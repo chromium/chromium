@@ -5,14 +5,16 @@
 package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.signin.R;
 
 import java.util.Objects;
 
 /* Class containing IDs of resources for the fullscreen sign-in view. */
+@NullMarked
 public final class FullscreenSigninConfig {
     public final @StringRes int titleId;
     public final @StringRes int subtitleId;

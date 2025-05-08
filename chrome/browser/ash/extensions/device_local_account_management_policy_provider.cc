@@ -6,6 +6,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/immediate_crash.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/extensions/extensions_permissions_tracker.h"
 #include "chrome/grit/generated_resources.h"
@@ -65,6 +66,9 @@ bool DeviceLocalAccountManagementPolicyProvider::UserMayLoad(
           extension->GetType() == extensions::Manifest::TYPE_EXTENSION) {
         return true;
       }
+      break;
+    case policy::DeviceLocalAccountType::kArcvmKioskApp:
+      // No companion extensions in ARC VM kiosk.
       break;
   }
 

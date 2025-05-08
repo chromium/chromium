@@ -6,7 +6,6 @@
 
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 namespace enterprise_connectors {
 
@@ -26,7 +25,6 @@ ConnectorsService* ConnectorsServiceFactory::GetForProfile(
 ConnectorsServiceFactory::ConnectorsServiceFactory()
     : ProfileKeyedServiceFactoryIOS("ConnectorsService",
                                     ProfileSelection::kOwnInstanceInIncognito) {
-  DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 ConnectorsServiceFactory::~ConnectorsServiceFactory() = default;
@@ -34,10 +32,7 @@ ConnectorsServiceFactory::~ConnectorsServiceFactory() = default;
 std::unique_ptr<KeyedService> ConnectorsServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* browser_state) const {
   auto* profile = ProfileIOS::FromBrowserState(browser_state);
-  return std::make_unique<ConnectorsService>(
-      profile->IsOffTheRecord(), profile->GetPrefs(),
-      profile->GetUserCloudPolicyManager(),
-      IdentityManagerFactory::GetForProfile(profile));
+  return std::make_unique<ConnectorsService>(profile);
 }
 
 }  // namespace enterprise_connectors

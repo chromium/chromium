@@ -24,7 +24,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -40,6 +39,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #else
 #include <algorithm>
@@ -309,7 +309,7 @@ bool IsDemoSession() {
 
 bool IsChromeAppKioskSession() {
 #if BUILDFLAG(IS_CHROMEOS)
-  return user_manager::UserManager::Get()->IsLoggedInAsKioskApp();
+  return user_manager::UserManager::Get()->IsLoggedInAsKioskChromeApp();
 #else
   return false;
 #endif

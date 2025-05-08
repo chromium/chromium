@@ -353,6 +353,14 @@ std::optional<GroupSuggestions> GetAllGroupSuggestions(
 
 }  // namespace
 
+GroupingHeuristics::SuggestionsResult::SuggestionsResult() = default;
+GroupingHeuristics::SuggestionsResult::~SuggestionsResult() = default;
+GroupingHeuristics::SuggestionsResult::SuggestionsResult(
+    GroupingHeuristics::SuggestionsResult&&) = default;
+GroupingHeuristics::SuggestionsResult&
+GroupingHeuristics::SuggestionsResult::operator=(
+    GroupingHeuristics::SuggestionsResult&& suggestion_result) = default;
+
 GroupingHeuristics::GroupingHeuristics() {
   if (features::kGroupSuggestionEnableRecentlyOpened.Get()) {
     heuristics_.emplace(GroupSuggestion::SuggestionReason::kRecentlyOpened,
@@ -376,7 +384,7 @@ GroupingHeuristics::~GroupingHeuristics() = default;
 
 void GroupingHeuristics::GetSuggestions(
     std::vector<URLVisitAggregate> candidates,
-    GroupingHeuristics::SuggestionsCallback callback) {
+    GroupingHeuristics::SuggestionResultCallback callback) {
   GetSuggestions(std::move(candidates),
                  {GroupSuggestion::SuggestionReason::kSwitchedBetween,
                   GroupSuggestion::SuggestionReason::kSimilarSource,
@@ -388,9 +396,10 @@ void GroupingHeuristics::GetSuggestions(
 void GroupingHeuristics::GetSuggestions(
     std::vector<URLVisitAggregate> candidates,
     const std::vector<GroupSuggestion::SuggestionReason>& heuristics_priority,
-    SuggestionsCallback callback) {
+    SuggestionResultCallback callback) {
+  SuggestionsResult result;
   if (candidates.empty()) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(std::move(result));
     return;
   }
 
@@ -407,9 +416,10 @@ void GroupingHeuristics::GetSuggestions(
     auto& heuristic = heuristics_[type];
     heuristic_results.emplace(heuristic->reason(), heuristic->Run(signals));
   }
-
-  std::move(callback).Run(GetAllGroupSuggestions(
-      candidates, heuristics_priority, heuristic_results));
+  result.suggestions = GetAllGroupSuggestions(candidates, heuristics_priority,
+                                              heuristic_results);
+  result.inputs = signals;
+  std::move(callback).Run(std::move(result));
 }
 
 }  // namespace visited_url_ranking

@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="DataSharing.Android.JoinActionFlowState"
-    enum="JoinActionStateAndroid" expires_after="2025-09-03">
+    enum="JoinActionStateAndroid" expires_after="2025-11-02">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>
@@ -44,13 +44,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DataSharing.Android.ShareActionFlowState"
-    enum="ShareActionStateAndroid" expires_after="2025-09-03">
+    enum="ShareActionStateAndroid" expires_after="2025-11-02">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>
     Records the state of the share flow. Records one enum value for progress on
     each step of the flow. This histogram is used to understand the drop off
     rates at each step, and to estimate the frequency of errors.
+  </summary>
+</histogram>
+
+<histogram name="DataSharing.Android.UserAction" enum="DataSharingUserAction"
+    expires_after="2026-04-24">
+  <owner>ritikagup@google.com</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the user actions for DataSharing UI. It is recorded when the user
+    makes the action in the UI. This histogram will show the number of clicks
+    for various UI actions in each flow.
   </summary>
 </histogram>
 
@@ -94,7 +105,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DataSharing.TotalMembersInGroup.AtStartup" units="members"
-    expires_after="2025-09-03">
+    expires_after="2025-11-02">
   <owner>dljames@chromium.org</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>

@@ -19,17 +19,16 @@ import static org.mockito.Mockito.when;
 import android.graphics.PointF;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
+import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
 
 import java.util.Collections;
@@ -38,8 +37,6 @@ import java.util.Collections;
 @Config(qualifiers = "sw600dp")
 @RunWith(BaseRobolectricTestRunner.class)
 public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBase {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     // Constants
     private static final Integer INTERACTING_VIEW_ROOT_ID = 24; // Arbitrary value.
     private static final float END_X = 10f; // Arbitrary value.
@@ -57,6 +54,11 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
     @Override
     public void setup() {
         super.setup();
+        mModel.addTab(
+                mTabForInteractingView,
+                /* index= */ 0,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
         mStrategy =
                 new SourceViewDragDropReorderStrategy(
                         mReorderDelegate,
@@ -75,13 +77,15 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
                         mGroupStrategy);
     }
 
+    @Override
+    protected void setupStripViews() {}
+
     private void setupForTabDrag() {
-        mInteractingTab = buildStripTab(INTERACTING_VIEW_ID, 0, TAB_WIDTH);
+        mInteractingTab = buildStripTab(INTERACTING_VIEW_ID, 0);
     }
 
     private void setupForGroupDrag() {
-        mInteractingGroupTitle =
-                buildGroupTitle(INTERACTING_VIEW_ROOT_ID, GROUP_ID1, TAB_WIDTH, TAB_WIDTH);
+        mInteractingGroupTitle = buildGroupTitle(INTERACTING_VIEW_ROOT_ID, GROUP_ID1, TAB_WIDTH);
     }
 
     @Test
@@ -315,7 +319,6 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         setupForTabDrag();
         // Last tab in group. Will not skip ungrouping.
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mModel);
-        when(mTabGroupModelFilter.getTabUngrouper()).thenReturn(mTabUnGrouper);
         when(mTabGroupModelFilter.isTabInTabGroup(mTabForInteractingView)).thenReturn(true);
         when(mTabGroupModelFilter.getTabCountForGroup(any())).thenReturn(1);
         when(mActionConfirmationManager.willSkipUngroupTabAttempt()).thenReturn(false);

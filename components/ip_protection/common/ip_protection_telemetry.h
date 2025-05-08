@@ -82,6 +82,14 @@ enum class AuthTokenResultForGeo {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/network/enums.xml:IpProtectionGetAuthTokenResultForGeo)
 
+// An enumeration of events affecting the token count.
+enum class IpProtectionTokenCountEvent {
+  kIssued = 0,
+  kSpent = 1,
+  kExpired = 2,
+  kMaxValue = kExpired,
+};
+
 // An abstract interface for all of the telemetry associated with IP Protection.
 //
 // This is implemented by each telemetry platform, and a singleton made
@@ -216,6 +224,12 @@ class IpProtectionTelemetry {
   // QUIC proxies failed and the fallback HTTPS proxies succeeded. The argument
   // is the number of requests made with QUIC proxies before this failure.
   virtual void QuicProxiesFailed(int after_requests) = 0;
+
+  // Records the number of tokens involved in a specific event (request, spend,
+  // expiration). `count` is the number of tokens.
+  virtual void RecordTokenCountEvent(ProxyLayer layer,
+                                     IpProtectionTokenCountEvent event,
+                                     int count) = 0;
 };
 
 // Get the singleton instance of this type. This will be implemented by each

@@ -398,4 +398,9 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
     PrefService getPrefService() {
         return UserPrefs.get(getProfile());
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
 }

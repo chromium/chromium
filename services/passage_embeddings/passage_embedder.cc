@@ -66,6 +66,8 @@ PassageEmbedder::PassageEmbedder(
       embeddings_cache_(embedder_params->embedder_cache_size),
       user_initiated_priority_num_threads_(
           embedder_params->user_initiated_priority_num_threads),
+      urgent_priority_num_threads_(
+          embedder_params->urgent_priority_num_threads),
       passive_priority_num_threads_(
           embedder_params->passive_priority_num_threads),
       allow_gpu_execution_(embedder_params->allow_gpu_execution) {
@@ -164,6 +166,9 @@ bool PassageEmbedder::BuildExecutionTask() {
     case mojom::PassagePriority::kUserInitiated:
       num_threads = user_initiated_priority_num_threads_;
       break;
+    case mojom::PassagePriority::kUrgent:
+      num_threads = urgent_priority_num_threads_;
+      break;
     case mojom::PassagePriority::kPassive:
       num_threads = passive_priority_num_threads_;
       break;
@@ -215,7 +220,6 @@ void PassageEmbedder::GenerateEmbeddings(
   for (const std::string& input : inputs) {
     mojom::PassageEmbeddingsResultPtr result =
         mojom::PassageEmbeddingsResult::New();
-    result->passage = input;
 
     auto cache_value = embeddings_cache_.Get(input);
     bool cache_hit = cache_value != embeddings_cache_.end();

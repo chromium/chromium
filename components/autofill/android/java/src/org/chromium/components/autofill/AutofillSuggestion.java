@@ -24,7 +24,7 @@ public class AutofillSuggestion extends DropdownItemBase {
     private final @Nullable String mSecondarySublabel;
     private final @Nullable String mLabelContentDescription;
     private final int mIconId;
-    private final int mSuggestionType;
+    private final @SuggestionType int mSuggestionType;
     private final boolean mIsDeletable;
     private final boolean mApplyDeactivatedStyle;
     private final boolean mShouldDisplayTermsAvailable;
@@ -120,7 +120,7 @@ public class AutofillSuggestion extends DropdownItemBase {
         return mLabelContentDescription;
     }
 
-    public int getSuggestionType() {
+    public @SuggestionType int getSuggestionType() {
         return mSuggestionType;
     }
 

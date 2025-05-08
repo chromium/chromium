@@ -33,31 +33,20 @@
 #include "gpu/vulkan/vulkan_util.h"
 #include "ui/gl/gl_angle_util_vulkan.h"
 
-namespace features {
-// Based on Finch experiment results, the VMA block size does not significantly
-// affect performance.  Too small sizes (such as 4KB) result in instability,
-// likely due to running out of allowed allocations (the
-// |maxMemoryAllocationCount| Vulkan limit).  Too large sizes (such as 4MB)
-// result in significant memory waste due to fragmentation.  Finch results
-// have shown that with a block size of 64KB and below, the amount of
-// fragmentation is ~1MB in the 99th percentile.  For 128KB and higher block
-// sizes, the amount of fragmentation exponentially increases (with 2MB for
-// 128KB block size, 4MB for 256KB, etc).
-BASE_FEATURE(kVulkanVMALargeHeapBlockSizeExperiment,
-             "VulkanVMALargeHeapBlockSizeExperiment",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-constexpr base::FeatureParam<int> kVulkanVMALargeHeapBlockSize{
-    &kVulkanVMALargeHeapBlockSizeExperiment, "VulkanVMALargeHeapBlockSize",
-    64 * 1024};
-}  // namespace features
-
 namespace gpu {
 namespace {
 VkDeviceSize GetPreferredVMALargeHeapBlockSize() {
-  const VkDeviceSize block_size =
-      ::features::kVulkanVMALargeHeapBlockSize.Get();
-  DCHECK(std::has_single_bit(block_size));
-  return block_size;
+  // Based on Finch experiment results, the VMA block size does not
+  // significantly affect performance.  Too small sizes (such as 4KB) result in
+  // instability, likely due to running out of allowed allocations (the
+  // |maxMemoryAllocationCount| Vulkan limit).  Too large sizes (such as 4MB)
+  // result in significant memory waste due to fragmentation.  Finch results
+  // have shown that with a block size of 64KB and below, the amount of
+  // fragmentation is ~1MB in the 99th percentile.  For 128KB and higher block
+  // sizes, the amount of fragmentation exponentially increases (with 2MB for
+  // 128KB block size, 4MB for 256KB, etc).
+  constexpr VkDeviceSize kVulkanVMALargeHeapBlockSize = 64 * 1024;
+  return kVulkanVMALargeHeapBlockSize;
 }
 
 #if BUILDFLAG(IS_ANDROID)

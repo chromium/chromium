@@ -17,8 +17,8 @@
 goog.provide('goog.math.RangeSet');
 
 goog.require('goog.array');
+goog.require('goog.iter');
 goog.require('goog.iter.Iterator');
-goog.require('goog.iter.StopIteration');
 goog.require('goog.math.Range');
 
 
@@ -32,6 +32,7 @@ goog.require('goog.math.Range');
  * New ranges added to the set which overlap the values in one or more existing
  * ranges will be merged.
  *
+ * @implements {Iterable<!goog.math.Range>}
  * @struct
  * @constructor
  * @final
@@ -393,14 +394,27 @@ goog.math.RangeSet.prototype.__iterator__ = function(opt_keys) {
   var list = this.ranges_;
 
   var iterator = new goog.iter.Iterator();
-  iterator.nextValueOrThrow = function() {
+  /**
+   * @return {!IIterableResult<!goog.math.Range>}
+   * @override
+   */
+  iterator.next = function() {
     'use strict';
     if (i >= list.length) {
-      throw goog.iter.StopIteration;
+      return goog.iter.ES6_ITERATOR_DONE;
     }
-    return list[i++].clone();
+    return goog.iter.createEs6IteratorYield(list[i++].clone());
   };
 
-
   return iterator;
+};
+
+
+/**
+ * Returns an iterator that iterates over the ranges in the RangeSet.
+ * @return {!Iterator<!goog.math.Range>} An iterator over the values in the set.
+ */
+goog.math.RangeSet.prototype[Symbol.iterator] = function() {
+  // These are now identical!
+  return goog.math.RangeSet.prototype.__iterator__.call(this);
 };

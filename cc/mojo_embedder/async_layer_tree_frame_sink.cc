@@ -168,6 +168,8 @@ void AsyncLayerTreeFrameSink::DetachFromClient() {
   client_->SetBeginFrameSource(nullptr);
   begin_frame_source_.reset();
   synthetic_begin_frame_source_.reset();
+  internal_begin_frame_source_.reset();
+  num_did_not_produce_frame_since_last_submit_ = 0;
   client_receiver_ = std::monostate{};
   // `compositor_frame_sink_ptr_` points to either `compositor_frame_sink_` or
   // `compositor_frame_sink_associated_`, so it must be set to nullptr first.
@@ -192,7 +194,11 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
   DCHECK(frame.metadata.begin_frame_ack.has_damage);
   DCHECK(frame.metadata.begin_frame_ack.frame_id.IsSequenceValid());
 
-  if (auto_needs_begin_frame_ && !needs_begin_frames_) {
+  // TODO(crbug.com/411268742): there're test failures if we update
+  // needs_begin_frames_ when
+  // num_did_not_produce_frame_before_internal_begin_frame_source_ is set.
+  if (auto_needs_begin_frame_ && !needs_begin_frames_ &&
+      !num_did_not_produce_frame_before_internal_begin_frame_source_) {
     UpdateNeedsBeginFramesInternal(/*needs_begin_frames=*/true);
   }
 
@@ -279,13 +285,7 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
   compositor_frame_sink_ptr_->SubmitCompositorFrame(
       local_surface_id_, std::move(frame), std::move(hit_test_region_list), 0);
 
-  if (base::FeatureList::IsEnabled(
-          features::kExportFrameTimingAfterFrameDone)) {
-    for (const auto& pair : timing_details_) {
-      client_->DidPresentCompositorFrame(pair.first, pair.second);
-    }
-    timing_details_.clear();
-  }
+  ExportFrameTiming();
 
   num_did_not_produce_frame_since_last_submit_ = 0;
   if (use_internal_begin_frame_source_) {
@@ -314,13 +314,8 @@ void AsyncLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
         data->set_surface_frame_trace_id(ack.trace_id);
       });
 
-  if (base::FeatureList::IsEnabled(
-          features::kExportFrameTimingAfterFrameDone)) {
-    for (const auto& pair : timing_details_) {
-      client_->DidPresentCompositorFrame(pair.first, pair.second);
-    }
-    timing_details_.clear();
-  }
+  ExportFrameTiming();
+
   if (use_internal_begin_frame_source_) {
     if (ack.preferred_frame_interval) {
       const viz::BeginFrameArgs last_args =
@@ -343,6 +338,16 @@ void AsyncLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
         FROM_HERE,
         base::BindOnce(&AsyncLayerTreeFrameSink::UpdateInternalBeginFrameSource,
                        weak_factory_.GetWeakPtr(), true));
+  }
+}
+
+void AsyncLayerTreeFrameSink::ExportFrameTiming() {
+  if (base::FeatureList::IsEnabled(
+          features::kExportFrameTimingAfterFrameDone)) {
+    for (const auto& pair : timing_details_) {
+      client_->DidPresentCompositorFrame(pair.first, pair.second);
+    }
+    timing_details_.clear();
   }
 }
 
@@ -459,12 +464,19 @@ void AsyncLayerTreeFrameSink::OnSurfaceEvicted(
 void AsyncLayerTreeFrameSink::OnNeedsBeginFrames(bool needs_begin_frames) {
   DCHECK(compositor_frame_sink_ptr_);
 
-  // If no CompositorFrame submitted(!needs_begin_frames_), but client needs
-  // begin frames when internal begin frame source is enabled.
   if (!needs_begin_frames_ && needs_begin_frames &&
       num_did_not_produce_frame_before_internal_begin_frame_source_) {
-    DCHECK(!use_internal_begin_frame_source_);
-    // Issue internal begin frame after current OnNeedsBeginFrames.
+    if (use_internal_begin_frame_source_) {
+      // OnNeedsBeginFrames is only called when ExternalBeginFrameSourceClient
+      // is the current active BeginFrameSource. This means we've just
+      // switched from internal begin frame source and a CompositorFrame is
+      // submitted. So only update needs_begin_frames_ here.
+      UpdateNeedsBeginFramesInternal(needs_begin_frames);
+      return;
+    }
+    // If no CompositorFrame submitted(!needs_begin_frames_ &&
+    // !use_internal_begin_frame_source_), issue internal begin frames
+    // after current OnNeedsBeginFrames.
     compositor_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&AsyncLayerTreeFrameSink::UpdateInternalBeginFrameSource,
@@ -525,11 +537,11 @@ void AsyncLayerTreeFrameSink::UpdateInternalBeginFrameSource(
       internal_begin_frame_source_->OnUpdateVSyncParameters(
           last_args.frame_time, last_args.interval);
     }
-    use_internal_begin_frame_source_ = true;
     client_->SetBeginFrameSource(internal_begin_frame_source_.get());
+    use_internal_begin_frame_source_ = true;
   } else {
-    use_internal_begin_frame_source_ = false;
     client_->SetBeginFrameSource(begin_frame_source_.get());
+    use_internal_begin_frame_source_ = false;
   }
   TRACE_EVENT1("cc", "UpdateInternalBeginFrameSource",
                "use_internal_begin_frame_source_",

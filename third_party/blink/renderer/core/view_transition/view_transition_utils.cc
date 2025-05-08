@@ -6,6 +6,8 @@
 
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -29,7 +31,8 @@ void ViewTransitionUtils::ForEachTransitionPseudo(Element& element,
   func(transition_pseudo);
 
   for (const auto& view_transition_name :
-       element.GetDocument().GetStyleEngine().ViewTransitionTags()) {
+       To<ViewTransitionPseudoElementBase>(transition_pseudo)
+           ->GetViewTransitionNames()) {
     auto* container_pseudo =
         To<ViewTransitionTransitionElement>(transition_pseudo)
             ->FindViewTransitionGroupPseudoElement(view_transition_name);
@@ -71,7 +74,8 @@ PseudoElement* ViewTransitionUtils::FindPseudoIf(const Element& element,
   }
 
   for (const auto& view_transition_name :
-       element.GetDocument().GetStyleEngine().ViewTransitionTags()) {
+       To<ViewTransitionPseudoElementBase>(transition_pseudo)
+           ->GetViewTransitionNames()) {
     auto* container_pseudo =
         To<ViewTransitionTransitionElement>(transition_pseudo)
             ->FindViewTransitionGroupPseudoElement(view_transition_name);
@@ -123,8 +127,8 @@ void ViewTransitionUtils::ForEachDirectTransitionPseudo(const Element* element,
 
   switch (element->GetPseudoId()) {
     case kPseudoIdViewTransition:
-      for (auto name :
-           element->GetDocument().GetStyleEngine().ViewTransitionTags()) {
+      for (auto name : To<ViewTransitionPseudoElementBase>(element)
+                           ->GetViewTransitionNames()) {
         if (auto* pseudo =
                 element->GetPseudoElement(kPseudoIdViewTransitionGroup, name)) {
           func(pseudo);
@@ -180,6 +184,13 @@ ViewTransition* ViewTransitionUtils::GetTransition(const Element& element) {
     return nullptr;
   }
   return transition;
+}
+
+ViewTransition* ViewTransitionUtils::GetTransition(const Node& node) {
+  if (node.IsElementNode()) {
+    return GetTransition(To<Element>(node));
+  }
+  return GetTransition(node.GetDocument());
 }
 
 ViewTransition* ViewTransitionUtils::TransitionForTaggedElement(

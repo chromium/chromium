@@ -27,6 +27,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/chrome_web_authentication_delegate.h"
+#include "chrome/browser/webauthn/immediate_request_rate_limiter_factory.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/password_credential_controller.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
@@ -40,6 +41,7 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/webauthn/core/browser/immediate_request_rate_limiter.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/test_passkey_model.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
@@ -148,6 +150,10 @@ class MockCableDiscoveryFactory : public device::FidoDiscoveryFactory {
 class ChromeAuthenticatorRequestDelegateTest
     : public ChromeRenderViewHostTestHarness {
  public:
+  ChromeAuthenticatorRequestDelegateTest()
+      : ChromeRenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     PasskeyModelFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -157,6 +163,12 @@ class ChromeAuthenticatorRequestDelegateTest
               return std::make_unique<webauthn::TestPasskeyModel>();
             }));
     ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(&observer_);
+
+    ImmediateRequestRateLimiterFactory::GetInstance()->SetTestingFactoryAndUse(
+        profile(), base::BindRepeating([](content::BrowserContext* context)
+                                           -> std::unique_ptr<KeyedService> {
+          return std::make_unique<webauthn::ImmediateRequestRateLimiter>();
+        }));
   }
 
   void TearDown() override {
@@ -1017,6 +1029,78 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
   EXPECT_CALL(mock_closure, Run).Times(0);
   EXPECT_CALL(observer_, OnTransportAvailabilityEnumerated).Times(1);
   std::move(callback).Run({});
+}
+
+TEST_F(ChromeAuthenticatorRequestDelegateTest, ImmediateMediationRateLimit) {
+  constexpr base::TimeDelta kWindowSize = base::Minutes(1);
+  constexpr int kMaxRequestsPerWindow = 2;
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      device::kWebAuthnImmediateRequestRateLimit,
+      {{"max_requests", base::NumberToString(kMaxRequestsPerWindow)},
+       {"window_seconds", "60"}});
+  // Navigate to commit the origin.
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL(kOrigin));
+  ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+  delegate.SetRelyingPartyId(kRpId);
+  delegate.SetUIPresentation(UIPresentation::kModalImmediate);
+
+  // Register a mock callback for the immediate_not_found case.
+  // This is called when MaybeHandleImmediateMediation returns true (e.g., rate
+  // limited).
+  base::MockCallback<base::OnceClosure> mock_immediate_not_found_callback;
+  delegate.RegisterActionCallbacks(
+      /*cancel_callback=*/base::DoNothing(),
+      mock_immediate_not_found_callback.Get(),
+      /*start_over_callback=*/base::DoNothing(),
+      /*account_preselected_callback=*/base::DoNothing(),
+      /*password_selected_callback=*/base::DoNothing(),
+      /*request_callback=*/base::DoNothing(),
+      /*bluetooth_adapter_power_on_callback=*/base::DoNothing(),
+      /*bluetooth_query_status_callback=*/base::DoNothing());
+
+  TransportAvailabilityInfo transports_info;
+  transports_info.request_type = device::FidoRequestType::kGetAssertion;
+  transports_info.recognized_credentials = {
+      device::DiscoverableCredentialMetadata(
+          device::AuthenticatorType::kEnclave, kRpId, {},
+          device::PublicKeyCredentialUserEntity(),
+          /*provider_name=*/std::nullopt)};
+
+  for (int i = 0; i < kMaxRequestsPerWindow; ++i) {
+    SCOPED_TRACE(testing::Message() << "Request " << i + 1);
+    EXPECT_CALL(mock_immediate_not_found_callback, Run).Times(0);
+    // Need to pass a copy as OnTransportAvailabilityEnumerated takes by value.
+    TransportAvailabilityInfo info_copy = transports_info;
+    delegate.OnTransportAvailabilityEnumerated(std::move(info_copy));
+    testing::Mock::VerifyAndClearExpectations(
+        &mock_immediate_not_found_callback);
+  }
+
+  // The next request should be rate-limited (callback is called).
+  {
+    SCOPED_TRACE(testing::Message() << "Request " << kMaxRequestsPerWindow + 1);
+    EXPECT_CALL(mock_immediate_not_found_callback, Run).Times(1);
+    TransportAvailabilityInfo info_copy = transports_info;
+    delegate.OnTransportAvailabilityEnumerated(std::move(info_copy));
+    testing::Mock::VerifyAndClearExpectations(
+        &mock_immediate_not_found_callback);
+  }
+
+  // Advance time beyond the window.
+  task_environment()->FastForwardBy(kWindowSize + base::Seconds(1));
+
+  // The next request should be allowed again (callback not called).
+  {
+    SCOPED_TRACE(testing::Message() << "Request after time window");
+    EXPECT_CALL(mock_immediate_not_found_callback, Run).Times(0);
+    TransportAvailabilityInfo info_copy = transports_info;
+    delegate.OnTransportAvailabilityEnumerated(std::move(info_copy));
+    testing::Mock::VerifyAndClearExpectations(
+        &mock_immediate_not_found_callback);
+  }
 }
 
 }  // namespace

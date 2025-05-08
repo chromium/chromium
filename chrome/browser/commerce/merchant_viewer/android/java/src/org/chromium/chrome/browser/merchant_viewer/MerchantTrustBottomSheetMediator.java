@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.merchant_viewer;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.ViewGroup;
@@ -15,6 +17,9 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -28,6 +33,7 @@ import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.WebContents;
@@ -40,6 +46,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 /** Mediator class for the component. */
+@NullMarked
 public class MerchantTrustBottomSheetMediator {
     private static final long HIDE_PROGRESS_BAR_DELAY_MS = 50;
 
@@ -51,13 +58,13 @@ public class MerchantTrustBottomSheetMediator {
     private final int mFaviconSize;
     private final ObservableSupplier<Profile> mProfileSupplier;
 
-    private PropertyModel mToolbarModel;
-    private WebContents mWebContents;
-    private ContentView mWebContentView;
-    private WebContentsDelegateAndroid mWebContentsDelegate;
-    private WebContentsObserver mWebContentsObserver;
-    private WebContents mWebContentsForTesting;
-    private Drawable mFaviconDrawableForTesting;
+    private @Nullable PropertyModel mToolbarModel;
+    private @Nullable WebContents mWebContents;
+    private @Nullable ContentView mWebContentView;
+    private @Nullable WebContentsDelegateAndroid mWebContentsDelegate;
+    private @Nullable WebContentsObserver mWebContentsObserver;
+    private @Nullable WebContents mWebContentsForTesting;
+    private @Nullable Drawable mFaviconDrawableForTesting;
 
     /** Creates a new instance. */
     MerchantTrustBottomSheetMediator(
@@ -90,7 +97,7 @@ public class MerchantTrustBottomSheetMediator {
 
         mWebContentsObserver =
                 new WebContentsObserver(mWebContents) {
-                    private GURL mCurrentUrl;
+                    private @Nullable GURL mCurrentUrl;
 
                     @Override
                     public void loadProgressChanged(float progress) {
@@ -113,15 +120,17 @@ public class MerchantTrustBottomSheetMediator {
                     @Override
                     public void titleWasSet(String title) {
                         if (!MerchantViewerConfig.doesTrustSignalsSheetUsePageTitle()) return;
+                        assumeNonNull(mToolbarModel);
                         mToolbarModel.set(BottomSheetToolbarProperties.TITLE, title);
                     }
 
                     @Override
                     public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
                         if (navigation.hasCommitted()) {
+                            assumeNonNull(mToolbarModel);
                             mToolbarModel.set(
                                     BottomSheetToolbarProperties.URL,
-                                    getWebContents().getVisibleUrl());
+                                    assumeNonNull(getWebContents()).getVisibleUrl());
                         }
                     }
                 };
@@ -131,6 +140,7 @@ public class MerchantTrustBottomSheetMediator {
                     @Override
                     public void visibleSSLStateChanged() {
                         if (mToolbarModel == null) return;
+                        assumeNonNull(mWebContents);
                         int securityLevel =
                                 SecurityStateModel.getSecurityLevelForWebContents(mWebContents);
                         mToolbarModel.set(
@@ -207,6 +217,7 @@ public class MerchantTrustBottomSheetMediator {
                 : RenderCoordinates.fromWebContents(mWebContents).getScrollYPixInt();
     }
 
+    @EnsuresNonNull("mWebContents")
     private void createWebContents() {
         assert mWebContents == null;
         if (mWebContentsForTesting != null) {
@@ -241,9 +252,11 @@ public class MerchantTrustBottomSheetMediator {
     }
 
     private void loadUrl(GURL url) {
-        if (mWebContents != null) {
-            mWebContents.getNavigationController().loadUrl(new LoadUrlParams(url.getSpec()));
-        }
+        if (mWebContents == null) return;
+        NavigationController navigationController = mWebContents.getNavigationController();
+        if (navigationController == null) return;
+
+        navigationController.loadUrl(new LoadUrlParams(url.getSpec()));
     }
 
     private static @DrawableRes int getSecurityIconResource(
@@ -284,6 +297,7 @@ public class MerchantTrustBottomSheetMediator {
         // wrong non-null bitmap for the first navigation within bottom sheet, so we use Google icon
         // directly for valid urls.
         if (isValidUrl(url) || (profile == null)) {
+            assumeNonNull(mToolbarModel);
             mToolbarModel.set(
                     BottomSheetToolbarProperties.FAVICON_ICON_DRAWABLE,
                     getDefaultFaviconDrawable(url));
@@ -304,6 +318,7 @@ public class MerchantTrustBottomSheetMediator {
                     } else {
                         drawable = getDefaultFaviconDrawable(url);
                     }
+                    assumeNonNull(mToolbarModel);
                     mToolbarModel.set(BottomSheetToolbarProperties.FAVICON_ICON_DRAWABLE, drawable);
                 });
     }

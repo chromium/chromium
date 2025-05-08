@@ -26,16 +26,6 @@ namespace {
 using testing::Key;
 using testing::UnorderedElementsAre;
 
-TEST(FirstPartySetsTraitsTest, Roundtrips_SiteIndex) {
-  net::FirstPartySetEntry::SiteIndex original(1337);
-  net::FirstPartySetEntry::SiteIndex round_tripped;
-
-  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SiteIndex>(
-      original, round_tripped));
-
-  EXPECT_EQ(original, round_tripped);
-}
-
 TEST(FirstPartySetsTraitsTest, Roundtrips_SiteType) {
   for (net::SiteType site_type : {
            net::SiteType::kPrimary,
@@ -52,7 +42,7 @@ TEST(FirstPartySetsTraitsTest, Roundtrips_SiteType) {
 TEST(FirstPartySetsTraitsTest, Roundtrips_FirstPartySetEntry) {
   net::SchemefulSite primary(GURL("https://primary.test"));
 
-  net::FirstPartySetEntry original(primary, net::SiteType::kAssociated, 1);
+  net::FirstPartySetEntry original(primary, net::SiteType::kAssociated);
   net::FirstPartySetEntry round_tripped;
 
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::FirstPartySetEntry>(
@@ -66,10 +56,9 @@ TEST(FirstPartySetsTraitsTest, Roundtrips_FirstPartySetMetadata) {
   net::SchemefulSite frame_owner(GURL("https://frame.test"));
   net::SchemefulSite top_frame_owner(GURL("https://top_frame.test"));
 
-  net::FirstPartySetEntry frame_entry(frame_owner, net::SiteType::kAssociated,
-                                      1);
+  net::FirstPartySetEntry frame_entry(frame_owner, net::SiteType::kAssociated);
   net::FirstPartySetEntry top_frame_entry(top_frame_owner,
-                                          net::SiteType::kAssociated, 2);
+                                          net::SiteType::kAssociated);
 
   auto make_metadata = [&]() {
     // Use non-default values to ensure serialization/deserialization works
@@ -100,20 +89,18 @@ TEST(FirstPartySetsTraitsTest, RoundTrips_GlobalFirstPartySets) {
       base::Version("1.2.3"),
       /*entries=*/
       {
-          {a,
-           net::FirstPartySetEntry(a, net::SiteType::kPrimary, std::nullopt)},
-          {b, net::FirstPartySetEntry(a, net::SiteType::kAssociated, 0)},
-          {c,
-           net::FirstPartySetEntry(a, net::SiteType::kService, std::nullopt)},
+          {a, net::FirstPartySetEntry(a, net::SiteType::kPrimary)},
+          {b, net::FirstPartySetEntry(a, net::SiteType::kAssociated)},
+          {c, net::FirstPartySetEntry(a, net::SiteType::kService)},
       },
       /*aliases=*/{{c_cctld, c}});
 
   original.ApplyManuallySpecifiedSet(
       net::LocalSetDeclaration::Create(
           /*set_entries=*/{{a, net::FirstPartySetEntry(
-                                   a, net::SiteType::kPrimary, std::nullopt)},
+                                   a, net::SiteType::kPrimary)},
                            {b, net::FirstPartySetEntry(
-                                   a, net::SiteType::kAssociated, 0)}},
+                                   a, net::SiteType::kAssociated)}},
           /*aliases=*/{{b_cctld, b}})
           .value());
 
@@ -138,20 +125,18 @@ TEST(FirstPartySetsTraitsTest, GlobalFirstPartySets_InvalidVersion) {
       base::Version(),
       /*entries=*/
       {
-          {a,
-           net::FirstPartySetEntry(a, net::SiteType::kPrimary, std::nullopt)},
-          {b, net::FirstPartySetEntry(a, net::SiteType::kAssociated, 0)},
-          {c,
-           net::FirstPartySetEntry(a, net::SiteType::kService, std::nullopt)},
+          {a, net::FirstPartySetEntry(a, net::SiteType::kPrimary)},
+          {b, net::FirstPartySetEntry(a, net::SiteType::kAssociated)},
+          {c, net::FirstPartySetEntry(a, net::SiteType::kService)},
       },
       /*aliases=*/{{c_cctld, c}});
 
   original.ApplyManuallySpecifiedSet(
       net::LocalSetDeclaration::Create(
           /*set_entries=*/{{a, net::FirstPartySetEntry(
-                                   a, net::SiteType::kPrimary, std::nullopt)},
+                                   a, net::SiteType::kPrimary)},
                            {b, net::FirstPartySetEntry(
-                                   a, net::SiteType::kAssociated, 0)}},
+                                   a, net::SiteType::kAssociated)}},
           /*aliases=*/{{b_cctld, b}})
           .value());
 
@@ -180,12 +165,12 @@ TEST(FirstPartySetsTraitsTest, RoundTrips_FirstPartySetsContextConfig) {
   const net::FirstPartySetsContextConfig original =
       net::FirstPartySetsContextConfig::Create(
           {
-              {a, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-                      a, net::SiteType::kPrimary, std::nullopt))},
-              {b, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-                      a, net::SiteType::kAssociated, 0))},
+              {a, net::FirstPartySetEntryOverride(
+                      net::FirstPartySetEntry(a, net::SiteType::kPrimary))},
+              {b, net::FirstPartySetEntryOverride(
+                      net::FirstPartySetEntry(a, net::SiteType::kAssociated))},
               {b_alias, net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-                            a, net::SiteType::kAssociated, 0))},
+                            a, net::SiteType::kAssociated))},
               {c, net::FirstPartySetEntryOverride()},
           },
           {{b_alias, b}})

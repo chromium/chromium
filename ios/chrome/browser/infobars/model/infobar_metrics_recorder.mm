@@ -143,6 +143,16 @@ const char kInfobarTypeSigninModalEventHistogram[] =
 const char kInfobarTypeSigninBadgeTappedHistogram[] =
     "Mobile.Messages.Badge.Tapped.InfobarTypeSignin";
 
+// Histogram names for collaboration group banner.
+const char kInfobarCollaborationGroupBannerEventHistogram[] =
+    "Mobile.Messages.Banner.Event.kInfobarCollaborationGroup";
+const char kInfobarCollaborationGroupBannerDismissTypeHistogram[] =
+    "Mobile.Messages.Banner.Dismiss.kInfobarCollaborationGroup";
+const char kInfobarCollaborationGroupModalEventHistogram[] =
+    "Mobile.Messages.Modal.Event.kInfobarCollaborationGroup";
+const char kInfobarCollaborationGroupBadgeTappedHistogram[] =
+    "Mobile.Messages.Badge.Tapped.kInfobarCollaborationGroup";
+
 }  // namespace
 
 @interface InfobarMetricsRecorder ()
@@ -203,6 +213,10 @@ const char kInfobarTypeSigninBadgeTappedHistogram[] =
     case InfobarType::kInfobarTypeSignin:
       UMA_HISTOGRAM_ENUMERATION(kInfobarTypeSigninBannerEventHistogram, event);
       break;
+    case InfobarType::kInfobarTypeCollaborationGroup:
+      UMA_HISTOGRAM_ENUMERATION(kInfobarCollaborationGroupBannerEventHistogram,
+                                event);
+      break;
   }
 }
 
@@ -253,6 +267,10 @@ const char kInfobarTypeSigninBadgeTappedHistogram[] =
       UMA_HISTOGRAM_ENUMERATION(kInfobarTypeSigninBannerDismissTypeHistogram,
                                 dismissType);
       break;
+    case InfobarType::kInfobarTypeCollaborationGroup:
+      UMA_HISTOGRAM_ENUMERATION(
+          kInfobarCollaborationGroupBannerDismissTypeHistogram, dismissType);
+      break;
   }
 }
 
@@ -301,6 +319,10 @@ const char kInfobarTypeSigninBadgeTappedHistogram[] =
     case InfobarType::kInfobarTypeSignin:
       UMA_HISTOGRAM_ENUMERATION(kInfobarTypeSigninModalEventHistogram, event);
       break;
+    case InfobarType::kInfobarTypeCollaborationGroup:
+      UMA_HISTOGRAM_ENUMERATION(kInfobarCollaborationGroupModalEventHistogram,
+                                event);
+      break;
   }
 }
 
@@ -343,6 +365,10 @@ const char kInfobarTypeSigninBadgeTappedHistogram[] =
       break;
     case InfobarType::kInfobarTypeSignin:
       UMA_HISTOGRAM_ENUMERATION(kInfobarTypeSigninBadgeTappedHistogram, state);
+      break;
+    case InfobarType::kInfobarTypeCollaborationGroup:
+      UMA_HISTOGRAM_ENUMERATION(kInfobarCollaborationGroupBadgeTappedHistogram,
+                                state);
       break;
   }
 }

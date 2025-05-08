@@ -41,7 +41,8 @@ goog.string.FORCE_NON_DOM_HTML_UNESCAPING =
  * @enum {string}
  */
 goog.string.Unicode = {
-  NBSP: '\xa0'
+  NBSP: '\xa0',
+  ZERO_WIDTH_SPACE: '\u200b'  // This is equivalent to <wbr>.
 };
 
 
@@ -653,7 +654,7 @@ goog.string.unescapeEntitiesUsingDom_ = function(str, opt_document) {
     // Check for numeric entity.
     if (entity.charAt(0) == '#') {
       // Prefix with 0 so that hex entities (e.g. &#x10) parse as hex numbers.
-      const n = Number('0' + entity.substr(1));
+      const n = Number('0' + entity.slice(1));
       if (!isNaN(n)) {
         value = String.fromCharCode(n);
       }
@@ -698,7 +699,7 @@ goog.string.unescapePureXmlEntities_ = function(str) {
       default:
         if (entity.charAt(0) == '#') {
           // Prefix with 0 so that hex entities (e.g. &#x10) parse as hex.
-          const n = Number('0' + entity.substr(1));
+          const n = Number('0' + entity.slice(1));
           if (!isNaN(n)) {
             return String.fromCharCode(n);
           }
@@ -998,8 +999,7 @@ goog.string.removeAt = function(s, index, stringLength) {
   let resultStr = s;
   // If the index is greater or equal to 0 then remove substring
   if (index >= 0 && index < s.length && stringLength > 0) {
-    resultStr = s.substr(0, index) +
-        s.substr(index + stringLength, s.length - index - stringLength);
+    resultStr = s.slice(0, index) + s.slice(index + stringLength);
   }
   return resultStr;
 };
@@ -1093,13 +1093,18 @@ goog.string.repeat = (String.prototype.repeat) ? function(string, length) {
  */
 goog.string.padNumber = function(num, length, opt_precision) {
   'use strict';
-  const s =
+  if (!Number.isFinite(num)) return String(num);
+  let s =
       (opt_precision !== undefined) ? num.toFixed(opt_precision) : String(num);
   let index = s.indexOf('.');
-  if (index == -1) {
+  if (index === -1) {
     index = s.length;
   }
-  return goog.string.repeat('0', Math.max(0, length - index)) + s;
+  const sign = s[0] === '-' ? '-' : '';
+  if (sign) {
+    s = s.substring(1);
+  }
+  return sign + goog.string.repeat('0', Math.max(0, length - index)) + s;
 };
 
 
@@ -1114,27 +1119,6 @@ goog.string.makeSafe = function(obj) {
   'use strict';
   return obj == null ? '' : String(obj);
 };
-
-
-/**
- * Concatenates string expressions. This is useful
- * since some browsers are very inefficient when it comes to using plus to
- * concat strings. Be careful when using null and undefined here since
- * these will not be included in the result. If you need to represent these
- * be sure to cast the argument to a String first.
- * For example:
- * <pre>buildString('a', 'b', 'c', 'd') -> 'abcd'
- * buildString(null, undefined) -> ''
- * </pre>
- * @param {...*} var_args A list of strings to concatenate. If not a string,
- *     it will be casted to one.
- * @return {string} The concatenation of `var_args`.
- */
-goog.string.buildString = function(var_args) {
-  'use strict';
-  return Array.prototype.join.call(arguments, '');
-};
-
 
 /**
  * Returns a string with at least 64-bits of randomness.
@@ -1352,7 +1336,7 @@ goog.string.toTitleCase = function(str, opt_delimiters) {
 goog.string.capitalize = function(str) {
   'use strict';
   return String(str.charAt(0)).toUpperCase() +
-      String(str.substr(1)).toLowerCase();
+      String(str.slice(1)).toLowerCase();
 };
 
 

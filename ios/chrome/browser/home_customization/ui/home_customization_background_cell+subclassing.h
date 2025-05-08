@@ -15,7 +15,7 @@
 
 // Main content view rendered inside the border wrapper.
 // Displays the core visual element.
-@property(nonatomic, strong) UIView* innerContentView;
+@property(nonatomic, strong) UIStackView* innerContentView;
 
 @end
 

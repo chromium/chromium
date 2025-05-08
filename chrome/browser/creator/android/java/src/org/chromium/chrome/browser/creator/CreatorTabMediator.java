@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.creator;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 
 import androidx.annotation.DrawableRes;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
@@ -29,6 +33,7 @@ import org.chromium.url.GURL;
  * Mediator class for preview tab, responsible for communicating with other objects.
  * This is based on the implementation of bottombar/ephemeraltab/EphemeralTabMediator.java.
  */
+@NullMarked
 public class CreatorTabMediator {
     /** The delay (four video frames) after which the hide progress will be hidden. */
     private static final long HIDE_PROGRESS_BAR_DELAY_MS = (1000 / 60) * 4;
@@ -37,11 +42,11 @@ public class CreatorTabMediator {
     private final CreatorCoordinator.FaviconLoader mFaviconLoader;
     private final int mTopControlsHeightDp;
 
-    private WebContents mWebContents;
-    private CreatorTabSheetContent mSheetContent;
-    private WebContentsObserver mWebContentsObserver;
-    private WebContentsDelegateAndroid mWebContentsDelegate;
-    private Profile mProfile;
+    private @Nullable WebContents mWebContents;
+    private @Nullable CreatorTabSheetContent mSheetContent;
+    private @Nullable WebContentsObserver mWebContentsObserver;
+    private @Nullable WebContentsDelegateAndroid mWebContentsDelegate;
+    private @Nullable Profile mProfile;
 
     /** Constructor. */
     public CreatorTabMediator(
@@ -73,11 +78,12 @@ public class CreatorTabMediator {
     /** Loads a new URL into the tab and makes it visible. */
     void requestShowContent(GURL url, String title) {
         loadUrl(url);
-        mSheetContent.updateTitle(title);
+        assumeNonNull(mSheetContent).updateTitle(title);
         mBottomSheetController.requestShowContent(mSheetContent, true);
     }
 
     private void loadUrl(GURL url) {
+        assert mWebContents != null && mWebContents.getNavigationController() != null;
         mWebContents.getNavigationController().loadUrl(new LoadUrlParams(url.getSpec()));
     }
 
@@ -88,7 +94,7 @@ public class CreatorTabMediator {
                     /** Whether the currently loaded page is an error (interstitial) page. */
                     private boolean mIsOnErrorPage;
 
-                    private GURL mCurrentUrl;
+                    private @Nullable GURL mCurrentUrl;
 
                     @Override
                     public void loadProgressChanged(float progress) {
@@ -119,14 +125,15 @@ public class CreatorTabMediator {
 
                     @Override
                     public void titleWasSet(String title) {
-                        mSheetContent.updateTitle(title);
+                        assumeNonNull(mSheetContent).updateTitle(title);
                     }
 
                     @Override
                     public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
                         if (navigation.hasCommitted()) {
                             mIsOnErrorPage = navigation.isErrorPage();
-                            mSheetContent.updateURL(getWebContents().getVisibleUrl());
+                            assumeNonNull(mSheetContent)
+                                    .updateURL(assumeNonNull(getWebContents()).getVisibleUrl());
                         } else {
                             // Not viewable contents such as download. Show a toast and close the
                             // tab.
@@ -152,6 +159,7 @@ public class CreatorTabMediator {
                     @Override
                     public void visibleSSLStateChanged() {
                         if (mSheetContent == null) return;
+                        assert mWebContents != null;
                         int securityLevel =
                                 SecurityStateModel.getSecurityLevelForWebContents(mWebContents);
                         mSheetContent.setSecurityIcon(getSecurityIconResource(securityLevel));

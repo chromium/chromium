@@ -69,7 +69,8 @@ gfx::Size CameraSystemAppDelegate::GetMinimumWindowSize() const {
   return {kChromeCameraAppMinimumWidth, kChromeCameraAppMinimumHeight + 32};
 }
 
-gfx::Rect CameraSystemAppDelegate::GetDefaultBounds(Browser*) const {
+gfx::Rect CameraSystemAppDelegate::GetDefaultBounds(
+    ash::BrowserDelegate*) const {
   gfx::Rect bounds =
       display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
   bounds.ClampToCenteredSize(CAMERA_WINDOW_DEFAULT_SIZE);

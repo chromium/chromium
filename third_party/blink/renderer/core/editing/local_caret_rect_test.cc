@@ -773,15 +773,33 @@ TEST_F(LocalCaretRectTest, AfterLineBreakTextArea) {
       LocalCaretRect(inner_text->GetLayoutObject(), PhysicalRect(30, 0, 1, 10)),
       LocalCaretRectOfPosition(PositionWithAffinity(
           Position(inner_text, 3), TextAffinity::kDownstream)));
+
+  // Test the second line.
+  const Node* br_in_2nd_line = inner_text->nextSibling()->nextSibling();
+  Position position4 = RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()
+                           ? Position(br_in_2nd_line, 0)
+                           : Position(inner_text, 4);
+  PhysicalRect local_rect4 =
+      RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled()
+          ? PhysicalRect(0, 0, 1, 10)
+          : PhysicalRect(0, 10, 1, 10);
   EXPECT_EQ(
-      LocalCaretRect(inner_text->GetLayoutObject(), PhysicalRect(0, 10, 1, 10)),
-      LocalCaretRectOfPosition(PositionWithAffinity(
-          Position(inner_text, 4), TextAffinity::kDownstream)));
-  const Node* hidden_br = inner_text->nextSibling();
-  EXPECT_EQ(
-      LocalCaretRect(hidden_br->GetLayoutObject(), PhysicalRect(0, 20, 1, 10)),
-      LocalCaretRectOfPosition(PositionWithAffinity(
-          Position(inner_text, 5), TextAffinity::kDownstream)));
+      LocalCaretRect(position4.AnchorNode()->GetLayoutObject(), local_rect4),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(position4, TextAffinity::kDownstream)));
+
+  // Test the third line.
+  const Node* placeholder_br = textarea->InnerEditorElement()->lastChild();
+  Position position5 = RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()
+                           ? Position(placeholder_br, 0)
+                           : Position(inner_text, 5);
+  PhysicalRect local_rect5 =
+      RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled()
+          ? PhysicalRect(0, 0, 1, 10)
+          : PhysicalRect(0, 20, 1, 10);
+  EXPECT_EQ(LocalCaretRect(placeholder_br->GetLayoutObject(), local_rect5),
+            LocalCaretRectOfPosition(
+                PositionWithAffinity(position5, TextAffinity::kDownstream)));
 }
 
 TEST_F(LocalCaretRectTest, CollapsedSpace) {

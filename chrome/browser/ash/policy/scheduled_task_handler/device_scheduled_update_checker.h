@@ -103,7 +103,7 @@ class DeviceScheduledUpdateChecker
 namespace update_checker_internal {
 
 // The tag associated to register |update_check_executor_|.
-constexpr char kUpdateCheckTimerTag[] = "DeviceScheduledUpdateChecker";
+inline constexpr char kUpdateCheckTimerTag[] = "DeviceScheduledUpdateChecker";
 
 // The timeout after which an OS and policies update is aborted.
 constexpr base::TimeDelta kOsAndPoliciesUpdateCheckHardTimeout =

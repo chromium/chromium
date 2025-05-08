@@ -1376,7 +1376,10 @@ bool IsNonZeroUserUnitsValue(const CSSPrimitiveValue* value) {
            numeric_literal->ClampedDoubleValue() != 0;
   }
   const auto& math_value = To<CSSMathFunctionValue>(*value);
-  return math_value.Category() == kCalcNumber && math_value.DoubleValue() != 0;
+  // If the calc() expression contains unresolvable values like sibling-index(),
+  // assume it's zero. This is only used for use counting below.
+  return math_value.Category() == kCalcNumber &&
+         math_value.GetValueIfKnown().value_or(0) != 0;
 }
 
 }  // namespace
@@ -1662,14 +1665,12 @@ bool IsFetchRestricted(StringView url, const CSSParserContext& context) {
          !ProtocolIs(url.ToString(), "data");
 }
 
-CSSUrlData CollectUrlData(const StringView& url,
-                          const CSSParserContext& context) {
+const CSSUrlData* CollectUrlData(const StringView& url,
+                                 const CSSParserContext& context) {
   AtomicString url_string = url.ToAtomicString();
-  return CSSUrlData(
+  return MakeGarbageCollected<CSSUrlData>(
       url_string, context.CompleteNonEmptyURL(url_string),
-      context.GetReferrer(),
-      context.IsOriginClean() ? OriginClean::kTrue : OriginClean::kFalse,
-      context.IsAdRelated());
+      context.GetReferrer(), context.IsOriginClean(), context.IsAdRelated());
 }
 
 }  // namespace
@@ -1726,7 +1727,7 @@ cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenStream& stream,
     return nullptr;
   }
   return MakeGarbageCollected<cssvalue::CSSURIValue>(
-      CollectUrlData(url.Value(), context));
+      *CollectUrlData(url.Value(), context));
 }
 
 struct ColorInterpolationSpace {
@@ -3378,7 +3379,7 @@ static CSSImageValue* CreateCSSImageValueWithReferrer(
     const StringView& uri,
     const CSSParserContext& context) {
   auto* image_value =
-      MakeGarbageCollected<CSSImageValue>(CollectUrlData(uri, context));
+      MakeGarbageCollected<CSSImageValue>(*CollectUrlData(uri, context));
   if (context.Mode() == kUASheetMode) {
     image_value->SetInitiator(fetch_initiator_type_names::kUacss);
   }

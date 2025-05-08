@@ -6,12 +6,12 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
-#include "base/containers/flat_set.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/transliterator.h"
 #include "base/i18n/unicodestring.h"
@@ -97,12 +97,12 @@ std::vector<Token> ExtractContent(const std::string& content_id,
 }
 
 bool IsNonLatinLocale(const std::string& locale) {
-  static const base::NoDestructor<base::flat_set<std::string>>
-      non_latin_locales({"am", "ar", "be", "bg", "bn", "el", "fa", "gu",
-                         "hi", "hy", "iw", "ja", "ka", "kk", "km", "kn",
-                         "ko", "ky", "lo", "mk", "ml", "mn", "mr", "my",
-                         "pa", "ru", "sr", "ta", "te", "th", "uk", "zh"});
-  return base::Contains(*non_latin_locales, locale.substr(0, 2));
+  static constexpr auto kNonLatinLocales =
+      base::MakeFixedFlatSet<std::string_view>(
+          {"am", "ar", "be", "bg", "bn", "el", "fa", "gu", "hi", "hy", "iw",
+           "ja", "ka", "kk", "km", "kn", "ko", "ky", "lo", "mk", "ml", "mn",
+           "mr", "my", "pa", "ru", "sr", "ta", "te", "th", "uk", "zh"});
+  return kNonLatinLocales.contains(locale.substr(0, 2));
 }
 
 bool IsStopword(const std::u16string& word, const std::string& locale) {
@@ -113,8 +113,8 @@ bool IsStopword(const std::u16string& word, const std::string& locale) {
     return false;
 
   // A set of stopwords in English. This set is taken from NLTK library.
-  static const base::NoDestructor<base::flat_set<std::string>>
-      english_stopwords(
+  static constexpr auto kEnglishStopWords =
+      base::MakeFixedFlatSet<std::string_view>(
           {"i",         "me",         "my",        "myself",  "we",
            "our",       "ours",       "ourselves", "you",     "you're",
            "you've",    "you'll",     "you'd",     "your",    "yours",
@@ -151,7 +151,7 @@ bool IsStopword(const std::u16string& word, const std::string& locale) {
            "needn",     "needn't",    "shan",      "shan't",  "shouldn",
            "shouldn't", "wasn",       "wasn't",    "weren",   "weren't",
            "won",       "won't",      "wouldn",    "wouldn't"});
-  return base::Contains(*english_stopwords, base::UTF16ToUTF8(word));
+  return kEnglishStopWords.contains(base::UTF16ToUTF8(word));
 }
 
 std::u16string Normalizer(const std::u16string& word, bool remove_hyphen) {

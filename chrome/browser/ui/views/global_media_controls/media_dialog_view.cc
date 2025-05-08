@@ -257,7 +257,7 @@ void MediaDialogView::AddedToWidget() {
       views::Emphasis::kHigh);
   views::BubbleFrameView* frame = GetBubbleFrameView();
   if (frame) {
-    frame->SetCornerRadius(corner_radius);
+    frame->SetRoundedCorners(gfx::RoundedCornersF(corner_radius));
   }
   if (entry_point_ ==
       global_media_controls::GlobalMediaControlsEntryPoint::kPresentation) {

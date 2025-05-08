@@ -447,14 +447,12 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithFormatStrings) {
         *form_structure->field(1)->GetFieldSignature());
     {
       auto* added_format_string = upload_date_field->add_format_string();
-      added_format_string->set_type(
-          AutofillUploadContents_Field_FormatString_Type_DATE);
+      added_format_string->set_type(FormatString_Type_DATE);
       added_format_string->set_format_string("DD/MM/YYYY");
     }
     {
       auto* added_format_string = upload_date_field->add_format_string();
-      added_format_string->set_type(
-          AutofillUploadContents_Field_FormatString_Type_DATE);
+      added_format_string->set_type(FormatString_Type_DATE);
       added_format_string->set_format_string("MM/DD/YYYY");
     }
   }
@@ -526,8 +524,10 @@ TEST_F(AutofillCrowdsourcingEncoding,
       field_options.generated_password_changed = true;
     }
     if (form_structure->field(i)->name() == u"username") {
-      form_structure->field(i)->set_vote_type(
-          AutofillUploadContents::Field::CREDENTIALS_REUSED);
+      auto& field_options =
+          options.fields[form_structure->field(i)->global_id()];
+      field_options.vote_type =
+          AutofillUploadContents::Field::CREDENTIALS_REUSED;
     }
   }
 
@@ -1813,7 +1813,6 @@ TEST_F(AutofillCrowdsourcingEncoding,
   // Simulate user changed pre-filled field value.
   form_structure.field(2)->set_value(u"changed@example.com");
 
-  // Sets `initial_value_changed` on `form_structure::fields_`.
   form_structure.RetrieveFromCache(
       cached_form_structure,
       FormStructure::RetrieveFromCacheReason::kFormImport);

@@ -4,8 +4,11 @@
 
 #include "components/autofill/core/browser/ui/autofill_image_fetcher.h"
 
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/constants.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/request_metadata.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -57,6 +60,12 @@ constexpr net::NetworkTrafficAnnotationTag kCardArtImageTrafficAnnotation =
         }
       })");
 
+// Time between fetch attempts.
+static constexpr base::TimeDelta kRefetchDelay = base::Minutes(2);
+
+// Maximum number of times to attempt fetching an image.
+static constexpr int kMaxFetchAttempts = 2;
+
 }  // namespace
 
 AutofillImageFetcher::~AutofillImageFetcher() = default;
@@ -69,10 +78,7 @@ void AutofillImageFetcher::FetchCreditCardArtImagesForURLs(
   }
 
   for (const auto& image_url : image_urls) {
-    FetchImageForURL(
-        image_url, ImageType::kCreditCardArtImage,
-        base::BindOnce(&AutofillImageFetcher::OnCardArtImageFetched,
-                       GetWeakPtr(), image_url, base::TimeTicks::Now()));
+    FetchImageForURL(image_url, ImageType::kCreditCardArtImage);
   }
 }
 
@@ -90,10 +96,7 @@ void AutofillImageFetcher::FetchValuableImagesForURLs(
   }
 
   for (const auto& image_url : image_urls) {
-    FetchImageForURL(
-        image_url, ImageType::kValuableImage,
-        base::BindOnce(&AutofillImageFetcher::OnValuableImageFetched,
-                       GetWeakPtr(), image_url));
+    FetchImageForURL(image_url, ImageType::kValuableImage);
   }
 }
 
@@ -108,62 +111,68 @@ const gfx::Image* AutofillImageFetcher::GetCachedImageForUrl(
   return it->second.get();
 }
 
-gfx::Image AutofillImageFetcher::ResolveCardArtImage(
-    const GURL& card_art_url,
-    const gfx::Image& card_art_image) {
-  return card_art_image;
+gfx::Image AutofillImageFetcher::ResolveImage(const GURL& image_url,
+                                              const gfx::Image& image,
+                                              ImageType image_type) {
+  if (image.IsEmpty()) {
+    return image;
+  }
+  switch (image_type) {
+    case ImageType::kCreditCardArtImage:
+      return ResolveCardArtImage(image_url, image);
+    case ImageType::kPixAccountImage:
+      NOTREACHED() << "Pix account images are available only on Android";
+    case ImageType::kValuableImage:
+      return image;
+  }
 }
 
 AutofillImageFetcher::AutofillImageFetcher() = default;
 
-void AutofillImageFetcher::OnCardArtImageFetched(
-    const GURL& card_art_url,
-    const std::optional<base::TimeTicks>& fetch_image_request_timestamp,
-    const gfx::Image& card_art_image,
+void AutofillImageFetcher::OnImageFetched(
+    const GURL& image_url,
+    ImageType image_type,
+    const gfx::Image& image,
     const image_fetcher::RequestMetadata& metadata) {
-  CHECK(fetch_image_request_timestamp.has_value());
+  AutofillMetrics::LogImageFetchResult(image_type,
+                                       /* succeeded= */ !image.IsEmpty());
 
+  // Images are cached by the resolved URLs. This allows caching the same image
+  // at different scales which is useful e.g. to show images of different scales
+  // on different surfaces.
+  GURL resolved_url = ResolveImageURL(image_url, image_type);
   // Allow subclasses to specialize the card art image if desired.
-  gfx::Image resolved_image = ResolveCardArtImage(card_art_url, card_art_image);
+  gfx::Image resolved_image = ResolveImage(image_url, image, image_type);
 
   // Unlike the `CachedImageFetcher`, the `AutofillImageFetcher` stores the
   // post-processed image in the in-memory cache.
   if (!resolved_image.IsEmpty()) {
-    // Images are cached by the resolved URLs.
-    GURL resolved_url =
-        ResolveImageURL(card_art_url, ImageType::kCreditCardArtImage);
+    AutofillMetrics::LogImageFetchOverallResult(image_type,
+                                                /* succeeded= */ true);
     cached_images_[resolved_url] = std::make_unique<gfx::Image>(resolved_image);
+    return;
   }
 
-  // Log metrics on card fetch success/failure. We only log metrics on either
-  // the first attempt to fetch a given URL (whether it succeeded or failed) or
-  // on the first success after a previously failed fetch. The goal is to
-  // minimize bias in the metrics due to repeated fetches.
-  bool succeeded = !card_art_image.IsEmpty();
-  if (!url_to_image_fetch_result_map_.contains(card_art_url.spec()) ||
-      (!url_to_image_fetch_result_map_[card_art_url.spec()] && succeeded)) {
-    url_to_image_fetch_result_map_[card_art_url.spec()] = succeeded;
-    AutofillMetrics::LogImageFetcherRequestLatency(
-        base::TimeTicks::Now() - *fetch_image_request_timestamp);
-    AutofillMetrics::LogImageFetchResult(succeeded);
+  // Image fetching failed, and max retry attempts reached.
+  if (fetch_attempt_counter_[resolved_url] >= kMaxFetchAttempts) {
+    AutofillMetrics::LogImageFetchOverallResult(image_type,
+                                                /* succeeded= */ false);
+    return;
   }
-}
 
-void AutofillImageFetcher::OnValuableImageFetched(
-    const GURL& image_url,
-    const gfx::Image& valuable_image,
-    const image_fetcher::RequestMetadata& metadata) {
-  if (!valuable_image.IsEmpty()) {
-    // Images are cached by the resolved URLs.
-    GURL resolved_url = ResolveImageURL(image_url, ImageType::kValuableImage);
-    cached_images_[resolved_url] = std::make_unique<gfx::Image>(valuable_image);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillRetryImageFetchOnFailure)) {
+    // Post a delayed task to retry the fetch.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&AutofillImageFetcher::FetchImageForURL, GetWeakPtr(),
+                       image_url, image_type),
+        kRefetchDelay);
   }
 }
 
-void AutofillImageFetcher::FetchImageForURL(
-    const GURL& image_url,
-    ImageType image_type,
-    image_fetcher::ImageFetcherCallback callback) {
+void AutofillImageFetcher::FetchImageForURL(const GURL& image_url,
+                                            ImageType image_type) {
   CHECK(image_url.is_valid());
 
   // Don't fetch the image if the in-memory cache already contains it.
@@ -174,10 +183,18 @@ void AutofillImageFetcher::FetchImageForURL(
   // Allow subclasses to specialize the URL if desired.
   GURL resolved_url = ResolveImageURL(image_url, image_type);
 
+  // Update attempt counter for the URL.
+  // Note: std::map::operator[] default-constructs the value (to 0) if
+  // `resolved_url` is not present in the map yet.
+  fetch_attempt_counter_[resolved_url]++;
+
   image_fetcher::ImageFetcherParams params(kCardArtImageTrafficAnnotation,
                                            kUmaClientName);
-  GetImageFetcher()->FetchImage(resolved_url, std::move(callback),
-                                std::move(params));
+  GetImageFetcher()->FetchImage(
+      resolved_url,
+      base::BindOnce(&AutofillImageFetcher::OnImageFetched, GetWeakPtr(),
+                     image_url, image_type),
+      std::move(params));
 }
 
 }  // namespace autofill

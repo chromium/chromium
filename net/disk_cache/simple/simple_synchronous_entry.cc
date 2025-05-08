@@ -1718,8 +1718,10 @@ int SimpleSynchronousEntry::ReadAndValidateStream0AndMaybe1(
   }
 
   // Ensure the key is validated before completion.
-  if (!has_key_sha256 && header_and_key_check_needed_[0])
-    CheckHeaderAndKey(file.get(), 0);
+  if (!has_key_sha256 && header_and_key_check_needed_[0] &&
+      !CheckHeaderAndKey(file.get(), 0)) {
+    return net::ERR_FAILED;
+  }
 
   return net::OK;
 }

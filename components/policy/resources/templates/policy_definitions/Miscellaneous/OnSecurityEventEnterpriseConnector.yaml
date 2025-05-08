@@ -51,11 +51,10 @@ schema:
         type: string
     type: object
   type: array
-future_on:
-- ios
 supported_on:
 - chrome.*:84-
 - chrome_os:84-
 - android:136-
+- ios:137-
 tags: []
 type: dict

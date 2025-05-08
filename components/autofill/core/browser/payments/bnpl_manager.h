@@ -54,10 +54,7 @@ class BnplManager {
   // micros). `on_bnpl_vcn_fetched_callback` is the callback that should be run
   // if the flow is completed successfully, to fill the form with the VCN that
   // will facilitate the BNPL transaction.
-  //
-  // TODO(crbug.com/409358161): Rename `InitBnplFlow` to
-  // `OnDidAcceptBnplSuggestion`.
-  virtual void InitBnplFlow(
+  virtual void OnDidAcceptBnplSuggestion(
       uint64_t final_checkout_amount,
       OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback);
 
@@ -81,6 +78,13 @@ class BnplManager {
   // that the manager can update suggestions for buy-now-pay-later.
   virtual void OnAmountExtractionReturned(
       const std::optional<uint64_t>& extracted_amount);
+
+  // Determines if autofill BNPL is supported.
+  // Returns true if:
+  // 1. The BNPL feature flag is enabled.
+  // 2. The client has an `AutofillOptimizationGuide` assigned.
+  // 3. The URL being visited is within the BNPL issuer allowlist.
+  bool IsEligibleForBnpl() const;
 
  private:
   friend class BnplManagerTestApi;
@@ -163,11 +167,13 @@ class BnplManager {
   // The callback after
   // `PaymentsNetworkInterface::GetDetailsForCreateBnplPaymentInstrument` calls.
   // The callback contains the result of the call as well as `context_token`
-  // for creating the instrument and `legal_message` for user action.
+  // for providing information from this request that is needed by
+  // `CreateBnplPaymentInstrumentRequest` and `legal_message` to be displayed
+  // to users.
   void OnDidGetDetailsForCreateBnplPaymentInstrument(
       PaymentsAutofillClient::PaymentsRpcResult result,
       std::string context_token,
-      std::unique_ptr<base::Value::Dict> legal_message);
+      LegalMessageLines legal_message);
 
   // Runs when a linked issuer is selected by the user. Will load risk data
   // if it is not cached, and then call the functions for fetching issuer

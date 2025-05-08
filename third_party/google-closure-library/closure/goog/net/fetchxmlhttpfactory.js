@@ -281,7 +281,10 @@ goog.net.FetchXmlHttp.prototype.abort = function() {
   this.status = 0;
 
   if (!!this.currentReader_) {
-    this.currentReader_.cancel('Request was aborted.');
+    this.currentReader_.cancel('Request was aborted.')
+        .catch(
+            e => goog.log.warning(
+                this.logger_, 'Fetch reader cancellation error.', e));
   }
 
   if (((this.readyState >= goog.net.FetchXmlHttp.RequestState.OPENED) &&
@@ -383,7 +386,9 @@ goog.net.FetchXmlHttp.prototype.handleDataFromStream_ = function(result) {
   }
 
   if (this.streamBinaryChunks_ && result.value) {
-    this.response.push(/** @type {!Uint8Array} */ (result.value));
+    // When streamBinaryChunks_ is enabled, "response" is an array
+    /** @type {!Array} */ (this.response)
+        .push(/** @type {!Uint8Array} */ (result.value));
   } else if (!this.streamBinaryChunks_) {
     const dataPacket = result.value ?
         /** @type {!Uint8Array} */ (result.value) :

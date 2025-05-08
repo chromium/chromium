@@ -103,7 +103,8 @@ class TestLayerTreeFrameSink::TestCompositorFrameSinkImpl
       SubmitCompositorFrameSyncCallback callback) override {}
   void InitializeCompositorFrameSinkType(
       viz::mojom::CompositorFrameSinkType type) override {}
-  void BindLayerContext(viz::mojom::PendingLayerContextPtr context) override;
+  void BindLayerContext(viz::mojom::PendingLayerContextPtr context,
+                        bool draw_mode_is_gpu) override;
 #if BUILDFLAG(IS_ANDROID)
   void SetThreads(const std::vector<viz::Thread>& threads) override {}
 #endif
@@ -113,8 +114,9 @@ class TestLayerTreeFrameSink::TestCompositorFrameSinkImpl
 };
 
 void TestLayerTreeFrameSink::TestCompositorFrameSinkImpl::BindLayerContext(
-    viz::mojom::PendingLayerContextPtr context) {
-  support_->BindLayerContext(*context);
+    viz::mojom::PendingLayerContextPtr context,
+    bool draw_mode_is_gpu) {
+  support_->BindLayerContext(*context, draw_mode_is_gpu);
 }
 
 static constexpr viz::FrameSinkId kLayerTreeFrameSinkId(1, 1);

@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.autofill.editors;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** The interface for editor fields that handle validation, display errors, and can be updated. */
+@NullMarked
 interface FieldView {
     /**
      * Validates the field.

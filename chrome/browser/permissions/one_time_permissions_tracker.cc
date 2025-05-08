@@ -53,8 +53,7 @@ void OneTimePermissionsTracker::WebContentsBackgrounded(
       // When all undiscarded tabs which point to the origin are in the
       // background, the timers should be reset.
       origin_tracker_[origin].background_expiration_timer->Start(
-          FROM_HERE,
-          permissions::feature_params::kOneTimePermissionTimeout.Get(),
+          FROM_HERE, permissions::kOneTimePermissionTimeout,
           base::BindOnce(
               &OneTimePermissionsTracker::NotifyBackgroundTimerExpired,
               weak_factory_.GetWeakPtr(), origin,
@@ -62,8 +61,7 @@ void OneTimePermissionsTracker::WebContentsBackgrounded(
                   kTimeout));
 
       origin_tracker_[origin].background_expiration_long_timer->Start(
-          FROM_HERE,
-          permissions::feature_params::kOneTimePermissionLongTimeout.Get(),
+          FROM_HERE, permissions::kOneTimePermissionMaximumLifetime,
           base::BindOnce(
               &OneTimePermissionsTracker::NotifyBackgroundTimerExpired,
               weak_factory_.GetWeakPtr(), origin,
@@ -117,8 +115,7 @@ void OneTimePermissionsTracker::StartContentSpecificExpirationTimer(
   origin_tracker_[origin]
       .content_setting_specific_expiration_timer_map[content_setting]
       ->Start(
-          FROM_HERE,
-          permissions::feature_params::kOneTimePermissionTimeout.Get(),
+          FROM_HERE, permissions::kOneTimePermissionTimeout,
           base::BindOnce(notify_callback, weak_factory_.GetWeakPtr(), origin));
 }
 

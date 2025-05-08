@@ -6,12 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_WRITING_ASSISTANCE_CREATE_CLIENT_H_
 
 #include "base/task/sequenced_task_runner.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_create_monitor_callback.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/ai/ai_context_observer.h"
-#include "third_party/blink/renderer/modules/ai/ai_create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
+#include "third_party/blink/renderer/modules/ai/create_monitor.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 
 namespace blink {
@@ -44,8 +44,8 @@ class AIWritingAssistanceCreateClient
         task_runner_(
             GetExecutionContext()->GetTaskRunner(TaskType::kInternalDefault)) {
     if (options->hasMonitor()) {
-      monitor_ = MakeGarbageCollected<AICreateMonitor>(GetExecutionContext(),
-                                                       task_runner_);
+      monitor_ = MakeGarbageCollected<CreateMonitor>(GetExecutionContext(),
+                                                     task_runner_);
       std::ignore = options->monitor()->Invoke(nullptr, monitor_);
       HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
           AIInterfaceProxy::GetAIManagerRemote(GetExecutionContext());
@@ -139,7 +139,7 @@ class AIWritingAssistanceCreateClient
   HeapMojoReceiver<AIMojoCreateClient, AIWritingAssistanceCreateClient>
       receiver_;
   Member<CreateOptions> options_;
-  Member<AICreateMonitor> monitor_;
+  Member<CreateMonitor> monitor_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 

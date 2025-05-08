@@ -87,6 +87,7 @@ constexpr char kBindingsSystemPerContextKey[] = "extension_bindings_system";
 
 constexpr char kStringNameAIOriginTrial[] = "aiOriginTrial";
 constexpr char kStringNameLanguageModel[] = "languageModel";
+constexpr char kStringNameGlobalLanguageModel[] = "LanguageModel";
 
 // Returns true if the given |api| is a "prefixed" api of the |root_api|; that
 // is, if the api begins with the root.
@@ -1165,9 +1166,8 @@ void NativeExtensionBindingsSystem::UpdateBindingsForPromptAPI(
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> v8_context = context->v8_context();
 
-  // If the extension has requested for `kAILanguageModelOriginTrial`
-  // permission, we will set the `chrome.aiOriginTrial.languageModel` as a
-  // mirror of `self.ai.languageModel`.
+  // Extensions with `kAILanguageModelOriginTrial` permission may access global
+  // `chrome.aiOriginTrial.languageModel` and `LanguageModel` entrypoints.
   if (!context->extension() ||
       !context->extension()
            ->permissions_data()
@@ -1195,6 +1195,21 @@ void NativeExtensionBindingsSystem::UpdateBindingsForPromptAPI(
   success = chrome_ai_object->CreateDataProperty(
       v8_context, language_model_name, language_model_value);
   CHECK(success.IsJust() && success.FromJust());
+
+  // Also ensure extensions with an OT token and permission support the
+  // experimental Web API's `LanguageModel` entrypoint, even when Web-specific
+  // flags aren't enabled. This approach should be simplified through API IDL
+  // extended attributes, as Web and Extension configuration states are aligned,
+  // and bindings for aiOriginTrial are aligned with other Built-In AI APIs.
+  v8::Local<v8::String> global_language_model_name =
+      gin::StringToSymbol(isolate, kStringNameGlobalLanguageModel);
+  if (!v8_context->Global()
+           ->HasRealNamedProperty(v8_context, global_language_model_name)
+           .FromJust()) {
+    success = v8_context->Global()->CreateDataProperty(
+        v8_context, global_language_model_name, language_model_value);
+    CHECK(success.IsJust() && success.FromJust());
+  }
 }
 
 }  // namespace extensions

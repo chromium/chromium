@@ -9,6 +9,7 @@
 #include <starboard/player.h>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper_base.h"
 
@@ -16,6 +17,12 @@ namespace chromecast {
 namespace media {
 
 namespace {
+
+static_assert(sizeof(SbMediaColorMetadata::custom_primary_matrix) ==
+              sizeof(StarboardColorMetadata::custom_primary_matrix));
+
+constexpr size_t kCustomPrimaryMatrixSize =
+    std::size(StarboardColorMetadata{}.custom_primary_matrix);
 
 // Populates a VideoStreamInfo struct from a StarboardVideoSampleInfo.
 SbMediaVideoStreamInfo ToSbMediaVideoStreamInfo(
@@ -57,12 +64,9 @@ SbMediaVideoStreamInfo ToSbMediaVideoStreamInfo(
   out_color_metadata.range =
       static_cast<SbMediaRangeId>(in_color_metadata.range);
 
-  static_assert(sizeof(out_color_metadata.custom_primary_matrix) ==
-                    sizeof(in_color_metadata.custom_primary_matrix),
-                "Struct field size mismatch (custom_primary_matrix)");
-  memcpy(out_color_metadata.custom_primary_matrix,
-         in_color_metadata.custom_primary_matrix,
-         sizeof(out_color_metadata.custom_primary_matrix));
+  base::span<float, kCustomPrimaryMatrixSize>(
+      out_color_metadata.custom_primary_matrix)
+      .copy_from_nonoverlapping(in_color_metadata.custom_primary_matrix);
 
   return out_video_info;
 }
@@ -121,8 +125,7 @@ class StarboardApiWrapper15 : public StarboardApiWrapperBase {
  private:
   // StarboardApiWrapperBase impl:
   SbPlayerCreationParam ToSbPlayerCreationParam(
-      const StarboardPlayerCreationParam& in_param,
-      void* drm_system) override {
+      const StarboardPlayerCreationParam& in_param) override {
     SbPlayerCreationParam out_param = {};
 
     out_param.audio_stream_info =
@@ -132,13 +135,12 @@ class StarboardApiWrapper15 : public StarboardApiWrapperBase {
     out_param.output_mode =
         static_cast<SbPlayerOutputMode>(in_param.output_mode);
 
-    if (drm_system) {
+    if (in_param.drm_system) {
       LOG(INFO) << "Using an SbDrmSystem for decryption.";
-      out_param.drm_system = static_cast<SbDrmSystem>(drm_system);
+      out_param.drm_system = static_cast<SbDrmSystem>(in_param.drm_system);
     } else {
-      LOG(INFO)
-          << "No SbDrmSystem was created before SbPlayer; no decryption is "
-             "possible in starboard.";
+      LOG(INFO) << "No SbDrmSystem was specified; no decryption is possible in "
+                   "starboard.";
       out_param.drm_system = kSbDrmSystemInvalid;
     }
 

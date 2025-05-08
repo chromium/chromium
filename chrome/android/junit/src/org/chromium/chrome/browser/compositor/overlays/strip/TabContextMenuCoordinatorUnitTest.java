@@ -15,6 +15,7 @@ import static org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin.TAB_ST
 import static org.chromium.ui.listmenu.ListSectionDividerProperties.COLOR_ID;
 
 import android.app.Activity;
+import android.graphics.Rect;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -57,6 +58,7 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.widget.RectProvider;
 import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
@@ -482,6 +484,34 @@ public class TabContextMenuCoordinatorUnitTest {
                         .getDimensionPixelSize(R.dimen.tab_strip_context_menu_min_width);
         int expectedWidth = minWidth + 1;
         assertEquals(expectedWidth, mTabContextMenuCoordinator.getMenuWidth(expectedWidth));
+    }
+
+    @Test
+    public void testAnchor_offset() {
+        RectProvider rectProvider = new RectProvider();
+        rectProvider.setRect(new Rect(0, 10, 50, 40));
+        mTabContextMenuCoordinator.showMenu(rectProvider, 0);
+        assertEquals(
+                "Expected anchor rect to have a top offset of popup_menu_shadow_length, "
+                        + "and a width which accounts for the popup_menu_shadow_length",
+                new Rect(0, 4, 74, 34),
+                rectProvider.getRect());
+        // Clean up to avoid "object not destroyed after test".
+        mTabContextMenuCoordinator.destroyMenuForTesting();
+    }
+
+    @Test
+    public void testAnchor_offset_incognito() {
+        setupWithIncognito(/* incognito= */ true);
+        RectProvider rectProvider = new RectProvider();
+        rectProvider.setRect(new Rect(0, 10, 50, 40));
+        mTabContextMenuCoordinator.showMenu(rectProvider, 0);
+        assertEquals(
+                "Expected anchor rect to not have any offset in incognito",
+                new Rect(0, 10, 50, 40),
+                rectProvider.getRect());
+        // Clean up to avoid "object not destroyed after test".
+        mTabContextMenuCoordinator.destroyMenuForTesting();
     }
 
     @Test

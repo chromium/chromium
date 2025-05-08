@@ -38,6 +38,7 @@ if (enable_rust_cxx) {
 # be provided.
 
 template("rust_target") {
+  assert(enable_rust)
   _target_name = target_name
 
   # NOTE: TargetName=>CrateName mangling algorithm should be updated

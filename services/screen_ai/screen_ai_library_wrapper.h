@@ -44,6 +44,7 @@ class ScreenAILibraryWrapper {
       const std::string& serialized_view_hierarchy) = 0;
 
   virtual bool InitOCR() = 0;
+  virtual uint32_t GetMaxImageDimension() = 0;
   virtual std::optional<chrome_screen_ai::VisualAnnotation> PerformOcr(
       const SkBitmap& image) = 0;
 };

@@ -324,7 +324,7 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
   // and because proto time has less granularity, this comparison fails unless
   // we pre-downgrade to proto time and back before saving in our database.
   const base::Time now_time =
-      syncer::ProtoTimeToTime(syncer::TimeToProtoTime(base::Time::Now()));
+      syncer::ProtoTimeToTime(syncer::TimeToProtoTime(clock_->Now()));
 
   // The UI may initiate a full install to overwrite the existing
   // non-locally-installed app. Therefore, `install_state` can be
@@ -514,6 +514,10 @@ void WebAppInstallFinalizer::Shutdown() {
   // can properly call callbacks on shutdown instead of dropping them on
   // shutdown.
   weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
+void WebAppInstallFinalizer::SetClockForTesting(base::Clock* clock) {
+  clock_ = clock;
 }
 
 void WebAppInstallFinalizer::UpdateIsolationDataAndResetPendingUpdateInfo(

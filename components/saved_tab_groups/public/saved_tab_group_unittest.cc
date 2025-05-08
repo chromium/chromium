@@ -155,6 +155,25 @@ TEST(SavedTabGroupTest, RemoveTabLocallyReordersPositions) {
   }
 }
 
+TEST(SavedTabGroupTest, RemoveTabLocallyStoresMetadata) {
+  SavedTabGroup group = CreateDefaultEmptySavedTabGroup().CloneAsSharedTabGroup(
+      CollaborationId("collaboration"));
+  SavedTabGroupTab tab_1 = CreateDefaultSavedTabGroupTab(group.saved_guid());
+  SavedTabGroupTab tab_2 = CreateDefaultSavedTabGroupTab(group.saved_guid());
+
+  group.AddTabLocally(tab_1);
+  group.AddTabLocally(tab_2);
+
+  GaiaId removed_by("user_id");
+  group.RemoveTabLocally(tab_2.saved_tab_guid(), removed_by);
+
+  EXPECT_THAT(group.last_removed_tabs_metadata(),
+              UnorderedElementsAre(testing::Key(tab_2.saved_tab_guid())));
+  EXPECT_EQ(
+      group.last_removed_tabs_metadata().at(tab_2.saved_tab_guid()).removed_by,
+      removed_by);
+}
+
 TEST(SavedTabGroupTest, AddTabFromSyncRespectsPositions) {
   // Create a group and 2 tabs
   SavedTabGroup group = CreateDefaultEmptySavedTabGroup();

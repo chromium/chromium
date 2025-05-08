@@ -42,9 +42,9 @@ class ArcBackgroundAuthCodeFetcher;
 class ArcBridgeService;
 class ArcFetcherBase;
 
-constexpr char kArcAuthRequestAccountInfoResultPrimaryHistogramName[] =
+inline constexpr char kArcAuthRequestAccountInfoResultPrimaryHistogramName[] =
     "Arc.Auth.RequestAccountInfoResult.Primary";
-constexpr char kArcAuthRequestAccountInfoResultSecondaryHistogramName[] =
+inline constexpr char kArcAuthRequestAccountInfoResultSecondaryHistogramName[] =
     "Arc.Auth.RequestAccountInfoResult.Secondary";
 
 // Implementation of ARC authorization.

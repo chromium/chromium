@@ -153,31 +153,31 @@ public class TabGroupRowViewUnitTest {
         remakeWithProperty(
                 TITLE_DATA,
                 new TabGroupRowViewTitleData(
-                        "Title", 3, R.string.tab_group_bottom_sheet_row_accessibility_text));
+                        "Title", 3, R.plurals.tab_group_bottom_sheet_row_accessibility_text));
         assertEquals("Title", mTitleTextView.getText());
 
         remakeWithProperty(
                 TITLE_DATA,
                 new TabGroupRowViewTitleData(
-                        " ", 3, R.string.tab_group_bottom_sheet_row_accessibility_text));
+                        " ", 3, R.plurals.tab_group_bottom_sheet_row_accessibility_text));
         assertEquals(" ", mTitleTextView.getText());
 
         remakeWithProperty(
                 TITLE_DATA,
                 new TabGroupRowViewTitleData(
-                        "", 3, R.string.tab_group_bottom_sheet_row_accessibility_text));
+                        "", 3, R.plurals.tab_group_bottom_sheet_row_accessibility_text));
         assertEquals("3 tabs", mTitleTextView.getText());
 
         remakeWithProperty(
                 TITLE_DATA,
                 new TabGroupRowViewTitleData(
-                        null, 3, R.string.tab_group_bottom_sheet_row_accessibility_text));
+                        null, 3, R.plurals.tab_group_bottom_sheet_row_accessibility_text));
         assertEquals("3 tabs", mTitleTextView.getText());
 
         remakeWithProperty(
                 TITLE_DATA,
                 new TabGroupRowViewTitleData(
-                        "", 1, R.string.tab_group_bottom_sheet_row_accessibility_text));
+                        "", 1, R.plurals.tab_group_bottom_sheet_row_accessibility_text));
         assertEquals("1 tab", mTitleTextView.getText());
     }
 
@@ -186,7 +186,7 @@ public class TabGroupRowViewUnitTest {
         remakeWithProperty(
                 TITLE_DATA,
                 new TabGroupRowViewTitleData(
-                        "", 1, R.string.tab_group_bottom_sheet_row_accessibility_text));
+                        "", 1, R.plurals.tab_group_bottom_sheet_row_accessibility_text));
         assertEquals(GONE, mTextSpace.getVisibility());
         assertEquals(GONE, mSubtitleTextView.getVisibility());
     }
@@ -312,8 +312,8 @@ public class TabGroupRowViewUnitTest {
         remakeWithProperty(
                 TITLE_DATA,
                 new TabGroupRowViewTitleData(
-                        "Title", 3, R.string.tab_group_row_accessibility_text));
-        assertEquals("Open Title", mTitleTextView.getContentDescription());
+                        "Title", 3, R.plurals.tab_group_row_accessibility_text));
+        assertEquals("Open Title with 3 tabs", mTitleTextView.getContentDescription());
         assertEquals("Title tab group options", mListMenuButton.getContentDescription());
     }
 

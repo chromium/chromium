@@ -53,6 +53,7 @@ constexpr char kReceivedViaSharingSuffix[] = ".ReceivedViaSharing";
 constexpr char kImportedViaCredentialExchangeSuffix[] =
     ".ImportedViaCredentialExchange";
 constexpr char kOverallSuffix[] = ".Overall";
+constexpr char kExcludingStoreErrorsSuffix[] = ".ExcludingStoreErrors";
 
 // Need to stay in sync with the CustomPassphraseStatus variant in
 // histograms.xml.
@@ -118,14 +119,13 @@ void LogTimesUsedStat(const std::string& name, int sample) {
   base::UmaHistogramCustomCounts(name, sample, 0, 100, 10);
 }
 
-int ReportNumberOfAccountsMetrics(
-    bool is_account_store,
-    bool custom_passphrase_enabled,
-    const std::vector<std::unique_ptr<PasswordForm>>& forms) {
+int ReportNumberOfAccountsMetrics(bool is_account_store,
+                                  bool custom_passphrase_enabled,
+                                  const PasswordStoreResults& results) {
   base::flat_map<std::tuple<std::string, PasswordForm::Type, int>, int>
       accounts_per_site_map;
 
-  for (const auto& form : forms) {
+  for (const auto& form : results.store_results) {
     accounts_per_site_map[{form->signon_realm, form->type,
                            form->blocked_by_user}]++;
   }
@@ -228,6 +228,14 @@ int ReportNumberOfAccountsMetrics(
       base::StrCat({kPasswordManager, store_suffix, kTotalAccountsByTypeSuffix,
                     kOverallSuffix}),
       total_accounts);
+
+  if (!results.has_error) {
+    LogAccountStatHiRes(
+        base::StrCat({kPasswordManager, store_suffix,
+                      kTotalAccountsByTypeSuffix, kOverallSuffix,
+                      kExcludingStoreErrorsSuffix}),
+        total_accounts);
+  }
 
   LogAccountStatHiRes(
       base::StrCat({kPasswordManager, store_suffix, ".BlacklistedSitesHiRes3",
@@ -497,9 +505,12 @@ int ReportStoreMetrics(bool is_account_store,
                        bool custom_passphrase_enabled,
                        const std::string& sync_username,
                        bool is_safe_browsing_enabled,
-                       std::vector<std::unique_ptr<PasswordForm>> results) {
+                       PasswordStoreResults password_store_results) {
+  std::vector<std::unique_ptr<PasswordForm>>& results =
+      password_store_results.store_results;
+
   int total_accounts = ReportNumberOfAccountsMetrics(
-      is_account_store, custom_passphrase_enabled, results);
+      is_account_store, custom_passphrase_enabled, password_store_results);
   ReportLoginsWithSchemesMetrics(is_account_store, results);
   ReportTimesPasswordUsedMetrics(is_account_store, custom_passphrase_enabled,
                                  results);
@@ -612,10 +623,8 @@ StoreMetricsReporter::CredentialsCount ReportAllMetrics(
     const std::string& sync_username,
     bool is_account_storage_enabled,
     bool is_safe_browsing_enabled,
-    std::optional<std::vector<std::unique_ptr<PasswordForm>>>
-        profile_store_results,
-    std::optional<std::vector<std::unique_ptr<PasswordForm>>>
-        account_store_results) {
+    std::optional<PasswordStoreResults> profile_store_results,
+    std::optional<PasswordStoreResults> account_store_results) {
   // Maps from (signon_realm, username) to password.
   std::unique_ptr<
       std::map<std::pair<std::string, std::u16string>, std::u16string>>
@@ -628,7 +637,7 @@ StoreMetricsReporter::CredentialsCount ReportAllMetrics(
     profile_store_passwords_per_signon_and_username = std::make_unique<
         std::map<std::pair<std::string, std::u16string>, std::u16string>>();
     for (const std::unique_ptr<PasswordForm>& form :
-         profile_store_results.value()) {
+         profile_store_results.value().store_results) {
       profile_store_passwords_per_signon_and_username->insert(std::make_pair(
           std::make_pair(form->signon_realm, form->username_value),
           form->password_value));
@@ -639,7 +648,7 @@ StoreMetricsReporter::CredentialsCount ReportAllMetrics(
     account_store_passwords_per_signon_and_username = std::make_unique<
         std::map<std::pair<std::string, std::u16string>, std::u16string>>();
     for (const std::unique_ptr<PasswordForm>& form :
-         account_store_results.value()) {
+         account_store_results.value().store_results) {
       account_store_passwords_per_signon_and_username->insert(std::make_pair(
           std::make_pair(form->signon_realm, form->username_value),
           form->password_value));
@@ -695,6 +704,16 @@ void ReportPasswordReencryption(PrefService* prefs) {
 }
 
 }  // namespace
+
+PasswordStoreResults::PasswordStoreResults(
+    std::vector<std::unique_ptr<PasswordForm>> store_results,
+    bool has_error)
+    : store_results(std::move(store_results)), has_error(has_error) {}
+PasswordStoreResults::~PasswordStoreResults() = default;
+PasswordStoreResults::PasswordStoreResults(PasswordStoreResults&& other) =
+    default;
+PasswordStoreResults& PasswordStoreResults::operator=(
+    PasswordStoreResults&& other) = default;
 
 StoreMetricsReporter::StoreMetricsReporter(
     PasswordStoreInterface* profile_store,
@@ -786,6 +805,27 @@ void StoreMetricsReporter::OnGetPasswordStoreResults(
 void StoreMetricsReporter::OnGetPasswordStoreResultsFrom(
     PasswordStoreInterface* store,
     std::vector<std::unique_ptr<PasswordForm>> results) {
+  // This class overrides OnGetPasswordStoreResultsOrErrorFrom() (the version
+  // that also receives the error case), so the plain password form version
+  // never gets called.
+  NOTREACHED();
+}
+
+void StoreMetricsReporter::OnGetPasswordStoreResultsOrErrorFrom(
+    PasswordStoreInterface* store,
+    LoginsResultOrError results_or_error) {
+  PasswordStoreResults password_store_results{
+      password_manager::ConvertPasswordToUniquePtr(
+          password_manager::GetLoginsOrEmptyListOnFailure(
+              std::move(results_or_error))),
+      std::holds_alternative<PasswordStoreBackendError>(results_or_error)};
+
+  ProcessPasswordResults(store, std::move(password_store_results));
+}
+
+void StoreMetricsReporter::ProcessPasswordResults(
+    PasswordStoreInterface* store,
+    PasswordStoreResults results) {
   if (store == account_store_) {
     account_store_results_ = std::move(results);
   } else {

@@ -181,7 +181,7 @@ class PermissionUtil {
   static bool HasUserGesture(PermissionPrompt::Delegate* delegate);
 
   static bool CanPermissionRequestIgnoreStatus(
-      const PermissionRequestData& request,
+      const std::unique_ptr<PermissionRequestData>& request,
       content::PermissionStatusSource source);
 
   // Returns `true` if the current platform support permission chips.

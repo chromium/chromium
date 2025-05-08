@@ -413,6 +413,32 @@ public class KeyboardAccessoryData {
         }
     }
 
+    /** Represents a Google Wallet loyalty card to be shown on the manual fallback UI. */
+    public static final class LoyaltyCardInfo {
+        private String mMerchantName;
+        private GURL mProgramLogoUrl;
+        private UserInfoField mLoyaltyCardNumber;
+
+        public LoyaltyCardInfo(
+                String merchantName, GURL programLogoUrl, UserInfoField loyaltyCardNumber) {
+            mMerchantName = merchantName;
+            mProgramLogoUrl = programLogoUrl;
+            mLoyaltyCardNumber = loyaltyCardNumber;
+        }
+
+        public String getMerchantName() {
+            return mMerchantName;
+        }
+
+        public GURL getProgramLogoUrl() {
+            return mProgramLogoUrl;
+        }
+
+        public UserInfoField getLoyaltyCardNumber() {
+            return mLoyaltyCardNumber;
+        }
+    }
+
     /** Represents a command below the suggestions, such as "Manage password...". */
     public static final class FooterCommand {
         private final String mDisplayText;
@@ -456,6 +482,7 @@ public class KeyboardAccessoryData {
         private final List<PasskeySection> mPasskeySectionList = new ArrayList<>();
         private final List<PromoCodeInfo> mPromoCodeInfoList = new ArrayList<>();
         private final List<IbanInfo> mIbanInfoList = new ArrayList<>();
+        private final List<LoyaltyCardInfo> mLoyaltyCardInfoList = new ArrayList<>();
         private final List<FooterCommand> mFooterCommands = new ArrayList<>();
 
         /**
@@ -539,6 +566,11 @@ public class KeyboardAccessoryData {
         /** Returns the list of {@link IbanInfo} to be shown on the accessory sheet. */
         public List<IbanInfo> getIbanInfoList() {
             return mIbanInfoList;
+        }
+
+        /** Returns the list of {@link LoyaltyCardInfo} to be shown on the accessory sheet. */
+        public List<LoyaltyCardInfo> getLoyaltyCardInfoList() {
+            return mLoyaltyCardInfoList;
         }
 
         /** Returns the list of {@link FooterCommand} to be shown on the accessory sheet. */

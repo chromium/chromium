@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/separate_profiles_util.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
@@ -52,7 +52,7 @@ void OpenManageAccountsView() {
                                        IDS_IOS_ACCOUNT_MENU_EDIT_ACCOUNT_LIST)),
                                    grey_interactable(), nil)]
       performAction:grey_tap()];
-  // Checks the manage accounts view is shown
+  // Checks the manage accounts view is shown.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kSettingsEditAccountListTableViewId)]
       assertWithMatcher:grey_sufficientlyVisible()];

@@ -10,18 +10,19 @@
 
 #include "components/dom_distiller/core/dom_distiller_request_view_base.h"
 #include "components/dom_distiller/core/task_tracker.h"
+#import "ios/chrome/browser/dom_distiller/model/distiller_service.h"
 
 class GURL;
 
 namespace dom_distiller {
-
 class DistilledPagePrefs;
-class Distiller;
+}  // namespace dom_distiller
 
 // An interface for a dom_distiller ViewRequestDelegate that distills a URL and
 // calls the given callback with the distilled HTML string and the images it
 // contains.
-class DistillerViewerInterface : public DomDistillerRequestViewBase {
+class DistillerViewerInterface
+    : public dom_distiller::DomDistillerRequestViewBase {
  public:
   struct ImageInfo {
     // The url of the image.
@@ -36,8 +37,8 @@ class DistillerViewerInterface : public DomDistillerRequestViewBase {
                               const std::string& title,
                               const std::string& csp_nonce)>;
 
-  DistillerViewerInterface(PrefService* prefs)
-      : DomDistillerRequestViewBase(new DistilledPagePrefs(prefs)) {}
+  DistillerViewerInterface(dom_distiller::DistilledPagePrefs* prefs)
+      : dom_distiller::DomDistillerRequestViewBase(prefs) {}
 
   DistillerViewerInterface(const DistillerViewerInterface&) = delete;
   DistillerViewerInterface& operator=(const DistillerViewerInterface&) = delete;
@@ -55,13 +56,12 @@ class DistillerViewerInterface : public DomDistillerRequestViewBase {
 // A very simple and naive implementation of the DistillerViewer.
 class DistillerViewer : public DistillerViewerInterface {
  public:
-  // Creates a `DistillerView` without depending on the DomDistillerService.
-  // Caller must provide `distiller_factory` and `page` which cannot be null.
+  // Creates a `DistillerView` without depending on the DistillerService.
+  // Caller must provide `distiller_service` and `page` which cannot be null.
   // `callback` is called when distillation is finished with the protobuf
   // containing the distilled page.
-  DistillerViewer(dom_distiller::DistillerFactory* distiller_factory,
+  DistillerViewer(DistillerService* distiller_service,
                   std::unique_ptr<dom_distiller::DistillerPage> page,
-                  PrefService* prefs,
                   const GURL& url,
                   DistillationFinishedCallback callback);
 
@@ -94,14 +94,12 @@ class DistillerViewer : public DistillerViewerInterface {
   std::string js_buffer_;
   // CSP nonce value.
   std::string csp_nonce_;
+  // Whether offline data should be injected in the viewer.
+  bool use_offline_data_;
   // Callback to run once distillation is complete.
   DistillationFinishedCallback callback_;
-  // Keep reference of the distiller_ during distillation.
-  std::unique_ptr<Distiller> distiller_;
 
   base::WeakPtrFactory<DistillerViewer> weak_ptr_factory_{this};
 };
-
-}  // namespace dom_distiller
 
 #endif  // IOS_CHROME_BROWSER_DOM_DISTILLER_MODEL_DISTILLER_VIEWER_H_

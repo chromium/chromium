@@ -114,6 +114,8 @@ using TimeRecordingPolicy =
 namespace {
 
 constexpr TimeDelta kLongTaskTraceEventThreshold = Milliseconds(50);
+// Proportion of tasks which will record thread time for metrics.
+const double kTaskSamplingRateForRecordingCPUTime = 0.001;
 
 void ReclaimMemoryFromQueue(internal::TaskQueueImpl* queue, LazyNow* lazy_now) {
   queue->ReclaimMemory(lazy_now->Now());
@@ -802,9 +804,19 @@ void SequenceManagerImpl::WillQueueTask(Task* pending_task) {
 
 TaskQueue::TaskTiming SequenceManagerImpl::InitializeTaskTiming(
     internal::TaskQueueImpl* task_queue) {
-  bool records_wall_time =
-      ShouldRecordTaskTiming(task_queue) == TimeRecordingPolicy::DoRecord;
-  return TaskQueue::TaskTiming(records_wall_time);
+  bool records_wall_time = false;
+  bool records_thread_time = false;
+
+  if (ShouldRecordTaskTiming(task_queue) == TimeRecordingPolicy::DoRecord) {
+    records_wall_time = true;
+    if (ThreadTicks::IsSupported()) {
+      records_thread_time =
+          settings_.sample_cpu_time &&
+          ShouldRecordSubsampledMetric(kTaskSamplingRateForRecordingCPUTime);
+    }
+  }
+
+  return TaskQueue::TaskTiming(records_wall_time, records_thread_time);
 }
 
 TimeRecordingPolicy SequenceManagerImpl::ShouldRecordTaskTiming(

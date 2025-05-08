@@ -92,7 +92,8 @@ void SharedWorkerClientHolder::Connect(
     mojom::blink::SharedWorkerSameSiteCookies same_site_cookies,
     ukm::SourceId client_ukm_source_id,
     const HeapMojoRemote<mojom::blink::SharedWorkerConnector>*
-        connector_override) {
+        connector_override,
+    bool extended_lifetime) {
   DCHECK(IsMainThread());
   DCHECK(options);
 
@@ -123,7 +124,7 @@ void SharedWorkerClientHolder::Connect(
           outside_fetch_client_settings_object->GetReferrerPolicy(),
           KURL(outside_fetch_client_settings_object->GetOutgoingReferrer()),
           insecure_requests_policy),
-      same_site_cookies);
+      same_site_cookies, extended_lifetime);
 
   const HeapMojoRemote<mojom::blink::SharedWorkerConnector>& connector =
       connector_override ? *connector_override : connector_;

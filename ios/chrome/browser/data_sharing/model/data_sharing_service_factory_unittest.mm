@@ -29,7 +29,6 @@ class DataSharingServiceFactoryTest : public PlatformTest {
           /*enabled_features=*/
           {
               kTabGroupSync,
-              kTabGroupsIPad,
               data_sharing::features::kDataSharingJoinOnly,
           },
           /*disable_features=*/{});
@@ -41,10 +40,7 @@ class DataSharingServiceFactoryTest : public PlatformTest {
               data_sharing::features::kDataSharingFeature,
           });
     }
-    TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(DataSharingServiceFactory::GetInstance(),
-                              DataSharingServiceFactory::GetDefaultFactory());
-    profile_ = std::move(builder).Build();
+    profile_ = TestProfileIOS::Builder().Build();
   }
 
   void TearDown() override { web_task_env_.RunUntilIdle(); }
@@ -72,11 +68,8 @@ TEST_F(DataSharingServiceFactoryTest, FeatureDisabledUsesEmptyService) {
 TEST_F(DataSharingServiceFactoryTest,
        FeatureEnabledUsesEmptyServiceInIncognito) {
   InitService(/*enable_feature=*/true);
-  raw_ptr<ProfileIOS> otr_profile =
-      profile_->CreateOffTheRecordProfileWithTestingFactories(
-          {TestProfileIOS::TestingFactory{
-              DataSharingServiceFactory::GetInstance(),
-              DataSharingServiceFactory::GetDefaultFactory()}});
+  TestProfileIOS* otr_profile =
+      profile_->CreateOffTheRecordProfileWithTestingFactories();
   DataSharingService* service =
       DataSharingServiceFactory::GetForProfile(otr_profile);
   EXPECT_TRUE(service->IsEmptyService());

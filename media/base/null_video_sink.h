@@ -56,6 +56,11 @@ class MEDIA_EXPORT NullVideoSink : public VideoRendererSink {
     background_render_ = is_background_rendering;
   }
 
+  // Sets a callback to be called before every call to `callback->Render()`.
+  void set_render_cb(base::RepeatingClosure render_cb) {
+    render_cb_ = std::move(render_cb);
+  }
+
   void set_clockless(bool clockless) { clockless_ = clockless; }
 
  private:
@@ -88,6 +93,9 @@ class MEDIA_EXPORT NullVideoSink : public VideoRendererSink {
 
   // If set, called when Stop() is called.
   base::OnceClosure stop_cb_;
+
+  // Called before every call to Render().
+  base::RepeatingClosure render_cb_;
 
   // Value passed to RenderCallback::Render().
   bool background_render_;

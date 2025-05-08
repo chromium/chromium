@@ -51,7 +51,7 @@
 @property(nonatomic, weak) id<NewCredentialHandler> credentialHandler;
 
 // The host for the password being generated.
-@property(nonatomic, strong) NSString* currentHost;
+@property(nonatomic, copy) NSString* currentHost;
 
 @end
 

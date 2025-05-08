@@ -769,6 +769,12 @@ TEST_F(SafeBrowsingServiceTest, TestShouldCreateAsyncChecker) {
   EXPECT_TRUE(safe_browsing_service_->ShouldCreateAsyncChecker(
       &web_state_, safe_browsing_client_.get()));
 
+  safe_browsing_client_->set_should_force_sync_real_time_url_checks(true);
+  EXPECT_FALSE(safe_browsing_service_->ShouldCreateAsyncChecker(
+      &web_state_, safe_browsing_client_.get()));
+
+  safe_browsing_client_->set_should_force_sync_real_time_url_checks(false);
+
   pref_service_.SetBoolean(prefs::kSafeBrowsingEnabled, false);
   pref_service_.SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);

@@ -9,14 +9,12 @@ import org.chromium.build.annotations.NullMarked;
 /**
  * Lists base::Features that can be accessed through {@link PermissionsAndroidFeatureMap}.
  *
- * Should be kept in sync with |kFeaturesExposedToJava| in
+ * <p>Should be kept in sync with |kFeaturesExposedToJava| in
  * components/permissions/android/permissions_android_feature_map.cc.
  */
 @NullMarked
 public abstract class PermissionsAndroidFeatureList {
     public static final String BLOCK_MIDI_BY_DEFAULT = "BlockMidiByDefault";
-
-    public static final String ONE_TIME_PERMISSION = "OneTimePermission";
 
     public static final String ANDROID_CANCEL_PERMISSION_PROMPT_ON_TOUCH_OUTSIDE =
             "AndroidCancelPermissionPromptOnTouchOutside";

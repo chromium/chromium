@@ -20,9 +20,9 @@ bool IsEligibleAndEnabledUploadOfficeToCloud(const Profile* profile);
 
 namespace cloud_upload {
 
-constexpr char kCloudUploadPolicyAllowed[] = "allowed";
-constexpr char kCloudUploadPolicyDisallowed[] = "disallowed";
-constexpr char kCloudUploadPolicyAutomated[] = "automated";
+inline constexpr char kCloudUploadPolicyAllowed[] = "allowed";
+inline constexpr char kCloudUploadPolicyDisallowed[] = "disallowed";
+inline constexpr char kCloudUploadPolicyAutomated[] = "automated";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 

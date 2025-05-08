@@ -1,7 +1,7 @@
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
- * Copyright (C) 2002-2017 Németh László
+ * Copyright (C) 2002-2022 Németh László
  *
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
@@ -68,19 +68,21 @@
  * SUCH DAMAGE.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <time.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+#include <cctype>
+#include <ctime>
 
 #include "suggestmgr.hxx"
+#include "hunspell.hxx"
 #include "htypes.hxx"
 #include "csutil.hxx"
 
 const w_char W_VLINE = {'\0', '|'};
 
 #define MAX_CHAR_DISTANCE 4
+#define MAXWORDUTF8LEN (MAXWORDLEN * 3)
 
 #ifdef HUNSPELL_CHROME_CLIENT
 namespace {
@@ -181,12 +183,12 @@ hentry* ScopedHashEntryFactory::CreateScopedHashEntry(int index,
 
 #ifdef HUNSPELL_CHROME_CLIENT
 SuggestMgr::SuggestMgr(hunspell::BDictReader* reader,
-                       const char * tryme, int maxn, 
+                       const std::string& tryme, int maxn, 
                        AffixMgr * aptr)
 {
   bdict_reader = reader;
 #else
-SuggestMgr::SuggestMgr(const char* tryme, unsigned int maxn, AffixMgr* aptr) {
+SuggestMgr::SuggestMgr(const std::string& tryme, unsigned int maxn, AffixMgr* aptr) {
 #endif
   // register affix manager and check in string of chars to
   // try when building candidate suggestions
@@ -195,10 +197,8 @@ SuggestMgr::SuggestMgr(const char* tryme, unsigned int maxn, AffixMgr* aptr) {
   csconv = NULL;
 
   ckeyl = 0;
-  ckey = NULL;
 
   ctryl = 0;
-  ctry = NULL;
 
   utf8 = 0;
   langnum = 0;
@@ -224,38 +224,38 @@ SuggestMgr::SuggestMgr(const char* tryme, unsigned int maxn, AffixMgr* aptr) {
     complexprefixes = pAMgr->get_complexprefixes();
   }
 
-  if (ckey) {
+  if (!ckey.empty()) {
     if (utf8) {
-      ckeyl = u8_u16(ckey_utf, ckey);
+      int len = u8_u16(ckey_utf, ckey);
+      if (len != -1) {
+        ckeyl = len;
+      }
     } else {
-      ckeyl = strlen(ckey);
+      ckeyl = ckey.size();
     }
   }
 
-  if (tryme) {
-    ctry = mystrdup(tryme);
-    if (ctry)
-      ctryl = strlen(ctry);
-    if (ctry && utf8) {
-      ctryl = u8_u16(ctry_utf, tryme);
+  ctry = tryme;
+  if (!ctry.empty()) {
+    if (utf8) {
+      int len = u8_u16(ctry_utf, ctry);
+      if (len != -1) {
+        ctryl = len;
+      }
+    } else {
+      ctryl = ctry.size();
     }
   }
 
   // language with possible dash usage
   // (latin letters or dash in TRY characters)
-  lang_with_dash_usage = (ctry &&
-      ((strchr(ctry, '-') != NULL) || (strchr(ctry, 'a') != NULL)));
+  lang_with_dash_usage = ctry.find('-') != std::string::npos ||
+	                 ctry.find('a') != std::string::npos;
 }
 
 SuggestMgr::~SuggestMgr() {
   pAMgr = NULL;
-  if (ckey)
-    free(ckey);
-  ckey = NULL;
   ckeyl = 0;
-  if (ctry)
-    free(ctry);
-  ctry = NULL;
   ctryl = 0;
   maxSug = 0;
 #ifdef MOZILLA_CLIENT
@@ -267,18 +267,20 @@ void SuggestMgr::testsug(std::vector<std::string>& wlst,
                         const std::string& candidate,
                         int cpdsuggest,
                         int* timer,
-                        clock_t* timelimit) {
-  int cwrd = 1;
+                        clock_t* timelimit,
+                        int& info) {
   if (wlst.size() == maxSug)
     return;
-  for (size_t k = 0; k < wlst.size(); ++k) {
-    if (wlst[k] == candidate) {
-      cwrd = 0;
-      break;
+
+  const int cwrd = std::find(wlst.begin(), wlst.end(), candidate) != wlst.end() ? 0 : 1;
+  
+  if (cwrd) {
+    if (int result = checkword(candidate, cpdsuggest, timer, timelimit)) {
+      // compound word in the dictionary
+      if (cpdsuggest == 0 && result >= 2)
+          info |= SPELL_COMPOUND;
+      wlst.push_back(candidate);
     }
-  }
-  if ((cwrd) && checkword(candidate, cpdsuggest, timer, timelimit)) {
-    wlst.push_back(candidate);
   }
 }
 
@@ -289,15 +291,12 @@ void SuggestMgr::testsug(std::vector<std::string>& wlst,
  * (REP, ph: or a dictionary word pair)
  */
 bool SuggestMgr::suggest(std::vector<std::string>& slst,
-                        const char* w,
-                        int* onlycompoundsug) {
-  int nocompoundtwowords = 0;
+                        const std::string& w,
+                        int* onlycompoundsug, bool test_simplesug) {
+  int nocompoundtwowords = 0; // no second or third loops, see below
   std::vector<w_char> word_utf;
-  int wl = 0;
-  size_t nsugorig = slst.size();
+  size_t nsugorig = slst.size(), oldSug = 0;
   std::string w2;
-  const char* word = w;
-  size_t oldSug = 0;
   bool good_suggestion = false;
 
   // word reversing wrapper for complex prefixes
@@ -307,22 +306,29 @@ bool SuggestMgr::suggest(std::vector<std::string>& slst,
       reverseword_utf(w2);
     else
       reverseword(w2);
-    word = w2.c_str();
   }
 
+  const std::string& word = complexprefixes ? w2 : w;
+
   if (utf8) {
-    wl = u8_u16(word_utf, word);
+    int wl = u8_u16(word_utf, word);
     if (wl == -1) {
       return false;
     }
   }
 
-  for (int cpdsuggest = 0; (cpdsuggest < 2) && (nocompoundtwowords == 0) && !good_suggestion;
-       cpdsuggest++) {
+  // three loops:
+  // - the first without compounding,
+  // - the second one with 2-word compounding,
+  // - the third one with 3-or-more-word compounding
+  // Run second and third loops only if:
+  // - no ~good suggestion in the first loop
+  // - not for testing compound words with 3 or more words (test_simplesug == false)
+  int info = 0;
+  for (int cpdsuggest = 0; cpdsuggest < 3 && nocompoundtwowords == 0; cpdsuggest++) {
 
-    clock_t timelimit;
     // initialize both in non-compound and compound cycles
-    timelimit = clock();
+    clock_t timelimit = clock();
 
     // limit compound suggestion
     if (cpdsuggest > 0)
@@ -332,9 +338,9 @@ bool SuggestMgr::suggest(std::vector<std::string>& slst,
     if (slst.size() < maxSug) {
       size_t i = slst.size();
       if (utf8)
-        capchars_utf(slst, &word_utf[0], wl, cpdsuggest);
+        capchars_utf(slst, word_utf, cpdsuggest, info);
       else
-        capchars(slst, word, cpdsuggest);
+        capchars(slst, word, cpdsuggest, info);
       if (slst.size() > i)
         good_suggestion = true;
     }
@@ -342,114 +348,150 @@ bool SuggestMgr::suggest(std::vector<std::string>& slst,
     // perhaps we made a typical fault of spelling
     if ((slst.size() < maxSug) && (!cpdsuggest || (slst.size() < oldSug + maxcpdsugs))) {
       size_t i = slst.size();
-      replchars(slst, word, cpdsuggest);
-      if (slst.size() > i)
+      replchars(slst, word, cpdsuggest, info);
+      if (slst.size() > i) {
         good_suggestion = true;
+        if (info & SPELL_BEST_SUG)
+          return true;
+      }
     }
     if (clock() > timelimit + TIMELIMIT_SUGGESTION)
       return good_suggestion;
+    if (test_simplesug && slst.size())
+      return true;
 
     // perhaps we made chose the wrong char from a related set
     if ((slst.size() < maxSug) &&
         (!cpdsuggest || (slst.size() < oldSug + maxcpdsugs))) {
-      mapchars(slst, word, cpdsuggest);
+      mapchars(slst, word, cpdsuggest, info);
     }
     if (clock() > timelimit + TIMELIMIT_SUGGESTION)
       return good_suggestion;
+    if (test_simplesug && slst.size())
+      return true;
 
-    // only suggest compound words when no other suggestion
+    // only suggest compound words when no other ~good suggestion
     if ((cpdsuggest == 0) && (slst.size() > nsugorig))
       nocompoundtwowords = 1;
 
     // did we swap the order of chars by mistake
     if ((slst.size() < maxSug) && (!cpdsuggest || (slst.size() < oldSug + maxcpdsugs))) {
       if (utf8)
-        swapchar_utf(slst, &word_utf[0], wl, cpdsuggest);
+        swapchar_utf(slst, word_utf, cpdsuggest, info);
       else
-        swapchar(slst, word, cpdsuggest);
+        swapchar(slst, word, cpdsuggest, info);
     }
     if (clock() > timelimit + TIMELIMIT_SUGGESTION)
       return good_suggestion;
+    if (test_simplesug && slst.size())
+      return true;
 
     // did we swap the order of non adjacent chars by mistake
     if ((slst.size() < maxSug) && (!cpdsuggest || (slst.size() < oldSug + maxcpdsugs))) {
       if (utf8)
-        longswapchar_utf(slst, &word_utf[0], wl, cpdsuggest);
+        longswapchar_utf(slst, word_utf, cpdsuggest, info);
       else
-        longswapchar(slst, word, cpdsuggest);
+        longswapchar(slst, word, cpdsuggest, info);
     }
     if (clock() > timelimit + TIMELIMIT_SUGGESTION)
       return good_suggestion;
+    if (test_simplesug && slst.size())
+      return true;
 
     // did we just hit the wrong key in place of a good char (case and keyboard)
     if ((slst.size() < maxSug) && (!cpdsuggest || (slst.size() < oldSug + maxcpdsugs))) {
       if (utf8)
-        badcharkey_utf(slst, &word_utf[0], wl, cpdsuggest);
+        badcharkey_utf(slst, word_utf, cpdsuggest, info);
       else
-        badcharkey(slst, word, cpdsuggest);
+        badcharkey(slst, word, cpdsuggest, info);
     }
     if (clock() > timelimit + TIMELIMIT_SUGGESTION)
       return good_suggestion;
+    if (test_simplesug && slst.size())
+      return true;
 
     // did we add a char that should not be there
     if ((slst.size() < maxSug) && (!cpdsuggest || (slst.size() < oldSug + maxcpdsugs))) {
       if (utf8)
-        extrachar_utf(slst, &word_utf[0], wl, cpdsuggest);
+        extrachar_utf(slst, word_utf, cpdsuggest, info);
       else
-        extrachar(slst, word, cpdsuggest);
+        extrachar(slst, word, cpdsuggest, info);
     }
     if (clock() > timelimit + TIMELIMIT_SUGGESTION)
       return good_suggestion;
+    if (test_simplesug && slst.size())
+      return true;
 
     // did we forgot a char
     if ((slst.size() < maxSug) && (!cpdsuggest || (slst.size() < oldSug + maxcpdsugs))) {
       if (utf8)
-        forgotchar_utf(slst, &word_utf[0], wl, cpdsuggest);
+        forgotchar_utf(slst, word_utf, cpdsuggest, info);
       else
-        forgotchar(slst, word, cpdsuggest);
+        forgotchar(slst, word, cpdsuggest, info);
     }
     if (clock() > timelimit + TIMELIMIT_SUGGESTION)
       return good_suggestion;
+    if (test_simplesug && slst.size())
+      return true;
 
     // did we move a char
     if ((slst.size() < maxSug) && (!cpdsuggest || (slst.size() < oldSug + maxcpdsugs))) {
       if (utf8)
-        movechar_utf(slst, &word_utf[0], wl, cpdsuggest);
+        movechar_utf(slst, word_utf, cpdsuggest, info);
       else
-        movechar(slst, word, cpdsuggest);
+        movechar(slst, word, cpdsuggest, info);
     }
     if (clock() > timelimit + TIMELIMIT_SUGGESTION)
       return good_suggestion;
+    if (test_simplesug && slst.size())
+      return true;
 
     // did we just hit the wrong key in place of a good char
     if ((slst.size() < maxSug) && (!cpdsuggest || (slst.size() < oldSug + maxcpdsugs))) {
       if (utf8)
-        badchar_utf(slst, &word_utf[0], wl, cpdsuggest);
+        badchar_utf(slst, word_utf, cpdsuggest, info);
       else
-        badchar(slst, word, cpdsuggest);
+        badchar(slst, word, cpdsuggest, info);
     }
     if (clock() > timelimit + TIMELIMIT_SUGGESTION)
       return good_suggestion;
+    if (test_simplesug && slst.size())
+      return true;
 
     // did we double two characters
     if ((slst.size() < maxSug) && (!cpdsuggest || (slst.size() < oldSug + maxcpdsugs))) {
       if (utf8)
-        doubletwochars_utf(slst, &word_utf[0], wl, cpdsuggest);
+        doubletwochars_utf(slst, word_utf, cpdsuggest, info);
       else
-        doubletwochars(slst, word, cpdsuggest);
+        doubletwochars(slst, word, cpdsuggest, info);
     }
     if (clock() > timelimit + TIMELIMIT_SUGGESTION)
       return good_suggestion;
+    if (test_simplesug && slst.size())
+      return true;
 
     // perhaps we forgot to hit space and two words ran together
     // (dictionary word pairs have top priority here, so
     // we always suggest them, in despite of nosplitsugs, and
     // drop compound word and other suggestions)
     if (!cpdsuggest || (!nosplitsugs && slst.size() < oldSug + maxcpdsugs)) {
-      good_suggestion = twowords(slst, word, cpdsuggest, good_suggestion);
+      good_suggestion = twowords(slst, word, cpdsuggest, good_suggestion, info);
+
+      if (info & SPELL_BEST_SUG)
+        return true;
     }
     if (clock() > timelimit + TIMELIMIT_SUGGESTION)
       return good_suggestion;
+
+    // testing returns after the first loop
+    if (test_simplesug)
+      return slst.size() > 0;
+
+    // don't need third loop, if the second loop was successful or
+    // the first loop found a dictionary-based compound word
+    // (we don't need more, likely worse and false 3-or-more-word compound words)
+    if (cpdsuggest == 1 && (slst.size() > oldSug || (info & SPELL_COMPOUND)))
+       nocompoundtwowords = 1;
 
   }  // repeating ``for'' statement compounding support
 
@@ -461,35 +503,33 @@ bool SuggestMgr::suggest(std::vector<std::string>& slst,
 
 // suggestions for an uppercase word (html -> HTML)
 void SuggestMgr::capchars_utf(std::vector<std::string>& wlst,
-                              const w_char* word,
-                              int wl,
-                              int cpdsuggest) {
-  std::vector<w_char> candidate_utf(word, word + wl);
+                              const std::vector<w_char>& word,
+                              int cpdsuggest, int& info) {
+  std::vector<w_char> candidate_utf(word);
   mkallcap_utf(candidate_utf, langnum);
   std::string candidate;
   u16_u8(candidate, candidate_utf);
-  testsug(wlst, candidate, cpdsuggest, NULL, NULL);
+  testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
 }
 
 // suggestions for an uppercase word (html -> HTML)
 void SuggestMgr::capchars(std::vector<std::string>& wlst,
-                          const char* word,
-                          int cpdsuggest) {
+                          const std::string& word,
+                          int cpdsuggest, int& info) {
   std::string candidate(word);
   mkallcap(candidate, csconv);
-  testsug(wlst, candidate, cpdsuggest, NULL, NULL);
+  testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
 }
 
 // suggestions for when chose the wrong char out of a related set
 int SuggestMgr::mapchars(std::vector<std::string>& wlst,
-                         const char* word,
-                         int cpdsuggest) {
+                         const std::string& word,
+                         int cpdsuggest, int& info) {
   std::string candidate;
   clock_t timelimit;
   int timer;
 
-  int wl = strlen(word);
-  if (wl < 2 || !pAMgr)
+  if (word.size() < 2 || !pAMgr)
     return wlst.size();
 
   const std::vector<mapentry>& maptable = pAMgr->get_maptable();
@@ -499,25 +539,20 @@ int SuggestMgr::mapchars(std::vector<std::string>& wlst,
   timelimit = clock();
   timer = MINTIMER;
   return map_related(word, candidate, 0, wlst, cpdsuggest,
-                     maptable, &timer, &timelimit);
+                     maptable, &timer, &timelimit, 0, info);
 }
 
-int SuggestMgr::map_related(const char* word,
+int SuggestMgr::map_related(const std::string& word,
                             std::string& candidate,
-                            int wn,
+                            size_t wn,
                             std::vector<std::string>& wlst,
                             int cpdsuggest,
                             const std::vector<mapentry>& maptable,
                             int* timer,
-                            clock_t* timelimit) {
-  if (*(word + wn) == '\0') {
-    int cwrd = 1;
-    for (size_t m = 0; m < wlst.size(); ++m) {
-      if (wlst[m] == candidate) {
-        cwrd = 0;
-        break;
-      }
-    }
+                            clock_t* timelimit,
+                            int depth, int& info) {
+  if (word.size() == wn) {
+    const int cwrd = std::find(wlst.begin(), wlst.end(), candidate) != wlst.end() ? 0 : 1;
     if ((cwrd) && checkword(candidate, cpdsuggest, timer, timelimit)) {
       if (wlst.size() < maxSug) {
         wlst.push_back(candidate);
@@ -525,18 +560,24 @@ int SuggestMgr::map_related(const char* word,
     }
     return wlst.size();
   }
+
+  if (depth > 0x3F00) {
+    *timer = 0;
+    return wlst.size();
+  }
+
   int in_map = 0;
   for (size_t j = 0; j < maptable.size(); ++j) {
     for (size_t k = 0; k < maptable[j].size(); ++k) {
       size_t len = maptable[j][k].size();
-      if (strncmp(maptable[j][k].c_str(), word + wn, len) == 0) {
+      if (len && word.compare(wn, len, maptable[j][k]) == 0) {
         in_map = 1;
         size_t cn = candidate.size();
         for (size_t l = 0; l < maptable[j].size(); ++l) {
           candidate.resize(cn);
           candidate.append(maptable[j][l]);
           map_related(word, candidate, wn + len, wlst,
-                           cpdsuggest, maptable, timer, timelimit);
+                           cpdsuggest, maptable, timer, timelimit, depth + 1, info);
           if (!(*timer))
             return wlst.size();
         }
@@ -544,9 +585,9 @@ int SuggestMgr::map_related(const char* word,
     }
   }
   if (!in_map) {
-    candidate.push_back(*(word + wn));
+    candidate.push_back(word[wn]);
     map_related(word, candidate, wn + 1, wlst, cpdsuggest,
-                maptable, timer, timelimit);
+                maptable, timer, timelimit, depth + 1, info);
   }
   return wlst.size();
 }
@@ -554,10 +595,10 @@ int SuggestMgr::map_related(const char* word,
 // suggestions for a typical fault of spelling, that
 // differs with more, than 1 letter from the right form.
 int SuggestMgr::replchars(std::vector<std::string>& wlst,
-                          const char* word,
-                          int cpdsuggest) {
+                          const std::string& word,
+                          int cpdsuggest, int& info) {
   std::string candidate;
-  int wl = strlen(word);
+  int wl = word.size();
   if (wl < 2 || !pAMgr)
     return wlst.size();
 
@@ -566,46 +607,51 @@ int SuggestMgr::replchars(std::vector<std::string>& wlst,
   const char *pattern, *pattern2;
   hunspell::ReplacementIterator iterator = bdict_reader->GetReplacementIterator();
   while (iterator.GetNext(&pattern, &pattern2)) {
-    const char* r = word;
+    size_t r = 0;
     size_t lenr = strlen(pattern2);
     size_t lenp = strlen(pattern);
 
     // search every occurence of the pattern in the word
-    while ((r=strstr(r, pattern)) != NULL) {
+    while ((r = word.find(pattern, r)) != std::string::npos) {
       candidate = word;
-      candidate.replace(r-word, lenp, pattern2);
+      candidate.replace(r, lenp, pattern2);
 #else
   const std::vector<replentry>& reptable = pAMgr->get_reptable();
-  for (size_t i = 0; i < reptable.size(); ++i) {
-    const char* r = word;
+  for (const auto& entry : reptable) {
+    size_t r = 0;
     // search every occurence of the pattern in the word
-    while ((r = strstr(r, reptable[i].pattern.c_str())) != NULL) {
-      int type = (r == word) ? 1 : 0;
-      if (r - word + reptable[i].pattern.size() == strlen(word))
+    while ((r = word.find(entry.pattern, r)) != std::string::npos) {
+      int type = (r == 0) ? 1 : 0;
+      if (r + entry.pattern.size() == word.size())
         type += 2;
-      while (type && reptable[i].outstrings[type].empty())
-        type = (type == 2 && r != word) ? 0 : type - 1;
-      const std::string&out = reptable[i].outstrings[type];
+      while (type && entry.outstrings[type].empty())
+        type = (type == 2 && r != 0) ? 0 : type - 1;
+      const std::string&out = entry.outstrings[type];
       if (out.empty()) {
         ++r;
         continue;
       }
-      candidate.assign(word);
-      candidate.resize(r - word);
-      candidate.append(reptable[i].outstrings[type]);
-      candidate.append(r + reptable[i].pattern.size());
+      candidate.assign(word, 0, r);
+      candidate.append(entry.outstrings[type]);
+      candidate.append(word, r + entry.pattern.size(), std::string::npos);
 #endif
-      testsug(wlst, candidate, cpdsuggest, NULL, NULL);
-      // check REP suggestions with space
       size_t sp = candidate.find(' ');
+      size_t oldns = wlst.size();
+      testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
+      if (oldns < wlst.size()) {
+        // REP suggestions are the best, don't search other type of suggestions
+        info |= SPELL_BEST_SUG;
+      }
+
+      // check REP suggestions with space
       if (sp != std::string::npos) {
         size_t prev = 0;
         while (sp != std::string::npos) {
           std::string prev_chunk = candidate.substr(prev, sp - prev);
           if (checkword(prev_chunk, 0, NULL, NULL)) {
-            size_t oldns = wlst.size();
+            oldns = wlst.size();
             std::string post_chunk = candidate.substr(sp + 1);
-            testsug(wlst, post_chunk, cpdsuggest, NULL, NULL);
+            testsug(wlst, post_chunk, cpdsuggest, NULL, NULL, info);
             if (oldns < wlst.size()) {
               wlst[wlst.size() - 1] = candidate;
             }
@@ -626,19 +672,21 @@ int SuggestMgr::replchars(std::vector<std::string>& wlst,
 // "(.)(.)\1\2\1" or "..(.)(.)\1\2"
 
 int SuggestMgr::doubletwochars(std::vector<std::string>& wlst,
-                               const char* word,
-                               int cpdsuggest) {
-  int state = 0;
-  int wl = strlen(word);
+                               const std::string& word,
+                               int cpdsuggest, int& info) {
+  size_t wl = word.size();
   if (wl < 5 || !pAMgr)
     return wlst.size();
-  for (int i = 2; i < wl; i++) {
+
+  int state = 0;
+  for (size_t i = 2; i < wl; ++i) {
     if (word[i] == word[i - 2]) {
       state++;
       if (state == 3 || (state == 2 && i >= 4)) {
-        std::string candidate(word, word + i - 1);
-        candidate.insert(candidate.end(), word + i + 1, word + wl);
-        testsug(wlst, candidate, cpdsuggest, NULL, NULL);
+        auto word_iter = word.begin();
+        std::string candidate(word_iter, word_iter + i - 1);
+        candidate.insert(candidate.end(), word_iter + i + 1, word.end());
+        testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
         state = 0;
       }
     } else {
@@ -654,21 +702,22 @@ int SuggestMgr::doubletwochars(std::vector<std::string>& wlst,
 // "(.)(.)\1\2\1" or "..(.)(.)\1\2"
 
 int SuggestMgr::doubletwochars_utf(std::vector<std::string>& wlst,
-                                   const w_char* word,
-                                   int wl,
-                                   int cpdsuggest) {
+                                   const std::vector<w_char>& word,
+                                   int cpdsuggest, int& info) {
+  size_t wl = word.size();
   int state = 0;
   if (wl < 5 || !pAMgr)
     return wlst.size();
-  for (int i = 2; i < wl; i++) {
+  for (size_t i = 2; i < wl; ++i) {
     if (word[i] == word[i - 2]) {
       state++;
       if (state == 3 || (state == 2 && i >= 4)) {
-        std::vector<w_char> candidate_utf(word, word + i - 1);
-        candidate_utf.insert(candidate_utf.end(), word + i + 1, word + wl);
+        auto word_iter = word.begin();
+        std::vector<w_char> candidate_utf(word_iter, word_iter + i - 1);
+        candidate_utf.insert(candidate_utf.end(), word_iter + i + 1, word.end());
         std::string candidate;
         u16_u8(candidate, candidate_utf);
-        testsug(wlst, candidate, cpdsuggest, NULL, NULL);
+        testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
         state = 0;
       }
     } else {
@@ -681,34 +730,38 @@ int SuggestMgr::doubletwochars_utf(std::vector<std::string>& wlst,
 // error is wrong char in place of correct one (case and keyboard related
 // version)
 int SuggestMgr::badcharkey(std::vector<std::string>& wlst,
-                           const char* word,
-                           int cpdsuggest) {
+                           const std::string& word,
+                           int cpdsuggest, int& info) {
   std::string candidate(word);
 
   // swap out each char one by one and try uppercase and neighbor
   // keyboard chars in its place to see if that makes a good word
-  for (size_t i = 0; i < candidate.size(); ++i) {
+  for (size_t i = 0, wl = candidate.size(); i < wl; ++i) {
     char tmpc = candidate[i];
     // check with uppercase letters
     candidate[i] = csconv[((unsigned char)tmpc)].cupper;
     if (tmpc != candidate[i]) {
-      testsug(wlst, candidate, cpdsuggest, NULL, NULL);
+      testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
       candidate[i] = tmpc;
     }
     // check neighbor characters in keyboard string
-    if (!ckey)
+    if (ckey.empty())
       continue;
-    char* loc = strchr(ckey, tmpc);
-    while (loc) {
-      if ((loc > ckey) && (*(loc - 1) != '|')) {
-        candidate[i] = *(loc - 1);
-        testsug(wlst, candidate, cpdsuggest, NULL, NULL);
+    size_t loc = 0;
+    while ((loc < ckeyl) && ckey[loc] != tmpc)
+      ++loc;
+    while (loc < ckeyl) {
+      if ((loc > 0) && ckey[loc - 1] != '|') {
+        candidate[i] = ckey[loc - 1];
+        testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
       }
-      if ((*(loc + 1) != '|') && (*(loc + 1) != '\0')) {
-        candidate[i] = *(loc + 1);
-        testsug(wlst, candidate, cpdsuggest, NULL, NULL);
+      if (((loc + 1) < ckeyl) && (ckey[loc + 1] != '|')) {
+        candidate[i] = ckey[loc + 1];
+        testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
       }
-      loc = strchr(loc + 1, tmpc);
+      do {
+        loc++;
+      } while ((loc < ckeyl) && ckey[loc] != tmpc);
     }
     candidate[i] = tmpc;
   }
@@ -718,24 +771,23 @@ int SuggestMgr::badcharkey(std::vector<std::string>& wlst,
 // error is wrong char in place of correct one (case and keyboard related
 // version)
 int SuggestMgr::badcharkey_utf(std::vector<std::string>& wlst,
-                               const w_char* word,
-                               int wl,
-                               int cpdsuggest) {
+                               const std::vector<w_char>& word,
+                               int cpdsuggest, int& info) {
   std::string candidate;
-  std::vector<w_char> candidate_utf(word, word + wl);
+  std::vector<w_char> candidate_utf(word);
   // swap out each char one by one and try all the tryme
   // chars in its place to see if that makes a good word
-  for (int i = 0; i < wl; i++) {
+  for (size_t i = 0, wl = word.size(); i < wl; ++i) {
     w_char tmpc = candidate_utf[i];
     // check with uppercase letters
     candidate_utf[i] = upper_utf(candidate_utf[i], 1);
     if (tmpc != candidate_utf[i]) {
       u16_u8(candidate, candidate_utf);
-      testsug(wlst, candidate, cpdsuggest, NULL, NULL);
+      testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
       candidate_utf[i] = tmpc;
     }
     // check neighbor characters in keyboard string
-    if (!ckey)
+    if (ckey_utf.empty())
       continue;
     size_t loc = 0;
     while ((loc < ckeyl) && ckey_utf[loc] != tmpc)
@@ -744,12 +796,12 @@ int SuggestMgr::badcharkey_utf(std::vector<std::string>& wlst,
       if ((loc > 0) && ckey_utf[loc - 1] != W_VLINE) {
         candidate_utf[i] = ckey_utf[loc - 1];
         u16_u8(candidate, candidate_utf);
-        testsug(wlst, candidate, cpdsuggest, NULL, NULL);
+        testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
       }
       if (((loc + 1) < ckeyl) && (ckey_utf[loc + 1] != W_VLINE)) {
         candidate_utf[i] = ckey_utf[loc + 1];
         u16_u8(candidate, candidate_utf);
-        testsug(wlst, candidate, cpdsuggest, NULL, NULL);
+        testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
       }
       do {
         loc++;
@@ -761,19 +813,21 @@ int SuggestMgr::badcharkey_utf(std::vector<std::string>& wlst,
 }
 
 // error is wrong char in place of correct one
-int SuggestMgr::badchar(std::vector<std::string>& wlst, const char* word, int cpdsuggest) {
+int SuggestMgr::badchar(std::vector<std::string>& wlst,
+                               const std::string& word,
+                               int cpdsuggest, int& info) {
   std::string candidate(word);
   clock_t timelimit = clock();
   int timer = MINTIMER;
   // swap out each char one by one and try all the tryme
   // chars in its place to see if that makes a good word
   for (size_t j = 0; j < ctryl; ++j) {
-    for (std::string::reverse_iterator aI = candidate.rbegin(), aEnd = candidate.rend(); aI != aEnd; ++aI) {
+    for (auto aI = candidate.rbegin(), aEnd = candidate.rend(); aI != aEnd; ++aI) {
       char tmpc = *aI;
       if (ctry[j] == tmpc)
         continue;
       *aI = ctry[j];
-      testsug(wlst, candidate, cpdsuggest, &timer, &timelimit);
+      testsug(wlst, candidate, cpdsuggest, &timer, &timelimit, info);
       if (!timer)
         return wlst.size();
       *aI = tmpc;
@@ -784,26 +838,25 @@ int SuggestMgr::badchar(std::vector<std::string>& wlst, const char* word, int cp
 
 // error is wrong char in place of correct one
 int SuggestMgr::badchar_utf(std::vector<std::string>& wlst,
-                            const w_char* word,
-                            int wl,
-                            int cpdsuggest) {
-  std::vector<w_char> candidate_utf(word, word + wl);
+                            const std::vector<w_char>& word,
+                            int cpdsuggest, int& info) {
+  std::vector<w_char> candidate_utf(word);
   std::string candidate;
   clock_t timelimit = clock();
   int timer = MINTIMER;
   // swap out each char one by one and try all the tryme
   // chars in its place to see if that makes a good word
   for (size_t j = 0; j < ctryl; ++j) {
-    for (int i = wl - 1; i >= 0; i--) {
-      w_char tmpc = candidate_utf[i];
+    for (auto aI = candidate_utf.rbegin(), aEnd = candidate_utf.rend(); aI != aEnd; ++aI) {
+      w_char tmpc = *aI;
       if (tmpc == ctry_utf[j])
         continue;
-      candidate_utf[i] = ctry_utf[j];
+      *aI = ctry_utf[j];
       u16_u8(candidate, candidate_utf);
-      testsug(wlst, candidate, cpdsuggest, &timer, &timelimit);
+      testsug(wlst, candidate, cpdsuggest, &timer, &timelimit, info);
       if (!timer)
         return wlst.size();
-      candidate_utf[i] = tmpc;
+      *aI = tmpc;
     }
   }
   return wlst.size();
@@ -811,10 +864,9 @@ int SuggestMgr::badchar_utf(std::vector<std::string>& wlst,
 
 // error is word has an extra letter it does not need
 int SuggestMgr::extrachar_utf(std::vector<std::string>& wlst,
-                              const w_char* word,
-                              int wl,
-                              int cpdsuggest) {
-  std::vector<w_char> candidate_utf(word, word + wl);
+                              const std::vector<w_char>& word,
+                              int cpdsuggest, int& info) {
+  std::vector<w_char> candidate_utf(word);
   if (candidate_utf.size() < 2)
     return wlst.size();
   // try omitting one char of word at a time
@@ -824,7 +876,7 @@ int SuggestMgr::extrachar_utf(std::vector<std::string>& wlst,
     candidate_utf.erase(candidate_utf.begin() + index);
     std::string candidate;
     u16_u8(candidate, candidate_utf);
-    testsug(wlst, candidate, cpdsuggest, NULL, NULL);
+    testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
     candidate_utf.insert(candidate_utf.begin() + index, tmpc);
   }
   return wlst.size();
@@ -832,8 +884,8 @@ int SuggestMgr::extrachar_utf(std::vector<std::string>& wlst,
 
 // error is word has an extra letter it does not need
 int SuggestMgr::extrachar(std::vector<std::string>& wlst,
-                          const char* word,
-                          int cpdsuggest) {
+                          const std::string& word,
+                          int cpdsuggest, int& info) {
   std::string candidate(word);
   if (candidate.size() < 2)
     return wlst.size();
@@ -842,7 +894,7 @@ int SuggestMgr::extrachar(std::vector<std::string>& wlst,
     size_t index = candidate.size() - 1 - i;
     char tmpc = candidate[index];
     candidate.erase(candidate.begin() + index);
-    testsug(wlst, candidate, cpdsuggest, NULL, NULL);
+    testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
     candidate.insert(candidate.begin() + index, tmpc);
   }
   return wlst.size();
@@ -850,8 +902,8 @@ int SuggestMgr::extrachar(std::vector<std::string>& wlst,
 
 // error is missing a letter it needs
 int SuggestMgr::forgotchar(std::vector<std::string>& wlst,
-                           const char* word,
-                           int cpdsuggest) {
+                           const std::string& word,
+                           int cpdsuggest, int& info) {
   std::string candidate(word);
   clock_t timelimit = clock();
   int timer = MINTIMER;
@@ -862,7 +914,7 @@ int SuggestMgr::forgotchar(std::vector<std::string>& wlst,
     for (size_t i = 0; i <= candidate.size(); ++i) {
       size_t index = candidate.size() - i;
       candidate.insert(candidate.begin() + index, ctry[k]);
-      testsug(wlst, candidate, cpdsuggest, &timer, &timelimit);
+      testsug(wlst, candidate, cpdsuggest, &timer, &timelimit, info);
       if (!timer)
         return wlst.size();
       candidate.erase(candidate.begin() + index);
@@ -873,10 +925,9 @@ int SuggestMgr::forgotchar(std::vector<std::string>& wlst,
 
 // error is missing a letter it needs
 int SuggestMgr::forgotchar_utf(std::vector<std::string>& wlst,
-                               const w_char* word,
-                               int wl,
-                               int cpdsuggest) {
-  std::vector<w_char> candidate_utf(word, word + wl);
+                               const std::vector<w_char>& word,
+                               int cpdsuggest, int& info) {
+  std::vector<w_char> candidate_utf(word);
   clock_t timelimit = clock();
   int timer = MINTIMER;
 
@@ -888,7 +939,7 @@ int SuggestMgr::forgotchar_utf(std::vector<std::string>& wlst,
       candidate_utf.insert(candidate_utf.begin() + index, ctry_utf[k]);
       std::string candidate;
       u16_u8(candidate, candidate_utf);
-      testsug(wlst, candidate, cpdsuggest, &timer, &timelimit);
+      testsug(wlst, candidate, cpdsuggest, &timer, &timelimit, info);
       if (!timer)
         return wlst.size();
       candidate_utf.erase(candidate_utf.begin() + index);
@@ -903,22 +954,19 @@ int SuggestMgr::forgotchar_utf(std::vector<std::string>& wlst,
  * this function.
  */
 bool SuggestMgr::twowords(std::vector<std::string>& wlst,
-                         const char* word,
+                         const std::string& word,
                          int cpdsuggest,
-                         bool good) {
-  int c2;
-  int forbidden = 0;
-  int cwrd;
-
-  int wl = strlen(word);
+                         bool good, int& info) {
+  int c2, forbidden = 0, cwrd, wl = word.size();
   if (wl < 3)
     return false;
 
   if (langnum == LANG_hu)
-    forbidden = check_forbidden(word, wl);
+    forbidden = check_forbidden(word);
 
-  char* candidate = (char*)malloc(wl + 2);
-  strcpy(candidate + 1, word);
+  char* candidate = new char[wl + 2];
+  memcpy(candidate + 1, word.data(), wl);
+  candidate[wl + 1] = 0;
 
   // split the string into two pieces after every char
   // if both pieces are good words make them a suggestion
@@ -941,11 +989,15 @@ bool SuggestMgr::twowords(std::vector<std::string>& wlst,
     // alot -> a lot, alto, slot...
     *p = ' ';
     if (!cpdsuggest && checkword(candidate, cpdsuggest, NULL, NULL)) {
+      // best solution
+      info |= SPELL_BEST_SUG;
+
       // remove not word pair suggestions
       if (!good) {
         good = true;
         wlst.clear();
       }
+
       wlst.insert(wlst.begin(), candidate);
     }
 
@@ -954,6 +1006,9 @@ bool SuggestMgr::twowords(std::vector<std::string>& wlst,
       *p = '-';
 
       if (!cpdsuggest && checkword(candidate, cpdsuggest, NULL, NULL)) {
+        // best solution
+        info |= SPELL_BEST_SUG;
+
         // remove not word pair suggestions
         if (!good) {
           good = true;
@@ -980,52 +1035,47 @@ bool SuggestMgr::twowords(std::vector<std::string>& wlst,
           else
             *p = ' ';
 
-          cwrd = 1;
-          for (size_t k = 0; k < wlst.size(); ++k) {
-            if (wlst[k] == candidate) {
-              cwrd = 0;
-              break;
-            }
-          }
+          cwrd = std::find(wlst.begin(), wlst.end(), candidate) != wlst.end() ? 0 : 1;
 
           if (cwrd && (wlst.size() < maxSug))
-              wlst.push_back(candidate);
+              wlst.emplace_back(candidate);
 
           // add two word suggestion with dash, depending on the language
           // Note that cwrd doesn't modified for REP twoword sugg.
           if ( !nosplitsugs && lang_with_dash_usage &&
               mystrlen(p + 1) > 1 && mystrlen(candidate) - mystrlen(p) > 1) {
             *p = '-';
-            for (size_t k = 0; k < wlst.size(); ++k) {
-              if (wlst[k] == candidate) {
+            for (auto& k : wlst) {
+              if (k == candidate) {
                 cwrd = 0;
                 break;
               }
             }
 
             if ((wlst.size() < maxSug) && cwrd)
-              wlst.push_back(candidate);
+              wlst.emplace_back(candidate);
           }
         }
       }
     }
   }
-  free(candidate);
+  delete[] candidate;
   return good;
 }
 
 // error is adjacent letter were swapped
 int SuggestMgr::swapchar(std::vector<std::string>& wlst,
-                         const char* word,
-                         int cpdsuggest) {
-  std::string candidate(word);
-  if (candidate.size() < 2)
+                         const std::string& word,
+                         int cpdsuggest, int& info) {
+  if (word.size() < 2)
     return wlst.size();
+
+  std::string candidate(word);
 
   // try swapping adjacent chars one by one
   for (size_t i = 0; i < candidate.size() - 1; ++i) {
     std::swap(candidate[i], candidate[i+1]);
-    testsug(wlst, candidate, cpdsuggest, NULL, NULL);
+    testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
     std::swap(candidate[i], candidate[i+1]);
   }
 
@@ -1037,12 +1087,12 @@ int SuggestMgr::swapchar(std::vector<std::string>& wlst,
     candidate[2] = word[2];
     candidate[candidate.size() - 2] = word[candidate.size() - 1];
     candidate[candidate.size() - 1] = word[candidate.size() - 2];
-    testsug(wlst, candidate, cpdsuggest, NULL, NULL);
+    testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
     if (candidate.size() == 5) {
       candidate[0] = word[0];
       candidate[1] = word[2];
       candidate[2] = word[1];
-      testsug(wlst, candidate, cpdsuggest, NULL, NULL);
+      testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
     }
   }
 
@@ -1051,19 +1101,19 @@ int SuggestMgr::swapchar(std::vector<std::string>& wlst,
 
 // error is adjacent letter were swapped
 int SuggestMgr::swapchar_utf(std::vector<std::string>& wlst,
-                             const w_char* word,
-                             int wl,
-                             int cpdsuggest) {
-  std::vector<w_char> candidate_utf(word, word + wl);
-  if (candidate_utf.size() < 2)
+                             const std::vector<w_char>& word,
+                             int cpdsuggest, int& info) {
+  if (word.size() < 2)
     return wlst.size();
+
+  std::vector<w_char> candidate_utf(word);
 
   std::string candidate;
   // try swapping adjacent chars one by one
   for (size_t i = 0; i < candidate_utf.size() - 1; ++i) {
     std::swap(candidate_utf[i], candidate_utf[i+1]);
     u16_u8(candidate, candidate_utf);
-    testsug(wlst, candidate, cpdsuggest, NULL, NULL);
+    testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
     std::swap(candidate_utf[i], candidate_utf[i+1]);
   }
 
@@ -1076,13 +1126,13 @@ int SuggestMgr::swapchar_utf(std::vector<std::string>& wlst,
     candidate_utf[candidate_utf.size() - 2] = word[candidate_utf.size() - 1];
     candidate_utf[candidate_utf.size() - 1] = word[candidate_utf.size() - 2];
     u16_u8(candidate, candidate_utf);
-    testsug(wlst, candidate, cpdsuggest, NULL, NULL);
+    testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
     if (candidate_utf.size() == 5) {
       candidate_utf[0] = word[0];
       candidate_utf[1] = word[2];
       candidate_utf[2] = word[1];
       u16_u8(candidate, candidate_utf);
-      testsug(wlst, candidate, cpdsuggest, NULL, NULL);
+      testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
     }
   }
   return wlst.size();
@@ -1090,16 +1140,16 @@ int SuggestMgr::swapchar_utf(std::vector<std::string>& wlst,
 
 // error is not adjacent letter were swapped
 int SuggestMgr::longswapchar(std::vector<std::string>& wlst,
-                             const char* word,
-                             int cpdsuggest) {
+                             const std::string& word,
+                             int cpdsuggest, int& info) {
   std::string candidate(word);
   // try swapping not adjacent chars one by one
-  for (std::string::iterator p = candidate.begin(); p < candidate.end(); ++p) {
-    for (std::string::iterator q = candidate.begin(); q < candidate.end(); ++q) {
-      size_t distance = std::abs(std::distance(q, p));
+  for (auto p = candidate.begin(); p < candidate.end(); ++p) {
+    for (auto q = candidate.begin(); q < candidate.end(); ++q) {
+      const auto distance = std::abs(std::distance(q, p));
       if (distance > 1 && distance <= MAX_CHAR_DISTANCE) {
         std::swap(*p, *q);
-        testsug(wlst, candidate, cpdsuggest, NULL, NULL);
+        testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
         std::swap(*p, *q);
       }
     }
@@ -1109,19 +1159,18 @@ int SuggestMgr::longswapchar(std::vector<std::string>& wlst,
 
 // error is adjacent letter were swapped
 int SuggestMgr::longswapchar_utf(std::vector<std::string>& wlst,
-                                 const w_char* word,
-                                 int wl,
-                                 int cpdsuggest) {
-  std::vector<w_char> candidate_utf(word, word + wl);
+                                 const std::vector<w_char>& word,
+                                 int cpdsuggest, int& info) {
+  std::vector<w_char> candidate_utf(word);
   // try swapping not adjacent chars
-  for (std::vector<w_char>::iterator p = candidate_utf.begin(); p < candidate_utf.end(); ++p) {
-    for (std::vector<w_char>::iterator q = candidate_utf.begin(); q < candidate_utf.end(); ++q) {
-      size_t distance = std::abs(std::distance(q, p));
+  for (auto p = candidate_utf.begin(); p < candidate_utf.end(); ++p) {
+    for (auto q = candidate_utf.begin(); q < candidate_utf.end(); ++q) {
+      const auto distance = std::abs(std::distance(q, p));
       if (distance > 1 && distance <= MAX_CHAR_DISTANCE) {
         std::swap(*p, *q);
         std::string candidate;
         u16_u8(candidate, candidate_utf);
-        testsug(wlst, candidate, cpdsuggest, NULL, NULL);
+        testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
         std::swap(*p, *q);
       }
     }
@@ -1131,31 +1180,34 @@ int SuggestMgr::longswapchar_utf(std::vector<std::string>& wlst,
 
 // error is a letter was moved
 int SuggestMgr::movechar(std::vector<std::string>& wlst,
-                         const char* word,
-                         int cpdsuggest) {
-  std::string candidate(word);
-  if (candidate.size() < 2)
+                         const std::string& word,
+                         int cpdsuggest, int& info) {
+  if (word.size() < 2)
     return wlst.size();
 
+  std::string candidate(word);
+
   // try moving a char
-  for (std::string::iterator p = candidate.begin(); p < candidate.end(); ++p) {
-    for (std::string::iterator q = p + 1; q < candidate.end() && std::distance(p, q) <= MAX_CHAR_DISTANCE; ++q) {
+  for (auto p = candidate.begin(); p < candidate.end(); ++p) {
+    for (auto q = p + 1; q < candidate.end() && std::distance(p, q) <= MAX_CHAR_DISTANCE; ++q) {
       std::swap(*q, *(q - 1));
       if (std::distance(p, q) < 2)
         continue;  // omit swap char
-      testsug(wlst, candidate, cpdsuggest, NULL, NULL);
+      testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
     }
-    std::copy(word, word + candidate.size(), candidate.begin());
+    const auto word_iter = word.begin();
+    std::copy_n(word_iter, candidate.size(), candidate.begin());
   }
 
-  for (std::string::reverse_iterator p = candidate.rbegin(), pEnd = candidate.rend() - 1; p != pEnd; ++p) {
-    for (std::string::reverse_iterator q = p + 1, qEnd = candidate.rend(); q != qEnd && std::distance(p, q) <= MAX_CHAR_DISTANCE; ++q) {
+  for (auto p = candidate.rbegin(), pEnd = candidate.rend() - 1; p != pEnd; ++p) {
+    for (auto q = p + 1, qEnd = candidate.rend(); q != qEnd && std::distance(p, q) <= MAX_CHAR_DISTANCE; ++q) {
       std::swap(*q, *(q - 1));
       if (std::distance(p, q) < 2)
         continue;  // omit swap char
-      testsug(wlst, candidate, cpdsuggest, NULL, NULL);
+      testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
     }
-    std::copy(word, word + candidate.size(), candidate.begin());
+    const auto word_iter = word.begin();
+    std::copy_n(word_iter, candidate.size(), candidate.begin());
   }
 
   return wlst.size();
@@ -1163,39 +1215,70 @@ int SuggestMgr::movechar(std::vector<std::string>& wlst,
 
 // error is a letter was moved
 int SuggestMgr::movechar_utf(std::vector<std::string>& wlst,
-                             const w_char* word,
-                             int wl,
-                             int cpdsuggest) {
-  std::vector<w_char> candidate_utf(word, word + wl);
-  if (candidate_utf.size() < 2)
+                             const std::vector<w_char>& word,
+                             int cpdsuggest, int& info) {
+  if (word.size() < 2)
     return wlst.size();
 
+  std::vector<w_char> candidate_utf(word);
+
   // try moving a char
-  for (std::vector<w_char>::iterator p = candidate_utf.begin(); p < candidate_utf.end(); ++p) {
-    for (std::vector<w_char>::iterator q = p + 1; q < candidate_utf.end() && std::distance(p, q) <= MAX_CHAR_DISTANCE; ++q) {
+  for (auto p = candidate_utf.begin(); p < candidate_utf.end(); ++p) {
+    for (auto q = p + 1; q < candidate_utf.end() && std::distance(p, q) <= MAX_CHAR_DISTANCE; ++q) {
       std::swap(*q, *(q - 1));
       if (std::distance(p, q) < 2)
         continue;  // omit swap char
       std::string candidate;
       u16_u8(candidate, candidate_utf);
-      testsug(wlst, candidate, cpdsuggest, NULL, NULL);
+      testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
     }
-    std::copy(word, word + candidate_utf.size(), candidate_utf.begin());
+    const auto word_iter = word.begin();
+    std::copy_n(word_iter, candidate_utf.size(), candidate_utf.begin());
   }
 
-  for (std::vector<w_char>::reverse_iterator p = candidate_utf.rbegin(); p < candidate_utf.rend(); ++p) {
-    for (std::vector<w_char>::reverse_iterator q = p + 1; q < candidate_utf.rend() && std::distance(p, q) <= MAX_CHAR_DISTANCE; ++q) {
+  for (auto p = candidate_utf.rbegin(); p < candidate_utf.rend(); ++p) {
+    for (auto q = p + 1; q < candidate_utf.rend() && std::distance(p, q) <= MAX_CHAR_DISTANCE; ++q) {
       std::swap(*q, *(q - 1));
       if (std::distance(p, q) < 2)
         continue;  // omit swap char
       std::string candidate;
       u16_u8(candidate, candidate_utf);
-      testsug(wlst, candidate, cpdsuggest, NULL, NULL);
+      testsug(wlst, candidate, cpdsuggest, NULL, NULL, info);
     }
-    std::copy(word, word + candidate_utf.size(), candidate_utf.begin());
+    const auto word_iter = word.begin();
+    std::copy_n(word_iter, candidate_utf.size(), candidate_utf.begin());
   }
 
   return wlst.size();
+}
+
+namespace
+{
+  class ngsuggest_guard
+  {
+    bool m_nonbmp;
+    cs_info* m_origconv;
+    int* m_utf8;
+    cs_info** m_csconv;
+
+    public:
+
+    ngsuggest_guard(bool nonbmp, cs_info* origconv, int* utf8, cs_info** csconv)
+      : m_nonbmp(nonbmp)
+      , m_origconv(origconv)
+      , m_utf8(utf8)
+      , m_csconv(csconv)
+    {
+    }
+
+    ~ngsuggest_guard()
+    {
+      if (m_nonbmp) {
+        *m_csconv = m_origconv;
+        *m_utf8 = 1;
+      }
+    }
+  };
 }
 
 // generate a set of suggestions for very poorly spelled words
@@ -1203,10 +1286,7 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
                           const char* w,
                           const std::vector<HashMgr*>& rHMgr,
                           int captype) {
-  int lval;
-  int sc;
-  int lp, lpphon;
-  int nonbmp = 0;
+  int lval, sc, lp, lpphon, nonbmp = 0;
 
   // exhaustively search through all root words
   // keeping track of the MAX_ROOTS most similar root words
@@ -1220,6 +1300,8 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
     rootsphon[i] = NULL;
     scoresphon[i] = -100 * i;
   }
+  bool has_roots = false;
+  bool has_rootsphon = false;
   lp = MAX_ROOTS - 1;
   lpphon = MAX_ROOTS - 1;
   int low = NGRAM_LOWERING;
@@ -1227,6 +1309,7 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
   std::string w2;
   const char* word = w;
 
+  int nc;
   // word reversing wrapper for complex prefixes
   if (complexprefixes) {
     w2.assign(w);
@@ -1235,20 +1318,31 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
     else
       reverseword(w2);
     word = w2.c_str();
+    nc = (int)w2.size();
+  } else {
+    nc = (int)strlen(word);
   }
 
   std::vector<w_char> u8;
-  int nc = strlen(word);
   int n = (utf8) ? u8_u16(u8, word) : nc;
 
   // set character based ngram suggestion for words with non-BMP Unicode
   // characters
+  struct cs_info* origconv = csconv;
   if (n == -1) {
     utf8 = 0;  // XXX not state-free
+    if (!csconv)
+      csconv = get_current_cs("iso88591"); // XXX not state-free
     n = nc;
     nonbmp = 1;
     low = 0;
   }
+  ngsuggest_guard restore_state(nonbmp, origconv, &utf8, &csconv);
+  int max_word_len = (utf8) ? MAXWORDUTF8LEN : MAXWORDLEN;
+  // ofz#59067 a replist entry can generate a very long word, abandon
+  // ngram if that odd-edge case arises
+  if (n > max_word_len * 4)
+      return;
 
   struct hentry* hp = NULL;
   int col = -1;
@@ -1386,6 +1480,7 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
 #else
         roots[lp] = hp;
 #endif
+        has_roots = true;
         lval = sc;
         for (int j = 0; j < MAX_ROOTS; j++)
           if (scores[j] < lval) {
@@ -1397,6 +1492,7 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
       if (scphon > scoresphon[lpphon]) {
         scoresphon[lpphon] = scphon;
         rootsphon[lpphon] = HENTRY_WORD(hp);
+        has_rootsphon = true;
         lval = scphon;
         for (int j = 0; j < MAX_ROOTS; j++)
           if (scoresphon[j] < lval) {
@@ -1405,6 +1501,12 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
           }
       }
     }
+  }
+
+  if (!has_roots && !has_rootsphon) {
+    // with no roots there will be no guesses and no point running
+    // ngram
+    return;
   }
 
   // find minimum threshold for a passable suggestion
@@ -1456,24 +1558,18 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
 
   lp = MAX_GUESS - 1;
 
-  struct guessword* glst;
-  glst = (struct guessword*)calloc(MAX_WORDS, sizeof(struct guessword));
-  if (!glst) {
-    if (nonbmp)
-      utf8 = 1;
-    return;
-  }
+  std::vector<guessword> glst(MAX_WORDS);
 
-  for (int i = 0; i < MAX_ROOTS; i++) {
-    if (roots[i]) {
-      struct hentry* rp = roots[i];
+  for (auto& root : roots) {
+    if (root) {
+      struct hentry* rp = root;
 
       f.clear();
       const char *field = NULL;
       if ((rp->var & H_OPT_PHON) && copy_field(f, HENTRY_DATA(rp), MORPH_PHON))
           field = f.c_str();
       int nw = pAMgr->expand_rootword(
-          glst, MAX_WORDS, HENTRY_WORD(rp), rp->blen, rp->astr, rp->alen, word,
+          glst.data(), MAX_WORDS, HENTRY_WORD(rp), rp->blen, rp->astr, rp->alen, word,
           nc, field);
 
       for (int k = 0; k < nw; k++) {
@@ -1502,9 +1598,9 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
         if (sc > thresh) {
           if (sc > gscore[lp]) {
             if (guess[lp]) {
-              free(guess[lp]);
+              delete[] guess[lp];
               if (guessorig[lp]) {
-                free(guessorig[lp]);
+                delete[] guessorig[lp];
                 guessorig[lp] = NULL;
               }
             }
@@ -1518,19 +1614,17 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
                 lval = gscore[j];
               }
           } else {
-            free(glst[k].word);
-            if (glst[k].orig)
-              free(glst[k].orig);
+            delete[] glst[k].word;
+            delete[] glst[k].orig;
           }
         } else {
-          free(glst[k].word);
-          if (glst[k].orig)
-            free(glst[k].orig);
+          delete[] glst[k].word;
+          delete[] glst[k].orig;
         }
       }
     }
   }
-  free(glst);
+  glst.clear();
 
   // now we are done generating guesses
   // sort in order of decreasing score
@@ -1580,25 +1674,25 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
       if (utf8) {
         u8_u16(w_gl, gl);
         //w_gl is lowercase already at this point
-        re = ngram(2, w_word, w_gl, NGRAM_ANY_MISMATCH + NGRAM_WEIGHTED);
+        re = ngram(2, w_word, w_gl, NGRAM_ANY_MISMATCH | NGRAM_WEIGHTED);
         if (low) {
           w_f = w_word;
           // lowering dictionary word
           mkallsmall_utf(w_f, langnum);
-          re += ngram(2, w_gl, w_f, NGRAM_ANY_MISMATCH + NGRAM_WEIGHTED);
+          re += ngram(2, w_gl, w_f, NGRAM_ANY_MISMATCH | NGRAM_WEIGHTED);
         } else {
-          re += ngram(2, w_gl, w_word, NGRAM_ANY_MISMATCH + NGRAM_WEIGHTED);
+          re += ngram(2, w_gl, w_word, NGRAM_ANY_MISMATCH | NGRAM_WEIGHTED);
         }
       } else {
         //gl is lowercase already at this point
-        re = ngram(2, word, gl, NGRAM_ANY_MISMATCH + NGRAM_WEIGHTED);
+        re = ngram(2, word, gl, NGRAM_ANY_MISMATCH | NGRAM_WEIGHTED);
         if (low) {
           f = word;
           // lowering dictionary word
           mkallsmall(f, csconv);
-          re += ngram(2, gl, f, NGRAM_ANY_MISMATCH + NGRAM_WEIGHTED);
+          re += ngram(2, gl, f, NGRAM_ANY_MISMATCH | NGRAM_WEIGHTED);
         } else {
-          re += ngram(2, gl, word, NGRAM_ANY_MISMATCH + NGRAM_WEIGHTED);
+          re += ngram(2, gl, word, NGRAM_ANY_MISMATCH | NGRAM_WEIGHTED);
         }
       }
 
@@ -1684,17 +1778,16 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
           same = 1;
           // keep the best ngram suggestions, unless in ONLYMAXDIFF mode
           if (wlst.size() > oldns || (pAMgr && pAMgr->get_onlymaxdiff())) {
-            free(guess[i]);
-            if (guessorig[i])
-              free(guessorig[i]);
+            delete[] guess[i];
+            delete[] guessorig[i];
             continue;
           }
         }
-        for (size_t j = 0; j < wlst.size(); ++j) {
+        for (auto& j : wlst) {
           // don't suggest previous suggestions or a previous suggestion with
           // prefixes or affixes
-          if ((!guessorig[i] && strstr(guess[i], wlst[j].c_str())) ||
-              (guessorig[i] && strstr(guessorig[i], wlst[j].c_str())) ||
+          if ((!guessorig[i] && strstr(guess[i], j.c_str())) ||
+              (guessorig[i] && strstr(guessorig[i], j.c_str())) ||
               // check forbidden words
               !checkword(guess[i], 0, NULL, NULL)) {
             unique = 0;
@@ -1703,47 +1796,42 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
         }
         if (unique) {
           if (guessorig[i]) {
-            wlst.push_back(guessorig[i]);
+            wlst.emplace_back(guessorig[i]);
           } else {
-            wlst.push_back(guess[i]);
+            wlst.emplace_back(guess[i]);
           }
         }
-        free(guess[i]);
-        if (guessorig[i])
-          free(guessorig[i]);
+        delete[] guess[i];
+        delete[] guessorig[i];
       } else {
-        free(guess[i]);
-        if (guessorig[i])
-          free(guessorig[i]);
+        delete[] guess[i];
+        delete[] guessorig[i];
       }
     }
   }
 
   oldns = wlst.size();
   if (ph)
-    for (int i = 0; i < MAX_ROOTS; i++) {
-      if (rootsphon[i]) {
+    for (auto& i : rootsphon) {
+      if (i) {
         if ((wlst.size() < oldns + MAXPHONSUGS) && (wlst.size() < maxSug)) {
           int unique = 1;
-          for (size_t j = 0; j < wlst.size(); ++j) {
+          for (auto& j : wlst) {
             // don't suggest previous suggestions or a previous suggestion with
             // prefixes or affixes
-            if (strstr(rootsphon[i], wlst[j].c_str()) ||
+            if (strstr(i, j.c_str()) ||
                 // check forbidden words
-                !checkword(rootsphon[i], 0, NULL, NULL)) {
+                !checkword(i, 0, NULL, NULL)) {
               unique = 0;
               break;
             }
           }
           if (unique) {
-            wlst.push_back(rootsphon[i]);
+            wlst.emplace_back(i);
           }
         }
       }
     }
-
-  if (nonbmp)
-    utf8 = 1;
 }
 
 // see if a candidate suggestion is spelled correctly
@@ -1770,13 +1858,16 @@ int SuggestMgr::checkword(const std::string& word,
     struct hentry* rv = NULL;
     int nosuffix = 0;
 
-    if (cpdsuggest == 1) {
+    if (cpdsuggest >= 1) {
       if (pAMgr->get_compound()) {
         struct hentry* rv2 = NULL;
         struct hentry* rwords[100];  // buffer for COMPOUND pattern checking
-        rv = pAMgr->compound_check(word, 0, 0, 100, 0, NULL, (hentry**)&rwords, 0, 1, 0);  // EXT
+        int info = (cpdsuggest == 1) ? SPELL_COMPOUND_2 : 0;
+        rv = pAMgr->compound_check(word, 0, 0, 100, 0, NULL, (hentry**)&rwords, 0, 1, &info);  // EXT
+        // TODO filter 3-word or more compound words, as in spell()
+        // (it's too slow to call suggest() here for all possible compound words)
         if (rv &&
-            (!(rv2 = pAMgr->lookup(word.c_str())) || !rv2->astr ||
+            (!(rv2 = pAMgr->lookup(word.c_str(), word.size())) || !rv2->astr ||
              !(TESTAFF(rv2->astr, pAMgr->get_forbiddenword(), rv2->alen) ||
                TESTAFF(rv2->astr, pAMgr->get_nosuggest(), rv2->alen))))
           return 3;  // XXX obsolote categorisation + only ICONV needs affix
@@ -1785,7 +1876,7 @@ int SuggestMgr::checkword(const std::string& word,
       return 0;
     }
 
-    rv = pAMgr->lookup(word.c_str());
+    rv = pAMgr->lookup(word.c_str(), word.size());
 
     if (rv) {
       if ((rv->astr) &&
@@ -1803,20 +1894,20 @@ int SuggestMgr::checkword(const std::string& word,
           break;
       }
     } else
-      rv = pAMgr->prefix_check(word.c_str(), word.size(),
+      rv = pAMgr->prefix_check(word, 0, word.size(),
                                0);  // only prefix, and prefix + suffix XXX
 
     if (rv) {
       nosuffix = 1;
     } else {
-      rv = pAMgr->suffix_check(word.c_str(), word.size(), 0, NULL,
+      rv = pAMgr->suffix_check(word, 0, word.size(), 0, NULL,
                                FLAG_NULL, FLAG_NULL, IN_CPD_NOT);  // only suffix
     }
 
     if (!rv && pAMgr->have_contclass()) {
-      rv = pAMgr->suffix_check_twosfx(word.c_str(), word.size(), 0, NULL, FLAG_NULL);
+      rv = pAMgr->suffix_check_twosfx(word, 0, word.size(), 0, NULL, FLAG_NULL);
       if (!rv)
-        rv = pAMgr->prefix_check_twosfx(word.c_str(), word.size(), 0, FLAG_NULL);
+        rv = pAMgr->prefix_check_twosfx(word, 0, word.size(), 0, FLAG_NULL);
     }
 
     // check forbidden words
@@ -1837,15 +1928,16 @@ int SuggestMgr::checkword(const std::string& word,
   return 0;
 }
 
-int SuggestMgr::check_forbidden(const char* word, int len) {
+int SuggestMgr::check_forbidden(const std::string& word) {
   if (pAMgr) {
-    struct hentry* rv = pAMgr->lookup(word);
+    struct hentry* rv = pAMgr->lookup(word.c_str(), word.size());
     if (rv && rv->astr &&
         (TESTAFF(rv->astr, pAMgr->get_needaffix(), rv->alen) ||
          TESTAFF(rv->astr, pAMgr->get_onlyincompound(), rv->alen)))
       rv = NULL;
-    if (!(pAMgr->prefix_check(word, len, 1)))
-      rv = pAMgr->suffix_check(word, len, 0, NULL,
+    size_t len = word.size();
+    if (!(pAMgr->prefix_check(word, 0, len, 1)))
+      rv = pAMgr->suffix_check(word, 0, len, 0, NULL,
                                FLAG_NULL, FLAG_NULL, IN_CPD_NOT);  // prefix+suffix, suffix
     // check forbidden words
     if ((rv) && (rv->astr) &&
@@ -1861,7 +1953,7 @@ std::string SuggestMgr::suggest_morph(const std::string& in_w) {
   struct hentry* rv = NULL;
 
   if (!pAMgr)
-    return std::string();
+    return {};
 
   std::string w(in_w);
 
@@ -1873,7 +1965,7 @@ std::string SuggestMgr::suggest_morph(const std::string& in_w) {
       reverseword(w);
   }
 
-  rv = pAMgr->lookup(w.c_str());
+  rv = pAMgr->lookup(w.c_str(), w.size());
 
   while (rv) {
     if ((!rv->astr) ||
@@ -1894,15 +1986,14 @@ std::string SuggestMgr::suggest_morph(const std::string& in_w) {
     rv = rv->next_homonym;
   }
 
-  std::string st = pAMgr->affix_check_morph(w.c_str(), w.size());
+  std::string st = pAMgr->affix_check_morph(w, 0, w.size());
   if (!st.empty()) {
     result.append(st);
   }
 
   if (pAMgr->get_compound() && result.empty()) {
     struct hentry* rwords[100];  // buffer for COMPOUND pattern checking
-    pAMgr->compound_check_morph(w.c_str(), w.size(), 0, 0, 100, 0, NULL, (hentry**)&rwords, 0, result,
-                                NULL);
+    pAMgr->compound_check_morph(w, 0, 0, 100, 0, NULL, (hentry**)&rwords, 0, result, NULL);
   }
 
   line_uniq(result, MSEP_REC);
@@ -1957,7 +2048,7 @@ std::string SuggestMgr::suggest_hentry_gen(hentry* rv, const char* pattern) {
     p += MORPH_TAG_LEN;
     int plen = fieldlen(p);
     std::string allomorph(p, plen);
-    struct hentry* rv2 = pAMgr->lookup(allomorph.c_str());
+    struct hentry* rv2 = pAMgr->lookup(allomorph.c_str(), allomorph.size());
     while (rv2) {
       //            if (HENTRY_DATA(rv2) && get_sfxcount(HENTRY_DATA(rv2)) <=
       //            sfxcount) {
@@ -1983,7 +2074,7 @@ std::string SuggestMgr::suggest_hentry_gen(hentry* rv, const char* pattern) {
 
 std::string SuggestMgr::suggest_gen(const std::vector<std::string>& desc, const std::string& in_pattern) {
   if (desc.empty() || !pAMgr)
-    return std::string();
+    return {};
 
   const char* pattern = in_pattern.c_str();
   std::string result2;
@@ -2017,37 +2108,37 @@ std::string SuggestMgr::suggest_gen(const std::vector<std::string>& desc, const 
         pos = tok.find(" | ", pos);
       }
       std::vector<std::string> pl = line_tok(tok, MSEP_ALT);
-      for (size_t i = 0; i < pl.size(); ++i) {
+      for (auto& i : pl) {
         // remove inflectional and terminal suffixes
-        size_t is = pl[i].find(MORPH_INFL_SFX);
+        size_t is = i.find(MORPH_INFL_SFX);
         if (is != std::string::npos)
-          pl[i].resize(is);
-        size_t ts = pl[i].find(MORPH_TERM_SFX);
+	        i.resize(is);
+        size_t ts = i.find(MORPH_TERM_SFX);
         while (ts != std::string::npos) {
-          pl[i][ts] = '_';
-          ts = pl[i].find(MORPH_TERM_SFX);
+	        i[ts] = '_';
+          ts = i.find(MORPH_TERM_SFX);
         }
         const char* st = strstr(s, MORPH_STEM);
         if (st) {
           copy_field(tok, st, MORPH_STEM);
-          rv = pAMgr->lookup(tok.c_str());
+          rv = pAMgr->lookup(tok.c_str(), tok.size());
           while (rv) {
-            std::string newpat(pl[i]);
+            std::string newpat(i);
             newpat.append(pattern);
             std::string sg = suggest_hentry_gen(rv, newpat.c_str());
             if (sg.empty())
               sg = suggest_hentry_gen(rv, pattern);
             if (!sg.empty()) {
               std::vector<std::string> gen = line_tok(sg, MSEP_REC);
-              for (size_t j = 0; j < gen.size(); ++j) {
+              for (auto& j : gen) {
                 result2.push_back(MSEP_REC);
                 result2.append(result);
-                if (pl[i].find(MORPH_SURF_PFX) != std::string::npos) {
+                if (i.find(MORPH_SURF_PFX) != std::string::npos) {
                   std::string field;
-                  copy_field(field, pl[i], MORPH_SURF_PFX);
+                  copy_field(field, i, MORPH_SURF_PFX);
                   result2.append(field);
                 }
-                result2.append(gen[j]);
+                result2.append(j);
               }
             }
             rv = rv->next_homonym;
@@ -2071,14 +2162,8 @@ int SuggestMgr::ngram(int n,
                       const std::vector<w_char>& su1,
                       const std::vector<w_char>& su2,
                       int opt) {
-  int nscore = 0;
-  int ns;
-  int l1;
-  int l2;
-  int test = 0;
+  int nscore = 0, ns, l1 = su1.size(), l2 = su2.size();
 
-  l1 = su1.size();
-  l2 = su2.size();
   if (l2 == 0)
     return 0;
   for (int j = 1; j <= n; j++) {
@@ -2087,9 +2172,7 @@ int SuggestMgr::ngram(int n,
       int k = 0;
       for (int l = 0; l <= (l2 - j); l++) {
         for (k = 0; k < j; k++) {
-          const w_char& c1 = su1[i + k];
-          const w_char& c2 = su2[l + k];
-          if ((c1.l != c2.l) || (c1.h != c2.h))
+          if (su1[i + k] != su2[l + k])
             break;
         }
         if (k == j) {
@@ -2099,7 +2182,6 @@ int SuggestMgr::ngram(int n,
       }
       if (k != j && opt & NGRAM_WEIGHTED) {
         ns--;
-        test++;
         if (i == 0 || i == l1 - j)
           ns--;  // side weight
       }
@@ -2123,13 +2205,8 @@ int SuggestMgr::ngram(int n,
                       const std::string& s1,
                       const std::string& s2,
                       int opt) {
-  int nscore = 0;
-  int ns;
-  int l1;
-  int l2;
-  int test = 0;
-
-  l2 = s2.size();
+  int nscore = 0, ns, l1, l2 = s2.size();
+  
   if (l2 == 0)
     return 0;
   l1 = s1.size();
@@ -2141,7 +2218,6 @@ int SuggestMgr::ngram(int n,
         ns++;
       } else if (opt & NGRAM_WEIGHTED) {
         ns--;
-        test++;
         if (i == 0 || i == l1 - j)
           ns--;  // side weight
       }
@@ -2164,20 +2240,18 @@ int SuggestMgr::ngram(int n,
 int SuggestMgr::leftcommonsubstring(
     const std::vector<w_char>& su1,
     const std::vector<w_char>& su2) {
-  int l1 = su1.size();
-  int l2 = su2.size();
+  int l1 = su1.size(), l2 = su2.size();
   // decapitalize dictionary word
   if (complexprefixes) {
-    if (su1[l1 - 1] == su2[l2 - 1])
+    if (l1 && l2 && su1[l1 - 1] == su2[l2 - 1])
       return 1;
   } else {
-    unsigned short idx = su2.empty() ? 0 : (su2[0].h << 8) + su2[0].l;
-    unsigned short otheridx = su1.empty() ? 0 : (su1[0].h << 8) + su1[0].l;
+    unsigned short idx = su2.empty() ? 0 : (unsigned short)(su2[0]),
+  	               otheridx = su1.empty() ? 0 : (unsigned short)(su1[0]);
     if (otheridx != idx && (otheridx != unicodetolower(idx, langnum)))
       return 0;
     int i;
-    for (i = 1; (i < l1) && (i < l2) && (su1[i].l == su2[i].l) &&
-                (su1[i].h == su2[i].h);
+    for (i = 1; (i < l1) && (i < l2) && (su1[i] == su2[i]);
          i++)
       ;
     return i;
@@ -2190,9 +2264,8 @@ int SuggestMgr::leftcommonsubstring(
     const char* s1,
     const char* s2) {
   if (complexprefixes) {
-    int l1 = strlen(s1);
-    int l2 = strlen(s2);
-    if (l1 <= l2 && s2[l1 - 1] == s2[l2 - 1])
+    int l1 = strlen(s1), l2 = strlen(s2);
+    if (l1 && l1 <= l2 && s2[l1 - 1] == s2[l2 - 1])
       return 1;
   } else if (csconv) {
     const char* olds = s1;
@@ -2211,15 +2284,12 @@ int SuggestMgr::leftcommonsubstring(
 int SuggestMgr::commoncharacterpositions(const char* s1,
                                          const char* s2,
                                          int* is_swap) {
-  int num = 0;
-  int diff = 0;
-  int diffpos[2];
+  int num = 0, diff = 0, diffpos[2];
   *is_swap = 0;
   if (utf8) {
     std::vector<w_char> su1;
     std::vector<w_char> su2;
-    int l1 = u8_u16(su1, s1);
-    int l2 = u8_u16(su2, s2);
+    int l1 = u8_u16(su1, s1), l2 = u8_u16(su2, s2);
 
     if (l1 <= 0 || l2 <= 0)
       return 0;
@@ -2302,22 +2372,16 @@ void SuggestMgr::bubblesort(char** rword, char** rword2, int* rsc, int n) {
     }
     m++;
   }
-  return;
 }
 
 // longest common subsequence
-void SuggestMgr::lcs(const char* s,
-                     const char* s2,
-                     int* l1,
-                     int* l2,
-                     char** result) {
-  int n, m;
+char* SuggestMgr::lcs(const char* s,
+                      const char* s2,
+                      int* l1,
+                      int* l2) {
+  int n, m, i, j;
   std::vector<w_char> su;
   std::vector<w_char> su2;
-  char* b;
-  char* c;
-  int i;
-  int j;
   if (utf8) {
     m = u8_u16(su, s);
     n = u8_u16(su2, s2);
@@ -2325,16 +2389,8 @@ void SuggestMgr::lcs(const char* s,
     m = strlen(s);
     n = strlen(s2);
   }
-  c = (char *) calloc(m + 1, n + 1);
-  b = (char *) calloc(m + 1, n + 1);
-  if (!c || !b) {
-    if (c)
-      free(c);
-    if (b)
-      free(b);
-    *result = NULL;
-    return;
-  }
+  char* c = new char[(m + 1) * (n + 1)]();
+  char* b = new char[(m + 1) * (n + 1)]();
   for (i = 1; i <= m; i++) {
     for (j = 1; j <= n; j++) {
       if (((utf8) && (su[i - 1] == su2[j - 1])) ||
@@ -2350,24 +2406,16 @@ void SuggestMgr::lcs(const char* s,
       }
     }
   }
-  *result = b;
-  free(c);
+  delete[] c;
   *l1 = m;
   *l2 = n;
+  return b;
 }
 
 int SuggestMgr::lcslen(const char* s, const char* s2) {
-  int m;
-  int n;
-  int i;
-  int j;
-  char* result;
-  int len = 0;
-  lcs(s, s2, &m, &n, &result);
-  if (!result)
-    return 0;
-  i = m;
-  j = n;
+  int m, n, len = 0;
+  char* result = lcs(s, s2, &m, &n);
+  int i = m, j = n;
   while ((i != 0) && (j != 0)) {
     if (result[i * (n + 1) + j] == LCS_UPLEFT) {
       len++;
@@ -2378,7 +2426,7 @@ int SuggestMgr::lcslen(const char* s, const char* s2) {
     } else
       j--;
   }
-  free(result);
+  delete[] result;
   return len;
 }
 

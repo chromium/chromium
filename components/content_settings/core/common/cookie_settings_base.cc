@@ -157,17 +157,8 @@ bool IsStorageAccessAllowedByPermissionsPolicy(
 
 }  // namespace
 
-bool CookieSettingsBase::storage_access_api_grants_unpartitioned_storage_ =
-    false;
 
-void CookieSettingsBase::
-    SetStorageAccessAPIGrantsUnpartitionedStorageForTesting(bool grants) {
-  storage_access_api_grants_unpartitioned_storage_ = grants;
-}
-
-CookieSettingsBase::CookieSettingsBase()
-    : is_storage_partitioned_(base::FeatureList::IsEnabled(
-          net::features::kThirdPartyStoragePartitioning)) {}
+CookieSettingsBase::CookieSettingsBase() = default;
 
 CookieSettingsBase::CookieSettingWithMetadata::CookieSettingWithMetadata(
     ContentSetting cookie_setting,
@@ -596,20 +587,6 @@ bool CookieSettingsBase::IsAllowedBy3pcdHeuristicsGrantsSettings(
          GetContentSetting(url, first_party_url,
                            ContentSettingsType::TPCD_HEURISTICS_GRANTS,
                            /*info=*/nullptr) == CONTENT_SETTING_ALLOW;
-}
-
-net::CookieSettingOverrides CookieSettingsBase::SettingOverridesForStorage()
-    const {
-  net::CookieSettingOverrides overrides;
-  if (storage_access_api_grants_unpartitioned_storage_ ||
-      is_storage_partitioned_) {
-    overrides.Put(net::CookieSettingOverride::kStorageAccessGrantEligible);
-  }
-  if (is_storage_partitioned_) {
-    overrides.Put(
-        net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
-  }
-  return overrides;
 }
 
 bool CookieSettingsBase::IsAllowedByTopLevelStorageAccessGrant(

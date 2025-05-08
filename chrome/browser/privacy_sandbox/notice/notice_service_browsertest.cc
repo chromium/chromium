@@ -54,7 +54,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeServiceBrowserTest,
 
   EXPECT_TRUE(histogram_tester()
                   ->GetTotalCountsForPrefix(
-                      "PrivacySandbox.Notice.NoticeStartupState2.")
+                      "PrivacySandbox.Notice.Startup.LastRecordedEvent.")
                   .empty());
 
   PrivacySandboxNoticeServiceInterface* notice_service =
@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeServiceBrowserTest,
 
   EXPECT_FALSE(histogram_tester()
                    ->GetTotalCountsForPrefix(
-                       "PrivacySandbox.Notice.NoticeStartupState2.")
+                       "PrivacySandbox.Notice.Startup.LastRecordedEvent.")
                    .empty());
 }
 

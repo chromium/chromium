@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -24,34 +25,30 @@ public class TripUnitTest {
 
     private static final String TAG = "TripUnitTest";
 
-    public static class NestedFactoryStation extends Station<Activity> {
-        public final Condition mOuterCondition;
-        public final Condition mInnerCondition;
+    private static class NestedFactoryStation extends Station<Activity> {
         public final CallbackHelper mDeclareElementsCallbackHelper = new CallbackHelper();
         public final CallbackHelper mOuterCallbackHelper = new CallbackHelper();
         public final CallbackHelper mInnerCallbackHelper = new CallbackHelper();
+        public final Element<String> outerElement;
+        public Element<String> innerElement;
 
-        public NestedFactoryStation(Condition outerCondition, Condition innerCondition) {
+        public NestedFactoryStation(
+                ConditionWithResult<String> outerCondition,
+                ConditionWithResult<String> innerCondition) {
             super(null);
-            mOuterCondition = outerCondition;
-            mInnerCondition = innerCondition;
-        }
 
-        @Override
-        public void declareElements(Elements.Builder elements) {
-            super.declareElements(elements);
-            elements.declareElement(
+            declareElement(
                     LogicalElement.instrumentationThreadLogicalElement(
                             "LogicalElement 1, always True", () -> Condition.fulfilled()));
-            elements.declareEnterCondition(
+            declareEnterCondition(
                     InstrumentationThreadCondition.from(
                             "Enter Condition 1, always True", () -> Condition.fulfilled()));
-            elements.declareExitCondition(
+            declareExitCondition(
                     InstrumentationThreadCondition.from(
                             "Exit Condition 1, always True", () -> Condition.fulfilled()));
-            elements.declareEnterCondition(mOuterCondition);
-            elements.declareElementFactory(
-                    mOuterCondition,
+            outerElement = declareEnterConditionAsElement(outerCondition);
+            declareElementFactory(
+                    outerElement,
                     (nestedElements) -> {
                         nestedElements.declareElement(
                                 LogicalElement.instrumentationThreadLogicalElement(
@@ -65,9 +62,10 @@ public class TripUnitTest {
                                 InstrumentationThreadCondition.from(
                                         "Exit Condition 2, always True",
                                         () -> Condition.fulfilled()));
-                        nestedElements.declareEnterCondition(mInnerCondition);
+                        innerElement =
+                                nestedElements.declareEnterConditionAsElement(innerCondition);
                         nestedElements.declareElementFactory(
-                                mInnerCondition,
+                                innerElement,
                                 (nestedNestedElements) -> {
                                     nestedNestedElements.declareElement(
                                             LogicalElement.instrumentationThreadLogicalElement(
@@ -89,12 +87,13 @@ public class TripUnitTest {
         }
     }
 
-    public static class TestCondition extends InstrumentationThreadCondition {
+    public static class TestCondition extends ConditionWithResult<String> {
         public ConditionStatus mConditionStatus =
                 Condition.awaiting("Waiting for a call to setConditionStatus");
         private String mDescription;
 
         TestCondition(String description) {
+            super(/* isRunOnUiThread= */ false);
             mDescription = description;
         }
 
@@ -104,8 +103,12 @@ public class TripUnitTest {
         }
 
         @Override
-        public ConditionStatus checkWithSuppliers() {
-            return mConditionStatus;
+        public ConditionStatusWithResult<String> resolveWithSuppliers() {
+            if (mConditionStatus.isFulfilled()) {
+                return mConditionStatus.withResult("TestCondition's result");
+            } else {
+                return mConditionStatus.withoutResult();
+            }
         }
 
         public void setConditionStatus(ConditionStatus conditionStatus) {
@@ -113,19 +116,45 @@ public class TripUnitTest {
         }
     }
 
+    @After
+    public void tearDown() {
+        TrafficControl.hopOffPublicTransit();
+    }
+
     @Test
     public void testTransitionWithNestedElementFactory() throws Throwable {
-        Condition alwaysTrueCondition =
-                InstrumentationThreadCondition.from(
-                        "AlwaysTrueCondition", () -> Condition.fulfilled());
-        NestedFactoryStation sourceStation =
-                new NestedFactoryStation(alwaysTrueCondition, alwaysTrueCondition);
-        sourceStation.setStateActiveWithoutTransition();
-
         TestCondition outerCondition = new TestCondition("outer condition");
         TestCondition innerCondition = new TestCondition("inner condition");
         NestedFactoryStation destinationStation =
                 new NestedFactoryStation(outerCondition, innerCondition);
+
+        doTestTransitionWithNestedElementFactory(
+                destinationStation, outerCondition, innerCondition);
+    }
+
+    @Test
+    public void testTransitionWithNestedElementFactory_replaceCondition() throws Throwable {
+        TestCondition alwaysFalseCondition = new TestCondition("always false condition");
+        TestCondition outerCondition = new TestCondition("outer condition");
+        TestCondition innerCondition = new TestCondition("inner condition");
+        NestedFactoryStation destinationStation =
+                new NestedFactoryStation(alwaysFalseCondition, innerCondition);
+        destinationStation.outerElement.replaceEnterCondition(outerCondition);
+
+        doTestTransitionWithNestedElementFactory(
+                destinationStation, outerCondition, innerCondition);
+    }
+
+    private void doTestTransitionWithNestedElementFactory(
+            NestedFactoryStation destinationStation,
+            TestCondition outerCondition,
+            TestCondition innerCondition)
+            throws Throwable {
+        TestCondition alwaysTrueCondition = new TestCondition("always true condition");
+        alwaysTrueCondition.setConditionStatus(Condition.fulfilled());
+        NestedFactoryStation sourceStation =
+                new NestedFactoryStation(alwaysTrueCondition, alwaysTrueCondition);
+        sourceStation.setStateActiveWithoutTransition();
 
         Thread transitionThread =
                 new Thread(
@@ -171,9 +200,15 @@ public class TripUnitTest {
         }
 
         // All elements from nested factories added to the destination elements.
-        assertEquals(3, destinationStation.getElements().getElements().size());
+
+        // 3 LogicalElements: constructor, outer factory, inner factory
+        // +2 outerElement and innerElement
+        assertEquals(5, destinationStation.getElements().getElements().size());
+        // 2 factories: outer factory, inner factory
         assertEquals(2, destinationStation.getElements().getElementFactories().size());
-        assertEquals(5, destinationStation.getElements().getOtherEnterConditions().size());
+        // 3 enter Conditions: constructor, outer factory, inner factory
+        assertEquals(3, destinationStation.getElements().getOtherEnterConditions().size());
+        // 3 exit Conditions: constructor, outer factory, inner factory
         assertEquals(3, destinationStation.getElements().getOtherExitConditions().size());
 
         // Conditions started and stopped monitoring during transition.

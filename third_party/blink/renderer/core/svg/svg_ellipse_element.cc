@@ -102,12 +102,6 @@ void SVGEllipseElement::SvgAttributeChanged(
   SVGGeometryElement::SvgAttributeChanged(params);
 }
 
-bool SVGEllipseElement::SelfHasRelativeLengths() const {
-  return cx_->CurrentValue()->IsRelative() ||
-         cy_->CurrentValue()->IsRelative() ||
-         rx_->CurrentValue()->IsRelative() || ry_->CurrentValue()->IsRelative();
-}
-
 LayoutObject* SVGEllipseElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutSVGEllipse>(this);
 }

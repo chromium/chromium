@@ -166,10 +166,12 @@ ScreenAIServiceRouter::ScreenAIServiceRouter()
 ScreenAIServiceRouter::~ScreenAIServiceRouter() = default;
 
 // static
+// LINT.IfChange(SuggestedWaitTimeBeforeReAttempt)
 base::TimeDelta ScreenAIServiceRouter::SuggestedWaitTimeBeforeReAttempt(
     uint32_t reattempt_number) {
   return base::Minutes(reattempt_number * reattempt_number);
 }
+// LINT.ThenChange(//chrome/browser/ash/app_list/search/local_image_search/image_annotation_worker.cc:SuggestedWaitTimeBeforeReAttempt)
 
 std::optional<bool> ScreenAIServiceRouter::GetServiceState(Service service) {
   if (GetAndRecordSuspendedState()) {

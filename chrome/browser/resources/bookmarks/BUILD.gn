@@ -7,7 +7,11 @@ import("//ui/webui/resources/tools/build_webui.gni")
 build_webui("build") {
   grd_prefix = "bookmarks"
 
-  static_files = [ "bookmarks.html" ]
+  static_files = [
+    "bookmarks.html",
+    "images/batch_upload_bookmarks_promo.svg",
+    "images/batch_upload_bookmarks_promo_dark.svg",
+  ]
 
   ts_files = [
     "actions.ts",
@@ -42,6 +46,16 @@ build_webui("build") {
     "util.ts",
   ]
 
+  if (!is_chromeos) {
+    ts_files += [
+      "promo_card.html.ts",
+      "promo_card.ts",
+    ]
+  }
+
+  icons_html_files = [ "icons.html" ]
+  html_to_wrapper_template = "detect"
+
   # Files that are passed as input to css_to_wrapper().
   css_files = [
     "app.css",
@@ -52,6 +66,10 @@ build_webui("build") {
     "shared_vars.css",
     "toolbar.css",
   ]
+
+  if (!is_chromeos) {
+    css_files += [ "promo_card.css" ]
+  }
 
   ts_composite = true
   ts_definitions = [

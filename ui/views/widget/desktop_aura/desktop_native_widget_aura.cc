@@ -80,6 +80,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/base/win/shell.h"
+#include "ui/gfx/win/hwnd_util.h"
 #include "ui/views/widget/desktop_aura/desktop_native_cursor_manager_win.h"
 #endif
 
@@ -962,6 +963,32 @@ bool DesktopNativeWidgetAura::IsVisible() const {
   // short-circuit a call to show this widget if they think its already visible.
   return content_window_ && content_window_->TargetVisibility() &&
          desktop_window_tree_host_ && desktop_window_tree_host_->IsVisible();
+}
+
+bool DesktopNativeWidgetAura::IsVisibleOnScreen() const {
+  if (!IsVisible() || IsMinimized()) {
+    return false;
+  }
+
+  if (!desktop_window_tree_host_) {
+    return false;
+  }
+
+  // Determine if the window is hidden in some other way, such as on a different
+  // desktop.
+  // TODO(crbug.com/410938804): implement workspace handling on other platforms.
+#if BUILDFLAG(IS_WIN)
+  // If a window is cloaked, it is not visible on screen because e.g., it is
+  // on an invisible virtual desktop.
+  // https://devblogs.microsoft.com/oldnewthing/20200302-00/?p=103507
+  aura::WindowTreeHost* host = desktop_window_tree_host_->AsWindowTreeHost();
+  if (gfx::IsWindowCloaked(host->GetAcceleratedWidget())) {
+    return false;
+  }
+#endif
+
+  // All checks pass, the window is visible on screen.
+  return true;
 }
 
 void DesktopNativeWidgetAura::Activate() {

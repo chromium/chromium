@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.educational_tip;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** ViewBinder for the educational tip module. */
+@NullMarked
 public class EducationalTipModuleViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         EducationalTipModuleView moduleView = (EducationalTipModuleView) view;

@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.pwd_check_wrapper;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.SyncService;
@@ -19,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
  * The controller, which manages the breached credentials check. It runs the password check
  * asynchronously and provides the result whenever it's ready.
  */
+@NullMarked
 public interface PasswordCheckController {
 
     /**
@@ -35,7 +38,7 @@ public interface PasswordCheckController {
     public static class PasswordCheckResult {
         private OptionalInt mTotalPasswordsCount = OptionalInt.empty();
         private OptionalInt mBreachedCount = OptionalInt.empty();
-        private Exception mError;
+        private @Nullable Exception mError;
 
         public PasswordCheckResult(int totalPasswordsCount, int breachedCount) {
             mTotalPasswordsCount = OptionalInt.of(totalPasswordsCount);
@@ -54,17 +57,18 @@ public interface PasswordCheckController {
             return mTotalPasswordsCount;
         }
 
-        public Exception getError() {
+        public @Nullable Exception getError() {
             return mError;
         }
     }
 
-    static String getAccountNameForPasswordStorageType(
-            @PasswordStorageType int passwordStorageType, SyncService syncService) {
+    static @Nullable String getAccountNameForPasswordStorageType(
+            @PasswordStorageType int passwordStorageType, @Nullable SyncService syncService) {
         switch (passwordStorageType) {
             case PasswordStorageType.LOCAL_STORAGE:
                 return null;
             case PasswordStorageType.ACCOUNT_STORAGE:
+                assert syncService != null;
                 assert PasswordManagerHelper.hasChosenToSyncPasswords(syncService)
                         : "The account storage is only available if password sync is on.";
                 return CoreAccountInfo.getEmailFrom(syncService.getAccountInfo());

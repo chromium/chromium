@@ -542,14 +542,14 @@ def main():
   parser.add_argument('-m',
                       '--module-apk',
                       dest='module_apk',
-                      help='CTS module apk name in the --cts-gcs-path'
-                      ' file, without the path prefix.')
+                      help=('CTS module apk name in the --cts-gcs-path '
+                            'file, without the path prefix.'))
   parser.add_argument(
       '--avd-config',
       type=os.path.realpath,
-      help='Path to the avd config textpb. '
-           '(See //tools/android/avd/proto for message definition'
-           ' and existing textpb files.)')
+      help=('Path to the avd config textpb. '
+            '(See //tools/android/avd/proto for message definition'
+            ' and existing textpb files.)'))
   # Emulator log will be routed to stdout when "--emulator-debug-tags" is set
   # without an output_manager.
   # Mark this arg as unused for run_cts to avoid dumping too much swarming log.
@@ -567,18 +567,18 @@ def main():
   parser.add_argument('--cts-archive-dir',
                       type=os.path.realpath,
                       default=_DEFAULT_CTS_ARCHIVE_DIR,
-                      help='Path to where CTS archives are stored. '
-                      'Defaults to: ' + _DEFAULT_CTS_ARCHIVE_DIR)
+                      help=('Path to where CTS archives are stored. '
+                            'Defaults to: ' + _DEFAULT_CTS_ARCHIVE_DIR))
   parser.add_argument('--tradefed-aapt-path',
                       type=os.path.realpath,
                       default=_DEFAULT_TRADEFED_AAPT_PATH,
-                      help='Path to where AAPT binary is located. '
-                      'Defaults to: ' + _DEFAULT_TRADEFED_AAPT_PATH)
+                      help=('Path to where AAPT binary is located. '
+                            'Defaults to: ' + _DEFAULT_TRADEFED_AAPT_PATH))
   parser.add_argument('--tradefed-adb-path',
                       type=os.path.realpath,
                       default=_DEFAULT_TRADEFED_ADB_PATH,
-                      help='Path to where ADB binary is located. '
-                      'Defaults to: ' + _DEFAULT_TRADEFED_ADB_PATH)
+                      help=('Path to where ADB binary is located. '
+                            'Defaults to: ' + _DEFAULT_TRADEFED_ADB_PATH))
 
   # The variations test seed file should be in JSON format. Please look
   # in //components/variations/test_data/cipd for examples of variations
@@ -586,9 +586,9 @@ def main():
   parser.add_argument('--variations-test-seed-path',
                       type=os.path.relpath,
                       default=None,
-                      help='Path to a JSON file that contains the '
-                      'variations test seed. Defaults to running CTS tests '
-                      'without a variations test seed.')
+                      help=('Path to a JSON file that contains the '
+                            'variations test seed. Defaults to running CTS '
+                            'tests without a variations test seed.'))
   # We are re-using this argument that is used by our test runner
   # to detect if we are testing against an instant app
   # This allows us to know if we should filter tests based off the app
@@ -600,18 +600,17 @@ def main():
   parser.add_argument(
       _TEST_APK_AS_INSTANT_ARG,
       action='store_true',
-      help='Run CTS tests in instant app mode. '
-      'Instant apps run in a more restrictive execution environment.')
+      help=('Run CTS tests in instant app mode. '
+            'Instant apps run in a more restrictive execution environment.'))
 
   # Read the package name from the apk path passed by this flag to
   # determine if the emulator will start with "writable_system" or not.
   parser.add_argument(_USE_WEBVIEW_PROVIDER_ARG,
                       type=os.path.realpath,
                       default=None,
-                      help='Use this apk as the webview provider during test. '
-                      'The original provider will be restored if possible, '
-                      "on Nougat the provider can't be determined and so "
-                      'the system will choose the default provider.')
+                      help=('Use this apk as the webview provider during test. '
+                            'The original provider will be restored if '
+                            'possible.'))
 
 
   test_filter.AddFilterOptions(parser)
@@ -630,8 +629,8 @@ def main():
 
     if (args.test_filter_files or args.test_filters
         or args.isolated_script_test_filters):
-      # TODO(aluo): auto-determine the module based on the test filter and the
-      # available tests in each module
+      # TODO(https://crbug.com/40617687): auto-determine the module based on the
+      # test filter and the available tests in each module
       if not args.module_apk:
         args.module_apk = 'CtsWebkitTestCases.apk'
 

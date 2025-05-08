@@ -18,8 +18,6 @@ EnumTraits<mojo_base::mojom::ThreadType, base::ThreadType>::ToMojom(
       return mojo_base::mojom::ThreadType::kBackground;
     case base::ThreadType::kUtility:
       return mojo_base::mojom::ThreadType::kUtility;
-    case base::ThreadType::kResourceEfficient:
-      return mojo_base::mojom::ThreadType::kResourceEfficient;
     case base::ThreadType::kDefault:
       return mojo_base::mojom::ThreadType::kDefault;
     case base::ThreadType::kDisplayCritical:
@@ -40,9 +38,6 @@ bool EnumTraits<mojo_base::mojom::ThreadType, base::ThreadType>::FromMojom(
       return true;
     case mojo_base::mojom::ThreadType::kUtility:
       *out = base::ThreadType::kUtility;
-      return true;
-    case mojo_base::mojom::ThreadType::kResourceEfficient:
-      *out = base::ThreadType::kResourceEfficient;
       return true;
     case mojo_base::mojom::ThreadType::kDefault:
       *out = base::ThreadType::kDefault;

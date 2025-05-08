@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/base64.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
@@ -18,7 +17,6 @@
 #include "extensions/common/icons/extension_icon_set.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/grit/extensions_browser_resources.h"
-#include "skia/public/mojom/bitmap.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPaint.h"
@@ -66,16 +64,18 @@ struct IconRepresentationInfo {
 };
 
 template <class T>
-bool HasValue(const std::map<int, T>& map, int tab_id) {
+bool HasValue(const std::map<int, T>& map, ExtensionAction::TabID tab_id) {
   return base::Contains(map, tab_id);
 }
 
 }  // namespace
 
 // static
+// LINT.IfChange(ActionIconSize)
 extension_misc::ExtensionIcons ExtensionAction::ActionIconSize() {
   return extension_misc::EXTENSION_ICON_BITTY;
 }
+// LINT.ThenChange(/extensions/browser/icon_util.cc:ActionIconSize)
 
 // static
 gfx::Image ExtensionAction::FallbackIcon() {
@@ -98,7 +98,7 @@ ExtensionAction::ExtensionAction(const Extension& extension,
 
 ExtensionAction::~ExtensionAction() = default;
 
-void ExtensionAction::SetPopupUrl(int tab_id, const GURL& url) {
+void ExtensionAction::SetPopupUrl(TabID tab_id, const GURL& url) {
   // We store |url| even if it is empty, rather than removing a URL from the
   // map.  If an extension has a default popup, and removes it for a tab via
   // the API, we must remember that there is no popup for that specific tab.
@@ -107,61 +107,23 @@ void ExtensionAction::SetPopupUrl(int tab_id, const GURL& url) {
   SetValue(&popup_url_, tab_id, url);
 }
 
-bool ExtensionAction::HasPopup(int tab_id) const {
+bool ExtensionAction::HasPopup(TabID tab_id) const {
   return !GetPopupUrl(tab_id).is_empty();
 }
 
-GURL ExtensionAction::GetPopupUrl(int tab_id) const {
+GURL ExtensionAction::GetPopupUrl(TabID tab_id) const {
   return GetValue(popup_url_, tab_id);
 }
 
-void ExtensionAction::SetIcon(int tab_id, const gfx::Image& image) {
+void ExtensionAction::SetIcon(TabID tab_id, const gfx::Image& image) {
   SetValue(&icon_, tab_id, image);
 }
 
-ExtensionAction::IconParseResult ExtensionAction::ParseIconFromCanvasDictionary(
-    const base::Value::Dict& dict,
-    gfx::ImageSkia* icon) {
-  for (const auto item : dict) {
-    std::string byte_string;
-    const void* bytes = nullptr;
-    size_t num_bytes = 0;
-    if (item.second.is_blob()) {
-      bytes = item.second.GetBlob().data();
-      num_bytes = item.second.GetBlob().size();
-    } else if (item.second.is_string()) {
-      if (!base::Base64Decode(item.second.GetString(), &byte_string)) {
-        return IconParseResult::kDecodeFailure;
-      }
-      bytes = byte_string.c_str();
-      num_bytes = byte_string.length();
-    } else {
-      continue;
-    }
-    SkBitmap bitmap;
-    if (!skia::mojom::InlineBitmap::Deserialize(bytes, num_bytes, &bitmap)) {
-      return IconParseResult::kUnpickleFailure;
-    }
-    // A well-behaved renderer will never send a null bitmap to us here.
-    CHECK(!bitmap.isNull());
-
-    // Chrome helpfully scales the provided icon(s), but let's not go overboard.
-    const int kActionIconMaxSize = 10 * ActionIconSize();
-    if (bitmap.drawsNothing() || bitmap.width() > kActionIconMaxSize) {
-      continue;
-    }
-
-    float scale = static_cast<float>(bitmap.width()) / ActionIconSize();
-    icon->AddRepresentation(gfx::ImageSkiaRep(bitmap, scale));
-  }
-  return IconParseResult::kSuccess;
-}
-
-gfx::Image ExtensionAction::GetExplicitlySetIcon(int tab_id) const {
+gfx::Image ExtensionAction::GetExplicitlySetIcon(TabID tab_id) const {
   return GetValue(icon_, tab_id);
 }
 
-bool ExtensionAction::SetIsVisible(int tab_id, bool new_visibility) {
+bool ExtensionAction::SetIsVisible(TabID tab_id, bool new_visibility) {
   const bool old_visibility = GetValue(is_visible_, tab_id);
 
   if (old_visibility == new_visibility) {
@@ -173,12 +135,12 @@ bool ExtensionAction::SetIsVisible(int tab_id, bool new_visibility) {
   return true;
 }
 
-void ExtensionAction::DeclarativeShow(int tab_id) {
+void ExtensionAction::DeclarativeShow(TabID tab_id) {
   DCHECK_NE(tab_id, kDefaultTabId);
   ++declarative_show_count_[tab_id];  // Use default initialization to 0.
 }
 
-void ExtensionAction::UndoDeclarativeShow(int tab_id) {
+void ExtensionAction::UndoDeclarativeShow(TabID tab_id) {
   int& show_count = declarative_show_count_[tab_id];
   DCHECK_GT(show_count, 0);
   if (--show_count == 0) {
@@ -186,14 +148,14 @@ void ExtensionAction::UndoDeclarativeShow(int tab_id) {
   }
 }
 
-void ExtensionAction::DeclarativeSetIcon(int tab_id,
+void ExtensionAction::DeclarativeSetIcon(TabID tab_id,
                                          int priority,
                                          const gfx::Image& icon) {
   DCHECK_NE(tab_id, kDefaultTabId);
   declarative_icon_[tab_id][priority].push_back(icon);
 }
 
-void ExtensionAction::UndoDeclarativeSetIcon(int tab_id,
+void ExtensionAction::UndoDeclarativeSetIcon(TabID tab_id,
                                              int priority,
                                              const gfx::Image& icon) {
   std::vector<gfx::Image>& icons = declarative_icon_[tab_id][priority];
@@ -205,15 +167,15 @@ void ExtensionAction::UndoDeclarativeSetIcon(int tab_id,
   }
 }
 
-const gfx::Image ExtensionAction::GetDeclarativeIcon(int tab_id) const {
-  if (declarative_icon_.find(tab_id) != declarative_icon_.end() &&
-      !declarative_icon_.find(tab_id)->second.rbegin()->second.empty()) {
-    return declarative_icon_.find(tab_id)->second.rbegin()->second.back();
+const gfx::Image ExtensionAction::GetDeclarativeIcon(TabID tab_id) const {
+  auto it = declarative_icon_.find(tab_id);
+  if (it != declarative_icon_.end() && !it->second.rbegin()->second.empty()) {
+    return it->second.rbegin()->second.back();
   }
   return gfx::Image();
 }
 
-void ExtensionAction::ClearAllValuesForTab(int tab_id) {
+void ExtensionAction::ClearAllValuesForTab(TabID tab_id) {
   popup_url_.erase(tab_id);
   title_.erase(tab_id);
   icon_.erase(tab_id);
@@ -256,7 +218,7 @@ gfx::Image ExtensionAction::GetPlaceholderIconImage() const {
   return placeholder_icon_image_;
 }
 
-std::string ExtensionAction::GetDisplayBadgeText(int tab_id) const {
+std::string ExtensionAction::GetDisplayBadgeText(TabID tab_id) const {
   // Tab specific badge text set by an extension overrides the automatically set
   // action count. Action count should only be shown if at least one action is
   // matched.
@@ -266,35 +228,35 @@ std::string ExtensionAction::GetDisplayBadgeText(int tab_id) const {
                               : GetExplicitlySetBadgeText(tab_id);
 }
 
-bool ExtensionAction::HasPopupUrl(int tab_id) const {
+bool ExtensionAction::HasPopupUrl(TabID tab_id) const {
   return HasValue(popup_url_, tab_id);
 }
 
-bool ExtensionAction::HasTitle(int tab_id) const {
+bool ExtensionAction::HasTitle(TabID tab_id) const {
   return HasValue(title_, tab_id);
 }
 
-bool ExtensionAction::HasBadgeText(int tab_id) const {
+bool ExtensionAction::HasBadgeText(TabID tab_id) const {
   return HasValue(badge_text_, tab_id);
 }
 
-bool ExtensionAction::HasBadgeBackgroundColor(int tab_id) const {
+bool ExtensionAction::HasBadgeBackgroundColor(TabID tab_id) const {
   return HasValue(badge_background_color_, tab_id);
 }
 
-bool ExtensionAction::HasBadgeTextColor(int tab_id) const {
+bool ExtensionAction::HasBadgeTextColor(TabID tab_id) const {
   return HasValue(badge_text_color_, tab_id);
 }
 
-bool ExtensionAction::HasIsVisible(int tab_id) const {
+bool ExtensionAction::HasIsVisible(TabID tab_id) const {
   return HasValue(is_visible_, tab_id);
 }
 
-bool ExtensionAction::HasIcon(int tab_id) const {
+bool ExtensionAction::HasIcon(TabID tab_id) const {
   return HasValue(icon_, tab_id);
 }
 
-bool ExtensionAction::HasDNRActionCount(int tab_id) const {
+bool ExtensionAction::HasDNRActionCount(TabID tab_id) const {
   return HasValue(dnr_action_count_, tab_id);
 }
 
@@ -326,7 +288,7 @@ void ExtensionAction::Populate(const Extension& extension,
 }
 
 // Determines which icon would be returned by |GetIcon|, and returns its width.
-int ExtensionAction::GetIconWidth(int tab_id) const {
+int ExtensionAction::GetIconWidth(TabID tab_id) const {
   // If icon has been set, return its width.
   gfx::Image icon = GetValue(icon_, tab_id);
   if (!icon.IsEmpty()) {
@@ -343,7 +305,7 @@ int ExtensionAction::GetIconWidth(int tab_id) const {
   return FallbackIcon().Width();
 }
 
-bool ExtensionAction::GetIsVisibleInternal(int tab_id,
+bool ExtensionAction::GetIsVisibleInternal(TabID tab_id,
                                            bool include_declarative) const {
   if (const bool* tab_is_visible = base::FindOrNull(is_visible_, tab_id)) {
     return *tab_is_visible;

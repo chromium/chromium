@@ -575,4 +575,15 @@ void NavigationControllerAndroid::SetEntryExtraData(
   map_data->map()[key] = value;
 }
 
+void NavigationControllerAndroid::CopyStateFrom(
+    JNIEnv* env,
+    jlong source_navigation_controller_ptr,
+    jboolean needs_reload) {
+  navigation_controller_->CopyStateFrom(
+      reinterpret_cast<NavigationControllerAndroid*>(
+          source_navigation_controller_ptr)
+          ->navigation_controller_,
+      needs_reload);
+}
+
 }  // namespace content

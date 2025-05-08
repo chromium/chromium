@@ -177,11 +177,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/permissions/permission_request_enums.h:PermissionPredictionSource) -->
 
-<enum name="PermissionPredictionThresholdSource">
-  <int value="0" label="MODEL_METADATA"/>
-  <int value="1" label="HARDCODED_FALLBACK"/>
-</enum>
-
 <enum name="PermissionPromptDismissMethod">
   <int value="0" label="Unspecified"/>
   <int value="1" label="Back navigation"/>

@@ -19,6 +19,9 @@ class PhotosServiceFactory : public ProfileKeyedServiceFactoryIOS {
   static PhotosService* GetForProfile(ProfileIOS* profile);
   static PhotosServiceFactory* GetInstance();
 
+  // Returns the default factory.
+  static TestingFactory GetDefaultFactory();
+
  private:
   friend class base::NoDestructor<PhotosServiceFactory>;
 

@@ -1,7 +1,5 @@
 This is a testharness.js-based test.
 [FAIL] CSSStyleRule is a CSSGroupingRule
   assert_equals: expected function "function CSSGroupingRule() { [native code] }" but got function "function CSSRule() { [native code] }"
-[FAIL] Manipulation of nested declarations through CSSOM
-  assert_equals: expected "3" but got "1"
 Harness: the test ran to completion.
 

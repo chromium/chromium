@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import {IS_HIDPI, IS_RTL} from './constants.js';
-import {spriteDefinitionByType} from './offline-sprite-definitions.js';
+import {Dimensions} from './dimensions.js';
 import {Runner} from './offline.js';
+import {spriteDefinitionByType} from './offline_sprite_definitions.js';
 import {Trex} from './trex.js';
 import {getTimeStamp} from './utils.js';
 
@@ -14,7 +15,7 @@ export class GameOverPanel {
    * @param {!HTMLCanvasElement} canvas
    * @param {Object} textImgPos
    * @param {Object} restartImgPos
-   * @param {!Object} dimensions Canvas dimensions.
+   * @param {!Dimensions} dimensions Canvas dimensions.
    * @param {Object=} opt_altGameEndImgPos
    * @param {boolean=} opt_altGameActive
    */
@@ -49,22 +50,22 @@ export class GameOverPanel {
    * @param {number} opt_height Optional new canvas height.
    */
   updateDimensions(width, opt_height) {
-    this.canvasDimensions.WIDTH = width;
+    this.canvasDimensions.width = width;
     if (opt_height) {
-      this.canvasDimensions.HEIGHT = opt_height;
+      this.canvasDimensions.height = opt_height;
     }
     this.currentFrame = GameOverPanel.animConfig.frames.length - 1;
   }
 
   drawGameOverText(dimensions, opt_useAltText) {
-    const centerX = this.canvasDimensions.WIDTH / 2;
+    const centerX = this.canvasDimensions.width / 2;
     let textSourceX = dimensions.TEXT_X;
     let textSourceY = dimensions.TEXT_Y;
     let textSourceWidth = dimensions.TEXT_WIDTH;
     let textSourceHeight = dimensions.TEXT_HEIGHT;
 
     const textTargetX = Math.round(centerX - (dimensions.TEXT_WIDTH / 2));
-    const textTargetY = Math.round((this.canvasDimensions.HEIGHT - 25) / 3);
+    const textTargetY = Math.round((this.canvasDimensions.height - 25) / 3);
     const textTargetWidth = dimensions.TEXT_WIDTH;
     const textTargetHeight = dimensions.TEXT_HEIGHT;
 
@@ -86,7 +87,7 @@ export class GameOverPanel {
     this.canvasCtx.save();
 
     if (IS_RTL) {
-      this.canvasCtx.translate(this.canvasDimensions.WIDTH, 0);
+      this.canvasCtx.translate(this.canvasDimensions.width, 0);
       this.canvasCtx.scale(-1, 1);
     }
 
@@ -134,8 +135,8 @@ export class GameOverPanel {
     let restartSourceWidth = dimensions.RESTART_WIDTH;
     let restartSourceHeight = dimensions.RESTART_HEIGHT;
     const restartTargetX =
-        (this.canvasDimensions.WIDTH / 2) - (dimensions.RESTART_WIDTH / 2);
-    const restartTargetY = this.canvasDimensions.HEIGHT / 2;
+        (this.canvasDimensions.width / 2) - (dimensions.RESTART_WIDTH / 2);
+    const restartTargetY = this.canvasDimensions.height / 2;
 
     if (IS_HIDPI) {
       restartSourceWidth *= 2;
@@ -146,7 +147,7 @@ export class GameOverPanel {
     this.canvasCtx.save();
 
     if (IS_RTL) {
-      this.canvasCtx.translate(this.canvasDimensions.WIDTH, 0);
+      this.canvasCtx.translate(this.canvasDimensions.width, 0);
       this.canvasCtx.scale(-1, 1);
     }
 
@@ -247,8 +248,8 @@ export class GameOverPanel {
 
     this.canvasCtx.clearRect(
         Math.round(
-            this.canvasDimensions.WIDTH / 2 - (dimensions.TEXT_WIDTH / 2)),
-        Math.round((this.canvasDimensions.HEIGHT - 25) / 3),
+            this.canvasDimensions.width / 2 - (dimensions.TEXT_WIDTH / 2)),
+        Math.round((this.canvasDimensions.height - 25) / 3),
         dimensions.TEXT_WIDTH, dimensions.TEXT_HEIGHT + 4);
     this.canvasCtx.restore();
   }

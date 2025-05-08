@@ -44,9 +44,17 @@ public class BrowserBoundKey {
      */
     public static final int COSE_ALGORITHM_ES256 = -7;
 
+    private final byte[] mIdentifier;
     private final KeyPair mKeyPair;
 
-    BrowserBoundKey(KeyPair keyPair) {
+    /**
+     * Creates a browser bound key given the identifier and keyPair.
+     *
+     * @param identifier The identifier of the browser bound key.
+     * @param keyPair The KeyPair of this browser bound key obtained from a KeyStore.
+     */
+    BrowserBoundKey(byte[] identifier, KeyPair keyPair) {
+        mIdentifier = identifier;
         mKeyPair = keyPair;
     }
 
@@ -88,6 +96,13 @@ public class BrowserBoundKey {
             return null;
         }
         return encodeCoseKeyWithEs256SignatureAlgorithm((ECPublicKey) mKeyPair.getPublic());
+    }
+
+    /** Returns the identifier of this browser bound key. */
+    @CalledByNative
+    @JniType("std::vector<uint8_t>")
+    public byte[] getIdentifier() {
+        return mIdentifier;
     }
 
     KeyPair getKeyPairForTesting() {

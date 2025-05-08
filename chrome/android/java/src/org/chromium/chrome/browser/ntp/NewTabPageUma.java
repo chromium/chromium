@@ -70,7 +70,7 @@ public class NewTabPageUma {
      */
     // public static final int ACTION_CLICKED_MANAGE_INTERESTS = 12;
 
-    /** (Obsolete) User triggered a block content action. * */
+    /** (Obsolete) User triggered a block content action. */
     // public static final int ACTION_BLOCK_CONTENT = 13;
 
     /** (Obsolete) User clicked on the "Manage activity" item in the feed header menu. */

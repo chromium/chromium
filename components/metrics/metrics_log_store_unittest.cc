@@ -420,4 +420,25 @@ TEST_F(MetricsLogStoreTest,
   EXPECT_EQ(0U, log_store.ongoing_log_count());
 }
 
+TEST_F(MetricsLogStoreTest, TrimLargeInitialStabilityLog) {
+  // Set the max log size to be 1 byte so that pretty much all logs will be
+  // trimmed. We don't set it to 0 bytes because that is a special value that
+  // represents no max size.
+  client_.set_max_initial_log_size_bytes(1);
+  MetricsLogStore log_store(&pref_service_, client_.GetStorageLimits(),
+                            /*signing_key=*/std::string(),
+                            /*logs_event_manager=*/nullptr);
+  log_store.LoadPersistedUnsentLogs();
+
+  log_store.StoreLog("not_persisted", MetricsLog::INITIAL_STABILITY_LOG,
+                     LogMetadata(),
+                     MetricsLogsEventManager::CreateReason::kUnknown);
+  log_store.StoreLog("persisted", MetricsLog::ONGOING_LOG, LogMetadata(),
+                     MetricsLogsEventManager::CreateReason::kUnknown);
+
+  // Only the ongoing log should be written out, due to the threshold.
+  log_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
+  EXPECT_EQ(0U, TypeCount(MetricsLog::INITIAL_STABILITY_LOG));
+  EXPECT_EQ(1U, TypeCount(MetricsLog::ONGOING_LOG));
+}
 }  // namespace metrics

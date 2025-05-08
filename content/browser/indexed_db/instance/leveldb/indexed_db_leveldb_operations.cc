@@ -113,10 +113,10 @@ std::string ReadCorruptionInfo(const base::FilePath& path_base,
 
   base::File file(info_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (file.IsValid()) {
-    std::string input_js(file_info.size, '\0');
-    if (file_info.size ==
-        UNSAFE_TODO(file.Read(0, std::data(input_js), file_info.size))) {
-      std::optional<base::Value> val = base::JSONReader::Read(input_js);
+    std::vector<uint8_t> input_js(file_info.size, '\0');
+    if (file.ReadAndCheck(/*offset=*/0, input_js)) {
+      std::optional<base::Value> val =
+          base::JSONReader::Read(base::as_string_view(input_js));
       if (val && val->is_dict()) {
         std::string* s = val->GetDict().FindString("message");
         if (s) {
@@ -414,16 +414,8 @@ Status VersionExists(TransactionalLevelDBTransaction* transaction,
   return s;
 }
 
-template Status GetNewDatabaseId<LevelDBDirectTransaction>(
-    LevelDBDirectTransaction* transaction,
-    int64_t* new_id);
-
-template Status GetNewDatabaseId<TransactionalLevelDBTransaction>(
-    TransactionalLevelDBTransaction* transaction,
-    int64_t* new_id);
-
-template <typename Transaction>
-Status GetNewDatabaseId(Transaction* transaction, int64_t* new_id) {
+Status GetNewDatabaseId(LevelDBDirectTransaction* transaction,
+                        int64_t* new_id) {
   *new_id = -1;
   int64_t max_database_id = -1;
   bool found = false;

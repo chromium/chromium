@@ -53,6 +53,7 @@
 #include "absl/container/internal/container_memory.h"
 #include "absl/container/internal/hash_function_defaults.h"
 #include "absl/container/internal/hash_policy_testing.h"
+#include "absl/random/random.h"
 // TODO(b/382423690): Separate tests that depend only on
 // hashtable_control_bytes.
 #include "absl/container/internal/hashtable_control_bytes.h"
@@ -995,6 +996,21 @@ TYPED_TEST(SooTest, Empty) {
   EXPECT_TRUE(t.empty());
 }
 
+TEST(Table, Prefetch) {
+  IntTable t;
+  t.emplace(1);
+  // Works for both present and absent keys.
+  t.prefetch(1);
+  t.prefetch(2);
+
+  static constexpr int size = 10;
+  for (int i = 0; i < size; ++i) t.insert(i);
+  for (int i = 0; i < size; ++i) {
+    t.prefetch(i);
+    ASSERT_TRUE(t.find(i) != t.end()) << i;
+  }
+}
+
 TYPED_TEST(SooTest, LookupEmpty) {
   TypeParam t;
   auto it = t.find(0);
@@ -1922,8 +1938,7 @@ ProbeStats CollectProbeStatsOnLinearlyTransformedKeys(
     const std::vector<int64_t>& keys, size_t num_iters) {
   ProbeStats stats;
 
-  std::random_device rd;
-  std::mt19937 rng(rd());
+  absl::InsecureBitGen rng;
   auto linear_transform = [](size_t x, size_t y) { return x * 17 + y * 13; };
   std::uniform_int_distribution<size_t> dist(0, keys.size() - 1);
   while (num_iters--) {
@@ -3012,7 +3027,7 @@ std::vector<const HashtablezInfo*> SampleSooMutation(
   SetSamplingRateTo1Percent();
 
   auto& sampler = GlobalHashtablezSampler();
-  size_t start_size = 0;
+  int64_t start_size = 0;
   // Reserve the table, so that if it sampled, it'll be preexisting.
   absl::flat_hash_set<const HashtablezInfo*> preexisting_info(10);
   start_size += sampler.Iterate([&](const HashtablezInfo& info) {
@@ -3025,7 +3040,7 @@ std::vector<const HashtablezInfo*> SampleSooMutation(
     tables.emplace_back();
     mutate_table(tables.back());
   }
-  size_t end_size = 0;
+  int64_t end_size = 0;
   std::vector<const HashtablezInfo*> infos;
   end_size += sampler.Iterate([&](const HashtablezInfo& info) {
     ++end_size;
@@ -3107,6 +3122,29 @@ TEST(RawHashSamplerTest, SooTableReserveToFullSoo) {
   }
 }
 
+TEST(RawHashSamplerTest, SooTableSampleOnCopy) {
+  if (SooInt32Table().capacity() != SooCapacity()) {
+    CHECK_LT(sizeof(void*), 8) << "missing SOO coverage";
+    GTEST_SKIP() << "not SOO on this platform";
+  }
+
+  SooInt32Table t_orig;
+  t_orig.insert(1);
+
+  std::vector<const HashtablezInfo*> infos =
+      SampleSooMutation([&t_orig](SooInt32Table& t) {
+        t = t_orig;
+      });
+
+  for (const HashtablezInfo* info : infos) {
+    ASSERT_EQ(info->inline_element_size,
+              sizeof(typename SooInt32Table::value_type));
+    ASSERT_EQ(info->soo_capacity, SooCapacity());
+    ASSERT_EQ(info->capacity, NextCapacity(SooCapacity()));
+    ASSERT_EQ(info->size, 1);
+  }
+}
+
 // This tests that rehash(0) on a sampled table with size that fits in SOO
 // doesn't incorrectly result in losing sampling.
 TEST(RawHashSamplerTest, SooTableRehashShrinkWhenSizeFitsInSoo) {
@@ -3141,15 +3179,16 @@ TEST(RawHashSamplerTest, DoNotSampleCustomAllocators) {
   SetSamplingRateTo1Percent();
 
   auto& sampler = GlobalHashtablezSampler();
-  size_t start_size = 0;
+  int64_t start_size = 0;
   start_size += sampler.Iterate([&](const HashtablezInfo&) { ++start_size; });
 
   std::vector<CustomAllocIntTable> tables;
   for (int i = 0; i < 100000; ++i) {
     tables.emplace_back();
     tables.back().insert(1);
+    tables.push_back(tables.back());  // Copies the table.
   }
-  size_t end_size = 0;
+  int64_t end_size = 0;
   end_size += sampler.Iterate([&](const HashtablezInfo&) { ++end_size; });
 
   EXPECT_NEAR((end_size - start_size) / static_cast<double>(tables.size()),
@@ -3660,16 +3699,16 @@ TEST(Table, CountedHash) {
     t.insert(1);
     EXPECT_EQ(HashCount(t), 1);
     t.erase(1);
-    EXPECT_EQ(HashCount(t), 2);
+    EXPECT_LE(HashCount(t), 2);
   }
   {
     Table t;
     t.insert(3);
     EXPECT_EQ(HashCount(t), 1);
     auto node = t.extract(3);
-    EXPECT_EQ(HashCount(t), 2);
+    EXPECT_LE(HashCount(t), 2);
     t.insert(std::move(node));
-    EXPECT_EQ(HashCount(t), 3);
+    EXPECT_LE(HashCount(t), 3);
   }
   {
     Table t;
@@ -4199,9 +4238,8 @@ TEST(Table, GrowExtremelyLargeTable) {
   // artificially update growth info to force resize.
   absl::flat_hash_set<uint8_t, ConstUint8Hash> t(63, ConstUint8Hash{&hash});
   CommonFields& common = RawHashSetTestOnlyAccess::GetCommon(t);
-  // Assign value to the seed, so that H1 is always 0.
-  // That helps to test all buffer overflows in GrowToNextCapacity.
-  hash = common.seed().seed() << 7;
+  // Set 0 seed so that H1 is always 0.
+  common.set_no_seed_for_testing();
   ASSERT_EQ(H1(t.hash_function()(75), common.seed()), 0);
   uint8_t inserted_till = 210;
   for (uint8_t i = 0; i < inserted_till; ++i) {

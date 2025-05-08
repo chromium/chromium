@@ -1,74 +1,25 @@
-<style include="print-preview-shared md-select search-highlight-style
-    cr-hidden-style">
-  :host {
-    display: flex;
-    min-height: 54px;
-    position: relative;
-  }
-
-  :host > * {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    vertical-align: middle;
-  }
-
-  .label,
-  .value {
-    align-self: center;
-    color: var(--cr-primary-text-color);
-    overflow: hidden;
-  }
-
-  .label {
-    flex: 1;
-    min-width: 96px;
-    opacity: 0.87;
-  }
-
-  .value {
-    flex: 0;
-    min-width: 239px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .value > * {
-    display: flex;
-    margin-inline-start: 10px;
-  }
-
-  cr-input {
-    width: 239px;
-    --cr-input-error-display: none;
-  }
-
-  select.md-select {
-    font-size: 1em;
-  }
-</style>
-<label class="label searchable">[[getDisplayName_(capability)]]</label>
+<label class="label searchable">${this.getDisplayName_(this.capability)}</label>
 <div class="value">
-  <template is="dom-if" if="[[isCapabilityTypeSelect_(capability)]]"
-      restamp>
+  ${this.isCapabilityTypeSelect_() ? html`
     <div>
-      <select class="md-select" on-change="onUserInput_">
-        <template is="dom-repeat" items="[[capability.select_cap.option]]">
-          <option class="searchable" text="[[getDisplayName_(item)]]"
-              value="[[item.value]]"
-              selected="[[isOptionSelected_(item, currentValue_)]]">
+      <select class="md-select" @change="${this.onUserInput_}">
+        ${this.capability.select_cap!.option!.map(item => html`
+          <option class="searchable" value="${item.value}"
+              ?selected="${this.isOptionSelected_(item)}">
+             ${this.getDisplayName_(item)}
           </option>
-        </template>
+        `)}
       </select>
     </div>
-  </template>
-  <span hidden$="[[!isCapabilityTypeInput_(capability)]]">
-    <cr-input type="text" on-input="onUserInput_" spellcheck="false"
-        placeholder="[[getCapabilityPlaceholder_(capability)]]">
+  ` : ''}
+  <span ?hidden="${!this.isCapabilityTypeInput_()}">
+    <cr-input type="text" @input="${this.onUserInput_}" spellcheck="false"
+        placeholder="${this.getCapabilityPlaceholder_()}">
     </cr-input>
   </span>
-  <span hidden$="[[!isCapabilityTypeCheckbox_(capability)]]">
-    <cr-checkbox on-change="onCheckboxInput_"
-        checked="[[isChecked_(currentValue_)]]">
+  <span ?hidden="${!this.isCapabilityTypeCheckbox_()}">
+    <cr-checkbox @change="${this.onCheckboxInput_}"
+        ?checked="${this.isChecked_()}">
     </cr-checkbox>
   </span>
 </div>

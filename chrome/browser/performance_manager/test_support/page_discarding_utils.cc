@@ -99,22 +99,19 @@ void GraphTestHarnessWithDiscardablePage::RecreateNodes() {
 LenientMockPageDiscarder::LenientMockPageDiscarder() = default;
 LenientMockPageDiscarder::~LenientMockPageDiscarder() = default;
 
-std::vector<performance_manager::mechanism::PageDiscarder::DiscardEvent>
-LenientMockPageDiscarder::DiscardPageNodes(
-    const std::vector<const PageNode*>& page_nodes,
+std::optional<uint64_t> LenientMockPageDiscarder::DiscardPageNode(
+    const PageNode* page_node,
     ::mojom::LifecycleUnitDiscardReason discard_reason) {
-  std::vector<DiscardEvent> discard_events;
-  for (auto* node : page_nodes) {
-    if (DiscardPageNodeImpl(node)) {
-      discard_events.emplace_back(base::TimeTicks::Now(), 0);
-    }
+  if (DiscardPageNodeImpl(page_node)) {
+    // Discard success: Return a non-nullopt estimated memory freed.
+    return 0;
   }
-  return discard_events;
+  // Discard failure: return nullopt;
+  return std::nullopt;
 }
 
-GraphTestHarnessWithMockDiscarder::GraphTestHarnessWithMockDiscarder()
-    : GraphTestHarnessWithDiscardablePage() {}
-
+GraphTestHarnessWithMockDiscarder::GraphTestHarnessWithMockDiscarder() =
+    default;
 GraphTestHarnessWithMockDiscarder::~GraphTestHarnessWithMockDiscarder() =
     default;
 

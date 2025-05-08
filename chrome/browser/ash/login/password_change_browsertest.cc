@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
+#include "base/json/values_util.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_restrictions.h"
@@ -63,6 +64,7 @@ constexpr char kUserEmail[] = "test-user@gmail.com";
 constexpr GaiaId::Literal kGaiaID("111111");
 constexpr char kTokenHandle[] = "test_token_handle";
 constexpr char kTestingFileName[] = "testing-file.txt";
+constexpr char kTokenHandleLastCheckedPref[] = "TokenHandleLastChecked";
 
 using AuthOp = FakeUserDataAuthClient::Operation;
 
@@ -339,19 +341,20 @@ class PasswordChangeTokenCheck : public PasswordChangeTest {
     ignore_sync_errors_for_test_ =
         SigninErrorNotifier::IgnoreSyncErrorsForTesting();
     UserDataAuthClient::InitializeFake();
-    token_handle_store_ = TokenHandleStoreFactory::Get()->GetTokenHandleStore();
   }
 
  protected:
   // PasswordChangeTest:
-  void SetUpInProcessBrowserTestFixture() override {
-    PasswordChangeTest::SetUpInProcessBrowserTestFixture();
+  void SetUpOnMainThread() override {
+    PasswordChangeTest::SetUpOnMainThread();
+    token_handle_store_ = TokenHandleStoreFactory::Get()->GetTokenHandleStore();
     token_handle_store_->SetInvalidTokenForTesting(kTokenHandle);
   }
 
-  void TearDownInProcessBrowserTestFixture() override {
+  void TearDownOnMainThread() override {
     token_handle_store_->SetInvalidTokenForTesting(nullptr);
-    PasswordChangeTest::TearDownInProcessBrowserTestFixture();
+    token_handle_store_ = nullptr;
+    LoginManagerTest::TearDownOnMainThread();
   }
 
   AccountId user_with_invalid_token_;
@@ -429,8 +432,9 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTokenCheck, PRE_Session) {
   // Store invalid token to trigger notification in the session.
   token_handle_store_->StoreTokenHandle(user_with_invalid_token_, kTokenHandle);
   // Make token not "checked recently".
-  token_handle_store_->SetLastCheckedPrefForTesting(user_with_invalid_token_,
-                                                    base::Time());
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  known_user.SetPath(user_with_invalid_token_, kTokenHandleLastCheckedPref,
+                     base::TimeToValue(base::Time()));
 
   ProfileWaiter waiter;
   login_mixin_.LoginWithDefaultContext(login_mixin_.users().back());
@@ -501,7 +505,16 @@ class TokenAfterCrash : public MixinBasedInProcessBrowserTest {
     login_mixin_.SetShouldObtainHandle(true);
     login_mixin_.AppendRegularUsers(1);
     UserDataAuthClient::InitializeFake();
+  }
+
+  void SetUpOnMainThread() override {
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
     token_handle_store_ = TokenHandleStoreFactory::Get()->GetTokenHandleStore();
+  }
+
+  void TearDownOnMainThread() override {
+    token_handle_store_ = nullptr;
+    MixinBasedInProcessBrowserTest::TearDownOnMainThread();
   }
 
  protected:
@@ -565,12 +578,13 @@ class IgnoreOldTokenTest
 
     account_id_ = login_mixin_.users()[0].account_id;
     UserDataAuthClient::InitializeFake();
-    token_handle_store_ = TokenHandleStoreFactory::Get()->GetTokenHandleStore();
   }
 
   // LocalStateMixin::Delegate:
   void SetUpLocalState() override {
+    token_handle_store_ = TokenHandleStoreFactory::Get()->GetTokenHandleStore();
     token_handle_store_->StoreTokenHandle(account_id_, kTokenHandle);
+    token_handle_store_->SetInvalidTokenForTesting(kTokenHandle);
 
     if (content::IsPreTest()) {
       // Keep `TokenHandleRotated` flag to disable logic of neglecting not
@@ -579,15 +593,10 @@ class IgnoreOldTokenTest
     }
   }
 
-  // LoginManagerTest:
-  void SetUpInProcessBrowserTestFixture() override {
-    LoginManagerTest::SetUpInProcessBrowserTestFixture();
-    token_handle_store_->SetInvalidTokenForTesting(kTokenHandle);
-  }
-
-  void TearDownInProcessBrowserTestFixture() override {
+  void TearDownOnMainThread() override {
     token_handle_store_->SetInvalidTokenForTesting(nullptr);
-    LoginManagerTest::TearDownInProcessBrowserTestFixture();
+    token_handle_store_ = nullptr;
+    LoginManagerTest::TearDownOnMainThread();
   }
 
  protected:

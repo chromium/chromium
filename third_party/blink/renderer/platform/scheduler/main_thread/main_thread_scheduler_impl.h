@@ -16,6 +16,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/message_loop/message_pump.h"
 #include "base/metrics/single_sample_metrics.h"
 #include "base/observer_list.h"
 #include "base/profiler/sample_metadata.h"
@@ -785,6 +786,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
     // `WidgetScheduler`s that have not been shut down.
     WTF::HashSet<scoped_refptr<WidgetSchedulerImpl>> widget_schedulers;
+    raw_ptr<base::MessagePump> message_pump;
   };
 
   struct AnyThread {

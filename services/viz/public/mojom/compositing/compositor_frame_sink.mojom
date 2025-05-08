@@ -91,7 +91,7 @@ interface CompositorFrameSink {
   // longer submit frames through the CompositorFrameSink interface. Instead
   // frames will automtaically be submitted by Viz based on the state of a
   // GPU-side layer tree which can be manipulated through this LayerContext.
-  BindLayerContext(PendingLayerContext context);
+  BindLayerContext(PendingLayerContext context, bool draw_mode_is_gpu);
 
   // Informs the display compositor the IDs of the thread involved in frame
   // production. This is used on Android PerformanceHint API to dynamically

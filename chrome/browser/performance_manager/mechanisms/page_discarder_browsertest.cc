@@ -69,10 +69,10 @@ IN_PROC_BROWSER_TEST_P(PageDiscarderBrowserTest, DiscardPageNodes) {
       });
 
   PageDiscarder discarder;
-  std::vector<PageDiscarder::DiscardEvent> discard_events =
-      discarder.DiscardPageNodes({page_node.get()}, discard_reason);
+  std::optional<uint64_t> estimated_memory_freed_kb =
+      discarder.DiscardPageNode(page_node.get(), discard_reason);
 
-  EXPECT_EQ(discard_events.size(), 1U);
+  EXPECT_TRUE(estimated_memory_freed_kb.has_value());
 
   auto* new_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
   EXPECT_TRUE(new_contents->WasDiscarded());

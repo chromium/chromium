@@ -159,6 +159,13 @@ DictationE2ETestBase = class extends E2ETestBase {
         ]);
   }
 
+  /** @override */
+  get featureList() {
+    return {
+      disabled: ['features::kAccessibilityManifestV3AccessibilityCommon']
+    };
+  }
+
   /** Turns on Dictation and checks IME and Speech Recognition state. */
   toggleDictationOn() {
     this.mockAccessibilityPrivate.callOnToggleDictation(true);

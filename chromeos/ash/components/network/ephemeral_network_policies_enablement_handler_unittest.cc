@@ -81,7 +81,7 @@ TEST_F(EphemeralNetworkPoliciesEnablementHandlerTest, EnabledByFeature) {
 TEST_F(EphemeralNetworkPoliciesEnablementHandlerTest, EnabledByPref_OnInit) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kEphemeralNetworkPoliciesEnabledPolicy},
+      /*enabled_features=*/{},
       /*disabled_features=*/{features::kEphemeralNetworkPolicies});
 
   auto handler = CreateEphemeralNetworkPoliciesEnablementHandler();
@@ -109,7 +109,7 @@ TEST_F(EphemeralNetworkPoliciesEnablementHandlerTest, EnabledByPref_OnInit) {
 TEST_F(EphemeralNetworkPoliciesEnablementHandlerTest, EnabledByPref_AfterInit) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kEphemeralNetworkPoliciesEnabledPolicy},
+      /*enabled_features=*/{},
       /*disabled_features=*/{features::kEphemeralNetworkPolicies});
 
   auto handler = CreateEphemeralNetworkPoliciesEnablementHandler();
@@ -137,34 +137,5 @@ TEST_F(EphemeralNetworkPoliciesEnablementHandlerTest, EnabledByPref_AfterInit) {
   handler->SetDevicePrefs(nullptr);
 }
 
-TEST_F(EphemeralNetworkPoliciesEnablementHandlerTest,
-       EnabledByPref_NotRespected_KillSwitch) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kEphemeralNetworkPolicies,
-                             features::kEphemeralNetworkPoliciesEnabledPolicy});
-
-  auto handler = CreateEphemeralNetworkPoliciesEnablementHandler();
-
-  EXPECT_FALSE(policy_util::AreEphemeralNetworkPoliciesEnabled());
-  EXPECT_FALSE(ephemeral_network_policies_enabled_called_);
-
-  device_prefs_.SetManagedPref(prefs::kDeviceEphemeralNetworkPoliciesEnabled,
-                               base::Value(true));
-
-  handler->SetDevicePrefs(&device_prefs_);
-
-  EXPECT_FALSE(policy_util::AreEphemeralNetworkPoliciesEnabled());
-  EXPECT_FALSE(ephemeral_network_policies_enabled_called_);
-
-  // Going back to false doesn't change the decision.
-  device_prefs_.SetManagedPref(prefs::kDeviceEphemeralNetworkPoliciesEnabled,
-                               base::Value(false));
-
-  EXPECT_FALSE(policy_util::AreEphemeralNetworkPoliciesEnabled());
-
-  handler->SetDevicePrefs(nullptr);
-}
 
 }  // namespace ash

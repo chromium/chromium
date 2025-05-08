@@ -1213,13 +1213,6 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       }
       break;
     }
-    case IDC_GLIC_TOGGLE_FOCUS: {
-      if (auto* glic_keyed_service =
-              glic::GlicProfileManager::GetInstance()->GetLastActiveGlic()) {
-        glic_keyed_service->FocusUI();
-      }
-      break;
-    }
 #endif
     default:
       LOG(WARNING) << "Received Unimplemented Command: " << id;
@@ -1565,8 +1558,6 @@ void BrowserCommandController::InitCommandState() {
       IDC_GLIC_TOGGLE_PIN, glic::GlicEnabling::IsProfileEligible(profile()));
   command_updater_.UpdateCommandEnabled(
       IDC_OPEN_GLIC, glic::GlicEnabling::IsEnabledForProfile(profile()));
-  command_updater_.UpdateCommandEnabled(
-      IDC_GLIC_TOGGLE_FOCUS, glic::GlicEnabling::IsProfileEligible(profile()));
 #endif
 
   // Initialize other commands whose state changes based on various conditions.

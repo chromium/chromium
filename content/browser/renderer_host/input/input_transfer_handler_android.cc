@@ -84,6 +84,22 @@ bool InputTransferHandlerAndroid::OnTouchEvent(
     return true;
   }
 
+  if (handler_state_ == HandlerState::kConsumeSequence) {
+    ConsumeSequence(event);
+    return true;
+  }
+
+  if (event.GetDownTime() <= cached_transferred_sequence_down_time_ms_ &&
+      requested_input_back_reason_ ==
+          RequestInputBackReason::kStartDragAndDropGesture) {
+    requested_input_back_reason_ = std::nullopt;
+    handler_state_ = HandlerState::kConsumeSequence;
+    ConsumeSequence(event);
+    return true;
+  }
+
+  requested_input_back_reason_ = std::nullopt;
+
   if (event.GetAction() != ui::MotionEvent::Action::DOWN) {
     return false;
   }
@@ -184,9 +200,16 @@ bool InputTransferHandlerAndroid::FilterRedundantDownEvent(
   return event.GetDownTime() <= cached_transferred_sequence_down_time_ms_;
 }
 
-void InputTransferHandlerAndroid::RequestInputBack() {
+void InputTransferHandlerAndroid::RequestInputBack(
+    RequestInputBackReason reason) {
   requested_input_back_ = true;
+  requested_input_back_reason_ = reason;
   GetHostFrameSinkManager()->RequestInputBack();
+}
+
+bool InputTransferHandlerAndroid::IsTouchSequencePotentiallyActiveOnViz()
+    const {
+  return cached_transferred_sequence_down_time_ms_ > last_seen_touch_end_ts_;
 }
 
 void InputTransferHandlerAndroid::OnTouchEnd(base::TimeTicks event_time) {
@@ -248,6 +271,15 @@ void InputTransferHandlerAndroid::ConsumeEventsUntilCancel(
   }
   base::UmaHistogramEnumeration(kEventsAfterTransferHistogram,
                                 event.GetAction());
+}
+
+void InputTransferHandlerAndroid::ConsumeSequence(
+    const ui::MotionEventAndroid& event) {
+  CHECK_EQ(handler_state_, HandlerState::kConsumeSequence);
+  if (event.GetAction() == ui::MotionEvent::Action::CANCEL ||
+      event.GetAction() == ui::MotionEvent::Action::UP) {
+    handler_state_ = HandlerState::kIdle;
+  }
 }
 
 void InputTransferHandlerAndroid::OnTouchTransferredSuccessfully(

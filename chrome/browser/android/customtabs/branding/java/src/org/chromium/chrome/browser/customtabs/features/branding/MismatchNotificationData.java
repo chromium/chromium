@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.customtabs.features.branding;
 
-import androidx.annotation.NonNull;
-
 import com.google.common.io.BaseEncoding;
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.features.branding.proto.AccountMismatchData.Account;
 import org.chromium.chrome.browser.customtabs.features.branding.proto.AccountMismatchData.AllAccounts;
 import org.chromium.chrome.browser.customtabs.features.branding.proto.AccountMismatchData.App;
@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** Collection of app data storing the information on sign-in prompt UI for a specific profile. */
+@NullMarked
 public class MismatchNotificationData {
     /** Per-app prompt UI data */
     public static class AppUiData {
@@ -60,7 +61,7 @@ public class MismatchNotificationData {
      * @param account Account ID
      * @param appId App ID
      */
-    public @NonNull AppUiData getAppData(String accountId, String appId) {
+    public AppUiData getAppData(String accountId, String appId) {
         Map<String, AppUiData> accountData = mDataMap.get(accountId);
         AppUiData res = accountData != null ? accountData.get(appId) : null;
         return res != null ? res : new AppUiData();
@@ -72,7 +73,7 @@ public class MismatchNotificationData {
      * @param account Account ID
      * @param appId App ID
      */
-    public void setAppData(String accountId, String appId, @NonNull AppUiData data) {
+    public void setAppData(String accountId, String appId, AppUiData data) {
         Map<String, AppUiData> accountData = mDataMap.get(accountId);
         if (accountData != null) {
             accountData.put(appId, data);
@@ -109,7 +110,7 @@ public class MismatchNotificationData {
     }
 
     /** Restore the class from a serialized string in Base64 encoding. */
-    static MismatchNotificationData fromBase64(String s) {
+    static @Nullable MismatchNotificationData fromBase64(String s) {
         MismatchNotificationData mimData = null;
         AllAccounts protoData = null;
         try {

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_ACTION_CONTAINER_H_
 
 #include "base/gtest_prod_util.h"
+#include "chrome/browser/glic/browser_ui/glic_button_controller_delegate.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "chrome/browser/ui/tabs/glic_nudge_observer.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
@@ -16,6 +17,7 @@
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/animation/animation_delegate_views.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/mouse_watcher.h"
 #include "ui/views/view.h"
 
@@ -32,7 +34,8 @@ class TabStripActionContainer : public views::View,
                                 public views::AnimationDelegateViews,
                                 public views::MouseWatcherListener,
                                 public TabOrganizationObserver,
-                                public GlicNudgeObserver {
+                                public GlicNudgeObserver,
+                                public glic::GlicButtonControllerDelegate {
   METADATA_HEADER(TabStripActionContainer, views::View)
 
  public:
@@ -118,7 +121,14 @@ class TabStripActionContainer : public views::View,
   // GlicNudgeObserver
   void OnTriggerGlicNudgeUI(std::string label) override;
 
+  // GlicButtonControllerDelegate:
+  void SetGlicShowState(bool show) override;
+  void SetGlicIcon(const gfx::VectorIcon& icon) override;
+
   void UpdateButtonBorders(gfx::Insets button_insets);
+
+  void DidBecomeActive(BrowserWindowInterface* browser);
+  void DidBecomeInactive(BrowserWindowInterface* browser);
 
  private:
   friend class TabStripActionContainerBrowserTest;
@@ -186,6 +196,7 @@ class TabStripActionContainer : public views::View,
   raw_ptr<TabOrganizationService> tab_organization_service_ = nullptr;
   raw_ptr<tabs::TabDeclutterController> tab_declutter_controller_ = nullptr;
   raw_ptr<tabs::GlicNudgeController> glic_nudge_controller_ = nullptr;
+  raw_ptr<views::Separator> separator_ = nullptr;
 
   raw_ptr<glic::GlicButton> glic_button_ = nullptr;
 
@@ -211,6 +222,8 @@ class TabStripActionContainer : public views::View,
 
   // Prevents other features from showing tabstrip-modal UI.
   std::unique_ptr<ScopedTabStripModalUI> scoped_tab_strip_modal_ui_;
+
+  std::list<base::CallbackListSubscription> subscriptions_;
 
   std::unique_ptr<TabStripNudgeAnimationSession> animation_session_;
 };

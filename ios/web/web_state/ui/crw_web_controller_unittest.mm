@@ -421,7 +421,7 @@ class JavaScriptDialogPresenterTest : public WebTestWithWebController {
            !requested_confirm_dialogs().empty() ||
            !requested_prompt_dialogs().empty();
   }
-  const GURL& page_url() { return page_url_; }
+  const url::Origin page_origin() { return url::Origin::Create(page_url_); }
 
  private:
   FakeWebStateDelegate web_state_delegate_;
@@ -439,7 +439,7 @@ TEST_F(JavaScriptDialogPresenterTest, Alert) {
   ASSERT_TRUE(requested_prompt_dialogs().empty());
   auto& dialog = requested_alert_dialogs().front();
   EXPECT_EQ(web_state(), dialog->web_state);
-  EXPECT_EQ(page_url(), dialog->origin_url);
+  EXPECT_EQ(page_origin(), dialog->origin);
   EXPECT_NSEQ(@"test", dialog->message_text);
 }
 
@@ -456,7 +456,7 @@ TEST_F(JavaScriptDialogPresenterTest, ConfirmWithTrue) {
   ASSERT_TRUE(requested_prompt_dialogs().empty());
   auto& dialog = requested_confirm_dialogs().front();
   EXPECT_EQ(web_state(), dialog->web_state);
-  EXPECT_EQ(page_url(), dialog->origin_url);
+  EXPECT_EQ(page_origin(), dialog->origin);
   EXPECT_NSEQ(@"test", dialog->message_text);
 }
 
@@ -471,7 +471,7 @@ TEST_F(JavaScriptDialogPresenterTest, ConfirmWithFalse) {
   ASSERT_TRUE(requested_prompt_dialogs().empty());
   auto& dialog = requested_confirm_dialogs().front();
   EXPECT_EQ(web_state(), dialog->web_state);
-  EXPECT_EQ(page_url(), dialog->origin_url);
+  EXPECT_EQ(page_origin(), dialog->origin);
   EXPECT_NSEQ(@"test", dialog->message_text);
 }
 
@@ -488,7 +488,7 @@ TEST_F(JavaScriptDialogPresenterTest, Prompt) {
   ASSERT_EQ(1U, requested_prompt_dialogs().size());
   auto& dialog = requested_prompt_dialogs().front();
   EXPECT_EQ(web_state(), dialog->web_state);
-  EXPECT_EQ(page_url(), dialog->origin_url);
+  EXPECT_EQ(page_origin(), dialog->origin);
   EXPECT_NSEQ(@"Yes?", dialog->message_text);
   EXPECT_NSEQ(@"No", dialog->default_prompt_text);
 }
@@ -507,7 +507,7 @@ TEST_F(JavaScriptDialogPresenterTest, PromptEmpty) {
   ASSERT_EQ(1U, requested_prompt_dialogs().size());
   auto& dialog = requested_prompt_dialogs().front();
   EXPECT_EQ(web_state(), dialog->web_state);
-  EXPECT_EQ(page_url(), dialog->origin_url);
+  EXPECT_EQ(page_origin(), dialog->origin);
   EXPECT_NSEQ(@"", dialog->message_text);
   EXPECT_NSEQ(@"", dialog->default_prompt_text);
 }
@@ -520,7 +520,7 @@ TEST_F(JavaScriptDialogPresenterTest, DifferentVisibleUrl) {
   // Change visible URL.
   AddPendingItem(GURL("https://pending.test/"), ui::PAGE_TRANSITION_TYPED);
   web_controller().webStateImpl->SetIsLoading(true);
-  ASSERT_NE(page_url().DeprecatedGetOriginAsURL(),
+  ASSERT_NE(page_origin().GetURL(),
             web_state()->GetVisibleURL().DeprecatedGetOriginAsURL());
 
   ExecuteJavaScript(@"alert('test')");

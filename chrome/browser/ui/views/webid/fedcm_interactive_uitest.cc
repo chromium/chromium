@@ -41,11 +41,12 @@ class FedCmCUJTest : public InteractiveBrowserTest {
       idps_ = {base::MakeRefCounted<content::IdentityProviderData>(
           "idp-example.com", content::IdentityProviderMetadata(),
           content::ClientMetadata(GURL(), GURL(), GURL(), gfx::Image()),
-          blink::mojom::RpContext::kSignIn, kDefaultDisclosureFields,
+          blink::mojom::RpContext::kSignIn, /*format=*/std::nullopt,
+          kDefaultDisclosureFields,
           /*has_login_status_mismatch=*/false)};
       accounts_ = {base::MakeRefCounted<Account>(
           "id", "display_identifier", "display_name", "email", "name",
-          "given_name", GURL(),
+          "given_name", GURL(), "phone", "username",
           /*login_hints=*/std::vector<std::string>(),
           /*domain_hints=*/std::vector<std::string>(),
           /*labels=*/std::vector<std::string>())};

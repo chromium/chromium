@@ -27,7 +27,7 @@ class ScopedFakeStatisticsProvider;
 
 namespace reporting {
 
-constexpr char kFakeDmToken[] = "FAKE_DM_TOKEN";
+inline constexpr char kFakeDmToken[] = "FAKE_DM_TOKEN";
 
 class EncryptedReportingClient;
 

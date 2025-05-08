@@ -29,6 +29,9 @@ struct ContentCaptureData {
   ContentCaptureData(const ContentCaptureData& data);
   ~ContentCaptureData();
 
+  friend bool operator==(const ContentCaptureData&,
+                         const ContentCaptureData&) = default;
+
   // The id of the frame or the content,
   // For frame, this will be 0 until ContentCaptureReceiver assigns a unique ID.
   int64_t id = 0;
@@ -41,12 +44,6 @@ struct ContentCaptureData {
   gfx::Rect bounds;
   // The children content, only available for frame or scrollable area.
   std::vector<ContentCaptureData> children;
-
-  bool operator==(const ContentCaptureData& other) const;
-
-  bool operator!=(const ContentCaptureData& other) const {
-    return !(*this == other);
-  }
 };
 
 }  // namespace content_capture

@@ -146,7 +146,7 @@ public class OtpVerificationDialogView extends RelativeLayout {
         };
     }
 
-    /** Builds Otp Resend Message Link * */
+    /** Builds Otp Resend Message Link */
     private SpannableString buildOtpResendMessageLink(Context context, ViewDelegate viewDelegate) {
         return SpanApplier.applySpans(
                 context.getString(

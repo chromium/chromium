@@ -33,13 +33,11 @@ TEST_F(NthIndexCacheTest, NthIndex) {
 
   EXPECT_EQ(nth_index_cache.NthChildIndex(
                 *GetElementById("nth-child"), /*filter=*/nullptr,
-                /*selector_checker=*/nullptr, /*context=*/nullptr,
-                NthIndexData::kLightTree),
+                /*selector_checker=*/nullptr, /*context=*/nullptr),
             12U);
   EXPECT_EQ(nth_index_cache.NthLastChildIndex(
                 *GetElementById("nth-last-child"), /*filter=*/nullptr,
-                /*selector_checker=*/nullptr, /*context=*/nullptr,
-                NthIndexData::kLightTree),
+                /*selector_checker=*/nullptr, /*context=*/nullptr),
             12U);
 }
 

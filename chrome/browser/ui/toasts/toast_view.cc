@@ -18,6 +18,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -115,7 +116,7 @@ ToastView::ToastView(
       image_override_(image_override),
       render_toast_over_web_contents_(render_toast_over_web_contents),
       toast_close_callback_(std::move(toast_close_callback)) {
-  set_background_color(ui::kColorToastBackgroundProminent);
+  SetBackgroundColor(ui::kColorToastBackgroundProminent);
   SetPaintClientToLayer(true);
   SetShowCloseButton(false);
   DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
@@ -154,6 +155,15 @@ void ToastView::AddMenu(std::unique_ptr<ui::MenuModel> model) {
       /*on_executed_command=*/
       base::BindRepeating(&ToastView::Close, base::Unretained(this),
                           ToastCloseReason::kMenuItemClick));
+}
+
+void ToastView::AddAcceleratorCallback(ui::Accelerator accelerator,
+                                       base::RepeatingClosure callback) {
+  has_accelerator_ = true;
+  accelerator_ = accelerator;
+  accelerator_callback_ = std::move(callback);
+
+  AddAccelerator(accelerator);
 }
 
 int ToastView::GetIconSize() {
@@ -210,6 +220,7 @@ void ToastView::Init() {
     action_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
     action_button_->SetProperty(views::kElementIdentifierKey,
                                 kToastActionButton);
+    action_button_->SetAppearDisabledInInactiveWidget(false);
     action_button_->SetProperty(
         views::kMarginsKey,
         GetLeftMargin(lp->GetDistanceMetric(
@@ -305,7 +316,8 @@ void ToastView::Init() {
       top_margin, lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_MARGIN_LEFT),
       total_vertical_margins - top_margin, right_margin));
 
-  if (has_action_button_ || has_close_button_ || menu_model_) {
+  if (has_action_button_ || has_close_button_ || menu_model_ ||
+      has_accelerator_) {
     SetFocusTraversesOut(true);
   } else {
     set_focus_traversable_from_anchor_view(false);
@@ -430,6 +442,15 @@ void ToastView::OnThemeChanged() {
         *icon_, color_provider->GetColor(ui::kColorToastForeground),
         GetIconSize()));
   }
+}
+
+bool ToastView::AcceleratorPressed(const ui::Accelerator& accelerator) {
+  if (accelerator == accelerator_) {
+    accelerator_callback_.Run();
+    return true;
+  }
+
+  return false;
 }
 
 void ToastView::AnimateOut(base::OnceClosure callback,

@@ -2,19 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/codec/video_encoder_active_map.h"
 
 #include <algorithm>
 #include <utility>
 
-#include <string.h>
-
-#include "base/check_op.h"
+#include "base/containers/heap_array.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_region.h"
 
@@ -41,28 +34,30 @@ void VideoEncoderActiveMap::Initialize(const webrtc::DesktopSize& size) {
 }
 
 void VideoEncoderActiveMap::Clear() {
-  DCHECK(active_map_.data() != nullptr);
-  memset(active_map_.data(), 0,
-         active_map_size_.width() * active_map_size_.height());
+  std::ranges::fill(active_map_, 0);
 }
 
 void VideoEncoderActiveMap::Update(
     const webrtc::DesktopRegion& updated_region) {
+  if (active_map_.empty()) {
+    return;
+  }
+  const int map_width = active_map_size_.width();
+  const int map_height = active_map_size_.height();
   for (DesktopRegionIterator r(updated_region); !r.IsAtEnd(); r.Advance()) {
     const webrtc::DesktopRect& rect = r.rect();
-    int left = rect.left() / kMacroBlockSize;
-    int right = (rect.right() - 1) / kMacroBlockSize;
-    int top = rect.top() / kMacroBlockSize;
-    int bottom = (rect.bottom() - 1) / kMacroBlockSize;
-    DCHECK_LT(right, active_map_size_.width());
-    DCHECK_LT(bottom, active_map_size_.height());
-
-    uint8_t* map = active_map_.data() + top * active_map_size_.width();
+    const int left =
+        std::clamp(rect.left() / kMacroBlockSize, 0, map_width - 1);
+    const int right =
+        std::clamp((rect.right() - 1) / kMacroBlockSize, 0, map_width - 1);
+    const int top = std::clamp(rect.top() / kMacroBlockSize, 0, map_height - 1);
+    const int bottom =
+        std::clamp((rect.bottom() - 1) / kMacroBlockSize, 0, map_height - 1);
     for (int y = top; y <= bottom; ++y) {
+      const size_t row_offset = static_cast<size_t>(y) * map_width;
       for (int x = left; x <= right; ++x) {
-        map[x] = 1;
+        active_map_[row_offset + x] = 1;
       }
-      map += active_map_size_.width();
     }
   }
 }

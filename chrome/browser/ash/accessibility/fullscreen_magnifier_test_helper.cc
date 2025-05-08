@@ -15,6 +15,7 @@
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host_test_helper.h"
+#include "extensions/browser/extension_registry_test_helper.h"
 #include "ui/accessibility/ax_mode.h"
 
 namespace ash {
@@ -63,6 +64,8 @@ FullscreenMagnifierTestHelper::~FullscreenMagnifierTestHelper() = default;
 void FullscreenMagnifierTestHelper::LoadMagnifier(Profile* profile) {
   extensions::ExtensionHostTestHelper host_helper(
       profile, extension_misc::kAccessibilityCommonExtensionId);
+  extensions::ExtensionRegistryTestHelper observer(
+      extension_misc::kAccessibilityCommonExtensionId, profile);
   ASSERT_FALSE(MagnificationManager::Get()->IsMagnifierEnabled());
   MagnificationManager::Get()->SetMagnifierEnabled(true);
 
@@ -72,7 +75,11 @@ void FullscreenMagnifierTestHelper::LoadMagnifier(Profile* profile) {
   // the mouse movement won't affect the position of magnifier window later.
   MagnifierAnimationWaiter magnifier_waiter(GetFullscreenMagnifierController());
   magnifier_waiter.Wait();
-  host_helper.WaitForHostCompletedFirstLoad();
+  if (observer.WaitForManifestVersion() == 3) {
+    observer.WaitForServiceWorkerStart();
+  } else {
+    host_helper.WaitForHostCompletedFirstLoad();
+  }
 
   // Start in a known location.
   MoveMagnifierWindow(center_position_on_load_.x(),

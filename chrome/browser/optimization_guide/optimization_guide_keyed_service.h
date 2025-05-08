@@ -37,9 +37,17 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
+namespace contextual_cueing {
+class ZeroStateSuggestionsPageData;
+}  // namespace contextual_cueing
+
 namespace download {
 class BackgroundDownloadService;
 }  // namespace download
+
+namespace glic {
+class GlicPageContextEligibilityObserver;
+}  // namespace glic
 
 namespace on_device_internals {
 class PageHandler;
@@ -161,6 +169,11 @@ class OptimizationGuideKeyedService
   optimization_guide::OnDeviceModelEligibilityReason
   GetOnDeviceModelEligibility(
       optimization_guide::ModelBasedCapabilityKey feature) override;
+  void GetOnDeviceModelEligibilityAsync(
+      optimization_guide::ModelBasedCapabilityKey feature,
+      base::OnceCallback<
+          void(optimization_guide::OnDeviceModelEligibilityReason)> callback)
+      override;
   std::optional<optimization_guide::SamplingParamsConfig>
   GetSamplingParamsConfig(
       optimization_guide::ModelBasedCapabilityKey feature) override;
@@ -246,6 +259,8 @@ class OptimizationGuideKeyedService
   friend class BrowserView;
   friend class ChromeBrowserMainExtraPartsOptimizationGuide;
   friend class ChromeBrowsingDataRemoverDelegate;
+  friend class contextual_cueing::ZeroStateSuggestionsPageData;
+  friend class glic::GlicPageContextEligibilityObserver;
   friend class HintsFetcherBrowserTest;
   friend class on_device_internals::PageHandler;
   friend class OptimizationGuideInternalsUI;
@@ -265,12 +280,8 @@ class OptimizationGuideKeyedService
   friend class optimization_guide::android::OptimizationGuideBridge;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  // Evaluates and records the device performance class to local state prefs.
-  static void DeterminePerformanceClass(
-      base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
-          on_device_component_state_manager);
-  static void RegisterPerformanceClassSyntheticTrial(
-      optimization_guide::OnDeviceModelPerformanceClass perf_class);
+  // Allows tests to override the value of `version_info::IsOfficialBuild()`.
+  static void SetIsOfficialBuildForTesting(bool is_official_build);
 
   // Initializes |this|.
   void Initialize();
@@ -341,6 +352,15 @@ class OptimizationGuideKeyedService
       optimization_guide::UserVisibleFeatureKey feature,
       std::string_view feature_name);
 
+  // Ensures the performance class will be up to date and available when
+  // `complete` runs.
+  void EnsurePerformanceClassAvailable(base::OnceClosure complete);
+
+  void FinishGetOnDeviceModelEligibility(
+      optimization_guide::ModelBasedCapabilityKey feature,
+      base::OnceCallback<
+          void(optimization_guide::OnDeviceModelEligibilityReason)> callback);
+
   raw_ptr<content::BrowserContext> browser_context_;
 
   // The store of hints.
@@ -394,6 +414,8 @@ class OptimizationGuideKeyedService
 
   // Used to observe profile initialization event.
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
+
+  base::WeakPtrFactory<OptimizationGuideKeyedService> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_KEYED_SERVICE_H_

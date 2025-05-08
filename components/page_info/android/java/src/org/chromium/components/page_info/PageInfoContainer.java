@@ -9,8 +9,11 @@ import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
+import androidx.core.view.ViewCompat;
 
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -25,6 +28,7 @@ public class PageInfoContainer extends FrameLayout {
     public static final float sScale = 0.92f;
     public static final int sOutDuration = 90;
     public static final int sInDuration = 210;
+    private ChromeImageButton mBackButton;
 
     /** Parameters to configure the view of page info subpage. */
     public static class Params {
@@ -102,8 +106,8 @@ public class PageInfoContainer extends FrameLayout {
         View closeButtonLeftPadding = findViewById(R.id.page_info_close_left_padding);
         closeButtonLeftPadding.setVisibility(params.showCloseButton ? VISIBLE : GONE);
 
-        ChromeImageButton backButton = findViewById(R.id.subpage_back_button);
-        backButton.setOnClickListener(v -> params.backButtonClickCallback.run());
+        mBackButton = findViewById(R.id.subpage_back_button);
+        mBackButton.setOnClickListener(v -> params.backButtonClickCallback.run());
     }
 
     private void initializeUrlView(View view, Params params) {
@@ -163,7 +167,17 @@ public class PageInfoContainer extends FrameLayout {
                                     .scaleY(1)
                                     .alpha(1)
                                     .setInterpolator(Interpolators.EMPHASIZED_DECELERATE)
-                                    .withEndAction(onPreviousPageRemoved);
+                                    .withEndAction(
+                                            () -> {
+                                                if (mSubpageHeader.getVisibility() == VISIBLE) {
+                                                    // Set accessibility focus to back button.
+                                                    mBackButton.sendAccessibilityEvent(
+                                                            AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                                                }
+                                                if (onPreviousPageRemoved != null) {
+                                                    onPreviousPageRemoved.run();
+                                                }
+                                            });
                         });
     }
 
@@ -174,7 +188,8 @@ public class PageInfoContainer extends FrameLayout {
         mSubpageHeader.setVisibility(subPageTitle != null ? VISIBLE : GONE);
         mSubpageTitle.setText(subPageTitle);
         mContent.addView(view);
-        announceForAccessibility(
+        ViewCompat.setAccessibilityPaneTitle(
+                this,
                 subPageTitle != null
                         ? subPageTitle
                         : getResources().getString(R.string.accessibility_toolbar_btn_site_info));

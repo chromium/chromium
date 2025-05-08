@@ -134,7 +134,7 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
         gfx::Rect visible_rect =
             j % 2 == 0 ? gfx::Rect(0, 0, 1, 2) : gfx::Rect(0, 1, 1, 1);
         bool needs_blending = false;
-        bool premultiplied_alpha = false;
+        bool premultiplied_alpha = true;
         const gfx::PointF uv_top_left;
         const gfx::PointF uv_bottom_right;
         SkColor4f background_color = SkColors::kGreen;

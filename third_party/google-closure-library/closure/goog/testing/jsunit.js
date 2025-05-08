@@ -18,7 +18,7 @@ goog.provide('goog.testing.jsunit');
 goog.require('goog.dom.TagName');
 goog.require('goog.testing.TestCase');
 goog.require('goog.testing.TestRunner');
-goog.require('goog.userAgent');
+goog.require('goog.testing.asserts');
 
 
 /**
@@ -174,11 +174,6 @@ if (goog.testing.jsunit.AUTO_RUN_ONLOAD) {
     // Execute the test on the next turn, to allow the WebDriver.get()
     // operation to return to the test runner and begin polling.
     var executionDelayAfterLoad = goog.testing.jsunit.AUTO_RUN_DELAY_IN_MS;
-    if (goog.userAgent.IE && !goog.userAgent.isVersionOrHigher('11')) {
-      // Older IE Webdriver will not return onload if the page uses iframes.
-      executionDelayAfterLoad =
-          Math.max(goog.testing.jsunit.AUTO_RUN_DELAY_IN_MS, 500);
-    }
 
     realTimeout(function() {
       'use strict';

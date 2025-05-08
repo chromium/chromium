@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] new DOMMatrix("scale(sign(1em))")
+  assert_throws_dom: function "function() { new self[constr](string); }" did not throw
+[FAIL] new DOMMatrix("translateX(calc(10px * sign(1em - 10px)))")
+  assert_throws_dom: function "function() { new self[constr](string); }" did not throw
+[FAIL] new DOMMatrix("rotate(calc(5deg * sign(1em - 10px)))")
+  assert_throws_dom: function "function() { new self[constr](string); }" did not throw
+[FAIL] new DOMMatrixReadOnly("scale(sign(1em))")
+  assert_throws_dom: function "function() { new self[constr](string); }" did not throw
+[FAIL] new DOMMatrixReadOnly("translateX(calc(10px * sign(1em - 10px)))")
+  assert_throws_dom: function "function() { new self[constr](string); }" did not throw
+[FAIL] new DOMMatrixReadOnly("rotate(calc(5deg * sign(1em - 10px)))")
+  assert_throws_dom: function "function() { new self[constr](string); }" did not throw
+Harness: the test ran to completion.
+

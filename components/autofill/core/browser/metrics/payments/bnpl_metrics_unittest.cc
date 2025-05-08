@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -14,11 +15,13 @@
 
 namespace autofill::autofill_metrics {
 
+using IssuerId = autofill::BnplIssuer::IssuerId;
+
 // Params of the BnplMetricsTest:
 // -- std::string_view issuer_id;
 class BnplMetricsTest : public AutofillMetricsBaseTest,
                         public testing::Test,
-                        public testing::WithParamInterface<std::string_view> {
+                        public testing::WithParamInterface<IssuerId> {
  public:
   BnplMetricsTest() = default;
   ~BnplMetricsTest() override = default;
@@ -27,7 +30,7 @@ class BnplMetricsTest : public AutofillMetricsBaseTest,
 
   void TearDown() override { TearDownHelper(); }
 
-  std::string_view GetBnplIssuerId() { return GetParam(); }
+  IssuerId GetIssuerId() { return GetParam(); }
 };
 
 // BNPL is currently only available for desktop platforms.
@@ -78,7 +81,7 @@ TEST_F(BnplMetricsTest, LogBnplIssuersSyncedCountAtStartup) {
 
 TEST_P(BnplMetricsTest, LogBnplTosDialogShown) {
   base::HistogramTester histogram_tester;
-  std::string_view issuer_id = GetBnplIssuerId();
+  IssuerId issuer_id = GetIssuerId();
 
   LogBnplTosDialogShown(issuer_id);
   histogram_tester.ExpectUniqueSample(
@@ -134,12 +137,12 @@ TEST_F(BnplMetricsTest, LogSelectBnplIssuerDialogResult_IssuerSelected) {
 
 TEST_P(BnplMetricsTest, LogBnplIssuerSelection) {
   base::HistogramTester histogram_tester;
-  std::string_view issuer_id = GetBnplIssuerId();
+  IssuerId issuer_id = GetIssuerId();
 
   LogBnplIssuerSelection(issuer_id);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.Bnpl.SelectionDialogIssuerSelected",
-      GetEnumForIssuerId(issuer_id), /*expected_bucket_count=*/1);
+      "Autofill.Bnpl.SelectionDialogIssuerSelected", issuer_id,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(BnplMetricsTest, LogBnplAddedOnUpdateSuggestion) {
@@ -153,7 +156,7 @@ TEST_F(BnplMetricsTest, LogBnplAddedOnUpdateSuggestion) {
 
 TEST_P(BnplMetricsTest, LogBnplPopupWindowShown) {
   base::HistogramTester histogram_tester;
-  std::string_view issuer_id = GetBnplIssuerId();
+  IssuerId issuer_id = GetIssuerId();
 
   LogBnplPopupWindowShown(issuer_id);
   histogram_tester.ExpectUniqueSample(
@@ -165,7 +168,7 @@ TEST_P(BnplMetricsTest, LogBnplPopupWindowShown) {
 
 TEST_P(BnplMetricsTest, LogBnplPopupWindowResult_Success) {
   base::HistogramTester histogram_tester;
-  std::string_view issuer_id = GetBnplIssuerId();
+  IssuerId issuer_id = GetIssuerId();
 
   LogBnplPopupWindowResult(issuer_id, BnplFlowResult::kSuccess);
   histogram_tester.ExpectUniqueSample(
@@ -176,7 +179,7 @@ TEST_P(BnplMetricsTest, LogBnplPopupWindowResult_Success) {
 
 TEST_P(BnplMetricsTest, LogBnplPopupWindowResult_Failure) {
   base::HistogramTester histogram_tester;
-  std::string_view issuer_id = GetBnplIssuerId();
+  IssuerId issuer_id = GetIssuerId();
 
   LogBnplPopupWindowResult(issuer_id, BnplFlowResult::kFailure);
   histogram_tester.ExpectUniqueSample(
@@ -187,7 +190,7 @@ TEST_P(BnplMetricsTest, LogBnplPopupWindowResult_Failure) {
 
 TEST_P(BnplMetricsTest, LogBnplPopupWindowResult_UserClosed) {
   base::HistogramTester histogram_tester;
-  std::string_view issuer_id = GetBnplIssuerId();
+  IssuerId issuer_id = GetIssuerId();
 
   LogBnplPopupWindowResult(issuer_id, BnplFlowResult::kUserClosed);
   histogram_tester.ExpectUniqueSample(
@@ -198,7 +201,7 @@ TEST_P(BnplMetricsTest, LogBnplPopupWindowResult_UserClosed) {
 
 TEST_P(BnplMetricsTest, LogBnplPopupWindowLatency_Success) {
   base::HistogramTester histogram_tester;
-  std::string_view issuer_id = GetBnplIssuerId();
+  IssuerId issuer_id = GetIssuerId();
 
   LogBnplPopupWindowLatency(base::Milliseconds(1000), issuer_id,
                             BnplFlowResult::kSuccess);
@@ -211,7 +214,7 @@ TEST_P(BnplMetricsTest, LogBnplPopupWindowLatency_Success) {
 
 TEST_P(BnplMetricsTest, LogBnplPopupWindowLatency_Failure) {
   base::HistogramTester histogram_tester;
-  std::string_view issuer_id = GetBnplIssuerId();
+  IssuerId issuer_id = GetIssuerId();
 
   LogBnplPopupWindowLatency(base::Milliseconds(2000), issuer_id,
                             BnplFlowResult::kFailure);
@@ -224,7 +227,7 @@ TEST_P(BnplMetricsTest, LogBnplPopupWindowLatency_Failure) {
 
 TEST_P(BnplMetricsTest, LogBnplPopupWindowLatency_UserClosed) {
   base::HistogramTester histogram_tester;
-  std::string_view issuer_id = GetBnplIssuerId();
+  IssuerId issuer_id = GetIssuerId();
 
   LogBnplPopupWindowLatency(base::Milliseconds(3000), issuer_id,
                             BnplFlowResult::kUserClosed);
@@ -238,7 +241,7 @@ TEST_P(BnplMetricsTest, LogBnplPopupWindowLatency_UserClosed) {
 
 TEST_P(BnplMetricsTest, LogBnplTosDialogResult_AcceptButtonClicked) {
   base::HistogramTester histogram_tester;
-  std::string_view issuer_id = GetBnplIssuerId();
+  IssuerId issuer_id = GetIssuerId();
 
   LogBnplTosDialogResult(BnplTosDialogResult::kAcceptButtonClicked, issuer_id);
   histogram_tester.ExpectUniqueSample(
@@ -250,7 +253,7 @@ TEST_P(BnplMetricsTest, LogBnplTosDialogResult_AcceptButtonClicked) {
 
 TEST_P(BnplMetricsTest, LogBnplTosDialogResult_CancelButtonClicked) {
   base::HistogramTester histogram_tester;
-  std::string_view issuer_id = GetBnplIssuerId();
+  IssuerId issuer_id = GetIssuerId();
 
   LogBnplTosDialogResult(BnplTosDialogResult::kCancelButtonClicked, issuer_id);
   histogram_tester.ExpectUniqueSample(
@@ -271,9 +274,9 @@ TEST_F(BnplMetricsTest, LogBnplSelectionDialogShown) {
 
 INSTANTIATE_TEST_SUITE_P(,
                          BnplMetricsTest,
-                         testing::Values(kBnplAffirmIssuerId,
-                                         kBnplZipIssuerId,
-                                         kBnplAfterpayIssuerId));
+                         testing::Values(IssuerId::kBnplAffirm,
+                                         IssuerId::kBnplZip,
+                                         IssuerId::kBnplAfterpay));
 
 class BnplFormEventsMetricsTest : public AutofillMetricsBaseTest,
                                   public testing::Test {
@@ -312,7 +315,7 @@ TEST_F(BnplFormEventsMetricsTest, SuggestionsShownOnBnplEligibleMerchant) {
 
   ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
               autofill_manager().client().GetAutofillOptimizationGuide()),
-          IsUrlEligibleForCheckoutAmountSearchForIssuerId)
+          IsUrlEligibleForBnplIssuer)
       .WillByDefault(testing::Return(true));
 
   DidShowAutofillSuggestions(form(), /*field_index=*/form().fields().size() - 1,
@@ -337,7 +340,7 @@ TEST_F(BnplFormEventsMetricsTest, BnplSuggestionsNotShownDueToUrl) {
 
   ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
               autofill_manager().client().GetAutofillOptimizationGuide()),
-          IsUrlEligibleForCheckoutAmountSearchForIssuerId)
+          IsUrlEligibleForBnplIssuer)
       .WillByDefault(testing::Return(false));
 
   DidShowAutofillSuggestions(form(), /*field_index=*/form().fields().size() - 1,
@@ -361,7 +364,7 @@ TEST_F(BnplFormEventsMetricsTest, SuggestionAccepted) {
 TEST_F(BnplFormEventsMetricsTest, FormFilledOnceWithAffirm) {
   base::HistogramTester histogram_tester;
 
-  LogFormFilledWithBnplVcn(kBnplAffirmIssuerId);
+  LogFormFilledWithBnplVcn(BnplIssuer::IssuerId::kBnplAffirm);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl",
@@ -372,7 +375,7 @@ TEST_F(BnplFormEventsMetricsTest, FormFilledOnceWithAffirm) {
 TEST_F(BnplFormEventsMetricsTest, FormFilledOnceWithZip) {
   base::HistogramTester histogram_tester;
 
-  LogFormFilledWithBnplVcn(kBnplZipIssuerId);
+  LogFormFilledWithBnplVcn(BnplIssuer::IssuerId::kBnplZip);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl",
@@ -383,7 +386,7 @@ TEST_F(BnplFormEventsMetricsTest, FormFilledOnceWithZip) {
 TEST_F(BnplFormEventsMetricsTest, FormFilledOnceWithAfterpay) {
   base::HistogramTester histogram_tester;
 
-  LogFormFilledWithBnplVcn(kBnplAfterpayIssuerId);
+  LogFormFilledWithBnplVcn(BnplIssuer::IssuerId::kBnplAfterpay);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl",
@@ -394,7 +397,7 @@ TEST_F(BnplFormEventsMetricsTest, FormFilledOnceWithAfterpay) {
 TEST_F(BnplFormEventsMetricsTest, FormSubmittedOnceWithAffirm) {
   base::HistogramTester histogram_tester;
 
-  LogFormSubmittedWithBnplVcn(kBnplAffirmIssuerId);
+  LogFormSubmittedWithBnplVcn(BnplIssuer::IssuerId::kBnplAffirm);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl",
@@ -405,7 +408,7 @@ TEST_F(BnplFormEventsMetricsTest, FormSubmittedOnceWithAffirm) {
 TEST_F(BnplFormEventsMetricsTest, FormSubmittedOnceWithZip) {
   base::HistogramTester histogram_tester;
 
-  LogFormSubmittedWithBnplVcn(kBnplZipIssuerId);
+  LogFormSubmittedWithBnplVcn(BnplIssuer::IssuerId::kBnplZip);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl",
@@ -416,7 +419,7 @@ TEST_F(BnplFormEventsMetricsTest, FormSubmittedOnceWithZip) {
 TEST_F(BnplFormEventsMetricsTest, FormSubmittedOnceWithAfterpay) {
   base::HistogramTester histogram_tester;
 
-  LogFormSubmittedWithBnplVcn(kBnplAfterpayIssuerId);
+  LogFormSubmittedWithBnplVcn(BnplIssuer::IssuerId::kBnplAfterpay);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.CreditCard.Bnpl",

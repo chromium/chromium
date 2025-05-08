@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_bloberizer.h"
 
 #include <memory>
@@ -83,7 +78,7 @@ void CheckBlobBuffer(const ShapeResultBloberizer::BlobBuffer& blob_buffer,
   auto&& expected_blob_iter = expected_blobs.begin();
   for (; blob_info_iter != blob_buffer.end() &&
          expected_blob_iter != expected_blobs.end();
-       ++blob_info_iter, ++expected_blob_iter) {
+       UNSAFE_TODO(++blob_info_iter), ++expected_blob_iter) {
     size_t blob_index = expected_blob_iter - expected_blobs.begin();
     const ExpectedBlob& expected_blob = *expected_blob_iter;
     SkTextBlob::Iter::Run run;
@@ -106,21 +101,24 @@ void CheckBlobBuffer(const ShapeResultBloberizer::BlobBuffer& blob_buffer,
       EXPECT_EQ(actual_size, expected_size)
           << "Blob: " << blob_index << " Run: " << run_index;
       for (int i = 0; i < actual_size && i < expected_size; ++i) {
-        EXPECT_EQ(run.fUtf8_forTest[i], expected_run.utf8[i])
+        EXPECT_EQ(UNSAFE_TODO(run.fUtf8_forTest[i]), expected_run.utf8[i])
             << "Blob: " << blob_index << " Run: " << run_index << " i: " << i;
       }
 
       auto utf8_index_previous = run.fClusterIndex_forTest[0];
       for (int i = 0; i < run.fGlyphCount; ++i) {
-        EXPECT_LE(0ul, run.fClusterIndex_forTest[i]);
-        EXPECT_LT((int)run.fClusterIndex_forTest[i], run.fUtf8Size_forTest);
+        EXPECT_LE(0ul, UNSAFE_TODO(run.fClusterIndex_forTest[i]));
+        EXPECT_LT((int)UNSAFE_TODO(run.fClusterIndex_forTest[i]),
+                  run.fUtf8Size_forTest);
         auto expected_direction = expected_run.cluster_direction;
         if (expected_direction == ExpectedRun::ClusterDirection::kAscending) {
-          EXPECT_LE(utf8_index_previous, run.fClusterIndex_forTest[i]);
+          EXPECT_LE(utf8_index_previous,
+                    UNSAFE_TODO(run.fClusterIndex_forTest[i]));
         } else {
-          EXPECT_GE(utf8_index_previous, run.fClusterIndex_forTest[i]);
+          EXPECT_GE(utf8_index_previous,
+                    UNSAFE_TODO(run.fClusterIndex_forTest[i]));
         }
-        utf8_index_previous = run.fClusterIndex_forTest[i];
+        utf8_index_previous = UNSAFE_TODO(run.fClusterIndex_forTest[i]);
       }
     }
   }

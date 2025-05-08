@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsSessionToken;
@@ -19,6 +20,7 @@ import androidx.browser.trusted.TrustedWebActivityIntentBuilder;
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
@@ -40,20 +42,61 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.Origin;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.Objects;
+
 /**
  * Holds a hidden tab which may be used to preload pages before a CustomTabActivity is launched.
  *
- * Lifecycle: 1:1 relationship between this and {@link CustomTabsConnection}.
- * Thread safety: Only access on UI Thread.
+ * <p>Lifecycle: 1:1 relationship between this and {@link CustomTabsConnection}. <br>
+ * Thread safety: Only access on UI Thread. <br>
  * Native: This class needs native to be loaded (since it creates Tabs).
  */
 public class HiddenTabHolder {
+    private static final String EARLY_NAV_FAILURE_NAME = "CustomTabs.Startup.EarlyNavFailureReason";
+
+    /**
+     * Records why External Navigation would have failed if we didn't work around whatever bug we're
+     * hitting. Used for debugging.
+     */
+    @IntDef({
+        EarlyNavFailureReason.SUCCESS,
+        EarlyNavFailureReason.NO_SESSION,
+        EarlyNavFailureReason.NO_SPECULATION,
+        EarlyNavFailureReason.WRONG_URL_VALID_SESSION,
+        EarlyNavFailureReason.WRONG_REFERRER_VALID_SESSION,
+        EarlyNavFailureReason.WRONG_URL_INVALID_SESSION,
+        EarlyNavFailureReason.WRONG_REFERRER_INVALID_SESSION,
+        EarlyNavFailureReason.NUM_ENTRIES
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface EarlyNavFailureReason {
+        /* Not a failure. */
+        int SUCCESS = 0;
+        /* Intent has no associated session. */
+        int NO_SESSION = 1;
+        /* Speculation was gone by the time we received the intent. */
+        int NO_SPECULATION = 2;
+        /* Intent URL doesn't match speculated URL, session is valid. */
+        int WRONG_URL_VALID_SESSION = 3;
+        /* Intent referrer doesn't match speculated referrer, session is valid. */
+        int WRONG_REFERRER_VALID_SESSION = 4;
+        /* Intent URL doesn't match speculated URL, session is invalid. */
+        int WRONG_URL_INVALID_SESSION = 5;
+        /* Intent referrer doesn't match speculated referrer, session is invalid. */
+        int WRONG_REFERRER_INVALID_SESSION = 6;
+
+        int NUM_ENTRIES = 6;
+    }
+
     /** Holds the parameters for the current hidden tab speculation. */
     @VisibleForTesting
     static final class SpeculationParams {
         public final SessionHolder<?> session;
         public final HiddenTab hiddenTab;
         public final String referrer;
+        public final boolean isEarlyNav;
 
         private SpeculationParams(
                 SessionHolder<?> session,
@@ -62,7 +105,8 @@ public class HiddenTabHolder {
                 String referrer,
                 TabObserverRegistrar tabObserverRegistrar,
                 CustomTabObserver customTabObserver,
-                CustomTabNavigationEventObserver customTabNavigationEventObserver) {
+                CustomTabNavigationEventObserver customTabNavigationEventObserver,
+                boolean isEarlyNav) {
             this.session = session;
             this.hiddenTab =
                     new HiddenTab(
@@ -72,6 +116,7 @@ public class HiddenTabHolder {
                             customTabNavigationEventObserver,
                             url);
             this.referrer = referrer;
+            this.isEarlyNav = isEarlyNav;
         }
     }
 
@@ -133,6 +178,8 @@ public class HiddenTabHolder {
             String url,
             @Nullable Bundle extras,
             @Nullable WebContents webContents) {
+        // If a new speculation arrives with an early-nav in progress, don't clobber the early nav.
+        if (mSpeculation != null && mSpeculation.isEarlyNav) return;
         assert mSpeculation == null;
         Intent extrasIntent = new Intent();
         if (extras != null) extrasIntent.putExtras(extras);
@@ -197,7 +244,8 @@ public class HiddenTabHolder {
                         referrer,
                         registrar,
                         customTabObserver,
-                        customTabNavigationEventObserver);
+                        customTabNavigationEventObserver,
+                        /* isEarlyNav= */ false);
         tab.loadUrl(loadParams);
     }
 
@@ -216,10 +264,15 @@ public class HiddenTabHolder {
             @Nullable SessionHolder<?> session,
             boolean ignoreFragments,
             String url,
-            @Nullable String referrer) {
+            Intent intent) {
         try (TraceEvent e = TraceEvent.scoped("CustomTabsConnection.takeHiddenTab")) {
-            if (mSpeculation == null || session == null) return null;
-            if (!session.equals(mSpeculation.session)) return null;
+            if (intent.getBooleanExtra(IntentHandler.EXTRA_CCT_EARLY_NAV, false)) {
+                recordEarlyNavDebugMetric(session, ignoreFragments, url, intent);
+            }
+
+            if (mSpeculation == null) return null;
+            // ~10% of CCT startups have no session, allow them to use Early Nav.
+            if (!Objects.equals(session, mSpeculation.session)) return null;
 
             HiddenTab hiddenTab = mSpeculation.hiddenTab;
             String speculatedUrl = hiddenTab.url;
@@ -232,6 +285,7 @@ public class HiddenTabHolder {
                             ? UrlUtilities.urlsMatchIgnoringFragments(speculatedUrl, url)
                             : TextUtils.equals(speculatedUrl, url);
 
+            String referrer = IntentHandler.getReferrerUrlIncludingExtraHeaders(intent);
             if (referrer == null) referrer = "";
 
             if (urlsMatch && TextUtils.equals(speculationReferrer, referrer)) {
@@ -243,10 +297,57 @@ public class HiddenTabHolder {
         }
     }
 
+    // Not a dynamic string, just an error code enum.
+    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
+    void recordEarlyNavDebugMetric(
+            @Nullable SessionHolder<?> session,
+            boolean ignoreFragments,
+            String url,
+            Intent intent) {
+        @EarlyNavFailureReason int failureReason = EarlyNavFailureReason.SUCCESS;
+        if (mSpeculation == null) {
+            failureReason = EarlyNavFailureReason.NO_SPECULATION;
+        } else if (!Objects.equals(session, mSpeculation.session)) {
+            // NO_SESSION redefined to be wrong session. This is just for short term debugging so
+            // it's fine.
+            failureReason = EarlyNavFailureReason.NO_SESSION;
+        } else {
+            boolean isSessionValid = CustomTabsConnection.getInstance().isSessionValid(session);
+            HiddenTab hiddenTab = mSpeculation.hiddenTab;
+            String speculatedUrl = hiddenTab.url;
+            boolean urlsMatch =
+                    ignoreFragments
+                            ? UrlUtilities.urlsMatchIgnoringFragments(speculatedUrl, url)
+                            : TextUtils.equals(speculatedUrl, url);
+            String referrer = IntentHandler.getReferrerUrlIncludingExtraHeaders(intent);
+            if (referrer == null) referrer = "";
+            if (!urlsMatch) {
+                if (isSessionValid) {
+                    failureReason = EarlyNavFailureReason.WRONG_URL_VALID_SESSION;
+                } else {
+                    failureReason = EarlyNavFailureReason.WRONG_URL_INVALID_SESSION;
+                }
+            } else {
+                if (referrer == null) referrer = "";
+                if (!TextUtils.equals(mSpeculation.referrer, referrer)) {
+                    if (isSessionValid) {
+                        failureReason = EarlyNavFailureReason.WRONG_REFERRER_VALID_SESSION;
+                    } else {
+                        failureReason = EarlyNavFailureReason.WRONG_REFERRER_INVALID_SESSION;
+                    }
+                }
+            }
+        }
+        TraceEvent.instant(EARLY_NAV_FAILURE_NAME + "_" + failureReason);
+        RecordHistogram.recordEnumeratedHistogram(
+                EARLY_NAV_FAILURE_NAME, failureReason, EarlyNavFailureReason.NUM_ENTRIES);
+    }
+
     /** Cancels the speculation for a given session, or any session if null. */
     void destroyHiddenTab(@Nullable SessionHolder<?> session) {
         if (mSpeculation == null) return;
         if (session != null && !session.equals(mSpeculation.session)) return;
+        if (mSpeculation.isEarlyNav) return;
 
         mSpeculation.hiddenTab.tab.destroy();
         mSpeculation = null;
@@ -322,7 +423,8 @@ public class HiddenTabHolder {
                         referrer,
                         registrar,
                         customTabObserver,
-                        customTabNavigationEventObserver);
+                        customTabNavigationEventObserver,
+                        /* isEarlyNav= */ true);
 
         // Notifies PreloadingImpl that a navigation to CCT is happening. This is used to calculate
         // the recall of CCT prefetch's attempt. Please see
@@ -335,6 +437,7 @@ public class HiddenTabHolder {
             }
         }
 
+        intent.putExtra(IntentHandler.EXTRA_CCT_EARLY_NAV, true);
         tab.loadUrl(params);
         return true;
     }

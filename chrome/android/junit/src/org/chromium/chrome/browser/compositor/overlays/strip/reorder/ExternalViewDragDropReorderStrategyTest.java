@@ -7,7 +7,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.floatThat;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -17,12 +16,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
@@ -35,6 +30,8 @@ import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabGroupDropDataAndroid;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.dragdrop.DragDropGlobalState.TrackerToken;
@@ -49,19 +46,10 @@ import java.util.List;
 @Config(qualifiers = "sw600dp")
 @RunWith(BaseRobolectricTestRunner.class)
 public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTestBase {
-
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    // Constants
-    private static final Integer INTERACTING_VIEW_ROOT_ID = 24; // Arbitrary value.
-
     // Data
     private StripLayoutTab mStripTab1;
     private StripLayoutTab mStripTab2;
     private StripLayoutTab mStripTab3;
-    @Mock private Tab mTabForStripTab1;
-    @Mock private Tab mTabForStripTab2;
-    @Mock private Tab mTabForStripTab3;
 
     // Target
     private ExternalViewDragDropReorderStrategy mStrategy;
@@ -70,6 +58,11 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
     @Override
     public void setup() {
         super.setup();
+        mModel.addTab(
+                mTabForInteractingView,
+                /* index= */ 0,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
         mStrategy =
                 new ExternalViewDragDropReorderStrategy(
                         mReorderDelegate,
@@ -82,8 +75,23 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
                         mGroupIdToHideSupplier,
                         mTabWidthSupplier,
                         mLastReorderScrollTimeSupplier);
-        setupStripViews();
         setupDragDropState(/* isGroupDrag= */ false);
+    }
+
+    @Override
+    protected void setupStripViews() {
+        mStripTab1 = buildStripTab(TAB_ID1, 0);
+        mInteractingGroupTitle = buildGroupTitle(INTERACTING_VIEW_ID, GROUP_ID1, TAB_WIDTH);
+        mInteractingTab = buildStripTab(INTERACTING_VIEW_ID, 2 * TAB_WIDTH);
+        mStripTab2 = buildStripTab(TAB_ID2, 3 * TAB_WIDTH);
+        mStripTab3 = buildStripTab(TAB_ID3, 4 * TAB_WIDTH);
+
+        mStripTabs = new StripLayoutTab[] {mStripTab1, mInteractingTab, mStripTab2, mStripTab3};
+        mGroupTitles = new StripLayoutGroupTitle[] {mInteractingGroupTitle};
+        mStripViews =
+                new StripLayoutView[] {
+                    mStripTab1, mInteractingGroupTitle, mInteractingTab, mStripTab2, mStripTab3
+                };
     }
 
     @Test
@@ -122,8 +130,8 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
 
     @Test
     public void testStartReorder_firstAndLastTabInGroup_setEdgeMargins() {
-        mockTabInGroup(mStripTab1.getTabId(), mTabForStripTab1);
-        mockTabInGroup(mStripTab3.getTabId(), mTabForStripTab3);
+        mockTabInGroup(mStripTab1.getTabId());
+        mockTabInGroup(mStripTab3.getTabId());
 
         // Call
         mStrategy.startReorderMode(
@@ -170,8 +178,8 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
         setupDragDropState(/* isGroupDrag= */ true);
 
         // Group and collapse tabs.
-        mockTabInGroup(INTERACTING_VIEW_ROOT_ID, mTabForInteractingView);
-        mockTabInGroup(mStripTab2.getTabId(), mTabForStripTab2);
+        mockTabInGroup(INTERACTING_VIEW_ID);
+        mockTabInGroup(mStripTab2.getTabId());
         mInteractingGroupTitle.setCollapsed(true);
 
         // Start reorder to set interacting view - bottom indicator width should be 0 if collapsed.
@@ -222,10 +230,8 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
         setupDragDropState(/* isGroupDrag= */ true);
 
         // Group and collapse tabs.
-        mockTabInGroup(INTERACTING_VIEW_ROOT_ID, mTabForInteractingView);
-        mockTabInGroup(mStripTab2.getTabId(), mTabForStripTab2);
-        when(mTabGroupModelFilter.getRelatedTabList(anyInt()))
-                .thenReturn(Arrays.asList(mTabForInteractingView, mTabForStripTab2));
+        mockTabInGroup(INTERACTING_VIEW_ID);
+        mockTabInGroup(mStripTab2.getTabId());
         float initialBottomIndicatorWidth = mInteractingGroupTitle.getBottomIndicatorWidth();
 
         // Start reorder to set interacting view - bottom indicator width should be 0 for
@@ -283,7 +289,6 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
 
         // Move drag to mStripTab2.
         // Call - endX = end of mStripTab2 (accounting for interacting view's trailing margin)
-        when(mModel.getTabById(anyInt())).thenReturn(mTabForInteractingView);
         mStrategy.updateReorderPosition(
                 mStripViews,
                 mGroupTitles,
@@ -310,7 +315,7 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
 
     @Test
     public void testUpdateReorder_hoveredTabDiffThanInteractingView_updateInteractingView() {
-        mockTabInGroup(mStripTab2.getTabId(), mTabForStripTab2);
+        mockTabInGroup(mStripTab2.getTabId());
         // Start reorder to set interacting view - interacting view gets trailing margin
         mStrategy.startReorderMode(
                 mStripViews, mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
@@ -347,8 +352,8 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
     @Test
     public void testUpdateReorder_hoveredTabCollapsed_noBottomIndicator() {
         // Group and collapse tabs.
-        mockTabInGroup(INTERACTING_VIEW_ROOT_ID, mTabForInteractingView);
-        mockTabInGroup(mStripTab2.getTabId(), mTabForStripTab2);
+        mockTabInGroup(INTERACTING_VIEW_ID);
+        mockTabInGroup(mStripTab2.getTabId());
         mInteractingGroupTitle.setCollapsed(true);
 
         // Start reorder to set interacting view - interacting view shouldn't bottom indicator width
@@ -475,7 +480,6 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
         // Call
         int draggedTabId = 100; // Arbitrary value.
         int dropIndex = 1;
-        when(mModel.getTabById(anyInt())).thenReturn(mTabForInteractingView);
         mStrategy.handleDrop(mGroupTitles, Collections.singletonList(draggedTabId), dropIndex);
 
         // Verify
@@ -487,26 +491,9 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
                 mStrategy.getInteractingViewDuringStopForTesting());
     }
 
-    private void mockTabInGroup(int id, Tab tabForStripTab) {
-        when(mModel.getTabById(id)).thenReturn(tabForStripTab);
-        when(mTabGroupModelFilter.isTabInTabGroup(tabForStripTab)).thenReturn(true);
-        when(tabForStripTab.getTabGroupId()).thenReturn(GROUP_ID1);
-    }
-
-    private void setupStripViews() {
-        mStripTab1 = buildStripTab(1, 0, TAB_WIDTH);
-        mInteractingGroupTitle =
-                buildGroupTitle(INTERACTING_VIEW_ROOT_ID, GROUP_ID1, TAB_WIDTH, TAB_WIDTH);
-        mInteractingTab = buildStripTab(INTERACTING_VIEW_ID, 2 * TAB_WIDTH, TAB_WIDTH);
-        mStripTab2 = buildStripTab(2, 3 * TAB_WIDTH, TAB_WIDTH);
-        mStripTab3 = buildStripTab(3, 4 * TAB_WIDTH, TAB_WIDTH);
-
-        mStripTabs = new StripLayoutTab[] {mStripTab1, mInteractingTab, mStripTab2, mStripTab3};
-        mGroupTitles = new StripLayoutGroupTitle[] {mInteractingGroupTitle};
-        mStripViews =
-                new StripLayoutView[] {
-                    mStripTab1, mInteractingGroupTitle, mInteractingTab, mStripTab2, mStripTab3
-                };
+    private void mockTabInGroup(int id) {
+        Tab tab = mModel.getTabById(id);
+        mockTabGroup(GROUP_ID1, tab.getId(), tab);
     }
 
     private void setupDragDropState(boolean isGroupDrag) {

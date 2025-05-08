@@ -452,8 +452,6 @@ xxxxxxxx x</div>
 
 <div id="test-opacity"></div>
 
-<iframe id="test-frame-offset"></iframe>
-
 <iframe id="test-translate-frame-standard" src="style_test_standard.html"
  style="overflow:auto;position:absolute;left:100px;top:150px;width:200px;height:200px;border:0px;">
 </iframe>
@@ -527,7 +525,7 @@ Test-visible
   </svg>
 </div>
 
-<script>
+<script nonce="CSP+Nonce+For+Tests+Only">
 if (!goog.userAgent.IE || goog.userAgent.isDocumentModeOrHigher(9)) {
   document.write(
       '<iframe id="svg-frame" src="style_test_rect.svg"></' + 'iframe>');

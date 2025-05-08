@@ -302,10 +302,6 @@ class DenseSet {
       return a.index_ == b.index_;
     }
 
-    friend constexpr bool operator!=(const Iterator& a, const Iterator& b) {
-      return !(a == b);
-    }
-
     constexpr T operator*() const {
       DCHECK(dereferenceable());
       return index_to_value(index_);

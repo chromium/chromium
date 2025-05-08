@@ -252,12 +252,11 @@ void SavedTabGroupButton::UpdateButtonLayout() {
   }
 
   if (is_shared_) {
-    const ui::ColorId icon_color =
-        GetText().empty() ? GetSavedTabGroupOutlineColorId(tab_group_color_id_)
-                          : ui::kColorMenuIcon;
     SetImageModel(ButtonState::STATE_NORMAL,
-                  ui::ImageModel::FromVectorIcon(kPeopleGroupIcon, icon_color,
-                                                 gfx::kFaviconSize));
+                  ui::ImageModel::FromVectorIcon(
+                      kPeopleGroupIcon,
+                      GetSavedTabGroupForegroundColorId(tab_group_color_id_),
+                      gfx::kFaviconSize));
   }
 
   if (GetText().empty()) {

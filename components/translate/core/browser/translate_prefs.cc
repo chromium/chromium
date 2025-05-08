@@ -108,11 +108,6 @@ void MigrateObsoleteAlwaysTranslateLanguagesPref(PrefService* prefs) {
 }
 
 bool IsTranslateLanguage(std::string_view language) {
-  // Allow "xx" to be used for testing purposes.
-  if (language == "xx") {
-    return true;
-  }
-
   // Check if |language| is translatable.
   TranslateLanguageList* language_list =
       TranslateDownloadManager::GetInstance()->language_list();
@@ -258,15 +253,25 @@ bool TranslatePrefs::IsBlockedLanguage(std::string_view input_language) const {
 
 void TranslatePrefs::BlockLanguage(std::string_view input_language) {
   DCHECK(!input_language.empty());
-  std::string canonical_lang(input_language);
-  language::ToTranslateLanguageSynonym(&canonical_lang);
-  if (!l10n_util::IsPossibleAcceptLanguage(canonical_lang)) {
+
+  // Get the translate version of the string to add to the blocked list.
+  std::string translate_lang(input_language);
+  language::ToTranslateLanguageSynonym(&translate_lang);
+
+  // Get the Chrome version of the base language.
+  std::string chrome_lang(l10n_util::GetLanguage(input_language));
+  language::ToChromeLanguageSynonym(&chrome_lang);
+
+  // If neither the translate or Chrome language is a possible accept
+  // language skip adding to blocked language list.
+  if (!l10n_util::IsPossibleAcceptLanguage(translate_lang) &&
+      !l10n_util::IsPossibleAcceptLanguage(chrome_lang)) {
     return;
   }
 
-  if (!IsBlockedLanguage(canonical_lang)) {
+  if (!IsBlockedLanguage(translate_lang)) {
     ScopedListPrefUpdate update(prefs_, translate::prefs::kBlockedLanguages);
-    update->Append(std::move(canonical_lang));
+    update->Append(std::move(translate_lang));
   }
   // Remove the blocked language from the always translate list if present.
   RemoveLanguagePairFromAlwaysTranslateList(input_language);

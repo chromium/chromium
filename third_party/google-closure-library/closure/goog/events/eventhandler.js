@@ -182,6 +182,7 @@ goog.events.EventHandler.prototype.listen_ = function(
       return self;
     }
 
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     var key = listenerObj.key;
     self.keys_[key] = listenerObj;
   }
@@ -281,6 +282,7 @@ goog.events.EventHandler.prototype.listenOnce_ = function(
       return self;
     }
 
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     var key = listenerObj.key;
     self.keys_[key] = listenerObj;
   }

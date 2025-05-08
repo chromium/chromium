@@ -26,20 +26,20 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_program.h"
 
 #include "gpu/command_buffer/client/gles2_interface.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_context_group.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_context_object_support.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_shader.h"
 
 namespace blink {
 
-WebGLProgram::WebGLProgram(WebGLRenderingContextBase* ctx)
-    : WebGLSharedPlatform3DObject(ctx),
+WebGLProgram::WebGLProgram(WebGLContextObjectSupport* ctx)
+    : WebGLObject(ctx),
       link_status_(false),
       link_count_(0),
       active_transform_feedback_count_(0),
       info_valid_(true),
       required_transform_feedback_buffer_count_(0),
       required_transform_feedback_buffer_count_after_next_link_(0) {
-  if (!ctx->isContextLost()) {
+  if (!ctx->IsLost()) {
     SetObject(ctx->ContextGL()->CreateProgram());
   }
 }
@@ -47,8 +47,7 @@ WebGLProgram::WebGLProgram(WebGLRenderingContextBase* ctx)
 WebGLProgram::~WebGLProgram() = default;
 
 void WebGLProgram::DeleteObjectImpl(gpu::gles2::GLES2Interface* gl) {
-  gl->DeleteProgram(object_);
-  object_ = 0;
+  gl->DeleteProgram(Object());
   if (!DestructionInProgress()) {
     if (vertex_shader_) {
       vertex_shader_->OnDetached(gl);
@@ -61,17 +60,17 @@ void WebGLProgram::DeleteObjectImpl(gpu::gles2::GLES2Interface* gl) {
   }
 }
 
-bool WebGLProgram::LinkStatus(WebGLRenderingContextBase* context) {
+bool WebGLProgram::LinkStatus(WebGLContextObjectSupport* context) {
   CacheInfoIfNeeded(context);
   return link_status_;
 }
 
-bool WebGLProgram::CompletionStatus(WebGLRenderingContextBase* context) {
+bool WebGLProgram::CompletionStatus(WebGLContextObjectSupport* context) {
   GLint completed = 0;
   gpu::gles2::GLES2Interface* gl = context->ContextGL();
   // If gl is nullptr, context has been lost.
   if (gl) {
-    gl->GetProgramiv(object_, GL_COMPLETION_STATUS_KHR, &completed);
+    gl->GetProgramiv(Object(), GL_COMPLETION_STATUS_KHR, &completed);
   }
 
   return completed;
@@ -139,18 +138,19 @@ bool WebGLProgram::DetachShader(WebGLShader* shader) {
   }
 }
 
-void WebGLProgram::CacheInfoIfNeeded(WebGLRenderingContextBase* context) {
+void WebGLProgram::CacheInfoIfNeeded(WebGLContextObjectSupport* context) {
   if (info_valid_)
     return;
-  if (!object_)
+  if (!HasObject()) {
     return;
+  }
   gpu::gles2::GLES2Interface* gl = context->ContextGL();
   if (!gl) {
     // Context has been lost.
     return;
   }
   GLint link_status = 0;
-  gl->GetProgramiv(object_, GL_LINK_STATUS, &link_status);
+  gl->GetProgramiv(Object(), GL_LINK_STATUS, &link_status);
   setLinkStatus(link_status);
 }
 
@@ -169,7 +169,7 @@ void WebGLProgram::setLinkStatus(bool link_status) {
 void WebGLProgram::Trace(Visitor* visitor) const {
   visitor->Trace(vertex_shader_);
   visitor->Trace(fragment_shader_);
-  WebGLSharedPlatform3DObject::Trace(visitor);
+  WebGLObject::Trace(visitor);
 }
 
 }  // namespace blink

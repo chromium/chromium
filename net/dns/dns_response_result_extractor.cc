@@ -385,6 +385,9 @@ ResultsOrError ExtractTxtResults(const DnsResponse& response,
   for (const auto& record : txt_records.value()) {
     const TxtRecordRdata* rdata = record->rdata<net::TxtRecordRdata>();
     DCHECK(rdata);
+    // TXT invalid without at least one string. If none, should be rejected by
+    // parser.
+    CHECK(!rdata->texts().empty());
     strings.insert(strings.end(), rdata->texts().begin(), rdata->texts().end());
 
     base::TimeDelta ttl = base::Seconds(record->ttl());

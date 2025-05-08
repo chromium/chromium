@@ -300,6 +300,24 @@ struct GetDetailsForEnrollmentResponseDetails {
   LegalMessageLines issuer_legal_message;
 };
 
+// An enum set in the GetCardUploadDetailsRequest indicating the source of the
+// request when uploading a card to Google Payments. It should stay consistent
+// with the same enum in Google Payments server code.
+enum UploadCardSource {
+  // Source unknown.
+  UNKNOWN_UPLOAD_CARD_SOURCE,
+  // Single card is being uploaded from the normal credit card offer-to-save
+  // prompt during a checkout flow.
+  UPSTREAM_CHECKOUT_FLOW,
+  // Single card is being uploaded from chrome://settings/payments.
+  UPSTREAM_SETTINGS_PAGE,
+  // Single card is being uploaded after being scanned by OCR.
+  UPSTREAM_CARD_OCR,
+  // Single card is being uploaded from the Save and Fill dialog during a
+  // non-post-checkout flow.
+  UPSTREAM_SAVE_AND_FILL,
+};
+
 // A collection of the information required to make a credit card upload
 // request.
 struct UploadCardRequestDetails {
@@ -316,6 +334,8 @@ struct UploadCardRequestDetails {
   std::string risk_data;
   std::string app_locale;
   std::vector<ClientBehaviorConstants> client_behavior_signals;
+  UploadCardSource upload_card_source =
+      UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE;
 };
 
 // A collection of information required to make an IBAN upload request.
@@ -330,21 +350,6 @@ struct UploadIbanRequestDetails {
   std::u16string value;
   std::u16string nickname;
   std::string risk_data;
-};
-
-// An enum set in the GetCardUploadDetailsRequest indicating the source of the
-// request when uploading a card to Google Payments. It should stay consistent
-// with the same enum in Google Payments server code.
-enum UploadCardSource {
-  // Source unknown.
-  UNKNOWN_UPLOAD_CARD_SOURCE,
-  // Single card is being uploaded from the normal credit card offer-to-save
-  // prompt during a checkout flow.
-  UPSTREAM_CHECKOUT_FLOW,
-  // Single card is being uploaded from chrome://settings/payments.
-  UPSTREAM_SETTINGS_PAGE,
-  // Single card is being uploaded after being scanned by OCR.
-  UPSTREAM_CARD_OCR,
 };
 
 // A collection of information received in the response for an

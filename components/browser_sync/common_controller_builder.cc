@@ -666,7 +666,7 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
               : nullptr,
           std::make_unique<password_manager::PasswordLocalDataBatchUploader>(
               profile_password_store_.value(), account_password_store_.value()),
-          pref_service_.value(), identity_manager_.value(), sync_service));
+          pref_service_.value(), identity_manager_.value()));
 
       // Couple password sharing invitations with password data type.
       if (!disabled_types.Has(syncer::INCOMING_PASSWORD_SHARING_INVITATION) &&

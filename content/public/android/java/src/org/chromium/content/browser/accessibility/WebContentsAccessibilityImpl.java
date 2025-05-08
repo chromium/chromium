@@ -66,7 +66,6 @@ import android.content.ReceiverCallNotAllowedException;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Bundle;
-import android.util.Pair;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
@@ -805,10 +804,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             WebContentsAccessibilityImplJni.get()
                     .setBrowserAXMode(
                             mNativeObj,
-                            AccessibilityState.isScreenReaderEnabled(),
-                            AccessibilityState.isOnlyPasswordManagersEnabled(),
                             AccessibilityState.isKnownScreenReaderEnabled(),
-                            AccessibilityState.getTalkBackEnabledState().second);
+                            AccessibilityState.isComplexUserInteractionServiceEnabled(),
+                            AccessibilityState.isOnlyPasswordManagersEnabled(),
+                            AccessibilityState.getNumberOfRunningServices() == 1);
 
             // Update the state of enabling/disabling the image descriptions feature. To enable the
             // feature, this instance must be a candidate and a screen reader must be enabled.
@@ -1472,7 +1471,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             boolean forwards,
             boolean canWrap,
             boolean setSequentialFocus) {
-        Pair<Boolean, Boolean> talkbackEnabledState = AccessibilityState.getTalkBackEnabledState();
         int id =
                 WebContentsAccessibilityImplJni.get()
                         .findElementType(
@@ -1482,8 +1480,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                                 forwards,
                                 canWrap,
                                 elementType.isEmpty(),
-                                talkbackEnabledState.first,
-                                talkbackEnabledState.second);
+                                AccessibilityState.isKnownScreenReaderEnabled(),
+                                AccessibilityState.getNumberOfRunningServices() == 1);
         if (id == 0) return false;
 
         if (setSequentialFocus) {
@@ -2279,10 +2277,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
         void setBrowserAXMode(
                 long nativeWebContentsAccessibilityAndroid,
-                boolean screenReaderMode,
-                boolean formControlsMode,
-                boolean isScreenReaderRunning,
-                boolean onScreenMode);
+                boolean isKnownScreenReaderEnabled,
+                boolean isComplexAccessibilityServiceEnabled,
+                boolean isFormControlsCandidate,
+                boolean isOnScreenModeCandidate);
 
         void disableRendererAccessibility(long nativeWebContentsAccessibilityAndroid);
 

@@ -17,8 +17,10 @@ struct AccountQuery: EntityQuery {
   }
 
   func defaultResult() async -> AccountDetail? {
-    let noAccount = AccountDetail(
-      id: "IDS_IOS_WIDGET_KIT_EXTENSION_NO_ACCOUNT_LABEL", gaia: "Default")
+    let noAccountName = String(
+      localized: "IDS_IOS_WIDGET_KIT_EXTENSION_NO_ACCOUNT_LABEL")
+
+    let noAccount = AccountDetail(id: noAccountName, gaia: "Default")
 
     guard let accounts = try? await suggestedEntities()
     else { return noAccount }
@@ -58,7 +60,9 @@ struct AccountDetail: AppEntity {
 
     var accountsDetail: [AccountDetail] = []
 
-    accountsDetail.append(AccountDetail(id: "No account", gaia: "Default"))
+    let noAccountName = String(
+      localized: "IDS_IOS_WIDGET_KIT_EXTENSION_NO_ACCOUNT_LABEL")
+    accountsDetail.append(AccountDetail(id: noAccountName, gaia: "Default"))
 
     for (key, value) in accounts {
       if let email = value["email"] as? String {

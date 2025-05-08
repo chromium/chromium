@@ -162,6 +162,7 @@
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/header_util.h"
+#include "services/network/public/cpp/integrity_policy.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/permissions_policy/fenced_frame_permissions_policies.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
@@ -2761,6 +2762,9 @@ void NavigationRequest::BeginNavigationImpl() {
       false /* has_followed redirect */,
       false /* url_upgraded_after_redirect */, false /* is_response_check */);
   if (net_error != net::OK) {
+    SCOPED_CRASH_KEY_NUMBER("NavReq", "net_error", static_cast<int>(net_error));
+    SCOPED_CRASH_KEY_NUMBER("NavReq", "navigating_frame_type",
+                            static_cast<int>(GetNavigatingFrameType()));
     // Create a navigation handle so that the correct error code can be set on
     // it by OnRequestFailedInternal().
     StartNavigation();
@@ -2901,15 +2905,6 @@ void NavigationRequest::BeginNavigationImpl() {
       const url::Origin origin = GetOriginForURLLoaderFactoryUnchecked();
       const net::SchemefulSite site = net::SchemefulSite(origin);
 
-      // Set the COOP origin in the policy container builder via the mutable
-      // reference before FinalPolicies() is called.
-      std::optional<url::Origin>& coop_origin =
-          policy_container_builder_->GetPolicyContainerHost()
-              ->cross_origin_opener_policy()
-              .origin;
-      if (!coop_origin.has_value()) {
-        coop_origin = origin;
-      }
       coop_status_.EnforceCOOP(
           policy_container_builder_->FinalPolicies().cross_origin_opener_policy,
           origin, net::NetworkAnonymizationKey::CreateSameSite(site));
@@ -3522,12 +3517,9 @@ void NavigationRequest::OnRequestRedirected(
     return;
   }
   const url::Origin origin = GetOriginForURLLoaderFactoryUnchecked();
-  // Set the COOP origin in the policy container builder via the mutable
-  // reference before coop is sent to EnforceCOOP.
-  network::CrossOriginOpenerPolicy& coop =
-      response()->parsed_headers->cross_origin_opener_policy;
-  coop.origin = origin;
-  coop_status_.EnforceCOOP(coop, origin, network_anonymization_key);
+  coop_status_.EnforceCOOP(
+      response()->parsed_headers->cross_origin_opener_policy, origin,
+      network_anonymization_key);
 
   const std::optional<network::mojom::BlockedByResponseReason>
       coep_requires_blocking = EnforceCOEP();
@@ -4052,9 +4044,6 @@ bool NavigationRequest::ShouldRequestSiteIsolationForCOOP() {
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin:
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
-    case network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties:
-    case network::mojom::CrossOriginOpenerPolicyValue::
-        kRestrictPropertiesPlusCoep:
     case network::mojom::CrossOriginOpenerPolicyValue::kNoopenerAllowPopups:
       should_header_value_trigger_isolation = true;
       break;
@@ -4134,13 +4123,6 @@ UrlInfo NavigationRequest::GetUrlInfo() {
       .WithWebExposedIsolationInfo(web_exposed_isolation_info)
       .WithCrossOriginIsolationKey(cross_origin_isolation_key)
       .WithIsPdf(is_pdf_);
-
-  // Records in the UrlInfo if COOP: same-origin or COOP: restrict-properties
-  // was set, and from which origin.
-  auto common_coop_origin = ComputeCommonCoopOrigin();
-  if (common_coop_origin.has_value()) {
-    url_info_init.WithCommonCoopOrigin(common_coop_origin.value());
-  }
 
   // Navigations with SiteInstances which have fixed storage partition (e.g.
   // <webview> tags) should always stay in the current StoragePartition.
@@ -4469,13 +4451,8 @@ void NavigationRequest::OnResponseStarted(
   // can be determined. This is needed for enforcing COOP below.
 
   {
-    // Set the COOP origin in the policy container builder before
-    // FinalPolicies() is called.
     const url::Origin origin = GetOriginForURLLoaderFactoryBeforeResponse(
         policy_container_builder_->FinalPolicies().sandbox_flags);
-    policy_container_builder_->GetPolicyContainerHost()
-        ->cross_origin_opener_policy()
-        .origin = origin;
     coop_status_.EnforceCOOP(
         policy_container_builder_->FinalPolicies().cross_origin_opener_policy,
         origin, network_anonymization_key);
@@ -5130,9 +5107,6 @@ void NavigationRequest::OnRequestFailedInternal(
   const auto origin = url::Origin();
   // Set the COOP origin in the policy container builder before FinalPolicies()
   // is called.
-  policy_container_builder_->GetPolicyContainerHost()
-      ->cross_origin_opener_policy()
-      .origin = origin;
   coop_status_.EnforceCOOP(
       policy_container_builder_->FinalPolicies().cross_origin_opener_policy,
       origin, net::NetworkAnonymizationKey::CreateTransient());
@@ -6739,8 +6713,7 @@ void NavigationRequest::CommitPageActivation() {
         frame_tree_node_->current_frame_host()->GetSiteInstance();
     SiteInstanceImpl* target_site_instance =
         activated_entry->render_frame_host()->GetSiteInstance();
-    CHECK(!target_site_instance->IsCoopRelatedSiteInstance(
-        current_site_instance));
+    CHECK(!target_site_instance->IsRelatedSiteInstance(current_site_instance));
     browsing_context_group_swap_ =
         BrowsingContextGroupSwap::CreateSecuritySwap();
 
@@ -6751,6 +6724,10 @@ void NavigationRequest::CommitPageActivation() {
     // NavigationRequest to be destroyed. Return if this is the case.
     if (!weak_self)
       return;
+
+    // Treat this as the commit start time for the activation (i.e., after the
+    // ReadyToCommitNavigation call).
+    page_activation_commit_time_ = base::TimeTicks::Now();
 
     // Use std::exchange instead of move, so that we clear out the optional on
     // the commit_params.
@@ -6807,6 +6784,10 @@ void NavigationRequest::CommitPageActivation() {
     // NavigationRequest to be destroyed. Return if this is the case.
     if (!weak_self)
       return;
+
+    // Treat this as the commit start time for the activation (i.e., after the
+    // ReadyToCommitNavigation call).
+    page_activation_commit_time_ = base::TimeTicks::Now();
 
     // Use std::exchange instead of move, so that we clear out the optional on
     // the commit_params.
@@ -8085,11 +8066,16 @@ void NavigationRequest::DidCommitNavigation(
   // knows locally about it because we sent an empty name at frame creation
   // time. The renderer has now committed the page and we can safely enforce the
   // empty name on the browser side.
+  BrowserContext* context =
+      frame_tree_node_->navigator().controller().GetBrowserContext();
   bool should_clear_browsing_instance_name =
       browsing_context_group_swap().ShouldClearWindowName() ||
       (commit_params().is_cross_site_cross_browsing_context_group &&
        base::FeatureList::IsEnabled(
-           features::kClearCrossSiteCrossBrowsingContextGroupWindowName));
+           features::kClearCrossSiteCrossBrowsingContextGroupWindowName) &&
+       GetContentClient()
+           ->browser()
+           ->IsClearWindowNameForNewBrowsingContextGroupAllowed(context));
 
   if (should_clear_browsing_instance_name) {
     std::string name, unique_name;
@@ -9544,6 +9530,28 @@ NavigationRequest::ComputeCrossOriginEmbedderPolicy() {
   return network::CrossOriginEmbedderPolicy();
 }
 
+NavigationRequest::IntegrityPolicies
+NavigationRequest::ComputeIntegrityPolicies() {
+  IntegrityPolicies policies;
+  if (!base::FeatureList::IsEnabled(
+          network::features::kIntegrityPolicyScript)) {
+    return policies;
+  }
+  const GURL& url = common_params_->url;
+  const GURL& top_level_creation_url = GetParentFrameOrOuterDocument()
+                                           ? GetParentFrameOrOuterDocument()
+                                                 ->GetOutermostMainFrame()
+                                                 ->GetLastCommittedURL()
+                                           : url;
+  if (network::IsUrlPotentiallyTrustworthy(top_level_creation_url) &&
+      response_head_ && response_head_->parsed_headers) {
+    policies.enforced = response_head_->parsed_headers->integrity_policy;
+    policies.report_only =
+        response_head_->parsed_headers->integrity_policy_report_only;
+  }
+  return policies;
+}
+
 // [spec]:
 // https://html.spec.whatwg.org/C/#check-a-navigation-response's-adherence-to-its-embedder-policy
 //
@@ -10076,6 +10084,12 @@ void NavigationRequest::ComputePoliciesToCommit() {
   policy_container_builder_->SetCrossOriginEmbedderPolicy(
       ComputeCrossOriginEmbedderPolicy());
 
+  IntegrityPolicies integrity_policies = ComputeIntegrityPolicies();
+  policy_container_builder_->SetIntegrityPolicy(
+      std::move(integrity_policies.enforced));
+  policy_container_builder_->SetIntegrityPolicyReportOnly(
+      std::move(integrity_policies.report_only));
+
   // If the navigation is the result of a network response, set DIP to the
   // one in the network response. Otherwise, DIP should follow normal rules of
   // policy inheritance, which should be handled by the policy container.
@@ -10084,15 +10098,6 @@ void NavigationRequest::ComputePoliciesToCommit() {
     policy_container_builder_->SetDocumentIsolationPolicy(
         response_head_->parsed_headers->document_isolation_policy);
   }
-
-  // COOP origins always match after a main frame navigation, so we only need
-  // to check sub frames. The main frame could be about:blank so we still might
-  // inherit `true`.
-  policy_container_builder_->SetAllowCrossOriginIsolation(
-      IsInMainFrame() || GetParentFrame()
-                             ->policy_container_host()
-                             ->policies()
-                             .allow_cross_origin_isolation);
 
   DCHECK(commit_params_);
   DCHECK(!HasCommitted());
@@ -10648,60 +10653,27 @@ NavigationRequest::ComputeWebExposedIsolationInfo() {
   // We consider navigations to be cross-origin isolated if the response
   // asserts proper COOP and COEP headers.
   if ((coop_status().current_coop().value !=
-       network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep) &&
-      (coop_status().current_coop().value !=
-       network::mojom::CrossOriginOpenerPolicyValue::
-           kRestrictPropertiesPlusCoep)) {
+       network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep)) {
     return WebExposedIsolationInfo::CreateNonIsolated();
   }
 
-  CHECK(coop_status().current_coop().origin.has_value());
-
   const GURL& url = common_params().url;
-  const url::Origin& origin = *coop_status().current_coop().origin;
+
+  // TODO(https://crbug.com/415943168): This should take into account Sandbox
+  // Flags. However, we can only do so when the CrossOriginOpenerPolicyStatus
+  // also take them into account. Because the CrossOriginOpenerPolicyStatus does
+  // not take into account sandbox flags, it does not mandate a BrowsingInstance
+  // switch when navigating between two same-origin pages where one of the pages
+  // has sandox flags that make its origin opaque. So the two pages are going to
+  // commit in the same BrowsingInstance. If we use an opaque origin here, we
+  // would end up with a mismatch between the WebExposedIsolationInfo for the
+  // navigation and that of the BrowsingInstance it is set to commit into.
+  const url::Origin origin = GetOriginForURLLoaderFactoryUnchecked();
 
   return SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
              GetNavigationController()->GetBrowserContext(), url)
              ? WebExposedIsolationInfo::CreateIsolatedApplication(origin)
              : WebExposedIsolationInfo::CreateIsolated(origin);
-}
-
-std::optional<url::Origin> NavigationRequest::ComputeCommonCoopOrigin() {
-  // Embedded content that cannot set COOP directly should inherit their COOP
-  // common origin from their embedder. For iframes, this is to ensure that they
-  // do not reuse a SiteInstance in the wrong page. For other embedded
-  // content it is simply for consistency as they should never try to get
-  // another SiteInstance in the same CoopRelatedGroup anyway. For this reason
-  // we use IsOutermostMainFrame.
-  if (!frame_tree_node_->IsOutermostMainFrame()) {
-    return frame_tree_node_->current_frame_host()
-        ->GetMainFrame()
-        ->GetSiteInstance()
-        ->GetCommonCoopOrigin();
-  }
-
-  using CoopValue = network::mojom::CrossOriginOpenerPolicyValue;
-
-  switch (coop_status().current_coop().value) {
-    case CoopValue::kSameOrigin:
-    case CoopValue::kSameOriginPlusCoep:
-    case CoopValue::kRestrictProperties:
-    case CoopValue::kNoopenerAllowPopups:
-    case CoopValue::kRestrictPropertiesPlusCoep:
-      // If we're early in the navigation process and the PolicyContainer was
-      // not yet computed, use a best effort origin.
-      // TODO(crbug.com/40879437): This is probably not very helpful. If
-      // we have a { Value+Origin } COOP bundle, we should be able to return a
-      // nullopt value that is distinct from { unsafe-none, nullopt }, similar
-      // to what exists for WebExposedIsolationInfo.
-      return policy_container_builder_->HasComputedPolicies()
-                 ? coop_status().current_coop().origin
-                 : GetTentativeOriginAtRequestTime();
-
-    case CoopValue::kUnsafeNone:
-    case CoopValue::kSameOriginAllowPopups:
-      return std::nullopt;
-  };
 }
 
 void NavigationRequest::MaybeAssignInvalidPrerenderFrameTreeNodeId() {
@@ -11536,17 +11508,30 @@ NavigationRequest::GenerateNavigationTimelineForMetrics(
   timeline.common_params_start = common_params().navigation_start;
   timeline.begin_navigation = begin_navigation_time_;
   timeline.loader_start = navigation_handle_timing_.loader_start_time;
-  timeline.loader_fetch_start = first_fetch_start_time_;
-  timeline.loader_receive_headers = final_receive_headers_end_time_;
+  if (!IsPageActivation()) {
+    // Prerender and bfcache activations should not use the stale loader values
+    // from the original commit. (Note: `loader_start` and `receive_response`
+    // are both set to fresh values for page activations.)
+    timeline.loader_fetch_start = first_fetch_start_time_;
+    timeline.loader_receive_headers = final_receive_headers_end_time_;
+  }
   timeline.receive_response = receive_response_time_;
   timeline.commit_ipc_sent =
-      navigation_handle_timing_.navigation_commit_sent_time;
+      !IsPageActivation()
+          ? navigation_handle_timing_.navigation_commit_sent_time
+          : page_activation_commit_time_;
+
   // Note that we can't use NavigationRequest's
   // navigation_handle_timing_.navigation_commit_received_time because it's
   // not populated yet when this function is called.
-  timeline.renderer_commit_ipc_received = params.commit_navigation_start;
-  timeline.renderer_did_commit_ipc_sent = params.commit_reply_sent;
-  timeline.did_commit_ipc_received = did_commit_ipc_received_time;
+  if (!IsPageActivation()) {
+    timeline.renderer_commit_ipc_received = params.commit_navigation_start;
+    timeline.renderer_did_commit_ipc_sent = params.commit_reply_sent;
+    timeline.did_commit_ipc_received = did_commit_ipc_received_time;
+  } else {
+    // Page activations don't send a commit IPC, so use a zero size interval.
+    timeline.did_commit_ipc_received = timeline.commit_ipc_sent;
+  }
 
   return timeline;
 }
@@ -11556,28 +11541,10 @@ void NavigationRequest::SanitizeDocumentIsolationPolicyHeader() {
     return;
   }
 
-  // First check if the document we're navigating to can be used
-  // Document-Isolation-Policy. This is the case if the DocumentIsolationPolicy
-  // feature is enabled.
-  bool can_use_dip =
-      base::FeatureList::IsEnabled(network::features::kDocumentIsolationPolicy);
-
-  // If the Origin Trial for DocumentIsolationPolicy is
-  // enabled and the navigation has a valid Origin Trial token, the document can
-  // also use Document-Isolation-Policy.
-  if (base::FeatureList::IsEnabled(
-          features::kDocumentIsolationPolicyOriginTrial) &&
-      response_head_->headers.get()) {
-    bool has_valid_ot_token =
-        blink::TrialTokenValidator().RequestEnablesFeature(
-            GetURL(), response_head_->headers.get(), "DocumentIsolationPolicy",
-            base::Time::Now());
-    can_use_dip |= has_valid_ot_token;
-  }
-
-  // If the document cannot use DocumentIsolationPolicy, set its
+  // If the DocumentIsolationPolicy feature is not enabled, set its
   // DocumentIsolationPolicy to its default value.
-  if (!can_use_dip) {
+  if (!base::FeatureList::IsEnabled(
+          network::features::kDocumentIsolationPolicy)) {
     response_head_->parsed_headers->document_isolation_policy =
         network::DocumentIsolationPolicy();
     return;

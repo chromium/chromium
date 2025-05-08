@@ -20,6 +20,7 @@
 #include "components/content_settings/browser/ui/cookie_controls_util.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
+#include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -163,19 +164,19 @@ void CookieControlsBubbleViewController::ApplyThirdPartyCookiesBlockedState() {
 void CookieControlsBubbleViewController::FillViewForThirdPartyCookies(
     CookieControlsEnforcement enforcement,
     base::Time expiration) {
-  if (protections_on_) {
-    ApplyThirdPartyCookiesBlockedState();
-  } else {
+  bool tpcs_allowed = controls_state_ == CookieControlsState::k3pcsAllowed;
+  if (tpcs_allowed) {
     ApplyThirdPartyCookiesAllowedState(enforcement, expiration);
+  } else {
+    ApplyThirdPartyCookiesBlockedState();
   }
-  bubble_view_->GetContentView()->SetToggleIsOn(!protections_on_);
-  bubble_view_->GetContentView()->SetToggleIcon(
-      GetToggleIcon(!protections_on_));
+  bubble_view_->GetContentView()->SetToggleIsOn(tpcs_allowed);
+  bubble_view_->GetContentView()->SetToggleIcon(GetToggleIcon(tpcs_allowed));
   switch (enforcement) {
     case CookieControlsEnforcement::kNoEnforcement:
       bubble_view_->GetContentView()->SetContentLabelsVisible(true);
       bubble_view_->GetContentView()->SetFeedbackSectionVisibility(
-          !protections_on_);
+          tpcs_allowed);
       bubble_view_->GetContentView()->SetToggleVisible(true);
       bubble_view_->GetContentView()->SetEnforcedIconVisible(false);
       break;
@@ -203,8 +204,7 @@ CookieControlsBubbleViewController::~CookieControlsBubbleViewController() =
     default;
 
 void CookieControlsBubbleViewController::OnStatusChanged(
-    bool controls_visible,
-    bool protections_on,
+    CookieControlsState controls_state,
     CookieControlsEnforcement enforcement,
     CookieBlocking3pcdStatus blocking_status,
     base::Time expiration) {
@@ -213,9 +213,9 @@ void CookieControlsBubbleViewController::OnStatusChanged(
   if (is_reloading_state_) {
     return;
   }
-  protections_on_ = protections_on;
   blocking_status_ = blocking_status;
-  if (!controls_visible) {
+  controls_state_ = controls_state;
+  if (controls_state_ == CookieControlsState::kHidden) {
     bubble_view_->CloseWidget();
     return;
   }

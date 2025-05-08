@@ -932,20 +932,11 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_POST_PWD_MIGRATION_SHEET_SUBTITLE_ABOUT_LOCAL_PWD" desc="The subtitle of the post password migration sheet that emphasises on merging local passwords." formatter_data="android_java">
         All passwords saved only to this device for Chrome and <ph name="CHROME_CHANNEL">%1$s<ex>Chrome Dev</ex></ph> were merged. You can autofill all your saved passwords on both apps.
       </message>
-      <message name="IDS_EXPORTED_PASSWORDS_DELETION_DIALOG_TITLE" desc="The title of the dialog that offers to delete passwords from Google Password Manager." formatter_data="android_java">
-        Delete passwords from Google Password Manager?
-      </message>
       <message name="IDS_EXPORTED_PASSWORDS_DELETION_IN_PROGRESS_TITLE" desc="The title of the progress bar that is visible while the passwords are being deleted." formatter_data="android_java">
         Deleting
       </message>
       <message name="IDS_PASSWORDS_EXPORT_IN_PROGRESS_TITLE" desc="The title of the progress bar that is visible while the passwords are being exported." formatter_data="android_java">
         Exporting
-      </message>
-      <message name="IDS_EXPORTED_PASSWORDS_DELETION_DIALOG_TEXT" desc="The text that describes the option to delete the passwords that were just exported." formatter_data="android_java">
-        Your passwords will be deleted from Google Password Manager for <ph name="CHROME_CHANNEL">%1$s<ex>Chrome Dev</ex></ph>. You will keep the passwords file you just downloaded.
-      </message>
-      <message name="IDS_EXPORTED_PASSWORDS_DELETE_BUTTON" desc="The text on the button that confirms the action of deleting the passwords that were exported." formatter_data="android_java">
-        Delete passwords
       </message>
       <message name="IDS_CHROME_CHANNEL_NAME_CANARY" desc="The Chrome channel name for canary channel">
         Chrome Canary
@@ -1761,10 +1752,6 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_ABUSIVE_NOTIFICATION_PERMISSIONS_SUBLABEL" desc="Description text shown below a site name, when notification permissions were automatically revoked for that site.">
         Notifications <ph name="SEPARATOR">•</ph> Chrome removed these permissions because this site is dangerous
       </message>
-      <!-- TODO(crbug.com/406473591): Remove translateable="false" and add the final string -->
-      <message name="IDS_SAFETY_HUB_DISRUPTIVE_NOTIFICATION_PERMISSIONS_SUBLABEL"  translateable="false" desc="Description text shown below a site name, when notification permissions were automatically revoked for that site because user isn't interacting with the site but the site is sending a lot of notifications.">
-        Notifications <ph name="SEPARATOR">•</ph> Chrome removed these permissions because this site is disruptive
-      </message>
       <message name="IDS_SAFETY_HUB_NOTIFICATIONS_RESET_SNACKBAR" desc="Snackbar text displayed when the user clicks the Unsubscribe button for a site which sends a lot of notifications. Informs the user for which site the notifications were unsubscribed.">
        Unsubscribed from <ph name="SITE_NAME">%1$s<ex>https://example.com:443</ex></ph>. You'll be asked again on your next visit.
       </message>
@@ -1878,14 +1865,14 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_NO_COMPROMISED_LOCAL_PASSWORDS_TITLE" desc="Title for the local password check row in the Safety Check page indicating that the checkup did not find any local compromised passwords.">
         No compromised passwords on this device
       </message>
-      <message name="IDS_SAFETY_HUB_NO_COMPROMISED_LOCAL_PASSWORDS_SUMMARY" desc="Summary for the local password check row in the Safety Check page indicating that the checkup didn't find any compromised local passwords">
-        If your passwords are compromised, we’ll let you know
-      </message>
       <message name="IDS_SAFETY_HUB_NO_ACCOUNT_PASSWORDS_TITLE" desc="Title for the account password check row in the Safety Check page indicating that the user does not have any account passwords saved to their Google account.">
         No saved passwords in your Google Account
       </message>
       <message name="IDS_SAFETY_HUB_NO_LOCAL_PASSWORDS_TITLE" desc="Title for the local password check row in the Safety Check page indicating that the user does not have any local passwords saved.">
         No saved passwords on this device
+      </message>
+      <message name="IDS_SAFETY_HUB_NO_PASSWORDS_TITLE" desc="Title for the password check row in the Safety Check page indicating that the user does not have any local or account passwords saved.">
+        No saved passwords
       </message>
       <message name="IDS_SAFETY_HUB_NO_PASSWORDS_SUMMARY" desc="Summary for the password check row in the Safety Check page indicating that the user has no passwords saved and that Safety check will start checking for breached passwords when they save them.">
         Chrome can check your passwords when you save them
@@ -1909,7 +1896,7 @@ Your Google account may have other forms of browsing history like searches and a
         You can stop these sites from sending future notifications
       </message>
       <message name="IDS_SAFETY_HUB_PERMISSIONS_OK_SUMMARY" desc="Summary for the permissions module in the Safety Hub dashboard. It is displayed when the user has no automatically revoked permissions that need to be reviewed.">
-        Chrome automatically removes permissions from abusive and unused sites
+        Chrome automatically removes permissions from sites that abuse notifications or that you haven’t visited recently
       </message>
       <message name="IDS_SAFETY_HUB_PERMISSIONS_WARNING_SUMMARY" desc="Text shown as a header at the very top of the Safety Hub permissions review subpage, or as a summary in the permissions review dashboard module. Further educates the user about why their permissions were revoked.">
         To help keep you safe, permissions were removed from some sites
@@ -1925,6 +1912,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_LOCAL_PASSWORD_CHECK_UNAVAILABLE_TITLE" desc="Title for the local password check row in the Safety Check page indicating that the local password checkup could not be completed.">
         Can’t check passwords on this device
       </message>
+      <message name="IDS_SAFETY_HUB_PASSWORD_CHECK_UNAVAILABLE_TITLE" desc="Title for the password check row in the Safety Check page indicating that the local and/or account password checkup could not be completed.">
+        Can’t check passwords
+      </message>
       <message name="IDS_SAFETY_HUB_UNAVAILABLE_SUMMARY" desc="Summary for the rows in the Safety Check page indicating that the checkup for the specific module could not be run at this time and to check again later.">
         Try again later
       </message>
@@ -1934,17 +1924,23 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_NO_REUSED_WEAK_PASSWORDS_TITLE" desc="Title for the password hub row in the Safety Check page indicating that the checkup didn't found reused or weak passwords.">
         No weak or reused passwords
       </message>
+      <message name="IDS_SAFETY_HUB_NO_COMPROMISED_PASSWORDS_TITLE" desc="Title for the password check row in the Safety Check page indicating that the checkup did not find any account or local compromised passwords.">
+        No compromised passwords
+      </message>
+      <message name="IDS_SAFETY_HUB_NO_COMPROMISED_PASSWORDS_SUMMARY" desc="Summary for the password check row in the Safety Check page indicating that the checkup didn't find any compromised passwords.">
+        If your passwords are compromised, we’ll let you know
+      </message>
       <message name="IDS_SAFETY_HUB_PASSWORD_CHECK_SIGNED_OUT_SUMMARY" desc="Summary for the password check row in the Safety Check page indicating that the user should sign-in so Safety Check can check if they have compromised passwords. This is only shown for signed-out users when the checkup could not be completed.">
         To check for compromised passwords, sign in to your Google Account
-      </message>
-      <message name="IDS_SAFETY_HUB_PASSWORD_CHECK_TIME_RECENTLY" desc="Summary for the password check row in the Safety Check page indicating that the checkup was ran recently for the passwords in the user's Google account.">
-        Recently checked passwords saved to <ph name="USERNAME">%1$s<ex>elisa.becket@gmail.com</ex></ph>
       </message>
       <message name="IDS_SAFETY_HUB_REUSED_WEAK_ACCOUNT_PASSWORDS_TITLE" desc="Title for the account password hub row in the Safety Check page indicating that the checkup found reused or/and weak account passwords.">
         Strengthen your passwords in your Google Account
       </message>
       <message name="IDS_SAFETY_HUB_REUSED_WEAK_LOCAL_PASSWORDS_TITLE" desc="Title for the local password check row in the Safety Check page indicating that the checkup found reused or/and weak local passwords.">
         Strengthen your passwords on this device
+      </message>
+      <message name="IDS_SAFETY_HUB_REUSED_WEAK_PASSWORDS_TITLE" desc="Title for the password check row in the Safety Check page indicating that the checkup found reused or/and weak account and local passwords.">
+        Strengthen your passwords
       </message>
       <message name="IDS_SAFETY_HUB_WEAK_PASSWORDS_SUMMARY" desc="Summary for the password hub row in the Safety Check page indicating that the checkup found weak passwords and that the user should improve them.">
         {NUM_PASSWORDS, plural,
@@ -1955,6 +1951,20 @@ Your Google account may have other forms of browsing history like searches and a
         {NUM_PASSWORDS, plural,
         =1 {Chrome found a reused password that you could improve}
         other {Chrome found # reused passwords that you could improve}}
+      </message>
+      <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_NOTIFICATION_TITLE" desc="Title for the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed.">
+        Chrome unsubscribed you from notifications
+      </message>
+      <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_NOTIFICATION_MESSAGE" desc="Message for the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed.">
+        {NUM_REVOKED_PERMISSIONS, plural,
+        =1 {Removed notification permissions from one site you haven’t visited recently}
+        other {Removed notification permissions from # sites you haven’t visited recently}}
+      </message>
+      <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_NOTIFICATION_ACK" desc="Button to acknowledge the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed.">
+        Got it
+      </message>
+      <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_NOTIFICATION_REVIEW" desc="Button to review revoked notifications on the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed.">
+        Review
       </message>
 
        <!-- Safe Browsing preferences -->
@@ -1972,9 +1982,6 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
       <message name="IDS_SAFE_BROWSING_ENHANCED_PROTECTION_TITLE" desc="Title for Safe Browsing enhanced protection mode. [CHAR_LIMIT=32]">
         Enhanced protection
-      </message>
-      <message name="IDS_SAFE_BROWSING_ENHANCED_PROTECTION_SUMMARY" desc="Summary for Safe Browsing enhanced protection mode.">
-        Real-time, proactive protection against dangerous sites, downloads, and extensions that’s based on your browsing data getting sent to Google
       </message>
       <message name="IDS_SAFE_BROWSING_ENHANCED_PROTECTION_SUMMARY_UPDATED" desc="Summary for Safe Browsing enhanced protection mode.">
         Real-time, AI-powered protection against dangerous sites, downloads, and extensions that's based on your browsing data getting sent to Google
@@ -2297,6 +2304,10 @@ Your Google account may have other forms of browsing history like searches and a
         <message name="IDS_MEDIA_CAPTURE_PICKER_DIALOG_AUDIO_SHARE_TEXT"
           desc="Text for the dialog showing a list of tabs for capture to ask user if tab audio should be shared.">
           Also share tab audio
+        </message>
+        <message name="IDS_MEDIA_CAPTURE_PICKER_DIALOG_WINDOW_OR_SCREEN_TEXT"
+          desc="Text for the dialog showing a list of tabs for capture to ask user whether to share a window or screen instead of a tab.">
+          Share window or screen instead
         </message>
       </if>
 
@@ -3215,6 +3226,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_CONTEXTMENU_INSPECT_ELEMENT" desc="This string is shown in the context menu to inspect an element in a web page using the developer tools. [CHAR_LIMIT=30]">
         Inspect
       </message>
+      <message name="IDS_CONTEXTMENU_SHOW_INTEREST_IN_ELEMENT" desc="This string is shown in the context menu for requesting additional information about the web link the user long-pressed. [CHAR_LIMIT=30]">
+        More info about link from site
+      </message>
 
       <!-- Swipe refresh -->
       <message name="IDS_ACCESSIBILITY_SWIPE_REFRESH" desc="Content description for the swipe refresh action.">
@@ -3335,6 +3349,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_NOTIFICATION_PROVISIONALLY_UNSUBSCRIBED_BODY" desc="Body text of a system notification informing the user that they have successfully unsubscribed from receiving notifications from a web site.">
         You'll no longer receive notifications from <ph name="DOMAIN">%1$s<ex>example.com</ex></ph>.
       </message>
+      <message name="IDS_NOTIFICATION_PROVISIONALLY_UNSUBSCRIBED_BODY_NEW" desc="Body text of a system notification informing the user that they can report their notification contents to Google.">
+        Help improve spam protection by sending notification content and the site's URL to Google.
+      </message>
       <message name="IDS_NOTIFICATION_UNDO_UNSUBSCRIBE_BUTTON" desc="Label for an action button on a system notification informing the user that they have successfully unsubscribed from receiving notifications from a web site. Clicking the button allows the user to undo unsubscribing, and continue receiving notifications instead.">
         Undo
       </message>
@@ -3355,6 +3372,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_NOTIFICATION_ALWAYS_ALLOW_BUTTON" desc="Text of a button shown on original notifications that were displayed after the warning notifications. Clicking the button allows the user to always receive notifications from their origin without warning notifications.">
         Always allow
+      </message>
+      <message name="IDS_NOTIFICATION_REPORT_SAFE_BUTTON" desc="Text of a button shown on always allow confirmation notification, allowing the user to report notification contents to Google signaling that it contains safe contents.">
+        Report as not spam
+      </message>
+      <message name="IDS_NOTIFICATION_REPORT_SPAM_BUTTON" desc="Text of a button shown on unsubscribe confirmation notification, allowing the user to report notification contents to Google signaling that it contains spam contents.">
+        Report spam
       </message>
 
       <!-- Download UI -->
@@ -4050,6 +4073,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_FEED_MANAGE_INTERESTS" desc="Title of the list item Interests in the new tab page customization feed settings bottom sheet.">
         Interests
       </message>
+      <message name="IDS_FEED_MANAGE_INTERESTS_DESCRIPTION" desc="Content description to manage interested sites.">
+        Manage content you follow and suggested topics and searches
+      </message>
       <message name="IDS_FOLLOW_MANAGE_FOLLOWING" desc="Header for Following Management activity.">
         Following
       </message>
@@ -4166,6 +4192,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <!-- Toolbar button strings -->
       <message name="IDS_BUTTON_NEW_TAB" desc="Button name for opening a new tab.">
         New tab
+      </message>
+      <message name="IDS_BUTTON_NEW_TAB_GROUP" desc="Button name for opening a new tab group.">
+        New tab group
       </message>
       <message name="IDS_BUTTON_NEW_INCOGNITO_TAB" desc="Tooltip for the button to open a new Incognito browser tab.">
         New Incognito tab
@@ -5566,6 +5595,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_KEYBOARD_SHORTCUT_ADDRESS_BAR" desc="A text label that appears next to the keyboard that will let you focus on the address bar on the screen. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
         Jump to the address bar
       </message>
+      <message name="IDS_KEYBOARD_SHORTCUT_SEARCH" desc="A text label that appears next to the keyboard that will focusa and clear the address bar on the screen. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
+        Jump to search
+      </message>
       <message name="IDS_KEYBOARD_SHORTCUT_BOOKMARK_MANAGER" desc="A text label that appears next to the keyboard shortcut that will open the bookmarks manager in Chrome. On a tablet this is a new tab, on the phone this is a new activity. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
         Open the bookmarks manager
       </message>
@@ -5574,6 +5606,15 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_KEYBOARD_SHORTCUT_HISTORY_MANAGER" desc="A text label that appears next to the keyboard shorcut that will open up the history page. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
         Open the history page
+      </message>
+      <message name="IDS_KEYBOARD_SHORTCUT_HISTORY_GO_BACK" desc="A text label that appears next to the keyboard shorcut that will go to the previous page in your browser History. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
+        Go to the previous page in History
+      </message>
+      <message name="IDS_KEYBOARD_SHORTCUT_HISTORY_GO_FORWARD" desc="A text label that appears next to the keyboard shorcut that will go to the next page in your browser History. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
+        Go to the next page in History
+      </message>
+      <message name="IDS_KEYBOARD_SHORTCUT_SAVE_PAGE" desc="A text label that appears next to the keyboard shortcut that will save the page. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
+        Open options to save page
       </message>
       <message name="IDS_KEYBOARD_SHORTCUT_PRINT_PAGE" desc="A text label that appears next to the keyboard shortcut that will open the print page. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
         Open options to print page

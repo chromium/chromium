@@ -103,8 +103,7 @@ public class DataSharingUiDelegateAndroid implements DataSharingUIDelegate {
     @CalledByNative
     public void handleShareURLIntercepted(GURL url) {
         Context context = ContextUtils.getApplicationContext();
-        Intent invitation_intent =
-                DataSharingNotificationManager.createInvitationIntent(context, url);
+        Intent invitation_intent = DataSharingIntentUtils.createInvitationIntent(context, url);
         IntentUtils.safeStartActivity(context, invitation_intent);
     }
 

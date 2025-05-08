@@ -46,8 +46,8 @@ class LogSourceAccessManager {
 
   // To override the default rate-limiting mechanism of this function, pass in
   // a TimeDelta representing the desired minimum time between consecutive reads
-  // of a source from an extension. Does not take ownership of |timeout|. When
-  // done testing, call this function again with |timeout|=nullptr to reset to
+  // of a source from an extension. Does not take ownership of `timeout`. When
+  // done testing, call this function again with `timeout`=nullptr to reset to
   // the default behavior.
   static void SetRateLimitingTimeoutForTesting(const base::TimeDelta* timeout);
 
@@ -56,7 +56,7 @@ class LogSourceAccessManager {
     tick_clock_ = clock;
   }
 
-  // Initiates a fetch from a log source, as specified in |params|. See
+  // Initiates a fetch from a log source, as specified in `params`. See
   // feedback_private.idl for more info about the actual parameters.
   bool FetchFromSource(const api::feedback_private::ReadLogSourceParams& params,
                        const ExtensionId& extension_id,
@@ -95,13 +95,13 @@ class LogSourceAccessManager {
   static constexpr ResourceId kInvalidResourceId = 0;
 
   // Creates a new LogSourceResource for the source and extension indicated by
-  // |source| and |extension_id|. Stores the new resource in the API Resource
+  // `source` and `extension_id`. Stores the new resource in the API Resource
   // Manager, and uses the resource ID as a key for a new entry in
-  // |open_handles_|, with value being a SourceAndExtension containing |source|
-  // and |extension_id|.
+  // `open_handles_`, with value being a SourceAndExtension containing `source`
+  // and `extension_id`.
   //
   // Returns the nonzero ID of the newly created LogSourceResource, or
-  // |kInvalidResourceId| if a new resource could not be created.
+  // `kInvalidResourceId` if a new resource could not be created.
   ResourceId CreateResource(api::feedback_private::LogSource source,
                             const ExtensionId& extension_id);
 
@@ -109,8 +109,8 @@ class LogSourceAccessManager {
   // Arguments:
   // - extension_id: ID of extension that opened the log source.
   // - resource_id: Resource ID provided by API Resource Manager for the reader.
-  // - delete_source: Set this if the source opened by |handle| should be
-  //   removed from both the API Resource Manager and from |open_handles_|.
+  // - delete_source: Set this if the source opened by `handle` should be
+  //   removed from both the API Resource Manager and from `open_handles_`.
   // - callback: Callback for sending the response as a ReadLogSourceResult
   //   struct.
   // - response: Contains the result from an operation to fetch from system
@@ -122,26 +122,26 @@ class LogSourceAccessManager {
       ReadLogSourceCallback callback,
       std::unique_ptr<system_logs::SystemLogsResponse> response);
 
-  // Removes an existing log source handle indicated by |id| from
-  // |open_handles_|.
+  // Removes an existing log source handle indicated by `id` from
+  // `open_handles_`.
   void RemoveHandle(ResourceId id);
 
-  // Returns the number of entries in |open_handles_| with source=|source|.
+  // Returns the number of entries in `open_handles_` with source=`source`.
   size_t GetNumActiveResourcesForSource(
       api::feedback_private::LogSource source) const;
 
-  // Attempts to update the |last_access_time| field for the SourceAndExtension
+  // Attempts to update the `last_access_time` field for the SourceAndExtension
   // |open_handles_[id]|, to record that the source is being accessed by the
-  // handle right now. If less than |min_time_between_reads_| has elapsed since
-  // the last successful read, does not update |last_access_times|, and instead
+  // handle right now. If less than `min_time_between_reads_` has elapsed since
+  // the last successful read, does not update `last_access_times`, and instead
   // returns false. Otherwise returns true.
   bool UpdateSourceAccessTime(ResourceId id);
 
   // Keeps track of the last time each source was accessed by each extension.
   // Each time FetchFromSource() is called, the timestamp gets updated.
   //
-  // This intentionally kept separate from |sources_| because entries can be
-  // removed from and re-added to |sources_|, but that should not erase the
+  // This intentionally kept separate from `sources_` because entries can be
+  // removed from and re-added to `sources_`, but that should not erase the
   // recorded access times.
   std::map<SourceAndExtension, std::unique_ptr<AccessRateLimiter>>
       rate_limiters_;

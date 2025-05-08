@@ -82,6 +82,22 @@ public class DownloadTestRule extends ChromeTabbedActivityTestRule {
     }
 
     /**
+     * Checks if a file matching the regex has downloaded. Is agnostic to the mechanism by which the
+     * file has downloaded.
+     *
+     * @param fileNameRegex Expected regex the file name should match. Files are non-recursively
+     *     searched in the system downloads path.
+     */
+    public boolean hasDownloadedRegex(String fileNameRegex) {
+        for (File file : DOWNLOAD_DIRECTORY.listFiles()) {
+            if (!file.isDirectory() && file.getName().matches(fileNameRegex)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Check the download exists in DownloadManager by matching the local file path.
      *
      * @param fileName Expected file name. Path is built by appending filename to the system

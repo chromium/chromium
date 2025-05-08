@@ -37,6 +37,7 @@ import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
 import org.chromium.ui.OverscrollAction;
 import org.chromium.ui.OverscrollRefreshHandler;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
+import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.annotation.Retention;
@@ -281,23 +282,26 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
     public boolean start(
             @OverscrollAction int type, @BackGestureEventSwipeEdge int initiatingEdge) {
         mSwipeType = type;
-        if (type == OverscrollAction.PULL_TO_REFRESH) {
-            if (mSwipeRefreshLayout == null) initSwipeRefreshLayout(mTab.getContext());
-            attachSwipeRefreshLayoutIfNecessary();
-            return mSwipeRefreshLayout.start();
-        } else if (type == OverscrollAction.HISTORY_NAVIGATION) {
-            if (mNavigationCoordinator != null) {
-                mNavigationCoordinator.startGesture();
-                // Note: triggerUi returns true as long as the handler is in a valid state, i.e.
-                // even if the navigation direction doesn't have further history entries.
-                boolean navigable = mNavigationCoordinator.triggerUi(initiatingEdge);
-                return navigable;
-            }
-        } else if (type == OverscrollAction.PULL_FROM_BOTTOM_EDGE) {
-            if (mBrowserControls != null) {
-                recordEdgeToEdgeOverscrollFromBottom(mBrowserControls);
+        if (isRefreshOnOverscrollSupported()) {
+            if (type == OverscrollAction.PULL_TO_REFRESH) {
+                if (mSwipeRefreshLayout == null) initSwipeRefreshLayout(mTab.getContext());
+                attachSwipeRefreshLayoutIfNecessary();
+                return mSwipeRefreshLayout.start();
+            } else if (type == OverscrollAction.HISTORY_NAVIGATION) {
+                if (mNavigationCoordinator != null) {
+                    mNavigationCoordinator.startGesture();
+                    // Note: triggerUi returns true as long as the handler is in a valid state, i.e.
+                    // even if the navigation direction doesn't have further history entries.
+                    boolean navigable = mNavigationCoordinator.triggerUi(initiatingEdge);
+                    return navigable;
+                }
+            } else if (type == OverscrollAction.PULL_FROM_BOTTOM_EDGE) {
+                if (mBrowserControls != null) {
+                    recordEdgeToEdgeOverscrollFromBottom(mBrowserControls);
+                }
             }
         }
+
         mSwipeType = OverscrollAction.NONE;
         return false;
     }
@@ -418,5 +422,23 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
                 "Android.OverscrollFromBottom.BottomControlsStatus",
                 sample,
                 BottomControlsStatus.NUM_TOTAL);
+    }
+
+    /**
+     * Checks to see if page refresh on overscroll is supported Wrapped so we can stub behavior in
+     * tests.
+     *
+     * <p>Currently, overscroll to refresh is disabled if a precision pointer device is attached.
+     * For example, this will disable it for touch screen when a mouse is attaached. However
+     * long-term, the plan is to selectively enable for things such as touchscreen only.
+     *
+     * <p>TODO(crbug.com/412465463): enable overscroll refresh for touch even when precision pointer
+     * is attached
+     *
+     * @return true if page refresh on overscroll is supported.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    boolean isRefreshOnOverscrollSupported() {
+        return !DeviceInput.supportsPrecisionPointer();
     }
 }

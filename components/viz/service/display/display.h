@@ -41,6 +41,10 @@
 #include "ui/gfx/swap_result.h"
 #include "ui/latency/latency_info.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "ui/gfx/android/surface_control_frame_rate.h"
+#endif
+
 namespace gfx {
 class Size;
 }
@@ -204,7 +208,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
 
 #if BUILDFLAG(IS_ANDROID)
   bool OutputSurfaceSupportsSetFrameRate();
-  void SetFrameIntervalOnOutputSurface(base::TimeDelta interval);
+  void SetFrameIntervalOnOutputSurface(gfx::SurfaceControlFrameRate frame_rate);
 #endif
 
   void PreserveChildSurfaceControls();

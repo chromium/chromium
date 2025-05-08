@@ -89,6 +89,10 @@ LinuxUi::WindowFrameAction FakeLinuxUi::GetWindowFrameAction(
   return WindowFrameAction::kNone;
 }
 
+std::vector<std::string> FakeLinuxUi::GetCmdLineFlagsForCopy() const {
+  return {};
+}
+
 bool FakeLinuxUi::PreferDarkTheme() const {
   return false;
 }

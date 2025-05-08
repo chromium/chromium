@@ -72,6 +72,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/fakes",
+    "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock:ocmock",
   ]

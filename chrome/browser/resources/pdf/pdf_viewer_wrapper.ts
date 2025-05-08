@@ -14,7 +14,7 @@ export {BeforeUnloadProxy, BeforeUnloadProxyImpl} from './before_unload_proxy.js
 export {Bookmark} from './bookmark_type.js';
 export {BrowserApi, ZoomBehavior} from './browser_api.js';
 // <if expr="enable_pdf_ink2">
-export {AnnotationBrush, AnnotationBrushType, AnnotationText, Color, TextAlignment, TextStyle} from './constants.js';
+export {AnnotationBrush, AnnotationBrushType, Color, TextAlignment, TextAnnotation, TextAttributes, TextStyle, TextTypeface} from './constants.js';
 // </if>
 // <if expr="enable_pdf_ink2 or enable_ink">
 export {AnnotationMode} from './constants.js';
@@ -28,6 +28,7 @@ export {InkAnnotationTextMixin, TEXT_COLORS, TEXT_SIZES} from './elements/ink_an
 export {InkBrushSelectorElement} from './elements/ink_brush_selector.js';
 export {InkColorSelectorElement} from './elements/ink_color_selector.js';
 export {InkSizeSelectorElement, HIGHLIGHTER_SIZES, PEN_SIZES} from './elements/ink_size_selector.js';
+export {InkTextBoxElement, TextBoxState} from './elements/ink_text_box.js';
 export {SelectableIconButtonElement} from './elements/selectable_icon_button.js';
 export {TextAlignmentSelectorElement} from './elements/text_alignment_selector.js';
 export {TextStylesSelectorElement} from './elements/text_styles_selector.js';
@@ -60,7 +61,7 @@ export {ViewerToolbarDropdownElement} from './elements/viewer_toolbar_dropdown.j
 // </if>
 export {GestureDetector, PinchEventDetail} from './gesture_detector.js';
 // <if expr="enable_pdf_ink2">
-export {Ink2Manager} from './ink2_manager.js';
+export {DEFAULT_TEXTBOX_HEIGHT, DEFAULT_TEXTBOX_WIDTH, Ink2Manager, TextBoxInit} from './ink2_manager.js';
 // </if>
 export {PdfPluginElement} from './internal_plugin.js';
 export {record, recordFitTo, resetForTesting, UserAction} from './metrics.js';

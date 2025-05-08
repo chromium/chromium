@@ -7,12 +7,15 @@
 
 #include <memory>
 #include <optional>
+#include <ostream>
 #include <tuple>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_navigation_handle_user_data.h"
+#include "chrome/browser/web_applications/navigation_capturing_metrics.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "components/webapps/common/web_app_id.h"
 #include "ui/base/window_open_disposition.h"
@@ -109,45 +112,6 @@ class NavigationCapturingProcess
     kFinished
   };
 
-  // TODO(crbug.com/336371044): Support web apps that open in a new tab.
-  // The initial result of navigation handling, stored as an enum to prevent
-  // transferring a `Browser` instance everywhere.
-  // Note: Apps can be configured to open in a browser tab or open in a
-  // standalone window.
-  enum class InitialResult {
-    // A browser tab was opened that wasn't the result of web app navigation
-    // capturing, but due to redirection the final behavior could change.
-    // Note: New context & capturable behavior for open-in-browser-tab apps
-    // apply to the cases below, and are not part of this category.
-    kBrowserTab = 0,
-    // The navigation was captured by an app and it resulted in the creation of
-    // a new app window for the navigation. This can only occur when the app
-    // opens in a standalone window.
-    kNavigateCapturedNewAppWindow = 1,
-    // The navigation was captured and it resulted in the creation of a new
-    // browser tab for the navigation. This can only occur when the app opens in
-    // a browser tab.
-    kNavigateCapturedNewBrowserTab = 2,
-    // The navigation was captured and it resulted in a existing web contents
-    // (either in an app window or browser tab) to be navigated.
-    kNavigateCapturingNavigateExisting = 3,
-    // The capturing logic forced this to launch the app in a new app window
-    // context, with the same behavior of `navigate-new`. This is used when it
-    // was a user-modified navigation, triggered by a shift or middle click.
-    // Launch parameters are enqueued.
-    kForcedNewAppContextAppWindow = 4,
-    // Same as above but for an app that opens in a browser tab.
-    kForcedNewAppContextBrowserTab = 5,
-    // The navigation open an auxiliary context, and thus the 'window container'
-    // (app or browser) needs to stay the same.
-    kAuxContext = 6,
-    // This navigation should be excluded from redirection handling. The
-    // NavigationCapturingProcess instance will not be attached to the
-    // NavigationHandle.
-    kNotHandledByNavigationHandling = 7,
-    kMaxValue = kNotHandledByNavigationHandling
-  };
-
   explicit NavigationCapturingProcess(const NavigateParams& params);
 
   // Returns true if based on the NavigateParams this instance was created with
@@ -211,6 +175,11 @@ class NavigationCapturingProcess
   // the navigation was captured by an app.
   bool InitialResultWasCaptured() const;
 
+  // Returns true if `initial_nav_handling_result_` is one of the values where
+  // the NavigationCapturingProcess performs navigation capturing and handles a
+  // navigation, regardless of whether it opens a new app window or not.
+  bool IsHandledByNavigationCapturing() const;
+
   bool is_user_modified_click() const {
     return disposition_ == WindowOpenDisposition::NEW_WINDOW ||
            disposition_ == WindowOpenDisposition::NEW_BACKGROUND_TAB;
@@ -235,10 +204,16 @@ class NavigationCapturingProcess
 
   bool navigation_capturing_enabled_ = false;
 
-  // This field records the outcome of handling the initial navigation,before
-  // any redirects might have happened.
-  InitialResult initial_nav_handling_result_ =
-      InitialResult::kNotHandledByNavigationHandling;
+  // This field records the outcome of handling the initial navigation, before
+  // any redirects might have happened. This is written to histograms on the
+  // destruction of the NavigationCapturingProcess.
+  NavigationCapturingInitialResult initial_nav_handling_result_ =
+      NavigationCapturingInitialResult::kNotHandled;
+
+  // This field records the outcome of the navigation post redirection, if it
+  // happens. This is written to histograms on the destruction of the
+  // NavigationCapturingProcess.
+  std::optional<NavigationCapturingRedirectionResult> redirection_result_;
 
   // The app that ended up being launched as a result of the navigation being
   // captured. This is initially set by
@@ -256,6 +231,10 @@ class NavigationCapturingProcess
   // this class.
   base::Value::Dict debug_data_;
   std::optional<int64_t> navigation_handle_id_ = std::nullopt;
+
+  // Stores the exact time when the navigation capturing process starts
+  // "handling" the current navigation when asked from Navigate().
+  base::TimeTicks time_navigation_started_{base::TimeTicks::Now()};
 
   NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
 };

@@ -479,7 +479,6 @@ message KioskAppInfoProto {
 }
 
 // Describes which Android application is to be launched.
-// Deprecated. Unsupported starting with M126.
 message AndroidKioskAppInfoProto {
   // Package name (must be present).
   // In the event this is the only field that is specified, runtime may use
@@ -539,6 +538,21 @@ message IsolatedWebAppKioskInfoProto {
   // Update URL of the isolated app (required).
   // Specifies the app version and where to download the web bundle from.
   optional string update_manifest_url = 2;
+
+  // The IWA release/update channel name (optional).
+  // If unset, the "default" channel is used.
+  optional string update_channel = 3;
+
+  // A specific version number to install (optional).
+  // ChromeOS will attempt to install this version if available on the current
+  // update channel. Pinning prevents further app updates.
+  // If unset, the IWA updates to the latest version on the current channel.
+  optional string pinned_version = 4;
+
+  // Enables downgrading to older versions of the IWA (optional).
+  // Ignored if `pinned_version` is not specified.
+  // If unset, defaults to false, i.e. downgrading is disabled for this IWA.
+  optional bool allow_downgrades = 5;
 }
 
 // Describes a single device-local account.
@@ -574,6 +588,11 @@ message DeviceLocalAccountInfoProto {
     // An account that serves as a container for a single full-screen
     // Isolated Web App (IWA).
     ACCOUNT_TYPE_KIOSK_IWA = 5;
+    // An account that serves as a container for a single full-screen
+    // Android app running inside ARCVM. This is different from the deprecated
+    // ACCOUNT_TYPE_KIOSK_ANDROID_APP as this will be used only for Project
+    // Starline devices.
+    ACCOUNT_TYPE_KIOSK_ARCVM = 6;
   }
   // Should keep ChromeServletUtil.toDimensionAccountType logic in sync with
   // AccountType enum.
@@ -623,6 +642,11 @@ message DeviceLocalAccountInfoProto {
 
   // Kiosk App parameters, relevant if |type| is ACCOUNT_TYPE_KIOSK_IWA.
   optional IsolatedWebAppKioskInfoProto isolated_kiosk_app = 8;
+
+  // Kiosk App parameters, relevant if |type| is ACCOUNT_TYPE_KIOSK_ARCVM.
+  // This is different from the deprecated android_kiosk_app field as this will
+  // be used only for Project Starline devices.
+  optional AndroidKioskAppInfoProto arcvm_kiosk_app = 9;
 }
 
 message DeviceLocalAccountsProto {
@@ -2097,4 +2121,5 @@ message ChromeDeviceSettingsProto {
   optional BooleanPolicyProto DeviceNativeClientForceAllowed = 1314;
   optional IntegerPolicyProto DevicePowerBatteryChargingOptimization = 1319;
   optional BooleanPolicyProto DeviceFlexArcPreloadEnabled = 1320;
+  optional BooleanPolicyProto DeviceUserInitiatedFirmwareUpdatesEnabled = 1356;
 }

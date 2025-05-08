@@ -220,7 +220,8 @@ class MockCompositorFrameSink : public viz::mojom::CompositorFrameSink {
   MOCK_METHOD1(SetPreferredFrameInterval, void(base::TimeDelta));
   MOCK_METHOD1(InitializeCompositorFrameSinkType,
                void(viz::mojom::CompositorFrameSinkType));
-  MOCK_METHOD1(BindLayerContext, void(viz::mojom::PendingLayerContextPtr));
+  MOCK_METHOD2(BindLayerContext,
+               void(viz::mojom::PendingLayerContextPtr, bool));
   MOCK_METHOD1(SetThreads, void(const std::vector<viz::Thread>&));
 
  private:

@@ -72,6 +72,7 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
   MOCK_METHOD(void, OnNoInteraction, (), (override));
   MOCK_METHOD(void, OnNopeUpdateClicked, (), (override));
   MOCK_METHOD(void, NeverSavePassword, (), (override));
+  MOCK_METHOD(void, OnNotNowClicked, (), (override));
   MOCK_METHOD(void, OnPasswordsRevealed, (), (override));
   MOCK_METHOD(void,
               SavePassword,

@@ -28,7 +28,9 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/win/scoped_devinfo.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
@@ -194,25 +196,26 @@ IN_PROC_BROWSER_TEST_P(SandboxedNetworkChangeNotifierBrowserTest,
   mojo::Remote<network::mojom::NetworkChangeManager> network_change_manager;
   GetNetworkService()->GetNetworkChangeManager(
       network_change_manager.BindNewPipeAndPassReceiver());
-  base::RunLoop run_loop;
 
   ::testing::StrictMock<MockNetworkChangeManagerClient> mock(
       network_change_manager.get());
-
   ::testing::InSequence order;
-  // OnInitialConnectionType can be called with CONNECTION_UNKNOWN or
-  // CONNECTION_ETHERNET.
-  EXPECT_CALL(mock, OnInitialConnectionType(::testing::AnyOf(
-                        network::mojom::ConnectionType::CONNECTION_UNKNOWN,
-                        network::mojom::ConnectionType::CONNECTION_ETHERNET)));
+
+  // First obtain the initial connection type. Before manipulating any network
+  // interfaces.
+  base::test::TestFuture<network::mojom::ConnectionType> connection_future;
+  EXPECT_CALL(mock, OnInitialConnectionType)
+      .WillOnce(base::test::InvokeFuture(connection_future));
+  network::mojom::ConnectionType connection = connection_future.Get();
+
   // NetworkChangeManager sends two notifications, the first is always
   // CONNECTION_NONE, followed by the actual ConnectionType. See
   // `network_change_manager.mojom`.
+  base::RunLoop run_loop;
   EXPECT_CALL(
       mock, OnNetworkChanged(network::mojom::ConnectionType::CONNECTION_NONE));
-  EXPECT_CALL(mock, OnNetworkChanged(
-                        network::mojom::ConnectionType::CONNECTION_ETHERNET))
-      .WillOnce([&run_loop]() { run_loop.Quit(); });
+  EXPECT_CALL(mock, OnNetworkChanged(connection))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
   // Install a new network card.
   base::FilePath dir_windows;

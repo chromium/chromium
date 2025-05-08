@@ -59,14 +59,10 @@ const char* version_incremental();
 
 BASE_EXPORT const char* hardware();
 
-bool is_at_least_u();
-
 const char* codename();
 
 // Available only on android S+. For S-, this method returns empty string.
 const char* soc_manufacturer();
-
-bool is_at_least_t();
 
 const char* abi_name();
 

@@ -147,8 +147,10 @@ class LegacyInfobarEditAddressProfileTableViewControllerTest
 };
 
 // Tests the edit view initialisation for the save prompt of an account profile.
+// TODO(crbug.com/416030990): Adapt test to
+// AutofillDynamicallyLoadsFieldsForAddressInput and re-enable the test.
 TEST_F(LegacyInfobarEditAddressProfileTableViewControllerTest,
-       TestEditForAccountProfile) {
+       DISABLED_TestEditForAccountProfile) {
   CreateAccountProfile();
 
   NSString* expected_footer_text = l10n_util::GetNSStringF(
@@ -170,8 +172,10 @@ class LegacyInfobarEditAddressProfileTableViewControllerMigrationPromptTest
 };
 
 // Tests the edit view initialisation for the migration prompt to account.
+// TODO(crbug.com/416030990): Adapt test to
+// AutofillDynamicallyLoadsFieldsForAddressInput and re-enable the test.
 TEST_F(LegacyInfobarEditAddressProfileTableViewControllerMigrationPromptTest,
-       TestMigrationPrompt) {
+       DISABLED_TestMigrationPrompt) {
   NSString* expected_footer_text = l10n_util::GetNSStringF(
       IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER, kTestSyncingEmail);
   TestModelRowsAndButtons(

@@ -20,10 +20,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.TrustedWebUtils;
-import androidx.browser.trusted.LaunchHandlerClientMode;
-import androidx.browser.trusted.TrustedWebActivityIntentBuilder;
 import androidx.core.os.BuildCompat;
 
 import org.chromium.base.ApplicationStatus;
@@ -40,8 +37,6 @@ import org.chromium.chrome.browser.customtabs.AuthTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
-import org.chromium.chrome.browser.customtabs.IncognitoCustomTabIntentDataProvider;
-import org.chromium.chrome.browser.customtabs.content.WebAppLaunchHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -154,45 +149,6 @@ public class LaunchIntentDispatcher {
         if (mIntent != null && BrowserIntentUtils.getStartupRealtimeMillis(mIntent) == -1) {
             BrowserIntentUtils.addStartupTimestampsToIntent(mIntent);
         }
-    }
-
-    private boolean maybeHandleNavigateNew() {
-        if (!ChromeFeatureList.sAndroidWebAppLaunchHandler.isEnabled()) {
-            return false;
-        }
-
-        CustomTabsSessionToken sessionToken =
-                CustomTabsSessionToken.getSessionTokenFromIntent(mIntent);
-
-        @LaunchHandlerClientMode.ClientMode
-        int clientModeData =
-                IntentUtils.safeGetIntExtra(
-                        mIntent,
-                        TrustedWebActivityIntentBuilder.EXTRA_LAUNCH_HANDLER_CLIENT_MODE,
-                        androidx.browser.trusted.LaunchHandlerClientMode.AUTO);
-
-        if (sessionToken == null
-                || WebAppLaunchHandler.getClientMode(clientModeData)
-                        != LaunchHandlerClientMode.NAVIGATE_NEW) {
-            return false;
-        }
-
-        SessionHolder session = new SessionHolder<>(sessionToken);
-        String packageName =
-                CustomTabsConnection.getInstance().getClientPackageNameForSession(session);
-
-        if (packageName == null) {
-            return false;
-        }
-
-        Intent newIntent = new Intent();
-        newIntent.setAction(Intent.ACTION_VIEW);
-        newIntent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-        newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        newIntent.setData(mIntent.getData());
-        newIntent.setPackage(packageName);
-        mActivity.startActivity(newIntent);
-        return true;
     }
 
     /**
@@ -409,10 +365,6 @@ public class LaunchIntentDispatcher {
         CustomTabsConnection.getInstance()
                 .onHandledIntent(SessionHolder.getSessionHolderFromIntent(mIntent), mIntent);
 
-        if (maybeHandleNavigateNew()) {
-            return false;
-        }
-
         boolean isCustomTab = true;
         if (IntentHandler.shouldIgnoreIntent(mIntent, mActivity, isCustomTab)) {
             return false;
@@ -426,6 +378,8 @@ public class LaunchIntentDispatcher {
             if (handled) return true;
         }
 
+        // Should not be set by external apps, remove if present.
+        mIntent.removeExtra(IntentHandler.EXTRA_CCT_EARLY_NAV);
         boolean startedNavigationEarly = maybeStartNavigation();
         RecordHistogram.recordBooleanHistogram(
                 "CustomTabs.Startup.StartedNavigationEarly", startedNavigationEarly);
@@ -443,8 +397,6 @@ public class LaunchIntentDispatcher {
         if (packageName != null) {
             intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, packageName);
         }
-
-        if (startedNavigationEarly) intent.putExtra(IntentHandler.EXTRA_SKIP_PRECONNECT, true);
 
         // Pass the package name obtained via identity sharing API separately from the one
         // obtained via startActivityForResult.
@@ -473,10 +425,7 @@ public class LaunchIntentDispatcher {
     private boolean maybeStartNavigation() {
         if (!WarmupManager.getInstance().isCctPrewarmTabFeatureEnabled(false)) return false;
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_EARLY_NAV)) return false;
-        if (IncognitoCustomTabIntentDataProvider.isValidIncognitoIntent(
-                mIntent, /* recordMetrics= */ false)) {
-            return false;
-        }
+        if (IntentHandler.willLaunchIncognitoCustomTab(mIntent)) return false;
         if (!ProfileManager.isInitialized()) return false;
         if (clearTopIntentsForCustomTabsEnabled(mIntent)
                 && SessionDataHolder.getInstance()

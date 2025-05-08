@@ -50,9 +50,9 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
-#include "components/policy/core/common/device_local_account_type.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -63,6 +63,7 @@
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/external_install_info.h"
 #include "extensions/browser/external_provider_interface.h"
@@ -668,7 +669,7 @@ class StartupAppLauncherNoCreateTest
     return CreateStartupAppLauncherInternal(/*should_skip_install=*/true);
   }
 
-  void PreinstallApp(const Extension& app) { service()->AddExtension(&app); }
+  void PreinstallApp(const Extension& app) { registrar()->AddExtension(&app); }
 
   TestAppLaunchDelegate startup_launch_delegate_;
 
@@ -1293,8 +1294,8 @@ TEST_F(StartupAppLauncherTest,
   // initially, so the test can verify the app gets enabled regardless of the
   // initial state.
   PreinstallApp(*SecondaryAppBuilder(kExtraSecondaryAppId).Build());
-  service()->DisableExtension(kExtraSecondaryAppId,
-                              extensions::disable_reason::DISABLE_USER_ACTION);
+  registrar()->DisableExtension(
+      kExtraSecondaryAppId, {extensions::disable_reason::DISABLE_USER_ACTION});
 
   InitializeLauncherWithNetworkReady();
   ASSERT_TRUE(DownloadAndInstallPrimaryApp(*primary_app));
@@ -1325,8 +1326,8 @@ TEST_F(StartupAppLauncherTest,
   PreinstallApp(*SecondaryAppBuilder(kSecondaryAppId).Build());
 
   PreinstallApp(*SecondaryAppBuilder(kExtraSecondaryAppId).Build());
-  service()->DisableExtension(kExtraSecondaryAppId,
-                              extensions::disable_reason::DISABLE_USER_ACTION);
+  registrar()->DisableExtension(
+      kExtraSecondaryAppId, {extensions::disable_reason::DISABLE_USER_ACTION});
 
   InitializeLauncherWithNetworkReady();
   ASSERT_TRUE(DownloadAndInstallPrimaryApp(*primary_app));
@@ -1357,9 +1358,9 @@ TEST_F(StartupAppLauncherTest,
   // initially, so the test can verify the app gets enabled regardless of the
   // initial state.
   PreinstallApp(*SecondaryAppBuilder(kSecondaryAppId).Build());
-  // Disable the secodnary app for a reason different than user action - that
+  // Disable the secondary app for a reason different than user action - that
   // disable reason should not be overriden during the kiosk launch.
-  service()->DisableExtension(
+  registrar()->DisableExtension(
       kSecondaryAppId, {extensions::disable_reason::DISABLE_USER_ACTION,
                         extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY});
 
@@ -1424,8 +1425,8 @@ TEST_F(StartupAppLauncherTest, PrimaryAppUpdatesToEnabledOnLaunch) {
            .set_offline_enabled(false)
            .Build());
   PreinstallApp(*SecondaryAppBuilder(kSecondaryAppId).Build());
-  service()->DisableExtension(kSecondaryAppId,
-                              extensions::disable_reason::DISABLE_USER_ACTION);
+  registrar()->DisableExtension(
+      kSecondaryAppId, {extensions::disable_reason::DISABLE_USER_ACTION});
 
   scoped_refptr<const Extension> primary_app_update =
       PrimaryAppBuilder()
@@ -1461,8 +1462,8 @@ TEST_F(StartupAppLauncherTest, SecondaryExtensionStateOnSessionRestore) {
   // Add the secondary app that should be enabled on launch - make it disabled
   // initially, and let test verify the app remains disabled during the launch.
   PreinstallApp(*SecondaryAppBuilder(kExtraSecondaryAppId).Build());
-  service()->DisableExtension(kExtraSecondaryAppId,
-                              extensions::disable_reason::DISABLE_USER_ACTION);
+  registrar()->DisableExtension(
+      kExtraSecondaryAppId, {extensions::disable_reason::DISABLE_USER_ACTION});
 
   startup_app_launcher_ = CreateStartupAppLauncherForSessionRestore();
 

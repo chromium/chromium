@@ -11,7 +11,8 @@
 
 namespace kcer::internal {
 
-const char kNssDbClientCertsRollback[] = "Ash.KcerRollbackHelper.Events";
+inline constexpr char kNssDbClientCertsRollback[] =
+    "Ash.KcerRollbackHelper.Events";
 
 // This enum should be kept in sync with the `NssDbClientCertsRollbackEvent`
 // in tools/metrics/histograms/metadata/ash/enums.xml.

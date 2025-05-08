@@ -313,14 +313,6 @@ GURL NormalizeUrl(const GURL& url) {
   return url_matcher::util::Normalize(effective_url);
 }
 
-bool AreWebFilterPrefsDefault(const PrefService& pref_service) {
-  return pref_service
-             .FindPreference(prefs::kDefaultSupervisedUserFilteringBehavior)
-             ->IsDefaultValue() ||
-         pref_service.FindPreference(prefs::kSupervisedUserSafeSites)
-             ->IsDefaultValue();
-}
-
 bool EmitLogRecordHistograms(
     const std::vector<FamilyLinkUserLogRecord>& records) {
   bool did_emit_histogram = false;

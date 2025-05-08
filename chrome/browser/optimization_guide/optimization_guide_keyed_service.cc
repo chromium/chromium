@@ -75,6 +75,7 @@
 #include "components/user_prefs/user_prefs.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/synthetic_trials.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
@@ -95,6 +96,9 @@ using ::optimization_guide::ModelExecutionFeaturesController;
 using ::optimization_guide::OnDeviceModelComponentStateManager;
 using ::optimization_guide::OnDeviceModelPerformanceClass;
 using ::optimization_guide::OnDeviceModelServiceController;
+
+// Used to override the value of `version_info::IsOfficialBuild()` for tests.
+std::optional<bool> g_is_official_build_for_testing;
 
 // Returns the profile to use for when setting up the keyed service when the
 // profile is Off-The-Record. For guest profiles, returns a loaded profile if
@@ -198,32 +202,9 @@ OptimizationGuideKeyedService::MaybeCreatePushNotificationManager(
 }
 
 // static
-void OptimizationGuideKeyedService::DeterminePerformanceClass(
-    base::WeakPtr<OnDeviceModelComponentStateManager>
-        on_device_component_state_manager) {
-  OnDeviceModelServiceController::GetEstimatedPerformanceClass(
-      GetOnDeviceModelServiceController(on_device_component_state_manager),
-      base::BindOnce([](OnDeviceModelPerformanceClass perf_class) {
-        base::UmaHistogramEnumeration(
-            "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
-            perf_class);
-        RegisterPerformanceClassSyntheticTrial(perf_class);
-        return perf_class;
-      })
-          .Then(base::BindOnce(&OnDeviceModelComponentStateManager::
-                                   DevicePerformanceClassChanged,
-                               on_device_component_state_manager)));
-}
-
-// static
-void OptimizationGuideKeyedService::RegisterPerformanceClassSyntheticTrial(
-    OnDeviceModelPerformanceClass perf_class) {
-  if (perf_class != OnDeviceModelPerformanceClass::kUnknown) {
-    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-        "SyntheticOnDeviceModelPerformanceClass",
-        SyntheticTrialGroupForPerformanceClass(perf_class),
-        variations::SyntheticTrialAnnotationMode::kCurrentLog);
-  }
+void OptimizationGuideKeyedService::SetIsOfficialBuildForTesting(
+    bool is_official_build) {
+  g_is_official_build_for_testing = is_official_build;
 }
 
 OptimizationGuideKeyedService::OptimizationGuideKeyedService(
@@ -412,24 +393,29 @@ void OptimizationGuideKeyedService::InitializeModelExecution(Profile* profile) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(
-              &OptimizationGuideKeyedService::DeterminePerformanceClass,
-              on_device_component_manager_->GetWeakPtr()),
+              &OptimizationGuideKeyedService::EnsurePerformanceClassAvailable,
+              weak_factory_.GetWeakPtr(), base::DoNothing()),
           optimization_guide::features::GetOnDeviceStartupMetricDelay());
     }
     // If the perf class was previously determined, register that.
-    RegisterPerformanceClassSyntheticTrial(
-        optimization_guide::PerformanceClassFromPref(
-            *g_browser_process->local_state()));
+    GetOnDeviceModelServiceController(
+        on_device_component_manager_->GetWeakPtr())
+        ->RegisterPerformanceClassSyntheticTrial(
+            optimization_guide::PerformanceClassFromPref(
+                *g_browser_process->local_state()));
 
     auto* variations_service = g_browser_process->variations_service();
     auto dogfood_status =
         variations_service && variations_service->IsLikelyDogfoodClient()
             ? ModelExecutionFeaturesController::DogfoodStatus::DOGFOOD
             : ModelExecutionFeaturesController::DogfoodStatus::NON_DOGFOOD;
+    bool is_official_build = g_is_official_build_for_testing.value_or(
+        version_info::IsOfficialBuild());
     model_execution_features_controller_ =
         std::make_unique<optimization_guide::ModelExecutionFeaturesController>(
             profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
-            g_browser_process->local_state(), dogfood_status);
+            g_browser_process->local_state(), dogfood_status,
+            is_official_build);
 
     // Don't create logs uploader service when feature is disabled. All the
     // logs upload get route through this service which exists one per
@@ -827,6 +813,15 @@ OptimizationGuideKeyedService::GetOnDeviceModelEligibility(
   return model_execution_manager_->GetOnDeviceModelEligibility(feature);
 }
 
+void OptimizationGuideKeyedService::GetOnDeviceModelEligibilityAsync(
+    optimization_guide::ModelBasedCapabilityKey feature,
+    base::OnceCallback<void(optimization_guide::OnDeviceModelEligibilityReason)>
+        callback) {
+  EnsurePerformanceClassAvailable(base::BindOnce(
+      &OptimizationGuideKeyedService::FinishGetOnDeviceModelEligibility,
+      weak_factory_.GetWeakPtr(), feature, std::move(callback)));
+}
+
 std::optional<optimization_guide::SamplingParamsConfig>
 OptimizationGuideKeyedService::GetSamplingParamsConfig(
     optimization_guide::ModelBasedCapabilityKey feature) {
@@ -845,4 +840,17 @@ OptimizationGuideKeyedService::GetFeatureMetadata(
   }
 
   return model_execution_manager_->GetFeatureMetadata(feature);
+}
+
+void OptimizationGuideKeyedService::EnsurePerformanceClassAvailable(
+    base::OnceClosure complete) {
+  GetOnDeviceModelServiceController(on_device_component_manager_->GetWeakPtr())
+      ->EnsurePerformanceClassAvailable(std::move(complete));
+}
+
+void OptimizationGuideKeyedService::FinishGetOnDeviceModelEligibility(
+    optimization_guide::ModelBasedCapabilityKey feature,
+    base::OnceCallback<void(optimization_guide::OnDeviceModelEligibilityReason)>
+        callback) {
+  std::move(callback).Run(GetOnDeviceModelEligibility(feature));
 }

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import android.os.Build;
 
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -15,7 +14,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -78,7 +76,6 @@ public class NewTabPageNavigationTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage"})
-    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/41490087")
     public void testNavigateToTabSwitcherFromNtp() {
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(

@@ -14,7 +14,7 @@
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/prefs/testing_pref_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -35,8 +35,6 @@ using ::testing::ElementsAre;
 using ::testing::WithArgs;
 
 namespace {
-
-using ::testing::_;
 
 constexpr char kFooURL[] = "https://foo.com";
 constexpr char kBarURL[] = "https://bar.com";
@@ -74,8 +72,8 @@ class ContextualCueingServiceTest : public testing::Test {
 
   ContextualCueingService* service() { return service_.get(); }
 
-  MockOptimizationGuideKeyedService* mock_optimization_guide_keyed_service() {
-    return mock_optimization_guide_keyed_service_.get();
+  MockOptimizationGuideKeyedService& mock_optimization_guide_keyed_service() {
+    return *mock_optimization_guide_keyed_service_;
   }
 
   void FastForwardBy(base::TimeDelta time_delta) {
@@ -178,7 +176,7 @@ TEST_F(ContextualCueingServiceTest, NudgeBlockedByCooldownTime) {
 }
 
 TEST_F(ContextualCueingServiceTest, DoesNotRegisterOptimizationType) {
-  EXPECT_CALL(*mock_optimization_guide_keyed_service(),
+  EXPECT_CALL(mock_optimization_guide_keyed_service(),
               RegisterOptimizationTypes(ElementsAre(
                   optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS)))
       .Times(0);
@@ -394,10 +392,25 @@ class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
                   return std::make_unique<MockOptimizationGuideKeyedService>();
                 })));
 
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        optimization_guide::switches::
+            kDisableCheckingUserPermissionsForTesting);
+    ON_CALL(mock_optimization_guide_keyed_service(),
+            CanApplyOptimization(
+                _, optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
+                An<optimization_guide::OptimizationGuideDecisionCallback>()))
+        .WillByDefault(WithArgs<2>(
+            [](optimization_guide::OptimizationGuideDecisionCallback callback) {
+              std::move(callback).Run(
+                  optimization_guide::OptimizationGuideDecision::kFalse,
+                  optimization_guide::OptimizationMetadata());
+            }));
+
     loading_predictor_ =
         std::make_unique<testing::NiceMock<MockLoadingPredictor>>(&profile_);
 
-    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+    pref_service_ =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     glic::prefs::RegisterProfilePrefs(pref_service_->registry());
   }
 
@@ -420,8 +433,8 @@ class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
 
   MockLoadingPredictor* loading_predictor() { return loading_predictor_.get(); }
 
-  MockOptimizationGuideKeyedService* mock_optimization_guide_keyed_service() {
-    return mock_optimization_guide_keyed_service_;
+  MockOptimizationGuideKeyedService& mock_optimization_guide_keyed_service() {
+    return *mock_optimization_guide_keyed_service_;
   }
 
   content::WebContents* web_contents() { return web_contents_.get(); }
@@ -435,7 +448,7 @@ class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
       mock_optimization_guide_keyed_service_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<testing::NiceMock<MockLoadingPredictor>> loading_predictor_;
-  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
   std::unique_ptr<ContextualCueingService> service_;
 };
 
@@ -462,7 +475,7 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
        InitializesPageDataWithContextEnabled) {
   base::HistogramTester histogram_tester;
   SetGlicTabContextEnabled(true);
-  EXPECT_CALL(*mock_optimization_guide_keyed_service(),
+  EXPECT_CALL(mock_optimization_guide_keyed_service(),
               RegisterOptimizationTypes(ElementsAre(
                   optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS)))
       .Times(1);
@@ -472,11 +485,8 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
   service()->GetContextualGlicZeroStateSuggestions(
       web_contents(), /*is_fre=*/false, future.GetCallback());
 
-  ASSERT_TRUE(future.Wait());
-
-  EXPECT_GE(histogram_tester.GetTotalSum(
-                "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone"),
-            0);
+  EXPECT_NE(nullptr, ZeroStateSuggestionsPageData::GetForPage(
+                         web_contents()->GetPrimaryPage()));
 }
 
 TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
@@ -493,6 +503,9 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
 
   histogram_tester.ExpectTotalCount(
       "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", 0);
+
+  EXPECT_EQ(nullptr, ZeroStateSuggestionsPageData::GetForPage(
+                         web_contents()->GetPrimaryPage()));
 }
 #endif
 

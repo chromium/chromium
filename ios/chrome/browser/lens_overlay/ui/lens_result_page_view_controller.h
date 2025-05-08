@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_consumer.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_presenter.h"
+#import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_presenter.h"
 
 @protocol LensToolbarMutator;
 @protocol LensResultPageMutator;
@@ -30,6 +30,9 @@
 @property(nonatomic, weak) id<LensToolbarMutator> toolbarMutator;
 /// Mutator of the lens result page.
 @property(nonatomic, weak) id<LensResultPageMutator> mutator;
+
+/// Sets the bottom sheet grabber visible.
+- (void)setBottomSheetGrabberVisible:(BOOL)bottomSheetGrabberVisible;
 
 /// Sets the omnibox edit view.
 - (void)setEditView:(UIView<TextFieldViewContaining>*)editView;

@@ -188,7 +188,6 @@ enum NavigationApiEntryRestoreReason {
 };
 
 enum StorageTypeAccessed {
-    kDatabase,
     kCacheStorage,
     kIndexedDB,
     kFileSystem,
@@ -875,6 +874,10 @@ interface LocalFrame {
   // context menu for `interesttarget` invokers.
   NotifyContextMenuInsetsObservers(gfx.mojom.Rect safe_area);
 
+  // This call will "show interest" in the Element with the provided DOMNodeID,
+  // which is presumed to have an `interesttarget` attribute.
+  ShowInterestInElement(int32 nodeID);
+
   // Add message to the frame console.
   AddMessageToConsole(ConsoleMessageLevel level, string message,
                     bool discard_duplicates);
@@ -1260,8 +1263,7 @@ interface LocalMainFrame {
   //
   InstallCoopAccessMonitor(
       blink.mojom.FrameToken accessed_window,
-      network.mojom.CrossOriginOpenerPolicyReporterParams coop_reporter_info,
-      bool is_in_same_virtual_coop_related_group);
+      network.mojom.CrossOriginOpenerPolicyReporterParams coop_reporter_info);
 
   // Notifies the renderer whether hiding/showing the browser controls is
   // enabled, what the current state should be, and whether or not to

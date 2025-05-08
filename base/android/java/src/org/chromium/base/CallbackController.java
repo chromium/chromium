@@ -6,6 +6,7 @@ package org.chromium.base;
 
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
 
@@ -90,7 +91,8 @@ public final class CallbackController {
     }
 
     /** Class wrapping a {@link Callback} interface with a {@link Cancelable} interface. */
-    private class CancelableCallback<T> implements Cancelable, Callback<T> {
+    private class CancelableCallback<T extends @Nullable Object>
+            implements Cancelable, Callback<T> {
         @GuardedBy("CallbackController.this")
         private @Nullable Callback<T> mCallback;
 
@@ -153,9 +155,11 @@ public final class CallbackController {
      * @param callback A callback that will be made cancelable.
      * @return A cancelable instance of the callback.
      */
-    public synchronized <T> Callback<T> makeCancelable(Callback<T> callback) {
+    @NullUnmarked // https://github.com/uber/NullAway/issues/1075
+    public synchronized <T extends @Nullable Object> Callback<T> makeCancelable(
+            Callback<T> callback) {
         checkNotCanceled();
-        CancelableCallback<T> cancelable = new CancelableCallback<>(callback);
+        CancelableCallback<@Nullable T> cancelable = new CancelableCallback<>(callback);
         addInternal(cancelable);
         return cancelable;
     }

@@ -17,6 +17,7 @@
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/autofill/core/common/password_form_fill_data.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace autofill {
@@ -191,12 +192,15 @@ class AutofillDriverRouter {
       RoutedCallback<const FormData&,
                      const FieldGlobalId&,
                      const gfx::Rect&,
-                     AutofillSuggestionTriggerSource> callback,
+                     AutofillSuggestionTriggerSource,
+                     base::optional_ref<const PasswordSuggestionRequest>>
+          callback,
       AutofillDriver& source,
       FormData form,
       const FieldGlobalId& field_id,
       const gfx::Rect& caret_bounds,
-      AutofillSuggestionTriggerSource trigger_source);
+      AutofillSuggestionTriggerSource trigger_source,
+      base::optional_ref<const PasswordSuggestionRequest> password_request);
   // This event is broadcast to all drivers.
   void DidEndTextFieldEditing(RoutedCallback<> callback,
                               AutofillDriver& source);

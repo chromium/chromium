@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 
+#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_split.h"
@@ -19,7 +20,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_window.h"
-#include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/chrome_content_verifier_delegate.h"
 #include "chrome/browser/extensions/content_verifier_test_utils.h"
 #include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
@@ -29,11 +29,13 @@
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/policy/policy_test_utils.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/common/buildflags.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/crx_file/id_util.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/content_verifier/content_verify_job.h"
@@ -54,13 +56,23 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "third_party/zlib/google/compression_utils.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/extensions/browsertest_util.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/test/base/ui_test_utils.h"
+#endif
+
 using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 
 namespace {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 constexpr char kTenMegResourceExtensionId[] =
     "mibjhafkjlepkpbjleahhallgddpjgle";
+#endif
 constexpr char kStoragePermissionExtensionId[] =
     "dmabdbcjhngdcmkfmgiogpcpiniaoddk";
 constexpr char kStoragePermissionExtensionCrx[] =
@@ -90,6 +102,7 @@ void ExtensionUpdateComplete(base::OnceClosure callback,
   std::move(callback).Run();
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // A helper override to force generation of hashes for all extensions, not just
 // those from the webstore.
 ChromeContentVerifierDelegate::VerifyInfo GetVerifyInfoAndForceHashes(
@@ -98,6 +111,7 @@ ChromeContentVerifierDelegate::VerifyInfo GetVerifyInfoAndForceHashes(
       ChromeContentVerifierDelegate::VerifyInfo::Mode::ENFORCE_STRICT,
       extension.from_webstore(), /*should_repair=*/false);
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 
@@ -229,10 +243,7 @@ class ContentVerifierTest : public ExtensionBrowserTest {
       const GURL& extension_resource) {
     TestExtensionRegistryObserver unload_observer(
         ExtensionRegistry::Get(profile()), extension_id);
-    ui_test_utils::NavigateToURLWithDisposition(
-        browser(), extension_resource,
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_NO_WAIT);
+    NavigateToURLInNewTab(extension_resource);
     EXPECT_TRUE(unload_observer.WaitForExtensionUnloaded());
     ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
     DisableReasonSet reasons = prefs->GetDisableReasons(extension_id);
@@ -305,6 +316,9 @@ class ContentVerifierTest : public ExtensionBrowserTest {
   testing::NiceMock<MockUpdateService> update_service_;
 };
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/391932982): Port to desktop Android when the tabs API is
+// supported.
 IN_PROC_BROWSER_TEST_F(ContentVerifierTest, DotSlashPaths) {
   TestContentVerifyJobObserver job_observer;
   std::string id = "hoipipabpcoomfapcecilckodldhmpgl";
@@ -361,6 +375,7 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest, DotSlashPaths) {
 
   EXPECT_TRUE(job_observer.WaitForExpectedJobs());
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Make sure that `VerifierObserver` doesn't crash on destruction.
 //
@@ -410,6 +425,7 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
                              ScriptModificationAction::kMakeUnreadable);
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // A class that forces all installed extensions to generate hashes (normally,
 // we'd only generate hashes for policy-installed extensions with the
 // appropriate enterprise policy applied). This makes it easier to test the
@@ -428,6 +444,8 @@ class ContentVerifierTestWithForcedHashes : public ContentVerifierTest {
 };
 
 // Tests detection of corruption in an extension's service worker file.
+// TODO(crbug.com/391932982): Port to desktop Android when the tabs API is
+// supported.
 IN_PROC_BROWSER_TEST_F(ContentVerifierTestWithForcedHashes,
                        TestServiceWorkerCorruption_DisableAndEnable) {
   static constexpr char kManifest[] =
@@ -464,10 +482,8 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTestWithForcedHashes,
 
   // Navigate to a new tab. This should fire the event listener (ensuring the
   // extension was active).
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("chrome://newtab"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLInNewTab(GURL("chrome://newtab"));
+  ASSERT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
   ASSERT_TRUE(event_listener.WaitUntilSatisfied());
 
   // Now alter the contents of the background script.
@@ -518,6 +534,8 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTestWithForcedHashes,
 }
 
 // Tests service worker corruption detection across browser starts.
+// TODO(crbug.com/391932982): Port to desktop Android when the tabs API is
+// supported.
 IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
                        PRE_TestServiceWorker_AcrossSession) {
   // Force-enable content verification for every extension.
@@ -561,10 +579,8 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
 
   // Navigate to a new tab. This should fire the event listener (ensuring the
   // extension was active).
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("chrome://newtab"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLInNewTab(GURL("chrome://newtab"));
+  ASSERT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
   ASSERT_TRUE(event_listener.WaitUntilSatisfied());
 
   // Now alter the contents of the background script.
@@ -580,6 +596,8 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
   // is preserved by the PRE_ test.)
 }
 
+// TODO(crbug.com/391932982): Port to desktop Android when the tabs API is
+// supported.
 IN_PROC_BROWSER_TEST_F(ContentVerifierTest, TestServiceWorker_AcrossSession) {
   // Force-enable content verification for every extension.
   ChromeContentVerifierDelegate::GetVerifyInfoTestOverride verify_info_override(
@@ -623,10 +641,8 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest, TestServiceWorker_AcrossSession) {
   // the //content layer, so the new contents aren't read from disk -- they're
   // retrieved from the cache.
   ExtensionTestMessageListener listener("listener fired");
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("chrome://newtab"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLInNewTab(GURL("chrome://newtab"));
+  ASSERT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
   ASSERT_TRUE(listener.WaitUntilSatisfied());
   // Verify the extension is still enabled.
   EXPECT_TRUE(registry->enabled_extensions().Contains(extension->id()));
@@ -672,6 +688,7 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest, TestServiceWorker_AcrossSession) {
       "Extensions.ContentVerification.VerifyFailedOnFileTypeMV3",
       kServiceWorkerScriptFileType, 1);
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests the case of a corrupt extension that is force-installed by policy and
 // should not be allowed to be manually uninstalled/disabled by the user.
@@ -930,10 +947,10 @@ IN_PROC_BROWSER_TEST_F(UserInstalledContentVerifierTest,
 // correctly disables the extension.
 IN_PROC_BROWSER_TEST_F(ContentVerifierTest, VerificationFailureOnNavigate) {
   const Extension* extension = InstallExtensionFromWebstore(
-      test_data_dir_.AppendASCII("content_verifier/dot_slash_paths.crx"), 1);
+      test_data_dir_.AppendASCII("content_verifier/content_script.crx"), 1);
   ASSERT_TRUE(extension);
   const ExtensionId kExtensionId = extension->id();
-  const base::FilePath::CharType kResource[] = FILE_PATH_LITERAL("page.html");
+  const base::FilePath::CharType kResource[] = FILE_PATH_LITERAL("script.js");
   {
     // Modify content so that content verification fails.
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -942,7 +959,7 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest, VerificationFailureOnNavigate) {
     ASSERT_TRUE(base::AppendToFile(real_path, extra));
   }
 
-  GURL page_url = extension->GetResourceURL("page.html");
+  GURL page_url = extension->GetResourceURL("script.js");
   NavigateToResourceAndExpectExtensionDisabled(kExtensionId, page_url);
 }
 
@@ -1065,9 +1082,12 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest, TamperLargeSizedResource) {
       extension->id(), extension->GetResourceURL(kResource));
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that a resource reading failure due to FileURLLoader cancellation
 // does not incorrectly result in content verificaton failure.
 // Regression test for: http://crbug.com/977805.
+// TODO(crbug.com/413122584): Port to desktop Android. The cross platform
+// navigation utilities we have don't support new tab + no wait.
 IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
                        PRE_ResourceReadCancellationDoesNotFailVerification) {
   // This test extension is copied from the webstore that has actual
@@ -1111,6 +1131,7 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
       registry->enabled_extensions().GetByID(kTenMegResourceExtensionId);
   ASSERT_TRUE(extension);
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests that navigating to an extension resource with '/' at end does not
 // disable the extension.
@@ -1119,14 +1140,14 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
 IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
                        RemainsEnabledOnNavigateToPathEndingWithSlash) {
   const Extension* extension = InstallExtensionFromWebstore(
-      test_data_dir_.AppendASCII("content_verifier/dot_slash_paths.crx"), 1);
+      test_data_dir_.AppendASCII("content_verifier/content_script.crx"), 1);
   ASSERT_TRUE(extension);
   const ExtensionId kExtensionId = extension->id();
 
-  GURL page_url = extension->GetResourceURL("page.html/");
-  ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
-      browser(), page_url, 1, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  GURL page_url = extension->GetResourceURL("script.js/");
+  // The page should not load.
+  ASSERT_FALSE(NavigateToURL(page_url));
+  ASSERT_FALSE(content::WaitForLoadStop(GetActiveWebContents()));
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   DisableReasonSet reasons = prefs->GetDisableReasons(kExtensionId);
   EXPECT_TRUE(reasons.empty());
@@ -1139,14 +1160,14 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
 IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
                        RemainsEnabledOnNavigateToPathEndingWithDot) {
   const Extension* extension = InstallExtensionFromWebstore(
-      test_data_dir_.AppendASCII("content_verifier/dot_slash_paths.crx"), 1);
+      test_data_dir_.AppendASCII("content_verifier/content_script.crx"), 1);
   ASSERT_TRUE(extension);
   const ExtensionId kExtensionId = extension->id();
 
-  GURL page_url = extension->GetResourceURL("page.html.");
-  ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
-      browser(), page_url, 1, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  GURL page_url = extension->GetResourceURL("script.js.");
+  // The page should not load.
+  ASSERT_FALSE(NavigateToURL(page_url));
+  ASSERT_FALSE(content::WaitForLoadStop(GetActiveWebContents()));
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   DisableReasonSet reasons = prefs->GetDisableReasons(kExtensionId);
   EXPECT_TRUE(reasons.empty());
@@ -1159,20 +1180,26 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
 IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
                        RemainsEnabledOnNavigateToPathWithIncorrectCase) {
   const Extension* extension = InstallExtensionFromWebstore(
-      test_data_dir_.AppendASCII("content_verifier/dot_slash_paths.crx"), 1);
+      test_data_dir_.AppendASCII("content_verifier/content_script.crx"), 1);
   ASSERT_TRUE(extension);
   const ExtensionId extension_id = extension->id();
 
-  // Note: the resource in |extension| is "page.html".
-  constexpr char kIncorrectCasePath[] = "PAGE.html";
+  // Note: the resource in `extension` is "script.js".
+  constexpr char kIncorrectCasePath[] = "SCRIPT.js";
 
   TestContentVerifySingleJobObserver job_observer(
       extension_id, base::FilePath().AppendASCII(kIncorrectCasePath));
 
   GURL page_url = extension->GetResourceURL(kIncorrectCasePath);
-  ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
-      browser(), page_url, 1, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  // Some platforms are case insensitive, load should succeed.
+  ASSERT_TRUE(NavigateToURL(page_url));
+  ASSERT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
+#else
+  // On case-sensitive platforms, load should fail.
+  ASSERT_FALSE(NavigateToURL(page_url));
+  ASSERT_FALSE(content::WaitForLoadStop(GetActiveWebContents()));
+#endif
 
   // Ensure that ContentVerifyJob has finished checking the resource.
   EXPECT_EQ(ContentVerifyJob::NONE, job_observer.WaitForJobFinished());
@@ -1232,6 +1259,9 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
   EXPECT_TRUE(reasons.empty());
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/394876083): Port these tests to desktop Android when more of
+// the policy/management stack is ported.
 class ContentVerifierPolicyTest : public ContentVerifierTest {
  public:
   // We need to do this work here because the force-install policy values are
@@ -1256,7 +1286,9 @@ class ContentVerifierPolicyTest : public ContentVerifierTest {
   }
 
   void SetUpOnMainThread() override {
+#if BUILDFLAG(IS_CHROMEOS)
     extensions::browsertest_util::CreateAndInitializeLocalCache();
+#endif
   }
 
  protected:
@@ -1405,5 +1437,145 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierPolicyTest, FailedUpdateRetries) {
 
   EXPECT_TRUE(registry_observer.WaitForExtensionInstalled());
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
+class ContentVerifierRepairsAllExtensionsDowngradeTest
+    : public UserInstalledContentVerifierTest {
+ public:
+  void SetUp() override { UserInstalledContentVerifierTest::SetUp(); }
+
+  void TearDown() override {
+    UserInstalledContentVerifierTest::TearDown();
+
+    if (!delete_all_extension_files_) {
+      return;
+    }
+    // Corrupt the extension
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(
+        base::DeletePathRecursively(profile_path_.AppendASCII("Extensions")));
+    ASSERT_TRUE(base::DeletePathRecursively(
+        profile_path_.AppendASCII("Extension State")));
+    ASSERT_TRUE(base::DeletePathRecursively(
+        profile_path_.AppendASCII("Extension Scripts")));
+    ASSERT_TRUE(base::DeletePathRecursively(
+        profile_path_.AppendASCII("Extension Rules")));
+  }
+
+  void SetUpOnMainThread() override {
+    UserInstalledContentVerifierTest::SetUpOnMainThread();
+    profile_path_ = profile()->GetPath();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    UserInstalledContentVerifierTest::SetUpCommandLine(command_line);
+    const std::string_view test_name(
+        ::testing::UnitTest::GetInstance()->current_test_info()->name());
+    if (GetTestPreCount() >= 1) {
+      return;
+    }
+
+    // Simulate a successful user data downgrade.
+    command_line->AppendSwitch(switches::kRepairAllValidExtensions);
+    command_line->AppendSwitch(switches::kUserDataMigrated);
+  }
+
+ protected:
+  CorruptedExtensionReinstaller* GetCorruptedExtensionReinstaller() {
+    return CorruptedExtensionReinstaller::Get(profile());
+  }
+
+  bool delete_all_extension_files_ = false;
+  base::FilePath profile_path_;
+};
+
+// Verify that all extensions are repaired while the browser is running and the
+// command line switch 'repair-all-valid-extensions' is set.
+IN_PROC_BROWSER_TEST_F(ContentVerifierRepairsAllExtensionsDowngradeTest,
+                       RepairsAllValidExtensions) {
+  auto verifier_observer = std::make_unique<VerifierObserver>();
+  InstallExtensionFromWebstore(
+      test_data_dir_.AppendASCII(kStoragePermissionExtensionCrx), 1);
+  verifier_observer->EnsureFetchCompleted(kStoragePermissionExtensionId);
+  verifier_observer.reset();
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
+  const Extension* extension =
+      registry->enabled_extensions().GetByID(kStoragePermissionExtensionId);
+  EXPECT_TRUE(extension);
+  const base::FilePath kResourcePath(FILE_PATH_LITERAL("background.js"));
+
+  // Corrupt the extension
+  {
+    base::FilePath resource_path = extension->path().Append(kResourcePath);
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    // Temporarily disable extension, we don't want to tackle with resources of
+    // enabled one.
+    DisableExtension(kStoragePermissionExtensionId);
+    ASSERT_TRUE(base::WriteFile(resource_path, "// corrupted\n"));
+    EnableExtension(kStoragePermissionExtensionId);
+  }
+
+  TestExtensionRegistryObserver registry_observer(
+      registry, kStoragePermissionExtensionId);
+  ExtensionSystem* system = ExtensionSystem::Get(profile());
+  system->content_verifier()->VerifyFailedForTest(
+      kStoragePermissionExtensionId, ContentVerifyJob::HASH_MISMATCH);
+  EXPECT_TRUE(registry_observer.WaitForExtensionUnloaded());
+
+  // The extension should be disabled and expected to be repaired.
+  EXPECT_THAT(ExtensionPrefs::Get(profile())->GetDisableReasons(
+                  kStoragePermissionExtensionId),
+              testing::UnorderedElementsAre(disable_reason::DISABLE_CORRUPTED));
+  EXPECT_TRUE(
+      GetCorruptedExtensionReinstaller()->IsReinstallForCorruptionExpected(
+          kStoragePermissionExtensionId));
+}
+
+IN_PROC_BROWSER_TEST_F(ContentVerifierRepairsAllExtensionsDowngradeTest,
+                       PRE_ExtensionsRepairedAtStartup) {
+  auto verifier_observer = std::make_unique<VerifierObserver>();
+  InstallExtensionFromWebstore(
+      test_data_dir_.AppendASCII(kStoragePermissionExtensionCrx), 1);
+  verifier_observer->EnsureFetchCompleted(kStoragePermissionExtensionId);
+  verifier_observer.reset();
+  ASSERT_TRUE(ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
+      kStoragePermissionExtensionId));
+  delete_all_extension_files_ = true;
+}
+
+IN_PROC_BROWSER_TEST_F(ContentVerifierRepairsAllExtensionsDowngradeTest,
+                       ExtensionsRepairedAtStartup) {
+  auto& command_line = *base::CommandLine::ForCurrentProcess();
+  ASSERT_TRUE(command_line.HasSwitch(switches::kRepairAllValidExtensions));
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
+  DisableReasonSet disable_reasons =
+      prefs->GetDisableReasons(kStoragePermissionExtensionId);
+
+  // Depending on timing, the extension may have already been reinstalled
+  // between SetUpInProcessBrowserTestFixture and now (usually not during local
+  // testing on a developer machine, but sometimes on a heavily loaded system
+  // such as the build waterfall / trybots). If the reinstall didn't already
+  // happen, wait for it.
+  if (disable_reasons.contains(disable_reason::DISABLE_CORRUPTED)) {
+    EXPECT_TRUE(
+        GetCorruptedExtensionReinstaller()->IsReinstallForCorruptionExpected(
+            kStoragePermissionExtensionId));
+    TestExtensionRegistryObserver registry_observer(
+        registry, kStoragePermissionExtensionId);
+    ASSERT_TRUE(registry_observer.WaitForExtensionInstalled());
+    disable_reasons = prefs->GetDisableReasons(kStoragePermissionExtensionId);
+  }
+  EXPECT_FALSE(
+      GetCorruptedExtensionReinstaller()->IsReinstallForCorruptionExpected(
+          kStoragePermissionExtensionId));
+  EXPECT_TRUE(disable_reasons.empty());
+  const Extension* extension =
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
+          kStoragePermissionExtensionId);
+  ASSERT_TRUE(extension);
+}
+#endif  // BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
 
 }  // namespace extensions

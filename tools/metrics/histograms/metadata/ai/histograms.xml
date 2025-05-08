@@ -35,6 +35,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_metrics.h:AISessionType) -->
 
+<variants name="WritingAssistanceFunctionName">
+  <variant name="availability" summary="Check availability of the model."/>
+  <variant name="create" summary="Create a session."/>
+</variants>
+
+<variants name="WritingAssistanceType">
+  <variant name="Rewriter" summary="AI rewriter session"/>
+  <variant name="Summarizer" summary="AI summarizer session"/>
+  <variant name="Writer" summary="AI writer session"/>
+</variants>
+
 <histogram name="AI.Session.{SessionType}.PromptRequestSize" units="bytes"
     expires_after="2025-10-27">
   <owner>leimy@chromium.org</owner>
@@ -81,6 +92,20 @@ chromium-metrics-reviews@google.com.
     each time when the stream completes or encounters errors.
   </summary>
   <token key="SessionType" variants="SessionType"/>
+</histogram>
+
+<histogram
+    name="AI.Summarizer.APIUsage.{WritingAssistanceFunctionName}.CoreOptionType"
+    enum="WritingAssistanceMetricsOptionType" expires_after="2025-10-27">
+  <owner>btriebw@chromium.org</owner>
+  <owner>ayui@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    This is recorded each time when the WritingAssistance function is invoked.
+    It can be used to measure the usage of the `type` option.
+  </summary>
+  <token key="WritingAssistanceFunctionName"
+      variants="WritingAssistanceFunctionName"/>
 </histogram>
 
 <histogram name="AI.Translation.LoadTranslateKitErrorCode"
@@ -132,6 +157,73 @@ chromium-metrics-reviews@google.com.
     `LanguageModel.availability()`.
   </summary>
   <token key="SessionType" variants="SessionType"/>
+</histogram>
+
+<histogram
+    name="AI.{WritingAssistanceType}.APIUsage.{WritingAssistanceFunctionName}.CoreOptionFormat"
+    enum="WritingAssistanceMetricsOptionFormat" expires_after="2025-10-27">
+  <owner>btriebw@chromium.org</owner>
+  <owner>ayui@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    This is recorded each time when the WritingAssistance function is invoked.
+    It can be used to measure the usage of the `format` option.
+  </summary>
+  <token key="WritingAssistanceType" variants="WritingAssistanceType"/>
+  <token key="WritingAssistanceFunctionName"
+      variants="WritingAssistanceFunctionName"/>
+</histogram>
+
+<histogram
+    name="AI.{WritingAssistanceType}.APIUsage.{WritingAssistanceFunctionName}.CoreOptionLength"
+    enum="WritingAssistanceMetricsOptionLength" expires_after="2025-10-27">
+  <owner>btriebw@chromium.org</owner>
+  <owner>ayui@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    This is recorded each time when the WritingAssistance function is invoked.
+    It can be used to measure the usage of the `length` option.
+  </summary>
+  <token key="WritingAssistanceType" variants="WritingAssistanceType"/>
+  <token key="WritingAssistanceFunctionName"
+      variants="WritingAssistanceFunctionName"/>
+</histogram>
+
+<histogram
+    name="AI.{WritingAssistanceType}.APIUsage.{WritingAssistanceFunctionName}.CoreOptionTone"
+    enum="WritingAssistanceMetricsOptionTone" expires_after="2025-10-27">
+  <owner>btriebw@chromium.org</owner>
+  <owner>ayui@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    This is recorded each time when the WritingAssistance function is invoked.
+    It can be used to measure the usage of the `tone` option.
+  </summary>
+  <token key="WritingAssistanceType" variants="WritingAssistanceType"/>
+  <token key="WritingAssistanceFunctionName"
+      variants="WritingAssistanceFunctionName"/>
+</histogram>
+
+<histogram
+    name="AI.{WritingAssistanceType}.APIUsage.{WritingAssistanceFunctionName}.{LanguageMetric}"
+    enum="LocaleCodeBCP47" expires_after="2025-10-27">
+  <owner>btriebw@chromium.org</owner>
+  <owner>ayui@chromium.org</owner>
+  <owner>src/chrome/browser/ai/OWNERS</owner>
+  <summary>
+    This is recorded each time when the WritingAssistance function is invoked.
+    It can be used to measure the usage of the language options.
+  </summary>
+  <token key="WritingAssistanceType" variants="WritingAssistanceType"/>
+  <token key="WritingAssistanceFunctionName"
+      variants="WritingAssistanceFunctionName"/>
+  <token key="LanguageMetric">
+    <variant name="ExpectedContextLanguage"
+        summary="Expected context language specified."/>
+    <variant name="ExpectedInputLanguage"
+        summary="Expected input language specified."/>
+    <variant name="OutputLanguage" summary="Output language specified."/>
+  </token>
 </histogram>
 
 </histograms>

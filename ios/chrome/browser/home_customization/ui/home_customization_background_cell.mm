@@ -8,6 +8,8 @@
 
 #import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_mutator.h"
+#import "ios/chrome/browser/ntp/ui_bundled/logo_vendor.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -29,6 +31,15 @@ const CGFloat kHighlightBorderWidth = 7.0;
 // Border width for the gap between content and borders.
 const CGFloat kGapBorderWidth = 3.78;
 
+// Relative vertical position multiplier for the logoView within its container.
+const CGFloat kLogoTopMultiplier = 0.24;
+
+// Fixed width and height for the logoView.
+const CGFloat kLogoWidth = 34.0;
+
+// Fixed height for the logoView.
+const CGFloat kLogoHeight = 11.0;
+
 }  // namespace
 
 @interface HomeCustomizationBackgroundCell ()
@@ -39,7 +50,7 @@ const CGFloat kGapBorderWidth = 3.78;
 
 // Main content view rendered inside the border wrapper.
 // Displays the core visual element.
-@property(nonatomic, strong) UIView* innerContentView;
+@property(nonatomic, strong) UIStackView* innerContentView;
 
 @end
 
@@ -63,12 +74,13 @@ const CGFloat kGapBorderWidth = 3.78;
 
     // Inner content view, placed with a gap inside the border wrapper view.
     // This holds the actual content.
-    self.innerContentView = [[UIView alloc] init];
+    self.innerContentView = [[UIStackView alloc] init];
     self.innerContentView.translatesAutoresizingMaskIntoConstraints = NO;
     self.innerContentView.backgroundColor =
         [UIColor colorNamed:@"ntp_background_color"];
     self.innerContentView.layer.cornerRadius = kContentViewCornerRadius;
     self.innerContentView.layer.masksToBounds = YES;
+    self.innerContentView.axis = UILayoutConstraintAxisVertical;
     [self.borderWrapperView addSubview:self.innerContentView];
 
     // Constraints for positioning the border wrapper view inside the cell.
@@ -91,8 +103,27 @@ const CGFloat kGapBorderWidth = 3.78;
 }
 
 - (void)configureWithBackgroundOption:
-    (BackgroundCustomizationConfiguration*)option {
+            (BackgroundCustomizationConfiguration*)option
+                           logoVendor:(id<LogoVendor>)logoVendor {
   _backgroundConfiguration = option;
+  UIView* logoView = logoVendor.view;
+
+  [self.innerContentView addSubview:logoView];
+  logoVendor.view.translatesAutoresizingMaskIntoConstraints = NO;
+
+  [NSLayoutConstraint activateConstraints:@[
+    [NSLayoutConstraint constraintWithItem:logoView
+                                 attribute:NSLayoutAttributeTop
+                                 relatedBy:NSLayoutRelationEqual
+                                    toItem:self.innerContentView
+                                 attribute:NSLayoutAttributeBottom
+                                multiplier:kLogoTopMultiplier
+                                  constant:0],
+    [logoView.centerXAnchor
+        constraintEqualToAnchor:self.innerContentView.centerXAnchor],
+    [logoView.widthAnchor constraintEqualToConstant:kLogoWidth],
+    [logoView.heightAnchor constraintEqualToConstant:kLogoHeight]
+  ]];
 }
 
 #pragma mark - Setters

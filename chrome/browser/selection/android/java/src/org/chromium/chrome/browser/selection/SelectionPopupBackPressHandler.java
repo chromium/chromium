@@ -52,6 +52,14 @@ public class SelectionPopupBackPressHandler extends EmptyTabObserver
     }
 
     @Override
+    public boolean invokeBackActionOnEscape() {
+        // For Escape key presses, we do not want to clear selection, which matches with Desktop. We
+        // do not also implement a custom {@link BackPressHandler#handleEscPress()} since we don't
+        // want anything to happen and for the manager to move to the next priority handler.
+        return false;
+    }
+
+    @Override
     public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mBackPressChangedSupplier;
     }

@@ -24,6 +24,7 @@
 #include "content/public/common/color_parser.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
+#include "net/base/network_isolation_partition.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
@@ -104,6 +105,8 @@ constexpr char kIdpBrandingForegroundColorKey[] = "color";
 // Client metadata keys.
 constexpr char kPrivacyPolicyKey[] = "privacy_policy_url";
 constexpr char kTermsOfServiceKey[] = "terms_of_service_url";
+constexpr char kClientMatchesTopFrameOriginKey[] =
+    "client_matches_top_frame_origin";
 
 // Accounts endpoint response keys.
 constexpr char kAccountsKey[] = "accounts";
@@ -339,8 +342,8 @@ IdentityRequestAccountPtr ParseAccount(const base::Value::Dict& account,
   return base::MakeRefCounted<IdentityRequestAccount>(
       *id, display_identifier, display_name, *email, *name,
       given_name ? *given_name : "", picture ? GURL(*picture) : GURL(),
-      std::move(account_hints), std::move(domain_hints), std::move(labels),
-      approved_value,
+      phone ? *phone : "", username ? *username : "", std::move(account_hints),
+      std::move(domain_hints), std::move(labels), approved_value,
       /*browser_trusted_login_state=*/LoginState::kSignUp);
 }
 
@@ -676,37 +679,36 @@ void OnConfigParsed(const GURL& provider,
     idp_metadata.requested_label = *requested_label;
   }
 
-  if (IsFedCmUseOtherAccountEnabled()) {
-    std::optional<bool> supports_add_account;
-    if (IsFedCmUseOtherAccountAndLabelsNewSyntaxEnabled()) {
-      supports_add_account = response.FindBool(kSupportsUseOtherAccountKey);
-    } else {
-      const base::Value::Dict* modes_dict = response.FindDict(kModesKey);
-      const base::Value::Dict* selected_mode_dict = nullptr;
-      if (modes_dict) {
-        switch (rp_mode) {
-          case blink::mojom::RpMode::kPassive:
-            selected_mode_dict = modes_dict->FindDict(kPassiveModeKey);
-            break;
-          case blink::mojom::RpMode::kActive:
-            selected_mode_dict = modes_dict->FindDict(kActiveModeKey);
-            break;
-        };
-      }
-      if (selected_mode_dict) {
-        supports_add_account =
-            selected_mode_dict->FindBool(kSupportsUseOtherAccountKey);
-      }
+  std::optional<bool> supports_add_account;
+  if (IsFedCmUseOtherAccountAndLabelsNewSyntaxEnabled()) {
+    supports_add_account = response.FindBool(kSupportsUseOtherAccountKey);
+  } else {
+    const base::Value::Dict* modes_dict = response.FindDict(kModesKey);
+    const base::Value::Dict* selected_mode_dict = nullptr;
+    if (modes_dict) {
+      switch (rp_mode) {
+        case blink::mojom::RpMode::kPassive:
+          selected_mode_dict = modes_dict->FindDict(kPassiveModeKey);
+          break;
+        case blink::mojom::RpMode::kActive:
+          selected_mode_dict = modes_dict->FindDict(kActiveModeKey);
+          break;
+      };
     }
-    if (supports_add_account) {
-      idp_metadata.supports_add_account = *supports_add_account;
+    if (selected_mode_dict) {
+      supports_add_account =
+          selected_mode_dict->FindBool(kSupportsUseOtherAccountKey);
     }
+  }
+  if (supports_add_account) {
+    idp_metadata.supports_add_account = *supports_add_account;
   }
   std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
                           endpoints, std::move(idp_metadata));
 }
 
 void OnClientMetadataParsed(
+    bool is_cross_site_iframe,
     int rp_brand_icon_ideal_size,
     int rp_brand_icon_minimum_size,
     IdpNetworkRequestManager::FetchClientMetadataCallback callback,
@@ -721,6 +723,10 @@ void OnClientMetadataParsed(
   const base::Value::Dict& response = result->GetDict();
   data.privacy_policy_url = ExtractUrl(response, kPrivacyPolicyKey);
   data.terms_of_service_url = ExtractUrl(response, kTermsOfServiceKey);
+  if (is_cross_site_iframe) {
+    data.client_matches_top_frame_origin =
+        response.FindBool(kClientMatchesTopFrameOriginKey);
+  }
 
   const base::Value::List* icons_value = response.FindList(kBrandingIconsKey);
   if (icons_value) {
@@ -1023,6 +1029,11 @@ IdpNetworkRequestManager::WellKnown::~WellKnown() = default;
 IdpNetworkRequestManager::WellKnown::WellKnown(const WellKnown& other) =
     default;
 
+IdpNetworkRequestManager::ClientMetadata::ClientMetadata() = default;
+IdpNetworkRequestManager::ClientMetadata::~ClientMetadata() = default;
+IdpNetworkRequestManager::ClientMetadata::ClientMetadata(
+    const ClientMetadata& other) = default;
+
 IdpNetworkRequestManager::TokenResult::TokenResult() = default;
 IdpNetworkRequestManager::TokenResult::~TokenResult() = default;
 IdpNetworkRequestManager::TokenResult::TokenResult(const TokenResult& other) =
@@ -1038,6 +1049,7 @@ std::unique_ptr<IdpNetworkRequestManager> IdpNetworkRequestManager::Create(
   // when the user selects an account to sign in.
   return std::make_unique<IdpNetworkRequestManager>(
       host->GetLastCommittedOrigin(),
+      host->GetMainFrame()->GetLastCommittedOrigin(),
       host->GetStoragePartition()->GetURLLoaderFactoryForBrowserProcess(),
       host->GetBrowserContext()->GetFederatedIdentityPermissionContext(),
       host->BuildClientSecurityState());
@@ -1045,10 +1057,12 @@ std::unique_ptr<IdpNetworkRequestManager> IdpNetworkRequestManager::Create(
 
 IdpNetworkRequestManager::IdpNetworkRequestManager(
     const url::Origin& relying_party_origin,
+    const url::Origin& rp_embedding_origin,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     FederatedIdentityPermissionContextDelegate* permission_delegate,
     network::mojom::ClientSecurityStatePtr client_security_state)
     : relying_party_origin_(relying_party_origin),
+      rp_embedding_origin_(rp_embedding_origin),
       loader_factory_(loader_factory),
       permission_delegate_(permission_delegate),
       client_security_state_(std::move(client_security_state)) {
@@ -1290,6 +1304,12 @@ void IdpNetworkRequestManager::SendDisconnectRequest(
       maxResponseSizeInKiB * 1024);
 }
 
+bool IdpNetworkRequestManager::IsCrossSiteIframe() const {
+  return IsFedCmIframeOriginEnabled() && !rp_embedding_origin_.opaque() &&
+         !net::SchemefulSite::IsSameSite(relying_party_origin_,
+                                         rp_embedding_origin_);
+}
+
 void IdpNetworkRequestManager::DownloadAndDecodeImage(const GURL& url,
                                                       ImageCallback callback) {
   std::unique_ptr<network::ResourceRequest> resource_request =
@@ -1387,8 +1407,12 @@ void IdpNetworkRequestManager::FetchClientMetadata(
     int rp_brand_icon_ideal_size,
     int rp_brand_icon_minimum_size,
     FetchClientMetadataCallback callback) {
-  GURL target_url = endpoint.Resolve(
-      "?client_id=" + base::EscapeQueryParamValue(client_id, true));
+  std::string parameters =
+      "?client_id=" + base::EscapeQueryParamValue(client_id, true);
+  if (IsCrossSiteIframe()) {
+    parameters += "&top_frame_origin=" + rp_embedding_origin_.Serialize();
+  }
+  GURL target_url = endpoint.Resolve(parameters);
 
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateUncredentialedResourceRequest(target_url,
@@ -1397,8 +1421,9 @@ void IdpNetworkRequestManager::FetchClientMetadata(
   DownloadJsonAndParse(
       std::move(resource_request),
       /*url_encoded_post_data=*/std::nullopt,
-      base::BindOnce(&OnClientMetadataParsed, rp_brand_icon_ideal_size,
-                     rp_brand_icon_minimum_size, std::move(callback)),
+      base::BindOnce(&OnClientMetadataParsed, IsCrossSiteIframe(),
+                     rp_brand_icon_ideal_size, rp_brand_icon_minimum_size,
+                     std::move(callback)),
       maxResponseSizeInKiB * 1024);
 }
 
@@ -1431,17 +1456,7 @@ IdpNetworkRequestManager::CreateUncredentialedResourceRequest(
     const GURL& target_url,
     bool send_origin,
     bool follow_redirects) const {
-  // We want this to be unique, so we append a random string.
-  static constexpr char kFedCmSchemeForIsolationKey[] = "fedcm-9c0367b4";
-
   auto resource_request = std::make_unique<network::ResourceRequest>();
-
-  GURL::Replacements replacements;
-  replacements.SetSchemeStr(kFedCmSchemeForIsolationKey);
-  GURL target_url_for_isolation_info =
-      target_url.ReplaceComponents(replacements);
-  url::Origin target_origin_for_isolation_info =
-      url::Origin::Create(target_url_for_isolation_info);
 
   resource_request->url = target_url;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
@@ -1464,8 +1479,11 @@ IdpNetworkRequestManager::CreateUncredentialedResourceRequest(
   resource_request->request_initiator = url::Origin();
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();
   resource_request->trusted_params->isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RequestType::kOther, relying_party_origin_,
-      target_origin_for_isolation_info, net::SiteForCookies());
+      net::IsolationInfo::RequestType::kOther,
+      /*top_frame_origin=*/relying_party_origin_,
+      /*frame_origin=*/url::Origin::Create(target_url), net::SiteForCookies(),
+      /*nonce=*/std::nullopt,
+      net::NetworkIsolationPartition::kFedCmUncredentialedRequests);
   DCHECK(client_security_state_);
   resource_request->trusted_params->client_security_state =
       client_security_state_.Clone();
@@ -1512,7 +1530,8 @@ IdpNetworkRequestManager::CreateCredentialedResourceRequest(
     request_type = net::IsolationInfo::RequestType::kMainFrame;
   }
   resource_request->trusted_params->isolation_info = net::IsolationInfo::Create(
-      request_type, target_origin, target_origin, site_for_cookies);
+      request_type, /*top_frame_origin=*/target_origin,
+      /*frame_origin=*/target_origin, site_for_cookies);
   DCHECK(client_security_state_);
   resource_request->trusted_params->client_security_state =
       client_security_state_.Clone();

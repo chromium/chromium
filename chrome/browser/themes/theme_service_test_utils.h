@@ -20,8 +20,8 @@ namespace theme_service::test {
 
 // Struct to distinguish SkColor (aliased to uint32_t) for printing.
 struct PrintableSkColor {
-  bool operator==(const PrintableSkColor& other) const;
-  bool operator!=(const PrintableSkColor& other) const;
+  friend constexpr bool operator==(const PrintableSkColor&,
+                                   const PrintableSkColor&) = default;
 
   const SkColor color;
 };

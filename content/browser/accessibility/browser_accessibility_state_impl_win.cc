@@ -22,10 +22,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
-#include "base/trace_event/trace_event.h"
 #include "base/win/registry.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
@@ -43,15 +43,10 @@ BASE_FEATURE(kDisableUiaProviderWhenJawsIsRunning,
              "DisableUiaProviderWhenJawsIsRunning",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Killswitch to turn off this feature remotely in case it affects performance.
-// This is temporary. TODO(crbug.com/407891291): Remove this feature flag in
-// Chrome 139.
-BASE_FEATURE(kDiscoverAssistiveTechOnUiThread,
-             "DiscoverAssistiveTechOnUiThread",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 const wchar_t kNarratorRegistryKey[] = L"Software\\Microsoft\\Narrator\\NoRoam";
-const wchar_t kNarratorRunningStateValueName[] = L"RunningState";
+const wchar_t kWinMagnifierRegistryKey[] =
+    L"Software\\Microsoft\\ScreenMagnifier";
+const wchar_t kWinATRunningStateValueName[] = L"RunningState";
 
 enum class AccessibilityTarget {
   kStickyKeys,
@@ -59,6 +54,7 @@ enum class AccessibilityTarget {
   kJaws,
   kNarrator,
   kNvda,
+  kWinMagnifier,
   kSupernova,
   kZoomText,
   kZdsr,
@@ -246,10 +242,21 @@ std::vector<AssistiveTechInfo> DiscoverAssistiveTech() {
   DWORD narrator_value = 0;
   if (base::win::RegKey(HKEY_CURRENT_USER, kNarratorRegistryKey,
                         KEY_QUERY_VALUE)
-              .ReadValueDW(kNarratorRunningStateValueName, &narrator_value) ==
+              .ReadValueDW(kWinATRunningStateValueName, &narrator_value) ==
           ERROR_SUCCESS &&
       narrator_value) {
     discovered_ats.push_back({AccessibilityTarget::kNarrator, std::nullopt});
+  }
+
+  // Windows magnifier detection.
+  DWORD windows_magnifier_value = 0;
+  if (base::win::RegKey(HKEY_CURRENT_USER, kWinMagnifierRegistryKey,
+                        KEY_QUERY_VALUE)
+              .ReadValueDW(kWinATRunningStateValueName,
+                           &windows_magnifier_value) == ERROR_SUCCESS &&
+      windows_magnifier_value) {
+    discovered_ats.push_back(
+        {AccessibilityTarget::kWinMagnifier, std::nullopt});
   }
 
   std::vector<HMODULE> snapshot;
@@ -300,105 +307,6 @@ std::vector<AssistiveTechInfo> DiscoverAssistiveTech() {
   return discovered_ats;
 }
 
-// Enables accessibility based on clues that indicate accessibility API usage.
-class WindowsAccessibilityEnabler
-    : public ui::WinAccessibilityAPIUsageObserver {
- public:
-  WindowsAccessibilityEnabler() {}
-
- private:
-  // WinAccessibilityAPIUsageObserver
-  void OnMSAAUsed() override {
-    // When only basic MSAA functionality is used, just enable kNativeAPIs.
-    // Enabling kNativeAPIs gives little perf impact, but allows these APIs to
-    // interact with the BrowserAccessibilityManager allowing ATs to be able at
-    // least find the document without using any advanced APIs.
-    BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
-        ui::AXMode::kNativeAPIs);
-  }
-
-  void OnBasicIAccessible2Used() override {
-    BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
-        ui::AXMode::kNativeAPIs);
-  }
-
-  void OnAdvancedIAccessible2Used() override {
-    // When IAccessible2 APIs have been used elsewhere in the codebase,
-    // enable basic web accessibility support. (Full screen reader support is
-    // detected later when specific more advanced APIs are accessed.)
-    BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
-        ui::kAXModeBasic);
-  }
-
-  void OnScreenReaderHoneyPotQueried() override {
-    // We used to trust this as a signal that a screen reader is running,
-    // but it's been abused. Now only enable accessibility if we also
-    // detect a call to get_accName.
-    if (screen_reader_honeypot_queried_) {
-      return;
-    }
-    screen_reader_honeypot_queried_ = true;
-    if (acc_name_called_) {
-      BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
-          ui::kAXModeBasic);
-    }
-  }
-
-  void OnAccNameCalled() override {
-    // See OnScreenReaderHoneyPotQueried, above.
-    if (acc_name_called_) {
-      return;
-    }
-    acc_name_called_ = true;
-    if (screen_reader_honeypot_queried_) {
-      BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
-          ui::kAXModeBasic);
-    }
-  }
-
-  void OnBasicUIAutomationUsed() override {
-    AddAXModeForUIA(ui::AXMode::kNativeAPIs);
-  }
-
-  void OnAdvancedUIAutomationUsed() override {
-    AddAXModeForUIA(ui::AXMode::kWebContents);
-  }
-
-  void OnProbableUIAutomationScreenReaderDetected() override {
-    // Same as kAXModeComplete but without kHTML as it is not needed for UIA.
-    AddAXModeForUIA(ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents |
-                    ui::AXMode::kExtendedProperties);
-  }
-
-  void OnTextPatternRequested() override {
-    AddAXModeForUIA(ui::AXMode::kInlineTextBoxes);
-  }
-
-  void AddAXModeForUIA(ui::AXMode mode) {
-    DCHECK(::ui::AXPlatform::GetInstance().IsUiaProviderEnabled());
-
-    // Firing a UIA event can cause UIA to call back into our APIs, don't
-    // consider this to be usage.
-    if (firing_uia_events_) {
-      return;
-    }
-
-    BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
-        mode);
-  }
-
-  void StartFiringUIAEvents() override { firing_uia_events_ = true; }
-
-  void EndFiringUIAEvents() override { firing_uia_events_ = false; }
-
-  // This should be set to true while we are firing uia events. Firing UIA
-  // events causes UIA to call back into our APIs, this should not be considered
-  // usage.
-  bool firing_uia_events_ = false;
-  bool screen_reader_honeypot_queried_ = false;
-  bool acc_name_called_ = false;
-};
-
 void OnWndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (message == WM_SETTINGCHANGE && wparam == SPI_SETCLIENTAREAANIMATION) {
@@ -416,6 +324,7 @@ class BrowserAccessibilityStateImplWin : public BrowserAccessibilityStateImpl {
 
  protected:
   void RefreshAssistiveTech() override;
+  void RefreshAssistiveTechIfNecessary(ui::AXMode new_mode) override;
   ui::AXPlatform::ProductStrings GetProductStrings() override;
   void OnUiaProviderRequested(bool uia_provider_enabled) override;
   void OnUiaProviderDisabled() override;
@@ -426,15 +335,16 @@ class BrowserAccessibilityStateImplWin : public BrowserAccessibilityStateImpl {
 
   std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
 
+  // A ScopedAccessibilityMode that holds AXMode::kScreenReader when
+  // an active screen reader has been detected.
+  std::unique_ptr<ScopedAccessibilityMode> screen_reader_mode_;
+
   // The presence of an AssistiveTech is currently being recomputed.
   // Will be updated via DiscoverAssistiveTech().
   bool awaiting_known_assistive_tech_computation_ = false;
 };
 
 BrowserAccessibilityStateImplWin::BrowserAccessibilityStateImplWin() {
-  ui::GetWinAccessibilityAPIUsageObserverList().AddObserver(
-      new WindowsAccessibilityEnabler());
-
   if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
     singleton_hwnd_observer_ = std::make_unique<gfx::SingletonHwndObserver>(
         base::BindRepeating(&OnWndProc));
@@ -442,31 +352,54 @@ BrowserAccessibilityStateImplWin::BrowserAccessibilityStateImplWin() {
 }
 
 void BrowserAccessibilityStateImplWin::RefreshAssistiveTech() {
-  if (awaiting_known_assistive_tech_computation_) {
+  if (!awaiting_known_assistive_tech_computation_) {
+    awaiting_known_assistive_tech_computation_ = true;
+    // Using base::Unretained() instead of a weak pointer as the lifetime of
+    // this is tied to BrowserMainLoop.
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&DiscoverAssistiveTech),
+        base::BindOnce(
+            &BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech,
+            base::Unretained(this)));
+  }
+}
+
+void BrowserAccessibilityStateImplWin::RefreshAssistiveTechIfNecessary(
+    ui::AXMode new_mode) {
+  bool was_screen_reader_active = ax_platform().IsScreenReaderActive();
+  bool has_screen_reader_mode = new_mode.has_mode(ui::AXMode::kScreenReader);
+  if (was_screen_reader_active != has_screen_reader_mode) {
+    OnAssistiveTechFound(has_screen_reader_mode
+                             ? ui::AssistiveTech::kGenericScreenReader
+                             : ui::AssistiveTech::kNone);
     return;
   }
 
-  awaiting_known_assistive_tech_computation_ = true;
-
-  if (base::FeatureList::IsEnabled(kDiscoverAssistiveTechOnUiThread)) {
-    TRACE_EVENT("accessibility", "DiscoverAssistiveTechOnUiThread");
-    OnDiscoveredAssistiveTech(DiscoverAssistiveTech());
-    return;
+  // An expensive check is required to determine which type of assistive tech is
+  // in use. Make this check only when `kExtendedProperties` is added or removed
+  // from the process-wide mode flags and no previous assistive tech has been
+  // discovered (in the former case) or one had been discovered (in the latter
+  // case). `kScreenReader` will be added/removed from the process-wide mode
+  // flags on completion and `OnAssistiveTechFound()` will be called with the
+  // results of the check.
+  bool has_extended_properties =
+      new_mode.has_mode(ui::AXMode::kExtendedProperties);
+  if (was_screen_reader_active != has_extended_properties) {
+    // Perform expensive assistive tech detection.
+    RefreshAssistiveTech();
   }
-
-  // Using base::Unretained() instead of a weak pointer as the lifetime of
-  // this is tied to BrowserMainLoop.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&DiscoverAssistiveTech),
-      base::BindOnce(
-          &BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech,
-          base::Unretained(this)));
 }
 
 void BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech(
     const std::vector<AssistiveTechInfo>& at_infos) {
   awaiting_known_assistive_tech_computation_ = false;
+
+  if (ActiveAssistiveTech() == ui::AssistiveTech::kGenericScreenReader) {
+    // A test has overridden the screen reader state manually.
+    // In such cases, we don't want to alter it.
+    return;
+  }
 
   // Older versions of JAWS are known to not work well with text fields when we
   // expose the native UIA provider. Disable it when we detect an older version
@@ -505,6 +438,8 @@ void BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech(
                         HasTarget(AccessibilityTarget::kNvda));
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinSupernova",
                         HasTarget(AccessibilityTarget::kSupernova));
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinMagnifier",
+                        HasTarget(AccessibilityTarget::kWinMagnifier));
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinZoomText",
                         HasTarget(AccessibilityTarget::kZoomText));
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinAPIs.UIAutomation",
@@ -516,6 +451,8 @@ void BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech(
       "ax_jaws", base::debug::CrashKeySize::Size32);
   static auto* ax_narrator_crash_key = base::debug::AllocateCrashKeyString(
       "ax_narrator", base::debug::CrashKeySize::Size32);
+  static auto* ax_win_magnifier_crash_key = base::debug::AllocateCrashKeyString(
+      "ax_win_magnifier", base::debug::CrashKeySize::Size32);
   static auto* ax_nvda_crash_key = base::debug::AllocateCrashKeyString(
       "ax_nvda", base::debug::CrashKeySize::Size32);
   static auto* ax_supernova_crash_key = base::debug::AllocateCrashKeyString(
@@ -538,6 +475,13 @@ void BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech(
   // Will prefer to report screen reader over other types of assistive tech,
   // because screen readers have the strongest effect on the user experience.
   ui::AssistiveTech most_important_assistive_tech = ui::AssistiveTech::kNone;
+
+  if (HasTarget(AccessibilityTarget::kWinMagnifier)) {
+    base::debug::SetCrashKeyString(ax_narrator_crash_key, "true");
+    most_important_assistive_tech = ui::AssistiveTech::kWinMagnifier;
+  } else {
+    base::debug::ClearCrashKeyString(ax_win_magnifier_crash_key);
+  }
 
   if (HasTarget(AccessibilityTarget::kZoomText)) {
     base::debug::SetCrashKeyString(ax_zoomtext_crash_key, "true");
@@ -599,7 +543,21 @@ void BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech(
     }
   }
 
+  // Save the current assistive tech before toggling AXModes, so
+  // that RefreshAssistiveTechIfNecessary() is a noop.
   OnAssistiveTechFound(most_important_assistive_tech);
+
+  // Add kScreenReader mode flag for products with screen reader features, which
+  // includes some magnifiers with light screen reader features (e.g. heading
+  // navigation).
+  if (ui::IsScreenReader(most_important_assistive_tech)) {
+    if (!screen_reader_mode_) {
+      screen_reader_mode_ = CreateScopedModeForProcess(
+          ui::kAXModeComplete | ui::AXMode::kScreenReader);
+    }
+  } else {
+    screen_reader_mode_.reset();
+  }
 }
 
 ui::AXPlatform::ProductStrings

@@ -580,7 +580,8 @@ void EmbeddedWorkerInstance::SendStartWorker(
 
   content_settings_ = std::make_unique<ServiceWorkerContentSettingsProxyImpl>(
       params->script_url, base::WrapRefCounted(context_->wrapper()),
-      params->content_settings_proxy.InitWithNewPipeAndPassReceiver());
+      params->content_settings_proxy.InitWithNewPipeAndPassReceiver(),
+      params->storage_key);
 
   const bool is_script_streaming = !params->installed_scripts_info.is_null();
   inflight_start_info_->start_worker_sent_time = base::TimeTicks::Now();

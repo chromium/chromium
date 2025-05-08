@@ -139,7 +139,11 @@ found in the LICENSE file.
     <dimen name="content_suggestions_card_bottom_margin">12dp</dimen>
     <!-- This is in sp because we want the icon to scale with the TextView it sits alongside. -->
     <dimen name="md_incognito_ntp_line_spacing">6sp</dimen>
-    <dimen name="md_incognito_ntp_padding_left">16dp</dimen>
+    <dimen name="md_incognito_ntp_padding_horizontal">12dp</dimen>
+    <dimen name="md_incognito_ntp_padding_vertical">16dp</dimen>
+    <!-- This offset is to account for the span background stroke horizontal padding for clickable
+    text flushed to the edges of the incognito NTP's TextView's. -->
+    <dimen name="md_incognito_ntp_view_horizontal_offset">@dimen/span_background_horizontal_padding</dimen>
 
     <!-- NTP Feed dimensions -->
     <dimen name="feed_header_menu_max_width">225dp</dimen>
@@ -164,6 +168,10 @@ found in the LICENSE file.
 
     <!-- New Tab Animation -->
     <dimen name="new_tab_animation_rect_corner_radius">10dp</dimen>
+    <dimen name="new_bg_tab_animation_size">32dp</dimen>
+    <dimen name="new_bg_tab_animation_link_elevation">13dp</dimen>
+    <dimen name="new_bg_tab_animation_tab_switcher_elevation">6dp</dimen>
+    <dimen name="new_bg_tab_animation_padding">4dp</dimen>
 
     <!-- Bookmarks dimensions -->
     <dimen name="bookmark_minimum_dialog_size_tablet">500dp</dimen>
@@ -401,7 +409,4 @@ found in the LICENSE file.
     <dimen name="tab_strip_group_context_menu_max_width">392dp</dimen>
     <dimen name="tab_strip_context_menu_min_width">200dp</dimen>
     <dimen name="tab_strip_context_menu_max_width">300dp</dimen>
-
-    <!-- Background tab animation host view -->
-    <dimen name="bg_tab_animation_elevation">12dp</dimen>
 </resources>

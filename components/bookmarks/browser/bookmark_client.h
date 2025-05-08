@@ -127,6 +127,12 @@ class BookmarkClient {
       const BookmarkNode* parent,
       size_t index,
       std::unique_ptr<BookmarkNode> node) = 0;
+
+  // Creates a persistent timer that allows recording metrics periodically
+  // (every 24hrs or on next startup). `metrics_callback` contains the logic to
+  // compute the metrics to be logged.
+  virtual void SchedulePersistentTimerForDailyMetrics(
+      base::RepeatingClosure metrics_callback) = 0;
 };
 
 }  // namespace bookmarks

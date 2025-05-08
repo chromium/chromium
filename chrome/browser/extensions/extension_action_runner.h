@@ -54,7 +54,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
 
   ~ExtensionActionRunner() override;
 
-  // Returns the ExtensionActionRunner for the given |web_contents|, or null
+  // Returns the ExtensionActionRunner for the given `web_contents`, or null
   // if one does not exist.
   static ExtensionActionRunner* GetForWebContents(
       content::WebContents* web_contents);
@@ -93,14 +93,14 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // extension.
   void OnActiveTabPermissionGranted(const Extension* extension);
 
-  // Called when a webRequest event for the given |extension| was blocked.
+  // Called when a webRequest event for the given `extension` was blocked.
   void OnWebRequestBlocked(const Extension* extension);
 
   // Returns a bitmask of BlockedActionType for the actions that have been
   // blocked for the given extension.
   int GetBlockedActions(const ExtensionId& extension_id) const;
 
-  // Returns true if the given |extension| has any blocked actions.
+  // Returns true if the given `extension` has any blocked actions.
   bool WantsToRun(const Extension* extension);
 
   // Runs any blocked actions the extension has, but does not handle any page
@@ -114,7 +114,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   }
 
   // Handles mojom::LocalFrameHost::RequestScriptInjectionPermission(). It
-  // replies back with |callback|.
+  // replies back with `callback`.
   void OnRequestScriptInjectionPermission(
       const ExtensionId& extension_id,
       mojom::InjectionType script_type,
@@ -171,8 +171,8 @@ class ExtensionActionRunner : public content::WebContentsObserver,
       const Extension* extension,
       mojom::InjectionType type);
 
-  // |callback|. The only assumption that can be made about when (or if)
-  // |callback| is run is that, if it is run, it will run on the current page.
+  // `callback`. The only assumption that can be made about when (or if)
+  // `callback` is run is that, if it is run, it will run on the current page.
   void RequestScriptInjection(const Extension* extension,
                               mojom::RunLocation run_location,
                               ScriptInjectionCallback callback);
@@ -202,7 +202,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
 
   // Runs the callback from the pending script. Since the callback holds
   // RequestScriptInjectionPermissionCallback, it should be called before the
-  // pending script is cleared. |granted| represents whether the script is
+  // pending script is cleared. `granted` represents whether the script is
   // granted or not.
   void RunCallbackOnPendingScript(const PendingScriptList& list, bool granted);
 

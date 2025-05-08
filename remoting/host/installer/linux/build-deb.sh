@@ -48,7 +48,7 @@ usage() {
   echo "-p     just print the expected DEB filename that this will build."
   echo "-s     path to the top of the src tree."
   echo "-o     output directory path."
-  echo "-O     option (enable_chromoting_crashpad)"
+  echo "-O     option (no options currently defined)"
 }
 
 while getopts ":s:o:O:ph" OPTNAME
@@ -118,16 +118,6 @@ cd "${tmpdir}/linux"
 
 if [[ ! "$OUTPUT_PATH" ]]; then
   OUTPUT_PATH="${SCRIPTDIR}/../../../../out/Release"
-fi
-
-# crbug.com/391748031: need to remove stale binary.
-if [[ "$OPTION" = "enable_chromoting_crashpad" ]]; then
-  echo "enable_chromoting_crashpad=true. remove remoting_crash_uploader"
-  rm -f "${OUTPUT_PATH}/remoting_crash_uploader"
-else
-  echo "enable_chromoting_crashpad=false. remove crashpad tools"
-  rm -f "${OUTPUT_PATH}/remoting_crashpad_handler"
-  rm -f "${OUTPUT_PATH}/remoting_crashpad_db"
 fi
 
 echo "Building version $version_full $revision_text"

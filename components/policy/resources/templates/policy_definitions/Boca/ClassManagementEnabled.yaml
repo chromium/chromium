@@ -4,7 +4,7 @@ desc: |-
   Setting the policy specifies whether users use <ph name="CLASS_TOOLS_NAME">Class Tools</ph> for sending/receiving content, sending/receiving caption as students, teachers, or if class management tools is disabled for users.
 example_value: disabled
 features:
-  dynamic_refresh: true
+  dynamic_refresh: false
   per_profile: true
 items:
 - caption: Users are not able to use any of the <ph name="CLASS_TOOLS_NAME">Class Tools</ph> or be added to a <ph name="CLASS_TOOLS_NAME">Class Tools</ph> session.

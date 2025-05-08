@@ -7,11 +7,13 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/version_info/version_info.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
@@ -76,6 +78,9 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   const bool is_glic_dev = command_line->HasSwitch(::switches::kGlicDev);
 
+  source->AddString("chromeVersion", version_info::GetVersionNumber());
+  source->AddString("chromeChannel",
+                    version_info::GetChannelString(chrome::GetChannel()));
   source->AddBoolean("loggingEnabled",
                      command_line->HasSwitch(::switches::kGlicHostLogging));
   // Set up guest URL via cli flag or default to finch param value.

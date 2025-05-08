@@ -34,12 +34,6 @@ class ChangePasswordFormWaiter
 
   ~ChangePasswordFormWaiter() override;
 
-#if defined(UNIT_TEST)
-  void MarkPageFinishedLoading() {
-    DocumentOnLoadCompletedInPrimaryMainFrame();
-  }
-#endif
-
  private:
   // password_manager::PasswordFormManagerObserver Impl
   void OnPasswordFormParsed(

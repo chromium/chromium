@@ -21,7 +21,7 @@ GetDetailsForCreateBnplPaymentInstrumentRequest::
         bool full_sync_enabled,
         base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                                 std::string context_token,
-                                std::unique_ptr<base::Value::Dict>)> callback)
+                                LegalMessageLines)> callback)
     : request_details_(request_details),
       full_sync_enabled_(full_sync_enabled),
       callback_(std::move(callback)) {}
@@ -70,17 +70,15 @@ void GetDetailsForCreateBnplPaymentInstrumentRequest::ParseResponse(
     context_token_ = context_token ? *context_token : std::string();
   }
 
-  // TODO(crbug.com/399677795): Parse legal message to `LegalMessageLines`.
   if (const base::Value::Dict* legal_message_value =
           response.FindDict("legal_message")) {
-    legal_message_ =
-        std::make_unique<base::Value::Dict>(legal_message_value->Clone());
+    LegalMessageLine::Parse(*legal_message_value, &legal_message_,
+                            /*escape_apostrophes=*/true);
   }
 }
 
 bool GetDetailsForCreateBnplPaymentInstrumentRequest::IsResponseComplete() {
-  // TODO(crbug.com/399677795): Add check legal_message is not empty.
-  return !context_token_.empty() && legal_message_;
+  return !context_token_.empty() && !legal_message_.empty();
 }
 
 void GetDetailsForCreateBnplPaymentInstrumentRequest::RespondToDelegate(

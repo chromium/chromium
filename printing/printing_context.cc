@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
@@ -165,10 +165,8 @@ mojom::ResultCode PrintingContext::UpdatePrintSettings(
       // TODO(crbug.com/40897743): Investigate and remove.
       std::optional<std::string> job_settings_json =
           base::WriteJson(job_settings);
-      if (job_settings_json.has_value()) {
-        DEBUG_ALIAS_FOR_CSTR(job_settings_json_copy,
-                             job_settings_json.value().c_str(), 1024);
-      }
+      SCOPED_CRASH_KEY_STRING1024("PrintingContext", "job_settings_json",
+                                  job_settings_json.value_or("nullopt"));
       DUMP_WILL_BE_NOTREACHED();
       return OnError();
     }

@@ -515,9 +515,6 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
       AudioCodecProfile profile = AudioCodecProfile::kUnknown;
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) ||
         // BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-      std::vector<uint8_t> aac_extra_data;
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
       if (audio_format == FOURCC_OPUS) {
         codec = AudioCodec::kOpus;
@@ -618,10 +615,7 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
           profile = aac.GetProfile();
           channel_layout = aac.GetChannelLayout(has_sbr_);
           sample_per_second = aac.GetOutputSamplesPerSecond(has_sbr_);
-          // Set `aac_extra_data` on all platforms. This is for backward
-          // compatibility until we have a better solution.
-          // See crbug.com/1245123 for details.
-          aac_extra_data = aac.codec_specific_data();
+          extra_data = aac.codec_specific_data();
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
         } else if (audio_type == kAC3) {
           codec = AudioCodec::kAC3;
@@ -704,7 +698,6 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
       if (codec == AudioCodec::kAAC) {
         audio_config.disable_discard_decoder_delay();
         audio_config.set_profile(profile);
-        audio_config.set_aac_extra_data(std::move(aac_extra_data));
       }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 #if BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)

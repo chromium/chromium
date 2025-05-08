@@ -98,11 +98,20 @@ SurfaceSavedFrame::~SurfaceSavedFrame() {
 }
 
 base::flat_set<ViewTransitionElementResourceId>
-SurfaceSavedFrame::GetEmptyResourceIds() const {
+SurfaceSavedFrame::GetEmptyResourceIds(
+    const CompositorRenderPassList& render_pass_list) const {
   base::flat_set<ViewTransitionElementResourceId> result;
-  for (auto& shared_element : directive_.shared_elements())
-    if (shared_element.render_pass_id.is_null())
+  for (auto& shared_element : directive_.shared_elements()) {
+    if (shared_element.render_pass_id.is_null()) {
       result.insert(shared_element.view_transition_element_resource_id);
+    }
+  }
+  for (auto& render_pass : render_pass_list) {
+    if (render_pass->output_rect.IsEmpty() &&
+        render_pass->view_transition_element_resource_id.IsValid()) {
+      result.insert(render_pass->view_transition_element_resource_id);
+    }
+  }
   return result;
 }
 
@@ -134,10 +143,12 @@ void SurfaceSavedFrame::RequestCopyOfOutput(
     }
   }
 
-  DCHECK_EQ(copy_request_count_, ExpectedResultCount());
+  DCHECK_EQ(copy_request_count_,
+            ExpectedResultCount(active_frame.render_pass_list));
 
   frame_result_.emplace();
-  frame_result_->empty_resource_ids = GetEmptyResourceIds();
+  frame_result_->empty_resource_ids =
+      GetEmptyResourceIds(active_frame.render_pass_list);
   frame_result_->shared_results.resize(directive_.shared_elements().size());
 
   // If we're using BlitRequests, then we need to create the result bundle
@@ -146,10 +157,8 @@ void SurfaceSavedFrame::RequestCopyOfOutput(
     for (auto& [index, shared_image] : blit_shared_images_) {
       OutputCopyResult* slot = &frame_result_->shared_results[index].emplace();
 
-      slot->is_software = is_software;
       slot->sync_token = shared_image->creation_sync_token();
       slot->shared_image = shared_image;
-      slot->draw_data = draw_data_[index];
       slot->release_callback = base::BindOnce(
           [](scoped_refptr<gpu::ClientSharedImage> image,
              const gpu::SyncToken& sync_token, bool is_lost) {
@@ -173,13 +182,17 @@ std::unique_ptr<CopyOutputRequest> SurfaceSavedFrame::CreateCopyRequestIfNeeded(
     const CompositorRenderPass& render_pass,
     bool is_software,
     gfx::ContentColorUsage content_color_usage) {
+  if (render_pass.output_rect.IsEmpty()) {
+    return nullptr;
+  }
+
   size_t shared_pass_index =
       GetSharedPassIndex(directive_.shared_elements(), render_pass.id);
-  if (shared_pass_index >= directive_.shared_elements().size())
+  if (shared_pass_index >= directive_.shared_elements().size()) {
     return nullptr;
+  }
 
-  RenderPassDrawData draw_data(render_pass);
-  draw_data_[shared_pass_index] = draw_data;
+  const gfx::Size size = render_pass.output_rect.size();
 
   auto request = std::make_unique<CopyOutputRequest>(
       kResultFormat, kResultDestination,
@@ -203,17 +216,16 @@ std::unique_ptr<CopyOutputRequest> SurfaceSavedFrame::CreateCopyRequestIfNeeded(
       gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
       shared_image =
           shared_image_interface_->CreateSharedImageForSoftwareCompositor(
-              {image_format, draw_data.size, color_space, flags,
+              {image_format, size, color_space, flags,
                "ViewTransitionTexture"});
     } else {
       gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                        gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
       shared_image = shared_image_interface_->CreateSharedImage(
-          {image_format, draw_data.size, color_space, flags,
-           "ViewTransitionTexture"},
+          {image_format, size, color_space, flags, "ViewTransitionTexture"},
           gpu::kNullSurfaceHandle);
     }
-    request->set_result_selection(gfx::Rect(draw_data.size));
+    request->set_result_selection(gfx::Rect(size));
     request->set_blit_request(BlitRequest(
         gfx::Point(), LetterboxingBehavior::kDoNotLetterbox,
         shared_image->mailbox(), shared_image->creation_sync_token(),
@@ -228,11 +240,18 @@ bool SurfaceSavedFrame::IsSharedElementRenderPass(
   return GetSharedPassIndex(shared_elements, pass_id) < shared_elements.size();
 }
 
-size_t SurfaceSavedFrame::ExpectedResultCount() const {
+size_t SurfaceSavedFrame::ExpectedResultCount(
+    const CompositorRenderPassList& render_pass_list) const {
   base::flat_set<CompositorRenderPassId> ids;
   for (auto& shared_element : directive_.shared_elements()) {
-    if (!shared_element.render_pass_id.is_null())
+    if (!shared_element.render_pass_id.is_null()) {
       ids.insert(shared_element.render_pass_id);
+    }
+  }
+  for (auto& render_pass : render_pass_list) {
+    if (render_pass->output_rect.IsEmpty()) {
+      ids.erase(render_pass->id);
+    }
   }
   return ids.size();
 }
@@ -276,20 +295,25 @@ void SurfaceSavedFrame::CompleteSavedFrameForTesting() {
     result->sync_token = shared_image_interface_->GenVerifiedSyncToken();
     result->release_callback =
         base::DoNothingWithBoundArgs(result->shared_image);
-    result->draw_data.size = kDefaultTextureSizeForTesting;
-    result->is_software = true;
   }
 
   copy_request_count_ = 0;
-  valid_result_count_ = ExpectedResultCount();
+  // TODO(vmpstr): Note that we also count passes that have an empty
+  // `output_rect` here, but in testing situations this is not currently the
+  // case. If we need to unittest empty render pass cases, then this value needs
+  // to be changed.
+  valid_result_count_ = [this]() {
+    base::flat_set<CompositorRenderPassId> ids;
+    for (auto& shared_element : directive_.shared_elements()) {
+      if (!shared_element.render_pass_id.is_null()) {
+        ids.insert(shared_element.render_pass_id);
+      }
+    }
+    return ids.size();
+  }();
   weak_factory_.InvalidateWeakPtrs();
   DCHECK(IsValid());
 }
-
-SurfaceSavedFrame::RenderPassDrawData::RenderPassDrawData() = default;
-SurfaceSavedFrame::RenderPassDrawData::RenderPassDrawData(
-    const CompositorRenderPass& render_pass)
-    : size(render_pass.output_rect.size()) {}
 
 SurfaceSavedFrame::OutputCopyResult::OutputCopyResult() = default;
 SurfaceSavedFrame::OutputCopyResult::OutputCopyResult(
@@ -305,23 +329,12 @@ SurfaceSavedFrame::OutputCopyResult::~OutputCopyResult() {
 
 SurfaceSavedFrame::OutputCopyResult&
 SurfaceSavedFrame::OutputCopyResult::operator=(OutputCopyResult&& other) {
-  mailbox = std::move(other.mailbox);
-  other.mailbox = gpu::Mailbox();
-
   sync_token = std::move(other.sync_token);
   other.sync_token = gpu::SyncToken();
 
-  color_space = std::move(other.color_space);
-  other.color_space = gfx::ColorSpace();
-
   shared_image = std::move(other.shared_image);
 
-  draw_data = std::move(other.draw_data);
-
   release_callback = std::move(other.release_callback);
-
-  is_software = other.is_software;
-  other.is_software = false;
 
   return *this;
 }

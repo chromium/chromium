@@ -34,11 +34,11 @@ void ExtensionURLLoaderThrottle::WillStartRequest(
 
 void ExtensionURLLoaderThrottle::WillRedirectRequest(
     net::RedirectInfo* redirect_info,
-    const network::mojom::URLResponseHead& /* response_head */,
-    bool* /* defer */,
-    std::vector<std::string>* /* to_be_removed_request_headers */,
-    net::HttpRequestHeaders* /* modified_request_headers */,
-    net::HttpRequestHeaders* /* modified_cors_exempt_request_headers */) {
+    /*response_head=*/const network::mojom::URLResponseHead&,
+    /*defer=*/bool*,
+    /*to_be_removed_request_headers=*/std::vector<std::string>*,
+    /*modified_request_headers=*/net::HttpRequestHeaders*,
+    /*modified_cors_exempt_request_headers=*/net::HttpRequestHeaders*) {
   if (manager_->ShouldRejectRedirect(start_request_url_, *redirect_info)) {
     delegate_->CancelWithError(net::ERR_TEMPORARILY_THROTTLED, kCancelReason);
   }

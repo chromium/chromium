@@ -145,9 +145,6 @@ class TipsNotificationClient : public PushNotificationClient {
   // notifications are allowed by policy.
   void UpdateProvisionalAllowed();
 
-  // Returns true if the Dismiss Limit has been reached.
-  bool DismissLimitReached();
-
   // Called when the pref that stores whether Tips notifications are permitted
   // changes.
   void OnPermittedPrefChanged(const std::string& name);
@@ -178,6 +175,10 @@ class TipsNotificationClient : public PushNotificationClient {
   // foreground scenes, this will store the notification type so it can
   // be handled when there is a foreground scene.
   std::optional<TipsNotificationType> interacted_type_;
+
+  // Stores the type of notification that is forced to be sent by experimental
+  // settings.
+  std::optional<TipsNotificationType> forced_type_;
 
   // Observes changes to permitted pref.
   PrefChangeRegistrar pref_change_registrar_;

@@ -11,8 +11,8 @@
 #include "base/numerics/safe_conversions.h"
 #include "components/crx_file/crx3.pb.h"
 #include "components/crx_file/crx_file.h"
+#include "crypto/hash.h"
 #include "crypto/rsa_private_key.h"
-#include "crypto/sha2.h"
 #include "crypto/signature_creator.h"
 
 namespace crx_file {
@@ -20,9 +20,9 @@ namespace crx_file {
 namespace {
 
 std::string GetCrxId(const std::string& key) {
-  uint8_t hash[16] = {};  // CRX IDs are 16 bytes long.
-  crypto::SHA256HashString(key, hash, sizeof(hash));
-  return std::string(reinterpret_cast<char*>(hash), sizeof(hash));
+  const auto full_hash = crypto::hash::Sha256(key);
+  const auto truncated_hash = base::span(full_hash).first<16>();
+  return std::string(base::as_string_view(truncated_hash));
 }
 
 constexpr size_t kFileBufferSize = 1 << 12;

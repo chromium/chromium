@@ -1409,33 +1409,12 @@ StorageAccessStatusCache URLRequest::CalculateStorageAccessStatus() const {
   std::optional<net::cookie_util::StorageAccessStatus> storage_access_status =
       network_delegate()->GetStorageAccessStatus(*this,
                                                  deferred_redirect_info_);
-
-  auto get_storage_access_value_outcome_if_omitted =
-      [&]() -> std::optional<net::cookie_util::StorageAccessStatusOutcome> {
-    if (!network_delegate()->IsStorageAccessHeaderEnabled()) {
-      return net::cookie_util::StorageAccessStatusOutcome::
-          kOmittedFeatureDisabled;
-    }
-    if (!storage_access_status) {
-      return net::cookie_util::StorageAccessStatusOutcome::kOmittedSameSite;
-    }
-    return std::nullopt;
-  };
-
-  auto storage_access_value_outcome =
-      get_storage_access_value_outcome_if_omitted();
-  if (storage_access_value_outcome) {
-    storage_access_status = std::nullopt;
-  } else {
-    storage_access_value_outcome =
-        ConvertSecFetchStorageAccessHeaderValueToOutcome(
-            storage_access_status.value());
-  }
-
   base::UmaHistogramEnumeration(
       "API.StorageAccessHeader.StorageAccessStatusOutcome",
-      storage_access_value_outcome.value());
-
+      storage_access_status
+          ? ConvertSecFetchStorageAccessHeaderValueToOutcome(
+                storage_access_status.value())
+          : net::cookie_util::StorageAccessStatusOutcome::kOmittedSameSite);
   return StorageAccessStatusCache(storage_access_status);
 }
 

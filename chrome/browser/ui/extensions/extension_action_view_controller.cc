@@ -700,11 +700,11 @@ ExtensionActionViewController::GetIconImageSource(
   bool has_side_panel_action =
       side_panel_service &&
       side_panel_service->HasSidePanelActionForTab(*extension(), tab_id);
-  bool grayscale =
+  bool is_grayscale =
       GetSiteInteraction(web_contents) ==
           extensions::SitePermissionsHelper::SiteInteraction::kNone &&
       !action_is_visible && !has_side_panel_action;
-  image_source->set_grayscale(grayscale);
+  image_source->set_grayscale(is_grayscale);
 
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {

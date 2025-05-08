@@ -20,6 +20,8 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_extension_registrar_delegate.h"
+#include "chrome/browser/extensions/extension_service_user_test_base.h"
+#include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -32,6 +34,7 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/unloaded_extension_reason.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
@@ -39,9 +42,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/test/test_screen.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_service_user_test_base.h"
-#endif
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 class ExtensionUnloadedObserver : public ExtensionRegistryObserver {
@@ -85,7 +86,8 @@ class ComponentLoaderTest : public testing::Test {
         /*user_name=*/std::u16string(),
         /*avatar_id=*/0, /*testing_factories=*/{});
 
-    extension_system_ = ExtensionSystem::Get(profile());
+    extension_system_ =
+        static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile()));
 
     extension_path_ =
         GetBasePath().AppendASCII("good")
@@ -135,13 +137,6 @@ class ComponentLoaderTest : public testing::Test {
     }
   }
 
-  void SetExtensionSystemReady() {
-    // The const_cast is ugly, but it's much simpler and more readable than
-    // trying to inject a MockExtensionSystem across desktop and Android,
-    // which use different ExtensionSystems and different factories.
-    const_cast<base::OneShotEvent*>(&extension_system_->ready())->Signal();
-  }
-
   TestingProfile* profile() { return profile_; }
 
  protected:
@@ -152,7 +147,7 @@ class ComponentLoaderTest : public testing::Test {
   std::unique_ptr<ChromeExtensionRegistrarDelegate>
       extension_registrar_delegate_;
   raw_ptr<ExtensionRegistrar> extension_registrar_ = nullptr;
-  raw_ptr<ExtensionSystem> extension_system_ = nullptr;
+  raw_ptr<TestExtensionSystem> extension_system_ = nullptr;
   raw_ptr<ComponentLoader> component_loader_ = nullptr;
 
   // The root directory of the text extension.
@@ -225,7 +220,7 @@ TEST_F(ComponentLoaderTest, AddWhenNotReady) {
 
 // Test that it *is* loaded when the extension service *is* ready.
 TEST_F(ComponentLoaderTest, AddWhenReady) {
-  SetExtensionSystemReady();
+  extension_system_->SetReady();
   std::string extension_id =
       component_loader_->Add(manifest_contents_, extension_path_);
   EXPECT_NE("", extension_id);
@@ -248,7 +243,7 @@ TEST_F(ComponentLoaderTest, Remove) {
   EXPECT_EQ(0u, registry->enabled_extensions().size());
 
   // Load an extension, and check that it's unloaded when Remove() is called.
-  SetExtensionSystemReady();
+  extension_system_->SetReady();
   std::string extension_id =
       component_loader_->Add(manifest_contents_, extension_path_);
   EXPECT_EQ(1u, registry->enabled_extensions().size());
@@ -280,9 +275,6 @@ TEST_F(ComponentLoaderTest, LoadAll) {
   EXPECT_EQ(default_count + 1, registry->enabled_extensions().size());
 }
 
-// TODO(crbug.com/408458901): Port these to desktop Android when we have an
-// extensions unit test base class where we can move MaybeSetupTestUser().
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 class ComponentLoaderExtensionServiceTest
     : public ExtensionServiceUserTestBase {
  public:
@@ -321,7 +313,6 @@ TEST_F(ComponentLoaderExtensionServiceTest, LoadAll_NonUserEmitHistograms) {
   RunEmitUserHistogramsTest(/*nonuser_expected_total_count=*/1,
                             /*user_expected_total_count=*/0);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test is flaky. https://crbug.com/1306983
 TEST_F(ComponentLoaderTest, DISABLED_AddOrReplace) {
@@ -349,7 +340,7 @@ TEST_F(ComponentLoaderTest, DISABLED_AddOrReplace) {
   EXPECT_EQ(default_count + 1,
             component_loader_->registered_extensions_count());
 
-  SetExtensionSystemReady();
+  extension_system_->SetReady();
   component_loader_->LoadAll();
 
   EXPECT_EQ(default_count + 1, registry->enabled_extensions().size());

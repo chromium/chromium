@@ -9,4 +9,5 @@ module network.mojom;
 enum NetworkIsolationPartition {
   kGeneral,
   kProtectedAudienceSellerWorklet,
+  kFedCmUncredentialedRequests,
 };

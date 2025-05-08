@@ -2856,6 +2856,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::PendingReceiver<blink::mojom::PeerConnectionTrackerHost> receiver);
   void EnableWebRtcEventLogOutput(int lid, int output_period_ms) override;
   void DisableWebRtcEventLogOutput(int lid) override;
+  void EnableWebRtcDataChannelLogOutput(int lid) override;
+  void DisableWebRtcDataChannelLogOutput(int lid) override;
   bool IsDocumentOnLoadCompletedInMainFrame() override;
   const std::vector<blink::mojom::FaviconURLPtr>& FaviconURLs() override;
 
@@ -3371,7 +3373,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // in a NavigationController. See https://crbug.com/365039 for more details.
   virtual void SendBeforeUnload(bool is_reload,
                                 base::WeakPtr<RenderFrameHostImpl> impl,
-                                bool for_legacy);
+                                bool for_legacy,
+                                const bool is_renderer_initiated_navigation);
 
  private:
   friend class CommitNavigationPauser;

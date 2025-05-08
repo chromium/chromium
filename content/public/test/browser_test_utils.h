@@ -2577,6 +2577,14 @@ void SetCapturedSurfaceControllerFactoryForTesting(
 
 void InitAndEnableRenderDocumentForAllFrames(
     base::test::ScopedFeatureList* feature_list);
+
+// Returns the DOMNodeId of the node matched by the given CSS query selector,
+// or std::nullopt if no node matches.
+// Note: This method makes multiple renderer IPC calls (via the devtools
+// protocol) and waits for a result (an IPC back from the renderer) each time.
+std::optional<int> GetDOMNodeId(content::RenderFrameHost& rfh,
+                                std::string_view query_selector);
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_TEST_BROWSER_TEST_UTILS_H_

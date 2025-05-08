@@ -14,6 +14,7 @@
 #include "media/capture/video/chromeos/camera_device_delegate.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"
 #include "media/capture/video_capture_types.h"
+#include "ui/gfx/native_pixmap_handle.h"
 
 namespace media {
 
@@ -27,7 +28,7 @@ struct BufferInfo {
   gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle;
   uint32_t drm_format;
   cros::mojom::HalPixelFormat hal_pixel_format;
-  uint64_t modifier;
+  uint64_t modifier = gfx::NativePixmapHandle::kNoModifier;
 };
 
 // RequestBuilder is used to build capture request that will be sent to camera

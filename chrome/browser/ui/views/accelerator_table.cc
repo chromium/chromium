@@ -60,9 +60,6 @@ const AcceleratorMapping kAcceleratorMap[] = {
     {ui::VKEY_G, ui::EF_PLATFORM_ACCELERATOR, IDC_FIND_NEXT},
     {ui::VKEY_G, ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR,
      IDC_FIND_PREVIOUS},
-#if !BUILDFLAG(IS_CHROMEOS)
-    {ui::VKEY_G, ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN, IDC_GLIC_TOGGLE_FOCUS},
-#endif
     {ui::VKEY_L, ui::EF_PLATFORM_ACCELERATOR, IDC_FOCUS_LOCATION},
     {ui::VKEY_O, ui::EF_PLATFORM_ACCELERATOR, IDC_OPEN_FILE},
     {ui::VKEY_P, ui::EF_PLATFORM_ACCELERATOR, IDC_PRINT},
@@ -255,7 +252,7 @@ const AcceleratorMapping kAcceleratorMap[] = {
 const AcceleratorMapping kTabGroupAcceleratorMap[] = {
     // Tab group commands.
     {ui::VKEY_C, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, IDC_ADD_NEW_TAB_TO_GROUP},
-    {ui::VKEY_D, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, IDC_CREATE_NEW_TAB_GROUP},
+    {ui::VKEY_P, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, IDC_CREATE_NEW_TAB_GROUP},
     {ui::VKEY_X, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, IDC_FOCUS_NEXT_TAB_GROUP},
     {ui::VKEY_Z, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, IDC_FOCUS_PREV_TAB_GROUP},
     {ui::VKEY_W, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, IDC_CLOSE_TAB_GROUP},

@@ -10,13 +10,13 @@
 import {EarconId} from '../common/earcon_id.js';
 import {LogType} from '../common/log_types.js';
 import {Msgs} from '../common/msgs.js';
+import {OffscreenCommandType} from '../common/offscreen_command_type.js';
 import {SettingsManager} from '../common/settings_manager.js';
 import {Personality, QueueMode} from '../common/tts_types.js';
 
 import {AbstractEarcons} from './abstract_earcons.js';
 import {ChromeVox} from './chromevox.js';
 import {ChromeVoxRange} from './chromevox_range.js';
-import {EarconEngine} from './earcon_engine.js';
 import {LogStore} from './logging/log_store.js';
 
 const DeviceType = chrome.audio.DeviceType;
@@ -28,7 +28,6 @@ type Rect = chrome.automation.Rect;
  * relevant, stop) playing.
  */
 export class Earcons extends AbstractEarcons {
-  private engine_ = new EarconEngine();
   private shouldPan_ = true;
 
   constructor() {
@@ -73,19 +72,27 @@ export class Earcons extends AbstractEarcons {
       const rect = opt_location ?? node.location;
       const container = node.root?.location;
       if (this.shouldPan_ && container) {
-        this.engine_.setPositionForRect(rect, container);
+        chrome.runtime.sendMessage(undefined, {
+          command: OffscreenCommandType.EARCON_SET_POSITION_FOR_RECT,
+          rect,
+          container
+        });
       } else {
-        this.engine_.resetPan();
+        chrome.runtime.sendMessage(undefined, {
+          command: OffscreenCommandType.EARCON_RESET_PAN,
+        });
       }
     }
 
-    this.engine_.playEarcon(earcon);
+    chrome.runtime.sendMessage(
+        undefined, {command: OffscreenCommandType.PLAY_EARCON, earcon});
   }
 
   override cancelEarcon(earcon: EarconId): void {
     switch (earcon) {
       case EarconId.PAGE_START_LOADING:
-        this.engine_.cancelProgress();
+        chrome.runtime.sendMessage(
+            undefined, {command: OffscreenCommandType.EARCON_CANCEL_PROGRESS});
         break;
     }
   }

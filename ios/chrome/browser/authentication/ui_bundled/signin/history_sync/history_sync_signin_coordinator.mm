@@ -50,12 +50,13 @@
   [_syncPopupCoordinator start];
 }
 
-#pragma mark - InterruptibleChromeCoordinator
+#pragma mark - AnimatedCoordinator
 
-- (void)interruptAnimated:(BOOL)animated {
+- (void)stopAnimated:(BOOL)animated {
   [_syncPopupCoordinator stopAnimated:animated];
   _syncPopupCoordinator.delegate = nil;
   _syncPopupCoordinator = nil;
+  [super stopAnimated:animated];
 }
 
 #pragma mark - HistorySyncPopupCoordinatorDelegate

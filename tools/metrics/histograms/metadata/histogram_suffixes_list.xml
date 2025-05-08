@@ -143,17 +143,6 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.Clients.Ads.Visible.Bytes.FullPage.Total2"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="AnimationLoop" separator=".">
-  <suffix name="FirstAnimationLoop"
-      label="Measurement taken on the first animation loop."/>
-  <suffix name="SecondAnimationLoop"
-      label="Measurement taken on the second animation loop."/>
-  <suffix name="ThirdToFifthAnimationLoop"
-      label="Measurements taken on the third, fourth, and fifth animation
-             loop."/>
-  <affected-histogram name="AnimatedImage.NumOfFramesSkipped"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="AutofillAddressFormType" separator=".">
   <suffix name="AddressOnly" label="Form has address and maybe name fields"/>
   <suffix name="AddressPlusContact"
@@ -434,14 +423,6 @@ chromium-metrics-reviews@google.com.
       label="Tab hidden while flushing FCP value."/>
   <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="IMEAutoCorrect" separator=".">
-  <suffix name="AC0" label="The auto-correct level is 0"/>
-  <suffix name="AC1" label="The auto-correct level is 1"/>
-  <suffix name="AC2" label="The auto-correct level is 2"/>
-  <affected-histogram name="InputMethod.Commit.Index.FR"/>
-  <affected-histogram name="InputMethod.Commit.Index.US"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="NavigationFrameType" separator=".">
@@ -1154,20 +1135,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Sharing.SendMessageResult.Windows"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SharingPulseInterval" separator=".">
-  <suffix name="PulseIntervalLong" label="Long pulse interval"/>
-  <suffix name="PulseIntervalMedium" label="Medium pulse interval"/>
-  <suffix name="PulseIntervalShort" label="Short pulse interval"/>
-  <affected-histogram name="Sharing.SendMessageResult"/>
-  <affected-histogram name="Sharing.SendMessageResult.Android"/>
-  <affected-histogram name="Sharing.SendMessageResult.ChromeOS"/>
-  <affected-histogram name="Sharing.SendMessageResult.iOS"/>
-  <affected-histogram name="Sharing.SendMessageResult.Linux"/>
-  <affected-histogram name="Sharing.SendMessageResult.Mac"/>
-  <affected-histogram name="Sharing.SendMessageResult.Unknown"/>
-  <affected-histogram name="Sharing.SendMessageResult.Windows"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="StartupTemperature" separator=".">
   <suffix name="ColdStartup"
       label="Startup was cold (mostly hard faults). Threshold updated Jan
@@ -1185,12 +1152,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Startup.FirstWebContents.NonEmptyPaint3"/>
   <affected-histogram name="Startup.LoadTime.ApplicationStartToChromeMain"/>
   <affected-histogram name="Startup.LoadTime.ProcessCreateToApplicationStart"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="WebSocketErrorCodesVariants" separator="_">
-  <suffix name="Localhost" label=""/>
-  <suffix name="NotLocalhost" label=""/>
-  <affected-histogram name="Net.WebSocket.ErrorCodes"/>
 </histogram_suffixes>
 
 </histogram_suffixes_list>

@@ -35,8 +35,8 @@ namespace ash {
 class FileSystemBackendDelegate;
 class FileAccessPermissions;
 
-constexpr char kSystemMountNameArchive[] = "archive";
-constexpr char kSystemMountNameRemovable[] = "removable";
+inline constexpr char kSystemMountNameArchive[] = "archive";
+inline constexpr char kSystemMountNameRemovable[] = "removable";
 
 // Backend Function called.  Used to control access.
 enum class BackendFunction {

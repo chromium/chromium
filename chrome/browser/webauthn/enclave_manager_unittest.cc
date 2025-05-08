@@ -79,8 +79,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "components/trusted_vault/icloud_recovery_key_mac.h"
 #include "crypto/scoped_fake_apple_keychain_v2.h"
-#include "device/fido/enclave/icloud_recovery_key_mac.h"
 #include "device/fido/mac/scoped_touch_id_test_environment.h"
 #include "third_party/boringssl/src/include/openssl/hmac.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
@@ -1428,8 +1428,8 @@ TEST_F(EnclaveManagerTest, AddICloudRecoveryKey) {
   EXPECT_TRUE(setup_future.Wait());
   ASSERT_TRUE(manager_.is_ready());
 
-  std::unique_ptr<device::enclave::ICloudRecoveryKey> icloud_key =
-      device::enclave::ICloudRecoveryKey::CreateForTest();
+  std::unique_ptr<trusted_vault::ICloudRecoveryKey> icloud_key =
+      trusted_vault::ICloudRecoveryKey::CreateForTest();
   std::unique_ptr<trusted_vault::SecureBoxKeyPair> key =
       trusted_vault::SecureBoxKeyPair::CreateByPrivateKeyImport(
           icloud_key->key()->private_key().ExportToBytes());

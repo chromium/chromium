@@ -46,12 +46,7 @@
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/system_identity_util.h"
-#import "ios/chrome/browser/widget_kit/model/features.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
-
-#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
-#import "ios/chrome/browser/widget_kit/model/model_swift.h"  // nogncheck
-#endif
 
 using signin::constants::kNoHostedDomainFound;
 
@@ -173,8 +168,8 @@ void AuthenticationService::Initialize(
       base::BindRepeating(&AuthenticationService::OnSigninAllowedChanged,
                           base::Unretained(this));
   pref_change_registrar_.Add(prefs::kSigninAllowed, signin_allowed_callback);
-// Migrate primary identity info to widgets if needed.
-#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
+
+  // Migrate primary identity info to widgets if needed.
   NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
   NSString* primary_account =
       [shared_defaults objectForKey:app_group::kPrimaryAccount];
@@ -187,7 +182,6 @@ void AuthenticationService::Initialize(
                           forKey:app_group::kPrimaryAccount];
     }
   }
-#endif
 
   // Reload credentials to ensure the accounts from the token service are
   // up-to-date.
@@ -222,7 +216,10 @@ void AuthenticationService::Initialize(
                                   signed_in_state);
   }
 
-  PerformFirstTimeProfileInitializationIfNecessary();
+  ProfileInitializationOutcome outcome =
+      PerformProfileInitializationIfNecessary();
+  base::UmaHistogramEnumeration(
+      "Signin.IOSAuthenticationServiceInitializationOutcome", outcome);
 }
 
 void AuthenticationService::Shutdown() {
@@ -454,26 +451,22 @@ void AuthenticationService::SignOut(
   }
 }
 
-void AuthenticationService::PerformFirstTimeProfileInitializationIfNecessary() {
+AuthenticationService::ProfileInitializationOutcome
+AuthenticationService::PerformProfileInitializationIfNecessary() {
   ProfileManagerIOS* profile_manager =
       GetApplicationContext()->GetProfileManager();
   if (!profile_manager) {
     // Skip if there is no profile manager, but this is possible only for test.
     CHECK_IS_TEST();
-    return;
+    return ProfileInitializationOutcome::kNoneForTesting;
   }
   ProfileAttributesStorageIOS* attributes_storage =
       profile_manager->GetProfileAttributesStorage();
 
   const std::string profile_name = account_manager_service_->GetProfileName();
 
-  // If the profile was already initialized before, nothing to do here.
-  if (attributes_storage->GetAttributesForProfileWithName(profile_name)
-          .IsFullyInitialized()) {
-    return;
-  }
-
-  // Once this method returns, the profile is considered fully initialized.
+  // Once this method returns, the profile is considered fully initialized. (If
+  // the profile was already initialized, this is a no-op.)
   base::ScopedClosureRunner mark_profile_initialized(base::BindOnce(
       [](ProfileAttributesStorageIOS* attributes_storage,
          std::string_view profile_name) {
@@ -484,29 +477,62 @@ void AuthenticationService::PerformFirstTimeProfileInitializationIfNecessary() {
       },
       attributes_storage, profile_name));
 
-  // When opening a managed profile for the first time, the user needs to be
-  // signed in automatically.
+  const bool was_already_initialized =
+      attributes_storage->GetAttributesForProfileWithName(profile_name)
+          .IsFullyInitialized();
+
   if (!AreSeparateProfilesForManagedAccountsEnabled()) {
-    return;
+    return was_already_initialized
+               ? ProfileInitializationOutcome::
+                     kFeatureDisabledAlreadyInitialized
+               : ProfileInitializationOutcome::kFeatureDisabledNewlyInitialized;
   }
 
-  if (profile_name == attributes_storage->GetPersonalProfileName()) {
+  // When opening a managed profile for the first time, the user needs to be
+  // signed in automatically.
+
+  const bool is_personal_profile =
+      profile_name == attributes_storage->GetPersonalProfileName();
+  if (is_personal_profile) {
     // Nothing to do if the current profile is the personal profile.
-    return;
+    return was_already_initialized
+               ? ProfileInitializationOutcome::
+                     kPersonalProfileAlreadyInitialized
+               : ProfileInitializationOutcome::kPersonalProfileNewlyInitialized;
   }
-  if (HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-    // Nothing to do if the profile is already signed in.
-    return;
+
+  const bool is_signed_in = HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+  if (is_signed_in) {
+    // Nothing to do if the managed profile is already signed in.
+    return was_already_initialized
+               ? ProfileInitializationOutcome::kManagedProfileAlreadyInitialized
+               : ProfileInitializationOutcome::
+                     kManagedProfileNewlyInitializedButAlreadySignedIn;
   }
+
   NSArray<id<SystemIdentity>>* identities_for_profile =
       account_manager_service_->GetAllIdentities();
-  // TODO(crbug.com/375605482): Evaluate if there is no race condition with
-  // this CHECK.
-  CHECK_EQ(identities_for_profile.count, 1ul, base::NotFatalUntil::M142);
-  if (identities_for_profile.count > 0) {
-    // TODO(crbug.com/375605482): Need to set the right access point.
-    SignIn(identities_for_profile[0], signin_metrics::AccessPoint::kUnknown);
+  if (identities_for_profile.count == 0) {
+    return was_already_initialized
+               ? ProfileInitializationOutcome::
+                     kManagedProfileAlreadyInitializedNoAccounts
+               : ProfileInitializationOutcome::
+                     kManagedProfileNewlyInitializedNoAccounts;
   }
+
+  SignIn(identities_for_profile[0],
+         signin_metrics::AccessPoint::kManagedProfileAutoSigninIos);
+  if (identities_for_profile.count > 1) {
+    return was_already_initialized
+               ? ProfileInitializationOutcome::
+                     kManagedProfileAlreadyInitializedMultipleAccountsAndNewlySignedIn
+               : ProfileInitializationOutcome::
+                     kManagedProfileNewlyInitializedMultipleAccounts;
+  }
+  return was_already_initialized
+             ? ProfileInitializationOutcome::
+                   kManagedProfileAlreadyInitializedButNewlySignedIn
+             : ProfileInitializationOutcome::kManagedProfileNewlyInitialized;
 }
 
 id<RefreshAccessTokenError> AuthenticationService::GetCachedMDMError(
@@ -653,16 +679,9 @@ void AuthenticationService::HandleForgottenIdentity(
     return;
   }
 
-  // YES if the primary identity should be ignored to simulate a backup/restore
-  // of the device.
-  bool simulate_identity_lost_for_restore =
-      device_restore && SimulatePostDeviceRestore();
-  // If the restore shorty needs to be simulated, the primary identity should
-  // not be found.
+  // Tests if the primary identity still exists.
   id<SystemIdentity> authenticated_identity =
-      simulate_identity_lost_for_restore
-          ? nil
-          : GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+      GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (authenticated_identity &&
       ![authenticated_identity isEqual:invalid_identity]) {
     // `authenticated_identity` exists and is a valid identity. Nothing to do

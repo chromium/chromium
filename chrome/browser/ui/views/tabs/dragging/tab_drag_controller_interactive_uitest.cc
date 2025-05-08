@@ -5488,7 +5488,7 @@ class SideBySideTabDragControllerTest
 };
 
 // Flaky. https://crbug.com/40748225
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_DragBetweenSplitTab DISABLED_DragBetweenSplitTab
 #else
 #define MAYBE_DragBetweenSplitTab DragBetweenSplitTab

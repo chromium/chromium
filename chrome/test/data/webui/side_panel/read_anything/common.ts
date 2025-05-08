@@ -4,7 +4,7 @@
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {MetricsBrowserProxyImpl, playFromSelectionTimeout, ReadAnythingLogger} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {MetricsBrowserProxyImpl, playFromSelectionTimeout, ReadAnythingLogger, VoicePackController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -64,7 +64,7 @@ export function createSpeechErrorEvent(
 
 export function setupBasicSpeech(
     app: AppElement, speech: TestSpeechBrowserProxy) {
-  app.enabledLangs = ['en'];
+  VoicePackController.getInstance().enableLang('en');
   createAndSetVoices(
       app, speech, [{lang: 'en', name: 'Google Basic', default: true}]);
 }

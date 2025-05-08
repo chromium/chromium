@@ -2358,6 +2358,13 @@ message ProfileSignalsReport {
   // A boolean indicating whether the Site Isolation (a.k.a Site Per Process)
   // setting is enabled.
   optional bool site_isolation_enabled = 7;
+
+  // Providers for various analysis connectors.
+  repeated string file_downloaded_providers = 8;
+  repeated string file_attached_providers = 9;
+  repeated string bulk_data_entry_providers = 10;
+  repeated string print_providers = 11;
+  repeated string security_event_providers = 12;
 }
 
 // Anti virus product information.
@@ -2432,7 +2439,7 @@ message OSReport {
   repeated AntiVirusProduct antivirus_info = 13;
 
   // A string contains the ID of installed hotfix system updates. Windows only.
-  optional string hotfixes = 14;
+  repeated string hotfixes = 14;
 
   // The machine GUID of the device, Windows only. This field contains PII.
   optional string machine_guid = 15;
@@ -2519,8 +2526,8 @@ message ChromeProfileReportRequest {
   enum ReportType {
     UNKNOWN = 0;
     PROFILE_REPORT = 1;
-    PROFILE_SIGNALS = 2;
-    PROFILE_REPORT_WITH_SIGNALS = 3;
+    PROFILE_SECURITY_SIGNALS = 2;
+    PROFILE_REPORT_WITH_SECURITY_SIGNALS = 3;
   }
 
   // The type of report that is being sent.
@@ -4908,8 +4915,8 @@ enum DeviceManagementErrorDetail {
 //   * The Authorization header isn't used for enterprise_check,
 //     enterprise_psm_check, device_initial_enrollment_state or
 //     certificate_based_register requests.
-//     It is also not used for register requests and check_android_management
-//     requests - for these requests, the OAuth token is passed in the "oauth"
+//     It is also not used for register requests
+//     - for these requests, the OAuth token is passed in the "oauth"
 //     HTTP query parameter.
 //
 // DeviceManagementRequest should only contain one request which matches the

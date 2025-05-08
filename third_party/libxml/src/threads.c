@@ -19,9 +19,11 @@
 #ifdef LIBXML_CATALOG_ENABLED
 #include <libxml/catalog.h>
 #endif
+#ifdef LIBXML_RELAXNG_ENABLED
+#include <libxml/relaxng.h>
+#endif
 #ifdef LIBXML_SCHEMAS_ENABLED
 #include <libxml/xmlschemastypes.h>
-#include <libxml/relaxng.h>
 #endif
 
 #if defined(SOLARIS)
@@ -159,6 +161,12 @@ xmlMutexUnlock(xmlMutexPtr tok)
 #endif
 }
 
+/**
+ * xmlInitRMutex:
+ * @tok:  mutex
+ *
+ * Initialize the mutex.
+ */
 void
 xmlInitRMutex(xmlRMutexPtr tok) {
     (void) tok;
@@ -195,6 +203,12 @@ xmlNewRMutex(void)
     return (tok);
 }
 
+/**
+ * xmlCleanupRMutex:
+ * @tok:  mutex
+ *
+ * Cleanup the mutex.
+ */
 void
 xmlCleanupRMutex(xmlRMutexPtr tok) {
     (void) tok;
@@ -286,35 +300,6 @@ xmlRMutexUnlock(xmlRMutexPtr tok ATTRIBUTE_UNUSED)
  *			Library wide thread interfaces			*
  *									*
  ************************************************************************/
-
-/**
- * xmlGetThreadId:
- *
- * DEPRECATED: Internal function, do not use.
- *
- * xmlGetThreadId() find the current thread ID number
- * Note that this is likely to be broken on some platforms using pthreads
- * as the specification doesn't mandate pthread_t to be an integer type
- *
- * Returns the current thread ID number
- */
-int
-xmlGetThreadId(void)
-{
-#ifdef HAVE_POSIX_THREADS
-    pthread_t id;
-    int ret;
-
-    id = pthread_self();
-    /* horrible but preserves compat, see warning above */
-    memcpy(&ret, &id, sizeof(ret));
-    return (ret);
-#elif defined HAVE_WIN32_THREADS
-    return GetCurrentThreadId();
-#else
-    return ((int) 0);
-#endif
-}
 
 /**
  * xmlLockLibrary:
@@ -482,6 +467,8 @@ xmlCleanupParser(void) {
 #endif
 #ifdef LIBXML_SCHEMAS_ENABLED
     xmlSchemaCleanupTypes();
+#endif
+#ifdef LIBXML_RELAXNG_ENABLED
     xmlRelaxNGCleanupTypes();
 #endif
 

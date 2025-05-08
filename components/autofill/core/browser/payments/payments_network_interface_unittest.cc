@@ -216,10 +216,10 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
   void OnDidGetDetailsForCreateBnplPaymentInstrument(
       PaymentsRpcResult result,
       std::string context_token,
-      std::unique_ptr<base::Value::Dict> legal_message) {
+      LegalMessageLines legal_message) {
     result_ = result;
     context_token_ = std::move(context_token);
-    legal_message_ = std::move(legal_message);
+    parsed_legal_message_ = std::move(legal_message);
   }
 
   void OnDidCreateBnplPaymentInstrument(PaymentsRpcResult result,
@@ -447,6 +447,8 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
       get_details_for_enrollment_response_fields_;
   // The legal message returned from a GetDetails upload save preflight call.
   std::unique_ptr<base::Value::Dict> legal_message_;
+  // The parsed legal message returned from a GetDetails call.
+  LegalMessageLines parsed_legal_message_;
   // A list of card BIN ranges supported by Google Payments, returned from a
   // GetDetails upload save preflight call.
   std::vector<std::pair<int, int>> supported_card_bin_ranges_;
@@ -1792,7 +1794,10 @@ TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
   switch (result) {
     case PaymentsRpcResult::kSuccess:
       ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
-                     "{ \"legal_message\": {}, "
+                     "{ \"legal_message\": {"
+                     "    \"line\": ["
+                     "      {\"template\": \"terms of service\"}]"
+                     "}, "
                      "\"context_token\": \"" +
                          context_token + "\" }");
       break;
@@ -1820,9 +1825,10 @@ TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
   EXPECT_EQ(result, result_);
   if (result == PaymentsRpcResult::kSuccess) {
     EXPECT_EQ(context_token, context_token_);
-    EXPECT_NE(nullptr, legal_message_.get());
+    EXPECT_FALSE(parsed_legal_message_.empty());
   }
 }
+
 // Test CreateBnplPaymentInstrument() with all the different PaymentsRpcResults.
 TEST_P(PaymentsNetworkInterfaceTestWithPaymentsRpcResultParam,
        CreateBnplPaymentInstrument_TestAllFlows) {

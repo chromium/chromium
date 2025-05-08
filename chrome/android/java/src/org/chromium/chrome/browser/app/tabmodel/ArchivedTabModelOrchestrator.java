@@ -19,7 +19,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -35,6 +34,7 @@ import org.chromium.chrome.browser.tab.TabArchiverImpl;
 import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabModelObserver;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.ArchivedTabCountSupplier;
 import org.chromium.chrome.browser.tabmodel.ArchivedTabCreator;
 import org.chromium.chrome.browser.tabmodel.ArchivedTabModelSelectorHolder;
 import org.chromium.chrome.browser.tabmodel.ArchivedTabModelSelectorImpl;
@@ -132,9 +132,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final TabWindowManager mTabWindowManager;
-    private final ObservableSupplierImpl<Integer> mTabCountSupplier =
-            new ObservableSupplierImpl<>();
-    private final Callback<Integer> mTabCountSupplierObserver = mTabCountSupplier::set;
     // The set of {@link TabModelOrchestrators}  which have registered themselves as active for
     // declutter.
     private final List<TabbedModeTabModelOrchestrator> mActivityTabModelOrchestrators =
@@ -150,9 +147,10 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     private boolean mRestoreTabsCalled;
     private boolean mRescueTabsCalled;
     private CallbackController mCallbackController = new CallbackController();
-    private ObservableSupplier<Integer> mUnderlyingTabCountSupplier;
     private @Nullable HistoricalTabModelObserver mHistoricalTabModelObserver;
     private boolean mTriggerAutodeleteAfterDataCreated;
+    private @Nullable TabGroupSyncService mTabGroupSyncService;
+    private ArchivedTabCountSupplier mArchivedTabCountSupplier;
 
     /**
      * Returns the ArchivedTabModelOrchestrator that corresponds to the given profile. Must be
@@ -240,10 +238,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
             mTabWindowManager.setArchivedTabModelSelector(null);
         }
 
-        if (mUnderlyingTabCountSupplier != null) {
-            mUnderlyingTabCountSupplier.removeObserver(mTabCountSupplierObserver);
-        }
-
         if (mHistoricalTabModelObserver != null) {
             mHistoricalTabModelObserver.destroy();
             mHistoricalTabModelObserver = null;
@@ -252,6 +246,11 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         if (mTabArchiver != null) {
             mTabArchiver.destroy();
             mTabArchiver = null;
+        }
+
+        if (mArchivedTabCountSupplier != null) {
+            mArchivedTabCountSupplier.destroy();
+            mArchivedTabCountSupplier = null;
         }
 
         super.destroy();
@@ -274,8 +273,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
      */
     public void registerTabModelOrchestrator(TabbedModeTabModelOrchestrator orchestrator) {
         mActivityTabModelOrchestrators.add(orchestrator);
-        if (ChromeFeatureList.sAndroidTabDeclutter.isEnabled()
-                && mTabArchiveSettings.getArchiveEnabled()) {
+        if (mTabArchiveSettings.getArchiveEnabled()) {
             // To account for the local tab group sync database synchronizing with the sync service
             // on startup, a delay must be included when initiating a declutter pass that involves
             // archiving tab groups. Unfortunately, there is no particular synchronization step that
@@ -301,7 +299,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
 
     /** Returns a supplier for the archive tab count. */
     public ObservableSupplier<Integer> getTabCountSupplier() {
-        return mTabCountSupplier;
+        return mArchivedTabCountSupplier;
     }
 
     public TabModel getTabModel() {
@@ -389,9 +387,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
             observer.onTabModelCreated(model);
         }
 
-        mUnderlyingTabCountSupplier = model.getTabCountSupplier();
-        mTabCountSupplier.set(mUnderlyingTabCountSupplier.get());
-        mUnderlyingTabCountSupplier.addObserver(mTabCountSupplierObserver);
+        mArchivedTabCountSupplier = new ArchivedTabCountSupplier(model, mTabGroupSyncService);
 
         mHistoricalTabModelObserver =
                 new HistoricalTabModelObserver(
@@ -431,7 +427,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
 
     private void doDeclutterPassImpl(TabbedModeTabModelOrchestrator orchestrator) {
         if (!mTabArchiveSettings.getArchiveEnabled()) return;
-        assert ChromeFeatureList.sAndroidTabDeclutter.isEnabled();
         pauseSaveTabList(orchestrator);
 
         int archiveTimeHours = mTabArchiveSettings.getArchiveTimeDeltaHours();
@@ -507,8 +502,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
 
         mTabArchiveSettings = new TabArchiveSettings(ChromeSharedPreferences.getInstance());
         mTabArchiveSettings.addObserver(mTabArchiveSettingsObserver);
-        TabGroupSyncService tabGroupSyncService =
-                TabGroupSyncServiceFactory.getForProfile(mProfile);
+        mTabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(mProfile);
         mTabArchiver =
                 new TabArchiverImpl(
                         mTabModelSelector
@@ -517,7 +511,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                         mArchivedTabCreator,
                         mTabArchiveSettings,
                         System::currentTimeMillis,
-                        tabGroupSyncService);
+                        mTabGroupSyncService);
         mTabArchiver.addObserver(mTabArchiverObserver);
     }
 

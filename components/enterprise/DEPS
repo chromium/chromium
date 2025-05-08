@@ -1,6 +1,7 @@
 include_rules = [
   "+components/download/public/common",
   "+components/device_signals/core/browser",
+  "+components/device_signals/core/common",
   "+components/policy",
   "+components/prefs",
   "+components/reporting/client",
@@ -12,6 +13,7 @@ include_rules = [
   "+crypto/sha2.h",
   "+crypto/signature_verifier.h",
   "+google_apis/gaia",
+  "+mojo/public/cpp",
   "+net",
   "+services/network/public",
   "+services/network/test",

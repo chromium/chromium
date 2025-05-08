@@ -260,6 +260,7 @@ using collaboration::CollaborationControllerDelegate;
 
   [_tabGroupCoordinator stop];
   _tabGroupCoordinator = nil;
+  self.mediator.baseDelegate = nil;
 }
 
 - (void)showTabGroupCreationForTabs:
@@ -338,6 +339,7 @@ using collaboration::CollaborationControllerDelegate;
                                     group:
                                         (base::WeakPtr<const TabGroup>)tabGroup
                          sourceButtonItem:(UIBarButtonItem*)sourceButtonItem {
+  CHECK(!IsContainedTabGroupEnabled());
   if (!tabGroup) {
     return;
   }
@@ -390,6 +392,7 @@ using collaboration::CollaborationControllerDelegate;
 - (void)startLeaveOrDeleteSharedGroup:(base::WeakPtr<const TabGroup>)group
                             forAction:(TabGroupActionType)actionType
                      sourceButtonItem:(UIBarButtonItem*)sourceButtonItem {
+  CHECK(!IsContainedTabGroupEnabled());
   __weak __typeof(self) weakSelf = self;
   base::OnceCallback<void(ResultCallback)> completionCallback =
       base::BindOnce(^(ResultCallback resultCallback) {
@@ -502,6 +505,7 @@ using collaboration::CollaborationControllerDelegate;
   _tabGroupCoordinator.modeHolder = self.modeHolder;
 
   [_tabGroupCoordinator start];
+  self.mediator.baseDelegate = _tabGroupCoordinator;
 }
 
 // Combines two arrays of inactive items into one. The `primaryInactiveItems`

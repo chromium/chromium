@@ -67,6 +67,7 @@ export class PrivacySandboxNoticeDialogAppElement extends
   }
 
   private onNoticeLearnMoreExpanded_(newValue: boolean, oldValue: boolean) {
+    this.loadPrivacyPolicyOnExpand(newValue, oldValue);
     this.onNoticeLearnMoreExpandedChanged(newValue, oldValue);
   }
 

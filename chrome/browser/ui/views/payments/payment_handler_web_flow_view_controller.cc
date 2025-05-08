@@ -124,6 +124,13 @@ class PaymentHandlerCloseButton : public views::ImageButton {
     views::SetImageFromVectorIconWithColor(this, vector_icons::kCloseIcon,
                                            enabled_color, disabled_color);
   }
+
+  base::WeakPtr<PaymentHandlerCloseButton> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<PaymentHandlerCloseButton> weak_ptr_factory_{this};
 };
 
 BEGIN_METADATA(PaymentHandlerCloseButton)
@@ -392,10 +399,18 @@ void PaymentHandlerWebFlowViewController::PopulateSheetHeaderView(
       color_utils::kMinimumVisibleContrastRatio);
   const SkColor close_icon_disabled_color = color_utils::AlphaBlend(
       close_icon_color, background_color, gfx::kDisabledControlAlpha);
-  container->AddChildView(std::make_unique<PaymentHandlerCloseButton>(
+  auto close_button = std::make_unique<PaymentHandlerCloseButton>(
       base::BindRepeating(&PaymentRequestSheetController::CloseButtonPressed,
                           GetWeakPtr()),
-      close_icon_color, close_icon_disabled_color));
+      close_icon_color, close_icon_disabled_color);
+  close_button_ = close_button->GetWeakPtr();
+  container->AddChildView(std::move(close_button));
+}
+
+views::View* PaymentHandlerWebFlowViewController::GetFirstFocusedView() {
+  // Prevent focusing the hidden "Cancel" button (https://crbug.com/415275892).
+  return close_button_ ? close_button_.get()
+                       : PaymentRequestSheetController::GetFirstFocusedView();
 }
 
 bool PaymentHandlerWebFlowViewController::GetSheetId(DialogViewID* sheet_id) {

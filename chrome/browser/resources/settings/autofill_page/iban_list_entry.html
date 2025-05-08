@@ -56,7 +56,8 @@
     <template is="dom-if" if="[[!showDotsMenu_(iban.metadata)]]">
       <cr-icon-button class="icon-external" id="remoteIbanLink"
           title="$i18n{remotePaymentMethodsLinkLabel}" role="link"
-          on-click="onRemoteEditClick_"></cr-icon-button>
+          on-click="onRemoteEditClick_"
+          aria-description="$i18n{opensInNewTab}"></cr-icon-button>
     </template>
   </div>
 </div>

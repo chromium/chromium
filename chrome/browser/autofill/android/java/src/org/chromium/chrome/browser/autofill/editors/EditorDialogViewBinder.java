@@ -31,6 +31,7 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Text
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VALIDATE_ON_SHOW;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VISIBLE;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.autofill.DropdownKeyValue;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -42,6 +43,7 @@ import java.util.List;
  * Provides functions that map {@link EditorProperties} changes in a {@link PropertyModel} to the
  * suitable method in {@link EditorDialogView}.
  */
+@NullMarked
 public class EditorDialogViewBinder {
     /**
      * Called whenever a property in the given model changes. It updates the given view accordingly.

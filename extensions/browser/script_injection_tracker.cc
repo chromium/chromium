@@ -176,7 +176,11 @@ std::vector<const UserScript*> GetLoadedDynamicScripts(
   UserScriptManager* manager =
       ExtensionSystem::Get(process.GetBrowserContext())->user_script_manager();
   if (!manager) {
+    // TODO(crbug.com/412829476): Remove this guard once we enable
+    // UserScriptManager on desktop Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     CHECK_IS_TEST();
+#endif
     return std::vector<const UserScript*>();
   }
 

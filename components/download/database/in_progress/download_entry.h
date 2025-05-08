@@ -27,9 +27,7 @@ struct DownloadEntry {
       int64_t ukm_id);
   ~DownloadEntry();
 
-  bool operator==(const DownloadEntry& other) const;
-
-  bool operator!=(const DownloadEntry& other) const;
+  friend bool operator==(const DownloadEntry&, const DownloadEntry&) = default;
 
   // A unique GUID that represents this download.
   std::string guid;

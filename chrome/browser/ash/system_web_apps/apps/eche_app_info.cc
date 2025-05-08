@@ -83,7 +83,7 @@ bool EcheSystemAppDelegate::ShouldAllowScriptsToCloseWindows() const {
   return !base::FeatureList::IsEnabled(ash::features::kEcheSWADebugMode);
 }
 
-gfx::Rect EcheSystemAppDelegate::GetDefaultBounds(Browser*) const {
+gfx::Rect EcheSystemAppDelegate::GetDefaultBounds(ash::BrowserDelegate*) const {
   // Ensures the Eche bounds is always 16:9 portrait aspect ratio and not more
   // than half of the windows.
   gfx::Rect bounds =

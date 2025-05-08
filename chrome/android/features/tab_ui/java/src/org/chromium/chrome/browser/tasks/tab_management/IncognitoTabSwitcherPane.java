@@ -142,7 +142,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
      * @param userEducationHelper Used for showing IPHs.
      * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      * @param compositorViewHolderSupplier Supplier to the {@link CompositorViewHolder} instance.
-     * @param tabGroupCreationUiFlow Orchestrates the tab group creation UI flow.
+     * @param tabGroupCreationUiDelegate Orchestrates the tab group creation UI flow.
      */
     IncognitoTabSwitcherPane(
             @NonNull Context context,
@@ -154,7 +154,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
             @NonNull UserEducationHelper userEducationHelper,
             @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             @NonNull ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
-            @NonNull TabGroupCreationUiFlow tabGroupCreationUiFlow) {
+            @NonNull TabGroupCreationUiDelegate tabGroupCreationUiDelegate) {
         super(
                 context,
                 factory,
@@ -163,7 +163,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                 userEducationHelper,
                 edgeToEdgeSupplier,
                 compositorViewHolderSupplier,
-                tabGroupCreationUiFlow);
+                tabGroupCreationUiDelegate);
 
         mIncognitoTabGroupModelFilterSupplier = incognitoTabGroupModelFilterSupplier;
         mLastClosedTabId = Tab.INVALID_TAB_ID;
@@ -326,12 +326,6 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
 
     @Override
     protected void tryToTriggerOnShownIphs() {}
-
-    @Override
-    public boolean requestOpenTabGroupDialog(int tabId) {
-        assert false : "Not reached.";
-        return false;
-    }
 
     private IncognitoTabModel getIncognitoTabModel() {
         if (!mIsNativeInitialized) return null;

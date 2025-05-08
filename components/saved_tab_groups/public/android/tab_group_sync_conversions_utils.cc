@@ -10,6 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/uuid.h"
+#include "components/saved_tab_groups/public/android/tab_group_sync_conversions_bridge.h"
 #include "components/saved_tab_groups/public/types.h"
 
 using base::android::ConvertJavaStringToUTF8;
@@ -40,6 +41,22 @@ ScopedJavaLocalRef<jstring> UuidToJavaString(JNIEnv* env,
 
 base::Uuid JavaStringToUuid(JNIEnv* env, const JavaParamRef<jstring>& j_uuid) {
   return base::Uuid::ParseLowercase(ConvertJavaStringToUTF8(env, j_uuid));
+}
+
+EitherGroupID JavaSyncOrLocalGroupIdToEitherGroupId(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& j_sync_group_id,
+    const JavaParamRef<jobject>& j_local_group_id) {
+  if (j_local_group_id.is_null()) {
+    std::string sync_group_id_str =
+        ConvertJavaStringToUTF8(env, j_sync_group_id);
+    return base::Uuid::ParseLowercase(sync_group_id_str);
+  } else {
+    LocalTabGroupID local_group_id =
+        TabGroupSyncConversionsBridge::FromJavaTabGroupId(env,
+                                                          j_local_group_id);
+    return local_group_id;
+  }
 }
 
 }  // namespace tab_groups

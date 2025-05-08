@@ -148,7 +148,7 @@ goog.history.Html5History.prototype.getToken = function() {
     return this.transformer_ ?
         this.transformer_.retrieveToken(
             this.pathPrefix_, this.window_.location) :
-        this.window_.location.pathname.substr(this.pathPrefix_.length);
+        this.window_.location.pathname.slice(this.pathPrefix_.length);
   }
 };
 
@@ -199,6 +199,12 @@ goog.history.Html5History.prototype.disposeInternal = function() {
         this.window_, goog.events.EventType.HASHCHANGE, this.onHistoryEvent_,
         false, this);
   }
+};
+
+
+/** @return {boolean} Whether the fragment is used to store tokens. */
+goog.history.Html5History.prototype.getUseFragment = function() {
+  return this.useFragment_;
 };
 
 

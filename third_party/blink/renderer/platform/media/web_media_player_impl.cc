@@ -4149,9 +4149,10 @@ void WebMediaPlayerImpl::RecordVideoOcclusionState(
 }
 
 void WebMediaPlayerImpl::RecordAutoPictureInPictureInfo(
-    const WebString& auto_picture_in_picture_info) {
+    const media::PictureInPictureEventsInfo::AutoPipInfo&
+        auto_picture_in_picture_info) {
   media_log_->AddEvent<MediaLogEvent::kAutoPictureInPictureInfoChanged>(
-      auto_picture_in_picture_info.Utf8());
+      auto_picture_in_picture_info);
 }
 
 void WebMediaPlayerImpl::ReportSessionUMAs() const {

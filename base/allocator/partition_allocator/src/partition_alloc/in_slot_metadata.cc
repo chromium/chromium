@@ -26,9 +26,7 @@ bool IsInFreelist(uintptr_t slot_start,
   size_t slot_size = slot_span->bucket->slot_size;
 
   // Next check if the `slot_start` is in the `slot_span`'s freelist.
-  PartitionFreelistEntry* node = slot_span->get_freelist_head();
-  const PartitionFreelistDispatcher* dispatcher =
-      PartitionRoot::FromSlotSpanMetadata(slot_span)->get_freelist_dispatcher();
+  FreelistEntry* node = slot_span->get_freelist_head();
 
   size_t length = slot_span->GetFreelistLength();
   size_t index = 0;
@@ -39,7 +37,7 @@ bool IsInFreelist(uintptr_t slot_start,
       return true;
     }
     // GetNext() causes crash if the freelist is corrupted.
-    node = dispatcher->GetNext(node, slot_size);
+    node = node->GetNext(slot_size);
     ++index;
   }
   position = 0;
@@ -84,8 +82,10 @@ InSlotMetadata::DoubleFreeOrCorruptionDetected(
   // will have `slot_size` in its stack data.
   PA_DEBUG_DATA_ON_STACK("slotsize", slot_size);
 
-  if (auto* thread_cache = root->GetThreadCache()) {
-    if (thread_cache->IsInFreelist(slot_start, slot_size, position)) {
+  auto* thread_cache = root->GetThreadCache();
+  if (ThreadCache::IsValid(thread_cache)) {
+    size_t bucket_index = slot_span->bucket - root->buckets;
+    if (thread_cache->IsInFreelist(slot_start, bucket_index, position)) {
       DoubleFreeDetected(position);
     }
   }

@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -224,13 +225,11 @@ void InstallAttribute(v8::Isolate* isolate,
   v8::Local<v8::String> interface_name =
       V8AtomicString(isolate, interface_name_ptr);
   v8::Local<v8::String> get_name = V8AtomicString(
-      isolate,
-      static_cast<String>(StringView(base::byte_span_from_cstring("get ")) +
-                          property_name_as_view));
+      isolate, WTF::StrCat({StringView(base::byte_span_from_cstring("get ")),
+                            property_name_as_view}));
   v8::Local<v8::String> set_name = V8AtomicString(
-      isolate,
-      static_cast<String>(StringView(base::byte_span_from_cstring("set ")) +
-                          property_name_as_view));
+      isolate, WTF::StrCat({StringView(base::byte_span_from_cstring("set ")),
+                            property_name_as_view}));
   v8::Local<v8::FunctionTemplate> get_func =
       CreateFunctionTemplate<v8::ExceptionContext::kAttributeGet>(
           isolate, world, signature, get_name, interface_name,
@@ -286,13 +285,11 @@ void InstallAttribute(v8::Isolate* isolate,
   v8::Local<v8::String> interface_name =
       V8AtomicString(isolate, interface_name_ptr);
   v8::Local<v8::String> get_name = V8AtomicString(
-      isolate,
-      static_cast<String>(StringView(base::byte_span_from_cstring("get ")) +
-                          name_as_view));
+      isolate, WTF::StrCat({StringView(base::byte_span_from_cstring("get ")),
+                            name_as_view}));
   v8::Local<v8::String> set_name = V8AtomicString(
-      isolate,
-      static_cast<String>(StringView(base::byte_span_from_cstring("set ")) +
-                          name_as_view));
+      isolate, WTF::StrCat({StringView(base::byte_span_from_cstring("set ")),
+                            name_as_view}));
   v8::Local<v8::Function> get_func =
       CreateFunction<v8::ExceptionContext::kAttributeGet>(
           isolate, context, world, signature, get_name, interface_name,

@@ -216,17 +216,12 @@ void LayoutBlock::AddChildBeforeDescendant(LayoutObject* new_child,
   // If the requested insertion point is not one of our children, then this is
   // because there is an anonymous container within this object that contains
   // the beforeDescendant.
-  if (before_descendant_container->IsAnonymousBlock()) {
+  if (before_descendant_container->IsAnonymousBlockFlow()) {
     // Insert the child into the anonymous block box instead of here. Note that
     // a LayoutOutsideListMarker is out-of-flow for tree building purposes, and
     // that is not inline level, although IsInline() is true.
-    const bool is_block_flow_like =
-        RuntimeEnabledFeatures::LayoutWebkitBoxTreeFixEnabled()
-            ? IsLayoutBlockFlow()
-            : (StyleRef().IsDeprecatedFlexbox() ||
-               (!IsFlexibleBox() && !IsLayoutGrid()));
     if ((new_child->IsInline() && !new_child->IsLayoutOutsideListMarker()) ||
-        (new_child->IsFloatingOrOutOfFlowPositioned() && is_block_flow_like) ||
+        (new_child->IsFloatingOrOutOfFlowPositioned() && IsLayoutBlockFlow()) ||
         before_descendant->Parent()->SlowFirstChild() != before_descendant) {
       before_descendant_container->AddChild(new_child, before_descendant);
     } else {
@@ -267,12 +262,7 @@ void LayoutBlock::AddChild(LayoutObject* new_child,
   // here.
   DCHECK(!ChildrenInline());
 
-  const bool is_block_flow_like =
-      !RuntimeEnabledFeatures::LayoutWebkitBoxTreeFixEnabled() &&
-      (StyleRef().IsDeprecatedFlexbox() ||
-       (!IsFlexibleBox() && !IsLayoutGrid()));
-  if (new_child->IsInline() ||
-      (new_child->IsFloatingOrOutOfFlowPositioned() && is_block_flow_like)) {
+  if (new_child->IsInline()) {
     // If we're inserting an inline child but all of our children are blocks,
     // then we have to make sure it is put into an anomyous block box. We try to
     // use an existing anonymous box if possible, otherwise a new one is created
@@ -280,7 +270,7 @@ void LayoutBlock::AddChild(LayoutObject* new_child,
     LayoutObject* after_child =
         before_child ? before_child->PreviousSibling() : LastChild();
 
-    if (after_child && after_child->IsAnonymousBlock()) {
+    if (after_child && after_child->IsAnonymousBlockFlow()) {
       after_child->AddChild(new_child);
       return;
     }
@@ -299,7 +289,7 @@ void LayoutBlock::AddChild(LayoutObject* new_child,
 
 void LayoutBlock::RemoveLeftoverAnonymousBlock(LayoutBlock* child) {
   NOT_DESTROYED();
-  DCHECK(child->IsAnonymousBlock());
+  DCHECK(child->IsAnonymousBlockFlow());
   DCHECK(!child->ChildrenInline());
   DCHECK_EQ(child->Parent(), this);
 

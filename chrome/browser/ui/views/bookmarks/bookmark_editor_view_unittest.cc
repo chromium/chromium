@@ -14,13 +14,16 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_test_views_delegate.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -136,7 +139,6 @@ class BookmarkEditorViewTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
 
- private:
   // Creates the following structure:
   // bookmark bar node
   //   a
@@ -164,6 +166,41 @@ class BookmarkEditorViewTest : public testing::Test {
     const BookmarkNode* of1 =
         model()->AddFolder(model()->other_node(), 1, u"OF1");
     model()->AddURL(of1, 0, u"of1a", GURL(test_base + "of1a"));
+  }
+
+  // Creates the following structure:
+  // account bookmark bar node
+  //   acc_a
+  //   acc_F1
+  //    acc_f1a
+  //    acc_F11
+  //      acc_f11a
+  //   acc_F2
+  // account other node
+  //   acc_oa
+  //   acc_OF1
+  //     acc_of1a
+  void AddAccountTestData() {
+    CHECK(base::FeatureList::IsEnabled(
+        switches::kSyncEnableBookmarksInTransportMode));
+    const BookmarkNode* account_bookmark_bar_node =
+        model()->account_bookmark_bar_node();
+    std::string test_base = base_path();
+    model()->AddURL(account_bookmark_bar_node, 0, u"acc_a",
+                    GURL(test_base + "acc_a"));
+    const BookmarkNode* f1 =
+        model()->AddFolder(account_bookmark_bar_node, 1, u"acc_F1");
+    model()->AddURL(f1, 0, u"acc_f1a", GURL(test_base + "acc_f1a"));
+    const BookmarkNode* f11 = model()->AddFolder(f1, 1, u"acc_F11");
+    model()->AddURL(f11, 0, u"acc_f11a", GURL(test_base + "acc_f11a"));
+    model()->AddFolder(account_bookmark_bar_node, 2, u"acc_F2");
+
+    // Children of the other node.
+    model()->AddURL(model()->account_other_node(), 0, u"acc_oa",
+                    GURL(test_base + "acc_oa"));
+    const BookmarkNode* of1 =
+        model()->AddFolder(model()->account_other_node(), 1, u"acc_OF1");
+    model()->AddURL(of1, 0, u"acc_of1a", GURL(test_base + "acc_of1a"));
   }
 
   ChromeTestViewsDelegate<> views_delegate_;
@@ -196,6 +233,70 @@ TEST_F(BookmarkEditorViewTest, ModelsMatch) {
   // Other node should have one child (OF1).
   ASSERT_EQ(1u, other_node->children().size());
   ASSERT_EQ(u"OF1", other_node->children()[0]->GetTitle());
+}
+
+// Makes sure the tree model matches that of the bookmark bar model with account
+// permanent folders.
+TEST_F(BookmarkEditorViewTest, ModelsMatchWithAccountFolders) {
+  base::test::ScopedFeatureList features(
+      switches::kSyncEnableBookmarksInTransportMode);
+  model()->CreateAccountPermanentFolders();
+  AddAccountTestData();
+
+  CreateEditor(profile_.get(),
+               BookmarkEditor::EditDetails::AddNodeInFolder(
+                   nullptr, static_cast<size_t>(-1), GURL(), std::u16string()),
+               BookmarkEditorView::SHOW_TREE);
+  BookmarkEditorView::EditorNode* editor_root = editor_tree_model()->GetRoot();
+
+  // The root should have two children: account and device.
+  ASSERT_EQ(2u, editor_root->children().size());
+  BookmarkEditorView::EditorNode* account_node =
+      editor_root->children()[0].get();
+  BookmarkEditorView::EditorNode* device_node =
+      editor_root->children()[1].get();
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_BOOKMARKS_ACCOUNT_BOOKMARKS),
+            account_node->GetTitle());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_BOOKMARKS_DEVICE_BOOKMARKS),
+            device_node->GetTitle());
+
+  // The account node should have 2 children: bookmark bar and other bookmarks.
+  // Mobile bookmarks is not set up and thus not visible.
+  BookmarkEditorView::EditorNode* account_bookmark_bar_node =
+      account_node->children()[0].get();
+  // The root should have 2 nodes: folder acc_F1 and acc_F2.
+  ASSERT_EQ(2u, account_bookmark_bar_node->children().size());
+  EXPECT_EQ(u"acc_F1", account_bookmark_bar_node->children()[0]->GetTitle());
+  EXPECT_EQ(u"acc_F2", account_bookmark_bar_node->children()[1]->GetTitle());
+  // acc_F1 should have one child, acc_F11
+  ASSERT_EQ(1u, account_bookmark_bar_node->children()[0]->children().size());
+  EXPECT_EQ(
+      u"acc_F11",
+      account_bookmark_bar_node->children()[0]->children()[0]->GetTitle());
+
+  BookmarkEditorView::EditorNode* account_other_node =
+      account_node->children()[1].get();
+  // Account other node should have one child (acc_OF1).
+  ASSERT_EQ(1u, account_other_node->children().size());
+  EXPECT_EQ(u"acc_OF1", account_other_node->children()[0]->GetTitle());
+
+  // The device node should also have 2 children: bookmark bar and
+  // other bookmarks.
+  BookmarkEditorView::EditorNode* bookmark_bar_node =
+      device_node->children()[0].get();
+  // The root should have 2 nodes: folder F1 and F2.
+  ASSERT_EQ(2u, bookmark_bar_node->children().size());
+  EXPECT_EQ(u"F1", bookmark_bar_node->children()[0]->GetTitle());
+  EXPECT_EQ(u"F2", bookmark_bar_node->children()[1]->GetTitle());
+  // F1 should have one child, F11
+  ASSERT_EQ(1u, bookmark_bar_node->children()[0]->children().size());
+  EXPECT_EQ(u"F11",
+            bookmark_bar_node->children()[0]->children()[0]->GetTitle());
+
+  BookmarkEditorView::EditorNode* other_node = device_node->children()[1].get();
+  // Other node should have one child (OF1).
+  ASSERT_EQ(1u, other_node->children().size());
+  EXPECT_EQ(u"OF1", other_node->children()[0]->GetTitle());
 }
 
 // Changes the title and makes sure parent/visual order doesn't change.
@@ -244,6 +345,26 @@ TEST_F(BookmarkEditorViewTest, ChangeParent) {
   const BookmarkNode* other_node = model()->other_node();
   ASSERT_EQ(u"a", other_node->children()[2]->GetTitle());
   ASSERT_TRUE(GURL(base_path() + "a") == other_node->children()[2]->url());
+}
+
+// Moves 'acc_a' to be a child of the account other node.
+TEST_F(BookmarkEditorViewTest, ChangeAccountParent) {
+  base::test::ScopedFeatureList features(
+      switches::kSyncEnableBookmarksInTransportMode);
+  model()->CreateAccountPermanentFolders();
+  AddAccountTestData();
+
+  CreateEditor(profile_.get(),
+               BookmarkEditor::EditDetails::EditNode(GetNode("acc_a")),
+               BookmarkEditorView::SHOW_TREE);
+
+  ApplyEdits(
+      editor_tree_model()->GetRoot()->children()[0]->children()[1].get());
+
+  const BookmarkNode* account_other_node = model()->account_other_node();
+  ASSERT_EQ(u"acc_a", account_other_node->children()[2]->GetTitle());
+  ASSERT_TRUE(GURL(base_path() + "acc_a") ==
+              account_other_node->children()[2]->url());
 }
 
 // Moves 'a' to be a child of the other node and changes its url to new_a.

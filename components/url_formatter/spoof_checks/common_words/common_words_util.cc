@@ -21,8 +21,8 @@ base::span<const uint8_t> g_dafsa_params = kDafsa;
 }  // namespace
 
 bool IsCommonWord(std::string_view word) {
-  return net::LookupStringInFixedSet(g_dafsa_params, word.data(),
-                                     word.size()) != net::kDafsaNotFound;
+  return net::LookupStringInFixedSet(g_dafsa_params, word) !=
+         net::kDafsaNotFound;
 }
 
 void SetCommonWordDAFSAForTesting(base::span<const uint8_t> dafsa) {

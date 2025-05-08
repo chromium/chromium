@@ -13,12 +13,15 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 import java.util.List;
 
 /** Provides storage for merchant trust signals events. */
+@NullMarked
 public class MerchantTrustSignalsEventStorage {
     private long mNativeMerchantSignalDB;
     private static boolean sSkipNativeAssertionsForTesting;
@@ -40,7 +43,7 @@ public class MerchantTrustSignalsEventStorage {
 
     @MainThread
     @VisibleForTesting
-    public void saveWithCallback(MerchantTrustSignalsEvent event, Runnable onComplete) {
+    public void saveWithCallback(MerchantTrustSignalsEvent event, @Nullable Runnable onComplete) {
         makeNativeAssertion();
         MerchantTrustSignalsEventStorageJni.get()
                 .save(mNativeMerchantSignalDB, event.getKey(), event.getTimestamp(), onComplete);
@@ -124,7 +127,7 @@ public class MerchantTrustSignalsEventStorage {
                 long nativeMerchantSignalDB,
                 @JniType("std::string") String key,
                 long timestamp,
-                Runnable onComplete);
+                @Nullable Runnable onComplete);
 
         void load(
                 long nativeMerchantSignalDB,
@@ -139,8 +142,8 @@ public class MerchantTrustSignalsEventStorage {
         void delete(
                 long nativeMerchantSignalDB,
                 @JniType("std::string") String key,
-                Runnable onComplete);
+                @Nullable Runnable onComplete);
 
-        void deleteAll(long nativeMerchantSignalDB, Runnable onComplete);
+        void deleteAll(long nativeMerchantSignalDB, @Nullable Runnable onComplete);
     }
 }

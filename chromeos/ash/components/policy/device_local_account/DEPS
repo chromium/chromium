@@ -1,0 +1,6 @@
+include_rules = [
+  # This package must not depend on policy to avoid circular deps.
+  # We expect some of the policy implementation uses device local account
+  # concepts, instead. (i.e., dependency from other policy code to here).
+  "-components/policy",
+]

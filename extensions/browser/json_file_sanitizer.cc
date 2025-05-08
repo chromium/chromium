@@ -6,145 +6,107 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/expected.h"
+#include "base/values.h"
 #include "extensions/browser/extension_file_task_runner.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace extensions {
 
-namespace {
-
-// Reads the file in |path| and then deletes it.
-// Returns a tuple containing: the file content, whether the read was
-// successful, whether the delete was successful.
-std::tuple<std::string, bool, bool> ReadAndDeleteTextFile(
-    const base::FilePath& path) {
-  std::string contents;
-  bool read_success = base::ReadFileToString(path, &contents);
-  bool delete_success = base::DeleteFile(path);
-  return std::make_tuple(contents, read_success, delete_success);
-}
-
-bool WriteStringToFile(const std::string& contents,
-                       const base::FilePath& file_path) {
-  return base::WriteFile(file_path, contents);
-}
-
-}  // namespace
-
 // static
 std::unique_ptr<JsonFileSanitizer> JsonFileSanitizer::CreateAndStart(
-    data_decoder::DataDecoder* decoder,
     const std::set<base::FilePath>& file_paths,
     Callback callback,
     const scoped_refptr<base::SequencedTaskRunner>& io_task_runner) {
   // Note we can't use std::make_unique as we want to keep the constructor
   // private.
   std::unique_ptr<JsonFileSanitizer> sanitizer(
-      new JsonFileSanitizer(file_paths, std::move(callback), io_task_runner));
-  sanitizer->Start(decoder);
+      new JsonFileSanitizer(std::move(callback), io_task_runner));
+  sanitizer->Start(file_paths);
   return sanitizer;
 }
 
 JsonFileSanitizer::JsonFileSanitizer(
-    const std::set<base::FilePath>& file_paths,
     Callback callback,
     const scoped_refptr<base::SequencedTaskRunner>& io_task_runner)
-    : file_paths_(file_paths),
-      callback_(std::move(callback)),
-      io_task_runner_(io_task_runner) {}
+    : callback_(std::move(callback)), io_task_runner_(io_task_runner) {}
 
 JsonFileSanitizer::~JsonFileSanitizer() = default;
 
-void JsonFileSanitizer::Start(data_decoder::DataDecoder* decoder) {
-  if (file_paths_.empty()) {
+void JsonFileSanitizer::Start(const std::set<base::FilePath>& file_paths) {
+  if (file_paths.empty()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&JsonFileSanitizer::ReportSuccess,
                                   weak_factory_.GetWeakPtr()));
     return;
   }
 
-  decoder->GetService()->BindJsonParser(
-      json_parser_.BindNewPipeAndPassReceiver());
-
-  for (const base::FilePath& path : file_paths_) {
+  remaining_callbacks_ = file_paths.size();
+  for (const base::FilePath& path : file_paths) {
     io_task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE, base::BindOnce(&ReadAndDeleteTextFile, path),
-        base::BindOnce(&JsonFileSanitizer::JsonFileRead,
-                       weak_factory_.GetWeakPtr(), path));
+        FROM_HERE, base::BindOnce(&JsonFileSanitizer::ProcessFile, path),
+        base::BindOnce(&JsonFileSanitizer::OnProcessedFile,
+                       weak_factory_.GetWeakPtr()));
   }
 }
 
-void JsonFileSanitizer::JsonFileRead(
-    const base::FilePath& file_path,
-    std::tuple<std::string, bool, bool> read_and_delete_result) {
-  if (!std::get<1>(read_and_delete_result)) {
-    ReportError(Status::kFileReadError, std::string());
-    return;
-  }
-  if (!std::get<2>(read_and_delete_result)) {
-    ReportError(Status::kFileDeleteError, std::string());
-    return;
-  }
-  json_parser_->Parse(std::get<0>(read_and_delete_result),
-                      base::JSON_PARSE_CHROMIUM_EXTENSIONS,
-                      base::BindOnce(&JsonFileSanitizer::JsonParsingDone,
-                                     weak_factory_.GetWeakPtr(), file_path));
-}
+base::expected<void, JsonFileSanitizer::Error> JsonFileSanitizer::ProcessFile(
+    const base::FilePath& path) {
+  std::string contents;
+  bool read_success = base::ReadFileToString(path, &contents);
+  bool delete_success = base::DeleteFile(path);
 
-void JsonFileSanitizer::JsonParsingDone(
-    const base::FilePath& file_path,
-    std::optional<base::Value> json_value,
-    const std::optional<std::string>& error) {
-  if (!json_value || !json_value->is_dict()) {
-    ReportError(Status::kDecodingError, error ? *error : std::string());
-    return;
+  if (!read_success) {
+    return base::unexpected(Error::kFileReadError);
+  }
+
+  if (!delete_success) {
+    return base::unexpected(Error::kFileDeleteError);
+  }
+
+  std::optional<base::Value> result = base::JSONReader::Read(contents);
+  if (!result.has_value() || !result->is_dict()) {
+    return base::unexpected(Error::kDecodingError);
   }
 
   // Reserialize the JSON and write it back to the original file.
   std::optional<std::string> json_string = base::WriteJsonWithOptions(
-      *json_value, base::JSONWriter::OPTIONS_PRETTY_PRINT);
+      *result, base::JSONWriter::OPTIONS_PRETTY_PRINT);
   if (!json_string) {
-    ReportError(Status::kSerializingError, std::string());
-    return;
+    return base::unexpected(Error::kSerializingError);
   }
 
-  io_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&WriteStringToFile, std::move(*json_string), file_path),
-      base::BindOnce(&JsonFileSanitizer::JsonFileWritten,
-                     weak_factory_.GetWeakPtr(), file_path));
+  if (!base::WriteFile(path, *json_string)) {
+    return base::unexpected(Error::kFileWriteError);
+  }
+
+  return base::ok();
 }
 
-void JsonFileSanitizer::JsonFileWritten(const base::FilePath& file_path,
-                                        bool success) {
-  if (!success) {
-    ReportError(Status::kFileWriteError, std::string());
-    return;
-  }
-  // We have finished with this JSON file.
-  size_t removed_count = file_paths_.erase(file_path);
-  DCHECK_EQ(1U, removed_count);
-
-  if (file_paths_.empty()) {
-    // This was the last path, we are done.
-    ReportSuccess();
+void JsonFileSanitizer::OnProcessedFile(base::expected<void, Error> result) {
+  if (result.has_value()) {
+    if (--remaining_callbacks_ == 0) {
+      ReportSuccess();
+    }
+  } else {
+    ReportError(result.error());
   }
 }
 
 void JsonFileSanitizer::ReportSuccess() {
-  std::move(callback_).Run(Status::kSuccess, std::string());
+  std::move(callback_).Run(base::ok());
 }
 
-void JsonFileSanitizer::ReportError(Status status, const std::string& error) {
+void JsonFileSanitizer::ReportError(Error error) {
   // Prevent any other task from reporting, we want to notify only once.
   weak_factory_.InvalidateWeakPtrs();
-  std::move(callback_).Run(status, error);
+  std::move(callback_).Run(base::unexpected(error));
 }
 
 }  // namespace extensions

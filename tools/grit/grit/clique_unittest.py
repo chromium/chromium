@@ -17,10 +17,11 @@ import unittest
 from io import StringIO
 
 from grit import clique
+from grit import constants
 from grit import exception
+from grit import grd_reader
 from grit import pseudo
 from grit import tclib
-from grit import grd_reader
 from grit import util
 
 class MessageCliqueUnittest(unittest.TestCase):
@@ -34,35 +35,78 @@ class MessageCliqueUnittest(unittest.TestCase):
     self.assertTrue(c.GetMessage() == msg)
     self.assertTrue(c.GetId() == msg.GetId())
 
+    msg_en_f = tclib.Translation(
+        text='Hello USERNAME, how are youe?',
+        id=msg.GetId(),
+        placeholders=[tclib.Placeholder('USERNAME', '%s', 'Joi')])
     msg_fr = tclib.Translation(text='Bonjour USERNAME, comment ca va?',
                                id=msg.GetId(), placeholders=[
                                 tclib.Placeholder('USERNAME', '%s', 'Joi')])
+    msg_fr_f = tclib.Translation(
+        text='Bonjour USERNAME, comment ca vae?',
+        id=msg.GetId(),
+        placeholders=[tclib.Placeholder('USERNAME', '%s', 'Joi')])
     msg_de = tclib.Translation(text='Guten tag USERNAME, wie geht es dir?',
                                id=msg.GetId(), placeholders=[
                                 tclib.Placeholder('USERNAME', '%s', 'Joi')])
+    msg_de_f = tclib.Translation(
+        text='Guten tag USERNAME, wie gehten es dir?',
+        id=msg.GetId(),
+        placeholders=[tclib.Placeholder('USERNAME', '%s', 'Joi')])
 
-    c.AddTranslation(msg_fr, 'fr')
-    factory.FindCliqueAndAddTranslation(msg_de, 'de')
+    c.AddTranslation(msg_en_f, 'en', constants.GENDER_FEMININE)
+    c.AddTranslation(msg_fr, 'fr', constants.DEFAULT_GENDER)
+    c.AddTranslation(msg_fr_f, 'fr', constants.GENDER_FEMININE)
+    factory.FindCliqueAndAddTranslation(msg_de, 'de', constants.DEFAULT_GENDER)
+    factory.FindCliqueAndAddTranslation(msg_de_f, 'de',
+                                        constants.GENDER_FEMININE)
 
     # sort() sorts lists in-place and does not return them
     for lang in ('en', 'fr', 'de'):
-      self.assertTrue(lang in c.clique)
+      for gender in (constants.DEFAULT_GENDER, constants.GENDER_FEMININE):
+        self.assertTrue((lang, gender) in c.clique,
+                        msg=f'({lang}, {gender}) is not in c.clique')
 
-    self.assertTrue(c.MessageForLanguage('fr').GetRealContent() ==
-                    msg_fr.GetRealContent())
+    self.assertEqual(
+        c.MessageForLanguageAndGender(
+            'fr', constants.DEFAULT_GENDER).GetRealContent(),
+        msg_fr.GetRealContent())
+    self.assertEqual(
+        c.MessageForLanguageAndGender(
+            'fr', constants.GENDER_FEMININE).GetRealContent(),
+        msg_fr_f.GetRealContent())
 
     try:
-      c.MessageForLanguage('zh-CN', False)
+      c.MessageForLanguageAndGender('zh-CN', constants.DEFAULT_GENDER, False)
       self.fail('Should have gotten exception')
     except:
       pass
 
-    self.assertTrue(c.MessageForLanguage('zh-CN', True) != None)
+    self.assertIsNotNone(
+        c.MessageForLanguageAndGender('zh-CN', constants.DEFAULT_GENDER, True))
+
+    # Missing gender translation falls back to the default gender for the same
+    # language.
+    self._assertTranslationPartsEqual(
+        c.MessageForLanguageAndGender('de', constants.GENDER_MASCULINE, False),
+        msg_de)
 
     rex = re.compile('fr|de|bingo')
-    self.assertTrue(len(c.AllMessagesThatMatch(rex, False)) == 2)
-    self.assertTrue(
-        c.AllMessagesThatMatch(rex, True)[pseudo.PSEUDO_LANG] is not None)
+    self.assertEqual(len(c.AllMessagesThatMatch(rex, False)), 4)
+    self.assertIsNotNone(
+        c.AllMessagesThatMatch(rex, True)[(pseudo.PSEUDO_LANG,
+                                           constants.DEFAULT_GENDER)])
+
+  def _assertTranslationPartsEqual(self, msg1, msg2):
+    for part in zip(msg1.parts, msg2.parts):
+      if isinstance(part[0], str):
+        self.assertEqual(part[0], part[1])
+      elif isinstance(part[0], tclib.Placeholder):
+        self.assertEqual(part[0].GetPresentation(), part[1].GetPresentation())
+        self.assertEqual(part[0].GetOriginal(), part[1].GetOriginal())
+        self.assertEqual(part[0].GetExample(), part[1].GetExample())
+      else:
+        self.fail(f'unsupported type in translation parts: {part[0]}')
 
   def testBestClique(self):
     factory = clique.UberClique()
@@ -148,31 +192,69 @@ class MessageCliqueUnittest(unittest.TestCase):
     cliques = [factory.MakeClique(msg) for msg in messages]
 
     for clq in cliques:
-      clq.AddTranslation(translation, 'fr')
+      clq.AddTranslation(translation, 'fr', constants.DEFAULT_GENDER)
 
-    self.assertTrue(cliques[0].MessageForLanguage('fr').GetRealContent() ==
-                    'Bonjour $1')
-    self.assertTrue(cliques[1].MessageForLanguage('fr').GetRealContent() ==
-                    'Bonjour %s')
+    self.assertTrue(cliques[0].MessageForLanguageAndGender(
+        'fr', constants.DEFAULT_GENDER).GetRealContent() == 'Bonjour $1')
+    self.assertTrue(cliques[1].MessageForLanguageAndGender(
+        'fr', constants.DEFAULT_GENDER).GetRealContent() == 'Bonjour %s')
 
   def testMissingTranslations(self):
-    messages = [ tclib.Message(text='Hello'), tclib.Message(text='Goodbye') ]
+    messages = [
+        tclib.Message(text='Hello'),
+        tclib.Message(text='Goodbye'),
+        tclib.Message(text='gender fallback to english example'),
+        tclib.Message(text='gender fallback to default gender example'),
+    ]
     factory = clique.UberClique()
     cliques = [factory.MakeClique(msg) for msg in messages]
 
-    cliques[1].MessageForLanguage('fr', False, True)
+    cliques[3].AddTranslation(
+        tclib.Translation(text='Buongiorno',
+                          id=messages[3].GetId(),
+                          placeholders=[]), 'it', constants.DEFAULT_GENDER)
 
-    self.assertTrue(not factory.HasMissingTranslations())
+    cliques[1].MessageForLanguageAndGender('fr', constants.DEFAULT_GENDER,
+                                           False, True)
+    cliques[2].MessageForLanguageAndGender('es', constants.DEFAULT_GENDER,
+                                           False, True)
 
-    cliques[0].MessageForLanguage('de', False, False)
+    # Non-default genders can still fall back to English
+    cliques[2].MessageForLanguageAndGender('es', constants.GENDER_MASCULINE,
+                                           False, True)
+
+    cliques[3].MessageForLanguageAndGender('it', constants.DEFAULT_GENDER,
+                                           False, False)
+
+    # Non-default genders can fall back to the default constants without an error
+    # or warning.
+    cliques[3].MessageForLanguageAndGender('it', constants.GENDER_MASCULINE,
+                                           False, False)
+
+    self.assertFalse(factory.HasMissingTranslations())
+
+    cliques[0].MessageForLanguageAndGender('de', constants.DEFAULT_GENDER,
+                                           False, False)
+    cliques[0].MessageForLanguageAndGender('de', constants.GENDER_FEMININE,
+                                           False, False)
 
     self.assertTrue(factory.HasMissingTranslations())
 
     report = factory.MissingTranslationsReport()
-    self.assertTrue(report.count('WARNING') == 1)
-    self.assertTrue(report.count('8053599568341804890 "Goodbye" fr') == 1)
-    self.assertTrue(report.count('ERROR') == 1)
-    self.assertTrue(report.count('800120468867715734 "Hello" de') == 1)
+    self.assertEqual(report.count('WARNING'), 1)
+    self.assertEqual(
+        report.count('''8053599568341804890 "Goodbye" ('fr', 'OTHER')'''), 1)
+    self.assertEqual(
+        report.count(
+            '''362457071231374324 "gender fallback to english example" ('es', 'OTHER'),('es', 'MASCULINE')'''
+        ), 1)
+    self.assertEqual(report.count('ERROR'), 1)
+    self.assertEqual(
+        report.count(
+            '''800120468867715734 "Hello" ('de', 'OTHER'),('de', 'FEMININE')'''
+        ), 1)
+    self.assertEqual(report.count('gender fallback to default gender example'),
+                     0)
 
   def testCustomTypes(self):
     factory = clique.UberClique()
@@ -189,8 +271,10 @@ class MessageCliqueUnittest(unittest.TestCase):
     c.SetCustomType(util.NewClassInstance(
       'grit.clique_unittest.DummyCustomType', clique.CustomType))
     translation = tclib.Translation(id=message.GetId(), text='Bilingo bolongo')
-    c.AddTranslation(translation, 'fr')
-    self.assertTrue(c.MessageForLanguage('fr').GetRealContent().startswith('jjj'))
+    c.AddTranslation(translation, 'fr', constants.DEFAULT_GENDER)
+    self.assertTrue(
+        c.MessageForLanguageAndGender(
+            'fr', constants.DEFAULT_GENDER).GetRealContent().startswith('jjj'))
 
   def testWhitespaceMessagesAreNontranslateable(self):
     factory = clique.UberClique()

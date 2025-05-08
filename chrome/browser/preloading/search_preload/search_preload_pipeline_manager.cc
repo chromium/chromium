@@ -33,6 +33,20 @@ std::optional<GURL> GetCanonicalUrlForSearchPreload(
   return std::nullopt;
 }
 
+// Ergonomic wrapper of `ExtractSearchTermsFromURL()`
+std::optional<std::u16string> ExtractSearchTermsFromUrl(
+    TemplateURLService& template_url_service,
+    const AutocompleteMatch& match) {
+  std::u16string search_terms;
+  if (template_url_service.GetDefaultSearchProvider()
+          ->ExtractSearchTermsFromURL(match.destination_url,
+                                      template_url_service.search_terms_data(),
+                                      &search_terms)) {
+    return search_terms;
+  }
+  return std::nullopt;
+}
+
 }  // namespace
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchPreloadPipelineManager);
@@ -119,4 +133,82 @@ void SearchPreloadPipelineManager::OnAutocompleteResultChanged(
         GetWebContents(), prerender_url,
         chrome_preloading_predictor::kDefaultSearchEngine);
   }
+}
+
+bool SearchPreloadPipelineManager::OnNavigationLikely(
+    Profile& profile,
+    const AutocompleteMatch& match,
+    omnibox::mojom::NavigationPredictor navigation_predictor) {
+  if (!features::DsePreload2IsPredictorEnabled(navigation_predictor)) {
+    return false;
+  }
+
+  if (!AutocompleteMatch::IsSearchType(match.type)) {
+    return false;
+  }
+
+  auto* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(&profile);
+  CHECK(template_url_service);
+  bool does_search_provider_opt_in =
+      template_url_service->GetDefaultSearchProvider() &&
+      template_url_service->GetDefaultSearchProvider()
+          ->data()
+          .prefetch_likely_navigations;
+  if (!does_search_provider_opt_in) {
+    return false;
+  }
+
+  const std::optional<GURL> maybe_canonical_url =
+      GetCanonicalUrlForSearchPreload(profile, match.destination_url);
+  if (!maybe_canonical_url.has_value()) {
+    return false;
+  }
+  const GURL& canonical_url = maybe_canonical_url.value();
+
+  const std::optional<std::u16string> maybe_search_terms =
+      ExtractSearchTermsFromUrl(*template_url_service, match);
+  if (!maybe_search_terms.has_value()) {
+    return false;
+  }
+  const std::u16string& search_terms = maybe_search_terms.value();
+
+  GURL prefetch_url;
+  if (match.search_terms_args) {
+    auto& search_terms_args = *match.search_terms_args.get();
+    prefetch_url =
+        GetPrefetchUrlFromMatch(search_terms_args, *template_url_service,
+                                /*is_navigation_likely=*/true);
+  } else {
+    // Search history suggestions (those that are not also server suggestions)
+    // don't have search term args. Generate search term args instead.
+
+    auto search_terms_args_for_history_suggestion =
+        std::make_unique<TemplateURLRef::SearchTermsArgs>(search_terms);
+    auto& search_terms_args = *search_terms_args_for_history_suggestion.get();
+    prefetch_url =
+        GetPrefetchUrlFromMatch(search_terms_args, *template_url_service,
+                                /*is_navigation_likely=*/true);
+  }
+
+  auto predictor =
+      [](omnibox::mojom::NavigationPredictor navigation_predictor) {
+        switch (navigation_predictor) {
+          case omnibox::mojom::NavigationPredictor::kMouseDown:
+            return chrome_preloading_predictor::kOmniboxMousePredictor;
+          case omnibox::mojom::NavigationPredictor::kUpOrDownArrowButton:
+            return chrome_preloading_predictor::kOmniboxSearchPredictor;
+          case omnibox::mojom::NavigationPredictor::kTouchDown:
+            return chrome_preloading_predictor::kOmniboxTouchDownPredictor;
+        }
+      }(navigation_predictor);
+
+  // TODO(crbug.com/403198750): Limit the number of active pipelines.
+  if (!pipelines_.contains(canonical_url)) {
+    pipelines_.insert_or_assign(
+        canonical_url, std::make_unique<SearchPreloadPipeline>(canonical_url));
+  }
+  pipelines_[canonical_url]->UpdateConfidence(GetWebContents(), 100);
+  return pipelines_[canonical_url]->StartPrefetch(GetWebContents(),
+                                                  prefetch_url, predictor);
 }

@@ -5,7 +5,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {LINK_TOGGLE_BUTTON_ID, PauseActionSource, SpeechBrowserProxyImpl, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {LINK_TOGGLE_BUTTON_ID, PauseActionSource, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -15,6 +15,7 @@ import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 suite('LinksToggledIntegration', () => {
   let app: AppElement;
   let linksToggleButton: CrIconButtonElement|null;
+  let speechController: SpeechController;
 
   // root htmlTag='#document' id=1
   // ++link htmlTag='a' url='http://www.google.com' id=2
@@ -70,6 +71,10 @@ suite('LinksToggledIntegration', () => {
     // ReadAnythingAppController, onConnected creates mojo pipes to connect to
     // the rest of the Read Anything feature, which we are not testing here.
     chrome.readingMode.onConnected = () => {};
+    const speech = new TestSpeechBrowserProxy();
+    SpeechBrowserProxyImpl.setInstance(speech);
+    speechController = new SpeechController();
+    SpeechController.setInstance(speechController);
 
     app = await createApp();
     linksToggleButton =
@@ -77,9 +82,6 @@ suite('LinksToggledIntegration', () => {
             '#' + LINK_TOGGLE_BUTTON_ID);
     assertTrue(!!linksToggleButton);
     chrome.readingMode.setContentForTesting(axTree, [3, 5]);
-
-    const speech = new TestSpeechBrowserProxy();
-    SpeechBrowserProxyImpl.setInstance(speech);
     setupBasicSpeech(app, speech);
   });
 
@@ -133,7 +135,7 @@ suite('LinksToggledIntegration', () => {
   suite('after speech pauses', () => {
     setup(() => {
       app.playSpeech();
-      app.stopSpeech(PauseActionSource.BUTTON_CLICK);
+      speechController.stopSpeech(PauseActionSource.BUTTON_CLICK);
     });
 
     test('container has links again', () => {
@@ -179,7 +181,7 @@ suite('LinksToggledIntegration', () => {
     suite('after speech pauses', () => {
       setup(() => {
         app.playSpeech();
-        app.stopSpeech(PauseActionSource.BUTTON_CLICK);
+        speechController.stopSpeech(PauseActionSource.BUTTON_CLICK);
       });
 
       test('container does not have links', () => {

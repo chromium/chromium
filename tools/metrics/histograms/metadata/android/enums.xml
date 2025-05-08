@@ -644,6 +644,13 @@ chromium-metrics-reviews@google.com.
   <int value="142" label="WebSettingsCompat.getPaymentRequestEnabled"/>
   <int value="143" label="WebSettingsCompat.setHasEnrolledInstrumentEnabled"/>
   <int value="144" label="WebSettingsCompat.getHasEnrolledInstrumentEnabled"/>
+  <int value="145" label="WebViewBuilder"/>
+  <int value="146" label="WebSettingsCompat.setIncludeCookiesOnIntercept"/>
+  <int value="147" label="WebSettingsCompat.getIncludeCookiesOnIntercept"/>
+  <int value="148"
+      label="ServiceWorkerWebSettingsCompat.setIncludeCookiesOnIntercept"/>
+  <int value="149"
+      label="ServiceWorkerWebSettingsCompat.getIncludeCookiesOnIntercept"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>
@@ -872,6 +879,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Both 32-bit and 64-bit"/>
 </enum>
 
+<!-- LINT.IfChange(CreateAndroidInputReceiverResult) -->
+
 <enum name="CreateAndroidInputReceiverResult">
   <int value="0" label="SuccessfullyCreated"/>
   <int value="1" label="FailedUnknown"/>
@@ -884,7 +893,11 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="NullBrowserInputToken"/>
   <int value="9" label="NotCreatingMoreThanOneReceiver"/>
   <int value="10" label="RootCompositorFrameSinkDestroyed"/>
+  <int value="11" label="FailedChoreographerNotSupported"/>
+  <int value="12" label="FailedNullChoreographer"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/viz/service/input/input_manager.cc:CreateAndroidInputReceiverResult) -->
 
 <enum name="DebuggingEnabled">
   <int value="0" label="Debugging not enabled."/>
@@ -951,11 +964,12 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="START_STICKY"/>
 </enum>
 
-<enum name="DragDropTabResult">
+<enum name="DragDropResult">
   <summary>
     SUCCESS is recorded during ACTION_DRAG_ENDED. The rest enums are all for
     failed drops, which are recorded in ACTION_DROP. Also see
-    Android.DragDrop.Tab.FromStrip.Result
+    Android.DragDrop.Tab.FromStrip.Result and
+    Android.DragDrop.TabGroup.FromStrip.Result.
   </summary>
   <int value="0" label="SUCCESS"/>
   <int value="1" label="IGNORED_TOOLBAR"/>
@@ -964,10 +978,13 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="IGNORED_SAME_INSTANCE"/>
   <int value="5" label="ERROR_TAB_NOT_FOUND"/>
   <int value="6" label="IGNORED_MAX_INSTANCES"/>
+  <int value="7" label="IGNORED_MHTML_TAB"/>
 </enum>
 
 <enum name="DragDropType">
-  <summary>See Android.DragDrop.Tab.Type</summary>
+  <summary>
+    See Android.DragDrop.Tab.Type and Android.DragDrop.TabGroup.Type
+  </summary>
   <int value="0" label="TAB_STRIP_TO_TAB_STRIP"/>
   <int value="1" label="TAB_STRIP_TO_CONTENT"/>
   <int value="2" label="TAB_STRIP_TO_NEW_INSTANCE"/>
@@ -985,6 +1002,12 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Flip Horizontally"/>
   <int value="7" label="Flip Vertically"/>
   <int value="8" label="Undefined"/>
+</enum>
+
+<enum name="FontLoadingOutcome">
+  <int value="0" label="Fallback Font Family"/>
+  <int value="1" label="Font resource"/>
+  <int value="2" label="Font family"/>
 </enum>
 
 <enum name="FrameJankStatus">
@@ -1263,6 +1286,8 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="Focus restored on activity recreation."/>
 </enum>
 
+<!-- LINT.IfChange(OmniboxSuggestionUiType) -->
+
 <enum name="OmniboxSuggestionUiType">
   <int value="0" label="DEFAULT"/>
   <int value="1" label="EDIT_URL_SUGGESTION"/>
@@ -1272,10 +1297,11 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="CLIPBOARD_SUGGESTION"/>
   <int value="6" label="HEADER"/>
   <int value="7" label="TILE_NAVSUGGEST"/>
-  <int value="8" label="PEDAL_SUGGESTION"/>
-  <int value="9" label="DIVIDER_LINE"/>
-  <int value="10" label="QUERY_TILES"/>
+  <int value="8" label="GROUP_SEPARATOR"/>
+  <int value="9" label="OBSOLETE_QUERY_TILES"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/omnibox/browser/android/java/src/org/chromium/components/omnibox/suggestions/OmniboxSuggestionUiType.java:OmniboxSuggestionUiType) -->
 
 <enum name="PartnerCustomizationProviderDelegate">
   <int value="0" label="None: default delegate inValid"/>

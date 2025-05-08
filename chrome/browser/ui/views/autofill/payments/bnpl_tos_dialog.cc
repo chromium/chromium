@@ -6,11 +6,15 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/throbber.h"
@@ -101,31 +105,39 @@ BnplTosDialog::BnplTosDialog(
       std::make_unique<views::Throbber>(kDialogThrobberDiameter));
   throbber_->SetProperty(views::kElementIdentifierKey,
                          BnplTosDialog::kThrobberId);
+  throbber_->GetViewAccessibility().AnnouncePolitely(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_BNPL_PROGRESS_DIALOG_LOADING_MESSAGE));
 }
 
 BnplTosDialog::~BnplTosDialog() = default;
 
 void BnplTosDialog::AddedToWidget() {
+  std::u16string title = controller_->GetTitle();
   // The view needs to be added to the widget before we can get the bubble frame
   // view.
   GetBubbleFrameView()->SetTitleView(
-      std::make_unique<TitleWithIconAfterLabelView>(controller_->GetTitle(),
-                                                    GetTitleIcon()));
+      std::make_unique<TitleWithIconAfterLabelView>(title, GetTitleIcon()));
+  SetAccessibleWindowRole(ax::mojom::Role::kDialog);
+  SetAccessibleTitle(title);
+}
+
+void BnplTosDialog::OnWidgetInitialized() {
+  views::DialogDelegateView::OnWidgetInitialized();
+  GetOkButton()->RequestFocus();
 }
 
 TitleWithIconAfterLabelView::Icon BnplTosDialog::GetTitleIcon() const {
-  const std::string& issuer_id = controller_->GetIssuerId();
-
-  if (issuer_id == kBnplAffirmIssuerId) {
-    return TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_AFFIRM;
+  switch (controller_->GetIssuerId()) {
+    case BnplIssuer::IssuerId::kBnplAffirm:
+      return TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_AFFIRM;
+    case BnplIssuer::IssuerId::kBnplZip:
+      return TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_ZIP;
+    // TODO(crbug.com/408268581): Handle Afterpay issuer enum value when adding
+    // Afterpay to the BNPL flow.
+    case BnplIssuer::IssuerId::kBnplAfterpay:
+      return TitleWithIconAfterLabelView::Icon::GOOGLE_PAY;
   }
-  if (issuer_id == kBnplZipIssuerId) {
-    return TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_ZIP;
-  }
-
-  // TODO: crbug.com/401282730 - Return Google Pay Icon as a graceful failure
-  // case until the BNPL issuer ID is converted into an enum.
-  return TitleWithIconAfterLabelView::Icon::GOOGLE_PAY;
+  NOTREACHED();
 }
 
 bool BnplTosDialog::OnAccepted() {

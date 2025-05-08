@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.ColorInt;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -24,6 +25,7 @@ import org.chromium.ui.UiUtils;
 import java.util.Objects;
 
 /** A class holding static util functions for bookmark views. */
+@NullMarked
 public class BookmarkViewUtils {
     /**
      * @param context {@link Context} used to retrieve the drawable.

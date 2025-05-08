@@ -25,6 +25,7 @@ class PrefRegistrySimple;
 
 namespace os_crypt {
 FORWARD_DECLARE_TEST(AppBoundEncryptionWinReencryptTest, KeyProviderTest);
+FORWARD_DECLARE_TEST(AppBoundEncryptionProvider, Basic);
 }  // namespace os_crypt
 
 namespace os_crypt_async {
@@ -40,6 +41,10 @@ BASE_DECLARE_FEATURE(kAppBoundUserDataDirProtection);
 // If enabled, App-Bound encryption will request that the version 3 key be used
 // for data encryption by the elevated service.
 BASE_DECLARE_FEATURE(kAppBoundEncryptionKeyV3);
+
+// If enabled, will re-generate a new key for catastrophic failures. See
+// `DetermineErrorType` in the cc file for the two current cases.
+BASE_DECLARE_FEATURE(kRegenerateKeyForCatastrophicFailures);
 
 }  // namespace features
 
@@ -58,6 +63,7 @@ class AppBoundEncryptionProviderWin : public os_crypt_async::KeyProvider {
  private:
   FRIEND_TEST_ALL_PREFIXES(os_crypt::AppBoundEncryptionWinReencryptTest,
                            KeyProviderTest);
+  FRIEND_TEST_ALL_PREFIXES(os_crypt::AppBoundEncryptionProvider, Basic);
 
   using ReadOnlyKeyData = const std::vector<uint8_t>;
   using ReadWriteKeyData = std::vector<uint8_t>;
@@ -79,6 +85,7 @@ class AppBoundEncryptionProviderWin : public os_crypt_async::KeyProvider {
   bool UseForEncryption() override;
   bool IsCompatibleWithOsCryptSync() override;
 
+  void GenerateAndPersistNewKeyInternal(KeyCallback callback);
   base::expected<std::vector<uint8_t>, KeyRetrievalStatus>
   RetrieveEncryptedKey();
   void HandleEncryptedKey(ReadWriteKeyData decrypted_key,
@@ -86,8 +93,9 @@ class AppBoundEncryptionProviderWin : public os_crypt_async::KeyProvider {
                           const OptionalReadOnlyKeyData& encrypted_key);
   void StoreAndReplyWithKey(
       KeyCallback callback,
-      std::optional<std::tuple<ReadWriteKeyData,
-                               const OptionalReadOnlyKeyData&>> key_pair);
+      base::expected<
+          std::tuple<ReadWriteKeyData, const OptionalReadOnlyKeyData&>,
+          KeyProvider::KeyError> key_pair);
   void StoreKey(base::span<const uint8_t> encrypted_key);
 
   raw_ptr<PrefService> local_state_ GUARDED_BY_CONTEXT(sequence_checker_);

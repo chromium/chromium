@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/shared_storage.mojom";
 import "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom";
@@ -75,13 +76,17 @@ interface SharedStorageWorkletHost {
   // index that results in `config`'s mapped URL will be cached in the browser
   // process for future uses, or else will be retrieved for this use if the
   // index for a query of name `saved_query_name` was previously cached.
+  // `start_time` gives the start time of the selectURL() call, so that the
+  // total time elapsed since the beginning of the call can be calculated
+  // in the browser process and reported to DevTools.
   SelectURL(string name,
             array<SharedStorageUrlWithMetadata> urls_with_metadata,
             CloneableMessage serialized_data,
             bool keep_alive_after_operation,
             PrivateAggregationConfig private_aggregation_config,
             bool resolve_to_config,
-            mojo_base.mojom.String16 saved_query_name)
+            mojo_base.mojom.String16 saved_query_name,
+            mojo_base.mojom.TimeTicks start_time)
       => (bool success,
           string error_message,
           FencedFrameConfig? config);
@@ -100,10 +105,14 @@ interface SharedStorageWorkletHost {
   // including the option `keepAlive: true`; other errors are suppressed and
   // reported as success.`private_aggregation_config` contains (optional)
   // parameters that are passed to Private Aggregation (if enabled).
+  // `start_time` gives the start time of the run() call, so that the total
+  // time elapsed since the beginning of the call can be calculated in the
+  // browser process and reported to DevTools.
   Run(string name,
       CloneableMessage serialized_data,
       bool keep_alive_after_operation,
-      PrivateAggregationConfig private_aggregation_config)
+      PrivateAggregationConfig private_aggregation_config,
+      mojo_base.mojom.TimeTicks start_time)
       => (bool success,
           string error_message);
 };

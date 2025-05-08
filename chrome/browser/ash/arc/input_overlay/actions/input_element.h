@@ -67,7 +67,6 @@ class InputElement {
   int mouse_flags() const { return mouse_flags_; }
 
   bool operator==(const InputElement& other) const;
-  bool operator!=(const InputElement& other) const;
 
  private:
   // Returns true if the `input_source` is set as one of the `input_sources_`.

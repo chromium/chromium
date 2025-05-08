@@ -7,12 +7,16 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/alert_view/ui_bundled/alert_action.h"
 #import "ios/chrome/browser/alert_view/ui_bundled/alert_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/progress_dialog/autofill_progress_dialog_mediator_delegate.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util.h"
 
 class AutofillProgressDialogMediatorTest : public PlatformTest {
  protected:
@@ -56,4 +60,22 @@ TEST_F(AutofillProgressDialogMediatorTest, DismissDialog) {
                      /*is_canceled_by_user=*/true);
 
   EXPECT_OCMOCK_VERIFY(delegate_);
+}
+
+// Tests that when showing confirmation, the consumer is updated correctly.
+TEST_F(AutofillProgressDialogMediatorTest,
+       DismissDialog_ShowConfirmation_UpdatesConsumer) {
+  NSString* expectedLabel = l10n_util::GetNSString(
+      IDS_IOS_AUTOFILL_PROGRESS_DIALOG_CONFIRMATION_ACCESSIBILITY_ANNOUNCEMENT);
+  mediator_->SetConsumer(consumer_);
+  OCMExpect([consumer_ setConfirmationAccessibilityLabel:expectedLabel]);
+
+  // Expectations for the consumer when showing confirmation.
+  OCMExpect([consumer_ setProgressState:ProgressIndicatorStateSuccess]);
+  OCMExpect([consumer_ setActions:@[]]);
+
+  mediator_->Dismiss(/*show_confirmation_before_closing=*/true,
+                     /*is_canceled_by_user=*/false);
+
+  EXPECT_OCMOCK_VERIFY(consumer_);
 }

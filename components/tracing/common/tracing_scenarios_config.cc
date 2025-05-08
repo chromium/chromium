@@ -116,7 +116,8 @@ ParseSerializedTracingScenariosConfig(
 std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
 ParseEncodedTracingScenariosConfig(const std::string& config_string) {
   std::string serialized_config;
-  if (!base::Base64Decode(config_string, &serialized_config)) {
+  if (!base::Base64Decode(config_string, &serialized_config,
+                          base::Base64DecodePolicy::kForgiving)) {
     return std::nullopt;
   }
 

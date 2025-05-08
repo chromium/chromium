@@ -48,12 +48,9 @@ class ChapsServiceAsh;
 class DeviceAttributesAsh;
 class DeviceOAuth2TokenServiceAsh;
 class DocumentScanAsh;
-class FileChangeServiceBridgeAsh;
 class FileSystemAccessCloudIdentifierProviderAsh;
 class FileSystemProviderServiceAsh;
-class FullRestoreAsh;
 class FullscreenControllerAsh;
-class IdentityManagerAsh;
 class KeystoreServiceAsh;
 class KioskSessionServiceAsh;
 class LocalPrinterAsh;
@@ -62,11 +59,7 @@ class LoginStateAsh;
 class MediaUIAsh;
 class MultiCaptureServiceAsh;
 class NetworkingAttributesAsh;
-class NetworkingPrivateAsh;
 class ParentAccessAsh;
-class PaymentAppInstanceAsh;
-class PolicyServiceAsh;
-class RemotingAsh;
 class StructuredMetricsServiceAsh;
 class VpnServiceAsh;
 
@@ -105,22 +98,16 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::DiagnosticsService> receiver) override;
   void BindDocumentScan(
       mojo::PendingReceiver<mojom::DocumentScan> receiver) override;
-  void BindFileChangeServiceBridge(
-      mojo::PendingReceiver<mojom::FileChangeServiceBridge> receiver) override;
   void BindFileSystemAccessCloudIdentifierProvider(
       mojo::PendingReceiver<mojom::FileSystemAccessCloudIdentifierProvider>
           receiver) override;
   void BindFileSystemProviderService(
       mojo::PendingReceiver<mojom::FileSystemProviderService> receiver)
       override;
-  void BindFullRestore(
-      mojo::PendingReceiver<mojom::FullRestore> receiver) override;
   void BindFullscreenController(
       mojo::PendingReceiver<mojom::FullscreenController> receiver) override;
   void BindHidManager(
       mojo::PendingReceiver<device::mojom::HidManager> receiver) override;
-  void BindIdentityManager(
-      mojo::PendingReceiver<mojom::IdentityManager> receiver) override;
   void BindInSessionAuth(
       mojo::PendingReceiver<chromeos::auth::mojom::InSessionAuth> receiver)
       override;
@@ -153,22 +140,14 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::NetworkChange> receiver) override;
   void BindNetworkingAttributes(
       mojo::PendingReceiver<mojom::NetworkingAttributes> receiver) override;
-  void BindNetworkingPrivate(
-      mojo::PendingReceiver<mojom::NetworkingPrivate> receiver) override;
   void BindParentAccess(
       mojo::PendingReceiver<mojom::ParentAccess> receiver) override;
-  void BindPaymentAppInstance(
-      mojo::PendingReceiver<chromeos::payments::mojom::PaymentAppInstance>
-          receiver) override;
-  void BindPolicyService(
-      mojo::PendingReceiver<mojom::PolicyService> receiver) override;
   void BindPrintPreviewCrosDelegate(
       mojo::PendingReceiver<mojom::PrintPreviewCrosDelegate> receiver) override;
   void BindRemoteAppsLacrosBridge(
       mojo::PendingReceiver<
           chromeos::remote_apps::mojom::RemoteAppsLacrosBridge> receiver)
       override;
-  void BindRemoting(mojo::PendingReceiver<mojom::Remoting> receiver) override;
   void BindSensorHalClient(
       mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> remote)
       override;
@@ -215,8 +194,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return file_system_provider_service_ash_.get();
   }
 
-  FullRestoreAsh* full_restore_ash() { return full_restore_ash_.get(); }
-
   FullscreenControllerAsh* fullscreen_controller_ash() {
     return fullscreen_controller_ash_.get();
   }
@@ -245,15 +222,7 @@ class CrosapiAsh : public mojom::Crosapi {
     return networking_attributes_ash_.get();
   }
 
-  NetworkingPrivateAsh* networking_private_ash() {
-    return networking_private_ash_.get();
-  }
-
   ParentAccessAsh* parent_access_ash() { return parent_access_ash_.get(); }
-
-  PaymentAppInstanceAsh* payment_app_instance_ash() {
-    return payment_app_instance_ash_.get();
-  }
 
   ash::printing::PrintPreviewWebcontentsAdapterAsh*
   print_preview_webcontents_adapter_ash() {
@@ -282,14 +251,11 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<DeviceOAuth2TokenServiceAsh> device_oauth2_token_service_ash_;
   std::unique_ptr<ash::DiagnosticsServiceAsh> diagnostics_service_ash_;
   std::unique_ptr<DocumentScanAsh> document_scan_ash_;
-  std::unique_ptr<FileChangeServiceBridgeAsh> file_change_service_bridge_ash_;
   std::unique_ptr<FileSystemAccessCloudIdentifierProviderAsh>
       file_system_access_cloud_identifier_provider_ash_;
   std::unique_ptr<FileSystemProviderServiceAsh>
       file_system_provider_service_ash_;
-  std::unique_ptr<FullRestoreAsh> full_restore_ash_;
   std::unique_ptr<FullscreenControllerAsh> fullscreen_controller_ash_;
-  std::unique_ptr<IdentityManagerAsh> identity_manager_ash_;
   std::unique_ptr<KeystoreServiceAsh> keystore_service_ash_;
   std::unique_ptr<KioskSessionServiceAsh> kiosk_session_service_ash_;
   std::unique_ptr<LocalPrinterAsh> local_printer_ash_;
@@ -298,17 +264,13 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<MediaUIAsh> media_ui_ash_;
   std::unique_ptr<MultiCaptureServiceAsh> multi_capture_service_ash_;
   std::unique_ptr<NetworkingAttributesAsh> networking_attributes_ash_;
-  std::unique_ptr<NetworkingPrivateAsh> networking_private_ash_;
   std::unique_ptr<ParentAccessAsh> parent_access_ash_;
-  std::unique_ptr<PaymentAppInstanceAsh> payment_app_instance_ash_;
-  std::unique_ptr<PolicyServiceAsh> policy_service_ash_;
   std::unique_ptr<ash::TelemetryDiagnosticsRoutineServiceAsh>
       telemetry_diagnostic_routine_service_ash_;
   std::unique_ptr<ash::TelemetryEventServiceAsh> telemetry_event_service_ash_;
   std::unique_ptr<ash::TelemetryManagementServiceAsh>
       telemetry_management_service_ash_;
   std::unique_ptr<ash::ProbeServiceAsh> probe_service_ash_;
-  std::unique_ptr<RemotingAsh> remoting_ash_;
   std::unique_ptr<ash::printing::PrintPreviewWebcontentsAdapterAsh>
       print_preview_webcontents_adapter_ash_;
   std::unique_ptr<StructuredMetricsServiceAsh> structured_metrics_service_ash_;

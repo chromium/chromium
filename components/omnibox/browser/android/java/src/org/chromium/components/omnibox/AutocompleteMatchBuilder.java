@@ -47,6 +47,7 @@ public class AutocompleteMatchBuilder {
     private boolean mAllowedToBeDefaultMatch;
     private String mInlineAutocompletion;
     private String mAdditionalText;
+    private String mTabGroupUuid;
 
     /**
      * Create a suggestion builder for a search suggestion.
@@ -97,6 +98,7 @@ public class AutocompleteMatchBuilder {
         mAllowedToBeDefaultMatch = false;
         mInlineAutocompletion = null;
         mAdditionalText = null;
+        mTabGroupUuid = null;
 
         mDisplayTextClassifications.add(
                 new AutocompleteMatch.MatchClassification(0, MatchClassificationStyle.NONE));
@@ -135,7 +137,8 @@ public class AutocompleteMatchBuilder {
                 mActions,
                 mAllowedToBeDefaultMatch,
                 mInlineAutocompletion,
-                mAdditionalText);
+                mAdditionalText,
+                mTabGroupUuid);
     }
 
     /**
@@ -326,6 +329,15 @@ public class AutocompleteMatchBuilder {
      */
     public AutocompleteMatchBuilder setSerializedAnswerTemplate(byte[] serializedAnswerTemplate) {
         mSerializedAnswerTemplate = serializedAnswerTemplate;
+        return this;
+    }
+
+    /**
+     * @param tabGroupUuid Matching tab group's uuid.
+     * @return Omnibox suggestion builder.
+     */
+    public AutocompleteMatchBuilder setTabGroupUuid(String tabGroupUuid) {
+        mTabGroupUuid = tabGroupUuid;
         return this;
     }
 }

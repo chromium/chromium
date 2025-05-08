@@ -37,6 +37,7 @@ static_library("core_internal") {
   ]
 
   deps = [
+    "//components/data_sharing/public:group_data",
     "//components/data_sharing/public:logger",
     "//components/sync/service",
     "//ui/base",
@@ -45,6 +46,7 @@ static_library("core_internal") {
   public_deps = [
     "//base",
     "//components/collaboration/public",
+    "//components/collaboration/public:prefs",
     "//components/data_sharing/public",
     "//components/keyed_service/core",
   ]
@@ -251,6 +253,7 @@ if (is_android) {
       "//build/android:build_java",
       "//components/collaboration/public:java",
       "//components/data_sharing/public:public_java",
+      "//components/saved_tab_groups/public:java",
       "//third_party/jni_zero:jni_zero_java",
       "//url:url_java",
     ]

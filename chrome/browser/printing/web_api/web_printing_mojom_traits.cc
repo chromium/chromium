@@ -6,6 +6,7 @@
 
 #include <cups/ipp.h>
 
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "printing/backend/cups_ipp_constants.h"
@@ -26,6 +27,10 @@ using MultipleDocumentHandling =
 
 // orientation-requested:
 using OrientationRequested = blink::mojom::WebPrintingOrientationRequested;
+
+// print-quality:
+using WebPrintQuality = blink::mojom::WebPrintQuality;
+using printing::mojom::Quality;
 
 // print-color-mode:
 using PrintColorMode = blink::mojom::WebPrintColorMode;
@@ -48,6 +53,7 @@ ColorModel PrintColorModeToColorModel(PrintColorMode print_color_mode) {
     case PrintColorMode::kMonochrome:
       return ColorModel::kColorModeMonochrome;
   }
+  NOTREACHED();
 }
 
 bool InferRequestedMedia(
@@ -95,6 +101,7 @@ EnumTraits<WebPrintingSides, DuplexMode>::ToMojom(
     case DuplexMode::kUnknownDuplexMode:
       NOTREACHED();
   }
+  NOTREACHED();
 }
 
 // static
@@ -111,6 +118,40 @@ bool EnumTraits<WebPrintingSides, DuplexMode>::FromMojom(WebPrintingSides input,
       *output = DuplexMode::kShortEdge;
       return true;
   }
+  NOTREACHED();
+}
+
+// static
+blink::mojom::WebPrintQuality EnumTraits<WebPrintQuality, Quality>::ToMojom(
+    Quality input) {
+  switch (input) {
+    case Quality::kDraft:
+      return WebPrintQuality::kDraft;
+    case Quality::kNormal:
+      return WebPrintQuality::kNormal;
+    case Quality::kHigh:
+      return WebPrintQuality::kHigh;
+    case Quality::kUnknownQuality:
+      return WebPrintQuality::kNormal;
+  }
+  NOTREACHED();
+}
+
+// static
+bool EnumTraits<WebPrintQuality, Quality>::FromMojom(WebPrintQuality input,
+                                                     Quality* output) {
+  switch (input) {
+    case WebPrintQuality::kDraft:
+      *output = Quality::kDraft;
+      return true;
+    case WebPrintQuality::kNormal:
+      *output = Quality::kNormal;
+      return true;
+    case WebPrintQuality::kHigh:
+      *output = Quality::kHigh;
+      return true;
+  }
+  NOTREACHED();
 }
 
 // static
@@ -125,6 +166,7 @@ EnumTraits<blink::mojom::WebPrinterState, ipp_pstate_t>::ToMojom(
     case IPP_PSTATE_STOPPED:
       return blink::mojom::WebPrinterState::kStopped;
   }
+  NOTREACHED();
 }
 
 // static
@@ -203,6 +245,7 @@ EnumTraits<WebPrinterStateReason, PrinterStatusReason>::ToMojom(
     case PrinterStatusReason::kCupsPkiExpired:
       return WebPrinterStateReason::kCupsPkiExpired;
   }
+  NOTREACHED();
 }
 
 // static
@@ -264,6 +307,15 @@ bool StructTraits<blink::mojom::WebPrintJobTemplateAttributesDataView,
   }
   if (auto print_color_mode = data.print_color_mode()) {
     settings->set_color(PrintColorModeToColorModel(*print_color_mode));
+  }
+  {
+    std::optional<Quality> quality;
+    if (!data.ReadPrintQuality(&quality)) {
+      return false;
+    }
+    if (quality) {
+      settings->set_quality(*quality);
+    }
   }
 
   *out = std::move(settings);

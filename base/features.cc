@@ -50,19 +50,6 @@ BASE_FEATURE(kFastFilePathIsParent,
              "FastFilePathIsParent",
              FEATURE_ENABLED_BY_DEFAULT);
 
-// Use the Rust JSON parser. Enabled everywhere.
-BASE_FEATURE(kUseRustJsonParser,
-             "UseRustJsonParser",
-             FEATURE_ENABLED_BY_DEFAULT);
-
-// If true, use the Rust JSON parser in-thread; otherwise, it runs in a thread
-// pool.
-BASE_FEATURE_PARAM(bool,
-                   kUseRustJsonParserInCurrentSequence,
-                   &kUseRustJsonParser,
-                   "UseRustJsonParserInCurrentSequence",
-                   true);
-
 // Use non default low memory device threshold.
 // Value should be given via |LowMemoryDeviceThresholdMB|.
 #if BUILDFLAG(IS_ANDROID)
@@ -131,6 +118,12 @@ BASE_FEATURE(kPostPowerMonitorBroadcastReceiverInitToBackground,
 BASE_FEATURE(kPostGetMyMemoryStateToBackground,
              "PostGetMyMemoryStateToBackground",
              FEATURE_ENABLED_BY_DEFAULT);
+
+// Use shared service connection to rebind a service binding to update the LRU
+// in the ProcessList of OomAdjuster.
+BASE_FEATURE(kUseSharedRebindServiceConnection,
+             "UseSharedRebindServiceConnection",
+             FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 void Init(EmitThreadControllerProfilerMetadata

@@ -43,7 +43,10 @@ source_set("global_accelerator_listener") {
       "global_accelerator_listener_ozone.cc",
       "global_accelerator_listener_ozone.h",
     ]
-    deps += [ "//build/config/linux/dbus:buildflags" ]
+    deps += [
+      "//build:branding_buildflags",
+      "//build/config/linux/dbus:buildflags",
+    ]
   }
 
   if (is_linux) {

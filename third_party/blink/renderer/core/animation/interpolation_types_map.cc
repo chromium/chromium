@@ -68,6 +68,8 @@
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -86,14 +88,16 @@ static const PropertyRegistration* GetRegistration(
   return registry->Registration(property.CustomPropertyName());
 }
 
-const InterpolationTypes& InterpolationTypesMap::Get(
+const InterpolationTypes* InterpolationTypesMap::Get(
     const PropertyHandle& property) const {
   using ApplicableTypesMap =
-      HashMap<PropertyHandle, std::unique_ptr<const InterpolationTypes>>;
-  DEFINE_STATIC_LOCAL(ApplicableTypesMap, all_applicable_types_map, ());
+      GCedHeapHashMap<PropertyHandle, Member<InterpolationTypes>>;
+  DEFINE_STATIC_LOCAL(Persistent<ApplicableTypesMap>, all_applicable_types_map,
+                      (MakeGarbageCollected<ApplicableTypesMap>()));
 
-  DEFINE_STATIC_LOCAL(ApplicableTypesMap, reduce_motion_applicable_types_map,
-                      ());
+  DEFINE_STATIC_LOCAL(Persistent<ApplicableTypesMap>,
+                      reduce_motion_applicable_types_map,
+                      (MakeGarbageCollected<ApplicableTypesMap>()));
 
   // Custom property interpolation types may change over time so don't trust the
   // applicable_types_map without checking the registry. Also since the static
@@ -107,16 +111,16 @@ const InterpolationTypes& InterpolationTypesMap::Get(
   bool reduce_motion = document_.ShouldForceReduceMotion();
 
   ApplicableTypesMap& applicable_types_map =
-      reduce_motion ? reduce_motion_applicable_types_map
-                    : all_applicable_types_map;
+      reduce_motion ? *reduce_motion_applicable_types_map
+                    : *all_applicable_types_map;
 
   auto entry = applicable_types_map.find(property);
   if (entry != applicable_types_map.end()) {
-    return *entry->value;
+    return entry->value;
   }
 
-  std::unique_ptr<InterpolationTypes> applicable_types =
-      std::make_unique<InterpolationTypes>();
+  InterpolationTypes* applicable_types(
+      MakeGarbageCollected<InterpolationTypes>());
 
   const CSSProperty& css_property = property.GetCSSProperty();
 
@@ -178,27 +182,28 @@ const InterpolationTypes& InterpolationTypesMap::Get(
       case CSSPropertyID::kX:
       case CSSPropertyID::kY:
         applicable_types->push_back(
-            std::make_unique<CSSLengthInterpolationType>(property));
+            MakeGarbageCollected<CSSLengthInterpolationType>(property));
         break;
       case CSSPropertyID::kAspectRatio:
         applicable_types->push_back(
-            std::make_unique<CSSAspectRatioInterpolationType>(property));
+            MakeGarbageCollected<CSSAspectRatioInterpolationType>(property));
         break;
       case CSSPropertyID::kGridTemplateColumns:
       case CSSPropertyID::kGridTemplateRows:
         applicable_types->push_back(
-            std::make_unique<CSSGridTemplatePropertyInterpolationType>(
+            MakeGarbageCollected<CSSGridTemplatePropertyInterpolationType>(
                 property));
         break;
       case CSSPropertyID::kContainIntrinsicWidth:
       case CSSPropertyID::kContainIntrinsicHeight:
         applicable_types->push_back(
-            std::make_unique<CSSIntrinsicLengthInterpolationType>(property));
+            MakeGarbageCollected<CSSIntrinsicLengthInterpolationType>(
+                property));
         break;
       case CSSPropertyID::kDynamicRangeLimit:
         if (RuntimeEnabledFeatures::CSSDynamicRangeLimitEnabled()) {
           applicable_types->push_back(
-              std::make_unique<CSSDynamicRangeLimitInterpolationType>(
+              MakeGarbageCollected<CSSDynamicRangeLimitInterpolationType>(
                   property));
         }
         break;
@@ -218,30 +223,30 @@ const InterpolationTypes& InterpolationTypesMap::Get(
       case CSSPropertyID::kWidows:
       case CSSPropertyID::kZIndex:
         applicable_types->push_back(
-            std::make_unique<CSSNumberInterpolationType>(property));
+            MakeGarbageCollected<CSSNumberInterpolationType>(property));
         break;
       case CSSPropertyID::kCornerTopLeftShape:
       case CSSPropertyID::kCornerTopRightShape:
       case CSSPropertyID::kCornerBottomLeftShape:
       case CSSPropertyID::kCornerBottomRightShape:
         applicable_types->push_back(
-            std::make_unique<CSSSuperellipseInterpolationType>(property));
+            MakeGarbageCollected<CSSSuperellipseInterpolationType>(property));
         break;
       case CSSPropertyID::kTextSizeAdjust:
         applicable_types->push_back(
-            std::make_unique<CSSPercentageInterpolationType>(property));
+            MakeGarbageCollected<CSSPercentageInterpolationType>(property));
         break;
       case CSSPropertyID::kLineHeight:
       case CSSPropertyID::kTabSize:
         applicable_types->push_back(
-            std::make_unique<CSSLengthInterpolationType>(property));
+            MakeGarbageCollected<CSSLengthInterpolationType>(property));
         applicable_types->push_back(
-            std::make_unique<CSSNumberInterpolationType>(property));
+            MakeGarbageCollected<CSSNumberInterpolationType>(property));
         break;
       case CSSPropertyID::kInterestTargetShowDelay:
       case CSSPropertyID::kInterestTargetHideDelay:
         applicable_types->push_back(
-            std::make_unique<CSSTimeInterpolationType>(property));
+            MakeGarbageCollected<CSSTimeInterpolationType>(property));
         break;
       case CSSPropertyID::kAccentColor:
       case CSSPropertyID::kBackgroundColor:
@@ -261,189 +266,192 @@ const InterpolationTypes& InterpolationTypesMap::Get(
       case CSSPropertyID::kRowRuleColor:
       case CSSPropertyID::kWebkitTextStrokeColor:
         applicable_types->push_back(
-            std::make_unique<CSSColorInterpolationType>(property));
+            MakeGarbageCollected<CSSColorInterpolationType>(property));
         break;
       case CSSPropertyID::kFill:
       case CSSPropertyID::kStroke:
         applicable_types->push_back(
-            std::make_unique<CSSPaintInterpolationType>(property));
+            MakeGarbageCollected<CSSPaintInterpolationType>(property));
         break;
       case CSSPropertyID::kOffsetPath:
         applicable_types->push_back(
-            std::make_unique<CSSBasicShapeInterpolationType>(property));
+            MakeGarbageCollected<CSSBasicShapeInterpolationType>(property));
         applicable_types->push_back(
-            std::make_unique<CSSRayInterpolationType>(property));
+            MakeGarbageCollected<CSSRayInterpolationType>(property));
         applicable_types->push_back(
-            std::make_unique<CSSPathInterpolationType>(property));
+            MakeGarbageCollected<CSSPathInterpolationType>(property));
         applicable_types->push_back(
-            std::make_unique<CSSShapeInterpolationType>(property));
+            MakeGarbageCollected<CSSShapeInterpolationType>(property));
         break;
       case CSSPropertyID::kD:
         applicable_types->push_back(
-            std::make_unique<CSSPathInterpolationType>(property));
+            MakeGarbageCollected<CSSPathInterpolationType>(property));
         break;
       case CSSPropertyID::kBoxShadow:
       case CSSPropertyID::kTextShadow:
         applicable_types->push_back(
-            std::make_unique<CSSShadowListInterpolationType>(property));
+            MakeGarbageCollected<CSSShadowListInterpolationType>(property));
         break;
       case CSSPropertyID::kBorderImageSource:
       case CSSPropertyID::kListStyleImage:
       case CSSPropertyID::kWebkitMaskBoxImageSource:
         applicable_types->push_back(
-            std::make_unique<CSSImageInterpolationType>(property));
+            MakeGarbageCollected<CSSImageInterpolationType>(property));
         break;
       case CSSPropertyID::kBackgroundImage:
         applicable_types->push_back(
-            std::make_unique<CSSImageListInterpolationType>(property));
+            MakeGarbageCollected<CSSImageListInterpolationType>(property));
         break;
       case CSSPropertyID::kStrokeDasharray:
         applicable_types->push_back(
-            std::make_unique<CSSLengthListInterpolationType>(property));
+            MakeGarbageCollected<CSSLengthListInterpolationType>(property));
         break;
       case CSSPropertyID::kFontWeight:
         applicable_types->push_back(
-            std::make_unique<CSSFontWeightInterpolationType>(property));
+            MakeGarbageCollected<CSSFontWeightInterpolationType>(property));
         break;
       case CSSPropertyID::kFontStretch:
         applicable_types->push_back(
-            std::make_unique<CSSFontStretchInterpolationType>(property));
+            MakeGarbageCollected<CSSFontStretchInterpolationType>(property));
         break;
       case CSSPropertyID::kFontStyle:
         applicable_types->push_back(
-            std::make_unique<CSSFontStyleInterpolationType>(property));
+            MakeGarbageCollected<CSSFontStyleInterpolationType>(property));
         break;
       case CSSPropertyID::kFontVariationSettings:
         applicable_types->push_back(
-            std::make_unique<CSSFontVariationSettingsInterpolationType>(
+            MakeGarbageCollected<CSSFontVariationSettingsInterpolationType>(
                 property));
         break;
       case blink::CSSPropertyID::kFontPalette:
         applicable_types->push_back(
-            std::make_unique<CSSFontPaletteInterpolationType>(property));
+            MakeGarbageCollected<CSSFontPaletteInterpolationType>(property));
         break;
       case CSSPropertyID::kVisibility:
         applicable_types->push_back(
-            std::make_unique<CSSVisibilityInterpolationType>(property));
+            MakeGarbageCollected<CSSVisibilityInterpolationType>(property));
         break;
       case CSSPropertyID::kClip:
         applicable_types->push_back(
-            std::make_unique<CSSClipInterpolationType>(property));
+            MakeGarbageCollected<CSSClipInterpolationType>(property));
         break;
       case CSSPropertyID::kOffsetRotate:
         applicable_types->push_back(
-            std::make_unique<CSSOffsetRotateInterpolationType>(property));
+            MakeGarbageCollected<CSSOffsetRotateInterpolationType>(property));
         break;
       case CSSPropertyID::kBackgroundPositionX:
       case CSSPropertyID::kBackgroundPositionY:
       case CSSPropertyID::kWebkitMaskPositionX:
       case CSSPropertyID::kWebkitMaskPositionY:
         applicable_types->push_back(
-            std::make_unique<CSSPositionAxisListInterpolationType>(property));
+            MakeGarbageCollected<CSSPositionAxisListInterpolationType>(
+                property));
         break;
       case CSSPropertyID::kObjectPosition:
       case CSSPropertyID::kOffsetAnchor:
       case CSSPropertyID::kOffsetPosition:
       case CSSPropertyID::kPerspectiveOrigin:
         applicable_types->push_back(
-            std::make_unique<CSSPositionInterpolationType>(property));
+            MakeGarbageCollected<CSSPositionInterpolationType>(property));
         break;
       case CSSPropertyID::kBorderBottomLeftRadius:
       case CSSPropertyID::kBorderBottomRightRadius:
       case CSSPropertyID::kBorderTopLeftRadius:
       case CSSPropertyID::kBorderTopRightRadius:
         applicable_types->push_back(
-            std::make_unique<CSSLengthPairInterpolationType>(property));
+            MakeGarbageCollected<CSSLengthPairInterpolationType>(property));
         break;
       case CSSPropertyID::kTranslate:
         applicable_types->push_back(
-            std::make_unique<CSSTranslateInterpolationType>(property));
+            MakeGarbageCollected<CSSTranslateInterpolationType>(property));
         break;
       case CSSPropertyID::kTransformOrigin:
         applicable_types->push_back(
-            std::make_unique<CSSTransformOriginInterpolationType>(property));
+            MakeGarbageCollected<CSSTransformOriginInterpolationType>(
+                property));
         break;
       case CSSPropertyID::kBackgroundSize:
       case CSSPropertyID::kMaskSize:
         applicable_types->push_back(
-            std::make_unique<CSSSizeListInterpolationType>(property));
+            MakeGarbageCollected<CSSSizeListInterpolationType>(property));
         break;
       case CSSPropertyID::kBorderImageOutset:
       case CSSPropertyID::kBorderImageWidth:
       case CSSPropertyID::kWebkitMaskBoxImageOutset:
       case CSSPropertyID::kWebkitMaskBoxImageWidth:
         applicable_types->push_back(
-            std::make_unique<CSSBorderImageLengthBoxInterpolationType>(
+            MakeGarbageCollected<CSSBorderImageLengthBoxInterpolationType>(
                 property));
         break;
       case CSSPropertyID::kScale:
         applicable_types->push_back(
-            std::make_unique<CSSScaleInterpolationType>(property));
+            MakeGarbageCollected<CSSScaleInterpolationType>(property));
         break;
       case CSSPropertyID::kFontSize:
         applicable_types->push_back(
-            std::make_unique<CSSFontSizeInterpolationType>(property));
+            MakeGarbageCollected<CSSFontSizeInterpolationType>(property));
         break;
       case CSSPropertyID::kFontSizeAdjust:
         applicable_types->push_back(
-            std::make_unique<CSSFontSizeAdjustInterpolationType>(property));
+            MakeGarbageCollected<CSSFontSizeAdjustInterpolationType>(property));
         break;
       case CSSPropertyID::kTextIndent:
         applicable_types->push_back(
-            std::make_unique<CSSTextIndentInterpolationType>(property));
+            MakeGarbageCollected<CSSTextIndentInterpolationType>(property));
         break;
       case CSSPropertyID::kBorderImageSlice:
       case CSSPropertyID::kWebkitMaskBoxImageSlice:
         applicable_types->push_back(
-            std::make_unique<CSSImageSliceInterpolationType>(property));
+            MakeGarbageCollected<CSSImageSliceInterpolationType>(property));
         break;
       case CSSPropertyID::kClipPath:
         applicable_types->push_back(
-            std::make_unique<CSSBasicShapeInterpolationType>(property));
+            MakeGarbageCollected<CSSBasicShapeInterpolationType>(property));
         applicable_types->push_back(
-            std::make_unique<CSSPathInterpolationType>(property));
+            MakeGarbageCollected<CSSPathInterpolationType>(property));
         applicable_types->push_back(
-            std::make_unique<CSSShapeInterpolationType>(property));
+            MakeGarbageCollected<CSSShapeInterpolationType>(property));
         break;
       case CSSPropertyID::kShapeOutside:
         applicable_types->push_back(
-            std::make_unique<CSSBasicShapeInterpolationType>(property));
+            MakeGarbageCollected<CSSBasicShapeInterpolationType>(property));
         break;
       case CSSPropertyID::kRotate:
         applicable_types->push_back(
-            std::make_unique<CSSRotateInterpolationType>(property));
+            MakeGarbageCollected<CSSRotateInterpolationType>(property));
         break;
       case CSSPropertyID::kBackdropFilter:
       case CSSPropertyID::kFilter:
         applicable_types->push_back(
-            std::make_unique<CSSFilterListInterpolationType>(property));
+            MakeGarbageCollected<CSSFilterListInterpolationType>(property));
         break;
       case CSSPropertyID::kTransform:
         applicable_types->push_back(
-            std::make_unique<CSSTransformInterpolationType>(property));
+            MakeGarbageCollected<CSSTransformInterpolationType>(property));
         break;
       case CSSPropertyID::kVariable:
         DCHECK_EQ(GetRegistration(registry_, property), nullptr);
         break;
       case CSSPropertyID::kObjectViewBox:
         applicable_types->push_back(
-            std::make_unique<CSSBasicShapeInterpolationType>(property));
+            MakeGarbageCollected<CSSBasicShapeInterpolationType>(property));
         break;
       case CSSPropertyID::kDisplay:
         applicable_types->push_back(
-            std::make_unique<CSSDisplayInterpolationType>(property));
+            MakeGarbageCollected<CSSDisplayInterpolationType>(property));
         break;
       case CSSPropertyID::kContentVisibility:
         applicable_types->push_back(
-            std::make_unique<CSSContentVisibilityInterpolationType>(property));
+            MakeGarbageCollected<CSSContentVisibilityInterpolationType>(
+                property));
         break;
       case CSSPropertyID::kOverlay:
         applicable_types->push_back(
-            std::make_unique<CSSOverlayInterpolationType>(property));
+            MakeGarbageCollected<CSSOverlayInterpolationType>(property));
         break;
       case CSSPropertyID::kScrollbarColor:
         applicable_types->push_back(
-            std::make_unique<CSSScrollbarColorInterpolationType>(property));
+            MakeGarbageCollected<CSSScrollbarColorInterpolationType>(property));
         break;
       default:
         DCHECK(!css_property.IsInterpolable());
@@ -452,64 +460,64 @@ const InterpolationTypes& InterpolationTypesMap::Get(
   }
 
   applicable_types->push_back(
-      std::make_unique<CSSDefaultInterpolationType>(property));
+      MakeGarbageCollected<CSSDefaultInterpolationType>(property));
 
-  auto add_result =
-      applicable_types_map.insert(property, std::move(applicable_types));
-  return *add_result.stored_value->value;
+  auto add_result = applicable_types_map.insert(property, applicable_types);
+  return add_result.stored_value->value;
 }
 
 size_t InterpolationTypesMap::Version() const {
   return registry_ ? registry_->Version() : 0;
 }
 
-static std::unique_ptr<CSSInterpolationType>
-CreateInterpolationTypeForCSSSyntax(const CSSSyntaxComponent syntax,
-                                    PropertyHandle property,
-                                    const PropertyRegistration& registration) {
+static const CSSInterpolationType* CreateInterpolationTypeForCSSSyntax(
+    const CSSSyntaxComponent syntax,
+    PropertyHandle property,
+    const PropertyRegistration& registration) {
   switch (syntax.GetType()) {
     case CSSSyntaxType::kAngle:
-      return std::make_unique<CSSAngleInterpolationType>(property,
-                                                         &registration);
+      return MakeGarbageCollected<CSSAngleInterpolationType>(property,
+                                                             &registration);
     case CSSSyntaxType::kColor:
-      return std::make_unique<CSSColorInterpolationType>(property,
-                                                         &registration);
+      return MakeGarbageCollected<CSSColorInterpolationType>(property,
+                                                             &registration);
     case CSSSyntaxType::kLength:
-      return std::make_unique<CSSCustomLengthInterpolationType>(property,
-                                                                &registration);
+      return MakeGarbageCollected<CSSCustomLengthInterpolationType>(
+          property, &registration);
     case CSSSyntaxType::kLengthPercentage:
-      return std::make_unique<CSSLengthInterpolationType>(property,
-                                                          &registration);
+      return MakeGarbageCollected<CSSLengthInterpolationType>(property,
+                                                              &registration);
     case CSSSyntaxType::kPercentage:
-      return std::make_unique<CSSPercentageInterpolationType>(property,
-                                                              &registration);
+      return MakeGarbageCollected<CSSPercentageInterpolationType>(
+          property, &registration);
     case CSSSyntaxType::kNumber:
-      return std::make_unique<CSSNumberInterpolationType>(property,
-                                                          &registration);
-    case CSSSyntaxType::kResolution:
-      return std::make_unique<CSSResolutionInterpolationType>(property,
+      return MakeGarbageCollected<CSSNumberInterpolationType>(property,
                                                               &registration);
+    case CSSSyntaxType::kResolution:
+      return MakeGarbageCollected<CSSResolutionInterpolationType>(
+          property, &registration);
     case CSSSyntaxType::kTime:
-      return std::make_unique<CSSTimeInterpolationType>(property,
-                                                        &registration);
+      return MakeGarbageCollected<CSSTimeInterpolationType>(property,
+                                                            &registration);
     case CSSSyntaxType::kImage:
       // TODO(andruud): Implement smooth interpolation for gradients.
       return nullptr;
     case CSSSyntaxType::kInteger:
-      return std::make_unique<CSSNumberInterpolationType>(property,
-                                                          &registration, true);
+      return MakeGarbageCollected<CSSNumberInterpolationType>(
+          property, &registration, true);
     case CSSSyntaxType::kTransformFunction:
       if (!syntax.IsRepeatable() ||
           syntax.GetRepeat() == CSSSyntaxRepeat::kCommaSeparated) {
         // <transform-function> needs an interpolation type different from
         // <transform-function>+ and <transform-list> as it can only use a
         // single function representation for interpolation and composition.
-        return std::make_unique<CSSCustomTransformFunctionInterpolationType>(
-            property, &registration);
+        return MakeGarbageCollected<
+            CSSCustomTransformFunctionInterpolationType>(property,
+                                                         &registration);
       }
       [[fallthrough]];
     case CSSSyntaxType::kTransformList:
-      return std::make_unique<CSSCustomTransformInterpolationType>(
+      return MakeGarbageCollected<CSSCustomTransformInterpolationType>(
           property, &registration);
     case CSSSyntaxType::kCustomIdent:
     case CSSSyntaxType::kIdent:
@@ -525,19 +533,19 @@ CreateInterpolationTypeForCSSSyntax(const CSSSyntaxComponent syntax,
   }
 }
 
-InterpolationTypes InterpolationTypesMap::CreateInterpolationTypesForCSSSyntax(
+InterpolationTypes* InterpolationTypesMap::CreateInterpolationTypesForCSSSyntax(
     const AtomicString& property_name,
     const CSSSyntaxDefinition& definition,
     const PropertyRegistration& registration) {
   PropertyHandle property(property_name);
-  InterpolationTypes result;
+  InterpolationTypes* result = MakeGarbageCollected<InterpolationTypes>();
 
   // All custom properties may encounter var() dependency cycles.
-  result.push_back(
-      std::make_unique<CSSVarCycleInterpolationType>(property, registration));
+  result->push_back(MakeGarbageCollected<CSSVarCycleInterpolationType>(
+      property, registration));
 
   for (const CSSSyntaxComponent& component : definition.Components()) {
-    std::unique_ptr<CSSInterpolationType> interpolation_type =
+    const CSSInterpolationType* interpolation_type =
         CreateInterpolationTypeForCSSSyntax(component, property, registration);
 
     if (!interpolation_type) {
@@ -547,14 +555,15 @@ InterpolationTypes InterpolationTypesMap::CreateInterpolationTypesForCSSSyntax(
     if (component.IsRepeatable() &&
         (component.GetType() != CSSSyntaxType::kTransformFunction ||
          component.GetRepeat() != CSSSyntaxRepeat::kSpaceSeparated)) {
-      interpolation_type = std::make_unique<CSSCustomListInterpolationType>(
+      interpolation_type = MakeGarbageCollected<CSSCustomListInterpolationType>(
           property, &registration, std::move(interpolation_type),
           component.GetType(), component.GetRepeat());
     }
 
-    result.push_back(std::move(interpolation_type));
+    result->push_back(std::move(interpolation_type));
   }
-  result.push_back(std::make_unique<CSSDefaultInterpolationType>(property));
+  result->push_back(
+      MakeGarbageCollected<CSSDefaultInterpolationType>(property));
   return result;
 }
 

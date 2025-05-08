@@ -45,7 +45,7 @@ class ChromeTestExtensionLoader {
 
   ~ChromeTestExtensionLoader();
 
-  // Loads the extension specified by |file_path|. Works for both packed and
+  // Loads the extension specified by `file_path`. Works for both packed and
   // unpacked extensions.
   scoped_refptr<const Extension> LoadExtension(const base::FilePath& file_path);
 
@@ -99,14 +99,14 @@ class ChromeTestExtensionLoader {
   void set_pem_path(const base::FilePath& pem_path) { pem_path_ = pem_path; }
 
  private:
-  // Packs the extension at |unpacked_path| and returns the path to the created
-  // crx. Note that the created crx is tied to the lifetime of |this|.
+  // Packs the extension at `unpacked_path` and returns the path to the created
+  // crx. Note that the created crx is tied to the lifetime of `this`.
   base::FilePath PackExtension(const base::FilePath& unpacked_path);
 
-  // Loads the crx pointed to by |crx_path|.
+  // Loads the crx pointed to by `crx_path`.
   scoped_refptr<const Extension> LoadCrx(const base::FilePath& crx_path);
 
-  // Loads the unpacked extension pointed to by |unpacked_path|.
+  // Loads the unpacked extension pointed to by `unpacked_path`.
   scoped_refptr<const Extension> LoadUnpacked(
       const base::FilePath& unpacked_path);
 

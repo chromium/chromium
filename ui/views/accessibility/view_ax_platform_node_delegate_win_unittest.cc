@@ -22,7 +22,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_constants.mojom.h"
-#include "ui/accessibility/platform/ax_platform_for_test.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/gfx/render_text_test_api.h"
 #include "ui/views/accessibility/test_list_grid_view.h"
@@ -764,7 +764,7 @@ class ViewAXPlatformNodeDelegateWinInnerTextRangeTest
   }
 
   void MockAXModeAdded() {
-    ui::AXMode mode = ui::AXPlatformForTest::GetInstance().GetProcessMode();
+    ui::AXMode mode = ui::AXPlatform::GetInstance().GetMode();
     widget_->OnAXModeAdded(mode);
   }
 

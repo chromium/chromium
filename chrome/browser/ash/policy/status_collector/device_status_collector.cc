@@ -79,6 +79,7 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
@@ -94,7 +95,6 @@
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
-#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -660,6 +660,12 @@ em::ActiveTimePeriod::SessionType GetSessionType(
 
     case DeviceLocalAccountType::kKioskIsolatedWebApp:
       return em::ActiveTimePeriod::SESSION_IWA_KIOSK;
+
+    case DeviceLocalAccountType::kArcvmKioskApp:
+      if (ash::features::IsHeliumArcvmKioskEnabled()) {
+        return em::ActiveTimePeriod::SESSION_ARC_KIOSK;
+      }
+      break;
 
     default:
       NOTREACHED();
@@ -2718,6 +2724,13 @@ bool DeviceStatusCollector::GetRunningKioskApp(
     case DeviceLocalAccountType::kKioskIsolatedWebApp:
       running_kiosk_app->set_app_id(account->kiosk_iwa_info.web_bundle_id());
       break;
+    case DeviceLocalAccountType::kArcvmKioskApp:
+      if (ash::features::IsHeliumArcvmKioskEnabled()) {
+        // Use package name as app ID for ARC Kiosks.
+        running_kiosk_app->set_app_id(
+            account->arcvm_kiosk_app_info.package_name());
+      }
+      break;
     case DeviceLocalAccountType::kPublicSession:
     case DeviceLocalAccountType::kSamlPublicSession:
       NOTREACHED();
@@ -3009,6 +3022,12 @@ bool DeviceStatusCollector::GetKioskSessionStatus(
       break;
     case DeviceLocalAccountType::kKioskIsolatedWebApp:
       app_status->set_app_id(account->kiosk_iwa_info.web_bundle_id());
+      break;
+    case DeviceLocalAccountType::kArcvmKioskApp:
+      if (ash::features::IsHeliumArcvmKioskEnabled()) {
+        // Use package name as app ID for ARC Kiosks.
+        app_status->set_app_id(account->arcvm_kiosk_app_info.package_name());
+      }
       break;
     case DeviceLocalAccountType::kPublicSession:
     case DeviceLocalAccountType::kSamlPublicSession:

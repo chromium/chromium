@@ -73,6 +73,7 @@ namespace {
 
 using ::testing::_;
 using ::testing::Contains;
+using ::testing::ElementsAre;
 using ::testing::InSequence;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
@@ -2222,6 +2223,178 @@ TEST_P(PDFiumEngineInkTest, LoadV2InkPathsForPage) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineInkTest, testing::Bool());
+
+class PDFiumEngineInkTextSelectionTest : public PDFiumEngineInkTest {
+ public:
+#if BUILDFLAG(IS_WIN)
+  static constexpr gfx::Rect kGoodbyeWorldExpectedRectPage0{32, 114, 156, 30};
+#elif BUILDFLAG(IS_MAC)
+  static constexpr gfx::Rect kGoodbyeWorldExpectedRectPage0{32, 115, 156, 29};
+#else
+  static constexpr gfx::Rect kGoodbyeWorldExpectedRectPage0{32, 116, 156, 26};
+#endif  // BUILDFLAG(IS_WIN)
+  static constexpr gfx::PointF kStartTextPositionPage0{50.0f, 110.0f};
+  static constexpr gfx::PointF kNonTextPositionPage0{5.0f, 5.0f};
+};
+
+TEST_P(PDFiumEngineInkTextSelectionTest, ExtendSelectionByNonTextPoint) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Plugin size chosen so all pages of the document are visible.
+  engine->PluginSizeUpdated({1024, 4096});
+
+  // Test point not on a page.
+  EXPECT_FALSE(engine->ExtendSelectionByPoint({-30.0f, -30.0f}));
+
+  // Test point not on any text.
+  EXPECT_FALSE(engine->ExtendSelectionByPoint(kNonTextPositionPage0));
+}
+
+TEST_P(PDFiumEngineInkTextSelectionTest, ExtendSelectionByPoint) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Plugin size chosen so all pages of the document are visible.
+  engine->PluginSizeUpdated({1024, 4096});
+
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+  EXPECT_THAT(engine->GetSelectionRects(), IsEmpty());
+
+  engine->OnTextOrLinkAreaClick(kStartTextPositionPage0, /*click_count=*/1);
+
+  constexpr gfx::PointF kEndPosition(100.0f, 110.0f);
+  EXPECT_TRUE(engine->ExtendSelectionByPoint((kEndPosition)));
+
+  EXPECT_EQ("Goodb", engine->GetSelectedText());
+#if BUILDFLAG(IS_WIN)
+  constexpr gfx::Rect kExpectedRect{32, 114, 64, 30};
+#elif BUILDFLAG(IS_MAC)
+  constexpr gfx::Rect kExpectedRect{32, 115, 64, 29};
+#else
+  constexpr gfx::Rect kExpectedRect{32, 116, 64, 26};
+#endif  // BUILDFLAG(IS_WIN)
+  EXPECT_THAT(engine->GetSelectionRects(), ElementsAre(kExpectedRect));
+}
+
+TEST_P(PDFiumEngineInkTextSelectionTest, ExtendSelectionByPointMultiPage) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Plugin size chosen so all pages of the document are visible.
+  engine->PluginSizeUpdated({1024, 4096});
+
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+  EXPECT_THAT(engine->GetSelectionRects(), IsEmpty());
+
+  engine->OnTextOrLinkAreaClick(kStartTextPositionPage0, /*click_count=*/1);
+
+  constexpr gfx::PointF kEndPosition(75.0f, 480.0f);
+  EXPECT_TRUE(engine->ExtendSelectionByPoint((kEndPosition)));
+
+#if BUILDFLAG(IS_WIN)
+  constexpr char kExpectedText[] = "Goodbye, world!\r\nHello,";
+#else
+  constexpr char kExpectedText[] = "Goodbye, world!\nHello,";
+#endif  // BUILDFLAG(IS_WIN)
+  EXPECT_EQ(kExpectedText, engine->GetSelectedText());
+
+#if BUILDFLAG(IS_WIN)
+  constexpr gfx::Rect kExpectedRectPage1{32, 466, 40, 22};
+#elif BUILDFLAG(IS_MAC)
+  constexpr gfx::Rect kExpectedRectPage1{32, 466, 40, 22};
+#else
+  constexpr gfx::Rect kExpectedRectPage1{32, 468, 40, 19};
+#endif  // BUILDFLAG(IS_WIN)
+  EXPECT_THAT(engine->GetSelectionRects(),
+              ElementsAre(kGoodbyeWorldExpectedRectPage0, kExpectedRectPage1));
+}
+
+TEST_P(PDFiumEngineInkTextSelectionTest, OnTextOrLinkAreaClickWithDoubleClick) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Plugin size chosen so all pages of the document are visible.
+  engine->PluginSizeUpdated({1024, 4096});
+
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+  EXPECT_THAT(engine->GetSelectionRects(), IsEmpty());
+
+  engine->OnTextOrLinkAreaClick(kStartTextPositionPage0, /*click_count=*/2);
+
+  EXPECT_EQ("Goodbye", engine->GetSelectedText());
+#if BUILDFLAG(IS_WIN)
+  constexpr gfx::Rect kExpectedRect{32, 114, 87, 30};
+#elif BUILDFLAG(IS_MAC)
+  constexpr gfx::Rect kExpectedRect{32, 115, 87, 29};
+#else
+  constexpr gfx::Rect kExpectedRect{32, 116, 87, 26};
+#endif  // BUILDFLAG(IS_WIN)
+  EXPECT_THAT(engine->GetSelectionRects(), ElementsAre(kExpectedRect));
+}
+
+TEST_P(PDFiumEngineInkTextSelectionTest, IsSelectableTextOrLinkAreaText) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("form_text_fields.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Plugin size chosen so all pages of the document are visible.
+  engine->PluginSizeUpdated({1024, 4096});
+
+  // Non-text position.
+  EXPECT_FALSE(engine->IsSelectableTextOrLinkArea(kNonTextPositionPage0));
+
+  // Form field position.
+  EXPECT_FALSE(engine->IsSelectableTextOrLinkArea({155.0f, 250.0f}));
+
+  // Text position.
+  EXPECT_TRUE(engine->IsSelectableTextOrLinkArea({160.0f, 145.0f}));
+}
+
+TEST_P(PDFiumEngineInkTextSelectionTest, IsSelectableTextOrLinkAreaLink) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("link_annots.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Plugin size chosen so all pages of the document are visible.
+  engine->PluginSizeUpdated({1024, 4096});
+
+  // Link position.
+  EXPECT_TRUE(engine->IsSelectableTextOrLinkArea({155.0f, 230.0f}));
+}
+
+TEST_P(PDFiumEngineInkTextSelectionTest, OnTextOrLinkAreaClickWithTripleClick) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Plugin size chosen so all pages of the document are visible.
+  engine->PluginSizeUpdated({1024, 4096});
+
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+  EXPECT_THAT(engine->GetSelectionRects(), IsEmpty());
+
+  engine->OnTextOrLinkAreaClick(kStartTextPositionPage0, /*click_count=*/3);
+
+  EXPECT_EQ("Goodbye, world!", engine->GetSelectedText());
+  EXPECT_THAT(engine->GetSelectionRects(),
+              ElementsAre(kGoodbyeWorldExpectedRectPage0));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PDFiumEngineInkTextSelectionTest,
+                         testing::Bool());
 
 using PDFiumEngineInkDrawTest = PDFiumTestBase;
 

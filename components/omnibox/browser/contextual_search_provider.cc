@@ -19,10 +19,12 @@
 #include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/actions/contextual_search_action.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
@@ -34,6 +36,7 @@
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
+#include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -51,15 +54,8 @@
 
 namespace {
 
-// Relevance for pedal-like action matches to be provided when not in keyword
-// mode and input is empty.
-constexpr int kAdvertActionRelevance = 10000;
-
 // The internal default verbatim match relevance.
-constexpr int kDefaultMatchRelevance = 1500;
-
-// Relevance value to use if it was not set explicitly by the server.
-constexpr int kDefaultSuggestResultRelevance = 100;
+constexpr int kDefaultVerbatimMatchRelevance = 1500;
 
 // Populates |results| with the response if it can be successfully parsed for
 // |input|. Returns true if the response can be successfully parsed.
@@ -80,7 +76,7 @@ bool ParseRemoteResponse(const std::string& response_json,
 
   return SearchSuggestionParser::ParseSuggestResults(
       *response_data, input, client->GetSchemeClassifier(),
-      /*default_result_relevance=*/kDefaultSuggestResultRelevance,
+      /*default_result_relevance=*/omnibox::kDefaultRemoteZeroSuggestRelevance,
       /*is_keyword_result=*/true, results);
 }
 
@@ -92,7 +88,7 @@ void ContextualSearchProvider::Start(
   TRACE_EVENT0("omnibox", "ContextualSearchProvider::Start");
   // Clear the cached results to remove the page search action matches. Also,
   // matches the behavior of the `ZeroSuggestProvider`.
-  Stop(/*clear_cached_results=*/true, /*due_to_user_inactivity=*/false);
+  Stop(AutocompleteStopReason::kClobbered);
 
   if (client()->IsOffTheRecord()) {
     done_ = true;
@@ -110,7 +106,7 @@ void ContextualSearchProvider::Start(
         input.current_url().SchemeIsHTTPOrHTTPS() &&
         (input.IsZeroSuggest() ||
          input.type() == metrics::OmniboxInputType::EMPTY)) {
-      AddPageSearchActionMatches();
+      AddPageSearchActionMatches(input);
     }
     return;
   }
@@ -128,17 +124,16 @@ void ContextualSearchProvider::Start(
   StartSuggestRequest(std::move(input));
 }
 
-void ContextualSearchProvider::Stop(bool clear_cached_results,
-                                    bool due_to_user_inactivity) {
-  if (!due_to_user_inactivity) {
-    // Stop the pending request if the sotp is not due to user inactivity. If
-    // it is due to user inactivity, the request will continue so the
-    // suggestions can be shown when they are ready.
-    AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
-    lens_suggest_inputs_subscription_ = {};
-    loader_.reset();
-    input_keyword_.clear();
+void ContextualSearchProvider::Stop(AutocompleteStopReason stop_reason) {
+  // If the stop is due to user inactivity, the request will continue so the
+  // suggestions can be shown when they are ready.
+  if (stop_reason == AutocompleteStopReason::kInactivity) {
+    return;
   }
+  AutocompleteProvider::Stop(stop_reason);
+  lens_suggest_inputs_subscription_ = {};
+  loader_.reset();
+  input_keyword_.clear();
 }
 
 void ContextualSearchProvider::AddProviderInfo(
@@ -305,28 +300,34 @@ void ContextualSearchProvider::ConvertSuggestResultsToAutocompleteMatches(
   }
 }
 
-void ContextualSearchProvider::AddPageSearchActionMatches() {
+void ContextualSearchProvider::AddPageSearchActionMatches(
+    const AutocompleteInput& input) {
   // These matches are effectively pedals that don't require any query matching.
-  AutocompleteMatch match(this, kAdvertActionRelevance, false,
-                          AutocompleteMatchType::PEDAL);
+  AutocompleteMatch match(this, omnibox::kContextualActionZeroSuggestRelevance,
+                          false, AutocompleteMatchType::PEDAL);
   match.contents_class = {{0, ACMatchClassification::NONE}};
   match.transition = ui::PAGE_TRANSITION_GENERATED;
   match.suggest_type = omnibox::SuggestType::TYPE_NATIVE_CHROME;
-  match.suggestion_group_id =
-      omnibox::GroupId::GROUP_ZERO_SUGGEST_IN_PRODUCT_HELP;
+  match.suggestion_group_id = omnibox::GroupId::GROUP_CONTEXTUAL_SEARCH_ACTION;
 
-  match.takeover_action =
-      base::MakeRefCounted<ContextualSearchAskAboutPageAction>();
-  // TODO(crbug.com/399951524): Use action's label strings hint.
-  match.contents = u"Ask about this page";
-  matches_.push_back(match);
-
-  match.relevance--;
-  match.takeover_action =
-      base::MakeRefCounted<ContextualSearchSelectRegionAction>();
-  // TODO(crbug.com/399951524): Use action's label strings hint.
-  match.contents = u"Search with Google Lens";
-  matches_.push_back(match);
+  auto add_action = [&](auto action) {
+    match.relevance--;
+    match.takeover_action = std::move(action);
+    match.contents = match.takeover_action->GetLabelStrings().hint;
+    matches_.push_back(match);
+  };
+  if (omnibox_feature_configs::ContextualSearch::Get().single_lens_action) {
+    add_action(base::MakeRefCounted<ContextualSearchOpenLensAction>());
+    // This one is special in that it also gets secondary text to show URL host.
+    AutocompleteMatch& action_match = matches_.back();
+    action_match.description = action_match.contents;
+    action_match.description_class = action_match.contents_class;
+    action_match.contents = base::UTF8ToUTF16(input.current_url().host());
+    action_match.contents_class = {{0, ACMatchClassification::URL}};
+  } else {
+    add_action(base::MakeRefCounted<ContextualSearchAskAboutPageAction>());
+    add_action(base::MakeRefCounted<ContextualSearchSelectRegionAction>());
+  }
 }
 
 void ContextualSearchProvider::AddDefaultVerbatimMatch(
@@ -334,7 +335,7 @@ void ContextualSearchProvider::AddDefaultVerbatimMatch(
   const TemplateURL* template_url = GetKeywordTemplateURL();
   std::u16string text = base::CollapseWhitespace(input.text(), false);
 
-  AutocompleteMatch match(this, kDefaultMatchRelevance, false,
+  AutocompleteMatch match(this, kDefaultVerbatimMatchRelevance, false,
                           AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
   if (text.empty()) {
     // Inert/static keyword mode helper text match for empty input. This match
@@ -362,7 +363,7 @@ void ContextualSearchProvider::AddDefaultVerbatimMatch(
         /*subtypes=*/{omnibox::SUBTYPE_CONTEXTUAL_SEARCH},
         /*from_keyword=*/true,
         /*navigational_intent=*/omnibox::NAV_INTENT_NONE,
-        /*relevance=*/kDefaultMatchRelevance,
+        /*relevance=*/kDefaultVerbatimMatchRelevance,
         /*relevance_from_server=*/false,
         /*input_text=*/text);
     match = CreateSearchSuggestion(

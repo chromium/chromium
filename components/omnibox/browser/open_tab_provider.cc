@@ -9,6 +9,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/omnibox/browser/suggestion_group_util.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "components/browser_ui/util/android/url_constants.h"
 #endif
@@ -34,7 +35,6 @@
 namespace {
 
 constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
-constexpr int kOpenTabDefaultScore = 1500;
 
 int Score(const AutocompleteInput& input,
           const query_parser::QueryNodeVector& input_query_nodes,
@@ -51,7 +51,7 @@ int Score(const AutocompleteInput& input,
 #endif
 
   if ((input.IsZeroSuggest() || input.text().empty()) && is_android) {
-    return kOpenTabDefaultScore +
+    return omnibox::kOpenTabMatchZeroSuggestRelevance +
            tab.last_shown_time.InSecondsFSinceUnixEpoch();
   }
   // TODO(crbug.com/40211187): The bookmark provider also uses on `query_parser`

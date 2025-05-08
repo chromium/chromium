@@ -133,6 +133,9 @@ public class FeedSurfaceCoordinatorTest {
         }
 
         @Override
+        public void sendMotionEventForInputTracking(MotionEvent ev) {}
+
+        @Override
         public boolean onInterceptTouchEvent(MotionEvent e) {
             return false;
         }

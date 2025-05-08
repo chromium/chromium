@@ -11,7 +11,6 @@
 
 #include "base/barrier_callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 #include "components/image_fetcher/core/image_fetcher_types.h"
 
@@ -53,14 +52,15 @@ class AutofillImageFetcher : public AutofillImageFetcherBase {
   // Subclasses may override this to provide custom handling of a given card art
   // URL for `image_type`. Resolved URLs are used as mapping keys for image
   // caching.
-  virtual GURL ResolveImageURL(const GURL& card_art_url,
+  virtual GURL ResolveImageURL(const GURL& image_url,
                                ImageType image_type) const = 0;
 
-  // Subclasses may override this to provide custom handling of a fetched card
-  // art image. The default behavior is a no-op. The passed-in `card_art_url` is
-  // the original URL before resolving via `ResolveCardArtURL`.
-  virtual gfx::Image ResolveCardArtImage(const GURL& card_art_url,
-                                         const gfx::Image& card_art_image);
+  // Applies platform-specific post-processing to the `image` of the given
+  // `image_type`. The passed-in `image_url` is the original URL before
+  // resolving via `ResolveImageURL`.
+  virtual gfx::Image ResolveImage(const GURL& image_url,
+                                  const gfx::Image& image,
+                                  ImageType image_type);
 
   // Subclasses override this to provide the underlying image fetcher instance.
   //
@@ -78,28 +78,23 @@ class AutofillImageFetcher : public AutofillImageFetcherBase {
   AutofillImageFetcher();
 
   // Called when an image is fetched. If the fetch was unsuccessful,
-  // `card_art_image` will be an empty gfx::Image(). If the original URL was
-  // invalid, `fetch_image_request_timestamp` will also be null.
-  void OnCardArtImageFetched(
-      const GURL& card_art_url,
-      const std::optional<base::TimeTicks>& fetch_image_request_timestamp,
-      const gfx::Image& card_art_image,
-      const image_fetcher::RequestMetadata& metadata);
+  // `image` will be an empty gfx::Image().
+  void OnImageFetched(const GURL& image_url,
+                      ImageType image_type,
+                      const gfx::Image& image,
+                      const image_fetcher::RequestMetadata& metadata);
 
-  void OnValuableImageFetched(const GURL& image_url,
-                              const gfx::Image& valuable_image,
-                              const image_fetcher::RequestMetadata& metadata);
+  // Subclasses may override this to provide custom handling of a fetched card
+  // art image. The passed-in `card_art_url` is the original URL before
+  // resolving via `ResolveImageURL`.
+  virtual gfx::Image ResolveCardArtImage(const GURL& card_art_url,
+                                         const gfx::Image& card_art_image) = 0;
 
  private:
-  void FetchImageForURL(const GURL& image_url,
-                        ImageType image_type,
-                        image_fetcher::ImageFetcherCallback callback);
+  void FetchImageForURL(const GURL& image_url, ImageType image_type);
 
-  // Stores the result of fetching images for card art URLs. It's used to
-  // mitigate the issue of inflated failure metrics caused by repeated fetch
-  // attempts.
-  std::map<std::string, bool> url_to_image_fetch_result_map_;
-
+  // Keeps track of the number of fetch attempts for a given URL.
+  std::map<GURL, int> fetch_attempt_counter_;
   // An in-memory image cache which stores post-processed images.
   std::map<GURL, std::unique_ptr<gfx::Image>> cached_images_;
 };

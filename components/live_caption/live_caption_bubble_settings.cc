@@ -81,4 +81,8 @@ void LiveCaptionBubbleSettings::SetLiveTranslateTargetLanguageCode(
                             language_code);
 }
 
+bool LiveCaptionBubbleSettings::ShouldAdjustPositionOnExpand() {
+  return false;
+}
+
 }  // namespace captions

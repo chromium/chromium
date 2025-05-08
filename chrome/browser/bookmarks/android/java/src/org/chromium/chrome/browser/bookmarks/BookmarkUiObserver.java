@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.components.bookmarks.BookmarkId;
 
@@ -12,6 +13,7 @@ import org.chromium.components.bookmarks.BookmarkId;
  * event that affects UI. All bookmark UI components are expected to implement this and update
  * themselves correctly on each event.
  */
+@NullMarked
 interface BookmarkUiObserver {
     /** Called when the entire UI is being destroyed and will be no longer in use. */
     default void onDestroy() {}

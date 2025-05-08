@@ -205,13 +205,17 @@ goog.debug.FancyWindow.prototype.getDropDown_ = function(id, selected) {
 goog.debug.FancyWindow.prototype.closeOptions_ = function() {
   'use strict';
   this.dh_.getElement('options').style.display = 'none';
-  var loggers = goog.debug.FancyWindow.getLoggers_();
-  var dh = this.dh_;
-  for (var i = 0; i < loggers.length; i++) {
-    var logger = loggers[i];
-    var sel = /** @type {!HTMLSelectElement} */ (
+  const loggers = goog.debug.FancyWindow.getLoggers_();
+  const dh = this.dh_;
+  for (let i = 0; i < loggers.length; i++) {
+    const logger = loggers[i];
+    const sel = /** @type {?HTMLSelectElement} */ (
         dh.getElement('sel' + logger.getName()));
-    var level = sel.options[sel.selectedIndex].text;
+    if (!sel) {
+      // Skip loggers added after the options opened with no matching element.
+      continue;
+    }
+    const level = sel.options[sel.selectedIndex].text;
     if (level == 'INHERIT') {
       goog.log.setLevel(logger, null);
     } else {

@@ -13,7 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 
 namespace {
@@ -41,9 +41,7 @@ namespace crx_file::id_util {
 const size_t kIdSize = 16;
 
 std::string GenerateId(std::string_view input) {
-  uint8_t hash[kIdSize];
-  crypto::SHA256HashString(input, hash, sizeof(hash));
-  return GenerateIdFromHash(hash);
+  return GenerateIdFromHash(crypto::hash::Sha256(input));
 }
 
 std::string GenerateIdFromHash(base::span<const uint8_t> hash) {

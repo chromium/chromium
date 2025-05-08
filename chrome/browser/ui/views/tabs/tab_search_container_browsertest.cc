@@ -65,7 +65,7 @@ class TabSearchContainerBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/338649929): Flaky on Windows 10 builds.
+// TODO(crbug.com/413441658): Flaky on Windows 10 builds.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_TogglesActionUIState DISABLED_TogglesActionUIState
 #else
@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                   ->IsShowing());
 }
 
-// TODO(crbug.com/338649929): Flaky on Windows 10 builds.
+// TODO(crbug.com/413441658): Flaky on Windows 10 builds.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_TogglesActionUIStateOnlyInCorrectBrowser \
   DISABLED_TogglesActionUIStateOnlyInCorrectBrowser
@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
   EXPECT_FALSE(second_search_container->animation_session_for_testing());
 }
 
-// TODO(crbug.com/338649929): Flaky on Windows 10 builds.
+// TODO(crbug.com/413441658): Flaky on Windows 10 builds.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_DoesntShowIfTabStripModalUIExists \
   DISABLED_DoesntShowIfTabStripModalUIExists
@@ -158,8 +158,15 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                   ->IsShowing());
 }
 
+// TODO(crbug.com/413441658): Flaky on Windows 10 builds.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_BlocksTabStripModalUIWhileShown \
+  DISABLED_BlocksTabStripModalUIWhileShown
+#else
+#define MAYBE_BlocksTabStripModalUIWhileShown BlocksTabStripModalUIWhileShown
+#endif
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
-                       BlocksTabStripModalUIWhileShown) {
+                       MAYBE_BlocksTabStripModalUIWhileShown) {
   ASSERT_TRUE(browser()->tab_strip_model()->CanShowModalUI());
 
   tab_search_container()->SetLockedExpansionModeForTesting(
@@ -272,8 +279,16 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                   ->IsClosing());
 }
 
+// TODO(crbug.com/414839512): Fix flaky test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DelayedHidesWhenOrganizeButtonTimesOut \
+  DISABLED_DelayedHidesWhenOrganizeButtonTimesOut
+#else
+#define MAYBE_DelayedHidesWhenOrganizeButtonTimesOut \
+  DelayedHidesWhenOrganizeButtonTimesOut
+#endif
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
-                       DelayedHidesWhenOrganizeButtonTimesOut) {
+                       MAYBE_DelayedHidesWhenOrganizeButtonTimesOut) {
   // RunScheduledLayout() is needed due to widget auto-resize.
   views::test::RunScheduledLayout(tab_search_container());
 
@@ -345,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
   histogram_tester.ExpectUniqueSample("Tab.Organization.Trigger.Outcome", 1, 1);
 }
 
-// TODO(crbug.com/409238041): Flaky on Windows 10 builds.
+// TODO(crbug.com/413441658): Flaky on Windows 10 builds.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_LogsFailureWhenAutoTabGroupsButtonTimeout \
   DISABLED_LogsFailureWhenAutoTabGroupsButtonTimeout
@@ -464,7 +479,14 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
             expanded_value);
 }
 
-IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest, ShowsDeclutterChip) {
+// TODO(crbug.com/414839512): Fix flaky test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ShowsDeclutterChip DISABLED_ShowsDeclutterChip
+#else
+#define MAYBE_ShowsDeclutterChip ShowsDeclutterChip
+#endif
+IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
+                       MAYBE_ShowsDeclutterChip) {
   ASSERT_FALSE(tab_search_container()->animation_session_for_testing());
 
   tab_search_container()->ShowTabOrganization(

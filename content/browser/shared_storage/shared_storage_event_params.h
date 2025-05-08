@@ -71,6 +71,7 @@ class CONTENT_EXPORT SharedStorageEventParams {
       int worklet_id);
   static SharedStorageEventParams CreateForRun(
       const std::string& operation_name,
+      int operation_id,
       bool keep_alive,
       const blink::mojom::PrivateAggregationConfigPtr&
           private_aggregation_config,
@@ -78,12 +79,14 @@ class CONTENT_EXPORT SharedStorageEventParams {
       int worklet_id);
   static SharedStorageEventParams CreateForRunForTesting(
       const std::string& operation_name,
+      int operation_id,
       bool keep_alive,
       PrivateAggregationConfigWrapper config_wrapper,
       const blink::CloneableMessage& serialized_data,
       int worklet_id);
   static SharedStorageEventParams CreateForSelectURL(
       const std::string& operation_name,
+      int operation_id,
       bool keep_alive,
       const blink::mojom::PrivateAggregationConfigPtr&
           private_aggregation_config,
@@ -95,6 +98,7 @@ class CONTENT_EXPORT SharedStorageEventParams {
       int worklet_id);
   static SharedStorageEventParams CreateForSelectURLForTesting(
       const std::string& operation_name,
+      int operation_id,
       bool keep_alive,
       PrivateAggregationConfigWrapper config_wrapper,
       const blink::CloneableMessage& serialized_data,
@@ -145,6 +149,7 @@ class CONTENT_EXPORT SharedStorageEventParams {
   std::optional<std::string> script_source_url;
   std::optional<std::string> data_origin;
   std::optional<std::string> operation_name;
+  std::optional<int> operation_id;
   std::optional<bool> keep_alive;
   std::optional<PrivateAggregationConfigWrapper> private_aggregation_config;
   std::optional<std::string> serialized_data;
@@ -167,6 +172,7 @@ class CONTENT_EXPORT SharedStorageEventParams {
       std::optional<std::string> script_source_url,
       std::optional<std::string> data_origin,
       std::optional<std::string> operation_name,
+      std::optional<int> operation_id,
       std::optional<bool> keep_alive,
       std::optional<PrivateAggregationConfigWrapper> private_aggregation_config,
       std::optional<std::string> serialized_data,
@@ -190,6 +196,7 @@ class CONTENT_EXPORT SharedStorageEventParams {
 
   static SharedStorageEventParams CreateForWorkletOperation(
       const std::string& operation_name,
+      int operation_id,
       bool keep_alive,
       const blink::mojom::PrivateAggregationConfigPtr&
           private_aggregation_config,
@@ -202,6 +209,7 @@ class CONTENT_EXPORT SharedStorageEventParams {
       int worklet_id);
   static SharedStorageEventParams CreateForWorkletOperationForTesting(
       const std::string& operation_name,
+      int operation_id,
       bool keep_alive,
       PrivateAggregationConfigWrapper config_wrapper,
       const blink::CloneableMessage& serialized_data,

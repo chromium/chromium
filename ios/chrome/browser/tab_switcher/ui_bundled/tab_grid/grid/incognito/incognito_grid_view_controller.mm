@@ -11,9 +11,9 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_commands.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_view.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/base_grid_view_controller+subclassing.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_commands.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/incognito_grid_commands.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -58,44 +58,21 @@
   self.contentNeedsAuthentication = require;
 
   if (require) {
-    if (!_blockingView) {
-      _blockingView = [[IncognitoReauthView alloc] init];
-      _blockingView.translatesAutoresizingMaskIntoConstraints = NO;
-      _blockingView.layer.zPosition = FLT_MAX;
-      // No need to show tab switcher button when already in the tab switcher.
-      _blockingView.tabSwitcherButton.hidden = YES;
-      // Hide the logo.
-      _blockingView.logoView.hidden = YES;
-
-      [_blockingView.authenticateButton
-                 addTarget:self.reauthHandler
-                    action:@selector(authenticateIncognitoContent)
-          forControlEvents:UIControlEventTouchUpInside];
-
-      if (IsIOSSoftLockEnabled()) {
-        id<GridCommands> gridHandler = self.gridHandler;
-        id<IncognitoReauthCommands> reauthHandler = self.reauthHandler;
-        [_blockingView.exitIncognitoButton
-                   addAction:[UIAction actionWithHandler:^(UIAction* action) {
-                     base::UmaHistogramEnumeration(
-                         kIncognitoLockOverlayInteractionHistogram,
-                         IncognitoLockOverlayInteraction::
-                             kCloseIncognitoTabsButtonClicked);
-                     base::RecordAction(base::UserMetricsAction(
-                         "IOS.IncognitoLock.Overlay.CloseIncognitoTabs"));
-                     [gridHandler closeAllItems];
-                     [reauthHandler manualAuthenticationOverride];
-                   }]
-            forControlEvents:UIControlEventTouchUpInside];
-      }
+    // If the blocking view is already installed, early return.
+    if ([_blockingView superview]) {
+      return;
     }
 
-    // Dismiss all modals.
-    [self.applicationHandler dismissModalDialogsWithCompletion:nil];
+    if (!_blockingView) {
+      _blockingView = [self createBlockingView];
+    }
 
     [self.view addSubview:_blockingView];
     _blockingView.alpha = 1;
     AddSameConstraints(self.collectionView.frameLayoutGuide, _blockingView);
+
+    // Dismiss modals related to this view controller.
+    [self.incognitoGridHandler dismissIncognitoGridModals];
   } else {
     __weak IncognitoGridViewController* weakSelf = self;
     [UIView animateWithDuration:kMaterialDuration1
@@ -124,6 +101,41 @@
 }
 
 #pragma mark - Private
+
+// Creates and configures a IncognitoReauthView.
+- (IncognitoReauthView*)createBlockingView {
+  IncognitoReauthView* blockingView = [[IncognitoReauthView alloc] init];
+  blockingView.translatesAutoresizingMaskIntoConstraints = NO;
+  blockingView.layer.zPosition = FLT_MAX;
+  // No need to show tab switcher button when already in the tab switcher.
+  blockingView.tabSwitcherButton.hidden = YES;
+  // Hide the logo.
+  blockingView.logoView.hidden = YES;
+
+  [blockingView.authenticateButton
+             addTarget:self.reauthHandler
+                action:@selector(authenticateIncognitoContent)
+      forControlEvents:UIControlEventTouchUpInside];
+
+  if (IsIOSSoftLockEnabled()) {
+    id<GridCommands> gridHandler = self.gridHandler;
+    id<IncognitoReauthCommands> reauthHandler = self.reauthHandler;
+    [blockingView.exitIncognitoButton
+               addAction:[UIAction actionWithHandler:^(UIAction* action) {
+                 base::UmaHistogramEnumeration(
+                     kIncognitoLockOverlayInteractionHistogram,
+                     IncognitoLockOverlayInteraction::
+                         kCloseIncognitoTabsButtonClicked);
+                 base::RecordAction(base::UserMetricsAction(
+                     "IOS.IncognitoLock.Overlay.CloseIncognitoTabs"));
+                 [gridHandler closeAllItems];
+                 [reauthHandler manualAuthenticationOverride];
+               }]
+        forControlEvents:UIControlEventTouchUpInside];
+  }
+
+  return blockingView;
+}
 
 // Sets properties that should be animated to remove the blocking view.
 - (void)hideBlockingView {

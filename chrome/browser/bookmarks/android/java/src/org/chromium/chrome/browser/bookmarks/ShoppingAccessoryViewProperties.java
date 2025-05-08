@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.commerce.PriceUtils;
 import org.chromium.components.payments.ui.CurrencyFormatter;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -11,6 +12,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Responsible for hosting properties of the improved bookmark row. */
+@NullMarked
 class ShoppingAccessoryViewProperties {
     /** Encapsulates price info on a product. */
     public static class PriceInfo {

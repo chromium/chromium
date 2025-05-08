@@ -22,7 +22,6 @@
 #include "content/browser/child_process_host_impl.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/gpu/gpu_disk_cache_factory.h"
-#include "content/browser/gpu/gpu_memory_buffer_manager_singleton.h"
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -289,19 +288,12 @@ void BrowserGpuChannelHostFactory::CloseChannel() {
     gpu_channel_->DestroyChannel();
     gpu_channel_ = nullptr;
   }
-
-  // This will unblock any other threads waiting on CreateGpuMemoryBuffer()
-  // requests. It runs before IO and thread pool threads are stopped to avoid
-  // shutdown hangs.
-  gpu_memory_buffer_manager_->Shutdown();
 }
 
 BrowserGpuChannelHostFactory::BrowserGpuChannelHostFactory()
     : gpu_client_id_(ChildProcessHostImpl::GenerateChildProcessUniqueId()),
       gpu_client_tracing_id_(
-          memory_instrumentation::mojom::kServiceTracingProcessId),
-      gpu_memory_buffer_manager_(
-          new GpuMemoryBufferManagerSingleton(gpu_client_id_)) {}
+          memory_instrumentation::mojom::kServiceTracingProcessId) {}
 
 BrowserGpuChannelHostFactory::~BrowserGpuChannelHostFactory() {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
@@ -394,11 +386,6 @@ void BrowserGpuChannelHostFactory::EstablishGpuChannel(
   DCHECK(gpu_channel_);
   for (auto& cb : callbacks)
     std::move(cb).Run(gpu_channel_);
-}
-
-gpu::GpuMemoryBufferManager*
-BrowserGpuChannelHostFactory::GetGpuMemoryBufferManager() {
-  return gpu_memory_buffer_manager_.get();
 }
 
 // Ensures that any pending timeout is cancelled when we are backgrounded.

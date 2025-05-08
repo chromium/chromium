@@ -1060,8 +1060,8 @@ id<GREYMatcher> TabGroupOverflowMenuButton() {
   return [ChromeMatchersAppInterface tabGroupOverflowMenuButton];
 }
 
-id<GREYMatcher> TabGroupBackButton() {
-  return [ChromeMatchersAppInterface tabGroupBackButton];
+id<GREYMatcher> CloseTabGroupButton() {
+  return [ChromeMatchersAppInterface closeTabGroupButton];
 }
 
 id<GREYMatcher> TabGroupActivitySummaryCell() {

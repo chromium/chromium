@@ -4,7 +4,7 @@
 
 #import "components/autofill/ios/browser/credit_card_save_manager_test_observer_bridge.h"
 
-#include "base/check.h"
+#import "base/check.h"
 
 namespace autofill {
 

@@ -4,13 +4,20 @@
 
 import hashlib
 import json
+import logging
 import pathlib
 import os
 import subprocess
+import sys
 import zipfile
 import re
 
 _SRC_PATH = pathlib.Path(__file__).resolve().parents[2]
+
+sys.path.insert(1, str(_SRC_PATH / 'third_party/depot_tools'))
+import gclient_eval
+
+
 _FETCH_ALL_PATH = _SRC_PATH / 'third_party/android_deps/fetch_all.py'
 _HASH_LENGTH = 15
 _SKIP_FILES = ('OWNERS', 'cipd.yaml')
@@ -20,6 +27,58 @@ _DEFAULT_GENERATED_DISCLAIMER = '''\
 //                by the autoroller. Please update build.gradle.template
 //                instead.
 '''
+
+ANDROIDX_CIPD_PACKAGE = 'chromium/third_party/androidx'
+
+
+def _get_current_cipd_instance():
+  with open(os.path.join(_SRC_PATH, 'DEPS'), 'rt') as f:
+    gclient_dict = gclient_eval.Exec(f.read())
+    return gclient_eval.GetCIPD(gclient_dict, 'src/third_party/androidx/cipd',
+                                ANDROIDX_CIPD_PACKAGE)
+
+
+def _query_cipd_tags(version):
+  cipd_output = subprocess.check_output(
+      ['cipd', 'describe', ANDROIDX_CIPD_PACKAGE, '-version', version],
+      encoding='utf-8')
+  # Output looks like:
+  # Package:       chromium/third_party/androidx
+  # Instance ID:   gUjEawxv5mQO8yfbuC8W-rx4V3zYE-4LTWggXpZHI4sC
+  # Registered by: user:chromium-cipd-builder@chops-service-accounts.iam.gserviceaccount.com
+  # Registered at: 2025-01-06 17:54:48.034135 +0000 UTC
+  # Refs:
+  #   latest
+  # Tags:
+  #   details0:version-cr-012873390
+  #   version:cr-012873390
+  lines = cipd_output.split('\n')
+  tags = {}
+  parsing_tags = False
+  for line in lines:
+    if not line.strip():
+      continue
+    if line.startswith('Tags:'):
+      parsing_tags = True
+      continue
+    if parsing_tags:
+      tag, value = line.strip().split(':', 1)
+      tags[tag] = value
+  return tags
+
+
+def get_current_androidx_version():
+  cipd_instance = _get_current_cipd_instance()
+  cipd_tags = _query_cipd_tags(cipd_instance)
+  version_string = cipd_tags['version']
+  version = version_string[len('cr-0'):]
+  logging.info('Resolved current androidx version to %s', version)
+  return version
+
+
+def make_androidx_maven_url(version):
+  return ('https://androidx.dev/snapshots/builds/' + version +
+          '/artifacts/repository')
 
 
 def generate_version_map_str(bom_path, with_hash=False):
@@ -177,10 +236,8 @@ def run_fetch_all(android_deps_dir,
                   extra_args,
                   verbose_count=0,
                   output_subdir=None):
-  fetch_all_cmd = [
-      _FETCH_ALL_PATH, '--android-deps-dir', android_deps_dir,
-      '--ignore-vulnerabilities'
-  ] + ['-v'] * verbose_count
+  fetch_all_cmd = [_FETCH_ALL_PATH, '--android-deps-dir', android_deps_dir]
+  fetch_all_cmd += ['-v'] * verbose_count
   if output_subdir:
     fetch_all_cmd += ['--output-subdir', output_subdir]
 

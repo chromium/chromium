@@ -346,7 +346,7 @@ AggregatableDebugReport::CreateAggregatableReportRequest() const {
   return AggregatableReportRequest::Create(
       AggregationServicePayloadContents(
           AggregationServicePayloadContents::Operation::kHistogram,
-          contributions_, blink::mojom::AggregationServiceMode::kDefault,
+          contributions_,
           aggregation_coordinator_origin_
               ? std::make_optional(**aggregation_coordinator_origin_)
               : std::nullopt,

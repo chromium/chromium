@@ -293,9 +293,12 @@ testSuite({
 
   /** @suppress {checkTypes} suppression added to enable type checking */
   testIterator() {
+    const expectedContent = ['abc', '#br', '#br', 'def'];
     testingDom.assertNodesMatch(
-        Range.createFromNodeContents(dom.getElement('test2')),
-        ['abc', '#br', '#br', 'def']);
+        Range.createFromNodeContents(dom.getElement('test2')), expectedContent);
+    testingDom.assertNodesMatch(
+        Range.createFromNodeContents(dom.getElement('test2')), expectedContent,
+        false);
   },
 
   testReversedNodes() {

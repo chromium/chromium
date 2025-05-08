@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/page_load_metrics/observers/core/ukm_page_load_metrics_observer.h"
 
@@ -1560,46 +1556,9 @@ void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
 
   ukm::builders::Graphics_Smoothness_NormalizedPercentDroppedFrames builder(
       GetDelegate().GetPageUkmSourceId());
-  if (features::StopExportDFCMetrics()) {
-    builder.SetAverage(smoothness_data.avg_smoothness)
-        .SetMedian(smoothness_data.median_smoothness)
-        .SetCompositorFocusedMedian(smoothness_data.compositor_focused_median);
-  } else {
-    builder.SetAverage(smoothness_data.avg_smoothness)
-        .SetMedian(smoothness_data.median_smoothness)
-        .SetPercentile95(smoothness_data.percentile_95)
-        .SetAboveThreshold(smoothness_data.above_threshold)
-        .SetWorstCase(smoothness_data.worst_smoothness)
-        .SetVariance(smoothness_data.variance)
-        .SetSmoothnessVeryGood(smoothness_data.buckets[0])
-        .SetSmoothnessGood(smoothness_data.buckets[1])
-        .SetSmoothnessOkay(smoothness_data.buckets[2])
-        .SetSmoothnessBad(smoothness_data.buckets[3])
-        .SetSmoothnessVeryBad25to50(smoothness_data.buckets[4])
-        .SetSmoothnessVeryBad50to75(smoothness_data.buckets[5])
-        .SetSmoothnessVeryBad75to100(smoothness_data.buckets[6])
-        .SetMainFocusedMedian(smoothness_data.main_focused_median)
-        .SetMainFocusedPercentile95(smoothness_data.main_focused_percentile_95)
-        .SetMainFocusedVariance(smoothness_data.main_focused_variance)
-        .SetCompositorFocusedMedian(smoothness_data.compositor_focused_median)
-        .SetCompositorFocusedPercentile95(
-            smoothness_data.compositor_focused_percentile_95)
-        .SetCompositorFocusedVariance(
-            smoothness_data.compositor_focused_variance)
-        .SetScrollFocusedMedian(smoothness_data.scroll_focused_median)
-        .SetScrollFocusedPercentile95(
-            smoothness_data.scroll_focused_percentile_95)
-        .SetScrollFocusedVariance(smoothness_data.scroll_focused_variance);
-    if (smoothness_data.worst_smoothness_after1sec >= 0) {
-      builder.SetWorstCaseAfter1Sec(smoothness_data.worst_smoothness_after1sec);
-    }
-    if (smoothness_data.worst_smoothness_after2sec >= 0) {
-      builder.SetWorstCaseAfter2Sec(smoothness_data.worst_smoothness_after2sec);
-    }
-    if (smoothness_data.worst_smoothness_after5sec >= 0) {
-      builder.SetWorstCaseAfter5Sec(smoothness_data.worst_smoothness_after5sec);
-    }
-  }
+  builder.SetAverage(smoothness_data.avg_smoothness)
+      .SetMedian(smoothness_data.median_smoothness)
+      .SetCompositorFocusedMedian(smoothness_data.compositor_focused_median);
   builder.Record(ukm::UkmRecorder::Get());
 }
 

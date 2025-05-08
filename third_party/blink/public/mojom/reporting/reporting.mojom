@@ -49,6 +49,16 @@ interface ReportingServiceProxy {
                           int32 line_number,
                           int32 column_number);
 
+  // Attempts to queue an Integrity Violation report using the Reporting API.
+  //
+  // (See //third_party/blink/renderer/core/frame/integrity_violation_report_body.h.)
+  QueueIntegrityViolationReport(url.mojom.Url url,
+                          string endpoint,
+                          string document_url,
+                          string blocked_url,
+                          string destination,
+                          bool report_only);
+
   // Attempts to queue a Permissions Policy violation report using the Reporting API.
   //
   // (See //third_party/blink/renderer/core/frame/permissions_policy_violation_report_body.h.)

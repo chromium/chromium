@@ -11,7 +11,7 @@ using AppRefreshProviderTest = PlatformTest;
 
 @interface TestAppRefreshProvider : AppRefreshProvider
 // Make identifier writable.
-@property(nonatomic, strong, readwrite) NSString* identifier;
+@property(nonatomic, copy, readwrite) NSString* identifier;
 @end
 
 @implementation TestAppRefreshProvider

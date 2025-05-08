@@ -58,6 +58,7 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/extensions/api/braille_display_private/braille_display_private_api.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/input_method/candidate_window_view.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
@@ -99,6 +100,9 @@
 #include "ui/events/types/event_type.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
+
+using KeyEvent = ::extensions::api::braille_display_private::KeyEvent;
+using KeyCommand = ::extensions::api::braille_display_private::KeyCommand;
 
 namespace ash {
 
@@ -502,7 +506,7 @@ class CaptionSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
         {});
   }
 
-  void SetCaptionText(std::string text) {
+  void SetCaptionText(const std::string& text) {
     // The UI is only created after SODA is installed.
     speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
         speech::LanguageCode::kEnUs);
@@ -512,7 +516,7 @@ class CaptionSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
         ::captions::LiveCaptionControllerFactory::GetForProfile(
             AccessibilityManager::Get()->profile());
     live_caption_controller->DispatchTranscription(
-        GetCaptionBubbleContext(),
+        /*web_contents=*/nullptr, GetCaptionBubbleContext(),
         media::SpeechRecognitionResult(text, /*is_final=*/false));
   }
 
@@ -522,6 +526,13 @@ class CaptionSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
           browser()->tab_strip_model()->GetActiveWebContents());
     }
     return caption_bubble_context_.get();
+  }
+
+  void SendBrailleKeyEvent(KeyCommand key_command) {
+    KeyEvent key_event;
+    key_event.command = key_command;
+    extensions::BrailleDisplayPrivateAPI(GetProfile())
+        .OnBrailleKeyEvent(key_event);
   }
 
  private:
@@ -570,32 +581,41 @@ IN_PROC_BROWSER_TEST_F(CaptionSpokenFeedbackTest, CaptionsNotToggled) {
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionSpokenFeedbackTest, CaptionsChanged) {
-  std::string initial_text =
-      "To be, or not to be, that is the question: Whether 'tis nobler in the "
-      "mind to suffer The slings and arrows of outrageous fortune, Or to take "
-      "arms against a sea of troubles And by opposing end them. ";
+  std::string captions = "To be, or not to be";
   PrefChangeRegistrar change_observer;
   EnableChromeVox();
-  sm_.Call([this, &change_observer, &initial_text]() {
+
+  AutomationTestUtils test_utils(extension_misc::kChromeVoxExtensionId);
+  sm_.Call([&test_utils]() { test_utils.SetUpTestSupport(); });
+
+  sm_.Call([this, &change_observer, &captions]() {
     // Use braille captions as an approximation of a braille display.
     ExecuteCommandHandlerCommand("toggleBrailleCaptions");
 
     // Set the caption text only once live captions is enabled.
     change_observer.Init(AccessibilityManager::Get()->profile()->GetPrefs());
     change_observer.Add(::prefs::kLiveCaptionEnabled,
-                        base::BindLambdaForTesting([this, &initial_text]() {
-                          SetCaptionText(initial_text);
-                        }));
+                        base::BindLambdaForTesting(
+                            [this, &captions]() { SetCaptionText(captions); }));
     ExecuteCommandHandlerCommand("toggleCaptions");
   });
   sm_.ExpectSpeechPattern("To be*");
-  sm_.Call([this]() { ExecuteCommandHandlerCommand("panRight"); });
-  sm_.ExpectSpeechPattern("*that is*");
-  sm_.Call([this, &initial_text]() {
-    SetCaptionText(initial_text + "To die—to sleep, No more;");
-    ExecuteCommandHandlerCommand("panRight");
+  sm_.Call([this, &captions, &test_utils]() {
+    captions += ", that is the question";
+    SetCaptionText(captions);
+    test_utils.WaitForChildrenChangedEvent();
+
+    SendBrailleKeyEvent(KeyCommand::kPanRight);
   });
-  sm_.ExpectNextSpeechIsNotPattern("*that is*");
+  sm_.ExpectSpeechPattern("*that is*");
+  sm_.Call([this, &captions, &test_utils]() {
+    captions += ": Whether 'tis nobler in the";
+    SetCaptionText(captions);
+    test_utils.WaitForChildrenChangedEvent();
+
+    SendBrailleKeyEvent(KeyCommand::kPanRight);
+  });
+  sm_.ExpectSpeechPattern("*Whether*");
 
   sm_.Replay();
 }

@@ -20,8 +20,7 @@ class TabGroupSyncServiceFactory : public ProfileKeyedServiceFactoryIOS {
   static TabGroupSyncService* GetForProfile(ProfileIOS* profile);
   static TabGroupSyncServiceFactory* GetInstance();
 
-  // Returns the default factory used to build TabGroupSyncService-s. Can be
-  // registered with AddTestingFactory to use real instances during testing.
+  // Return the default factory.
   static TestingFactory GetDefaultFactory();
 
  private:

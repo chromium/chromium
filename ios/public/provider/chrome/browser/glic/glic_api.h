@@ -9,8 +9,11 @@
 
 #import <string>
 
+#import "base/memory/raw_ptr.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "services/network/public/cpp/resource_request.h"
+
+class AuthenticationService;
 
 namespace ios::provider {
 
@@ -23,7 +26,10 @@ std::string CreateRequestBody(
 std::unique_ptr<network::ResourceRequest> CreateResourceRequest();
 
 // Starts the overlay experience on a given view controller.
-void StartOverlay(UIViewController* base_view_controller);
+void StartGlicOverlay(
+    UIViewController* base_view_controller,
+    raw_ptr<AuthenticationService> auth_service,
+    std::unique_ptr<optimization_guide::proto::PageContext> page_context);
 
 }  // namespace ios::provider
 

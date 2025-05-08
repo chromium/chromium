@@ -64,7 +64,7 @@ BookmarkContextMenu::BookmarkContextMenu(
   menu_runner_ = std::make_unique<views::MenuRunner>(
       base::WrapUnique<views::MenuItemView>(menu_),
       views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::IS_NESTED |
-          views::MenuRunner::CONTEXT_MENU);
+          views::MenuRunner::MENU_ITEM_CONTEXT_MENU);
   ui::SimpleMenuModel* menu_model = controller_->menu_model();
   for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
     views::MenuModelAdapter::AppendMenuItemFromModel(

@@ -7,10 +7,6 @@
 #include "base/logging.h"
 #include "media/base/audio_timestamp_helper.h"
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/373960632): Replace unsafe usage once AudioBus is spanified.
-#pragma allow_unsafe_buffers
-#endif
 
 namespace media {
 

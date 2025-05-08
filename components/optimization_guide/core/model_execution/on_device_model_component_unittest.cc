@@ -364,7 +364,7 @@ TEST_F(OnDeviceModelComponentTest, NeedsPerformanceClassUpdateEveryStartup) {
   WaitForStartup();
   EXPECT_TRUE(manager()->NeedsPerformanceClassUpdate());
   manager()->DevicePerformanceClassChanged(
-      OnDeviceModelPerformanceClass::kVeryLow);
+      base::DoNothing(), OnDeviceModelPerformanceClass::kVeryLow);
   EXPECT_TRUE(manager()->NeedsPerformanceClassUpdate());
 }
 
@@ -376,7 +376,7 @@ TEST_F(OnDeviceModelComponentTest, NeedsPerformanceClassUpdate) {
   WaitForStartup();
   EXPECT_TRUE(manager()->NeedsPerformanceClassUpdate());
   manager()->DevicePerformanceClassChanged(
-      OnDeviceModelPerformanceClass::kVeryLow);
+      base::DoNothing(), OnDeviceModelPerformanceClass::kVeryLow);
   EXPECT_FALSE(manager()->NeedsPerformanceClassUpdate());
 }
 
@@ -390,7 +390,7 @@ TEST_F(OnDeviceModelComponentTest, KeepInstalledWhileNotAllowed) {
   EXPECT_TRUE(on_device_component_state_manager_.IsInstallerRegistered());
   on_device_component_state_manager_.Reset();
   manager()->DevicePerformanceClassChanged(
-      OnDeviceModelPerformanceClass::kVeryLow);
+      base::DoNothing(), OnDeviceModelPerformanceClass::kVeryLow);
   manager()->OnStartup();
   WaitForStartup();
 
@@ -439,7 +439,8 @@ TEST_F(OnDeviceModelComponentTest, InstallAfterPerformanceClassChanges) {
   ASSERT_FALSE(on_device_component_state_manager_.IsInstallerRegistered());
   EXPECT_FALSE(manager()->GetState());
 
-  manager()->DevicePerformanceClassChanged(OnDeviceModelPerformanceClass::kLow);
+  manager()->DevicePerformanceClassChanged(base::DoNothing(),
+                                           OnDeviceModelPerformanceClass::kLow);
   WaitForStartup();
 
   EXPECT_TRUE(on_device_component_state_manager_.IsInstallerRegistered());
@@ -465,7 +466,7 @@ TEST_F(OnDeviceModelComponentTest, PerformanceClassChangesAfterInstall) {
   on_device_component_state_manager_.Reset();
   manager()->AddObserver(&observer);
   manager()->DevicePerformanceClassChanged(
-      OnDeviceModelPerformanceClass::kServiceCrash);
+      base::DoNothing(), OnDeviceModelPerformanceClass::kServiceCrash);
   manager()->OnStartup();
   WaitForStartup();
   ASSERT_TRUE(on_device_component_state_manager_.IsInstallerRegistered());
@@ -480,7 +481,7 @@ TEST_F(OnDeviceModelComponentTest, PerformanceClassChangesAfterInstall) {
 
   // Device is now eligible
   manager()->DevicePerformanceClassChanged(
-      OnDeviceModelPerformanceClass::kHigh);
+      base::DoNothing(), OnDeviceModelPerformanceClass::kHigh);
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(manager()->GetState());
   EXPECT_TRUE(observer.GetState());
@@ -492,7 +493,8 @@ TEST_F(OnDeviceModelComponentTest, DontUninstallAfterPerformanceClassChanges) {
 
   ASSERT_TRUE(on_device_component_state_manager_.IsInstallerRegistered());
 
-  manager()->DevicePerformanceClassChanged(OnDeviceModelPerformanceClass::kLow);
+  manager()->DevicePerformanceClassChanged(base::DoNothing(),
+                                           OnDeviceModelPerformanceClass::kLow);
   WaitForStartup();
 
   EXPECT_TRUE(on_device_component_state_manager_.IsInstallerRegistered());
@@ -577,7 +579,7 @@ TEST_F(OnDeviceModelComponentTest, SetReadyManifestContainsPerformanceHints) {
   WaitForStartup();
 
   manager()->DevicePerformanceClassChanged(
-      OnDeviceModelPerformanceClass::kHigh);
+      base::DoNothing(), OnDeviceModelPerformanceClass::kHigh);
 
   manager()->SetReady(base::Version("0.1.1"),
                       base::FilePath(FILE_PATH_LITERAL("/some/path")),
@@ -595,7 +597,8 @@ TEST_F(OnDeviceModelComponentTest,
   manager()->OnStartup();
   WaitForStartup();
 
-  manager()->DevicePerformanceClassChanged(OnDeviceModelPerformanceClass::kLow);
+  manager()->DevicePerformanceClassChanged(base::DoNothing(),
+                                           OnDeviceModelPerformanceClass::kLow);
 
   manager()->SetReady(base::Version("0.1.1"),
                       base::FilePath(FILE_PATH_LITERAL("/some/path")),

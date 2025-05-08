@@ -100,6 +100,13 @@ GpuMemoryBufferHandle::GpuMemoryBufferHandle(DXGIHandle handle)
 }
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+GpuMemoryBufferHandle::GpuMemoryBufferHandle(
+    NativePixmapHandle native_pixmap_handle)
+    : type(GpuMemoryBufferType::NATIVE_PIXMAP),
+      native_pixmap_handle_(std::move(native_pixmap_handle)) {}
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 GpuMemoryBufferHandle::GpuMemoryBufferHandle(
     base::android::ScopedHardwareBufferHandle handle)
@@ -132,7 +139,7 @@ GpuMemoryBufferHandle GpuMemoryBufferHandle::Clone() const {
   handle.offset = offset;
   handle.stride = stride;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
-  handle.native_pixmap_handle = CloneHandleForIPC(native_pixmap_handle);
+  handle.native_pixmap_handle_ = CloneHandleForIPC(native_pixmap_handle_);
 #elif BUILDFLAG(IS_APPLE)
   handle.io_surface = io_surface;
 #elif BUILDFLAG(IS_WIN)

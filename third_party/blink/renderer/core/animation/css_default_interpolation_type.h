@@ -74,12 +74,10 @@ class CSSDefaultInterpolationType : public InterpolationType {
     return nullptr;
   }
 
-  void Composite(UnderlyingValueOwner& underlying_value_owner,
+  void Composite(UnderlyingValueOwner&,
                  double underlying_fraction,
-                 const InterpolationValue& value,
-                 double interpolation_fraction) const final {
-    underlying_value_owner.Set(*this, value);
-  }
+                 const InterpolationValue&,
+                 double interpolation_fraction) const final;
 
   void Apply(const InterpolableValue&,
              const NonInterpolableValue*,

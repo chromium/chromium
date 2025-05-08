@@ -73,6 +73,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.ViewUtils;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.List;
@@ -378,6 +379,42 @@ public class AccessorySheetRenderTest {
         showSheetTab(coordinator, sheet);
 
         mRenderTestRule.render(mContentView, "ibans");
+    }
+
+    // Tests rendering of Payments tab with loyalty cards.
+    // Loyalty cards should appear in Payment Methods section.
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testAddingLoyaltyCardToModelRendersTabsView() throws Exception {
+        final KeyboardAccessoryData.AccessorySheetData sheet =
+                new KeyboardAccessoryData.AccessorySheetData(
+                        AccessoryTabType.CREDIT_CARDS,
+                        /* userInfoTitle= */ "No payment methods",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ "");
+        sheet.getLoyaltyCardInfoList()
+                .add(
+                        new KeyboardAccessoryData.LoyaltyCardInfo(
+                                "CVS Pharmacy",
+                                new GURL("https:://image.server.com/image.png"),
+                                new UserInfoField.Builder()
+                                        .setSuggestionType(AccessorySuggestionType.LOYALTY_CARD)
+                                        .setDisplayText("987654321")
+                                        .setId("")
+                                        .setCallback(result -> {})
+                                        .build()));
+        sheet.getFooterCommands()
+                .add(new KeyboardAccessoryData.FooterCommand("Manage loyalty cards", cb -> {}));
+
+        CreditCardAccessorySheetCoordinator coordinator =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                new CreditCardAccessorySheetCoordinator(
+                                        mActivityTestRule.getActivity(), mProfile, null));
+        showSheetTab(coordinator, sheet);
+
+        mRenderTestRule.render(mContentView, "loyalty_cards");
     }
 
     @Test

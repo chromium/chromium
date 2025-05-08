@@ -82,14 +82,16 @@ std::vector<device::mojom::XRViewPtr> GetDefaultViews() {
   auto left = device::mojom::XRView::New();
   left->eye = device::mojom::XREye::kLeft;
   left->viewport = gfx::Rect(x_offset, 0, width, height);
-  left->field_of_view =
+  left->geometry = device::mojom::XRViewGeometry::New();
+  left->geometry->field_of_view =
       device::mojom::VRFieldOfView::New(45.0f, 45.0f, 45.0f, 45.0f);
   x_offset += width;
 
   auto right = device::mojom::XRView::New();
   right->eye = device::mojom::XREye::kRight;
   right->viewport = gfx::Rect(x_offset, 0, width, height);
-  right->field_of_view =
+  right->geometry = device::mojom::XRViewGeometry::New();
+  right->geometry->field_of_view =
       device::mojom::VRFieldOfView::New(45.0f, 45.0f, 45.0f, 45.0f);
 
   std::vector<device::mojom::XRViewPtr> views;

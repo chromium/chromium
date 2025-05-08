@@ -615,7 +615,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.ExpandRatePercent" units="%"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>hlundin@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
@@ -865,7 +865,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Call.AbsCapture.Offset" units="microseconds"
-    expires_after="2025-05-25">
+    expires_after="2025-09-28">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1215,12 +1215,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.AddIceCandidate"
-    enum="AddIceCandidateResult" expires_after="2024-05-05">
+    enum="AddIceCandidateResult" expires_after="2025-10-28">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
     Outcomes of adding ICE candidates to a PeerConnection. Used to check the
     theory that failures in candidate addition are ignored by applications.
+    Warning: This histogram was expired from 2024-05-05 to 2025-04-28. Data may
+    be missing.
   </summary>
 </histogram>
 
@@ -2317,12 +2319,13 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebRTC.Video.HardwareDecodedFramesBetweenSoftwareFallbacks{WebRtcCodecs}"
-    units="frames" expires_after="2025-03-09">
+    units="frames" expires_after="2026-03-09">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
     The number of hardware decoded frames between fallbacks to software decoder
-    for a received video stream. {WebRtcCodecs}
+    for a received video stream. {WebRtcCodecs} Warning: this histogram was
+    expired from 2025-03-09 to 2025-04-24; data may be missing.
   </summary>
   <token key="WebRtcCodecs">
     <variant name=".Av1" summary=""/>
@@ -2347,7 +2350,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Video.HwCapabilities.Decode.{Codec}" enum="Boolean"
-    expires_after="2025-08-31">
+    expires_after="2025-11-02">
   <owner>kron@chromium.org</owner>
   <owner>video-performance-team@google.com</owner>
   <summary>
@@ -2364,7 +2367,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Video.HwCapabilities.Encode.{Codec}"
-    enum="EncodeScalabilityMode" expires_after="2025-08-31">
+    enum="EncodeScalabilityMode" expires_after="2025-11-02">
   <owner>kron@chromium.org</owner>
   <owner>video-performance-team@google.com</owner>
   <summary>
@@ -3764,7 +3767,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Video.TotalReceiveDelay" units="ms"
-    expires_after="2025-04-01">
+    expires_after="2026-04-01">
   <owner>kron@chromium.org</owner>
   <owner>video-performance-team@google.com</owner>
   <summary>
@@ -3812,7 +3815,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Video{TypeOfStream}.CorruptionLikelihoodPermille"
-    units="permille (‰)" expires_after="2025-04-01">
+    units="permille (‰)" expires_after="2025-10-01">
   <owner>sprang@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -3847,13 +3850,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRtcEventLogging.Api" enum="WebRtcEventLoggingApiEnum"
-    expires_after="2023-11-07">
+    expires_after="2025-12-31">
   <owner>eladalon@chromium.org</owner>
-  <owner>manj@google.com</owner>
-  <owner>dmitriyg@google.com</owner>
+  <owner>philipel@chromium.org</owner>
   <summary>
     The result of calls to the API for the collection and uploading of WebRTC
-    event logs.
+    event logs. Warning: this histogram was expired from 2023-11-07 to
+    2025-05-05; data may be missing.
   </summary>
 </histogram>
 

@@ -44,9 +44,6 @@ class InProcessDataDecoder
   // them. Useful for tests simulating service failures.
   void SimulateImageDecoderCrash(bool drop) { drop_image_decoders_ = drop; }
 
-  // Same as above but for JsonParser receivers.
-  void SimulateJsonParserCrash(bool drop);
-
   // Configures the service to use |binder| to bind
   // WebBundleParserFactory in subsequent
   // BindWebBundleParserFactory() calls.
@@ -82,7 +79,6 @@ class InProcessDataDecoder
   ::data_decoder::DataDecoderService service_;
   mojo::ReceiverSet<mojom::DataDecoderService> receivers_;
   bool drop_image_decoders_ = false;
-  bool drop_json_parsers_ = false;
   base::RepeatingCallback<void(
       mojo::PendingReceiver<web_package::mojom::WebBundleParserFactory>)>
       web_bundle_parser_factory_binder_;

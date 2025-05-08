@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_WEBDATA_SERVICES_WEB_DATA_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_WEBDATA_SERVICES_WEB_DATA_SERVICE_FACTORY_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/webdata_services/web_data_service_wrapper_factory.h"

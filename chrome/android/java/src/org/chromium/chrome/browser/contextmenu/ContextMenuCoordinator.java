@@ -82,7 +82,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
     private ContextMenuDialog mDialog;
     private Runnable mOnMenuClosed;
     private ContextMenuNativeDelegate mNativeDelegate;
-    private boolean mIsInterestTarget;
+    private boolean mIsInterestTargetWithShiftedMenu;
 
     /**
      * Constructor that also sets the content offset.
@@ -135,11 +135,21 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         Activity activity = window.getActivity().get();
 
         final boolean isDragDropEnabled = ContextMenuUtils.isDragDropEnabled(activity);
-        mIsInterestTarget = params.getOpenedFromInterestTarget();
+        // There are two experimental modes for the interesttarget feature:
+        //  1. the context menu is "shifted", to leave room for the page content, with the available
+        //     space communicated back to the site via env() variables.
+        //  2. the context menu is shown "as usual", but an item is added to the top of the context
+        //     menu, allowing the user to show interest in the link.
+        // If mIsInterestTargetWithShiftedMenu is true, we're in case 1. The
+        // InterestTargetNodeID being set to 0 indicate this, and that'll happen
+        // if the `HTMLInterestTargetContextMenuItemOnly` feature is disabled.
+        mIsInterestTargetWithShiftedMenu =
+                params.getOpenedFromInterestTarget() && params.getInterestTargetNodeID() == 0;
+
         final boolean usePopupWindow =
                 isDragDropEnabled
                         || ContextMenuUtils.isMouseOrHighlightPopup(params)
-                        || mIsInterestTarget;
+                        || mIsInterestTargetWithShiftedMenu;
 
         final View layout =
                 LayoutInflater.from(activity)
@@ -163,7 +173,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         //  1. For larger screens, simply provide a rectangular area around the
         //     tapped screen location, and let the context menu position itself
         //     relative to that.
-        if (mIsInterestTarget) {
+        if (mIsInterestTargetWithShiftedMenu) {
             var displayMetrics = activity.getResources().getDisplayMetrics();
             float displayWidth = (float) displayMetrics.widthPixels;
             float displayHeight = (float) displayMetrics.heightPixels;
@@ -266,7 +276,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         mDialog.setOnDismissListener(
                 (dialogInterface) -> {
                     mOnMenuClosed.run();
-                    if (mIsInterestTarget) {
+                    if (mIsInterestTargetWithShiftedMenu) {
                         // Remove context menu insets when the menu closes.
                         webContents.setContextMenuInsets(new Rect());
                     }
@@ -493,7 +503,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
             mChipController.dismissChipIfShowing();
         }
         mDialog.dismiss();
-        if (mIsInterestTarget) {
+        if (mIsInterestTargetWithShiftedMenu) {
             // Remove context menu insets if the menu is dismissed.
             mWebContents.setContextMenuInsets(new Rect());
         }

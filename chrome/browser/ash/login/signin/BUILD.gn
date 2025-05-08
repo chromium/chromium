@@ -12,6 +12,8 @@ static_library("signin") {
     "auth_error_observer_factory.h",
     "authentication_flow_auto_reload_manager.cc",
     "authentication_flow_auto_reload_manager.h",
+    "legacy_token_handle_fetcher.cc",
+    "legacy_token_handle_fetcher.h",
     "merge_session_navigation_throttle.cc",
     "merge_session_navigation_throttle.h",
     "merge_session_throttling_utils.cc",
@@ -125,6 +127,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/extensions:test_support",
+    "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/login",
@@ -158,6 +161,7 @@ source_set("unit_tests") {
     "offline_signin_limiter_unittest.cc",
     "signin_error_notifier_unittest.cc",
     "token_handle_checker_unittest.cc",
+    "token_handle_fetcher_unittest.cc",
     "token_handle_store_unittest.cc",
   ]
 

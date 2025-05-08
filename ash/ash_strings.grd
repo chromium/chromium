@@ -387,7 +387,7 @@ Style notes:
         Settings
       </message>
       <message name="IDS_ASH_STATUS_TRAY_SETTINGS_DISABLED" desc="The tooltip text for a settings button when disabled.">
-        This setting is managed by your administrator.
+        This setting is managed by your administrator
       </message>
       <message name="IDS_ASH_STATUS_TRAY_SPOKEN_FEEDBACK_ENABLED" desc="The message shown on a notification when spoken feedback is enabled">
         Press Ctrl + Alt + Z to disable spoken feedback.
@@ -6584,6 +6584,9 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SUNFISH_CAPTURE_LABEL" desc="The capture label message which shows in the middle of the screen when in sunfish session." translateable="false">
         Drag to select an area to search
       </message>
+      <message name="IDS_ASH_SUNFISH_CAPTURE_LABEL_KEYBOARD_NAVIGATION" desc="The capture label message which shows in the middle of the screen when in sunfish session. Includes keyboard navigation instructions.">
+        Drag or press Space to select an area to search
+      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_LABEL_WINDOW_IMAGE_CAPTURE" desc="The capture label message which shows in the middle of the screen when in window image capture mode in tablet mode.">
         Select a window to capture
       </message>
@@ -6733,6 +6736,9 @@ Here are some things you can try to get started.
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_OPEN" desc="Alert spoken by screen readers on entering capture mode.">
         Capture Mode, default is <ph name="SOURCE">$1<ex>partial</ex></ph> <ph name="TYPE">$2<ex>screenshot</ex></ph>. Press tab for keyboard navigation.
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_KEYBOARD_NAVIGATION_ALERT_OPEN" desc="Alert spoken by screen readers on entering capture mode. Contains details about using keyboard navigation in a session.">
+        In screen capture, set to <ph name="SOURCE">$1<ex>partial</ex></ph> <ph name="TYPE">$2<ex>screenshot</ex></ph>. Press tab to choose capture type. Press space to select region. Press enter to capture.
       </message>
       <message name="IDS_ASH_SUNFISH_MODE_ALERT_OPEN" desc="Alert spoken by screen readers on entering a mode where users can select a region on their screen to search.">
         Select to search my screen. Press tab then space for keyboard navigation.

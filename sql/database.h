@@ -20,7 +20,6 @@
 #include "base/check_op.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -36,7 +35,6 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "sql/internal_api_token.h"
-#include "sql/sql_features.h"
 #include "sql/sql_name_variants.h"
 #include "sql/sqlite_result_code.h"
 #include "sql/sqlite_result_code_values.h"
@@ -118,10 +116,6 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   // to prevent the database files from being opened from any process including
   // being opened a second time by the hosting process.
   //
-  // A side effect of setting this flag is that the database cannot be
-  // preloaded. If you would like to set this flag on a preloaded database,
-  // please reach out to a //sql owner.
-  //
   // This option is experimental and will be merged into the `exclusive_locking`
   // option above if proven to cause no OS compatibility issues.
   // TODO(crbug.com/40262539): Merge into above option, if possible.
@@ -142,6 +136,8 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   //
   // Note: Changing page size is not supported when in WAL mode. So running
   // 'PRAGMA page_size = <new-size>' will result in no-ops.
+  //
+  // Note: This option is not supported in read-only mode.
   //
   // More details at https://www.sqlite.org/wal.html
   DatabaseOptions& set_wal_mode(bool wal_mode) {
@@ -180,6 +176,8 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   // until the data is written to the persistent media. This guarantees
   // durability in the event of power loss, which is needed to guarantee the
   // integrity of non-WAL databases.
+  //
+  // Note: This option is not supported in read-only mode.
   DatabaseOptions& set_flush_to_media(bool flush_to_media) {
     flush_to_media_ = flush_to_media;
     return *this;
@@ -211,6 +209,8 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   //
   // 0 invokes SQLite's default, which is currently to size up the cache to use
   // exactly 2,048,000 bytes of RAM.
+  //
+  // Note: This option is not supported in read-only mode.
   DatabaseOptions& set_cache_size(int cache_size) {
     cache_size_ = cache_size;
     return *this;
@@ -259,6 +259,16 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
     return *this;
   }
 
+  // If true, the database is opened in read-only mode. All operations requiring
+  // write access will fail, including insert statements and some pragmas.
+  // Queries on the database will fail in the presence of a hot journal since
+  // the database file can't be modified to apply it. This must be used in the
+  // VFS returns read-only file descriptors, but not otherwise.
+  DatabaseOptions& set_read_only(bool read_only) {
+    read_only_ = read_only;
+    return *this;
+  }
+
  private:
   friend class Database;
   FRIEND_TEST_ALL_PREFIXES(DatabaseOptionsTest,
@@ -268,8 +278,7 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
 
   bool exclusive_locking_ = true;
   bool exclusive_database_file_lock_ = false;
-  bool wal_mode_ =
-      base::FeatureList::IsEnabled(sql::features::kEnableWALModeByDefault);
+  bool wal_mode_ = false;
   bool flush_to_media_ = false;
   int page_size_ = kDefaultPageSize;
   int cache_size_ = 0;
@@ -278,6 +287,7 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   bool enable_views_discouraged_ = false;
   const char* vfs_name_discouraged_ = nullptr;
   bool mmap_enabled_ = true;
+  bool read_only_ = false;
 };
 
 // Holds database diagnostics in a structured format.
@@ -490,19 +500,6 @@ class COMPONENT_EXPORT(SQL) Database {
   // any other functions after closing it. It is permissable to call Close on
   // an uninitialized or already-closed database.
   void Close();
-
-  // Hints the file system that the database will be accessed soon.
-  //
-  // This method should be called on databases that are on the critical path to
-  // Chrome startup. Informing the filesystem about our expected access pattern
-  // early on reduces the likelihood that we'll be blocked on disk I/O. This has
-  // a high impact on startup time.
-  //
-  // This method should not be used for non-critical databases. While using it
-  // will likely improve micro-benchmarks involving one specific database,
-  // overuse risks randomizing the disk I/O scheduler, slowing down Chrome
-  // startup.
-  void Preload();
 
   // Release all non-essential memory associated with this database connection.
   void TrimMemory();

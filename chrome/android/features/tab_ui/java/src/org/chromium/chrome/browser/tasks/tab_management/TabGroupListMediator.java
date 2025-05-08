@@ -83,6 +83,7 @@ public class TabGroupListMediator {
             new PendingRunnable(
                     TaskTraits.UI_DEFAULT,
                     mCallbackController.makeCancelable(this::repopulateModelList));
+    private final boolean mEnableContainment;
 
     private final TabModelObserver mTabModelObserver =
             new TabModelObserver() {
@@ -204,6 +205,7 @@ public class TabGroupListMediator {
      * @param actionConfirmationManager Used to show confirmation dialogs.
      * @param syncService Used to query active sync types.
      * @param modalDialogManager Used to show error dialogs.
+     * @param enableContainment Whether containment is enabled.
      */
     public TabGroupListMediator(
             Context context,
@@ -219,7 +221,8 @@ public class TabGroupListMediator {
             TabGroupUiActionHandler tabGroupUiActionHandler,
             ActionConfirmationManager actionConfirmationManager,
             SyncService syncService,
-            ModalDialogManager modalDialogManager) {
+            ModalDialogManager modalDialogManager,
+            boolean enableContainment) {
         mContext = context;
         mModelList = modelList;
         mPropertyModel = propertyModel;
@@ -234,6 +237,7 @@ public class TabGroupListMediator {
         mActionConfirmationManager = actionConfirmationManager;
         mSyncService = syncService;
         mModalDialogManager = modalDialogManager;
+        mEnableContainment = enableContainment;
 
         mFilter.addObserver(mTabModelObserver);
         if (mTabGroupSyncService != null) {
@@ -290,7 +294,8 @@ public class TabGroupListMediator {
                             mModalDialogManager,
                             mActionConfirmationManager,
                             mFaviconResolver,
-                            () -> sortUtil.getState(savedTabGroup));
+                            () -> sortUtil.getState(savedTabGroup),
+                            mEnableContainment);
             ListItem listItem = new ListItem(RowType.TAB_GROUP, rowMediator.getModel());
             mModelList.add(listItem);
         }

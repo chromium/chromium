@@ -55,10 +55,10 @@ public interface ResourceFetcher {
         public int getStatusCode();
 
         /** List of headers for this response. */
-        public List<Header> getHeaders();
+        public @Nullable List<Header> getHeaders();
 
         /** Raw data received. */
-        public byte[] getRawData();
+        public byte @Nullable [] getRawData();
     }
 
     /** Notify that a request has responded. */

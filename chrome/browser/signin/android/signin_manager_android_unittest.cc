@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
@@ -32,6 +33,7 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "components/offline_pages/core/stub_offline_page_model.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/split_stores_and_local_upm.h"
@@ -212,12 +214,17 @@ class SigninManagerAndroidWithoutLocalUpmTest
 };
 
 TEST_F(SigninManagerAndroidWithoutLocalUpmTest, WipePasswordsIfLocalUpmOff) {
+  // After login db deprecation, all users have split stores which either
+  // store credentials outside of the browser or cannot store credentials at
+  // all. In any case, wiping data doesn't apply to them.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      password_manager::features::kLoginDbDeprecationAndroid);
   password_manager::PasswordForm form;
   form.username_value = u"username";
   form.password_value = u"password";
   form.signon_realm = "https://g.com";
   profile_password_store()->AddLogin(form);
-  ASSERT_FALSE(account_password_store());
 
   WipeData(/*all_data=*/true);
 

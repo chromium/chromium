@@ -42,7 +42,7 @@ AXPlatform::~AXPlatform() {
 
 AXMode AXPlatform::GetMode() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return delegate_->GetProcessMode();
+  return delegate_->GetAccessibilityMode();
 }
 
 void AXPlatform::AddModeObserver(AXModeObserver* observer) {
@@ -72,11 +72,6 @@ void AXPlatform::NotifyAssistiveTechChanged(AssistiveTech assistive_tech) {
 bool AXPlatform::IsScreenReaderActive() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return IsScreenReader(active_assistive_tech_);
-}
-
-void AXPlatform::NotifyAccessibilityApiUsage() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  delegate_->OnAccessibilityApiUsage();
 }
 
 bool AXPlatform::IsCaretBrowsingEnabled() {
@@ -147,13 +142,70 @@ void AXPlatform::OnUiaProviderRequested(bool uia_provider_enabled) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-void AXPlatform::DetachFromThreadForTesting() {
-  DETACH_FROM_THREAD(thread_checker_);
+#if BUILDFLAG(IS_WIN)
+void AXPlatform::OnScreenReaderHoneyPotQueried() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // We used to trust this as a signal that a screen reader is running,
+  // but it's been abused. Now only enable accessibility if we detect that a
+  // minimal property (name, role, location) is also used..
+  if (screen_reader_honeypot_queried_) {
+    return;
+  }
+  screen_reader_honeypot_queried_ = true;
+  if (minimal_properties_used_) {
+    OnPropertiesUsedInWebContent();
+  }
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+void AXPlatform::OnMinimalPropertiesUsed() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  delegate_->OnMinimalPropertiesUsed();
+#if BUILDFLAG(IS_WIN)
+  // See OnScreenReaderHoneyPotQueried, above.
+  if (minimal_properties_used_) {
+    return;
+  }
+  minimal_properties_used_ = true;
+  if (screen_reader_honeypot_queried_) {
+    OnPropertiesUsedInWebContent();
+    return;
+  }
+#endif
 }
 
-void AXPlatform::SetMode(AXMode new_mode) {
+void AXPlatform::OnPropertiesUsedInBrowserUI() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  delegate_->SetProcessMode(new_mode);
+  delegate_->OnPropertiesUsedInBrowserUI();
+}
+
+void AXPlatform::OnPropertiesUsedInWebContent() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  delegate_->OnPropertiesUsedInWebContent();
+}
+
+void AXPlatform::OnInlineTextBoxesUsedInWebContent() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  delegate_->OnInlineTextBoxesUsedInWebContent();
+}
+
+void AXPlatform::OnExtendedPropertiesUsedInWebContent() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  delegate_->OnExtendedPropertiesUsedInWebContent();
+}
+
+void AXPlatform::OnHTMLAttributesUsed() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  delegate_->OnHTMLAttributesUsed();
+}
+
+void AXPlatform::OnActionFromAssistiveTech() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  delegate_->OnActionFromAssistiveTech();
+}
+
+void AXPlatform::DetachFromThreadForTesting() {
+  DETACH_FROM_THREAD(thread_checker_);
 }
 
 #if BUILDFLAG(IS_WIN)

@@ -501,6 +501,10 @@ class PasswordManagerClient {
   virtual void NavigateToManagePasswordsPage(ManagePasswordsReferrer referrer) {
   }
 
+  // If PasswordChangeService exists, notifies it of presence of OTP field on
+  // the page.
+  virtual void InformPasswordChangeServiceOfOtpPresent() {}
+
 #if BUILDFLAG(IS_ANDROID)
   virtual void NavigateToManagePasskeysPage(ManagePasswordsReferrer referrer) {}
 #endif

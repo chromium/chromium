@@ -28,8 +28,7 @@ struct AccountInfo {
   AccountInfo();
   AccountInfo(const GaiaId& gaia, const std::string& email);
   explicit AccountInfo(CoreAccountInfo account_info);
-  bool operator==(const AccountInfo& rhs) const;
-  bool operator!=(const AccountInfo& rhs) const { return !(*this == rhs); }
+  friend bool operator==(const AccountInfo&, const AccountInfo&) = default;
   bool IsEmpty() const;
 
   GaiaId gaia;

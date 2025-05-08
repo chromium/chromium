@@ -167,6 +167,7 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
       PseudoId,
       const AtomicString& document_transition_tag = g_null_atom) const;
   bool HasViewTransitionGroupPseudoElement() const;
+  bool HasScrollButtonOrMarkerGroupPseudos() const;
   PseudoElementData::PseudoElementVector GetPseudoElements() const;
   void AddColumnPseudoElement(ColumnPseudoElement&);
   const ColumnPseudoElementsVector* GetColumnPseudoElements() const;

@@ -16,7 +16,6 @@
 #import "google_apis/gaia/core_account_id.h"
 #import "google_apis/gaia/gaia_auth_util.h"
 #import "google_apis/gaia/gaia_id.h"
-#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -117,9 +116,6 @@ CGSize GetSizeForIdentityAvatarSize(IdentityAvatarSize avatar_size) {
 }
 
 signin::Tribool IsFirstSessionAfterDeviceRestore(base::OnceClosure completion) {
-  if (SimulatePostDeviceRestore()) {
-    return signin::Tribool::kTrue;
-  }
   const signin::RestoreData& restore_data =
       LoadDeviceRestoreData(std::move(completion));
   return restore_data.is_first_session_after_device_restore;
@@ -180,13 +176,6 @@ void RunSystemCapabilitiesPrefetch(NSArray<id<SystemIdentity>>* identities) {
             // Ignore the result.
         }));
   }
-}
-
-bool SimulatePostDeviceRestore() {
-  // We simulate post device restore if required either by experimental settings
-  // or test flag.
-  return tests_hook::SimulatePostDeviceRestore() ||
-         experimental_flags::SimulatePostDeviceRestore();
 }
 
 void ResetDeviceRestoreDataForTesting() {

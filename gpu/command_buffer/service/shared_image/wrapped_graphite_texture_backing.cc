@@ -269,7 +269,7 @@ void WrappedGraphiteTextureBacking::Update(
 bool WrappedGraphiteTextureBacking::UploadFromMemory(
     const std::vector<SkPixmap>& pixmaps) {
   // Using `context_state_` isn't compatible with a thread safe backing.
-  CHECK(!is_thread_safe());
+  CHECK(!is_thread_safe() || created_task_runner_->BelongsToCurrentThread());
   CHECK_EQ(pixmaps.size(), texture_holders_.size());
 
   if (context_state_->context_lost()) {
@@ -293,7 +293,7 @@ bool WrappedGraphiteTextureBacking::UploadFromMemory(
 bool WrappedGraphiteTextureBacking::ReadbackToMemory(
     const std::vector<SkPixmap>& pixmaps) {
   // Using `context_state_` isn't compatible with a thread safe backing.
-  CHECK(!is_thread_safe());
+  CHECK(!is_thread_safe() || created_task_runner_->BelongsToCurrentThread());
   CHECK_EQ(pixmaps.size(), texture_holders_.size());
 
   if (context_state_->context_lost()) {

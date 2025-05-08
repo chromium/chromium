@@ -138,7 +138,20 @@ bool DisplayResourceProvider::IsOverlayCandidate(ResourceId id) const {
   // TODO(ericrk): We should never fail TryGetResource, but we appear to
   // be doing so on Android in rare cases. Handle this gracefully until a
   // better solution can be found. https://crbug.com/811858
-  return resource && resource->transferable.is_overlay_candidate;
+  if (!resource) {
+    return false;
+  }
+  // Agtm rendering is currently only implemented in shaders. Use the
+  // mechanism of claiming that resources which have Agtm metadata were
+  // not marked as overlays to ensure that rendering falls back to shaders
+  // on all platforms.
+  // https://crbug.com/395659818
+  if (gfx::HdrMetadataAgtm::IsEnabled()) {
+    if (resource->transferable.hdr_metadata.agtm.has_value()) {
+      return false;
+    }
+  }
+  return resource->transferable.is_overlay_candidate;
 }
 
 bool DisplayResourceProvider::IsLowLatencyRendering(ResourceId id) const {

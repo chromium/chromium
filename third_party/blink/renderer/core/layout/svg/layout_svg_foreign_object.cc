@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/svg/svg_foreign_object_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -73,9 +74,18 @@ AffineTransform LayoutSVGForeignObject::LocalToSVGParentTransform() const {
   return transform;
 }
 
-DeprecatedLayoutPoint LayoutSVGForeignObject::LocationInternal() const {
+PhysicalOffset LayoutSVGForeignObject::PhysicalLocation(
+    const LayoutBox*) const {
   NOT_DESTROYED();
   return overridden_location_;
+}
+
+DeprecatedLayoutPoint LayoutSVGForeignObject::DeprecatedLocationInternal()
+    const {
+  NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
+  return DeprecatedLayoutPoint(overridden_location_.left,
+                               overridden_location_.top);
 }
 
 PaintLayerType LayoutSVGForeignObject::LayerTypeRequired() const {
@@ -136,7 +146,7 @@ SVGLayoutResult LayoutSVGForeignObject::UpdateSVGLayout(
   // would pull this information from ComputedStyle - in SVG those properties
   // are ignored for non <svg> elements, so we mimic what happens when
   // specifying them through CSS.
-  overridden_location_ = DeprecatedLayoutPoint(zoomed_location);
+  overridden_location_ = PhysicalOffset::FromPointFFloor(zoomed_location);
 
   ConstraintSpaceBuilder builder(
       style.GetWritingMode(), style.GetWritingDirection(),

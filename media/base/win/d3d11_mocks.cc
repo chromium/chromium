@@ -21,6 +21,9 @@ D3D11DeviceMock::~D3D11DeviceMock() = default;
 DXGIFactoryMock::DXGIFactoryMock() = default;
 DXGIFactoryMock::~DXGIFactoryMock() = default;
 
+DXGIFactory2Mock::DXGIFactory2Mock() = default;
+DXGIFactory2Mock::~DXGIFactory2Mock() = default;
+
 DXGIDeviceMock::DXGIDeviceMock() = default;
 DXGIDeviceMock::~DXGIDeviceMock() = default;
 
@@ -55,5 +58,8 @@ D3D11DeviceContextMock::~D3D11DeviceContextMock() = default;
 
 D3D11FenceMock::D3D11FenceMock() = default;
 D3D11FenceMock::~D3D11FenceMock() = default;
+
+DXGISwapChain1Mock::DXGISwapChain1Mock() = default;
+DXGISwapChain1Mock::~DXGISwapChain1Mock() = default;
 
 }  // namespace media

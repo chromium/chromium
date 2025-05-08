@@ -71,7 +71,7 @@ gfx::Size VcBackgroundUISystemAppDelegate::GetMinimumWindowSize() const {
 }
 
 gfx::Rect VcBackgroundUISystemAppDelegate::GetDefaultBounds(
-    Browser* browser) const {
+    BrowserDelegate*) const {
   gfx::Rect bounds =
       display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
   bounds.ClampToCenteredSize({826, 608});

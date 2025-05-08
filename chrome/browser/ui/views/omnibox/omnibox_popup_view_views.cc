@@ -132,12 +132,21 @@ class OmniboxPopupViewViews::AutocompletePopupWidget final
         base::BindOnce(&AutocompletePopupWidget::Close, AsWeakPtr())));
   }
 
-  void OnNativeWidgetDestroying() override {
-    // End all our animations immediately, as our closing animation may trigger
-    // a Close call which will be invalid once the native widget is gone.
-    GetLayer()->GetAnimator()->AbortAllAnimations();
+  void OnWidgetDestroying(views::Widget* widget) override {
+    // ThemeCopyingWidget observation is set on the role_model widget, which in
+    // the case of `AutocompletePopupWidget` is the hosting parent widget.
+    CHECK_NE(widget, this);
+    ThemeCopyingWidget::OnWidgetDestroying(widget);
 
-    ThemeCopyingWidget::OnNativeWidgetDestroying();
+    // In the case the host widget is destroyed, close the popup widget
+    // synchronously. This is necessary as the popup widget's contents view has
+    // dependencies on the hosting widget's BrowserView (see
+    // `SetPopupContentsView()` above). Since the popup widget is owned by its
+    // NativeWidget there is a risk of dangling pointers if it is not destroyed
+    // synchronously with its parent.
+    // TODO(crbug.com/40232479): Once this is migrated to CLIENT_OWNS_WIDGET
+    // this will no longer be necessary.
+    CloseNow();
   }
 
   void OnMouseEvent(ui::MouseEvent* event) override {

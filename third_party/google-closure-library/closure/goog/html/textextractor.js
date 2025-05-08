@@ -15,7 +15,6 @@ goog.provide('goog.html.textExtractor');
 goog.require('goog.dom.TagName');
 goog.require('goog.html.sanitizer.HtmlSanitizer');
 goog.require('goog.object');
-goog.require('goog.userAgent');
 
 
 /**
@@ -118,5 +117,5 @@ goog.html.textExtractor.isBlockElement_ = function(element) {
  */
 goog.html.textExtractor.isSupported = function() {
   'use strict';
-  return !goog.userAgent.IE || goog.userAgent.isVersionOrHigher(10);
+  return true;
 };

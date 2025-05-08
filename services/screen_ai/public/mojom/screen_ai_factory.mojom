@@ -60,7 +60,4 @@ interface ScreenAIServiceFactory {
   // Sets the shutdown handler.
   BindShutdownHandler(
     pending_remote<ScreenAIServiceShutdownHandler> shutdown_handler);
-
-  // Shuts down the service if there are no connected remotes.
-  ShutDownIfNoClients();
 };

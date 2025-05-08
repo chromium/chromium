@@ -320,6 +320,12 @@ extern const char kIOSWelcomeBackPromoTrigger[];
 // The Welcome Back promo was used.
 extern const char kIOSWelcomeBackPromoUsed[];
 
+// The GLIC promo was triggered.
+extern const char kIOSGLICPromoTrigger[];
+
+// The GLIC promo was used.
+extern const char kIOSGLICPromoUsed[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

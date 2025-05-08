@@ -8,6 +8,7 @@
 // for LanguageModel instead.
 [
   Exposed(Window AIPromptAPI, Worker AIPromptAPIForWorkers),
+  RuntimeEnabled=AIPromptAPI,
   SecureContext
 ]
 interface AI {};

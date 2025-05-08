@@ -80,6 +80,10 @@ void* GetProcessBaseAddress(HANDLE process);
 // Returns true if the string contains a NUL ('\0') character.
 bool ContainsNulCharacter(std::wstring_view str);
 
+// Call in a sandboxed process before target lockdown where modules should be
+// pre-loaded to support the infrastructure underlying crypto::RandBytes.
+void WarmupRandomnessInfrastructure();
+
 }  // namespace sandbox
 
 #endif  // SANDBOX_WIN_SRC_WIN_UTILS_H_

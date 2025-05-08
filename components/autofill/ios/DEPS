@@ -2,4 +2,7 @@ include_rules = [
   "+google_apis/gaia",
   "+ios/testing",
   "+ios/web/public",
+
+  # For tests
+  "+ios/web/test/fakes",
 ]

@@ -118,7 +118,8 @@ class WorkletModuleResponsesMapTest : public PageTestBase {
     WorkletModuleScriptFetcher* module_fetcher =
         MakeGarbageCollected<WorkletModuleScriptFetcher>(
             global_scope_, ModuleScriptLoader::CreatePassKeyForTests());
-    module_fetcher->Fetch(fetch_params, ModuleType::kJavaScript, fetcher_.Get(),
+    module_fetcher->Fetch(fetch_params, ModuleType::kJavaScriptOrWasm,
+                          fetcher_.Get(),
                           ModuleGraphLevel::kTopLevelModuleFetch, client);
   }
 

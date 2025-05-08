@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
+#include "chrome/browser/ui/webui/privacy_sandbox/base_dialog_ui.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -22,29 +23,33 @@ class WebView;
 
 // Implements the PrivacySandboxDialog as a View. The view contains a WebView
 // into which is loaded a WebUI page which renders the actual dialog content.
-class PrivacySandboxDialogView : public views::View {
+class PrivacySandboxDialogView : public views::View,
+                                 public privacy_sandbox::BaseDialogUIDelegate {
   METADATA_HEADER(PrivacySandboxDialogView, views::View)
 
  public:
-  PrivacySandboxDialogView(BrowserWindowInterface* browser,
-                           PrivacySandboxService::PromptType dialog_type);
+  static std::unique_ptr<PrivacySandboxDialogView>
+  CreateDialogViewForPromptType(BrowserWindowInterface* browser,
+                                PrivacySandboxService::PromptType prompt_type);
+  // TODO(chrstne): Create initialization method for PSNotice, v2.
 
-  void Close();
+  content::WebContents* GetWebContentsForTesting();
+
+  // privacy_sandbox::BaseDialogUIDelegate
+  void CloseNativeView() override;
+  void ResizeNativeView(int height) override;
+  void ShowNativeView() override;
 
  private:
   friend class PrivacySandboxQueueTestNotice;
 
+  explicit PrivacySandboxDialogView(BrowserWindowInterface* browser);
+  void InitializeDialogUIForPromptType(
+      PrivacySandboxService::PromptType prompt_type);
   void AdsDialogNoArgsCallback(
       PrivacySandboxService::AdsDialogCallbackNoArgsEvents event);
-  void ResizeNativeView(int height);
-  void ShowNativeView();
   void OpenPrivacySandboxSettings();
   void OpenPrivacySandboxAdMeasurementSettings();
-  friend class PrivacySandboxDialogViewPrivacyPolicyBrowserTest;
-  friend class
-      PrivacySandboxDialogViewAdsApiUxEnhancementPrivacyPolicyBrowserTest;
-  friend class PrivacySandboxDialogViewAdsApiUxEnhancementsLearnMoreBrowserTest;
-  content::WebContents* GetWebContentsForTesting();
 
   raw_ptr<views::WebView> web_view_;
   raw_ptr<BrowserWindowInterface> browser_;

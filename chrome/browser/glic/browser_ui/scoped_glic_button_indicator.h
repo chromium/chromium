@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_BROWSER_UI_SCOPED_GLIC_BUTTON_INDICATOR_H_
 #define CHROME_BROWSER_GLIC_BROWSER_UI_SCOPED_GLIC_BUTTON_INDICATOR_H_
 
-#include "base/memory/weak_ptr.h"
+#include "base/memory/raw_ptr.h"
 
 namespace glic {
 
@@ -24,5 +24,7 @@ class ScopedGlicButtonIndicator {
  private:
   raw_ptr<GlicButton> glic_button_;
 };
+
 }  // namespace glic
+
 #endif  // CHROME_BROWSER_GLIC_BROWSER_UI_SCOPED_GLIC_BUTTON_INDICATOR_H_

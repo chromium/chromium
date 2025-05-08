@@ -17,15 +17,15 @@ namespace power {
 namespace ml {
 
 // Metrics below are bucketized.
-constexpr char kBatteryPercent[] = "BatteryPercent";
-constexpr char kEventLogDuration[] = "EventLogDuration";
-constexpr char kKeyEventsInLastHour[] = "KeyEventsInLastHour";
-constexpr char kLastActivityTime[] = "LastActivityTime";
-constexpr char kLastUserActivityTime[] = "LastUserActivityTime";
-constexpr char kMouseEventsInLastHour[] = "MouseEventsInLastHour";
-constexpr char kRecentVideoPlayingTime[] = "RecentVideoPlayingTime";
-constexpr char kTimeSinceLastVideoEnded[] = "TimeSinceLastVideoEnded";
-constexpr char kTouchEventsInLastHour[] = "TouchEventsInLastHour";
+inline constexpr char kBatteryPercent[] = "BatteryPercent";
+inline constexpr char kEventLogDuration[] = "EventLogDuration";
+inline constexpr char kKeyEventsInLastHour[] = "KeyEventsInLastHour";
+inline constexpr char kLastActivityTime[] = "LastActivityTime";
+inline constexpr char kLastUserActivityTime[] = "LastUserActivityTime";
+inline constexpr char kMouseEventsInLastHour[] = "MouseEventsInLastHour";
+inline constexpr char kRecentVideoPlayingTime[] = "RecentVideoPlayingTime";
+inline constexpr char kTimeSinceLastVideoEnded[] = "TimeSinceLastVideoEnded";
+inline constexpr char kTouchEventsInLastHour[] = "TouchEventsInLastHour";
 
 // TODO(jiameng): both Bucket and Bucketize are meant for user activity logging,
 // but it's currently used by adaptive brightness. Need to refactor by either

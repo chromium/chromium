@@ -798,6 +798,58 @@ public class Fido2CredentialRequestRobolectricTest {
         assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isFalse();
     }
 
+    @Test
+    @SmallTest
+    public void testImmediateGetAssertion_success() {
+        mRequestOptions.mediation = Mediation.IMMEDIATE;
+
+        mRequest.handleGetAssertionRequest(
+                mRequestOptions,
+                mOrigin,
+                mOrigin,
+                /* payment= */ null,
+                mCallback::onSignResponse,
+                mCallback::onError,
+                mCallback::onRequestOutcome);
+
+        String originString = Fido2CredentialRequest.convertOriginToString(mOrigin);
+        verify(mCredManHelperMock)
+                .startGetRequest(
+                        eq(mRequestOptions),
+                        eq(originString),
+                        eq(TEST_CLIENT_DATA_JSON.getBytes()),
+                        /* clientDataHash= */ notNull(),
+                        /* getCallback= */ any(),
+                        /* errorCallback= */ any(),
+                        /* ignoreGpm= */ eq(false));
+        verify(mBrowserBridgeMock, never()).onCredManUiClosed(any(), anyBoolean());
+    }
+
+    @Test
+    @SmallTest
+    public void testImmediateGetAssertion_withAllowList_notAllowed() {
+        mRequestOptions.mediation = Mediation.IMMEDIATE;
+        PublicKeyCredentialDescriptor descriptor = new PublicKeyCredentialDescriptor();
+        descriptor.type = 0;
+        descriptor.id = new byte[] {1, 2, 3, 4};
+        descriptor.transports = new int[] {0};
+        mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[] {descriptor};
+
+        mRequest.handleGetAssertionRequest(
+                mRequestOptions,
+                mOrigin,
+                mOrigin,
+                /* payment= */ null,
+                mCallback::onSignResponse,
+                mCallback::onError,
+                mCallback::onRequestOutcome);
+
+        verify(mCredManHelperMock, never())
+                .startGetRequest(any(), any(), any(), any(), any(), any(), anyBoolean());
+        assertThat(mCallback.getStatus())
+                .isEqualTo(Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR));
+    }
+
     private WebauthnCredentialDetails createWebauthnCredential() {
         PublicKeyCredentialDescriptor descriptor = new PublicKeyCredentialDescriptor();
         descriptor.type = 0;

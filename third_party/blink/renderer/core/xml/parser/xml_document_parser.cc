@@ -402,7 +402,6 @@ void XMLDocumentParser::HandleError(XMLErrors::ErrorType type,
 }
 
 void XMLDocumentParser::CreateLeafTextNodeIfNeeded() {
-  is_start_of_new_chunk_ = false;
   if (leaf_text_node_)
     return;
 
@@ -415,7 +414,6 @@ bool XMLDocumentParser::UpdateLeafTextNode() {
   if (IsStopped())
     return false;
 
-  is_start_of_new_chunk_ = false;
   if (!leaf_text_node_)
     return true;
 
@@ -913,7 +911,6 @@ void XMLDocumentParser::DoWrite(const String& parse_string) {
     XMLDocumentParserScope scope(GetDocument());
     base::AutoReset<bool> encoding_scope(&is_currently_parsing8_bit_chunk_,
                                          parse_string.Is8Bit());
-    is_start_of_new_chunk_ = true;
     ParseChunk(context->Context(), parse_string);
 
     // JavaScript (which may be run under the parseChunk callstack) may
@@ -1035,18 +1032,19 @@ void XMLDocumentParser::StartElementNs(
   bool is_first_element = !saw_first_element_;
   saw_first_element_ = true;
 
-  v8::Isolate* isolate = document_->GetAgent().isolate();
   Vector<Attribute, kAttributePrealloc> prefixed_attributes;
   if (!HandleNamespaceAttributes(prefixed_attributes, namespaces,
-                                 IgnoreException(isolate))) {
+                                 IGNORE_EXCEPTION)) {
     StopParsing();
     return;
   }
 
+  v8::Isolate* isolate = document_->GetAgent().isolate();
   v8::TryCatch try_catch(isolate);
   if (!HandleElementAttributes(prefixed_attributes, attributes,
                                prefix_to_namespace_map_,
-                               PassThroughException(isolate))) {
+                               parsing_fragment_ ? PassThroughException(isolate)
+                                                 : IGNORE_EXCEPTION)) {
     StopParsing();
     if (parsing_fragment_) {
       DCHECK(try_catch.HasCaught());
@@ -1159,7 +1157,7 @@ void XMLDocumentParser::EndElementNs() {
   if (element->IsScriptElement() &&
       !ScriptingContentIsAllowed(GetParserContentPolicy())) {
     PopCurrentNode();
-    n->remove(IgnoreException(document_->GetAgent().isolate()));
+    n->remove(IGNORE_EXCEPTION_FOR_TESTING);
     return;
   }
 
@@ -1289,35 +1287,11 @@ void XMLDocumentParser::CdataBlock(const String& text) {
     return;
   }
 
-  // `is_start_of_new_chunk_` is reset by UpdateLeafTextNode(). If it was set
-  // when we entered this method, this CDATA block appears at the beginning of
-  // the current input chunk.
-  const bool is_start_of_new_chunk = is_start_of_new_chunk_;
   if (!UpdateLeafTextNode())
     return;
 
-  // If the most recent child is already a CDATA node *AND* this is the first
-  // parse event emitted from the current input chunk, we append this text to
-  // the existing node. Otherwise we append a new CDATA node.
-  // TODO(https://crbug.com/36431): Unfortunately, when a CDATA straddles
-  // multiple input chunks, libxml starts to emit CDATA nodes in 300 byte
-  // chunks. The MergeAdjacentCDataSections REF is an attempt to keep these
-  // within a single node. However, this will also merge actual adjacent CDATA
-  // sections into a single node, e.g.: `<![CDATA[foo]]><![CDATA[bar]]>` will
-  // now produce one node. The REF is added to easily reverse in case this
-  // isn't web compatible. Otherwise, we can remove `is_start_of_new_chunk_`
-  // and this REF.
-  CDATASection* cdata_tail =
-      current_node_ ? DynamicTo<CDATASection>(current_node_->lastChild())
-                    : nullptr;
-  if (cdata_tail &&
-      (RuntimeEnabledFeatures::XMLParserMergeAdjacentCDataSectionsEnabled() ||
-       is_start_of_new_chunk)) {
-    cdata_tail->ParserAppendData(text);
-  } else {
-    current_node_->ParserAppendChild(
-        CDATASection::Create(current_node_->GetDocument(), text));
-  }
+  current_node_->ParserAppendChild(
+      CDATASection::Create(current_node_->GetDocument(), text));
 }
 
 void XMLDocumentParser::Comment(const String& text) {
@@ -1499,8 +1473,8 @@ static base::span<const char, N - 1> CopyToEntityBuffer(
     base::span<const char, N> expanded_entity_chars) {
   auto entity_buffer =
       base::as_writable_chars(base::span(g_shared_xhtml_entity_result));
-  entity_buffer.first<N>().copy_from(expanded_entity_chars);
-  return entity_buffer.first<N - 1>();
+  entity_buffer.template first<N>().copy_from(expanded_entity_chars);
+  return entity_buffer.template first<N - 1>();
 }
 
 static base::span<const char> ConvertUTF16EntityToUTF8(

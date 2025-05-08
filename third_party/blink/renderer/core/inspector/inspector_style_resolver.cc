@@ -14,6 +14,8 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -37,8 +39,6 @@ InspectorStyleResolver::InspectorStyleResolver(
   // to get this information without grabbing at internal style classes!
   StyleResolver& style_resolver = element_->GetDocument().GetStyleResolver();
 
-  DCHECK(!IsTransitionPseudoElement(element_pseudo_id) ||
-         element_->IsDocumentElement());
   matched_rules_ = style_resolver.PseudoCSSRulesForElement(
       element_, element_pseudo_id, view_transition_name,
       StyleResolver::kAllCSSRules);
@@ -72,16 +72,14 @@ InspectorStyleResolver::InspectorStyleResolver(
   }
 
   const bool has_active_view_transition =
-      element_->IsDocumentElement() &&
-      !element_->GetDocument().GetStyleEngine().ViewTransitionTags().empty();
+      !!ViewTransitionUtils::GetTransition(*element);
+
   for (PseudoId pseudo_id = kFirstPublicPseudoId;
        pseudo_id < kAfterLastInternalPseudoId;
        pseudo_id = static_cast<PseudoId>(pseudo_id + 1)) {
     if (!PseudoElement::IsWebExposed(pseudo_id, element_))
       continue;
 
-    // The ::view-transition* pseudo elements are only generated for the root
-    // element.
     if (IsTransitionPseudoElement(pseudo_id) && !has_active_view_transition) {
       continue;
     }
@@ -94,9 +92,12 @@ InspectorStyleResolver::InspectorStyleResolver(
       continue;
     }
 
-    for (const auto& tag :
-         element_->GetDocument().GetStyleEngine().ViewTransitionTags()) {
-      AddPseudoElementRules(pseudo_id, tag);
+    if (auto* view_transition_pseudo =
+            DynamicTo<ViewTransitionPseudoElementBase>(
+                element_->GetPseudoElement(kPseudoIdViewTransition))) {
+      for (const auto& tag : view_transition_pseudo->GetViewTransitionNames()) {
+        AddPseudoElementRules(pseudo_id, tag);
+      }
     }
   }
 

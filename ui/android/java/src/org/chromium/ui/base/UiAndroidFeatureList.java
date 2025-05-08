@@ -35,5 +35,12 @@ public class UiAndroidFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
 
-    public static final List<CachedFlag> sFlagsCachedUiAndroid = List.of(sAndroidWindowOcclusion);
+    public static final CachedFlag sAndroidWindowManagementWebApi =
+            newCachedFlag(
+                    UiAndroidFeatures.ANDROID_WINDOW_MANAGEMENT_WEB_API,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
+
+    public static final List<CachedFlag> sFlagsCachedUiAndroid =
+            List.of(sAndroidWindowOcclusion, sAndroidWindowManagementWebApi);
 }

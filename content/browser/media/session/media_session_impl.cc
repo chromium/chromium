@@ -1440,11 +1440,12 @@ void MediaSessionImpl::GetMediaImageBitmap(
 void MediaSessionImpl::ReportAutoPictureInPictureInfoChanged() {
   ContentClient* content_client = GetContentClient();
   const auto auto_picture_in_picture_info =
-      media::PictureInPictureEventsInfo::AutoPipInfoToString(
-          content_client->browser()->GetAutoPipInfo(*web_contents()));
+      media::PictureInPictureEventsInfo::AutoPipInfo{
+          content_client->browser()->GetAutoPipInfo(*web_contents())};
 
   ForAllPlayers(base::BindRepeating(
-      [](std::string_view auto_picture_in_picture_info,
+      [](const media::PictureInPictureEventsInfo::AutoPipInfo&
+             auto_picture_in_picture_info,
          const PlayerIdentifier& player) {
         player.observer->OnAutoPictureInPictureInfoChanged(
             player.player_id, auto_picture_in_picture_info);
@@ -1696,17 +1697,6 @@ void MediaSessionImpl::UpdateRoutedService() {
   RebuildAndNotifyActionsChanged();
   RebuildAndNotifyMediaSessionInfoChanged();
   RebuildAndNotifyMediaPositionChanged();
-
-  if (routed_service_ &&
-      !BackForwardCacheImpl::IsMediaSessionServiceAllowed()) {
-    // A page in the back-forward cache may affect the media control UI
-    // displayed to users. So it is marked as ineligible as soon as a
-    // MediaSession service is associated with it.
-    BackForwardCache::DisableForRenderFrameHost(
-        routed_service_->GetRenderFrameHostId(),
-        BackForwardCacheDisable::DisabledReason(
-            BackForwardCacheDisable::DisabledReasonId::kMediaSessionService));
-  }
 }
 
 MediaSessionServiceImpl* MediaSessionImpl::ComputeServiceForRouting() {

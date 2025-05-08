@@ -141,8 +141,8 @@ void MockAudioManager::SetAecDumpRecordingManager(
   // This is no-op by default.
 }
 
-const char* MockAudioManager::GetName() {
-  return nullptr;
+const std::string_view MockAudioManager::GetName() {
+  return "Mock";
 }
 
 void MockAudioManager::SetMakeOutputStreamCB(MakeOutputStreamCallback cb) {

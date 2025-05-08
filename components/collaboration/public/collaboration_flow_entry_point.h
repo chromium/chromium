@@ -55,7 +55,8 @@ enum class CollaborationServiceShareOrManageEntryPoint {
   kDesktopGroupEditorShareOrManageButton = 19,
   kDesktopNotification = 20,
   kDesktopRecentActivity = 21,
-  kMaxValue = kDesktopRecentActivity,
+  kiOSMessage = 22,
+  kMaxValue = kiOSMessage,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceShareOrManageEntryPoint)
 

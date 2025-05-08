@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "services/network/public/cpp/web_sandbox_flags.h"
+#include "services/network/public/mojom/integrity_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/csp/conversion_util.h"
 
 namespace blink {
@@ -38,14 +39,15 @@ std::unique_ptr<PolicyContainer> PolicyContainer::CreateFromWebPolicyContainer(
       container->policies.cross_origin_embedder_policy;
   mojom::blink::PolicyContainerPoliciesPtr policies =
       mojom::blink::PolicyContainerPolicies::New(
-          cross_origin_embedder_policy, container->policies.referrer_policy,
+          cross_origin_embedder_policy, container->policies.integrity_policy,
+          container->policies.integrity_policy_report_only,
+          container->policies.referrer_policy,
           ConvertToMojoBlink(
               std::move(container->policies.content_security_policies)),
           container->policies.is_credentialless,
           container->policies.sandbox_flags,
           container->policies.ip_address_space,
           container->policies.can_navigate_top_without_user_gesture,
-          container->policies.allow_cross_origin_isolation,
           container->policies.cross_origin_isolation_enabled_by_dip);
 
   return std::make_unique<PolicyContainer>(std::move(container->remote),

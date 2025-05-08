@@ -16,6 +16,7 @@
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
+#include "content/browser/indexed_db/instance/leveldb/backing_store.h"
 #include "content/browser/indexed_db/instance/leveldb/indexed_db_leveldb_operations.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -85,8 +86,11 @@ class LevelDbTombstoneSweeperTest : public testing::Test {
     //   os2
     //     index1
     //     index2
-    metadata_.emplace_back(u"db1", kDb1, 1, 29);
-    auto& db1 = metadata_.back();
+    auto db1_ptr = std::make_unique<BackingStore::DatabaseMetadata>(u"db1");
+    auto& db1 = *db1_ptr;
+    db1.id = kDb1;
+    db1.version = 1;
+    db1.max_object_store_id = 29;
     db1.object_stores[kOs1] = IndexedDBObjectStoreMetadata(
         u"os1", kOs1, IndexedDBKeyPath(), false, 1000);
     db1.object_stores[kOs2] = IndexedDBObjectStoreMetadata(
@@ -96,12 +100,16 @@ class LevelDbTombstoneSweeperTest : public testing::Test {
         u"index1", kIndex1, IndexedDBKeyPath(), true, false);
     os2.indexes[kIndex2] = IndexedDBIndexMetadata(
         u"index2", kIndex2, IndexedDBKeyPath(), true, false);
+    metadata_.push_back(std::move(db1_ptr));
     // db2
     //   os3
     //     index3
     //   os4
-    metadata_.emplace_back(u"db2", kDb2, 1, 29);
-    auto& db2 = metadata_.back();
+    auto db2_ptr = std::make_unique<BackingStore::DatabaseMetadata>(u"db2");
+    auto& db2 = *db2_ptr;
+    db2.id = kDb2;
+    db2.version = 1;
+    db2.max_object_store_id = 29;
     db2.object_stores[kOs3] = IndexedDBObjectStoreMetadata(
         u"os3", kOs3, IndexedDBKeyPath(), false, 1000);
     db2.object_stores[kOs4] = IndexedDBObjectStoreMetadata(
@@ -109,19 +117,24 @@ class LevelDbTombstoneSweeperTest : public testing::Test {
     auto& os3 = db2.object_stores[kOs3];
     os3.indexes[kIndex3] = IndexedDBIndexMetadata(
         u"index3", kIndex3, IndexedDBKeyPath(), true, false);
+    metadata_.push_back(std::move(db2_ptr));
   }
 
   void PopulateSingleIndexDBMetadata() {
     // db1
     //   os1
     //     index1
-    metadata_.emplace_back(u"db1", kDb1, 1, 29);
-    auto& db1 = metadata_.back();
+    auto db1_ptr = std::make_unique<BackingStore::DatabaseMetadata>(u"db1");
+    auto& db1 = *db1_ptr;
+    db1.id = kDb1;
+    db1.version = 1;
+    db1.max_object_store_id = 29;
     db1.object_stores[kOs1] = IndexedDBObjectStoreMetadata(
         u"os1", kOs1, IndexedDBKeyPath(), false, 1000);
     auto& os2 = db1.object_stores[kOs1];
     os2.indexes[kIndex1] = IndexedDBIndexMetadata(
         u"index1", kIndex1, IndexedDBKeyPath(), true, false);
+    metadata_.push_back(std::move(db1_ptr));
   }
 
   void SetupMockDB() {
@@ -198,7 +211,7 @@ class LevelDbTombstoneSweeperTest : public testing::Test {
   std::unique_ptr<TransactionalLevelDBDatabase> in_memory_db_;
   leveldb::MockLevelDB mock_db_;
 
-  std::vector<IndexedDBDatabaseMetadata> metadata_;
+  std::vector<std::unique_ptr<IndexedDBDatabaseMetadata>> metadata_;
 
   std::unique_ptr<LevelDbTombstoneSweeper> sweeper_;
 

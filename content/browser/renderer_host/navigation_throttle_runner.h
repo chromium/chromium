@@ -16,13 +16,21 @@
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 
 namespace content {
+
+class NavigationHandle;
 
 // This class owns the set of NavigationThrottles added to a NavigationHandle.
 // It is responsible for calling the various sets of events on its
 // NavigationThrottle, and notifying its delegate of the results of said events.
-class CONTENT_EXPORT NavigationThrottleRunner {
+// TODO(https://crbug.com/412524375): Currently this class implements
+// NavigationThrottleRegistry, but this will be factored out to a separate
+// NavigationThrottleRegistryImpl class, and will hold common logic for the
+// legacy NavigationThrottleRunner, and the new NavigationThrottleRunner2.
+class CONTENT_EXPORT NavigationThrottleRunner
+    : public NavigationThrottleRegistry {
   // Do not remove this macro!
   // The macro is maintained by the memory safety team.
   ADVANCED_MEMORY_SAFETY_CHECKS();
@@ -62,7 +70,14 @@ class CONTENT_EXPORT NavigationThrottleRunner {
   NavigationThrottleRunner(const NavigationThrottleRunner&) = delete;
   NavigationThrottleRunner& operator=(const NavigationThrottleRunner&) = delete;
 
-  ~NavigationThrottleRunner();
+  ~NavigationThrottleRunner() override;
+
+  // Implements NavigationThrottleRegistry:
+  NavigationHandle& GetNavigationHandle() override;
+  void AddThrottle(
+      std::unique_ptr<NavigationThrottle> navigation_throttle) override;
+  void MaybeAddThrottle(
+      std::unique_ptr<NavigationThrottle> navigation_throttle) override;
 
   // Will call the appropriate NavigationThrottle function based on |event| on
   // all NavigationThrottles owned by this NavigationThrottleRunner.
@@ -93,11 +108,6 @@ class CONTENT_EXPORT NavigationThrottleRunner {
   // throttle at index |next_index_ -1|). If the handle is not deferred, returns
   // nullptr;
   NavigationThrottle* GetDeferringThrottle() const;
-
-  // Takes ownership of |navigation_throttle|. Following this call, any event
-  // processed by the NavigationThrottleRunner will be called on
-  // |navigation_throttle|.
-  void AddThrottle(std::unique_ptr<NavigationThrottle> navigation_throttle);
 
   void set_first_deferral_callback_for_testing(base::OnceClosure callback) {
     first_deferral_callback_for_testing_ = std::move(callback);

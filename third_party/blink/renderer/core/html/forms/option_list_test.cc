@@ -105,4 +105,21 @@ TEST_F(OptionListTest, RetreatBeforeBeginning) {
   EXPECT_FALSE(is_null);
 }
 
+TEST_F(OptionListTest, RetreatOverHRAndOptgroup) {
+  Select().setInnerHTML(R"HTML(
+    <option id=o1>one</option>
+    <hr>
+    <optgroup></optgroup>
+    <option id=o2>two</option>
+  )HTML");
+
+  OptionList list = Select().GetOptionList();
+  OptionList::Iterator it = list.begin();
+  EXPECT_EQ("o1", Id(*it));
+  ++it;
+  EXPECT_EQ("o2", Id(*it));
+  --it;
+  EXPECT_EQ("o1", Id(*it));
+}
+
 }  // naemespace blink

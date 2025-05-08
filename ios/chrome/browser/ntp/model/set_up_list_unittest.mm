@@ -232,7 +232,6 @@ TEST_F(SetUpListTest, BuildListWithAutofill) {
 TEST_F(SetUpListTest, BuildListWithNotifications_Tips) {
   [PushNotificationUtil
       updateAuthorizationStatusPref:UNAuthorizationStatusAuthorized];
-  feature_list_.InitAndEnableFeature(kIOSTipsNotifications);
   SetTipsNotificationsEnabled(false);
   BuildSetUpList();
   ExpectListToInclude(SetUpListItemType::kNotifications, NO);
@@ -354,7 +353,6 @@ TEST_F(SetUpListTest, ObservesPrefs) {
 // complete.
 TEST_F(SetUpListTest, AllItemsComplete) {
   base::HistogramTester histogram_tester;
-  feature_list_.InitAndEnableFeature(kIOSTipsNotifications);
   BuildSetUpList();
   EXPECT_FALSE([set_up_list_ allItemsComplete]);
   histogram_tester.ExpectBucketCount("IOS.SetUpList.AllItemsCompleted", true,
@@ -376,7 +374,6 @@ TEST_F(SetUpListTest, AllItemsComplete) {
 
 TEST_F(SetUpListTest, RecordsAllItemsCompleteOnce) {
   base::HistogramTester histogram_tester;
-  feature_list_.InitAndEnableFeature(kIOSTipsNotifications);
   BuildSetUpList();
   histogram_tester.ExpectBucketCount("IOS.SetUpList.AllItemsCompleted", true,
                                      0);
@@ -410,7 +407,6 @@ TEST_F(SetUpListTest, Disable) {
 
 // Tests that the Set Up List item order is correct with kMagicStack enabled.
 TEST_F(SetUpListTest, MagicStackItemOrder) {
-  feature_list_.InitWithFeatures({kIOSTipsNotifications}, {});
   BuildSetUpList();
 
   EXPECT_EQ(GetItemIndex(SetUpListItemType::kDefaultBrowser), 0u);

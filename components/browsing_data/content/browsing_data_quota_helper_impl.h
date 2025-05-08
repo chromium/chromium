@@ -42,8 +42,6 @@ class BrowsingDataQuotaHelperImpl : public BrowsingDataQuotaHelper {
       delete;
 
  private:
-  using PendingHosts =
-      std::set<std::pair<std::string, blink::mojom::StorageType>>;
   using QuotaInfoMap = std::map<blink::StorageKey, QuotaInfo>;
 
   ~BrowsingDataQuotaHelperImpl() override;

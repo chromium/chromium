@@ -3201,6 +3201,8 @@ extern "C" {
     pub fn arc4random() -> u32;
     pub fn arc4random_buf(buf: *mut c_void, nbytes: size_t);
     pub fn arc4random_uniform(upper_bound: u32) -> u32;
+
+    pub fn secure_getenv(name: *const c_char) -> *mut c_char;
 }
 
 #[link(name = "sendfile")]

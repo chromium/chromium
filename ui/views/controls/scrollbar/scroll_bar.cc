@@ -9,11 +9,10 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/containers/flat_map.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -517,9 +516,8 @@ ScrollBar::ScrollAmount ScrollBar::DetermineScrollAmountByKeyCode(
     return ScrollAmount::kNone;
   }
 
-  static const base::NoDestructor<
-      base::flat_map<ui::KeyboardCode, ScrollAmount>>
-      kMap({
+  static constexpr auto kMap =
+      base::MakeFixedFlatMap<ui::KeyboardCode, ScrollAmount>({
           {ui::VKEY_LEFT, ScrollAmount::kPrevLine},
           {ui::VKEY_RIGHT, ScrollAmount::kNextLine},
           {ui::VKEY_UP, ScrollAmount::kPrevLine},
@@ -530,8 +528,8 @@ ScrollBar::ScrollAmount ScrollBar::DetermineScrollAmountByKeyCode(
           {ui::VKEY_END, ScrollAmount::kEnd},
       });
 
-  const auto i = kMap->find(keycode);
-  return (i == kMap->end()) ? ScrollAmount::kNone : i->second;
+  const auto i = kMap.find(keycode);
+  return (i == kMap.end()) ? ScrollAmount::kNone : i->second;
 }
 
 std::optional<int> ScrollBar::GetDesiredScrollOffset(ScrollAmount amount) {

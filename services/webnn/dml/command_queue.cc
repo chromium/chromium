@@ -229,6 +229,22 @@ CommandQueue::GetQueuedObjectsForTesting() const {
   return queued_objects_;
 }
 
+HRESULT CommandQueue::WaitForFence(
+    Microsoft::WRL::ComPtr<ID3D12Fence> wait_fence,
+    uint64_t wait_fence_value) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  HRESULT hr = command_queue_->Wait(wait_fence.Get(), wait_fence_value);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "[WebNN] Failed to wait for fence : "
+               << logging::SystemErrorCodeToString(hr);
+    return hr;
+  }
+
+  // Keep the fence alive until the wait is satisfied.
+  ReferenceUntilCompleted(std::move(wait_fence));
+  return S_OK;
+}
+
 CommandQueue::QueuedObject::QueuedObject(uint64_t fence_value,
                                          ComPtr<IUnknown> object)
     : fence_value(fence_value), object(std::move(object)) {}

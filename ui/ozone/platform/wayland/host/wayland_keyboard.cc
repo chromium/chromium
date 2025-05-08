@@ -192,16 +192,31 @@ void WaylandKeyboard::OnUnhandledKeyEvent(const KeyEvent& key_event) {
   extended_keyboard_->AckKey(serial, false);
 }
 
-// Keyboard shortcuts will be inhibited only when in fullscreen
-// and when a WaylandKeyboardHook is in place for a given widget. See
-// KeyboardLock spec for more details: https://wicg.github.io/keyboard-lock
+// Keyboard shortcuts will be inhibited only when the following conditions are
+// met:
+// 1) A fullscreen window requested by the app is active.
+// 2) A WaylandKeyboardHook is in place for a given widget.
+// 3) Escape key is not requested as the only key (see comment below).
 //
-// TODO(crbug.com/40229635): Revisit once this scenario changes.
+// See KeyboardLock spec for more details: https://wicg.github.io/keyboard-lock
 std::unique_ptr<PlatformKeyboardHook> WaylandKeyboard::CreateKeyboardHook(
     WaylandWindow* window,
     std::optional<base::flat_set<DomCode>> dom_codes,
     PlatformKeyboardHook::KeyEventCallback callback) {
   DCHECK(window);
+  if (dom_codes.has_value() && dom_codes->size() == 1 &&
+      *dom_codes->begin() == DomCode::ESCAPE) {
+    // TODO(crbug.com/40270434): The protocol doesn't support locking specific
+    // keys [1]. So when a lock is active, all keys are locked.
+    // An exception can be made just for escape key since this is typically done
+    // to avoid exiting fullscreen mode only instead of locking any other keys.
+    // And since the key would still be received by the foreground window, there
+    // is really no need to use the protocol in this case, which would lock all
+    // keys, when in fact other shortcuts (e.g. Alt+Tab) should continue to be
+    // handled by the compositor.
+    // [1] https://gitlab.freedesktop.org/wayland/wayland-protocols/-/issues/131
+    return nullptr;
+  }
   return std::make_unique<WaylandKeyboardHook>(
       CreateShortcutsInhibitor(window));
 }

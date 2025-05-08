@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.webauthn;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -15,6 +16,7 @@ import org.chromium.content_public.browser.WebContentsStatics;
 
 import java.util.Optional;
 
+@NullMarked
 public class ChromeAuthenticatorFactory extends AuthenticatorFactory {
     public ChromeAuthenticatorFactory(RenderFrameHost renderFrameHost) {
         super(renderFrameHost, new ChromeAuthenticatorConfirmationFactory());

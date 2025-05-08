@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -525,8 +526,8 @@ void EventGenerator::GestureMultiFingerScrollWithDelays(
   CHECK_LE(count, kMaxTouchPoints);
   CHECK_GT(steps, 0);
 
-  gfx::Point points[kMaxTouchPoints];
-  gfx::Vector2d delta_per_step[kMaxTouchPoints];
+  std::array<gfx::Point, kMaxTouchPoints> points;
+  std::array<gfx::Vector2d, kMaxTouchPoints> delta_per_step;
   for (int i = 0; i < count; ++i) {
     points[i] = start[i];
     delta_per_step[i].set_x(delta[i].x() / steps);
@@ -534,9 +535,9 @@ void EventGenerator::GestureMultiFingerScrollWithDelays(
   }
 
   base::TimeTicks press_time_first = ui::EventTimeForNow();
-  base::TimeTicks press_time[kMaxTouchPoints];
-  base::TimeTicks release_time[kMaxTouchPoints];
-  bool pressed[kMaxTouchPoints];
+  std::array<base::TimeTicks, kMaxTouchPoints> press_time;
+  std::array<base::TimeTicks, kMaxTouchPoints> release_time;
+  std::array<bool, kMaxTouchPoints> pressed;
   for (int i = 0; i < count; ++i) {
     pressed[i] = false;
     press_time[i] =

@@ -251,7 +251,7 @@ const char kUserGestureRequiredPolicy[] = "user-gesture-required";
 
 }  // namespace autoplay
 
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 // Some (Qualcomm only at the moment) V4L2 video decoders require setting the
 // framerate so that the hardware decoder can scale the clocks efficiently.
 // This provides a mechanism during testing to lock the decoder framerate
@@ -269,14 +269,14 @@ const char kEnablePrimaryNodeAccessForVkmsTesting[] =
 
 const char kCastStreamingForceDisableHardwareH264[] =
     "cast-streaming-force-disable-hardware-h264";
-const char kCastStreamingForceDisableHardwareVp8[] =
-    "cast-streaming-force-disable-hardware-vp8";
-const char kCastStreamingForceDisableHardwareVp9[] =
-    "cast-streaming-force-disable-hardware-vp9";
 const char kCastStreamingForceEnableHardwareH264[] =
     "cast-streaming-force-enable-hardware-h264";
+const char kCastStreamingForceDisableHardwareVp8[] =
+    "cast-streaming-force-disable-hardware-vp8";
 const char kCastStreamingForceEnableHardwareVp8[] =
     "cast-streaming-force-enable-hardware-vp8";
+const char kCastStreamingForceDisableHardwareVp9[] =
+    "cast-streaming-force-disable-hardware-vp9";
 const char kCastStreamingForceEnableHardwareVp9[] =
     "cast-streaming-force-enable-hardware-vp9";
 
@@ -454,6 +454,13 @@ BASE_FEATURE(kContextMenuSearchForVideoFrame,
 BASE_FEATURE(kChromeWideEchoCancellation,
              "ChromeWideEchoCancellation",
              base::FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+BASE_FEATURE(kSystemLoopbackAsAecReference,
+             "SystemLoopbackAsAecReference",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kAddedProcessingDelay{
+    &kSystemLoopbackAsAecReference, "added_delay_ms", 100};
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #endif
 
 #if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
@@ -937,6 +944,8 @@ BASE_FEATURE(kFailUrlProvisionFetcherForTesting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables hardware secure decryption if supported by hardware and CDM.
+// NOTE: This feature is experimental and not officially supported. Users may
+// encounter issues; enabling is discouraged.
 // TODO(xhwang): Currently this is only used for development of new features.
 // Apply this to Android and ChromeOS as well where hardware secure decryption
 // is already available.
@@ -1119,13 +1128,12 @@ BASE_FEATURE(kBuiltInHlsPlayer,
 #endif
 );
 
-BASE_FEATURE(kBuiltInHlsMP4,
-             "BuiltInHlsMP4",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBuiltInHlsMP4, "BuiltInHlsMP4", base::FEATURE_ENABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+// TODO(crbug.com/414430336): Consider restricting to IS_CHROMEOS.
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 // Enable Variable Bitrate encoding with hardware accelerated encoders on
 // ChromeOS.
 BASE_FEATURE(kChromeOSHWVBREncoding,
@@ -1196,7 +1204,7 @@ BASE_FEATURE(kEnableArmHwdrm,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
 #if BUILDFLAG(IS_WIN)
 // Enables DirectShow GetPhotoState implementation
@@ -1554,6 +1562,10 @@ BASE_FEATURE(kCastStreamingExponentialVideoBitrateAlgorithm,
              "CastStreamingExponentialVideoBitrateAlgorithm",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCastStreamingHardwareHevc,
+             "CastStreamingHardwareHevc",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // TODO(crbug.com/282984511): Remove after M151.
 BASE_FEATURE(kCastStreamingMediaVideoEncoder,
              "CastStreamingMediaVideoEncoder",
@@ -1697,6 +1709,25 @@ bool IsChromeWideEchoCancellationEnabled() {
 #else
   return false;
 #endif
+}
+
+bool IsSystemLoopbackAsAecReferenceEnabled() {
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION) && \
+    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
+  return base::FeatureList::IsEnabled(kSystemLoopbackAsAecReference);
+#else
+  return false;
+#endif
+}
+
+std::optional<base::TimeDelta> GetAecAddedDelay() {
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION) && \
+    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
+  if (IsSystemLoopbackAsAecReferenceEnabled()) {
+    return base::Milliseconds(kAddedProcessingDelay.Get());
+  }
+#endif
+  return std::nullopt;
 }
 
 bool IsSystemEchoCancellationEnforced() {

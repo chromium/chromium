@@ -13,7 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -50,8 +50,10 @@ class CheckClientDownloadRequest : public CheckClientDownloadRequestBase,
   void OnDownloadDestroyed(download::DownloadItem* download) override;
   void OnDownloadUpdated(download::DownloadItem* download) override;
 
+  // Returns whether `item` is eligible for CheckClientDownloadRequest.
+  // Note: Behavior is platform-specific.
   static bool IsSupportedDownload(const download::DownloadItem& item,
-                                  const base::FilePath& target_path,
+                                  const base::FilePath& file_name,
                                   DownloadCheckResultReason* reason);
 
   download::DownloadItem* item() const override;

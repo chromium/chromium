@@ -131,6 +131,7 @@ Object: {
 			isPicture: boolean
 			loadingAttribute: string
 			nodeId: number
+			nodeName: string
 			srcHeight: number
 			srcWidth: number
 			srcsetAttribute: string
@@ -174,6 +175,7 @@ Object: {
 		data: {
 			frame: string
 			nodeId: number
+			nodeName: string
 		}
 	}
 	cat: string
@@ -245,6 +247,7 @@ Object: {
 				{
 					depth: number
 					nodeId: number
+					nodeName: string
 				}
 			]
 		}

@@ -316,10 +316,13 @@ HEADLESS_MODE_PROTOCOL_TEST(FullscreenRestoreWindow,
                             "sanity/fullscreen-restore-window.js")
 #endif  // !BUILDFLAG(IS_MAC)
 
+// This currently fails on Mac, see https://crbug.com/416088625
+#if !BUILDFLAG(IS_MAC)
 HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     MaximizedWindowSize,
     "sanity/maximized-window-size.js",
     "--screen-info={1600x1200}")
+#endif  // !BUILDFLAG(IS_MAC)
 
 // This currently fails on Mac, see https://crbug.com/1500046
 #if !BUILDFLAG(IS_MAC)
@@ -348,8 +351,6 @@ HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     "--ozone-override-screen-size=1234,5678")
 #endif
 
-// --screen-info switch is only supported on Linux and Windows at this time.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 // This currently results in an unexpected screen orientation type,
 // see http://crbug.com/398150465.
 HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
@@ -357,8 +358,15 @@ HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     "sanity/multiple-screen-details.js",
     "--screen-info={label=#1}{600x800 label='#2'}")
 
+// TODO(crbug.com/40283476): MoveWindowBetweenScreens is failing on Mac
+#if !BUILDFLAG(IS_MAC)
+#define MAYBE_MoveWindowBetweenScreens MoveWindowBetweenScreens
+#else
+#define MAYBE_MoveWindowBetweenScreens DISABLED_MoveWindowBetweenScreens
+#endif
+
 HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    MoveWindowBetweenScreens,
+    MAYBE_MoveWindowBetweenScreens,
     "sanity/move-window-between-screens.js",
     "--screen-info={label='#1'}{label='#2'}{0,600 label='#3'}{label='#4'}")
 
@@ -367,11 +375,16 @@ HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     "sanity/window-open-on-secondary-screen.js",
     "--screen-info={label='#1'}{label='#2'} --disable-popup-blocking")
 
+// TODO(crbug.com/40283476): CreateTargetSecondaryScreen is failing on Mac
+#if !BUILDFLAG(IS_MAC)
+#define MAYBE_CreateTargetSecondaryScreen CreateTargetSecondaryScreen
+#else
+#define MAYBE_CreateTargetSecondaryScreen DISABLED_CreateTargetSecondaryScreen
+#endif
+
 HEADLESS_MODE_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
-    CreateTargetSecondaryScreen,
+    MAYBE_CreateTargetSecondaryScreen,
     "sanity/create-target-secondary-screen.js",
     "--screen-info={label='#1'}{label='#2'}")
-
-#endif
 
 }  // namespace headless

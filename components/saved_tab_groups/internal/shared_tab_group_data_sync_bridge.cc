@@ -1227,9 +1227,8 @@ SharedTabGroupDataSyncBridge::AddGroupToLocalStorage(
     // tab strip, and associate its local group ID. This is currently prevented
     // by delaying observer calls in the TabGroupSyncService.
     StoreSharedGroup(write_batch, specifics, proto::LocalSharedTabGroupData());
-    bool use_originating_tab_group_guid =
-        collaboration_metadata.created_by() ==
-        GaiaId(change_processor()->TrackedAccountId());
+    bool use_originating_tab_group_guid = collaboration_metadata.created_by() ==
+                                          change_processor()->TrackedGaiaId();
     model_wrapper_->AddGroup(SpecificsToSharedTabGroup(
         specifics, collaboration_metadata, creation_time,
         use_originating_tab_group_guid));

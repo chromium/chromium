@@ -52,37 +52,22 @@ testSuite({
         DomControlRange.createFromBrowserRange(range));
   },
 
-  /** @suppress {missingProperties} suppression added to enable type checking */
-  testSelect() {
-    if (!userAgent.IE || userAgent.isVersionOrHigher('11')) {
-      return;
-    }
-
-    const range = DomControlRange.createFromElements(table);
-    range.select();
-
-    assertEquals(
-        'Control range should be selected', 'Control', document.selection.type);
-    assertEquals(
-        'Control range should have length 1', 1,
-        document.selection.createRange().length);
-    assertEquals(
-        'Control range should select table', table,
-        document.selection.createRange().item(0));
-  },
-
   /** @suppress {checkTypes} suppression added to enable type checking */
   testControlRangeIterator() {
     if (!userAgent.IE) {
       return;
     }
-    const range = DomControlRange.createFromElements(logo, table);
     // Each node is included twice - once as a start tag, once as an end.
-    testingDom.assertNodesMatch(range, [
+    const expectedContent = [
       '#logo', '#logo', '#table', '#tbody', '#tr1',   '#td11',  'a', '#td11',
       '#td12', 'b',     '#td12',  '#tr1',   '#tr2',   '#td21',  'c', '#td21',
       '#td22', 'd',     '#td22',  '#tr2',   '#tbody', '#table',
-    ]);
+    ];
+    testingDom.assertNodesMatch(
+        DomControlRange.createFromElements(logo, table), expectedContent, true);
+    testingDom.assertNodesMatch(
+        DomControlRange.createFromElements(logo, table), expectedContent,
+        false);
   },
 
   testBounds() {

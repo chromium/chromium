@@ -234,6 +234,10 @@ void AndroidAutofillProviderBridgeImpl::DetachFromJavaAutofillProvider(
   java_ref_.reset();
 }
 
+jboolean AndroidAutofillProviderBridgeImpl::HasPasskeyRequest(JNIEnv* env) {
+  return delegate_->HasPasskeyRequest();
+}
+
 void AndroidAutofillProviderBridgeImpl::OnAutofillAvailable(JNIEnv* env) {
   delegate_->OnAutofillAvailable();
 }
@@ -260,4 +264,9 @@ void AndroidAutofillProviderBridgeImpl::OnShowBottomSheetResult(
     jboolean provided_autofill_structure) {
   delegate_->OnShowBottomSheetResult(is_shown, provided_autofill_structure);
 }
+
+void AndroidAutofillProviderBridgeImpl::OnTriggerPasskeyRequest(JNIEnv* env) {
+  delegate_->OnTriggerPasskeyRequest();
+}
+
 }  // namespace autofill

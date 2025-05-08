@@ -684,7 +684,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                 mRecyclerView,
                 mMockViewHolder1,
                 0,
-                7,
+                10,
                 ItemTouchHelper.ACTION_STATE_DRAG,
                 true);
 

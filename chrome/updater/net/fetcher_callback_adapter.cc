@@ -58,12 +58,15 @@ class PostRequestObserverImpl : public mojom::PostRequestObserver {
       int32_t net_error,
       const std::string& header_etag,
       const std::string& header_x_cup_server_proof,
+      const std::string& header_cookie,
       std::optional<uint64_t> xheader_retry_after_sec) override {
     CHECK(post_request_complete_callback_)
         << __func__ << " is called without a valid callback. Was " << __func__
         << " called mulitple times?";
+
     std::move(post_request_complete_callback_)
         .Run(response_body, net_error, header_etag, header_x_cup_server_proof,
+             header_cookie,
              xheader_retry_after_sec
                  ? ToSignedIntegral(*xheader_retry_after_sec)
                  : -1);

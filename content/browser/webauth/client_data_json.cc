@@ -109,7 +109,8 @@ std::string BuildClientDataJson(ClientDataJsonParams params) {
     ret.append(R"(,"crossOrigin":false)");
   }
 
-  if (params.payment_options) {
+  if (params.payment_options &&
+      params.type == ClientDataRequestType::kPaymentGet) {
     ret.append(R"(,"payment":{)");
 
     ret.append(R"("rpId":)");
@@ -150,6 +151,13 @@ std::string BuildClientDataJson(ClientDataJsonParams params) {
       ret.append(ToJSONString(Base64UrlEncodeOmitPadding(
           *params.payment_options->browser_bound_public_key)));
     }
+    ret.append("}");
+  } else if (params.payment_options &&
+             params.payment_options->browser_bound_public_key.has_value() &&
+             params.type == ClientDataRequestType::kWebAuthnCreate) {
+    ret.append(R"(","payment":{"browserBoundPublicKey":)");
+    ret.append(ToJSONString(Base64UrlEncodeOmitPadding(
+        *params.payment_options->browser_bound_public_key)));
     ret.append("}");
   }
 

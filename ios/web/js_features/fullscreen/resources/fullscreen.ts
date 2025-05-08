@@ -6,7 +6,7 @@
  * @fileoverview Reports viewport details to the app.
  */
 
-import { getFrameId } from '//ios/web/public/js_messaging/resources/frame_id.js';
+import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
@@ -18,7 +18,7 @@ function reportViewportConfiguration() {
     const coverValue =
         viewportMeta.getAttribute('content')?.includes('viewport-fit=cover');
     sendWebKitMessage('FullscreenViewportHandler', {
-      'frame_id': getFrameId(),
+      'frame_id': gCrWeb.getFrameId(),
       'cover': coverValue,
     });
   }

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.merchant_viewer;
 
 import android.graphics.drawable.Drawable;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
@@ -14,6 +15,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.url.GURL;
 
 /** BottomSheetToolbar UI properties. */
+@NullMarked
 public class BottomSheetToolbarProperties {
     public static final WritableObjectPropertyKey<GURL> URL = new WritableObjectPropertyKey<>();
 

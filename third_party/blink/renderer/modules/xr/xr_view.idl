@@ -15,8 +15,6 @@ enum XREye {
     RuntimeEnabled=WebXR
 ] interface XRView {
   readonly attribute XREye eye;
-  readonly attribute Float32Array projectionMatrix;
-  [SameObject, ImplementedAs=refSpaceFromView] readonly attribute XRRigidTransform transform;
   readonly attribute double? recommendedViewportScale;
 
   // Added by the AR module.
@@ -28,3 +26,5 @@ enum XREye {
   [SameObject]
   readonly attribute XRCamera? camera;
 };
+
+XRView includes XRViewGeometry;

@@ -497,7 +497,6 @@ test("capture_unittests") {
     "//mojo/core/embedder",
     "//services/video_capture/public/mojom",
     "//services/video_effects/buildflags",
-    "//services/video_effects/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/libyuv:libyuv",
@@ -505,7 +504,10 @@ test("capture_unittests") {
   ]
 
   if (enable_video_effects) {
-    deps += [ "//components/viz/test:test_support" ]
+    deps += [
+      "//components/viz/test:test_support",
+      "//services/video_effects/test:test_support",
+    ]
   }
 
   if (is_linux) {

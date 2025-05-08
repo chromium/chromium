@@ -236,7 +236,8 @@ class MediaStreamConstraintsUtilVideoDeviceTest : public testing::Test {
     };
   }
 
-  static WTF::Vector<DoubleConstraint MediaTrackConstraintSetPlatform::*>
+  static WTF::Vector<
+      DoubleOrBooleanConstraint MediaTrackConstraintSetPlatform::*>
   PanTiltZoomConstraints() {
     return {
         &MediaTrackConstraintSetPlatform::pan,
@@ -1969,11 +1970,11 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, MandatoryPanTiltZoomRange) {
     EXPECT_EQ(low_res_device_->device_id.Utf8(), result.device_id());
     ASSERT_TRUE(result.image_capture_device_settings().has_value());
     if (constraint == &MediaTrackConstraintSetPlatform::pan) {
-      EXPECT_EQ(2, *result.image_capture_device_settings()->pan);
+      EXPECT_EQ(3, *result.image_capture_device_settings()->pan);
     } else if (constraint == &MediaTrackConstraintSetPlatform::tilt) {
-      EXPECT_EQ(2, *result.image_capture_device_settings()->tilt);
+      EXPECT_EQ(3, *result.image_capture_device_settings()->tilt);
     } else if (constraint == &MediaTrackConstraintSetPlatform::zoom) {
-      EXPECT_EQ(2, *result.image_capture_device_settings()->zoom);
+      EXPECT_EQ(3, *result.image_capture_device_settings()->zoom);
     }
   }
 }
@@ -2897,7 +2898,10 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, AdvancedPanTiltZoom) {
     ASSERT_TRUE(result.HasValue());
     EXPECT_EQ(default_device_->device_id.Utf8(), result.device_id());
     // The advanced set must be ignored because the device does not support PTZ.
-    EXPECT_FALSE(result.image_capture_device_settings().has_value());
+    EXPECT_FALSE(result.image_capture_device_settings().has_value() &&
+                 (result.image_capture_device_settings()->pan.has_value() ||
+                  result.image_capture_device_settings()->tilt.has_value() ||
+                  result.image_capture_device_settings()->zoom.has_value()));
   }
 }
 

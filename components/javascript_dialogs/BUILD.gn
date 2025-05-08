@@ -23,11 +23,10 @@ static_library("javascript_dialogs") {
 
   deps = [
     "//base",
-    "//base:i18n",
+    "//components/javascript_dialogs/core:util",
     "//components/navigation_metrics/",
     "//components/strings",
     "//components/ukm/content",
-    "//components/url_formatter",
     "//content/public/browser",
     "//content/public/common",
     "//net",
@@ -36,7 +35,6 @@ static_library("javascript_dialogs") {
     "//skia",
     "//ui/base",
     "//ui/gfx",
-    "//url:url",
   ]
 
   if (use_aura) {

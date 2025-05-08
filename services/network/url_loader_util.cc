@@ -5,6 +5,7 @@
 #include "services/network/url_loader_util.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/containers/enum_set.h"
 #include "base/containers/to_vector.h"
@@ -21,7 +22,10 @@
 #include "services/network/ad_heuristic_cookie_overrides.h"
 #include "services/network/attribution/attribution_request_helper.h"
 #include "services/network/chunked_data_pipe_upload_data_stream.h"
+#include "services/network/cookie_manager.h"
+#include "services/network/cookie_settings.h"
 #include "services/network/data_pipe_element_reader.h"
+#include "services/network/network_context.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/data_element.h"
@@ -33,10 +37,11 @@
 #include "services/network/public/cpp/sri_message_signatures.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/network_context.mojom-shared.h"
 #include "services/network/public/mojom/url_request.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/sec_header_helpers.h"
+#include "services/network/shared_resource_checker.h"
 
 namespace network::url_loader_util {
 
@@ -551,7 +556,8 @@ void MaybeRecordSharedDictionaryUsedResponseMetrics(
 void ConfigureUrlRequest(const ResourceRequest& request,
                          const mojom::URLLoaderFactoryParams& factory_params,
                          const cors::OriginAccessList& origin_access_list,
-                         net::URLRequest& url_request) {
+                         net::URLRequest& url_request,
+                         SharedResourceChecker& shared_resource_checker) {
   url_request.set_method(request.method);
   url_request.set_site_for_cookies(request.site_for_cookies);
   url_request.set_force_ignore_site_for_cookies(
@@ -571,7 +577,12 @@ void ConfigureUrlRequest(const ResourceRequest& request,
       factory_params.isolation_info,
       factory_params.automatically_assign_isolation_info, request);
   if (isolation_info) {
+    // set_isolation_info sets the url_request's cookie_partition_key which can
+    // then be used when checking IsSharedResource().
     url_request.set_isolation_info(std::move(isolation_info).value());
+    url_request.set_is_shared_resource(shared_resource_checker.IsSharedResource(
+        request, url_request.isolation_info().top_frame_origin(),
+        url_request.cookie_partition_key()));
   }
 
   // When a service worker forwards a navigation request it uses the
@@ -626,10 +637,10 @@ void ConfigureUrlRequest(const ResourceRequest& request,
   }
 
   SetFetchMetadataHeaders(
-      &url_request, request.mode,
+      url_request, request.mode,
       request.trusted_params && request.trusted_params->has_user_activation,
-      request.destination, nullptr, factory_params, origin_access_list,
-      request.credentials_mode);
+      request.destination, /*pending_redirect_url=*/std::nullopt,
+      factory_params, origin_access_list, request.credentials_mode);
 
   MaybeSetAcceptSignatureHeader(&url_request, request.expected_public_keys);
 

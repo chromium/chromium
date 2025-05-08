@@ -26,13 +26,6 @@ bool IsUserAllowedToUseLeakDetection(Profile* profile) {
          IdentityManagerFactory::GetForProfileIfExists(profile);
 }
 
-// Returns whether the effective value of the Safe Browsing preferences for
-// |profile| is standard protection.
-bool IsSafeBrowsingStandard(Profile* profile) {
-  return profile->GetPrefs()->GetBoolean(prefs::kSafeBrowsingEnabled) &&
-         !profile->GetPrefs()->GetBoolean(prefs::kSafeBrowsingEnhanced);
-}
-
 }  // namespace
 
 namespace settings_api = extensions::api::settings_private;
@@ -78,40 +71,17 @@ GeneratedPasswordLeakDetectionPref::SetPref(const base::Value* value) {
     return extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
   }
 
-  // Decouples password leak pref from standard safe browsing. Users now have
-  // free choice regardless of their protection level.
-  if (base::FeatureList::IsEnabled(safe_browsing::kPasswordLeakToggleMove)) {
-    if (!profile_->GetPrefs()
-             ->FindPreference(
-                 password_manager::prefs::kPasswordLeakDetectionEnabled)
-             ->IsUserModifiable() ||
-        !IsUserAllowedToUseLeakDetection(profile_)) {
-      return extensions::settings_private::SetPrefResult::PREF_NOT_MODIFIABLE;
-    }
-
-    profile_->GetPrefs()->SetBoolean(
-        password_manager::prefs::kPasswordLeakDetectionEnabled,
-        value->GetBool());
-    return extensions::settings_private::SetPrefResult::SUCCESS;
-  } else {
-    if (!IsSafeBrowsingStandard(profile_) ||
-        !IsUserAllowedToUseLeakDetection(profile_)) {
-      return extensions::settings_private::SetPrefResult::PREF_NOT_MODIFIABLE;
-    }
-
-    if (!profile_->GetPrefs()
-             ->FindPreference(
-                 password_manager::prefs::kPasswordLeakDetectionEnabled)
-             ->IsUserModifiable()) {
-      return extensions::settings_private::SetPrefResult::PREF_NOT_MODIFIABLE;
-    }
-
-    profile_->GetPrefs()->SetBoolean(
-        password_manager::prefs::kPasswordLeakDetectionEnabled,
-        value->GetBool());
-
-    return extensions::settings_private::SetPrefResult::SUCCESS;
+  if (!profile_->GetPrefs()
+           ->FindPreference(
+               password_manager::prefs::kPasswordLeakDetectionEnabled)
+           ->IsUserModifiable() ||
+      !IsUserAllowedToUseLeakDetection(profile_)) {
+    return extensions::settings_private::SetPrefResult::PREF_NOT_MODIFIABLE;
   }
+
+  profile_->GetPrefs()->SetBoolean(
+      password_manager::prefs::kPasswordLeakDetectionEnabled, value->GetBool());
+  return extensions::settings_private::SetPrefResult::SUCCESS;
 }
 
 settings_api::PrefObject GeneratedPasswordLeakDetectionPref::GetPrefObject()
@@ -124,14 +94,8 @@ settings_api::PrefObject GeneratedPasswordLeakDetectionPref::GetPrefObject()
   pref_object.type = settings_api::PrefType::kBoolean;
   pref_object.value = base::Value(backing_preference->GetValue()->GetBool() &&
                                   IsUserAllowedToUseLeakDetection(profile_));
-  if (base::FeatureList::IsEnabled(safe_browsing::kPasswordLeakToggleMove)) {
-    pref_object.user_control_disabled =
-        !IsUserAllowedToUseLeakDetection(profile_);
-  } else {
-    pref_object.user_control_disabled =
-        !IsSafeBrowsingStandard(profile_) ||
-        !IsUserAllowedToUseLeakDetection(profile_);
-  }
+  pref_object.user_control_disabled =
+      !IsUserAllowedToUseLeakDetection(profile_);
   if (!backing_preference->IsUserModifiable()) {
     pref_object.enforcement = settings_api::Enforcement::kEnforced;
     extensions::settings_private::GeneratedPref::ApplyControlledByFromPref(

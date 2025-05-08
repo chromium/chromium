@@ -167,9 +167,6 @@ std::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
       std::get_if<AttributionReport::AggregatableData>(&report.data());
   DCHECK(aggregatable_data);
 
-  std::vector<blink::mojom::AggregatableReportHistogramContribution>
-      contributions = aggregatable_data->contributions();
-
   const AttributionInfo& attribution_info = report.attribution_info();
 
   AggregatableReportSharedInfo::DebugMode debug_mode =
@@ -195,8 +192,7 @@ std::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
   return AggregatableReportRequest::Create(
       AggregationServicePayloadContents(
           AggregationServicePayloadContents::Operation::kHistogram,
-          std::move(contributions),
-          blink::mojom::AggregationServiceMode::kDefault,
+          aggregatable_data->contributions(),
           aggregatable_data->aggregation_coordinator_origin()
               ? std::make_optional(
                     **aggregatable_data->aggregation_coordinator_origin())

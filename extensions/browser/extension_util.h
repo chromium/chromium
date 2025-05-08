@@ -46,11 +46,11 @@ namespace util {
 // Returns true if the extension can be enabled in incognito mode.
 bool CanBeIncognitoEnabled(const Extension* extension);
 
-// Returns true if |extension_id| can run in an incognito window.
+// Returns true if `extension_id` can run in an incognito window.
 bool IsIncognitoEnabled(const ExtensionId& extension_id,
                         content::BrowserContext* context);
 
-// Returns true if |extension| can see events and data from another sub-profile
+// Returns true if `extension` can see events and data from another sub-profile
 // (incognito to original profile, or vice versa).
 bool CanCrossIncognito(const Extension* extension,
                        content::BrowserContext* context);
@@ -81,12 +81,12 @@ void InitExtensionSystemForIncognitoSplit(content::BrowserContext* context);
 bool AllowFileAccess(const ExtensionId& extension_id,
                      content::BrowserContext* context);
 
-// Returns the StoragePartition domain for |extension|.
-// Note: The reference returned has the same lifetime as |extension|.
+// Returns the StoragePartition domain for `extension`.
+// Note: The reference returned has the same lifetime as `extension`.
 const std::string& GetPartitionDomainForExtension(const Extension* extension);
 
 // Returns an extension specific StoragePartitionConfig if the extension
-// associated with |extension_id| has isolated storage.
+// associated with `extension_id` has isolated storage.
 // Otherwise, return the default StoragePartitionConfig.
 content::StoragePartitionConfig GetStoragePartitionConfigForExtensionId(
     const ExtensionId& extension_id,
@@ -102,10 +102,10 @@ content::ServiceWorkerContext* GetServiceWorkerContextForExtensionId(
     const ExtensionId& extension_id,
     content::BrowserContext* browser_context);
 
-// Maps a |file_url| to a |file_path| on the local filesystem, including
+// Maps a `file_url` to a `file_path` on the local filesystem, including
 // resources in extensions. Returns true on success. See NaClBrowserDelegate for
-// full details. If |use_blocking_api| is false, only a subset of URLs will be
-// handled. If |use_blocking_api| is true, blocking file operations may be used,
+// full details. If `use_blocking_api` is false, only a subset of URLs will be
+// handled. If `use_blocking_api` is true, blocking file operations may be used,
 // and this must be called on threads that allow blocking. Otherwise this can be
 // called on any thread.
 bool MapUrlToLocalFilePath(const ExtensionSet* extensions,
@@ -128,8 +128,8 @@ bool CanWithholdPermissionsFromExtension(
 // be keyed by strings instead.
 int GetBrowserContextId(content::BrowserContext* context);
 
-// Returns whether the |extension| should be loaded in the given
-// |browser_context|.
+// Returns whether the `extension` should be loaded in the given
+// `browser_context`.
 bool IsExtensionVisibleToContext(const Extension& extension,
                                  content::BrowserContext* browser_context);
 

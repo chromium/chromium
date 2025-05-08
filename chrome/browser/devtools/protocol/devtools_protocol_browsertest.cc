@@ -567,8 +567,7 @@ class DevToolsProtocolTest_BounceTrackingMitigations
   void SetUp() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{features::kBtm,
-                               {{"delete", "true"},
-                                {"triggering_action", "stateful_bounce"}}}},
+                               {{"triggering_action", "stateful_bounce"}}}},
         /*disabled_features=*/{});
 
     DevToolsProtocolTest::SetUp();
@@ -591,10 +590,10 @@ class DevToolsProtocolTest_BounceTrackingMitigations
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-testing::AssertionResult SimulateDipsBounce(content::WebContents* web_contents,
-                                            const GURL& initial_url,
-                                            const GURL& bounce_url,
-                                            const GURL& final_url) {
+testing::AssertionResult SimulateBtmBounce(content::WebContents* web_contents,
+                                           const GURL& initial_url,
+                                           const GURL& bounce_url,
+                                           const GURL& final_url) {
   web_contents = web_contents->OpenURL(
       content::OpenURLParams(initial_url, content::Referrer(),
                              WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -609,7 +608,7 @@ testing::AssertionResult SimulateDipsBounce(content::WebContents* web_contents,
     return testing::AssertionFailure() << "Failed to wait for loading to stop";
   }
 
-  content::BtmService* dips_service =
+  content::BtmService* btm_service =
       content::BtmService::Get(web_contents->GetBrowserContext());
   if (!content::NavigateToURLFromRenderer(web_contents, bounce_url)) {
     return testing::AssertionFailure()
@@ -626,7 +625,7 @@ testing::AssertionResult SimulateDipsBounce(content::WebContents* web_contents,
   }
   cookie_observer.Wait();
 
-  content::DipsRedirectChainObserver final_observer(dips_service, final_url);
+  content::BtmRedirectChainObserver final_observer(btm_service, final_url);
   if (!content::NavigateToURLFromRendererWithoutUserGesture(web_contents,
                                                             final_url)) {
     return testing::AssertionFailure() << "Failed to navigate to " << final_url;
@@ -675,7 +674,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_BounceTrackingMitigations,
       embedded_test_server()->GetURL("example.test", "/title1.html"));
 
   // Record a stateful bounce for `bouncer`.
-  ASSERT_TRUE(SimulateDipsBounce(
+  ASSERT_TRUE(SimulateBtmBounce(
       web_contents(), embedded_test_server()->GetURL("a.test", "/empty.html"),
       bouncer, embedded_test_server()->GetURL("b.test", "/empty.html")));
 
@@ -695,26 +694,22 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_BounceTrackingMitigations,
 
 class BtmStatusDevToolsProtocolTest
     : public DevToolsProtocolTest,
-      public testing::WithParamInterface<std::tuple<bool, bool, std::string>> {
+      public testing::WithParamInterface<std::tuple<bool, std::string>> {
   // The fields of `GetParam()` indicate/control the following:
   //   `std::get<0>(GetParam())` => `features::kBtm`
-  //   `std::get<1>(GetParam())` => `features::kBtmDeletionEnabled`
-  //   `std::get<2>(GetParam())` => `features::kBtmTriggeringAction`
+  //   `std::get<1>(GetParam())` => `features::kBtmTriggeringAction`
   //
   // In order for Bounce Tracking Mitigations to take effect, `features::kBtm`
-  // must be true/enabled, `kDeletionEnabled` must be true, and
-  // `kTriggeringAction` must NOT be `none`.
+  // must be enabled, and `features::kTriggeringAction` must NOT be none.
   //
   // Note: Bounce Tracking Mitigations issues only report sites that would
-  // be affected when `kTriggeringAction` is set to 'stateful_bounce'.
+  // be affected when `features::kTriggeringAction` is set to stateful_bounce.
 
  protected:
   void SetUp() override {
     if (std::get<0>(GetParam())) {
       scoped_feature_list_.InitAndEnableFeatureWithParameters(
-          features::kBtm,
-          {{"delete", base::ToString((std::get<1>(GetParam())))},
-           {"triggering_action", std::get<2>(GetParam())}});
+          features::kBtm, {{"triggering_action", std::get<1>(GetParam())}});
     } else {
       scoped_feature_list_.InitAndDisableFeature(features::kBtm);
     }
@@ -723,8 +718,7 @@ class BtmStatusDevToolsProtocolTest
   }
 
   bool ShouldBeEnabled() {
-    return (std::get<0>(GetParam()) && std::get<1>(GetParam()) &&
-            (std::get<2>(GetParam()) != "none"));
+    return (std::get<0>(GetParam()) && (std::get<1>(GetParam()) != "none"));
   }
 
  private:
@@ -735,10 +729,10 @@ IN_PROC_BROWSER_TEST_P(BtmStatusDevToolsProtocolTest,
                        TrueWhenEnabledAndDeleting) {
   AttachToBrowserTarget();
 
-  base::Value::Dict paramsDIPS;
-  paramsDIPS.Set("featureState", "DIPS");
+  base::Value::Dict btm_params;
+  btm_params.Set("featureState", "DIPS");
 
-  SendCommand("SystemInfo.getFeatureState", std::move(paramsDIPS));
+  SendCommand("SystemInfo.getFeatureState", std::move(btm_params));
   EXPECT_EQ(result()->FindBool("featureEnabled"), ShouldBeEnabled());
 }
 
@@ -746,7 +740,6 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     BtmStatusDevToolsProtocolTest,
     ::testing::Combine(
-        ::testing::Bool(),
         ::testing::Bool(),
         ::testing::Values("none", "storage", "bounce", "stateful_bounce")));
 
@@ -1620,12 +1613,12 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsOverrideTest,
                        PrivacySandboxEnrollmentOverride) {
   Attach();
 
-  base::Value::Dict paramsDIPS;
+  base::Value::Dict btm_params;
   const std::string attestation_url = "https://google.com";
-  paramsDIPS.Set("url", attestation_url);
+  btm_params.Set("url", attestation_url);
 
   SendCommand("Browser.addPrivacySandboxEnrollmentOverride",
-              std::move(paramsDIPS));
+              std::move(btm_params));
 
   EXPECT_TRUE(
       privacy_sandbox::PrivacySandboxAttestations::GetInstance()->IsOverridden(
@@ -1636,12 +1629,12 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsOverrideTest,
                        PrivacySandboxEnrollmentOverrideInvalidUrl) {
   Attach();
 
-  base::Value::Dict paramsDIPS;
+  base::Value::Dict btm_params;
   const std::string attestation_url = "this is a bad url";
-  paramsDIPS.Set("url", attestation_url);
+  btm_params.Set("url", attestation_url);
 
   SendCommand("Browser.addPrivacySandboxEnrollmentOverride",
-              std::move(paramsDIPS));
+              std::move(btm_params));
 
   EXPECT_TRUE(error());
   EXPECT_FALSE(

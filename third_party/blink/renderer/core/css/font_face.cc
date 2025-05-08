@@ -401,7 +401,8 @@ void FontFace::SetPropertyFromString(const ExecutionContext* context,
     return;
   }
 
-  String message = "Failed to set '" + s + "' as a property value.";
+  String message =
+      WTF::StrCat({"Failed to set '", s, "' as a property value."});
   if (exception_state) {
     exception_state->ThrowDOMException(DOMExceptionCode::kSyntaxError, message);
   } else {
@@ -922,7 +923,7 @@ void FontFace::InitCSSFontFace(ExecutionContext* context,
       context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kOther,
           mojom::blink::ConsoleMessageLevel::kWarning,
-          "OTS parsing error: " + ots_parse_message_));
+          WTF::StrCat({"OTS parsing error: ", ots_parse_message_})));
     }
     SetError(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kSyntaxError, "Invalid font data in ArrayBuffer."));

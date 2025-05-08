@@ -276,10 +276,8 @@ class ModelHandler : public OptimizationTargetModelObserver {
 
   // Validates that the model info's metadata is of the same type and is
   // parseable as |T|. Will return metadata if all checks pass.
-  template <
-      class T,
-      class = typename std::enable_if<
-          std::is_convertible<T*, google::protobuf::MessageLite*>{}>::type>
+  template <class T>
+    requires(std::is_convertible_v<T*, google::protobuf::MessageLite*>)
   std::optional<T> ParsedSupportedFeaturesForLoadedModel() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (!model_info_ || !model_info_->GetModelMetadata())

@@ -504,7 +504,7 @@ void WebStateImpl::RealizedWebState::ShowRepostFormWarningDialog(
 }
 
 void WebStateImpl::RealizedWebState::RunJavaScriptAlertDialog(
-    const GURL& origin_url,
+    const url::Origin& origin,
     NSString* message_text,
     base::OnceClosure callback) {
   JavaScriptDialogPresenter* presenter =
@@ -516,12 +516,12 @@ void WebStateImpl::RealizedWebState::RunJavaScriptAlertDialog(
 
   running_javascript_dialog_ = true;
   presenter->RunJavaScriptAlertDialog(
-      owner_, origin_url, message_text,
+      owner_, origin, message_text,
       WrapCallbackForJavaScriptDialog(std::move(callback)));
 }
 
 void WebStateImpl::RealizedWebState::RunJavaScriptConfirmDialog(
-    const GURL& origin_url,
+    const url::Origin& origin,
     NSString* message_text,
     base::OnceCallback<void(bool success)> callback) {
   JavaScriptDialogPresenter* presenter =
@@ -533,12 +533,12 @@ void WebStateImpl::RealizedWebState::RunJavaScriptConfirmDialog(
 
   running_javascript_dialog_ = true;
   presenter->RunJavaScriptConfirmDialog(
-      owner_, origin_url, message_text,
+      owner_, origin, message_text,
       WrapCallbackForJavaScriptDialog(std::move(callback)));
 }
 
 void WebStateImpl::RealizedWebState::RunJavaScriptPromptDialog(
-    const GURL& origin_url,
+    const url::Origin& origin,
     NSString* message_text,
     NSString* default_prompt_text,
     base::OnceCallback<void(NSString* user_input)> callback) {
@@ -551,7 +551,7 @@ void WebStateImpl::RealizedWebState::RunJavaScriptPromptDialog(
 
   running_javascript_dialog_ = true;
   presenter->RunJavaScriptPromptDialog(
-      owner_, origin_url, message_text, default_prompt_text,
+      owner_, origin, message_text, default_prompt_text,
       WrapCallbackForJavaScriptDialog(std::move(callback)));
 }
 

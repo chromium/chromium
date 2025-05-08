@@ -91,8 +91,7 @@ NOINLINE TrustTokenDatabaseOwner::TrustTokenDatabaseOwner(
       db_task_runner_(db_task_runner),
       backing_database_(std::make_unique<sql::Database>(
           sql::DatabaseOptions()
-              .set_preload(base::FeatureList::IsEnabled(
-                  sql::features::kPreOpenPreloadDatabase))
+              .set_preload(true)
               // TODO(pwnall): Add a meta table and remove this option.
               .set_mmap_alt_status_discouraged(true)
               .set_enable_views_discouraged(
@@ -152,11 +151,6 @@ void TrustTokenDatabaseOwner::InitializeMembersOnDbSequence(
   }
 
   DCHECK(!backing_database_ || backing_database_->is_open());
-
-  if (backing_database_ &&
-      !base::FeatureList::IsEnabled(sql::features::kPreOpenPreloadDatabase)) {
-    backing_database_->Preload();
-  }
 
   table_manager_->InitializeOnDbSequence(
       backing_database_.get(),

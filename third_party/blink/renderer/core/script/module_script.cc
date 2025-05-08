@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/bindings/core/v8/boxed_v8_module.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -25,7 +26,7 @@
 namespace blink {
 
 ModuleScript::ModuleScript(Modulator* settings_object,
-                           v8::Local<v8::Module> record,
+                           v8::Local<v8::Data> record,
                            const KURL& source_url,
                            const KURL& base_url,
                            const ScriptFetchOptions& fetch_options,
@@ -49,8 +50,22 @@ v8::Local<v8::Module> ModuleScript::V8Module() const {
     return v8::Local<v8::Module>();
   }
   v8::Isolate* isolate = settings_object_->GetScriptState()->GetIsolate();
+  return record_.Get(isolate).As<v8::Module>();
+}
 
-  return record_.Get(isolate);
+BoxedV8Module* ModuleScript::BoxModuleRecord() const {
+  CHECK(!record_.IsEmpty());
+  v8::Isolate* isolate = settings_object_->GetScriptState()->GetIsolate();
+  return MakeGarbageCollected<BoxedV8Module>(
+      isolate, record_.Get(isolate).As<v8::Module>());
+}
+
+Vector<ModuleRequest> ModuleScript::GetModuleRecordRequests() const {
+  CHECK(!record_.IsEmpty());
+  v8::Isolate* isolate = settings_object_->GetScriptState()->GetIsolate();
+  v8::Local<v8::Module> record = record_.Get(isolate).As<v8::Module>();
+  return ModuleRecord::ModuleRequests(settings_object_->GetScriptState(),
+                                      record);
 }
 
 bool ModuleScript::HasEmptyRecord() const {

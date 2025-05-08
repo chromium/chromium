@@ -13,15 +13,11 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 
-import java.util.concurrent.FutureTask;
-
 /**
- * Implements the Java side of LocationProviderAndroid.
- * Delegates all real functionality to the implementation
- * returned from LocationProviderFactory.
- * See detailed documentation on
- * content/browser/geolocation/location_api_adapter_android.h.
- * Based on android.webkit.GeolocationService.java
+ * Implements the Java side of LocationProviderAndroid. Delegates all real functionality to the
+ * implementation returned from LocationProviderFactory. See detailed documentation on
+ * content/browser/geolocation/location_api_adapter_android.h. Based on
+ * android.webkit.GeolocationService.java
  */
 @NullMarked
 public class LocationProviderAdapter {
@@ -41,35 +37,18 @@ public class LocationProviderAdapter {
 
     /**
      * Start listening for location updates until we're told to quit. May be called in any thread.
+     *
      * @param enableHighAccuracy Whether or not to enable high accuracy location providers.
      */
     @CalledByNative
     public void start(final boolean enableHighAccuracy) {
-        FutureTask<Void> task =
-                new FutureTask<Void>(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                mImpl.start(enableHighAccuracy);
-                            }
-                        },
-                        null);
-        ThreadUtils.runOnUiThread(task);
+        ThreadUtils.runOnUiThread(() -> mImpl.start(enableHighAccuracy));
     }
 
     /** Stop listening for location updates. May be called in any thread. */
     @CalledByNative
     public void stop() {
-        FutureTask<Void> task =
-                new FutureTask<Void>(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                mImpl.stop();
-                            }
-                        },
-                        null);
-        ThreadUtils.runOnUiThread(task);
+        ThreadUtils.runOnUiThread(mImpl::stop);
     }
 
     /**

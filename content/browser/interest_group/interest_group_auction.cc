@@ -62,6 +62,7 @@
 #include "content/browser/interest_group/bidding_and_auction_response.h"
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
 #include "content/browser/interest_group/for_debugging_only_report_util.h"
+#include "content/browser/interest_group/group_by_origin_key.h"
 #include "content/browser/interest_group/header_direct_from_seller_signals.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
 #include "content/browser/interest_group/interest_group_caching_storage.h"
@@ -380,9 +381,9 @@ struct BidStatesDescByPriority {
 struct BidStatesDescByPriorityAndGroupByJoinOrigin {
   bool operator()(const std::unique_ptr<InterestGroupAuction::BidState>& a,
                   const std::unique_ptr<InterestGroupAuction::BidState>& b) {
-    return std::tie(a->calculated_priority, a->bidder->joining_origin,
+    return std::tie(a->calculated_priority, a->group_by_origin_id,
                     a->bidder->interest_group.execution_mode) >
-           std::tie(b->calculated_priority, b->bidder->joining_origin,
+           std::tie(b->calculated_priority, b->group_by_origin_id,
                     b->bidder->interest_group.execution_mode);
   }
 };
@@ -897,6 +898,46 @@ void TakeDebugReportUrlsForLosingBidState(
   }
 }
 
+void TakeServerFilteredDebugReportUrls(
+    std::map<url::Origin, std::vector<GURL>>&
+        server_filtered_debugging_only_reports,
+    std::optional<DebugReportLockoutAndCooldowns>&
+        debug_report_lockout_and_cooldowns,
+    DebugReportLockoutAndCooldowns& new_debug_report_lockout_and_cooldowns,
+    std::vector<GURL>& debug_loss_report_urls) {
+  base::Time now = base::Time::Now();
+  base::Time now_nearest_next_hour = base::Time::FromDeltaSinceWindowsEpoch(
+      now.ToDeltaSinceWindowsEpoch().CeilToMultiple(base::Hours(1)));
+  // For server filtered fDO reports from a B&A auction.
+  for (const auto& [origin, reportUrls] :
+       server_filtered_debugging_only_reports) {
+    if (reportUrls.empty()) {
+      if (!IsOriginInDebugReportCooldownOrLockout(
+              origin, debug_report_lockout_and_cooldowns, now) &&
+          !IsOriginInDebugReportCooldownOrLockout(
+              origin, new_debug_report_lockout_and_cooldowns, now)) {
+        UpdateDebugReportCooldown(origin,
+                                  new_debug_report_lockout_and_cooldowns,
+                                  now_nearest_next_hour);
+      }
+      continue;
+    }
+    for (const auto& report : reportUrls) {
+      // Server filtered debug reports have been sampled on B&A servers already,
+      // so do not run sampling on client again for these reports.
+      if (KeepDebugReport(origin, /*is_from_server_response=*/true,
+                          debug_report_lockout_and_cooldowns,
+                          new_debug_report_lockout_and_cooldowns)) {
+        // For server filtered ones, post auction signals should have been
+        // filled on the server side. And as a result, for server filtered ones,
+        // there's no difference if they go to loss or win lists, since the
+        // difference was post auction signals.
+        debug_loss_report_urls.emplace_back(report);
+      }
+    }
+  }
+}
+
 // Adds debug reporting URLs for `bid_state` to `debug_win_report_urls` and
 // `debug_loss_report_urls`, if there are any, filling in report URL template
 // parameters as needed. The URLs are moved away from `bid_state`.
@@ -935,9 +976,6 @@ void TakeDebugReportUrlsForBidState(
     DebugReportLockoutAndCooldowns& new_debug_report_lockout_and_cooldowns,
     std::vector<GURL>& debug_win_report_urls,
     std::vector<GURL>& debug_loss_report_urls) {
-  base::Time now = base::Time::Now();
-  base::Time now_nearest_next_hour = base::Time::FromDeltaSinceWindowsEpoch(
-      now.ToDeltaSinceWindowsEpoch().CeilToMultiple(base::Hours(1)));
   // TODO(qingxinwu): Give bidder's and seller's debug report the same chance to
   // be kept after sampling. Bidder's debug report is sampled before seller's,
   // giving bidder's report a higher chance to be kept (especially when the
@@ -954,34 +992,10 @@ void TakeDebugReportUrlsForBidState(
         new_debug_report_lockout_and_cooldowns, debug_loss_report_urls);
   }
 
-  // For server filtered fDO reports from a B&A auction.
-  for (const auto& [origin, reportUrls] :
-       bid_state->server_filtered_debugging_only_reports) {
-    if (reportUrls.empty()) {
-      if (!IsOriginInDebugReportCooldownOrLockout(
-              origin, debug_report_lockout_and_cooldowns, now) &&
-          !IsOriginInDebugReportCooldownOrLockout(
-              origin, new_debug_report_lockout_and_cooldowns, now)) {
-        UpdateDebugReportCooldown(origin,
-                                  new_debug_report_lockout_and_cooldowns,
-                                  now_nearest_next_hour);
-      }
-      continue;
-    }
-    for (const auto& report : reportUrls) {
-      // Server filtered debug reports have been sampled on B&A servers already,
-      // so do not run sampling on client again for these reports.
-      if (KeepDebugReport(origin, /*is_from_server_response=*/true,
-                          debug_report_lockout_and_cooldowns,
-                          new_debug_report_lockout_and_cooldowns)) {
-        // For server filtered ones, post auction signals should have been
-        // filled on the server side. And as a result, for server filtered ones,
-        // there's no difference if they go to loss or win lists, since the
-        // difference was post auction signals.
-        debug_loss_report_urls.emplace_back(report);
-      }
-    }
-  }
+  TakeServerFilteredDebugReportUrls(
+      bid_state->server_filtered_debugging_only_reports,
+      debug_report_lockout_and_cooldowns,
+      new_debug_report_lockout_and_cooldowns, debug_loss_report_urls);
 }
 
 // Retrieves the timeout from `buyer_timeouts` associated with `buyer`, if any.
@@ -2289,6 +2303,10 @@ class InterestGroupAuction::BuyerHelper
           true;
     }
 
+    bid_state->group_by_origin_id =
+        bid_state->worklet_handle->GetGroupByOriginKeyMapper()
+            .LookupGroupByOriginId(bid_state->bidder);
+
     bool browser_signal_for_debugging_only_sampling = ShouldSampleDebugReport();
     bid_state->worklet_handle->GetBidderWorklet()->BeginGenerateBid(
         auction_worklet::mojom::BidderWorkletNonSharedParams::New(
@@ -2314,7 +2332,8 @@ class InterestGroupAuction::BuyerHelper
         browser_signal_for_debugging_only_sampling,
         bid_state->bidder->bidding_browser_signals.Clone(),
         auction_->auction_start_time_, auction_->RequestedAdSize(),
-        multi_bid_limit_, *bid_state->trace_id, std::move(pending_remote),
+        multi_bid_limit_, bid_state->group_by_origin_id, *bid_state->trace_id,
+        std::move(pending_remote),
         bid_state->bid_finalizer.BindNewEndpointAndPassReceiver());
 
     // TODO(morlovich): This should arguably be merged into BeginGenerateBid
@@ -2372,7 +2391,8 @@ class InterestGroupAuction::BuyerHelper
                 *interest_group.trusted_bidding_signals_url,
                 *interest_group.trusted_bidding_signals_coordinator,
                 interest_group.trusted_bidding_signals_keys,
-                std::move(additional_params), partition_id);
+                std::move(additional_params),
+                auction_->GetBuyerTKVSignals(owner_), partition_id);
     return auction_worklet::mojom::TrustedSignalsCacheKey::New(
         bid_state.bidding_signals_handle->compression_group_token(),
         partition_id);
@@ -4179,8 +4199,6 @@ bool InterestGroupAuction::ReportPaBuyersValueIfAllowed(
               base::saturated_cast<int32_t>(
                   std::max(0.0, value * report_buyers_config->scale)),
               /*filtering_id=*/std::nullopt),
-          // TODO(caraitto): Consider allowing this to be set.
-          blink::mojom::AggregationServiceMode::kDefault,
           std::move(debug_mode_details),
           /*error_event=*/std::nullopt));
   return true;
@@ -4770,6 +4788,21 @@ uint16_t InterestGroupAuction::GetBuyerMultiBidLimit(const url::Origin& buyer) {
     val = it->second;
   }
   return std::max(val, uint16_t{1});
+}
+
+std::optional<std::string> InterestGroupAuction::GetBuyerTKVSignals(
+    const url::Origin& owner) const {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kFledgeTrustedSignalsKVv2ContextualData)) {
+    return std::nullopt;
+  }
+
+  auto it = config_->non_shared_params.per_buyer_tkv_signals.find(owner);
+  if (it != config_->non_shared_params.per_buyer_tkv_signals.end()) {
+    return it->second;
+  }
+
+  return std::nullopt;
 }
 
 std::optional<uint16_t> InterestGroupAuction::GetBuyerExperimentId(
@@ -5666,7 +5699,7 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
                 bid->interest_group->owner,
                 bid->bid_state->bidder->joining_origin, bid->ad_descriptor.url,
                 bid->GetAdComponentUrls(), std::move(additional_params),
-                partition_id);
+                /*seller_tkv_signals=*/std::nullopt, partition_id);
     cache_key = auction_worklet::mojom::TrustedSignalsCacheKey::New(
         cache_handle->compression_group_token(), partition_id);
   }
@@ -6561,7 +6594,7 @@ void InterestGroupAuction::OnLoadedGhostWinnerGroupImpl(
 }
 
 void InterestGroupAuction::MaybeLoadDebugReportLockoutAndCooldowns() {
-  if (saved_response_->result == AuctionResult::kSuccess &&
+  if (saved_response_->result != AuctionResult::kInvalidServerResponse &&
       base::FeatureList::IsEnabled(
           blink::features::kFledgeSampleDebugReports) &&
       !server_auction_debug_report_lockout_loaded_) {
@@ -6747,6 +6780,26 @@ void InterestGroupAuction::CreateBidFromServerResponse() {
                          /*bid_in_seller_currency=*/std::nullopt,
                          /*scoring_signals_data_version=*/std::nullopt,
                          non_kanon_enforced_auction_leader_);
+  }
+
+  if (buyer_helpers_.empty() &&
+      saved_response_->result != AuctionResult::kInvalidServerResponse) {
+    // When there's no winner, we still need to collect loss forDebuggingOnly
+    // reports, and private aggregation contributions.
+    TakeServerFilteredDebugReportUrls(
+        saved_response_->server_filtered_debugging_only_reports,
+        debug_report_lockout_and_cooldowns_,
+        new_debug_report_lockout_and_cooldowns_, debug_loss_report_urls_);
+    saved_response_->server_filtered_debugging_only_reports.clear();
+
+    for (auto& [key, requests] :
+         saved_response_->server_filtered_pagg_requests_reserved) {
+      FinalizedPrivateAggregationRequests& destination_vector =
+          private_aggregation_requests_reserved_[key];
+      destination_vector.insert(destination_vector.end(),
+                                std::move_iterator(requests.begin()),
+                                std::move_iterator(requests.end()));
+    }
   }
 }
 

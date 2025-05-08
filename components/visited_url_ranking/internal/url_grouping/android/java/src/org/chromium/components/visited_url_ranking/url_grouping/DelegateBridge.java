@@ -47,7 +47,10 @@ public class DelegateBridge {
             } else {
                 suggestion_id = groupSuggestions.groupSuggestions.get(0).suggestionId;
             }
-            callback.onResult(new UserResponseMetadata(suggestion_id, UserResponse.NOT_SHOWN));
+            // TODO(crbug.com/397221723): Only return REJECTED when create_suggestions_promotion_ui
+            // is disabled; currently having no Java delegates means that
+            // create_suggestions_promotion_ui is disabled.
+            callback.onResult(new UserResponseMetadata(suggestion_id, UserResponse.REJECTED));
             return;
         }
         for (GroupSuggestionsService.Delegate javaDelegate : mJavaDelegates) {

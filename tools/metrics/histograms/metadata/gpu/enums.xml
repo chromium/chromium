@@ -434,6 +434,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="kVideoConference"/>
   <int value="4" label="kOnlyAnimatingImage"/>
   <int value="5" label="kOnlyScrollBarFadeOut"/>
+  <int value="6" label="kUserInputBoost"/>
+  <int value="7" label="kSlowScrollThrottle"/>
 </enum>
 
 <enum name="GLImplementation">

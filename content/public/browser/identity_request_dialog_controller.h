@@ -102,6 +102,7 @@ class CONTENT_EXPORT IdentityProviderData
                        const IdentityProviderMetadata& idp_metadata,
                        const ClientMetadata& client_metadata,
                        blink::mojom::RpContext rp_context,
+                       std::optional<blink::mojom::Format> format,
                        const std::vector<IdentityRequestDialogDisclosureField>&
                            disclosure_fields,
                        bool has_login_status_mismatch);
@@ -110,6 +111,7 @@ class CONTENT_EXPORT IdentityProviderData
   IdentityProviderMetadata idp_metadata;
   ClientMetadata client_metadata;
   blink::mojom::RpContext rp_context;
+  std::optional<blink::mojom::Format> format;
   // For which fields should the dialog request permission for (assuming
   // this is for signup).
   std::vector<IdentityRequestDialogDisclosureField> disclosure_fields;

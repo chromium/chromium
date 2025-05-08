@@ -65,8 +65,8 @@ class SyncableSettingsStorage : public value_store::ValueStore {
 
   // Starts syncing this storage area. Must only be called if sync isn't
   // already active.
-  // |sync_state| is the current state of the extension settings in sync.
-  // |sync_processor| is used to write out any changes.
+  // `sync_state` is the current state of the extension settings in sync.
+  // `sync_processor` is used to write out any changes.
   // Returns any error when trying to sync, or std::nullopt on success.
   std::optional<syncer::ModelError> StartSyncing(
       base::Value::Dict sync_state,
@@ -82,7 +82,7 @@ class SyncableSettingsStorage : public value_store::ValueStore {
       std::unique_ptr<SettingSyncDataList> sync_changes);
 
  private:
-  // Sends the changes from |result| to sync if it's enabled.
+  // Sends the changes from `result` to sync if it's enabled.
   void SyncResultIfEnabled(const value_store::ValueStore::WriteResult& result);
 
   // Analyze the result returned by a call to the delegate, and take appropriate

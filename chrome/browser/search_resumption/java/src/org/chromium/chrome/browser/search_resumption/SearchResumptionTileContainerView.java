@@ -13,9 +13,11 @@ import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.widget.LinearLayout;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** The view for the section of a set of search suggestions on the search resumption module. */
+@NullMarked
 public class SearchResumptionTileContainerView extends LinearLayout {
     private static final int ANIMATION_DURATION_MS = 200;
 

@@ -390,6 +390,9 @@ public class AuxiliarySearchDonorUnitTest {
         mAuxiliarySearchDonor.onSetSchemaResponseAvailable(setSchemaResponse);
         assertNull(mAuxiliarySearchDonor.getPendingDocumentsForTesting());
         assertTrue(mAuxiliarySearchDonor.getIsSchemaSetForTesting());
+        assertEquals(
+                AuxiliarySearchUtils.CURRENT_SCHEMA_VERSION,
+                AuxiliarySearchUtils.getSchemaVersion());
     }
 
     @Test
@@ -460,6 +463,7 @@ public class AuxiliarySearchDonorUnitTest {
         mAuxiliarySearchDonor.resetSchemaSetForTesting();
         SharedPreferencesManager chromeSharedPreferences = ChromeSharedPreferences.getInstance();
         chromeSharedPreferences.writeBoolean(key, true);
+        AuxiliarySearchUtils.setSchemaVersion(AuxiliarySearchUtils.CURRENT_SCHEMA_VERSION);
         assertFalse(mAuxiliarySearchDonor.getIsSchemaSetForTesting());
 
         // Verifies that #onConsumerSchemaSearchedImpl() returns false, i.e., not to set the schema
@@ -506,6 +510,7 @@ public class AuxiliarySearchDonorUnitTest {
     public void testOnConsumerSchemaSearchedImpl() {
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET, true);
+        AuxiliarySearchUtils.setSchemaVersion(AuxiliarySearchUtils.CURRENT_SCHEMA_VERSION);
         Callback<Boolean> callback = Mockito.mock(Callback.class);
         mAuxiliarySearchDonor.setPendingCallbackForTesting(callback);
 
@@ -532,6 +537,20 @@ public class AuxiliarySearchDonorUnitTest {
         // AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND is set to be true.
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET, false);
+        assertTrue(mAuxiliarySearchDonor.onConsumerSchemaSearchedImpl(/* success= */ true));
+        assertTrue(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(
+                                ChromePreferenceKeys.AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND,
+                                false));
+
+        // Verifies that onConsumerSchemaSearchedImpl() returns true to set the schema if the
+        // AUXILIARY_SEARCH_SCHEMA_VERSION doesn't match the CURRENT_SCHEMA_VERSION.
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET, true);
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.AUXILIARY_SEARCH_SCHEMA_VERSION);
+        assertEquals(0, AuxiliarySearchUtils.getSchemaVersion());
         assertTrue(mAuxiliarySearchDonor.onConsumerSchemaSearchedImpl(/* success= */ true));
         assertTrue(
                 ChromeSharedPreferences.getInstance()
@@ -664,6 +683,7 @@ public class AuxiliarySearchDonorUnitTest {
         SharedPreferencesManager chromeSharedPreferences = ChromeSharedPreferences.getInstance();
         String key = ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET;
         chromeSharedPreferences.writeBoolean(key, true);
+        AuxiliarySearchUtils.setSchemaVersion(AuxiliarySearchUtils.CURRENT_SCHEMA_VERSION);
         assertFalse(mAuxiliarySearchDonor.getIsSchemaSetForTesting());
 
         // Verifies that |mIsSchemaSet| checks the key for schema V1.

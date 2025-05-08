@@ -17,6 +17,7 @@
 #include "cc/layers/append_quads_data.h"
 #include "cc/tiles/tiling_set_coverage_iterator.h"
 #include "cc/trees/layer_tree_impl.h"
+#include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 
@@ -47,19 +48,19 @@ TileDisplayLayerImpl::TileResource::operator=(const TileResource&) = default;
 
 TileDisplayLayerImpl::TileResource::~TileResource() = default;
 
-TileDisplayLayerImpl::Tile::Tile() = default;
-
-TileDisplayLayerImpl::Tile::Tile(const TileContents& contents)
-    : contents_(contents) {
+TileDisplayLayerImpl::Tile::Tile(TileDisplayLayerImpl& layer,
+                                 const TileContents& contents)
+    : layer_(layer), contents_(contents) {
   DCHECK(!std::holds_alternative<NoContents>(contents_));
 }
 
 TileDisplayLayerImpl::Tile::Tile(Tile&&) = default;
 
-TileDisplayLayerImpl::Tile& TileDisplayLayerImpl::Tile::operator=(Tile&&) =
-    default;
-
-TileDisplayLayerImpl::Tile::~Tile() = default;
+TileDisplayLayerImpl::Tile::~Tile() {
+  if (auto* resource = std::get_if<TileResource>(&contents_)) {
+    layer_->DiscardResource(resource->resource.id);
+  }
+}
 
 TileDisplayLayerImpl::Tiling::Tiling(TileDisplayLayerImpl& layer,
                                      float scale_key)
@@ -102,8 +103,8 @@ void TileDisplayLayerImpl::Tiling::SetTilingRect(const gfx::Rect& rect) {
 
 void TileDisplayLayerImpl::Tiling::SetTileContents(const TileIndex& key,
                                                    const TileContents& contents,
-                                                   bool is_incremental_update) {
-  if (is_incremental_update) {
+                                                   bool update_damage) {
+  if (update_damage) {
     // Full tree updates receive damage as part of the LayerImpl::update_rect.
     // For incremental tile updates on an Active tree, we need to record the
     // damage caused by each tile change.
@@ -126,16 +127,8 @@ void TileDisplayLayerImpl::Tiling::SetTileContents(const TileIndex& key,
     if (auto* resource = std::get_if<TileResource>(&contents)) {
       layer_->ImportResource(resource->resource);
     }
-    old_tile = std::exchange(tiles_[key], std::make_unique<Tile>(contents));
-  }
-
-  if (old_tile) {
-    if (auto* resource = std::get_if<TileResource>(&old_tile->contents())) {
-      // As of now, this will mark only one resource discarded at a time.
-      // TODO(vikassoni): Optimize to discard resources in batch. This will
-      // eventually trigger less IPCs back to the Renderer.
-      layer_->DiscardResource(resource->resource.id);
-    }
+    old_tile =
+        std::exchange(tiles_[key], std::make_unique<Tile>(*layer_, contents));
   }
 }
 
@@ -145,10 +138,8 @@ TileDisplayLayerImpl::Tiling::Cover(const gfx::Rect& coverage_rect,
   return DisplayTilingCoverageIterator(this, coverage_scale, coverage_rect);
 }
 
-TileDisplayLayerImpl::TileDisplayLayerImpl(Client& client,
-                                           LayerTreeImpl& tree,
-                                           int id)
-    : LayerImpl(&tree, id), client_(client) {}
+TileDisplayLayerImpl::TileDisplayLayerImpl(LayerTreeImpl& tree, int id)
+    : LayerImpl(&tree, id) {}
 
 TileDisplayLayerImpl::~TileDisplayLayerImpl() = default;
 
@@ -166,6 +157,16 @@ TileDisplayLayerImpl::GetOrCreateTilingFromScaleKey(float scale_key) {
   Tiling& tiling = *tilings_.back();
   std::sort(tilings_.begin(), tilings_.end(), TilingOrder());
   return tiling;
+}
+
+void TileDisplayLayerImpl::RemoveTiling(float scale_key) {
+  auto it = std::find_if(tilings_.begin(), tilings_.end(),
+                         [scale_key](const auto& tiling) {
+                           return tiling->contents_scale_key() == scale_key;
+                         });
+  if (it != tilings_.end()) {
+    tilings_.erase(it);
+  }
 }
 
 mojom::LayerType TileDisplayLayerImpl::GetLayerType() const {
@@ -195,7 +196,7 @@ void TileDisplayLayerImpl::AppendQuads(const AppendQuadsContext& context,
   }
 
   const float max_contents_scale =
-      tilings_.empty() ? 1.0f : tilings_.back()->contents_scale_key();
+      tilings_.empty() ? 1.0f : tilings_.front()->contents_scale_key();
 
   // If this layer is used as a backdrop filter, don't create and append a quad
   // as that will be done in RenderSurfaceImpl::AppendQuads.
@@ -314,7 +315,7 @@ void TileDisplayLayerImpl::GetContentsResourceId(
   CHECK_EQ(tilings_.size(), 1u);
 
   const float max_contents_scale =
-      tilings_.empty() ? 1.0f : tilings_.back()->contents_scale_key();
+      tilings_.empty() ? 1.0f : tilings_.front()->contents_scale_key();
   gfx::Rect content_rect =
       gfx::ScaleToEnclosingRect(gfx::Rect(bounds()), max_contents_scale);
   const auto ideal_scale = GetIdealContentsScale();
@@ -349,11 +350,26 @@ void TileDisplayLayerImpl::RecordDamage(const gfx::Rect& damage_rect) {
 }
 
 void TileDisplayLayerImpl::DiscardResource(viz::ResourceId resource) {
-  client_->DiscardResource(std::move(resource));
+  layer_tree_impl()->host_impl()->resource_provider()->RemoveImportedResource(
+      std::move(resource));
 }
 
 void TileDisplayLayerImpl::ImportResource(viz::TransferableResource resource) {
-  client_->ImportResource(std::move(resource));
+  // Note that using LayerTreeHostImpl* is safe since LayerTreeHostImpl owns
+  // ClientResourceProvider and hence oulives it.
+  auto release_callback = base::BindOnce(
+      [](LayerTreeHostImpl* host_impl, viz::ResourceId id,
+         const gpu::SyncToken& sync_token, bool is_lost) {
+        host_impl->ReturnResource({id, sync_token,
+                                   /*release_fence=*/gfx::GpuFenceHandle(),
+                                   /*count=*/1, is_lost});
+      },
+      layer_tree_impl()->host_impl(), resource.id);
+
+  layer_tree_impl()->host_impl()->resource_provider()->ImportResource(
+      resource, /*impl_release_callback=*/std::move(release_callback),
+      /*main_thread_release_callback=*/base::NullCallback(),
+      /*evicted_callback=*/base::NullCallback());
 }
 
 }  // namespace cc

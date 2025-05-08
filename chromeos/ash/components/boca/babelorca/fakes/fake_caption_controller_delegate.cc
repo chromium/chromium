@@ -32,12 +32,14 @@ class FakeCaptionBubbleController : public captions::CaptionBubbleController {
     delegate_->SetCaptionBubbleDestroyed();
   }
 
-  bool OnTranscription(captions::CaptionBubbleContext*,
+  bool OnTranscription(content::WebContents*,
+                       captions::CaptionBubbleContext*,
                        const media::SpeechRecognitionResult& result) override {
     return delegate_->AddTranscription(result);
   }
 
   void OnLanguageIdentificationEvent(
+      content::WebContents*,
       captions::CaptionBubbleContext*,
       const media::mojom::LanguageIdentificationEventPtr&) override {
     delegate_->OnLanguageIdentificationEvent();
@@ -56,7 +58,8 @@ class FakeCaptionBubbleController : public captions::CaptionBubbleController {
   bool IsGenericErrorMessageVisibleForTesting() override { return false; }
   std::string GetBubbleLabelTextForTesting() override { return std::string(); }
   void CloseActiveModelForTesting() override {}
-  void OnAudioStreamEnd(captions::CaptionBubbleContext*) override {}
+  void OnAudioStreamEnd(content::WebContents*,
+                        captions::CaptionBubbleContext*) override {}
 
  private:
   raw_ptr<FakeCaptionControllerDelegate> delegate_;

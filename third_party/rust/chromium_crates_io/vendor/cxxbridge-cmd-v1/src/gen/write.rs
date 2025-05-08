@@ -95,7 +95,7 @@ fn write_data_structures<'a>(out: &mut OutFile<'a>, apis: &'a [Api]) {
     let mut methods_for_type = Map::new();
     for api in apis {
         if let Api::CxxFunction(efn) | Api::RustFunction(efn) = api {
-            if let Some(receiver) = &efn.sig.receiver {
+            if let Some(receiver) = &efn.receiver {
                 methods_for_type
                     .entry(&receiver.ty.rust)
                     .or_insert_with(Vec::new)
@@ -986,7 +986,7 @@ fn write_rust_function_decl_impl(
 
 fn write_rust_function_shim<'a>(out: &mut OutFile<'a>, efn: &'a ExternFn) {
     out.set_namespace(&efn.name.namespace);
-    let local_name = match &efn.sig.receiver {
+    let local_name = match &efn.receiver {
         None => efn.name.cxx.to_string(),
         Some(receiver) => format!(
             "{}::{}",

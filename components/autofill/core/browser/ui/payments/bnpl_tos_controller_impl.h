@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_BNPL_TOS_CONTROLLER_IMPL_H_
 
 #include "base/functional/callback.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -35,7 +36,7 @@ class BnplTosControllerImpl : public BnplTosController {
   TextWithLink GetLinkText() const override;
   const LegalMessageLines& GetLegalMessageLines() const override;
   AccountInfo GetAccountInfo() const override;
-  const std::string& GetIssuerId() const override;
+  BnplIssuer::IssuerId GetIssuerId() const override;
   base::WeakPtr<BnplTosController> GetWeakPtr() override;
 
   // Show the BNPL ToS view. `create_and_show_view_callback` will be invoked

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_adapter_info.h"
 
 #include "third_party/blink/renderer/modules/webgpu/gpu_memory_heap_info.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_subgroup_matrix_config.h"
 
 namespace blink {
 
@@ -37,6 +38,11 @@ GPUAdapterInfo::GPUAdapterInfo(const String& vendor,
 
 void GPUAdapterInfo::AppendMemoryHeapInfo(GPUMemoryHeapInfo* info) {
   memory_heaps_.push_back(info);
+}
+
+void GPUAdapterInfo::AppendSubgroupMatrixConfig(
+    GPUSubgroupMatrixConfig* config) {
+  subgroup_matrix_configs_.push_back(config);
 }
 
 const String& GPUAdapterInfo::vendor() const {
@@ -84,6 +90,11 @@ const HeapVector<Member<GPUMemoryHeapInfo>>& GPUAdapterInfo::memoryHeaps()
   return memory_heaps_;
 }
 
+const HeapVector<Member<GPUSubgroupMatrixConfig>>&
+GPUAdapterInfo::subgroupMatrixConfigs() const {
+  return subgroup_matrix_configs_;
+}
+
 const std::optional<uint32_t>& GPUAdapterInfo::d3dShaderModel() const {
   return d3d_shader_model_;
 }
@@ -98,6 +109,7 @@ const String& GPUAdapterInfo::powerPreference() const {
 
 void GPUAdapterInfo::Trace(Visitor* visitor) const {
   visitor->Trace(memory_heaps_);
+  visitor->Trace(subgroup_matrix_configs_);
   ScriptWrappable::Trace(visitor);
 }
 

@@ -41,7 +41,9 @@
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
 #include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
 #include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
+#include "content/services/auction_worklet/public/cpp/creative_info.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
+#include "content/services/auction_worklet/public/mojom/in_progress_auction_download.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "content/services/auction_worklet/real_time_reporting_bindings.h"
@@ -455,7 +457,7 @@ SellerWorklet::SellerWorklet(
     mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
         auction_network_events_handler,
     TrustedSignalsKVv2Manager* trusted_signals_kvv2_manager,
-    const GURL& decision_logic_url,
+    mojom::InProgressAuctionDownloadPtr decision_logic_load,
     const std::optional<GURL>& trusted_scoring_signals_url,
     const url::Origin& top_window_origin,
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
@@ -467,7 +469,8 @@ SellerWorklet::SellerWorklet(
         load_seller_worklet_client)
     : url_loader_factory_(std::move(pending_url_loader_factory)),
       trusted_signals_kvv2_manager_(trusted_signals_kvv2_manager),
-      script_source_url_(decision_logic_url),
+      script_source_url_(decision_logic_load->url),
+      script_source_load_(std::move(decision_logic_load)),
       send_creative_scanning_metadata_(send_creative_scanning_metadata),
       trusted_scoring_signals_origin_(
           trusted_scoring_signals_url ? std::make_optional(url::Origin::Create(
@@ -491,7 +494,7 @@ SellerWorklet::SellerWorklet(
     v8_state_.push_back(std::unique_ptr<V8State, base::OnTaskRunnerDeleter>(
         new V8State(
             v8_helpers_[i], debug_ids_[i], std::move(shared_storage_hosts[i]),
-            decision_logic_url, trusted_scoring_signals_url,
+            script_source_url_, trusted_scoring_signals_url,
             trusted_scoring_signals_origin_, top_window_origin,
             permissions_policy_state->Clone(), experiment_group_id,
             send_creative_scanning_metadata, weak_ptr_factory_.GetWeakPtr()),
@@ -2057,7 +2060,7 @@ void SellerWorklet::Start() {
       url_loader_factory_.get(), /*auction_network_events_handler=*/
       CreateNewAuctionNetworkEventsHandlerRemote(
           auction_network_events_handler_),
-      script_source_url_, v8_helpers_, debug_ids_,
+      std::move(script_source_load_), v8_helpers_, debug_ids_,
       std::move(on_got_cross_origin_signals_permissions),
       base::BindOnce(&SellerWorklet::OnDownloadComplete,
                      base::Unretained(this)));
@@ -2209,11 +2212,11 @@ void SellerWorklet::StartFetchingSignalsForTask(
       send_creative_scanning_metadata_.value_or(false) &&
       !trusted_signals_request_manager_->HasPublicKey();
 
-  TrustedSignals::CreativeInfo main_ad(
+  CreativeInfo main_ad(
       send_creative_scanning_metadata, *score_ad_task->ad,
       score_ad_task->browser_signal_interest_group_owner,
       score_ad_task->browser_signal_buyer_and_seller_reporting_id);
-  std::set<TrustedSignals::CreativeInfo> component_ads;
+  std::set<CreativeInfo> component_ads;
   for (const auto& component : score_ad_task->ad_components) {
     component_ads.emplace(
         send_creative_scanning_metadata, *component,

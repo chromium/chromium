@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "services/network/shared_dictionary/shared_dictionary_on_disk.h"
 
 #include "base/run_loop.h"
@@ -113,7 +108,7 @@ TEST(SharedDictionaryOnDiskTest, AsyncOpenEntryAsyncReadData) {
       .Run(disk_cache::EntryResult::MakeOpened(entry.release()));
   ASSERT_TRUE(buffer);
   ASSERT_TRUE(read_all_callback);
-  memcpy(buffer->data(), kTestData.c_str(), kTestData.size());
+  buffer->span().copy_prefix_from(base::as_byte_span(kTestData));
   std::move(read_all_callback).Run(base::checked_cast<int>(expected_size));
   EXPECT_TRUE(read_all_finished);
   EXPECT_EQ(kTestData,
@@ -173,7 +168,7 @@ TEST(SharedDictionaryOnDiskTest, SyncOpenEntryAsyncReadData) {
 
   ASSERT_TRUE(buffer);
   ASSERT_TRUE(read_all_callback);
-  memcpy(buffer->data(), kTestData.c_str(), kTestData.size());
+  buffer->span().copy_prefix_from(base::as_byte_span(kTestData));
   std::move(read_all_callback).Run(base::checked_cast<int>(expected_size));
   EXPECT_TRUE(read_all_finished);
   EXPECT_EQ(kTestData,
@@ -214,7 +209,7 @@ TEST(SharedDictionaryOnDiskTest, AsyncOpenEntrySyncReadData) {
         EXPECT_EQ(1, index);
         EXPECT_EQ(0, offset);
         EXPECT_EQ(base::checked_cast<int>(expected_size), buf_len);
-        memcpy(buf->data(), kTestData.c_str(), kTestData.size());
+        buf->span().copy_prefix_from(base::as_byte_span(kTestData));
         return base::checked_cast<int>(expected_size);
       });
 
@@ -264,7 +259,7 @@ TEST(SharedDictionaryOnDiskTest, SyncOpenEntrySyncReadData) {
         EXPECT_EQ(1, index);
         EXPECT_EQ(0, offset);
         EXPECT_EQ(base::checked_cast<int>(expected_size), buf_len);
-        memcpy(buf->data(), kTestData.c_str(), kTestData.size());
+        buf->span().copy_prefix_from(base::as_byte_span(kTestData));
         return base::checked_cast<int>(expected_size);
       });
 

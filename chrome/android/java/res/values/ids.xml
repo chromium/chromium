@@ -28,6 +28,7 @@ found in the LICENSE file.
 
     <!-- Sync UI constants -->
     <item type="id" name="passphrase_type_list" />
+    <item type="id" name="history_and_tabs_toggle"/>
 
     <!-- Keyboard shortcuts -->
     <item type="id" name="print_id" />
@@ -39,6 +40,7 @@ found in the LICENSE file.
     <item type="id" name="switch_keyboard_focus_row" />
     <item type="id" name="focus_bookmarks" />
     <item type="id" name="dev_tools" />
+    <item type="id" name="esc_key" />
 
     <!-- Editor dialog -->
     <item type="id" name="editor_dialog_done_button" />
@@ -71,6 +73,7 @@ found in the LICENSE file.
     <item type="id" name="contextmenu_share_link" />
     <item type="id" name="contextmenu_direct_share_link" />
     <item type="id" name="contextmenu_read_later" />
+    <item type="id" name="contextmenu_show_interest_in_element" />
 
     <!--Image Group -->
     <item type="id" name="contextmenu_load_original_image" />

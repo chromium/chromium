@@ -110,7 +110,7 @@ class ReportSchedulerIOSTest : public PlatformTest {
     params.delegate = report_delegate_factory_.GetReportSchedulerDelegate();
     params.report_generator = std::move(generator_ptr_);
     scheduler_ = std::make_unique<ReportScheduler>(std::move(params));
-    scheduler_->SetReportUploaderForTesting(std::move(uploader_ptr_));
+    scheduler_->QueueReportUploaderForTesting(std::move(uploader_ptr_));
   }
 
   void SetLastUploadInHour(base::TimeDelta gap) {

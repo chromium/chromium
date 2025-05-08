@@ -158,6 +158,10 @@ std::vector<LoyaltyCard> ValuablesTable::GetLoyaltyCards() const {
 
 bool ValuablesTable::SetLoyaltyCards(
     const std::vector<LoyaltyCard>& loyalty_cards) const {
+  sql::Transaction transaction(db());
+  if (!transaction.Begin()) {
+    return false;
+  }
   // Remove the existing set of loyalty cards.
   bool response = Delete(db(), kLoyaltyCardsTable);
   response &= Delete(db(), kLoyaltyCardMerchantDomainTable);
@@ -196,6 +200,7 @@ bool ValuablesTable::SetLoyaltyCards(
       response &= insert_card_merchant_domains.Run();
     }
   }
+  transaction.Commit();
   return response;
 }
 

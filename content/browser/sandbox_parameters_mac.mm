@@ -108,7 +108,7 @@ void SetupCommonSandboxParameters(
   CHECK(
       serializer->SetParameter(sandbox::policy::kParamBundlePath, bundle_path));
 
-  std::string bundle_id = base::apple::BaseBundleID();
+  std::string bundle_id(base::apple::BaseBundleID());
   DCHECK(!bundle_id.empty()) << "base::apple::OuterBundle is unset";
   CHECK(serializer->SetParameter(sandbox::policy::kParamBundleId, bundle_id));
 

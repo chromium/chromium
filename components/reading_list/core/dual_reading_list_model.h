@@ -16,7 +16,7 @@
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
-#include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "url/gurl.h"
 
 namespace reading_list {
@@ -64,7 +64,7 @@ class DualReadingListModel : public ReadingListModel,
   scoped_refptr<const ReadingListEntry> GetEntryByURL(
       const GURL& gurl) const override;
   bool IsUrlSupported(const GURL& url) override;
-  CoreAccountId GetAccountWhereEntryIsSavedTo(const GURL& url) override;
+  GaiaId GetAccountWhereEntryIsSavedTo(const GURL& url) override;
   bool NeedsExplicitUploadToSyncServer(const GURL& url) const override;
   void MarkAllForUploadToSyncServerIfNeeded() override;
   const ReadingListEntry& AddOrReplaceEntry(
@@ -136,6 +136,12 @@ class DualReadingListModel : public ReadingListModel,
   // Note: This should only be called if `account_model_` is the one used for
   // sync.
   base::flat_set<GURL> GetKeysThatNeedUploadToSyncServer() const;
+
+  // Uploads entries corresponding to `keys` that required upload to sync
+  // server. The upload itself may take long to complete (depending on network
+  // connectivity and many other factors).
+  void MarkEntriesForUploadToSyncServerIfNeeded(
+      const base::flat_set<GURL>& keys);
 
   StorageStateForTesting GetStorageStateForURLForTesting(const GURL& url);
 

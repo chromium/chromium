@@ -137,11 +137,11 @@ goog.testing.DeferredTestCase.prototype.waitForDeferred = function(a, opt_b) {
   var deferred;
   switch (arguments.length) {
     case 1:
-      deferred = a;
+      deferred = /** @type {!goog.async.Deferred} */ (a);
       waitMsg = null;
       break;
     case 2:
-      deferred = opt_b;
+      deferred = /** @type {!goog.async.Deferred} */ (opt_b);
       waitMsg = a;
       break;
     default:  // Shouldn't be here in compiled mode

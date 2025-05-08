@@ -41,9 +41,18 @@ class MediaCapturePickerDialogBridge {
             MediaCapturePickerDialogCallback callback);
 
   // Called from Java via JNI when the dialog resolves.
-  void OnResult(JNIEnv* env,
-                const base::android::JavaParamRef<jobject>& java_web_contents,
-                bool audio_share);
+  void OnPickTab(JNIEnv* env,
+                 const base::android::JavaParamRef<jobject>& java_web_contents,
+                 bool audio_share);
+
+  // Called from Java via JNI when the dialog resolves.
+  void OnPickWindow(JNIEnv* env);
+
+  // Called from Java via JNI when the dialog resolves.
+  void OnPickScreen(JNIEnv* env);
+
+  // Called from Java via JNI when the dialog resolves.
+  void OnCancel(JNIEnv* env);
 
  private:
   MediaCapturePickerDialogCallback callback_;

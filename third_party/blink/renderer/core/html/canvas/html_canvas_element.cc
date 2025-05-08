@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_encode_options.h"
 #include "third_party/blink/renderer/core/canvas_interventions/canvas_interventions_helper.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
+#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -383,6 +384,9 @@ void HTMLCanvasElement::ParseAttribute(
       params.name == html_names::kHeightAttr) {
     Reset();
   }
+  if (params.name == html_names::kLayoutsubtreeAttr) {
+    setLayoutSubtree(EqualIgnoringASCIICase(params.new_value, "true"));
+  }
   HTMLElement::ParseAttribute(params);
 }
 
@@ -430,6 +434,25 @@ void HTMLCanvasElement::setWidth(unsigned value,
     SetUnsignedIntegralAttribute(html_names::kWidthAttr, value,
                                  kDefaultCanvasWidth);
   }
+}
+
+void HTMLCanvasElement::setLayoutSubtree(bool value) {
+  if (layoutSubtree() == value) {
+    return;
+  }
+
+  SetBooleanAttribute(html_names::kLayoutsubtreeAttr, value);
+  SetNeedsStyleRecalc(
+      kSubtreeStyleChange,
+      StyleChangeReasonForTracing::Create(style_change_reason::kAttribute));
+  SetForceReattachLayoutTree();
+  if (auto* object = GetLayoutObject()) {
+    object->SetNeedsLayout(layout_invalidation_reason::kAttributeChanged);
+  }
+}
+
+bool HTMLCanvasElement::layoutSubtree() const {
+  return FastHasAttribute(html_names::kLayoutsubtreeAttr);
 }
 
 void HTMLCanvasElement::SetSize(gfx::Size new_size) {
@@ -895,8 +918,9 @@ void HTMLCanvasElement::Reset() {
 }
 
 bool HTMLCanvasElement::PaintsIntoCanvasBuffer() const {
-  if (OffscreenCanvasFrame())
+  if (HasOffscreenCanvasFrame()) {
     return false;
+  }
   DCHECK(context_);
   if (!context_->IsComposited())
     return true;
@@ -1037,18 +1061,21 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
 
   // FIXME: crbug.com/438240; there is a bug with the new CSS blending and
   // compositing feature.
-  if (!context_ && !OffscreenCanvasFrame())
+  if (!context_ && !HasOffscreenCanvasFrame()) {
     return;
+  }
 
   // If the canvas is gpu composited, it has another way of getting to screen
   if (!PaintsIntoCanvasBuffer()) {
     // For click-and-drag or printing we still want to draw
-    if (!(flatten_composited_layers || GetDocument().Printing()))
+    if (!(flatten_composited_layers ||
+          GetDocument().IsPrintingOrPaintingPreview())) {
       return;
+    }
   }
 
-  if (OffscreenCanvasFrame()) {
-    DCHECK(GetDocument().Printing());
+  if (HasOffscreenCanvasFrame()) {
+    DCHECK(GetDocument().IsPrintingOrPaintingPreview());
     scoped_refptr<StaticBitmapImage> image_for_printing =
         OffscreenCanvasFrame()->Bitmap()->MakeUnaccelerated();
     if (!image_for_printing)
@@ -1187,7 +1214,7 @@ scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
   }
 
   scoped_refptr<StaticBitmapImage> image_bitmap;
-  if (OffscreenCanvasFrame()) {  // Offscreen Canvas
+  if (HasOffscreenCanvasFrame()) {  // Offscreen Canvas
     DCHECK(OffscreenCanvasFrame()->OriginClean());
     image_bitmap = OffscreenCanvasFrame()->Bitmap();
   } else if (IsWebGL()) {
@@ -1196,26 +1223,8 @@ scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
       if (ResourceProvider())
         image_bitmap = ResourceProvider()->Snapshot(reason);
     } else {
-      sk_sp<SkData> pixel_data =
-          context_->PaintRenderingResultsToRGBADataArray(source_buffer);
-      if (pixel_data) {
-        // If the accelerated canvas is too big, there is a logic in WebGL code
-        // path that scales down the drawing buffer to the maximum supported
-        // size. Hence, we need to query the adjusted size of DrawingBuffer.
-        gfx::Size adjusted_size = context_->DrawingBufferSize();
-        if (!adjusted_size.IsEmpty()) {
-          image_bitmap = StaticBitmapImage::Create(
-              std::move(pixel_data),
-              SkImageInfo::Make(
-                  SkISize::Make(adjusted_size.width(), adjusted_size.height()),
-                  (GetRenderingContextFormat() ==
-                   viz::SinglePlaneFormat::kRGBA_F16)
-                      ? kRGBA_F16_SkColorType
-                      : kRGBA_8888_SkColorType,
-                  kUnpremul_SkAlphaType,
-                  GetRenderingContextColorSpace().ToSkColorSpace()));
-        }
-      }
+      image_bitmap =
+          context_->GetRGBAUnacceleratedStaticBitmapImage(source_buffer);
     }
   } else if (context_) {
     DCHECK(IsRenderingContext2D() || IsImageBitmapRenderingContext() ||
@@ -1440,8 +1449,9 @@ bool HTMLCanvasElement::OriginClean() const {
       GetDocument().GetSettings()->GetDisableReadingFromCanvas()) {
     return false;
   }
-  if (OffscreenCanvasFrame())
+  if (HasOffscreenCanvasFrame()) {
     return OffscreenCanvasFrame()->OriginClean();
+  }
   return origin_clean_;
 }
 
@@ -1809,7 +1819,7 @@ HTMLCanvasElement::GetSourceImageForCanvasInternal(FlushReason reason,
 
   scoped_refptr<StaticBitmapImage> image;
 
-  if (OffscreenCanvasFrame()) {
+  if (HasOffscreenCanvasFrame()) {
     // This may be false to set status to normal if a valid image can be got
     // even if this HTMLCanvasElement has been transferred
     // control to an offscreenCanvas. As offscreencanvas with the
@@ -1862,7 +1872,7 @@ gfx::SizeF HTMLCanvasElement::ElementSize(
     }
     return gfx::SizeF(0, 0);
   }
-  if (OffscreenCanvasFrame()) {
+  if (HasOffscreenCanvasFrame()) {
     return gfx::SizeF(OffscreenCanvasFrame()->Size());
   }
   return gfx::SizeF(width(), height());

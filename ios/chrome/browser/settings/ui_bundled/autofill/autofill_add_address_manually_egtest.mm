@@ -45,11 +45,9 @@ NSString* const kZipLabel =
     base::SysUTF8ToNSString(autofill::FieldTypeToDeveloperRepresentationString(
         autofill::ADDRESS_HOME_ZIP));
 
-NSString* const kNameLabel = base::SysUTF8ToNSString(
-    autofill::FieldTypeToDeveloperRepresentationString(autofill::NAME_FULL));
+NSString* const kNameLabel = @"Name";
 
-NSString* const kCompanyNameLabel = base::SysUTF8ToNSString(
-    autofill::FieldTypeToDeveloperRepresentationString(autofill::COMPANY_NAME));
+NSString* const kCompanyNameLabel = @"Organization";
 
 // Matcher for the "Save Address" button.
 id<GREYMatcher> SaveAddressButton() {
@@ -370,10 +368,10 @@ UIViewController* TopPresentedViewController() {
   [self openAddAddressView:NO];
 
   // Fill the non-required fields.
-  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(kNameLabel)]
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kNameLabel)]
       performAction:grey_replaceText(@"Custom Name")];
 
-  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(kCompanyNameLabel)]
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kCompanyNameLabel)]
       performAction:grey_replaceText(@"Custom Company Name")];
 
   // Save the profile.

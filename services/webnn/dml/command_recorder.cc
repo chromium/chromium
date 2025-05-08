@@ -115,6 +115,26 @@ HRESULT CommandRecorder::Close() {
 // `CommandRecorder` destructor will also clear it.
 HRESULT CommandRecorder::Execute() {
   CHECK(!is_open_);
+
+  // If the command queue has not completed execution of its previous submission
+  // then re-executing the same command list in a new submission will cause a
+  // device removal. See "Runtime validation" in the following MSDN article.
+  // https://learn.microsoft.com/en-us/windows/win32/api/d3d12/nf-d3d12-id3d12commandqueue-executecommandlist
+  if (last_submitted_fence_value_ != UINT64_MAX &&
+      last_submitted_fence_value_ > command_queue_->GetCompletedValue()) {
+    RETURN_IF_FAILED(command_queue_->WaitForFence(
+        command_queue_->submission_fence(), last_submitted_fence_value_));
+  }
+
+  // Before command submission, ensure interop tensors are not accessed by
+  // the command queue until existing GPU work using them has been completed.
+  for (auto& [command_buffer, webnn_tensor_impl] : command_tensor_impls_) {
+    if (webnn_tensor_impl) {
+      RETURN_IF_FAILED(webnn_tensor_impl->WaitForExternalFenceAndReset(
+          command_queue_.get()));
+    }
+  }
+
   RETURN_IF_FAILED(command_queue_->ExecuteCommandList(command_list_.Get()));
   last_submitted_fence_value_ = command_queue_->GetLastFenceValue();
 

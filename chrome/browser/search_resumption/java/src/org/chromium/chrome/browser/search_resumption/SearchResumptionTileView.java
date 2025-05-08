@@ -9,15 +9,17 @@ import android.util.AttributeSet;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionTileBuilder.OnSuggestionClickCallback;
 import org.chromium.url.GURL;
 
 /** The view for a search suggestion tile. */
+@NullMarked
 public class SearchResumptionTileView extends RelativeLayout {
-    private GURL mGurl;
+    private @Nullable GURL mGurl;
     private TextView mTileContent;
 
     public SearchResumptionTileView(Context context, @Nullable AttributeSet attrs) {

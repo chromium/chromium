@@ -21,6 +21,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
@@ -102,8 +103,7 @@ class CookieControlsBubbleViewPixelTest
     cookie_controls_coordinator_->SetDisplayNameForTesting(u"example.com");
   }
 
-  void SetStatus(bool controls_visible,
-                 bool protections_on,
+  void SetStatus(CookieControlsState controls_state,
                  CookieControlsEnforcement enforcement,
                  CookieBlocking3pcdStatus blocking_status,
                  int days_to_expiration) {
@@ -120,9 +120,8 @@ class CookieControlsBubbleViewPixelTest
     // after OnStatusChanged() is called it will pull state from
     // CookieControlsController, which has not been updated to reflect what is
     // needed for this test.
-    view_controller()->OnStatusChanged(controls_visible, protections_on,
-                                       enforcement, blocking_status,
-                                       expiration);
+    view_controller()->OnStatusChanged(controls_state, enforcement,
+                                       blocking_status, expiration);
     cookie_controls_icon()->DisableUpdatesForTesting();
   }
 
@@ -162,8 +161,7 @@ class CookieControlsBubbleViewPixelTest
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "CookieControlsBubbleViewImpl");
     cookie_controls_icon()->ExecuteForTesting();
-    SetStatus(controls_visible_, protections_on_, enforcement_, GetParam(),
-              days_to_expiration_);
+    SetStatus(controls_state_, enforcement_, GetParam(), days_to_expiration_);
     waiter.WaitIfNeededAndGet();
 
     // Even with the waiter, it's possible that the toggle is in the process
@@ -196,10 +194,10 @@ class CookieControlsBubbleViewPixelTest
   }
 
  protected:
-  bool controls_visible_ = true;
-  bool protections_on_ = true;
   CookieControlsEnforcement enforcement_ =
       CookieControlsEnforcement::kNoEnforcement;
+  CookieControlsState controls_state_ = CookieControlsState::k3pcsBlocked;
+
   int days_to_expiration_ = 0;
   // Overriding `base::Time::Now()` to obtain a consistent X days until
   // exception expiration calculation regardless of the time the test runs.
@@ -222,35 +220,35 @@ IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
 IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
                        InvokeUi_PermanentException) {
   set_baseline("6229914");
-  protections_on_ = false;
+  controls_state_ = CookieControlsState::k3pcsAllowed;
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
                        InvokeUi_TemporaryException) {
   set_baseline("6229914");
-  protections_on_ = false;
+  controls_state_ = CookieControlsState::k3pcsAllowed;
   days_to_expiration_ = 90;
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
                        InvokeUi_EnforcedByCookieSetting) {
-  protections_on_ = false;
+  controls_state_ = CookieControlsState::k3pcsAllowed;
   enforcement_ = CookieControlsEnforcement::kEnforcedByCookieSetting;
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
                        InvokeUi_EnforcedByPolicy) {
-  protections_on_ = false;
+  controls_state_ = CookieControlsState::k3pcsAllowed;
   enforcement_ = CookieControlsEnforcement::kEnforcedByPolicy;
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
                        InvokeUi_EnforcedByExtension) {
-  protections_on_ = false;
+  controls_state_ = CookieControlsState::k3pcsAllowed;
   enforcement_ = CookieControlsEnforcement::kEnforcedByExtension;
   ShowAndVerifyUi();
 }

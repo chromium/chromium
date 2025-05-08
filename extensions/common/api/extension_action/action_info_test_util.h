@@ -10,18 +10,18 @@
 namespace extensions {
 class Extension;
 
-// Given an |action_type|, returns the corresponding API name to be referenced
+// Given an `action_type`, returns the corresponding API name to be referenced
 // from JavaScript.
 const char* GetAPINameForActionType(ActionInfo::Type action_type);
 
-// Retrieves the ActionInfo for the |extension| if and only if it
-// corresponds to the specified |type|. This is useful for testing to ensure
+// Retrieves the ActionInfo for the `extension` if and only if it
+// corresponds to the specified `type`. This is useful for testing to ensure
 // the type is specified correctly, since most production code is type-
 // agnostic.
 const ActionInfo* GetActionInfoOfType(const Extension& extension,
                                       ActionInfo::Type type);
 
-// Retrieves the appropriate manifest version for the given |type|; necessary
+// Retrieves the appropriate manifest version for the given `type`; necessary
 // because the chrome.action API is restricted to MV3, while browser and page
 // actions are restricted to MV2.
 int GetManifestVersionForActionType(ActionInfo::Type type);

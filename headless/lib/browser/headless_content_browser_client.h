@@ -133,8 +133,8 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
 #endif
 
 #if defined(HEADLESS_USE_POLICY)
-  std::vector<std::unique_ptr<content::NavigationThrottle>>
-  CreateThrottlesForNavigation(content::NavigationHandle* handle) override;
+  void CreateThrottlesForNavigation(
+      content::NavigationThrottleRegistry& registry) override;
 #endif
 
   void OnNetworkServiceCreated(
@@ -150,6 +150,8 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
   bool ShouldSandboxNetworkService() override;
 
   content::BluetoothDelegate* GetBluetoothDelegate() override;
+
+  bool IsRendererProcessPriorityEnabled() override;
 
  private:
   class StubBadgeService;

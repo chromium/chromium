@@ -980,10 +980,10 @@ def main():
           '^.*SanitizerCommon-ubsan-arm64-Darwin.*Posix/dedup_token_length_test.cpp$',
       ]
   elif sys.platform == 'win32':
-      lit_excludes += [
-          # TODO(https://crbug.com/404547503): fix and re-enable
-          '^.*Profile-x86_64.*ContinuousSyncMode/online-merging-windows.c$',
-      ]
+    lit_excludes += [
+        # TODO(https://crbug.com/404547503): fix and re-enable
+        '^.*Profile-x86_64.*ContinuousSyncMode/online-merging-windows.c$',
+    ]
 
   test_env = os.environ.copy()
   # Dump all FileCheck input on test failure.

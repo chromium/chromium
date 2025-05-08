@@ -121,7 +121,7 @@ class WebViewInternalExecuteCodeFunction
  protected:
   ~WebViewInternalExecuteCodeFunction() override;
 
-  // Initialize |details_| if it hasn't already been.
+  // Initialize `details_` if it hasn't already been.
   InitResult Init() override;
   bool ShouldInsertCSS() const override;
   bool ShouldRemoveCSS() const override;

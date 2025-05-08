@@ -532,6 +532,12 @@ class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
     [rwhv_cocoa_ setFrame:window_.contentView.bounds];
     rwhv_mac_->Show();
 
+    // The `MockRenderWidgetHostImpl` constructed above does not go through the
+    // initilization steps seen by an actual RWH in the browser.  This test
+    // needs input event processing, and the paint-holding initialiation signal
+    // below enables that.
+    host_->InitializePaintHolding(false);
+
     base::RunLoop().RunUntilIdle();
     process_host_->sink().ClearMessages();
   }
@@ -1265,6 +1271,9 @@ TEST_F(RenderWidgetHostViewMacTest,
   RenderWidgetHostViewMac* view = new RenderWidgetHostViewMac(host.get());
   base::RunLoop().RunUntilIdle();
 
+  // See the comment on `RenderWidgetHostViewMacTest::SetUp()` above.
+  host->InitializePaintHolding(false);
+
   // Send an initial wheel event for scrolling by 3 lines.
   NSEvent* wheelEvent1 =
       MockScrollWheelEventWithPhase(@selector(phaseBegan), 3);
@@ -1329,6 +1338,9 @@ TEST_F(RenderWidgetHostViewMacTest,
   RenderWidgetHostViewMac* view = new RenderWidgetHostViewMac(host.get());
   base::RunLoop().RunUntilIdle();
 
+  // See the comment on `RenderWidgetHostViewMacTest::SetUp()` above.
+  host->InitializePaintHolding(false);
+
   // Send an initial wheel event for scrolling by 3 lines.
   NSEvent* wheelEvent1 =
       MockScrollWheelEventWithPhase(@selector(phaseBegan), 3);
@@ -1388,6 +1400,9 @@ TEST_F(RenderWidgetHostViewMacTest,
       /*for_frame_widget=*/false);
   RenderWidgetHostViewMac* view = new RenderWidgetHostViewMac(host.get());
   base::RunLoop().RunUntilIdle();
+
+  // See the comment on `RenderWidgetHostViewMacTest::SetUp()` above.
+  host->InitializePaintHolding(false);
 
   // Send an initial wheel event for scrolling by 3 lines.
   NSEvent* wheelEvent1 =

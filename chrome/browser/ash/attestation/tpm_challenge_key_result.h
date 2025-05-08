@@ -82,8 +82,8 @@ struct TpmChallengeKeyResult {
   const char* GetErrorMessage() const;
   bool IsSuccess() const;
 
-  bool operator==(const TpmChallengeKeyResult& other) const;
-  bool operator!=(const TpmChallengeKeyResult& other) const;
+  friend bool operator==(const TpmChallengeKeyResult&,
+                         const TpmChallengeKeyResult&) = default;
 
   TpmChallengeKeyResultCode result_code = TpmChallengeKeyResultCode::kSuccess;
   std::string public_key;

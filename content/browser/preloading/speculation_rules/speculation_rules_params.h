@@ -17,7 +17,7 @@ struct CONTENT_EXPORT SpeculationRulesParams {
   SpeculationRulesParams();
   SpeculationRulesParams(blink::mojom::SpeculationTargetHint target_hint,
                          blink::mojom::SpeculationEagerness eagerness,
-                         std::optional<SpeculationRulesTags> tags);
+                         SpeculationRulesTags tags);
   ~SpeculationRulesParams();
 
   // Copyable and movable.
@@ -35,11 +35,7 @@ struct CONTENT_EXPORT SpeculationRulesParams {
       blink::mojom::SpeculationEagerness::kConservative;
 
   // https://wicg.github.io/nav-speculation/speculation-rules.html#speculation-rule-tags
-  // Currently this is optional, as tags are not provided when
-  // RuntimeEnabledFeatures::SpeculationRulesTagEnabled() returns false.
-  // TODO(crbug.com/381687257): Make this non-optional after the feature is
-  // launched.
-  std::optional<SpeculationRulesTags> tags;
+  SpeculationRulesTags tags;
 };
 
 }  // namespace content

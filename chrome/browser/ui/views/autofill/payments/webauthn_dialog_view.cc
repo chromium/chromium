@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/sheet_view_factory.h"
+#include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
@@ -23,6 +24,8 @@
 #include "ui/views/controls/button/label_button.h"
 
 namespace autofill {
+
+using AcceptButtonState = AuthenticatorRequestSheetModel::AcceptButtonState;
 
 WebauthnDialogView::WebauthnDialogView(WebauthnDialogController* controller,
                                        WebauthnDialogState dialog_state)
@@ -45,7 +48,7 @@ WebauthnDialogView::WebauthnDialogView(WebauthnDialogController* controller,
   SetButtonLabel(ui::mojom::DialogButton::kOk, model_->GetAcceptButtonLabel());
   SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  model_->GetCancelButtonLabel());
-  SetButtons(model_->IsAcceptButtonVisible()
+  SetButtons(model_->GetAcceptButtonState() != AcceptButtonState::kNotVisible
                  ? static_cast<int>(ui::mojom::DialogButton::kOk) |
                        static_cast<int>(ui::mojom::DialogButton::kCancel)
                  : static_cast<int>(ui::mojom::DialogButton::kCancel));
@@ -112,7 +115,7 @@ bool WebauthnDialogView::Cancel() {
 bool WebauthnDialogView::IsDialogButtonEnabled(
     ui::mojom::DialogButton button) const {
   return button == ui::mojom::DialogButton::kOk
-             ? model_->IsAcceptButtonEnabled()
+             ? model_->GetAcceptButtonState() == AcceptButtonState::kEnabled
              : true;
 }
 
@@ -138,7 +141,7 @@ void WebauthnDialogView::RefreshContent() {
   SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  model_->GetCancelButtonLabel());
   DCHECK(model_->IsCancelButtonVisible());
-  SetButtons(model_->IsAcceptButtonVisible()
+  SetButtons(model_->GetAcceptButtonState() != AcceptButtonState::kNotVisible
                  ? static_cast<int>(ui::mojom::DialogButton::kOk) |
                        static_cast<int>(ui::mojom::DialogButton::kCancel)
                  : static_cast<int>(ui::mojom::DialogButton::kCancel));

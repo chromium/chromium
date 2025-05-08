@@ -8,6 +8,8 @@ import android.text.TextUtils;
 import android.view.ViewGroup;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.url.GURL;
@@ -15,9 +17,10 @@ import org.chromium.url.GURL;
 import java.util.List;
 
 /**
- * Utility class that builds a set of {@link SearchResumptionTileView} into a provided
- * {@link ViewGroup}, creating and manipulating the views as needed.
+ * Utility class that builds a set of {@link SearchResumptionTileView} into a provided {@link
+ * ViewGroup}, creating and manipulating the views as needed.
  */
+@NullMarked
 public class SearchResumptionTileBuilder {
     public static final int MAX_TILES_NUMBER = 3;
 
@@ -25,7 +28,7 @@ public class SearchResumptionTileBuilder {
 
     /** The callback when a {@link SearchResumptionTileView} is clicked. */
     interface OnSuggestionClickCallback {
-        void onSuggestionClick(GURL gurl);
+        void onSuggestionClick(@Nullable GURL gurl);
     }
 
     public SearchResumptionTileBuilder(OnSuggestionClickCallback callback) {
@@ -125,6 +128,7 @@ public class SearchResumptionTileBuilder {
         return tileView;
     }
 
+    @SuppressWarnings("NullAway")
     void destroy() {
         mCallback = null;
     }

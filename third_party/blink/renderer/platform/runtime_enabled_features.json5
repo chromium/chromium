@@ -28,11 +28,10 @@
     //   name: "ExampleFeature",
     //   status: {"Android": "stable", "Win": "experimental"},
     // }
-    // "ExampleFeature" will be stable on Android/WebView/WebLayer, experimental
+    // "ExampleFeature" will be stable on Android/WebView, experimental
     // on Windows and not enabled on any other platform.
     //
-    // Note that the Android status key implies Chrome for Android, WebView and
-    // WebLayer.
+    // Note that the Android status key implies Chrome for Android and WebView.
     //
     // "stable" features listed here should be rare, as anything which we've
     // shipped stable can have its runtime flag removed soon after.
@@ -342,11 +341,6 @@
     {
       name: "AIPromptAPIForWorkers",
       public: true,
-      origin_trial_feature_name: "AIPromptAPIForExtension",
-      origin_trial_allows_third_party: true,
-      status: "experimental",
-      base_feature_status: "enabled",
-      copied_from_base_feature_if: "overridden",
     },
     {
       name: "AIPromptAPIMultimodalInput",
@@ -366,6 +360,14 @@
       name: "AIRewriterAPI",
       public: true,
       status: "experimental",
+      origin_trial_feature_name: "AIRewriterAPI",
+      origin_trial_allows_third_party: true,
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
+    },
+    {
+      name: "AIRewriterAPIForWorkers",
+      public: true,
     },
     {
       name: "AISummarizationAPI",
@@ -377,9 +379,21 @@
       copied_from_base_feature_if: "overridden",
     },
     {
+      name: "AISummarizationAPIForWorkers",
+      public: true,
+    },
+    {
       name: "AIWriterAPI",
       public: true,
       status: "experimental",
+      origin_trial_feature_name: "AIWriterAPI",
+      origin_trial_allows_third_party: true,
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
+    },
+    {
+      name: "AIWriterAPIForWorkers",
+      public: true,
     },
     {
       name: "AllowContentInitiatedDataUrlNavigations",
@@ -410,7 +424,7 @@
     },
     {
       name: "AllowSvgUseToReferenceExternalDocumentRoot",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "AllowSyntheticTimingForCanvasCapture",
@@ -575,6 +589,10 @@
       copied_from_base_feature_if: "overridden",
     },
     {
+      name: "BackForwardCacheRestorationPerformanceEntry",
+      status: "experimental",
+    },
+    {
       name: "BackForwardCacheUpdateNotRestoredReasonsName",
       status: "stable",
     },
@@ -726,6 +744,12 @@
       status: "test",
     },
     {
+      // https://github.com/WICG/html-in-canvas/blob/main/README.md
+      name: "CanvasElementDrawImage",
+      status: "test",
+      implied_by: ["CanvasPlaceElement"],
+    },
+    {
       name: "CanvasFloatingPoint",
       status: "stable",
     },
@@ -749,9 +773,9 @@
       base_feature: "none",
     },
     {
-      // https://github.com/Igalia/explainers/blob/main/canvas-formatted-text/html-in-canvas.md
+      // https://github.com/WICG/html-in-canvas/blob/main/README.md
       name: "CanvasPlaceElement",
-      status: "experimental",
+      status: "test",
     },
     {
       // https://chromestatus.com/feature/5066778773028864
@@ -793,7 +817,7 @@
     },
     {
       name: "CapturedSurfaceResolution",
-      status: { "Win": "stable", "Mac": "stable", "ChromeOS": "experimental", "default": ""},
+      status: { "Win": "stable", "Mac": "stable", "ChromeOS": "stable", "default": ""},
     },
     {
       name: "CaptureHandle",
@@ -870,6 +894,10 @@
       // Support ClipboardItemData of Promise<DOMString> type according to spec
       // https://w3c.github.io/clipboard-apis/#typedefdef-clipboarditemdata
       name: "ClipboardItemWithDOMStringSupport",
+      status: "stable",
+    },
+    {
+      name: "ClipPathNestedRasterOptimization",
       status: "stable",
     },
     {
@@ -1037,6 +1065,11 @@
       status: "stable",
     },
     {
+      // Enables alignment properties for block and inline out-of-flow elements.
+      name: "CSSAlignBlockAndInlineOutOfFlows",
+      status: "stable",
+    },
+    {
       // Remember the scroll offset of the default anchor when initially
       // displaying an anchor-positioned element, and when it switches position
       // options (`position-try-fallbacks`), also known as an anchor
@@ -1131,11 +1164,6 @@
       status: "experimental",
     },
     {
-      // crbug.com/392927981
-      name: "CssDecoratingBoxPseudoFix",
-      status: "stable",
-    },
-    {
       name: "CSSDynamicRangeLimit",
       status: "stable",
     },
@@ -1143,7 +1171,7 @@
       // Include custom properties in CSSComputedStyleDeclaration::item/length.
       // https://crbug.com/949807
       name: "CSSEnumeratedCustomProperties",
-      status: "test",
+      status: "stable",
     },
     {
       name: "CSSExponentialFunctions",
@@ -1363,6 +1391,10 @@
       status: "stable",
     },
     {
+      name: "CSSScrollDirectionContainerQueries",
+      status: "test",
+    },
+    {
       // https://drafts.csswg.org/css-scroll-snap-2#scroll-initial-target
       name: "CSSScrollInitialTarget",
       status: "stable",
@@ -1398,7 +1430,8 @@
       // Flag for supporting scroll-state() and container-type: scroll-state
       // Implied by supporting at least one of the scroll-state query features.
       name: "CSSScrollStateContainerQueries",
-      implied_by: ["CSSStickyContainerQueries", "CSSSnapContainerQueries", "CSSScrollableContainerQueries"],
+      implied_by: ["CSSStickyContainerQueries", "CSSSnapContainerQueries",
+                   "CSSScrollableContainerQueries", "CSSScrollDirectionContainerQueries"],
     },
     {
       name: "CSSSelectorFragmentAnchor",
@@ -1514,8 +1547,18 @@
       depends_on: ["SelectParserRelaxation"],
     },
     {
-      // If a node within a customizable <select> doesn't obey the content model, an Issue is reported to DevTools so that web authors get more context on why this can impact the accessibility behavior of the <select>.
+      // If a node within a customizable <select> doesn't obey the content
+      // model, an Issue is reported to DevTools so that web authors get more
+      // context on why this can impact the accessibility behavior of the
+      // <select>. Shipped in M138, flag can be removed M140.
       name: "CustomizableSelectElementAccessibilityIssues",
+      status: "stable",
+      depends_on: ["CustomizableSelect"],
+    },
+    {
+      // appearance:base-select for <select multiple> and <select size=n>
+      // https://issues.chromium.org/issues/357649033
+      name: "CustomizableSelectInPage",
       status: "experimental",
       depends_on: ["CustomizableSelect"],
     },
@@ -1840,6 +1883,11 @@
       status: "stable",
     },
     {
+      // crbug.com/40118302
+      name: "EmptyReferenceFilterInvalidation",
+      status: "stable",
+    },
+    {
       name: "EnforceAnonymityExposure",
       status: "stable",
     },
@@ -1933,6 +1981,11 @@
       // Not enabled due to a RTL issue. crbug.com/1421016.
     },
     {
+      // crbug.com/414112253
+      name: "FastSelectionSync",
+      status: "stable",
+    },
+    {
       name: "FedCm",
       public: true,
       status: "stable",
@@ -1981,15 +2034,6 @@
       depends_on: ["FedCm"],
       public: true,
       base_feature: "none",
-    },
-    {
-      name: "FedCmWithStorageAccessAPI",
-      depends_on: ["FedCm"],
-      base_feature_status: "enabled",
-      browser_process_read_access: true,
-      origin_trial_feature_name: "FedCmWithStorageAccessAPI",
-      copied_from_base_feature_if: "overridden",
-      status: "stable",
     },
     {
       name: "FencedFrames",
@@ -2151,6 +2195,7 @@
     },
     {
       name: "FledgeBiddingAndAuctionServerAPIMultiSeller",
+      status: "stable",
     },
     {
       name: "FledgeClickiness",
@@ -2237,10 +2282,6 @@
     {
       name: "FontAccess",
       status: {"Android": "", "default": "stable"},
-    },
-    {
-      name: "FontationsFontBackend",
-      status: "stable",
     },
     {
       name: "FontFamilyPostscriptMatchingCTMigration",
@@ -2459,6 +2500,16 @@
       origin_trial_feature_name: "HTMLInterestTargetAttribute",
       origin_trial_allows_third_party: true,
     },
+    // Enables the "context menu item only" behavior mode for the
+    // `interesttarget` API. In this mode, the context menu is displayed in the
+    // "normal" location, but an additional line item is added to the menu which
+    // allows the user to show interest. This is enabled by default, but depends
+    // on HTMLInterestTargetAttribute.
+    {
+      name: "HTMLInterestTargetContextMenuItemOnly",
+      status: "stable",
+      depends_on: ["HTMLInterestTargetAttribute"],
+    },
     {
       // A flag, just for local testing to make the
       // HTML parser yield more often and take longer to resume.
@@ -2472,7 +2523,7 @@
     },
     {
       name: "IgnoreLetterSpacingInCursiveScripts",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ImageDataPixelFormat",
@@ -2546,18 +2597,18 @@
       status: "experimental",
     },
     {
-      // Makes the HTML parser close <select> tags before inserting <input>
-      // tags to match the old parser behavior. This is shipping with the
-      // initial release of SelectParserRelaxation in order to de-risk it, but
-      // we could consider disabling this in future releases of we want to
-      // support authors who want to put <input>s in <select>s.
-      name: "InputClosesSelect",
-      status: "stable",
-      depends_on: ["SelectParserRelaxation"],
-    },
-    {
       name: "InputEventConstructorThrows",
       status: "stable",
+    },
+    {
+      // The HTML parser inserts a </select> end tag before inserting <input>
+      // when parsing inside of a <select> tag. We want to allow <input> inside
+      // <select>, but it isn't web compatible enough. This flag allows <input>
+      // inside <select> but only if there is another open tag in between the
+      // <input> and the <select>, like <select><div><input>.
+      name: "InputInSelect",
+      status: "experimental",
+      depends_on: ["SelectParserRelaxation"],
     },
     {
       name: "InputMultipleFieldsUI",
@@ -2597,6 +2648,12 @@
       status: "experimental",
     },
     {
+      name: "IntegrityPolicyScript",
+      status: "stable",
+      base_feature: "none",
+      public: true,
+    },
+    {
       name: "InterestGroupsInSharedStorageWorklet",
       public: true,
       status: "stable",
@@ -2626,6 +2683,9 @@
       name: "JavaScriptCompileHintsPerFunctionMagicRuntime",
       status: "experimental",
       origin_trial_feature_name: "JavaScriptCompileHintsPerFunctionMagic",
+    },
+    {
+      name: "JavaScriptSourcePhaseImports",
     },
     {
       name: "KeyboardAccessibleTooltip",
@@ -2669,17 +2729,30 @@
       copied_from_base_feature_if: "overridden",
     },
     {
+      name: "LanguageDetectionAPIForWorkers",
+      public: true,
+    },
+    {
+      // LayoutBox::PhysicalLocation() to return a truly visual offset - the
+      // offset of its first fragment relatively to the first fragment of its
+      // containing block, also when block-fragmented (used to be in the
+      // "stitched" flow-thread coordinate space).
+      name: "LayoutBoxVisualLocation",
+      status: "experimental",
+    },
+    {
       name: "LayoutFlexNewRowAlgorithm",
+      status: "stable",
+    },
+    {
+      name: "LayoutFlexNewStretch",
       status: "stable",
     },
     {
       name: "LayoutIgnoreMarginsForSticky",
     },
     {
-      name: "LayoutImageRevalidationCheckForSvgImages",
-    },
-    {
-      name: "LayoutJustifySelfForBlocks",
+      name: "LayoutIsAnonymousBlockFix",
       status: "stable",
     },
     {
@@ -2692,12 +2765,11 @@
       base_feature: "LayoutNGShapeCache",
     },
     {
-      name: "LayoutStretch",
-      status: "experimental",
+      name: "LayoutReplacedReturnExplicitDefaultNaturalSize",
     },
     {
-      name: "LayoutWebkitBoxTreeFix",
-      status: "stable",
+      name: "LayoutStretch",
+      status: "experimental",
     },
     {
       name: "LazyInitializeMediaControls",
@@ -2726,8 +2798,23 @@
       base_feature: "none",
     },
     {
+      name: "LineBreakEarlyReturn",
+      status: "stable",
+    },
+    {
       name: "ListItemWithCounterSetNotSetExplicitValue",
       status: "stable",
+    },
+    {
+      name: "ListOwnerMustHaveCSSBox",
+      status: "stable",
+    },
+    // Enables Local Network Access Permission Policy. Does nothing without
+    // also enabling network::features::kLocalNetworkAccessChecks. See
+    // https://crbug.com/394009026.
+    {
+      name: "LocalNetworkAccessPermissionPolicy",
+      status: "experimental",
     },
     {
       name: "LockedMode",
@@ -2898,6 +2985,10 @@
         "Win": "stable",
         "default": "experimental",
       },
+    },
+    {
+      name: "MenuElements",
+      status: "test",
     },
     {
       name: "MessagePortCloseEvent",
@@ -3640,6 +3731,12 @@
       depends_on: ["ReduceUserAgentMinorVersion"],
       status: {"Android": "stable"},
     },
+    // If enabled, the platform version in User-Agent Data will be removed.
+    // This feature is limited to Linux only.
+    {
+      name: "ReduceUserAgentDataLinuxPlatformVersion",
+      status: {"Linux": "experimental"},
+    },
     // If enabled, the minor version of the User-Agent string will be reduced.
     // This User-Agent Reduction feature has been enabled starting from M101,
     // but we still keep this flag for future phase tests.
@@ -3700,12 +3797,6 @@
       name: "RemoveDataUrlInSvgUse",
       status: "stable",
     },
-    // Remove a node if it's selected fully even though it has children. See
-    // https://crbug.com/331074432
-    {
-      name: "RemoveNodeHavingChildrenIfFullySelected",
-      status: "stable",
-    },
     {
       // crbug.com/41047725
       name: "RemovePlaceholderBRForDisplayInline",
@@ -3748,7 +3839,7 @@
       // composited pixel alignment issues. See
       // https://crbug.com/40084005
       name: "RenderSurfaceFor2DScaleTransform",
-      status: "stable",
+      status: "experimental",
     },
     {
       name: "ReportEventTimingAtVisibilityChange",
@@ -3789,6 +3880,10 @@
       status: "stable",
     },
     {
+      name: "RestrictTabFocusForHiddenSVGElements",
+      status: "stable",
+    },
+    {
       // New behavior when line breaker rewinds floats. crbug.com/1499290
       name: "RewindFloats",
       status: "stable",
@@ -3811,10 +3906,6 @@
     },
     {
       name: "RTCDataChannelPriority",
-      status: "experimental",
-    },
-    {
-      name: "RTCEncodedAudioFrameAbsCaptureTime",
       status: "experimental",
     },
     {
@@ -4031,6 +4122,7 @@
     },
     {
       name: "SecurePaymentConfirmationBrowserBoundKeys",
+      status: "experimental",
     },
     {
       name: "SecurePaymentConfirmationDebug",
@@ -4049,6 +4141,23 @@
       base_feature: "none",
     },
     {
+      // Implements improved accessibility mappings for having an <input>
+      // inside of a <select> by keeping the child <input> in the a11y tree at
+      // the same place that its at in the DOM tree, but automatically setting
+      // up a controls relationship to the menu list popup.
+      name: "SelectAccessibilityNestedInput",
+      status: "test",
+      depends_on: ["CustomizableSelect"],
+    },
+    {
+      // Implements improved accessibility mappings for having an <input>
+      // inside of a <select> by reparenting the child <input> in the
+      // accessibility tree to be a sibling of the menu list popup.
+      name: "SelectAccessibilityReparentInput",
+      status: "test",
+      depends_on: ["CustomizableSelect"],
+    },
+    {
       // SelectAudioOutput API
       // https://chromestatus.com/feature/5164535504437248
       name: "SelectAudioOutput",
@@ -4062,7 +4171,6 @@
       // select option colors. https://issues.chromium.org/issues/40788356
       // This is shipping in M136 and can be removed in M138
       name: "SelectColorsRemoveImportant",
-      status: "stable",
     },
     {
       // The selectedcontentelement attribute is for connecting select elements
@@ -4159,6 +4267,12 @@
       base_feature: "WebSerialAPI",
     },
     {
+      // Kill-switch for crbug.com/40791925.
+      // Added in M138, and it can be removed in M140.
+      name: "SerializeCdataAsTextInHTMLDocuments",
+      status: "stable",
+    },
+    {
       name: "SerializeViewTransitionStateInSPA",
     },
     {
@@ -4231,6 +4345,13 @@
       base_feature: "none",
     },
     {
+      // If enabled, SharedWorker supports extendedLifetime
+      // https://github.com/whatwg/html/issues/10997
+      name: "SharedWorkerExtendedLifetime",
+      origin_trial_feature_name: "SharedWorkerExtendedLifetime",
+      origin_trial_allows_third_party: true,
+    },
+    {
       name: "SignatureBasedInlineIntegrity",
       status: "experimental",
     },
@@ -4254,12 +4375,6 @@
     {
       name: "SkipLineBreakItemWhenIsCollapsed",
       status: "stable",
-    },
-    {
-      // If enabled, HTMLPreloadScanner will be skipped.
-      name: "SkipPreloadScanning",
-      origin_trial_feature_name: "SkipPreloadScanning",
-      base_feature: "SkipPreloadScanning",
     },
     {
       // Skips the browser touch event filter, ensuring that events that reach
@@ -4337,10 +4452,6 @@
     },
     {
       name: "SpeculationRulesPrefetchWithSubresources",
-    },
-    {
-      name: "SpeculationRulesTag",
-      status: "stable",
     },
     {
       // Enables to run prerendering for new tabs (e.g., target="_blank").
@@ -4439,7 +4550,7 @@
     },
     {
       name: "SvgInlineRootPixelSnappingScaleAdjustment",
-      status: "stable",
+      status: "test",
     },
     {
       name: "SvgNoPixelSnappingScaleAdjustment",
@@ -4451,7 +4562,7 @@
     },
     {
       name: "SvgTransformOnNestedSvgElement",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "SynthesizedKeyboardEventsForAccessibilityActions",
@@ -4526,6 +4637,17 @@
     {
       name: "TestFeatureStable",
       status: "stable",
+    },
+    {
+      // crbug.com/341564372
+      name: "TextareaLineEndingsAsBr",
+      status: "experimental",
+    },
+    {
+      // crbug.com/341564372
+      name: "TextareaMultipleIfcs",
+      status: "experimental",
+      depends_on: ["FastSelectionSync", "TextareaLineEndingsAsBr"],
     },
     {
       // killswitch for fix in M137
@@ -4680,6 +4802,10 @@
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
       implied_by: ["TranslationAPIV1"],
+    },
+    {
+      name: "TranslationAPIForWorkers",
+      public: true,
     },
     {
       name: "TranslationAPIV1",
@@ -4839,7 +4965,10 @@
     },
     {
       name: "VideoFrameMetadataBackgroundBlur",
-      public: true,
+      status: "experimental",
+    },
+    {
+      name: "VideoFrameMetadataRtpTimestamp",
       status: "experimental",
     },
     {
@@ -4865,11 +4994,7 @@
     },
     {
       name: "ViewportSegments",
-      status: "experimental",
-      public: true,
-      base_feature_status: "enabled",
-      copied_from_base_feature_if: "overridden",
-      origin_trial_feature_name: "FoldableAPIs",
+      status: "stable",
     },
     {
       name: "ViewTransitionDisableSnapBrowserControlsOnHidden",
@@ -5034,6 +5159,8 @@
     {
       name: "WebAuthenticationImmediateGet",
       status: "experimental",
+      base_feature: "none",
+      public: true,
     },
     // Methods for deserializing WebAuthn requests from JSON/serializing
     // responses into JSON.
@@ -5147,8 +5274,20 @@
       public: true,
     },
     {
+      name: "WebGLOnWebGPU",
+      status: "experimental",
+    },
+    {
       name: "WebGPUAdapterInfoIsFallbackAdapter",
       status: "stable",
+    },
+    {
+      // Launch feature flag for WebGPU Compatibility Mode
+      // https://chromestatus.com/feature/6436406437871616
+      name: "WebGPUCompatibilityMode",
+      status: "experimental",
+      // Also enabled as part of all experimental WebGPU features.
+      implied_by: ["WebGPUExperimentalFeatures"],
     },
     {
       name: "WebGPUCopyBufferToBufferOverload",
@@ -5173,8 +5312,9 @@
       // https://chromestatus.com/feature/5154347661656064
       name: "WebGPUFeatureLevel",
       status: "experimental",
-      // Also enabled as part of all experimental WebGPU features.
-      implied_by: ["WebGPUExperimentalFeatures"],
+      // Also enabled as part of all experimental WebGPU features and
+      // as part of Compatibility Mode.
+      implied_by: ["WebGPUExperimentalFeatures", "WebGPUCompatibilityMode"],
     },
     {
       name: "WebHID",
@@ -5241,12 +5381,14 @@
       name: "WebPrinting",
       status: {"Android": "", "default": "test"},
     },
-    // WebShare is enabled by default on Android.
+    // WebShare is enabled by default on Android (non-WebView), Win, ChromeOS, and Mac.
+    // This is done in chrome/renderer/chrome_content_renderer_client.cc to prevent
+    // making the API available to Linux and WebView. Ideally we would set the status
+    // below to "stable" once we can do so without significant test expectation duplication.
     {
       name: "WebShare",
       public: true,
       status: "test",
-      base_feature: "none",
     },
     {
       name: "WebSocketStream",
@@ -5411,10 +5553,8 @@
       status: "experimental",
       implied_by: ["DesktopPWAsAdditionalWindowingControls"],
     },
-    // Flag guard for change to XML parser to merge adjacent CDATA sections.
-    // See https://crrev.com/c/4790343.
     {
-      name: "XMLParserMergeAdjacentCDataSections",
+      name: "XMLSerializerConsistentDefaultNsDeclMatching",
       status: "stable",
     },
     {

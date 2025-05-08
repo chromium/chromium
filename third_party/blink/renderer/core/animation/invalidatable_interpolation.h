@@ -37,7 +37,6 @@ class CORE_EXPORT InvalidatableInterpolation : public Interpolation {
                              PropertySpecificKeyframe* end_keyframe)
       : Interpolation(),
         property_(property),
-        interpolation_types_(nullptr),
         interpolation_types_version_(0),
         start_keyframe_(start_keyframe),
         end_keyframe_(end_keyframe),
@@ -57,6 +56,7 @@ class CORE_EXPORT InvalidatableInterpolation : public Interpolation {
   }
 
   void Trace(Visitor* visitor) const override {
+    visitor->Trace(interpolation_types_);
     visitor->Trace(start_keyframe_);
     visitor->Trace(end_keyframe_);
     visitor->Trace(cached_pair_conversion_);
@@ -85,13 +85,13 @@ class CORE_EXPORT InvalidatableInterpolation : public Interpolation {
       const PropertySpecificKeyframe&,
       const CSSInterpolationEnvironment&,
       const UnderlyingValueOwner&) const;
-  void AddConversionCheckers(const InterpolationType&,
+  void AddConversionCheckers(const InterpolationType*,
                              ConversionCheckers&) const;
   void SetFlagIfInheritUsed(CSSInterpolationEnvironment&) const;
   double UnderlyingFraction() const;
 
   const PropertyHandle property_;
-  mutable const InterpolationTypes* interpolation_types_;
+  mutable Member<const InterpolationTypes> interpolation_types_;
   mutable size_t interpolation_types_version_;
   Member<PropertySpecificKeyframe> start_keyframe_;
   Member<PropertySpecificKeyframe> end_keyframe_;

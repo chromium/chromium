@@ -25,6 +25,7 @@
 #include "cc/layers/mirror_layer_impl.h"
 #include "cc/layers/solid_color_layer_impl.h"
 #include "cc/layers/surface_layer_impl.h"
+#include "cc/layers/texture_layer_impl.h"
 #include "cc/layers/tile_display_layer_impl.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -47,14 +48,15 @@ int GenerateNextDisplayTreeId() {
   return next_id++;
 }
 
-cc::LayerTreeSettings GetDisplayTreeSettings() {
+cc::LayerTreeSettings GetDisplayTreeSettings(bool draw_mode_is_gpu) {
   cc::LayerTreeSettings settings;
   settings.use_layer_lists = true;
-  settings.is_display_tree = true;
+  settings.trees_in_viz_in_viz_process = true;
+  settings.display_tree_draw_mode_is_gpu = draw_mode_is_gpu;
   return settings;
 }
 
-std::unique_ptr<cc::LayerImpl> CreateLayer(LayerContextImpl& context,
+std::unique_ptr<cc::LayerImpl> CreateLayer(cc::LayerTreeHostImpl& host_impl,
                                            cc::LayerTreeImpl& tree,
                                            cc::mojom::LayerType type,
                                            int id) {
@@ -65,13 +67,16 @@ std::unique_ptr<cc::LayerImpl> CreateLayer(LayerContextImpl& context,
     case cc::mojom::LayerType::kMirror:
       return cc::MirrorLayerImpl::Create(&tree, id);
 
+    case cc::mojom::LayerType::kPicture:
+      return std::make_unique<cc::TileDisplayLayerImpl>(tree, id);
+
     case cc::mojom::LayerType::kSurface:
       // The callback is triggered in the renderer side during WillDraw(),
       // and there is no need to do it in viz.
       return cc::SurfaceLayerImpl::Create(&tree, id, base::NullCallback());
 
-    case cc::mojom::LayerType::kPicture:
-      return std::make_unique<cc::TileDisplayLayerImpl>(context, tree, id);
+    case cc::mojom::LayerType::kTexture:
+      return cc::TextureLayerImpl::Create(&tree, id);
 
     default:
       // TODO(rockot): Support other layer types.
@@ -387,6 +392,32 @@ void UpdateMirrorLayerExtra(const mojom::MirrorLayerExtraPtr& extra,
   layer.SetMirroredLayerId(extra->mirrored_layer_id);
 }
 
+void UpdateTextureLayerExtra(const mojom::TextureLayerExtraPtr& extra,
+                             cc::TextureLayerImpl& layer) {
+  layer.SetPremultipliedAlpha(extra->premultiplied_alpha);
+  layer.SetBlendBackgroundColor(extra->blend_background_color);
+  layer.SetForceTextureToOpaque(extra->force_texture_to_opaque);
+  layer.SetUVTopLeft(extra->uv_top_left);
+  layer.SetUVBottomRight(extra->uv_bottom_right);
+
+  if (extra->transferable_resource) {
+    ReleaseCallback release_callback;
+    if (!extra->transferable_resource->is_empty()) {
+      release_callback = base::BindOnce(
+          [](cc::LayerTreeHostImpl* host_impl, ResourceId id,
+             const gpu::SyncToken& sync_token, bool is_lost) {
+            host_impl->ReturnResource({id, sync_token,
+                                       /*release_fence=*/gfx::GpuFenceHandle(),
+                                       /*count=*/1, is_lost});
+          },
+          layer.layer_tree_impl()->host_impl(),
+          extra->transferable_resource->id);
+    }
+    layer.SetTransferableResource(extra->transferable_resource.value(),
+                                  std::move(release_callback));
+  }
+}
+
 void UpdateSurfaceLayerExtra(const mojom::SurfaceLayerExtraPtr& extra,
                              cc::SurfaceLayerImpl& layer) {
   layer.SetRange(extra->surface_range, extra->deadline_in_frames);
@@ -406,6 +437,12 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
   layer.SetContentsOpaque(wire.contents_opaque);
   layer.SetContentsOpaqueForText(wire.contents_opaque_for_text);
   layer.SetDrawsContent(wire.is_drawable);
+  if (wire.layer_property_changed_not_from_property_trees) {
+    layer.NoteLayerPropertyChanged();
+  }
+  if (wire.layer_property_changed_from_property_trees) {
+    layer.NoteLayerPropertyChangedFromPropertyTrees();
+  }
   layer.SetBackgroundColor(wire.background_color);
   layer.SetSafeOpaqueBackgroundColor(wire.safe_opaque_background_color);
   layer.SetHitTestOpaqueness(wire.hit_test_opaqueness);
@@ -413,6 +450,12 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
   layer.UnionUpdateRect(wire.update_rect);
   layer.SetOffsetToTransformParent(wire.offset_to_transform_parent);
   layer.SetShouldCheckBackfaceVisibility(wire.should_check_backface_visibility);
+  if (wire.rare_properties) {
+    layer.SetFilterQuality(wire.rare_properties->filter_quality);
+    layer.SetDynamicRangeLimit(wire.rare_properties->dynamic_range_limit);
+    layer.SetCaptureBounds(wire.rare_properties->capture_bounds);
+  }
+  layer.SetMayContainVideo(wire.may_contain_video);
 
   if (layer.GetLayerType() == cc::mojom::LayerType::kTileDisplay) {
     auto& tile_display_layer = static_cast<cc::TileDisplayLayerImpl&>(layer);
@@ -464,6 +507,10 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
       UpdateSurfaceLayerExtra(wire.layer_extra->get_surface_layer_extra(),
                               static_cast<cc::SurfaceLayerImpl&>(layer));
       break;
+    case cc::mojom::LayerType::kTexture:
+      UpdateTextureLayerExtra(wire.layer_extra->get_texture_layer_extra(),
+                              static_cast<cc::TextureLayerImpl&>(layer));
+      break;
     default:
       // TODO(zmo): handle other types of LayerImpl.
       break;
@@ -472,7 +519,7 @@ base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
 }
 
 base::expected<void, std::string> CreateOrUpdateLayers(
-    LayerContextImpl& context,
+    cc::LayerTreeHostImpl& host_impl,
     const std::vector<mojom::LayerPtr>& updates,
     std::optional<std::vector<int32_t>>& layer_order,
     cc::LayerTreeImpl& layers) {
@@ -498,7 +545,7 @@ base::expected<void, std::string> CreateOrUpdateLayers(
   for (auto& wire : updates) {
     auto& layer = layer_map[wire->id];
     if (!layer) {
-      layer = CreateLayer(context, layers, wire->type, wire->id);
+      layer = CreateLayer(host_impl, layers, wire->type, wire->id);
     }
     RETURN_IF_ERROR(UpdateLayer(*wire, *layer));
   }
@@ -580,7 +627,7 @@ DeserializeTileContents(mojom::TileContents& wire) {
 base::expected<void, std::string> DeserializeTiling(
     cc::TileDisplayLayerImpl& layer,
     mojom::Tiling& wire,
-    bool is_incremental_update) {
+    bool update_damage) {
   const float scale_key =
       std::max(wire.raster_scale.x(), wire.raster_scale.y());
   auto& tiling = layer.GetOrCreateTilingFromScaleKey(scale_key);
@@ -594,7 +641,10 @@ base::expected<void, std::string> DeserializeTiling(
     tiling.SetTileContents(
         cc::TileIndex{base::saturated_cast<int>(wire_tile->column_index),
                       base::saturated_cast<int>(wire_tile->row_index)},
-        std::move(contents), is_incremental_update);
+        std::move(contents), update_damage);
+    if (tiling.tiles().empty()) {
+      layer.RemoveTiling(tiling.contents_scale_key());
+    }
   }
   return base::ok();
 }
@@ -926,24 +976,25 @@ base::expected<void, std::string> DeserializeAnimationUpdates(
 }  // namespace
 
 LayerContextImpl::LayerContextImpl(CompositorFrameSinkSupport* compositor_sink,
-                                   mojom::PendingLayerContext& context)
+                                   mojom::PendingLayerContext& context,
+                                   bool draw_mode_is_gpu)
     : compositor_sink_(compositor_sink),
       receiver_(this, std::move(context.receiver)),
       client_(std::move(context.client)),
       task_runner_provider_(cc::TaskRunnerProvider::CreateForDisplayTree(
           base::SingleThreadTaskRunner::GetCurrentDefault())),
       rendering_stats_(cc::RenderingStatsInstrumentation::Create()),
-      host_impl_(
-          cc::LayerTreeHostImpl::Create(GetDisplayTreeSettings(),
-                                        this,
-                                        task_runner_provider_.get(),
-                                        rendering_stats_.get(),
-                                        /*task_graph_runner=*/nullptr,
-                                        animation_host_->CreateImplInstance(),
-                                        /*dark_mode_filter=*/nullptr,
-                                        GenerateNextDisplayTreeId(),
-                                        /*image_worker_task_runner=*/nullptr,
-                                        /*scheduling_client=*/nullptr)) {
+      host_impl_(cc::LayerTreeHostImpl::Create(
+          GetDisplayTreeSettings(draw_mode_is_gpu),
+          this,
+          task_runner_provider_.get(),
+          rendering_stats_.get(),
+          /*task_graph_runner=*/nullptr,
+          animation_host_->CreateImplInstance(),
+          /*dark_mode_filter=*/nullptr,
+          GenerateNextDisplayTreeId(),
+          /*image_worker_task_runner=*/nullptr,
+          /*scheduling_client=*/nullptr)) {
   CHECK(host_impl_->InitializeFrameSink(this));
 }
 
@@ -1096,6 +1147,10 @@ size_t LayerContextImpl::CommitDurationSampleCountForTesting() const {
   return 0;
 }
 
+void LayerContextImpl::ReturnResource(ReturnedResource returned_resource) {
+  resources_to_return_.emplace_back(std::move(returned_resource));
+}
+
 void LayerContextImpl::DidObserveFirstScrollDelay(
     int source_frame_number,
     base::TimeDelta first_scroll_delay,
@@ -1142,27 +1197,6 @@ void LayerContextImpl::SubmitCompositorFrame(CompositorFrame frame,
 void LayerContextImpl::DidNotProduceFrame(const BeginFrameAck& ack,
                                           cc::FrameSkippedReason reason) {
   compositor_sink_->DidNotProduceFrame(ack);
-}
-
-void LayerContextImpl::ImportResource(TransferableResource resource) {
-  auto release_callback = base::BindOnce(
-      [](LayerContextImpl* impl, ResourceId id,
-         const gpu::SyncToken& sync_token, bool is_lost) {
-        impl->resources_to_return_.emplace_back(
-            id, sync_token,
-            /*release_fence=*/gfx::GpuFenceHandle(),
-            /*count=*/1, is_lost);
-      },
-      base::Unretained(this), resource.id);
-
-  host_impl_->resource_provider()->ImportResource(
-      resource, /*impl_release_callback=*/std::move(release_callback),
-      /*main_thread_release_callback=*/base::NullCallback(),
-      /*evicted_callback=*/base::NullCallback());
-}
-
-void LayerContextImpl::DiscardResource(ResourceId resource) {
-  host_impl_->resource_provider()->RemoveImportedResource(resource);
 }
 
 void LayerContextImpl::SetVisible(bool visible) {
@@ -1246,8 +1280,8 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
                                       *(update->view_transition_requests));
   }
 
-  RETURN_IF_ERROR(
-      CreateOrUpdateLayers(*this, update->layers, update->layer_order, layers));
+  RETURN_IF_ERROR(CreateOrUpdateLayers(
+      *(this->host_impl_.get()), update->layers, update->layer_order, layers));
 
   if (update->local_surface_id_from_parent) {
     layers.SetLocalSurfaceIdFromParent(*update->local_surface_id_from_parent);
@@ -1263,7 +1297,7 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
       }
       RETURN_IF_ERROR(
           DeserializeTiling(static_cast<cc::TileDisplayLayerImpl&>(*layer),
-                            *tiling, /*is_incremental_update=*/false));
+                            *tiling, /*update_damage=*/false));
     }
   }
 
@@ -1274,6 +1308,8 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   layers.set_source_frame_number(update->source_frame_number);
   layers.set_trace_id(
       cc::BeginMainFrameTraceId::FromUnsafeValue(update->trace_id));
+  layers.set_primary_main_frame_item_sequence_number(
+      update->primary_main_frame_item_sequence_number);
   layers.SetDeviceViewportRect(update->device_viewport);
 
   if (update->page_scale_factor <= 0 || update->min_page_scale_factor <= 0 ||
@@ -1362,7 +1398,8 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   return base::ok();
 }
 
-void LayerContextImpl::UpdateDisplayTiling(mojom::TilingPtr tiling) {
+void LayerContextImpl::UpdateDisplayTiling(mojom::TilingPtr tiling,
+                                           bool update_damage) {
   cc::LayerTreeImpl& layers = *host_impl_->active_tree();
   if (cc::LayerImpl* layer = layers.LayerById(tiling->layer_id)) {
     if (layer->GetLayerType() != cc::mojom::LayerType::kTileDisplay) {
@@ -1370,9 +1407,8 @@ void LayerContextImpl::UpdateDisplayTiling(mojom::TilingPtr tiling) {
       return;
     }
 
-    auto result =
-        DeserializeTiling(static_cast<cc::TileDisplayLayerImpl&>(*layer),
-                          *tiling, /*is_incremental_update=*/true);
+    auto result = DeserializeTiling(
+        static_cast<cc::TileDisplayLayerImpl&>(*layer), *tiling, update_damage);
     if (!result.has_value()) {
       receiver_.ReportBadMessage(result.error());
       return;

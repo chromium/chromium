@@ -17,8 +17,11 @@ import android.view.inputmethod.InputContentInfo;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.omnibox.OmniboxFeatures;
 
+@NullMarked
 class AutocompleteInputConnection extends InputConnectionWrapper {
     private static final String TAG = "AutocompleteInput";
     private static final boolean DEBUG = OmniboxFeatures.sDiagInputConnection.getValue();
@@ -369,7 +372,7 @@ class AutocompleteInputConnection extends InputConnectionWrapper {
     }
 
     @Override
-    public CharSequence getTextAfterCursor(final int n, final int flags) {
+    public @Nullable CharSequence getTextAfterCursor(final int n, final int flags) {
         if (DEBUG) Log.i(TAG, "getTextAfterCursor");
         onBeginImeCommand();
         CharSequence retVal = super.getTextAfterCursor(n, flags);
@@ -378,7 +381,7 @@ class AutocompleteInputConnection extends InputConnectionWrapper {
     }
 
     @Override
-    public CharSequence getTextBeforeCursor(final int n, final int flags) {
+    public @Nullable CharSequence getTextBeforeCursor(final int n, final int flags) {
         if (DEBUG) Log.i(TAG, "getTextBeforeCursor");
         onBeginImeCommand();
         CharSequence retVal = super.getTextBeforeCursor(n, flags);

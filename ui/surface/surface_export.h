@@ -15,11 +15,7 @@
 #endif  // defined(SURFACE_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(SURFACE_IMPLEMENTATION)
 #define SURFACE_EXPORT __attribute__((visibility("default")))
-#else
-#define SURFACE_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

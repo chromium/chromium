@@ -46,8 +46,9 @@ class TestSheetModel : public AuthenticatorRequestSheetModel {
     return u"Test Cancel";
   }
 
-  bool IsAcceptButtonVisible() const override { return true; }
-  bool IsAcceptButtonEnabled() const override { return true; }
+  AcceptButtonState GetAcceptButtonState() const override {
+    return AcceptButtonState::kEnabled;
+  }
   std::u16string GetAcceptButtonLabel() const override { return u"Test OK"; }
 
   std::u16string GetStepTitle() const override { return u"Test Title"; }

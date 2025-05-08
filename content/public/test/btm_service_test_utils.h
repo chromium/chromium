@@ -12,10 +12,10 @@
 
 namespace content {
 
-class DipsRedirectChainObserver : public BtmService::Observer {
+class BtmRedirectChainObserver : public BtmService::Observer {
  public:
-  DipsRedirectChainObserver(BtmService* service, GURL final_url);
-  ~DipsRedirectChainObserver() override;
+  BtmRedirectChainObserver(BtmService* service, GURL final_url);
+  ~BtmRedirectChainObserver() override;
 
   void Wait();
   const std::optional<std::vector<BtmRedirectInfoPtr>>& redirects() const {

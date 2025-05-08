@@ -40,9 +40,8 @@ def GetBuildData(method, request):
   url = ulib_request.Request(
       'https://cr-buildbucket.appspot.com/prpc/buildbucket.v2.Builds/' + method,
       request, headers)
-  conn = ulib_request.urlopen(url)
-  result = conn.read()
-  conn.close()
+  with ulib_request.urlopen(url) as conn:
+    result = conn.read()
   # Result is a multi-line string the first line of which is
   # deliberate garbage and the rest of which is a JSON payload.
   return json.loads(''.join(result.splitlines()[1:]))
@@ -127,9 +126,8 @@ def ProcessStepStdout(stdout_url, entry):
                 ulib_parse.unquote(stdout_url))
 
   # The following fails with Python 2.7.6, but succeeds with Python 2.7.14.
-  conn = ulib_request.urlopen(stdout_url + '?format=raw')
-  lines = conn.read().splitlines()
-  conn.close()
+  with ulib_request.urlopen(stdout_url + '?format=raw') as conn:
+    lines = conn.read().splitlines()
 
   pattern = re.compile(r'^\[(\d+)/(\d+)\]$')
   results = None
@@ -236,7 +234,7 @@ def SaveResultsAsCSV(results, output_filename):
       continue
     csv_data.extend(entries)
   if len(csv_data) > 0:
-    with open(output_filename, 'w') as csv_file:
+    with open(output_filename, 'w', encoding='utf-8') as csv_file:
       labels = sorted(csv_data[0].keys())
       w = csv.DictWriter(csv_file, fieldnames=labels)
       w.writeheader()
@@ -329,7 +327,7 @@ def main():
     ProcessStepStdout(stdout_url, results['builds'][-1])
 
   logging.debug('Saving output to %s', options.output_json)
-  with open(options.output_json, 'w') as f:
+  with open(options.output_json, 'w', encoding='utf-8') as f:
     json.dump(results, f, sort_keys=True, indent=2, separators=(',', ': '))
 
   logging.debug('Saving output to %s', options.output_csv)

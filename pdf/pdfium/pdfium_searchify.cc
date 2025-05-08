@@ -42,6 +42,10 @@ namespace chrome_pdf {
 
 namespace {
 
+// The maximum image dimension which is processed without downsampling by OCR.
+// TODO(crbug.com/413318481): Get this from OCR service.
+constexpr int kMaxImageDimensionForOcr = 2048;
+
 std::vector<uint32_t> Utf8ToCharcodes(const std::string& string) {
   std::u16string utf16_str = base::UTF8ToUTF16(string);
   std::vector<uint32_t> charcodes;
@@ -284,7 +288,8 @@ std::vector<uint8_t> PDFiumSearchify(
     for (int object_index = 0; object_index < object_count; object_index++) {
       // GetImageForOcr() checks for null `image`.
       FPDF_PAGEOBJECT image = FPDFPage_GetObject(page.get(), object_index);
-      SkBitmap bitmap = GetImageForOcr(document.get(), page.get(), image);
+      SkBitmap bitmap = GetImageForOcr(document.get(), page.get(), image,
+                                       kMaxImageDimensionForOcr);
       // The object is not an image or failed to get the bitmap from the image.
       if (bitmap.empty()) {
         continue;

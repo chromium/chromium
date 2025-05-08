@@ -12,8 +12,10 @@ import static org.chromium.chrome.browser.ui.device_lock.MissingDeviceLockProper
 import android.content.Context;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 public class MissingDeviceLockMediator {
     private final PropertyModel mModel;
 

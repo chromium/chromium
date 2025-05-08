@@ -58,6 +58,9 @@ class SafeBrowsingClient : public KeyedService {
   // `url` The url which was cancelled.
   virtual bool OnMainFrameUrlQueryCancellationDecided(web::WebState* web_state,
                                                       const GURL& url) = 0;
+  // Returns whether or not real time url checks allow navigation to continue
+  // while awaiting for the results.
+  virtual bool ShouldForceSyncRealTimeUrlChecks() const = 0;
 };
 
 #endif  // IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_SAFE_BROWSING_CLIENT_H_

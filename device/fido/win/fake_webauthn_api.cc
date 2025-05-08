@@ -24,6 +24,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
+#include "crypto/hash.h"
 #include "crypto/sha2.h"
 #include "device/fido/attestation_statement.h"
 #include "device/fido/attested_credential_data.h"
@@ -155,7 +156,7 @@ bool FakeWinWebAuthnApi::InjectNonDiscoverableCredential(
   std::tie(std::ignore, was_inserted) = registrations_.insert(
       {fido_parsing_utils::Materialize(credential_id),
        RegistrationData(VirtualFidoDevice::PrivateKey::FreshP256Key(),
-                        fido_parsing_utils::CreateSHA256Hash(rp_id),
+                        crypto::hash::Sha256(rp_id),
                         /*counter=*/0)});
   return was_inserted;
 }
@@ -166,7 +167,7 @@ bool FakeWinWebAuthnApi::InjectDiscoverableCredential(
     device::PublicKeyCredentialUserEntity user,
     std::optional<std::string> provider_name) {
   RegistrationData registration(VirtualFidoDevice::PrivateKey::FreshP256Key(),
-                                fido_parsing_utils::CreateSHA256Hash(rp.id),
+                                crypto::hash::Sha256(rp.id),
                                 /*counter=*/0);
   registration.is_resident = true;
   registration.user = std::move(user);
@@ -250,7 +251,7 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorMakeCredential(
       crypto::SHA256Hash(public_key->cose_key_bytes));
   std::string rp_id = base::WideToUTF8(rp->pwszId);
   std::array<uint8_t, crypto::kSHA256Length> rp_id_hash =
-      fido_parsing_utils::CreateSHA256Hash(rp_id);
+      crypto::hash::Sha256(rp_id);
   std::vector<uint8_t> user_id =
       fido_parsing_utils::Materialize(base::span(user->pbId, user->cbId));
 
@@ -326,8 +327,7 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorGetAssertion(
     return result_override_;
   }
 
-  const auto rp_id_hash =
-      fido_parsing_utils::CreateSHA256Hash(base::WideToUTF8(rp_id));
+  const auto rp_id_hash = crypto::hash::Sha256(base::WideToUTF8(rp_id));
 
   RegistrationData* registration = nullptr;
   base::span<const uint8_t> credential_id;

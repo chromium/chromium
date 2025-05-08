@@ -153,28 +153,30 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
   size_t file_count = files_to_register->GetMappingSize();
   DCHECK(file_count > 0);
 
-  ScopedJavaLocalRef<jclass> j_file_info_class = base::android::GetClass(
-      env, "org/chromium/base/process_launcher/FileDescriptorInfo");
-  ScopedJavaLocalRef<jobjectArray> j_file_infos(
-      env, env->NewObjectArray(file_count, j_file_info_class.obj(), NULL));
-  base::android::CheckException(env);
-
+  std::vector<int32_t> ids(file_count);
+  std::vector<int32_t> fds(file_count);
+  std::vector<bool> auto_closes(file_count);
+  std::vector<int64_t> offsets(file_count);
+  std::vector<int64_t> sizes(file_count);
   for (size_t i = 0; i < file_count; ++i) {
     int fd = files_to_register->GetFDAt(i);
     CHECK(0 <= fd);
-    int id = files_to_register->GetIDAt(i);
+    fds[i] = fd;
+    ids[i] = files_to_register->GetIDAt(i);
     const auto& region = files_to_register->GetRegionAt(i);
+    offsets[i] = region.offset;
+    sizes[i] = region.size;
     bool auto_close = files_to_register->OwnsFD(fd);
     if (auto_close) {
       std::ignore = files_to_register->ReleaseFD(fd).release();
     }
-
-    ScopedJavaLocalRef<jobject> j_file_info =
-        Java_ChildProcessLauncherHelperImpl_makeFdInfo(
-            env, id, fd, auto_close, region.offset, region.size);
-    CHECK(j_file_info.obj());
-    env->SetObjectArrayElement(j_file_infos.obj(), i, j_file_info.obj());
+    auto_closes[i] = auto_close;
   }
+
+  ScopedJavaLocalRef<jobjectArray> j_file_infos =
+      Java_ChildProcessLauncherHelperImpl_makeFdInfos(
+          env, ids, fds, auto_closes, offsets, sizes);
+  CHECK(j_file_infos.obj());
 
   AddRef();  // Balanced by OnChildProcessStarted.
   java_peer_.Reset(Java_ChildProcessLauncherHelperImpl_createAndStart(

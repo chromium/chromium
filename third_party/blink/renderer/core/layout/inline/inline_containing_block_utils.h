@@ -34,6 +34,7 @@ class InlineContainingBlockUtils {
     // The accumulated relative offset of the inline container to be applied to
     // any descendants after fragmentation.
     LogicalOffset relative_offset;
+    bool is_hidden_for_paint;
   };
 
   // It is safe to use Persistent here because this is used only on stack.

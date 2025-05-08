@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "components/google/core/common/google_util.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/navigation_controller.h"
@@ -65,6 +66,11 @@ bool IsOauthLoginComplete(const GURL& url) {
 bool IsChromeWebStoreURL(const GURL& url) {
   return (url.host() == extension_urls::GetWebstoreLaunchURL().host()) ||
          (url.host() == extension_urls::GetNewWebstoreLaunchURL().host());
+}
+
+bool IsBocaAppHostURL(const GURL& url) {
+  return (url.SchemeIs(content::kChromeUIUntrustedScheme) &&
+          url.host() == boca::kChromeBocaAppHost);
 }
 
 }  // namespace
@@ -152,6 +158,16 @@ bool OnTaskLockedSessionNavigationThrottle::MaybeProceedForOneLevelDeep(
   if (!window_tracker) {
     return false;
   }
+
+  // Google search sometimes redirects to the captcha page. We let this
+  // navigation proceed by default.
+  if (google_util::IsGoogleDomainUrl(
+          url, google_util::SubdomainPermission::DISALLOW_SUBDOMAIN,
+          google_util::PortPermission::ALLOW_NON_STANDARD_PORTS) &&
+      url.path_piece().starts_with("/sorry/")) {
+    return true;
+  }
+
   OnTaskBlocklist* const on_task_blocklist =
       window_tracker->on_task_blocklist();
   if (!on_task_blocklist->CanPerformOneLevelNavigation(tab)) {
@@ -169,14 +185,11 @@ bool OnTaskLockedSessionNavigationThrottle::
   // an exception), blob urls, non-boca app chrome urls, and other local
   // schemes.
   const GURL& url = navigation_handle()->GetURL();
-  bool is_boca_app_host_url =
-      (url.SchemeIs(content::kChromeUIUntrustedScheme) &&
-       url.host() == boca::kChromeBocaAppHost);
   return (navigation_handle()->IsDownload() ||
           (navigation_handle()->GetRequestMethod() !=
                net::HttpRequestHeaders::kGetMethod &&
            !navigation_handle()->IsFormSubmission()) ||
-          (!url.SchemeIsHTTPOrHTTPS() && !is_boca_app_host_url) ||
+          (!url.SchemeIsHTTPOrHTTPS() && !IsBocaAppHostURL(url)) ||
           IsChromeWebStoreURL(url));
 }
 
@@ -223,7 +236,20 @@ OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
     MaybeShowBlockedURLToast();
     return CANCEL;
   }
+
+  // Allow redirects triggered as separate navigation requests to go through.
+  if (navigation_handle()->GetRedirectChain().size() > 1) {
+    return PROCEED;
+  }
   const GURL& url = navigation_handle()->GetURL();
+
+  // There is no nav restriction associated with the home tab so the blocklist
+  // may enforce nav restrictions based on the previous active tab. We allow all
+  // requests to the home URL to go through for now.
+  // TODO(crbug.com/413468168) - Associate a nav restriction with the home tab.
+  if (IsBocaAppHostURL(url)) {
+    return PROCEED;
+  }
 
   // Checks if the query is the end of an OAuth login. If so, then we want
   // to let these pass.

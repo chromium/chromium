@@ -177,6 +177,8 @@ class DictationTestBase : public AccessibilityFeatureBrowserTest,
         utils_->GetEnabledFeatures();
     std::vector<base::test::FeatureRef> disabled_features =
         utils_->GetDisabledFeatures();
+    disabled_features.push_back(
+        ::features::kAccessibilityManifestV3SwitchAccess);
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
     InProcessBrowserTest::SetUpCommandLine(command_line);

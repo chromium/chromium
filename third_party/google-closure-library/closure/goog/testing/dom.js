@@ -21,9 +21,12 @@ goog.require('goog.dom.NodeType');
 goog.require('goog.dom.TagIterator');
 goog.require('goog.dom.TagName');
 goog.require('goog.dom.classlist');
+goog.require('goog.dom.safe');
+goog.require('goog.html.uncheckedconversions');
 goog.require('goog.iter');
 goog.require('goog.object');
 goog.require('goog.string');
+goog.require('goog.string.Const');
 goog.require('goog.style');
 goog.require('goog.testing.asserts');
 goog.require('goog.userAgent');
@@ -53,26 +56,26 @@ goog.testing.dom.END_TAG_MARKER_ = goog.testing.dom.createEndTagMarker_();
 /**
  * Tests if the given iterator over nodes matches the given Array of node
  * descriptors.  Throws an error if any match fails.
- * @param {goog.iter.Iterator} it  An iterator over nodes.
- * @param {Array<Node|number|string>} array Array of node descriptors to match
+ * @param {!goog.iter.Iterator} it  An iterator over nodes.
+ * @param {!Array<!Node|number|string>} array Array of node descriptors to match
  *     against.  Node descriptors can be any of the following:
  *         Node: Test if the two nodes are equal.
  *         number: Test node.nodeType == number.
  *         string starting with '#': Match the node's id with the text
  *             after "#".
  *         other string: Match the text node's contents.
+ * @suppress {strictMissingProperties} charAt on union type
  */
 goog.testing.dom.assertNodesMatch = function(it, array) {
-  'use strict';
-  var i = 0;
-  goog.iter.forEach(it, function(node) {
+  let i = 0;
+  function checkNode(node) {
     'use strict';
     if (array.length <= i) {
       fail(
           'Got more nodes than expected: ' +
           goog.testing.dom.describeNode_(node));
     }
-    var expected = array[i];
+    const expected = array[i];
 
     if (goog.dom.isNodeLike(expected)) {
       assertEquals('Nodes should match at position ' + i, expected, node);
@@ -83,7 +86,7 @@ goog.testing.dom.assertNodesMatch = function(it, array) {
       assertEquals(
           'Expected element at position ' + i, goog.dom.NodeType.ELEMENT,
           node.nodeType);
-      var expectedId = expected.substr(1);
+      const expectedId = expected.slice(1);
       assertEquals('IDs should match at position ' + i, expectedId, node.id);
 
     } else {
@@ -96,8 +99,14 @@ goog.testing.dom.assertNodesMatch = function(it, array) {
     }
 
     i++;
+  }
+  const iterator = goog.iter.toIterator(it);
+  const iterable = /** @type {!Iterable<?>} */ ({
+    [Symbol.iterator]: () => iterator,
   });
-
+  for (const node of iterable) {
+    checkNode(node);
+  }
   assertEquals('Used entire match array', array.length, i);
 };
 
@@ -156,7 +165,7 @@ goog.testing.dom.checkUserAgents_ = function(userAgents) {
     if (goog.string.contains(userAgents, ' ')) {
       throw new Error('Only a single negative user agent may be specified');
     }
-    return !goog.userAgent[userAgents.substr(1)];
+    return !goog.userAgent[userAgents.slice(1)];
   }
 
   var agents = userAgents.split(' ');
@@ -287,7 +296,13 @@ goog.testing.dom.assertHtmlContentsMatch = function(
     htmlPattern, actual, opt_strictAttributes) {
   'use strict';
   var div = goog.dom.createDom(goog.dom.TagName.DIV);
-  div.innerHTML = htmlPattern;
+
+  goog.dom.safe.setInnerHtml(
+      div,
+      goog.html.uncheckedconversions
+          .safeHtmlFromStringKnownToSatisfyTypeContract(
+              goog.string.Const.from('HTML is never attached to DOM'),
+              htmlPattern));
 
   var errorSuffix =
       '\nExpected\n' + div.innerHTML + '\nActual\n' + actual.innerHTML;
@@ -417,7 +432,12 @@ goog.testing.dom.assertHtmlMatches = function(
     htmlPattern, actual, opt_strictAttributes) {
   'use strict';
   var div = goog.dom.createDom(goog.dom.TagName.DIV);
-  div.innerHTML = actual;
+
+  goog.dom.safe.setInnerHtml(
+      div,
+      goog.html.uncheckedconversions
+          .safeHtmlFromStringKnownToSatisfyTypeContract(
+              goog.string.Const.from('HTML is never attached to DOM'), actual));
 
   goog.testing.dom.assertHtmlContentsMatch(
       htmlPattern, div, opt_strictAttributes);

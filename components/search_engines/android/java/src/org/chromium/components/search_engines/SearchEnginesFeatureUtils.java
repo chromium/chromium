@@ -6,23 +6,44 @@ package org.chromium.components.search_engines;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.CommandLine;
 import org.chromium.build.annotations.NullMarked;
 
 /** Helpers to access feature params for {@link SearchEnginesFeatures}. */
 @NullMarked
 public final class SearchEnginesFeatureUtils {
+
+    static final String ENABLE_CHOICE_APIS_DEBUG_SWITCH = "enable-choice-apis-debug";
+    static final String ENABLE_CHOICE_APIS_FAKE_BACKEND_SWITCH = "enable-choice-apis-fake-backend";
+
     /**
-     * Whether the feature should be powered by a fake backend. This avoid having dependencies on
-     * other device apps/components to test the feature.
+     * Whether verbose logs associated with device choice APIs should be enabled.
      *
-     * <p>In "fake backend" mode, if the "dialog_timeout_millis" param is set, it is also used to
-     * simulate a long-running backend query. It will respond that blocking is required after {@code
-     * min(3000, paramValue("dialog_timeout_millis"))} milliseconds.
-     *
-     * <p>This param is surfaced in {@code chrome://flags}.
+     * <p>This can be controlled by starting chrome with the <code>--enable-choice-apis-debug</code>
+     * command line flag.
      */
+    public static boolean isChoiceApisDebugEnabled() {
+        return CommandLine.getInstance().hasSwitch(ENABLE_CHOICE_APIS_DEBUG_SWITCH);
+    }
+
+    /**
+     * Whether the SearchEngineChoiceService should be powered by a fake backend. This avoids having
+     * dependencies on other device apps/components to test the feature.
+     *
+     * <p>This can be controlled by starting chrome with the <code>
+     * --enable-choice-apis-fake-backend</code> command line flag.
+     *
+     * <p>In "fake backend" mode, if the "ClayBlocking" feature's "dialog_timeout_millis" param is
+     * set, it is also used to simulate a long-running backend query. It will respond that blocking
+     * is required after {@code min(3000, paramValue("dialog_timeout_millis"))} milliseconds.
+     */
+    public static boolean isChoiceApisFakeBackendEnabled() {
+        return CommandLine.getInstance().hasSwitch(ENABLE_CHOICE_APIS_FAKE_BACKEND_SWITCH);
+    }
+
+    @Deprecated
     public static boolean clayBlockingUseFakeBackend() {
-        return clayBlockingFeatureParamAsBoolean("use_fake_backend", false);
+        return isChoiceApisFakeBackendEnabled();
     }
 
     /**
@@ -39,14 +60,9 @@ public final class SearchEnginesFeatureUtils {
         return clayBlockingFeatureParamAsBoolean("is_dark_launch", false);
     }
 
-    /**
-     * Whether verbose logs should be enabled.
-     *
-     * <p>This param is surfaced in {@code chrome://flags}.
-     */
+    @Deprecated
     public static boolean clayBlockingEnableVerboseLogging() {
-        // TODO(crbug.com/391570180): Finish cleaning up this flag once usage is removed.
-        return false;
+        return isChoiceApisDebugEnabled();
     }
 
     /**

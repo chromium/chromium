@@ -56,6 +56,10 @@ class SignatureModelExecutor : public BaseModelExecutor<OutputType, InputType> {
         static_cast<GenericModelExecutionTask<OutputType, InputType>*>(
             execution_task)
             ->GetSignatureRunner(GetSignature());
+    if (!signature_runner) {
+      *out_status = ExecutionStatus::kErrorModelFileNotValid;
+      return std::nullopt;
+    }
     Preprocess(GetTensorsMappedByInputNames(signature_runner), input);
     TfLiteStatus status = signature_runner->Invoke();
     if (status == kTfLiteCancelled) {

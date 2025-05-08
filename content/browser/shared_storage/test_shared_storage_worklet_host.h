@@ -98,18 +98,25 @@ class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
       bool initial_message);
 
   void OnRunOperationOnWorkletFinished(
-      base::TimeTicks start_time,
+      base::TimeTicks run_start_time,
+      base::TimeTicks execution_start_time,
+      int operation_id,
       bool success,
       const std::string& error_message) override;
 
-  void OnRunOperationOnWorkletFinishedHelper(base::TimeTicks start_time,
-                                             bool success,
-                                             const std::string& error_message,
-                                             bool initial_message);
+  void OnRunOperationOnWorkletFinishedHelper(
+      base::TimeTicks run_start_time,
+      base::TimeTicks execution_start_time,
+      int operation_id,
+      bool success,
+      const std::string& error_message,
+      bool initial_message);
 
   void OnRunURLSelectionOperationOnWorkletFinished(
       const GURL& urn_uuid,
-      base::TimeTicks start_time,
+      base::TimeTicks select_url_start_time,
+      base::TimeTicks execution_start_time,
+      int operation_id,
       const std::string& operation_name,
       const std::u16string& saved_query_name_to_cache,
       bool script_execution_success,
@@ -120,7 +127,9 @@ class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
 
   void OnRunURLSelectionOperationOnWorkletFinishedHelper(
       const GURL& urn_uuid,
-      base::TimeTicks start_time,
+      base::TimeTicks select_url_start_time,
+      base::TimeTicks execution_start_time,
+      int operation_id,
       const std::string& operation_name,
       const std::u16string& saved_query_name_to_cache,
       bool script_execution_success,

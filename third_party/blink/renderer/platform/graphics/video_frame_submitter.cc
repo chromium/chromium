@@ -165,8 +165,8 @@ class VideoFrameSubmitter::FrameSinkBundleProxy
     bundle_->InitializeCompositorFrameSinkType(frame_sink_id_.sink_id(), type);
   }
 
-  void BindLayerContext(
-      viz::mojom::blink::PendingLayerContextPtr context) override {}
+  void BindLayerContext(viz::mojom::blink::PendingLayerContextPtr context,
+                        bool draw_mode_is_gpu) override {}
 
 #if BUILDFLAG(IS_ANDROID)
   void SetThreads(const WTF::Vector<viz::Thread>& threads) override {
@@ -189,10 +189,8 @@ VideoFrameSubmitter::VideoFrameSubmitter(
       resource_provider_(std::move(resource_provider)),
       roughness_reporter_(std::make_unique<cc::VideoPlaybackRoughnessReporter>(
           std::move(roughness_reporting_callback))),
-      frame_trackers_(false, nullptr),
-      frame_sorter_(base::BindRepeating(
-          &cc::FrameSequenceTrackerCollection::AddSortedFrame,
-          base::Unretained(&frame_trackers_))) {
+      frame_trackers_(false, nullptr) {
+  frame_sorter_.AddObserver(&frame_trackers_);
   DETACH_FROM_THREAD(thread_checker_);
 }
 

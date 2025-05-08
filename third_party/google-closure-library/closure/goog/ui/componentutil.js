@@ -13,6 +13,7 @@ goog.provide('goog.ui.ComponentUtil');
 goog.require('goog.events.MouseAsMouseEventType');
 goog.require('goog.events.MouseEvents');
 goog.require('goog.events.PointerAsMouseEventType');
+goog.requireType('goog.ui.Component');
 
 
 

@@ -29,9 +29,10 @@
 # GPU
 # tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340 amd-0x7480
 #         amd64
-#         apple apple-apple-m1 apple-apple-m2
+#         apple apple-apple-m1 apple-apple-m2 apple-apple-m3
 #             apple-angle-metal-renderer:-apple-m1
 #             apple-angle-metal-renderer:-apple-m2
+#             apple-angle-metal-renderer:-apple-m3
 #         arm
 #         google google-0xffff google-0xc0de
 #         imagination
@@ -84,6 +85,8 @@
 # tags: [ clang-coverage no-clang-coverage ]
 # Skia Graphite
 # tags: [ graphite-enabled graphite-disabled ]
+# Memory capacity
+# tags: [ memory_lt_16gb memory_ge_16gb ]
 # results: [ Failure RetryOnFailure Skip Slow ]
 # END TAG HEADER
 
@@ -142,6 +145,20 @@ crbug.com/371802469 [ mac intel ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefe
 crbug.com/371802469 [ mac intel ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_camera [ Failure ]
 # Same with prefer-hardware
 crbug.com/371802469 [ amd-0x7340 angle-opengl asan graphite-disabled mac ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+
+# Flaky crashes that started when upgrading to Mac 15.4
+crbug.com/416294710 [ sequoia angle-opengl graphite-disabled intel-0x3e9b ] WebCodecs_ContentHint_hvc1.1.6.L123.00_detail [ Failure ]
+crbug.com/416294710 [ sequoia angle-opengl graphite-disabled intel-0x3e9b ] WebCodecs_ContentHint_hvc1.1.6.L123.00_motion [ Failure ]
+crbug.com/416294710 [ sequoia angle-opengl graphite-disabled intel-0x3e9b ] WebCodecs_EncodeColorSpace_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/416294710 [ sequoia angle-opengl graphite-disabled intel-0x3e9b ] WebCodecs_EncodeDecode_arraybuffer_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/416294710 [ sequoia angle-opengl graphite-disabled intel-0x3e9b ] WebCodecs_EncodeDecode_camera_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/416294710 [ sequoia angle-opengl graphite-disabled intel-0x3e9b ] WebCodecs_EncodeDecode_capture_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/416294710 [ sequoia angle-opengl graphite-disabled intel-0x3e9b ] WebCodecs_EncodeDecode_hw_decoder_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/416294710 [ sequoia angle-opengl graphite-disabled intel-0x3e9b ] WebCodecs_EncodeDecode_offscreen_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/416294710 [ sequoia angle-opengl graphite-disabled intel-0x3e9b ] WebCodecs_EncodeDecode_sw_decoder_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/416294710 [ sequoia angle-opengl graphite-disabled intel-0x3e9b ] WebCodecs_Encode_arraybuffer_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/416294710 [ sequoia angle-opengl graphite-disabled intel-0x3e9b ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/416294710 [ sequoia angle-opengl graphite-disabled intel-0x3e9b ] WebCodecs_Encode_capture_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
 
 crbug.com/389978730 [ win11 nvidia-0x2783 ] WebCodecs_EncodeColorSpace_av01.0.04M.08_prefer-hardware [ Failure ]
 

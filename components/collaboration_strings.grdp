@@ -34,6 +34,9 @@
   <message name="IDS_COLLABORATION_SEVERAL_GROUPS_REMOVED_NOTIFICATION" desc="Format for the notification text appearing when more than 2 tab groups are no longer shared with the user.">
     <ph name="GROUP_COUNT">$1<ex>5</ex></ph> tab groups no longer available
   </message>
+  <message name="IDS_COLLABORATION_RECENT_ACTIVITY_MENU_OPTION" desc="Accessibility string for the recent activity menu options." formatter_data="android_java">
+    Sharing options
+  </message>
   <!-- Error Messages -->
   <message name ="IDS_COLLABORATION_SOMETHING_WENT_WRONG_HEADER" desc="The header of the error dialog something went wrong.">
     Something went wrong.
@@ -83,7 +86,7 @@
   <message name ="IDS_COLLABORATION_ENTREPRISE_GROUP_CLOSED_BODY" desc="The body of the error dialog when entreprise group is closed.">
     When a group is closed, it limits who can join
   </message>
-  <!-- Error Messages -->
+  <!-- /Error Messages -->
   <!-- /Collaboration -->
 
   <!-- Data Sharing -->
@@ -155,8 +158,8 @@
   <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_UNKNOWN_USER" desc="The user name to show on the recent activity bottom sheet row if the user info cannot be found, e.g. deleted their account.">
     Deleted account
   </message>
-  <message name ="IDS_DATA_SHARING_SHOW_ALL_RECENT_ACTIVITY" desc="The text on the button to show the full recent activity logs.">
-    See full activity
+  <message name ="IDS_DATA_SHARING_SHARED_TAB_GROUP_ACTIVITY" desc="The text on the button to show the full recent activity logs and manage screen menu options." formatter_data="android_java">
+    Shared tab group activity
   </message>
   <!-- Recent Activity -->
 

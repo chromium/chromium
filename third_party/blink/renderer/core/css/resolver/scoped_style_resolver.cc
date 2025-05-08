@@ -137,8 +137,12 @@ void ScopedStyleResolver::AppendActiveStyleSheets(
       AddKeyframeRules(rule_set);
       AddFontFaceRules(rule_set);
       AddCounterStyleRules(rule_set);
-      AddPositionTryRules(rule_set);
-      AddFunctionRules(rule_set);
+      AddNameDefiningRules<StyleRulePositionTry>(
+          rule_set.PositionTryRules(), cascade_layer_map_,
+          /*out=*/position_try_rule_map_);
+      AddNameDefiningRules<StyleRuleFunction>(rule_set.FunctionRules(),
+                                              cascade_layer_map_,
+                                              /*out=*/function_rule_map_);
       AddFontFeatureValuesRules(rule_set);
       AddRuleSetToRuleSetGroupList(&rule_set, rule_set_groups_);
     }
@@ -332,42 +336,6 @@ void ScopedStyleResolver::RebuildCascadeLayerMap(
   cascade_layer_map_ = MakeGarbageCollected<CascadeLayerMap>(sheets);
 }
 
-void ScopedStyleResolver::AddPositionTryRules(const RuleSet& rule_set) {
-  for (StyleRulePositionTry* rule : rule_set.PositionTryRules()) {
-    auto result = position_try_rule_map_.insert(rule->Name(), rule);
-    if (result.is_new_entry) {
-      continue;
-    }
-    Member<StyleRulePositionTry>& stored_rule = result.stored_value->value;
-    const bool should_override =
-        !cascade_layer_map_ ||
-        cascade_layer_map_->CompareLayerOrder(stored_rule->GetCascadeLayer(),
-                                              rule->GetCascadeLayer()) <= 0;
-    if (should_override) {
-      stored_rule = rule;
-    }
-  }
-}
-
-void ScopedStyleResolver::AddFunctionRules(const RuleSet& rule_set) {
-  const HeapVector<Member<StyleRuleFunction>> function_rules =
-      rule_set.FunctionRules();
-  for (StyleRuleFunction* rule : function_rules) {
-    auto result = function_rule_map_.insert(rule->GetName(), rule);
-    if (result.is_new_entry) {
-      continue;
-    }
-    Member<StyleRuleFunction>& stored_rule = result.stored_value->value;
-    const bool should_override =
-        !cascade_layer_map_ ||
-        cascade_layer_map_->CompareLayerOrder(stored_rule->GetCascadeLayer(),
-                                              rule->GetCascadeLayer()) <= 0;
-    if (should_override) {
-      stored_rule = rule;
-    }
-  }
-}
-
 void ScopedStyleResolver::AddFontFeatureValuesRules(const RuleSet& rule_set) {
   // TODO(https://crbug.com/1382722): Support @font-feature-values in shadow
   // trees and support scoping correctly. See CSSFontSelector::GetFontData: In
@@ -408,7 +376,7 @@ StyleRulePositionTry* ScopedStyleResolver::PositionTryForName(
 }
 
 StyleRuleFunction* ScopedStyleResolver::FunctionForName(StringView name) {
-  auto iter = function_rule_map_.find(name.ToString());
+  auto iter = function_rule_map_.find(AtomicString(name));
   if (iter != function_rule_map_.end()) {
     return iter->value.Get();
   }

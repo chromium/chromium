@@ -32,8 +32,6 @@
 namespace ash {
 namespace {
 
-constexpr ui::ColorId kBackgroundColor =
-    cros_tokens::kCrosSysSystemBaseElevatedOpaque;
 constexpr int kBubbleOverlapOverPicker = 4;
 constexpr int kQuickInsertBubbleCornerRadius = 12;
 constexpr gfx::Insets kMargins(8);
@@ -76,7 +74,7 @@ QuickInsertPreviewBubbleView::QuickInsertPreviewBubbleView(
                                views::BubbleBorder::LEFT_CENTER,
                                views::BubbleBorder::STANDARD_SHADOW,
                                /*autosize=*/true) {
-  set_background_color(kBackgroundColor);
+  SetBackgroundColor(cros_tokens::kCrosSysSystemBaseElevatedOpaque);
 
   // Configuration for this view.
   SetLayoutManager(

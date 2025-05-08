@@ -770,9 +770,28 @@ void DownloadManagerImpl::CreateNewDownloadItemToStart(
     info->save_info->total_bytes = info->total_bytes;
   }
   content::devtools_instrumentation::WillBeginDownload(info.get(), download);
+  // Check if the download is a duplicate. Only GET download URL that has
+  // existed are considered duplicate.
+  bool is_duplicate = duplicate_file_exists && (info->method == "GET");
+  if (is_duplicate) {
+    bool found_same_url = false;
+    // If there is another download with the same path, the download is
+    // not a duplicate.
+    for (auto it = downloads_.begin(); it != downloads_.end(); ++it) {
+      if (it->second->GetTargetFilePath() == duplicate_download_file_path) {
+        if (it->second->GetURL() != info->url()) {
+          is_duplicate = false;
+          break;
+        } else {
+          found_same_url = true;
+        }
+      }
+    }
+    is_duplicate = is_duplicate && found_same_url;
+  }
   std::move(callback).Run(
       std::move(info), download,
-      duplicate_file_exists ? duplicate_download_file_path : base::FilePath(),
+      is_duplicate ? duplicate_download_file_path : base::FilePath(),
       should_persist_new_download_);
   if (download) {
     // For new downloads, we notify here, rather than earlier, so that

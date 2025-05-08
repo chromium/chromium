@@ -289,6 +289,7 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
     this.session_.append(
         {
           maxTokens: 0,
+          // TODO(crbug.com/416009528): This field is deprecated. Remove it.
           tokenOffset: 0,
           input: {pieces: textToInputPieces(this.contextText_)},
         },
@@ -407,6 +408,7 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
     clonedSession.append(
         {
           maxTokens: 0,
+          // TODO(crbug.com/416009528): This field is deprecated. Remove it.
           tokenOffset: 0,
           input: {pieces: pieces},
         },
@@ -416,7 +418,8 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
           maxOutputTokens: 0,
           topK: null,
           temperature: null,
-          responseJsonSchema: '',
+          responseJsonSchema: null,
+          constraint: null,
         },
         this.responseRouter_.$.bindNewPipeAndPassRemote());
     const onResponseId =

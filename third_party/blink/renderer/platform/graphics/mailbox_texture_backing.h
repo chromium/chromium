@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
 
@@ -22,18 +23,18 @@ class MailboxTextureBacking : public TextureBacking {
       sk_sp<SkImage> sk_image,
       scoped_refptr<MailboxRef> mailbox_ref,
       const gfx::Size& size,
-      SkColorType sk_color_type,
+      const viz::SharedImageFormat& format,
       SkAlphaType alpha_type,
-      sk_sp<SkColorSpace> sk_color_space,
+      const gfx::ColorSpace& color_space,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper);
   explicit MailboxTextureBacking(
       const gpu::Mailbox& mailbox,
       scoped_refptr<MailboxRef> mailbox_ref,
       const gfx::Size& size,
-      SkColorType sk_color_type,
+      const viz::SharedImageFormat& format,
       SkAlphaType alpha_type,
-      sk_sp<SkColorSpace> sk_color_space,
+      const gfx::ColorSpace& color_space,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper);
   ~MailboxTextureBacking() override;

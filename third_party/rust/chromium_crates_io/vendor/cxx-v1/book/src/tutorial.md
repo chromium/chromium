@@ -426,7 +426,7 @@ fn main() {
     let chunks = vec![b"fearless".to_vec(), b"concurrency".to_vec()];
     let mut buf = MultiBuf { chunks, pos: 0 };
     let blobid = client.put(&mut buf);
-    println!("blobid = {}", blobid);
+    println!("blobid = {blobid}");
 }
 ```
 
@@ -552,7 +552,7 @@ fn main() {
     let chunks = vec![b"fearless".to_vec(), b"concurrency".to_vec()];
     let mut buf = MultiBuf { chunks, pos: 0 };
     let blobid = client.put(&mut buf);
-    println!("blobid = {}", blobid);
+    println!("blobid = {blobid}");
 
     // Add a tag.
     client.tag(blobid, "rust");

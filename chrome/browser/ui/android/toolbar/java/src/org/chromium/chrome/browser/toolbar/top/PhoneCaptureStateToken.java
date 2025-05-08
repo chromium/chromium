@@ -9,6 +9,8 @@ import android.content.res.ColorStateList;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.VisualState;
 
@@ -19,6 +21,7 @@ import java.util.Objects;
  * against new states, to infer if anything important has changed. Especially useful when deciding
  * if a new bitmap capture is warranted.
  */
+@NullMarked
 class PhoneCaptureStateToken {
     private final @ColorInt int mTint;
     private final int mTabCount;
@@ -35,7 +38,7 @@ class PhoneCaptureStateToken {
     public PhoneCaptureStateToken(
             @ColorInt int tint,
             int tabCount,
-            ButtonData optionalButtonData,
+            @Nullable ButtonData optionalButtonData,
             @VisualState int visualState,
             VisibleUrlText visibleUrlText,
             @DrawableRes int securityIcon,
@@ -69,7 +72,7 @@ class PhoneCaptureStateToken {
      * @return The difference.
      */
     public static @ToolbarSnapshotDifference int getAnyDifference(
-            PhoneCaptureStateToken current, PhoneCaptureStateToken next) {
+            @Nullable PhoneCaptureStateToken current, PhoneCaptureStateToken next) {
         assert next != null;
         if (current == null) {
             return ToolbarSnapshotDifference.NULL;

@@ -12,6 +12,7 @@ import android.widget.ImageButton;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -51,8 +52,9 @@ public class ReloadButtonCoordinator {
     public ReloadButtonCoordinator(
             ImageButton view,
             ReloadButtonCoordinator.Delegate delegate,
-            ObservableSupplier<Tab> tabSupplier,
+            ObservableSupplier<@Nullable Tab> tabSupplier,
             ObservableSupplier<Boolean> ntpLoadingSupplier,
+            ObservableSupplier<Boolean> enabledSupplier,
             ThemeColorProvider themeColorProvider) {
         mView = view;
 
@@ -80,18 +82,10 @@ public class ReloadButtonCoordinator {
                         themeColorProvider,
                         tabSupplier,
                         ntpLoadingSupplier,
+                        enabledSupplier,
                         (text) -> Toast.showAnchoredToast(mView.getContext(), mView, text),
                         mView.getResources());
         PropertyModelChangeProcessor.create(model, mView, ReloadButtonViewBinder::bind);
-    }
-
-    /**
-     * Changes reload button enabled state.
-     *
-     * @param isEnabled indicates whether the button should be enabled or disabled.
-     */
-    public void setEnabled(boolean isEnabled) {
-        mMediator.setEnabled(isEnabled);
     }
 
     /**
@@ -131,6 +125,15 @@ public class ReloadButtonCoordinator {
         final var rect = new Rect();
         mView.getHitRect(rect);
         return rect;
+    }
+
+    /**
+     * Gets visibility.
+     *
+     * @return a Boolean indicating whether view is visible or not.
+     */
+    public boolean isVisibile() {
+        return mMediator.isVisible();
     }
 
     /** Destroys current object instance. It can't be used after this call. */

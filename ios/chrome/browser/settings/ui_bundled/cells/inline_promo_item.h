@@ -19,7 +19,7 @@
 @property(nonatomic, copy) NSString* promoText;
 
 // Title of the more info button.
-@property(nonatomic, strong) NSString* moreInfoButtonTitle;
+@property(nonatomic, copy) NSString* moreInfoButtonTitle;
 
 // Whether or not the close button should be visible. `YES` by default.
 @property(nonatomic, assign) BOOL shouldShowCloseButton;

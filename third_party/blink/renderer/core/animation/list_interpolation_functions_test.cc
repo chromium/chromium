@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/animation/css_number_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/interpolation_value.h"
 #include "third_party/blink/renderer/core/animation/underlying_value.h"
+#include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -208,7 +209,8 @@ TEST(ListInterpolationFunctionsTest, EqualCompositeSameLengths) {
   auto list2 = CreateInterpolableList({{1.0, 1}, {2.0, 2}, {3.0, 3}});
 
   PropertyHandle property_handle(GetCSSPropertyZIndex());
-  CSSNumberInterpolationType interpolation_type(property_handle);
+  CSSNumberInterpolationType* interpolation_type(
+      MakeGarbageCollected<CSSNumberInterpolationType>(property_handle));
   UnderlyingValueOwner owner;
   owner.Set(interpolation_type, std::move(list1));
 
@@ -235,7 +237,8 @@ TEST(ListInterpolationFunctionsTest, EqualCompositeDifferentLengths) {
   auto list2 = CreateInterpolableList({4.0, 5.0});
 
   PropertyHandle property_handle(GetCSSPropertyZIndex());
-  CSSNumberInterpolationType interpolation_type(property_handle);
+  CSSNumberInterpolationType* interpolation_type(
+      MakeGarbageCollected<CSSNumberInterpolationType>(property_handle));
   UnderlyingValueOwner owner;
   owner.Set(interpolation_type, std::move(list1));
 
@@ -264,7 +267,8 @@ TEST(ListInterpolationFunctionsTest,
       {true, false, true});
 
   PropertyHandle property_handle(GetCSSPropertyZIndex());
-  CSSNumberInterpolationType interpolation_type(property_handle);
+  CSSNumberInterpolationType* interpolation_type(
+      MakeGarbageCollected<CSSNumberInterpolationType>(property_handle));
   UnderlyingValueOwner owner;
   owner.Set(interpolation_type, std::move(list1));
 
@@ -294,7 +298,8 @@ TEST(ListInterpolationFunctionsTest,
   auto list2 = CreateInterpolableList({{4.0, 1}, {5.0, 4}, {6.0, 3}});
 
   PropertyHandle property_handle(GetCSSPropertyZIndex());
-  CSSNumberInterpolationType interpolation_type(property_handle);
+  CSSNumberInterpolationType* interpolation_type(
+      MakeGarbageCollected<CSSNumberInterpolationType>(property_handle));
   UnderlyingValueOwner owner;
   owner.Set(interpolation_type, std::move(list1));
 

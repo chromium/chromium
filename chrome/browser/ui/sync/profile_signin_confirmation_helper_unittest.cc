@@ -219,7 +219,7 @@ TEST_F(ProfileSigninConfirmationHelperTest, PromptForNewProfile_Extensions) {
                       extensions::mojom::ManifestLocation::kComponent);
   extensions::ExtensionPrefs::Get(profile_.get())
       ->AddGrantedPermissions(webstore->id(), extensions::PermissionSet());
-  extension_registrar->AddExtension(webstore.get());
+  extension_registrar->AddExtension(webstore);
   EXPECT_FALSE(GetCallbackResult(
       base::BindOnce(&ui::CheckShouldPromptForNewProfile, profile_.get())));
 
@@ -227,7 +227,7 @@ TEST_F(ProfileSigninConfirmationHelperTest, PromptForNewProfile_Extensions) {
       "foo", std::string(), extensions::mojom::ManifestLocation::kInternal);
   extensions::ExtensionPrefs::Get(profile_.get())
       ->AddGrantedPermissions(extension->id(), extensions::PermissionSet());
-  extension_registrar->AddExtension(extension.get());
+  extension_registrar->AddExtension(extension);
   EXPECT_TRUE(GetCallbackResult(
       base::BindOnce(&ui::CheckShouldPromptForNewProfile, profile_.get())));
 }

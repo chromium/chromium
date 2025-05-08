@@ -40,6 +40,10 @@ td {
   flex: 1;
 }
 
+.value {
+  font-weight: bold;
+}
+
 #expandedContent {
   padding-inline-end: var(--cr-section-padding);
   padding-inline-start: var(--cr-section-indent-padding);

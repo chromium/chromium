@@ -332,6 +332,7 @@ static inline void ReadHDRMetadata(
     std::optional<gfx::HDRMetadata>* hdr_metadata) {
   std::optional<gfx::HdrMetadataCta861_3> clli;
   std::optional<gfx::HdrMetadataSmpteSt2086> mdcv;
+  std::optional<gfx::HdrMetadataAgtm> agtm;
   png_unknown_chunkp unknown_chunks;
   size_t num_unknown_chunks =
       png_get_unknown_chunks(png, info, &unknown_chunks);
@@ -383,8 +384,12 @@ static inline void ReadHDRMetadata(
                    min_luminance_times_10000 * 1e-4f);
       continue;
     }
+    if (strcmp(reinterpret_cast<const char*>(chunk.name), "agTm") == 0) {
+      agtm.emplace(SkData::MakeWithCopy(chunk.data, chunk.size));
+      continue;
+    }
   }
-  if (clli || mdcv) {
+  if (clli || mdcv || agtm) {
     if (!hdr_metadata->has_value()) {
       hdr_metadata->emplace();
     }
@@ -393,6 +398,9 @@ static inline void ReadHDRMetadata(
     }
     if (mdcv) {
       (*hdr_metadata)->smpte_st_2086 = mdcv;
+    }
+    if (agtm) {
+      (*hdr_metadata)->agtm = agtm;
     }
   }
 }

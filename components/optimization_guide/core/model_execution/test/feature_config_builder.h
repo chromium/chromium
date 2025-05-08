@@ -10,8 +10,10 @@
 #include <string>
 
 #include "components/optimization_guide/proto/descriptors.pb.h"
+#include "components/optimization_guide/proto/features/example_for_testing.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/proto/redaction.pb.h"
+#include "components/optimization_guide/proto/substitution.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 
 namespace optimization_guide {
@@ -42,9 +44,17 @@ proto::ProtoField OutputField();
 // Reference StringValue::value
 proto::ProtoField StringValueField();
 
+// Construct a RangeExpr.
+proto::RangeExpr RangeExpr(proto::ProtoField repeated_field,
+                           proto::SubstitutedString expr);
+
 // Make Substitution putting 'field' in 'tmpl'.
 proto::SubstitutedString FieldSubstitution(const std::string& tmpl,
-                                           proto::ProtoField&& field);
+                                           proto::ProtoField field);
+
+// Make a Substitution that formats a repeated field.
+proto::SubstitutedString ForEachSubstitution(proto::ProtoField repeated_field,
+                                             proto::SubstitutedString expr);
 
 // Make a template for "url: {page_url}".
 proto::SubstitutedString PageUrlSubstitution();
@@ -112,6 +122,26 @@ inline auto Int64Proto(int64_t value) {
   return v;
 }
 
+// Construct an InputConfig that formats a proto::ExampleForTestingRequest.
+proto::OnDeviceModelExecutionInputConfig TestInputConfig(
+    proto::SubstitutedString context_template,
+    proto::SubstitutedString execution_template);
+
+// Construct an output config compatible with ResponseHolder.
+proto::OnDeviceModelExecutionOutputConfig ResponseHolderOutputConfig();
+
+// Construct a SubstitutedString that repeats a chunk for each element in
+// proto::ExampleForTestingRequest::repeated
+inline proto::SubstitutedString ForEachRepeated(proto::SubstitutedString sub) {
+  return ForEachSubstitution(
+      ProtoField({proto::ExampleForTestingRequest::kRepeatedFieldFieldNumber}),
+      std::move(sub));
+}
+
+// A StringSubstitution that formats an ExampleForTestingMessage.
+proto::SubstitutedString FormatTestMessage();
+
+// Construct a TextSafetyModelMetadata that composes the feature configs.
 proto::TextSafetyModelMetadata SafetyMetadata(
     std::initializer_list<proto::FeatureTextSafetyConfiguration> configs);
 

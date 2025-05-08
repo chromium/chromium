@@ -20,7 +20,9 @@
 #include "net/dns/mock_host_resolver.h"
 
 namespace hats {
+
 namespace {
+
 const char kTestSurveyTrigger[] = "testing";
 const SurveyBitsData kTestSurveyProductSpecificBitsData{
     {"Test Field 1", true},

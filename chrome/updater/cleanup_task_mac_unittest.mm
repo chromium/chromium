@@ -14,6 +14,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "chrome/updater/configurator.h"
+#include "chrome/updater/external_constants.h"
+#include "chrome/updater/prefs.h"
 #include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/updater_branding.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,6 +24,11 @@
 namespace updater {
 
 TEST(CleanupTaskMacTest, CleansOldCache) {
+  const UpdaterScope scope = GetUpdaterScopeForTesting();
+  VLOG(2) << __func__ << scope;
+  if (scope == UpdaterScope::kSystem) {
+    GTEST_SKIP() << "Cannot create system prefs as user.";
+  }
   base::test::TaskEnvironment task_environment;
 
   base::FilePath cache;
@@ -36,8 +44,9 @@ TEST(CleanupTaskMacTest, CleansOldCache) {
   EXPECT_TRUE(base::CreateDirectory(crx_cache));
   EXPECT_TRUE(base::WriteFile(file, "contents"));
 
-  auto cleanup_task =
-      base::MakeRefCounted<CleanupTask>(GetUpdaterScopeForTesting());
+  auto cleanup_task = base::MakeRefCounted<CleanupTask>(
+      scope, base::MakeRefCounted<Configurator>(
+                 CreateLocalPrefs(scope), CreateExternalConstants(), scope));
   base::RunLoop run_loop;
   cleanup_task->Run(run_loop.QuitClosure());
   run_loop.Run();
@@ -49,6 +58,10 @@ TEST(CleanupTaskMacTest, CleansOldCache) {
 }
 
 TEST(CleanupTaskMacTest, CleansOldCacheSymlinkSafe) {
+  const UpdaterScope scope = GetUpdaterScopeForTesting();
+  if (scope == UpdaterScope::kSystem) {
+    GTEST_SKIP() << "Cannot create system prefs as user.";
+  }
   base::test::TaskEnvironment task_environment;
 
   base::ScopedTempDir temp;
@@ -62,8 +75,9 @@ TEST(CleanupTaskMacTest, CleansOldCacheSymlinkSafe) {
   ASSERT_TRUE(base::DeletePathRecursively(cache));
   ASSERT_FALSE(symlink(temp.GetPath().value().c_str(), cache.value().c_str()));
 
-  auto cleanup_task =
-      base::MakeRefCounted<CleanupTask>(GetUpdaterScopeForTesting());
+  auto cleanup_task = base::MakeRefCounted<CleanupTask>(
+      scope, base::MakeRefCounted<Configurator>(
+                 CreateLocalPrefs(scope), CreateExternalConstants(), scope));
   base::RunLoop run_loop;
   cleanup_task->Run(run_loop.QuitClosure());
   run_loop.Run();

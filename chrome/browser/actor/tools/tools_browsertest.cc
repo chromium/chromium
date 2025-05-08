@@ -4,6 +4,7 @@
 
 #include <string_view>
 
+#include "base/command_line.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/actor/tools/wait_tool.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/common/chrome_switches.h"
@@ -29,6 +31,8 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
+#include "ui/display/display_switches.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -37,6 +41,7 @@ using base::test::TestFuture;
 using content::ChildFrameAt;
 using content::EvalJs;
 using content::ExecJs;
+using content::GetDOMNodeId;
 using content::JsReplace;
 using content::RenderFrameHost;
 using content::TestNavigationManager;
@@ -117,6 +122,11 @@ class ActorToolsTest : public InProcessBrowserTest {
     actor_coordinator().StartTaskForTesting(browser()->GetActiveTabInterface());
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "1");
+  }
+
   void TearDownOnMainThread() override {
     // The coordinator has a pointer to the profile, which must be released
     // before the browser is torn down to avoid a dangling pointer.
@@ -173,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_SentToElement) {
 
   // Send a click to the document body.
   {
-    std::optional<int> body_id = FindContentNodeId(*main_frame(), "body");
+    std::optional<int> body_id = GetDOMNodeId(*main_frame(), "body");
     ASSERT_TRUE(body_id);
 
     BrowserAction action = MakeClick(body_id.value());
@@ -189,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_SentToElement) {
   // Send a second click to the button.
   {
     std::optional<int> button_id =
-        FindContentNodeId(*main_frame(), "button#clickable");
+        GetDOMNodeId(*main_frame(), "button#clickable");
     ASSERT_TRUE(button_id);
 
     BrowserAction action = MakeClick(button_id.value());
@@ -229,8 +239,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_DisabledElement) {
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  std::optional<int> button_id =
-      FindContentNodeId(*main_frame(), "button#disabled");
+  std::optional<int> button_id = GetDOMNodeId(*main_frame(), "button#disabled");
   ASSERT_TRUE(button_id);
 
   BrowserAction action = MakeClick(button_id.value());
@@ -250,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_OffscreenElement) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   std::optional<int> button_id =
-      FindContentNodeId(*main_frame(), "button#offscreen");
+      GetDOMNodeId(*main_frame(), "button#offscreen");
   ASSERT_TRUE(button_id);
 
   BrowserAction action = MakeClick(button_id.value());
@@ -273,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_TextInput) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   std::string typed_string = "test";
-  std::optional<int> input_id = FindContentNodeId(*main_frame(), "#input");
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#input");
   ASSERT_TRUE(input_id);
   BrowserAction action =
       MakeType(input_id.value(), typed_string, /*follow_by_enter=*/true);
@@ -312,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_Events) {
 
   std::string typed_string = "ab";
 
-  std::optional<int> input_id = FindContentNodeId(*main_frame(), "#input");
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#input");
   ASSERT_TRUE(input_id);
   BrowserAction action =
       MakeType(input_id.value(), typed_string, /*follow_by_enter=*/true);
@@ -342,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_EmptyText) {
 
   std::string typed_string = "";
 
-  std::optional<int> input_id = FindContentNodeId(*main_frame(), "#input");
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#input");
   ASSERT_TRUE(input_id);
   BrowserAction action =
       MakeType(input_id.value(), typed_string, /*follow_by_enter=*/true);
@@ -365,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_FollowByEnter) {
   // The log starts empty.
   ASSERT_EQ("", EvalJs(web_contents(), "input_event_log.join(',')"));
 
-  std::optional<int> input_id = FindContentNodeId(*main_frame(), "#input");
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#input");
   ASSERT_TRUE(input_id);
 
   // Send 'a' followed by enter. Ensure the click event is seen.
@@ -405,6 +414,83 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_FollowByEnter) {
       EvalJs(web_contents(), "input_event_log.join(',')"));
 }
 
+// Ensure the type tool doesn't fail if the keydown event is handled (page
+// called preventDefault).
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_PageHandlesKeyEvents) {
+  const GURL url = embedded_test_server()->GetURL("/actor/input.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  std::optional<int> input_id =
+      GetDOMNodeId(*main_frame(), "#keyHandlingInput");
+  ASSERT_TRUE(input_id);
+
+  std::string typed_string = "abc";
+  BrowserAction action =
+      MakeType(input_id.value(), typed_string, /*follow_by_enter=*/true);
+
+  TestFuture<bool> result;
+  actor_coordinator().Act(action, result.GetCallback());
+  EXPECT_TRUE(result.Get());
+}
+
+// Ensure that the default mode is for the type tool to replace any existing
+// text in the targeted element.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_ReplacesText) {
+  const GURL url = embedded_test_server()->GetURL("/actor/input.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     "document.getElementById('input').value = 'foo bar'"));
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#input");
+  ASSERT_TRUE(input_id);
+
+  std::string typed_string = "abc";
+  BrowserAction action =
+      MakeType(input_id.value(), typed_string, /*follow_by_enter=*/false);
+
+  TestFuture<bool> result;
+  actor_coordinator().Act(action, result.GetCallback());
+  EXPECT_TRUE(result.Get());
+  EXPECT_EQ(typed_string,
+            EvalJs(web_contents(), "document.getElementById('input').value"));
+}
+
+// Ensure that if the page moves focus immediately to a different input box, the
+// type tool correctly operates on the new input box.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_FocusMovesFocus) {
+  const GURL url = embedded_test_server()->GetURL("/actor/input.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Setup the first input box to immediately move focus to the second input
+  // box. Ensure the existing text in the second box is replaced.
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     R"JS(
+                        let input = document.getElementById('input');
+                        let input2 = document.getElementById('input2');
+                        input2.value = 'foo bar';
+                        input.addEventListener('focus', () => {
+                          input2.focus();
+                        });
+                      )JS"));
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#input");
+  ASSERT_TRUE(input_id);
+
+  std::string typed_string = "abc";
+  BrowserAction action =
+      MakeType(input_id.value(), typed_string, /*follow_by_enter=*/false);
+
+  TestFuture<bool> result;
+  actor_coordinator().Act(action, result.GetCallback());
+  EXPECT_TRUE(result.Get());
+
+  // Since focusing the first input causes the second input to become focused,
+  // the tool should operate on the second input.
+  EXPECT_EQ("",
+            EvalJs(web_contents(), "document.getElementById('input').value"));
+  EXPECT_EQ(typed_string,
+            EvalJs(web_contents(), "document.getElementById('input2').value"));
+}
+
 // ===============================================
 // Mouse Move Tool
 // ===============================================
@@ -435,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_Events) {
 
   // Move mouse over #first DIV
   {
-    std::optional<int> first_id = FindContentNodeId(*main_frame(), "#first");
+    std::optional<int> first_id = GetDOMNodeId(*main_frame(), "#first");
     BrowserAction action = MakeMouseMove(first_id.value());
 
     TestFuture<bool> result;
@@ -449,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_Events) {
 
   // Move mouse over #second DIV
   {
-    std::optional<int> second_id = FindContentNodeId(*main_frame(), "#second");
+    std::optional<int> second_id = GetDOMNodeId(*main_frame(), "#second");
     BrowserAction action = MakeMouseMove(second_id.value());
 
     TestFuture<bool> result;
@@ -473,8 +559,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_TargetOutsideViewport) {
   // Move mouse over #offscreen DIV. This should fail since #offscreen is
   // outside the viewport.
   {
-    std::optional<int> offscreen_id =
-        FindContentNodeId(*main_frame(), "#offscreen");
+    std::optional<int> offscreen_id = GetDOMNodeId(*main_frame(), "#offscreen");
     BrowserAction action = MakeMouseMove(offscreen_id.value());
 
     TestFuture<bool> result;
@@ -492,8 +577,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_TargetOutsideViewport) {
   // Try moving the mouse over #offscreen again. This time it should succeed
   // since it was scrolled into the viewport.
   {
-    std::optional<int> offscreen_id =
-        FindContentNodeId(*main_frame(), "#offscreen");
+    std::optional<int> offscreen_id = GetDOMNodeId(*main_frame(), "#offscreen");
     BrowserAction action = MakeMouseMove(offscreen_id.value());
 
     TestFuture<bool> result;
@@ -509,7 +593,25 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_TargetOutsideViewport) {
 // Scroll Tool
 // ===============================================
 
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ScrollOnPage) {
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_FailOnInvalidNodeID) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Use a random node id that doesn't exist.
+  float scroll_offset_y = 50;
+  BrowserAction action = MakeScroll(kNonExistentContentNodeId,
+                                    /*scroll_offset_x=*/0, scroll_offset_y);
+
+  TestFuture<bool> result_fail;
+  actor_coordinator().Act(action, result_fail.GetCallback());
+  EXPECT_FALSE(result_fail.Get());
+
+  EXPECT_EQ(0, EvalJs(web_contents(), "window.scrollY"));
+}
+
+// Test scrolling the viewport vertically.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ScrollPageVertical) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -536,21 +638,246 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ScrollOnPage) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_FailOnInvalidNodeID) {
+// Test scrolling the viewport horizontally.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ScrollPageHorizontal) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  // Use a random node id that doesn't exist.
+  int scroll_offset_x = 50;
+
+  {
+    // If no node id is passed, it will scroll the page's viewport.
+    BrowserAction action =
+        MakeScroll(/*content_node_id=*/std::nullopt, scroll_offset_x,
+                   /*scroll_offset_y=*/0);
+    TestFuture<bool> result_success;
+    actor_coordinator().Act(action, result_success.GetCallback());
+    EXPECT_TRUE(result_success.Get());
+    EXPECT_EQ(scroll_offset_x, EvalJs(web_contents(), "window.scrollX"));
+  }
+
+  {
+    BrowserAction action =
+        MakeScroll(/*content_node_id=*/std::nullopt, scroll_offset_x,
+                   /*scroll_offset_y=*/0);
+    TestFuture<bool> result_success;
+    actor_coordinator().Act(action, result_success.GetCallback());
+    EXPECT_TRUE(result_success.Get());
+    EXPECT_EQ(2 * scroll_offset_x, EvalJs(web_contents(), "window.scrollX"));
+  }
+}
+
+// Test scrolling in a sub-scroller on the page.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ScrollElement) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  int scroll_offset_x = 50;
+  int scroll_offset_y = 80;
+
+  int scroller = GetDOMNodeId(*main_frame(), "#scroller").value();
+
+  {
+    BrowserAction action = MakeScroll(scroller, scroll_offset_x,
+                                      /*scroll_offset_y=*/0);
+    TestFuture<bool> result_success;
+    actor_coordinator().Act(action, result_success.GetCallback());
+    EXPECT_TRUE(result_success.Get());
+    EXPECT_EQ(scroll_offset_x,
+              EvalJs(web_contents(),
+                     "document.getElementById('scroller').scrollLeft"));
+  }
+
+  {
+    BrowserAction action = MakeScroll(scroller,
+                                      /*scroll_offset_x=*/0, scroll_offset_y);
+    TestFuture<bool> result_success;
+    actor_coordinator().Act(action, result_success.GetCallback());
+    EXPECT_TRUE(result_success.Get());
+    EXPECT_EQ(scroll_offset_y,
+              EvalJs(web_contents(),
+                     "document.getElementById('scroller').scrollTop"));
+  }
+}
+
+// Test scrolling over a non-scrollable element returns failure.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_NonScrollable) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  int scroll_offset_y = 80;
+
+  int scroller = GetDOMNodeId(*main_frame(), "#nonscroll").value();
+
+  {
+    BrowserAction action = MakeScroll(scroller,
+                                      /*scroll_offset_x=*/0, scroll_offset_y);
+    TestFuture<bool> result_success;
+    actor_coordinator().Act(action, result_success.GetCallback());
+    EXPECT_FALSE(result_success.Get());
+    EXPECT_EQ(0, EvalJs(web_contents(),
+                        "document.getElementById('nonscroll').scrollTop"));
+    EXPECT_EQ(0, EvalJs(web_contents(), "window.scrollY"));
+  }
+}
+
+// Test that a scrolling over a scroller with overflow in one axis only works
+// correctly.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_OneAxisScroller) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  int scroll_offset = 80;
+
+  int scroller = GetDOMNodeId(*main_frame(), "#horizontalscroller").value();
+
+  // Try a vertical scroll - it should fail since the scroller has only
+  // horizontal overflow.
+  {
+    BrowserAction action = MakeScroll(scroller,
+                                      /*scroll_offset_x=*/0, scroll_offset);
+    TestFuture<bool> result_success;
+    actor_coordinator().Act(action, result_success.GetCallback());
+    EXPECT_FALSE(result_success.Get());
+    EXPECT_EQ(
+        0, EvalJs(web_contents(),
+                  "document.getElementById('horizontalscroller').scrollTop"));
+    EXPECT_EQ(0, EvalJs(web_contents(), "window.scrollY"));
+  }
+
+  // Horizontal scroll should succeed.
+  {
+    BrowserAction action = MakeScroll(scroller, scroll_offset,
+                                      /*scroll_offset_y=*/0);
+    TestFuture<bool> result_success;
+    actor_coordinator().Act(action, result_success.GetCallback());
+    EXPECT_TRUE(result_success.Get());
+    EXPECT_EQ(
+        scroll_offset,
+        EvalJs(web_contents(),
+               "document.getElementById('horizontalscroller').scrollLeft"));
+  }
+}
+
+// Ensure scroll distances are correctly scaled when browser zoom is applied.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_BrowserZoom) {
+  // Set the default browser page zoom to 150%.
+  double level = blink::ZoomFactorToZoomLevel(1.5);
+  browser()->profile()->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(level);
+
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // 60 physical pixels translates to 40 CSS pixels when the zoom factor is 1.5
+  // (3 physical pixels : 2 CSS Pixels)
+  int scroll_offset_physical = 60;
+  int expected_offset_css = 40;
+  int scroller = GetDOMNodeId(*main_frame(), "#scroller").value();
+
+  {
+    BrowserAction action =
+        MakeScroll(scroller,
+                   /*scroll_offset_x=*/0, scroll_offset_physical);
+    TestFuture<bool> result_success;
+    actor_coordinator().Act(action, result_success.GetCallback());
+    EXPECT_TRUE(result_success.Get());
+    EXPECT_EQ(expected_offset_css,
+              EvalJs(web_contents(),
+                     "document.getElementById('scroller').scrollTop"));
+  }
+}
+
+// Ensure scroll distances are correctly scaled when applied to a CSS zoomed
+// scroller.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_CSSZoom) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // 60 physical pixels translates to 120 CSS pixels since the scroller is
+  // inside a `zoom:0.5` subtree (1 physical pixels : 2 CSS Pixels)
+  int scroll_offset_physical = 60;
+  int expected_offset_css = 120;
+  int scroller = GetDOMNodeId(*main_frame(), "#zoomedscroller").value();
+
+  {
+    BrowserAction action =
+        MakeScroll(scroller,
+                   /*scroll_offset_x=*/0, scroll_offset_physical);
+    TestFuture<bool> result_success;
+    actor_coordinator().Act(action, result_success.GetCallback());
+    EXPECT_TRUE(result_success.Get());
+    EXPECT_EQ(expected_offset_css,
+              EvalJs(web_contents(),
+                     "document.getElementById('zoomedscroller').scrollTop"));
+  }
+}
+
+class ActorToolsTestDSF2 : public ActorToolsTest {
+ public:
+  ActorToolsTestDSF2() = default;
+  explicit ActorToolsTestDSF2(const ActorToolsTest&) = delete;
+  ActorToolsTestDSF2& operator=(const ActorToolsTestDSF2&) = delete;
+
+  ~ActorToolsTestDSF2() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "2");
+  }
+};
+
+// Ensure scroll distances are correctly scaled when using a non-1 device scale
+// factor
+IN_PROC_BROWSER_TEST_F(ActorToolsTestDSF2, ScrollTool_ScrollDSF) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // 80 physical pixels translates to 40 CSS pixels when the device scale factor
+  // = 2 (2 physical pixels : 1 CSS pixel);
+  int scroll_offset_physical = 80;
+  int expected_offset_css = 40;
+  int scroller = GetDOMNodeId(*main_frame(), "#scroller").value();
+
+  {
+    BrowserAction action =
+        MakeScroll(scroller,
+                   /*scroll_offset_x=*/0, scroll_offset_physical);
+    TestFuture<bool> result_success;
+    actor_coordinator().Act(action, result_success.GetCallback());
+    EXPECT_TRUE(result_success.Get());
+    EXPECT_EQ(expected_offset_css,
+              EvalJs(web_contents(),
+                     "document.getElementById('scroller').scrollTop"));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ZeroIdTargetsViewport) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // DOMNodeIDs start at 1 so 0 should be interpreted as viewport.
+  constexpr int kViewportId = 0;
   float scroll_offset_y = 50;
-  BrowserAction action = MakeScroll(kNonExistentContentNodeId,
+  BrowserAction action = MakeScroll(kViewportId,
                                     /*scroll_offset_x=*/0, scroll_offset_y);
 
-  TestFuture<bool> result_fail;
-  actor_coordinator().Act(action, result_fail.GetCallback());
-  EXPECT_FALSE(result_fail.Get());
+  TestFuture<bool> result;
+  actor_coordinator().Act(action, result.GetCallback());
+  EXPECT_TRUE(result.Get());
 
-  EXPECT_EQ(0, EvalJs(web_contents(), "window.scrollY"));
+  // Not sure why, since all zooms should be exactly 1.0, but some numerical
+  // instability seems to creep in. Using ExtractDouble and EXPECT_FLOAT_EQ for
+  // that reason.
+  EXPECT_FLOAT_EQ(scroll_offset_y,
+                  EvalJs(web_contents(), "window.scrollY").ExtractDouble());
 }
 
 // ===============================================
@@ -934,7 +1261,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_OptionSelected) {
 
   const std::string plain_select_id = "#plainSelect";
   const int32_t plain_select_dom_node_id =
-      FindContentNodeId(*main_frame(), plain_select_id).value();
+      GetDOMNodeId(*main_frame(), plain_select_id).value();
 
   ASSERT_EQ(GetSelectElementCurrentValue(plain_select_id), "alpha");
 
@@ -977,7 +1304,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_Events) {
 
   const std::string plain_select_id = "#plainSelect";
   const int32_t plain_select_dom_node_id =
-      FindContentNodeId(*main_frame(), plain_select_id).value();
+      GetDOMNodeId(*main_frame(), plain_select_id).value();
 
   ASSERT_EQ(GetSelectElementCurrentValue(plain_select_id), "alpha");
   ASSERT_EQ("", EvalJs(web_contents(), "select_event_log.join(',')"));
@@ -1000,7 +1327,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_NonExistentValueFails) {
 
   const std::string plain_select_id = "#plainSelect";
   int32_t plain_select_dom_node_id =
-      FindContentNodeId(*main_frame(), plain_select_id).value();
+      GetDOMNodeId(*main_frame(), plain_select_id).value();
 
   const std::string initial_value =
       GetSelectElementCurrentValue(plain_select_id);
@@ -1023,7 +1350,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_NonOptionNodeValueFails) {
 
   const std::string non_options_select_id = "#nonOptionsSelect";
   int32_t non_options_select_dom_node_id =
-      FindContentNodeId(*main_frame(), non_options_select_id).value();
+      GetDOMNodeId(*main_frame(), non_options_select_id).value();
 
   const std::string initial_value =
       GetSelectElementCurrentValue(non_options_select_id);
@@ -1073,7 +1400,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_ValueIsCaseSensitive) {
 
   const std::string plain_select_id = "#plainSelect";
   int32_t plain_select_dom_node_id =
-      FindContentNodeId(*main_frame(), plain_select_id).value();
+      GetDOMNodeId(*main_frame(), plain_select_id).value();
   const std::string initial_value =
       GetSelectElementCurrentValue(plain_select_id);
 
@@ -1097,7 +1424,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_DisabledOptionFails) {
 
   const std::string plain_select_id = "#plainSelect";
   int32_t plain_select_dom_node_id =
-      FindContentNodeId(*main_frame(), plain_select_id).value();
+      GetDOMNodeId(*main_frame(), plain_select_id).value();
   const std::string initial_value =
       GetSelectElementCurrentValue(plain_select_id);
 
@@ -1119,7 +1446,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_DisabledOptGroupFails) {
 
   const std::string group_select_id = "#groupedSelect";
   int32_t plain_select_dom_node_id =
-      FindContentNodeId(*main_frame(), group_select_id).value();
+      GetDOMNodeId(*main_frame(), group_select_id).value();
   const std::string initial_value =
       GetSelectElementCurrentValue(group_select_id);
 
@@ -1143,7 +1470,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_DisabledSelectFails) {
 
   const std::string disabled_select_id = "#disabledSelect";
   int32_t disabled_select_dom_node_id =
-      FindContentNodeId(*main_frame(), disabled_select_id).value();
+      GetDOMNodeId(*main_frame(), disabled_select_id).value();
   const std::string initial_value =
       GetSelectElementCurrentValue(disabled_select_id);
 
@@ -1165,7 +1492,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_GroupedOptionSelected) {
 
   const std::string grouped_select_id = "#groupedSelect";
   int32_t grouped_select_dom_node_id =
-      FindContentNodeId(*main_frame(), grouped_select_id).value();
+      GetDOMNodeId(*main_frame(), grouped_select_id).value();
 
   ASSERT_EQ(GetSelectElementCurrentValue(grouped_select_id), "alpha");
 
@@ -1198,7 +1525,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_ListboxOptionSelected) {
 
   const std::string listbox_select_id = "#listboxSelect";
   int32_t listbox_select_dom_node_id =
-      FindContentNodeId(*main_frame(), listbox_select_id).value();
+      GetDOMNodeId(*main_frame(), listbox_select_id).value();
 
   // List box starts with no element selected.
   ASSERT_EQ(GetSelectElementCurrentValue(listbox_select_id), "");

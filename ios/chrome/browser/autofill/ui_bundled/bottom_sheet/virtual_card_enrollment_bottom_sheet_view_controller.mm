@@ -8,6 +8,7 @@
 #import "components/autofill/core/browser/payments/payments_service_url.h"
 #import "components/grit/components_scaled_resources.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -292,52 +293,11 @@ CGFloat const kCreditCardCellHeight = 64;
 // Adds a text view for the given legal message to the under title view.
 - (void)addLegalMessages:(NSArray<SaveCardMessageWithLinks*>*)messages {
   for (SaveCardMessageWithLinks* message in messages) {
-    UITextView* textView = CreateUITextViewWithTextKit1();
-    textView.scrollEnabled = NO;
-    textView.editable = NO;
+    UITextView* textView =
+        [AutofillCreditCardUtil createTextViewForLegalMessage:message];
     textView.delegate = self;
-    textView.translatesAutoresizingMaskIntoConstraints = NO;
-    textView.textContainerInset = UIEdgeInsetsZero;
-    textView.linkTextAttributes =
-        @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]};
-    textView.backgroundColor = UIColor.clearColor;
-    textView.attributedText = [VirtualCardEnrollmentBottomSheetViewController
-        attributedTextForText:message.messageText
-                     linkUrls:message.linkURLs
-                   linkRanges:message.linkRanges];
     [_customUnderTitleView addArrangedSubview:textView];
   }
-}
-
-+ (NSAttributedString*)attributedTextForText:(NSString*)text
-                                    linkUrls:(std::vector<GURL>)linkURLs
-                                  linkRanges:(NSArray*)linkRanges {
-  NSMutableParagraphStyle* centeredTextStyle =
-      [[NSMutableParagraphStyle alloc] init];
-  centeredTextStyle.alignment = NSTextAlignmentCenter;
-  NSDictionary* textAttributes = @{
-    NSFontAttributeName :
-        [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2],
-    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
-    NSParagraphStyleAttributeName : centeredTextStyle,
-  };
-
-  NSMutableAttributedString* attributedText =
-      [[NSMutableAttributedString alloc] initWithString:text
-                                             attributes:textAttributes];
-  if (linkRanges) {
-    [linkRanges enumerateObjectsUsingBlock:^(NSValue* rangeValue, NSUInteger i,
-                                             BOOL* stop) {
-      CrURL* crurl = [[CrURL alloc] initWithGURL:linkURLs[i]];
-      if (!crurl || !crurl.gurl.is_valid()) {
-        return;
-      }
-      [attributedText addAttribute:NSLinkAttributeName
-                             value:crurl.nsurl
-                             range:rangeValue.rangeValue];
-    }];
-  }
-  return attributedText;
 }
 
 #pragma mark - UITextViewDelegate

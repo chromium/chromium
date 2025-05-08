@@ -220,7 +220,7 @@ std::string AudioManagerWin::GetAssociatedOutputDeviceID(
   return CoreAudioUtil::GetMatchingOutputDeviceID(input_device_id);
 }
 
-const char* AudioManagerWin::GetName() {
+const std::string_view AudioManagerWin::GetName() {
   return "Windows";
 }
 

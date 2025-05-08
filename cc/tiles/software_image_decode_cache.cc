@@ -182,25 +182,27 @@ ImageDecodeCache::TaskResult SoftwareImageDecodeCache::GetTaskForImageAndRef(
     const TracingInfo& tracing_info) {
   DCHECK_EQ(client_id, ImageDecodeCache::kDefaultClientId)
       << "SoftwareImageDecodeCache cannot be shared between multiple clients.";
-  return GetTaskForImageAndRefInternal(image, tracing_info,
-                                       TaskType::kInRaster);
+  return GetTaskForImageAndRefInternal(image, tracing_info, TaskType::kInRaster,
+                                       /*speculative*/ false);
 }
 
 ImageDecodeCache::TaskResult
 SoftwareImageDecodeCache::GetOutOfRasterDecodeTaskForImageAndRef(
     ClientId client_id,
-    const DrawImage& image) {
+    const DrawImage& image,
+    bool speculative) {
   DCHECK_EQ(client_id, ImageDecodeCache::kDefaultClientId)
       << "SoftwareImageDecodeCache cannot be shared between multiple clients.";
   return GetTaskForImageAndRefInternal(image, TracingInfo(0, TilePriority::NOW),
-                                       TaskType::kOutOfRaster);
+                                       TaskType::kOutOfRaster, speculative);
 }
 
 ImageDecodeCache::TaskResult
 SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
     const DrawImage& image,
     const TracingInfo& tracing_info,
-    TaskType task_type) {
+    TaskType task_type,
+    bool speculative) {
   CacheKey key = CacheKey::FromDrawImage(
       image, GetColorTypeForPaintImage(image.target_color_params(),
                                        image.paint_image()));

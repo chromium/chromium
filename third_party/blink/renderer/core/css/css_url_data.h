@@ -22,7 +22,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_URL_DATA_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/css/css_origin_clean.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -36,12 +36,12 @@ class Document;
 class KURL;
 
 // Stores data for a <url> value (url(), src()).
-class CORE_EXPORT CSSUrlData {
+class CORE_EXPORT CSSUrlData : public GarbageCollected<CSSUrlData> {
  public:
   CSSUrlData(const AtomicString& unresolved_url,
              const KURL& resolved_url,
              const Referrer&,
-             OriginClean,
+             bool is_from_origin_clean_style_sheet,
              bool is_ad_related);
 
   // Create URL data with a resolved (absolute) URL. Generally used for
@@ -57,15 +57,20 @@ class CORE_EXPORT CSSUrlData {
   bool ReResolveUrl(const Document&) const;
 
   // Returns an absolutized copy of this URL data (suitable for computed value).
-  CSSUrlData MakeAbsolute() const;
+  const CSSUrlData* MakeAbsolute() const;
 
   // Returns a copy where the unresolved URL has been resolved against
   // `base_url` (using `charset` encoding if valid).
-  CSSUrlData MakeResolved(const KURL& base_url,
-                          const WTF::TextEncoding& charset) const;
+  const CSSUrlData* MakeResolved(const KURL& base_url,
+                                 const WTF::TextEncoding& charset) const;
+
+  // Returns a copy with the URL (re)resolved against the base URL of the
+  // document if there's is potential risk of "dangling markup". Otherwise
+  // returns itself.
+  const CSSUrlData* MakeResolvedIfDanglingMarkup(const Document&) const;
 
   // Returns a copy where the referrer has been reset.
-  CSSUrlData MakeWithoutReferrer() const;
+  const CSSUrlData* MakeWithoutReferrer() const;
 
   const AtomicString& ValueForSerialization() const {
     return is_local_ || absolute_url_.empty() ? relative_url_ : absolute_url_;
@@ -79,10 +84,6 @@ class CORE_EXPORT CSSUrlData {
   bool IsFromOriginCleanStyleSheet() const {
     return is_from_origin_clean_style_sheet_;
   }
-  OriginClean GetOriginClean() const {
-    return is_from_origin_clean_style_sheet_ ? OriginClean::kTrue
-                                             : OriginClean::kFalse;
-  }
   bool IsAdRelated() const { return is_ad_related_; }
 
   // Returns true if this URL is "local" to the specified Document (either by
@@ -90,6 +91,8 @@ class CORE_EXPORT CSSUrlData {
   bool IsLocal(const Document&) const;
 
   String CssText() const;
+
+  void Trace(Visitor*) const {}
 
   bool operator==(const CSSUrlData& other) const;
 

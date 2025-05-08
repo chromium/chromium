@@ -39,15 +39,18 @@ class TouchToFillPaymentMethodProperties {
         // A section containing the IBAN data.
         int IBAN = 2;
 
+        // A section containing the loyalty card data.
+        int LOYALTY_CARD = 3;
+
         // A "Continue" button, which is shown when there is only one payment
         // method available.
-        int FILL_BUTTON = 3;
+        int FILL_BUTTON = 4;
 
         // A footer section containing additional actions.
-        int FOOTER = 4;
+        int FOOTER = 5;
 
         // A section with a terms label is present when card benefits are available.
-        int TERMS_LABEL = 5;
+        int TERMS_LABEL = 6;
     }
 
     /** Metadata associated with a card's image. */
@@ -120,6 +123,20 @@ class TouchToFillPaymentMethodProperties {
         };
 
         private IbanProperties() {}
+    }
+
+    /** Properties for a loyalty card entry in the TouchToFill sheet for payments. */
+    static class LoyaltyCardProperties {
+        static final PropertyModel.ReadableObjectPropertyKey<String> LOYALTY_CARD_NUMBER =
+                new PropertyModel.ReadableObjectPropertyKey<>("loyalty_card_number");
+        static final PropertyModel.ReadableObjectPropertyKey<String> MERCHANT_NAME =
+                new PropertyModel.ReadableObjectPropertyKey<>("merchant_name");
+
+        static final PropertyKey[] NON_TRANSFORMING_LOYALTY_CARD_KEYS = {
+            LOYALTY_CARD_NUMBER, MERCHANT_NAME
+        };
+
+        private LoyaltyCardProperties() {}
     }
 
     /**

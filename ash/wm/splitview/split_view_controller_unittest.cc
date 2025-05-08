@@ -68,6 +68,7 @@
 #include "ui/aura/test/test_windows.h"
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/dialog_model.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_utils.h"
@@ -79,6 +80,7 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/shadow_controller.h"
 #include "ui/wm/core/window_util.h"
@@ -2773,38 +2775,6 @@ TEST_F(SplitViewControllerTest, ActivateNonSnappableWindow) {
   EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
 }
 
-// Tests that if a snapped window has a bubble transient child, the bubble's
-// bounds should always align with the snapped window's bounds.
-TEST_F(SplitViewControllerTest, AdjustTransientChildBounds) {
-  std::unique_ptr<views::Widget> widget(
-      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET));
-  aura::Window* window = widget->GetNativeWindow();
-  window->SetProperty(aura::client::kResizeBehaviorKey,
-                      aura::client::kResizeBehaviorCanResize |
-                          aura::client::kResizeBehaviorCanMaximize);
-  split_view_controller()->SnapWindow(window, SnapPosition::kPrimary);
-  const gfx::Rect window_bounds = window->GetBoundsInScreen();
-
-  // Create a bubble widget without anchor. (anchored bubble's bounds won't be
-  // adjusted)
-  views::Widget* bubble_widget = views::BubbleDialogDelegateView::CreateBubble(
-      new TestBubbleDialogDelegateView(widget->GetNativeWindow()));
-  aura::Window* bubble_window = bubble_widget->GetNativeWindow();
-  EXPECT_TRUE(::wm::HasTransientAncestor(bubble_window, window));
-  // Test that the bubble is created inside its anchor widget.
-  EXPECT_TRUE(window_bounds.Contains(bubble_window->GetBoundsInScreen()));
-
-  // Now try to manually move the bubble out of the snapped window.
-  bubble_window->SetBoundsInScreen(
-      split_view_controller()->GetSnappedWindowBoundsInScreen(
-          SnapPosition::kSecondary, window, chromeos::kDefaultSnapRatio,
-          /*account_for_divider_width=*/true),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window));
-  // Test that the bubble can't be moved outside of its anchor widget.
-  EXPECT_TRUE(window_bounds.Contains(bubble_window->GetBoundsInScreen()));
-  EndSplitView();
-}
-
 // Tests the divider closest position ratio if work area is not starts from the
 // top of the display.
 TEST_F(SplitViewControllerTest, DividerClosestRatioOnWorkArea) {
@@ -4123,6 +4093,63 @@ TEST_F(SplitViewControllerTest, SplitViewDividerViewAccessibleProperties) {
   EXPECT_EQ(data.role, ax::mojom::Role::kToolbar);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             l10n_util::GetStringUTF16(IDS_ASH_SNAP_GROUP_DIVIDER_A11Y_NAME));
+}
+
+// Ensure tracked Transient children are translucent during drag.
+TEST_F(SplitViewControllerTest, ResizeChangeOpacityOnTransientChild) {
+  const gfx::Rect bounds(0, 0, 400, 400);
+  std::unique_ptr<aura::Window> left_window(CreateWindow(bounds));
+  std::unique_ptr<aura::Window> right_window(CreateWindow(bounds));
+
+  split_view_controller()->SnapWindow(left_window.get(),
+                                      SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(right_window.get(),
+                                      SnapPosition::kSecondary);
+  ASSERT_TRUE(split_view_controller()->InSplitViewMode());
+
+  auto host1 = std::make_unique<views::BubbleDialogModelHost>(
+      ui::DialogModel::Builder().Build(), /*anchor=*/nullptr,
+      views::BubbleBorder::Arrow::NONE);
+  host1->set_parent_window(right_window.get());
+  host1->set_close_on_deactivate(false);
+
+  auto* bubble_widget1 =
+      views::BubbleDialogDelegate::CreateBubble(std::move(host1));
+  bubble_widget1->Show();
+
+  SplitViewDivider* divider = split_view_divider();
+
+  // Expected opacity of transient children.
+  constexpr float kExpectedOpacity = 0.5f;
+
+  const auto center_point =
+      divider->GetDividerBoundsInScreen(/*is_dragging=*/false).CenterPoint();
+  divider->StartResizeWithDivider(center_point);
+  EXPECT_EQ(kExpectedOpacity,
+            bubble_widget1->GetNativeWindow()->layer()->GetTargetOpacity());
+  EXPECT_EQ(kExpectedOpacity,
+            bubble_widget1->GetNativeWindow()->layer()->opacity());
+
+  auto host2 = std::make_unique<views::BubbleDialogModelHost>(
+      ui::DialogModel::Builder().Build(), /*anchor=*/nullptr,
+      views::BubbleBorder::Arrow::NONE);
+  host2->set_parent_window(left_window.get());
+  host2->set_close_on_deactivate(false);
+  auto* bubble_widget2 =
+      views::BubbleDialogDelegate::CreateBubble(std::move(host2));
+  bubble_widget2->Show();
+  EXPECT_EQ(kExpectedOpacity,
+            bubble_widget2->GetNativeWindow()->layer()->GetTargetOpacity());
+
+  // Bubble becomes non transient, so the oapcity should set back to 1.0f.
+  wm::RemoveTransientChild(right_window.get(),
+                           bubble_widget1->GetNativeWindow());
+  EXPECT_EQ(1.f,
+            bubble_widget1->GetNativeWindow()->layer()->GetTargetOpacity());
+
+  divider->EndResizeWithDivider(center_point);
+  EXPECT_EQ(1.f,
+            bubble_widget2->GetNativeWindow()->layer()->GetTargetOpacity());
 }
 
 // The test class that enables the feature flag of portrait mode split view

@@ -58,6 +58,14 @@ const char kDuplexNoTumble[] = "DuplexNoTumble";
 constexpr int kPaperSizeTresholdMicrons = 100;
 constexpr int kMicronsInMm = 1000;
 
+struct GListDeleter {
+  void operator()(void* ptr) const {
+    if (ptr) {
+      g_list_free(reinterpret_cast<GList*>(ptr));
+    }
+  }
+};
+
 // Checks whether |gtk_paper_size| can be used to represent user selected media.
 // In fuzzy match mode checks that paper sizes are "close enough" (less than
 // 1mm difference). In the exact mode, looks for the paper with the same PPD
@@ -130,40 +138,6 @@ StickyPrintSettingGtk& GetLastUsedSettings() {
   return *settings;
 }
 
-// Helper class to track GTK printers.
-class GtkPrinterList {
- public:
-  GtkPrinterList() { gtk_enumerate_printers(SetPrinter, this, nullptr, TRUE); }
-
-  ~GtkPrinterList() = default;
-  // Can return nullptr if the printer cannot be found due to:
-  // - Printer list out of sync with printer dialog UI.
-  // - Querying for non-existent printers like 'Print to PDF'.
-  ScopedGObject<GtkPrinter> GetPrinterWithName(const std::string& name) {
-    if (name.empty()) {
-      return nullptr;
-    }
-
-    for (ScopedGObject<GtkPrinter>& printer : printers_) {
-      if (gtk_printer_get_name(printer.get()) == name) {
-        return printer;
-      }
-    }
-
-    return nullptr;
-  }
-
- private:
-  // Callback function used by gtk_enumerate_printers() to get all printer.
-  static gboolean SetPrinter(GtkPrinter* printer, gpointer data) {
-    GtkPrinterList* printer_list = reinterpret_cast<GtkPrinterList*>(data);
-    printer_list->printers_.push_back(WrapGObject(printer));
-    return FALSE;
-  }
-
-  std::vector<ScopedGObject<GtkPrinter>> printers_;
-};
-
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
 ScopedGKeyFile GetGKeyFileFromDict(const base::Value::Dict& data,
                                    std::string_view key) {
@@ -178,6 +152,43 @@ ScopedGKeyFile GetGKeyFileFromDict(const base::Value::Dict& data,
   return key_file;
 }
 #endif
+
+std::vector<GtkPrintBackend*> GetPrintBackends() {
+  std::vector<GtkPrintBackend*> backends;
+  std::unique_ptr<GList, GListDeleter> backends_list(
+      gtk_print_backend_load_modules());
+  for (GList* it = backends_list.get(); it; it = it->next) {
+    auto* backend = reinterpret_cast<GtkPrintBackend*>(it->data);
+    CHECK(backend);
+    backends.push_back(backend);
+    // This is required to populate the printer list.
+    if (gtk::GtkCheckVersion(4)) {
+      WrapGObject(gtk_print_backend_get_printers(backend));
+    } else {
+      std::unique_ptr<GList, GListDeleter>(
+          gtk_print_backend_get_printer_list(backend));
+    }
+  }
+
+  // This is required to wait for the printer list to be populated.
+  gtk_enumerate_printers(
+      [](GtkPrinter* printer, gpointer data) -> gboolean { return false; },
+      nullptr, nullptr, true);
+
+  return backends;
+}
+
+ScopedGObject<GtkPrinter> GetPrinterWithName(const char* name) {
+  static base::NoDestructor<std::vector<GtkPrintBackend*>> backends(
+      GetPrintBackends());
+
+  for (GtkPrintBackend* backend : *backends) {
+    if (GtkPrinter* printer = gtk_print_backend_find_printer(backend, name)) {
+      return WrapGObject(printer);
+    }
+  }
+  return nullptr;
+}
 
 }  // namespace
 
@@ -204,8 +215,7 @@ PrintDialogGtk::~PrintDialogGtk() {
       parent->RemoveObserver(this);
       gtk::ClearAuraTransientParent(dialog_, parent);
     }
-    gtk::GtkWindowDestroy(dialog_);
-    dialog_ = nullptr;
+    gtk::GtkWindowDestroy(dialog_.ExtractAsDangling());
   }
   if (reenable_parent_events_) {
     std::move(reenable_parent_events_).Run();
@@ -234,9 +244,8 @@ void PrintDialogGtk::UpdateSettings(
   if (!gtk_settings_)
     gtk_settings_ = gtk_print_settings_copy(GetLastUsedSettings().settings());
 
-  auto printer_list = std::make_unique<GtkPrinterList>();
-  printer_ = printer_list->GetPrinterWithName(
-      base::UTF16ToUTF8(settings->device_name()));
+  printer_ =
+      GetPrinterWithName(base::UTF16ToUTF8(settings->device_name()).c_str());
   if (printer_.get()) {
     gtk_print_settings_set_printer(gtk_settings_,
                                    gtk_printer_get_name(printer_.get()));
@@ -375,9 +384,7 @@ void PrintDialogGtk::LoadPrintSettings(const PrintSettings& settings) {
           printing::kLinuxSystemPrintDialogDataPrinter);
   CHECK(printer_name);
 
-  auto printer_list = std::make_unique<GtkPrinterList>();
-  printer_ = printer_list->GetPrinterWithName(*printer_name);
-  CHECK(printer_);
+  printer_ = GetPrinterWithName(printer_name->c_str());
 
   if (!gtk_settings_) {
     gtk_settings_ = gtk_print_settings_copy(GetLastUsedSettings().settings());

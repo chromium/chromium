@@ -33,7 +33,8 @@
 #import "services/metrics/public/cpp/ukm_builders.h"
 #import "ui/base/l10n/l10n_util.h"
 
-ReadingListBrowserAgent::ReadingListBrowserAgent(Browser* browser) {
+ReadingListBrowserAgent::ReadingListBrowserAgent(Browser* browser)
+    : BrowserUserData(browser) {
   browser_ = browser;
 }
 
@@ -157,12 +158,12 @@ AccountInfo ReadingListBrowserAgent::GetAccountInfoFromLastAddedURL(
     const GURL& url) {
   ReadingListModel* reading_model =
       ReadingListModelFactory::GetForProfile(browser_->GetProfile());
-  CoreAccountId account_id = reading_model->GetAccountWhereEntryIsSavedTo(url);
+  GaiaId gaia_id = reading_model->GetAccountWhereEntryIsSavedTo(url);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(
           browser_->GetProfile()->GetOriginalProfile());
   AccountInfo account_info =
-      identity_manager->FindExtendedAccountInfoByAccountId(account_id);
+      identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
   return account_info;
 }
 

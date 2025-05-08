@@ -12,6 +12,7 @@
 
 #include "base/barrier_callback.h"
 #include "base/functional/callback.h"
+#include "base/types/optional_ref.h"
 #include "components/autofill/content/browser/bad_message.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -140,6 +141,22 @@ base::OnceCallback<void(Args...)> Lift(ContentAutofillDriver& source,
       raw_ref(source), std::move(cb));
 }
 
+base::optional_ref<const PasswordSuggestionRequest> Lift(
+    ContentAutofillDriver& source,
+    const std::optional<PasswordSuggestionRequest>& request) {
+  if (!request) {
+    return std::nullopt;
+  }
+  // These indices are equal to fields().size() for a manual requests.
+  if ((request->username_field_index > request->form_data.fields().size()) ||
+      (request->password_field_index > request->form_data.fields().size())) {
+    mojo::ReportBadMessage(
+        "username_field_index or password_field_index cannot be greater than "
+        "form.fields.size()!");
+  }
+  return request;
+}
+
 // WithNewVersion() bumps the FormData::version of each form. This should be
 // called for every browser form before it enters AutofillManager so that
 // AutofillManager can distinguish newer and older forms.
@@ -156,7 +173,8 @@ template <typename T>
                  base::TimeTicks,
                  gfx::Rect,
                  std::u16string,
-                 std::vector<FormGlobalId>>)
+                 std::vector<FormGlobalId>,
+                 base::optional_ref<const PasswordSuggestionRequest>>)
 T&& WithNewVersion(T&& x) {
   return std::forward<T>(x);
 }
@@ -573,10 +591,11 @@ void ContentAutofillDriver::AskForValuesToFill(
     const FormData& form,
     FieldRendererId field_id,
     const gfx::Rect& caret_bounds,
-    AutofillSuggestionTriggerSource trigger_source) {
+    AutofillSuggestionTriggerSource trigger_source,
+    const std::optional<PasswordSuggestionRequest>& password_request) {
   RouteToManager(*this, router(), &AutofillDriverRouter::AskForValuesToFill,
                  &AutofillManager::OnAskForValuesToFill, form, field_id,
-                 caret_bounds, trigger_source);
+                 caret_bounds, trigger_source, password_request);
 }
 
 void ContentAutofillDriver::HidePopup() {

@@ -41,7 +41,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "services/network/public/cpp/features.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -305,9 +305,9 @@ base::FilePath StoragePartitionImplMap::GetStoragePartitionPath(
   if (!partition_name.empty()) {
     // For analysis of why we can ignore collisions, see the comment above
     // kPartitionNameHashBytes.
-    uint8_t buffer[kPartitionNameHashBytes];
-    crypto::SHA256HashString(partition_name, buffer, sizeof(buffer));
-    return path.AppendASCII(base::HexEncode(buffer));
+    auto hash = crypto::hash::Sha256(partition_name);
+    auto truncated_hash = base::span(hash).first<kPartitionNameHashBytes>();
+    return path.AppendASCII(base::HexEncode(truncated_hash));
   }
 
   return path.Append(kDefaultPartitionDirname);

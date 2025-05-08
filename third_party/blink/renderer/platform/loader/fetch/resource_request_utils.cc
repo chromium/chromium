@@ -175,6 +175,12 @@ void UpgradeResourceRequestForLoader(
   if (resource_type == ResourceType::kLinkPrefetch) {
     // Add the "Purpose: prefetch" header to requests for prefetch.
     resource_request.SetPurposeHeader(kSecPurposePrefetchHeaderValue);
+    if (base::FeatureList::IsEnabled(
+            blink::features::kSecPurposePrefetchHeaderRelPrefetch)) {
+      // Add the "Sec-Purpose: prefetch" header to requests for prefetch.
+      resource_request.SetHttpHeaderField(http_names::kSecPurpose,
+                                          AtomicString("prefetch"));
+    }
   } else if (context.IsPrerendering()) {
     // Add the "Sec-Purpose: prefetch;prerender" header to requests issued from
     // prerendered pages. Add "Purpose: prefetch" as well for compatibility
@@ -245,6 +251,8 @@ PrepareResourceRequestForCacheAccess(
       options, reporting_disposition,
       MemoryCache::RemoveFragmentIdentifierIfNeeded(url_before_redirects),
       redirect_status);
+  // There's no need to add an integrity policy check here, as CanRequest() will
+  // do that below.
 
   context.PopulateResourceRequestBeforeCacheAccess(options, resource_request);
   if (!resource_request.Url().IsValid()) {

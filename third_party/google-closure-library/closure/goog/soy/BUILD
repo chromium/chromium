@@ -7,8 +7,10 @@ licenses(["notice"])
 closure_js_library(
     name = "data",
     srcs = ["data.js"],
+    lenient = True,
     deps = [
         "//closure/goog/asserts",
+        "//closure/goog/dom:safe",
         "//closure/goog/html:safehtml",
         "//closure/goog/html:safescript",
         "//closure/goog/html:safestyle",
@@ -19,7 +21,7 @@ closure_js_library(
         "//closure/goog/i18n:bidi",
         "//closure/goog/string:const",
         "//closure/goog/uri",
-        "//javascript/typescript/safevalues:safevalues_js",
+        "//third_party/javascript/safevalues",
     ],
 )
 
@@ -29,6 +31,7 @@ closure_js_library(
         "injecteddatasupplier.js",
         "renderer.js",
     ],
+    lenient = True,
     deps = [
         ":data",
         ":soy",
@@ -42,6 +45,7 @@ closure_js_library(
 closure_js_library(
     name = "soy",
     srcs = ["soy.js"],
+    lenient = True,
     deps = [
         ":data",
         "//closure/goog/asserts",
@@ -57,6 +61,7 @@ closure_js_library(
     name = "soy_testhelper",
     testonly = 1,
     srcs = ["soy_testhelper.js"],
+    lenient = True,
     deps = [
         ":data",
         "//closure/goog/dom",

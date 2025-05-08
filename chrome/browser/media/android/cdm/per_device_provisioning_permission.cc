@@ -11,9 +11,12 @@
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/android_theme_resources.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_thread.h"
@@ -77,9 +80,11 @@ class PerDeviceProvisioningPermissionRequest final
       const url::Origin& origin,
       base::OnceCallback<void(bool)> callback)
       : PermissionRequest(
-            origin.GetURL(),
-            permissions::RequestType::kProtectedMediaIdentifier,
-            /*has_gesture=*/false,
+            std::make_unique<permissions::PermissionRequestData>(
+                std::make_unique<permissions::ContentSettingPermissionResolver>(
+                    ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER),
+                /*user_gesture=*/false,
+                origin.GetURL()),
             base::BindRepeating(
                 &PerDeviceProvisioningPermissionRequest::PermissionDecided,
                 base::Unretained(this)),
@@ -94,9 +99,11 @@ class PerDeviceProvisioningPermissionRequest final
   PerDeviceProvisioningPermissionRequest& operator=(
       const PerDeviceProvisioningPermissionRequest&) = delete;
 
-  void PermissionDecided(ContentSetting result,
-                         bool is_one_time,
-                         bool is_final_decision) {
+  void PermissionDecided(
+      ContentSetting result,
+      bool is_one_time,
+      bool is_final_decision,
+      const std::unique_ptr<permissions::PermissionRequestData>& request_data) {
     DCHECK(!is_one_time);
     DCHECK(!is_final_decision);
     const bool granted = result == ContentSetting::CONTENT_SETTING_ALLOW;

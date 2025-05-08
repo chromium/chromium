@@ -196,10 +196,10 @@ found in the LICENSE file.
 
     <!-- Misc. app menu dimens -->
     <dimen name="app_menu_corner_size">24dp</dimen>
-    <dimen name="app_menu_shadow_length">@dimen/default_shadow_length_elev_2</dimen>
+    <dimen name="app_menu_shadow_length">6dp</dimen>
     <dimen name="app_menu_elevation">3dp</dimen>
-    <!-- app_menu_shadow_length + padding(8dp) -->
-    <dimen name="app_menu_padding">14dp</dimen>
+    <!-- app_menu_shadow_length + padding(4dp) -->
+    <dimen name="app_menu_padding">10dp</dimen>
 
     <!-- Empty view layout dimensions -->
     <dimen name="empty_state_text_width">341dp</dimen>
@@ -228,4 +228,7 @@ found in the LICENSE file.
     <!-- Loading Fullscreen dimens -->
     <dimen name="left_right_padding">16dp</dimen>
     <dimen name="top_bottom_padding">18dp</dimen>
+
+    <!-- Anchored popup menu dimens -->
+    <dimen name="popup_menu_shadow_length">6dp</dimen>
 </resources>

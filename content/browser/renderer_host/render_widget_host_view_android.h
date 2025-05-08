@@ -166,11 +166,11 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
       const gfx::Rect& src_rect,
       const gfx::Size& output_size,
       base::OnceCallback<void(const SkBitmap&)> callback) override;
-  void CopyFromExactSurfaceWithIpcPriority(
+  void CopyFromExactSurfaceWithIpcDelay(
       const gfx::Rect& src_rect,
       const gfx::Size& output_size,
       base::OnceCallback<void(const SkBitmap&)> callback,
-      CopyOutputIpcPriority ipc_priority) override;
+      base::TimeDelta ipc_delay) override;
   void CopyFromExactSurface(
       const gfx::Rect& src_rect,
       const gfx::Size& output_size,
@@ -261,6 +261,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void NotifyVirtualKeyboardOverlayRect(
       const gfx::Rect& keyboard_rect) override;
   void NotifyContextMenuInsetsObservers(const gfx::Rect&) override;
+  void ShowInterestInElement(int) override;
   void OnPointerLockRelease() override;
 
   // ui::ViewAndroidObserver implementation:
@@ -354,6 +355,21 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
       bool ignore_ack = false);
 
   bool HasValidFrame() const;
+
+  // Returns whethere there's a touch sequence active on Viz.
+  //  false: There's definitely no active touch sequence on Viz.
+  //  true: A touch sequence is likely active on Viz, but could be a false
+  //  positive in some racy conditions.
+  bool IsTouchSequencePotentiallyActiveOnViz();
+
+  void RequestInputBackForDragAndDrop(
+      blink::mojom::DragDataPtr drag_data,
+      const url::Origin& source_origin,
+      blink::DragOperationsMask drag_operations_mask,
+      SkBitmap bitmap,
+      gfx::Vector2d cursor_offset_in_dip,
+      gfx::Rect drag_obj_rect_in_dip,
+      blink::mojom::DragEventSourceInfoPtr event_info);
 
   void MoveCaret(const gfx::Point& point);
   void DismissTextHandles();
@@ -791,6 +807,12 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   SurfaceIdChangedCallbackList surface_id_changed_callbacks_;
 
   base::android::ScopedJavaGlobalRef<jobject> obj_;
+
+  void CleanupDraggingCallback();
+
+  base::OneShotTimer cleanup_dragging_callback_timer_;
+
+  base::OnceCallback<void()> start_dragging_callback_;
 
   ScreenStateChangeHandler screen_state_change_handler_;
 

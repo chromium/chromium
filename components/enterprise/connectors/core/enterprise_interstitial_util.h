@@ -6,8 +6,8 @@
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_ENTERPRISE_INTERSTITIAL_UTIL_H_
 
 #include <string>
+#include <vector>
 
-#include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 
 // This namespace contains shared functions for enterprise interstitials
@@ -17,7 +17,7 @@ namespace enterprise_connectors {
 // Returns the custom message specified by admin in RTLookup response.
 std::u16string GetUrlFilteringCustomMessage(
     const std::vector<security_interstitials::UnsafeResource>&
-        unsafe_resources_);
+        unsafe_resources);
 
 }  // namespace enterprise_connectors
 

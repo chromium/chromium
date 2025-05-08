@@ -7,10 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-@class TabGroupItem;
-
 @class GroupTabInfo;
+@class TabGroupItem;
 #ifdef __cplusplus
+class FaviconLoader;
 class TabGroup;
 class WebStateList;
 #endif
@@ -44,10 +44,14 @@ typedef void (^GroupTabInfosFetchingCompletionBlock)(
 @property(nonatomic, readonly) NSInteger numberOfTabsInGroup;
 @property(nonatomic, readonly) BOOL collapsed;
 
+#ifdef __cplusplus
 // Fetches the groupTabInfos (pair of snapshots and favicons), calling
 // `completion` on the calling sequence when the operation completes.
+// `faviconLoader`: used to fetch favicons on Google server, can be `nullptr`.
 - (void)fetchGroupTabInfos:
-    (nonnull GroupTabInfosFetchingCompletionBlock)completion;
+            (GroupTabInfosFetchingCompletionBlock _Nonnull)completion
+             faviconLoader:(FaviconLoader* _Nullable)faviconLoader;
+#endif
 
 @end
 

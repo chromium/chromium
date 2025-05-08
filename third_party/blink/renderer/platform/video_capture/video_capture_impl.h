@@ -72,20 +72,20 @@ class PLATFORM_EXPORT VideoCaptureImpl
   // Start capturing using the provided parameters.
   // |client_id| must be unique to this object in the render process. It is
   // used later to stop receiving video frames.
-  // |state_update_cb| will be called when state changes.
-  // |deliver_frame_cb| will be called when a frame is ready.
-  // |sub_capture_target_version_cb| will be called when it is guaranteed that
-  // all subsequent frames |deliver_frame_cb| is called for, have a crop version
-  // that is equal-to-or-greater-than the given crop version.
-  // |frame_dropped_cb| will be called when a frame was dropped prior to
-  // delivery (i.e. |deliver_frame_cb| was not called for this frame).
+  // |video_capture_callbacks.state_update_cb| will be called when state
+  // changes.
+  // |video_capture_callbacks.deliver_frame_cb| will be called when a
+  // frame is ready.
+  // |video_capture_callbacks.sub_capture_target_version_cb| will be called
+  // when it is guaranteed that all subsequent frames
+  // |video_capture_callbacks.deliver_frame_cb| is called for, have a crop
+  // version that is equal-to-or-greater-than the given crop version.
+  // |video_capture_callbacks.frame_dropped_cb| will be called when a frame was
+  // dropped prior to delivery (i.e. |video_capture_callbacks.deliver_frame_cb|
+  // was not called for this frame).
   void StartCapture(int client_id,
                     const media::VideoCaptureParams& params,
-                    const VideoCaptureStateUpdateCB& state_update_cb,
-                    const VideoCaptureDeliverFrameCB& deliver_frame_cb,
-                    const VideoCaptureSubCaptureTargetVersionCB&
-                        sub_capture_target_version_cb,
-                    const VideoCaptureNotifyFrameDroppedCB& frame_dropped_cb);
+                    VideoCaptureCallbacks video_capture_callbacks);
 
   // Stop capturing. |client_id| is the identifier used to call StartCapture.
   void StopCapture(int client_id);

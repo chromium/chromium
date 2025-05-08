@@ -31,6 +31,7 @@
 
 #include "third_party/blink/renderer/core/editing/commands/move_commands.h"
 
+#include "cc/input/scroll_utils.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/editing/editing_behavior.h"
@@ -69,10 +70,7 @@ unsigned MoveCommands::VerticalScrollDistance(LocalFrame& frame) {
   const ScrollableArea& scrollable_area = *frame.View()->LayoutViewport();
   const int height = std::min<int>(layout_box.ClientHeight().ToInt(),
                                    scrollable_area.VisibleHeight());
-  return static_cast<unsigned>(
-      max(max<int>(height * ScrollableArea::MinFractionToStepWhenPaging(),
-                   height - scrollable_area.MaxOverlapBetweenPages()),
-          1));
+  return cc::ScrollUtils::CalculatePageStep(height);
 }
 
 bool MoveCommands::ModifySelectionWithPageGranularity(

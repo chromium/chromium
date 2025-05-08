@@ -28,11 +28,13 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 import androidx.core.widget.TextViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
 
 /** ViewBinder for the price insights bottom sheet */
+@NullMarked
 public class PriceInsightsBottomSheetViewBinder {
 
     private static final int PRICE_HISTORY_CHART_ID = View.generateViewId();

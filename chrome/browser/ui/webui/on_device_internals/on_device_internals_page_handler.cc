@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/webui/on_device_internals/on_device_internals_page_handler.h"
 
 #include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/ui/webui/on_device_internals/on_device_internals_page.mojom.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
@@ -46,13 +48,15 @@ on_device_model::ModelAssets LoadModelAssets(const base::FilePath& model_path) {
   } else {
     model_paths.weights = model_path;
   }
+
   return on_device_model::LoadModelAssets(model_paths);
 }
 #endif
 
 base::flat_map<std::string, std::string> GetCriteria(
-    optimization_guide::OnDeviceModelComponentStateManager* component_manager) {
-  auto* criteria = component_manager->GetRegistrationCriteria();
+    const optimization_guide::OnDeviceModelComponentStateManager::DebugState&
+        debug_state) {
+  auto* criteria = debug_state.criteria_.get();
   base::flat_map<std::string, std::string> mojom_criteria;
   if (criteria == nullptr) {
     return mojom_criteria;
@@ -76,7 +80,7 @@ base::flat_map<std::string, std::string> GetCriteria(
     int disk_space_required_mb = optimization_guide::features::
         GetDiskSpaceRequiredInMbForOnDeviceModelInstall();
     int disk_space_available_mb =
-        component_manager->GetDiskBytesAvailableForModel() / (1024 * 1024);
+        debug_state.disk_space_available_ / (1024 * 1024);
     disk_space_string = base::StrCat(
         {" (", base::NumberToString(disk_space_available_mb),
          " MiB available, ", base::NumberToString(disk_space_required_mb),
@@ -190,8 +194,10 @@ void PageHandler::OnModelLoaded(
     std::move(callback).Run(result, on_device_model::Capabilities());
     return;
   }
-  GetService().GetCapabilities(std::move(assets),
-                               base::BindOnce(std::move(callback), result));
+  GetService().GetCapabilities(
+      std::move(assets),
+      base::BindOnce(std::move(callback),
+                     on_device_model::mojom::LoadModelResult::kSuccess));
 }
 #endif
 
@@ -220,12 +226,25 @@ void PageHandler::GetPageData(PageHandler::GetPageDataCallback callback) {
   auto data = mojom::PageData::New();
   auto* component_manager =
       optimization_guide_keyed_service_->GetComponentManager();
-  data->base_model_ready = component_manager->IsInstallerRegistered();
+  auto debug_state =
+      component_manager->GetDebugState(base::PassKey<PageHandler>());
 
-  data->model_state =
-      base::ToString(component_manager->GetOnDeviceModelStatus());
+  data->base_model = mojom::BaseModelState::New();
+  data->base_model->state =
+      base::StrCat({base::ToString(debug_state.status_),
+                    debug_state.has_override_ ? " (Overridden)" : ""});
 
-  data->registration_criteria = GetCriteria(component_manager);
+  if (debug_state.state_) {
+    auto info = mojom::BaseModelInfo::New();
+    info->file_path = debug_state.state_->GetInstallDirectory().AsUTF8Unsafe();
+    info->component_version =
+        debug_state.state_->GetComponentVersion().GetString();
+    info->version = debug_state.state_->GetBaseModelSpec().model_version;
+    info->name = debug_state.state_->GetBaseModelSpec().model_name;
+    data->base_model->info = std::move(info);
+  }
+
+  data->base_model->registration_criteria = GetCriteria(debug_state);
 
   // Populate status for supplementary models.
   base::flat_map<std::string, bool> supp_models =

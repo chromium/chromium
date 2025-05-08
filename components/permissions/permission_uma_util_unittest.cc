@@ -4,6 +4,8 @@
 
 #include "components/permissions/permission_uma_util.h"
 
+#include <memory>
+
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -18,8 +20,11 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/constants.h"
+#include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "components/permissions/test/test_permissions_client.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -101,9 +106,14 @@ class PermissionRequestWrapper {
   explicit PermissionRequestWrapper(permissions::RequestType type,
                                     const char* url) {
     const bool user_gesture = true;
-    auto decided = [](ContentSetting, bool, bool) {};
+    auto decided = [](ContentSetting, bool, bool,
+                      const std::unique_ptr<PermissionRequestData>&) {};
     request_ = std::make_unique<permissions::PermissionRequest>(
-        GURL(url), type, user_gesture, base::BindRepeating(decided),
+        std::make_unique<PermissionRequestData>(
+            std::make_unique<ContentSettingPermissionResolver>(
+                RequestTypeToContentSettingsType(type).value()),
+            /*user_gesture=*/user_gesture, GURL(url)),
+        base::BindRepeating(decided),
         base::BindOnce(&PermissionRequestWrapper::DeleteThis,
                        base::Unretained(this)));
   }

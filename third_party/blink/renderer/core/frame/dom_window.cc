@@ -783,8 +783,7 @@ void DOMWindow::PostMessageForTesting(
 void DOMWindow::InstallCoopAccessMonitor(
     LocalFrame* accessing_frame,
     network::mojom::blink::CrossOriginOpenerPolicyReporterParamsPtr
-        coop_reporter_params,
-    bool is_in_same_virtual_coop_related_group) {
+        coop_reporter_params) {
   ExecutionContext* execution_context =
       accessing_frame->DomWindow()->GetExecutionContext();
   CoopAccessMonitor* monitor =
@@ -797,8 +796,6 @@ void DOMWindow::InstallCoopAccessMonitor(
   monitor->endpoint_defined = coop_reporter_params->endpoint_defined;
   monitor->reported_window_url =
       std::move(coop_reporter_params->reported_window_url);
-  monitor->is_in_same_virtual_coop_related_group =
-      is_in_same_virtual_coop_related_group;
 
   // `task_runner` is used for handling disconnect, and it uses
   // `TaskType::kInternalDefault` to match the main frame receiver.
@@ -886,11 +883,6 @@ void DOMWindow::ReportCoopAccess(const char* property_name) {
         }
 
         String property_name_as_string = property_name;
-        if (monitor->is_in_same_virtual_coop_related_group &&
-            (property_name_as_string == "postMessage" ||
-             property_name_as_string == "closed")) {
-          return false;
-        }
 
         // TODO(arthursonzogni): Send the blocked-window-url.
 
@@ -1177,19 +1169,6 @@ DOMWindow::GetProxyAccessBlockedReason(v8::Isolate* isolate) const {
       (accessing_frame->GetPage()->IsPartitionedPopin() ||
        GetFrame()->GetPage()->IsPartitionedPopin())) {
     return DOMWindow::ProxyAccessBlockedReason::kPartitionedPopins;
-  }
-
-  // Returns an exception message if the two windows are in the same
-  // CoopRelatedGroup but not in the same BrowsingInstance as this means COOP:
-  // restrict-properties is blocking access between the contexts.
-  // TODO(https://crbug.com/1464618): Is there actually any scenario where
-  // cross browsing context group was allowed before COOP: restrict-properties?
-  // Verify that we need to have this check.
-  if (accessing_frame->GetPage()->CoopRelatedGroupToken() ==
-          GetFrame()->GetPage()->CoopRelatedGroupToken() &&
-      accessing_frame->GetPage()->BrowsingContextGroupToken() !=
-          GetFrame()->GetPage()->BrowsingContextGroupToken()) {
-    return DOMWindow::ProxyAccessBlockedReason::kCoopRp;
   }
 
   // Our fallback allows access.

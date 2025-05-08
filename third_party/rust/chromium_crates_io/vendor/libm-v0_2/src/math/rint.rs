@@ -1,50 +1,51 @@
-#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
-pub fn rint(x: f64) -> f64 {
-    let one_over_e = 1.0 / f64::EPSILON;
-    let as_u64: u64 = x.to_bits();
-    let exponent: u64 = as_u64 >> 52 & 0x7ff;
-    let is_positive = (as_u64 >> 63) == 0;
-    if exponent >= 0x3ff + 52 {
-        x
-    } else {
-        let ans = if is_positive {
-            #[cfg(all(target_arch = "x86", not(target_feature = "sse2")))]
-            let x = force_eval!(x);
-            let xplusoneovere = x + one_over_e;
-            #[cfg(all(target_arch = "x86", not(target_feature = "sse2")))]
-            let xplusoneovere = force_eval!(xplusoneovere);
-            xplusoneovere - one_over_e
-        } else {
-            #[cfg(all(target_arch = "x86", not(target_feature = "sse2")))]
-            let x = force_eval!(x);
-            let xminusoneovere = x - one_over_e;
-            #[cfg(all(target_arch = "x86", not(target_feature = "sse2")))]
-            let xminusoneovere = force_eval!(xminusoneovere);
-            xminusoneovere + one_over_e
-        };
+use super::support::Round;
 
-        if ans == 0.0 { if is_positive { 0.0 } else { -0.0 } } else { ans }
+/// Round `x` to the nearest integer, breaking ties toward even.
+#[cfg(f16_enabled)]
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
+pub fn rintf16(x: f16) -> f16 {
+    select_implementation! {
+        name: rintf16,
+        use_arch: all(target_arch = "aarch64", target_feature = "fp16"),
+        args: x,
     }
+
+    super::generic::rint_round(x, Round::Nearest).val
 }
 
-// PowerPC tests are failing on LLVM 13: https://github.com/rust-lang/rust/issues/88520
-#[cfg(not(target_arch = "powerpc64"))]
-#[cfg(test)]
-mod tests {
-    use super::rint;
-
-    #[test]
-    fn negative_zero() {
-        assert_eq!(rint(-0.0_f64).to_bits(), (-0.0_f64).to_bits());
+/// Round `x` to the nearest integer, breaking ties toward even.
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
+pub fn rintf(x: f32) -> f32 {
+    select_implementation! {
+        name: rintf,
+        use_arch: any(
+            all(target_arch = "aarch64", target_feature = "neon"),
+            all(target_arch = "wasm32", intrinsics_enabled),
+        ),
+        args: x,
     }
 
-    #[test]
-    fn sanity_check() {
-        assert_eq!(rint(-1.0), -1.0);
-        assert_eq!(rint(2.8), 3.0);
-        assert_eq!(rint(-0.5), -0.0);
-        assert_eq!(rint(0.5), 0.0);
-        assert_eq!(rint(-1.5), -2.0);
-        assert_eq!(rint(1.5), 2.0);
+    super::generic::rint_round(x, Round::Nearest).val
+}
+
+/// Round `x` to the nearest integer, breaking ties toward even.
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
+pub fn rint(x: f64) -> f64 {
+    select_implementation! {
+        name: rint,
+        use_arch: any(
+            all(target_arch = "aarch64", target_feature = "neon"),
+            all(target_arch = "wasm32", intrinsics_enabled),
+        ),
+        args: x,
     }
+
+    super::generic::rint_round(x, Round::Nearest).val
+}
+
+/// Round `x` to the nearest integer, breaking ties toward even.
+#[cfg(f128_enabled)]
+#[cfg_attr(all(test, assert_no_panic), no_panic::no_panic)]
+pub fn rintf128(x: f128) -> f128 {
+    super::generic::rint_round(x, Round::Nearest).val
 }

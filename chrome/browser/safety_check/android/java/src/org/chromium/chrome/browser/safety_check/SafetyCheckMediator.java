@@ -16,8 +16,6 @@ import android.text.format.DateUtils;
 import android.view.View;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 
 import org.chromium.base.Callback;
@@ -27,6 +25,8 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.GmsUpdateLauncher;
@@ -66,12 +66,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 
+@NullMarked
 class SafetyCheckMediator {
     /**
-     * The minimal amount of time to show the checking state.
-     * This needs to be non-zero to make it seem like the browser is doing work. This is different
-     * from the standard guideline of 500ms because of the UX guidance for Safety check on mobile
-     * and to be consistent with the Desktop counterpart (also 1s there).
+     * The minimal amount of time to show the checking state. This needs to be non-zero to make it
+     * seem like the browser is doing work. This is different from the standard guideline of 500ms
+     * because of the UX guidance for Safety check on mobile and to be consistent with the Desktop
+     * counterpart (also 1s there).
      */
     private static final int CHECKING_MIN_DURATION_MS = 1000;
 
@@ -90,13 +91,13 @@ class SafetyCheckMediator {
      * Model representing the current state of the password check of passwords from the account
      * storage.
      */
-    private PropertyModel mPasswordsCheckAccountStorageModel;
+    private @Nullable PropertyModel mPasswordsCheckAccountStorageModel;
 
     /**
      * Model representing the current state of the password check of passwords from the local
      * storage.
      */
-    private PropertyModel mPasswordsCheckLocalStorageModel;
+    private @Nullable PropertyModel mPasswordsCheckLocalStorageModel;
 
     /** Client to interact with Omaha for the updates check. */
     private SafetyCheckUpdatesDelegate mUpdatesClient;
@@ -127,10 +128,10 @@ class SafetyCheckMediator {
     private Handler mHandler;
 
     /** Stores the callback updating the safe browsing check state in the UI after the delay. */
-    private Runnable mRunnableSafeBrowsing;
+    private @Nullable Runnable mRunnableSafeBrowsing;
 
     /** Stores the callback updating the updates check state in the UI after the delay. */
-    private Runnable mRunnableUpdates;
+    private @Nullable Runnable mRunnableUpdates;
 
     private long mCheckStartTime = -1;
 
@@ -205,73 +206,8 @@ class SafetyCheckMediator {
     public SafetyCheckMediator(
             Profile profile,
             PropertyModel safetyCheckModel,
-            PropertyModel passwordsCheckAccountModel,
-            PropertyModel passwordsCheckLocalModel,
-            SafetyCheckUpdatesDelegate client,
-            SafetyCheckBridge bridge,
-            SigninAndHistorySyncActivityLauncher signinLauncher,
-            SyncService syncService,
-            PrefService prefService,
-            PasswordStoreBridge passwordStoreBridge,
-            PasswordManagerHelper passwordManagerHelper,
-            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
-            SettingsCustomTabLauncher settingsCustomTabLauncher) {
-        this(
-                profile,
-                safetyCheckModel,
-                passwordsCheckAccountModel,
-                passwordsCheckLocalModel,
-                client,
-                bridge,
-                signinLauncher,
-                syncService,
-                prefService,
-                new Handler(),
-                passwordStoreBridge,
-                new PasswordCheckControllerFactory(),
-                passwordManagerHelper,
-                modalDialogManagerSupplier);
-        mSettingsCustomTabLauncher = settingsCustomTabLauncher;
-    }
-
-    @VisibleForTesting
-    SafetyCheckMediator(
-            Profile profile,
-            PropertyModel safetyCheckModel,
-            PropertyModel passwordsCheckAccountModel,
-            PropertyModel passwordsCheckLocalModel,
-            SafetyCheckUpdatesDelegate client,
-            SafetyCheckBridge bridge,
-            SigninAndHistorySyncActivityLauncher signinLauncher,
-            SyncService syncService,
-            PrefService prefService,
-            PasswordStoreBridge passwordStoreBridge,
-            PasswordCheckControllerFactory passwordCheckControllerFactory,
-            PasswordManagerHelper passwordManagerHelper,
-            Handler handler,
-            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
-        this(
-                profile,
-                safetyCheckModel,
-                passwordsCheckAccountModel,
-                passwordsCheckLocalModel,
-                client,
-                bridge,
-                signinLauncher,
-                syncService,
-                prefService,
-                handler,
-                passwordStoreBridge,
-                passwordCheckControllerFactory,
-                passwordManagerHelper,
-                modalDialogManagerSupplier);
-    }
-
-    private SafetyCheckMediator(
-            Profile profile,
-            PropertyModel safetyCheckModel,
-            PropertyModel passwordsCheckAccountModel,
-            PropertyModel passwordsCheckLocalModel,
+            @Nullable PropertyModel passwordsCheckAccountModel,
+            @Nullable PropertyModel passwordsCheckLocalModel,
             SafetyCheckUpdatesDelegate client,
             SafetyCheckBridge bridge,
             SigninAndHistorySyncActivityLauncher signinLauncher,
@@ -281,7 +217,8 @@ class SafetyCheckMediator {
             PasswordStoreBridge passwordStoreBridge,
             PasswordCheckControllerFactory passwordCheckControllerFactory,
             PasswordManagerHelper passwordManagerHelper,
-            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+            SettingsCustomTabLauncher settingsCustomTabLauncher) {
         mProfile = profile;
         mSafetyCheckModel = safetyCheckModel;
         mPasswordsCheckAccountStorageModel = passwordsCheckAccountModel;
@@ -297,6 +234,7 @@ class SafetyCheckMediator {
                         syncService, prefService, passwordStoreBridge, passwordManagerHelper);
         mPasswordManagerHelper = passwordManagerHelper;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mSettingsCustomTabLauncher = settingsCustomTabLauncher;
         // Set the listener for clicking the updates element.
         mSafetyCheckModel.set(
                 SafetyCheckProperties.UPDATES_CLICK_LISTENER,
@@ -397,7 +335,7 @@ class SafetyCheckMediator {
     }
 
     private void setPasswordsState(
-            PropertyModel passwordsCheckModel, @PasswordsState int passwordsState) {
+            @Nullable PropertyModel passwordsCheckModel, @PasswordsState int passwordsState) {
         if (passwordsCheckModel == null) return;
 
         passwordsCheckModel.set(PasswordsCheckPreferenceProperties.PASSWORDS_STATE, passwordsState);
@@ -437,7 +375,8 @@ class SafetyCheckMediator {
         mUpdatesClient.checkForUpdates(new WeakReference(mUpdatesCheckCallback));
     }
 
-    /** Cancels any pending callbacks and registered observers.  */
+    /** Cancels any pending callbacks and registered observers. */
+    @SuppressWarnings("NullAway")
     public void destroy() {
         // Removes all the callbacks from handler
         mHandler.removeCallbacksAndMessages(null);
@@ -610,8 +549,8 @@ class SafetyCheckMediator {
                                                 HistorySyncConfig.OptInMode.NONE)
                                         .build();
                         // Open the sign-in page.
-                        @Nullable
-                        Intent intent =
+
+                        @Nullable Intent intent =
                                 mSigninLauncher.createBottomSheetSigninIntentOrShowError(
                                         p.getContext(),
                                         mProfile,
@@ -709,7 +648,7 @@ class SafetyCheckMediator {
                         });
     }
 
-    private PropertyModel getPasswordsCheckModelForStoreType(
+    private @Nullable PropertyModel getPasswordsCheckModelForStoreType(
             @PasswordStorageType int passwordStoreType) {
         if (passwordStoreType == PasswordStorageType.ACCOUNT_STORAGE) {
             return mPasswordsCheckAccountStorageModel;

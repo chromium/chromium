@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.readaloud.player.expanded;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
+import org.chromium.chrome.modules.readaloud.Feedback.FeedbackType;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackModeSelectionEnablementStatus;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -15,6 +17,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * View binder as described in //docs/ui/android/mvc_overview.md. Updates views based on model
  * state.
  */
+@NullMarked
 public class ExpandedPlayerViewBinder {
     /**
      * Called by {@link PropertyModelChangeProcessor} on creation and each time the model is
@@ -72,6 +75,8 @@ public class ExpandedPlayerViewBinder {
             content.setPlaybackModeSelectionEnabled(
                     PlaybackModeSelectionEnablementStatus.fromValue(
                             model.get(PlayerProperties.PLAYBACK_MODE_SELECTION_ENABLED)));
+        } else if (key == PlayerProperties.FEEDBACK_TYPE) {
+          content.setSentFeedback(FeedbackType.fromValue(model.get(PlayerProperties.FEEDBACK_TYPE)));
         }
     }
 }

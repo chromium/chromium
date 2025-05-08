@@ -4,9 +4,10 @@
 
 #include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
 
-#include <string>
+#include <string_view>
 #include <utility>
 
+#include "base/check.h"
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -19,10 +20,17 @@ MojoNetworkEventsDelegate::MojoNetworkEventsDelegate(
         remote)
     : remote_(std::move(remote)) {}
 
+MojoNetworkEventsDelegate::MojoNetworkEventsDelegate(
+    mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+        remote,
+    std::string_view request_id)
+    : remote_(std::move(remote)), request_id_(request_id) {}
+
 MojoNetworkEventsDelegate::~MojoNetworkEventsDelegate() = default;
 
 void MojoNetworkEventsDelegate::OnNetworkSendRequest(
     network::ResourceRequest& request) {
+  CHECK(!request_id_);
   request_id_ = request.devtools_request_id;
   remote_->OnNetworkSendRequest(request, base::TimeTicks::Now());
 }

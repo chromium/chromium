@@ -22,7 +22,6 @@
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -44,7 +43,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
@@ -343,10 +341,10 @@ class ParentPermissionDialogViewTest
       const std::string& extension_name) {
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder(extension_name).Build();
-    extension_registrar()->AddExtension(extension.get());
-    extension_service()->DisableExtension(
+    extension_registrar()->AddExtension(extension);
+    extension_registrar()->DisableExtension(
         extension->id(),
-        extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
+        {extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED});
     return extension;
   }
 
@@ -588,66 +586,24 @@ IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
           ActionStatus::kWasPerformed)));
 }
 
-enum class ExtensionsManagingToggle : int {
-  /* Extensions are managed by the dedicated
-  "Skip parent approval to install extensions" FL button. */
-  kExtensions = 0,
-  /* Extensions are managed by the
-  "Permissions for sites, apps and extensions" FL button. */
-  kPermissions = 1
-};
-
 // Test which labels are used in the Parent Permission Input Section
 // of the permission dialog based on the usage of the dialog
 // (extension approval, other approval).
 class ParentPermissionInputSectionLabelTest
-    : public ParentPermissionDialogViewTest,
-      public ::testing::WithParamInterface<ExtensionsManagingToggle> {
- public:
-  ParentPermissionInputSectionLabelTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (GetParam() == ExtensionsManagingToggle::kExtensions) {
-      enabled_features.push_back(
-          supervised_user::
-              kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
-      enabled_features.push_back(
-          supervised_user::kUpdatedSupervisedUserExtensionApprovalStrings);
-    } else {
-      disabled_features.push_back(
-          supervised_user::
-              kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
-    }
-    enabled_features.push_back(
-        supervised_user::
-            kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
+    : public ParentPermissionDialogViewTest {};
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(ParentPermissionInputSectionLabelTest,
+IN_PROC_BROWSER_TEST_F(ParentPermissionInputSectionLabelTest,
                        PermissionReceived_extension) {
   supervision_mixin_.SetNextReAuthStatus(
       GaiaAuthConsumer::ReAuthProofTokenStatus::kSuccess);
 
-  // When the feature
-  // `kEnableSupervisedUserSkipParentApprovalToInstallExtensions`
-  // is enabled and the parent approval dialog is shown for an extensions
+  // When the parent approval dialog is shown for an extension
   // approval, extension-specific labels are shown to the Permission Input
   // section of the dialog. Otherwise, general purpose labels are used.
-  auto present_parent_label_id =
-      GetParam() == ExtensionsManagingToggle::kExtensions
-          ? ParentPermissionDialog::
-                kExtensionsParentApprovalVerificationTextIdForTesting
-          : ParentPermissionDialog::kParentAccountTextIdForTesting;
+  auto present_parent_label_id = ParentPermissionDialog::
+      kExtensionsParentApprovalVerificationTextIdForTesting;
   auto non_present_parent_label_id =
-      GetParam() == ExtensionsManagingToggle::kExtensions
-          ? ParentPermissionDialog::kParentAccountTextIdForTesting
-          : ParentPermissionDialog::
-                kExtensionsParentApprovalVerificationTextIdForTesting;
+      ParentPermissionDialog::kParentAccountTextIdForTesting;
 
   RunTestSequence(
       InAnyContext(ShowDialog(),
@@ -656,7 +612,7 @@ IN_PROC_BROWSER_TEST_P(ParentPermissionInputSectionLabelTest,
                    EnsureNotPresent(non_present_parent_label_id)));
 }
 
-IN_PROC_BROWSER_TEST_P(ParentPermissionInputSectionLabelTest,
+IN_PROC_BROWSER_TEST_F(ParentPermissionInputSectionLabelTest,
                        PermissionReceived_default) {
   supervision_mixin_.SetNextReAuthStatus(
       GaiaAuthConsumer::ReAuthProofTokenStatus::kSuccess);
@@ -672,11 +628,4 @@ IN_PROC_BROWSER_TEST_P(ParentPermissionInputSectionLabelTest,
           ParentPermissionDialog::
               kExtensionsParentApprovalVerificationTextIdForTesting)));
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ParentPermissionInputSectionLabelTest,
-    testing::Values(ExtensionsManagingToggle::kExtensions,
-                    ExtensionsManagingToggle::kPermissions));
-
 }  // namespace

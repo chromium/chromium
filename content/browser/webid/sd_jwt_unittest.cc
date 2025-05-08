@@ -81,7 +81,7 @@ TEST_F(SdJwtTest, DisclosureParsing) {
   auto disclosure = Disclosure::From(base::JSONReader::Read(json)->GetList());
   EXPECT_TRUE(disclosure);
 
-  EXPECT_EQ(disclosure->salt, "_26bc4LT-ac6q2KI6cBW5es");
+  EXPECT_EQ(disclosure->salt, Base64String("_26bc4LT-ac6q2KI6cBW5es"));
   EXPECT_EQ(disclosure->name, "family_name");
   EXPECT_EQ(disclosure->value, "Möbius");
 }
@@ -91,11 +91,11 @@ TEST_F(SdJwtTest, DisclosureSerialization) {
   // https://www.ietf.org/archive/id/draft-ietf-oauth-selective-disclosure-jwt-13.html#section-4.2.1
 
   Disclosure disclosure;
-  disclosure.salt = "_26bc4LT-ac6q2KI6cBW5es";
+  disclosure.salt = Base64String("_26bc4LT-ac6q2KI6cBW5es");
   disclosure.name = "family_name";
   disclosure.value = "Möbius";
 
-  auto base64 = disclosure.Serialize();
+  Base64String base64 = disclosure.Serialize();
 
   // This value is different from what's in the spec, but that's because
   // our JSON serialization strips whitespaces between array elements
@@ -108,7 +108,7 @@ TEST_F(SdJwtTest, DisclosureSerialization) {
   std::string expected =
       "WyJfMjZiYzRMVC1hYzZxMktJNmNCVzVlcyIsImZhbWlseV9uYW1lIiwiTcO2Yml1cyJd";
 
-  EXPECT_STREQ(base64.c_str(), expected.c_str());
+  EXPECT_STREQ(base64->c_str(), expected.c_str());
 }
 
 TEST_F(SdJwtTest, JwtParsing) {
@@ -119,9 +119,9 @@ TEST_F(SdJwtTest, JwtParsing) {
   auto token = Jwt::From(*Jwt::Parse(jwt));
   EXPECT_TRUE(token);
 
-  EXPECT_EQ(token->header, "header");
-  EXPECT_EQ(token->payload, "payload");
-  EXPECT_EQ(token->signature, "signature");
+  EXPECT_EQ(token->header, JSONString("header"));
+  EXPECT_EQ(token->payload, JSONString("payload"));
+  EXPECT_EQ(token->signature, Base64String("signature"));
 }
 
 TEST_F(SdJwtTest, JwtParsingInvalid) {
@@ -141,13 +141,13 @@ TEST_F(SdJwtTest, JwtParsingInvalid) {
 
 TEST_F(SdJwtTest, JwtSerializing) {
   Jwt token;
-  token.header = "header";
-  token.payload = "payload";
-  token.signature = "signature";
+  token.header = JSONString("header");
+  token.payload = JSONString("payload");
+  token.signature = Base64String("signature");
 
   // Jwt's top level structure:
   // Base64UrlEncode(header) . Base64UrlEncode(payload)  . signature
-  EXPECT_EQ(token.Serialize(), "aGVhZGVy.cGF5bG9hZA.signature");
+  EXPECT_EQ(token.Serialize(), JSONString("aGVhZGVy.cGF5bG9hZA.signature"));
 }
 
 TEST_F(SdJwtTest, HeaderParsingAndSerializing) {
@@ -155,9 +155,10 @@ TEST_F(SdJwtTest, HeaderParsingAndSerializing) {
   header.alg = "foo";
   header.typ = "bar";
 
-  EXPECT_EQ(header.ToJson(), R"({"alg":"foo","typ":"bar"})");
+  EXPECT_EQ(header.ToJson(), JSONString(R"({"alg":"foo","typ":"bar"})"));
   // The serializion of the header is a base64 encoding of the JSON.
-  EXPECT_EQ(header.Serialize(), "eyJhbGciOiJmb28iLCJ0eXAiOiJiYXIifQ");
+  EXPECT_EQ(header.Serialize(),
+            Base64String("eyJhbGciOiJmb28iLCJ0eXAiOiJiYXIifQ"));
 
   // Test that we can go back from base64 to value.
   auto parsed =
@@ -171,9 +172,9 @@ TEST_F(SdJwtTest, PayloadParsingAndSerializing) {
   Payload payload;
   payload.sub = "foo";
 
-  EXPECT_EQ(payload.ToJson(), R"({"sub":"foo"})");
+  EXPECT_EQ(payload.ToJson(), JSONString(R"({"sub":"foo"})"));
   // The serializion of the header is a base64 encoding of the JSON.
-  EXPECT_EQ(payload.Serialize(), "eyJzdWIiOiJmb28ifQ");
+  EXPECT_EQ(payload.Serialize(), Base64String("eyJzdWIiOiJmb28ifQ"));
 
   // Test that we can go back from base64 to value.
   auto parsed = Payload::From(*base::JSONReader::ReadDict(R"({"sub":"foo"})"));
@@ -207,10 +208,11 @@ TEST_F(SdJwtTest, JwtParsingRFC) {
   auto token = Jwt::From(*Jwt::Parse(jwt));
   EXPECT_TRUE(token);
 
-  EXPECT_EQ(token->header, R"({"alg": "ES256", "typ": "example+sd-jwt"})");
+  EXPECT_EQ(token->header,
+            JSONString(R"({"alg": "ES256", "typ": "example+sd-jwt"})"));
   EXPECT_EQ(token->signature,
-            "oQ0UNJB1E1agYouB1yfGXfYLyWueHhfMFuicSV-n_"
-            "GLXHtX0XK99sfDDERiWKukCUzadGTT4QbCwXe6JvVmZWw");
+            Base64String("oQ0UNJB1E1agYouB1yfGXfYLyWueHhfMFuicSV-n_"
+                         "GLXHtX0XK99sfDDERiWKukCUzadGTT4QbCwXe6JvVmZWw"));
 
   std::string expected =
       R"({)"
@@ -237,15 +239,17 @@ TEST_F(SdJwtTest, JwtParsingRFC) {
       R"("y": "ZxjiWWbZMQGHVWKVQ4hbSIirsVfuecCE6t4jT9F2HZQ"}})"
       R"(})";
 
-  EXPECT_STREQ(token->payload.c_str(), expected.c_str());
+  EXPECT_STREQ(token->payload.value().c_str(), expected.c_str());
 
-  auto header = Header::From(*base::JSONReader::ReadDict(token->header));
+  auto header =
+      Header::From(*base::JSONReader::ReadDict(token->header.value()));
   EXPECT_TRUE(header);
 
   EXPECT_EQ(header->typ, "example+sd-jwt");
   EXPECT_EQ(header->alg, "ES256");
 
-  auto payload = Payload::From(*base::JSONReader::ReadDict(token->payload));
+  auto payload =
+      Payload::From(*base::JSONReader::ReadDict(token->payload.value()));
   EXPECT_TRUE(payload);
 
   EXPECT_EQ(payload->iss, "https://issuer.example.com");
@@ -269,15 +273,15 @@ TEST_F(SdJwtTest, SdJwtParsingAndSerializing) {
   auto token = SdJwt::From(*SdJwt::Parse(jwt));
   EXPECT_TRUE(token);
 
-  EXPECT_EQ(token->jwt.header, "header");
-  EXPECT_EQ(token->jwt.payload, "payload");
-  EXPECT_EQ(token->jwt.signature, "signature");
+  EXPECT_EQ(token->jwt.header, JSONString("header"));
+  EXPECT_EQ(token->jwt.payload, JSONString("payload"));
+  EXPECT_EQ(token->jwt.signature, Base64String("signature"));
   EXPECT_EQ(token->disclosures.size(), 2ul);
-  EXPECT_EQ(token->disclosures[0], "disclosure1");
-  EXPECT_EQ(token->disclosures[1], "disclosure2");
+  EXPECT_EQ(token->disclosures[0], JSONString("disclosure1"));
+  EXPECT_EQ(token->disclosures[1], JSONString("disclosure2"));
 
   // Asserts that we can serialize the token again.
-  token->jwt.header = "new-header";
+  token->jwt.header = JSONString("new-header");
   EXPECT_EQ(
       token->Serialize(),
       "bmV3LWhlYWRlcg.cGF5bG9hZA.signature~ZGlzY2xvc3VyZTE~ZGlzY2xvc3VyZTI~");
@@ -316,12 +320,12 @@ TEST_F(SdJwtTest, SdJwtParsingCornerCases) {
 
 TEST_F(SdJwtTest, SelectiveDisclosure) {
   Disclosure name;
-  name.salt = "fake-salt1";
+  name.salt = Base64String("fake-salt1");
   name.name = "name";
   name.value = "Sam";
 
   Disclosure email;
-  email.salt = "fake-salt2";
+  email.salt = Base64String("fake-salt2");
   email.name = "email";
   email.value = "goto@email.com";
 
@@ -339,7 +343,8 @@ TEST_F(SdJwtTest, SelectiveDisclosure) {
   EXPECT_EQ(presentation->size(), 1ul);
 
   // ... and that it was selected correctly:
-  EXPECT_EQ((*presentation)[0], "[\"fake-salt1\",\"name\",\"Sam\"]");
+  EXPECT_EQ((*presentation)[0],
+            JSONString("[\"fake-salt1\",\"name\",\"Sam\"]"));
 }
 
 TEST_F(SdJwtTest, SdJwtKbParsingAndSerializing) {
@@ -356,18 +361,18 @@ TEST_F(SdJwtTest, SdJwtKbParsingAndSerializing) {
   auto token = SdJwtKb::Parse(bin);
   EXPECT_TRUE(token);
 
-  EXPECT_EQ(token->sd_jwt.jwt.header, "header");
-  EXPECT_EQ(token->sd_jwt.jwt.payload, "payload");
-  EXPECT_EQ(token->sd_jwt.jwt.signature, "iss_signature");
+  EXPECT_EQ(token->sd_jwt.jwt.header, JSONString("header"));
+  EXPECT_EQ(token->sd_jwt.jwt.payload, JSONString("payload"));
+  EXPECT_EQ(token->sd_jwt.jwt.signature, Base64String("iss_signature"));
   EXPECT_EQ(token->sd_jwt.disclosures.size(), 2ul);
-  EXPECT_EQ(token->sd_jwt.disclosures[0], "disclosure1");
-  EXPECT_EQ(token->sd_jwt.disclosures[1], "disclosure2");
-  EXPECT_EQ(token->kb_jwt.header, "header");
-  EXPECT_EQ(token->kb_jwt.payload, "payload");
-  EXPECT_EQ(token->kb_jwt.signature, "kb_signature");
+  EXPECT_EQ(token->sd_jwt.disclosures[0], JSONString("disclosure1"));
+  EXPECT_EQ(token->sd_jwt.disclosures[1], JSONString("disclosure2"));
+  EXPECT_EQ(token->kb_jwt.header, JSONString("header"));
+  EXPECT_EQ(token->kb_jwt.payload, JSONString("payload"));
+  EXPECT_EQ(token->kb_jwt.signature, Base64String("kb_signature"));
 
   // Asserts that we can serialize the token again.
-  token->sd_jwt.jwt.header = "new-header";
+  token->sd_jwt.jwt.header = JSONString("new-header");
   EXPECT_EQ(
       token->Serialize(),
       "bmV3LWhlYWRlcg.cGF5bG9hZA.iss_signature~ZGlzY2xvc3VyZTE~ZGlzY2xvc3VyZTI~"
@@ -419,12 +424,12 @@ std::vector<std::uint8_t> TestSha256(std::string_view data) {
 
 TEST_F(SdJwtTest, SdJwtKb_Bind) {
   Disclosure name;
-  name.salt = "fake-salt1";
+  name.salt = Base64String("fake-salt1");
   name.name = "name";
   name.value = "Sam";
 
   Disclosure email;
-  email.salt = "fake-salt2";
+  email.salt = Base64String("fake-salt2");
   email.name = "email";
   email.value = "goto@email.com";
 
@@ -440,9 +445,9 @@ TEST_F(SdJwtTest, SdJwtKb_Bind) {
   EXPECT_TRUE(disclosures);
 
   Jwt issued;
-  issued.header = "header";
-  issued.payload = "payload";
-  issued.signature = "signature";
+  issued.header = JSONString("header");
+  issued.payload = JSONString("payload");
+  issued.signature = Base64String("signature");
 
   SdJwt presentation;
   presentation.jwt = issued;
@@ -459,13 +464,13 @@ TEST_F(SdJwtTest, SdJwtKb_Bind) {
 
   // Checks KB headers:
   // https://www.ietf.org/archive/id/draft-ietf-oauth-selective-disclosure-jwt-13.html#section-4.3
-  auto header = Header::From(*base::JSONReader::ReadDict(kb.header));
+  auto header = Header::From(*base::JSONReader::ReadDict(kb.header.value()));
   EXPECT_TRUE(header);
   // typ MUST be "kb+jwt".
   EXPECT_EQ(header->typ, "kb+jwt");
   EXPECT_EQ(header->alg, "ES256");
 
-  auto payload = Payload::From(*base::JSONReader::ReadDict(kb.payload));
+  auto payload = Payload::From(*base::JSONReader::ReadDict(kb.payload.value()));
   EXPECT_TRUE(payload);
   // aud is required.
   EXPECT_EQ(payload->aud, "https://verifier.example");
@@ -478,9 +483,11 @@ TEST_F(SdJwtTest, SdJwtKb_Bind) {
 
   // Checks for how the hash was constructed:
   // https://www.ietf.org/archive/id/draft-ietf-oauth-selective-disclosure-jwt-13.html#section-4.3.1
-  EXPECT_EQ(payload->sd_hash,
-            "U2hhMjU2KGFHVmhaR1Z5LmNHRjViRzloWkEuc2lnbmF0dXJlfld5Sm1ZV3RsTFh"
-            "OaGJIUXhJaXdpYm1GdFpTSXNJbE5oYlNKZH4p");
+  EXPECT_EQ(
+      payload->sd_hash,
+      Base64String(
+          "U2hhMjU2KGFHVmhaR1Z5LmNHRjViRzloWkEuc2lnbmF0dXJlfld5Sm1ZV3RsTFh"
+          "OaGJIUXhJaXdpYm1GdFpTSXNJbE5oYlNKZH4p"));
 
   // Checks that the signature was constructed correctly too:
   // https://www.ietf.org/archive/id/draft-ietf-oauth-selective-disclosure-jwt-13.html#section-4.3.1
@@ -503,7 +510,7 @@ TEST_F(SdJwtTest, SdJwtKb_Bind) {
   //           Base64(["fake-salt1","name","Sam"])~)"
   //  }
   //
-  base64_t base64;
+  std::string base64;
   base::Base64UrlEncode(
       "Signed(eyJhbGciOiJFUzI1NiIsInR5cCI6ImtiK2p3dCJ9."
       "eyJhdWQiOiJodHRwczovL3ZlcmlmaWVyLmV4YW1wbGUiLCJpYXQiOjEyMzQsIm5"
@@ -512,7 +519,7 @@ TEST_F(SdJwtTest, SdJwtKb_Bind) {
       "EZoT2FHSklVWGhKYVhkcFltMUdkRnBUU1hOSmJFNW9ZbE5LWkg0cCJ9)",
       base::Base64UrlEncodePolicy::OMIT_PADDING, &base64);
 
-  EXPECT_STREQ(kb.signature.c_str(), base64.c_str());
+  EXPECT_STREQ(kb.signature->c_str(), base64.c_str());
 }
 
 }  // namespace content::sdjwt

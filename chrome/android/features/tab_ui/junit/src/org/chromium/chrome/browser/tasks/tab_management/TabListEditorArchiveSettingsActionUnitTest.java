@@ -25,6 +25,8 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.Acti
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 
+import java.util.Collections;
+
 /** Unit tests for {@link TabListEditorArchiveSettingsAction}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -32,7 +34,7 @@ public class TabListEditorArchiveSettingsActionUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
-    @Mock private SelectionDelegate<Integer> mSelectionDelegate;
+    @Mock private SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegate;
     @Mock private ActionDelegate mDelegate;
     @Mock private Profile mProfile;
 
@@ -70,7 +72,7 @@ public class TabListEditorArchiveSettingsActionUnitTest {
 
     @Test
     public void testPerformAction() {
-        mAction.performAction(null);
+        mAction.performAction(Collections.emptyList(), Collections.emptyList());
         verify(mArchiveDelegate).openArchiveSettings();
     }
 }

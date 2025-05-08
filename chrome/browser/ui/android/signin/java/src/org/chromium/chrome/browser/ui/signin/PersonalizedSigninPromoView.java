@@ -15,9 +15,11 @@ import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.widget.ButtonCompat;
 
 /** Container view for personalized signin promos. */
+@NullMarked
 public class PersonalizedSigninPromoView extends FrameLayout {
     private ImageView mImage;
     private ImageButton mDismissButton;

@@ -77,7 +77,6 @@ class CORE_EXPORT WorkletGlobalScope
   void Dispose() override;
   WorkerThread* GetThread() const final;
   const base::UnguessableToken& GetDevToolsToken() const override;
-  bool IsInitialized() const final { return true; }
   CodeCacheHost* GetCodeCacheHost() override;
   std::optional<mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>
   FindRaceNetworkRequestURLLoaderFactory(

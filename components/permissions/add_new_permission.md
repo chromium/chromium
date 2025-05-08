@@ -100,7 +100,7 @@ update [IsAllowlistedPermissionType()](https://source.chromium.org/chromium/chro
       [WEB_VIEW_PERMISSION_TYPE_MEDIA](https://source.chromium.org/search?q=WEB_VIEW_PERMISSION_TYPE_MEDIA&ss=chromium%2Fchromium%2Fsrc) to guide how to do this in
       Controlled Frame.
     * Add permission type to
-      [controlled_frame_permissions_unittest.cc](//chrome/browser/controlled_frame/controlled_frame_permissions_unittest.cc).
+      [controlled_frame_permissions_unittest.cc](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/controlled_frame/controlled_frame_permissions_unittest.cc).
 
 ### Add ContentSettingsType
 1. In [content_settings_types.h](https://source.chromium.org/chromium/chromium/src/+/main:components/content_settings/core/common/content_settings_types.h)
@@ -133,7 +133,7 @@ update
     * Example of disabling:
       * [controlledframe: Disable Web Serial for <webview> & <controlledframe> crrev.com/c/5838413](https://chromium-review.googlesource.com/c/chromium/src/+/5838413)
     * Add your new ContentSettingsType to
-      [controlled_frame_permissions_unittest.cc](//chrome/browser/controlled_frame/controlled_frame_permissions_unittest.cc).
+      [controlled_frame_permissions_unittest.cc](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/controlled_frame/controlled_frame_permissions_unittest.cc).
 
 ### UI-less ContentSettingsType
 If you add a new [ContentSettingsType](https://source.chromium.org/chromium/chromium/src/+/main:components/content_settings/core/common/content_settings_types.h;l=17;drc=0c2e6d2e27af976e1b28eebd7dacc7a0296bb1cc)
@@ -224,8 +224,12 @@ If you need to add a permission policy:
 1. In [permissions_policy_feature.mojom](https://source.chromium.org/chromium/chromium/src/+/main:services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom)
 update enum
 [PermissionsPolicyFeature](https://source.chromium.org/chromium/chromium/src/+/main:services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom;l=16)
+
 2. In [permissions_policy_features.json5](https://source.chromium.org/chromium/chromium/src/+/main:services/network/public/cpp/permissions_policy/permissions_policy_features.json5)
-update `data` array with the new policy.
+update `data` array with the new policy. Also update PermissionPolicyFeature
+enum in
+[browser_protocol.pdl](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/public/devtools_protocol/browser_protocol.pdl)
+
 5. Update [feature-policy-features-expected.txt](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/webexposed/feature-policy-features-expected.txt)
 6. In the `<PermissionName>PermissionContext`, make sure to initialize the permission policy variable
 [permissions_policy_feature_](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_context_base.h;l=223;drc=caa1747121ee9f14ba7d4e346ea2dc5e7a2e05c0)

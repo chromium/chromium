@@ -17,12 +17,12 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/test/tab_strip_interactive_test_mixin.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
-#include "chrome/browser/ui/views/data_sharing/data_sharing_open_group_helper.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
@@ -30,7 +30,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "components/data_sharing/public/data_sharing_service.h"
+#include "components/data_sharing/public/data_sharing_utils.h"
 #include "components/data_sharing/public/features.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -45,7 +45,8 @@
 
 namespace tab_groups {
 
-class DataSharingChromeNativeUiTest : public InteractiveBrowserTest {
+class DataSharingChromeNativeUiTest
+    : public TabStripInteractiveTestMixin<InteractiveBrowserTest> {
  protected:
   DataSharingChromeNativeUiTest() = default;
   ~DataSharingChromeNativeUiTest() override = default;
@@ -59,44 +60,11 @@ class DataSharingChromeNativeUiTest : public InteractiveBrowserTest {
     InProcessBrowserTest::SetUp();
   }
 
-  MultiStep FinishTabstripAnimations() {
-    return Steps(WaitForShow(kTabStripElementId),
-                 WithView(kTabStripElementId, [](TabStrip* tab_strip) {
-                   tab_strip->StopAnimating(true);
-                 }).SetDescription("FinishTabstripAnimation"));
-  }
-
   MultiStep ShowBookmarksBar() {
     return Steps(PressButton(kToolbarAppMenuButtonElementId),
                  SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
                  SelectMenuItem(BookmarkSubMenuModel::kShowBookmarkBarMenuItem),
                  WaitForShow(kBookmarkBarElementId));
-  }
-
-  MultiStep HoverTabAt(int index) {
-    const char kTabToHover[] = "Tab to hover";
-    return Steps(NameDescendantViewByType<Tab>(kBrowserViewElementId,
-                                               kTabToHover, index),
-                 MoveMouseTo(kTabToHover));
-  }
-
-  MultiStep HoverTabGroupHeader(tab_groups::TabGroupId group_id) {
-    const char kTabGroupHeaderToHover[] = "Tab group header to hover";
-    return Steps(
-        FinishTabstripAnimations(),
-        NameDescendantView(
-            kBrowserViewElementId, kTabGroupHeaderToHover,
-            base::BindRepeating(
-                [](tab_groups::TabGroupId group_id, const views::View* view) {
-                  const TabGroupHeader* header =
-                      views::AsViewClass<TabGroupHeader>(view);
-                  if (!header) {
-                    return false;
-                  }
-                  return header->group().value() == group_id;
-                },
-                group_id)),
-        MoveMouseTo(kTabGroupHeaderToHover));
   }
 
   MultiStep SaveGroupLeaveEditorBubbleOpen(tab_groups::TabGroupId group_id) {
@@ -180,12 +148,10 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowJoinBubble) {
       Do([=, this]() {
         auto share_link = data_sharing::GetShareLink(
             fake_collab_id, fake_access_token, browser()->profile());
-        auto* data_sharing_service =
-            data_sharing::DataSharingServiceFactory::GetForProfile(
-                browser()->profile());
         // Directly show join UI to bypass sign in flow.
         data_sharing::RequestInfo request_info(
-            data_sharing_service->ParseDataSharingUrl(share_link).value(),
+            data_sharing::DataSharingUtils::ParseDataSharingUrl(share_link)
+                .value(),
             data_sharing::FlowType::kJoin);
         DataSharingBubbleController::GetOrCreateForBrowser(browser())->Show(
             request_info);
@@ -331,43 +297,6 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, GenerateWebUIUrl) {
   url = data_sharing::GenerateWebUIUrl(request_info_close_with_token,
                                        browser()->profile());
   EXPECT_EQ(url.value().spec(), expected_close_flow_url_with_token);
-}
-
-IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, OpenGroupHelper) {
-  std::string fake_collab_id = "fake_collab_id";
-  tab_groups::LocalTabGroupID local_group_id = InstrumentATabGroup();
-  auto* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
-          browser()->profile());
-  std::optional<tab_groups::SavedTabGroup> group_copy =
-      tab_group_service->GetGroup(local_group_id);
-
-  // Mock up a shared group.
-  group_copy->SetCollaborationId(tab_groups::CollaborationId(fake_collab_id));
-
-  RunTestSequence(
-      SaveGroupLeaveEditorBubbleOpen(local_group_id),
-      WaitForShow(kTabGroupHeaderElementId),
-      EnsurePresent(kTabGroupEditorBubbleId),
-      PressButton(kTabGroupEditorBubbleCloseGroupButtonId),
-      FinishTabstripAnimations(), WaitForHide(kTabGroupHeaderElementId),
-      Do([=, this]() {
-        DataSharingOpenGroupHelper* open_group_helper =
-            browser()
-                ->browser_window_features()
-                ->data_sharing_open_group_helper();
-        open_group_helper->OpenTabGroupWhenAvailable(fake_collab_id);
-        EXPECT_TRUE(open_group_helper->group_ids_for_testing().contains(
-            fake_collab_id));
-
-        // Mock group sync from remote.
-        open_group_helper->OnTabGroupAdded(group_copy.value(),
-                                           tab_groups::TriggerSource::REMOTE);
-        EXPECT_FALSE(open_group_helper->group_ids_for_testing().contains(
-            fake_collab_id));
-      }),
-      // The group is opened into the tab strip.
-      WaitForShow(kTabGroupHeaderElementId));
 }
 
 }  // namespace tab_groups

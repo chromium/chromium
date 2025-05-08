@@ -11,7 +11,7 @@ GEN_INCLUDE(['../../../common/testing/mock_accessibility_private.js']);
 MagnifierE2ETest = class extends E2ETestBase {
   constructor() {
     super();
-    window.RoleType = chrome.automation.RoleType;
+    globalThis.RoleType = chrome.automation.RoleType;
   }
 
   async getNextMagnifierBounds() {

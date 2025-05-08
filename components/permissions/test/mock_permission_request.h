@@ -35,9 +35,11 @@ class MockPermissionRequest : public PermissionRequest {
 
   void RegisterOnPermissionDecidedCallback(base::OnceClosure callback);
 
-  void PermissionDecided(ContentSetting result,
-                         bool is_one_time,
-                         bool is_final_decision);
+  void PermissionDecided(
+      ContentSetting result,
+      bool is_one_time,
+      bool is_final_decision,
+      const std::unique_ptr<permissions::PermissionRequestData>& request_data);
   void MarkFinished();
 
   bool granted();

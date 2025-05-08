@@ -36,7 +36,7 @@ android_resources("ui_java_resources") {
     "android/java/res/drawable-xxxhdpi/tabstrip_keyfocus_10dp.9.png",
     "android/java/res/drawable-xxxhdpi/tabstrip_keyfocus_11dp.9.png",
     "android/java/res/drawable-xxxhdpi/tabstrip_keyfocus_8dp.9.png",
-    "android/java/res/drawable/close_button_keyfocus.xml",
+    "android/java/res/drawable/circular_button_keyfocus.xml",
     "android/java/res/values/colors.xml",
     "android/java/res/values/dimens.xml",
   ]

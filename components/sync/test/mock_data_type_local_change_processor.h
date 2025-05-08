@@ -13,6 +13,7 @@
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/metadata_batch.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace syncer {
@@ -76,7 +77,7 @@ class MockDataTypeLocalChangeProcessor : public DataTypeLocalChangeProcessor {
               (std::unique_ptr<MetadataBatch> batch),
               (override));
   MOCK_METHOD(bool, IsTrackingMetadata, (), (const override));
-  MOCK_METHOD(std::string, TrackedAccountId, (), (const override));
+  MOCK_METHOD(GaiaId, TrackedGaiaId, (), (const override));
   MOCK_METHOD(std::string, TrackedCacheGuid, (), (const override));
   MOCK_METHOD(void, ReportError, (const ModelError& error), (override));
   MOCK_METHOD(std::optional<ModelError>, GetError, (), (const override));

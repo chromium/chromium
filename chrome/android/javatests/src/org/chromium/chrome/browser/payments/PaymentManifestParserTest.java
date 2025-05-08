@@ -19,7 +19,9 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.payments.PaymentManifestParser;
 import org.chromium.components.payments.PaymentManifestParser.ManifestParseCallback;
 import org.chromium.components.payments.WebAppManifestSection;
@@ -30,7 +32,8 @@ import org.chromium.url.GURL;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PaymentManifestParserTest implements ManifestParseCallback {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private final PaymentManifestParser mParser = new PaymentManifestParser();
     private GURL[] mWebAppManifestUris;
@@ -61,9 +64,9 @@ public class PaymentManifestParserTest implements ManifestParseCallback {
 
     @Before
     public void setUp() throws Throwable {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        WebPageStation page = mActivityTestRule.startOnBlankPage();
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mParser.createNative(mActivityTestRule.getWebContents()));
+                () -> mParser.createNative(page.webContentsElement.get()));
         mWebAppManifestUris = null;
         mSupportedOrigins = null;
         mWebAppManifest = null;

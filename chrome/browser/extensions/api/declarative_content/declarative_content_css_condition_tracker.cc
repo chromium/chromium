@@ -193,7 +193,7 @@ void DeclarativeContentCssConditionTracker::TrackForWebContents(
     content::WebContents* contents) {
   per_web_contents_tracker_[contents] = std::make_unique<PerWebContentsTracker>(
       contents,
-      base::BindRepeating(&Delegate::RequestEvaluation,
+      base::BindRepeating(&Delegate::NotifyPredicateStateUpdated,
                           base::Unretained(delegate_)),
       base::BindOnce(
           &DeclarativeContentCssConditionTracker::DeletePerWebContentsTracker,
@@ -269,7 +269,7 @@ InstructRenderProcessIfManagingBrowserContext(
     content::RenderProcessHost* process,
     std::vector<std::string> watched_css_selectors) {
   content::BrowserContext* browser_context = process->GetBrowserContext();
-  if (delegate_->ShouldManageConditionsForBrowserContext(browser_context)) {
+  if (delegate_->ShouldManagePredicatesForBrowserContext(browser_context)) {
     mojom::Renderer* renderer =
         RendererStartupHelperFactory::GetForBrowserContext(browser_context)
             ->GetRenderer(process);

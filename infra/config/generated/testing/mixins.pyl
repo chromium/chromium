@@ -261,6 +261,7 @@
     ],
     'android_args': [
       '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
+      '$$MAGIC_SUBSTITUTION_AndroidDesktopTelemetryRemote',
       '--initial-find-device-attempts=3',
     ],
     'chromeos_args': [
@@ -422,12 +423,12 @@
       },
     },
   },
-  'ios_runtime_cache_18_0': {
+  'ios_runtime_cache_18_2': {
     'swarming': {
       'named_caches': [
         {
-          'name': 'runtime_ios_18_0',
-          'path': 'Runtime-ios-18.0',
+          'name': 'runtime_ios_18_2',
+          'path': 'Runtime-ios-18.2',
         },
       ],
     },
@@ -532,7 +533,7 @@
     'swarming': {
       'dimensions': {
         'cpu': 'x86-64',
-        'os': 'Mac-14',
+        'os': 'Mac-14|Mac-15',
       },
     },
   },
@@ -543,7 +544,7 @@
         'cpu': 'arm64',
         'gpu': 'apple:m1',
         'mac_model': 'Macmini9,1',
-        'os': 'Mac-14.5',
+        'os': 'Mac-15.4',
         'pool': 'chromium.tests',
         'display_attached': '1',
       },
@@ -626,7 +627,7 @@
       'dimensions': {
         'cpu': 'x86-64',
         'gpu': '8086:3e9b',
-        'os': 'Mac-14.5',
+        'os': 'Mac-15.4',
         'display_attached': '1',
       },
     },
@@ -866,8 +867,8 @@
     'swarming': {
       'dimensions': {
         'display_attached': '1',
-        'gpu': '10de:2184-31.0.15.4601',
-        'os': 'Windows-10-19045',
+        'gpu': '10de:2184-32.0.15.7602',
+        'os': 'Windows-11-26100',
         'pool': 'chromium.tests.gpu',
       },
     },

@@ -16,8 +16,8 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/logging/user_signin_logger.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/stop_animated_chrome_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/animated_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_coordinator.h"
@@ -40,8 +40,7 @@
   // Coordinator for the user to select an account.
   IdentityChooserCoordinator* _identityChooserCoordinator;
   // Coordinator to add an account.
-  SigninCoordinator<StopAnimatedChromeCoordinator>*
-      _addAccountSigninCoordinator;
+  SigninCoordinator* _addAccountSigninCoordinator;
   // Overlay to block the current window while the sign-in is in progress.
   ActivityOverlayCoordinator* _activityOverlayCoordinator;
   // Action recorded if sign-in succeeded.
@@ -136,6 +135,8 @@
   _identityChooserCoordinator.delegate = self;
   [_identityChooserCoordinator start];
 }
+
+#pragma mark - AnimatedCoordinator
 
 - (void)stopAnimated:(BOOL)animated {
   if (_addAccountSigninCoordinator) {

@@ -2529,8 +2529,7 @@ bool LocalDOMWindow::CrossOriginIsolatedCapability() const {
       IsFeatureEnabled(
           network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated) ||
       GetPolicyContainer()->GetPolicies().cross_origin_isolation_enabled_by_dip;
-  return Agent::IsCrossOriginIsolated() && permission_policy_allows_coi &&
-         GetPolicyContainer()->GetPolicies().allow_cross_origin_isolation;
+  return Agent::IsCrossOriginIsolated() && permission_policy_allows_coi;
 }
 
 bool LocalDOMWindow::IsIsolatedContext() const {

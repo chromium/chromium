@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.feed.feedmanagement;
 
 import android.view.View.OnClickListener;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Items for the list view in the feed management activity. */
+@NullMarked
 public class FeedManagementItemProperties {
     public static final int DEFAULT_ITEM_TYPE = 0;
 

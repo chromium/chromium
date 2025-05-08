@@ -5,6 +5,7 @@
 #ifndef UI_EVENTS_OZONE_EVDEV_TOUCH_FILTER_NEURAL_STYLUS_PALM_DETECTION_FILTER_H_
 #define UI_EVENTS_OZONE_EVDEV_TOUCH_FILTER_NEURAL_STYLUS_PALM_DETECTION_FILTER_H_
 
+#include <array>
 #include <bitset>
 #include <cstdint>
 #include <map>
@@ -98,7 +99,7 @@ class COMPONENT_EXPORT(EVDEV) NeuralStylusPalmDetectionFilter
   base::TimeTicks previous_report_time_;
   std::unordered_set<int> active_tracking_ids_;
   int tracking_ids_count_within_session_;
-  int tracking_ids_[kNumTouchEvdevSlots];
+  std::array<int, kNumTouchEvdevSlots> tracking_ids_;
   const PalmFilterDeviceInfo palm_filter_dev_info_;
   std::unique_ptr<NeuralStylusPalmDetectionFilterModel> model_;
 };

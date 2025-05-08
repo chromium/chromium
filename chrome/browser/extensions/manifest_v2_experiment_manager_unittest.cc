@@ -9,7 +9,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_management_internal.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_user_test_base.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/profiles/profile.h"
@@ -559,7 +558,7 @@ TEST_F(ManifestV2ExperimentManagerDisableWithReEnableUnitTest,
   registrar()->AddExtension(extension.get());
 
   experiment_manager()->DisableAffectedExtensionsForTesting();
-  service()->EnableExtension(extension->id());
+  registrar()->EnableExtension(extension->id());
   experiment_manager()->EmitMetricsForProfileReadyForTesting();
 
   histogram_tester.ExpectTotalCount(
@@ -583,9 +582,9 @@ TEST_F(ManifestV2ExperimentManagerDisableWithReEnableUnitTest,
   registrar()->AddExtension(extension.get());
 
   experiment_manager()->DisableAffectedExtensionsForTesting();
-  service()->EnableExtension(extension->id());
-  service()->DisableExtension(extension->id(),
-                              disable_reason::DISABLE_USER_ACTION);
+  registrar()->EnableExtension(extension->id());
+  registrar()->DisableExtension(extension->id(),
+                                {disable_reason::DISABLE_USER_ACTION});
   experiment_manager()->EmitMetricsForProfileReadyForTesting();
 
   histogram_tester.ExpectTotalCount(

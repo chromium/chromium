@@ -49,52 +49,16 @@ class ScrollMarkerChooser {
   HeapVector<Member<Element>> Choose();
 
  private:
-  // An auxiliary struct to help with selecting scroll markers.
-  // It is only created when selecting scroll markers.
-  struct ScrollTargetOffsetData {
-    ScrollTargetOffsetData(float scroll_offset,
-                           float layout_offset,
-                           float layout_size)
-        : aligned_scroll_offset(scroll_offset),
-          layout_offset(layout_offset),
-          layout_size(layout_size) {}
-
-    // The scroll offset at which the scroll marker, for which this object was
-    // created, is considered aligned in the particular axis for which this
-    // object was generated.
-    float aligned_scroll_offset;
-    // The position, in coordinates of the associated scroll container's content
-    // area, occupied by the scroll marker generating this object in the
-    // particular axis for which this object was generated.
-    float layout_offset;
-    // The size of the scroll marker generating this object in the particular
-    // axis for which this object was generated.
-    float layout_size;
-  };
-
-  // Compute a ScrollTargetOffsetData for a given element, |scroll_marker|
+  // Compute the target position for the target of the given |scroll_marker|
   // within |scrollable_area|'s content area along the |axis| specified.
-  std::optional<ScrollMarkerChooser::ScrollTargetOffsetData>
-  GetScrollTargetOffsetData(Element* scroll_marker);
+  std::optional<double> GetScrollTargetPosition(Element* scroll_marker);
 
-  // Select a scroll marker from the given |candidates| if the
-  // |intended_scroll_offset_| is within the region "reserved" so that
-  // unreachable scroll markers can be selected.
-  HeapVector<Member<Element>> ChooseReserved(
-      const HeapVector<Member<Element>>& candidates);
+  // Implements the search for the active targets in a particular axis as
+  // described at https://drafts.csswg.org/css-overflow-5/#example-d2ca6884.
+  HeapVector<Member<Element>> ChooseInternal();
 
-  // Select a scroll marker from the given |candidates| in the |axis|
-  // by selecting the scroll marker with the largest target position which is at
-  // or before |intended_scroll_offset_| in the relevant |axis|.
-  HeapVector<Member<Element>> ChooseGeneric(
-      const HeapVector<Member<Element>>& candidates);
-
-  // Select a scroll marker from the given |candidates| using their positions
-  // within |scrollable_area_|'s content area (rather than their aligned scroll
-  // positions). This should only be used to break ties between items at the
-  // same aligned scroll positions.
-  HeapVector<Member<Element>> ChooseVisual(
-      const HeapVector<Member<Element>>& candidates);
+  HeapVector<Member<Element>> ComputeTargetPositions(
+      HeapHashMap<Member<Element>, double>& target_positions);
 
   // The axis this chooser is picking a target in.
   const ScrollAxis axis_;

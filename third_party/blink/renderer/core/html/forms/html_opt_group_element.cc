@@ -243,7 +243,8 @@ void HTMLOptGroupElement::ManuallyAssignSlots() {
   for (Node& child : NodeTraversal::ChildrenOf(*this)) {
     if (!child.IsSlotable())
       continue;
-    if (customizable_select_rendering_ || CanAssignToOptGroupSlot(child)) {
+    if (RuntimeEnabledFeatures::CustomizableSelectInPageEnabled() ||
+        customizable_select_rendering_ || CanAssignToOptGroupSlot(child)) {
       opt_group_nodes.push_back(child);
     }
   }
@@ -255,11 +256,26 @@ void HTMLOptGroupElement::UpdateGroupLabel() {
   HTMLDivElement& label = OptGroupLabelElement();
   label.setTextContent(label_text);
   label.setAttribute(html_names::kAriaLabelAttr, AtomicString(label_text));
-  if (label_text.ContainsOnlyWhitespaceOrEmpty() || FirstChildLegend(*this)) {
-    if (customizable_select_rendering_) {
+
+  // Empty or missing label attributes result in a blank line being rendered,
+  // see fast/forms/select/listbox-appearance-basic.html. If the author provides
+  // a <legend> element which replaces the label attribute, then set the label
+  // to display:none.
+  // The ContainsOnlyWhitespaceOrEmpty() check here was shortsightedly added for
+  // CustomizableSelect to remove the empty line behavior, but we want to remove
+  // it for CustomizableSelectInPage.
+  if ((!RuntimeEnabledFeatures::CustomizableSelectInPageEnabled() &&
+       label_text.ContainsOnlyWhitespaceOrEmpty()) ||
+      FirstChildLegend(*this)) {
+    if (customizable_select_rendering_ ||
+        RuntimeEnabledFeatures::CustomizableSelectInPageEnabled()) {
       // If the author uses <legend> to label the <optgroup> instead of the
       // label attribute, then we don't want extra space being taken up for the
       // unused label attribute.
+      // TODO(crbug.com/383841336): Consider replacing this with UA style rules
+      // if we can make the label attribute become a part like pseudo-element,
+      // and add more tests for the label attribute with base appearance
+      // rendering.
       label.SetInlineStyleProperty(CSSPropertyID::kDisplay, "none");
     }
   } else {

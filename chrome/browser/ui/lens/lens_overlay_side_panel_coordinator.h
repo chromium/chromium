@@ -10,8 +10,8 @@
 #include "chrome/browser/lens/core/mojom/lens_side_panel.mojom.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/lens/lens_overlay_translate_options.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
-#include "components/lens/lens_overlay_side_panel_result.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -71,6 +71,17 @@ struct SearchQuery {
   std::optional<lens::TranslateOptions> translate_options_;
 };
 
+// A Lens feature that wants to keep results in the side panel should call
+// `LensOveraySidePanelCoordinator::RegisterEntryAndShow()` and keep alive the
+// instance of `SidePanelInUse` for the duration of using the side panel. When
+// all instances of `SidePanelInUse` are destroyed, the side panel will close
+// and the `LensOveraySidePanelCoordinator` will clean up.
+class SidePanelInUse {
+ public:
+  SidePanelInUse() = default;
+  virtual ~SidePanelInUse() = default;
+};
+
 // Handles the creation and registration of the lens overlay side panel entry.
 // There are two ways for this instance to be torn down.
 //   (1) Its owner, LensOverlayController can destroy it.
@@ -89,7 +100,7 @@ class LensOverlaySidePanelCoordinator
       public ui::SimpleMenuModel::Delegate {
  public:
   explicit LensOverlaySidePanelCoordinator(
-      LensOverlayController* lens_overlay_controller);
+      LensSearchController* lens_search_controller);
   LensOverlaySidePanelCoordinator(const LensOverlaySidePanelCoordinator&) =
       delete;
   LensOverlaySidePanelCoordinator& operator=(
@@ -97,8 +108,9 @@ class LensOverlaySidePanelCoordinator
   ~LensOverlaySidePanelCoordinator() override;
 
   // Registers the side panel entry in the side panel if it doesn't already
-  // exist and then shows it.
-  void RegisterEntryAndShow();
+  // exist and then shows it. Calls must keep the returned `SidePanelInUse`
+  // alive for the duration of using the side panel.
+  std::unique_ptr<SidePanelInUse> RegisterEntryAndShow();
 
   // SidePanelEntryObserver:
   void OnEntryWillHide(SidePanelEntry* entry,
@@ -110,9 +122,14 @@ class LensOverlaySidePanelCoordinator
 
   content::WebContents* GetSidePanelWebContents();
 
-  // Return the LensOverlayController that owns this side panel coordinator.
+  // Return the LensSearchController that owns this side panel coordinator.
+  LensSearchController* GetLensSearchController() {
+    return lens_search_controller_.get();
+  }
+
+  // Return the LensOverlayController that is part of this tab.
   LensOverlayController* GetLensOverlayController() {
-    return lens_overlay_controller_.get();
+    return lens_search_controller_->lens_overlay_controller();
   }
 
   // Handles rendering text highlights on the main browser window based on
@@ -134,6 +151,16 @@ class LensOverlaySidePanelCoordinator
   void PopAndLoadQueryFromHistory() override;
   void GetIsContextualSearchbox(
       GetIsContextualSearchboxCallback callback) override;
+  void OnScrollToMessage(const std::vector<std::string>& text_fragments,
+      uint32_t pdf_page_number) override;
+  void RequestSendFeedback() override;
+
+  // This method is used to set up communication between this instance and the
+  // side panel WebUI. This is called by the WebUIController when the WebUI is
+  // executing javascript and ready to bind.
+  void BindSidePanel(
+      mojo::PendingReceiver<lens::mojom::LensSidePanelPageHandler> receiver,
+      mojo::PendingRemote<lens::mojom::LensSidePanelPage> page);
 
   enum CommandID {
     COMMAND_MY_ACTIVITY,
@@ -143,6 +170,19 @@ class LensOverlaySidePanelCoordinator
 
   // SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
+
+  // Show or hide the protected error page based on the value of
+  // `show_protected_error_page.
+  void SetShowProtectedErrorPage(bool show_protected_error_page);
+
+  // Whether the side panel is currently showing the protected error page.
+  bool IsShowingProtectedErrorPage();
+
+  // Sets the latest page URL that was sent from the browser to the server. This
+  // is currently only set when the latest page URL is a local file scheme URL
+  // (`file://`). This is used to determine whether to scroll in the main tab or
+  // open a new tab.
+  void SetLatestPageUrlWithResponse(const GURL& url);
 
   // Internal state machine. States are mutually exclusive. Exposed for testing.
   enum class State {
@@ -181,13 +221,6 @@ class LensOverlaySidePanelCoordinator
   friend class lens::LensOverlaySidePanelNavigationThrottle;
 
  protected:
-  // This method is used to set up communication between this instance and the
-  // side panel WebUI. This is called by the WebUIController when the WebUI is
-  // executing javascript and ready to bind.
-  void BindSidePanel(
-      mojo::PendingReceiver<lens::mojom::LensSidePanelPageHandler> receiver,
-      mojo::PendingRemote<lens::mojom::LensSidePanelPage> page);
-
   // Returns whether the side panel is bound to the WebUI.
   bool IsSidePanelBound();
 
@@ -201,7 +234,7 @@ class LensOverlaySidePanelCoordinator
   // done if the side panel is not already in the state provided by the
   // parameters or on its first load.
   void MaybeSetSidePanelShowErrorPage(bool should_show_error_page,
-                                      lens::SidePanelResultStatus status);
+                                      mojom::SidePanelResultStatus status);
 
   // Set the side panel state as being offline.
   void SetSidePanelIsOffline(bool is_offline);
@@ -235,6 +268,21 @@ class LensOverlaySidePanelCoordinator
     // The search query that is currently loaded in the results frame.
     std::optional<SearchQuery> currently_loaded_search_query_;
   };
+
+  // Tracks whether the side panel is in use.
+  class SidePanelInUseImpl : public SidePanelInUse {
+   public:
+    explicit SidePanelInUseImpl(LensOverlaySidePanelCoordinator* coordinator);
+    ~SidePanelInUseImpl() override;
+
+   private:
+    // Owns this.
+    base::WeakPtr<LensOverlaySidePanelCoordinator> coordinator_;
+  };
+
+  // Cleans up the side panel entry and closes the side panel if there are no
+  // other SidePanelInUse instances.
+  void DeregisterEntryAndCleanup();
 
   // content::WebContentsObserver:
   void DidOpenRequestedURL(content::WebContents* new_contents,
@@ -307,7 +355,7 @@ class LensOverlaySidePanelCoordinator
   std::unique_ptr<ui::MenuModel> GetMoreInfoMenuModel();
 
   // Owns this.
-  const raw_ptr<LensOverlayController> lens_overlay_controller_;
+  const raw_ptr<LensSearchController> lens_search_controller_;
 
   // Connections to and from the side panel WebUI. Only valid when the side
   // panel is currently open and after the WebUI has started executing JS and
@@ -332,10 +380,15 @@ class LensOverlaySidePanelCoordinator
   // URL to load when command to open side panel in a new tab is executed.
   GURL side_panel_new_tab_url_;
 
+  // The latest page URL that was sent from the browser to the server. This is
+  // currently only set when the latest page URL is a local file scheme URL
+  // (`file://`).
+  GURL latest_page_url_with_response_;
+
   // The status of the side panel, or whether it is currently showing an error
   // page.
-  lens::SidePanelResultStatus side_panel_result_status_ =
-      lens::SidePanelResultStatus::kUnknown;
+  mojom::SidePanelResultStatus side_panel_result_status_ =
+      mojom::SidePanelResultStatus::kUnknown;
 
   // General side panel coordinator responsible for all side panel interactions.
   // Separate from this class because this controls interactions to other side
@@ -343,6 +396,10 @@ class LensOverlaySidePanelCoordinator
   // lives with the browser view, so it should outlive this class. Therefore
   // this can be assumed to be non-null.
   raw_ptr<SidePanelCoordinator> side_panel_coordinator_ = nullptr;
+
+  // Counts the number of SidePanelInUse instances that are alive. When this
+  // reaches zero, the side panel will close.
+  uint16_t side_panel_in_use_count_ = 0;
 
   raw_ptr<LensOverlaySidePanelWebView> side_panel_web_view_;
   base::WeakPtrFactory<LensOverlaySidePanelCoordinator> weak_ptr_factory_{this};

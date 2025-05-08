@@ -11,9 +11,11 @@
 
 namespace actor {
 
-void PostResponseTask(base::OnceCallback<void(bool)> task, bool response) {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(task), response));
+void PostResponseTask(base::OnceCallback<void(bool)> task,
+                      bool response,
+                      base::TimeDelta delay) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(std::move(task), response), delay);
 }
 
 }  // namespace actor

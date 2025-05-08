@@ -1295,11 +1295,12 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerRegistrationRestartMetricBrowserTest,
   ServiceWorkerTaskQueueRegistrationObserver register_observer(
       extension()->id());
   task_queue->SetObserverForTest(&register_observer);
-  ExtensionSystem* system = ExtensionSystem::Get(profile());
+
+  auto* extension_registrar = ExtensionRegistrar::Get(profile());
 
   // Disable extension and wait for worker to be unregistered.
-  system->extension_service()->DisableExtension(
-      extension()->id(), disable_reason::DISABLE_USER_ACTION);
+  extension_registrar->DisableExtension(extension()->id(),
+                                        {disable_reason::DISABLE_USER_ACTION});
   {
     SCOPED_TRACE(
         "waiting for worker to be unregistered after disabling extension");
@@ -1307,7 +1308,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerRegistrationRestartMetricBrowserTest,
   }
 
   // Enable extension and wait for registration metric should have been emitted.
-  system->extension_service()->EnableExtension(extension()->id());
+  extension_registrar->EnableExtension(extension()->id());
   {
     SCOPED_TRACE(
         "waiting for worker to be registered after enabling extension");

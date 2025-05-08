@@ -57,8 +57,7 @@ class DefaultParamEmbeddedPermissionPromptUiTest
  public:
   DefaultParamEmbeddedPermissionPromptUiTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{permissions::features::kOneTimePermission, {}},
-         {blink::features::kPermissionElement, {}},
+        {{blink::features::kPermissionElement, {}},
          {blink::features::kBypassPepcSecurityForTesting, {}}},
         {});
   }
@@ -92,7 +91,6 @@ class WindowMiddleEmbeddedPermissionPromptUiTest
   WindowMiddleEmbeddedPermissionPromptUiTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {
-            {permissions::features::kOneTimePermission, {}},
             {blink::features::kPermissionElement, {}},
             {blink::features::kBypassPepcSecurityForTesting, {}},
             {permissions::features::kPermissionElementPromptPositioning,
@@ -130,7 +128,6 @@ class NearElementEmbeddedPermissionPromptUiTest
   NearElementEmbeddedPermissionPromptUiTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {
-            {permissions::features::kOneTimePermission, {}},
             {blink::features::kPermissionElement, {}},
             {blink::features::kBypassPepcSecurityForTesting, {}},
             {permissions::features::kPermissionElementPromptPositioning,
@@ -168,7 +165,6 @@ class LegacyPromptEmbeddedPermissionPromptUiTest
   LegacyPromptEmbeddedPermissionPromptUiTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {
-            {permissions::features::kOneTimePermission, {}},
             {blink::features::kPermissionElement, {}},
             {blink::features::kBypassPepcSecurityForTesting, {}},
             {permissions::features::kPermissionElementPromptPositioning,

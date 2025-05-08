@@ -37,6 +37,11 @@ BASE_FEATURE(kInvalidateSearchEngineChoiceOnDeviceRestoreDetection,
              "InvalidateSearchEngineChoiceOnDeviceRestoreDetection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+const base::FeatureParam<bool> kInvalidateChoiceOnRestoreIsRetroactive{
+    /*feature=*/&kInvalidateSearchEngineChoiceOnDeviceRestoreDetection,
+    /*name=*/"is_retroactive", /*default_value=*/false};
+
 // Enables the search engine choice screen. Feature parameters below can
 // affect the actual triggering logic.
 // The default feature state is split by platform to ease potential merges

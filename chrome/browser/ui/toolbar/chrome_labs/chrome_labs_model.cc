@@ -41,23 +41,8 @@ const std::vector<LabInfo>& GetData() {
   static const base::NoDestructor<std::vector<LabInfo>> lab_info_([]() {
     std::vector<LabInfo> lab_info;
 
-    // Tab Scrolling.
-    std::vector<std::u16string> tab_scrolling_variation_descriptions = {
-        l10n_util::GetStringUTF16(IDS_TABS_SHRINK_TO_PINNED_TAB_WIDTH),
-        l10n_util::GetStringUTF16(IDS_TABS_SHRINK_TO_MEDIUM_WIDTH),
-        l10n_util::GetStringUTF16(IDS_TABS_SHRINK_TO_LARGE_WIDTH),
-        l10n_util::GetStringUTF16(IDS_TABS_DO_NOT_SHRINK)};
-
-    lab_info.emplace_back(
-        flag_descriptions::kScrollableTabStripFlagId,
-        l10n_util::GetStringUTF16(IDS_TAB_SCROLLING_EXPERIMENT_NAME),
-        l10n_util::GetStringUTF16(IDS_TAB_SCROLLING_EXPERIMENT_DESCRIPTION),
-        "chrome-labs-tab-scrolling", version_info::Channel::BETA,
-        tab_scrolling_variation_descriptions);
-
     // Thumbnail Tab Strip for Windows.
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP) && \
-    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS))
+#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP) && BUILDFLAG(IS_WIN)
     lab_info.emplace_back(
         flag_descriptions::kWebUITabStripFlagId,
         l10n_util::GetStringUTF16(IDS_THUMBNAIL_TAB_STRIP_EXPERIMENT_NAME),

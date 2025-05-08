@@ -106,13 +106,16 @@ int TipsNotificationsEnabledBitfield();
 std::vector<TipsNotificationType> TipsNotificationsTypesOrder(
     bool for_reactivation);
 
-// Returns the dismiss limit. If the user dismisses this number of Tips
-// notifications in a row, no more Tips notifications will be sent. Zero
-// indicates there should be no limit.
-int TipsNotificationsDismissLimit();
-
 // Returns the matching NotificationType for the TipsNotificationType `type`.
 NotificationType NotificationTypeForTipsNotificationType(
     TipsNotificationType type);
+
+// Returns the type of Tips Notification that is forced to be sent, via
+// experimental settings.
+std::optional<TipsNotificationType> ForcedTipsNotificationType();
+
+// Returns the trigger time (in seconds) that was set in Experimental Settings.
+// Returns 0 if it was not set.
+int TipsNotificationTriggerExperimentalSetting();
 
 #endif  // IOS_CHROME_BROWSER_TIPS_NOTIFICATIONS_MODEL_UTILS_H_

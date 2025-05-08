@@ -21,6 +21,7 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/app_store_rating/ui_bundled/app_store_rating_display_handler.h"
 #import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/features.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/promo/signin_fullscreen_promo_display_handler.h"
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_display_handler.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -34,6 +35,10 @@
 #import "ios/chrome/browser/default_promo/ui_bundled/stay_safe_default_browser_promo_view_provider.h"
 #import "ios/chrome/browser/docking_promo/ui/docking_promo_display_handler.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/first_run/ui_bundled/features.h"
+#import "ios/chrome/browser/first_run/ui_bundled/welcome_back/ui/welcome_back_display_handler.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/glic/ui/glic_promo_display_handler.h"
 #import "ios/chrome/browser/post_restore_signin/ui_bundled/post_restore_signin_provider.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
@@ -605,8 +610,22 @@
       [[DefaultBrowserRemindMeLaterPromoDisplayHandler alloc] init];
 
   // Sign-in fullscreen promo handler.
-  _displayHandlerPromos[promos_manager::Promo::SigninFullscreen] =
-      [[SigninFullscreenPromoDisplayHandler alloc] init];
+  if (IsFullscreenSigninPromoManagerMigrationEnabled()) {
+    _displayHandlerPromos[promos_manager::Promo::SigninFullscreen] =
+        [[SigninFullscreenPromoDisplayHandler alloc] init];
+  }
+
+  // Welcome Back promo handler.
+  if (first_run::IsWelcomeBackInFirstRunEnabled()) {
+    _displayHandlerPromos[promos_manager::Promo::WelcomeBack] =
+        [[WelcomeBackDisplayHandler alloc] init];
+  }
+
+  // GLIC promo handler.
+  if (IsPageActionMenuEnabled()) {
+    _displayHandlerPromos[promos_manager::Promo::GLICPromo] =
+        [[GLICPromoDisplayHandler alloc] init];
+  }
 }
 
 - (void)registerStandardPromoViewProviderPromos {

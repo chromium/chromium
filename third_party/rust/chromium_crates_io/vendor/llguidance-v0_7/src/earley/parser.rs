@@ -67,6 +67,11 @@ struct Item {
     data: u64,
 }
 
+#[derive(Clone)]
+struct SavedParserState {
+    lexer_stack_length: usize,
+}
+
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct ParserStats {
     pub compute_time_us: u64,
@@ -592,19 +597,25 @@ impl ParserState {
         let mut lexer = Lexer::from(grammar.lexer_spec(), &mut limits, true)?;
         if limits.precompute_large_lexemes {
             let t0 = crate::Instant::now();
+            lexer.dfa.set_fuel(limits.initial_lexer_fuel);
             for spec in &grammar.lexer_spec().lexemes {
                 let w = lexer.dfa.lexeme_weight(spec.idx);
                 if w > 1000 {
                     // println!(
-                    //     "precomputing lexeme {} (w={w})",
-                    //     lexer.lexer_spec().lexeme_def_to_string(spec.idx)
+                    //     "precomputing lexeme {} (w={w}) f={}",
+                    //     lexer.lexer_spec().lexeme_def_to_string(spec.idx),
+                    //     lexer.dfa.get_fuel()
                     // );
                     let mut allowed = grammar.lexer_spec().alloc_lexeme_set();
                     allowed.add(spec.idx);
                     lexer.precompute_for(tok_env.tok_trie(), &allowed);
+                    // println!("fuel={}", lexer.dfa.get_fuel());
                 }
             }
             perf_counters.precompute.record(t0.elapsed());
+            if lexer.dfa.has_error() {
+                bail!("lexer precomputation failed; either increase limits.initial_lexer_fuel or disable limits.precompute_large_lexemes");
+            }
         }
         let scratch = Scratch::new(Arc::clone(&grammar));
         let lexer_state = lexer.a_dead_state(); // placeholder
@@ -758,10 +769,7 @@ impl ParserState {
         if start.is_empty() {
             self.run_speculative("token_ranges", |state| {
                 if state.flush_lexer() {
-                    let possible = state
-                        .lexer()
-                        .possible_lexemes(state.lexer_state().lexer_state);
-                    for spec in state.lexer_spec().token_range_lexemes(possible) {
+                    for spec in state.token_range_lexemes() {
                         for range in &spec.token_ranges {
                             set.allow_range(range.clone());
                         }
@@ -996,66 +1004,58 @@ impl ParserState {
         self.assert_definitive();
         self.run_speculative("validate_tokens", |state| {
             let mut applied_idx = state.byte_to_token_idx.len();
-            let eos = state.tok_env.tok_trie().eos_token();
-            let mut r = ParserRecognizer { state };
-            'token: for (tidx, &tok) in tokens.iter().enumerate() {
+            let tok_env = state.tok_env.clone();
+            let trie = tok_env.tok_trie();
+            let eos = trie.eos_token();
+            let mut recog = ParserRecognizer { state };
+            for (tidx, &tok) in tokens.iter().enumerate() {
+                let state = &mut recog.state;
                 if tok == eos {
-                    if applied_idx == r.state.bytes.len() && r.state.is_accepting_inner() {
+                    if applied_idx == state.bytes.len() && state.is_accepting_inner() {
                         return tidx + 1;
                     } else {
                         return tidx;
                     }
                 }
 
-                let token_bytes = r.state.tok_env.tok_trie().decode_raw(&[tok]);
+                if applied_idx >= state.bytes.len() {
+                    let saved_parser_state = state.save_state();
 
-                let token_bytes = if applied_idx < r.state.bytes.len()
-                    && r.state.bytes[applied_idx] == TokTrie::SPECIAL_TOKEN_MARKER
+                    if let Some(idx) = state.flush_and_check_numeric(tok) {
+                        let numeric_bytes = trie.decode_as_special(tok);
+                        let ok = state.add_numeric_token(idx, &numeric_bytes);
+                        assert!(ok.is_ok());
+                        continue; // next token please
+                    }
+
+                    state.restore_state(saved_parser_state);
+                }
+
+                let token_bytes = trie.decode_raw(&[tok]);
+
+                let token_bytes = if applied_idx < state.bytes.len()
+                    && state.bytes[applied_idx] == TokTrie::SPECIAL_TOKEN_MARKER
                 {
-                    r.state.tok_env.tok_trie().decode_as_special(tok)
+                    trie.decode_as_special(tok)
                 } else {
                     token_bytes
                 };
 
-                'byte: for (bidx, &b) in token_bytes.iter().enumerate() {
-                    if applied_idx < r.state.bytes.len() {
-                        if r.state.bytes[applied_idx] == b {
+                for &b in &token_bytes {
+                    if applied_idx < recog.state.bytes.len() {
+                        if recog.state.bytes[applied_idx] == b {
                             applied_idx += 1;
                         } else {
                             return tidx;
                         }
                     } else {
                         // never push FF
-                        if b != TokTrie::SPECIAL_TOKEN_MARKER && r.try_push_byte(b) {
+                        if b != TokTrie::SPECIAL_TOKEN_MARKER && recog.try_push_byte(b) {
                             // normal path
-                            continue 'byte;
-                        }
-
-                        if bidx != 0 {
-                            // not at the start of the token, bail
+                            continue;
+                        } else {
                             return tidx;
                         }
-
-                        if !r.state.flush_lexer() {
-                            // we need to flush lexer before checking for special/numeric tokens
-                            return tidx;
-                        }
-
-                        for spec in r.state.token_range_lexemes() {
-                            if spec.contains_token(tok) {
-                                let numeric_bytes =
-                                    r.state.tok_env.tok_trie().decode_as_special(tok);
-                                let ok = r.state.add_numeric_token(spec.idx, &numeric_bytes);
-                                if ok.is_ok() {
-                                    continue 'token;
-                                } else {
-                                    unreachable!(); // ???
-                                }
-                            }
-                        }
-
-                        // didn't find numeric token
-                        return tidx;
                     }
                 }
             }
@@ -1093,10 +1093,21 @@ impl ParserState {
         Ok(())
     }
 
+    fn flush_and_check_numeric(&mut self, tok_id: TokenId) -> Option<LexemeIdx> {
+        if self.flush_lexer() {
+            for spec in self.token_range_lexemes() {
+                if spec.contains_token(tok_id) {
+                    return Some(spec.idx);
+                }
+            }
+        }
+        None
+    }
+
     // apply_tokens() "pushes" the bytes in 'tokens' into the lexer and parser.  It is a top-level
     // method in this file.  It is well below llguidance's top-level methods, but in the llguidance
     // LLInterpreter interface, it is called indirectly via the commit_token() method.
-    pub fn apply_token(&mut self, tok_bytes: &[u8]) -> Result<usize> {
+    pub fn apply_token(&mut self, tok_bytes: &[u8], tok_id: TokenId) -> Result<usize> {
         self.assert_definitive();
 
         item_trace!("apply_token: {:?}", String::from_utf8_lossy(tok_bytes));
@@ -1114,6 +1125,28 @@ impl ParserState {
             row_to_apply -= 1;
         }
 
+        // tok_id normally matches tok_bytes, except when the caller was handling
+        // some byte prefix
+        if self.tok_env.tok_trie().token(tok_id) == tok_bytes
+            && self.byte_to_token_idx.len() == self.bytes.len()
+        {
+            let applies = self
+                .run_speculative("numeric_apply_token", |state| {
+                    state.flush_and_check_numeric(tok_id)
+                })
+                .is_some();
+            if applies {
+                // non-speculative now
+                let row_idx = self.num_rows() - 1;
+                self.row_infos[row_idx].apply_token_idx(self.token_idx);
+
+                let idx = self.flush_and_check_numeric(tok_id).unwrap();
+                self.add_numeric_token(idx, tok_bytes)?;
+
+                return Ok(0);
+            }
+        }
+
         for (bidx, &b) in tok_bytes.iter().enumerate() {
             check_lexer_max_tokens = false;
             let applied_idx = self.byte_to_token_idx.len();
@@ -1126,17 +1159,6 @@ impl ParserState {
 
                 let (ok, bt) = self.try_push_byte_definitive(Some(b));
                 if !ok {
-                    if bidx == 0 {
-                        let toks = self.tok_env.tok_trie().greedy_tokenize(tok_bytes);
-                        if self.flush_lexer() && toks.len() == 1 {
-                            for spec in self.token_range_lexemes() {
-                                if spec.contains_token(toks[0]) {
-                                    self.add_numeric_token(spec.idx, tok_bytes)?;
-                                    return Ok(0);
-                                }
-                            }
-                        }
-                    }
                     bail!(
                         "token {:?} doesn't satisfy the grammar; byte {:?} fails parse",
                         String::from_utf8_lossy(tok_bytes),
@@ -1612,6 +1634,16 @@ impl ParserState {
         // }
 
         slow_res
+    }
+
+    fn save_state(&self) -> SavedParserState {
+        SavedParserState {
+            lexer_stack_length: self.lexer_stack.len(),
+        }
+    }
+
+    fn restore_state(&mut self, state: SavedParserState) {
+        self.lexer_stack.truncate(state.lexer_stack_length);
     }
 
     /// Advance the parser as if the current lexeme (if any)
@@ -2699,6 +2731,10 @@ impl Parser {
         self.with_shared(|state| state.scan_eos())
     }
 
+    pub fn grammar_warnings(&mut self) -> Vec<String> {
+        self.with_shared(|state| state.lexer_spec().render_warnings())
+    }
+
     pub(crate) fn apply_forced(&mut self, byte_idx: usize) {
         self.state.byte_to_token_idx.resize(byte_idx, 0);
     }
@@ -2710,8 +2746,8 @@ impl Parser {
         self.state.byte_to_token_idx.truncate(new_len);
     }
 
-    pub fn apply_token(&mut self, tok_bytes: &[u8]) -> Result<usize> {
-        let r = self.with_shared(|state| state.apply_token(tok_bytes));
+    pub fn apply_token(&mut self, tok_bytes: &[u8], tok_id: TokenId) -> Result<usize> {
+        let r = self.with_shared(|state| state.apply_token(tok_bytes, tok_id));
         self.state.token_idx += 1;
         r
     }

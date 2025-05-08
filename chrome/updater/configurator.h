@@ -21,7 +21,6 @@ class PrefService;
 
 namespace base {
 class Version;
-class FilePath;
 }  // namespace base
 
 namespace crx_file {
@@ -30,6 +29,7 @@ enum class VerifierFormat;
 
 namespace update_client {
 class NetworkFetcherFactory;
+class CrxCache;
 class CrxDownloaderFactory;
 class ProtocolHandlerFactory;
 }  // namespace update_client
@@ -40,11 +40,13 @@ class ExternalConstants;
 class PersistedData;
 class PolicyService;
 class UpdaterPrefs;
+enum class UpdaterScope;
 
 class Configurator : public update_client::Configurator {
  public:
   Configurator(scoped_refptr<UpdaterPrefs> prefs,
                scoped_refptr<ExternalConstants> external_constants,
+               UpdaterScope scope,
                bool is_ceca_experiment_enabled = false);
   Configurator(const Configurator&) = delete;
   Configurator& operator=(const Configurator&) = delete;
@@ -78,7 +80,7 @@ class Configurator : public update_client::Configurator {
   GetProtocolHandlerFactory() const override;
   std::optional<bool> IsMachineExternallyManaged() const override;
   update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
-  std::optional<base::FilePath> GetCrxCachePath() const override;
+  scoped_refptr<update_client::CrxCache> GetCrxCache() const override;
   bool IsConnectionMetered() const override;
 
   scoped_refptr<PersistedData> GetUpdaterPersistedData() const;
@@ -102,6 +104,7 @@ class Configurator : public update_client::Configurator {
   scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;
   scoped_refptr<update_client::PatcherFactory> patch_factory_;
+  scoped_refptr<update_client::CrxCache> crx_cache_;
   const std::optional<bool> is_managed_device_;
 };
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_bloberizer.h"
 
 #include <hb.h>
@@ -121,25 +116,25 @@ void ShapeResultBloberizer::CommitText() {
   unsigned size = to - from;
   Vector<uint32_t, 256> pending_utf8_character_index_from_character_index(size);
   if (current_text_.Is8Bit()) {
-    const LChar* latin1 = current_text_.Characters8();
+    const LChar* latin1 = UNSAFE_TODO(current_text_.Characters8());
     wtf_size_t utf8_size = pending_utf8_.size();
     for (unsigned i = from; i < to;) {
       pending_utf8_character_index_from_character_index[i - from] = utf8_size;
 
-      LChar cp = latin1[i++];
+      LChar cp = UNSAFE_TODO(latin1[i++]);
       pending_utf8_.Grow(utf8_size + U8_LENGTH(cp));
-      U8_APPEND_UNSAFE(pending_utf8_.begin(), utf8_size, cp);
+      UNSAFE_TODO(U8_APPEND_UNSAFE(pending_utf8_.begin(), utf8_size, cp));
     }
   } else {
-    const UChar* utf16 = current_text_.Characters16();
+    const UChar* utf16 = UNSAFE_TODO(current_text_.Characters16());
     wtf_size_t utf8_size = pending_utf8_.size();
     for (unsigned i = from; i < to;) {
       pending_utf8_character_index_from_character_index[i - from] = utf8_size;
 
       UChar32 cp;
-      U16_NEXT_OR_FFFD(utf16, i, current_text_length, cp);
+      UNSAFE_TODO(U16_NEXT_OR_FFFD(utf16, i, current_text_length, cp));
       pending_utf8_.Grow(utf8_size + U8_LENGTH(cp));
-      U8_APPEND_UNSAFE(pending_utf8_.begin(), utf8_size, cp);
+      UNSAFE_TODO(U8_APPEND_UNSAFE(pending_utf8_.begin(), utf8_size, cp));
     }
   }
 
@@ -152,8 +147,9 @@ void ShapeResultBloberizer::CommitText() {
   current_character_indexes_.Shrink(0);
 
   DVLOG(4) << "  CommitText appended UTF-8: \""
-           << std::string(&pending_utf8_[pending_utf8_original_size],
-                          pending_utf8_.data() + pending_utf8_.size())
+           << std::string(
+                  &pending_utf8_[pending_utf8_original_size],
+                  UNSAFE_TODO(pending_utf8_.data() + pending_utf8_.size()))
            << "\"";
   DVLOG(4) << "  CommitText UTF-8 indexes: "
            << base::span(pending_utf8_character_indexes_)
@@ -424,7 +420,7 @@ class ClusterStarts {
     if (!cluster_starts_.empty()) {
       // 'from' may point inside a cluster; the least seen index may be larger.
       DCHECK_LE(from, *cluster_starts_.begin());
-      DCHECK_LT(*(cluster_starts_.end() - 1), to);
+      DCHECK_LT(*(UNSAFE_TODO(cluster_starts_.end() - 1)), to);
     }
     cluster_starts_.push_back(to);
   }

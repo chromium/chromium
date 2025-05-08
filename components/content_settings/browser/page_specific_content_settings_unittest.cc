@@ -522,7 +522,7 @@ TEST_F(PageSpecificContentSettingsTest, SiteDataObserver) {
   NavigateAndCommit(GURL("http://google.com"));
   auto* rfh = web_contents()->GetPrimaryMainFrame();
   MockSiteDataObserver mock_observer(web_contents());
-  EXPECT_CALL(mock_observer, OnSiteDataAccessed).Times(6);
+  EXPECT_CALL(mock_observer, OnSiteDataAccessed).Times(5);
 
   bool blocked_by_policy = false;
   GURL origin("http://google.com");
@@ -558,9 +558,6 @@ TEST_F(PageSpecificContentSettingsTest, SiteDataObserver) {
       blocked_by_policy);
   PageSpecificContentSettings::StorageAccessed(
       StorageType::LOCAL_STORAGE, rfh->GetGlobalId(), google_storage_key,
-      blocked_by_policy);
-  PageSpecificContentSettings::StorageAccessed(
-      StorageType::DATABASE, rfh->GetGlobalId(), google_storage_key,
       blocked_by_policy);
 }
 

@@ -24,12 +24,14 @@ import org.chromium.net.X509Util;
 import org.chromium.net.test.util.CertTestUtil;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * A simple file server for java tests.
  *
- * An example use:
+ * <p>An example use:
  *
  * <pre>
  * EmbeddedTestServer s = EmbeddedTestServer.createAndStartServer(context);
@@ -484,6 +486,21 @@ public class EmbeddedTestServer {
 
         for (int i = 0; i < relativeUrls.length; ++i) absoluteUrls[i] = getURL(relativeUrls[i]);
 
+        return absoluteUrls;
+    }
+
+    /**
+     * Get the full URLs for the given relative URLs.
+     *
+     * @see #getURL(String)
+     * @param relativeUrls The relative URLs for which full URLs will be obtained.
+     * @return The URLs as a List.
+     */
+    public List<String> getURLs(List<String> relativeUrls) {
+        List<String> absoluteUrls = new ArrayList<>(relativeUrls.size());
+        for (String relativeUrl : relativeUrls) {
+            absoluteUrls.add(getURL(relativeUrl));
+        }
         return absoluteUrls;
     }
 

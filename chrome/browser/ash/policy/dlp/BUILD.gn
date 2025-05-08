@@ -42,6 +42,7 @@ static_library("dlp") {
     "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
     "//chrome/app:generated_resources",
+    "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/policy/dlp/dialogs",
     "//chrome/browser/chromeos/policy/dlp",

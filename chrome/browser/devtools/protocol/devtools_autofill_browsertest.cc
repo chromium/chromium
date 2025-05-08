@@ -555,8 +555,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
                         base::UTF8ToUTF16(
                             main_frame()->GetDevToolsFrameToken().ToString())));
     EXPECT_THAT(ff,
-                Not(FilledFieldHasAttributeWithValue16(
-                    "value", af->value(autofill::ValueSemantics::kCurrent))));
+                Not(FilledFieldHasAttributeWithValue16("value", af->value())));
     EXPECT_THAT(ff,
                 FilledFieldHasAttributeWithValue(
                     "htmlType", std::string(autofill::FormControlTypeToString(
@@ -618,7 +617,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AutofillInOOPIFs) {
           autofill::ContentAutofillDriver::GetForRenderFrameHost(rfh));
       driver->AskForValuesToFill(
           form, form.fields()[0].renderer_id(), gfx::Rect(0, 10),
-          ::autofill::mojom::AutofillSuggestionTriggerSource::kUnspecified);
+          ::autofill::mojom::AutofillSuggestionTriggerSource::kUnspecified,
+          std::nullopt);
     }
   });
 

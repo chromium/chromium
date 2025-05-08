@@ -6,7 +6,7 @@
 #define CONTENT_WEB_TEST_BROWSER_WEB_TEST_FEDCM_MANAGER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request_automation.mojom.h"
+#include "third_party/blink/public/test/mojom/webid/federated_auth_request_automation.test-mojom.h"
 
 namespace content {
 

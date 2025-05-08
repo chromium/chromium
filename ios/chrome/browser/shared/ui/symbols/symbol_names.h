@@ -18,6 +18,7 @@
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 extern NSString* const kChromeDefaultBrowserIllustrationImage;
 extern NSString* const kChromeDefaultBrowserScreenBannerImage;
+extern NSString* const kChromeGuidedTourBannerImage;
 extern NSString* const kChromeNotificationsOptInBannerImage;
 extern NSString* const kChromeNotificationsOptInBannerLandscapeImage;
 extern NSString* const kChromeSearchEngineChoiceIcon;
@@ -42,6 +43,7 @@ extern NSString* const kUSPSCarrierImage;
 #else
 extern NSString* const kChromiumDefaultBrowserIllustrationImage;
 extern NSString* const kChromiumDefaultBrowserScreenBannerImage;
+extern NSString* const kChromiumGuidedTourBannerImage;
 extern NSString* const kChromiumNotificationsOptInBannerImage;
 extern NSString* const kChromiumNotificationsOptInBannerLandscapeImage;
 extern NSString* const kChromiumPasswordManagerWidgetPromoImage;

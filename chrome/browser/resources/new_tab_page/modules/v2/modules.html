@@ -1,34 +1,20 @@
-<style include="cr-hidden-style">
-  #container {
-    display: flex;
-    flex-flow: row wrap;
-    gap: var(--container-gap);
-    justify-content: center;
-    margin-top: 8px;
-    max-width: var(--container-max-width, inherit);
-  }
-
-  #undoToastMessage {
-    flex-grow: 1;
-  }
-</style>
 <div id="container">
+  ${this.moduleInstances_.map(item => html`
+    <ntp-module-wrapper .module="${item}"
+        ?hidden="${this.moduleDisabled_(item)}"
+        @disable-module="${this.onDisableModule_}"
+        @dismiss-module-element="${this.onDismissModuleElement_}"
+        @dismiss-module-instance="${this.onDismissModuleInstance_}">
+    </ntp-module-wrapper>
+  `)}
 </div>
-<template>
-  <ntp-module-wrapper module="[[item]]"
-      hidden="[[moduleDisabled_(disabledModules_, item)]]"
-      on-disable-module="onDisableModule_"
-      on-dismiss-module-element="onDismissModuleElement_"
-      on-dismiss-module-instance="onDismissModuleInstance_">
-  </ntp-module-wrapper>
-</template>
 <cr-toast id="undoToast" duration="10000">
-  <div id="undoToastMessage">[[undoData_.message]]</div>
-  <template is="dom-if" if="[[undoData_.undo]]">
+  <div id="undoToastMessage">${this.undoData_?.message || ''}</div>
+  ${this.undoData_?.undo ? html `
     <cr-button id="undoButton"
         aria-label="$i18n{undoDescription}"
-        on-click="onUndoButtonClick_">
+        @click="${this.onUndoButtonClick_}">
       $i18n{undo}
     </cr-button>
-  </template>
+  ` : ''}
 </cr-toast>

@@ -6,8 +6,7 @@ package org.chromium.chrome.browser.educational_tip;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
@@ -15,14 +14,15 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Coordinator for the educational tip module. */
+@NullMarked
 public class EducationalTipModuleCoordinator implements ModuleProvider {
     private final EducationalTipModuleMediator mMediator;
 
     public EducationalTipModuleCoordinator(
             @ModuleType int moduleType,
-            @NonNull ModuleDelegate moduleDelegate,
-            @NonNull EducationTipModuleActionDelegate actionDelegate,
-            @NonNull Profile profile) {
+            ModuleDelegate moduleDelegate,
+            EducationTipModuleActionDelegate actionDelegate,
+            Profile profile) {
         PropertyModel model = new PropertyModel(EducationalTipModuleProperties.ALL_KEYS);
         mMediator =
                 new EducationalTipModuleMediator(
@@ -48,7 +48,7 @@ public class EducationalTipModuleCoordinator implements ModuleProvider {
     }
 
     @Override
-    public String getModuleContextMenuHideText(@NonNull Context context) {
+    public String getModuleContextMenuHideText(Context context) {
         return context.getString(R.string.educational_tip_module_context_menu_hide);
     }
 

@@ -6,7 +6,6 @@
 
 #import "base/test/ios/wait_util.h"
 #import "components/policy/core/browser/signin/profile_separation_policies.h"
-#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/ui_bundled/expected_signin_histograms.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_app_interface.h"
@@ -81,23 +80,38 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   [self verifySignedOut];
 }
 
-- (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity {
+- (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity
+    waitForSyncTransportActive:(BOOL)waitForSync {
   [SigninEarlGreyAppInterface signinWithFakeIdentity:identity];
   [self closeManagedAccountSignInDialogIfAny:identity];
   [self verifySignedInWithFakeIdentity:identity];
+  if (waitForSync) {
+    [ChromeEarlGrey
+        waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
+  }
+}
+
+- (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity {
+  [self signinWithFakeIdentity:identity waitForSyncTransportActive:YES];
 }
 
 - (void)signinWithFakeManagedIdentityInPersonalProfile:
-    (FakeSystemIdentity*)identity {
+            (FakeSystemIdentity*)identity
+                            waitForSyncTransportActive:(BOOL)waitForSync {
   [SigninEarlGreyAppInterface
       signinWithFakeManagedIdentityInPersonalProfile:identity];
   [self closeManagedAccountSignInDialogIfAny:identity];
   [self verifySignedInWithFakeIdentity:identity];
+  if (waitForSync) {
+    [ChromeEarlGrey
+        waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
+  }
 }
 
-- (void)signinAndWaitForSyncTransportStateActive:(FakeSystemIdentity*)identity {
-  [self signinWithFakeIdentity:identity];
-  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
+- (void)signinWithFakeManagedIdentityInPersonalProfile:
+    (FakeSystemIdentity*)identity {
+  [self signinWithFakeManagedIdentityInPersonalProfile:identity
+                            waitForSyncTransportActive:YES];
 }
 
 - (void)triggerReauthDialogWithFakeIdentity:(FakeSystemIdentity*)identity {
@@ -162,13 +176,6 @@ using base::test::ios::WaitUntilConditionOrTimeout;
                        expectedEmail, primaryAccountEmail];
   EG_TEST_HELPER_ASSERT_TRUE(
       [expectedEmail isEqualToString:primaryAccountEmail], errorStr);
-}
-
-- (void)verifyPrimaryAccountWithEmail:(NSString*)expectedEmail
-                              consent:(signin::ConsentLevel)consent {
-  GREYAssert(consent == signin::ConsentLevel::kSignin,
-             @"Only ConsentLevel::kSignin is supported");
-  [SigninEarlGrey verifyPrimaryAccountWithEmail:expectedEmail];
 }
 
 - (void)verifySignedOut {
@@ -237,6 +244,16 @@ using base::test::ios::WaitUntilConditionOrTimeout;
                             forHistogram:histogram];
     chrome_test_util::GREYAssertErrorNil(error);
   }
+}
+
+- (void)setUseFakeResponsesForProfileSeparationPolicyRequests {
+  [SigninEarlGreyAppInterface
+      setUseFakeResponsesForProfileSeparationPolicyRequests];
+}
+
+- (void)clearUseFakeResponsesForProfileSeparationPolicyRequests {
+  [SigninEarlGreyAppInterface
+      clearUseFakeResponsesForProfileSeparationPolicyRequests];
 }
 
 - (void)setPolicyResponseForNextProfileSeparationPolicyRequest:

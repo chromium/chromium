@@ -54,6 +54,7 @@
 #include "cc/base/math_util.h"
 #include "cc/input/touch_action.h"
 #include "components/input/features.h"
+#include "components/input/input_constants.h"
 #include "components/input/input_router.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "components/input/switches.h"
@@ -13943,7 +13944,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWithMainFrameThresholdTest,
     // SimulateUnresponsiveRenderer does not work here, because it hits only
     // WebContents, while we need widget to know that it is unresponsive.
     static_cast<RenderWidgetHostImpl*>(subframe->GetRenderWidgetHost())
-        ->OnInputEventAckTimeout();
+        ->OnInputEventAckTimeout(base::TimeTicks::Now() +
+                                 input::kHungRendererDelay);
 
     RenderProcessHost* hung_process = unresponsive_renderer_observer.Wait();
     EXPECT_EQ(hung_process, b_subframe_process);

@@ -138,6 +138,13 @@ const std::string kMultivariantPlaylistWithAlts =
     "#EXT-X-STREAM-INF:BANDWIDTH=65000,CODECS=\"mp4a.40.05\",AUDIO=\"aac\"\n"
     "main/english-audio.m3u8\n";
 
+const std::string kMultivariantPlaylistWithEmbeddedAlts =
+    "#EXTM3U\n"
+    "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"aac\",NAME=\"Eng\",DEFAULT=YES,"
+    "AUTOSELECT=YES,LANGUAGE=\"en\"\n"
+    "#EXT-X-STREAM-INF:BANDWIDTH=7680000,CODECS=\"avc1.420000\",AUDIO=\"aac\"\n"
+    "hi/video-only.m3u8\n";
+
 const std::string kLiveFullEncryptedMediaPlaylist =
     "#EXTM3U\n"
     "#EXT-X-VERSION:4\n"
@@ -597,6 +604,30 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantPlaylistWithAlternates) {
       "http://media.example.com/manifest.m3u8", kMultivariantPlaylistWithAlts);
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/eng-audio.m3u8", kSingleInfoMediaPlaylist);
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+      "http://media.example.com/hi/video-only.m3u8", kSimpleMediaPlaylist);
+  EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
+  InitializeEngine();
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantPlaylistWithNoUrlAlts) {
+  EXPECT_CALL(*mock_mdeh_, SetSequenceMode("audio-override", true)).Times(0);
+  EXPECT_CALL(*mock_mdeh_, SetSequenceMode("primary", true));
+  EXPECT_CALL(*mock_mdeh_, SetDuration(21.021));
+  EXPECT_CALL(*mock_mdeh_,
+              AddRole("audio-override", RelaxedParserSupportedType::kMP2T))
+      .Times(0);
+  EXPECT_CALL(*mock_mdeh_,
+              AddRole("primary", RelaxedParserSupportedType::kMP2T));
+
+  // URL queries in order:
+  //  - manifest.m3u8: root manifest
+  //  - video-only.m3u8: primary rendition
+  //  - first.ts: check container/codecs for the primary rendition
+  BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+      "http://media.example.com/manifest.m3u8",
+      kMultivariantPlaylistWithEmbeddedAlts);
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/hi/video-only.m3u8", kSimpleMediaPlaylist);
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));

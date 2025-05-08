@@ -99,11 +99,14 @@ goog.events.ActionEventWrapper_.prototype.listen = function(
       listenerFn.call(opt_scope, e);
     } else if (
         e.keyCode == goog.events.KeyCodes.SPACE &&
-        e.type == goog.events.EventType.KEYUP &&
         (role == goog.a11y.aria.Role.BUTTON ||
          role == goog.a11y.aria.Role.TAB ||
          role == goog.a11y.aria.Role.RADIO)) {
-      listenerFn.call(opt_scope, e);
+      if (e.type == goog.events.EventType.KEYUP) {
+        listenerFn.call(opt_scope, e);
+      }
+      // prevent the browser from scrolling the page down when space is pressed
+      // on an interactive element.
       e.preventDefault();
     }
   };

@@ -6,12 +6,23 @@ assert(!is_android)
 
 source_set("new_tab_footer") {
   sources = [
+    "footer_controller.cc",
+    "footer_controller.h",
     "footer_web_view.cc",
     "footer_web_view.h",
   ]
 
   deps = [
-    "//skia",
+    "//base:base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/new_tab_footer:resources_grit",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/webui/new_tab_footer",
+    "//chrome/browser/ui/webui/top_chrome",
+    "//chrome/common",
+    "//components/tabs:public",
+    "//content/public/browser",
     "//ui/base",
     "//ui/views",
     "//ui/views/controls/webview",

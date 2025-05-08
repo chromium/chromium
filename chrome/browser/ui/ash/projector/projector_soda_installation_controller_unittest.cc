@@ -25,6 +25,7 @@
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/constants.h"
+#include "components/soda/mock_soda_installer.h"
 #include "components/soda/soda_installer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,35 +41,6 @@ inline void SetLocale(const std::string& locale) {
       ->Set(locale);
   LocaleUpdateController::Get()->OnLocaleChanged();
 }
-
-// A mocked version instance of SodaInstaller for testing purposes.
-class MockSodaInstaller : public speech::SodaInstaller {
- public:
-  MockSodaInstaller() = default;
-  MockSodaInstaller(const MockSodaInstaller&) = delete;
-  MockSodaInstaller& operator=(const MockSodaInstaller&) = delete;
-  ~MockSodaInstaller() override = default;
-
-  MOCK_METHOD(base::FilePath, GetSodaBinaryPath, (), (const, override));
-  MOCK_METHOD(base::FilePath,
-              GetLanguagePath,
-              (const std::string&),
-              (const, override));
-  MOCK_METHOD(void,
-              InstallLanguage,
-              (const std::string&, PrefService*),
-              (override));
-  MOCK_METHOD(void,
-              UninstallLanguage,
-              (const std::string&, PrefService*),
-              (override));
-  MOCK_METHOD(std::vector<std::string>,
-              GetAvailableLanguages,
-              (),
-              (const, override));
-  MOCK_METHOD(void, InstallSoda, (PrefService*), (override));
-  MOCK_METHOD(void, UninstallSoda, (PrefService*), (override));
-};
 
 const char kEnglishLocale[] = "en-US";
 const char kNonEnglishLocale[] = "fr";
@@ -100,7 +72,7 @@ class ProjectorSodaInstallationControllerTest : public ChromeAshTestBase {
     ASSERT_TRUE(testing_profile_manager_->SetUp());
     testing_profile_ = ProfileManager::GetPrimaryUserProfile();
 
-    soda_installer_ = std::make_unique<MockSodaInstaller>();
+    soda_installer_ = std::make_unique<speech::MockSodaInstaller>();
     ON_CALL(*soda_installer(), GetAvailableLanguages)
         .WillByDefault(
             testing::Return(std::vector<std::string>({kEnglishLocale})));
@@ -161,7 +133,7 @@ class ProjectorSodaInstallationControllerTest : public ChromeAshTestBase {
     return soda_installation_controller_.get();
   }
 
-  MockSodaInstaller* soda_installer() { return soda_installer_.get(); }
+  speech::MockSodaInstaller* soda_installer() { return soda_installer_.get(); }
   speech::LanguageCode en_us() { return speech::LanguageCode::kEnUs; }
   speech::LanguageCode fr_fr() { return speech::LanguageCode::kFrFr; }
 
@@ -170,7 +142,7 @@ class ProjectorSodaInstallationControllerTest : public ChromeAshTestBase {
 
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
 
-  std::unique_ptr<MockSodaInstaller> soda_installer_;
+  std::unique_ptr<speech::MockSodaInstaller> soda_installer_;
   std::unique_ptr<MockProjectorClient> mock_client_;
   std::unique_ptr<MockAppClient> mock_app_client_;
 

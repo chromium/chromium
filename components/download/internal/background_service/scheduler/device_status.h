@@ -50,8 +50,7 @@ struct DeviceStatus {
 
   NetworkStatus network_status;
 
-  bool operator==(const DeviceStatus& rhs) const;
-  bool operator!=(const DeviceStatus& rhs) const;
+  friend bool operator==(const DeviceStatus&, const DeviceStatus&) = default;
 
   // Returns if the current device status meets all the conditions defined in
   // the scheduling parameters.

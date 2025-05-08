@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SMART_CARD_CHROMEOS_SMART_CARD_DELEGATE_H_
 #define CHROME_BROWSER_SMART_CARD_CHROMEOS_SMART_CARD_DELEGATE_H_
 
-#include "base/memory/weak_ptr.h"
 #include "content/public/browser/smart_card_delegate.h"
 
 class ChromeOsSmartCardDelegate : public content::SmartCardDelegate {

@@ -109,7 +109,7 @@ class ExtensionsBrowserClient {
   ExtensionsBrowserClient& operator=(const ExtensionsBrowserClient&) = delete;
   virtual ~ExtensionsBrowserClient();
 
-  // Returns the single instance of |this|.
+  // Returns the single instance of `this`.
   static ExtensionsBrowserClient* Get();
 
   // Sets and initializes the single instance.
@@ -150,18 +150,18 @@ class ExtensionsBrowserClient {
   virtual bool IsSameContext(content::BrowserContext* first,
                              content::BrowserContext* second) = 0;
 
-  // Returns true if |context| has an off-the-record context associated with it.
+  // Returns true if `context` has an off-the-record context associated with it.
   virtual bool HasOffTheRecordContext(content::BrowserContext* context) = 0;
 
-  // Returns the off-the-record context associated with |context|. If |context|
-  // is already off-the-record, returns |context|.
+  // Returns the off-the-record context associated with `context`. If `context`
+  // is already off-the-record, returns `context`.
   // WARNING: This may create a new off-the-record context. To avoid creating
   // another context, check HasOffTheRecordContext() first.
   virtual content::BrowserContext* GetOffTheRecordContext(
       content::BrowserContext* context) = 0;
 
-  // Returns the original "recording" context. This method returns |context| if
-  // |context| is not incognito.
+  // Returns the original "recording" context. This method returns `context` if
+  // `context` is not incognito.
   virtual content::BrowserContext* GetOriginalContext(
       content::BrowserContext* context) = 0;
 
@@ -199,21 +199,21 @@ class ExtensionsBrowserClient {
   virtual bool IsActiveContext(
       content::BrowserContext* browser_context) const = 0;
 
-  // Returns a user id hash from |context| or an empty string if no hash could
+  // Returns a user id hash from `context` or an empty string if no hash could
   // be extracted.
   virtual std::string GetUserIdHashFromContext(
       content::BrowserContext* context) = 0;
 #endif
 
-  // Returns true if |context| corresponds to a guest session.
+  // Returns true if `context` corresponds to a guest session.
   virtual bool IsGuestSession(content::BrowserContext* context) const = 0;
 
-  // Returns true if |extension_id| can run in an incognito window.
+  // Returns true if `extension_id` can run in an incognito window.
   virtual bool IsExtensionIncognitoEnabled(
       const ExtensionId& extension_id,
       content::BrowserContext* context) const = 0;
 
-  // Returns true if |extension| can see events and data from another
+  // Returns true if `extension` can see events and data from another
   // sub-profile (incognito to original profile, or vice versa).
   virtual bool CanExtensionCrossIncognito(
       const extensions::Extension* extension,
@@ -250,7 +250,7 @@ class ExtensionsBrowserClient {
       const ProcessMap& process_map,
       const GURL& upstream_url) = 0;
 
-  // Returns the PrefService associated with |context|.
+  // Returns the PrefService associated with `context`.
   virtual PrefService* GetPrefServiceForContext(
       content::BrowserContext* context) = 0;
 
@@ -288,7 +288,7 @@ class ExtensionsBrowserClient {
   // Return true if the device is enrolled in Demo Mode.
   virtual bool IsInDemoMode() = 0;
 
-  // Return true if |app_id| matches the screensaver and the device is enrolled
+  // Return true if `app_id` matches the screensaver and the device is enrolled
   // in Demo Mode.
   virtual bool IsScreensaverInDemoMode(const std::string& app_id) = 0;
 
@@ -339,7 +339,7 @@ class ExtensionsBrowserClient {
   virtual bool IsBackgroundUpdateAllowed() = 0;
 
   // Indicates whether an extension update which specifies its minimum browser
-  // version as |min_version| can be installed by the client. Not all extensions
+  // version as `min_version` can be installed by the client. Not all extensions
   // embedders share the same versioning model, so interpretation of the string
   // is left up to the embedder.
   virtual bool IsMinBrowserVersionSupported(const std::string& min_version) = 0;
@@ -353,7 +353,7 @@ class ExtensionsBrowserClient {
   virtual void CreateExtensionWebContentsObserver(
       content::WebContents* web_contents) = 0;
 
-  // Returns the ExtensionWebContentsObserver for the given |web_contents|.
+  // Returns the ExtensionWebContentsObserver for the given `web_contents`.
   virtual ExtensionWebContentsObserver* GetExtensionWebContentsObserver(
       content::WebContents* web_contents) = 0;
 
@@ -367,8 +367,8 @@ class ExtensionsBrowserClient {
   // contexts.
   virtual void ClearBackForwardCache() {}
 
-  // Attaches the task manager extension tag to |web_contents|, if needed based
-  // on |view_type|, so that its corresponding task shows up in the task
+  // Attaches the task manager extension tag to `web_contents`, if needed based
+  // on `view_type`, so that its corresponding task shows up in the task
   // manager.
   virtual void AttachExtensionTaskManagerTag(content::WebContents* web_contents,
                                              mojom::ViewType view_type) {}
@@ -382,7 +382,7 @@ class ExtensionsBrowserClient {
   virtual std::unique_ptr<ScopedExtensionUpdaterKeepAlive>
   CreateUpdaterKeepAlive(content::BrowserContext* context);
 
-  // Returns true if activity logging is enabled for the given |context|.
+  // Returns true if activity logging is enabled for the given `context`.
   virtual bool IsActivityLoggingEnabled(content::BrowserContext* context);
 
   // Retrives the embedder's notion of tab and window ID for a given
@@ -400,9 +400,9 @@ class ExtensionsBrowserClient {
   // Returns the locale used by the application.
   virtual std::string GetApplicationLocale() = 0;
 
-  // Returns whether |extension_id| is currently enabled.
+  // Returns whether `extension_id` is currently enabled.
   // This will only return a valid answer for installed extensions (regardless
-  // of whether it is currently loaded or not) under the provided |context|.
+  // of whether it is currently loaded or not) under the provided `context`.
   // Loaded extensions return true if they are currently loaded or terminated.
   // Unloaded extensions will return true if they are not blocked, disabled,
   // blocklisted or uninstalled (for external extensions). The default return
@@ -425,8 +425,8 @@ class ExtensionsBrowserClient {
   // for the given BrowserContext.
   virtual void SignalContentScriptsLoaded(content::BrowserContext* context);
 
-  // Returns whether |scheme| should bypass extension-specific navigation checks
-  // (e.g. whether the |scheme| is allowed to initiate navigations to extension
+  // Returns whether `scheme` should bypass extension-specific navigation checks
+  // (e.g. whether the `scheme` is allowed to initiate navigations to extension
   // resources that are not declared as web accessible).
   virtual bool ShouldSchemeBypassNavigationChecks(
       const std::string& scheme) const;
@@ -436,12 +436,12 @@ class ExtensionsBrowserClient {
   virtual void SetLastSaveFilePath(content::BrowserContext* context,
                                    const base::FilePath& path);
 
-  // Returns true if the |extension_id| requires its own isolated storage
+  // Returns true if the `extension_id` requires its own isolated storage
   // partition.
   virtual bool HasIsolatedStorage(const ExtensionId& extension_id,
                                   content::BrowserContext* context);
 
-  // Returns whether screenshot of |web_contents| is restricted due to Data Leak
+  // Returns whether screenshot of `web_contents` is restricted due to Data Leak
   // Protection policy.
   virtual bool IsScreenshotRestricted(content::WebContents* web_contents) const;
 
@@ -533,9 +533,9 @@ class ExtensionsBrowserClient {
       const std::u16string& url_title,
       int call_type);
 
-  // Invokes |callback| with the StoragePartitionConfig that should be used for
-  // a <webview> or <controlledframe> with the given |partition_name| that is
-  // owned by a frame within |owner_site_instance|.
+  // Invokes `callback` with the StoragePartitionConfig that should be used for
+  // a <webview> or <controlledframe> with the given `partition_name` that is
+  // owned by a frame within `owner_site_instance`.
   virtual void GetWebViewStoragePartitionConfig(
       content::BrowserContext* browser_context,
       content::SiteInstance* owner_site_instance,

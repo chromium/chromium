@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/test/bind.h"
 #include "components/country_codes/country_codes.h"
+#include "components/metrics/cloned_install_detector.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/policy/policy_constants.h"
 #include "components/regional_capabilities/regional_capabilities_prefs.h"
@@ -34,6 +35,7 @@ SearchEngineChoiceServiceTestBase::SearchEngineChoiceServiceTestBase::
       metrics::prefs::kMetricsReportingEnabled, true);
   local_state_.registry()->RegisterInt64Pref(
       prefs::kDefaultSearchProviderGuestModePrepopulatedId, 0);
+  metrics::ClonedInstallDetector::RegisterPrefs(local_state_.registry());
 
   // Override the country checks to simulate being in Belgium.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -120,7 +122,9 @@ void SearchEngineChoiceServiceTestBase::PopulateLazyFactories(
             return std::make_unique<SearchEngineChoiceService>(
                 std::make_unique<FakeSearchEngineChoiceServiceClient>(
                     args.variation_country_id,
-                    args.is_profile_eligible_for_dse_guest_propagation),
+                    args.is_profile_eligible_for_dse_guest_propagation,
+                    args.restore_detected_in_current_session,
+                    args.choice_predates_restore),
                 environment.pref_service(), &environment.local_state(),
                 environment.regional_capabilities_service(),
                 environment.prepopulate_data_resolver());

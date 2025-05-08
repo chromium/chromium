@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.res.Resources;
 
 import androidx.annotation.DimenRes;
@@ -11,6 +13,7 @@ import androidx.annotation.StringRes;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 
@@ -21,6 +24,7 @@ import java.util.List;
  * Helper class to manage all the logic and UI behind adding the reading list section headers in the
  * bookmark content UI.
  */
+@NullMarked
 class ReadingListSectionHeader {
     /**
      * Sorts the reading list and adds section headers if the list is a reading list. Noop, if the
@@ -56,6 +60,7 @@ class ReadingListSectionHeader {
         // Search for the first read element, and insert the read section header.
         for (int i = readingListStartIndex + 1; i < listItems.size(); i++) {
             BookmarkListEntry listItem = listItems.get(i);
+            assumeNonNull(listItem.getBookmarkItem());
             assert listItem.getBookmarkItem().getId().getType() == BookmarkType.READING_LIST;
             if (listItem.getBookmarkItem().isRead()) {
                 listItems.add(i, createReadingListSectionHeader(/* read= */ true));
@@ -76,7 +81,8 @@ class ReadingListSectionHeader {
                     // Unread items are shown first, then sorted based on creation time.
                     BookmarkItem lhsItem = lhs.getBookmarkItem();
                     BookmarkItem rhsItem = rhs.getBookmarkItem();
-
+                    assumeNonNull(lhsItem);
+                    assumeNonNull(rhsItem);
                     // Sort by read status first.
                     if (lhsItem.isRead() != rhsItem.isRead()) {
                         return Boolean.compare(lhsItem.isRead(), rhsItem.isRead());
@@ -101,7 +107,7 @@ class ReadingListSectionHeader {
         for (int i = 0; i < listItems.size(); i++) {
             // Skip the headers.
             if (listItems.get(i).getBookmarkItem() == null) continue;
-            if (listItems.get(i).getBookmarkItem().isRead()) {
+            if (assumeNonNull(listItems.get(i).getBookmarkItem()).isRead()) {
                 numReadItems++;
             } else {
                 numUnreadItems++;

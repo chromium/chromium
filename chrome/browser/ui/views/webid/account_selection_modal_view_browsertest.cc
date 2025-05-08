@@ -62,6 +62,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
             content::IdentityProviderMetadata(),
             CreateTestClientMetadata(),
             blink::mojom::RpContext::kSignIn,
+            /*format=*/std::nullopt,
             kDefaultDisclosureFields,
             /*has_login_status_mismatch=*/false)) {
     test_shared_url_loader_factory_ =
@@ -108,10 +109,16 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
   void CreateAndShowMultiAccountPicker(
       const std::vector<std::string>& account_suffixes,
+      bool has_display_identifier,
       bool supports_add_account = false) {
     idp_data_->idp_metadata.supports_add_account = supports_add_account;
     account_list_ =
         CreateTestIdentityRequestAccounts(account_suffixes, idp_data_);
+    if (!has_display_identifier) {
+      for (auto& account : account_list_) {
+        account->display_identifier = "";
+      }
+    }
 
     CreateAccountSelectionModal();
     dialog_->ShowMultiAccountPicker(account_list_, {idp_data_},
@@ -130,6 +137,10 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
   void CreateAndShowVerifyingSheet() {
     CreateAccountSelectionModal();
+    ShowVerifyingSheet();
+  }
+
+  void ShowVerifyingSheet() {
     const std::string kAccountSuffix = "suffix";
     IdentityRequestAccountPtr account(CreateTestIdentityRequestAccount(
         kAccountSuffix, idp_data_,
@@ -375,7 +386,9 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
   void TestMultipleAccounts(bool supports_add_account = false) {
     const std::vector<std::string> kAccountSuffixes = {"0", "1", "2"};
-    CreateAndShowMultiAccountPicker(kAccountSuffixes, supports_add_account);
+    CreateAndShowMultiAccountPicker(kAccountSuffixes,
+                                    /*has_display_identifier=*/true,
+                                    supports_add_account);
 
     std::vector<raw_ptr<views::View, VectorExperimental>> children =
         dialog()->children();
@@ -1025,6 +1038,13 @@ IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
                         content::IdentityRequestAccount::LoginState::kSignIn,
                         /*idp_brand_icon_url=*/kIdpBrandIconUrl,
                         /*rp_brand_icon_url=*/kRpBrandIconUrl);
+}
+
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
+                       VerifyingSheetSingleIdentifier) {
+  CreateAndShowMultiAccountPicker(/*account_suffixes=*/{"0", "suffix", "2"},
+                                  /*has_display_identifier=*/false);
+  ShowVerifyingSheet();
 }
 
 }  //  namespace webid

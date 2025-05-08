@@ -40,6 +40,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/icon_util.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
@@ -187,7 +188,7 @@ ExtensionFunction::ResponseAction ExtensionActionFunction::Run() {
       ExtensionActionManager::Get(browser_context());
   extension_action_ = manager->GetExtensionAction(*extension());
   if (!extension_action_) {
-    // TODO(kalman): ideally the browserAction/pageAction APIs wouldn't event
+    // TODO(kalman): Ideally the browserAction/pageAction APIs wouldn't even
     // exist for extensions that don't have one declared. This should come as
     // part of the Feature system.
     return RespondNow(Error(kNoExtensionActionError));
@@ -307,10 +308,10 @@ ExtensionActionSetIconFunction::RunExtensionAction() {
   if (canvas_set) {
     gfx::ImageSkia icon;
 
-    ExtensionAction::IconParseResult parse_result =
-        ExtensionAction::ParseIconFromCanvasDictionary(*canvas_set, &icon);
+    extensions::IconParseResult parse_result =
+        extensions::ParseIconFromCanvasDictionary(*canvas_set, &icon);
     EXTENSION_FUNCTION_VALIDATE(parse_result ==
-                                ExtensionAction::IconParseResult::kSuccess);
+                                extensions::IconParseResult::kSuccess);
 
     if (icon.isNull())
       return RespondNow(Error("Icon invalid."));

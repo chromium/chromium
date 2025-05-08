@@ -114,73 +114,13 @@ class SelectAllScreensTest : public SelectAllScreensTestBase,
 };
 
 IN_PROC_BROWSER_TEST_P(SelectAllScreensTest, SelectAllScreensTestOrigins) {
-  Browser* current_browser = browser();
-  TabStripModel* current_tab_strip_model = current_browser->tab_strip_model();
-  content::WebContents* current_web_contents =
-      current_tab_strip_model->GetWebContentsAt(0);
-
   base::test::TestFuture<bool> future;
-  capture_policy::CheckGetAllScreensMediaAllowed(
-      current_web_contents->GetBrowserContext(), GURL(GetParam().testing_url),
-      future.GetCallback());
+  capture_policy::CheckGetAllScreensMediaAllowed(GURL(GetParam().testing_url),
+                                                 future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ(GetParam().expected_is_get_all_screens_media_allowed,
             future.Get<bool>());
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    DeprecatedPolicySelectAllScreensTestWithParams,
-    SelectAllScreensTest,
-    testing::Values(
-        TestParam({
-            .allow_list_policy_name =
-                policy::key::kGetDisplayMediaSetSelectAllScreensAllowedForUrls,
-            .allow_listed_origins = {""},
-            .testing_url = "",
-            .expected_is_get_all_screens_media_allowed = false,
-        }),
-        TestParam({
-            .allow_list_policy_name =
-                policy::key::kGetDisplayMediaSetSelectAllScreensAllowedForUrls,
-            .allow_listed_origins = {},
-            .testing_url = "https://www.chromium.org",
-            .expected_is_get_all_screens_media_allowed = false,
-        }),
-        TestParam({
-            .allow_list_policy_name =
-                policy::key::kGetDisplayMediaSetSelectAllScreensAllowedForUrls,
-            .allow_listed_origins = {},
-            .testing_url = "",
-            .expected_is_get_all_screens_media_allowed = false,
-        }),
-        TestParam({
-            .allow_list_policy_name =
-                policy::key::kGetDisplayMediaSetSelectAllScreensAllowedForUrls,
-            .allow_listed_origins = {"https://www.chromium.org"},
-            .testing_url = "https://www.chromium.org",
-            .expected_is_get_all_screens_media_allowed = true,
-        }),
-        TestParam({
-            .allow_list_policy_name =
-                policy::key::kGetDisplayMediaSetSelectAllScreensAllowedForUrls,
-            .allow_listed_origins = {"[*.]chromium.org"},
-            .testing_url = "https://sub.chromium.org",
-            .expected_is_get_all_screens_media_allowed = true,
-        }),
-        TestParam({
-            .allow_list_policy_name =
-                policy::key::kGetDisplayMediaSetSelectAllScreensAllowedForUrls,
-            .allow_listed_origins = {"[*.]chrome.org", "[*.]chromium.com"},
-            .testing_url = "https://www.chromium.org",
-            .expected_is_get_all_screens_media_allowed = false,
-        }),
-        TestParam({
-            .allow_list_policy_name =
-                policy::key::kGetDisplayMediaSetSelectAllScreensAllowedForUrls,
-            .allow_listed_origins = {"[*.]chrome.org", "[*.]chromium.org"},
-            .testing_url = "https://www.chromium.org",
-            .expected_is_get_all_screens_media_allowed = true,
-        })));
 
 INSTANTIATE_TEST_SUITE_P(
     SelectAllScreensTestWithParams,
@@ -253,7 +193,6 @@ class SelectAllScreensDynamicRefreshTest
          GetParam().expected_allowed_origins) {
       base::test::TestFuture<bool> future;
       capture_policy::CheckGetAllScreensMediaAllowed(
-          current_web_contents->GetBrowserContext(),
           GURL(expected_allowed_origin), future.GetCallback());
       ASSERT_TRUE(future.Wait());
       EXPECT_TRUE(future.Get<bool>());
@@ -263,7 +202,6 @@ class SelectAllScreensDynamicRefreshTest
          GetParam().expected_forbidden_origins) {
       base::test::TestFuture<bool> future;
       capture_policy::CheckGetAllScreensMediaAllowed(
-          current_web_contents->GetBrowserContext(),
           GURL(expected_forbidden_origin), future.GetCallback());
       ASSERT_TRUE(future.Wait());
       EXPECT_FALSE(future.Get<bool>());
@@ -282,27 +220,6 @@ IN_PROC_BROWSER_TEST_P(
   base::RunLoop().RunUntilIdle();
   CheckExpectedAllowlistedAndForbiddenOrigins();
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    DeprecatedPolicySelectAllScreensDynamicRefreshTestWithParams,
-    SelectAllScreensDynamicRefreshTest,
-    testing::Values(
-        NoRefreshTestParam({
-            .allow_list_policy_name =
-                policy::key::kGetDisplayMediaSetSelectAllScreensAllowedForUrls,
-            .original_allowlisted_origins = {"https://www.chromium.org"},
-            .updated_allowlisted_origins = {},
-            .expected_allowed_origins = {"https://www.chromium.org"},
-            .expected_forbidden_origins = {"https://www.chromium.com"},
-        }),
-        NoRefreshTestParam({
-            .allow_list_policy_name =
-                policy::key::kGetDisplayMediaSetSelectAllScreensAllowedForUrls,
-            .original_allowlisted_origins = {},
-            .updated_allowlisted_origins = {"https://www.chromium.org"},
-            .expected_allowed_origins = {},
-            .expected_forbidden_origins = {},
-        })));
 
 INSTANTIATE_TEST_SUITE_P(
     SelectAllScreensDynamicRefreshTestWithParams,
@@ -326,6 +243,81 @@ INSTANTIATE_TEST_SUITE_P(
                         .expected_forbidden_origins = {kValidIsolatedAppId1,
                                                        kValidIsolatedAppId2},
                     })));
+
+class MultiCaptureTest
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<
+          std::tuple<std::vector<std::string>, std::string>> {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    provider_.SetDefaultReturns(/*is_initialization_complete_return=*/true,
+                                /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
+    policy_map_.Set(policy::key::kMultiScreenCaptureAllowedForUrls,
+                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                    policy::POLICY_SOURCE_CLOUD,
+                    base::Value(AllowedOriginsList()),
+                    /*external_data_fetcher=*/nullptr);
+    provider_.UpdateChromePolicy(policy_map_);
+  }
+
+  const std::vector<std::string>& AllowedOrigins() const {
+    return std::get<0>(GetParam());
+  }
+
+  base::Value::List AllowedOriginsList() const {
+    base::Value::List allowed_origins;
+    for (const auto& origin : AllowedOrigins()) {
+      allowed_origins.Append(base::Value(origin));
+    }
+    return allowed_origins;
+  }
+
+  const std::string& CurrentOrigin() const { return std::get<1>(GetParam()); }
+
+ protected:
+  bool ExpectedIsMultiCaptureAllowed() {
+    std::vector<std::string> allowed_urls = AllowedOrigins();
+    return base::Contains(allowed_urls, CurrentOrigin());
+  }
+
+  bool ExpectedIsMultiCaptureAllowedForAnyUrl() {
+    return !AllowedOrigins().empty();
+  }
+
+ private:
+  policy::PolicyMap policy_map_;
+  policy::MockConfigurationPolicyProvider provider_;
+};
+
+IN_PROC_BROWSER_TEST_P(MultiCaptureTest, IsMultiCaptureAllowedBasedOnPolicy) {
+  base::test::TestFuture<bool> future;
+  capture_policy::CheckGetAllScreensMediaAllowed(GURL(CurrentOrigin()),
+                                                 future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(ExpectedIsMultiCaptureAllowed(), future.Get<bool>());
+}
+
+IN_PROC_BROWSER_TEST_P(MultiCaptureTest, IsMultiCaptureAllowedForAnyUrl) {
+  base::test::TestFuture<bool> future;
+  capture_policy::CheckGetAllScreensMediaAllowedForAnyOrigin(
+      future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(ExpectedIsMultiCaptureAllowedForAnyUrl(), future.Get<bool>());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    MultiCaptureTestCases,
+    MultiCaptureTest,
+    ::testing::Combine(
+        // Allowed origins
+        ::testing::ValuesIn({std::vector<std::string>{},
+                             std::vector<std::string>{kValidIsolatedAppId1}}),
+        // Origin to test
+        ::testing::ValuesIn({std::string(kValidIsolatedAppId1),
+                             std::string(kValidIsolatedAppId2)})));
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 using CaptureUtilsBrowserTest = InProcessBrowserTest;
@@ -336,15 +328,9 @@ IN_PROC_BROWSER_TEST_F(CaptureUtilsBrowserTest, MultiCaptureServiceExists) {
 
 IN_PROC_BROWSER_TEST_F(CaptureUtilsBrowserTest,
                        NoPolicySetMultiCaptureServiceMaybeExists) {
-  Browser* current_browser = browser();
-  TabStripModel* current_tab_strip_model = current_browser->tab_strip_model();
-  content::WebContents* current_web_contents =
-      current_tab_strip_model->GetWebContentsAt(0);
-
   base::test::TestFuture<bool> future;
-  capture_policy::CheckGetAllScreensMediaAllowed(
-      current_web_contents->GetBrowserContext(), GURL(kValidIsolatedAppId1),
-      future.GetCallback());
+  capture_policy::CheckGetAllScreensMediaAllowed(GURL(kValidIsolatedAppId1),
+                                                 future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_FALSE(future.Get<bool>());
 }

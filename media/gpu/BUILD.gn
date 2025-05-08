@@ -21,7 +21,12 @@ buildflag_header("buildflags") {
     "USE_VAAPI_IMAGE_CODECS=$use_vaapi_image_codecs",
     "USE_V4L2_CODEC=$use_v4l2_codec",
     "USE_LIBV4L2=$use_v4lplugin",
+    "USE_LINUX_VIDEO_ACCELERATION=$use_linux_video_acceleration",
   ]
+}
+
+if (use_linux_video_acceleration) {
+  assert(is_linux || is_chromeos)
 }
 
 component("gpu") {

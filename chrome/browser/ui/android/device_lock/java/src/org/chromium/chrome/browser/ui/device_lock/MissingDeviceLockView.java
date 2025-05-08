@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.DualControlLayout;
 import org.chromium.components.browser_ui.widget.DualControlLayout.ButtonType;
 import org.chromium.components.signin.SigninFeatureMap;
@@ -23,6 +24,7 @@ import org.chromium.components.signin.SigninFeatures;
  * View shown to a user who has removed the device lock to inform them that their private data will
  * be deleted from Chrome if they continue, and prompts them to create a new device lock otherwise.
  */
+@NullMarked
 public class MissingDeviceLockView extends LinearLayout {
     private TextView mTitle;
     private TextView mDescription;

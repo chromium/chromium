@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_LOW_END_DEVICE;
@@ -25,15 +26,20 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -41,6 +47,11 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
+import org.chromium.url.GURL;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests for ChromeTabCreator. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -58,6 +69,7 @@ public class ChromeTabCreatorTest {
     @ClassRule public static EmbeddedTestServerRule sTestServerRule = new EmbeddedTestServerRule();
 
     private static final String TEST_PATH = "/chrome/test/data/android/about.html";
+    private static final String TEST_PATH_2 = "/chrome/test/data/android/simple.html";
 
     private EmbeddedTestServer mTestServer;
 
@@ -240,6 +252,282 @@ public class ChromeTabCreatorTest {
 
         // Title should change when the page loads.
         assertNotEquals(title, ChromeTabUtils.getTitleOnUiThread(bgTab));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    public void testHistoryNavigationBackground() {
+        final String url = mTestServer.getURL(TEST_PATH);
+        final String url2 = mTestServer.getURL(TEST_PATH_2);
+        sActivityTestRule.loadUrl(url);
+        sActivityTestRule.loadUrl(url2);
+        final ChromeTabbedActivity activity = sActivityTestRule.getActivity();
+        final TabModel tabModel = activity.getCurrentTabModel();
+        final ObservableSupplier<Tab> currentTabSupplier = tabModel.getCurrentTabSupplier();
+        final CallbackHelper createdCallback = new CallbackHelper();
+        final AtomicReference<Boolean> wasSelected = new AtomicReference<>(false);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    tabModel.addObserver(
+                            new TabModelObserver() {
+                                @Override
+                                public void didAddTab(
+                                        Tab tab,
+                                        @TabLaunchType int type,
+                                        @TabCreationState int creationState,
+                                        boolean markedForSelection) {
+                                    createdCallback.notifyCalled();
+                                    tabModel.removeObserver(this);
+                                }
+
+                                @Override
+                                public void didSelectTab(
+                                        Tab tab, @TabSelectionType int type, int lastId) {
+                                    wasSelected.set(true);
+                                }
+                            });
+                });
+        final Tab parentTab = currentTabSupplier.get();
+        final Tab bgTab =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                sActivityTestRule
+                                        .getActivity()
+                                        .getCurrentTabCreator()
+                                        .createTabWithHistory(
+                                                parentTab,
+                                                TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND));
+        try {
+            createdCallback.waitForCallback(null, 0, 1, 10, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            throw new AssertionError("Never received tab creation event", e);
+        }
+        assertFalse(
+                "Expected new tab to be in the background (i.e. was never selected)",
+                wasSelected.get());
+        assertEquals(
+                "Expected the new tab to have the same URL as its parent",
+                parentTab.getUrl(),
+                bgTab.getUrl());
+        assertTrue("Expected the new tab to be able to go back", bgTab.canGoBack());
+
+        assertEquals(
+                "Expected the new tab to have the correct number of history entries",
+                3,
+                bgTab.getWebContents()
+                        .getNavigationController()
+                        .getNavigationHistory()
+                        .getEntryCount());
+
+        assertEquals(
+                "Expected the new tab's first history entry to be about:blank",
+                new GURL("about:blank"),
+                bgTab.getWebContents()
+                        .getNavigationController()
+                        .getNavigationHistory()
+                        .getEntryAtIndex(0)
+                        .getUrl());
+        assertEquals(
+                "Expected the new tab's 2nd history entry to be url1",
+                new GURL(url),
+                bgTab.getWebContents()
+                        .getNavigationController()
+                        .getNavigationHistory()
+                        .getEntryAtIndex(1)
+                        .getUrl());
+        assertEquals(
+                "Expected the new tab's 3nd history entry to be url2",
+                new GURL(url2),
+                bgTab.getWebContents()
+                        .getNavigationController()
+                        .getNavigationHistory()
+                        .getEntryAtIndex(2)
+                        .getUrl());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    public void testHistoryNavigationForeground() {
+        final String url = mTestServer.getURL(TEST_PATH);
+        final String url2 = mTestServer.getURL(TEST_PATH_2);
+        sActivityTestRule.loadUrl(url);
+        sActivityTestRule.loadUrl(url2);
+        final Tab parentTab = sActivityTestRule.getActivity().getActivityTab();
+        final Tab fgTab =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                sActivityTestRule
+                                        .getActivity()
+                                        .getCurrentTabCreator()
+                                        .createTabWithHistory(
+                                                parentTab,
+                                                TabLaunchType.FROM_HISTORY_NAVIGATION_FOREGROUND));
+        ObservableSupplier<Tab> currentTabSupplier =
+                sActivityTestRule.getActivity().getCurrentTabModel().getCurrentTabSupplier();
+        assertEquals(
+                "Expected TabLaunchType.FROM_HISTORY_NAVIGATION_FOREGROUND to launch tab in fg",
+                fgTab,
+                currentTabSupplier.get());
+        assertEquals(
+                "Expected the new tab to have the same URL as its parent",
+                parentTab.getUrl(),
+                fgTab.getUrl());
+        assertTrue("Expected the new tab to be able to go back", fgTab.canGoBack());
+
+        assertEquals(
+                "Expected the new tab to have the correct number of history entries",
+                3,
+                fgTab.getWebContents()
+                        .getNavigationController()
+                        .getNavigationHistory()
+                        .getEntryCount());
+
+        assertEquals(
+                "Expected the new tab's first history entry to be about:blank",
+                new GURL("about:blank"),
+                fgTab.getWebContents()
+                        .getNavigationController()
+                        .getNavigationHistory()
+                        .getEntryAtIndex(0)
+                        .getUrl());
+        assertEquals(
+                "Expected the new tab's 2nd history entry to be url1",
+                new GURL(url),
+                fgTab.getWebContents()
+                        .getNavigationController()
+                        .getNavigationHistory()
+                        .getEntryAtIndex(1)
+                        .getUrl());
+        assertEquals(
+                "Expected the new tab's 3nd history entry to be url2",
+                new GURL(url2),
+                fgTab.getWebContents()
+                        .getNavigationController()
+                        .getNavigationHistory()
+                        .getEntryAtIndex(2)
+                        .getUrl());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    public void testCreateNewTabSameGroupAsParent_FromLongpressForegroundInGroup() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Tab currentTab = sActivityTestRule.getActivity().getActivityTab();
+                    Tab tabForGroup =
+                            sActivityTestRule
+                                    .getActivity()
+                                    .getCurrentTabCreator()
+                                    .createNewTab(
+                                            new LoadUrlParams(mTestServer.getURL(TEST_PATH)),
+                                            TabLaunchType.FROM_LINK,
+                                            currentTab);
+                    ChromeTabUtils.mergeTabsToGroup(currentTab, tabForGroup);
+                    Tab newTab =
+                            sActivityTestRule
+                                    .getActivity()
+                                    .getCurrentTabCreator()
+                                    .createNewTab(
+                                            new LoadUrlParams(mTestServer.getURL(TEST_PATH)),
+                                            TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP,
+                                            currentTab);
+                    assertNotNull("Expected tab to have a tab group ID", newTab.getTabGroupId());
+                    assertEquals(
+                            "Expected tab to have the same tab group ID as its parent",
+                            currentTab.getTabGroupId(),
+                            newTab.getTabGroupId());
+                });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    public void testCreateNewTabSameGroupAsParent_FromLongpressBackgroundInGroup() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Tab currentTab = sActivityTestRule.getActivity().getActivityTab();
+                    Tab tabForGroup =
+                            sActivityTestRule
+                                    .getActivity()
+                                    .getCurrentTabCreator()
+                                    .createNewTab(
+                                            new LoadUrlParams(mTestServer.getURL(TEST_PATH)),
+                                            TabLaunchType.FROM_LINK,
+                                            currentTab);
+                    ChromeTabUtils.mergeTabsToGroup(currentTab, tabForGroup);
+                    Tab newTab =
+                            sActivityTestRule
+                                    .getActivity()
+                                    .getCurrentTabCreator()
+                                    .createNewTab(
+                                            new LoadUrlParams(mTestServer.getURL(TEST_PATH)),
+                                            TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
+                                            currentTab);
+                    assertNotNull("Expected tab to have a tab group ID", newTab.getTabGroupId());
+                    assertEquals(
+                            "Expected tab to have the same tab group ID as its parent",
+                            currentTab.getTabGroupId(),
+                            newTab.getTabGroupId());
+                });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    public void testCreateNewTab_ParentInGroup_FromLongpressBackground_OutsideGroup() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Tab currentTab = sActivityTestRule.getActivity().getActivityTab();
+                    Tab tabForGroup =
+                            sActivityTestRule
+                                    .getActivity()
+                                    .getCurrentTabCreator()
+                                    .createNewTab(
+                                            new LoadUrlParams(mTestServer.getURL(TEST_PATH)),
+                                            TabLaunchType.FROM_LINK,
+                                            currentTab);
+                    ChromeTabUtils.mergeTabsToGroup(currentTab, tabForGroup);
+                    Tab newTab =
+                            sActivityTestRule
+                                    .getActivity()
+                                    .getCurrentTabCreator()
+                                    .createNewTab(
+                                            new LoadUrlParams(mTestServer.getURL(TEST_PATH)),
+                                            TabLaunchType.FROM_LONGPRESS_BACKGROUND,
+                                            currentTab);
+                    assertNull("Expected tab to not be in a group", newTab.getTabGroupId());
+                });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    public void testCreateNewTab_FromLongpressForeground_OutsideGroup() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Tab currentTab = sActivityTestRule.getActivity().getActivityTab();
+                    Tab tabForGroup =
+                            sActivityTestRule
+                                    .getActivity()
+                                    .getCurrentTabCreator()
+                                    .createNewTab(
+                                            new LoadUrlParams(mTestServer.getURL(TEST_PATH)),
+                                            TabLaunchType.FROM_LINK,
+                                            currentTab);
+                    ChromeTabUtils.mergeTabsToGroup(currentTab, tabForGroup);
+                    Tab newTab =
+                            sActivityTestRule
+                                    .getActivity()
+                                    .getCurrentTabCreator()
+                                    .createNewTab(
+                                            new LoadUrlParams(mTestServer.getURL(TEST_PATH)),
+                                            TabLaunchType.FROM_LONGPRESS_FOREGROUND,
+                                            currentTab);
+                    assertNull("Expected tab to not be in a group", newTab.getTabGroupId());
+                });
     }
 
     private Intent createIntent(int tabIndex) {

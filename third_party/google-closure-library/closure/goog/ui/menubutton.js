@@ -695,6 +695,7 @@ goog.ui.MenuButton.prototype.setAlignMenuToStart = function(alignToStart) {
  * @param {boolean} scrollOnOverflow Whether the menu should scroll when too big
  *     to fit on the screen.  If false, adjust logic will be used to try and
  *     reposition the menu to fit.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.MenuButton.prototype.setScrollOnOverflow = function(scrollOnOverflow) {
   'use strict';
@@ -710,6 +711,7 @@ goog.ui.MenuButton.prototype.setScrollOnOverflow = function(scrollOnOverflow) {
 /**
  * @return {boolean} Whether the menu will scroll when it's to big to fit
  *     vertically on the screen.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.MenuButton.prototype.isScrollOnOverflow = function() {
   'use strict';
@@ -817,11 +819,18 @@ goog.ui.MenuButton.prototype.setOpen = function(open, opt_e) {
       // keyboarding up or down. Thus, the first menu item will be announced
       // for screen reader users. If selectFirstOnEnterOrSpace is set, do this
       // for enter or space as well.
-      var isEnterOrSpace =
-          !!opt_e && (opt_e.keyCode == goog.events.KeyCodes.ENTER ||
-                      opt_e.keyCode == goog.events.KeyCodes.SPACE);
-      var isUpOrDown = !!opt_e && (opt_e.keyCode == goog.events.KeyCodes.DOWN ||
-                                   opt_e.keyCode == goog.events.KeyCodes.UP);
+      /**
+       * @suppress {strictMissingProperties} Added to tighten compiler checks
+       */
+      var isEnterOrSpace = !!opt_e &&
+          (opt_e.keyCode == goog.events.KeyCodes.ENTER ||
+           opt_e.keyCode == goog.events.KeyCodes.SPACE);
+      /**
+       * @suppress {strictMissingProperties} Added to tighten compiler checks
+       */
+      var isUpOrDown = !!opt_e &&
+          (opt_e.keyCode == goog.events.KeyCodes.DOWN ||
+           opt_e.keyCode == goog.events.KeyCodes.UP);
       var focus =
           isUpOrDown || (isEnterOrSpace && this.selectFirstOnEnterOrSpace_);
       if (focus) {
@@ -1002,6 +1011,7 @@ goog.ui.MenuButton.prototype.attachKeyDownEventListener_ = function(attach) {
  */
 goog.ui.MenuButton.prototype.handleHighlightItem = function(e) {
   'use strict';
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var targetEl = e.target.getElement();
   if (targetEl) {
     this.setAriaActiveDescendant_(targetEl);

@@ -2,48 +2,55 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/android/resource_sizes.gni")
 import("//build/config/android/config.gni")
-import("//build/config/android/rules.gni")
-import("//build/config/android/system_image.gni")
 import("//build/config/cronet/config.gni")
-import("//build/config/python.gni")
-import("//build/util/process_version.gni")
+import("//build/toolchain/gcc_toolchain.gni")
 import("//chrome/android/chrome_common_shared_library.gni")
-import("//chrome/android/chrome_java_resources.gni")
-import("//chrome/android/chrome_public_apk_tmpl.gni")
-import("//chrome/android/expectations/expectations.gni")
-import("//chrome/android/features/dev_ui/dev_ui_module.gni")
-import("//chrome/android/features/tab_ui/tab_management_java_sources.gni")
-import("//chrome/android/feed/feed_java_sources.gni")
-import("//chrome/android/modules/chrome_bundle_tmpl.gni")
 import("//chrome/android/modules/chrome_feature_module_tmpl.gni")
-import(
-    "//chrome/browser/bookmarks/android/unmodularized_bookmarks_java_files.gni")
-import("//chrome/browser/commerce/price_tracking/android/java_sources.gni")
-import("//chrome/browser/commerce/subscriptions/android/java_sources.gni")
-import("//chrome/browser/page_info/buildflags.gni")
-import("//chrome/browser/share/android/java_sources.gni")
-import("//chrome/chrome_paks.gni")
-import("//chrome/common/features.gni")
-import("//chrome/version.gni")
-import("//components/password_manager/core/browser/buildflags.gni")
-import("//components/plus_addresses/buildflags.gni")
-import("//content/public/common/features.gni")
-import("//device/vr/buildflags/buildflags.gni")
-import("//printing/buildflags/buildflags.gni")
-import("//testing/test.gni")
-import("//third_party/icu/config.gni")
-import("//third_party/jni_zero/jni_zero.gni")
-import("//third_party/protobuf/proto_library.gni")
-import("//tools/resources/generate_resource_allowlist.gni")
-import("channel.gni")
-import("java_sources.gni")
-import("static_initializers.gni")
-import("trichrome.gni")
+import("//components/supervised_user/buildflags.gni")
 
 assert(!is_cronet_build)
 assert(enable_supervised_users)
+
+_is_default_toolchain = current_toolchain == default_toolchain
+
+if (_is_default_toolchain) {
+  import("//build/android/resource_sizes.gni")
+  import("//build/config/android/rules.gni")
+  import("//build/config/android/system_image.gni")
+  import("//build/config/python.gni")
+  import("//build/util/process_version.gni")
+  import("//chrome/android/chrome_java_resources.gni")
+  import("//chrome/android/chrome_public_apk_tmpl.gni")
+  import("//chrome/android/expectations/expectations.gni")
+  import("//chrome/android/features/dev_ui/dev_ui_module.gni")
+  import("//chrome/android/features/tab_ui/tab_management_java_sources.gni")
+  import("//chrome/android/feed/feed_java_sources.gni")
+  import("//chrome/android/modules/chrome_bundle_tmpl.gni")
+  import(
+      "//chrome/browser/bookmarks/android/unmodularized_bookmarks_java_files.gni")
+  import("//chrome/browser/commerce/price_tracking/android/java_sources.gni")
+  import("//chrome/browser/commerce/subscriptions/android/java_sources.gni")
+  import("//chrome/browser/page_info/buildflags.gni")
+  import("//chrome/browser/share/android/java_sources.gni")
+  import("//chrome/chrome_paks.gni")
+  import("//chrome/common/features.gni")
+  import("//chrome/version.gni")
+  import("//components/password_manager/core/browser/buildflags.gni")
+  import("//components/plus_addresses/buildflags.gni")
+  import("//content/public/common/features.gni")
+  import("//device/vr/buildflags/buildflags.gni")
+  import("//printing/buildflags/buildflags.gni")
+  import("//testing/test.gni")
+  import("//third_party/icu/config.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+  import("//third_party/protobuf/proto_library.gni")
+  import("//tools/resources/generate_resource_allowlist.gni")
+  import("channel.gni")
+  import("java_sources.gni")
+  import("static_initializers.gni")
+  import("trichrome.gni")
+}
 
 # 32-bit library will have browser code in it. 64-bit is webview-only.
 if (defined(android_app_secondary_abi)) {
@@ -69,7 +76,7 @@ if (android_64bit_target_cpu) {
   _android_lint_target_name = "monochrome_public_bundle"
 }
 
-if (current_toolchain == default_toolchain) {
+if (_is_default_toolchain) {
   template("chrome_public_bundle") {
     _is_monochrome = defined(invoker.is_monochrome) && invoker.is_monochrome
     if (_is_monochrome) {
@@ -83,7 +90,6 @@ if (current_toolchain == default_toolchain) {
       forward_variables_from(invoker,
                              [
                                "assert_no_deps",
-                               "add_view_trace_events",
                                "expected_android_manifest",
                                "is_64_bit_browser",
                                "is_monochrome",
@@ -94,6 +100,7 @@ if (current_toolchain == default_toolchain) {
                                "resource_ids_provider_dep",
                              ])
       target_type = "android_app_bundle_module"
+      add_view_trace_events = true
 
       srcjar_deps = []
       foreach(_module_desc, _module_descs) {
@@ -113,7 +120,6 @@ if (current_toolchain == default_toolchain) {
     chrome_bundle(target_name) {
       forward_variables_from(invoker,
                              [
-                               "add_view_trace_events",
                                "bundle_name",
                                "include_32_bit_webview",
                                "include_64_bit_webview",
@@ -129,6 +135,7 @@ if (current_toolchain == default_toolchain) {
       manifest_package = chrome_public_manifest_package
       module_descs = _module_descs
       chrome_deps = [ ":delegate_public_impl_java" ]
+      add_view_trace_events = true
 
       if (target_name == _android_lint_target_name) {
         enable_lint = true
@@ -446,6 +453,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/prefetch/android:java",
       "//chrome/browser/preloading/android:java",
       "//chrome/browser/privacy:java",
+      "//chrome/browser/privacy:privacy_settings_java",
       "//chrome/browser/privacy_guide/android:java",
       "//chrome/browser/privacy_sandbox/android:java",
       "//chrome/browser/profiles/android:java",
@@ -522,7 +530,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/ui/android/page_info:java",
       "//chrome/browser/ui/android/pdf:java",
       "//chrome/browser/ui/android/pdf:pdf_provider_java",
-      "//chrome/browser/ui/android/plus_addresses:java",
       "//chrome/browser/ui/android/preloading:java",
       "//chrome/browser/ui/android/quickactionsearchwidget:java",
       "//chrome/browser/ui/android/searchactivityutils:java",
@@ -533,6 +540,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/ui/android/web_app_header:java",
       "//chrome/browser/ui/android/whats_new:java",
       "//chrome/browser/ui/messages/android:java",
+      "//chrome/browser/ui/plus_addresses/android:java",
       "//chrome/browser/uid/android:java",
       "//chrome/browser/usb/android:java",
       "//chrome/browser/user_education:java",
@@ -1109,7 +1117,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/tab_ui/android:junit",
       "//chrome/browser/tabmodel:junit",
       "//chrome/browser/tabpersistence:junit",
-      "//chrome/browser/tabwindow:junit",
+      "//chrome/browser/tabwindow/internal:junit",
       "//chrome/browser/task_manager/internal/android:junit",
       "//chrome/browser/touch_to_fill/autofill/android/internal:junit",
       "//chrome/browser/touch_to_fill/common/android:junit",
@@ -1134,7 +1142,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/ui/android/night_mode:junit",
       "//chrome/browser/ui/android/omnibox:junit",
       "//chrome/browser/ui/android/pdf:junit",
-      "//chrome/browser/ui/android/plus_addresses:junit",
       "//chrome/browser/ui/android/searchactivityutils:junit",
       "//chrome/browser/ui/android/settings_promo_card:junit",
       "//chrome/browser/ui/android/signin:junit",
@@ -1144,6 +1151,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/ui/android/webid/internal:junit",
       "//chrome/browser/ui/android/whats_new:junit",
       "//chrome/browser/ui/messages/android:junit",
+      "//chrome/browser/ui/plus_addresses/android:junit",
       "//chrome/browser/uid/android:junit",
       "//chrome/browser/usb/android:junit",
       "//chrome/browser/user_education:junit",
@@ -2352,8 +2360,8 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/touch_to_fill/password_manager/password_generation/android/internal:javatests",
       "//chrome/browser/ui/android/digital_credentials:javatests",
       "//chrome/browser/ui/android/fast_checkout/internal:javatests",
-      "//chrome/browser/ui/android/plus_addresses:javatests",
       "//chrome/browser/ui/android/webid/internal:javatests",
+      "//chrome/browser/ui/plus_addresses/android:javatests",
       "//components/ip_protection/android/android_auth_client_lib/javatests:ip_protection_auth_javatests",
     ]
 
@@ -2730,7 +2738,6 @@ if (current_toolchain == default_toolchain) {
     chrome_public_bundle(_main_monochrome_public_bundle_target) {
       is_monochrome = true
       bundle_name = "MonochromePublic"
-      add_view_trace_events = true
 
       if (android_64bit_target_cpu) {
         is_64_bit_browser = false
@@ -2748,7 +2755,6 @@ if (current_toolchain == default_toolchain) {
       is_trichrome = true
       bundle_name = "TrichromeChrome"
       static_library_provider = ":$_main_trichrome_library_apk_target"
-      add_view_trace_events = true
       if (android_64bit_target_cpu) {
         is_64_bit_browser = false
         include_64_bit_webview = true
@@ -3032,385 +3038,392 @@ if (current_toolchain == default_toolchain) {
       }
     }
   }
-}
 
-generate_jni("chrome_jni_headers") {
-  sources = [
-    "../browser/share/android/java/src/org/chromium/chrome/browser/share/BitmapDownloadRequest.java",
-    "../browser/share/android/java/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextBridge.java",
-    "../browser/share/android/java/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsTabService.java",
-    "../browser/share/android/java/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsTabServiceFactory.java",
-    "../browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/QRCodeGenerator.java",
-    "../browser/share/android/java/src/org/chromium/chrome/browser/share/screenshot/EditorScreenshotTask.java",
-    "../browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/MetricsRecorder.java",
-    "../browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/NotificationManager.java",
-    "../browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfAndroidBridge.java",
-    "../browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/TargetDeviceInfo.java",
-    "java/src/org/chromium/chrome/browser/DevToolsServer.java",
-    "java/src/org/chromium/chrome/browser/IntentHandler.java",
-    "java/src/org/chromium/chrome/browser/PlayServicesVersionInfo.java",
-    "java/src/org/chromium/chrome/browser/ServiceTabLauncher.java",
-    "java/src/org/chromium/chrome/browser/ShortcutHelper.java",
-    "java/src/org/chromium/chrome/browser/WarmupManager.java",
-    "java/src/org/chromium/chrome/browser/about_settings/AboutSettingsBridge.java",
-    "java/src/org/chromium/chrome/browser/announcement/AnnouncementNotificationManager.java",
-    "java/src/org/chromium/chrome/browser/app/flags/ChromeCachedFlags.java",
-    "java/src/org/chromium/chrome/browser/app/send_tab_to_self/SendTabToSelfNotificationReceiver.java",
-    "java/src/org/chromium/chrome/browser/app/tab_activity_glue/ReparentingTask.java",
-    "java/src/org/chromium/chrome/browser/app/tabmodel/TabGroupSyncDepsProvider.java",
-    "java/src/org/chromium/chrome/browser/autofill/AutofillAccessibilityUtils.java",
-    "java/src/org/chromium/chrome/browser/autofill/AutofillExpirationDateFixFlowBridge.java",
-    "java/src/org/chromium/chrome/browser/autofill/AutofillNameFixFlowBridge.java",
-    "java/src/org/chromium/chrome/browser/autofill/AutofillSnackbarController.java",
-    "java/src/org/chromium/chrome/browser/autofill/CardUnmaskBridge.java",
-    "java/src/org/chromium/chrome/browser/autofill/CreditCardScannerBridge.java",
-    "java/src/org/chromium/chrome/browser/autofill/PlusAddressesHelper.java",
-    "java/src/org/chromium/chrome/browser/autofill/SaveUpdateAddressProfilePrompt.java",
-    "java/src/org/chromium/chrome/browser/autofill/SaveUpdateAddressProfilePromptController.java",
-    "java/src/org/chromium/chrome/browser/autofill/iban/AutofillSaveIbanBottomSheetBridge.java",
-    "java/src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetBridge.java",
-    "java/src/org/chromium/chrome/browser/autofill/settings/AutofillPaymentMethodsDelegate.java",
-    "java/src/org/chromium/chrome/browser/autofill/settings/SettingsNavigationHelper.java",
-    "java/src/org/chromium/chrome/browser/autofill/settings/VirtualCardEnrollmentFields.java",
-    "java/src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetBridge.java",
-    "java/src/org/chromium/chrome/browser/background_sync/BackgroundSyncBackgroundTask.java",
-    "java/src/org/chromium/chrome/browser/background_sync/BackgroundSyncBackgroundTaskScheduler.java",
-    "java/src/org/chromium/chrome/browser/background_sync/GooglePlayServicesChecker.java",
-    "java/src/org/chromium/chrome/browser/background_sync/PeriodicBackgroundSyncChromeWakeUpTask.java",
-    "java/src/org/chromium/chrome/browser/background_task_scheduler/ChromeBackgroundTaskFactory.java",
-    "java/src/org/chromium/chrome/browser/background_task_scheduler/ProxyNativeTask.java",
-    "java/src/org/chromium/chrome/browser/backup/ChromeBackupAgentImpl.java",
-    "java/src/org/chromium/chrome/browser/backup/ChromeBackupWatcher.java",
-    "java/src/org/chromium/chrome/browser/backup/DictPrefBackupSerializer.java",
-    "java/src/org/chromium/chrome/browser/browserservices/digitalgoods/SiteIsolator.java",
-    "java/src/org/chromium/chrome/browser/browserservices/permissiondelegation/InstalledWebappBridge.java",
-    "java/src/org/chromium/chrome/browser/browserservices/permissiondelegation/InstalledWebappGeolocationBridge.java",
-    "java/src/org/chromium/chrome/browser/browsing_data/BrowsingDataBridge.java",
-    "java/src/org/chromium/chrome/browser/browsing_data/BrowsingDataCounterBridge.java",
-    "java/src/org/chromium/chrome/browser/browsing_data/UrlFilterBridge.java",
-    "java/src/org/chromium/chrome/browser/complex_tasks/TaskTabHelper.java",
-    "java/src/org/chromium/chrome/browser/compositor/CompositorView.java",
-    "java/src/org/chromium/chrome/browser/compositor/LayerTitleCache.java",
-    "java/src/org/chromium/chrome/browser/compositor/bottombar/OverlayPanelContent.java",
-    "java/src/org/chromium/chrome/browser/compositor/scene_layer/ContextualSearchSceneLayer.java",
-    "java/src/org/chromium/chrome/browser/compositor/scene_layer/SolidColorSceneLayer.java",
-    "java/src/org/chromium/chrome/browser/compositor/scene_layer/StaticTabSceneLayer.java",
-    "java/src/org/chromium/chrome/browser/compositor/scene_layer/TabListSceneLayer.java",
-    "java/src/org/chromium/chrome/browser/compositor/scene_layer/TabStripSceneLayer.java",
-    "java/src/org/chromium/chrome/browser/compositor/scene_layer/ToolbarSwipeSceneLayer.java",
-    "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuHelper.java",
-    "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchContext.java",
-    "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchManager.java",
-    "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchPolicy.java",
-    "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchTabHelper.java",
-    "java/src/org/chromium/chrome/browser/crash/MinidumpUploadServiceImpl.java",
-    "java/src/org/chromium/chrome/browser/customtabs/CustomTabAuthUrlHeuristics.java",
-    "java/src/org/chromium/chrome/browser/customtabs/CustomTabsConnection.java",
-    "java/src/org/chromium/chrome/browser/customtabs/CustomTabsOpenTimeRecorder.java",
-    "java/src/org/chromium/chrome/browser/customtabs/content/WebAppLaunchHandler.java",
-    "java/src/org/chromium/chrome/browser/customtabs/features/TabInteractionRecorder.java",
-    "java/src/org/chromium/chrome/browser/datareduction/DataSaverOSSetting.java",
-    "java/src/org/chromium/chrome/browser/device_dialog/ChromeBluetoothChooserAndroidDelegate.java",
-    "java/src/org/chromium/chrome/browser/device_dialog/ChromeBluetoothScanningPromptAndroidDelegate.java",
-    "java/src/org/chromium/chrome/browser/device_dialog/SerialChooserDialog.java",
-    "java/src/org/chromium/chrome/browser/device_dialog/UsbChooserDialog.java",
-    "java/src/org/chromium/chrome/browser/dom_distiller/DomDistillerServiceFactory.java",
-    "java/src/org/chromium/chrome/browser/dom_distiller/DomDistillerTabUtils.java",
-    "java/src/org/chromium/chrome/browser/dom_distiller/DomDistillerUiUtils.java",
-    "java/src/org/chromium/chrome/browser/download/DownloadController.java",
-    "java/src/org/chromium/chrome/browser/download/DownloadItem.java",
-    "java/src/org/chromium/chrome/browser/download/DownloadManagerService.java",
-    "java/src/org/chromium/chrome/browser/download/DownloadMessageBridge.java",
-    "java/src/org/chromium/chrome/browser/download/DownloadUtils.java",
-    "java/src/org/chromium/chrome/browser/download/DuplicateDownloadDialogBridge.java",
-    "java/src/org/chromium/chrome/browser/download/OpenDownloadDialogBridge.java",
-    "java/src/org/chromium/chrome/browser/download/service/DownloadBackgroundTask.java",
-    "java/src/org/chromium/chrome/browser/download/service/DownloadTaskScheduler.java",
-    "java/src/org/chromium/chrome/browser/feedback/ConnectivityChecker.java",
-    "java/src/org/chromium/chrome/browser/feedback/ScreenshotTask.java",
-    "java/src/org/chromium/chrome/browser/firstrun/FirstRunUtils.java",
-    "java/src/org/chromium/chrome/browser/flags/BadFlagsSnackbarManager.java",
-    "java/src/org/chromium/chrome/browser/history/BrowsingHistoryBridge.java",
-    "java/src/org/chromium/chrome/browser/history/HistoryDeletionBridge.java",
-    "java/src/org/chromium/chrome/browser/history/HistoryDeletionInfo.java",
-    "java/src/org/chromium/chrome/browser/infobar/AutofillSaveCardInfoBar.java",
-    "java/src/org/chromium/chrome/browser/infobar/AutofillVirtualCardEnrollmentInfoBar.java",
-    "java/src/org/chromium/chrome/browser/infobar/InfoBarContainer.java",
-    "java/src/org/chromium/chrome/browser/infobar/KnownInterceptionDisclosureInfoBar.java",
-    "java/src/org/chromium/chrome/browser/infobar/PermissionInfoBar.java",
-    "java/src/org/chromium/chrome/browser/init/NativeStartupBridge.java",
-    "java/src/org/chromium/chrome/browser/lens/LensPolicyUtils.java",
-    "java/src/org/chromium/chrome/browser/login/ChromeHttpAuthHandler.java",
-    "java/src/org/chromium/chrome/browser/media/MediaCaptureDevicesDispatcherAndroid.java",
-    "java/src/org/chromium/chrome/browser/media/PictureInPictureActivity.java",
-    "java/src/org/chromium/chrome/browser/media/router/ChromeMediaRouterClient.java",
-    "java/src/org/chromium/chrome/browser/metrics/LaunchMetrics.java",
-    "java/src/org/chromium/chrome/browser/metrics/UmaSessionStats.java",
-    "java/src/org/chromium/chrome/browser/metrics/VariationsSession.java",
-    "java/src/org/chromium/chrome/browser/mojo/ChromeInterfaceRegistrar.java",
-    "java/src/org/chromium/chrome/browser/navigation_predictor/NavigationPredictorBridge.java",
-    "java/src/org/chromium/chrome/browser/notifications/ActionInfo.java",
-    "java/src/org/chromium/chrome/browser/notifications/NotificationPlatformBridge.java",
-    "java/src/org/chromium/chrome/browser/notifications/NotificationSuspender.java",
-    "java/src/org/chromium/chrome/browser/notifications/NotificationTriggerScheduler.java",
-    "java/src/org/chromium/chrome/browser/notifications/PushMessagingServiceBridge.java",
-    "java/src/org/chromium/chrome/browser/notifications/scheduler/DisplayAgent.java",
-    "java/src/org/chromium/chrome/browser/notifications/scheduler/NotificationSchedulerTask.java",
-    "java/src/org/chromium/chrome/browser/ntp/RecentTabsPagePrefs.java",
-    "java/src/org/chromium/chrome/browser/ntp/RecentlyClosedBridge.java",
-    "java/src/org/chromium/chrome/browser/ntp/RecentlyClosedTab.java",
-    "java/src/org/chromium/chrome/browser/offlinepages/AutoFetchNotifier.java",
-    "java/src/org/chromium/chrome/browser/offlinepages/BackgroundSchedulerBridge.java",
-    "java/src/org/chromium/chrome/browser/offlinepages/OfflinePageArchivePublisherBridge.java",
-    "java/src/org/chromium/chrome/browser/offlinepages/OfflinePageBridge.java",
-    "java/src/org/chromium/chrome/browser/offlinepages/PublishPageCallback.java",
-    "java/src/org/chromium/chrome/browser/offlinepages/RequestCoordinatorBridge.java",
-    "java/src/org/chromium/chrome/browser/offlinepages/SavePageRequest.java",
-    "java/src/org/chromium/chrome/browser/offlinepages/downloads/OfflinePageDownloadBridge.java",
-    "java/src/org/chromium/chrome/browser/page_info/PageInfoAboutThisSiteController.java",
-    "java/src/org/chromium/chrome/browser/password_manager/AccountChooserDialog.java",
-    "java/src/org/chromium/chrome/browser/password_manager/AutoSigninFirstRunDialog.java",
-    "java/src/org/chromium/chrome/browser/password_manager/AutoSigninSnackbarController.java",
-    "java/src/org/chromium/chrome/browser/password_manager/Credential.java",
-    "java/src/org/chromium/chrome/browser/password_manager/CredentialLeakDialogBridge.java",
-    "java/src/org/chromium/chrome/browser/password_manager/PasswordAccessLossWarningBridge.java",
-    "java/src/org/chromium/chrome/browser/password_manager/PasswordCheckupLauncher.java",
-    "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerErrorMessageHelperBridge.java",
-    "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerLauncher.java",
-    "java/src/org/chromium/chrome/browser/password_manager/PasswordMigrationWarningBridge.java",
-    "java/src/org/chromium/chrome/browser/payments/ServiceWorkerPaymentAppBridge.java",
-    "java/src/org/chromium/chrome/browser/permissions/PermissionBlockedDialog.java",
-    "java/src/org/chromium/chrome/browser/permissions/PermissionUpdateRequester.java",
-    "java/src/org/chromium/chrome/browser/policy/PolicyAuditor.java",
-    "java/src/org/chromium/chrome/browser/policy/PolicyAuditorBridge.java",
-    "java/src/org/chromium/chrome/browser/printing/TabPrinter.java",
-    "java/src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManagerImpl.java",
-    "java/src/org/chromium/chrome/browser/push_messaging/PushMessagingServiceObserver.java",
-    "java/src/org/chromium/chrome/browser/renderer_host/ChromeNavigationUiData.java",
-    "java/src/org/chromium/chrome/browser/resources/ResourceMapper.java",
-    "java/src/org/chromium/chrome/browser/rlz/RevenueStats.java",
-    "java/src/org/chromium/chrome/browser/rlz/RlzPingHandler.java",
-    "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingPasswordReuseDialogBridge.java",
-    "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingReferringAppBridge.java",
-    "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingSettingsNavigation.java",
-    "java/src/org/chromium/chrome/browser/segmentation_platform/ContextualPageActionController.java",
-    "java/src/org/chromium/chrome/browser/sharing/SharingJNIBridge.java",
-    "java/src/org/chromium/chrome/browser/sharing/click_to_call/ClickToCallMessageHandler.java",
-    "java/src/org/chromium/chrome/browser/sharing/sms_fetcher/SmsFetcherMessageHandler.java",
-    "java/src/org/chromium/chrome/browser/signin/SigninBridge.java",
-    "java/src/org/chromium/chrome/browser/signin/SigninManagerImpl.java",
-    "java/src/org/chromium/chrome/browser/site_settings/ChromeSiteSettingsDelegate.java",
-    "java/src/org/chromium/chrome/browser/site_settings/CookieControlsServiceBridge.java",
-    "java/src/org/chromium/chrome/browser/status_indicator/StatusIndicatorSceneLayer.java",
-    "java/src/org/chromium/chrome/browser/suggestions/mostvisited/MostVisitedSites.java",
-    "java/src/org/chromium/chrome/browser/suggestions/mostvisited/MostVisitedSitesBridge.java",
-    "java/src/org/chromium/chrome/browser/supervised_user/ChildAccountService.java",
-    "java/src/org/chromium/chrome/browser/sync/TrustedVaultClient.java",
-    "java/src/org/chromium/chrome/browser/tab/TabBrowserControlsConstraintsHelper.java",
-    "java/src/org/chromium/chrome/browser/tab/TabFavicon.java",
-    "java/src/org/chromium/chrome/browser/tab/TabImpl.java",
-    "java/src/org/chromium/chrome/browser/tab/TabWebContentsDelegateAndroidImpl.java",
-    "java/src/org/chromium/chrome/browser/tab/tab_restore/HistoricalTabSaverImpl.java",
-    "java/src/org/chromium/chrome/browser/tabmodel/TabModelJniBridge.java",
-    "java/src/org/chromium/chrome/browser/tabmodel/TabModelObserverJniBridge.java",
-    "java/src/org/chromium/chrome/browser/usage_stats/UsageStatsBridge.java",
-    "java/src/org/chromium/chrome/browser/webapps/WebApkDataProvider.java",
-    "java/src/org/chromium/chrome/browser/webapps/WebApkHandlerDelegate.java",
-    "java/src/org/chromium/chrome/browser/webapps/WebApkInstallService.java",
-    "java/src/org/chromium/chrome/browser/webapps/WebApkInstaller.java",
-    "java/src/org/chromium/chrome/browser/webapps/WebApkPostShareTargetNavigator.java",
-    "java/src/org/chromium/chrome/browser/webapps/WebApkSyncService.java",
-    "java/src/org/chromium/chrome/browser/webapps/WebApkUpdateDataFetcher.java",
-    "java/src/org/chromium/chrome/browser/webapps/WebApkUpdateManager.java",
-    "java/src/org/chromium/chrome/browser/webapps/WebappRegistry.java",
-  ]
+  generate_jni("chrome_jni_headers") {
+    sources = [
+      "../browser/share/android/java/src/org/chromium/chrome/browser/share/BitmapDownloadRequest.java",
+      "../browser/share/android/java/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextBridge.java",
+      "../browser/share/android/java/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsTabService.java",
+      "../browser/share/android/java/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsTabServiceFactory.java",
+      "../browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/QRCodeGenerator.java",
+      "../browser/share/android/java/src/org/chromium/chrome/browser/share/screenshot/EditorScreenshotTask.java",
+      "../browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/MetricsRecorder.java",
+      "../browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/NotificationManager.java",
+      "../browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfAndroidBridge.java",
+      "../browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/TargetDeviceInfo.java",
+      "java/src/org/chromium/chrome/browser/DevToolsServer.java",
+      "java/src/org/chromium/chrome/browser/IntentHandler.java",
+      "java/src/org/chromium/chrome/browser/PlayServicesVersionInfo.java",
+      "java/src/org/chromium/chrome/browser/ServiceTabLauncher.java",
+      "java/src/org/chromium/chrome/browser/ShortcutHelper.java",
+      "java/src/org/chromium/chrome/browser/WarmupManager.java",
+      "java/src/org/chromium/chrome/browser/about_settings/AboutSettingsBridge.java",
+      "java/src/org/chromium/chrome/browser/announcement/AnnouncementNotificationManager.java",
+      "java/src/org/chromium/chrome/browser/app/flags/ChromeCachedFlags.java",
+      "java/src/org/chromium/chrome/browser/app/send_tab_to_self/SendTabToSelfNotificationReceiver.java",
+      "java/src/org/chromium/chrome/browser/app/tab_activity_glue/ReparentingTask.java",
+      "java/src/org/chromium/chrome/browser/app/tabmodel/TabGroupSyncDepsProvider.java",
+      "java/src/org/chromium/chrome/browser/autofill/AutofillAccessibilityUtils.java",
+      "java/src/org/chromium/chrome/browser/autofill/AutofillExpirationDateFixFlowBridge.java",
+      "java/src/org/chromium/chrome/browser/autofill/AutofillFallbackSurfaceLauncher.java",
+      "java/src/org/chromium/chrome/browser/autofill/AutofillNameFixFlowBridge.java",
+      "java/src/org/chromium/chrome/browser/autofill/AutofillSnackbarController.java",
+      "java/src/org/chromium/chrome/browser/autofill/CardUnmaskBridge.java",
+      "java/src/org/chromium/chrome/browser/autofill/CreditCardScannerBridge.java",
+      "java/src/org/chromium/chrome/browser/autofill/SaveUpdateAddressProfilePrompt.java",
+      "java/src/org/chromium/chrome/browser/autofill/SaveUpdateAddressProfilePromptController.java",
+      "java/src/org/chromium/chrome/browser/autofill/iban/AutofillSaveIbanBottomSheetBridge.java",
+      "java/src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetBridge.java",
+      "java/src/org/chromium/chrome/browser/autofill/settings/AutofillPaymentMethodsDelegate.java",
+      "java/src/org/chromium/chrome/browser/autofill/settings/SettingsNavigationHelper.java",
+      "java/src/org/chromium/chrome/browser/autofill/settings/VirtualCardEnrollmentFields.java",
+      "java/src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetBridge.java",
+      "java/src/org/chromium/chrome/browser/background_sync/BackgroundSyncBackgroundTask.java",
+      "java/src/org/chromium/chrome/browser/background_sync/BackgroundSyncBackgroundTaskScheduler.java",
+      "java/src/org/chromium/chrome/browser/background_sync/GooglePlayServicesChecker.java",
+      "java/src/org/chromium/chrome/browser/background_sync/PeriodicBackgroundSyncChromeWakeUpTask.java",
+      "java/src/org/chromium/chrome/browser/background_task_scheduler/ChromeBackgroundTaskFactory.java",
+      "java/src/org/chromium/chrome/browser/background_task_scheduler/ProxyNativeTask.java",
+      "java/src/org/chromium/chrome/browser/backup/ChromeBackupAgentImpl.java",
+      "java/src/org/chromium/chrome/browser/backup/ChromeBackupWatcher.java",
+      "java/src/org/chromium/chrome/browser/backup/DictPrefBackupSerializer.java",
+      "java/src/org/chromium/chrome/browser/browserservices/digitalgoods/SiteIsolator.java",
+      "java/src/org/chromium/chrome/browser/browserservices/permissiondelegation/InstalledWebappBridge.java",
+      "java/src/org/chromium/chrome/browser/browserservices/permissiondelegation/InstalledWebappGeolocationBridge.java",
+      "java/src/org/chromium/chrome/browser/browsing_data/BrowsingDataBridge.java",
+      "java/src/org/chromium/chrome/browser/browsing_data/BrowsingDataCounterBridge.java",
+      "java/src/org/chromium/chrome/browser/browsing_data/UrlFilterBridge.java",
+      "java/src/org/chromium/chrome/browser/complex_tasks/TaskTabHelper.java",
+      "java/src/org/chromium/chrome/browser/compositor/CompositorView.java",
+      "java/src/org/chromium/chrome/browser/compositor/LayerTitleCache.java",
+      "java/src/org/chromium/chrome/browser/compositor/bottombar/OverlayPanelContent.java",
+      "java/src/org/chromium/chrome/browser/compositor/scene_layer/ContextualSearchSceneLayer.java",
+      "java/src/org/chromium/chrome/browser/compositor/scene_layer/SolidColorSceneLayer.java",
+      "java/src/org/chromium/chrome/browser/compositor/scene_layer/StaticTabSceneLayer.java",
+      "java/src/org/chromium/chrome/browser/compositor/scene_layer/TabListSceneLayer.java",
+      "java/src/org/chromium/chrome/browser/compositor/scene_layer/TabStripSceneLayer.java",
+      "java/src/org/chromium/chrome/browser/compositor/scene_layer/ToolbarSwipeSceneLayer.java",
+      "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuHelper.java",
+      "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchContext.java",
+      "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchManager.java",
+      "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchPolicy.java",
+      "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchTabHelper.java",
+      "java/src/org/chromium/chrome/browser/crash/MinidumpUploadServiceImpl.java",
+      "java/src/org/chromium/chrome/browser/customtabs/CustomTabAuthUrlHeuristics.java",
+      "java/src/org/chromium/chrome/browser/customtabs/CustomTabsConnection.java",
+      "java/src/org/chromium/chrome/browser/customtabs/CustomTabsOpenTimeRecorder.java",
+      "java/src/org/chromium/chrome/browser/customtabs/content/WebAppLaunchHandler.java",
+      "java/src/org/chromium/chrome/browser/customtabs/features/TabInteractionRecorder.java",
+      "java/src/org/chromium/chrome/browser/datareduction/DataSaverOSSetting.java",
+      "java/src/org/chromium/chrome/browser/device_dialog/ChromeBluetoothChooserAndroidDelegate.java",
+      "java/src/org/chromium/chrome/browser/device_dialog/ChromeBluetoothScanningPromptAndroidDelegate.java",
+      "java/src/org/chromium/chrome/browser/device_dialog/SerialChooserDialog.java",
+      "java/src/org/chromium/chrome/browser/device_dialog/UsbChooserDialog.java",
+      "java/src/org/chromium/chrome/browser/dom_distiller/DomDistillerServiceFactory.java",
+      "java/src/org/chromium/chrome/browser/dom_distiller/DomDistillerTabUtils.java",
+      "java/src/org/chromium/chrome/browser/dom_distiller/DomDistillerUiUtils.java",
+      "java/src/org/chromium/chrome/browser/download/DownloadController.java",
+      "java/src/org/chromium/chrome/browser/download/DownloadItem.java",
+      "java/src/org/chromium/chrome/browser/download/DownloadManagerService.java",
+      "java/src/org/chromium/chrome/browser/download/DownloadMessageBridge.java",
+      "java/src/org/chromium/chrome/browser/download/DownloadUtils.java",
+      "java/src/org/chromium/chrome/browser/download/DuplicateDownloadDialogBridge.java",
+      "java/src/org/chromium/chrome/browser/download/OpenDownloadDialogBridge.java",
+      "java/src/org/chromium/chrome/browser/download/service/DownloadBackgroundTask.java",
+      "java/src/org/chromium/chrome/browser/download/service/DownloadTaskScheduler.java",
+      "java/src/org/chromium/chrome/browser/feedback/ConnectivityChecker.java",
+      "java/src/org/chromium/chrome/browser/feedback/ScreenshotTask.java",
+      "java/src/org/chromium/chrome/browser/firstrun/FirstRunUtils.java",
+      "java/src/org/chromium/chrome/browser/flags/BadFlagsSnackbarManager.java",
+      "java/src/org/chromium/chrome/browser/gesturenav/OverscrollSceneLayer.java",
+      "java/src/org/chromium/chrome/browser/history/BrowsingHistoryBridge.java",
+      "java/src/org/chromium/chrome/browser/history/HistoryDeletionBridge.java",
+      "java/src/org/chromium/chrome/browser/history/HistoryDeletionInfo.java",
+      "java/src/org/chromium/chrome/browser/infobar/AutofillSaveCardInfoBar.java",
+      "java/src/org/chromium/chrome/browser/infobar/AutofillVirtualCardEnrollmentInfoBar.java",
+      "java/src/org/chromium/chrome/browser/infobar/InfoBarContainer.java",
+      "java/src/org/chromium/chrome/browser/infobar/KnownInterceptionDisclosureInfoBar.java",
+      "java/src/org/chromium/chrome/browser/infobar/PermissionInfoBar.java",
+      "java/src/org/chromium/chrome/browser/init/NativeStartupBridge.java",
+      "java/src/org/chromium/chrome/browser/lens/LensPolicyUtils.java",
+      "java/src/org/chromium/chrome/browser/login/ChromeHttpAuthHandler.java",
+      "java/src/org/chromium/chrome/browser/media/MediaCaptureDevicesDispatcherAndroid.java",
+      "java/src/org/chromium/chrome/browser/media/PictureInPictureActivity.java",
+      "java/src/org/chromium/chrome/browser/media/router/ChromeMediaRouterClient.java",
+      "java/src/org/chromium/chrome/browser/metrics/LaunchMetrics.java",
+      "java/src/org/chromium/chrome/browser/metrics/UmaSessionStats.java",
+      "java/src/org/chromium/chrome/browser/metrics/VariationsSession.java",
+      "java/src/org/chromium/chrome/browser/mojo/ChromeInterfaceRegistrar.java",
+      "java/src/org/chromium/chrome/browser/navigation_predictor/NavigationPredictorBridge.java",
+      "java/src/org/chromium/chrome/browser/notifications/ActionInfo.java",
+      "java/src/org/chromium/chrome/browser/notifications/NotificationPlatformBridge.java",
+      "java/src/org/chromium/chrome/browser/notifications/NotificationSuspender.java",
+      "java/src/org/chromium/chrome/browser/notifications/NotificationTriggerScheduler.java",
+      "java/src/org/chromium/chrome/browser/notifications/PushMessagingServiceBridge.java",
+      "java/src/org/chromium/chrome/browser/notifications/scheduler/DisplayAgent.java",
+      "java/src/org/chromium/chrome/browser/notifications/scheduler/NotificationSchedulerTask.java",
+      "java/src/org/chromium/chrome/browser/ntp/RecentTabsPagePrefs.java",
+      "java/src/org/chromium/chrome/browser/ntp/RecentlyClosedBridge.java",
+      "java/src/org/chromium/chrome/browser/ntp/RecentlyClosedTab.java",
+      "java/src/org/chromium/chrome/browser/offlinepages/AutoFetchNotifier.java",
+      "java/src/org/chromium/chrome/browser/offlinepages/BackgroundSchedulerBridge.java",
+      "java/src/org/chromium/chrome/browser/offlinepages/OfflinePageArchivePublisherBridge.java",
+      "java/src/org/chromium/chrome/browser/offlinepages/OfflinePageBridge.java",
+      "java/src/org/chromium/chrome/browser/offlinepages/PublishPageCallback.java",
+      "java/src/org/chromium/chrome/browser/offlinepages/RequestCoordinatorBridge.java",
+      "java/src/org/chromium/chrome/browser/offlinepages/SavePageRequest.java",
+      "java/src/org/chromium/chrome/browser/offlinepages/downloads/OfflinePageDownloadBridge.java",
+      "java/src/org/chromium/chrome/browser/page_info/PageInfoAboutThisSiteController.java",
+      "java/src/org/chromium/chrome/browser/password_manager/AccountChooserDialog.java",
+      "java/src/org/chromium/chrome/browser/password_manager/AutoSigninFirstRunDialog.java",
+      "java/src/org/chromium/chrome/browser/password_manager/AutoSigninSnackbarController.java",
+      "java/src/org/chromium/chrome/browser/password_manager/Credential.java",
+      "java/src/org/chromium/chrome/browser/password_manager/CredentialLeakDialogBridge.java",
+      "java/src/org/chromium/chrome/browser/password_manager/PasswordAccessLossWarningBridge.java",
+      "java/src/org/chromium/chrome/browser/password_manager/PasswordCheckupLauncher.java",
+      "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerErrorMessageHelperBridge.java",
+      "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerLauncher.java",
+      "java/src/org/chromium/chrome/browser/password_manager/PasswordMigrationWarningBridge.java",
+      "java/src/org/chromium/chrome/browser/payments/ServiceWorkerPaymentAppBridge.java",
+      "java/src/org/chromium/chrome/browser/permissions/PermissionBlockedDialog.java",
+      "java/src/org/chromium/chrome/browser/permissions/PermissionUpdateRequester.java",
+      "java/src/org/chromium/chrome/browser/policy/PolicyAuditor.java",
+      "java/src/org/chromium/chrome/browser/policy/PolicyAuditorBridge.java",
+      "java/src/org/chromium/chrome/browser/printing/TabPrinter.java",
+      "java/src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManagerImpl.java",
+      "java/src/org/chromium/chrome/browser/push_messaging/PushMessagingServiceObserver.java",
+      "java/src/org/chromium/chrome/browser/renderer_host/ChromeNavigationUiData.java",
+      "java/src/org/chromium/chrome/browser/resources/ResourceMapper.java",
+      "java/src/org/chromium/chrome/browser/rlz/RevenueStats.java",
+      "java/src/org/chromium/chrome/browser/rlz/RlzPingHandler.java",
+      "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingPasswordReuseDialogBridge.java",
+      "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingReferringAppBridge.java",
+      "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingSettingsNavigation.java",
+      "java/src/org/chromium/chrome/browser/segmentation_platform/ContextualPageActionController.java",
+      "java/src/org/chromium/chrome/browser/sharing/SharingJNIBridge.java",
+      "java/src/org/chromium/chrome/browser/sharing/click_to_call/ClickToCallMessageHandler.java",
+      "java/src/org/chromium/chrome/browser/sharing/sms_fetcher/SmsFetcherMessageHandler.java",
+      "java/src/org/chromium/chrome/browser/signin/SigninBridge.java",
+      "java/src/org/chromium/chrome/browser/signin/SigninManagerImpl.java",
+      "java/src/org/chromium/chrome/browser/site_settings/ChromeSiteSettingsDelegate.java",
+      "java/src/org/chromium/chrome/browser/site_settings/CookieControlsServiceBridge.java",
+      "java/src/org/chromium/chrome/browser/status_indicator/StatusIndicatorSceneLayer.java",
+      "java/src/org/chromium/chrome/browser/suggestions/mostvisited/MostVisitedSites.java",
+      "java/src/org/chromium/chrome/browser/suggestions/mostvisited/MostVisitedSitesBridge.java",
+      "java/src/org/chromium/chrome/browser/supervised_user/ChildAccountService.java",
+      "java/src/org/chromium/chrome/browser/sync/TrustedVaultClient.java",
+      "java/src/org/chromium/chrome/browser/tab/TabBrowserControlsConstraintsHelper.java",
+      "java/src/org/chromium/chrome/browser/tab/TabFavicon.java",
+      "java/src/org/chromium/chrome/browser/tab/TabImpl.java",
+      "java/src/org/chromium/chrome/browser/tab/TabWebContentsDelegateAndroidImpl.java",
+      "java/src/org/chromium/chrome/browser/tab/tab_restore/HistoricalTabSaverImpl.java",
+      "java/src/org/chromium/chrome/browser/tabmodel/TabModelJniBridge.java",
+      "java/src/org/chromium/chrome/browser/tabmodel/TabModelObserverJniBridge.java",
+      "java/src/org/chromium/chrome/browser/usage_stats/UsageStatsBridge.java",
+      "java/src/org/chromium/chrome/browser/webapps/WebApkDataProvider.java",
+      "java/src/org/chromium/chrome/browser/webapps/WebApkHandlerDelegate.java",
+      "java/src/org/chromium/chrome/browser/webapps/WebApkInstallService.java",
+      "java/src/org/chromium/chrome/browser/webapps/WebApkInstaller.java",
+      "java/src/org/chromium/chrome/browser/webapps/WebApkPostShareTargetNavigator.java",
+      "java/src/org/chromium/chrome/browser/webapps/WebApkSyncService.java",
+      "java/src/org/chromium/chrome/browser/webapps/WebApkUpdateDataFetcher.java",
+      "java/src/org/chromium/chrome/browser/webapps/WebApkUpdateManager.java",
+      "java/src/org/chromium/chrome/browser/webapps/WebappRegistry.java",
+    ]
 
-  if (enable_screen_capture) {
-    sources += [ "java/src/org/chromium/chrome/browser/media/MediaCapturePickerDialogBridge.java" ]
-  }
-
-  # Used for testing only, should not be shipped to end users.
-  if (enable_offline_pages_harness) {
-    sources += [ "java/src/org/chromium/chrome/browser/offlinepages/evaluation/OfflinePageEvaluationBridge.java" ]
-  }
-
-  public_deps = [
-    ":base_module_jni",
-    "//chrome/browser/bookmarks/android:jni_headers",
-    "//chrome/browser/partnerbookmarks:jni_headers",
-    "//chrome/browser/webid:jni_headers",
-  ]
-}
-
-source_set("chrome_test_util") {
-  testonly = true
-  sources = [
-    "javatests/src/custom_tabs_test_utils.cc",
-    "javatests/src/federated_identity_test_utils.cc",
-    "javatests/src/pwa_restore_bottom_sheet_test_utils.cc",
-  ]
-  deps = [
-    ":chrome_test_util_jni",
-    "//base",
-    "//chrome/browser",
-    "//chrome/browser/profiles:profile",
-    "//components/variations",
-    "//url:url",
-  ]
-}
-
-# This is a list of all base module jni headers. New features should add their
-# own jni target to this list.
-group("jni_headers") {
-  public_deps = [
-    ":chrome_jni_headers",
-    "//chrome/android/features/keyboard_accessory:jni_headers",
-    "//chrome/browser/android/browserservices/metrics:jni_headers",
-    "//chrome/browser/android/browserservices/verification:jni_headers",
-    "//chrome/browser/android/cookies:jni_headers",
-    "//chrome/browser/android/metrics:jni_headers",
-    "//chrome/browser/battery/android:jni_headers",
-    "//chrome/browser/collaboration:internal_jni_headers",
-    "//chrome/browser/collaboration:jni_headers",
-    "//chrome/browser/collaboration:messaging_jni_headers",
-    "//chrome/browser/commerce/merchant_viewer/android:jni_headers",
-    "//chrome/browser/commerce/price_tracking/android:jni_headers",
-    "//chrome/browser/contextmenu:jni_headers",
-    "//chrome/browser/data_sharing:jni_headers",
-    "//chrome/browser/download/android:jni_headers",
-    "//chrome/browser/enterprise/util:jni_headers",
-    "//chrome/browser/facilitated_payments/ui/android:jni_headers",
-    "//chrome/browser/feature_engagement:jni_headers",
-    "//chrome/browser/flags:jni_headers",
-    "//chrome/browser/history:jni_headers",
-    "//chrome/browser/history_clusters:jni_headers",
-    "//chrome/browser/image_descriptions:jni_headers",
-    "//chrome/browser/incognito:jni_headers",
-    "//chrome/browser/locale:jni_headers",
-    "//chrome/browser/mandatory_reauth/android:jni_headers",
-    "//chrome/browser/page_load_metrics:jni_headers",
-    "//chrome/browser/preferences:jni_headers",
-    "//chrome/browser/privacy:jni_headers",
-    "//chrome/browser/profiles/android:jni_headers",
-    "//chrome/browser/quick_delete:jni_headers",
-    "//chrome/browser/search_engines/android:jni_headers",
-    "//chrome/browser/segmentation_platform:client_util_jni_headers",
-    "//chrome/browser/segmentation_platform:jni_headers",
-    "//chrome/browser/ssl/android:jni_headers",
-    "//chrome/browser/tab:jni_headers",
-    "//chrome/browser/tab_group_suggestion:jni_headers",
-    "//chrome/browser/tab_group_sync:factory_jni_headers",
-    "//chrome/browser/tab_group_sync:jni_headers",
-    "//chrome/browser/tab_ui/android:jni_headers",
-    "//chrome/browser/task_manager/android:jni_headers",
-    "//chrome/browser/touch_to_fill/autofill/android:jni_headers",
-    "//chrome/browser/touch_to_fill/password_manager/android:jni_headers",
-    "//chrome/browser/ui/android/digital_credentials:jni_headers",
-    "//chrome/browser/ui/android/edge_to_edge:jni_headers",
-    "//chrome/browser/ui/android/fast_checkout:jni_headers",
-    "//chrome/browser/ui/android/favicon:jni_headers",
-    "//chrome/browser/ui/android/hats:jni_headers",
-    "//chrome/browser/ui/android/hats/internal:jni_headers",
-    "//chrome/browser/ui/android/logo:jni_headers",
-    "//chrome/browser/ui/android/omnibox:jni_headers",
-    "//chrome/browser/ui/android/plus_addresses:jni_headers",
-    "//chrome/browser/ui/android/preloading:jni_headers",
-    "//chrome/browser/ui/android/toolbar:jni_headers",
-    "//chrome/browser/ui/android/webid:jni_headers",
-    "//chrome/browser/ui/messages/android:jni_headers",
-    "//chrome/browser/util:jni_headers",
-    "//chrome/browser/webauthn/android:jni_headers",
-    "//components/browser_ui/device_lock/android:device_lock_bridge_jni_headers",
-    "//components/content_relationship_verification/android:jni_headers",
-    "//components/image_fetcher:jni_headers",
-    "//components/media_router/browser/android:jni_headers",
-    "//components/ukm/android:jni_headers",
-    "//components/webauthn/android:jni_headers",
-  ]
-}
-
-# Chrome APK's native library.
-template("libchrome_impl") {
-  chrome_common_shared_library(target_name) {
-    sources = [ "../browser/android/chrome_entry_point.cc" ]
-    deps = []
-    if (defined(invoker.deps)) {
-      deps += invoker.deps
+    if (enable_screen_capture) {
+      sources += [ "java/src/org/chromium/chrome/browser/media/MediaCapturePickerDialogBridge.java" ]
     }
 
-    java_targets = [ "//chrome/android:chrome_public_apk" ]
-    forward_variables_from(invoker, "*", [ "deps" ])
-  }
-}
+    # Used for testing only, should not be shipped to end users.
+    if (enable_offline_pages_harness) {
+      sources += [ "java/src/org/chromium/chrome/browser/offlinepages/evaluation/OfflinePageEvaluationBridge.java" ]
+    }
 
-if (enable_resource_allowlist_generation) {
-  libchrome_impl("libchrome_inputs") {
-    collect_inputs_only = true
+    public_deps = [
+      ":base_module_jni",
+      "//chrome/browser/bookmarks/android:jni_headers",
+      "//chrome/browser/partnerbookmarks:jni_headers",
+      "//chrome/browser/webid:jni_headers",
+    ]
   }
-}
 
-libchrome_impl("libchrome") {
-  define_unwind_table_target =
-      add_unwind_tables_in_chrome_32bit_apk && target_cpu == "arm"
+  source_set("chrome_test_util") {
+    testonly = true
+    sources = [
+      "javatests/src/custom_tabs_test_utils.cc",
+      "javatests/src/federated_identity_test_utils.cc",
+      "javatests/src/pwa_restore_bottom_sheet_test_utils.cc",
+    ]
+    deps = [
+      ":chrome_test_util_jni",
+      "//base",
+      "//chrome/browser",
+      "//chrome/browser/profiles:profile",
+      "//components/variations",
+      "//url:url",
+    ]
+  }
+
+  # This is a list of all base module jni headers. New features should add their
+  # own jni target to this list.
+  group("jni_headers") {
+    public_deps = [
+      ":chrome_jni_headers",
+      "//chrome/android/features/keyboard_accessory:jni_headers",
+      "//chrome/browser/android/browserservices/metrics:jni_headers($default_toolchain)",
+      "//chrome/browser/android/browserservices/verification:jni_headers",
+      "//chrome/browser/android/cookies:jni_headers",
+      "//chrome/browser/android/metrics:jni_headers",
+      "//chrome/browser/battery/android:jni_headers",
+      "//chrome/browser/collaboration:internal_jni_headers",
+      "//chrome/browser/collaboration:jni_headers",
+      "//chrome/browser/collaboration:messaging_jni_headers",
+      "//chrome/browser/commerce/merchant_viewer/android:jni_headers",
+      "//chrome/browser/commerce/price_tracking/android:jni_headers",
+      "//chrome/browser/contextmenu:jni_headers",
+      "//chrome/browser/data_sharing:jni_headers",
+      "//chrome/browser/download/android:jni_headers",
+      "//chrome/browser/enterprise/util:jni_headers",
+      "//chrome/browser/facilitated_payments/ui/android:jni_headers",
+      "//chrome/browser/feature_engagement:jni_headers",
+      "//chrome/browser/flags:jni_headers",
+      "//chrome/browser/history:jni_headers",
+      "//chrome/browser/history_clusters:jni_headers",
+      "//chrome/browser/image_descriptions:jni_headers",
+      "//chrome/browser/incognito:jni_headers",
+      "//chrome/browser/locale:jni_headers",
+      "//chrome/browser/mandatory_reauth/android:jni_headers",
+      "//chrome/browser/page_load_metrics:jni_headers",
+      "//chrome/browser/preferences:jni_headers",
+      "//chrome/browser/privacy:jni_headers",
+      "//chrome/browser/profiles/android:jni_headers",
+      "//chrome/browser/quick_delete:jni_headers",
+      "//chrome/browser/search_engines/android:jni_headers",
+      "//chrome/browser/segmentation_platform:client_util_jni_headers",
+      "//chrome/browser/segmentation_platform:jni_headers",
+      "//chrome/browser/ssl/android:jni_headers",
+      "//chrome/browser/tab:jni_headers",
+      "//chrome/browser/tab_group_suggestion:jni_headers",
+      "//chrome/browser/tab_group_sync:factory_jni_headers",
+      "//chrome/browser/tab_group_sync:jni_headers",
+      "//chrome/browser/tab_ui/android:jni_headers",
+      "//chrome/browser/task_manager/android:jni_headers",
+      "//chrome/browser/touch_to_fill/autofill/android:jni_headers",
+      "//chrome/browser/touch_to_fill/password_manager/android:jni_headers",
+      "//chrome/browser/ui/android/digital_credentials:jni_headers",
+      "//chrome/browser/ui/android/edge_to_edge:jni_headers",
+      "//chrome/browser/ui/android/fast_checkout:jni_headers",
+      "//chrome/browser/ui/android/favicon:jni_headers",
+      "//chrome/browser/ui/android/hats:jni_headers",
+      "//chrome/browser/ui/android/hats/internal:jni_headers",
+      "//chrome/browser/ui/android/logo:jni_headers",
+      "//chrome/browser/ui/android/omnibox:jni_headers",
+      "//chrome/browser/ui/android/preloading:jni_headers",
+      "//chrome/browser/ui/android/toolbar:jni_headers",
+      "//chrome/browser/ui/android/webid:jni_headers",
+      "//chrome/browser/ui/messages/android:jni_headers",
+      "//chrome/browser/ui/plus_addresses/android:jni_headers",
+      "//chrome/browser/util:jni_headers",
+      "//chrome/browser/webauthn/android:jni_headers",
+      "//components/browser_ui/device_lock/android:device_lock_bridge_jni_headers",
+      "//components/content_relationship_verification/android:jni_headers",
+      "//components/image_fetcher:jni_headers",
+      "//components/media_router/browser/android:jni_headers",
+      "//components/ukm/android:jni_headers",
+      "//components/webauthn/android:jni_headers",
+    ]
+  }
+
+  chrome_common_shared_library("libchromefortest") {
+    testonly = true
+    define_unwind_table_target =
+        add_unwind_tables_in_chrome_32bit_apk && target_cpu == "arm"
+    sources = [ "../browser/android/chrome_entry_point_for_test.cc" ]
+    deps = [
+      ":browser_test_support",
+      ":chrome_test_util",
+      "//base/test:test_support",
+      "//chrome/browser/android/metrics:ukm_utils_for_test",
+      "//chrome/browser/password_manager/android:test_support",
+      "//chrome/browser/subresource_filter:android_test_support",
+      "//chrome/browser/supervised_user:test_support",
+      "//components/crash/android:crash_android",
+      "//components/external_intents/android:test_support",
+      "//components/ip_protection/android/android_auth_client_lib/cpp:ip_protection_auth_test_natives",
+      "//components/minidump_uploader",
+      "//components/paint_preview/player/android:test_support",
+      "//components/sync",
+      "//components/variations/android:test_support",
+      "//content/public/test/android:content_native_test_support",
+      "//content/test:test_support",
+      "//ui/base/clipboard:clipboard_test_support",
+    ]
+
+    # Make this a partitioned library, since some partitioned code is linked in
+    # (otherwise, the library will warn at build time that it contains multiple
+    # symbol tables). However, do not create the partitions, as they are not
+    # required or packaged into the APK. This can be removed if LLD starts
+    # supporting a "no partitions" argument (https://crbug.com/1021108).
+    module_descs = []
+
+    java_targets = [
+      "//chrome/android:chrome_public_unit_test_apk__test_apk",
+      "//chrome/android:chrome_public_test_apk__test_apk",
+      "//chrome/test/android:chrome_java_test_wpr_tests__test_apk",
+      "//chrome/test/android:chrome_java_test_feed_test__test_apk",
+    ]
+    if (enable_vr) {
+      java_targets += [ "//chrome/android:chrome_public_test_vr_apk__test_apk" ]
+    }
+  }
+
+  # Chrome APK's native library.
+  template("libchrome_impl") {
+    chrome_common_shared_library(target_name) {
+      sources = [ "../browser/android/chrome_entry_point.cc" ]
+      deps = []
+      if (defined(invoker.deps)) {
+        deps += invoker.deps
+      }
+
+      java_targets = [ "//chrome/android:chrome_public_apk" ]
+      forward_variables_from(invoker, "*", [ "deps" ])
+    }
+  }
+
   if (enable_resource_allowlist_generation) {
-    # Make sure allowlist_inputs is built first so when concurrent_links == 1
-    # it comes before the actual (very slow) link step.
-    deps = [ ":libchrome_inputs" ]
+    libchrome_impl("libchrome_inputs") {
+      collect_inputs_only = true
+    }
   }
+  libchrome_impl("libchrome") {
+    define_unwind_table_target =
+        add_unwind_tables_in_chrome_32bit_apk && target_cpu == "arm"
+    if (enable_resource_allowlist_generation) {
+      # Make sure allowlist_inputs is built first so when concurrent_links == 1
+      # it comes before the actual (very slow) link step.
+      deps = [ ":libchrome_inputs" ]
+    }
 
-  module_descs = chrome_module_descs
+    module_descs = chrome_module_descs
 
-  # Java and native targets form two independent compile graphs. Deps from java targets
-  # onto native ones (or vice versa) are unnecessary and reduce parallelism.
-  # This prevents deps from native -> java.
-  assert_no_deps = [ "//build/android:build_java" ]
-}
-
-chrome_common_shared_library("libchromefortest") {
-  testonly = true
-  define_unwind_table_target =
-      add_unwind_tables_in_chrome_32bit_apk && target_cpu == "arm"
-  sources = [ "../browser/android/chrome_entry_point_for_test.cc" ]
-  deps = [
-    ":browser_test_support",
-    ":chrome_test_util",
-    "//base/test:test_support",
-    "//chrome/browser/android/metrics:ukm_utils_for_test",
-    "//chrome/browser/password_manager/android:test_support",
-    "//chrome/browser/subresource_filter:android_test_support",
-    "//chrome/browser/supervised_user:test_support",
-    "//components/crash/android:crash_android",
-    "//components/external_intents/android:test_support",
-    "//components/ip_protection/android/android_auth_client_lib/cpp:ip_protection_auth_test_natives",
-    "//components/minidump_uploader",
-    "//components/paint_preview/player/android:test_support",
-    "//components/sync",
-    "//components/variations/android:test_support",
-    "//content/public/test/android:content_native_test_support",
-    "//content/test:test_support",
-    "//ui/base/clipboard:clipboard_test_support",
-  ]
-
-  # Make this a partitioned library, since some partitioned code is linked in
-  # (otherwise, the library will warn at build time that it contains multiple
-  # symbol tables). However, do not create the partitions, as they are not
-  # required or packaged into the APK. This can be removed if LLD starts
-  # supporting a "no partitions" argument (https://crbug.com/1021108).
-  module_descs = []
-
-  java_targets = [
-    "//chrome/android:chrome_public_unit_test_apk__test_apk",
-    "//chrome/android:chrome_public_test_apk__test_apk",
-    "//chrome/test/android:chrome_java_test_wpr_tests__test_apk",
-    "//chrome/test/android:chrome_java_test_feed_test__test_apk",
-  ]
-  if (enable_vr) {
-    java_targets += [ "//chrome/android:chrome_public_test_vr_apk__test_apk" ]
+    # Java and native targets form two independent compile graphs. Deps from java targets
+    # onto native ones (or vice versa) are unnecessary and reduce parallelism.
+    # This prevents deps from native -> java.
+    assert_no_deps = [ "//build/android:build_java" ]
+  }
+} else {  # _is_default_toolchain
+  group("chrome_jni_headers") {
+    public_deps = [ ":chrome_jni_headers($default_toolchain)" ]
+  }
+  group("jni_headers") {
+    public_deps = [ ":jni_headers($default_toolchain)" ]
   }
 }
 
 # Monochrome equivalent of Chrome's APK or bundle library template.
-template("libmonochrome_apk_or_bundle_tmpl") {
+template("libmonochrome_tmpl") {
   chrome_common_shared_library(target_name) {
     sources = [ "../browser/android/monochrome_entry_point.cc" ]
     deps = [
@@ -3439,7 +3452,7 @@ template("libmonochrome_apk_or_bundle_tmpl") {
   }
 }
 
-libmonochrome_apk_or_bundle_tmpl("libmonochrome") {
+libmonochrome_tmpl("libmonochrome") {
   enable_target = current_toolchain == _monochrome_browser_toolchain
   define_unwind_table_target =
       add_unwind_tables_in_chrome_32bit_apk && current_cpu == "arm"
@@ -3453,7 +3466,7 @@ libmonochrome_apk_or_bundle_tmpl("libmonochrome") {
 if (current_toolchain == _monochrome_browser_toolchain) {
   # Avoiding a real link for this step allows the actual libmonochrome to
   # run at the same time as R8.
-  libmonochrome_apk_or_bundle_tmpl("libmonochrome_inputs") {
+  libmonochrome_tmpl("libmonochrome_inputs") {
     collect_inputs_only = true
   }
 
@@ -3466,7 +3479,7 @@ if (current_toolchain == _monochrome_browser_toolchain) {
 
 if (android_64bit_target_cpu) {
   # 64-bit browser library targets (APK and bundle).
-  libmonochrome_apk_or_bundle_tmpl("libmonochrome_64") {
+  libmonochrome_tmpl("libmonochrome_64") {
   }
 
   # 32-bit browser library alias targets, pulled in by 64-bit WebView builds.
@@ -3477,7 +3490,7 @@ if (android_64bit_target_cpu) {
   }
 }
 
-if (add_unwind_tables_in_chrome_32bit_apk) {
+if (_is_default_toolchain && add_unwind_tables_in_chrome_32bit_apk) {
   if (defined(android_secondary_abi_toolchain)) {
     _toolchain = android_secondary_abi_toolchain
   } else {
@@ -3515,7 +3528,7 @@ if (add_unwind_tables_in_chrome_32bit_apk) {
 }
 
 # Used by android-binary-size trybot to validate expectations.
-if (current_toolchain == default_toolchain &&
+if (_is_default_toolchain &&
     (enable_libs_and_assets_verification || enable_manifest_verification)) {
   group("validate_expectations") {
     deps = []

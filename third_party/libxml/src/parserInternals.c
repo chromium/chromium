@@ -44,7 +44,12 @@
 #include "private/enc.h"
 #include "private/error.h"
 #include "private/io.h"
+#include "private/memory.h"
 #include "private/parser.h"
+
+#ifndef SIZE_MAX
+  #define SIZE_MAX ((size_t) -1)
+#endif
 
 #define XML_MAX_ERRORS 100
 
@@ -256,30 +261,12 @@ xmlCtxtErrIO(xmlParserCtxtPtr ctxt, int code, const char *uri)
                msg, str1, str2);
 }
 
-int
-xmlIsCatastrophicError(int level, int code) {
-    int fatal = 0;
-
-    if (level != XML_ERR_FATAL)
-        return(0);
-
-    switch (code) {
-        case XML_ERR_NO_MEMORY:
-        /* case XML_ERR_RESOURCE_LIMIT: */
-        case XML_ERR_SYSTEM:
-        case XML_ERR_ARGUMENT:
-        case XML_ERR_INTERNAL_ERROR:
-            fatal = 1;
-            break;
-        default:
-            if ((code >= 1500) && (code <= 1599))
-                fatal = 1;
-            break;
-    }
-
-    return(fatal);
-}
-
+/**
+ * xmlCtxtIsCatastrophicError:
+ * @ctxt:  parser context
+ *
+ * Returns true if the last error is catastrophic.
+ */
 int
 xmlCtxtIsCatastrophicError(xmlParserCtxtPtr ctxt) {
     if (ctxt == NULL)
@@ -456,9 +443,9 @@ xmlCtxtErr(xmlParserCtxtPtr ctxt, xmlNodePtr node, xmlErrorDomain domain,
  *
  * Returns a bitmask of XML_STATUS_* flags ORed together.
  */
-int
+xmlParserStatus
 xmlCtxtGetStatus(xmlParserCtxt *ctxt) {
-    int bits = 0;
+    xmlParserStatus bits = 0;
 
     if (xmlCtxtIsCatastrophicError(ctxt)) {
         bits |= XML_STATUS_CATASTROPHIC_ERROR |
@@ -607,6 +594,49 @@ xmlParserGrow(xmlParserCtxtPtr ctxt) {
     }
 
     return(ret);
+}
+
+/**
+ * xmlParserCheckEOF:
+ * @ctxt:  parser ctxt
+ * @code:  error code
+ *
+ * Raises an error with @code if the input wasn't consumed
+ * completely.
+ */
+void
+xmlParserCheckEOF(xmlParserCtxtPtr ctxt, xmlParserErrors code) {
+    xmlParserInputPtr in = ctxt->input;
+    xmlParserInputBufferPtr buf;
+
+    if (ctxt->errNo != XML_ERR_OK)
+        return;
+
+    if (in->cur < in->end) {
+        xmlFatalErr(ctxt, code, NULL);
+        return;
+    }
+
+    buf = in->buf;
+    if ((buf != NULL) && (buf->encoder != NULL)) {
+        size_t curBase = in->cur - in->base;
+        size_t sizeOut = 64;
+        xmlCharEncError ret;
+
+        /*
+         * Check for truncated multi-byte sequence
+         */
+        ret = xmlCharEncInput(buf, &sizeOut, /* flush */ 1);
+        xmlBufUpdateInput(buf->buffer, in, curBase);
+        if (ret != XML_ENC_ERR_SUCCESS) {
+            xmlCtxtErrIO(ctxt, buf->error, NULL);
+            return;
+        }
+
+        /* Shouldn't happen */
+        if (in->cur < in->end)
+            xmlFatalErr(ctxt, XML_ERR_INTERNAL_ERROR, "expected EOF");
+    }
 }
 
 /**
@@ -1099,12 +1129,14 @@ xmlCtxtSetCharEncConvImpl(xmlParserCtxtPtr ctxt, xmlCharEncConvImpl impl,
     ctxt->convCtxt = vctxt;
 }
 
-static int
+static xmlParserErrors
 xmlDetectEBCDIC(xmlParserCtxtPtr ctxt, xmlCharEncodingHandlerPtr *hout) {
     xmlChar out[200];
     xmlParserInputPtr input = ctxt->input;
     xmlCharEncodingHandlerPtr handler;
-    int inlen, outlen, res, i;
+    int inlen, outlen, i;
+    xmlParserErrors code;
+    xmlCharEncError res;
 
     *hout = NULL;
 
@@ -1112,13 +1144,14 @@ xmlDetectEBCDIC(xmlParserCtxtPtr ctxt, xmlCharEncodingHandlerPtr *hout) {
      * To detect the EBCDIC code page, we convert the first 200 bytes
      * to IBM037 (EBCDIC-US) and try to find the encoding declaration.
      */
-    res = xmlCreateCharEncodingHandler("IBM037", /* output */ 0,
+    code = xmlCreateCharEncodingHandler("IBM037", XML_ENC_INPUT,
             ctxt->convImpl, ctxt->convCtxt, &handler);
-    if (res != 0)
-        return(res);
+    if (code != XML_ERR_OK)
+        return(code);
     outlen = sizeof(out) - 1;
     inlen = input->end - input->cur;
-    res = xmlEncInputChunk(handler, out, &outlen, input->cur, &inlen);
+    res = xmlEncInputChunk(handler, out, &outlen, input->cur, &inlen,
+                           /* flush */ 0);
     /*
      * Return the EBCDIC handler if decoding failed. The error will
      * be reported later.
@@ -1156,13 +1189,13 @@ xmlDetectEBCDIC(xmlParserCtxtPtr ctxt, xmlCharEncodingHandlerPtr *hout) {
                 break;
             out[i] = 0;
             xmlCharEncCloseFunc(handler);
-            res = xmlCreateCharEncodingHandler((char *) out + start,
-                    /* output */ 0, ctxt->convImpl, ctxt->convCtxt,
+            code = xmlCreateCharEncodingHandler((char *) out + start,
+                    XML_ENC_INPUT, ctxt->convImpl, ctxt->convCtxt,
                     &handler);
-            if (res != 0)
-                return(res);
+            if (code != XML_ERR_OK)
+                return(code);
             *hout = handler;
-            return(0);
+            return(XML_ERR_OK);
         }
     }
 
@@ -1171,12 +1204,12 @@ done:
      * Encoding handlers are stateful, so we have to recreate them.
      */
     xmlCharEncCloseFunc(handler);
-    res = xmlCreateCharEncodingHandler("IBM037", /* output */ 0,
+    code = xmlCreateCharEncodingHandler("IBM037", XML_ENC_INPUT,
             ctxt->convImpl, ctxt->convCtxt, &handler);
-    if (res != 0)
-        return(res);
+    if (code != XML_ERR_OK)
+        return(code);
     *hout = handler;
-    return(0);
+    return(XML_ERR_OK);
 }
 
 /**
@@ -1197,14 +1230,14 @@ xmlSwitchEncoding(xmlParserCtxtPtr ctxt, xmlCharEncoding enc)
 {
     xmlCharEncodingHandlerPtr handler = NULL;
     int ret;
-    int res;
+    xmlParserErrors code;
 
     if ((ctxt == NULL) || (ctxt->input == NULL))
         return(-1);
 
-    res = xmlLookupCharEncodingHandler(enc, &handler);
-    if (res != 0) {
-        xmlFatalErr(ctxt, res, NULL);
+    code = xmlLookupCharEncodingHandler(enc, &handler);
+    if (code != 0) {
+        xmlFatalErr(ctxt, code, NULL);
         return(-1);
     }
 
@@ -1229,12 +1262,12 @@ static int
 xmlSwitchInputEncodingName(xmlParserCtxtPtr ctxt, xmlParserInputPtr input,
                            const char *encoding) {
     xmlCharEncodingHandlerPtr handler;
-    int res;
+    xmlParserErrors res;
 
     if (encoding == NULL)
         return(-1);
 
-    res = xmlCreateCharEncodingHandler(encoding, /* output */ 0,
+    res = xmlCreateCharEncodingHandler(encoding, XML_ENC_INPUT,
             ctxt->convImpl, ctxt->convCtxt, &handler);
     if (res == XML_ERR_UNSUPPORTED_ENCODING) {
         xmlWarningMsg(ctxt, XML_ERR_UNSUPPORTED_ENCODING,
@@ -1288,12 +1321,12 @@ xmlSwitchEncodingName(xmlParserCtxtPtr ctxt, const char *encoding) {
  *
  * Returns an xmlParserErrors code.
  */
-int
+xmlParserErrors
 xmlInputSetEncodingHandler(xmlParserInputPtr input,
                            xmlCharEncodingHandlerPtr handler) {
     xmlParserInputBufferPtr in;
     xmlBufPtr buf;
-    int code = XML_ERR_OK;
+    xmlParserErrors code = XML_ERR_OK;
 
     if ((input == NULL) || (input->buf == NULL)) {
         xmlCharEncCloseFunc(handler);
@@ -1346,7 +1379,7 @@ xmlInputSetEncodingHandler(xmlParserInputPtr input,
     if (input->end > input->base) {
         size_t processed;
         size_t nbchars;
-        int res;
+        xmlCharEncError res;
 
         /*
          * Shrink the current input buffer.
@@ -1364,11 +1397,11 @@ xmlInputSetEncodingHandler(xmlParserInputPtr input,
          * memory buffer which we don't want to convert completely.
          */
         if (input->flags & XML_INPUT_PROGRESSIVE)
-            nbchars = ((size_t) - 1);
+            nbchars = SIZE_MAX;
         else
             nbchars = 4000 /* MINLEN */;
-        res = xmlCharEncInput(in, &nbchars);
-        if (res < 0)
+        res = xmlCharEncInput(in, &nbchars, /* flush */ 0);
+        if (res != XML_ENC_ERR_SUCCESS)
             code = in->error;
     }
 
@@ -1392,7 +1425,7 @@ xmlInputSetEncodingHandler(xmlParserInputPtr input,
 int
 xmlSwitchInputEncoding(xmlParserCtxtPtr ctxt, xmlParserInputPtr input,
                        xmlCharEncodingHandlerPtr handler) {
-    int code = xmlInputSetEncodingHandler(input, handler);
+    xmlParserErrors code = xmlInputSetEncodingHandler(input, handler);
 
     if (code != XML_ERR_OK) {
         xmlCtxtErrIO(ctxt, code, NULL);
@@ -1417,7 +1450,7 @@ xmlSwitchInputEncoding(xmlParserCtxtPtr ctxt, xmlParserInputPtr input,
 int
 xmlSwitchToEncoding(xmlParserCtxtPtr ctxt, xmlCharEncodingHandlerPtr handler)
 {
-    int code;
+    xmlParserErrors code;
 
     if (ctxt == NULL)
         return(-1);
@@ -1467,12 +1500,23 @@ xmlDetectEncoding(xmlParserCtxtPtr ctxt) {
     enc = XML_CHAR_ENCODING_NONE;
     bomSize = 0;
 
+    /*
+     * BOM sniffing and detection of initial bytes of an XML
+     * declaration.
+     *
+     * The HTML5 spec doesn't cover UTF-32 (UCS-4) or EBCDIC.
+     */
     switch (in[0]) {
         case 0x00:
-            if ((in[1] == 0x00) && (in[2] == 0x00) && (in[3] == 0x3C)) {
+            if ((!ctxt->html) &&
+                (in[1] == 0x00) && (in[2] == 0x00) && (in[3] == 0x3C)) {
                 enc = XML_CHAR_ENCODING_UCS4BE;
                 autoFlag = XML_INPUT_AUTO_OTHER;
             } else if ((in[1] == 0x3C) && (in[2] == 0x00) && (in[3] == 0x3F)) {
+                /*
+                 * TODO: The HTML5 spec requires to check that the
+                 * next codepoint is an 'x'.
+                 */
                 enc = XML_CHAR_ENCODING_UTF16BE;
                 autoFlag = XML_INPUT_AUTO_UTF16BE;
             }
@@ -1480,10 +1524,15 @@ xmlDetectEncoding(xmlParserCtxtPtr ctxt) {
 
         case 0x3C:
             if (in[1] == 0x00) {
-                if ((in[2] == 0x00) && (in[3] == 0x00)) {
+                if ((!ctxt->html) &&
+                    (in[2] == 0x00) && (in[3] == 0x00)) {
                     enc = XML_CHAR_ENCODING_UCS4LE;
                     autoFlag = XML_INPUT_AUTO_OTHER;
                 } else if ((in[2] == 0x3F) && (in[3] == 0x00)) {
+                    /*
+                     * TODO: The HTML5 spec requires to check that the
+                     * next codepoint is an 'x'.
+                     */
                     enc = XML_CHAR_ENCODING_UTF16LE;
                     autoFlag = XML_INPUT_AUTO_UTF16LE;
                 }
@@ -1491,7 +1540,8 @@ xmlDetectEncoding(xmlParserCtxtPtr ctxt) {
             break;
 
         case 0x4C:
-	    if ((in[1] == 0x6F) && (in[2] == 0xA7) && (in[3] == 0x94)) {
+	    if ((!ctxt->html) &&
+                (in[1] == 0x6F) && (in[2] == 0xA7) && (in[3] == 0x94)) {
 	        enc = XML_CHAR_ENCODING_EBCDIC;
                 autoFlag = XML_INPUT_AUTO_OTHER;
             }
@@ -1531,7 +1581,7 @@ xmlDetectEncoding(xmlParserCtxtPtr ctxt) {
 
         if (enc == XML_CHAR_ENCODING_EBCDIC) {
             xmlCharEncodingHandlerPtr handler;
-            int res;
+            xmlParserErrors res;
 
             res = xmlDetectEBCDIC(ctxt, &handler);
             if (res != XML_ERR_OK) {
@@ -1562,7 +1612,7 @@ xmlSetDeclaredEncoding(xmlParserCtxtPtr ctxt, xmlChar *encoding) {
     if (((ctxt->input->flags & XML_INPUT_HAS_ENCODING) == 0) &&
         ((ctxt->options & XML_PARSE_IGNORE_ENC) == 0)) {
         xmlCharEncodingHandlerPtr handler;
-        int res;
+        xmlParserErrors res;
 
         /*
          * xmlSwitchEncodingName treats unsupported encodings as
@@ -1570,7 +1620,7 @@ xmlSetDeclaredEncoding(xmlParserCtxtPtr ctxt, xmlChar *encoding) {
          * declaration.
          */
         res = xmlCreateCharEncodingHandler((const char *) encoding,
-                /* output */ 0, ctxt->convImpl, ctxt->convCtxt, &handler);
+                XML_ENC_INPUT, ctxt->convImpl, ctxt->convCtxt, &handler);
         if (res != XML_ERR_OK) {
             xmlFatalErr(ctxt, res, (const char *) encoding);
             xmlFree(encoding);
@@ -1644,7 +1694,7 @@ xmlSetDeclaredEncoding(xmlParserCtxtPtr ctxt, xmlChar *encoding) {
 
 /**
  * xmlCtxtGetDeclaredEncoding:
- * ctxt:  parser context
+ * @ctxt:  parser context
  *
  * Available since 2.14.0.
  *
@@ -1750,7 +1800,7 @@ xmlNewInputStream(xmlParserCtxtPtr ctxt) {
 xmlParserInputPtr
 xmlCtxtNewInputFromUrl(xmlParserCtxtPtr ctxt, const char *url,
                        const char *publicId, const char *encoding,
-                       int flags ATTRIBUTE_UNUSED) {
+                       xmlParserInputFlags flags ATTRIBUTE_UNUSED) {
     xmlParserInputPtr input;
 
     if ((ctxt == NULL) || (url == NULL))
@@ -1828,7 +1878,7 @@ xmlNewInputInternal(xmlParserInputBufferPtr buf, const char *filename) {
  */
 xmlParserInputPtr
 xmlNewInputFromMemory(const char *url, const void *mem, size_t size,
-                      int flags) {
+                      xmlParserInputFlags flags) {
     xmlParserInputBufferPtr buf;
 
     if (mem == NULL)
@@ -1855,7 +1905,7 @@ xmlNewInputFromMemory(const char *url, const void *mem, size_t size,
 xmlParserInputPtr
 xmlCtxtNewInputFromMemory(xmlParserCtxtPtr ctxt, const char *url,
                           const void *mem, size_t size,
-                          const char *encoding, int flags) {
+                          const char *encoding, xmlParserInputFlags flags) {
     xmlParserInputPtr input;
 
     if ((ctxt == NULL) || (mem == NULL))
@@ -1893,7 +1943,8 @@ xmlCtxtNewInputFromMemory(xmlParserCtxtPtr ctxt, const char *url,
  * Returns a new parser input or NULL if a memory allocation failed.
  */
 xmlParserInputPtr
-xmlNewInputFromString(const char *url, const char *str, int flags) {
+xmlNewInputFromString(const char *url, const char *str,
+                      xmlParserInputFlags flags) {
     xmlParserInputBufferPtr buf;
 
     if (str == NULL)
@@ -1918,7 +1969,8 @@ xmlNewInputFromString(const char *url, const char *str, int flags) {
  */
 xmlParserInputPtr
 xmlCtxtNewInputFromString(xmlParserCtxtPtr ctxt, const char *url,
-                          const char *str, const char *encoding, int flags) {
+                          const char *str, const char *encoding,
+                          xmlParserInputFlags flags) {
     xmlParserInputPtr input;
 
     if ((ctxt == NULL) || (str == NULL))
@@ -1940,7 +1992,7 @@ xmlCtxtNewInputFromString(xmlParserCtxtPtr ctxt, const char *url,
  * xmlNewInputFromFd:
  * @url:  base URL (optional)
  * @fd:  file descriptor
- * @flags:  unused, pass 0
+ * @flags:  input flags
  *
  * Creates a new parser input to read from a zero-terminated string.
  *
@@ -1949,20 +2001,29 @@ xmlCtxtNewInputFromString(xmlParserCtxtPtr ctxt, const char *url,
  *
  * @fd is closed after parsing has finished.
  *
+ * Supported @flags are XML_INPUT_UNZIP to decompress data
+ * automatically. This feature is deprecated and will be removed
+ * in a future release.
+ *
  * Available since 2.14.0.
  *
  * Returns a new parser input or NULL if a memory allocation failed.
  */
 xmlParserInputPtr
-xmlNewInputFromFd(const char *url, int fd, int flags ATTRIBUTE_UNUSED) {
+xmlNewInputFromFd(const char *url, int fd, xmlParserInputFlags flags) {
     xmlParserInputBufferPtr buf;
 
     if (fd < 0)
 	return(NULL);
 
-    buf = xmlParserInputBufferCreateFd(fd, XML_CHAR_ENCODING_NONE);
+    buf = xmlAllocParserInputBuffer(XML_CHAR_ENCODING_NONE);
     if (buf == NULL)
         return(NULL);
+
+    if (xmlInputFromFd(buf, fd, flags) != XML_ERR_OK) {
+        xmlFreeParserInputBuffer(buf);
+        return(NULL);
+    }
 
     return(xmlNewInputInternal(buf, url));
 }
@@ -1979,11 +2040,15 @@ xmlNewInputFromFd(const char *url, int fd, int flags ATTRIBUTE_UNUSED) {
  */
 xmlParserInputPtr
 xmlCtxtNewInputFromFd(xmlParserCtxtPtr ctxt, const char *url,
-                      int fd, const char *encoding, int flags) {
+                      int fd, const char *encoding,
+                      xmlParserInputFlags flags) {
     xmlParserInputPtr input;
 
     if ((ctxt == NULL) || (fd < 0))
 	return(NULL);
+
+    if (ctxt->options & XML_PARSE_UNZIP)
+        flags |= XML_INPUT_UNZIP;
 
     input = xmlNewInputFromFd(url, fd, flags);
     if (input == NULL) {
@@ -2026,7 +2091,7 @@ xmlCtxtNewInputFromFd(xmlParserCtxtPtr ctxt, const char *url,
 xmlParserInputPtr
 xmlNewInputFromIO(const char *url, xmlInputReadCallback ioRead,
                   xmlInputCloseCallback ioClose, void *ioCtxt,
-                  int flags ATTRIBUTE_UNUSED) {
+                  xmlParserInputFlags flags ATTRIBUTE_UNUSED) {
     xmlParserInputBufferPtr buf;
 
     if (ioRead == NULL)
@@ -2062,7 +2127,8 @@ xmlParserInputPtr
 xmlCtxtNewInputFromIO(xmlParserCtxtPtr ctxt, const char *url,
                       xmlInputReadCallback ioRead,
                       xmlInputCloseCallback ioClose,
-                      void *ioCtxt, const char *encoding, int flags) {
+                      void *ioCtxt, const char *encoding,
+                      xmlParserInputFlags flags) {
     xmlParserInputPtr input;
 
     if ((ctxt == NULL) || (ioRead == NULL))
@@ -2303,7 +2369,7 @@ xmlResolveResourceFromCatalog(const char *URL, const char *ID,
 #endif
 
 #ifdef LIBXML_HTTP_ENABLED
-static int
+static xmlParserErrors
 xmlCheckHTTPInputInternal(xmlParserInputPtr input) {
     const char *encoding;
     const char *redir;
@@ -2327,7 +2393,7 @@ xmlCheckHTTPInputInternal(xmlParserInputPtr input) {
         encoding = xmlNanoHTTPEncoding(input->buf->context);
         if (encoding != NULL) {
             xmlCharEncodingHandlerPtr handler;
-            int res;
+            xmlParserErrors res;
 
             res = xmlOpenCharEncodingHandler(encoding, /* output */ 0,
                                              &handler);
@@ -2414,11 +2480,12 @@ xmlCheckHTTPInput(xmlParserCtxtPtr ctxt, xmlParserInputPtr ret) {
  *
  * Returns an xmlParserErrors code.
  */
-int
-xmlNewInputFromUrl(const char *filename, int flags, xmlParserInputPtr *out) {
+xmlParserErrors
+xmlNewInputFromUrl(const char *filename, xmlParserInputFlags flags,
+                   xmlParserInputPtr *out) {
     xmlParserInputBufferPtr buf;
     xmlParserInputPtr input;
-    int code = XML_ERR_OK;
+    xmlParserErrors code = XML_ERR_OK;
 
     if (out == NULL)
         return(XML_ERR_ARGUMENT);
@@ -2468,13 +2535,13 @@ xmlNewInputFromUrl(const char *filename, int flags, xmlParserInputPtr *out) {
 xmlParserInputPtr
 xmlNewInputFromFile(xmlParserCtxtPtr ctxt, const char *filename) {
     xmlParserInputPtr input;
-    int flags = 0;
-    int code;
+    xmlParserInputFlags flags = 0;
+    xmlParserErrors code;
 
     if ((ctxt == NULL) || (filename == NULL))
         return(NULL);
 
-    if ((ctxt->options & XML_PARSE_NO_UNZIP) == 0)
+    if (ctxt->options & XML_PARSE_UNZIP)
         flags |= XML_INPUT_UNZIP;
     if ((ctxt->options & XML_PARSE_NONET) == 0)
         flags |= XML_INPUT_NETWORK;
@@ -2637,7 +2704,7 @@ xmlLoadResource(xmlParserCtxtPtr ctxt, const char *url, const char *publicId,
 
     if ((ctxt != NULL) && (ctxt->resourceLoader != NULL)) {
         char *resource = NULL;
-        int flags = 0;
+        xmlParserInputFlags flags = 0;
         int code;
 
 #ifdef LIBXML_CATALOG_ENABLED
@@ -2646,7 +2713,7 @@ xmlLoadResource(xmlParserCtxtPtr ctxt, const char *url, const char *publicId,
             url = resource;
 #endif
 
-        if ((ctxt->options & XML_PARSE_NO_UNZIP) == 0)
+        if (ctxt->options & XML_PARSE_UNZIP)
             flags |= XML_INPUT_UNZIP;
         if ((ctxt->options & XML_PARSE_NONET) == 0)
             flags |= XML_INPUT_NETWORK;
@@ -3044,7 +3111,7 @@ xmlNewSAXParserCtxt(const xmlSAXHandler *sax, void *userData)
 
 /**
  * xmlCtxtGetPrivate:
- * ctxt:  parser context
+ * @ctxt:  parser context
  *
  * Available since 2.14.0.
  *
@@ -3060,8 +3127,8 @@ xmlCtxtGetPrivate(xmlParserCtxtPtr ctxt) {
 
 /**
  * xmlCtxtSetPrivate:
- * ctxt:  parser context
- * priv:  private application data
+ * @ctxt:  parser context
+ * @priv:  private application data
  *
  * Available since 2.14.0.
  *
@@ -3077,7 +3144,7 @@ xmlCtxtSetPrivate(xmlParserCtxtPtr ctxt, void *priv) {
 
 /**
  * xmlCtxtGetCatalogs:
- * ctxt:  parser context
+ * @ctxt:  parser context
  *
  * Available since 2.14.0.
  *
@@ -3093,8 +3160,8 @@ xmlCtxtGetCatalogs(xmlParserCtxtPtr ctxt) {
 
 /**
  * xmlCtxtSetCatalogs:
- * ctxt:  parser context
- * catalogs:  catalogs pointer
+ * @ctxt:  parser context
+ * @catalogs:  catalogs pointer
  *
  * Available since 2.14.0.
  *
@@ -3110,7 +3177,7 @@ xmlCtxtSetCatalogs(xmlParserCtxtPtr ctxt, void *catalogs) {
 
 /**
  * xmlCtxtGetDict:
- * ctxt:  parser context
+ * @ctxt:  parser context
  *
  * Available since 2.14.0.
  *
@@ -3126,8 +3193,8 @@ xmlCtxtGetDict(xmlParserCtxtPtr ctxt) {
 
 /**
  * xmlCtxtSetDict:
- * ctxt:  parser context
- * dict:  dictionary
+ * @ctxt:  parser context
+ * @dict:  dictionary
  *
  * Available since 2.14.0.
  *
@@ -3144,6 +3211,132 @@ xmlCtxtSetDict(xmlParserCtxtPtr ctxt, xmlDictPtr dict) {
 
     xmlDictReference(dict);
     ctxt->dict = dict;
+}
+
+/**
+ * xmlCtxtGetSaxHandler:
+ * @ctxt:  parser context
+ *
+ * Available since 2.14.0.
+ *
+ * Returns the SAX handler struct. This is not a copy and must not
+ * be freed. Handlers can be updated.
+ */
+xmlSAXHandler *
+xmlCtxtGetSaxHandler(xmlParserCtxtPtr ctxt) {
+    if (ctxt == NULL)
+        return(NULL);
+
+    return(ctxt->sax);
+}
+
+/**
+ * xmlCtxtSetSaxHandler:
+ * @ctxt:  parser context
+ * @sax:  SAX handler
+ *
+ * Available since 2.14.0.
+ *
+ * Set the SAX handler struct to a copy of @sax.
+ *
+ * Returns 0 on success or -1 if arguments are invalid or a memory
+ * allocation failed.
+ */
+int
+xmlCtxtSetSaxHandler(xmlParserCtxtPtr ctxt, const xmlSAXHandler *sax) {
+    xmlSAXHandler *copy;
+
+    if ((ctxt == NULL) || (sax == NULL))
+        return(-1);
+
+    copy = xmlMalloc(sizeof(*copy));
+    if (copy == NULL)
+        return(-1);
+
+    memcpy(copy, sax, sizeof(*copy));
+    ctxt->sax = copy;
+
+    return(0);
+}
+
+/**
+ * xmlCtxtGetDocument:
+ * @ctxt:  parser context
+ *
+ * Available since 2.14.0.
+ *
+ * Returns the parsed document or NULL if a fatal error occurred when
+ * parsing. The document must be freed by the caller. Resets the
+ * context's document to NULL.
+ */
+xmlDocPtr
+xmlCtxtGetDocument(xmlParserCtxtPtr ctxt) {
+    xmlDocPtr doc;
+
+    if (ctxt == NULL)
+        return(NULL);
+
+    if ((ctxt->wellFormed) ||
+        (((ctxt->recovery) || (ctxt->html)) &&
+         (!xmlCtxtIsCatastrophicError(ctxt)))) {
+        doc = ctxt->myDoc;
+    } else {
+        if (ctxt->errNo == XML_ERR_OK)
+            xmlFatalErr(ctxt, XML_ERR_INTERNAL_ERROR, "unknown error");
+        doc = NULL;
+        xmlFreeDoc(ctxt->myDoc);
+    }
+    ctxt->myDoc = NULL;
+
+    return(doc);
+}
+
+/**
+ * xmlCtxtIsHtml:
+ * @ctxt:  parser context
+ *
+ * Available since 2.14.0.
+ *
+ * Returns 1 if this is a HTML parser context, 0 otherwise.
+ */
+int
+xmlCtxtIsHtml(xmlParserCtxtPtr ctxt) {
+    if (ctxt == NULL)
+        return(0);
+
+    return(ctxt->html ? 1 : 0);
+}
+
+/**
+ * xmlCtxtIsStopped:
+ * @ctxt:  parser context
+ *
+ * Available since 2.14.0.
+ *
+ * Returns 1 if the parser is stopped, 0 otherwise.
+ */
+int
+xmlCtxtIsStopped(xmlParserCtxtPtr ctxt) {
+    if (ctxt == NULL)
+        return(0);
+
+    return(PARSER_STOPPED(ctxt));
+}
+
+/**
+ * xmlCtxtGetValidCtxt:
+ * @ctxt:  parser context
+ *
+ * Available since 2.14.0.
+ *
+ * Returns the validation context.
+ */
+xmlValidCtxtPtr
+xmlCtxtGetValidCtxt(xmlParserCtxtPtr ctxt) {
+    if (ctxt == NULL)
+        return(NULL);
+
+    return(&ctxt->vctxt);
 }
 
 /************************************************************************
@@ -3307,29 +3500,23 @@ xmlParserAddNodeInfo(xmlParserCtxtPtr ctxt,
 
     /* Otherwise, we need to add new node to buffer */
     else {
-        if ((ctxt->node_seq.length + 1 > ctxt->node_seq.maximum) ||
-	    (ctxt->node_seq.buffer == NULL)) {
-            xmlParserNodeInfo *tmp_buffer;
-            unsigned int byte_size;
+        if (ctxt->node_seq.length + 1 > ctxt->node_seq.maximum) {
+            xmlParserNodeInfo *tmp;
+            int newSize;
 
-            if (ctxt->node_seq.maximum == 0)
-                ctxt->node_seq.maximum = 2;
-            byte_size = (sizeof(*ctxt->node_seq.buffer) *
-			(2 * ctxt->node_seq.maximum));
-
-            if (ctxt->node_seq.buffer == NULL)
-                tmp_buffer = (xmlParserNodeInfo *) xmlMalloc(byte_size);
-            else
-                tmp_buffer =
-                    (xmlParserNodeInfo *) xmlRealloc(ctxt->node_seq.buffer,
-                                                     byte_size);
-
-            if (tmp_buffer == NULL) {
+            newSize = xmlGrowCapacity(ctxt->node_seq.maximum, sizeof(tmp[0]),
+                                      4, XML_MAX_ITEMS);
+            if (newSize < 0) {
 		xmlCtxtErrMemory(ctxt);
                 return;
             }
-            ctxt->node_seq.buffer = tmp_buffer;
-            ctxt->node_seq.maximum *= 2;
+            tmp = xmlRealloc(ctxt->node_seq.buffer, newSize * sizeof(tmp[0]));
+            if (tmp == NULL) {
+		xmlCtxtErrMemory(ctxt);
+                return;
+            }
+            ctxt->node_seq.buffer = tmp;
+            ctxt->node_seq.maximum = newSize;
         }
 
         /* If position is not at end, move elements out of the way */

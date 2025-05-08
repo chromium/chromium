@@ -9,6 +9,8 @@ import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -17,12 +19,13 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Class for showing a dialog to add a new folder. */
+@NullMarked
 public class BookmarkAddNewFolderCoordinator {
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
     private final BookmarkModel mBookmarkModel;
 
-    private PropertyModel mModel;
+    private @Nullable PropertyModel mModel;
 
     /**
      * @param context The android context from which this is being called.

@@ -30,20 +30,13 @@ namespace guest_os {
 // but exposes it to its own clients as a T*. For the errors E it is advisable
 // to use something movable and copyable, preferably an enum.
 template <typename T, typename E>
+  requires(std::is_default_constructible_v<E>)
 class CachedCallback {
  public:
   // As a convenience this class provides a default implementation of the
   // Reject() method, which is used when the cache is deleted while callbacks
   // are in-flight. In this case we default-construct an E for them.
-  //
-  // We can avoid this requirement using std::enable_if shenanigans but
-  // enforcing the below is cleaner.
-  static_assert(
-      std::is_default_constructible<E>::value,
-      "Cached callbacks must have a default constructible error type");
-
   using Result = base::expected<T*, E>;
-
   using Callback = base::OnceCallback<void(Result result)>;
 
   virtual ~CachedCallback() {

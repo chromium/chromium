@@ -70,6 +70,51 @@ class BackingStoreTest;
 class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
                                     public LevelDBCleanupScheduler::Delegate {
  public:
+  // This struct contains extra metadata only relevant to this implementation of
+  // the backing store.
+  struct CONTENT_EXPORT DatabaseMetadata
+      : public blink::IndexedDBDatabaseMetadata {
+   public:
+    explicit DatabaseMetadata(const std::u16string& name);
+    DatabaseMetadata(DatabaseMetadata&& metadata);
+    DatabaseMetadata(const DatabaseMetadata& metadata);
+    DatabaseMetadata& operator=(const DatabaseMetadata& metadata);
+    DatabaseMetadata();
+    ~DatabaseMetadata() override;
+
+    // Uniquely identifies this database within the backing store. See
+    // `GetNewDatabaseId()`. Null indicates that this object does not (yet)
+    // represent a valid database.
+    std::optional<int64_t> id;
+  };
+
+  class CONTENT_EXPORT Database : public indexed_db::BackingStore::Database {
+   public:
+    Database(BackingStore& backing_store,
+             BackingStore::DatabaseMetadata metadata);
+    ~Database() override;
+
+    // indexed_db::BackingStore::Database:
+    const blink::IndexedDBDatabaseMetadata& GetMetadata() override;
+    PartitionedLockId GetLockId(int64_t object_store_id) const override;
+    std::unique_ptr<Transaction> CreateTransaction(
+        blink::mojom::IDBTransactionDurability durability,
+        blink::mojom::IDBTransactionMode mode) override;
+    Status DeleteDatabase(std::vector<PartitionedLock> locks,
+                          base::OnceClosure on_complete) override;
+
+    DatabaseMetadata& metadata() { return metadata_; }
+    base::WeakPtr<BackingStore> backing_store() { return backing_store_; }
+
+   private:
+    base::WeakPtr<BackingStore> backing_store_;
+    DatabaseMetadata metadata_;
+
+    base::WeakPtrFactory<Database> weak_factory_{this};
+  };
+
+  class Cursor;
+
   // This class could be moved to the implementation file, but it's left here to
   // avoid needless git churn.
   class CONTENT_EXPORT Transaction
@@ -83,7 +128,7 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
       BlobWriteCallback on_complete;
     };
 
-    Transaction(base::WeakPtr<BackingStore> backing_store,
+    Transaction(base::WeakPtr<Database> database,
                 blink::mojom::IDBTransactionDurability durability,
                 blink::mojom::IDBTransactionMode mode);
 
@@ -108,128 +153,85 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     Status CommitPhaseTwo() override;
     void Rollback() override;
     void Reset() override;
-    Status SetDatabaseVersion(
-        int64_t row_id,
-        int64_t version,
-        blink::IndexedDBDatabaseMetadata* metadata) override;
-    Status CreateObjectStore(
-        int64_t database_id,
-        int64_t object_store_id,
-        std::u16string name,
-        blink::IndexedDBKeyPath key_path,
-        bool auto_increment,
-        blink::IndexedDBObjectStoreMetadata* metadata) override;
-    Status DeleteObjectStore(
-        int64_t database_id,
-        const blink::IndexedDBObjectStoreMetadata& object_store) override;
-    Status RenameObjectStore(
-        int64_t database_id,
-        std::u16string new_name,
-        std::u16string* old_name,
-        blink::IndexedDBObjectStoreMetadata* metadata) override;
+    Status SetDatabaseVersion(int64_t version) override;
+    Status CreateObjectStore(int64_t object_store_id,
+                             const std::u16string& name,
+                             blink::IndexedDBKeyPath key_path,
+                             bool auto_increment) override;
+    Status DeleteObjectStore(int64_t object_store_id) override;
+    Status RenameObjectStore(int64_t object_store_id,
+                             const std::u16string& new_name) override;
 
     // Creates a new index metadata and writes it to the transaction.
-    Status CreateIndex(int64_t database_id,
-                       int64_t object_store_id,
+    Status CreateIndex(int64_t object_store_id,
                        int64_t index_id,
-                       std::u16string name,
+                       const std::u16string& name,
                        blink::IndexedDBKeyPath key_path,
                        bool is_unique,
-                       bool is_multi_entry,
-                       blink::IndexedDBIndexMetadata* metadata) override;
+                       bool is_multi_entry) override;
     // Deletes the index metadata on the transaction (but not any index
     // entries).
-    Status DeleteIndex(int64_t database_id,
-                       int64_t object_store_id,
-                       const blink::IndexedDBIndexMetadata& metadata) override;
+    Status DeleteIndex(int64_t object_store_id, int64_t index_id) override;
     // Renames the given index and writes it to the transaction.
-    Status RenameIndex(int64_t database_id,
-                       int64_t object_store_id,
-                       std::u16string new_name,
-                       std::u16string* old_name,
-                       blink::IndexedDBIndexMetadata* metadata) override;
-    Status GetRecord(int64_t database_id,
-                     int64_t object_store_id,
+    Status RenameIndex(int64_t object_store_id,
+                       int64_t index_id,
+                       const std::u16string& new_name) override;
+    Status GetRecord(int64_t object_store_id,
                      const blink::IndexedDBKey& key,
                      IndexedDBValue* record) override;
-    Status PutRecord(int64_t database_id,
-                     int64_t object_store_id,
+    Status PutRecord(int64_t object_store_id,
                      const blink::IndexedDBKey& key,
                      IndexedDBValue* value,
                      RecordIdentifier* record) override;
-    Status ClearObjectStore(int64_t database_id,
-                            int64_t object_store_id) override;
-    Status DeleteRecord(int64_t database_id,
-                        int64_t object_store_id,
-                        const RecordIdentifier& record) override;
-    Status DeleteRange(int64_t database_id,
-                       int64_t object_store_id,
+    Status ClearObjectStore(int64_t object_store_id) override;
+    Status DeleteRange(int64_t object_store_id,
                        const blink::IndexedDBKeyRange&) override;
-    Status GetKeyGeneratorCurrentNumber(int64_t database_id,
-                                        int64_t object_store_id,
+    Status GetKeyGeneratorCurrentNumber(int64_t object_store_id,
                                         int64_t* current_number) override;
-    Status MaybeUpdateKeyGeneratorCurrentNumber(int64_t database_id,
-                                                int64_t object_store_id,
+    Status MaybeUpdateKeyGeneratorCurrentNumber(int64_t object_store_id,
                                                 int64_t new_state,
                                                 bool check_current) override;
-    Status KeyExistsInObjectStore(int64_t database_id,
-                                  int64_t object_store_id,
+    Status KeyExistsInObjectStore(int64_t object_store_id,
                                   const blink::IndexedDBKey& key,
                                   RecordIdentifier* found_record_identifier,
                                   bool* found) override;
-    Status ClearIndex(int64_t database_id,
-                      int64_t object_store_id,
-                      int64_t index_id) override;
-    Status PutIndexDataForRecord(int64_t database_id,
-                                 int64_t object_store_id,
+    Status PutIndexDataForRecord(int64_t object_store_id,
                                  int64_t index_id,
                                  const blink::IndexedDBKey& key,
                                  const RecordIdentifier& record) override;
     Status GetPrimaryKeyViaIndex(
-        int64_t database_id,
         int64_t object_store_id,
         int64_t index_id,
         const blink::IndexedDBKey& key,
         std::unique_ptr<blink::IndexedDBKey>* primary_key) override;
     Status KeyExistsInIndex(
-        int64_t database_id,
         int64_t object_store_id,
         int64_t index_id,
         const blink::IndexedDBKey& key,
         std::unique_ptr<blink::IndexedDBKey>* found_primary_key,
         bool* exists) override;
-    std::unique_ptr<indexed_db::BackingStore::Cursor> OpenObjectStoreKeyCursor(
-        int64_t database_id,
-        int64_t object_store_id,
-        const blink::IndexedDBKeyRange& key_range,
-        blink::mojom::IDBCursorDirection,
-        Status*) override;
-    std::unique_ptr<indexed_db::BackingStore::Cursor> OpenObjectStoreCursor(
-        int64_t database_id,
-        int64_t object_store_id,
-        const blink::IndexedDBKeyRange& key_range,
-        blink::mojom::IDBCursorDirection,
-        Status*) override;
-    std::unique_ptr<indexed_db::BackingStore::Cursor> OpenIndexKeyCursor(
-        int64_t database_id,
-        int64_t object_store_id,
-        int64_t index_id,
-        const blink::IndexedDBKeyRange& key_range,
-        blink::mojom::IDBCursorDirection,
-        Status*) override;
-    std::unique_ptr<indexed_db::BackingStore::Cursor> OpenIndexCursor(
-        int64_t database_id,
-        int64_t object_store_id,
-        int64_t index_id,
-        const blink::IndexedDBKeyRange& key_range,
-        blink::mojom::IDBCursorDirection,
-        Status*) override;
+    base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
+    OpenObjectStoreKeyCursor(int64_t object_store_id,
+                             const blink::IndexedDBKeyRange& key_range,
+                             blink::mojom::IDBCursorDirection) override;
+    base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
+    OpenObjectStoreCursor(int64_t object_store_id,
+                          const blink::IndexedDBKeyRange& key_range,
+                          blink::mojom::IDBCursorDirection) override;
+    base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
+    OpenIndexKeyCursor(int64_t object_store_id,
+                       int64_t index_id,
+                       const blink::IndexedDBKeyRange& key_range,
+                       blink::mojom::IDBCursorDirection) override;
+    base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
+    OpenIndexCursor(int64_t object_store_id,
+                    int64_t index_id,
+                    const blink::IndexedDBKeyRange& key_range,
+                    blink::mojom::IDBCursorDirection) override;
 
-    Status PutExternalObjectsIfNeeded(int64_t database_id,
-                                      const std::string& object_store_data_key,
+    Status PutExternalObjectsIfNeeded(const std::string& object_store_data_key,
                                       std::vector<IndexedDBExternalObject>*);
-    void PutExternalObjects(int64_t database_id,
-                            const std::string& object_store_data_key,
+    void PutExternalObjects(const std::string& object_store_data_key,
                             std::vector<IndexedDBExternalObject>*);
 
     TransactionalLevelDBTransaction* transaction() {
@@ -240,8 +242,7 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
       tombstone_threshold_exceeded_ = tombstone_threshold_exceeded;
     }
 
-    Status GetExternalObjectsForRecord(int64_t database_id,
-                                       const std::string& object_store_data_key,
+    Status GetExternalObjectsForRecord(const std::string& object_store_data_key,
                                        IndexedDBValue* value);
 
     base::WeakPtr<Transaction> AsWeakPtr();
@@ -252,8 +253,9 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     blink::mojom::IDBTransactionMode mode() const { return mode_; }
 
    private:
-    Status FindKeyInIndex(int64_t database_id,
-                          int64_t object_store_id,
+    int64_t database_id() const { return *database_->metadata().id; }
+
+    Status FindKeyInIndex(int64_t object_store_id,
                           int64_t index_id,
                           const blink::IndexedDBKey& key,
                           std::string* found_encoded_primary_key,
@@ -280,11 +282,17 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     void PartitionBlobsToRemove(BlobJournalType* dead_blobs,
                                 BlobJournalType* live_blobs) const;
 
+    // Prepares a cursor and returns it if successful, an error Status if
+    // there's an error, or null if the cursor is empty.
+    base::expected<std::unique_ptr<indexed_db::BackingStore::Cursor>, Status>
+    PrepareCursor(std::unique_ptr<Cursor> cursor);
+
     // This does NOT mean that this class can outlive the BackingStore.
     // This is only to protect against security issues before this class is
     // refactored away and this isn't necessary.
     // https://crbug.com/1012918
     base::WeakPtr<BackingStore> backing_store_;
+    base::WeakPtr<Database> database_;
 
     scoped_refptr<TransactionalLevelDBTransaction> transaction_;
 
@@ -292,7 +300,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
         external_object_change_map_;
     std::map<std::string, std::unique_ptr<IndexedDBExternalObjectChangeRecord>>
         in_memory_external_object_map_;
-    int64_t database_id_ = -1;
 
     // List of blob files being newly written as part of this transaction.
     // These will be added to the recovery blob journal prior to commit, then
@@ -323,6 +330,8 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     // This flag is set when tombstones encountered during a read-only
     // cursor operation exceed `kCursorTombstoneThreshold`.
     bool tombstone_threshold_exceeded_ = false;
+
+    std::optional<DatabaseMetadata> metadata_before_transaction_;
 
     base::WeakPtrFactory<Transaction> weak_ptr_factory_{this};
   };
@@ -473,13 +482,8 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
   void InvalidateBlobReferences() override;
   void StartPreCloseTasks(base::OnceClosure on_done) override;
   void StopPreCloseTasks() override;
-  // Creates a new database in the backing store. `metadata` is an in-out param.
-  // The `name` and `version` fields are inputs, while the `id` and
-  // `max_object_store_id` fields are outputs.
-  Status CreateDatabase(blink::IndexedDBDatabaseMetadata& metadata) override;
-  Status DeleteDatabase(const std::u16string& name,
-                        std::vector<PartitionedLock> locks,
-                        base::OnceClosure on_complete) override;
+  base::expected<std::unique_ptr<indexed_db::BackingStore::Database>, Status>
+  CreateOrOpenDatabase(const std::u16string& name) override;
 
   uintptr_t GetIdentifierForMemoryDump() override;
   void FlushForTesting() override;
@@ -490,12 +494,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
   Status GetDatabaseNamesAndVersions(
       std::vector<blink::mojom::IDBNameAndVersionPtr>* names_and_versions)
       override;
-  // Reads in metadata for the database and all object stores & indices.
-  // Note: the database name is not populated in |metadata|. Virtual for
-  // testing.
-  Status ReadMetadataForDatabaseName(const std::u16string& name,
-                                     blink::IndexedDBDatabaseMetadata* metadata,
-                                     bool* found) override;
 
   base::FilePath GetBlobFileName(int64_t database_id, int64_t key) const;
 
@@ -524,17 +522,13 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
 
   bool in_memory() const { return backing_store_mode_ == Mode::kInMemory; }
 
-  std::unique_ptr<indexed_db::BackingStore::Transaction> CreateTransaction(
-      blink::mojom::IDBTransactionDurability durability,
-      blink::mojom::IDBTransactionMode mode) override;
-
   base::WeakPtr<BackingStore> AsWeakPtr() { return weak_factory_.GetWeakPtr(); }
 
   static bool ShouldSyncOnCommit(
       blink::mojom::IDBTransactionDurability durability);
 
   // Create and initialize a BackingStore; verify and report its status.
-  static std::tuple<std::unique_ptr<BackingStore>,
+  static std::tuple<std::unique_ptr<indexed_db::BackingStore>,
                     Status,
                     IndexedDBDataLossInfo,
                     bool /* is_disk_full */>
@@ -567,6 +561,10 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
                   bool is_first_attempt,
                   bool create_if_missing);
 
+  // Fills in metadata for the database specified by `metadata->name` by reading
+  // from disk. If no database is found, `metadata->id` will remain null.
+  Status ReadMetadataForDatabaseName(DatabaseMetadata& metadata);
+
   // LevelDBCleanupScheduler::Delegate:
   // This function updates the next run timestamp for the
   // tombstone sweeper in the database metadata.
@@ -580,7 +578,8 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
   bool UpdateEarliestCompactionTime() override;
   // TODO(dmurph): Move this completely to IndexedDBMetadataFactory.
   Status GetCompleteMetadata(
-      std::vector<blink::IndexedDBDatabaseMetadata>* output) override;
+      std::vector<std::unique_ptr<blink::IndexedDBDatabaseMetadata>>* output)
+      override;
 
   Status AnyDatabaseContainsBlobs(bool* blobs_exist);
 

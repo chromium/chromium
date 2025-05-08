@@ -5772,7 +5772,8 @@ xsltCleanupSourceDoc(xmlDocPtr doc) {
             xmlAttrPtr prop = cur->properties;
 
             while (prop) {
-                prop->atype &= ~(XSLT_SOURCE_NODE_MASK << 27);
+                prop->extra &=
+                    ~(XSLT_SOURCE_NODE_MASK << XSLT_SOURCE_NODE_SHIFT_32);
                 prop->psvi = NULL;
                 prop = prop->next;
             }

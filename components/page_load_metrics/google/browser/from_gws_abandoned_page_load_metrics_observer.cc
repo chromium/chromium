@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "base/trace_event/named_trigger.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/google/browser/google_url_util.h"
 #include "content/public/browser/navigation_handle.h"
@@ -40,6 +41,10 @@ FromGWSAbandonedPageLoadMetricsObserver::OnStart(
   if (!page_load_metrics::IsGoogleSearchResultUrl(currently_committed_url)) {
     return ObservePolicy::STOP_OBSERVING;
   }
+
+  // Emit a trigger to allow trace collection tied to from gws navigations.
+  base::trace_event::EmitNamedTrigger("from-gws-navigation-start");
+
   category_parameter_id_ =
       page_load_metrics::GetCategoryIdFromUrl(navigation_handle->GetURL());
   impression_ = navigation_handle->GetImpression();

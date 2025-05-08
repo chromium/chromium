@@ -30,7 +30,6 @@ class VIZ_SERVICE_EXPORT TransferableResourceTracker {
   // This represents a resource that is positioned somewhere on screen.
   struct VIZ_SERVICE_EXPORT PositionedResource {
     TransferableResource resource;
-    SurfaceSavedFrame::RenderPassDrawData draw_data;
   };
 
   // A SurfaceSavedFrame can be converted to a ResourceFrame via

@@ -10,6 +10,7 @@
 #include <utility>
 #include <variant>
 
+#include "base/check.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -315,7 +316,7 @@ gfx::RoundedCornersF MenuScrollViewContainer::GetRoundedCorners() const {
   // The controller could be null during context menu being closed.
   auto* menu_controller = content_view_->GetMenuItem()->GetMenuController();
   if (!menu_controller) {
-    return gfx::RoundedCornersF(corner_radius_);
+    return background_rounded_corners_;
   }
 
   std::optional<gfx::RoundedCornersF> rounded_corners =
@@ -324,7 +325,7 @@ gfx::RoundedCornersF MenuScrollViewContainer::GetRoundedCorners() const {
     return rounded_corners.value();
   }
 
-  return gfx::RoundedCornersF(corner_radius_);
+  return background_rounded_corners_;
 }
 
 gfx::Insets MenuScrollViewContainer::GetInsets() const {
@@ -389,7 +390,11 @@ void MenuScrollViewContainer::OnBoundsChanged(
 
   MenuItemView* const footnote = GetFootnote();
   if (footnote) {
-    footnote->SetCornerRadius(any_scroll_button_visible ? 0 : corner_radius_);
+    footnote->SetBottomCornersRadius(
+        any_scroll_button_visible ? 0
+                                  : background_rounded_corners_.lower_left(),
+        any_scroll_button_visible ? 0
+                                  : background_rounded_corners_.lower_right());
   }
 }
 
@@ -419,14 +424,14 @@ void MenuScrollViewContainer::CreateBorder() {
 
 void MenuScrollViewContainer::CreateDefaultBorder() {
   DCHECK_EQ(arrow_, BubbleBorder::NONE);
-  corner_radius_ = GetCornerRadius();
+  int corner_radius = GetCornerRadius();
   outside_border_insets_ = {};
 
   const auto& menu_config = MenuConfig::instance();
   const int vertical_inset =
-      corner_radius_ ? menu_config.rounded_menu_vertical_border_size.value_or(
-                           corner_radius_)
-                     : menu_config.nonrounded_menu_vertical_border_size;
+      corner_radius ? menu_config.rounded_menu_vertical_border_size.value_or(
+                          corner_radius)
+                    : menu_config.nonrounded_menu_vertical_border_size;
   const int horizontal_inset = menu_config.menu_horizontal_border_size;
   const bool has_footnote = !!GetFootnote();
   auto insets =
@@ -446,7 +451,7 @@ void MenuScrollViewContainer::CreateDefaultBorder() {
   }
 
   SetBackground(
-      CreateRoundedRectBackground(ui::kColorMenuBackground, corner_radius_,
+      CreateRoundedRectBackground(ui::kColorMenuBackground, corner_radius,
                                   views::RoundRectPainter::kBorderWidth));
 
   const auto* const color_provider = GetColorProvider();
@@ -457,8 +462,9 @@ void MenuScrollViewContainer::CreateDefaultBorder() {
     insets.set_bottom(views::RoundRectPainter::kBorderWidth);
   }
   SetBorder(views::CreateBorderPainter(
-      std::make_unique<views::RoundRectPainter>(color, corner_radius_),
-      insets));
+      std::make_unique<views::RoundRectPainter>(color, corner_radius), insets));
+
+  background_rounded_corners_ = gfx::RoundedCornersF(corner_radius);
 }
 
 void MenuScrollViewContainer::CreateBubbleBorder() {
@@ -493,7 +499,7 @@ void MenuScrollViewContainer::CreateBubbleBorder() {
         menu_controller->rounded_corners().has_value()) {
       bubble_border->set_rounded_corners(GetRoundedCorners());
     } else {
-      bubble_border->SetCornerRadius(border_radius);
+      bubble_border->set_rounded_corners(gfx::RoundedCornersF(border_radius));
     }
   }
 
@@ -516,7 +522,8 @@ void MenuScrollViewContainer::CreateBubbleBorder() {
     additional_insets_.set_bottom(0);
   }
 
-  corner_radius_ = bubble_border->corner_radius();
+  background_rounded_corners_ = bubble_border->rounded_corners();
+
   // If the menu uses Ash system UI layout, use `background_view` to build a
   // blurry background with highlight border. Otherwise, use default
   // BubbleBackground.
@@ -528,7 +535,7 @@ void MenuScrollViewContainer::CreateBubbleBorder() {
         CreateEmptyBorder(std::exchange(additional_insets_, {})));
 
     background_view_->SetBackground(
-        CreateRoundedRectBackground(id, corner_radius_));
+        CreateRoundedRectBackground(id, background_rounded_corners_));
     background_view_->layer()->SetRoundedCornerRadius(GetRoundedCorners());
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -437,13 +437,18 @@ android_library("cronet_impl_common_java") {
     _generated_impl_version_java,
   ]
 
+  # Note: This target should not depend on //base:base_java as base
+  # is only bundled within the native_impl jar. Which means that
+  # if this target depends on base then we'll have to export the
+  # native_impl jar to all users of the fallback impl too.
+  assert_no_deps = [ "//base:base_java" ]
+
   # Adding deps here won't include those deps in the cronet_impl_common_java.jar.
   # Please add to cronet_impl_common_java_deps_to_package instead.
   deps = [
     ":cronet_api_java",
     ":cronet_shared_java",
     ":impl_version",
-    "//base:base_java",
     "//third_party/androidx:androidx_annotation_annotation_experimental_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
@@ -1157,7 +1162,6 @@ android_resources("cronet_test_apk_resources") {
     # TODO(crbug.com/40283951): Modify quicroot.pem to become a build time copy of
     # net/data/ssl/certificates/cronet-quic-chain.pem.
     "test/res/raw/quicroot.pem",
-    "test/res/values/cronet-test-rule-configuration.xml",
     "test/res/values/strings.xml",
     "test/res/xml/network_security_config.xml",
   ]
@@ -1397,6 +1401,10 @@ android_library("cronet_javatests") {
     "test/javatests/src/org/chromium/net/urlconnection/QuicUploadTest.java",
     "test/javatests/src/org/chromium/net/urlconnection/TestUtil.java",
   ]
+
+  if (is_cronet_for_aosp_build) {
+    sources += [ "//components/cronet/android/platform-only/org/chromium/net/AndroidPlatformQuicTest.java" ]
+  }
 
   # Adding deps here won't include those deps in the cronet_tests_java.jar.
   # Please add to cronet_javatests_deps_to_package_no_build_info instead.
@@ -2057,11 +2065,24 @@ script_test("generate_build_script_test") {
 }
 
 action("cronet_gn2bp_aosp_feedback_loop") {
+  # This is only added here to allow GN2BP to depend on
+  # test-only libraries. See below for more information
+  testonly = true
   script = "//components/cronet/gn2bp/run_gn2bp.py"
   sources = GN2BP_SOURCES + LICENSE_SOURCES + [
               "$_gclient_path",
               "//components/cronet/gn2bp/copy.bara.sky",
             ]
+  deps = [
+    # This dependency exists to work around the issue of the gn2bp trybot skipping
+    # CLs that touch Cronet code but not gn2bp itself.
+    # TODO(https://crbug.com/414789446): this is a hack. It forces the
+    # bot to pointlessly build Cronet. Surely there is a cleaner way.
+    # This is still prone to failure if we decide to run GN2BP against
+    # a change that does not affect these particular targets.
+    ":cronet_non_test_package",
+    ":repackage_test_jars",
+  ]
   _stamp_path = "$target_gen_dir/$target_name.stamp"
   args = [
     "--wait-for-presubmit-verified",

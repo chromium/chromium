@@ -236,9 +236,10 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Result shown"/>
   <int value="2" label="Error page shown (offline)"/>
   <int value="3" label="Error page shown (start query response error)"/>
+  <int value="4" label="Error page shown (protected)"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/lens/lens_overlay_side_panel_result.h:LensOverlaySidePanelResultStatus) -->
+<!-- LINT.ThenChange(//components/lens/lens_overlay_side_panel_result.h:LensOverlaySidePanelResultStatus,//chrome/browser/lens/core/mojom/lens_side_panel.mojom:SidePanelResultStatus) -->
 
 </enums>
 

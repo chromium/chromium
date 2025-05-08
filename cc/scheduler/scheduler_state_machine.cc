@@ -1579,7 +1579,6 @@ void SchedulerStateMachine::SetVisible(bool visible) {
 }
 
 void SchedulerStateMachine::SetShouldWarmUp() {
-  CHECK(base::FeatureList::IsEnabled(features::kWarmUpCompositor));
   should_warm_up_ = true;
 }
 

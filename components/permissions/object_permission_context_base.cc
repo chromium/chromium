@@ -87,7 +87,7 @@ void ObjectPermissionContextBase::RemoveObserver(PermissionObserver* observer) {
 }
 
 bool ObjectPermissionContextBase::CanRequestObjectPermission(
-    const url::Origin& origin) {
+    const url::Origin& origin) const {
   if (!guard_content_settings_type_)
     return true;
 

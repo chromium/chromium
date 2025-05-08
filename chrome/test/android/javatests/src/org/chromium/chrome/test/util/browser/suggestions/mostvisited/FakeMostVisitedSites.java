@@ -58,6 +58,12 @@ public class FakeMostVisitedSites implements MostVisitedSites {
         return false;
     }
 
+    @Override
+    public boolean reorderCustomLink(GURL keyUrl, int newPos) {
+        // TODO (crbug.com/397421764): Implement when needed by tests.
+        return false;
+    }
+
     // MostVisitedSites implementation.
     @Override
     public void destroy() {}

@@ -192,4 +192,14 @@ class NullAwViewMethods implements AwViewMethods {
     public boolean performAccessibilityAction(final int action, final Bundle arguments) {
         return false;
     }
+
+    @Override
+    public void onStartTemporaryDetach() {
+        // Intentional no-op.
+    }
+
+    @Override
+    public void onFinishTemporaryDetach() {
+        // Intentional no-op.
+    }
 }

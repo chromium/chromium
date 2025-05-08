@@ -67,7 +67,7 @@ class EmbedderUserScriptLoader : public extensions::UserScriptLoader {
   // The number of complete fetchs.
   size_t complete_fetchers_;
 
-  // Caches |user_scripts_| from UserScriptLoader when loading.
+  // Caches `user_scripts_` from UserScriptLoader when loading.
   extensions::UserScriptList user_scripts_cache_;
 
   LoadScriptsCallback scripts_loaded_callback_;

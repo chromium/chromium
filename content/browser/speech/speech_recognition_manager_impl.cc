@@ -233,8 +233,7 @@ int SpeechRecognitionManagerImpl::CreateSession(
     // Set the error if on-device speech recognition is not used but recognition
     // context is set.
     if (config.recognition_context.has_value()) {
-      error = media::mojom::SpeechRecognitionErrorCode::
-          kRecognitionContextNotSupported;
+      error = media::mojom::SpeechRecognitionErrorCode::kPhrasesNotSupported;
     }
   }
 

@@ -9,6 +9,7 @@ Should be run from the checkout root (i.e. as `tools/crates/run_gnrt.py ...`)
 
 import argparse
 import os
+import pathlib
 import platform
 import subprocess
 import sys
@@ -22,6 +23,7 @@ def main():
     parser = argparse.ArgumentParser(description='build and run gnrt')
     parser.add_argument('--rust-sysroot',
                         default=DEFAULT_SYSROOT,
+                        type=pathlib.Path,
                         help='use cargo and rustc from here')
     parser.add_argument('--out-dir',
                         default='out/gnrt',
@@ -35,8 +37,7 @@ def main():
         '--locked', 'run', '--release', '--manifest-path', GNRT_MANIFEST_PATH,
         '--target-dir', target_dir, '--'
     ] + gnrt_args
-    success = RunCargo(args.rust_sysroot, home_dir, cargo_args)
-    return 0 if success else 1
+    return RunCargo(args.rust_sysroot, home_dir, cargo_args)
 
 
 if __name__ == '__main__':

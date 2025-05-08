@@ -60,7 +60,7 @@ enum class FunctionMode {
   kIncognito,
 };
 
-// Get |key| from |val| as the specified type. If |key| does not exist, or is
+// Get `key` from `val` as the specified type. If `key` does not exist, or is
 // not of the specified type, adds a failure to the current test and returns
 // false, 0, empty string, etc.
 bool GetBoolean(const base::Value::Dict& val, const std::string& key);
@@ -69,18 +69,18 @@ std::string GetString(const base::Value::Dict& val, const std::string& key);
 base::Value::List GetList(const base::Value::Dict& val, const std::string& key);
 base::Value::Dict GetDict(const base::Value::Dict& val, const std::string& key);
 
-// If |val| is a dictionary, return it as one, otherwise create an empty one.
+// If `val` is a dictionary, return it as one, otherwise create an empty one.
 base::Value::Dict ToDict(std::optional<base::ValueView> val);
-// If |val| is a list, return it as one, otherwise create an empty one.
+// If `val` is a list, return it as one, otherwise create an empty one.
 base::Value::List ToList(std::optional<base::ValueView> val);
 
 // Currently, we allow either a string for the args, which is parsed to a list,
 // or an already-constructed list.
 using ArgsType = std::variant<std::string, base::Value::List>;
 
-// Run |function| with |args| and return the result. Adds an error to the
-// current test if |function| returns an error. Takes ownership of
-// |function|. The caller takes ownership of the result.
+// Run `function` with `args` and return the result. Adds an error to the
+// current test if `function` returns an error. Takes ownership of
+// `function`. The caller takes ownership of the result.
 std::optional<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
     scoped_refptr<ExtensionFunction> function,
     ArgsType args,
@@ -95,9 +95,9 @@ std::optional<base::Value> RunFunctionAndReturnSingleResult(
     content::BrowserContext* context,
     FunctionMode mode = FunctionMode::kNone);
 
-// Run |function| with |args| and return the resulting error. Adds an error to
-// the current test if |function| returns a result. Takes ownership of
-// |function|.
+// Run `function` with `args` and return the resulting error. Adds an error to
+// the current test if `function` returns a result. Takes ownership of
+// `function`.
 std::string RunFunctionAndReturnError(scoped_refptr<ExtensionFunction> function,
                                       ArgsType args,
                                       content::BrowserContext* context,
@@ -110,11 +110,11 @@ base::expected<base::Value::List, std::string> RunFunctionAndReturnExpected(
     content::BrowserContext* context,
     FunctionMode mode = FunctionMode::kNone);
 
-// Create and run |function| with |args|. Works with both synchronous and async
-// functions. Ownership of |function| remains with the caller.
+// Create and run `function` with `args`. Works with both synchronous and async
+// functions. Ownership of `function` remains with the caller.
 //
-// TODO(aa): It would be nice if |args| could be validated against the schema
-// that |function| expects. That way, we know that we are testing something
+// TODO(aa): It would be nice if `args` could be validated against the schema
+// that `function` expects. That way, we know that we are testing something
 // close to what the bindings would actually send.
 //
 // TODO(aa): I'm concerned that this style won't scale to all the bits and bobs

@@ -1,7 +1,7 @@
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
- * Copyright (C) 2002-2017 Németh László
+ * Copyright (C) 2002-2022 Németh László
  *
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
@@ -41,10 +41,6 @@
 #include <string>
 
 class AffEntry {
- private:
-  AffEntry(const AffEntry&);
-  AffEntry& operator=(const AffEntry&);
-
  public:
   AffEntry()
       : numconds(0),
@@ -53,6 +49,8 @@ class AffEntry {
         morphcode(0),
         contclass(NULL),
         contclasslen(0) {}
+  AffEntry(const AffEntry&) = delete;
+  AffEntry& operator=(const AffEntry&) = delete;
   virtual ~AffEntry();
   std::string appnd;
   std::string strip;
@@ -68,7 +66,7 @@ class AffEntry {
   } c;
   char* morphcode;
   unsigned short* contclass;
-  short contclasslen;
+  unsigned short contclasslen;
 };
 
 #endif

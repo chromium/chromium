@@ -36,7 +36,7 @@ class TestMimeHandlerViewGuest : public MimeHandlerViewGuest {
   static std::unique_ptr<GuestViewBase> Create(
       content::RenderFrameHost* owner_rfh);
 
-  // Set a delay in the next creation of a guest's WebContents by |delay|
+  // Set a delay in the next creation of a guest's WebContents by `delay`
   // milliseconds.
   // TODO(mcnee): The use of a timed delay makes for tests with fragile timing
   // dependencies. This should be implemented in a way that allows the test to
@@ -67,7 +67,7 @@ class TestMimeHandlerViewGuest : public MimeHandlerViewGuest {
       GuestPageCreatedCallback callback);
 
   // A value in milliseconds that the next creation of a guest's WebContents
-  // will be delayed. After this creation is delayed, |delay_| will be reset to
+  // will be delayed. After this creation is delayed, `delay_` will be reset to
   // 0.
   static int delay_;
 

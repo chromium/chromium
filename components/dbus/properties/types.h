@@ -30,7 +30,6 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) DbusType {
   virtual ~DbusType();
 
   bool operator==(const DbusType& other) const;
-  bool operator!=(const DbusType& other) const;
 
   // Serializes this object to `writer`.
   virtual void Write(dbus::MessageWriter* writer) const = 0;
@@ -331,6 +330,9 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) DbusArray final
     }
   }
 
+  std::vector<T>& value() { return value_; }
+  const std::vector<T>& value() const { return value_; }
+
   static std::string GetSignature() {
     return std::string("a") + T::GetSignature();
   }
@@ -629,6 +631,11 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) DbusDictionary final
       return nullptr;
     }
     return variant->GetAs<T>();
+  }
+
+  template <typename T>
+  const T* GetAs(const std::string& key) const {
+    return const_cast<DbusDictionary*>(this)->GetAs<T>(key);
   }
 
  private:

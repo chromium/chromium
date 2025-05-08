@@ -150,8 +150,8 @@ struct BaseMemberHashTraits : SimpleClassHashTraits<MemberType> {
 #endif
     return WTF::GetHash(st.GetAsInteger());
   }
-  template <typename Member,
-            std::enable_if_t<WTF::IsAnyMemberType<Member>::value>* = nullptr>
+  template <typename Member>
+    requires(WTF::IsAnyMemberType<Member>::value)
   static unsigned GetHash(const Member& m) {
     return WTF::GetHash(m.GetRawStorage().GetAsInteger());
   }

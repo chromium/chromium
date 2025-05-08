@@ -36,20 +36,7 @@ public class ClientDataJsonTest {
     @Test
     @SmallTest
     public void testBuildClientDataJson() {
-        PaymentOptions payment = new PaymentOptions();
-        payment.total = new PaymentCurrencyAmount();
-        payment.total.currency = "USD";
-        payment.total.value = "123";
-        payment.instrument = new PaymentCredentialInstrument();
-        payment.instrument.displayName = "TestPay";
-        payment.instrument.icon = new Url();
-        payment.instrument.icon.url = "https://www.example.test/icon.png";
-        payment.payeeOrigin = new org.chromium.url.internal.mojom.Origin();
-        payment.payeeOrigin.scheme = "https";
-        payment.payeeOrigin.host = "test.example";
-        payment.payeeOrigin.port = 443;
-        payment.browserBoundPublicKey = new byte[] {0x01, 0x02, 0x03, 0x04};
-
+        PaymentOptions payment = createSamplePaymentOptions();
         byte[] challenge = new byte[3];
         String relyingPartyId = "subdomain.example.test";
         String origin = "https://example.test";
@@ -85,5 +72,46 @@ public class ClientDataJsonTest {
                 containsString(
                         String.format("\"displayName\":\"%s\"", payment.instrument.displayName)));
         assertThat(output, containsString(String.format("\"browserBoundPublicKey\":\"AQIDBA\"")));
+    }
+
+    @Test
+    @SmallTest
+    public void testBuildClientDataForJsonPaymentCredentialCreation() {
+        PaymentOptions payment = createSamplePaymentOptions();
+        byte[] challenge = new byte[3];
+        String relyingPartyId = "subdomain.example.test";
+        String origin = "https://example.test";
+        Origin topOrigin = Origin.create(new GURL("https://www.chromium.test/pay"));
+        String output =
+                ClientDataJson.buildClientDataJson(
+                        ClientDataRequestType.WEB_AUTHN_CREATE,
+                        origin,
+                        challenge,
+                        /* isCrossOrigin= */ false,
+                        payment,
+                        relyingPartyId,
+                        topOrigin);
+        assertThat(output, containsString("\"type\":\"webauthn.create\""));
+        assertThat(output, containsString("\"challenge\":\"AAAA\""));
+        assertThat(output, containsString(String.format("\"origin\":\"%s\"", origin)));
+        assertThat(output, containsString("\"crossOrigin\":false"));
+        assertThat(output, containsString("\"payment\":{\"browserBoundPublicKey\":\"AQIDBA\"}"));
+    }
+
+    private PaymentOptions createSamplePaymentOptions() {
+        PaymentOptions payment = new PaymentOptions();
+        payment.total = new PaymentCurrencyAmount();
+        payment.total.currency = "USD";
+        payment.total.value = "123";
+        payment.instrument = new PaymentCredentialInstrument();
+        payment.instrument.displayName = "TestPay";
+        payment.instrument.icon = new Url();
+        payment.instrument.icon.url = "https://www.example.test/icon.png";
+        payment.payeeOrigin = new org.chromium.url.internal.mojom.Origin();
+        payment.payeeOrigin.scheme = "https";
+        payment.payeeOrigin.host = "test.example";
+        payment.payeeOrigin.port = 443;
+        payment.browserBoundPublicKey = new byte[] {0x01, 0x02, 0x03, 0x04};
+        return payment;
     }
 }

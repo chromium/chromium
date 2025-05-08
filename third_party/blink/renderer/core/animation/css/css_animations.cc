@@ -2523,9 +2523,9 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
   InterpolationValue end = nullptr;
   bool discrete_interpolation = true;
 
-  for (const auto& interpolation_type : map.Get(property)) {
+  for (const auto& interpolation_type : *map.Get(property)) {
     start = interpolation_type->MaybeConvertUnderlyingValue(old_environment);
-    transition_type = interpolation_type.get();
+    transition_type = interpolation_type.Get();
     if (!start) {
       continue;
     }
@@ -2624,7 +2624,7 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
   TransitionKeyframe* start_keyframe =
       MakeGarbageCollected<TransitionKeyframe>(property);
   start_keyframe->SetValue(MakeGarbageCollected<TypedInterpolationValue>(
-      *transition_type, start.interpolable_value->Clone(),
+      transition_type, start.interpolable_value->Clone(),
       start.non_interpolable_value));
   start_keyframe->SetOffset(0);
   keyframes.push_back(start_keyframe);
@@ -2632,7 +2632,7 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
   TransitionKeyframe* end_keyframe =
       MakeGarbageCollected<TransitionKeyframe>(property);
   end_keyframe->SetValue(MakeGarbageCollected<TypedInterpolationValue>(
-      *transition_type, end.interpolable_value->Clone(),
+      transition_type, end.interpolable_value->Clone(),
       end.non_interpolable_value));
   end_keyframe->SetOffset(1);
   keyframes.push_back(end_keyframe);

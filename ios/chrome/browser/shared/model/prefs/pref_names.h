@@ -750,6 +750,9 @@ inline constexpr char kProvisionalNotificationsAllowedByPolicy[] =
 inline constexpr char kIosSyncInfobarErrorLastDismissedTimestamp[] =
     "ios.sync_infobar_error.last_dismissed_timestamp";
 
+// A boolean specifying whether the glic consent form has been accepted.
+inline constexpr char kIOSGLICConsent[] = "ios.glic.consent";
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_NAMES_H_

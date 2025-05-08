@@ -10,11 +10,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -22,6 +18,7 @@ import android.content.res.Resources;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -54,6 +51,7 @@ import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 
@@ -94,6 +92,15 @@ public class AuxiliarySearchProviderUnitTest {
         doReturn(mMockNormalTabModel).when(mTabModelSelector).getModel(false);
 
         BackgroundTaskSchedulerFactory.setSchedulerForTesting(mBackgroundTaskScheduler);
+    }
+
+    @After
+    public void tearDown() {
+        File tabDonateFile = AuxiliarySearchUtils.getTabDonateFile(mContext);
+        if (tabDonateFile.exists()) {
+            boolean deleteResult = tabDonateFile.delete();
+            assertTrue(deleteResult);
+        }
     }
 
     private Tab createTab(int index, long timestamp) {
@@ -279,16 +286,6 @@ public class AuxiliarySearchProviderUnitTest {
                     assertEquals(AuxiliarySearchTestHelper.VISIT_ID_2, entry.visitId);
                     assertEquals(AuxiliarySearchTestHelper.SCORE_2, entry.score);
                 });
-    }
-
-    @Test
-    @SmallTest
-    public void testSetObserver() {
-        AuxiliarySearchProvider.Observer observer = mock(AuxiliarySearchProvider.Observer.class);
-        mAuxiliarySearchProvider.setObserver(observer);
-
-        verify(mMockAuxiliarySearchBridgeJni)
-                .setObserverAndTrigger(eq(FAKE_NATIVE_PROVIDER), any(AuxiliarySearchBridge.class));
     }
 
     @Test

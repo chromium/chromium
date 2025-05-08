@@ -31,16 +31,6 @@
 
 namespace autofill {
 
-// Specifies which type of field value is desired from AutofillField::value().
-// TODO: crbug.com/40227496 - Remove together with `value(ValueSemantics)`.
-enum class ValueSemantics {
-  // The field's last known value or the field's value to be filled:
-  // FormFieldData::value().
-  kCurrent,
-  // The field's first known value.
-  kInitial,
-};
-
 // Enum representing prediction sources that are recognized.
 enum class AutofillPredictionSource {
   kServerCrowdsourcing = 0,
@@ -221,66 +211,41 @@ class AutofillField : public FormFieldData {
   // should be suppressed for this field (independently of the predicted type).
   bool ShouldSuppressSuggestionsAndFillingByDefault() const;
 
-  // Returns the requested current or initial value depending on the
-  // `ValueSemantics`, if `features::kAutofillFixValueSemantics` is enabled.
-  // Otherwise just forwards to `FormFieldData::value().
-  //
-  // In the context of form submission and import, consider calling
-  // `value_for_import()`.
-  //
-  // Currently, `value(ValueSemantics::kInitial)` is the empty string for fields
-  // of FormControlType::kSelect*.
-  // TODO: crbug.com/40227496 - Let `value(kInitial)` for select elements behave
-  // the same as for non-select elements.
-  //
-  // TODO: crbug.com/40227496 - When kAutofillFixValueSemantics is cleaned up,
-  // replace
-  // - `value(ValueSemantics::kCurrent)` with `FormFieldData::value()`
-  // - `value(ValueSemantics::kInitial)` with `AutofillField::initial_value()`
-  const std::u16string& value(ValueSemantics s) const;
-
   // Returns the current value, formatted as desired for import:
-  // (1) If the user left a field unchanged, returns the empty string.
-  // (2) If the field has FormControlType::kSelect* and has a selected text,
-  //     it is FormFieldData::selected_text().
+  // (1) If the field value hasn't changed since it was seen and the field is a
+  //     non-<select>, returns the empty string.
+  // (2) If the field has FormControlType::kSelect* and has a selected option,
+  //     returns that option's human-readable text.
+  // (3) Otherwise returns value().
   //
   // The motivation behind (1) is that unchanged values usually carry little
-  // value for importing. The exception are <select> fields, which often have
-  // a correct default value, so we consider them for import even if their value
-  // didn't change.
-  // TODO: crbug.com/40137859 - Consider making an exception for also for
-  // non-<select> ADDRESS_HOME_{STATE,COUNTRY} fields.
+  // value for importing. <select> fields are exempted because their default
+  // value is often correct (e.g., in ADDRESS_HOME_COUNTRY fields).
+  // TODO(crbug.com/40137859): Consider also exempting non-<select>
+  // ADDRESS_HOME_{STATE,COUNTRY} fields.
   //
   // The motivation behind (2) is that the human-readable text of an <option> is
   // usually better suited for import than the its value. See the documentation
   // of FormFieldData::value() and FormFieldData::selected_text() for further
   // details.
-  //
-  // This function only behaves reasonably if kAutofillFixValueSemantics and
-  // kAutofillFixCurrentValueInImport are enabled. If the latter is not enabled,
-  // FormStructure::RetrieveFromCache() resets the field's current value, with
-  // the intention of avoiding form import.
-  // TODO: crbug.com/40227496 - Remove the previous paragraph when the feature
-  // is launched.
   const std::u16string& value_for_import() const;
 
-  // Sets the field's current value, if `features::kAutofillFixValueSemantics`
-  // is enabled. Otherwise just forwards to FormFieldData::set_value().
+  // Returns the value the field had when it was first seen by the
+  // AutofillManager. For fields that exist on page load, this is typically the
+  // value on page load.
+  //
+  // There are some special cases where the above does not apply, such as:
+  // - When the field has moved to another form.
+  // - When the form has been extracted without the field. For example, this
+  //   could happen because the field was temporarily removed from the DOM.
+  //
+  // For the field's current value, see FormFieldData::value().
+  const std::u16string& initial_value() const { return initial_value_; }
+
+  // Sets the field's current value.
   void set_initial_value(std::u16string initial_value,
-                         base::PassKey<FormStructure> pass_key);
-
-  void set_initial_value_hash(uint32_t value) { initial_value_hash_ = value; }
-  std::optional<uint32_t> initial_value_hash() const {
-    return initial_value_hash_;
-  }
-
-  // TODO: crbug.com/40227496 - Remove when kAutofillFixValueSemantics is
-  // cleaned up.
-  void set_initial_value_changed(std::optional<bool> initial_value_changed) {
-    initial_value_changed_ = initial_value_changed;
-  }
-  std::optional<bool> initial_value_changed() const {
-    return initial_value_changed_;
+                         base::PassKey<FormStructure> pass_key) {
+    initial_value_ = std::move(initial_value);
   }
 
   void set_credit_card_number_offset(size_t position) {
@@ -288,13 +253,6 @@ class AutofillField : public FormFieldData {
   }
   size_t credit_card_number_offset() const {
     return credit_card_number_offset_;
-  }
-
-  void set_vote_type(AutofillUploadContents::Field::VoteType type) {
-    vote_type_ = type;
-  }
-  AutofillUploadContents::Field::VoteType vote_type() const {
-    return vote_type_;
   }
 
   void SetPasswordRequirements(PasswordRequirementsSpec spec);
@@ -481,19 +439,7 @@ class AutofillField : public FormFieldData {
 
   // The field's initial value. By default, it's the same as the field's
   // `value()`, but FormStructure::RetrieveFromCache() may override it.
-  std::u16string initial_value_ = value(ValueSemantics::kCurrent);
-
-  // A low-entropy hash of the field's initial value before user-interactions or
-  // automatic fillings. This field is used to detect static placeholders.
-  std::optional<uint32_t> initial_value_hash_;
-
-  // On form submission, set to `true` if the field had a value on page load and
-  // it was changed between page load and form submission. Set to `false` if the
-  // pre-filled value wasn't changed. Not set if the field didn't have a
-  // pre-filled value.
-  // Set for <select> fields only if kAutofillFixInitialValueOfSelect is
-  // enabled. Always set for <textarea> and <input>.
-  std::optional<bool> initial_value_changed_;
+  std::u16string initial_value_ = value();
 
   // Used to hold the position of the first digit to be copied as a substring
   // from credit card number.
@@ -513,12 +459,6 @@ class AutofillField : public FormFieldData {
   // The parseable label attribute is potentially only a part of the original
   // label when the label is divided between subsequent fields.
   std::u16string parseable_label_;
-
-  // The vote type, if the autofill type is USERNAME or any password vote.
-  // Otherwise, the field is ignored. |vote_type_| provides context as to what
-  // triggered the vote.
-  AutofillUploadContents::Field::VoteType vote_type_ =
-      AutofillUploadContents::Field::NO_INFORMATION;
 
   // A list of field log events, which record when user interacts the field
   // during autofill or editing, such as user clicks on the field, the

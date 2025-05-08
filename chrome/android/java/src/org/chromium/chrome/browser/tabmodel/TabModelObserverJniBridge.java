@@ -66,10 +66,7 @@ class TabModelObserverJniBridge implements TabModelObserver {
         assert mNativeTabModelObserverJniBridge != 0;
         TabModelObserverJniBridgeJni.get()
                 .onFinishingTabClosure(
-                        mNativeTabModelObserverJniBridge,
-                        TabModelObserverJniBridge.this,
-                        tab.getId(),
-                        tab.isIncognito());
+                        mNativeTabModelObserverJniBridge, TabModelObserverJniBridge.this, tab);
     }
 
     @Override
@@ -238,10 +235,7 @@ class TabModelObserverJniBridge implements TabModelObserver {
                 long nativeTabModelObserverJniBridge, TabModelObserverJniBridge caller, Tab tab);
 
         void onFinishingTabClosure(
-                long nativeTabModelObserverJniBridge,
-                TabModelObserverJniBridge caller,
-                int tabId,
-                boolean incognito);
+                long nativeTabModelObserverJniBridge, TabModelObserverJniBridge caller, Tab tab);
 
         void onFinishingMultipleTabClosure(
                 long nativeTabModelObserverJniBridge,

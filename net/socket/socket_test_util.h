@@ -1144,8 +1144,6 @@ class MockUDPClientSocket : public DatagramClientSocket, public AsyncSocket {
 
   NetLogWithSource net_log_;
 
-  DatagramBuffers unwritten_buffers_;
-
   SocketTag tag_;
   bool data_transferred_ = false;
   bool tagged_before_data_transferred_ = true;

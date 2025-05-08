@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ANDROID_COMPOSITOR_LAYER_TOOLBAR_LAYER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/android/compositor/layer/layer.h"
 #include "components/viz/common/quads/offset_tag.h"
 #include "ui/android/resources/resource_manager.h"

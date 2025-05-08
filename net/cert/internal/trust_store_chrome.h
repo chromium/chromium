@@ -33,16 +33,21 @@ struct StaticChromeRootCertConstraints {
   std::optional<std::string_view> max_version_exclusive;
 
   base::span<const std::string_view> permitted_dns_names;
-
-  bool enforce_anchor_expiry = false;
-  // True if the certificate verifier should enforce X.509 constraints encoded
-  // in the certificate.
-  bool enforce_anchor_constraints = false;
 };
 
 struct ChromeRootCertInfo {
   base::span<const uint8_t> root_cert_der;
   base::span<const StaticChromeRootCertConstraints> constraints;
+  bool enforce_anchor_expiry;
+  // True if the certificate verifier should enforce X.509 constraints encoded
+  // in the certificate.
+  bool enforce_anchor_constraints;
+  // If non-empty, the ASCII representation of the Trust Anchor ID
+  // (https://tlswg.org/tls-trust-anchor-ids/draft-ietf-tls-trust-anchor-ids.html)
+  // associated with this anchor -- that is, a relative object identifier in
+  // dotted decimal form (e.g., "1234.1"). If empty, this anchor has no
+  // associated Trust Anchor ID.
+  std::string trust_anchor_id;
 };
 
 struct NET_EXPORT ChromeRootCertConstraints {
@@ -51,9 +56,7 @@ struct NET_EXPORT ChromeRootCertConstraints {
                             std::optional<base::Time> sct_all_after,
                             std::optional<base::Version> min_version,
                             std::optional<base::Version> max_version_exclusive,
-                            std::vector<std::string> permitted_dns_names,
-                            bool enforce_anchor_expiry,
-                            bool enforce_anchor_constraints);
+                            std::vector<std::string> permitted_dns_names);
   explicit ChromeRootCertConstraints(
       const StaticChromeRootCertConstraints& constraints);
   ~ChromeRootCertConstraints();
@@ -69,11 +72,6 @@ struct NET_EXPORT ChromeRootCertConstraints {
   std::optional<base::Version> max_version_exclusive;
 
   std::vector<std::string> permitted_dns_names;
-
-  bool enforce_anchor_expiry = false;
-  // True if the certificate verifier should enforce X.509 constraints encoded
-  // in the certificate.
-  bool enforce_anchor_constraints = false;
 };
 
 // ChromeRootStoreData is a container class that stores all of the Chrome Root
@@ -86,6 +84,11 @@ class NET_EXPORT ChromeRootStoreData {
     Anchor(std::shared_ptr<const bssl::ParsedCertificate> certificate,
            std::vector<ChromeRootCertConstraints> constraints,
            bool eutl);
+    Anchor(std::shared_ptr<const bssl::ParsedCertificate> certificate,
+           std::vector<ChromeRootCertConstraints> constraints,
+           bool eutl,
+           bool enforce_anchor_expiry,
+           bool enforce_anchor_constraints);
     ~Anchor();
 
     Anchor(const Anchor& other);
@@ -96,6 +99,10 @@ class NET_EXPORT ChromeRootStoreData {
     std::shared_ptr<const bssl::ParsedCertificate> certificate;
     std::vector<ChromeRootCertConstraints> constraints;
     bool eutl;
+    bool enforce_anchor_expiry;
+    // True if the certificate verifier should enforce X.509 constraints encoded
+    // in the certificate.
+    bool enforce_anchor_constraints;
   };
 
   // CreateFromRootStoreProto converts |proto| into a usable

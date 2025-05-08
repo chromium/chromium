@@ -33,6 +33,10 @@ def _gpu_device(*, vendor, device):
 
 # LINT.IfChange
 
+_ANDROID_DESKTOP_BOARD_GPUS = {
+    "brya": _gpu_device(vendor = "8086", device = "46a8"),
+}
+
 _CROS_BOARD_GPUS = {
     "volteer": _gpu_device(vendor = "8086", device = "9a49"),
 }
@@ -45,6 +49,7 @@ _VENDOR_SUBSTITUTIONS = {
 _DEVICE_SUBSTITUTIONS = {
     "m1": "0",
     "m2": "0",
+    "m3": "0",
     # Qualcomm Adreno 680/685/690 and 741 on Windows arm64. The approach
     # swarming uses to find GPUs (looking for all Win32_VideoController WMI
     # objects) results in different output than what Chrome sees.
@@ -67,10 +72,20 @@ def _get_dimensions(spec_value):
         fail("dimensions is not set")
     return dimensions
 
+def _is_android_desktop(spec_value, settings):
+    """Helper function to determine if the test will be running on Android Desktop."""
+    is_android = settings.os_type == common.os_type.ANDROID
+    return is_android and _get_android_desktop_board_name(spec_value)
+
 def _is_skylab(settings):
     """Helper function to determine if the test will be running on skylab."""
     return (settings.browser_config == common.browser_config.CROS_CHROME and
             not settings.use_swarming)
+
+def _get_android_desktop_board_name(spec_value):
+    """Helper function to determine what Android Desktop board is being used."""
+    dimensions = _get_dimensions(spec_value)
+    return dimensions.get("label-board")
 
 def _get_cros_board_name(spec_value):
     """Helper function to determine what ChromeOS board is being used."""
@@ -83,6 +98,17 @@ def _get_cros_board_name(spec_value):
         fail("Unknown CrOS pool {}".format(pool))
 
     return dimensions.get("device_type", "amd64-generic")
+
+def _android_desktop_telemetry_remote(_, settings, spec_value):
+    """Substitutes the correct Android Desktop remote Telemetry arguments."""
+    if settings.os_type != common.os_type.ANDROID:
+        fail("Ran an Android Desktop-specific substitution on a non-Android builder")
+    if not _get_android_desktop_board_name(spec_value):
+        return []
+    return [
+        "--device=variable_lab_dut_hostname",
+        "--connect-to-device-over-network",
+    ]
 
 def _cros_telemetry_remote(_, settings, spec_value):
     """Substitutes the correct CrOS remote Telemetry arguments.
@@ -148,6 +174,8 @@ def _gpu_expected_vendor_id(_, settings, spec_value):
     We only ever trigger tests on a single vendor type per builder definition,
     so multiple found vendors is an error.
     """
+    if _is_android_desktop(spec_value, settings):
+        return _gpu_expected_vendor_id_android_desktop(spec_value)
     if _is_skylab(settings):
         return _gpu_expected_vendor_id_skylab(spec_value)
     gpus = _get_gpus(spec_value)
@@ -173,6 +201,14 @@ def _gpu_expected_vendor_id(_, settings, spec_value):
 
     return ["--expected-vendor-id", vendor_ids.pop()]
 
+def _gpu_expected_vendor_id_android_desktop(spec_value):
+    board = _get_android_desktop_board_name(spec_value)
+    if not board:
+        fail("Failed to get board for Android Desktop test")
+    gpu_device = _ANDROID_DESKTOP_BOARD_GPUS.get(board)
+    vendor_id = gpu_device.vendor if gpu_device else "0"
+    return ["--expected-vendor-id", vendor_id]
+
 def _gpu_expected_vendor_id_skylab(spec_value):
     cros_board = spec_value.get("cros_board")
     if cros_board == None:
@@ -187,6 +223,8 @@ def _gpu_expected_device_id(_, settings, spec_value):
     Most configurations only need one expected GPU, but heterogeneous pools
     (e.g. HD 630 and UHD 630 machines) require multiple.
     """
+    if _is_android_desktop(spec_value, settings):
+        return _gpu_expected_device_id_android_desktop(spec_value)
     if _is_skylab(settings):
         return _gpu_expected_device_id_skylab(spec_value)
     gpus = _get_gpus(spec_value)
@@ -215,6 +253,14 @@ def _gpu_expected_device_id(_, settings, spec_value):
     for device_id in sorted(device_ids):
         retval.extend(["--expected-device-id", device_id])
     return retval
+
+def _gpu_expected_device_id_android_desktop(spec_value):
+    board = _get_android_desktop_board_name(spec_value)
+    if not board:
+        fail("Failed to get board for Android Desktop test")
+    gpu_device = _ANDROID_DESKTOP_BOARD_GPUS.get(board)
+    device_id = gpu_device.device if gpu_device else "0"
+    return ["--expected-device-id", device_id]
 
 def _gpu_expected_device_id_skylab(spec_value):
     cros_board = spec_value.get("cros_board")
@@ -371,6 +417,10 @@ def _placeholder(*, pyl_arg_value, function):
     )
 
 magic_args = struct(
+    ANDROID_DESKTOP_TELEMETRY_REMOTE = _placeholder(
+        pyl_arg_value = "$$MAGIC_SUBSTITUTION_AndroidDesktopTelemetryRemote",
+        function = _android_desktop_telemetry_remote,
+    ),
     CROS_TELEMETRY_REMOTE = _placeholder(
         pyl_arg_value = "$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote",
         function = _cros_telemetry_remote,

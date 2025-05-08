@@ -27,7 +27,7 @@
 // Sets the name of the Lottie light-mode `imageLottieName` and
 // `imageDarkModeLottieName` for this alert.
 - (void)setImageLottieName:(NSString*)imageLottieName
-        darkModeLottieName:imageDarkModeLottieName;
+        darkModeLottieName:(NSString*)imageDarkModeLottieName;
 
 // Sets the actions for this alert. The double array of actions would be
 // represented visually with each sub-array being a row of buttons, unless the
@@ -43,6 +43,23 @@
 // Sets whether the action buttons should initially be disabled.
 - (void)setActionButtonsAreInitiallyDisabled:
     (BOOL)actionButtonsAreInitiallyDisabled;
+
+// Define the possible states for the progress indicator.
+typedef NS_ENUM(NSInteger, ProgressIndicatorState) {
+  ProgressIndicatorStateNone =
+      0,  // Nothing is shown (or the space is collapsed)
+  ProgressIndicatorStateActivity,  // The spinner is shown
+  ProgressIndicatorStateSuccess,   // The checkmark is shown
+};
+
+// Sets the states for the progress indicator.
+- (void)setProgressState:(ProgressIndicatorState)progressState;
+
+// The accessibility label for the confirmation checkmark.
+// This label is applied and announced by VoiceOver when `progressState` is
+// set to `ProgressIndicatorStateSuccess`.
+@property(nonatomic, copy) NSString* confirmationAccessibilityLabel;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_ALERT_VIEW_UI_BUNDLED_ALERT_CONSUMER_H_

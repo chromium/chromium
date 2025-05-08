@@ -125,7 +125,6 @@ if (!is_ios && !is_android) {
     if (is_chromeos) {
       deps += [
         "//chrome/services/sharing/nearby",
-        "//components/exo/wayland:test_controller_stub",
         "//components/exo/wayland:ui_controls_protocol_stub",
       ]
     }

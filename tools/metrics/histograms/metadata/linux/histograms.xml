@@ -163,6 +163,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Linux.X11.XInput2" enum="BooleanEnabled"
+    expires_after="2025-10-21">
+  <owner>hidehiko@chromium.org</owner>
+  <owner>thomasanderson@chromium.org</owner>
+  <summary>Whether X Input Extension version 2.x is available.</summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

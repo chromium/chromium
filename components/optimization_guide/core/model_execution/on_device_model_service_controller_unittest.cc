@@ -63,8 +63,10 @@
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "components/prefs/testing_pref_service.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/on_device_model/public/cpp/capabilities.h"
 #include "services/on_device_model/public/cpp/service_client.h"
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
+#include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -275,7 +277,6 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
 TEST_F(OnDeviceModelServiceControllerTest, ScoreBeforeContext) {
   Initialize(standard_assets_);
 
-  base::HistogramTester histogram_tester;
   auto session = CreateSession();
   ASSERT_TRUE(session);
   base::test::TestFuture<std::optional<float>> score_future;
@@ -286,7 +287,6 @@ TEST_F(OnDeviceModelServiceControllerTest, ScoreBeforeContext) {
 TEST_F(OnDeviceModelServiceControllerTest, ScorePresentAfterContext) {
   Initialize(standard_assets_);
 
-  base::HistogramTester histogram_tester;
   auto session = CreateSession();
   ASSERT_TRUE(session);
 
@@ -300,7 +300,6 @@ TEST_F(OnDeviceModelServiceControllerTest, ScorePresentAfterContext) {
 TEST_F(OnDeviceModelServiceControllerTest, ScoreAfterExecute) {
   Initialize(standard_assets_);
 
-  base::HistogramTester histogram_tester;
   auto session = CreateSession();
   ASSERT_TRUE(session);
 
@@ -331,7 +330,7 @@ TEST_F(OnDeviceModelServiceControllerTest, BaseModelExecutionSuccess) {
   session->ExecuteModel(PageUrlRequest("foo"),
                         response_.GetStreamingCallback());
   ASSERT_TRUE(response_.GetFinalStatus());
-  const std::string expected_response = "Context: execute:foo off:0 max:1024\n";
+  const std::string expected_response = "Context: execute:foo max:1024\n";
   EXPECT_EQ(*response_.value(), expected_response);
   EXPECT_TRUE(*response_.provided_by_on_device());
   EXPECT_THAT(response_.partials(), ElementsAre(expected_response));
@@ -446,7 +445,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AdaptationModelExecutionSuccess) {
                         response_.GetStreamingCallback());
   ASSERT_TRUE(response_.GetFinalStatus());
   EXPECT_EQ(*response_.value(),
-            "Adaptation model: 1015\nContext: execute:foo off:0 max:1024\n");
+            "Adaptation model: 1015\nContext: execute:foo max:1024\n");
 
   // If we destroy all sessions and wait long enough, everything should idle out
   // and the service should get terminated.
@@ -499,11 +498,11 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
   ASSERT_TRUE(compose_response.GetFinalStatus());
   EXPECT_EQ(*compose_response.value(),
-            "Adaptation model: 1015\nContext: execute:foo off:0 max:1024\n");
+            "Adaptation model: 1015\nContext: execute:foo max:1024\n");
   EXPECT_TRUE(*compose_response.provided_by_on_device());
   ASSERT_TRUE(test_response.GetFinalStatus());
   EXPECT_EQ(*test_response.value(),
-            "Adaptation model: 2024\nContext: execute:bar off:0 max:1024\n");
+            "Adaptation model: 2024\nContext: execute:bar max:1024\n");
   EXPECT_TRUE(*test_response.provided_by_on_device());
 
   session_compose.reset();
@@ -558,10 +557,10 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelAdaptationAndBaseModelSuccess) {
 
   ASSERT_TRUE(compose_response.GetFinalStatus());
   EXPECT_EQ(*compose_response.value(),
-            "Adaptation model: 1015\nContext: execute:foo off:0 max:1024\n");
+            "Adaptation model: 1015\nContext: execute:foo max:1024\n");
   EXPECT_TRUE(*compose_response.provided_by_on_device());
   ASSERT_TRUE(test_response.GetFinalStatus());
-  EXPECT_EQ(*test_response.value(), "Context: execute:bar off:0 max:1024\n");
+  EXPECT_EQ(*test_response.value(), "Context: execute:bar max:1024\n");
   EXPECT_TRUE(*test_response.provided_by_on_device());
 
   session_compose.reset();
@@ -627,7 +626,6 @@ TEST_F(OnDeviceModelServiceControllerTest, BaseModelAvailableAfterInit) {
   });
 
   // Model not yet available.
-  base::HistogramTester histogram_tester;
   auto session = CreateSession();
   EXPECT_FALSE(session);
 
@@ -678,7 +676,6 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionBeforeAndAfterModelUpdate) {
   EXPECT_EQ(0ull, fake_launcher_.on_device_model_receiver_count());
 
   // Create a new session and verify it uses the new model.
-  base::HistogramTester histogram_tester;
   auto session2 = CreateSession();
   ASSERT_TRUE(session2);
   ResponseHolder response2;
@@ -686,7 +683,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionBeforeAndAfterModelUpdate) {
                          response2.GetStreamingCallback());
   ASSERT_TRUE(response2.GetFinalStatus());
   EXPECT_EQ(*response2.value(),
-            "Base model: 2\nContext: execute:foo off:0 max:1024\n");
+            "Base model: 2\nContext: execute:foo max:1024\n");
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SessionFailsForInvalidFeature) {
@@ -1602,7 +1599,7 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnExecute) {
   EXPECT_EQ(
       *resp1.error(),
       OptimizationGuideModelExecutionError::ModelExecutionError::kCancelled);
-  EXPECT_EQ(*resp2.value(), "Context: execute:bar off:0 max:1024\n");
+  EXPECT_EQ(*resp2.value(), "Context: execute:bar max:1024\n");
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, WontStartSessionAfterGpuBlocked) {
@@ -1788,8 +1785,8 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextDisconnectExecute) {
       "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
       ExecuteModelResult::kUsedOnDevice, 1);
   std::string expected_response =
-      ("Context: ctx:foo off:0 max:8192\n"
-       "Context: execute:foobaz off:0 max:1024\n");
+      ("Context: ctx:foo max:8192\n"
+       "Context: execute:foobaz max:1024\n");
   EXPECT_EQ(*response_.value(), expected_response);
 }
 
@@ -1827,16 +1824,16 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextMultipleSessions) {
   session2->ExecuteModel(PageUrlRequest("2"), response_.GetStreamingCallback());
   ASSERT_TRUE(response_.GetFinalStatus());
   std::string expected_response1 =
-      ("Context: ctx:bar off:0 max:8192\n"
-       "Context: execute:bar2 off:0 max:1024\n");
+      ("Context: ctx:bar max:8192\n"
+       "Context: execute:bar2 max:1024\n");
   EXPECT_EQ(*response_.value(), expected_response1);
 
   ResponseHolder response2;
   session1->ExecuteModel(PageUrlRequest("1"), response2.GetStreamingCallback());
   ASSERT_TRUE(response2.GetFinalStatus());
   std::string expected_response2 =
-      ("Context: ctx:foo off:0 max:8192\n"
-       "Context: execute:foo1 off:0 max:1024\n");
+      ("Context: ctx:foo max:8192\n"
+       "Context: execute:foo1 max:1024\n");
   EXPECT_EQ(*response2.value(), expected_response2);
 }
 
@@ -2003,25 +2000,15 @@ TEST_F(OnDeviceModelServiceControllerTest, DisconnectsWhenIdle) {
 TEST_F(OnDeviceModelServiceControllerTest,
        ShutsDownServiceAfterPerformanceCheck) {
   Initialize(standard_assets_);
-  base::test::TestFuture<OnDeviceModelPerformanceClass> result_future;
-  OnDeviceModelServiceController::GetEstimatedPerformanceClass(
-      test_controller_, result_future.GetCallback());
-  EXPECT_EQ(OnDeviceModelPerformanceClass::kVeryHigh, result_future.Get());
+  base::HistogramTester histogram_tester;
+  base::RunLoop run_loop;
+  test_controller_->EnsurePerformanceClassAvailable(run_loop.QuitClosure());
+  run_loop.Run();
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
+      OnDeviceModelPerformanceClass::kVeryHigh, 1);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(fake_launcher_.is_service_running());
-}
-
-TEST_F(OnDeviceModelServiceControllerTest,
-       PerformanceCheckKeepsControllerAlive) {
-  Initialize(standard_assets_);
-  auto weak_controller = test_controller_->GetWeakPtr();
-  access_controller_ = nullptr;  // Avoid dangling pointer
-  base::test::TestFuture<OnDeviceModelPerformanceClass> result_future;
-  OnDeviceModelServiceController::GetEstimatedPerformanceClass(
-      std::move(test_controller_), result_future.GetCallback());
-  EXPECT_EQ(OnDeviceModelPerformanceClass::kVeryHigh, result_future.Get());
-  // Verify there wasn't something else keeping the controller alive.
-  EXPECT_FALSE(weak_controller);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {
@@ -2043,8 +2030,7 @@ TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {
   session1->ExecuteModel(UserInputRequest("foo"),
                          response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
-  const std::string expected_response1 =
-      "Context: execute:foo off:0 max:1024\n";
+  const std::string expected_response1 = "Context: execute:foo max:1024\n";
   EXPECT_EQ(*response_.value(), expected_response1);
   EXPECT_THAT(response_.partials(), IsEmpty());
 
@@ -2055,20 +2041,19 @@ TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {
   session2->ExecuteModel(UserInputRequest("abarx"),
                          response2.GetStreamingCallback());
   task_environment_.RunUntilIdle();
-  const std::string expected_response2 =
-      "Context: execute:abarx off:0 max:1024\n";
+  const std::string expected_response2 = "Context: execute:abarx max:1024\n";
   EXPECT_EQ(*response2.value(), expected_response2);
   EXPECT_THAT(response2.partials(), IsEmpty());
 
   // Output contains redacted text (and  input doesn't), so redact.
-  fake_settings_.set_execute_result({"Context: abarx off:0 max:1024\n"});
+  fake_settings_.set_execute_result({"Context: abarx max:1024\n"});
   auto session3 = CreateSession();
   ASSERT_TRUE(session3);
   ResponseHolder response3;
   session3->ExecuteModel(UserInputRequest("foo"),
                          response3.GetStreamingCallback());
   task_environment_.RunUntilIdle();
-  const std::string expected_response3 = "Context: a[###]x off:0 max:1024\n";
+  const std::string expected_response3 = "Context: a[###]x max:1024\n";
   EXPECT_EQ(*response3.value(), expected_response3);
   EXPECT_THAT(response3.partials(), IsEmpty());
 }
@@ -2129,7 +2114,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UsePreviousResponseForRewrite) {
   });
 
   // Force 'bar' to be returned from model.
-  fake_settings_.set_execute_result({"Context: bar off:0 max:1024\n"});
+  fake_settings_.set_execute_result({"Context: bar max:1024\n"});
 
   auto session = CreateSession();
   ASSERT_TRUE(session);
@@ -2138,7 +2123,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UsePreviousResponseForRewrite) {
                         response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   // `bar` shouldn't be rewritten as it's in the input.
-  const std::string expected_response = "Context: bar off:0 max:1024\n";
+  const std::string expected_response = "Context: bar max:1024\n";
   EXPECT_EQ(*response_.value(), expected_response);
   EXPECT_THAT(response_.partials(), IsEmpty());
 }
@@ -2155,14 +2140,13 @@ TEST_F(OnDeviceModelServiceControllerTest, ReplacementText) {
   });
 
   // Output contains redacted text (and  input doesn't), so redact.
-  fake_settings_.set_execute_result({"Context: abarx off:0 max:1024\n"});
+  fake_settings_.set_execute_result({"Context: abarx max:1024\n"});
   auto session = CreateSession();
   ASSERT_TRUE(session);
   session->ExecuteModel(UserInputRequest("foo"),
                         response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
-  const std::string expected_response =
-      "Context: a[redacted]x off:0 max:1024\n";
+  const std::string expected_response = "Context: a[redacted]x max:1024\n";
   EXPECT_EQ(*response_.value(), expected_response);
   EXPECT_THAT(response_.partials(), IsEmpty());
 }
@@ -2414,7 +2398,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UsesSessionTopKAndTemperature) {
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_.value());
   const std::vector<std::string> partial_responses = {
-      "Context: execute:foo off:0 max:1024\n",
+      "Context: execute:foo max:1024\n",
   };
   EXPECT_EQ(*response_.value(), ConcatResponses(partial_responses));
   EXPECT_THAT(response_.partials(), ElementsAreArray(partial_responses));
@@ -2797,8 +2781,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_TRUE(CreateSession());
 }
 
-// TODO(crbug.com/380229867): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/380229867): Flaky on Mac and Android.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_ModelValidationNewModelVersion \
   DISABLED_ModelValidationNewModelVersion
 #else
@@ -3157,10 +3141,9 @@ TEST_F(OnDeviceModelServiceControllerTest,
   Initialize({.base_model = &base_model, .adaptations = {&compose_asset}});
   task_environment_.RunUntilIdle();
 
-  base::test::TestFuture<OnDeviceModelPerformanceClass> result_future;
-  OnDeviceModelServiceController::GetEstimatedPerformanceClass(
-      test_controller_, result_future.GetCallback());
-  EXPECT_EQ(OnDeviceModelPerformanceClass::kVeryHigh, result_future.Get());
+  base::RunLoop run_loop;
+  test_controller_->EnsurePerformanceClassAvailable(run_loop.QuitClosure());
+  run_loop.Run();
   task_environment_.RunUntilIdle();
 
   // Performance check sh;ould not shut down service.
@@ -3189,9 +3172,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
   Initialize({.base_model = &base_model, .adaptations = {&compose_asset}});
   task_environment_.RunUntilIdle();
 
-  base::test::TestFuture<OnDeviceModelPerformanceClass> result_future;
-  OnDeviceModelServiceController::GetEstimatedPerformanceClass(
-      test_controller_, result_future.GetCallback());
+  base::RunLoop run_loop;
+  test_controller_->EnsurePerformanceClassAvailable(run_loop.QuitClosure());
 
   task_environment_.FastForwardBy(base::Seconds(1) + base::Milliseconds(1));
   task_environment_.RunUntilIdle();
@@ -3202,8 +3184,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
       "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
       OnDeviceModelValidationResult::kSuccess, 1);
 
-  EXPECT_FALSE(result_future.IsReady());
-  EXPECT_EQ(OnDeviceModelPerformanceClass::kVeryHigh, result_future.Get());
+  EXPECT_FALSE(run_loop.AnyQuitCalled());
+  run_loop.Run();
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(fake_launcher_.is_service_running());
 }
@@ -3219,7 +3201,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SendsPerformanceHint) {
                         response_.GetStreamingCallback());
   ASSERT_TRUE(response_.GetFinalStatus());
   EXPECT_EQ(*response_.value(),
-            "Fastest inference\nContext: execute:foo off:0 max:1024\n");
+            "Fastest inference\nContext: execute:foo max:1024\n");
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ImageExecutionSuccess) {
@@ -3249,11 +3231,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ImageExecutionSuccess) {
          ->mutable_proto_field() = ProtoField(
         {RequestProto::kNested2FieldNumber, NestedProto::kMediaFieldNumber});
   }
-  {
-    auto& output_config = *config.mutable_output_config();
-    output_config.set_proto_type(proto::ComposeResponse().GetTypeName());
-    *output_config.mutable_proto_field() = OutputField();
-  }
+  *config.mutable_output_config() = ResponseHolderOutputConfig();
   FakeAdaptationAsset compose_asset({
       .config = config,
   });
@@ -3276,13 +3254,12 @@ TEST_F(OnDeviceModelServiceControllerTest, ImageExecutionSuccess) {
         .capabilities = {on_device_model::CapabilityFlags::kImageInput},
     });
     ASSERT_TRUE(session);
-    session->SetInput(request.Clone());
+    session->SetInput(request.Clone(), {});
     session->ExecuteModel(proto::ExampleForTestingRequest(),
                           response.GetStreamingCallback());
     ASSERT_TRUE(response.GetFinalStatus());
-    EXPECT_EQ(
-        *response.value(),
-        "Context: <image> off:0 max:22\nContext: <image> off:0 max:1024\n");
+    EXPECT_EQ(*response.value(),
+              "Context: <image> max:22\nContext: <image> max:1024\n");
   }
 
   // Session without capabilities should not allow images.
@@ -3290,13 +3267,13 @@ TEST_F(OnDeviceModelServiceControllerTest, ImageExecutionSuccess) {
     ResponseHolder response;
     auto session = CreateSession();
     ASSERT_TRUE(session);
-    session->SetInput(std::move(request));
+    session->SetInput(std::move(request), {});
     session->ExecuteModel(proto::ExampleForTestingRequest(),
                           response.GetStreamingCallback());
     ASSERT_TRUE(response.GetFinalStatus());
     EXPECT_EQ(*response.value(),
-              "Context: <unsupported> off:0 max:22\nContext: <unsupported> "
-              "off:0 max:1024\n");
+              "Context: <unsupported> max:22\nContext: <unsupported> "
+              "max:1024\n");
   }
 }
 
@@ -3305,6 +3282,111 @@ proto::SubstitutedString EmptySubstitution() {
   result.set_string_template("%s");
   result.add_substitutions()->add_candidates()->set_raw_string("");
   return result;
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, KeepInputOnExtension) {
+  using Request = proto::ExampleForTestingRequest;
+  auto kRepeatedTag = Request::kRepeatedFieldFieldNumber;
+  using Msg = proto::ExampleForTestingMessage;
+  // A simple config that includes content from the
+  // proto::ExampleForTestingRequest::repeated_field
+  FakeAdaptationAsset compose_asset({
+      .config =
+          []() {
+            proto::OnDeviceModelExecutionFeatureConfig config;
+            config.set_feature(ToModelExecutionFeatureProto(
+                ModelBasedCapabilityKey::kCompose));
+            *config.mutable_input_config() = TestInputConfig(
+                ForEachRepeated(FormatTestMessage()), EmptySubstitution());
+            *config.mutable_output_config() = ResponseHolderOutputConfig();
+            return config;
+          }(),
+  });
+  Initialize(InitializeParams{
+      .base_model = &standard_assets_.base_model,
+      .safety = &standard_assets_.safety,
+      .language = &standard_assets_.language,
+      .adaptations = {&compose_asset},
+  });
+  base::test::TestFuture<
+      base::expected<size_t, OptimizationGuideModelExecutionError>>
+      set_input_future;
+
+  auto session = CreateSession(SessionConfigParams{
+      .capabilities = {on_device_model::CapabilityFlags::kImageInput,
+                       on_device_model::CapabilityFlags::kAudioInput},
+  });
+  ASSERT_TRUE(session);
+  MultimodalMessage request((Request()));
+  request.edit()
+      .MutableRepeatedField(kRepeatedTag)
+      .Add()
+      .Set(Msg::kStringValueFieldNumber, "v1");
+  request.edit()
+      .MutableRepeatedField(kRepeatedTag)
+      .Add()
+      .Set(Msg::kMediaFieldNumber, CreateBlackSkBitmap(1, 1));
+  request.edit()
+      .MutableRepeatedField(kRepeatedTag)
+      .Add()
+      .Set(Msg::kMediaFieldNumber, CreateDummyAudioBuffer());
+  session->SetInput(request.Clone(), {});
+  request.edit()
+      .MutableRepeatedField(kRepeatedTag)
+      .Add()
+      .Set(Msg::kStringValueFieldNumber, "v2");
+  session->SetInput(request.Clone(), set_input_future.GetCallback());
+  // Waiting for outstanding calls should let max_tokens be updated.
+  EXPECT_EQ(*set_input_future.Take(), 18ul);
+  request.edit()
+      .MutableRepeatedField(kRepeatedTag)
+      .Add()
+      .Set(Msg::kStringValueFieldNumber, "v3");
+  session->SetInput(request.Clone(), {});
+
+  // Make a clone that extends from the original input.
+  auto extended_clone = session->Clone();
+  request.edit()
+      .MutableRepeatedField(kRepeatedTag)
+      .Add()
+      .Set(Msg::kStringValueFieldNumber, "v4");
+  extended_clone->SetInput(request.Clone(), {});
+
+  // Make a clone that also alters the original request.
+  auto altered_clone = session->Clone();
+  request.edit()
+      .MutableRepeatedField(kRepeatedTag)
+      .Get(1)
+      .Set(Msg::kMediaFieldNumber, CreateBlackSkBitmap(2, 2));
+  altered_clone->SetInput(request.Clone(), {});
+
+  // The altered clone should have reset + resent all input in one chunk.
+  ResponseHolder altered_response;
+  altered_clone->ExecuteModel(proto::ExampleForTestingRequest(),
+                              altered_response.GetStreamingCallback());
+  ASSERT_TRUE(altered_response.GetFinalStatus());
+  EXPECT_EQ(*altered_response.value(),
+            "Context: v1<image><audio>v2v3v4 max:22\n");
+
+  // The clone that only extended should have sent input in separate chunks.
+  ResponseHolder extended_response;
+  extended_clone->ExecuteModel(proto::ExampleForTestingRequest(),
+                               extended_response.GetStreamingCallback());
+  ASSERT_TRUE(extended_response.GetFinalStatus());
+  EXPECT_EQ(*extended_response.value(),
+            "Context: v1<image><audio> max:22\n"
+            "Context: v2 max:22\n"
+            "Context: v3 max:4\n"
+            "Context: v4 max:4\n");
+
+  // The original should have input in separate chunks.
+  session->ExecuteModel(proto::ExampleForTestingRequest(),
+                        response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  EXPECT_EQ(*response_.value(),
+            "Context: v1<image><audio> max:22\n"
+            "Context: v2 max:22\n"
+            "Context: v3 max:4\n");
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, OmitEmptyInputs) {
@@ -3321,12 +3403,7 @@ TEST_F(OnDeviceModelServiceControllerTest, OmitEmptyInputs) {
             *input_config.add_input_context_substitutions() =
                 EmptySubstitution();
             *input_config.add_execute_substitutions() = EmptySubstitution();
-            {
-              auto& output_config = *config.mutable_output_config();
-              output_config.set_proto_type(
-                  proto::ComposeResponse().GetTypeName());
-              *output_config.mutable_proto_field() = OutputField();
-            }
+            *config.mutable_output_config() = ResponseHolderOutputConfig();
             return config;
           }(),
   });
@@ -3339,7 +3416,7 @@ TEST_F(OnDeviceModelServiceControllerTest, OmitEmptyInputs) {
   auto session = CreateSession();
   ASSERT_TRUE(session);
   MultimodalMessage request((proto::ExampleForTestingRequest()));
-  session->SetInput(std::move(request));
+  session->SetInput(std::move(request), {});
   session->ExecuteModel(proto::ExampleForTestingRequest(),
                         response_.GetStreamingCallback());
   ASSERT_TRUE(response_.GetFinalStatus());
@@ -3380,7 +3457,7 @@ TEST_F(OnDeviceModelServiceControllerTest, CloneUsesSessionTopKAndTemperature) {
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_.value());
   const std::vector<std::string> partial_responses = {
-      "Context: execute:foo off:0 max:1024\n",
+      "Context: execute:foo max:1024\n",
   };
   EXPECT_EQ(*response_.value(), ConcatResponses(partial_responses));
   EXPECT_THAT(response_.partials(), ElementsAreArray(partial_responses));
@@ -3470,8 +3547,8 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextAndClone) {
     clone->ExecuteModel(PageUrlRequest("bar"), response.GetStreamingCallback());
     ASSERT_TRUE(response.GetFinalStatus());
     std::string expected_response =
-        ("Context: ctx:foo off:0 max:8192\n"
-         "Context: execute:foobar off:0 max:1024\n");
+        ("Context: ctx:foo max:8192\n"
+         "Context: execute:foobar max:1024\n");
     EXPECT_EQ(*response.value(), expected_response);
   }
 
@@ -3482,8 +3559,8 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextAndClone) {
                           response.GetStreamingCallback());
     ASSERT_TRUE(response.GetFinalStatus());
     std::string expected_response =
-        ("Context: ctx:foo off:0 max:8192\n"
-         "Context: execute:fooblah off:0 max:1024\n");
+        ("Context: ctx:foo max:8192\n"
+         "Context: execute:fooblah max:1024\n");
     EXPECT_EQ(*response.value(), expected_response);
   }
 }
@@ -3502,7 +3579,7 @@ TEST_F(OnDeviceModelServiceControllerTest, CloneBeforeAddContext) {
     ResponseHolder response;
     clone->ExecuteModel(PageUrlRequest("bar"), response.GetStreamingCallback());
     ASSERT_TRUE(response.GetFinalStatus());
-    EXPECT_EQ(*response.value(), "Context: execute:bar off:0 max:1024\n");
+    EXPECT_EQ(*response.value(), "Context: execute:bar max:1024\n");
   }
 
   // Original session should execute with context
@@ -3512,8 +3589,8 @@ TEST_F(OnDeviceModelServiceControllerTest, CloneBeforeAddContext) {
                           response.GetStreamingCallback());
     ASSERT_TRUE(response.GetFinalStatus());
     std::string expected_response =
-        ("Context: ctx:foo off:0 max:8192\n"
-         "Context: execute:fooblah off:0 max:1024\n");
+        ("Context: ctx:foo max:8192\n"
+         "Context: execute:fooblah max:1024\n");
     EXPECT_EQ(*response.value(), expected_response);
   }
 }
@@ -3531,7 +3608,7 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelAddContextAndClone) {
   ResponseHolder response;
   clone->ExecuteModel(PageUrlRequest("bar"), response.GetStreamingCallback());
   ASSERT_TRUE(response.GetFinalStatus());
-  EXPECT_EQ(*response.value(), "Context: execute:foobar off:0 max:1024\n");
+  EXPECT_EQ(*response.value(), "Context: execute:foobar max:1024\n");
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, CloneAddContextDisconnectExecute) {
@@ -3550,8 +3627,8 @@ TEST_F(OnDeviceModelServiceControllerTest, CloneAddContextDisconnectExecute) {
   clone->ExecuteModel(PageUrlRequest("bar"), response.GetStreamingCallback());
   ASSERT_TRUE(response.GetFinalStatus());
   std::string expected_response =
-      ("Context: ctx:foo off:0 max:8192\n"
-       "Context: execute:foobar off:0 max:1024\n");
+      ("Context: ctx:foo max:8192\n"
+       "Context: execute:foobar max:1024\n");
   EXPECT_EQ(*response.value(), expected_response);
 }
 
@@ -3576,49 +3653,228 @@ TEST_F(OnDeviceModelServiceControllerTest, Broker) {
   ResponseHolder response;
   session->ExecuteModel(PageUrlRequest("bar"), response.GetStreamingCallback());
   ASSERT_TRUE(response.GetFinalStatus());
-  EXPECT_EQ(*response.value(), "Context: execute:bar off:0 max:1024\n");
+  EXPECT_EQ(*response.value(), "Context: execute:bar max:1024\n");
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       BrokerCreateSessionRunsPerformanceClassCheck) {
+  base::HistogramTester histogram_tester;
+  mojo::PendingReceiver<mojom::ModelBroker> pending_broker;
+
+  ModelBrokerClient broker_client(
+      pending_broker.InitWithNewPipeAndPassRemote(),
+      CreateSessionArgs(logger_.GetWeakPtr(), FailOnRemoteFallback()));
+  base::test::TestFuture<
+      std::unique_ptr<OptimizationGuideModelExecutor::Session>>
+      session_future;
+  broker_client.CreateSession(mojom::ModelBasedCapabilityKey::kCompose,
+                              std::nullopt, session_future.GetCallback());
+
+  Initialize(standard_assets_);
+  test_controller_->BindBroker(std::move(pending_broker));
+
+  ASSERT_TRUE(session_future.Take());
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
+      OnDeviceModelPerformanceClass::kVeryHigh, 1);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, Priority) {
   Initialize(standard_assets_);
 
-  base::HistogramTester histogram_tester;
   auto session = CreateSession();
   EXPECT_TRUE(session);
 
-  EXPECT_EQ(GetResponse(*session, "foo"),
-            "Context: execute:foo off:0 max:1024\n");
+  EXPECT_EQ(GetResponse(*session, "foo"), "Context: execute:foo max:1024\n");
 
   session->SetPriority(on_device_model::mojom::Priority::kBackground);
   EXPECT_EQ(GetResponse(*session, "foo"),
-            "Priority: background\nContext: execute:foo off:0 max:1024\n");
+            "Priority: background\nContext: execute:foo max:1024\n");
   EXPECT_EQ(GetResponse(*session, "foo"),
-            "Priority: background\nContext: execute:foo off:0 max:1024\n");
+            "Priority: background\nContext: execute:foo max:1024\n");
 
   session->SetPriority(on_device_model::mojom::Priority::kForeground);
-  EXPECT_EQ(GetResponse(*session, "foo"),
-            "Context: execute:foo off:0 max:1024\n");
+  EXPECT_EQ(GetResponse(*session, "foo"), "Context: execute:foo max:1024\n");
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, PriorityClone) {
   Initialize(standard_assets_);
 
-  base::HistogramTester histogram_tester;
   auto session = CreateSession();
   EXPECT_TRUE(session);
 
-  EXPECT_EQ(GetResponse(*session, "foo"),
-            "Context: execute:foo off:0 max:1024\n");
+  EXPECT_EQ(GetResponse(*session, "foo"), "Context: execute:foo max:1024\n");
 
   session->SetPriority(on_device_model::mojom::Priority::kBackground);
   EXPECT_EQ(GetResponse(*session, "foo"),
-            "Priority: background\nContext: execute:foo off:0 max:1024\n");
+            "Priority: background\nContext: execute:foo max:1024\n");
 
   auto clone = session->Clone();
   EXPECT_EQ(GetResponse(*clone, "foo"),
-            "Priority: background\nContext: execute:foo off:0 max:1024\n");
+            "Priority: background\nContext: execute:foo max:1024\n");
   EXPECT_EQ(GetResponse(*clone, "foo"),
-            "Priority: background\nContext: execute:foo off:0 max:1024\n");
+            "Priority: background\nContext: execute:foo max:1024\n");
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, SetInputCallback) {
+  Initialize(standard_assets_);
+
+  auto session = CreateSession();
+  ASSERT_TRUE(session);
+
+  MultimodalMessage request((UserInputRequest("foo")));
+  base::test::TestFuture<
+      base::expected<size_t, OptimizationGuideModelExecutionError>>
+      future;
+  session->SetInput(std::move(request), future.GetCallback());
+  EXPECT_EQ(*future.Get(), std::string("ctx:foo").size());
+
+  session->ExecuteModel(PageUrlRequest("bar"),
+                        response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  EXPECT_EQ(response_.value(),
+            "Context: ctx:foo max:8192\nContext: execute:foobar "
+            "max:1024\n");
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, SetInputCallbackCancelled) {
+  Initialize(standard_assets_);
+
+  auto session = CreateSession();
+  ASSERT_TRUE(session);
+
+  MultimodalMessage request((UserInputRequest("foo")));
+  base::test::TestFuture<
+      base::expected<size_t, OptimizationGuideModelExecutionError>>
+      future1;
+  base::test::TestFuture<
+      base::expected<size_t, OptimizationGuideModelExecutionError>>
+      future2;
+  session->SetInput(request.Clone(), future1.GetCallback());
+  session->SetInput(std::move(request), future2.GetCallback());
+
+  // First request is cancelled, second request completes.
+  EXPECT_EQ(
+      future1.Get().error().error(),
+      OptimizationGuideModelExecutionError::ModelExecutionError::kCancelled);
+  EXPECT_EQ(*future2.Get(), std::string("ctx:foo").size());
+
+  session->ExecuteModel(PageUrlRequest("bar"),
+                        response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  EXPECT_EQ(response_.value(),
+            "Context: ctx:foo max:8192\nContext: execute:foobar "
+            "max:1024\n");
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, SetInputCallbackError) {
+  Initialize(standard_assets_);
+
+  auto session = CreateSession();
+  ASSERT_TRUE(session);
+
+  MultimodalMessage request((proto::ExampleForTestingRequest()));
+  base::test::TestFuture<
+      base::expected<size_t, OptimizationGuideModelExecutionError>>
+      future;
+  session->SetInput(std::move(request), future.GetCallback());
+  EXPECT_EQ(future.Get().error().error(),
+            OptimizationGuideModelExecutionError::ModelExecutionError::
+                kInvalidRequest);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, TokenCounts) {
+  Initialize(standard_assets_);
+
+  auto session = CreateSession();
+  ASSERT_TRUE(session);
+
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  EXPECT_EQ(response_.value(), "Context: execute:foo max:1024\n");
+  EXPECT_EQ(response_.input_token_count(), strlen("execute:foo"));
+  EXPECT_EQ(response_.output_token_count(), strlen("execute:foo max:1024"));
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, ResponseConstraintOnExecute) {
+  Initialize(standard_assets_);
+  auto session = test_controller_->CreateSession(
+      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(),
+      /*config_params=*/std::nullopt);
+  ASSERT_TRUE(session);
+  session->ExecuteModelWithResponseConstraint(
+      PageUrlRequest("input"),
+      on_device_model::mojom::ResponseConstraint::NewRegex("[A-Z]*"),
+      response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  EXPECT_EQ(response_.value(),
+            "Constraint: regex [A-Z]*\n"
+            "Context: execute:input max:1024\n");
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, ResponseConstraintConfigJson) {
+  FakeAdaptationAsset test_asset({
+      .config =
+          []() {
+            auto config = SimpleComposeConfig();
+            config.mutable_output_config()
+                ->mutable_response_constraint()
+                ->set_json_schema("{ type: \"object\"}");
+            return config;
+          }(),
+  });
+
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .safety = &standard_assets_.safety,
+      .language = &standard_assets_.language,
+      .adaptations = {&test_asset},
+  });
+
+  auto session = test_controller_->CreateSession(
+      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(),
+      /*config_params=*/std::nullopt);
+  ASSERT_TRUE(session);
+
+  session->ExecuteModel(PageUrlRequest("input"),
+                        response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  EXPECT_EQ(response_.value(),
+            "Constraint: json { type: \"object\"}\n"
+            "Context: execute:input max:1024\n");
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, ResponseConstraintConfigRegex) {
+  FakeAdaptationAsset test_asset({
+      .config =
+          []() {
+            auto config = SimpleComposeConfig();
+            config.mutable_output_config()
+                ->mutable_response_constraint()
+                ->set_regex("[A-Z]*");
+            return config;
+          }(),
+  });
+
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .safety = &standard_assets_.safety,
+      .language = &standard_assets_.language,
+      .adaptations = {&test_asset},
+  });
+
+  auto session = test_controller_->CreateSession(
+      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(),
+      /*config_params=*/std::nullopt);
+  ASSERT_TRUE(session);
+
+  session->ExecuteModel(PageUrlRequest("input"),
+                        response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  EXPECT_EQ(response_.value(),
+            "Constraint: regex [A-Z]*\n"
+            "Context: execute:input max:1024\n");
 }
 
 }  // namespace optimization_guide

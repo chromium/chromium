@@ -10,6 +10,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetListContainerViewBinder;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetViewBinder;
@@ -19,6 +20,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator for the NTP cards bottom sheet. */
+@NullMarked
 public class NtpCardsCoordinator {
     private NtpCardsMediator mMediator;
 

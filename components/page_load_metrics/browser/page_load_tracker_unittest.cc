@@ -7,6 +7,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_content_test_harness.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/prerender_test_util.h"
@@ -251,8 +252,13 @@ TEST_F(PageLoadTrackerTest, EventForwarding) {
   // disabled, the same RenderFrameHost will be reused and not be deleted.
 
 #if BUILDFLAG(IS_ANDROID)
+  // With default SiteInstanceGroup enabled, the navigations are all
+  // cross-SiteInstance, so there will be as many RenderFrameHost deletions as
+  // in the (non-Android) Site Isolation cases, which is possibly more than the
+  // RenderDocument cases. (Applies here and below.)
   if (content::WillSameSiteNavigationChangeRenderFrameHosts(
-          /*is_main_frame=*/true)) {
+          /*is_main_frame=*/true) ||
+      base::FeatureList::IsEnabled(features::kDefaultSiteInstanceGroups)) {
     EXPECT_EQ(1u, GetEvents().render_frame_deleted_count);
   } else {
     EXPECT_EQ(0u, GetEvents().render_frame_deleted_count);
@@ -280,6 +286,9 @@ TEST_F(PageLoadTrackerTest, EventForwarding) {
   if (content::WillSameSiteNavigationChangeRenderFrameHosts(
           /*is_main_frame=*/true)) {
     EXPECT_EQ(1u, GetEvents().render_frame_deleted_count);
+  } else if (base::FeatureList::IsEnabled(
+                 features::kDefaultSiteInstanceGroups)) {
+    EXPECT_EQ(2u, GetEvents().render_frame_deleted_count);
   } else {
     EXPECT_EQ(0u, GetEvents().render_frame_deleted_count);
   }
@@ -296,6 +305,9 @@ TEST_F(PageLoadTrackerTest, EventForwarding) {
   if (content::WillSameSiteNavigationChangeRenderFrameHosts(
           /*is_main_frame=*/true)) {
     EXPECT_EQ(2u, GetEvents().render_frame_deleted_count);
+  } else if (base::FeatureList::IsEnabled(
+                 features::kDefaultSiteInstanceGroups)) {
+    EXPECT_EQ(3u, GetEvents().render_frame_deleted_count);
   } else {
     EXPECT_EQ(1u, GetEvents().render_frame_deleted_count);
   }
@@ -310,6 +322,9 @@ TEST_F(PageLoadTrackerTest, EventForwarding) {
   if (content::WillSameSiteNavigationChangeRenderFrameHosts(
           /*is_main_frame=*/true)) {
     EXPECT_EQ(3u, GetEvents().render_frame_deleted_count);
+  } else if (base::FeatureList::IsEnabled(
+                 features::kDefaultSiteInstanceGroups)) {
+    EXPECT_EQ(4u, GetEvents().render_frame_deleted_count);
   } else {
     EXPECT_EQ(2u, GetEvents().render_frame_deleted_count);
   }

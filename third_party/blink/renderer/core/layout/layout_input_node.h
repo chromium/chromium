@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/layout_box_utils.h"
 #include "third_party/blink/renderer/core/layout/list/layout_outside_list_marker.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
@@ -155,7 +154,7 @@ class CORE_EXPORT LayoutInputNode {
   bool IsMathML() const { return box_->IsMathML(); }
 
   bool IsAnonymous() const { return box_->IsAnonymous(); }
-  bool IsAnonymousBlock() const { return box_->IsAnonymousBlock(); }
+  bool IsAnonymousBlockFlow() const { return box_->IsAnonymousBlockFlow(); }
 
   // If the node is a quirky container for margin collapsing, see:
   // https://html.spec.whatwg.org/C/#margin-collapsing-quirks

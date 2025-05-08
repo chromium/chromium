@@ -8,11 +8,16 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
+namespace base {
+class CommandLine;
+}
 
 namespace content {
 class BrowserContext;
@@ -20,6 +25,10 @@ class BrowserContext;
 
 namespace extensions {
 class PermissionSet;
+}
+
+namespace update_client {
+class UpdateClient;
 }
 
 namespace user_prefs {
@@ -31,10 +40,11 @@ class Profile;
 namespace extensions {
 
 class Extension;
+class ScopedExtensionUpdaterKeepAlive;
 
 namespace util {
 
-// Returns true if the extension associated with |extension_id| has isolated
+// Returns true if the extension associated with `extension_id` has isolated
 // storage. This can be either because it is an app that requested this in its
 // manifest, or because it is a policy-installed app or extension running on
 // the Chrome OS sign-in profile.
@@ -43,14 +53,14 @@ bool HasIsolatedStorage(const std::string& extension_id,
 bool HasIsolatedStorage(const Extension& extension,
                         content::BrowserContext* context);
 
-// Sets whether |extension_id| can run in an incognito window. Reloads the
+// Sets whether `extension_id` can run in an incognito window. Reloads the
 // extension if it's enabled since this permission is applied at loading time
 // only. Note that an ExtensionService must exist.
 void SetIsIncognitoEnabled(const std::string& extension_id,
                            content::BrowserContext* context,
                            bool enabled);
 
-// Sets whether |extension_id| can inject scripts into pages with file URLs.
+// Sets whether `extension_id` can inject scripts into pages with file URLs.
 // Reloads the extension if it's enabled since this permission is applied at
 // loading time only. Note than an ExtensionService must exist.
 void SetAllowFileAccess(const std::string& extension_id,
@@ -62,7 +72,7 @@ void SetAllowFileAccess(const std::string& extension_id,
 base::Value::Dict GetExtensionInfo(const Extension* extension);
 
 // Returns a PermissionSet configured with the permissions that should be
-// displayed in an extension installation prompt for the specified |extension|.
+// displayed in an extension installation prompt for the specified `extension`.
 std::unique_ptr<const PermissionSet> GetInstallPromptPermissionSetForExtension(
     const Extension* extension,
     Profile* profile);
@@ -91,6 +101,23 @@ std::u16string GetFixupExtensionNameForUIDisplay(
 
 // Registers miscellaneous chrome-level extension-related prefs.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
+// Returns a new UpdateClient.
+// TODO(crbug.com/415033270): Move this to ChromeExtensionsBrowserClient when
+// DesktopAndroidExtensionsBrowserClient is deleted.
+scoped_refptr<update_client::UpdateClient> CreateUpdateClient(
+    content::BrowserContext* context);
+
+// Returns a new ScopedExtensionUpdaterKeepAlive.
+// TODO(crbug.com/415033270): Move this to ChromeExtensionsBrowserClient when
+// DesktopAndroidExtensionsBrowserClient is deleted.
+std::unique_ptr<ScopedExtensionUpdaterKeepAlive> CreateUpdaterKeepAlive(
+    content::BrowserContext* context);
+
+// Returns true if extensions have been disabled (e.g. via a command-line flag
+// or preference).
+bool AreExtensionsDisabled(const base::CommandLine& command_line,
+                           content::BrowserContext* context);
 
 }  // namespace util
 }  // namespace extensions

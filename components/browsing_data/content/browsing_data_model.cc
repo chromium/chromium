@@ -752,10 +752,6 @@ bool BrowsingDataModel::Iterator::operator==(const Iterator& other) const {
          inner_iterator_ == other.inner_iterator_;
 }
 
-bool BrowsingDataModel::Iterator::operator!=(const Iterator& other) const {
-  return !operator==(other);
-}
-
 BrowsingDataModel::BrowsingDataEntryView
 BrowsingDataModel::Iterator::operator*() const {
   DCHECK(outer_iterator_ != outer_end_iterator_);

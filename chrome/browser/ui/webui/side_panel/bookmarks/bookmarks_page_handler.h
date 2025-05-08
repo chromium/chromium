@@ -53,6 +53,9 @@ class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler,
   void ExecuteOpenInNewTabGroupCommand(
       const std::vector<int64_t>& node_ids,
       side_panel::mojom::ActionSource source) override;
+  void ExecuteOpenInSplitViewCommand(
+      const std::vector<int64_t>& node_ids,
+      side_panel::mojom::ActionSource source) override;
   void ExecuteEditCommand(const std::vector<int64_t>& node_ids,
                           side_panel::mojom::ActionSource source) override;
   void ExecuteMoveCommand(const std::vector<int64_t>& node_ids,

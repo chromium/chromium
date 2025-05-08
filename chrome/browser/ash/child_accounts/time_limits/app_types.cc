@@ -77,14 +77,6 @@ AppId& AppId::operator=(AppId&&) = default;
 
 AppId::~AppId() = default;
 
-bool AppId::operator==(const AppId& rhs) const {
-  return app_type_ == rhs.app_type() && app_id_ == rhs.app_id();
-}
-
-bool AppId::operator!=(const AppId& rhs) const {
-  return !(*this == rhs);
-}
-
 bool AppId::operator<(const AppId& rhs) const {
   return app_id_ < rhs.app_id();
 }

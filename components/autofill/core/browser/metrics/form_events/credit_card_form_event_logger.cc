@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/metrics/payments/card_unmask_flow_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/virtual_card_standalone_cvc_suggestion_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
+#include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -150,35 +151,19 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
   }
 
   if (!has_logged_suggestions_shown_on_bnpl_eligible_merchant_ &&
-      IsEligibleForBnpl(
-          owner_->client().GetLastCommittedPrimaryMainFrameURL())) {
+      IsEligibleForBnpl()) {
     LogBnplFormEvent(BnplFormEvent::kSuggestionsShown);
     has_logged_suggestions_shown_on_bnpl_eligible_merchant_ = true;
   }
 }
 
-bool CreditCardFormEventLogger::IsEligibleForBnpl(GURL url) {
-  AutofillClient& autofill_client = owner_->client();
-  AutofillOptimizationGuide* autofill_optimization_guide =
-      autofill_client.GetAutofillOptimizationGuide();
-  if (!autofill_optimization_guide) {
+bool CreditCardFormEventLogger::IsEligibleForBnpl() {
+  payments::BnplManager* bnpl_manager = owner_->GetPaymentsBnplManager();
+  if (!bnpl_manager) {
     return false;
   }
 
-  payments::PaymentsAutofillClient* payments_autofill_client =
-      autofill_client.GetPaymentsAutofillClient();
-  if (!payments_autofill_client) {
-    return false;
-  }
-
-  const auto& bnpl_issuers =
-      payments_autofill_client->GetPaymentsDataManager().GetBnplIssuers();
-  return std::any_of(bnpl_issuers.begin(), bnpl_issuers.end(),
-                     [&](const auto& issuer) {
-                       return autofill_optimization_guide
-                           ->IsUrlEligibleForCheckoutAmountSearchForIssuerId(
-                               issuer.issuer_id(), url);
-                     });
+  return bnpl_manager->IsEligibleForBnpl();
 }
 
 void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
@@ -504,7 +489,8 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
         // flows.
         if (credit_card.is_bnpl_card()) {
           if (!has_logged_form_filled_with_bnpl_vcn_) {
-            LogFormFilledWithBnplVcn(credit_card.issuer_id());
+            LogFormFilledWithBnplVcn(
+                autofill::ConvertToBnplIssuerIdEnum(credit_card.issuer_id()));
             has_logged_form_filled_with_bnpl_vcn_ = true;
           }
         } else {
@@ -686,7 +672,8 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
     // influencing other VCN metrics, as these represent distinct user flows.
     if (filled_credit_card_->is_bnpl_card()) {
       if (!has_logged_form_submitted_with_bnpl_vcn_) {
-        LogFormSubmittedWithBnplVcn(filled_credit_card_->issuer_id());
+        LogFormSubmittedWithBnplVcn(autofill::ConvertToBnplIssuerIdEnum(
+            filled_credit_card_->issuer_id()));
         has_logged_form_submitted_with_bnpl_vcn_ = true;
       }
     } else {

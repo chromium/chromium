@@ -612,12 +612,19 @@ bool IsInPrunableHiddenContainerInclusive(const Node& node,
 // -----------------------------------------------------------------------------
 AXObjectType DetermineAXObjectType(const Node* node,
                                    const LayoutObject* layout_object,
-                                   bool parent_ax_known = false) {
+                                   ui::AXMode ax_mode,
+                                   bool parent_ax_known) {
   DCHECK(layout_object || node);
   bool is_display_locked =
       node ? IsDisplayLocked(node) : IsDisplayLocked(layout_object);
-  if (is_display_locked)
+  if (is_display_locked) {
+    if (!ax_mode.has_mode(ui::AXMode::kScreenReader)) {
+      // When screen readers are not present, it is safe to prune display-locked
+      // content, avoid performance degradation of content-visibility.
+      return kPruneSubtree;
+    }
     layout_object = nullptr;
+  }
   DCHECK(!node || !layout_object || layout_object->GetNode() == node);
 
   bool is_node_relevant = false;
@@ -1030,12 +1037,16 @@ AXObject* AXObjectCacheImpl::EnsureFocusedObject() {
   return obj;
 }
 
-const ui::AXMode& AXObjectCacheImpl::GetAXMode() {
+const ui::AXMode& AXObjectCacheImpl::GetAXMode() const {
   return ax_mode_;
 }
 
 void AXObjectCacheImpl::SetAXMode(const ui::AXMode& ax_mode) {
   ax_mode_ = ax_mode;
+}
+
+bool AXObjectCacheImpl::IsScreenReaderActive() const {
+  return ax_mode_.has_mode(ui::AXMode::kScreenReader);
 }
 
 AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object,
@@ -1450,7 +1461,8 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
   }
 
   // Determine the type of accessibility object to be created.
-  AXObjectType ax_type = DetermineAXObjectType(node, layout_object, parent);
+  AXObjectType ax_type =
+      DetermineAXObjectType(node, layout_object, GetAXMode(), parent);
   if (ax_type == kPruneSubtree) {
     return nullptr;
   }
@@ -3064,6 +3076,12 @@ void AXObjectCacheImpl::FinalizeTree() {
 
 void AXObjectCacheImpl::CheckStyleIsComplete(Document& document) const {
 #if EXPENSIVE_DCHECKS_ARE_ON()
+  // Style is only guaranteed to be complete for display locked objects when a
+  // screen reader is active.
+  if (!IsScreenReaderActive()) {
+    return;
+  }
+
   Element* root_element = document.documentElement();
   if (!root_element) {
     return;
@@ -5858,7 +5876,9 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
       continue;
 
     if (GetAXMode().HasFilterFlags(ui::AXMode::kOnScreenOnly)) {
-      if (!obj->WasEverOnScreen() &&
+      DUMP_WILL_BE_CHECK(obj->IsRoot() || obj->ParentObjectIncludedInTree())
+          << "Non-root object has no parent: " << obj->ToString();
+      if (!obj->IsRoot() && !obj->WasEverOnScreen() &&
           !obj->ParentObjectIncludedInTree()->WasEverOnScreen()) {
         // Off-screen children with off-screen parents are not serialized.
         continue;

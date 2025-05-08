@@ -50,12 +50,12 @@ public class TabListEditorUngroupAction extends TabListEditorAction {
     }
 
     @Override
-    public void onSelectionStateChange(List<Integer> tabIds) {
-        setEnabledAndItemCount(!tabIds.isEmpty(), tabIds.size());
+    public void onSelectionStateChange(List<TabListEditorItemSelectionId> itemIds) {
+        setEnabledAndItemCount(!itemIds.isEmpty(), itemIds.size());
     }
 
     @Override
-    public boolean performAction(List<Tab> tabsToUngroup) {
+    public boolean performAction(List<Tab> tabsToUngroup, List<String> tabGroupSyncIds) {
         assert !editorSupportsActionOnRelatedTabs()
                 : "Ungrouping is not supported when actions apply to related tabs.";
 

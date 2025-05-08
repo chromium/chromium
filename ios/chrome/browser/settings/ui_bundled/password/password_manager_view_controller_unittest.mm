@@ -12,6 +12,7 @@
 #import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -31,7 +32,9 @@
 #import "ios/chrome/browser/settings/ui_bundled/cells/inline_promo_cell.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/inline_promo_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_check_item.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_view_controller+Testing.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_mediator.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_settings_commands.h"
@@ -118,6 +121,12 @@ class PasswordManagerViewControllerTest
     passwords_settings_commands_strict_mock_ =
         OCMStrictProtocolMock(@protocol(PasswordsSettingsCommands));
     passwords_controller.handler = passwords_settings_commands_strict_mock_;
+
+    password_manager_view_controller_presentation_delegate_mock_ =
+        OCMStrictProtocolMock(
+            @protocol(PasswordManagerViewControllerPresentationDelegate));
+    passwords_controller.presentationDelegate =
+        password_manager_view_controller_presentation_delegate_mock_;
 
     // Show the Password Manager widget promo.
     passwords_controller.shouldShowPasswordManagerWidgetPromo = YES;
@@ -340,6 +349,7 @@ class PasswordManagerViewControllerTest
   ScopedKeyWindow scoped_window_;
   UIViewController* root_view_controller_ = nil;
   id passwords_settings_commands_strict_mock_;
+  id password_manager_view_controller_presentation_delegate_mock_;
 };
 
 // Tests default case has no saved sites and no blocked sites.
@@ -1275,13 +1285,111 @@ TEST_F(PasswordManagerViewControllerTest, WidgetPromoMoreInfoButtonMetric) {
       [GetPasswordManagerViewController() tableView:controller().tableView
                               cellForRowAtIndexPath:index_path]);
 
+  OCMExpect([password_manager_view_controller_presentation_delegate_mock_
+      showPasswordManagerWidgetPromoInstructions]);
+
   // Simulate tap on promo's more info button.
   [cell.moreInfoButton sendActionsForControlEvents:UIControlEventTouchUpInside];
+
+  EXPECT_OCMOCK_VERIFY(
+      password_manager_view_controller_presentation_delegate_mock_);
 
   // Bucket count should now be one.
   histogram_tester.ExpectBucketCount(
       kPasswordManagerWidgetPromoActionHistogram,
       PasswordManagerWidgetPromoAction::kOpenInstructions, 1);
+
+  [GetPasswordManagerViewController() settingsWillBeDismissed];
+}
+
+// Test verifies that the Trusted Vault widget promo cell is not displayed when
+// the flag
+// `password_manager::features::kIOSEnablePasswordManagerTrustedVaultWidget` is
+// disabled.
+TEST_F(PasswordManagerViewControllerTest,
+       TrustedVaultWidgetPromoWhenFlagIsDisabled) {
+  AddSavedForm1();
+
+  GetPasswordManagerViewController().shouldShowTrustedVaultWidgetPromo = YES;
+  [GetPasswordManagerViewController() reloadData];
+
+  EXPECT_FALSE([GetPasswordManagerViewController().tableViewModel
+      hasSectionForSectionIdentifier:SectionIdentifierTrustedVaultWidgetPromo]);
+
+  [GetPasswordManagerViewController() settingsWillBeDismissed];
+}
+
+// Test verifies the content of the Trusted Vault widget promo cell when the
+// flag
+// `password_manager::features::kIOSEnablePasswordManagerTrustedVaultWidget` is
+// enabled.
+TEST_F(PasswordManagerViewControllerTest,
+       TrustedVaultWidgetPromoWhenFlagIsEnabled) {
+  // Enable a flag `kIOSEnablePasswordManagerTrustedVaultWidget` for this test.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kIOSEnablePasswordManagerTrustedVaultWidget);
+
+  AddSavedForm1();
+
+  // Make Password Manager show the promo:
+  GetPasswordManagerViewController().shouldShowTrustedVaultWidgetPromo = YES;
+  [GetPasswordManagerViewController() reloadData];
+
+  EXPECT_EQ(1, NumberOfItemsInSection(
+                   GetSectionIndex(SectionIdentifierTrustedVaultWidgetPromo)));
+
+  InlinePromoItem* item = static_cast<InlinePromoItem*>(GetTableViewItem(
+      GetSectionIndex(SectionIdentifierTrustedVaultWidgetPromo), 0));
+
+  EXPECT_NSEQ(item.promoImage, [UIImage imageNamed:WidgetPromoImageName()]);
+  EXPECT_NSEQ(item.promoText,
+              @"You should retrieve the Trusted Vault key (TODO: refine)");
+  EXPECT_NSEQ(item.moreInfoButtonTitle, @"Retrieve the key (TODO: refine)");
+  EXPECT_FALSE(item.shouldShowCloseButton);
+  EXPECT_FALSE(GetPasswordManagerViewController().editing);
+  EXPECT_TRUE(item.enabled);
+
+  SetEditing(true);
+  EXPECT_FALSE(item.enabled);
+  EXPECT_NSEQ(item.promoImage,
+              [UIImage imageNamed:WidgetPromoDisabledImageName()]);
+  SetEditing(false);
+
+  [GetPasswordManagerViewController() settingsWillBeDismissed];
+}
+
+// Tests that `showTrustedVaultReauthForFetchKeysFromViewController` is being
+// called when tapping the trusted vault widget promo's button.
+TEST_F(PasswordManagerViewControllerTest,
+       TrustedVaultWidgetPromoTappingButton) {
+  // Enable a flag `kIOSEnablePasswordManagerTrustedVaultWidget` for this test.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kIOSEnablePasswordManagerTrustedVaultWidget);
+
+  AddSavedForm1();
+
+  // Make Password Manager show the promo:
+  GetPasswordManagerViewController().shouldShowTrustedVaultWidgetPromo = YES;
+  [GetPasswordManagerViewController() reloadData];
+
+  NSIndexPath* index_path = [NSIndexPath
+      indexPathForRow:0
+            inSection:GetSectionIndex(
+                          SectionIdentifierTrustedVaultWidgetPromo)];
+  InlinePromoCell* cell = base::apple::ObjCCastStrict<InlinePromoCell>(
+      [GetPasswordManagerViewController() tableView:controller().tableView
+                              cellForRowAtIndexPath:index_path]);
+
+  OCMExpect([password_manager_view_controller_presentation_delegate_mock_
+      performReauthenticationForRetrievingTrustedVaultKey]);
+
+  // Simulate tap on the promo's button.
+  [cell.moreInfoButton sendActionsForControlEvents:UIControlEventTouchUpInside];
+
+  EXPECT_OCMOCK_VERIFY(
+      password_manager_view_controller_presentation_delegate_mock_);
 
   [GetPasswordManagerViewController() settingsWillBeDismissed];
 }

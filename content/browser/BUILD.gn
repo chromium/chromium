@@ -18,6 +18,7 @@ import("//content/public/common/zygote/features.gni")
 import("//device/bluetooth/emulation/buildflags.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//gpu/vulkan/features.gni")
+import("//media/gpu/args.gni")
 import("//media/media_options.gni")
 import("//net/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
@@ -288,7 +289,6 @@ source_set("browser") {
     "//third_party/blink/public/strings",
     "//third_party/boringssl",
     "//third_party/brotli:dec",
-    "//third_party/distributed_point_functions",
     "//third_party/icu",
     "//third_party/inspector_protocol:crdtp",
     "//third_party/libyuv",
@@ -1167,8 +1167,6 @@ source_set("browser") {
     "gpu/gpu_internals_ui.h",
     "gpu/gpu_main_thread_factory.cc",
     "gpu/gpu_main_thread_factory.h",
-    "gpu/gpu_memory_buffer_manager_singleton.cc",
-    "gpu/gpu_memory_buffer_manager_singleton.h",
     "gpu/gpu_process_host.cc",
     "gpu/gpu_process_host.h",
     "gpu/gpu_process_host_receiver_bindings.cc",
@@ -1245,6 +1243,8 @@ source_set("browser") {
     "interest_group/dwa_auction_metrics.h",
     "interest_group/for_debugging_only_report_util.cc",
     "interest_group/for_debugging_only_report_util.h",
+    "interest_group/group_by_origin_key.cc",
+    "interest_group/group_by_origin_key.h",
     "interest_group/header_direct_from_seller_signals.cc",
     "interest_group/header_direct_from_seller_signals.h",
     "interest_group/interest_group_auction.cc",
@@ -2072,9 +2072,6 @@ source_set("browser") {
     "screenlock_monitor/screenlock_monitor_device_source.h",
     "screenlock_monitor/screenlock_monitor_source.cc",
     "screenlock_monitor/screenlock_monitor_source.h",
-    "security/coop/coop_related_group.cc",
-    "security/coop/coop_related_group.h",
-    "security/coop/coop_swap_result.h",
     "security/coop/cross_origin_isolation_mode.h",
     "security/coop/cross_origin_opener_policy_access_report_manager.cc",
     "security/coop/cross_origin_opener_policy_access_report_manager.h",
@@ -2583,8 +2580,6 @@ source_set("browser") {
       "font_access/font_enumeration_data_source_linux.h",
       "font_service.cc",
       "font_service.h",
-      "media/video_encode_accelerator_provider_launcher.cc",
-      "media/video_encode_accelerator_provider_launcher.h",
       "memory/swap_metrics_driver_impl_linux.cc",
       "memory/swap_metrics_driver_impl_linux.h",
       "sandbox_host_linux.cc",
@@ -2594,7 +2589,12 @@ source_set("browser") {
       "zygote_host/zygote_host_impl_linux.cc",
       "zygote_host/zygote_host_impl_linux.h",
     ]
-
+    if (use_linux_video_acceleration) {
+      sources += [
+        "media/video_encode_accelerator_provider_launcher.cc",
+        "media/video_encode_accelerator_provider_launcher.h",
+      ]
+    }
     public_deps += [ "//components/services/font/public/mojom" ]
 
     deps += [

@@ -273,23 +273,6 @@
   public <init>();
 }
 
-# Let proguard know CastMediaOptions in CastOptions is always null, so it can
-# trim unused MediaNotificationService methods. This saves about 170 methods in
-# the dex file. https://crbug.com/855081
--assumenosideeffects class com.google.android.gms.cast.framework.CastOptions {
-  *** getCastMediaOptions() return null;
-}
-
-# Also, because CastOptions creates a default CastMediaOptions object upon
-# construction, we need to trim out the its builder as well, so we are truly
-# assuming there's no CastMediaOptions instances anywhere. This is to avoid
-# CastMediaOptions to reference resources upon construction.
--assumenosideeffects class com.google.android.gms.cast.framework.media.CastMediaOptions$Builder {
-  public <init>();
-  public <clinit>();
-  *** build() return null;
-}
-
 # Keep implementation classes needed for split compat. These will be accessed by
 # reflection.
 -keep,allowobfuscation public class ** extends org.chromium.chrome.browser.base.SplitCompat*$Impl {
@@ -1138,7 +1121,7 @@
     boolean getRECOVER_STACK_TRACES() return false;
 }
 
-# File: ../../third_party/android_deps/autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm/kotlinx-coroutines-core-jvm-1.7.3.jar:META-INF/com.android.tools/r8/coroutines.pro
+# File: ../../third_party/android_deps/autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm/kotlinx-coroutines-core-jvm-1.8.1.jar:META-INF/com.android.tools/r8/coroutines.pro
 # When editing this file, update the following files as well:
 # - META-INF/proguard/coroutines.pro
 # - META-INF/com.android.tools/proguard/coroutines.pro

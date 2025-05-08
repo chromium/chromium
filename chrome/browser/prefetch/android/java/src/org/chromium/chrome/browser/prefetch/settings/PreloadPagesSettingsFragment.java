@@ -101,4 +101,9 @@ public class PreloadPagesSettingsFragment extends PreloadPagesSettingsFragmentBa
         PreloadPagesSettingsBridge.setState(getProfile(), newState);
         return true;
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
 }

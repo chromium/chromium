@@ -79,6 +79,7 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
                           const GURL& target_url,
                           content::WebContents* new_contents) override;
   bool IsWebContentsCreationOverridden(
+      content::RenderFrameHost* opener,
       content::SiteInstance* source_site_instance,
       content::mojom::WindowContainerType window_container_type,
       const GURL& opener_url,

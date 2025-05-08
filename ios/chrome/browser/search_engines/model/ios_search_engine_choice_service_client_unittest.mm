@@ -61,16 +61,18 @@ namespace ios {
 
 class IOSSearchEngineChoiceServiceClientTest : public PlatformTest {
  public:
-  IOSSearchEngineChoiceServiceClientTest() {}
+  IOSSearchEngineChoiceServiceClientTest() = default;
 
   void SetUp() override {
     PlatformTest::SetUp();
+    ResetDeviceRestoreDataForTesting();
     ResetSentinelFiles();
   }
 
   void TearDown() override {
-    PlatformTest::TearDown();
     ResetSentinelFiles();
+    ResetDeviceRestoreDataForTesting();
+    PlatformTest::TearDown();
   }
 
  protected:
@@ -97,7 +99,6 @@ TEST_F(IOSSearchEngineChoiceServiceClientTest, NoBackupRestore) {
                                   backed_up_creation_timestamp);
   CreateDeviceRestoreSentinelFile(GetSentinelThatIsNotBackedUpURLPath(),
                                   not_backed_up_creation_timestamp);
-  ResetDeviceRestoreDataForTesting();
   base::RunLoop run_loop;
   // Call IsFirstSessionAfterDeviceRestore() explicitly to make sure sentinel
   // files related to backup/restore are fully created before the end of the
@@ -130,7 +131,6 @@ TEST_F(IOSSearchEngineChoiceServiceClientTest,
                                   backed_up_creation_timestamp);
   CreateDeviceRestoreSentinelFile(GetSentinelThatIsNotBackedUpURLPath(),
                                   not_backed_up_creation_timestamp);
-  ResetDeviceRestoreDataForTesting();
   base::RunLoop run_loop;
   // Call IsFirstSessionAfterDeviceRestore() explicitly to make sure sentinel
   // files related to backup/restore are fully created before the end of the
@@ -159,7 +159,6 @@ TEST_F(IOSSearchEngineChoiceServiceClientTest,
 
   CreateDeviceRestoreSentinelFile(GetSentinelThatIsBackedUpURLPath(),
                                   backed_up_creation_timestamp);
-  ResetDeviceRestoreDataForTesting();
   base::RunLoop run_loop;
   // Call IsFirstSessionAfterDeviceRestore() explicitly to make sure sentinel
   // files related to backup/restore are fully created before the end of the
@@ -172,7 +171,7 @@ TEST_F(IOSSearchEngineChoiceServiceClientTest,
   search_engines::ChoiceCompletionMetadata metadata = {
       .timestamp = choice_completion_timestamp,
       .version = base::Version("1.2.3.4")};
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       ios_search_engine_choice_service_client_.DoesChoicePredateDeviceRestore(
           metadata));
 }

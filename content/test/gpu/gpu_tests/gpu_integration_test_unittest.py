@@ -158,12 +158,12 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
       # tempfile_ext.NamedTemporaryFile(), put it in the list of generators
       # starting this with block. Also remove the try finally statement
       # below.
-      temp_file = tempfile.NamedTemporaryFile(delete=False)
-      temp_file.close()
+      with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+        temp_file_name = temp_file.name
       try:
         test_argv = [
             test_name,
-            f'--write-full-results-to={temp_file.name}',
+            f'--write-full-results-to={temp_file_name}',
             # We don't want the underlying typ-based tests to report their
             # results to ResultDB.
             '--disable-resultsink',
@@ -177,10 +177,10 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
         telemetry_args = browser_test_runner.ProcessConfig(
             unittest_config, processed_args)
         run_browser_tests.RunTests(telemetry_args)
-        with open(temp_file.name) as f:
+        with open(temp_file_name, encoding='utf-8') as f:
           self._test_result = json.load(f)
       finally:
-        temp_file.close()
+        os.remove(temp_file_name)
 
   def testOverrideDefaultRetryArgumentsinRunGpuIntegrationTests(self) -> None:
     self._RunGpuIntegrationTests('run_tests_with_expectations_files',
@@ -320,7 +320,9 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
     self.assertFalse(test_class._is_asan)
 
   @mock.patch('gpu_tests.util.host_information.IsLinux', return_value=False)
-  def testGenerateNvidiaExampleTags(self, _) -> None:
+  @mock.patch('gpu_tests.util.host_information.GetSystemMemoryBytes',
+              return_value=32_000_000_000)
+  def testGenerateNvidiaExampleTags(self, _, __) -> None:
     platform = fakes.FakePlatform('win', 'win10')
     browser = fakes.FakeBrowser(platform, 'release')
     browser._returned_system_info = _GetSystemInfo(
@@ -340,10 +342,13 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
             'target-cpu-64',
             'no-clang-coverage',
             'graphite-disabled',
+            'memory_ge_16gb',
         ]))
 
   @mock.patch('gpu_tests.util.host_information.IsLinux', return_value=False)
-  def testGenerateVendorTagUsingVendorString(self, _) -> None:
+  @mock.patch('gpu_tests.util.host_information.GetSystemMemoryBytes',
+              return_value=32_000_000_000)
+  def testGenerateVendorTagUsingVendorString(self, _, __) -> None:
     platform = fakes.FakePlatform('mac', 'mojave')
     browser = fakes.FakeBrowser(platform, 'release')
     browser._returned_system_info = _GetSystemInfo(
@@ -366,10 +371,13 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
             'renderer-skia-gl',
             'no-clang-coverage',
             'graphite-disabled',
+            'memory_ge_16gb',
         ]))
 
   @mock.patch('gpu_tests.util.host_information.IsLinux', return_value=False)
-  def testGenerateVendorTagUsingDeviceString(self, _) -> None:
+  @mock.patch('gpu_tests.util.host_information.GetSystemMemoryBytes',
+              return_value=32_000_000_000)
+  def testGenerateVendorTagUsingDeviceString(self, _, __) -> None:
     platform = fakes.FakePlatform('mac', 'mojave')
     browser = fakes.FakeBrowser(platform, 'release')
     browser._returned_system_info = _GetSystemInfo(
@@ -390,7 +398,27 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
             'renderer-skia-gl',
             'no-clang-coverage',
             'graphite-disabled',
+            'memory_ge_16gb',
         ]))
+
+  @mock.patch('gpu_tests.util.host_information.IsLinux', return_value=False)
+  def testGenerateMemoryTags(self, _):
+    platform = fakes.FakePlatform('win', 'win10')
+    browser = fakes.FakeBrowser(platform, 'release')
+    browser._returned_system_info = _GetSystemInfo(
+        gpu=VENDOR_NVIDIA, device=0x1cb3, gl_renderer='ANGLE Direct3D9')
+
+    with mock.patch('gpu_tests.util.host_information.GetSystemMemoryBytes',
+                    return_value=8_000_000_000):
+      tags = _GetTagsToTest(browser)
+      self.assertIn('memory_lt_16gb', tags)
+      self.assertNotIn('memory_ge_16gb', tags)
+
+    with mock.patch('gpu_tests.util.host_information.GetSystemMemoryBytes',
+                    return_value=16_000_000_000):
+      tags = _GetTagsToTest(browser)
+      self.assertNotIn('memory_lt_16gb', tags)
+      self.assertIn('memory_ge_16gb', tags)
 
   @mock.patch.dict(os.environ, clear=True)
   def testGenerateDisplayServer(self) -> None:
@@ -626,9 +654,9 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
               '--use-global-pool',
           ] + test_args.additional_args)
       run_browser_tests.RunTests(args)
-      with open(test_results_path) as f:
+      with open(test_results_path, encoding='utf-8') as f:
         self._test_result = json.load(f)
-      with open(test_state_path) as f:
+      with open(test_state_path, encoding='utf-8') as f:
         self._test_state = json.load(f)
       actual_successes, actual_failures, actual_skips = (_ExtractTestResults(
           self._test_result))

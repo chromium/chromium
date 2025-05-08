@@ -235,7 +235,7 @@ testSuite({
         .setContent(content)
         .addOkButton('The OK Button')
         .addCancelButton()
-        .addButton('The Apply Button', goog.nullFunction)
+        .addButton('The Apply Button', () => {})
         .addClassName('myClassName');
     dialog.show();
 

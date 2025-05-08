@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/http_cache_data_counter.h"
 
 #include <algorithm>
@@ -113,7 +108,7 @@ class HttpCacheDataCounterTest : public testing::Test {
 
       auto io_buf =
           base::MakeRefCounted<net::IOBufferWithSize>(test_entry.size);
-      std::fill(io_buf->data(), io_buf->data() + test_entry.size, 0);
+      std::ranges::fill(io_buf->span(), 0);
 
       net::TestCompletionCallback write_data_callback;
       int rv = entry->WriteData(1, 0, io_buf.get(), test_entry.size,

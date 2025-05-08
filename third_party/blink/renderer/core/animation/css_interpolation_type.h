@@ -70,6 +70,8 @@ class CORE_EXPORT CSSInterpolationType : public InterpolationType {
     NOTREACHED();
   }
 
+  void Trace(Visitor* v) const override;
+
  protected:
   explicit CSSInterpolationType(PropertyHandle,
                                 const PropertyRegistration* = nullptr);
@@ -117,7 +119,7 @@ class CORE_EXPORT CSSInterpolationType : public InterpolationType {
                                 const NonInterpolableValue*,
                                 StyleResolverState&) const;
 
-  WeakPersistent<const PropertyRegistration> registration_;
+  WeakMember<const PropertyRegistration> registration_;
 };
 
 }  // namespace blink

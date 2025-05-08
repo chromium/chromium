@@ -28,6 +28,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/trace_event/base_tracing.h"
 #include "components/embedder_support/android/util/features.h"
@@ -358,12 +359,6 @@ void ClientMapEntryUpdater::WebContentsDestroyed() {
   delete this;
 }
 
-base::SequencedTaskRunner* GetGlobalSequencedTaskRunner() {
-  static base::NoDestructor<scoped_refptr<base::SequencedTaskRunner>> instance(
-      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
-  return instance->get();
-}
-
 }  // namespace
 
 WebContentsKey GetWebContentsKey(content::WebContents& web_contents) {
@@ -502,9 +497,12 @@ void StartShouldInterceptRequest(
   TRACE_EVENT0("android_webview", "RunShouldInterceptRequest");
   // The app may perform blocking calls as part of synchronous
   // shouldInterceptRequest, so mark the rest of this scope as possibly
-  // blocking.
+  // blocking. This will ensure that the thread pool is expanded to avoid it
+  // being exhausted if all the threads end up waiting at the same time.
+  // See https://crbug.com/404563944 for an example of this happening.
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
+
   JNIEnv* env = AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> obj = ref.get(env);
   if (!obj) {
@@ -549,20 +547,11 @@ void AwContentsIoThreadClient::ShouldInterceptRequestAsync(
   if (mediator) {
     const base::TimeTicks request_started = base::TimeTicks::Now();
     // The mediator is kept alive on the Java side.
-    if (base::FeatureList::IsEnabled(
-            features::kWebViewSequencedShouldInterceptRequest)) {
-      GetGlobalSequencedTaskRunner()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&StartShouldInterceptRequest, std::move(request),
-                         request_started, std::move(callback),
-                         JavaObjectWeakGlobalRef(env, mediator)));
-    } else {
-      sequenced_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&StartShouldInterceptRequest, std::move(request),
-                         request_started, std::move(callback),
-                         JavaObjectWeakGlobalRef(env, mediator)));
-    }
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&StartShouldInterceptRequest, std::move(request),
+                       request_started, std::move(callback),
+                       JavaObjectWeakGlobalRef(env, mediator)));
   } else {
     Java_AwContentsIoThreadClient_onLoadResource(env, java_object_,
                                                  request.url);
@@ -623,6 +612,14 @@ bool AwContentsIoThreadClient::ShouldBlockNetworkLoads() const {
   JNIEnv* env = AttachCurrentThread();
   return Java_AwContentsIoThreadClient_shouldBlockNetworkLoads(env,
                                                                java_object_);
+}
+
+bool AwContentsIoThreadClient::ShouldIncludeCookiesOnIntercept() const {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  JNIEnv* env = AttachCurrentThread();
+  return Java_AwContentsIoThreadClient_shouldIncludeCookiesInIntercept(
+      env, java_object_);
 }
 
 }  // namespace android_webview

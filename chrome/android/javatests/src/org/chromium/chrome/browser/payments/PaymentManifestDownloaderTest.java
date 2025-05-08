@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.payments;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -23,7 +22,9 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.payments.CSPChecker;
 import org.chromium.components.payments.PaymentManifestDownloader;
 import org.chromium.components.payments.PaymentManifestDownloader.ManifestDownloadCallback;
@@ -37,7 +38,8 @@ import org.chromium.url.Origin;
 @MediumTest
 public class PaymentManifestDownloaderTest implements ManifestDownloadCallback {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final String EXPECTED_PAYMENT_METHOD_MANIFEST =
             "{\n" + "  \"default_applications\": [\"https://bobpay.test/app.json\"]\n" + "}\n";
@@ -98,14 +100,12 @@ public class PaymentManifestDownloaderTest implements ManifestDownloadCallback {
 
     @Before
     public void setUp() throws Throwable {
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mServer =
-                EmbeddedTestServer.createAndStartServer(
-                        ApplicationProvider.getApplicationContext());
+        mServer = mActivityTestRule.getTestServer();
+        WebPageStation page = mActivityTestRule.startOnBlankPage();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mDownloader.initialize(
-                            mActivityTestRule.getActivity().getCurrentWebContents(),
+                            page.webContentsElement.get(),
                             new CSPChecker() {
                                 @Override
                                 public void allowConnectToSource(

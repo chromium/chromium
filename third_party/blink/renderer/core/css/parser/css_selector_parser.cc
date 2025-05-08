@@ -2566,6 +2566,9 @@ static void RecordUsageAndDeprecationsOneSelector(
     case CSSSelector::kPseudoHas:
       feature = WebFeature::kCSSSelectorPseudoHas;
       break;
+    case CSSSelector::kPseudoHasSlotted:
+      feature = WebFeature::kCSSSelectorPseudoHasSlotted;
+      break;
     case CSSSelector::kPseudoState:
       feature = WebFeature::kCSSSelectorPseudoState;
       break;

@@ -44,6 +44,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/base/mojom/menu_source_type.mojom-shared.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -226,13 +227,21 @@ bool TabGroupHeader::OnMouseDragged(const ui::MouseEvent& event) {
 
 void TabGroupHeader::OnMouseReleased(const ui::MouseEvent& event) {
   if (!dragging()) {
-    if (event.IsLeftMouseButton()) {
-      tab_slot_controller_->ToggleTabGroupCollapsedState(
-          group().value(), ToggleTabGroupCollapsedStateOrigin::kMouse);
-    } else if (event.IsRightMouseButton() &&
-               !editor_bubble_tracker_.is_open()) {
+    bool open_editor_bubble =
+        base::FeatureList::IsEnabled(tab_groups::kLeftClickOpensTabGroupBubble)
+            ? (event.IsLeftMouseButton() && !editor_bubble_tracker_.is_open())
+            : (event.IsRightMouseButton() && !editor_bubble_tracker_.is_open());
+    bool toggle_collapse =
+        base::FeatureList::IsEnabled(tab_groups::kLeftClickOpensTabGroupBubble)
+            ? event.IsRightMouseButton()
+            : event.IsLeftMouseButton();
+
+    if (open_editor_bubble) {
       editor_bubble_tracker_.Opened(TabGroupEditorBubbleView::Show(
           tab_slot_controller_->GetBrowser(), group().value(), this));
+    } else if (toggle_collapse) {
+      tab_slot_controller_->ToggleTabGroupCollapsedState(
+          group().value(), ToggleTabGroupCollapsedStateOrigin::kMouse);
     }
   }
 
@@ -337,7 +346,12 @@ void TabGroupHeader::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
     ui::mojom::MenuSourceType source_type) {
-  if (editor_bubble_tracker_.is_open()) {
+  // Right click toggles ShowContextMenuForViewImpl, which we dont want to occur
+  // if the left click should toggle the context menu.
+  if ((source_type == ui::mojom::MenuSourceType::kMouse &&
+       base::FeatureList::IsEnabled(
+           tab_groups::kLeftClickOpensTabGroupBubble)) ||
+      editor_bubble_tracker_.is_open()) {
     return;
   }
 
@@ -460,13 +474,20 @@ void TabGroupHeader::UpdateAccessibleName() {
       is_collapsed ? l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_COLLAPSED)
                    : l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_EXPANDED);
 #endif
+
+  const std::u16string& shared_state =
+      should_show_header_icon_
+          ? l10n_util::GetStringUTF16(IDS_SAVED_GROUP_AX_LABEL_SHARED)
+          : u"";
+
   if (title.empty()) {
-    GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
-        IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT, contents, collapsed_state));
-  } else {
     GetViewAccessibility().SetName(
-        l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_NAMED_GROUP_FORMAT, title,
-                                   contents, collapsed_state));
+        l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT,
+                                   shared_state, contents, collapsed_state));
+  } else {
+    GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
+        IDS_GROUP_AX_LABEL_NAMED_GROUP_FORMAT, shared_state, title, contents,
+        collapsed_state));
   }
 }
 

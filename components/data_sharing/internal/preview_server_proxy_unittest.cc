@@ -29,6 +29,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using endpoint_fetcher::MockEndpointFetcher;
 using testing::_;
 
 namespace data_sharing {
@@ -161,6 +162,21 @@ const std::string kNoEntitySpecificsResponse = R"(
     ]
   })";
 
+const std::string kDasherPolicyViolationError = R"(
+{
+  "error":
+    {
+      "code": 403,
+      "message": "The caller does not have permission",
+      "status": "PERMISSION_DENIED",
+      "details": [{
+        "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+        "reason": "SAME_CUSTOMER_DASHER_POLICY_VIOLATED",
+        "domain": "chromesyncsharedentities-pa.googleapis.com"
+      }]
+    }
+  })";
+
 class FakePreviewServerProxy : public PreviewServerProxy {
  public:
   FakePreviewServerProxy(
@@ -180,7 +196,7 @@ class FakePreviewServerProxy : public PreviewServerProxy {
     return PreviewServerProxy::GetChannel();
   }
 
-  MOCK_METHOD(std::unique_ptr<EndpointFetcher>,
+  MOCK_METHOD(std::unique_ptr<endpoint_fetcher::EndpointFetcher>,
               CreateEndpointFetcher,
               (const GURL& url),
               (override));
@@ -368,6 +384,24 @@ TEST_F(PreviewServerProxyTest, TestGetSharedDataPreview_PermissionError) {
         ASSERT_EQ(
             result.error(),
             DataSharingService::DataPreviewActionFailure::kPermissionDenied);
+      }).Then(run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(PreviewServerProxyTest,
+       TestGetSharedDataPreview_PermissionErrorDasherViolation) {
+  fetcher_->SetFetchResponse(kDasherPolicyViolationError, net::HTTP_FORBIDDEN);
+  EXPECT_CALL(*server_proxy_, CreateEndpointFetcher(GURL(kExpectedUrl)))
+      .Times(1);
+
+  base::RunLoop run_loop;
+  server_proxy_->GetSharedDataPreview(
+      GroupToken(GroupId(kCollaborationId), kAccessToken),
+      /*data_type=*/std::nullopt,
+      base::BindOnce([](const DataSharingService::
+                            SharedDataPreviewOrFailureOutcome& result) {
+        ASSERT_EQ(result.error(), DataSharingService::DataPreviewActionFailure::
+                                      kGroupClosedByOrganizationPolicy);
       }).Then(run_loop.QuitClosure()));
   run_loop.Run();
 }

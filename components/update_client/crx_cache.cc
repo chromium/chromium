@@ -8,8 +8,10 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -43,6 +45,7 @@ class CrxCacheSynchronous {
       const std::string& hash,
       const std::string& fp) = 0;
   virtual void RemoveAll(const std::string& app_id) = 0;
+  virtual void RemoveIfNot(const std::vector<std::string>& app_ids) = 0;
 };
 
 // CrxCacheImpl uses a metadata.json file of the following format:
@@ -77,6 +80,7 @@ class CrxCacheImpl : public CrxCacheSynchronous {
       const std::string& hash,
       const std::string& fp) override;
   void RemoveAll(const std::string& app_id) override;
+  void RemoveIfNot(const std::vector<std::string>& app_ids) override;
 
  private:
   void Remove(const std::string& hash);
@@ -225,6 +229,16 @@ void CrxCacheImpl::RemoveAll(const std::string& app_id) {
   }
 }
 
+void CrxCacheImpl::RemoveIfNot(const std::vector<std::string>& app_ids) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  absl::flat_hash_set<std::string> retained_ids(app_ids.begin(), app_ids.end());
+  for (const auto& [id, hash] : ListHashesByAppId()) {
+    if (!base::Contains(retained_ids, id)) {
+      RemoveAll(id);
+    }
+  }
+}
+
 void CrxCacheImpl::Remove(const std::string& hash) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::DeleteFile(cache_root_.AppendUTF8(hash));
@@ -264,6 +278,9 @@ class CrxCacheError : public CrxCacheSynchronous {
     return base::unexpected(UnpackerError::kCrxCacheNotProvided);
   }
   void RemoveAll(const std::string& app_id) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  }
+  void RemoveIfNot(const std::vector<std::string>& app_ids) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
 
@@ -324,9 +341,20 @@ void CrxCache::Put(
       .Then(std::move(callback));
 }
 
-void CrxCache::RemoveAll(const std::string& app_id) {
+void CrxCache::RemoveAll(const std::string& app_id,
+                         base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  delegate_.AsyncCall(&CrxCacheSynchronous::RemoveAll).WithArgs(app_id);
+  delegate_.AsyncCall(&CrxCacheSynchronous::RemoveAll)
+      .WithArgs(app_id)
+      .Then(std::move(callback));
+}
+
+void CrxCache::RemoveIfNot(const std::vector<std::string>& app_ids,
+                           base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  delegate_.AsyncCall(&CrxCacheSynchronous::RemoveIfNot)
+      .WithArgs(app_ids)
+      .Then(std::move(callback));
 }
 
 }  // namespace update_client

@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/webnn_object_impl.h"
 
@@ -28,13 +29,15 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
  public:
   // Describes the constraints of a graph's inputs and outputs.
   struct COMPONENT_EXPORT(WEBNN_SERVICE) ComputeResourceInfo {
-    ComputeResourceInfo(base::flat_map<std::string, OperandDescriptor>
-                            input_names_to_descriptors,
-                        base::flat_map<std::string, OperandDescriptor>
-                            output_names_to_descriptors,
-                        base::flat_map<uint64_t, base::flat_set<size_t>>
-                            operand_to_dependent_operations,
-                        base::PassKey<WebNNGraphBuilderImpl> pass_key);
+    ComputeResourceInfo(
+        base::flat_map<std::string, OperandDescriptor>
+            input_names_to_descriptors,
+        base::flat_map<std::string, OperandDescriptor>
+            output_names_to_descriptors,
+        base::flat_map<OperandId, base::flat_set<OperationId>>
+            operand_to_dependent_operations,
+        base::flat_map<OperandId, OperationId> operand_to_producing_operation,
+        base::PassKey<WebNNGraphBuilderImpl> pass_key);
     ~ComputeResourceInfo();
 
     ComputeResourceInfo(const ComputeResourceInfo&) = delete;
@@ -45,8 +48,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
 
     base::flat_map<std::string, OperandDescriptor> input_names_to_descriptors;
     base::flat_map<std::string, OperandDescriptor> output_names_to_descriptors;
-    base::flat_map<uint64_t, base::flat_set<size_t>>
+    base::flat_map<OperandId, base::flat_set<OperationId>>
         operand_to_dependent_operations;
+    base::flat_map<OperandId, OperationId> operand_to_producing_operation;
   };
 
   // Constructs a graph where the receiever and implementation is owned by the

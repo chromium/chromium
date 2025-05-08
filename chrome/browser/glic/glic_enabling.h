@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "base/types/expected.h"
+#include "chrome/browser/glic/glic_user_status_fetcher.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -60,6 +61,9 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   // Code inside should use instance method IsAllowed() instead.
   static bool IsEnabledForProfile(Profile* profile);
 
+  // Returns true if the profile has completed the FRE.
+  static bool HasConsentedForProfile(Profile* profile);
+
   // Returns true if the given profile has Glic enabled and has completed the
   // FRE. True implies that IsEnabledByFlags(), IsProfileEligible(profile), and
   // IsEnabledForProfile(profile) are also true. This value can change at
@@ -77,12 +81,58 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   // Same as IsReadyForProfile, but returns a more detailed state.
   static mojom::ProfileReadyState GetProfileReadyState(Profile* profile);
 
+  // Whether the profile is in the glic tiered rollout population.
+  static bool IsEligibleForGlicTieredRollout(Profile* profile);
+
   // The settings page is shown when:
   // * Flags are enabled
   // * The profile is eligible (regular, non-incognito, non-guest, etc.)
   // * The profile has model execution privileges
   // * The profile has completed the first run experience
   static bool ShouldShowSettingsPage(Profile* profile);
+
+  struct ProfileEnablement {
+    // These conditions are checked first and may prevent following checks from
+    // occurring.
+    bool feature_disabled : 1 = false;
+    bool not_regular_profile : 1 = false;
+
+    // These are checked separately, so may be present in various combinations.
+    bool not_rolled_out : 1 = false;
+    bool primary_account_not_capable : 1 = false;
+    bool disallowed_by_chrome_policy : 1 = false;
+    bool disallowed_by_remote_admin : 1 = false;
+    bool disallowed_by_remote_other : 1 = false;
+    bool not_consented : 1 = false;
+
+    bool IsProfileEligible() const {
+      return !feature_disabled && !not_regular_profile;
+    }
+
+    bool IsEnabled() const {
+      return IsProfileEligible() && !not_rolled_out &&
+             !primary_account_not_capable && !DisallowedByAdmin() &&
+             !disallowed_by_remote_other;
+    }
+
+    bool IsEnabledAndConsented() const { return IsEnabled() && !not_consented; }
+
+    bool ShouldShowSettingsPage() const {
+      // If the feature is disabled by enterprise policy, the settings page
+      // should be shown (it will be shown in a policy-disabled state) only if
+      // all other non-enterprise conditions are met: the account has all
+      // appropriate permissions and has previously completed the FRE before the
+      // policy went into effect.
+      return IsProfileEligible() && !not_rolled_out &&
+             !primary_account_not_capable && !disallowed_by_remote_other &&
+             !not_consented;
+    }
+
+    bool DisallowedByAdmin() const {
+      return disallowed_by_chrome_policy || disallowed_by_remote_admin;
+    }
+  };
+  static ProfileEnablement EnablementForProfile(Profile* profile);
 
   explicit GlicEnabling(Profile* profile,
                         ProfileAttributesStorage* profile_attributes_storage);
@@ -108,6 +158,10 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   // Returns true if the given profile has completed the FRE and false
   // otherwise.
   bool HasConsented();
+
+  void SetGlicUserStatusUrlForTest(const GURL& test_url) {
+    glic_user_status_fetcher_->SetGlicUserStatusUrlForTest(test_url);
+  }
 
   // This is called anytime IsAllowed() might return a different value.
   using EnableChangedCallback = base::RepeatingClosure;
@@ -135,6 +189,8 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
   void OnRefreshTokensLoaded() override;
+  void OnRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info) override;
   void OnRefreshTokenRemovedForAccount(
       const CoreAccountId& account_id) override;
 
@@ -148,8 +204,13 @@ class GlicEnabling : public signin::IdentityManager::Observer {
       signin_metrics::SourceForRefreshTokenOperation token_operation_source)
       override;
 
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
+
   void UpdateEnabledStatus();
   void UpdateConsentStatus();
+
+  void UpdateUserStatus(const signin::PrimaryAccountChangeEvent& event_details);
 
   raw_ptr<Profile> profile_;
   raw_ptr<ProfileAttributesStorage> profile_attributes_storage_;
@@ -162,6 +223,7 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   OnShowSettingsPageChangeCallbackList
       show_settings_page_changed_callback_list_;
   PrefChangeRegistrar pref_registrar_;
+  std::unique_ptr<GlicUserStatusFetcher> glic_user_status_fetcher_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};

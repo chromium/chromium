@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/features.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
@@ -25,12 +24,6 @@ InProcessDataDecoder::~InProcessDataDecoder() {
 std::unique_ptr<data_decoder::mojom::ImageDecoder>
 InProcessDataDecoder::CreateCustomImageDecoder() {
   return nullptr;
-}
-
-void InProcessDataDecoder::SimulateJsonParserCrash(bool drop) {
-  CHECK(!base::FeatureList::IsEnabled(base::features::kUseRustJsonParser))
-      << "Rust JSON parser is in-process and cannot crash.";
-  drop_json_parsers_ = drop;
 }
 
 void InProcessDataDecoder::BindDataDecoderService(
@@ -68,9 +61,7 @@ void InProcessDataDecoder::BindImageDecoder(
 
 void InProcessDataDecoder::BindJsonParser(
     mojo::PendingReceiver<mojom::JsonParser> receiver) {
-  if (!drop_json_parsers_) {
-    GetForwardingInterface()->BindJsonParser(std::move(receiver));
-  }
+  GetForwardingInterface()->BindJsonParser(std::move(receiver));
 }
 
 void InProcessDataDecoder::BindWebBundleParserFactory(

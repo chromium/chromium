@@ -197,7 +197,7 @@ public class CustomTabActivityIncognitoTest {
                 AppMenuTestSupport.getMenuItemPropertyModel(
                                 mCustomTabActivityTestRule.getAppMenuCoordinator(),
                                 R.id.icon_row_menu_id)
-                        .get(AppMenuItemProperties.SUBMENU);
+                        .get(AppMenuItemProperties.ADDITIONAL_ICONS);
 
         int expectedTopActionIconsCount = 4;
         assertEquals(expectedTopActionIconsCount, iconRowModelList.size());
@@ -338,7 +338,7 @@ public class CustomTabActivityIncognitoTest {
     @MediumTest
     public void shareMenuItemByDefaultIsNotVisibile() throws Exception {
         launchAndTestMenuItemIsNotVisible(
-                R.id.share_row_menu_id, "Share menu item not visible by default");
+                R.id.share_menu_id, "Share menu item not visible by default");
     }
 
     @Test
@@ -351,8 +351,7 @@ public class CustomTabActivityIncognitoTest {
 
         assertNotNull(
                 AppMenuTestSupport.getMenuItemPropertyModel(
-                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                        R.id.share_row_menu_id));
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.share_menu_id));
     }
 
     @Test
@@ -387,7 +386,7 @@ public class CustomTabActivityIncognitoTest {
         assertNotNull(
                 AppMenuTestSupport.getMenuItemPropertyModel(
                         mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                        R.id.request_desktop_site_row_menu_id));
+                        R.id.request_desktop_site_id));
 
         // Check top icons are still the same.
         testTopActionIconsIsVisible();
@@ -422,7 +421,7 @@ public class CustomTabActivityIncognitoTest {
         assertNull(
                 AppMenuTestSupport.getMenuItemPropertyModel(
                         mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                        R.id.request_desktop_site_row_menu_id));
+                        R.id.request_desktop_site_id));
     }
 
     @Test

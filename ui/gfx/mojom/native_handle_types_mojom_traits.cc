@@ -254,7 +254,7 @@ bool UnionTraits<gfx::mojom::GpuMemoryBufferPlatformHandleDataView,
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
     case Tag::kNativePixmapHandle:
       handle->type = gfx::NATIVE_PIXMAP;
-      return data.ReadNativePixmapHandle(&handle->native_pixmap_handle);
+      return data.ReadNativePixmapHandle(&handle->native_pixmap_handle_);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
 #if BUILDFLAG(IS_WIN)
     case Tag::kDxgiHandle:

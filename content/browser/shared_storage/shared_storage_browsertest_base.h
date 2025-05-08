@@ -24,6 +24,7 @@
 #include "content/browser/shared_storage/test_shared_storage_runtime_manager.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/frame_tree_node_id.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test_utils.h"  // For `ToRenderFrameHost`
 #include "content/public/test/content_browser_test.h"
@@ -69,13 +70,17 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
   void ExpectAccessObserved(
       const std::vector<TestSharedStorageObserver::Access>& expected_accesses);
 
+  void ExpectOperationFinishedInfosObserved(
+      const std::vector<TestSharedStorageObserver::OperationFinishedInfo>&
+          expected_infos);
+
   uint16_t port() { return https_server()->port(); }
 
   double GetRemainingBudget(const url::Origin& origin);
 
   FrameTreeNode* PrimaryFrameTreeNodeRoot();
 
-  FrameTreeNodeId MainFrameId();
+  GlobalRenderFrameHostId MainFrameId();
 
   SharedStorageBudgetMetadata* GetSharedStorageBudgetMetadata(
       const GURL& urn_uuid);

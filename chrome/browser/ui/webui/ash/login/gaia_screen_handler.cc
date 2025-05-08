@@ -515,8 +515,7 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   params.Set("webviewPartitionName", partition_name);
   signin_partition_name_ = partition_name;
 
-  params.Set("extractSamlPasswordAttributes",
-             login::ExtractSamlPasswordAttributesEnabled());
+  params.Set("extractSamlPasswordAttributes", true);
 
   params.Set("recordAccountCreation",
              ash::features::IsGaiaRecordAccountCreationEnabled());

@@ -63,6 +63,25 @@ TimeGroup GetTimeGroupForExplodedTime(
   return static_cast<TimeGroup>(exploded_time.hour / kHoursPerGroup);
 }
 
+bool ShouldDiscardShortVisit(
+    visited_url_ranking::URLVisitAggregate::URLType type,
+    int64_t visit_duration_limit,
+    const history::AnnotatedVisit& annotated_visit) {
+  visited_url_ranking::URLVisitAggregate::URLType visit_type =
+      visited_url_ranking::URLVisitAggregate::URLType::kRemoteVisit;
+  if (annotated_visit.visit_row.app_id) {
+    visit_type = visited_url_ranking::URLVisitAggregate::URLType::kCCTVisit;
+  } else if (annotated_visit.visit_row.originator_cache_guid.empty()) {
+    visit_type = visited_url_ranking::URLVisitAggregate::URLType::kLocalVisit;
+  }
+  if (type != visit_type) {
+    return false;
+  }
+
+  return annotated_visit.visit_row.visit_duration.InMilliseconds() <
+         visit_duration_limit;
+}
+
 }  // namespace
 
 namespace visited_url_ranking {
@@ -94,7 +113,8 @@ void HistoryURLVisitDataFetcher::FetchURLVisitData(
         /*get_unclustered_visits_only=*/false,
         base::BindOnce(&HistoryURLVisitDataFetcher::OnGotAnnotatedVisits,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                       options.fetcher_sources.at(Fetcher::kHistory), config),
+                       options.fetcher_sources.at(Fetcher::kHistory),
+                       options.result_sources, config),
         &task_tracker_);
     return;
   }
@@ -105,23 +125,37 @@ void HistoryURLVisitDataFetcher::FetchURLVisitData(
 void HistoryURLVisitDataFetcher::OnGotAnnotatedVisits(
     FetchResultCallback callback,
     FetchOptions::FetchSources requested_fetch_sources,
+    const FetchOptions::ResultSourceOptions& result_sources,
     const FetcherConfig& config,
     std::vector<history::AnnotatedVisit> annotated_visits) {
-  if (!annotated_visits.empty() &&
-      features::kVisitedURLRankingHistoryFetcherDiscardZeroDurationVisits
-          .Get()) {
-    const size_t original_visit_count = annotated_visits.size();
-    std::erase_if(annotated_visits,
-                  [](const history::AnnotatedVisit& annotated_visit) {
-                    return annotated_visit.visit_row.visit_duration.is_zero();
-                  });
-    base::UmaHistogramCustomCounts(
-        "VisitedURLRanking.Fetch.History.Filter.ZeroDurationVisits."
-        "InOutPercentage",
-        base::ClampRound((static_cast<float>(annotated_visits.size()) /
-                          original_visit_count) *
-                         100),
-        1, 100, 100);
+  if (!annotated_visits.empty()) {
+    if (features::kVisitedURLRankingHistoryFetcherDiscardZeroDurationVisits
+            .Get()) {
+      const size_t original_visit_count = annotated_visits.size();
+      std::erase_if(annotated_visits,
+                    [](const history::AnnotatedVisit& annotated_visit) {
+                      return annotated_visit.visit_row.visit_duration.is_zero();
+                    });
+      base::UmaHistogramCustomCounts(
+          "VisitedURLRanking.Fetch.History.Filter.ZeroDurationVisits."
+          "InOutPercentage",
+          base::ClampRound((static_cast<float>(annotated_visits.size()) /
+                            original_visit_count) *
+                           100),
+          1, 100, 100);
+    }
+
+    for (auto res : result_sources) {
+      if (res.second.visit_duration_limit.has_value()) {
+        int64_t visit_duration_limit =
+            res.second.visit_duration_limit->InMilliseconds();
+        erase_if(annotated_visits,
+                 [&](const history::AnnotatedVisit& annotated_visit) {
+                   return ShouldDiscardShortVisit(
+                       res.first, visit_duration_limit, annotated_visit);
+                 });
+      }
+    }
   }
 
   std::map<std::string, std::pair<std::string, syncer::DeviceInfo::FormFactor>>

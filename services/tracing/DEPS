@@ -4,6 +4,7 @@ include_rules = [
   "+third_party/perfetto/include",
   "+third_party/perfetto/protos/perfetto",
   "+third_party/protobuf/src/google/protobuf/io/zero_copy_stream.h",
+  "+third_party/snappy"
 ]
 
 specific_include_rules = {

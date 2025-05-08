@@ -46,6 +46,55 @@ bool IsHardwareEncodingEnabled(
   return false;
 }
 
+// Scan profiles for hardware H.264 encoder support.
+bool IsHardwareH264EncodingEnabled(
+    const std::vector<VideoEncodeAccelerator::SupportedProfile>& profiles) {
+  // Force disabling takes precedent over other flags.
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  if (command_line.HasSwitch(
+          switches::kCastStreamingForceDisableHardwareH264)) {
+    return false;
+  }
+
+#if BUILDFLAG(IS_MAC)
+  if (!command_line.HasSwitch(
+          switches::kCastStreamingForceEnableHardwareH264) &&
+      !base::FeatureList::IsEnabled(kCastStreamingMacHardwareH264)) {
+    return false;
+  }
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/40653760): Now that we have software fallback for hardware
+  // encoders, it is okay to enable hardware H264 for windows, as the one to
+  // two percent of sessions that fail can gracefully fallback.
+  if (!command_line.HasSwitch(
+          switches::kCastStreamingForceEnableHardwareH264) &&
+      !base::FeatureList::IsEnabled(kCastStreamingWinHardwareH264)) {
+    return false;
+  }
+#endif
+
+  return IsHardwareEncodingEnabled(profiles, H264PROFILE_MIN, H264PROFILE_MAX);
+}
+
+// Scan profiles for hardware HEVC encoder support.
+bool IsHardwareHevcEncodingEnabled(
+    const std::vector<VideoEncodeAccelerator::SupportedProfile>& profiles) {
+  // HEVC encoding is only supported by the new media::VideoEncoder-based
+  // implementation.
+  if (!base::FeatureList::IsEnabled(media::kCastStreamingMediaVideoEncoder)) {
+    return false;
+  }
+
+  if (!base::FeatureList::IsEnabled(media::kCastStreamingHardwareHevc)) {
+    return false;
+  }
+
+  return IsHardwareEncodingEnabled(profiles, HEVCPROFILE_MIN, HEVCPROFILE_MAX);
+}
+
 // Scan profiles for hardware VP8 encoder support.
 bool IsHardwareVP8EncodingEnabled(
     const std::vector<VideoEncodeAccelerator::SupportedProfile>& profiles) {
@@ -81,39 +130,6 @@ bool IsHardwareVP9EncodingEnabled(
   return IsHardwareEncodingEnabled(profiles, VP9PROFILE_MIN, VP9PROFILE_MAX);
 }
 
-// Scan profiles for hardware H.264 encoder support.
-bool IsHardwareH264EncodingEnabled(
-    const std::vector<VideoEncodeAccelerator::SupportedProfile>& profiles) {
-  // Force disabling takes precedent over other flags.
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  if (command_line.HasSwitch(
-          switches::kCastStreamingForceDisableHardwareH264)) {
-    return false;
-  }
-
-#if BUILDFLAG(IS_MAC)
-  if (!command_line.HasSwitch(
-          switches::kCastStreamingForceEnableHardwareH264) &&
-      !base::FeatureList::IsEnabled(kCastStreamingMacHardwareH264)) {
-    return false;
-  }
-#endif
-
-#if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/40653760): Now that we have software fallback for hardware
-  // encoders, it is okay to enable hardware H264 for windows, as the one to
-  // two percent of sessions that fail can gracefully fallback.
-  if (!command_line.HasSwitch(
-          switches::kCastStreamingForceEnableHardwareH264) &&
-      !base::FeatureList::IsEnabled(kCastStreamingWinHardwareH264)) {
-    return false;
-  }
-#endif
-
-  return IsHardwareEncodingEnabled(profiles, H264PROFILE_MIN, H264PROFILE_MAX);
-}
-
 }  // namespace
 
 bool IsSoftwareEnabled(VideoCodec codec) {
@@ -144,15 +160,19 @@ bool IsHardwareEnabled(
     return false;
   }
 
+  // TODO: more streamlined function??
   switch (codec) {
+    case VideoCodec::kH264:
+      return IsHardwareH264EncodingEnabled(profiles);
+
+    case VideoCodec::kHEVC:
+      return IsHardwareHevcEncodingEnabled(profiles);
+
     case VideoCodec::kVP8:
       return IsHardwareVP8EncodingEnabled(profiles);
 
     case VideoCodec::kVP9:
       return IsHardwareVP9EncodingEnabled(profiles);
-
-    case VideoCodec::kH264:
-      return IsHardwareH264EncodingEnabled(profiles);
 
     default:
       return false;

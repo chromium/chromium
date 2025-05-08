@@ -30,11 +30,10 @@
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/host/zwp_text_input_v1.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
-#include "ui/ozone/platform/wayland/test/mock_zcr_extended_text_input.h"
 #include "ui/ozone/platform/wayland/test/mock_zwp_text_input.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
-#include "ui/ozone/platform/wayland/test/test_zcr_text_input_extension.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 
 using ::testing::_;
@@ -153,20 +152,20 @@ class MockTextInputClient : public TextInputClient {
   base::WeakPtrFactory<MockTextInputClient> weak_ptr_factory_{this};
 };
 
-class MockZWPTextInputWrapper : public ZWPTextInputWrapper {
+class MockZwpTextInputV3 : public ZwpTextInputV3 {
  public:
-  ~MockZWPTextInputWrapper() override = default;
+  ~MockZwpTextInputV3() override = default;
 
-  MOCK_METHOD(void, Reset, (), (override));
+  MOCK_METHOD(void, SetClient, (ZwpTextInputV3Client * context), (override));
 
   MOCK_METHOD(void,
-              Activate,
-              (WaylandWindow * window, ui::TextInputClient::FocusReason reason),
+              OnClientDestroyed,
+              (ZwpTextInputV3Client * context),
               (override));
-  MOCK_METHOD(void, Deactivate, (), (override));
 
-  MOCK_METHOD(void, ShowInputPanel, (), (override));
-  MOCK_METHOD(void, HideInputPanel, (), (override));
+  MOCK_METHOD(void, Enable, (), (override));
+  MOCK_METHOD(void, Disable, (), (override));
+  MOCK_METHOD(void, Reset, (), (override));
 
   MOCK_METHOD(void, SetCursorRect, (const gfx::Rect& rect), (override));
   MOCK_METHOD(void,
@@ -177,32 +176,15 @@ class MockZWPTextInputWrapper : public ZWPTextInputWrapper {
               (override));
   MOCK_METHOD(bool, HasAdvancedSurroundingTextSupport, (), (const override));
   MOCK_METHOD(void,
-              SetSurroundingTextOffsetUtf16,
-              (uint32_t offset_utf16),
-              (override));
-  MOCK_METHOD(void,
               SetContentType,
-              (ui::TextInputType type,
-               ui::TextInputMode mode,
-               uint32_t flags,
-               bool should_do_learning,
-               bool can_compose_inline),
-              (override));
-
-  MOCK_METHOD(void,
-              SetGrammarFragmentAtCursor,
-              (const ui::GrammarFragment& fragment),
-              (override));
-  MOCK_METHOD(void,
-              SetAutocorrectInfo,
-              (const gfx::Range& autocorrect_range,
-               const gfx::Rect& autocorrect_bounds),
+              (ui::TextInputType type, uint32_t flags, bool should_do_learning),
               (override));
 };
 
 class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
  public:
-  TestInputMethodContextDelegate() = default;
+  explicit TestInputMethodContextDelegate(gfx::AcceleratedWidget window_key)
+      : client_window_key_(window_key) {}
   TestInputMethodContextDelegate(const TestInputMethodContextDelegate&) =
       delete;
   TestInputMethodContextDelegate& operator=(
@@ -237,6 +219,10 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
   void OnSetVirtualKeyboardOccludedBounds(
       const gfx::Rect& screen_bounds) override {
     virtual_keyboard_bounds_ = screen_bounds;
+  }
+
+  gfx::AcceleratedWidget GetClientWindowKey() const override {
+    return client_window_key_;
   }
 
   bool was_on_commit_called() const { return was_on_commit_called_; }
@@ -275,6 +261,7 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
   }
 
  private:
+  gfx::AcceleratedWidget client_window_key_;
   bool was_on_commit_called_ = false;
   std::optional<std::u16string> last_commit_text_;
   std::optional<bool> last_on_confirm_composition_arg_;
@@ -316,7 +303,7 @@ class TestKeyboardDelegate : public WaylandKeyboard::Delegate {
   base::TimeTicks last_event_timestamp_;
 };
 
-class WaylandInputMethodContextTestBase : public WaylandTest {
+class WaylandInputMethodContextTest : public WaylandTest {
  public:
   void SetUp() override {
     // TODO(crbug.com/355271570) Most of these tests expect a v1 wrapper, so
@@ -339,20 +326,17 @@ class WaylandInputMethodContextTestBase : public WaylandTest {
     SetUpInternal();
   }
 
-  wl::TestZcrTextInputExtensionV1::Version GetApiVersion() {
-    return GetParam().text_input_extension_version;
-  }
-
  protected:
   void SetUpInternal() {
     input_method_context_delegate_ =
-        std::make_unique<TestInputMethodContextDelegate>();
+        std::make_unique<TestInputMethodContextDelegate>(window_->GetWidget());
     keyboard_delegate_ = std::make_unique<TestKeyboardDelegate>();
     input_method_context_ = std::make_unique<WaylandInputMethodContext>(
         connection_.get(), keyboard_delegate_.get(),
         input_method_context_delegate_.get());
-    input_method_context_->Init(
-        true, nullptr,
+    text_input_v1_ = connection_->EnsureTextInputV1();
+    input_method_context_->SetTextInputV1ForTesting(text_input_v1_.get());
+    input_method_context_->SetDesktopEnvironmentForTesting(
         // Ensure by default it doesn't pick the current desktop from the system
         // the tests are running on.
         base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_OTHER);
@@ -365,73 +349,23 @@ class WaylandInputMethodContextTestBase : public WaylandTest {
 
     PostToServerAndWait([](wl::TestWaylandServerThread* server) {
       ASSERT_TRUE(server->text_input_manager_v1()->text_input());
-      ASSERT_TRUE(server->text_input_extension_v1()->extended_text_input());
     });
 
     ASSERT_TRUE(connection_->text_input_manager_v1());
-    ASSERT_TRUE(connection_->text_input_extension_v1());
   }
 
   std::unique_ptr<TestInputMethodContextDelegate>
       input_method_context_delegate_;
   std::unique_ptr<TestKeyboardDelegate> keyboard_delegate_;
   std::unique_ptr<WaylandInputMethodContext> input_method_context_;
+  raw_ptr<ZwpTextInputV1> text_input_v1_;
 
   uint32_t surface_id_ = 0u;
 };
 
-using WaylandInputMethodContextTest = WaylandInputMethodContextTestBase;
-using WaylandInputMethodContextOldServerTest =
-    WaylandInputMethodContextTestBase;
-
-INSTANTIATE_TEST_SUITE_P(
-    TextInputExtensionLatestVersion,
-    WaylandInputMethodContextTest,
-    ::testing::Values(
-        wl::ServerConfig{
-            .text_input_extension_version =
-                wl::TestZcrTextInputExtensionV1::Version::kV8,
-        },
-        wl::ServerConfig{}));
-
-INSTANTIATE_TEST_SUITE_P(
-    TextInputExtensionV7,
-    WaylandInputMethodContextOldServerTest,
-    ::testing::Values(wl::ServerConfig{
-        .text_input_extension_version =
-            wl::TestZcrTextInputExtensionV1::Version::kV7}));
-
-TEST_P(WaylandInputMethodContextOldServerTest, SetInputType) {
-  connection_->window_manager()->SetKeyboardFocusedWindow(window_.get());
-  connection_->Flush();
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    EXPECT_CALL(*server->text_input_extension_v1()->extended_text_input(),
-                DeprecatedSetInputType(
-                    ZCR_EXTENDED_TEXT_INPUT_V1_INPUT_TYPE_URL,
-                    ZCR_EXTENDED_TEXT_INPUT_V1_INPUT_MODE_DEFAULT,
-                    ZCR_EXTENDED_TEXT_INPUT_V1_INPUT_FLAGS_AUTOCOMPLETE_ON,
-                    ZCR_EXTENDED_TEXT_INPUT_V1_LEARNING_MODE_ENABLED))
-        .Times(1);
-  });
-  LinuxInputMethodContext::TextInputClientAttributes attributes;
-  attributes.input_type = TEXT_INPUT_TYPE_URL;
-  attributes.input_mode = TEXT_INPUT_MODE_DEFAULT;
-  attributes.flags = TEXT_INPUT_FLAG_AUTOCOMPLETE_ON;
-  attributes.should_do_learning = true;
-  attributes.can_compose_inline = false;
-
-  input_method_context_->UpdateFocus(
-      /*has_client=*/true, TEXT_INPUT_TYPE_NONE, attributes,
-      TextInputClient::FOCUS_REASON_OTHER);
-
-  connection_->Flush();
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    Mock::VerifyAndClearExpectations(
-        server->text_input_extension_v1()->extended_text_input());
-  });
-}
+INSTANTIATE_TEST_SUITE_P(TextInputV1,
+                         WaylandInputMethodContextTest,
+                         ::testing::Values(wl::ServerConfig{}));
 
 TEST_P(WaylandInputMethodContextTest, ActivateDeactivate) {
   // Activate is called only when both InputMethod's TextInputClient focus and
@@ -628,18 +562,11 @@ TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForLongText) {
 
   std::string expected_sent_text;
   gfx::Range expected_sent_range;
-  if (GetApiVersion() == wl::TestZcrTextInputExtensionV1::Version::kV8) {
-    // In the old protocol, the text sent as wayland protocol must be at most
-    // 4000 byte and long enough in the limitation.
-    expected_sent_text = base::UTF16ToUTF8(std::u16string(1332, u'あ'));
-    // The selection range must be relocated accordingly to the sent text.
-    expected_sent_range = gfx::Range(1398, 2598);
-  } else {
-    // In the new protocol, the whole selection text with 500 bytes buffers are
-    // sent.
-    expected_sent_text = base::UTF16ToUTF8(std::u16string(732, u'あ'));
-    expected_sent_range = gfx::Range(498, 1698);
-  }
+  // The text sent as wayland protocol must be at most
+  // 4000 byte and long enough in the limitation.
+  expected_sent_text = base::UTF16ToUTF8(std::u16string(1332, u'あ'));
+  // The selection range must be relocated accordingly to the sent text.
+  expected_sent_range = gfx::Range(1398, 2598);
 
   PostToServerAndWait([expected_sent_text, expected_sent_range](
                           wl::TestWaylandServerThread* server) {
@@ -684,18 +611,11 @@ TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForLongTextInLeftEdge) {
 
   std::string expected_sent_text;
   gfx::Range expected_sent_range;
-  if (GetApiVersion() == wl::TestZcrTextInputExtensionV1::Version::kV8) {
-    // In old protocol, the text sent as wayland protocol must be at most 4000
-    // byte and large enough in the limitation.
-    expected_sent_text = base::UTF16ToUTF8(std::u16string(1333, u'あ'));
-    // The selection range must be relocated accordingly to the sent text.
-    expected_sent_range = gfx::Range(0, 1500);
-  } else {
-    // In the new protocol, whole selection range + at most 500 bytes buffers
-    // are sent.
-    expected_sent_text = base::UTF16ToUTF8(std::u16string(666, u'あ'));
-    expected_sent_range = gfx::Range(0, 1500);
-  }
+  // The text sent as wayland protocol must be at most 4000
+  // byte and large enough in the limitation.
+  expected_sent_text = base::UTF16ToUTF8(std::u16string(1333, u'あ'));
+  // The selection range must be relocated accordingly to the sent text.
+  expected_sent_range = gfx::Range(0, 1500);
 
   PostToServerAndWait([expected_sent_text, expected_sent_range](
                           wl::TestWaylandServerThread* server) {
@@ -741,18 +661,11 @@ TEST_P(WaylandInputMethodContextTest,
 
   std::string expected_sent_text;
   gfx::Range expected_sent_range;
-  if (GetApiVersion() == wl::TestZcrTextInputExtensionV1::Version::kV8) {
-    // In the old protocol, the text sent as wayland protocol must be at most
-    // 4000 byte and large enough in the limitation.
-    expected_sent_text = base::UTF16ToUTF8(std::u16string(1333, u'あ'));
-    // The selection range must be relocated accordingly to the sent text.
-    expected_sent_range = gfx::Range(2499, 3999);
-  } else {
-    // In the new protocol, whole selection + at most 500 bytes buffers are
-    // sent.
-    expected_sent_text = base::UTF16ToUTF8(std::u16string(666, u'あ'));
-    expected_sent_range = gfx::Range(498, 1998);
-  }
+  // The text sent as wayland protocol must be at most
+  // 4000 byte and large enough in the limitation.
+  expected_sent_text = base::UTF16ToUTF8(std::u16string(1333, u'あ'));
+  // The selection range must be relocated accordingly to the sent text.
+  expected_sent_range = gfx::Range(2499, 3999);
 
   PostToServerAndWait([expected_sent_text, expected_sent_range](
                           wl::TestWaylandServerThread* server) {
@@ -789,67 +702,6 @@ TEST_P(WaylandInputMethodContextTest,
       std::u16string(4500, u'あ'));
   EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
             gfx::Range(4500));
-}
-
-// TODO(crbug.com/354862211): This test is Lacros-specific and should be
-// removed. It fails without Lacros-specific patches to libwayland, which
-// shouldn't be applied when updating to a new Wayland of version as Lacros is
-// being sunset.
-TEST_P(WaylandInputMethodContextTest, DISABLED_SetSurroundingTextForLongRange) {
-  const std::u16string text(5000, u'あ');
-  constexpr gfx::Range range(1000, 4000);
-
-  if (GetApiVersion() == wl::TestZcrTextInputExtensionV1::Version::kV8) {
-    // set_surrounding_text request should be skipped when the selection range
-    // in UTF8 form is longer than 4000 byte.
-    PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-      EXPECT_CALL(*server->text_input_manager_v1()->text_input(),
-                  SetSurroundingText(_, _))
-          .Times(0);
-    });
-
-    input_method_context_->SetSurroundingText(
-        text, gfx::Range(0, 5000), gfx::Range::InvalidRange(), range);
-    // Predicted state in SurroundingTextTracker is reset when the range is
-    // longer than wayland message size maximum.
-    EXPECT_EQ(
-        input_method_context_->predicted_state_for_testing().surrounding_text,
-        u"");
-    EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
-              gfx::Range(0));
-    connection_->Flush();
-
-    PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-      Mock::VerifyAndClearExpectations(
-          server->text_input_manager_v1()->text_input());
-    });
-  } else {
-    // In the new protocol, we can send large selection range.
-    const std::string kExpectedSentText =
-        base::UTF16ToUTF8(std::u16string(3332, u'あ'));
-    constexpr gfx::Range kExpectedSentRange(498, 9498);
-
-    PostToServerAndWait([kExpectedSentText, kExpectedSentRange](
-                            wl::TestWaylandServerThread* server) {
-      EXPECT_CALL(*server->text_input_manager_v1()->text_input(),
-                  SetSurroundingText(kExpectedSentText, kExpectedSentRange))
-          .Times(1);
-    });
-
-    input_method_context_->SetSurroundingText(
-        text, gfx::Range(0, 5000), gfx::Range::InvalidRange(), range);
-    EXPECT_EQ(
-        input_method_context_->predicted_state_for_testing().surrounding_text,
-        text);
-    EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
-              range);
-    connection_->Flush();
-
-    PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-      Mock::VerifyAndClearExpectations(
-          server->text_input_manager_v1()->text_input());
-    });
-  }
 }
 
 TEST_P(WaylandInputMethodContextTest, DeleteSurroundingTextWithExtendedRange) {
@@ -1041,145 +893,6 @@ TEST_P(WaylandInputMethodContextTest,
             gfx::Range(7));
 }
 
-TEST_P(WaylandInputMethodContextTest, SetInputType) {
-  connection_->window_manager()->SetKeyboardFocusedWindow(window_.get());
-  connection_->Flush();
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    EXPECT_CALL(
-        *server->text_input_extension_v1()->extended_text_input(),
-        SetInputType(
-            ZCR_EXTENDED_TEXT_INPUT_V1_INPUT_TYPE_URL,
-            ZCR_EXTENDED_TEXT_INPUT_V1_INPUT_MODE_DEFAULT,
-            ZCR_EXTENDED_TEXT_INPUT_V1_INPUT_FLAGS_AUTOCOMPLETE_ON,
-            ZCR_EXTENDED_TEXT_INPUT_V1_LEARNING_MODE_ENABLED,
-            ZCR_EXTENDED_TEXT_INPUT_V1_INLINE_COMPOSITION_SUPPORT_SUPPORTED))
-        .Times(1);
-  });
-  LinuxInputMethodContext::TextInputClientAttributes attributes;
-  attributes.input_type = TEXT_INPUT_TYPE_URL;
-  attributes.input_mode = TEXT_INPUT_MODE_DEFAULT;
-  attributes.flags = TEXT_INPUT_FLAG_AUTOCOMPLETE_ON;
-  attributes.should_do_learning = true;
-  attributes.can_compose_inline = true;
-
-  input_method_context_->UpdateFocus(
-      /*has_client=*/true, TEXT_INPUT_TYPE_NONE, attributes,
-      TextInputClient::FOCUS_REASON_OTHER);
-  connection_->Flush();
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    Mock::VerifyAndClearExpectations(
-        server->text_input_extension_v1()->extended_text_input());
-  });
-}
-
-TEST_P(WaylandInputMethodContextTest, SetInputTypeWithoutLearning) {
-  connection_->window_manager()->SetKeyboardFocusedWindow(window_.get());
-  connection_->Flush();
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    EXPECT_CALL(
-        *server->text_input_extension_v1()->extended_text_input(),
-        SetInputType(
-            ZCR_EXTENDED_TEXT_INPUT_V1_INPUT_TYPE_URL,
-            ZCR_EXTENDED_TEXT_INPUT_V1_INPUT_MODE_DEFAULT,
-            ZCR_EXTENDED_TEXT_INPUT_V1_INPUT_FLAGS_AUTOCOMPLETE_ON,
-            ZCR_EXTENDED_TEXT_INPUT_V1_LEARNING_MODE_DISABLED,
-            ZCR_EXTENDED_TEXT_INPUT_V1_INLINE_COMPOSITION_SUPPORT_SUPPORTED))
-        .Times(1);
-  });
-  LinuxInputMethodContext::TextInputClientAttributes attributes;
-  attributes.input_type = TEXT_INPUT_TYPE_URL;
-  attributes.input_mode = TEXT_INPUT_MODE_DEFAULT;
-  attributes.flags = TEXT_INPUT_FLAG_AUTOCOMPLETE_ON;
-  attributes.should_do_learning = false;
-  attributes.can_compose_inline = true;
-
-  input_method_context_->UpdateFocus(
-      /*has_client=*/true, TEXT_INPUT_TYPE_NONE, attributes,
-      TextInputClient::FOCUS_REASON_OTHER);
-  connection_->Flush();
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    Mock::VerifyAndClearExpectations(
-        server->text_input_extension_v1()->extended_text_input());
-  });
-}
-
-TEST_P(WaylandInputMethodContextTest,
-       SetInputTypeWithoutInlineCompositionSupport) {
-  connection_->window_manager()->SetKeyboardFocusedWindow(window_.get());
-  connection_->Flush();
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    EXPECT_CALL(
-        *server->text_input_extension_v1()->extended_text_input(),
-        SetInputType(
-            ZCR_EXTENDED_TEXT_INPUT_V1_INPUT_TYPE_URL,
-            ZCR_EXTENDED_TEXT_INPUT_V1_INPUT_MODE_DEFAULT,
-            ZCR_EXTENDED_TEXT_INPUT_V1_INPUT_FLAGS_AUTOCOMPLETE_ON,
-            ZCR_EXTENDED_TEXT_INPUT_V1_LEARNING_MODE_ENABLED,
-            ZCR_EXTENDED_TEXT_INPUT_V1_INLINE_COMPOSITION_SUPPORT_UNSUPPORTED))
-        .Times(1);
-  });
-  LinuxInputMethodContext::TextInputClientAttributes attributes;
-  attributes.input_type = TEXT_INPUT_TYPE_URL;
-  attributes.input_mode = TEXT_INPUT_MODE_DEFAULT;
-  attributes.flags = TEXT_INPUT_FLAG_AUTOCOMPLETE_ON;
-  attributes.should_do_learning = true;
-  attributes.can_compose_inline = false;
-
-  input_method_context_->UpdateFocus(
-      /*has_client=*/true, TEXT_INPUT_TYPE_NONE, attributes,
-      TextInputClient::FOCUS_REASON_OTHER);
-  connection_->Flush();
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    Mock::VerifyAndClearExpectations(
-        server->text_input_extension_v1()->extended_text_input());
-  });
-}
-
-TEST_P(WaylandInputMethodContextTest, SetInputTypeAfterFocus) {
-  LinuxInputMethodContext::TextInputClientAttributes attributes;
-  attributes.input_type = TEXT_INPUT_TYPE_URL;
-  attributes.input_mode = TEXT_INPUT_MODE_DEFAULT;
-  attributes.flags = TEXT_INPUT_FLAG_AUTOCOMPLETE_ON;
-  attributes.should_do_learning = true;
-  attributes.can_compose_inline = false;
-
-  input_method_context_->UpdateFocus(
-      /*has_client=*/true, TEXT_INPUT_TYPE_NONE, attributes,
-      TextInputClient::FOCUS_REASON_OTHER);
-  connection_->Flush();
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    Mock::VerifyAndClearExpectations(
-        server->text_input_extension_v1()->extended_text_input());
-  });
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    EXPECT_CALL(
-        *server->text_input_extension_v1()->extended_text_input(),
-        SetInputType(
-            ZCR_EXTENDED_TEXT_INPUT_V1_INPUT_TYPE_URL,
-            ZCR_EXTENDED_TEXT_INPUT_V1_INPUT_MODE_DEFAULT,
-            ZCR_EXTENDED_TEXT_INPUT_V1_INPUT_FLAGS_AUTOCOMPLETE_ON,
-            ZCR_EXTENDED_TEXT_INPUT_V1_LEARNING_MODE_ENABLED,
-            ZCR_EXTENDED_TEXT_INPUT_V1_INLINE_COMPOSITION_SUPPORT_UNSUPPORTED))
-        .Times(1);
-  });
-
-  connection_->window_manager()->SetKeyboardFocusedWindow(window_.get());
-  connection_->Flush();
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    Mock::VerifyAndClearExpectations(
-        server->text_input_extension_v1()->extended_text_input());
-  });
-}
-
 TEST_P(WaylandInputMethodContextTest, OnPreeditChangedDefaultCompositionStyle) {
   constexpr std::string_view kPreeditString("PreeditString");
   constexpr gfx::Range kSelection{7, 13};
@@ -1304,430 +1017,6 @@ TEST_P(WaylandInputMethodContextTest, OnCommitAfterPreeditStringWithoutCursor) {
             gfx::Range(12));
   EXPECT_EQ(input_method_context_->predicted_state_for_testing().composition,
             gfx::Range(0));
-}
-
-// TODO(crbug.com/374244479): even though it was only running on lacros, this
-// might still be useful for Linux. Disable this for now.. If it's not, consider
-// removing this. It was left here intentionally.
-TEST_P(WaylandInputMethodContextTest, DISABLED_OnConfirmCompositionText) {
-  constexpr char16_t text[] = u"ab😀cあdef";
-  constexpr gfx::Range range(5, 6);  // あ is selected.
-
-  // SetSurroundingText should be called in UTF-8.
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    EXPECT_CALL(*server->text_input_manager_v1()->text_input(),
-                SetSurroundingText("ab😀cあdef", gfx::Range(7, 10)));
-  });
-  input_method_context_->SetSurroundingText(text, gfx::Range(0, 9),
-                                            gfx::Range::InvalidRange(), range);
-  EXPECT_EQ(
-      input_method_context_->predicted_state_for_testing().surrounding_text,
-      text);
-  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
-            range);
-  connection_->Flush();
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    auto* text_input = server->text_input_manager_v1()->text_input();
-    Mock::VerifyAndClearExpectations(text_input);
-
-    const gfx::Range sent_range(10, 7);
-    zwp_text_input_v1_send_cursor_position(
-        text_input->resource(), sent_range.start(), sent_range.end());
-    zwp_text_input_v1_send_commit_string(text_input->resource(), 0,
-                                         "ab😀cあdef");
-  });
-
-  EXPECT_THAT(input_method_context_delegate_->last_on_confirm_composition_arg(),
-              Optional(true));
-  EXPECT_EQ(
-      input_method_context_->predicted_state_for_testing().surrounding_text,
-      text);
-  // Cursor position is set to `range` position explicitly by OnCursorPosition.
-  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
-            range);
-  EXPECT_EQ(input_method_context_->predicted_state_for_testing().composition,
-            gfx::Range(0));
-}
-
-// TODO(crbug.com/374244479): even though it was only running on lacros, this
-// might still be useful for Linux. Disable this for now.. If it's not, consider
-// removing this. It was left here intentionally.
-TEST_P(WaylandInputMethodContextTest,
-       DISABLED_OnConfirmCompositionTextExtendedKeepSelectionNoComposition) {
-  input_method_context_->SetSurroundingText(
-      u"abcd", gfx::Range(0, 4), gfx::Range::InvalidRange(), gfx::Range(0, 4));
-  connection_->Flush();
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    zcr_extended_text_input_v1_send_confirm_preedit(
-        server->text_input_extension_v1()->extended_text_input()->resource(),
-        /*selection_behavior=*/
-        ZCR_EXTENDED_TEXT_INPUT_V1_CONFIRM_PREEDIT_SELECTION_BEHAVIOR_UNCHANGED);
-  });
-
-  EXPECT_THAT(input_method_context_delegate_->last_on_confirm_composition_arg(),
-              Optional(true));
-  // Selection range should not be changed.
-  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
-            gfx::Range(0, 4));
-}
-
-// TODO(crbug.com/374244479): even though it was only running on lacros, this
-// might still be useful for Linux. Disable this for now.. If it's not, consider
-// removing this. It was left here intentionally.
-TEST_P(WaylandInputMethodContextTest,
-       DISABLED_OnConfirmCompositionTextExtendedKeepSelectionComposition) {
-  input_method_context_->SetSurroundingText(
-      u"abcd", gfx::Range(0, 4), gfx::Range::InvalidRange(), gfx::Range(2));
-  input_method_context_->OnPreeditString("xyz", {}, gfx::Range(1));
-  connection_->Flush();
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    zcr_extended_text_input_v1_send_confirm_preedit(
-        server->text_input_extension_v1()->extended_text_input()->resource(),
-        /*selection_behavior=*/
-        ZCR_EXTENDED_TEXT_INPUT_V1_CONFIRM_PREEDIT_SELECTION_BEHAVIOR_UNCHANGED);
-  });
-
-  EXPECT_THAT(input_method_context_delegate_->last_on_confirm_composition_arg(),
-              Optional(true));
-  // Selection range should not be changed.
-  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
-            gfx::Range(3));
-}
-
-// TODO(crbug.com/374244479): even though it was only running on lacros, this
-// might still be useful for Linux. Disable this for now.. If it's not, consider
-// removing this. It was left here intentionally.
-TEST_P(
-    WaylandInputMethodContextTest,
-    DISABLED_OnConfirmCompositionTextExtendedDontKeepSelectionNoComposition) {
-  input_method_context_->SetSurroundingText(
-      u"abcd", gfx::Range(0, 4), gfx::Range::InvalidRange(), gfx::Range(0, 4));
-  connection_->Flush();
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    zcr_extended_text_input_v1_send_confirm_preedit(
-        server->text_input_extension_v1()->extended_text_input()->resource(),
-        /*selection_behavior=*/
-        ZCR_EXTENDED_TEXT_INPUT_V1_CONFIRM_PREEDIT_SELECTION_BEHAVIOR_AFTER_PREEDIT);
-  });
-
-  EXPECT_THAT(input_method_context_delegate_->last_on_confirm_composition_arg(),
-              Optional(false));
-  // Selection range should not be changed.
-  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
-            gfx::Range(0, 4));
-  EXPECT_EQ(input_method_context_->predicted_state_for_testing().composition,
-            gfx::Range(0));
-}
-
-// TODO(crbug.com/374244479): even though it was only running on lacros, this
-// might still be useful for Linux. Disable this for now.. If it's not, consider
-// removing this. It was left here intentionally.
-TEST_P(WaylandInputMethodContextTest,
-       DISABLED_OnConfirmCompositionTextExtendedDontKeepSelectionComposition) {
-  input_method_context_->SetSurroundingText(
-      u"abcd", gfx::Range(0, 4), gfx::Range::InvalidRange(), gfx::Range(2));
-  input_method_context_->OnPreeditString("xyz", {}, gfx::Range(1));
-  connection_->Flush();
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    zcr_extended_text_input_v1_send_confirm_preedit(
-        server->text_input_extension_v1()->extended_text_input()->resource(),
-        /*selection_behavior=*/
-        ZCR_EXTENDED_TEXT_INPUT_V1_CONFIRM_PREEDIT_SELECTION_BEHAVIOR_AFTER_PREEDIT);
-  });
-
-  EXPECT_THAT(input_method_context_delegate_->last_on_confirm_composition_arg(),
-              Optional(false));
-  // Selection range should move to the end of commit.
-  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
-            gfx::Range(5));
-  EXPECT_EQ(input_method_context_->predicted_state_for_testing().composition,
-            gfx::Range(0));
-}
-
-// TODO(crbug.com/374244479): even though it was only running on lacros, this
-// might still be useful for Linux. Disable this for now.. If it's not, consider
-// removing this. It was left here intentionally.
-TEST_P(WaylandInputMethodContextTest,
-       DISABLED_OnConfirmCompositionTextForLongRange) {
-  const std::u16string text(5000, u'あ');
-  constexpr gfx::Range range(4000, 4500);
-
-  std::string expected_sent_text;
-  gfx::Range expected_sent_range;
-  if (GetApiVersion() == wl::TestZcrTextInputExtensionV1::Version::kV8) {
-    // In old protocol, even if the range covers, the surrounding text
-    // longer than 4000 bytes is trimmed to meet the limitation.
-    // Selection range is also adjusted by the trimmed text before sendin to
-    // Exo.
-    expected_sent_text = base::UTF16ToUTF8(std::u16string(1332, u'あ'));
-    expected_sent_range = gfx::Range(1248, 2748);
-  } else {
-    // In new protocol, the surrounding text is trimmed around selection with
-    // at most 500 bytes buffer.
-    expected_sent_text = base::UTF16ToUTF8(std::u16string(832, u'あ'));
-    expected_sent_range = gfx::Range(498, 1998);
-  }
-
-  // SetSurroundingText should be called in UTF-8.
-  PostToServerAndWait([expected_sent_text, expected_sent_range](
-                          wl::TestWaylandServerThread* server) {
-    EXPECT_CALL(*server->text_input_manager_v1()->text_input(),
-                SetSurroundingText(expected_sent_text, expected_sent_range));
-  });
-  input_method_context_->SetSurroundingText(text, gfx::Range(0, 5000),
-                                            gfx::Range::InvalidRange(), range);
-  EXPECT_EQ(
-      input_method_context_->predicted_state_for_testing().surrounding_text,
-      text);
-  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
-            range);
-  connection_->Flush();
-
-  PostToServerAndWait([expected_sent_text, expected_sent_range](
-                          wl::TestWaylandServerThread* server) {
-    auto* text_input = server->text_input_manager_v1()->text_input();
-    Mock::VerifyAndClearExpectations(text_input);
-
-    gfx::Range range =
-        gfx::Range(expected_sent_range.end(), expected_sent_range.start());
-
-    zwp_text_input_v1_send_cursor_position(text_input->resource(),
-                                           range.start(), range.end());
-    zwp_text_input_v1_send_commit_string(text_input->resource(), 0,
-                                         expected_sent_text.c_str());
-  });
-
-  EXPECT_THAT(input_method_context_delegate_->last_on_confirm_composition_arg(),
-              Optional(true));
-  EXPECT_EQ(
-      input_method_context_->predicted_state_for_testing().surrounding_text,
-      text);
-  // Cursor position is set to `range` position explicitly by OnCursorPosition.
-  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
-            range);
-  EXPECT_EQ(input_method_context_->predicted_state_for_testing().composition,
-            gfx::Range(0));
-}
-
-TEST_P(WaylandInputMethodContextTest, OnSetPreeditRegion_Success) {
-  constexpr char16_t text[] = u"abcあdef";
-  const gfx::Range range(3, 4);  // あ is selected.
-
-  // SetSurroundingText should be called in UTF-8.
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    EXPECT_CALL(*server->text_input_manager_v1()->text_input(),
-                SetSurroundingText("abcあdef", gfx::Range(3, 6)));
-  });
-
-  input_method_context_->SetSurroundingText(text, gfx::Range(0, 7),
-                                            gfx::Range::InvalidRange(), range);
-  EXPECT_EQ(
-      input_method_context_->predicted_state_for_testing().surrounding_text,
-      text);
-  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
-            range);
-  connection_->Flush();
-
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    Mock::VerifyAndClearExpectations(
-        server->text_input_manager_v1()->text_input());
-
-    // Specify "cあd" as a new preedit region.
-    zcr_extended_text_input_v1_send_set_preedit_region(
-        server->text_input_extension_v1()->extended_text_input()->resource(),
-        -4, 5);
-  });
-
-  EXPECT_TRUE(
-      input_method_context_delegate_->was_on_set_preedit_region_called());
-  EXPECT_EQ(input_method_context_->predicted_state_for_testing().composition,
-            gfx::Range(2, 5));
-}
-
-TEST_P(WaylandInputMethodContextTest, OnSetPreeditRegion_NoSurroundingText) {
-  // If no surrounding text is set yet, set_preedit_region would fail.
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    zcr_extended_text_input_v1_send_set_preedit_region(
-        server->text_input_extension_v1()->extended_text_input()->resource(),
-        -1, 3);
-  });
-  EXPECT_FALSE(
-      input_method_context_delegate_->was_on_set_preedit_region_called());
-}
-
-// The range is represented in UTF-16 code points, so it is independent from
-// grapheme clusters.
-TEST_P(WaylandInputMethodContextTest,
-       OnSetPreeditRegion_GraphemeClusterIndependeceSimple) {
-  // Single code point representation of é.
-  constexpr char16_t u16_text[] = u"\u00E9";
-  constexpr char u8_text[] = "\xC3\xA9";  // In UTF-8 encode.
-
-  constexpr gfx::Range u16_range(0, 1);
-  constexpr gfx::Range u8_range(0, 2);
-
-  // Double check the text has one grapheme cluster.
-  ASSERT_EQ(1u, CountGraphemeCluster(u16_text));
-
-  // SetSurroundingText should be called in UTF-8.
-  PostToServerAndWait([u8_range, u8_text](wl::TestWaylandServerThread* server) {
-    EXPECT_CALL(*server->text_input_manager_v1()->text_input(),
-                SetSurroundingText(u8_text, u8_range));
-  });
-
-  input_method_context_->SetSurroundingText(
-      u16_text, gfx::Range(0, 1), gfx::Range::InvalidRange(), u16_range);
-  EXPECT_EQ(
-      input_method_context_->predicted_state_for_testing().surrounding_text,
-      u16_text);
-  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
-            u16_range);
-  connection_->Flush();
-
-  PostToServerAndWait([u8_range](wl::TestWaylandServerThread* server) {
-    Mock::VerifyAndClearExpectations(
-        server->text_input_manager_v1()->text_input());
-
-    // Specify the whole range as a new preedit region.
-    zcr_extended_text_input_v1_send_set_preedit_region(
-        server->text_input_extension_v1()->extended_text_input()->resource(),
-        -static_cast<int32_t>(u8_range.length()), u8_range.length());
-  });
-
-  EXPECT_TRUE(
-      input_method_context_delegate_->was_on_set_preedit_region_called());
-  EXPECT_EQ(input_method_context_->predicted_state_for_testing().composition,
-            u16_range);
-}
-
-TEST_P(WaylandInputMethodContextTest,
-       OnSetPreeditRegion_GraphemeClusterIndependeceCombined) {
-  // Decomposed code point representation of é.
-  constexpr char16_t u16_text[] = u"\u0065\u0301";
-  constexpr char u8_text[] = "\x65\xCC\x81";  // In UTF-8 encode.
-
-  constexpr gfx::Range u16_range(0, 2);
-  constexpr gfx::Range u8_range(0, 3);
-
-  // Double check the text has one grapheme cluster.
-  ASSERT_EQ(1u, CountGraphemeCluster(u16_text));
-
-  // SetSurroundingText should be called in UTF-8.
-  PostToServerAndWait([u8_range, u8_text](wl::TestWaylandServerThread* server) {
-    EXPECT_CALL(*server->text_input_manager_v1()->text_input(),
-                SetSurroundingText(u8_text, u8_range));
-  });
-
-  input_method_context_->SetSurroundingText(
-      u16_text, gfx::Range(0, 2), gfx::Range::InvalidRange(), u16_range);
-  EXPECT_EQ(
-      input_method_context_->predicted_state_for_testing().surrounding_text,
-      u16_text);
-  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
-            u16_range);
-  connection_->Flush();
-
-  PostToServerAndWait([u8_range](wl::TestWaylandServerThread* server) {
-    Mock::VerifyAndClearExpectations(
-        server->text_input_manager_v1()->text_input());
-
-    // Specify the whole range as a new preedit region.
-    zcr_extended_text_input_v1_send_set_preedit_region(
-        server->text_input_extension_v1()->extended_text_input()->resource(),
-        -static_cast<int32_t>(u8_range.length()), u8_range.length());
-  });
-
-  EXPECT_TRUE(
-      input_method_context_delegate_->was_on_set_preedit_region_called());
-  EXPECT_EQ(input_method_context_->predicted_state_for_testing().composition,
-            u16_range);
-}
-
-TEST_P(WaylandInputMethodContextTest, OnInsertImage) {
-  const GURL some_image_url = GURL("");
-  input_method_context_->OnInsertImage(some_image_url);
-  WaylandTestBase::SyncDisplay();
-  EXPECT_TRUE(input_method_context_delegate_->was_on_insert_image_called());
-}
-
-
-TEST_P(WaylandInputMethodContextTest, OnSetVirtualKeyboardOccludedBounds) {
-  constexpr gfx::Rect kBounds(10, 20, 300, 400);
-  input_method_context_->OnSetVirtualKeyboardOccludedBounds(kBounds);
-  WaylandTestBase::SyncDisplay();
-  EXPECT_EQ(input_method_context_delegate_->virtual_keyboard_bounds(), kBounds);
-}
-
-TEST_P(WaylandInputMethodContextTest,
-       OnSetVirtualKeyboardOccludedBoundsUpdatesPastTextInputClients) {
-  auto client1 = std::make_unique<MockTextInputClient>(TEXT_INPUT_TYPE_TEXT);
-  auto client2 = std::make_unique<MockTextInputClient>(TEXT_INPUT_TYPE_URL);
-
-  input_method_context_->WillUpdateFocus(client1.get(), client2.get());
-  LinuxInputMethodContext::TextInputClientAttributes attributes;
-  attributes.input_type = client2->GetTextInputType();
-  input_method_context_->UpdateFocus(true, client1->GetTextInputType(),
-                                     attributes,
-                                     ui::TextInputClient::FOCUS_REASON_OTHER);
-  input_method_context_->WillUpdateFocus(client2.get(), nullptr);
-  attributes.input_type = TEXT_INPUT_TYPE_NONE;
-  input_method_context_->UpdateFocus(false, client2->GetTextInputType(),
-                                     attributes,
-                                     ui::TextInputClient::FOCUS_REASON_NONE);
-
-  // Clients should get further bounds updates.
-  constexpr gfx::Rect kBounds(10, 20, 300, 400);
-  EXPECT_CALL(*client1, EnsureCaretNotInRect(kBounds));
-  EXPECT_CALL(*client2, EnsureCaretNotInRect(kBounds));
-  input_method_context_->OnSetVirtualKeyboardOccludedBounds(kBounds);
-  WaylandTestBase::SyncDisplay();
-  Mock::VerifyAndClearExpectations(client1.get());
-  Mock::VerifyAndClearExpectations(client2.get());
-
-  // Clients should get the empty bounds then be removed.
-  const gfx::Rect kBoundsEmpty(0, 30, 0, 0);
-  EXPECT_CALL(*client1, EnsureCaretNotInRect(kBoundsEmpty));
-  EXPECT_CALL(*client2, EnsureCaretNotInRect(kBoundsEmpty));
-  input_method_context_->OnSetVirtualKeyboardOccludedBounds(kBoundsEmpty);
-  WaylandTestBase::SyncDisplay();
-  Mock::VerifyAndClearExpectations(client1.get());
-  Mock::VerifyAndClearExpectations(client2.get());
-
-  // Verify client no longer gets bounds updates.
-  const gfx::Rect kBounds2(0, 40, 100, 200);
-  EXPECT_CALL(*client1, EnsureCaretNotInRect).Times(0);
-  EXPECT_CALL(*client2, EnsureCaretNotInRect).Times(0);
-  input_method_context_->OnSetVirtualKeyboardOccludedBounds(kBounds2);
-  WaylandTestBase::SyncDisplay();
-  Mock::VerifyAndClearExpectations(client1.get());
-  Mock::VerifyAndClearExpectations(client2.get());
-}
-
-TEST_P(WaylandInputMethodContextTest,
-       OnSetVirtualKeyboardOccludedBoundsWithDeletedPastTextInputClient) {
-  auto client = std::make_unique<MockTextInputClient>(TEXT_INPUT_TYPE_TEXT);
-
-  input_method_context_->WillUpdateFocus(client.get(), nullptr);
-  LinuxInputMethodContext::TextInputClientAttributes attributes;
-  attributes.input_type = TEXT_INPUT_TYPE_NONE;
-  input_method_context_->UpdateFocus(false, client->GetTextInputType(),
-                                     attributes,
-                                     ui::TextInputClient::FOCUS_REASON_NONE);
-
-  const gfx::Rect kBounds(10, 20, 300, 400);
-  EXPECT_CALL(*client, EnsureCaretNotInRect(kBounds));
-  input_method_context_->OnSetVirtualKeyboardOccludedBounds(kBounds);
-  WaylandTestBase::SyncDisplay();
-  Mock::VerifyAndClearExpectations(client.get());
-
-  client.reset();
-  input_method_context_->OnSetVirtualKeyboardOccludedBounds(kBounds);
-  WaylandTestBase::SyncDisplay();
 }
 
 TEST_P(WaylandInputMethodContextTest, DisplayVirtualKeyboard) {
@@ -1887,7 +1176,7 @@ class WaylandInputMethodContextNoKeyboardTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(TextInputExtensionLatestVersion,
+INSTANTIATE_TEST_SUITE_P(TextInputV1,
                          WaylandInputMethodContextNoKeyboardTest,
                          ::testing::Values(wl::ServerConfig{}));
 
@@ -1974,22 +1263,21 @@ TEST_P(WaylandInputMethodContextNoKeyboardTest, UpdateFocusBetweenTextFields) {
   });
 }
 
-// For use in tests that simply test the WaylandInputMethodContext in isolation
-// without using a real v1/v3 wrapper.
-class WaylandInputMethodContextWithMockWrapperTest : public WaylandTestSimple {
+// For use in tests that test the WaylandInputMethodContext in isolation with a
+// mock V3 client.
+class WaylandInputMethodContextWithMockV3Test : public WaylandTestSimple {
  public:
   void SetUp() override {
     WaylandTestSimple::SetUp();
     input_method_context_delegate_ =
-        std::make_unique<TestInputMethodContextDelegate>();
+        std::make_unique<TestInputMethodContextDelegate>(window_->GetWidget());
     keyboard_delegate_ = std::make_unique<TestKeyboardDelegate>();
+    mock_wrapper_ = std::make_unique<MockZwpTextInputV3>();
     input_method_context_ = std::make_unique<WaylandInputMethodContext>(
         connection_.get(), keyboard_delegate_.get(),
         input_method_context_delegate_.get());
-    auto mock_wrapper = std::make_unique<MockZWPTextInputWrapper>();
-    mock_wrapper_ = mock_wrapper.get();
-    input_method_context_->Init(
-        true, std::move(mock_wrapper),
+    input_method_context_->SetTextInputV3ForTesting(mock_wrapper_.get());
+    input_method_context_->SetDesktopEnvironmentForTesting(
         // Ensure by default it doesn't pick the current desktop from the system
         // the tests are running on.
         base::nix::DesktopEnvironment::DESKTOP_ENVIRONMENT_OTHER);
@@ -1999,11 +1287,11 @@ class WaylandInputMethodContextWithMockWrapperTest : public WaylandTestSimple {
   std::unique_ptr<TestInputMethodContextDelegate>
       input_method_context_delegate_;
   std::unique_ptr<TestKeyboardDelegate> keyboard_delegate_;
+  std::unique_ptr<MockZwpTextInputV3> mock_wrapper_;
   std::unique_ptr<WaylandInputMethodContext> input_method_context_;
-  raw_ptr<MockZWPTextInputWrapper> mock_wrapper_;
 };
 
-TEST_F(WaylandInputMethodContextWithMockWrapperTest,
+TEST_F(WaylandInputMethodContextWithMockV3Test,
        SetSurroundingShortTextWithCompositionRange) {
   const std::u16string text(50, u'あ');
   constexpr gfx::Range range(20, 30);
@@ -2024,7 +1312,7 @@ TEST_F(WaylandInputMethodContextWithMockWrapperTest,
   connection_->Flush();
 }
 
-TEST_F(WaylandInputMethodContextWithMockWrapperTest,
+TEST_F(WaylandInputMethodContextWithMockV3Test,
        SetSurroundingLongTextWithCompositionRange) {
   const std::u16string text(5000, u'あ');
   constexpr gfx::Range kRange(2800, 3200);
@@ -2045,7 +1333,7 @@ TEST_F(WaylandInputMethodContextWithMockWrapperTest,
             kRange);
 }
 
-TEST_F(WaylandInputMethodContextWithMockWrapperTest,
+TEST_F(WaylandInputMethodContextWithMockV3Test,
        SetSurroundingLongTextWithCompositionRangeOutsideSurroundingTextRange) {
   const std::u16string text(5000, u'あ');
   constexpr gfx::Range kSelectionRange(2800, 3200);
@@ -2082,7 +1370,7 @@ TEST_F(WaylandInputMethodContextWithMockWrapperTest,
             kSelectionRange);
 }
 
-TEST_F(WaylandInputMethodContextWithMockWrapperTest,
+TEST_F(WaylandInputMethodContextWithMockV3Test,
        SetSurroundingWithCompositionRangeOutideText) {
   const std::u16string text(5000, u'あ');
   constexpr gfx::Range kSelectionRange(2800, 3200);
@@ -2097,7 +1385,7 @@ TEST_F(WaylandInputMethodContextWithMockWrapperTest,
             kSelectionRange);
 }
 
-TEST_F(WaylandInputMethodContextWithMockWrapperTest,
+TEST_F(WaylandInputMethodContextWithMockV3Test,
        SetSurroundingWithCompositionRangeInvalid) {
   const std::u16string text(5000, u'あ');
   constexpr gfx::Range kSelectionRange(2800, 3200);
@@ -2119,7 +1407,7 @@ TEST_F(WaylandInputMethodContextWithMockWrapperTest,
             kSelectionRange);
 }
 
-TEST_F(WaylandInputMethodContextWithMockWrapperTest, OnPreeditChanged) {
+TEST_F(WaylandInputMethodContextWithMockV3Test, OnPreeditChanged) {
   const std::u16string text(50, u'あ');
   const std::string text_utf8 = base::UTF16ToUTF8(text);
 
@@ -2139,7 +1427,7 @@ TEST_F(WaylandInputMethodContextWithMockWrapperTest, OnPreeditChanged) {
             gfx::Range(20, 10));
 }
 
-TEST_F(WaylandInputMethodContextWithMockWrapperTest,
+TEST_F(WaylandInputMethodContextWithMockV3Test,
        OnPreeditChangedInvalidCursorEnd) {
   const std::u16string text(50, u'あ');
   const std::string text_utf8 = base::UTF16ToUTF8(text);
@@ -2163,7 +1451,7 @@ TEST_F(WaylandInputMethodContextWithMockWrapperTest,
             gfx::Range(0, 0));
 }
 
-TEST_F(WaylandInputMethodContextWithMockWrapperTest,
+TEST_F(WaylandInputMethodContextWithMockV3Test,
        OnPreeditChangedGnomeWorkaround) {
   const std::u16string text(50, u'あ');
   const std::string text_utf8 = base::UTF16ToUTF8(text);
@@ -2173,9 +1461,8 @@ TEST_F(WaylandInputMethodContextWithMockWrapperTest,
   input_method_context = std::make_unique<WaylandInputMethodContext>(
       connection_.get(), keyboard_delegate_.get(),
       input_method_context_delegate_.get());
-  auto mock_wrapper = std::make_unique<MockZWPTextInputWrapper>();
-  input_method_context->Init(true, std::move(mock_wrapper),
-                             base::nix::DESKTOP_ENVIRONMENT_KDE3);
+  input_method_context->SetDesktopEnvironmentForTesting(
+      base::nix::DESKTOP_ENVIRONMENT_KDE3);
 
   input_method_context->OnPreeditString(text_utf8, {}, {60, 30});
   EXPECT_EQ(
@@ -2188,9 +1475,8 @@ TEST_F(WaylandInputMethodContextWithMockWrapperTest,
   input_method_context = std::make_unique<WaylandInputMethodContext>(
       connection_.get(), keyboard_delegate_.get(),
       input_method_context_delegate_.get());
-  mock_wrapper = std::make_unique<MockZWPTextInputWrapper>();
-  input_method_context->Init(true, std::move(mock_wrapper),
-                             base::nix::DESKTOP_ENVIRONMENT_GNOME);
+  input_method_context->SetDesktopEnvironmentForTesting(
+      base::nix::DESKTOP_ENVIRONMENT_GNOME);
   input_method_context->OnPreeditString(text_utf8, {}, {60, 30});
   EXPECT_EQ(
       input_method_context->predicted_state_for_testing().surrounding_text,

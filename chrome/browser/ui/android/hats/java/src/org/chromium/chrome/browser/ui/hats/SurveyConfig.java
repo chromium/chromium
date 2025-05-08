@@ -137,7 +137,7 @@ public class SurveyConfig {
     }
 
     /** Return the dump of input Survey config for debugging purposes. */
-    public static String toString(SurveyConfig config) {
+    public static String toString(@Nullable SurveyConfig config) {
         if (config == null) return "";
 
         StringBuilder sb = new StringBuilder();

@@ -117,11 +117,8 @@ Suite Name | Browser Under Test | Harness | Tests Run
 
 ## Test expectations and Baselines
 
-The
-[MobileTestExpectations](../../third_party/blink/web_tests/MobileTestExpectations)
-file contains the list of all known Chrome Android and Chrome WebView specific
-test failures, and it inherits or overrides test expectations from the default
-[TestExpectations](../../third_party/blink/web_tests/TestExpectations) file.
+Expected failures on Chrome Android or WebView should be added to the default
+[TestExpectations](../../third_party/blink/web_tests/TestExpectations) file with the modifier "Android" or "Webview" respectively.
 
 For baselines:
 * Chrome Android specific baselines reside at

@@ -4,12 +4,13 @@
 
 package org.chromium.chrome.browser.feed;
 
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.FeedListContentManager.FeedContent;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScope;
@@ -18,6 +19,7 @@ import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityL
 import java.util.List;
 
 /** Interface used for interacting with the Stream library in order to render a stream of cards. */
+@NullMarked
 public interface Stream {
     /** The mediator of multiple Streams. */
     public interface StreamsMediator {
@@ -106,8 +108,8 @@ public interface Stream {
     void bind(
             RecyclerView view,
             FeedListContentManager manager,
-            FeedScrollState savedInstanceState,
-            FeedSurfaceScope surfaceScope,
+            @Nullable FeedScrollState savedInstanceState,
+            @Nullable FeedSurfaceScope surfaceScope,
             HybridListRenderer renderer,
             @Nullable FeedReliabilityLogger reliabilityLogger,
             int headerCount);

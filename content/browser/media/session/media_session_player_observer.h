@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "media/base/picture_in_picture_events_info.h"
 
 namespace media {
 enum class MediaContentType;
@@ -106,7 +107,8 @@ class MediaSessionPlayerObserver {
   // Called when the auto picture in picture information has changed.
   virtual void OnAutoPictureInPictureInfoChanged(
       int player_id,
-      std::string_view auto_picture_in_picture_info) = 0;
+      const media::PictureInPictureEventsInfo::AutoPipInfo&
+          auto_picture_in_picture_info) = 0;
 
   // Returns the RenderFrameHost this player observer belongs to. Returns
   // nullptr if unavailable.

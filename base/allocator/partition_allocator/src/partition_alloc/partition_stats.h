@@ -38,7 +38,7 @@ struct ThreadCacheStats {
   uint32_t metadata_overhead;
 
 #if PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
-  uint64_t allocs_per_bucket_[internal::kNumBuckets + 1];
+  uint64_t allocs_per_bucket_[BucketIndexLookup::kNumBuckets + 1];
 #endif  // PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
 };
 

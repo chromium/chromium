@@ -127,6 +127,10 @@ def _GenerateH(basepath, fileroot, head, namespace, schema, description):
     f.write(u'#define %s\n' % header_guard)
     f.write(u'\n')
 
+    aggregation = GetAggregationDetails(description)
+
+    if aggregation.kind == AggregationKind.ARRAY:
+      f.write("#include <array>\n")
     f.write(u'#include <cstddef>\n')
     f.write(u'\n')
 
@@ -135,7 +139,11 @@ def _GenerateH(basepath, fileroot, head, namespace, schema, description):
         f.write(u'#include <%s>\n' % header)
       f.write(u'\n')
 
-    for header in schema.get(u'headers', []):
+    headers = schema.get(u'headers', [])
+    if aggregation.kind == AggregationKind.MAP:
+      headers.append("base/containers/fixed_flat_map.h")
+
+    for header in sorted(headers):
       f.write(u'#include "%s"\n' % header)
     f.write(u'\n')
 
@@ -149,8 +157,6 @@ def _GenerateH(basepath, fileroot, head, namespace, schema, description):
 
     for var_name, value in description.get('int_variables', {}).items():
       f.write(u'extern const int %s;\n' % var_name)
-
-    aggregation = GetAggregationDetails(description)
 
     # Generate forward declarations of all elements.
     if aggregation.export_items:

@@ -19,12 +19,12 @@ found in the LICENSE file.
     <ImageView
         android:id="@+id/new_tab_background_animation_link_icon"
         android:importantForAccessibility="no"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="@dimen/new_bg_tab_animation_size"
+        android:layout_height="@dimen/new_bg_tab_animation_size"
         android:layout_gravity="center"
         android:background="@drawable/new_tab_animation_rounded_rect"
-        android:elevation="@dimen/bg_tab_animation_elevation"
+        android:elevation="@dimen/new_bg_tab_animation_link_elevation"
         android:src="@drawable/ic_link"
-        android:padding="4dp"
+        android:padding="@dimen/new_bg_tab_animation_padding"
         android:visibility="invisible"/>
 </org.chromium.chrome.browser.compositor.layouts.phone.NewBackgroundTabAnimationHostView>

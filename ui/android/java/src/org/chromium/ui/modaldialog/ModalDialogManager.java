@@ -645,7 +645,8 @@ public class ModalDialogManager {
         mSuspendedTypes.add(dialogType);
         if (isShowing()
                 && dialogType == mCurrentType
-                && mCurrentPriority != ModalDialogPriority.VERY_HIGH) {
+                && mCurrentPriority != ModalDialogPriority.VERY_HIGH
+                && !mDismissingCurrentDialog) {
             suspendCurrentDialog();
             showNextDialog();
         }

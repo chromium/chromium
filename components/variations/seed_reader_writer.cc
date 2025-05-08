@@ -87,11 +87,13 @@ void SetUpSeedFileTrial(
 
 const SeedFieldsPrefs kRegularSeedFieldsPrefs = {
     .seed = prefs::kVariationsCompressedSeed,
-    .signature = prefs::kVariationsSeedSignature};
+    .signature = prefs::kVariationsSeedSignature,
+    .milestone = prefs::kVariationsSeedMilestone};
 
 const SeedFieldsPrefs kSafeSeedFieldsPrefs = {
     .seed = prefs::kVariationsSafeCompressedSeed,
-    .signature = prefs::kVariationsSafeSeedSignature};
+    .signature = prefs::kVariationsSafeSeedSignature,
+    .milestone = prefs::kVariationsSafeSeedMilestone};
 
 SeedReaderWriter::SeedReaderWriter(
     PrefService* local_state,
@@ -125,23 +127,24 @@ SeedReaderWriter::~SeedReaderWriter() {
   }
 }
 
-void SeedReaderWriter::StoreValidatedSeed(std::string_view compressed_seed_data,
-                                          std::string_view base64_seed_data) {
+void SeedReaderWriter::StoreValidatedSeedInfo(ValidatedSeedInfo seed_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ShouldUseSeedFile()) {
-    ScheduleSeedFileWrite(compressed_seed_data);
+    ScheduleSeedFileWrite(seed_info);
   } else {
-    local_state_->SetString(fields_prefs_.seed, base64_seed_data);
+    ScheduleLocalStateWrite(seed_info);
   }
 }
 
-void SeedReaderWriter::ClearSeed() {
+void SeedReaderWriter::ClearSeedInfo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/372009105): Remove if-statements when experiment has ended.
   if (ShouldUseSeedFile()) {
-    ScheduleSeedFileWrite(std::string());
+    ScheduleSeedFileClear();
   } else {
-    local_state_->ClearPref(fields_prefs_.seed);
+    local_state_->ClearPref(fields_prefs_->seed);
+    local_state_->ClearPref(fields_prefs_->signature);
+    local_state_->ClearPref(fields_prefs_->milestone);
     // Although only clients in the treatment group write seeds to dedicated
     // seed files, attempt to delete the seed file for clients with
     // Local-State-based seeds. If a client switches experiment groups or
@@ -151,17 +154,20 @@ void SeedReaderWriter::ClearSeed() {
     }
   }
 }
-
 StoredSeed SeedReaderWriter::GetSeedData() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ShouldUseSeedFile()) {
     return StoredSeed{.storage_format = StoredSeed::StorageFormat::kCompressed,
-                      .data = seed_info_.data};
+                      .data = seed_info_.data,
+                      .signature = seed_info_.signature,
+                      .milestone = seed_info_.milestone};
   } else {
     return StoredSeed{
         .storage_format =
             StoredSeed::StorageFormat::kCompressedAndBase64Encoded,
-        .data = local_state_->GetString(fields_prefs_.seed)};
+        .data = local_state_->GetString(fields_prefs_->seed),
+        .signature = local_state_->GetString(fields_prefs_->signature),
+        .milestone = local_state_->GetInteger(fields_prefs_->milestone)};
   }
 }
 
@@ -187,13 +193,15 @@ SeedReaderWriter::GetSerializedDataProducerForBackgroundSequence() {
   return base::BindOnce(&DoSerialize, seed_info_.data);
 }
 
-void SeedReaderWriter::ScheduleSeedFileWrite(std::string_view seed_data) {
+void SeedReaderWriter::ScheduleSeedFileWrite(ValidatedSeedInfo seed_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Set `seed_info_.data`, this will be used later by the background
   // serialization and can be changed multiple times before a scheduled write
   // completes, in which case the background serializer will use the
   // `seed_info_.data` set at the last call of this function.
-  seed_info_.data = seed_data;
+  seed_info_.data = seed_info.compressed_seed_data;
+  seed_info_.signature = seed_info.signature;
+  seed_info_.milestone = seed_info.milestone;
   // `seed_writer_` will eventually call
   // GetSerializedDataProducerForBackgroundSequence() on *this* object to get
   // a callback that will be run asynchronously. This callback will be used to
@@ -203,6 +211,38 @@ void SeedReaderWriter::ScheduleSeedFileWrite(std::string_view seed_data) {
   // occurring in a background thread and that this will result in a new write
   // being scheduled.
   seed_writer_->ScheduleWriteWithBackgroundDataSerializer(this);
+  // TODO(crbug.com/380465790): Seed-related info that has not yet been migrated
+  // to seed files must continue to be maintained in local state. Once the
+  // migration is complete, stop updating local state.
+  local_state_->SetString(fields_prefs_->signature, seed_info_.signature);
+  local_state_->SetInteger(fields_prefs_->milestone, seed_info_.milestone);
+}
+
+void SeedReaderWriter::ScheduleSeedFileClear() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Set `seed_info_.data`, this will be used later by the background
+  // serialization and can be changed multiple times before a scheduled write
+  // completes, in which case the background serializer will use the
+  // `seed_info_.data` set at the last call of this function.
+  seed_info_ = {
+      .data = "",
+      .signature = "",
+      .milestone = 0,
+  };
+  // `seed_writer_` will eventually call
+  // GetSerializedDataProducerForBackgroundSequence() on *this* object to get
+  // a callback that will be run asynchronously. This callback will be used to
+  // call the DoSerialize() function which will return the seed data to write
+  // to the file. This write will also be asynchronous and on a different
+  // thread. Note that it is okay to call this while a write is already
+  // occurring in a background thread and that this will result in a new write
+  // being scheduled.
+  seed_writer_->ScheduleWriteWithBackgroundDataSerializer(this);
+  // TODO(crbug.com/380465790): Seed-related info that has not yet been migrated
+  // to seed files must continue to be maintained in local state. Once the
+  // migration is complete, stop updating local state.
+  local_state_->ClearPref(fields_prefs_->signature);
+  local_state_->ClearPref(fields_prefs_->milestone);
 }
 
 void SeedReaderWriter::DeleteSeedFile() {
@@ -223,6 +263,10 @@ void SeedReaderWriter::ReadSeedFile() {
 
   if (success) {
     seed_info_.data = std::move(seed_file_data);
+    // TODO(crbug.com/380465790): Read other SeedInfo fields from the seed file
+    // once it's stored there.
+    seed_info_.signature = local_state_->GetString(fields_prefs_->signature);
+    seed_info_.milestone = local_state_->GetInteger(fields_prefs_->milestone);
   } else {
     // Export seed data from Local State to a seed file in the following cases.
     // 1. Seed file does not exist because this is the first run. For Windows,
@@ -232,10 +276,13 @@ void SeedReaderWriter::ReadSeedFile() {
     // in the seed file experiment's treatment group.
     // 3. Seed file exists and read failed.
     std::string decoded_data;
-    if (base::Base64Decode(local_state_->GetString(fields_prefs_.seed),
+    if (base::Base64Decode(local_state_->GetString(fields_prefs_->seed),
                            &decoded_data)) {
-      // Write will only occur if ShouldUseSeedFile() is true.
-      ScheduleSeedFileWrite(decoded_data);
+      ScheduleSeedFileWrite(ValidatedSeedInfo{
+          .compressed_seed_data = decoded_data,
+          .signature = local_state_->GetString(fields_prefs_->signature),
+          .milestone = local_state_->GetInteger(fields_prefs_->milestone),
+      });
 
       // Record whether empty data is written to the seed file. This can happen
       // in the following cases.
@@ -260,7 +307,14 @@ void SeedReaderWriter::ReadSeedFile() {
 
   // Clients using a seed file should clear seed from local state as it will no
   // longer be used.
-  local_state_->ClearPref(fields_prefs_.seed);
+  local_state_->ClearPref(fields_prefs_->seed);
+}
+
+void SeedReaderWriter::ScheduleLocalStateWrite(ValidatedSeedInfo seed_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  local_state_->SetString(fields_prefs_->seed, seed_info.base64_seed_data);
+  local_state_->SetString(fields_prefs_->signature, seed_info.signature);
+  local_state_->SetInteger(fields_prefs_->milestone, seed_info.milestone);
 }
 
 bool SeedReaderWriter::ShouldUseSeedFile() const {

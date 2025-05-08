@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -26,6 +27,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Provides functions that map changes of {@link BankAccountProperties} in a {@link PropertyModel}
  * to the suitable method in {@link FacilitatedPaymentsPaymentMethodsView}.
  */
+@NullMarked
 class BankAccountViewBinder {
     static View createBankAccountItemView(ViewGroup parent) {
         return LayoutInflater.from(parent.getContext())

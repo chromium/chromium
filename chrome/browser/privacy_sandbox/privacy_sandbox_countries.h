@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_COUNTRIES_H_
 #define CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_COUNTRIES_H_
 
+#include "base/memory/raw_ptr.h"
+
 class PrivacySandboxCountries {
  public:
   virtual ~PrivacySandboxCountries() = default;
@@ -18,5 +20,7 @@ class PrivacySandboxCountries {
   // China.
   virtual bool IsLatestCountryChina() = 0;
 };
+
+raw_ptr<PrivacySandboxCountries> GetSingletonPrivacySandboxCountries();
 
 #endif  // CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_COUNTRIES_H_

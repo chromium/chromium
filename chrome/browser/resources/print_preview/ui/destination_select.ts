@@ -45,19 +45,32 @@ export class PrintPreviewDestinationSelectElement extends
 
   static get properties() {
     return {
-      activeUser: String,
-
-      dark: Boolean,
+      dark: {
+        type: Boolean,
+        value: false,
+      },
 
       destination: Object,
 
-      disabled: Boolean,
+      disabled: {
+        type: Boolean,
+        value: false,
+      },
 
-      loaded: Boolean,
+      loaded: {
+        type: Boolean,
+        value: false,
+      },
 
-      noDestinations: Boolean,
+      noDestinations: {
+        type: Boolean,
+        value: false,
+      },
 
-      pdfPrinterDisabled: Boolean,
+      pdfPrinterDisabled: {
+        type: Boolean,
+        value: false,
+      },
 
       recentDestinationList: Array,
 
@@ -68,7 +81,6 @@ export class PrintPreviewDestinationSelectElement extends
     };
   }
 
-  declare activeUser: string;
   declare dark: boolean;
   declare destination: Destination;
   declare disabled: boolean;
@@ -156,6 +168,10 @@ export class PrintPreviewDestinationSelectElement extends
   getVisibleItemsForTest(): NodeListOf<HTMLOptionElement> {
     return this.shadowRoot!.querySelectorAll<HTMLOptionElement>(
         'option:not([hidden])');
+  }
+
+  private isSelected_(destinationKey: string): boolean {
+    return this.selectedValue === destinationKey;
   }
 }
 

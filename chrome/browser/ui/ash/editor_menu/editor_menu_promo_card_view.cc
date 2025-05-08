@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_promo_card_view.h"
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_strings.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_view_delegate.h"
@@ -13,6 +15,7 @@
 #include "chrome/browser/ui/ash/editor_menu/utils/utils.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -63,9 +66,11 @@ int GetPromoCardLabelWidth(int promo_card_width) {
 }  // namespace
 
 EditorMenuPromoCardView::EditorMenuPromoCardView(
+    const ApplicationLocaleStorage* application_locale_storage,
     const gfx::Rect& anchor_view_bounds,
     EditorMenuViewDelegate* delegate)
-    : pre_target_handler_(
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      pre_target_handler_(
           std::make_unique<PreTargetHandler>(/*delegate=*/*this,
                                              CardType::kEditorMenu)),
       delegate_(delegate) {
@@ -80,6 +85,7 @@ EditorMenuPromoCardView::~EditorMenuPromoCardView() = default;
 
 // static
 std::unique_ptr<views::Widget> EditorMenuPromoCardView::CreateWidget(
+    const ApplicationLocaleStorage* application_locale_storage,
     const gfx::Rect& anchor_view_bounds,
     EditorMenuViewDelegate* delegate) {
   views::Widget::InitParams params(
@@ -95,7 +101,7 @@ std::unique_ptr<views::Widget> EditorMenuPromoCardView::CreateWidget(
   auto widget = std::make_unique<views::Widget>(std::move(params));
   EditorMenuPromoCardView* editor_menu_promo_card_view =
       widget->SetContentsView(std::make_unique<EditorMenuPromoCardView>(
-          anchor_view_bounds, delegate));
+          application_locale_storage, anchor_view_bounds, delegate));
   editor_menu_promo_card_view->UpdateBounds(anchor_view_bounds);
 
   return widget;
@@ -177,7 +183,8 @@ void EditorMenuPromoCardView::OnWidgetVisibilityChanged(views::Widget* widget,
 
 void EditorMenuPromoCardView::UpdateBounds(
     const gfx::Rect& anchor_view_bounds) {
-  GetWidget()->SetBounds(GetEditorMenuBounds(anchor_view_bounds, this));
+  GetWidget()->SetBounds(GetEditorMenuBounds(
+      anchor_view_bounds, this, application_locale_storage_->Get()));
 }
 
 views::View* EditorMenuPromoCardView::GetRootView() {

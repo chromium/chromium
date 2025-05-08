@@ -88,6 +88,8 @@ class CORE_EXPORT ViewTransitionSupplement
   void AddPendingRequest(std::unique_ptr<ViewTransitionRequest>) override;
   VectorOf<std::unique_ptr<ViewTransitionRequest>> TakePendingRequests();
   void OnTransitionFinished(ViewTransition* transition) override;
+  void OnSkipTransitionWithPendingCallback(ViewTransition*) override;
+  void OnSkippedTransitionDOMCallback(ViewTransition*) override;
 
   // TODO(https://crbug.com/1422251): Expand this to receive a the full set of
   // @view-transition options.
@@ -144,6 +146,11 @@ class CORE_EXPORT ViewTransitionSupplement
   // Element-scoped view transitions.
   HeapHashMap<WeakMember<const Element>, Member<ViewTransition>>
       element_transitions_;
+
+  // view-transitions that have been skipped but still have a pending DOM
+  // callback.
+  HeapHashMap<WeakMember<const Element>, Member<ViewTransition>>
+      skipped_with_pending_dom_callback_;
 
   VectorOf<std::unique_ptr<ViewTransitionRequest>> pending_requests_;
 

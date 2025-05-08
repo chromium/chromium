@@ -42,8 +42,6 @@ CollaborationMessagingObserverFactory::
 std::unique_ptr<KeyedService>
 CollaborationMessagingObserverFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  CHECK(tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups());
-  DCHECK(context);
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<CollaborationMessagingObserver>(profile);
 }

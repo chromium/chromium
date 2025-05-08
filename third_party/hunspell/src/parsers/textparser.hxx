@@ -1,7 +1,7 @@
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
- * Copyright (C) 2002-2017 Németh László
+ * Copyright (C) 2002-2022 Németh László
  *
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
@@ -59,6 +59,7 @@ class TextParser {
   std::vector<int> wordcharacters;// for detection of the word boundaries
   std::string line[MAXPREVLINE];  // parsed and previous lines
   std::vector<bool> urlline;      // mask for url detection
+  std::vector<w_char> wc;
   int checkurl;
   int actual;  // actual line
   size_t head; // head position

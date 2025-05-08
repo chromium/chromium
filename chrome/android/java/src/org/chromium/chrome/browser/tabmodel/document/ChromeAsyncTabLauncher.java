@@ -66,8 +66,8 @@ public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
      */
     public void launchTabInOtherWindow(
             LoadUrlParams loadUrlParams, Activity activity, int parentId, Activity otherActivity) {
-        Intent intent =
-                createNewTabIntent(new AsyncTabCreationParams(loadUrlParams), parentId, false);
+        Intent intent = createNewTabIntent(new AsyncTabCreationParams(loadUrlParams), parentId,
+                TabLaunchType.FROM_CHROME_UI);
 
         Class<? extends Activity> targetActivity =
                 MultiWindowUtils.getInstance().getOpenInOtherWindowActivity(activity);
@@ -125,19 +125,20 @@ public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
                 && asyncParams.getWebContents() != null);
 
         Intent intent =
-                createNewTabIntent(asyncParams, parentId, type == TabLaunchType.FROM_CHROME_UI);
+                createNewTabIntent(asyncParams, parentId, type);
         IntentHandler.startActivityForTrustedIntent(intent);
     }
 
     private Intent createNewTabIntent(
-            AsyncTabCreationParams asyncParams, int parentId, boolean isChromeUi) {
+            AsyncTabCreationParams asyncParams, int parentId,
+            @TabLaunchType int launchType) {
         int assignedTabId = TabIdManager.getInstance().generateValidId(Tab.INVALID_TAB_ID);
         AsyncTabParamsManagerSingleton.getInstance().add(assignedTabId, asyncParams);
 
         Intent intent =
                 new Intent(Intent.ACTION_VIEW, Uri.parse(asyncParams.getLoadUrlParams().getUrl()));
 
-        addAsyncTabExtras(asyncParams, parentId, isChromeUi, assignedTabId, intent);
+        addAsyncTabExtras(asyncParams, parentId, launchType, assignedTabId, intent);
 
         return intent;
     }
@@ -145,7 +146,7 @@ public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
     private void addAsyncTabExtras(
             AsyncTabCreationParams asyncParams,
             int parentId,
-            boolean isChromeUi,
+            @TabLaunchType int launchType,
             int assignedTabId,
             Intent intent) {
         ComponentName componentName = asyncParams.getComponentName();
@@ -160,7 +161,9 @@ public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
         IntentHandler.setTabId(intent, assignedTabId);
         intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, mIsIncognito);
         intent.putExtra(IntentHandler.EXTRA_PARENT_TAB_ID, parentId);
+        IntentHandler.setTabLaunchType(intent, launchType);
 
+        boolean isChromeUi = (launchType == TabLaunchType.FROM_CHROME_UI);
         if (mIsIncognito || isChromeUi) {
             intent.putExtra(
                     Browser.EXTRA_APPLICATION_ID,

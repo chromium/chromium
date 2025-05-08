@@ -512,6 +512,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.app") {
   sources = [
     "//chrome/android/java/src/org/chromium/chrome/browser/app/feed/NavigationRecorderTest.java",
     "src/org/chromium/chrome/browser/app/ContextMenuDragTest.java",
+    "src/org/chromium/chrome/browser/app/appmenu/MultiWindowAppMenuTest.java",
     "src/org/chromium/chrome/browser/app/appmenu/OverviewAppMenuTest.java",
     "src/org/chromium/chrome/browser/app/appmenu/TabbedAppMenuPTTest.java",
     "src/org/chromium/chrome/browser/app/appmenu/TabbedAppMenuTest.java",
@@ -559,7 +560,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.autofill") {
     "src/org/chromium/chrome/browser/autofill/settings/AutofillProfilesFragmentTest.java",
     "src/org/chromium/chrome/browser/autofill/settings/AutofillServerCardEditorTest.java",
     "src/org/chromium/chrome/browser/autofill/settings/AutofillTestRule.java",
-    "src/org/chromium/chrome/browser/autofill/settings/CreditCardScannerManagerTest.java",
     "src/org/chromium/chrome/browser/autofill/settings/FinancialAccountsManagementFragmentTest.java",
     "src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetRenderTest.java",
     "src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetViewBinderTest.java",
@@ -1331,6 +1331,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.tasks") {
   sources = [
     "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabCardLabelViewRenderTest.java",
     "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabCardLabelViewTest.java",
+    "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupListRenderTest.java",
     "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupRowViewRenderTest.java",
     "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherPanePublicTransitTest.java",
     "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/ArchivedTabsCardRenderTest.java",

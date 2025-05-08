@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.autofill.LoyaltyCard;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -67,19 +68,24 @@ class TouchToFillPaymentMethodViewBridge {
     }
 
     @CalledByNative
-    private void showSheet(
+    private void showCreditCards(
             @JniType("std::vector") Object[] cards,
             @JniType("std::vector") Object[] suggestions,
             boolean shouldShowScanCreditCard) {
-        mComponent.showSheet(
+        mComponent.showCreditCards(
                 (List<PersonalDataManager.CreditCard>) (List<?>) Arrays.asList(cards),
                 (List<AutofillSuggestion>) (List<?>) Arrays.asList(suggestions),
                 shouldShowScanCreditCard);
     }
 
     @CalledByNative
-    private void showSheet(@JniType("std::vector") List<PersonalDataManager.Iban> ibans) {
-        mComponent.showSheet(ibans);
+    private void showIbans(@JniType("std::vector") List<PersonalDataManager.Iban> ibans) {
+        mComponent.showIbans(ibans);
+    }
+
+    @CalledByNative
+    private void showLoyaltyCards(@JniType("std::vector") List<LoyaltyCard> loyaltyCards) {
+        mComponent.showLoyaltyCards(loyaltyCards);
     }
 
     @CalledByNative

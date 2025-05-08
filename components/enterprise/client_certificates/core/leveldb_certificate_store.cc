@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/pickle.h"
 #include "base/task/thread_pool.h"
+#include "components/enterprise/client_certificates/core/metrics_util.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "components/enterprise/client_certificates/core/private_key_factory.h"
 #include "components/enterprise/client_certificates/proto/client_certificates_database.pb.h"
@@ -170,7 +171,7 @@ void LevelDbCertificateStore::GetIdentity(
                                     std::move(callback)));
 }
 
-void LevelDbCertificateStore::InitializeDatabase() {
+void LevelDbCertificateStore::InitializeDatabase(bool retry_on_failure) {
   if (database_state_ != DatabaseState::kUninitialized) {
     return;
   }
@@ -178,14 +179,24 @@ void LevelDbCertificateStore::InitializeDatabase() {
   database_state_ = DatabaseState::kInitializing;
   database_->Init(
       base::BindOnce(&LevelDbCertificateStore::OnDatabaseInitialized,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), retry_on_failure));
 }
 
 void LevelDbCertificateStore::OnDatabaseInitialized(
+    bool retry_on_failure,
     leveldb_proto::Enums::InitStatus status) {
   database_state_ = status == leveldb_proto::Enums::InitStatus::kOK
                         ? DatabaseState::kInitialized
                         : DatabaseState::kUninitialized;
+
+  // Log the status. `retry_on_failure` is only true for the first call.
+  LogLevelDBInitStatus(status, /*with_retry=*/!retry_on_failure);
+
+  if (retry_on_failure && database_state_ == DatabaseState::kUninitialized) {
+    // Retry failed DB initialization at least once.
+    InitializeDatabase(/*retry_on_failure=*/false);
+    return;
+  }
 
   for (auto& operation : pending_operations_) {
     std::move(operation).Run();

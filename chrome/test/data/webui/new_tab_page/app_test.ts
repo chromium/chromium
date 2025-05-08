@@ -276,8 +276,13 @@ suite('NewTabPageAppTest', () => {
       assertEquals(
           0xffff0000 /* red */,
           (await backgroundManager.whenCalled('setBackgroundColor')).value);
+      assertStyle(
+          $$(app, '#content')!, '--color-new-tab-page-attribution-foreground',
+          'rgba(0, 0, 255, 1.00)');
       assertEquals(1, backgroundManager.getCallCount('setShowBackgroundImage'));
       assertFalse(await backgroundManager.whenCalled('setShowBackgroundImage'));
+      assertStyle($$(app, '#backgroundImageAttribution')!, 'display', 'none');
+      assertStyle($$(app, '#backgroundImageAttribution2')!, 'display', 'none');
       assertFalse(app.$.logo.singleColored);
       assertFalse(app.$.logo.dark);
       assertEquals(0xffff0000, app.$.logo.backgroundColor.value);
@@ -304,10 +309,6 @@ suite('NewTabPageAppTest', () => {
       // Arrange.
       const theme = createTheme();
       theme.backgroundImage = createBackgroundImage('https://img.png');
-      const footer = $$(app, 'ntp-footer');
-      assertTrue(!!footer);
-      assertStyle(
-          footer, '--ntp-protected-icon-background-color', 'transparent');
 
       // Act.
       backgroundManager.resetResolver('setShowBackgroundImage');
@@ -320,14 +321,42 @@ suite('NewTabPageAppTest', () => {
 
       // Scrim removal will remove text shadows as background protection is
       // applied to the background element instead.
+      assertNotStyle(
+          $$(app, '#backgroundImageAttribution')!, 'background-color',
+          'rgba(0, 0, 0, 0)');
       assertStyle(
-          footer, '--ntp-protected-icon-background-color', 'rgba(0, 0, 0, .6)');
+          $$(app, '#backgroundImageAttribution')!, 'text-shadow', 'none');
 
       assertEquals(1, backgroundManager.getCallCount('setBackgroundImage'));
       assertEquals(
           'https://img.png',
           (await backgroundManager.whenCalled('setBackgroundImage')).url.url);
       assertEquals(null, app.$.logo.backgroundColor);
+    });
+
+    test('setting attributions shows attributions', async function() {
+      // Arrange.
+      const theme = createTheme();
+      theme.backgroundImageAttribution1 = 'foo';
+      theme.backgroundImageAttribution2 = 'bar';
+      theme.backgroundImageAttributionUrl = {url: 'https://info.com'};
+
+      // Act.
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
+
+      // Assert.
+      assertNotStyle(
+          $$(app, '#backgroundImageAttribution')!, 'display', 'none');
+      assertNotStyle(
+          $$(app, '#backgroundImageAttribution2')!, 'display', 'none');
+      assertEquals(
+          'https://info.com',
+          $$(app, '#backgroundImageAttribution')!.getAttribute('href'));
+      assertEquals(
+          'foo', $$(app, '#backgroundImageAttribution1')!.textContent!.trim());
+      assertEquals(
+          'bar', $$(app, '#backgroundImageAttribution2')!.textContent!.trim());
     });
 
     test('setting logo color colors logo', async function() {
@@ -715,44 +744,21 @@ suite('NewTabPageAppTest', () => {
     });
 
     test('container is hidden', () => {
-      const modules = $$(app, 'ntp-modules-v2')!;
+      const modules = $$(app, 'ntp-modules')!;
       assertTrue(!!modules);
       assertStyle(modules, 'display', 'none');
     });
 
     test(`clicking records click`, () => {
       // Act.
-      $$<HTMLElement>(app, 'ntp-modules-v2')!.click();
+      $$<HTMLElement>(app, 'ntp-modules')!.click();
 
       // Assert.
       assertEquals(1, metrics.count('NewTabPage.Click'));
       assertEquals(1, metrics.count('NewTabPage.Click', NtpElement.MODULE));
     });
 
-    modulesCommonTests('ntp-modules-v2');
-  });
-
-  suite('v2 modules', () => {
-    suiteSetup(() => {
-      loadTimeData.overrideValues({
-        modulesEnabled: true,
-      });
-    });
-
-    test('container is hidden', () => {
-      const modules = $$(app, 'ntp-modules-v2')!;
-      assertTrue(!!modules);
-      assertStyle(modules, 'display', 'none');
-    });
-
-    test(`clicking records click`, () => {
-      // Act.
-      $$<HTMLElement>(app, 'ntp-modules-v2')!.click();
-
-      // Assert.
-      assertEquals(1, metrics.count('NewTabPage.Click'));
-      assertEquals(1, metrics.count('NewTabPage.Click', NtpElement.MODULE));
-    });
+    modulesCommonTests('ntp-modules');
   });
 
   suite('CounterfactualModules', () => {

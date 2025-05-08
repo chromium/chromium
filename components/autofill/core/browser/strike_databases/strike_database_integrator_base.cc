@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -144,18 +145,14 @@ void StrikeDatabaseIntegratorBase::LimitNumberOfStoredEntries() {
   if (entries.size() <= maximum_size) {
     return;
   }
-  size_t elements_to_delete = entries.size() - maximum_size;
-
-  std::vector<std::string> keys_to_delete;
 
   // Sort by timestamp.
-  std::sort(entries.begin(), entries.end(),
-            [](auto& a, auto& b) { return a.second < b.second; });
-
-  for (size_t i = 0; i < elements_to_delete; i++) {
-    keys_to_delete.push_back(entries.at(i).first);
-  }
-
+  std::ranges::sort(entries,
+                    [](auto& a, auto& b) { return a.second < b.second; });
+  const size_t elements_to_delete = entries.size() - maximum_size;
+  const std::vector<std::string> keys_to_delete =
+      base::ToVector(base::span(entries).first(elements_to_delete),
+                     &std::pair<std::string, int64_t>::first);
   ClearStrikesForKeys(keys_to_delete);
 }
 

@@ -14,8 +14,11 @@
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor.h"
 #include "device/bluetooth/emulation/fake_read_response.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
+#include "device/bluetooth/public/mojom/emulation/fake_bluetooth.mojom.h"
 
 namespace bluetooth {
+
+class FakeRemoteGattCharacteristic;
 
 // Implements device::BluetoothRemoteGattDescriptors. Meant to be used
 // by FakeRemoteGattCharacteristic to keep track of the descriptor's state and
@@ -24,10 +27,11 @@ namespace bluetooth {
 // Not intended for direct use by clients.  See README.md.
 class FakeRemoteGattDescriptor : public device::BluetoothRemoteGattDescriptor {
  public:
-  FakeRemoteGattDescriptor(
-      const std::string& descriptor_id,
-      const device::BluetoothUUID& descriptor_uuid,
-      device::BluetoothRemoteGattCharacteristic* characteristic);
+  using ResponseCallback = base::OnceCallback<void(uint16_t gatt_code)>;
+
+  FakeRemoteGattDescriptor(const std::string& descriptor_id,
+                           const device::BluetoothUUID& descriptor_uuid,
+                           FakeRemoteGattCharacteristic* characteristic);
   ~FakeRemoteGattDescriptor() override;
 
   // If |gatt_code| is mojom::kGATTSuccess the next read request will call
@@ -39,6 +43,11 @@ class FakeRemoteGattDescriptor : public device::BluetoothRemoteGattDescriptor {
   // If |gatt_code| is mojom::kGATTSuccess the next write request will call its
   // success callback. Otherwise it will call its error callback.
   void SetNextWriteResponse(uint16_t gatt_code);
+
+  void SimulateReadResponse(uint16_t gatt_code,
+                            const std::optional<std::vector<uint8_t>>& value);
+
+  void SimulateWriteResponse(uint16_t gatt_code);
 
   // Returns the last successfully written value to the descriptor. Returns
   // nullopt if no value has been written yet.
@@ -70,10 +79,13 @@ class FakeRemoteGattDescriptor : public device::BluetoothRemoteGattDescriptor {
                              ErrorCallback error_callback,
                              std::vector<uint8_t> value);
 
+  void DispatchDescriptorOperationEvent(
+      mojom::DescriptorOperationType type,
+      const std::optional<std::vector<uint8_t>>& data);
+
   const std::string descriptor_id_;
   const device::BluetoothUUID descriptor_uuid_;
-  raw_ptr<device::BluetoothRemoteGattCharacteristic> characteristic_;
-  std::vector<uint8_t> value_;
+  const raw_ref<FakeRemoteGattCharacteristic> fake_characteristic_;
 
   // Last successfully written value to the descriptor.
   std::optional<std::vector<uint8_t>> last_written_value_;
@@ -85,6 +97,9 @@ class FakeRemoteGattDescriptor : public device::BluetoothRemoteGattDescriptor {
   // Used to decide which callback should be called when WriteRemoteDescriptor
   // is called.
   std::optional<uint16_t> next_write_response_;
+
+  std::vector<ValueCallback> read_callbacks_;
+  std::vector<ResponseCallback> write_callbacks_;
 
   base::WeakPtrFactory<FakeRemoteGattDescriptor> weak_ptr_factory_{this};
 };

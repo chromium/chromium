@@ -5,6 +5,9 @@
 #ifndef CC_INPUT_SCROLL_UTILS_H_
 #define CC_INPUT_SCROLL_UTILS_H_
 
+#include <limits>
+
+#include "build/build_config.h"
 #include "cc/cc_export.h"
 
 namespace gfx {
@@ -16,6 +19,11 @@ namespace cc {
 
 static constexpr int kPixelsPerLineStep = 40;
 static constexpr float kMinFractionToStepWhenPaging = 0.875f;
+#if BUILDFLAG(IS_MAC)
+static constexpr int kMaxOverlapBetweenPages = 40;
+#else
+static constexpr int kMaxOverlapBetweenPages = std::numeric_limits<int>::max();
+#endif  // BUILDFLAG(IS_MAC)
 
 // Class for scroll helper methods in cc and blink.
 class CC_EXPORT ScrollUtils {
@@ -29,6 +37,8 @@ class CC_EXPORT ScrollUtils {
       const gfx::Vector2dF& scroll_delta,
       const gfx::SizeF& scroller_size,
       const gfx::SizeF& viewport_size);
+
+  static int CalculatePageStep(int length);
 };
 
 }  // namespace cc

@@ -14,11 +14,11 @@
 @interface TableViewIdentityItem : TableViewItem
 
 // Gaia ID.
-@property(nonatomic, strong) NSString* gaiaID;
+@property(nonatomic, copy) NSString* gaiaID;
 // User name.
-@property(nonatomic, strong) NSString* name;
+@property(nonatomic, copy) NSString* name;
 // User email.
-@property(nonatomic, strong) NSString* email;
+@property(nonatomic, copy) NSString* email;
 // User avatar.
 @property(nonatomic, strong) UIImage* avatar;
 // If YES, the identity is selected.

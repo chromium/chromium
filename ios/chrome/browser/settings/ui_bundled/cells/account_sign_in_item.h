@@ -11,7 +11,7 @@
 @interface AccountSignInItem : TableViewItem
 
 // Subtitle for the sign-in cell (optional).
-@property(nonatomic, strong) NSString* detailText;
+@property(nonatomic, copy) NSString* detailText;
 
 @end
 

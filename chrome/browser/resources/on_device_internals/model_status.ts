@@ -35,9 +35,11 @@ export class OnDeviceInternalsModelStatusElement extends CrLitElement {
   }
 
   protected accessor pageData_: PageData = {
-    baseModelReady: false,
-    modelState: 'NO STATE',
-    registrationCriteria: {},
+    baseModel: {
+      state: 'NO STATE',
+      registrationCriteria: {},
+      info: null,
+    },
     suppModels: [],
     modelCrashCount: 0,
     maxModelCrashCount: 0,

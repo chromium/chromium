@@ -26,7 +26,7 @@ public abstract class ImageFetcher {
     // update the histogram suffix ImageFetcherClients in histograms.xml as well.
     public static final String ASSISTANT_DETAILS_UMA_CLIENT_NAME = "AssistantDetails";
     public static final String ASSISTANT_INFO_BOX_UMA_CLIENT_NAME = "AssistantInfoBox";
-    public static final String AUTOFILL_CARD_ART_UMA_CLIENT_NAME = "AutofillCardArt";
+    public static final String AUTOFILL_IMAGE_FETCHER_UMA_CLIENT_NAME = "AutofillImageFetcher";
     public static final String CRYPTIDS_UMA_CLIENT_NAME = "Cryptids";
     public static final String DATA_SHARING_UMA_CLIENT_NAME = "DataSharing";
     public static final String OMNIBOX_UMA_CLIENT_NAME = "Omnibox";

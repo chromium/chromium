@@ -55,6 +55,28 @@ suite('fakeShimlessRmaServiceTestSuite', function() {
     assertEquals(RmadErrorCode.kOk, result.stateResult.error);
   });
 
+  // Verify the state property can be set.
+  test('setGetStatePropertiesResult', async () => {
+    assert(service);
+
+    const expectedPropertyResult = {
+      property: {
+        updateDeviceInfoStateProperty: {
+          serialNumberModifiable: true,
+          regionModifiable: true,
+          skuModifiable: true,
+          customLabelModifiable: false,
+          dramPartNumberModifiable: false,
+          featureLevelModifiable: false,
+        },
+      },
+    };
+
+    service.setGetStatePropertiesResult(expectedPropertyResult);
+    const result = await service.getStateProperties();
+    assertEquals(expectedPropertyResult, result.statePropertyResult);
+  });
+
   // Verify `getCurrentState()` returns the set error.
   test('GetCurrentStateError', async () => {
     const states = [

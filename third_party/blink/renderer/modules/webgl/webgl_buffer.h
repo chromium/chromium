@@ -26,15 +26,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_BUFFER_H_
 
-#include "third_party/blink/renderer/modules/webgl/webgl_shared_platform_3d_object.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_object.h"
 
 namespace blink {
 
-class WebGLBuffer final : public WebGLSharedPlatform3DObject {
+class WebGLBuffer final : public WebGLObject {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit WebGLBuffer(WebGLRenderingContextBase*);
+  explicit WebGLBuffer(WebGLContextObjectSupport*);
   ~WebGLBuffer() override;
 
   GLenum GetInitialTarget() const { return initial_target_; }
@@ -49,8 +49,6 @@ class WebGLBuffer final : public WebGLSharedPlatform3DObject {
   void DeleteObjectImpl(gpu::gles2::GLES2Interface*) override;
 
  private:
-  bool IsBuffer() const override { return true; }
-
   GLenum initial_target_;
   int64_t size_;
 };

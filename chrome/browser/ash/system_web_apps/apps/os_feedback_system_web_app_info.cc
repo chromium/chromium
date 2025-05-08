@@ -12,13 +12,12 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/os_feedback/os_feedback_screenshot_manager.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
+#include "chrome/browser/feedback/public/feedback_source.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -96,7 +95,7 @@ bool OSFeedbackAppDelegate::ShouldShowInSearchAndShelf() const {
   return IsUserFeedbackAllowed(profile());
 }
 
-gfx::Rect OSFeedbackAppDelegate::GetDefaultBounds(Browser*) const {
+gfx::Rect OSFeedbackAppDelegate::GetDefaultBounds(ash::BrowserDelegate*) const {
   gfx::Rect bounds =
       display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
   bounds.ClampToCenteredSize(
@@ -104,7 +103,7 @@ gfx::Rect OSFeedbackAppDelegate::GetDefaultBounds(Browser*) const {
   return bounds;
 }
 
-Browser* OSFeedbackAppDelegate::LaunchAndNavigateSystemWebApp(
+ash::BrowserDelegate* OSFeedbackAppDelegate::LaunchAndNavigateSystemWebApp(
     Profile* profile,
     web_app::WebAppProvider* provider,
     const GURL& url,
@@ -113,10 +112,10 @@ Browser* OSFeedbackAppDelegate::LaunchAndNavigateSystemWebApp(
   // feedback tool is to be launched.
   if (IsUserFeedbackAllowed(profile)) {
     // Check whether the feedback app is opened already. If yes, just show it.
-    Browser* browser = ash::FindSystemWebAppBrowser(
-        profile, ash::SystemWebAppType::OS_FEEDBACK);
+    ash::BrowserDelegate* browser = ash::FindSystemWebAppBrowser(
+        profile, ash::SystemWebAppType::OS_FEEDBACK, ash::BrowserType::kApp);
     if (browser) {
-      browser->window()->Show();
+      browser->Show();
     } else {
       apps::AppLaunchParams app_params(
           params.app_id, params.container, params.disposition,
@@ -147,18 +146,12 @@ void OSFeedbackAppDelegate::OnScreenshotTaken(Profile* profile,
                                               GURL url,
                                               apps::AppLaunchParams params,
                                               bool status) const {
-  // Exit early if we can't create browser windows (e.g. when browser is
-  // shutting down, or a wrong profile is given).
-  if (Browser::GetCreationStatusForProfile(profile) !=
-      Browser::CreationStatus::kOk) {
-    return;
-  }
-
   // Place new windows on the specified display.
   display::ScopedDisplayForNewWindows scoped_display(params.display_id);
 
-  Browser* browser = SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
-      profile, provider, url, params);
+  ash::BrowserDelegate* browser =
+      SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(profile, provider,
+                                                          url, params);
   if (!browser) {
     return;
   }
@@ -168,8 +161,7 @@ void OSFeedbackAppDelegate::OnScreenshotTaken(Profile* profile,
   // Here we move the newly created browser window (or the existing one on the
   // inactive desktop) to the current active (visible) desktop, so the user
   // always sees the launched app.
-  multi_user_util::MoveWindowToCurrentDesktop(
-      browser->window()->GetNativeWindow());
+  multi_user_util::MoveWindowToCurrentDesktop(browser->GetNativeWindow());
 
-  browser->window()->Show();
+  browser->Show();
 }

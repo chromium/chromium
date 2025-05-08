@@ -38,7 +38,7 @@ public class SigninPreferencesManager {
         String BOOKMARKS = "Bookmarks";
         String HISTORY_PAGE = "HistoryPage";
         String NTP = "Ntp";
-        String RECENT_TABS = "RecentTabs"; // Only used for histograms
+        String RECENT_TABS = "RecentTabs";
         String SETTINGS = "Settings";
     }
 

@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/collaboration/public/collaboration_service.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -115,6 +116,7 @@ class CollaborationServiceImpl : public CollaborationService,
       const data_sharing::GroupId& group_id,
       base::OnceCallback<void(bool)> callback,
       data_sharing::DataSharingService::PeopleGroupActionOutcome result);
+  void OnPrefChanged();
 
   ServiceStatus current_status_;
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
@@ -138,7 +140,10 @@ class CollaborationServiceImpl : public CollaborationService,
   // Service providing information about sync.
   raw_ptr<syncer::SyncService> sync_service_;
 
-  const raw_ptr<PrefService> profile_prefs_;
+  // Used to listen for sharing policy pref change notification.
+  PrefChangeRegistrar registrar_;
+
+  raw_ptr<PrefService> profile_prefs_;
 
   // Started flows.
   // Join controllers: <GroupId, CollaborationController>

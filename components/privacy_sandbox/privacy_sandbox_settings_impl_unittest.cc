@@ -70,8 +70,6 @@ constexpr auto CONTENT_SETTING_BLOCK = ContentSetting::CONTENT_SETTING_BLOCK;
 // using enum content_settings::CookieControlsMode;
 constexpr auto kBlockThirdParty =
     content_settings::CookieControlsMode::kBlockThirdParty;
-constexpr auto kLimitedThirdParty =
-    content_settings::CookieControlsMode::kLimited;
 
 constexpr int kTestTaxonomyVersion = 1;
 
@@ -2020,7 +2018,7 @@ TEST_P(PrivacySandboxAttestationsTest,
                              kM1FledgeEnabledUserPrefValue,
                              kM1AdMeasurementEnabledUserPrefValue},
            true},
-          {kCookieControlsModeUserPrefValue, kLimitedThirdParty},
+          {kTrackingProtection3pcdEnabledUserPrefValue, true},
           {kAttestationsMap,
            PrivacySandboxAttestationsMap{
                {net::SchemefulSite(enrollee_url),
@@ -2636,36 +2634,6 @@ TEST_F(PrivacySandboxSettingsSharedStorageDebugTest, NoEnrollments) {
                  {kIsSharedStorageAllowedDebugMessage,
                   &expected_out_shared_storage_debug_message},
                  {kIsSharedStorageBlockSiteSettingSpecific, &kFalse_}});
-}
-
-class PrivacySandboxSettingsCookieControlsModeTest
-    : public PrivacySandboxSettingsTest {
- public:
-  PrivacySandboxSettingsCookieControlsModeTest() {
-    feature_list_.InitWithFeatures(
-        {kAddLimit3pcsSetting},
-        {content_settings::features::kTrackingProtection3pcd});
-  }
-};
-
-TEST_F(PrivacySandboxSettingsCookieControlsModeTest,
-       OnRelatedWebsiteSetsEnabledChangedCalledWhen3pcBlockingChanges) {
-  prefs()->SetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, false);
-
-  privacy_sandbox_test_util::MockPrivacySandboxObserver observer;
-  privacy_sandbox_settings()->AddObserver(&observer);
-
-  EXPECT_CALL(observer, OnRelatedWebsiteSetsEnabledChanged(/*enabled=*/true));
-  prefs()->SetInteger(
-      prefs::kCookieControlsMode,
-      static_cast<int>(content_settings::CookieControlsMode::kLimited));
-  testing::Mock::VerifyAndClearExpectations(&observer);
-
-  EXPECT_CALL(observer, OnRelatedWebsiteSetsEnabledChanged(/*enabled=*/false));
-  prefs()->SetInteger(
-      prefs::kCookieControlsMode,
-      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
-  testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
 }  // namespace privacy_sandbox

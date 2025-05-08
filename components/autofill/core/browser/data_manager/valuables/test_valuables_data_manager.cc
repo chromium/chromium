@@ -7,12 +7,21 @@
 namespace autofill {
 
 TestValuablesDataManager::TestValuablesDataManager()
-    : ValuablesDataManager(/*webdata_service=*/nullptr) {}
-TestValuablesDataManager::~TestValuablesDataManager() = default;
+    : ValuablesDataManager(/*webdata_service=*/nullptr,
+                           /*image_fetcher=*/nullptr) {
+  owned_image_fetcher_ = std::make_unique<TestAutofillImageFetcher>();
+  image_fetcher_ = owned_image_fetcher_.get();
+}
 
-base::span<const LoyaltyCard> TestValuablesDataManager::GetLoyaltyCards()
-    const {
-  return {};
+TestValuablesDataManager::~TestValuablesDataManager() {
+  // Clear `image_fetcher_` raw pointer because the `owned_image_fetcher_` goes
+  // first out of scope.
+  image_fetcher_ = nullptr;
+}
+
+void TestValuablesDataManager::CacheImage(const GURL& url,
+                                          const gfx::Image& image) {
+  owned_image_fetcher_->CacheImage(url, image);
 }
 
 }  // namespace autofill

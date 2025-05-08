@@ -27,7 +27,8 @@ class PasswordChangeIconViews : public ManagePasswordsIconView,
   ~PasswordChangeIconViews() override;
 
   // ManagePasswordsIconView:
-  void SetState(password_manager::ui::State state) override;
+  void SetState(password_manager::ui::State state,
+                bool is_blocklisted) override;
 
   // PageActionIconView:
   views::BubbleDialogDelegate* GetBubble() const override;

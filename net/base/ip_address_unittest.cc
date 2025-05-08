@@ -398,21 +398,6 @@ TEST(IPAddressTest, IPAddressToStringWithPort) {
   EXPECT_EQ("", IPAddressToStringWithPort(IPAddress(addr3), 8080));
 }
 
-TEST(IPAddressTest, IPAddressToPackedString) {
-  IPAddress ipv4_address;
-  EXPECT_TRUE(ipv4_address.AssignFromIPLiteral("4.31.198.44"));
-  std::string expected_ipv4_address("\x04\x1f\xc6\x2c", 4);
-  EXPECT_EQ(expected_ipv4_address, IPAddressToPackedString(ipv4_address));
-
-  IPAddress ipv6_address;
-  EXPECT_TRUE(ipv6_address.AssignFromIPLiteral("2001:0700:0300:1800::000f"));
-  std::string expected_ipv6_address(
-      "\x20\x01\x07\x00\x03\x00\x18\x00"
-      "\x00\x00\x00\x00\x00\x00\x00\x0f",
-      16);
-  EXPECT_EQ(expected_ipv6_address, IPAddressToPackedString(ipv6_address));
-}
-
 // Test that invalid IP literals fail to parse.
 TEST(IPAddressTest, AssignFromIPLiteral_FailParse) {
   IPAddress address;
@@ -948,7 +933,7 @@ TEST(IPAddressTest, IPv6Mask) {
 template <size_t N>
 constexpr bool VerifyIPBytes(const IPAddress& addr,
                              const std::array<uint8_t, N> ip_bytes) {
-  return std::ranges::equal(addr.bytes(), ip_bytes);
+  return addr.bytes().span() == ip_bytes;
 }
 
 constexpr IPAddress CreateIPAddress(std::string_view ip_address) {

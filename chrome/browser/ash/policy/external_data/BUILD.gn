@@ -34,6 +34,7 @@ static_library("external_data") {
     "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/settings",
     "//components/policy:generated",
     "//components/policy/core/browser",

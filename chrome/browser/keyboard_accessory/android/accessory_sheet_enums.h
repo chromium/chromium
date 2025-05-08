@@ -58,7 +58,11 @@ enum class AccessorySuggestionType {
   // passwords manual filling sheets.
   kPlusAddress = 20,
 
-  kMaxValue = kPlusAddress,
+  // Google Wallet loyalty card suggestion accessing from the payments manual
+  // filling sheet.
+  kLoyaltyCard = 21,
+
+  kMaxValue = kLoyaltyCard,
 };
 
 // Describes possible actions in the keyboard accessory and its sheets. Used to
@@ -68,6 +72,8 @@ enum class AccessorySuggestionType {
 // be reused. Must be kept in sync with the enum in enums.xml. A java IntDef@ is
 // generated from this.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.keyboard_accessory
+//
+// LINT.IfChange(AccessoryAction)
 enum class AccessoryAction {
   GENERATE_PASSWORD_AUTOMATIC = 0,
   MANAGE_PASSWORDS = 1,
@@ -85,8 +91,10 @@ enum class AccessoryAction {
   CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET = 13,
   SELECT_PLUS_ADDRESS_FROM_PASSWORD_SHEET = 14,
   MANAGE_PLUS_ADDRESS_FROM_PASSWORD_SHEET = 15,
+  MANAGE_LOYALTY_CARDS = 16,
   COUNT,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml)
 
 // Used to record metrics for accessory toggles. Entries should not be
 // renumbered and numeric values should never be reused. Must be kept in sync

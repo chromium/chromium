@@ -282,4 +282,9 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
         }
         RecordUserAction.record("SafeBrowsing.Settings." + userActionSuffix);
     }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
+    }
 }

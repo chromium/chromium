@@ -7,7 +7,6 @@ import("//build/config/android/rules.gni")
 
 android_library("boundary_interface_java") {
   sources = [
-    "src/org/chromium/support_lib_boundary/AsyncShouldInterceptRequestCallbackBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/DropDataContentProviderBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/FeatureFlagHolderBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/IsomorphicObjectBoundaryInterface.java",
@@ -37,6 +36,7 @@ android_library("boundary_interface_java") {
     "src/org/chromium/support_lib_boundary/WebResourceRequestBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebSettingsBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebStorageBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/WebViewBuilderBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebViewClientBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebViewCookieManagerBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebViewNavigationBoundaryInterface.java",

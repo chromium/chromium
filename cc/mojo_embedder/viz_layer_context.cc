@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
@@ -25,6 +26,7 @@
 #include "cc/layers/mirror_layer_impl.h"
 #include "cc/layers/picture_layer_impl.h"
 #include "cc/layers/surface_layer_impl.h"
+#include "cc/layers/texture_layer_impl.h"
 #include "cc/tiles/picture_layer_tiling.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/property_tree.h"
@@ -471,6 +473,8 @@ void SerializePictureLayerTileUpdates(
     viz::ClientResourceProvider& resource_provider,
     viz::RasterContextProvider& context_provider,
     std::vector<viz::mojom::TilingPtr>& tilings) {
+  // TODO(vmiura): If needs_full_sync_ is set, all tiles should be
+  // synced, not only updated tiles.
   auto updates = layer.TakeUpdatedTiles();
   for (const auto& [scale_key, tile_indices] : updates) {
     if (const auto* tiling =
@@ -495,6 +499,31 @@ void SerializePictureLayerTileUpdates(
 void SerializeMirrorLayerExtra(MirrorLayerImpl& layer,
                                viz::mojom::MirrorLayerExtraPtr& extra) {
   extra->mirrored_layer_id = layer.mirrored_layer_id();
+}
+
+void SerializeTextureLayerExtra(TextureLayerImpl& layer,
+                                viz::mojom::TextureLayerExtraPtr& extra,
+                                viz::ClientResourceProvider& resource_provider,
+                                viz::RasterContextProvider& context_provider) {
+  extra->premultiplied_alpha = layer.premultiplied_alpha();
+  extra->blend_background_color = layer.blend_background_color();
+  extra->force_texture_to_opaque = layer.force_texture_to_opaque();
+  extra->uv_top_left = layer.uv_top_left();
+  extra->uv_bottom_right = layer.uv_bottom_right();
+
+  if (layer.needs_set_resource_push()) {
+    if (layer.resource_id() != viz::kInvalidResourceId) {
+      std::vector<viz::ResourceId> ids(1, layer.resource_id());
+      std::vector<viz::TransferableResource> resources;
+      resource_provider.PrepareSendToParent(ids, &resources, &context_provider);
+      CHECK_EQ(resources.size(), 1u);
+      extra->transferable_resource = resources[0];
+    } else {
+      extra->transferable_resource = viz::TransferableResource();
+    }
+
+    layer.ClearNeedsSetResourcePush();
+  }
 }
 
 void SerializeSurfaceLayerExtra(SurfaceLayerImpl& layer,
@@ -522,6 +551,10 @@ void SerializeLayer(LayerImpl& layer,
   wire.type = layer.GetLayerType();
   wire.bounds = layer.bounds();
   wire.is_drawable = layer.draws_content();
+  wire.layer_property_changed_not_from_property_trees =
+      layer.LayerPropertyChangedNotFromPropertyTrees();
+  wire.layer_property_changed_from_property_trees =
+      layer.LayerPropertyChangedFromPropertyTrees();
   wire.contents_opaque = layer.contents_opaque();
   wire.contents_opaque_for_text = layer.contents_opaque_for_text();
   wire.hit_test_opaqueness = layer.hit_test_opaqueness();
@@ -535,6 +568,17 @@ void SerializeLayer(LayerImpl& layer,
   wire.scroll_tree_index = layer.scroll_tree_index();
   wire.should_check_backface_visibility =
       layer.should_check_backface_visibility();
+  if (layer.HasAnyRarePropertySet()) {
+    auto rare_properties = viz::mojom::RareProperties::New();
+    rare_properties->filter_quality = layer.GetFilterQuality();
+    rare_properties->dynamic_range_limit = layer.GetDynamicRangeLimit();
+
+    // NOTE: If the layer's RareProperties is present, then `capture_bounds()`
+    // is guaranteed to be non-null.
+    rare_properties->capture_bounds = CHECK_DEREF(layer.capture_bounds());
+    wire.rare_properties = std::move(rare_properties);
+  }
+  wire.may_contain_video = layer.may_contain_video();
   switch (layer.GetLayerType()) {
     case mojom::LayerType::kMirror: {
       auto mirror_layer_extra = viz::mojom::MirrorLayerExtra::New();
@@ -561,6 +605,15 @@ void SerializeLayer(LayerImpl& layer,
       }
       SerializePictureLayerTileUpdates(picture_layer, resource_provider,
                                        context_provider, update.tilings);
+      break;
+    }
+    case mojom::LayerType::kTexture: {
+      auto texture_layer_extra = viz::mojom::TextureLayerExtra::New();
+      SerializeTextureLayerExtra(static_cast<TextureLayerImpl&>(layer),
+                                 texture_layer_extra, resource_provider,
+                                 context_provider);
+      wire.layer_extra = viz::mojom::LayerExtra::NewTextureLayerExtra(
+          std::move(texture_layer_extra));
       break;
     }
     default:
@@ -840,7 +893,8 @@ VizLayerContext::VizLayerContext(viz::mojom::CompositorFrameSink& frame_sink,
   auto context = viz::mojom::PendingLayerContext::New();
   context->receiver = service_.BindNewEndpointAndPassReceiver();
   context->client = client_receiver_.BindNewEndpointAndPassRemote();
-  frame_sink.BindLayerContext(std::move(context));
+  bool draw_mode_is_gpu = host_impl.GetDrawMode() == DRAW_MODE_HARDWARE;
+  frame_sink.BindLayerContext(std::move(context), draw_mode_is_gpu);
 }
 
 VizLayerContext::~VizLayerContext() = default;
@@ -859,6 +913,8 @@ void VizLayerContext::UpdateDisplayTreeFrom(
   update->begin_frame_args = tree.CurrentBeginFrameArgs();
   update->source_frame_number = tree.source_frame_number();
   update->trace_id = tree.trace_id().value();
+  update->primary_main_frame_item_sequence_number =
+      tree.primary_main_frame_item_sequence_number();
   update->page_scale_factor = tree.page_scale_factor()->Current(true);
   update->min_page_scale_factor = tree.min_page_scale_factor();
   update->max_page_scale_factor = tree.max_page_scale_factor();
@@ -886,7 +942,7 @@ void VizLayerContext::UpdateDisplayTreeFrom(
   // active tree during activation, implying that at least one layer addition or
   // removal happened since our last update. In this case only, we push the full
   // ordered list of layer IDs.
-  if (tree.needs_full_tree_sync()) {
+  if (tree.needs_full_tree_sync() || needs_full_sync_) {
     update->layer_order.emplace();
     update->layer_order->reserve(tree.NumLayers());
     for (LayerImpl* layer : tree) {
@@ -894,8 +950,14 @@ void VizLayerContext::UpdateDisplayTreeFrom(
     }
   }
 
-  for (LayerImpl* layer : tree.LayersThatShouldPushProperties()) {
-    SerializeLayer(*layer, resource_provider, context_provider, *update);
+  if (needs_full_sync_) {
+    for (LayerImpl* layer : tree) {
+      SerializeLayer(*layer, resource_provider, context_provider, *update);
+    }
+  } else {
+    for (LayerImpl* layer : tree.LayersThatShouldPushProperties()) {
+      SerializeLayer(*layer, resource_provider, context_provider, *update);
+    }
   }
 
   // TODO(rockot): Granular change tracking for property trees, so we aren't
@@ -917,7 +979,7 @@ void VizLayerContext::UpdateDisplayTreeFrom(
 
   last_committed_property_trees_ = property_trees;
 
-  if (tree.needs_surface_ranges_sync()) {
+  if (tree.needs_surface_ranges_sync() || needs_full_sync_) {
     update->surface_ranges.emplace();
     update->surface_ranges->reserve(tree.SurfaceRanges().size());
     for (const auto& surface_range : tree.SurfaceRanges()) {
@@ -940,17 +1002,20 @@ void VizLayerContext::UpdateDisplayTreeFrom(
     SerializeAnimationUpdates(tree, *update);
   }
   service_->UpdateDisplayTree(std::move(update));
+
+  needs_full_sync_ = false;
 }
 
 void VizLayerContext::UpdateDisplayTile(
     PictureLayerImpl& layer,
     const Tile& tile,
     viz::ClientResourceProvider& resource_provider,
-    viz::RasterContextProvider& context_provider) {
+    viz::RasterContextProvider& context_provider,
+    bool update_damage) {
   const Tile* tiles[] = {&tile};
   if (auto tiling = SerializeTiling(layer, *tile.tiling(), tiles,
                                     resource_provider, context_provider)) {
-    service_->UpdateDisplayTiling(std::move(tiling));
+    service_->UpdateDisplayTiling(std::move(tiling), update_damage);
   }
 }
 

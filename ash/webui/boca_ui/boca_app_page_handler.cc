@@ -24,10 +24,13 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
+#include "chromeos/ash/components/boca/boca_metrics_util.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/boca_session_util.h"
@@ -52,6 +55,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "ui/base/webui/web_ui_util.h"
 
 namespace ash::boca {
 
@@ -253,16 +257,17 @@ BocaAppHandler::BocaAppHandler(
       remote_(std::move(remote)),
       system_web_app_manager_(system_web_app_manager),
       session_client_impl_(session_client_impl),
-      web_ui_(web_ui) {
+      web_ui_(web_ui),
+      session_manager_(BocaAppClient::Get()->GetSessionManager()) {
   auto* user = ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
       web_ui->GetWebContents()->GetBrowserContext());
   user_identity_.set_email(user->GetAccountId().GetUserEmail());
   user_identity_.set_gaia_id(user->GetAccountId().GetGaiaId().ToString());
   user_identity_.set_full_name(base::UTF16ToUTF8(user->GetDisplayName()));
-  user_identity_.set_photo_url(user->image_url().spec());
+  SetAccountImage(user);
   pref_service_ = user->GetProfilePrefs();
   // BocaAppClient is guaranteed to be live here.
-  BocaAppClient::Get()->GetSessionManager()->AddObserver(this);
+  GetSessionManager()->AddObserver(this);
   network_info_provider_ = std::make_unique<NetworkInfoProvider>(
       base::BindRepeating(&BocaAppHandler::OnActiveNetworkStateChanged,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -271,15 +276,14 @@ BocaAppHandler::BocaAppHandler(
 }
 
 BocaAppHandler::~BocaAppHandler() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_producer_ &&
       producer_current_session_caption_config_->session_caption_enabled) {
     ::boca::CaptionsConfig caption_config;
     caption_config.set_captions_enabled(false);
-    BocaAppClient::Get()
-        ->GetSessionManager()
-        ->NotifySessionCaptionProducerEvents(caption_config);
+    GetSessionManager()->NotifySessionCaptionProducerEvents(caption_config);
   }
-  BocaAppClient::Get()->GetSessionManager()->RemoveObserver(this);
+  GetSessionManager()->RemoveObserver(this);
 }
 
 void BocaAppHandler::AuthenticateWebview(AuthenticateWebviewCallback callback) {
@@ -311,10 +315,8 @@ void BocaAppHandler::CreateSession(mojom::ConfigPtr config,
     NotifyLocalCaptionConfigUpdate(config->caption_config->Clone());
   }
 
-  if (BocaAppClient::Get()
-          ->GetSessionManager()
-          ->disabled_on_non_managed_network()) {
-    std::move(callback).Run(false);
+  if (GetSessionManager()->disabled_on_non_managed_network()) {
+    std::move(callback).Run(mojom::CreateSessionError::kNetworkRestriction);
     return;
   }
   std::unique_ptr<CreateSessionRequest> request =
@@ -323,34 +325,18 @@ void BocaAppHandler::CreateSession(mojom::ConfigPtr config,
           config->session_duration,
           // User will always start session as active state.
           ::boca::Session::SessionState::Session_SessionState_ACTIVE,
-          base::BindOnce(
-              [](CreateSessionCallback callback,
-                 base::expected<std::unique_ptr<::boca::Session>,
-                                google_apis::ApiErrorCode> result) {
-                // TODO(crbug.com/358476060): Potentially parse error code to
-                // UI;
-                if (!result.has_value()) {
-                  std::move(callback).Run(false);
-                } else {
-                  // Load current session into memory;
-                  BocaAppClient::Get()
-                      ->GetSessionManager()
-                      ->UpdateCurrentSession(std::move(result.value()),
-                                             /*dispatch_event=*/true);
-                  std::move(callback).Run(true);
-                }
-              },
-              std::move(callback)));
-    auto roster = std::make_unique<::boca::Roster>();
-    // Always create student group even if start session with no students.
-    auto* student_groups = roster->mutable_student_groups()->Add();
-    for (auto& item : config->students) {
-      auto* student = student_groups->mutable_students()->Add();
-      student->set_gaia_id(item->id);
-      student->set_email(item->email);
-      student->set_full_name(item->name);
-      student->set_photo_url(item->photo_url.value_or(GURL()).spec());
-    }
+          base::BindOnce(&BocaAppHandler::OnCreateSessionResponse,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  auto roster = std::make_unique<::boca::Roster>();
+  // Always create student group even if start session with no students.
+  auto* student_groups = roster->mutable_student_groups()->Add();
+  for (auto& item : config->students) {
+    auto* student = student_groups->mutable_students()->Add();
+    student->set_gaia_id(item->id);
+    student->set_email(item->email);
+    student->set_full_name(item->name);
+    student->set_photo_url(item->photo_url.value_or(GURL()).spec());
+  }
     request->set_roster(std::move(roster));
   if (config->caption_config) {
     request->set_captions_config(
@@ -366,18 +352,25 @@ void BocaAppHandler::CreateSession(mojom::ConfigPtr config,
 }
 
 void BocaAppHandler::GetSession(GetSessionCallback callback) {
+  if (GetSessionManager()->disabled_on_non_managed_network()) {
+    std::move(callback).Run(
+        mojom::SessionResult::NewError(mojom::GetSessionError::kEmpty));
+    GetSessionManager()->UpdateCurrentSession(nullptr, /*dispatch_event=*/true);
+    return;
+  }
   auto get_session_request = std::make_unique<GetSessionRequest>(
       session_client_impl_->sender(), base_url_, is_producer_,
       GaiaId(user_identity_.gaia_id()),
       base::BindOnce(&BocaAppHandler::OnGetSession,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   get_session_request->set_device_id(BocaAppClient::Get()->GetDeviceId());
-  session_client_impl_->GetSession(std::move(get_session_request));
+  // Can't skip because UI is expecting the callback to run as response.
+  session_client_impl_->GetSession(std::move(get_session_request),
+                                   /*can_skip_duplicate_request=*/false);
 }
 
 void BocaAppHandler::EndSession(EndSessionCallback callback) {
-  auto* session =
-      BocaAppClient::Get()->GetSessionManager()->GetCurrentSession();
+  auto* session = GetSessionManager()->GetCurrentSession();
   if (!session || session->session_state() != ::boca::Session::ACTIVE) {
     std::move(callback).Run(mojom::UpdateSessionError::kInvalid);
     return;
@@ -386,20 +379,8 @@ void BocaAppHandler::EndSession(EndSessionCallback callback) {
       std::make_unique<UpdateSessionRequest>(
           session_client_impl_->sender(), base_url_, user_identity_,
           session->session_id(),
-          base::BindOnce(
-              [](EndSessionCallback callback,
-                 base::expected<std::unique_ptr<::boca::Session>,
-                                google_apis::ApiErrorCode> result) {
-                if (!result.has_value()) {
-                  std::move(callback).Run(
-                      mojom::UpdateSessionError::kHTTPError);
-                  return;
-                }
-                std::move(callback).Run(std::nullopt);
-                BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
-                    std::move(result.value()), true);
-              },
-              std::move(callback)));
+          base::BindOnce(&BocaAppHandler::OnEndSessionResponse,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   request->set_session_state(
       std::make_unique<::boca::Session::SessionState>(::boca::Session::PAST));
   session_client_impl_->UpdateSession(std::move(request));
@@ -409,8 +390,7 @@ void BocaAppHandler::ExtendSessionDuration(
     base::TimeDelta extended_duration,
     ExtendSessionDurationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto* session =
-      BocaAppClient::Get()->GetSessionManager()->GetCurrentSession();
+  auto* session = GetSessionManager()->GetCurrentSession();
   if (!session || session->session_state() != ::boca::Session::ACTIVE ||
       extended_duration.is_negative()) {
     receiver_.ReportBadMessage("Extend session with invalid input.");
@@ -429,8 +409,7 @@ void BocaAppHandler::ExtendSessionDuration(
 
 void BocaAppHandler::RemoveStudent(const std::string& id,
                                    RemoveStudentCallback callback) {
-  auto* session =
-      BocaAppClient::Get()->GetSessionManager()->GetCurrentSession();
+  auto* session = GetSessionManager()->GetCurrentSession();
   if (!session || session->session_state() != ::boca::Session::ACTIVE) {
     std::move(callback).Run(mojom::RemoveStudentError::kInvalid);
     return;
@@ -450,8 +429,7 @@ void BocaAppHandler::RemoveStudent(const std::string& id,
 
 void BocaAppHandler::AddStudents(const std::vector<mojom::IdentityPtr> students,
                                  AddStudentsCallback callback) {
-  auto* session =
-      BocaAppClient::Get()->GetSessionManager()->GetCurrentSession();
+  auto* session = GetSessionManager()->GetCurrentSession();
   if (!session || session->session_state() != ::boca::Session::ACTIVE) {
     receiver_.ReportBadMessage("Extend session with invalid input.");
     return;
@@ -481,8 +459,7 @@ void BocaAppHandler::AddStudents(const std::vector<mojom::IdentityPtr> students,
 void BocaAppHandler::UpdateOnTaskConfig(mojom::OnTaskConfigPtr config,
                                         UpdateOnTaskConfigCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto* session =
-      BocaAppClient::Get()->GetSessionManager()->GetCurrentSession();
+  auto* session = GetSessionManager()->GetCurrentSession();
   if (!session || session->session_state() != ::boca::Session::ACTIVE ||
       !config) {
     std::move(callback).Run(mojom::UpdateSessionError::kInvalid);
@@ -505,8 +482,7 @@ void BocaAppHandler::UpdateCaptionConfig(mojom::CaptionConfigPtr config,
   NotifyLocalCaptionConfigUpdate(config->Clone());
 
   // Dispatch remote caption config.
-  auto* session =
-      BocaAppClient::Get()->GetSessionManager()->GetCurrentSession();
+  auto* session = GetSessionManager()->GetCurrentSession();
   // Only producer can update session captions config and the session has to be
   // active.
   if (!session || session->session_state() != ::boca::Session::ACTIVE ||
@@ -537,7 +513,7 @@ void BocaAppHandler::UpdateCaptionConfig(mojom::CaptionConfigPtr config,
                                 /*can_proceed=*/true);
     return;
   }
-  BocaAppClient::Get()->GetSessionManager()->InitSessionCaption(
+  GetSessionManager()->InitSessionCaption(
       base::BindOnce(&BocaAppHandler::UpdateCaptionConfigInternal,
                      weak_ptr_factory_.GetWeakPtr(), session->session_id(),
                      std::move(config), std::move(callback)));
@@ -552,10 +528,8 @@ void BocaAppHandler::SetFloatMode(bool is_float_mode,
 
 void BocaAppHandler::SubmitAccessCode(const std::string& access_code,
                                       SubmitAccessCodeCallback callback) {
-  if (BocaAppClient::Get()
-          ->GetSessionManager()
-          ->disabled_on_non_managed_network()) {
-    std::move(callback).Run(mojom::SubmitAccessCodeError::kInvalid);
+  if (GetSessionManager()->disabled_on_non_managed_network()) {
+    std::move(callback).Run(mojom::SubmitAccessCodeError::kNetworkRestriction);
     return;
   }
   std::unique_ptr<JoinSessionRequest> request =
@@ -576,6 +550,7 @@ void BocaAppHandler::ViewStudentScreen(const std::string& id,
           [](ViewStudentScreenCallback callback,
              base::expected<bool, google_apis::ApiErrorCode> result) {
             if (!result.has_value()) {
+              boca::RecordViewStudentScreenErrorCode(result.error());
               LOG(WARNING) << "[Boca] Error requesting to view student screen: "
                            << result.error();
               std::move(callback).Run(
@@ -599,6 +574,7 @@ void BocaAppHandler::EndViewScreenSession(
           [](EndViewScreenSessionCallback cb,
              base::expected<bool, google_apis::ApiErrorCode> result) {
             if (!result.has_value()) {
+              boca::RecordEndViewStudentScreenErrorCode(result.error());
               LOG(WARNING)
                   << "[Boca] Error setting view screen state to inactive: "
                   << result.error();
@@ -621,6 +597,7 @@ void BocaAppHandler::SetViewScreenSessionActive(
           [](SetViewScreenSessionActiveCallback cb,
              base::expected<bool, google_apis::ApiErrorCode> result) {
             if (!result.has_value()) {
+              boca::RecordSetViewScreenSessionActiveErrorCode(result.error());
               LOG(WARNING)
                   << "[Boca] Error setting view screen state to active: "
                   << result.error();
@@ -687,14 +664,14 @@ void BocaAppHandler::OpenFeedbackDialog(OpenFeedbackDialogCallback callback) {
 }
 
 void BocaAppHandler::RefreshWorkbook(RefreshWorkbookCallback callback) {
-  BocaAppClient::Get()->GetSessionManager()->NotifyAppReload();
+  GetSessionManager()->NotifyAppReload();
   std::move(callback).Run();
 }
 
 void BocaAppHandler::GetSpeechRecognitionInstallationStatus(
     GetSpeechRecognitionInstallationStatusCallback callback) {
-  std::move(callback).Run(GetMojomSodaState(
-      BocaAppClient::Get()->GetSessionManager()->GetSodaStatus()));
+  std::move(callback).Run(
+      GetMojomSodaState(GetSessionManager()->GetSodaStatus()));
 }
 
 void BocaAppHandler::OnStudentActivityUpdated(
@@ -717,6 +694,11 @@ void BocaAppHandler::OnConsumerActivityUpdated(
 }
 
 void BocaAppHandler::OnLocalCaptionDisabled() {}
+
+void BocaAppHandler::OnSpeechRecognitionInstallStateUpdated(
+    mojom::SpeechRecognitionInstallState) {}
+
+void BocaAppHandler::OnSessionCaptionDisabled(bool is_error) {}
 
 void BocaAppHandler::OnSessionStarted(const std::string& session_id,
                                       const ::boca::UserIdentity& producer) {
@@ -750,7 +732,32 @@ void BocaAppHandler::OnSessionRosterUpdated(const ::boca::Roster& roster) {
 }
 
 void BocaAppHandler::OnLocalCaptionClosed() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   remote_->OnLocalCaptionDisabled();
+}
+
+void BocaAppHandler::OnSodaStatusUpdate(BocaSessionManager::SodaStatus status) {
+  remote_->OnSpeechRecognitionInstallStateUpdated(GetMojomSodaState(status));
+}
+
+void BocaAppHandler::OnSessionCaptionClosed(bool is_error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!is_producer_) {
+    LOG(ERROR) << "Session caption closed called on consumer.";
+    return;
+  }
+  auto* session = GetSessionManager()->GetCurrentSession();
+  if (!session || session->session_state() != ::boca::Session::ACTIVE) {
+    return;
+  }
+  remote_->OnSessionCaptionDisabled(is_error);
+  producer_current_session_caption_config_->session_caption_enabled = false;
+  // Fire and forget captions update request, we don't need to handle the
+  // response and the session captions will be disabled locally either way.
+  UpdateCaptionConfigInternal(session->session_id(),
+                              producer_current_session_caption_config_->Clone(),
+                              /*callback=*/base::DoNothing(),
+                              /*can_proceed=*/true);
 }
 
 void BocaAppHandler::NotifyLocalCaptionConfigUpdate(
@@ -758,7 +765,7 @@ void BocaAppHandler::NotifyLocalCaptionConfigUpdate(
   ::boca::CaptionsConfig local_caption_config;
   local_caption_config.set_captions_enabled(config->local_caption_enabled);
   local_caption_config.set_translations_enabled(config->local_caption_enabled);
-  BocaAppClient::Get()->GetSessionManager()->NotifyLocalCaptionEvents(
+  GetSessionManager()->NotifyLocalCaptionEvents(
       std::move(local_caption_config));
 }
 
@@ -792,8 +799,7 @@ void BocaAppHandler::SetFloatModeAndBoundsForWindow(
 }
 
 void BocaAppHandler::UpdateSessionConfig() {
-  auto* session =
-      BocaAppClient::Get()->GetSessionManager()->GetCurrentSession();
+  auto* session = GetSessionManager()->GetCurrentSession();
   if (!session) {
     return;
   }
@@ -809,6 +815,7 @@ void BocaAppHandler::OnGetSession(
     base::expected<std::unique_ptr<::boca::Session>, google_apis::ApiErrorCode>
         result) {
   if (!result.has_value()) {
+    boca::RecordGetSessionErrorCode(result.error());
     std::move(callback).Run(
         mojom::SessionResult::NewError(mojom::GetSessionError::kHTTPError));
     return;
@@ -818,8 +825,7 @@ void BocaAppHandler::OnGetSession(
     std::move(callback).Run(
         mojom::SessionResult::NewError(mojom::GetSessionError::kEmpty));
     // Load current session into memory;
-    BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
-        nullptr, /*dispatch_event=*/true);
+    GetSessionManager()->UpdateCurrentSession(nullptr, /*dispatch_event=*/true);
     return;
   }
   auto session = std::move(result.value());
@@ -835,8 +841,8 @@ void BocaAppHandler::OnGetSession(
       std::move(session_config), std::move(student_activity))));
 
   // Load current session into memory;
-  BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
-      std::move(session), /*dispatch_event=*/true);
+  GetSessionManager()->UpdateCurrentSession(std::move(session),
+                                            /*dispatch_event=*/true);
 }
 
 void BocaAppHandler::OnUpdatedSession(
@@ -846,13 +852,14 @@ void BocaAppHandler::OnUpdatedSession(
         result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!result.has_value()) {
+    boca::RecordUpdateSessionErrorCode(result.error());
     std::move(callback).Run(mojom::UpdateSessionError::kHTTPError);
   } else {
     std::move(callback).Run(std::nullopt);
     if (IsActiveSession(session_id)) {
       // Trigger a session reload from session response.
-      BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
-          std::move(result.value()), /*dispatch_event=*/true);
+      GetSessionManager()->UpdateCurrentSession(std::move(result.value()),
+                                                /*dispatch_event=*/true);
     }
   }
   OnUpdateSessionBlockingRequestCompleted();
@@ -865,9 +872,11 @@ void BocaAppHandler::OnUpdatedCaptionConfig(
     base::expected<std::unique_ptr<::boca::Session>, google_apis::ApiErrorCode>
         result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  VLOG_IF(1, !result.has_value())
-      << "[Boca] captions update session request failed with code "
-      << result.error();
+  if (!result.has_value()) {
+    boca::RecordUpdateCaptionErrorCode(result.error());
+    VLOG(1) << "[Boca] captions update session request failed with code "
+            << result.error();
+  }
   // We should not block producer from stopping sending session captions even
   // if the update fails. So handle failure only if the producer was trying to
   // enable captions and ignore it otherwise.
@@ -889,12 +898,10 @@ void BocaAppHandler::OnUpdatedCaptionConfig(
                    .translations_enabled();
     if (result.has_value()) {
       // Trigger a session reload from session response.
-      BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
-          std::move(result.value()), /*dispatch_event=*/true);
+      GetSessionManager()->UpdateCurrentSession(std::move(result.value()),
+                                                /*dispatch_event=*/true);
     }
-    BocaAppClient::Get()
-        ->GetSessionManager()
-        ->NotifySessionCaptionProducerEvents(captions_config);
+    GetSessionManager()->NotifySessionCaptionProducerEvents(captions_config);
   }
   OnUpdateSessionBlockingRequestCompleted();
 }
@@ -905,6 +912,7 @@ void BocaAppHandler::OnStudentRemoved(
     std::string id,
     base::expected<bool, google_apis::ApiErrorCode> result) {
   if (!result.has_value()) {
+    boca::RecordRemoveStudentErrorCode(result.error());
     std::move(callback).Run(mojom::RemoveStudentError::kHTTPError);
     return;
   }
@@ -927,12 +935,13 @@ void BocaAppHandler::OnStudentsAdded(
     ::boca::Session* current_session,
     base::expected<bool, google_apis::ApiErrorCode> result) {
   if (!result.has_value()) {
+    boca::RecordAddStudentsErrorCode(result.error());
     std::move(callback).Run(mojom::AddStudentsError::kHTTPError);
     return;
   }
 
   std::move(callback).Run(std::nullopt);
-  BocaAppClient::Get()->GetSessionManager()->LoadCurrentSession(
+  GetSessionManager()->LoadCurrentSession(
       /*from_polling=*/false);
 }
 
@@ -941,14 +950,43 @@ void BocaAppHandler::OnAccessCodeSubmitted(
     base::expected<std::unique_ptr<::boca::Session>, google_apis::ApiErrorCode>
         result) {
   if (!result.has_value()) {
+    boca::RecordJoinSessionViaAccessCodeErrorCode(result.error());
     std::move(callback).Run(mojom::SubmitAccessCodeError::kInvalid);
     return;
   } else {
     // Load current session into memory;
-    BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
-        std::move(result.value()), /*dispatch_event=*/true);
+    GetSessionManager()->UpdateCurrentSession(std::move(result.value()),
+                                              /*dispatch_event=*/true);
     std::move(callback).Run(std::nullopt);
   }
+}
+
+void BocaAppHandler::OnCreateSessionResponse(
+    CreateSessionCallback callback,
+    base::expected<std::unique_ptr<::boca::Session>, google_apis::ApiErrorCode>
+        result) {
+  if (!result.has_value()) {
+    boca::RecordCreateSessionErrorCode(result.error());
+    std::move(callback).Run(mojom::CreateSessionError::kHTTPError);
+    return;
+  }
+  // Load current session into memory;
+  GetSessionManager()->UpdateCurrentSession(std::move(result.value()),
+                                            /*dispatch_event=*/true);
+  std::move(callback).Run(std::nullopt);
+}
+
+void BocaAppHandler::OnEndSessionResponse(
+    EndSessionCallback callback,
+    base::expected<std::unique_ptr<::boca::Session>, google_apis::ApiErrorCode>
+        result) {
+  if (!result.has_value()) {
+    boca::RecordEndSessionErrorCode(result.error());
+    std::move(callback).Run(mojom::UpdateSessionError::kHTTPError);
+    return;
+  }
+  std::move(callback).Run(std::nullopt);
+  GetSessionManager()->UpdateCurrentSession(std::move(result.value()), true);
 }
 
 void BocaAppHandler::UpdateCaptionConfigInternal(
@@ -990,8 +1028,7 @@ void BocaAppHandler::SendUpdateSessionRequestForExtendSession(
     std::move(callback).Run(mojom::UpdateSessionError::kInvalid);
     return;
   }
-  auto* session =
-      BocaAppClient::Get()->GetSessionManager()->GetCurrentSession();
+  auto* session = GetSessionManager()->GetCurrentSession();
   std::unique_ptr<UpdateSessionRequest> request =
       std::make_unique<UpdateSessionRequest>(
           session_client_impl_->sender(), base_url_, user_identity_,
@@ -1013,8 +1050,7 @@ void BocaAppHandler::SendUpdateSessionRequestForOnTaskConfig(
     std::move(callback).Run(mojom::UpdateSessionError::kInvalid);
     return;
   }
-  auto* const session =
-      BocaAppClient::Get()->GetSessionManager()->GetCurrentSession();
+  auto* const session = GetSessionManager()->GetCurrentSession();
   auto request = std::make_unique<UpdateSessionRequest>(
       session_client_impl_->sender(), base_url_, user_identity_, session_id,
       base::BindOnce(&BocaAppHandler::OnUpdatedSession,
@@ -1036,8 +1072,7 @@ void BocaAppHandler::SendUpdateSessionRequestForCaptionConfig(
   }
   std::unique_ptr<::boca::CaptionsConfig> captions_config_proto =
       CaptionConfigMojomToProto(config);
-  auto* const session =
-      BocaAppClient::Get()->GetSessionManager()->GetCurrentSession();
+  auto* const session = GetSessionManager()->GetCurrentSession();
   auto request = std::make_unique<UpdateSessionRequest>(
       session_client_impl_->sender(), base_url_, user_identity_, session_id,
       base::BindOnce(&BocaAppHandler::OnUpdatedCaptionConfig,
@@ -1059,8 +1094,7 @@ void BocaAppHandler::SendUpdateSessionRequestAndBlock(
 }
 
 bool BocaAppHandler::IsActiveSession(const std::string& session_id) {
-  auto* session =
-      BocaAppClient::Get()->GetSessionManager()->GetCurrentSession();
+  auto* session = GetSessionManager()->GetCurrentSession();
   return session && session->session_state() == ::boca::Session::ACTIVE &&
          session->session_id() == session_id;
 }
@@ -1075,6 +1109,30 @@ void BocaAppHandler::OnUpdateSessionBlockingRequestCompleted() {
       std::move(pending_update_requests_.front());
   pending_update_requests_.pop();
   std::move(update_request_cb).Run();
+}
+
+BocaSessionManager* BocaAppHandler::GetSessionManager() {
+  return session_manager_;
+}
+
+void BocaAppHandler::SetAccountImage(user_manager::User* user) {
+  auto* identity_manager = BocaAppClient::Get()->GetIdentityManager();
+  if (!identity_manager) {
+    return;
+  }
+
+  auto account_id = user->GetAccountId();
+  if (account_id.GetAccountType() != AccountType::GOOGLE) {
+    // Account type might not be GOOGLE during tests.
+    return;
+  }
+
+  AccountInfo maybe_account_info =
+      identity_manager->FindExtendedAccountInfoByGaiaId(account_id.GetGaiaId());
+  if (!maybe_account_info.IsEmpty()) {
+    user_identity_.set_photo_url(
+        webui::GetBitmapDataUrl(maybe_account_info.account_image.AsBitmap()));
+  }
 }
 
 }  // namespace ash::boca

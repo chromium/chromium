@@ -708,7 +708,7 @@ TEST_F(
       .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
                       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
   BnplIssuer bnpl_issuer = test::GetTestLinkedBnplIssuer();
-  bnpl_issuer.set_issuer_id(std::string(kBnplAffirmIssuerId));
+  bnpl_issuer.set_issuer_id(BnplIssuer::IssuerId::kBnplAffirm);
   payments_data_manager().AddBnplIssuer(bnpl_issuer);
 
   // Ensure that on registration the right optimization type is registered.
@@ -736,7 +736,7 @@ TEST_F(AutofillOptimizationGuideTest,
       .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
                       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
   BnplIssuer bnpl_issuer = test::GetTestLinkedBnplIssuer();
-  bnpl_issuer.set_issuer_id(std::string(kBnplZipIssuerId));
+  bnpl_issuer.set_issuer_id(BnplIssuer::IssuerId::kBnplZip);
   payments_data_manager().AddBnplIssuer(bnpl_issuer);
 
   // Ensure that on registration the right optimization type is registered.
@@ -764,7 +764,7 @@ TEST_F(AutofillOptimizationGuideTest,
       .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
                       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
   BnplIssuer bnpl_issuer = test::GetTestLinkedBnplIssuer();
-  bnpl_issuer.set_issuer_id(std::string(kBnplAffirmIssuerId));
+  bnpl_issuer.set_issuer_id(BnplIssuer::IssuerId::kBnplAffirm);
   payments_data_manager().AddBnplIssuer(bnpl_issuer);
 
   // RegisterOptimizationTypes shouldn't be called.
@@ -799,12 +799,10 @@ TEST_F(AutofillOptimizationGuideTest,
 // Test that we allow checkout amount searching for Affirm on an allowlisted
 // URL.
 TEST_F(AutofillOptimizationGuideTest,
-       IsUrlEligibleForCheckoutAmountSearchForIssuerId_AffirmUrlAllowed) {
+       IsUrlEligibleForBnplIssuer_AffirmUrlAllowed) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableAmountExtractionAllowlistDesktop};
 
-  // Ensure that `IsUrlEligibleForCheckoutAmountSearchForIssuerId()` returns the
-  // right response.
   ON_CALL(decider(),
           CanApplyOptimization(
               Eq(GURL("https://www.testurl.test")),
@@ -814,19 +812,17 @@ TEST_F(AutofillOptimizationGuideTest,
           Return(optimization_guide::OptimizationGuideDecision::kTrue));
 
   // testurl.test is in the allowlist.
-  EXPECT_TRUE(guide().IsUrlEligibleForCheckoutAmountSearchForIssuerId(
-      kBnplAffirmIssuerId, GURL("https://www.testurl.test")));
+  EXPECT_TRUE(guide().IsUrlEligibleForBnplIssuer(
+      BnplIssuer::IssuerId::kBnplAffirm, GURL("https://www.testurl.test")));
 }
 
 // Test that we do not allow checkout amount searching for Affirm on a
 // non-allowlisted URL.
 TEST_F(AutofillOptimizationGuideTest,
-       IsUrlEligibleForCheckoutAmountSearchForIssuerId_AffirmUrlBlocked) {
+       IsUrlEligibleForBnplIssuer_AffirmUrlBlocked) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableAmountExtractionAllowlistDesktop};
 
-  // Ensure that `IsUrlEligibleForCheckoutAmountSearchForIssuerId()` returns the
-  // right response.
   ON_CALL(decider(),
           CanApplyOptimization(
               Eq(GURL("https://www.testurl.test")),
@@ -836,18 +832,16 @@ TEST_F(AutofillOptimizationGuideTest,
           Return(optimization_guide::OptimizationGuideDecision::kFalse));
 
   // testurl.test is not in the allowlist.
-  EXPECT_FALSE(guide().IsUrlEligibleForCheckoutAmountSearchForIssuerId(
-      kBnplAffirmIssuerId, GURL("https://www.testurl.test")));
+  EXPECT_FALSE(guide().IsUrlEligibleForBnplIssuer(
+      BnplIssuer::IssuerId::kBnplAffirm, GURL("https://www.testurl.test")));
 }
 
 // Test that we allow checkout amount searching for Zip on an allowlisted URL.
 TEST_F(AutofillOptimizationGuideTest,
-       IsUrlEligibleForCheckoutAmountSearchForIssuerId_ZipUrlAllowed) {
+       IsUrlEligibleForBnplIssuer_ZipUrlAllowed) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableAmountExtractionAllowlistDesktop};
 
-  // Ensure that `IsUrlEligibleForCheckoutAmountSearchForIssuerId()` returns the
-  // right response.
   ON_CALL(decider(),
           CanApplyOptimization(
               Eq(GURL("https://www.testurl.test")),
@@ -857,19 +851,17 @@ TEST_F(AutofillOptimizationGuideTest,
           Return(optimization_guide::OptimizationGuideDecision::kTrue));
 
   // testurl.test is in the allowlist.
-  EXPECT_TRUE(guide().IsUrlEligibleForCheckoutAmountSearchForIssuerId(
-      kBnplZipIssuerId, GURL("https://www.testurl.test")));
+  EXPECT_TRUE(guide().IsUrlEligibleForBnplIssuer(
+      BnplIssuer::IssuerId::kBnplZip, GURL("https://www.testurl.test")));
 }
 
 // Test that we do not allow checkout amount searching for Zip on a
 // non-allowlisted URL.
 TEST_F(AutofillOptimizationGuideTest,
-       IsUrlEligibleForCheckoutAmountSearchForIssuerId_ZipUrlBlocked) {
+       IsUrlEligibleForBnplIssuer_ZipUrlBlocked) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableAmountExtractionAllowlistDesktop};
 
-  // Ensure that `IsUrlEligibleForCheckoutAmountSearchForIssuerId()` returns the
-  // right response.
   ON_CALL(decider(),
           CanApplyOptimization(
               Eq(GURL("https://www.testurl.test")),
@@ -879,41 +871,18 @@ TEST_F(AutofillOptimizationGuideTest,
           Return(optimization_guide::OptimizationGuideDecision::kFalse));
 
   // testurl.test is not in the allowlist.
-  EXPECT_FALSE(guide().IsUrlEligibleForCheckoutAmountSearchForIssuerId(
-      kBnplZipIssuerId, GURL("https://www.testurl.test")));
-}
-
-// Test that we do not allow checkout amount searching for unknown issuer id.
-TEST_F(AutofillOptimizationGuideTest,
-       IsUrlEligibleForCheckoutAmountSearchForIssuerId_UnknownIssuerIdBlocked) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillEnableAmountExtractionAllowlistDesktop};
-
-  // Ensure that `IsUrlEligibleForCheckoutAmountSearchForIssuerId()` returns the
-  // right response.
-  ON_CALL(decider(),
-          CanApplyOptimization(
-              Eq(GURL("https://www.testurl.test")),
-              Eq(optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP),
-              Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
-      .WillByDefault(
-          Return(optimization_guide::OptimizationGuideDecision::kTrue));
-
-  // testurl.test is in the allowlist but issuer_id is not matched.
-  EXPECT_FALSE(guide().IsUrlEligibleForCheckoutAmountSearchForIssuerId(
-      /*issuer_id=*/"zipp", GURL("https://www.testurl.test")));
+  EXPECT_FALSE(guide().IsUrlEligibleForBnplIssuer(
+      BnplIssuer::IssuerId::kBnplZip, GURL("https://www.testurl.test")));
 }
 
 // Test that we do not allow checkout amount searching when the amount
 // extraction allowlist is off.
 TEST_F(AutofillOptimizationGuideTest,
-       IsUrlEligibleForCheckoutAmountSearchForIssuerId_AllowlistFlagOff) {
+       IsUrlEligibleForBnplIssuer_AllowlistFlagOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kAutofillEnableAmountExtractionAllowlistDesktop);
 
-  // Ensure that `IsUrlEligibleForCheckoutAmountSearchForIssuerId()` returns the
-  // right response.
   ON_CALL(decider(),
           CanApplyOptimization(
               Eq(GURL("https://www.testurl.test")),
@@ -922,8 +891,8 @@ TEST_F(AutofillOptimizationGuideTest,
       .WillByDefault(
           Return(optimization_guide::OptimizationGuideDecision::kTrue));
 
-  EXPECT_FALSE(guide().IsUrlEligibleForCheckoutAmountSearchForIssuerId(
-      kBnplZipIssuerId, GURL("https://www.testurl.test")));
+  EXPECT_FALSE(guide().IsUrlEligibleForBnplIssuer(
+      BnplIssuer::IssuerId::kBnplZip, GURL("https://www.testurl.test")));
 }
 #endif
 

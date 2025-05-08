@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {BookmarksPageState, FolderOpenState, NodeMap, SelectFolderAction, SelectionState, SelectItemsAction} from 'chrome://bookmarks/bookmarks.js';
-import {changeFolderOpen, clearSearch, createBookmark, createEmptyState, deselectItems, editBookmark, getDisplayedList, isShowingSearch, moveBookmark, reduceAction, removeBookmark, reorderChildren, selectFolder, setSearchResults, setSearchTerm, updateAnchor, updateFolderOpenState, updateNodes, updateSelectedFolder, updateSelection} from 'chrome://bookmarks/bookmarks.js';
+import type {BookmarksPageState, FolderOpenState, NodeMap, SelectionState, SelectItemsAction} from 'chrome://bookmarks/bookmarks.js';
+import {changeFolderOpen, clearSearch, createBookmark, createEmptyState, deselectItems, editBookmark, getDisplayedList, isShowingSearch, moveBookmark, reduceAction, removeBookmark, reorderChildren, selectFolder, setSearchResults, setSearchTerm, updateAnchor, updateFolderOpenState, updateNodes, updateSelection} from 'chrome://bookmarks/bookmarks.js';
 import type {Action} from 'chrome://resources/js/store.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -212,12 +212,13 @@ suite('folder open state', function() {
 });
 
 suite('selected folder', function() {
-  let nodes: NodeMap;
-  let selectedFolder: string;
-  let action: SelectFolderAction;
+  let state: BookmarksPageState;
+  let action: Action;
 
   setup(function() {
-    nodes = testTree(createFolder('1', [
+    // Test selected folder using a full state.
+    state = createEmptyState();
+    state.nodes = testTree(createFolder('1', [
       createFolder(
           '2',
           [
@@ -225,43 +226,42 @@ suite('selected folder', function() {
             createFolder('4', []),
           ]),
     ]));
-
-    selectedFolder = '1';
+    state.selectedFolder = '1';
   });
 
   test('updates from selectFolder action', function() {
     action = selectFolder('2')!;
-    selectedFolder = updateSelectedFolder(selectedFolder, action, nodes);
-    assertEquals('2', selectedFolder);
+    state = reduceAction(state, action);
+    assertEquals('2', state.selectedFolder);
   });
 
   test('updates when parent of selected folder is closed', function() {
     action = selectFolder('2')!;
-    selectedFolder = updateSelectedFolder(selectedFolder, action, nodes);
+    state = reduceAction(state, action);
 
     action = changeFolderOpen('1', false);
-    selectedFolder = updateSelectedFolder(selectedFolder, action, nodes);
-    assertEquals('1', selectedFolder);
+    state = reduceAction(state, action);
+    assertEquals('1', state.selectedFolder);
   });
 
   test('selects ancestor when selected folder is deleted', function() {
     action = selectFolder('3')!;
-    selectedFolder = updateSelectedFolder(selectedFolder, action, nodes);
+    state = reduceAction(state, action);
 
     // Delete the selected folder:
-    action = removeBookmark('3', '2', 0, nodes);
-    selectedFolder = updateSelectedFolder(selectedFolder, action, nodes);
+    action = removeBookmark('3', '2', 0, state.nodes);
+    state = reduceAction(state, action);
 
-    assertEquals('2', selectedFolder);
+    assertEquals('2', state.selectedFolder);
 
     action = selectFolder('4')!;
-    selectedFolder = updateSelectedFolder(selectedFolder, action, nodes);
+    state = reduceAction(state, action);
 
     // Delete an ancestor of the selected folder:
-    action = removeBookmark('2', '1', 0, nodes);
-    selectedFolder = updateSelectedFolder(selectedFolder, action, nodes);
+    action = removeBookmark('2', '1', 0, state.nodes);
+    state = reduceAction(state, action);
 
-    assertEquals('1', selectedFolder);
+    assertEquals('1', state.selectedFolder);
   });
 });
 

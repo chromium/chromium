@@ -77,22 +77,19 @@ void EnterpriseSearchManager::RegisterProfilePrefs(
 }
 
 bool EnterpriseSearchManager::GetRequireShortcutValue() const {
-  // Use the `require_shortcut` preference value if set by policy.
-  const PrefService::Preference* pref = pref_service_->FindPreference(
-      kEnterpriseSearchAggregatorSettingsRequireShortcutPrefName);
-  if (pref && pref->IsManaged()) {
-    return pref->GetValue()->GetBool();
+  // Prefer mock `require_shortcut` over `require_shortcut` from pref.
+  // TODO(crbug.com/402175538): Remove the ability to override pref engines via
+  // feature.
+  if (!omnibox_feature_configs::SearchAggregatorProvider::Get()
+           .AreMockEnginesValid()) {
+    // Use the `require_shortcut` preference value if set by policy.
+    const PrefService::Preference* pref = pref_service_->FindPreference(
+        kEnterpriseSearchAggregatorSettingsRequireShortcutPrefName);
+    return pref && pref->GetValue()->GetBool();
   }
 
-  // Fallback to mock settings if policy is not set and mock engine is valid.
-  if (omnibox_feature_configs::SearchAggregatorProvider::Get()
-          .AreMockEnginesValid()) {
-    return omnibox_feature_configs::SearchAggregatorProvider::Get()
-        .require_shortcut;
-  }
-
-  // Use the pref's default value if neither policy nor mock settings apply.
-  return pref && pref->GetValue()->GetBool();
+  return omnibox_feature_configs::SearchAggregatorProvider::Get()
+      .require_shortcut;
 }
 
 void EnterpriseSearchManager::OnPrefChanged() {

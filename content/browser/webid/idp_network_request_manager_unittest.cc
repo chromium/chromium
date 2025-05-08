@@ -124,11 +124,16 @@ url::Origin GetOriginHeader(const network::ResourceRequest& request) {
 
 class IdpNetworkRequestManagerTest : public ::testing::Test {
  public:
-  std::unique_ptr<IdpNetworkRequestManager> CreateTestManager() {
+  std::unique_ptr<IdpNetworkRequestManager> CreateTestManager(
+      const char* top_level_origin = nullptr) {
     test_permission_delegate_ =
         std::make_unique<NiceMock<MockPermissionDelegate>>();
+    url::Origin top_level_origin_obj;
+    if (top_level_origin) {
+      top_level_origin_obj = url::Origin::Create(GURL(top_level_origin));
+    }
     return std::make_unique<IdpNetworkRequestManager>(
-        url::Origin::Create(GURL(kTestRpUrl)),
+        url::Origin::Create(GURL(kTestRpUrl)), top_level_origin_obj,
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_),
         test_permission_delegate_.get(),
@@ -311,10 +316,15 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
 
   IdpClientMetadata SendClientMetadataRequestAndWaitForResponse(
       const char* client_id,
-      const std::string& response = R"({})") {
+      const std::string& response = R"({})",
+      const char* top_level_origin = nullptr) {
     GURL client_id_endpoint(kTestClientMetadataEndpoint);
-    AddResponse(GURL(client_id_endpoint.spec() + "?client_id=" + client_id),
-                net::HTTP_OK, "application/json", response);
+    std::string url_string =
+        client_id_endpoint.spec() + "?client_id=" + client_id;
+    if (top_level_origin) {
+      url_string += std::string("&top_frame_origin=") + top_level_origin;
+    }
+    AddResponse(GURL(url_string), net::HTTP_OK, "application/json", response);
 
     IdpClientMetadata data;
     base::RunLoop run_loop;
@@ -324,7 +334,8 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
           run_loop.Quit();
         });
 
-    std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+    std::unique_ptr<IdpNetworkRequestManager> manager =
+        CreateTestManager(top_level_origin);
     manager->FetchClientMetadata(
         client_id_endpoint, client_id, kTestBrandIconIdealSize,
         kTestBrandIconMinimumSize, std::move(callback));
@@ -914,6 +925,7 @@ TEST_F(IdpNetworkRequestManagerTest, FetchWellKnownIllegalDomainFails) {
 
   auto network_manager = std::make_unique<IdpNetworkRequestManager>(
       url::Origin::Create(GURL(kTestRpUrl)),
+      /*rp_embedding_origin=*/url::Origin(),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory),
       test_permission_delegate_.get(),
@@ -1417,9 +1429,6 @@ TEST_F(IdpNetworkRequestManagerTest, ParseConfigSupportsOtherAccountNewSyntax) {
 
 TEST_F(IdpNetworkRequestManagerTest,
        ParseConfigSupportsOtherAccountDifferentMode) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmUseOtherAccount);
-
   const char test_json[] = R"({
   "modes": {
     "active": {
@@ -1440,9 +1449,6 @@ TEST_F(IdpNetworkRequestManagerTest,
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseConfigSupportsOtherAccountBothModes) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmUseOtherAccount);
-
   const char test_json[] = R"({
   "modes": {
     "active": {
@@ -1459,30 +1465,6 @@ TEST_F(IdpNetworkRequestManagerTest, ParseConfigSupportsOtherAccountBothModes) {
   std::tie(fetch_status, idp_metadata) = SendConfigRequestAndWaitForResponse(
       test_json, net::HTTP_OK, "application/json",
       blink::mojom::RpMode::kActive);
-
-  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
-  EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
-  EXPECT_EQ(false, idp_metadata.supports_add_account);
-}
-
-TEST_F(IdpNetworkRequestManagerTest, ParseConfigUseOtherAccountDisabled) {
-  base::test::ScopedFeatureList list;
-  // Disables both flags since this feature can be enabled by the other.
-  list.InitWithFeatures(
-      {}, {features::kFedCmUseOtherAccount, features::kFedCmButtonMode});
-
-  const char test_json[] = R"({
-  "modes": {
-    "passive": {
-      "supports_use_other_account": true
-    }
-  }
-  })";
-
-  FetchStatus fetch_status;
-  IdentityProviderMetadata idp_metadata;
-  std::tie(fetch_status, idp_metadata) =
-      SendConfigRequestAndWaitForResponse(test_json);
 
   EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
@@ -1796,6 +1778,19 @@ TEST_F(IdpNetworkRequestManagerTest, ClientMetadata) {
   ASSERT_EQ(GURL(), data.privacy_policy_url);
   ASSERT_EQ(GURL(), data.terms_of_service_url);
   ASSERT_EQ(GURL(), data.brand_icon_url);
+  ASSERT_FALSE(data.client_matches_top_frame_origin.has_value());
+}
+
+// Tests the "matches top frame" boolean.
+TEST_F(IdpNetworkRequestManagerTest, ClientMatchesTopFrameOrigin) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmIframeOrigin);
+
+  IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse(
+      "clientid", R"({"client_matches_top_frame_origin": false})",
+      "https://toplevel.example");
+  ASSERT_TRUE(data.client_matches_top_frame_origin.has_value());
+  EXPECT_FALSE(*data.client_matches_top_frame_origin);
 }
 
 // Tests that we correctly records metrics regarding approved_clients.
@@ -2056,9 +2051,6 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionWrongMimeType) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, FetchingTokenLeadsToAContinuationUrl) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAuthz);
-
   net::HttpStatusCode http_status = net::HTTP_OK;
   const std::string& mime_type = "application/json";
 
@@ -2091,9 +2083,6 @@ TEST_F(IdpNetworkRequestManagerTest, FetchingTokenLeadsToAContinuationUrl) {
 //+    kTokenReceivedAndErrorReceivedAndContinueOnReceived = 5,
 
 TEST_F(IdpNetworkRequestManagerTest, ContinueOnWithToken) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAuthz);
-
   net::HttpStatusCode http_status = net::HTTP_OK;
   const std::string& mime_type = "application/json";
 
@@ -2113,9 +2102,6 @@ TEST_F(IdpNetworkRequestManagerTest, ContinueOnWithToken) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ContinueOnWithErrorAndToken) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAuthz);
-
   net::HttpStatusCode http_status = net::HTTP_OK;
   const std::string& mime_type = "application/json";
 
@@ -2136,9 +2122,6 @@ TEST_F(IdpNetworkRequestManagerTest, ContinueOnWithErrorAndToken) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ContinueOnWithError) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAuthz);
-
   net::HttpStatusCode http_status = net::HTTP_OK;
   const std::string& mime_type = "application/json";
 
@@ -2158,9 +2141,6 @@ TEST_F(IdpNetworkRequestManagerTest, ContinueOnWithError) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ContinueOnCanBeRelativeUrl) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAuthz);
-
   net::HttpStatusCode http_status = net::HTTP_OK;
   const std::string& mime_type = "application/json";
 

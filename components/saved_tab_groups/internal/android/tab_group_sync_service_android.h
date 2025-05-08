@@ -166,6 +166,11 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
                             const JavaParamRef<jstring>& j_sync_group_id,
                             const jboolean j_archival_status);
 
+  void SetCollaborationAvailableInFinderForTesting(
+      JNIEnv* env,
+      const JavaParamRef<jobject>& j_caller,
+      const JavaParamRef<jstring>& j_collaboration_id);
+
  private:
   // A reference to the Java counterpart of this class.  See
   // TabGroupSyncServiceImpl.java.

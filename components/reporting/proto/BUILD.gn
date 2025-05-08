@@ -42,7 +42,7 @@ proto_library("interface_proto") {
 
   sources = [ "synced/interface.proto" ]
 
-  proto_deps = [
+  deps = [
     ":record_constants",
     ":record_proto",
     ":status_proto",

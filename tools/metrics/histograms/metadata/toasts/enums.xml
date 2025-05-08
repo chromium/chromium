@@ -71,6 +71,8 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Tab removed from collaboration"/>
   <int value="13" label="User joined collaboration"/>
   <int value="14" label="Collaboration removed"/>
+  <int value="15" label="Video Frame Copied"/>
+  <int value="16" label="Close pinned tab confirmation toast"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->

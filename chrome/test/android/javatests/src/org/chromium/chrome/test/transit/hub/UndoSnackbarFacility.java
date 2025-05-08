@@ -15,6 +15,6 @@ public class UndoSnackbarFacility extends SnackbarFacility<TabSwitcherStation> {
 
     /** Press undo to revert the operation. */
     public void pressUndo() {
-        mHostStation.exitFacilitySync(this, buttonElement.clickTrigger());
+        mHostStation.exitFacilitySync(this, buttonElement.getClickTrigger());
     }
 }

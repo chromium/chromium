@@ -12,8 +12,7 @@ LocalNetworkAccessPermissionContext::LocalNetworkAccessPermissionContext(
     : PermissionContextBase(
           browser_context,
           ContentSettingsType::LOCAL_NETWORK_ACCESS,
-          // TODO(crbug.com/400455013): Add permission policy for LNA.
-          network::mojom::PermissionsPolicyFeature::kNotFound) {}
+          network::mojom::PermissionsPolicyFeature::kLocalNetworkAccess) {}
 
 LocalNetworkAccessPermissionContext::~LocalNetworkAccessPermissionContext() =
     default;

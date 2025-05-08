@@ -6,6 +6,7 @@
 #define CHROME_TEST_BASE_ANDROID_ANDROID_BROWSER_TEST_H_
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/public/test/browser_test_base.h"
 
 class PrefService;
@@ -70,6 +71,8 @@ class AndroidBrowserTest : public content::BrowserTestBase {
   // Temporary user data directory. Used only when a user data directory is not
   // specified in the command line.
   base::ScopedTempDir temp_user_data_dir_;
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 #endif  // CHROME_TEST_BASE_ANDROID_ANDROID_BROWSER_TEST_H_

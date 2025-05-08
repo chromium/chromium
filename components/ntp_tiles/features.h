@@ -21,9 +21,6 @@ BASE_DECLARE_FEATURE(kPopularSitesBakedInContentFeature);
 // Likely tiles on the New Tab Page.
 BASE_DECLARE_FEATURE(kNtpMostLikelyFaviconsFromServerFeature);
 
-// If this feature is enabled, we enable popular sites in the suggestions UI.
-BASE_DECLARE_FEATURE(kUsePopularSitesSuggestions);
-
 }  // namespace ntp_tiles
 
 #endif  // COMPONENTS_NTP_TILES_FEATURES_H_

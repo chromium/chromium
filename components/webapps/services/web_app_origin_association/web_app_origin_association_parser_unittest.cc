@@ -4,7 +4,6 @@
 
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_parser.h"
 
-#include "base/json/json_reader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -65,11 +64,7 @@ TEST_F(WebAppOriginAssociationParserTest, EmptyStringNull) {
   EXPECT_TRUE(IsAssociationNull(association));
   EXPECT_EQ(1u, GetErrorCount());
 
-  if (base::JSONReader::UsingRust()) {
-    EXPECT_EQ(errors()[0], "EOF while parsing a value at line 1 column 0");
-  } else {
-    EXPECT_EQ(errors()[0], "Line: 1, column: 1, Unexpected token.");
-  }
+  EXPECT_EQ(errors()[0], "EOF while parsing a value at line 1 column 0");
 }
 
 TEST_F(WebAppOriginAssociationParserTest, NoContentParses) {

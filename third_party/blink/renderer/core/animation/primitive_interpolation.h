@@ -46,7 +46,7 @@ class PrimitiveInterpolation : public GarbageCollected<PrimitiveInterpolation> {
 class PairwisePrimitiveInterpolation : public PrimitiveInterpolation {
  public:
   PairwisePrimitiveInterpolation(
-      const InterpolationType& type,
+      const InterpolationType* type,
       InterpolableValue* start,
       InterpolableValue* end,
       const NonInterpolableValue* non_interpolable_value)
@@ -60,7 +60,7 @@ class PairwisePrimitiveInterpolation : public PrimitiveInterpolation {
 
   ~PairwisePrimitiveInterpolation() override = default;
 
-  const InterpolationType& GetType() const { return type_; }
+  const InterpolationType* GetType() const { return type_; }
 
   TypedInterpolationValue* InitialValue() const {
     return MakeGarbageCollected<TypedInterpolationValue>(
@@ -69,6 +69,7 @@ class PairwisePrimitiveInterpolation : public PrimitiveInterpolation {
 
   void Trace(Visitor* v) const override {
     PrimitiveInterpolation::Trace(v);
+    v->Trace(type_);
     v->Trace(start_);
     v->Trace(end_);
     v->Trace(non_interpolable_value_);
@@ -78,7 +79,7 @@ class PairwisePrimitiveInterpolation : public PrimitiveInterpolation {
   void InterpolateValue(double fraction,
                         Member<TypedInterpolationValue>& result) const final {
     DCHECK(result);
-    DCHECK_EQ(&result->GetType(), &type_);
+    DCHECK_EQ(result->GetType(), type_);
     DCHECK_EQ(result->GetNonInterpolableValue(), non_interpolable_value_.Get());
     start_->AssertCanInterpolateWith(*end_);
     start_->Interpolate(*end_, fraction,
@@ -91,7 +92,7 @@ class PairwisePrimitiveInterpolation : public PrimitiveInterpolation {
     return Blend(start, end, fraction);
   }
 
-  const InterpolationType& type_;
+  Member<const InterpolationType> type_;
   Member<InterpolableValue> start_;
   Member<InterpolableValue> end_;
   Member<const NonInterpolableValue> non_interpolable_value_;

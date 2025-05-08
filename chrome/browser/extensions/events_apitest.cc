@@ -537,7 +537,7 @@ IN_PROC_BROWSER_TEST_F(
   // EXPECT_EQ(2, content::EvalJs(extension_contents, "self.receivedEvents;"));
   // because each listener should fire exactly once (we only visited one new
   // page).
-  // However, currently we'll disptach the event to the same process twice
+  // However, currently we'll dispatch the event to the same process twice
   // (once for each listener), and each dispatch will match both listeners,
   // resulting in each listener being triggered twice (for a total of four
   // received events).
@@ -613,7 +613,7 @@ IN_PROC_BROWSER_TEST_F(ChromeUpdatesEventsApiTest, ChromeUpdates) {
   content::RunAllPendingInMessageLoop();
   content::RunAllTasksUntilIdle();
 
-  // "chrome updates listener" registerd a listener for the onInstalled event,
+  // "chrome updates listener" registered a listener for the onInstalled event,
   // whereas "chrome updates non listener" did not. Only the
   // "chrome updates listener" extension should have been woken up for the
   // chrome update event.

@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/permission_context_base.h"
+#include "components/permissions/permission_request_data.h"
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/geolocation_control.mojom.h"
@@ -33,11 +34,10 @@ class GeolocationPermissionContext : public PermissionContextBase {
     // Allows the delegate to override the context's DecidePermission() logic.
     // If this returns true, the base context's DecidePermission() will not be
     // called.
-    virtual bool DecidePermission(const PermissionRequestID& id,
-                                  const GURL& requesting_origin,
-                                  bool user_gesture,
-                                  BrowserPermissionCallback* callback,
-                                  GeolocationPermissionContext* context) = 0;
+    virtual bool DecidePermission(
+        const std::unique_ptr<PermissionRequestData>& request_data,
+        BrowserPermissionCallback* callback,
+        GeolocationPermissionContext* context) = 0;
 
 #if BUILDFLAG(IS_ANDROID)
     // Returns whether or not this |web_contents| is interactable.
@@ -61,8 +61,9 @@ class GeolocationPermissionContext : public PermissionContextBase {
 
   ~GeolocationPermissionContext() override;
 
-  void DecidePermission(PermissionRequestData request_data,
-                        BrowserPermissionCallback callback) override;
+  void DecidePermission(
+      std::unique_ptr<permissions::PermissionRequestData> request_data,
+      BrowserPermissionCallback callback) override;
 
   base::WeakPtr<GeolocationPermissionContext> GetWeakPtr();
 

@@ -6,9 +6,7 @@
 #define CHROME_BROWSER_ASH_TEST_WEB_KIOSK_APP_LOGGED_IN_BROWSER_TEST_MIXIN_H_
 
 #include <string>
-#include <string_view>
 
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 
 namespace ash {
@@ -21,7 +19,7 @@ class WebKioskAppLoggedInBrowserTestMixin : public InProcessBrowserTestMixin {
   // AccountId (to be used by, e.g., UserManager) is generated from the
   // `account_id`.
   WebKioskAppLoggedInBrowserTestMixin(InProcessBrowserTestMixinHost* host,
-                                      std::string_view account_id);
+                                      std::string account_id);
   ~WebKioskAppLoggedInBrowserTestMixin() override;
 
   // InProcessBrowserTestMixin:
@@ -29,12 +27,12 @@ class WebKioskAppLoggedInBrowserTestMixin : public InProcessBrowserTestMixin {
   void SetUpLocalStatePrefService(PrefService* local_state) override;
 
  private:
+  // Account ID passed to the constructor, which is the one used in the policy.
+  const std::string account_id_;
+
   // Email-style ID used as a part of AccountId for the given User,
   // generated from the `account_id` passed to the ctor.
   const std::string user_id_;
-
-  // Injects CrosSettings value to enable Web Kiosk user.
-  ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 }  // namespace ash

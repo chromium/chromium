@@ -156,6 +156,11 @@ public class SampleForTestsJni implements SampleForTests.Natives {
   }
 
   @Override
+  public int returnFromEnum() {
+    return (int) GEN_JNI.org_jni_1zero_SampleForTests_returnFromEnum();
+  }
+
+  @Override
   public void setNonPODDatatype(SampleForTests obj, Rect rect) {
     assert obj != null : "Parameter \"obj\" was null. Add @Nullable to it?";
     assert rect != null : "Parameter \"rect\" was null. Add @Nullable to it?";

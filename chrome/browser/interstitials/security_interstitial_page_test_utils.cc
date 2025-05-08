@@ -98,12 +98,8 @@ HFMInterstitialType GetHFMInterstitialType(content::WebContents* tab) {
                                    "you are in Incognito mode")) {
     return HFMInterstitialType::kIncognito;
   }
-  bool use_new_interstitial = base::FeatureList::IsEnabled(
-      features::kHttpsFirstModeInterstitialAugust2024Refresh);
-  std::string substring = use_new_interstitial
-                              ? "doesn’t support a secure connection"
-                              : "this site does not support HTTPS.";
-  if (IsInterstitialDisplayingText(tab->GetPrimaryMainFrame(), substring)) {
+  if (IsInterstitialDisplayingText(tab->GetPrimaryMainFrame(),
+                                   "doesn’t support a secure connection")) {
     return HFMInterstitialType::kStandard;
   }
   return HFMInterstitialType::kNone;

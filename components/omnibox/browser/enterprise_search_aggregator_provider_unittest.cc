@@ -15,10 +15,12 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -604,7 +606,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, IsProviderAllowed) {
   }
 
   {
-    // The provider is only run if Google is the default search provider.
+    // The provider is run regardless of default search engine.
     TemplateURLService* turl_service = client_->GetTemplateURLService();
     TemplateURLData data;
     data.SetShortName(u"test");
@@ -613,7 +615,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, IsProviderAllowed) {
     TemplateURL* new_default_provider =
         turl_service->Add(std::make_unique<TemplateURL>(data));
     turl_service->SetUserSelectedDefaultSearchProvider(new_default_provider);
-    EXPECT_FALSE(provider_->IsProviderAllowed(input));
+    EXPECT_TRUE(provider_->IsProviderAllowed(input));
     TemplateURL* current_template_url =
         const_cast<TemplateURL*>((provider_->template_url_).get());
     turl_service->SetUserSelectedDefaultSearchProvider(current_template_url);
@@ -716,6 +718,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest,
 
 // Test response is parsed accurately.
 TEST_F(EnterpriseSearchAggregatorProviderTest, Parse) {
+  base::test::ScopedRestoreDefaultTimezone la_time("America/Los_Angeles");
+
   scoped_config_.Get().relevance_scoring_mode = "server";
 
   provider_->adjusted_input_ = CreateInput(u"john d", true);
@@ -797,7 +801,6 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, ParseWithMissingFields) {
   EXPECT_THAT(
       GetMatches(),
       testing::ElementsAre(u"https://www.google.com/?q=john%40example.com",
-                           u"https://www.missinguributlinkavailable.co.uk/",
                            u"https://www.example.com/",
                            u"https://www.google.com/?q=John%27s+Document+1"));
 }
@@ -1667,7 +1670,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Logging) {
   {
     SCOPED_TRACE("Case: Stop() before Run().");
     base::HistogramTester histogram_tester;
-    provider_->Stop(false, false);
+    provider_->Stop(AutocompleteStopReason::kClobbered);
     histogram_tester.ExpectTotalCount(
         "Omnibox.SuggestRequestsSent.ResponseTime2.RequestState."
         "EnterpriseSearchAggregatorSuggest.Interrupted",
@@ -1685,7 +1688,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Logging) {
     provider_->RequestStarted(network::SimpleURLLoader::Create(
         std::make_unique<network::ResourceRequest>(),
         net::DefineNetworkTrafficAnnotation("test", "test")));
-    provider_->Stop(false, false);
+    provider_->Stop(AutocompleteStopReason::kClobbered);
     histogram_tester.ExpectTotalCount(
         "Omnibox.SuggestRequestsSent.ResponseTime2.RequestState."
         "EnterpriseSearchAggregatorSuggest.Interrupted",

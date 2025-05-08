@@ -119,17 +119,12 @@ PasswordReuseManagerImpl::PasswordReuseManagerImpl() = default;
 PasswordReuseManagerImpl::~PasswordReuseManagerImpl() = default;
 
 void PasswordReuseManagerImpl::Shutdown() {
-  if (profile_store_) {
-    profile_store_->RemoveObserver(this);
-    profile_store_.reset();
-  }
-  if (account_store_) {
-    account_store_->RemoveObserver(this);
-    profile_store_.reset();
-  }
-  if (identity_manager_) {
-    identity_manager_->RemoveObserver(this);
-  }
+  profile_store_observation_.Reset();
+  profile_store_.reset();
+  account_store_observation_.Reset();
+  account_store_.reset();
+  identity_manager_observation_.Reset();
+  identity_manager_ = nullptr;
   if (notifier_) {
     notifier_->UnsubscribeFromSigninEvents();
   }
@@ -155,7 +150,7 @@ void PasswordReuseManagerImpl::Init(
 #if BUILDFLAG(IS_ANDROID)
   if (shared_pref_delegate) {
     shared_pref_delegate_ = std::move(shared_pref_delegate);
-    identity_manager_->AddObserver(this);
+    identity_manager_observation_.Observe(identity_manager_);
   }
 #endif
   main_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
@@ -394,11 +389,11 @@ void PasswordReuseManagerImpl::ScheduleEnterprisePasswordURLUpdate() {
 }
 
 void PasswordReuseManagerImpl::RequestLoginsFromStores() {
-  profile_store_->AddObserver(this);
+  profile_store_observation_.Observe(profile_store_.get());
   profile_store_->GetAutofillableLogins(
       /*consumer=*/weak_ptr_factory_.GetWeakPtr());
   if (account_store_) {
-    account_store_->AddObserver(this);
+    account_store_observation_.Observe(account_store_.get());
     account_store_->GetAutofillableLogins(
         /*consumer=*/weak_ptr_factory_.GetWeakPtr());
     // base::Unretained() is safe because `this` outlives the subscription.

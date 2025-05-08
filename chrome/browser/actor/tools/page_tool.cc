@@ -9,6 +9,7 @@
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -28,8 +29,12 @@ void SetMojoTarget(const ActionTarget& target,
     out_mojo_target = actor::mojom::ToolTarget::NewCoordinate(
         gfx::Point(target.coordinate().x(), target.coordinate().y()));
   } else {
-    out_mojo_target =
-        actor::mojom::ToolTarget::NewDomNodeId(target.content_node_id());
+    // A ContentNodeId of 0 indicates the viewport. The mojo message indicates
+    // viewport by omitting a target.
+    if (target.content_node_id() > 0) {
+      out_mojo_target =
+          actor::mojom::ToolTarget::NewDomNodeId(target.content_node_id());
+    }
   }
 }
 
@@ -46,12 +51,17 @@ bool SetClickToolArgs(actor::mojom::ClickActionPtr& click,
     case ClickAction_ClickType::ClickAction_ClickType_RIGHT:
       click->type = actor::mojom::ClickAction::Type::kRight;
       break;
-    default:
+    case ClickAction_ClickType::ClickAction_ClickType_UNKNOWN_CLICK_TYPE:
+    case ClickAction_ClickType::
+        ClickAction_ClickType_ClickAction_ClickType_INT_MAX_SENTINEL_DO_NOT_USE_:
+    case ClickAction_ClickType::
+        ClickAction_ClickType_ClickAction_ClickType_INT_MIN_SENTINEL_DO_NOT_USE_:
       // TODO(issuetracker.google.com/412700289): Revert once this is set.
       click->type = actor::mojom::ClickAction::Type::kLeft;
       break;
       // return false;
   }
+
   switch (action_info.click().click_count()) {
     case ClickAction_ClickCount::ClickAction_ClickCount_SINGLE:
       click->count = actor::mojom::ClickAction::Count::kSingle;
@@ -59,7 +69,11 @@ bool SetClickToolArgs(actor::mojom::ClickActionPtr& click,
     case ClickAction_ClickCount::ClickAction_ClickCount_DOUBLE:
       click->count = actor::mojom::ClickAction::Count::kDouble;
       break;
-    default:
+    case ClickAction_ClickCount::ClickAction_ClickCount_UNKNOWN_CLICK_COUNT:
+    case ClickAction_ClickCount::
+        ClickAction_ClickCount_ClickAction_ClickCount_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case ClickAction_ClickCount::
+        ClickAction_ClickCount_ClickAction_ClickCount_INT_MAX_SENTINEL_DO_NOT_USE_:
       // TODO(issuetracker.google.com/412700289): Revert once this is set.
       click->count = actor::mojom::ClickAction::Count::kSingle;
       break;
@@ -96,7 +110,10 @@ bool SetTypeToolArgs(actor::mojom::TypeActionPtr& type_action,
       type_action->mode = actor::mojom::TypeAction::Mode::kAppend;
       break;
     case TypeAction_TypeMode::TypeAction_TypeMode_UNKNOWN_TYPE_MODE:
-    default:
+    case TypeAction_TypeMode::
+        TypeAction_TypeMode_TypeAction_TypeMode_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case TypeAction_TypeMode::
+        TypeAction_TypeMode_TypeAction_TypeMode_INT_MAX_SENTINEL_DO_NOT_USE_:
       // TODO(issuetracker.google.com/412700289): Revert once this is set.
       type_action->mode = actor::mojom::TypeAction::Mode::kDeleteExisting;
       break;
@@ -126,11 +143,16 @@ bool SetScrollToolArgs(actor::mojom::ScrollActionPtr& scroll,
     case ScrollAction_ScrollDirection::ScrollAction_ScrollDirection_DOWN:
       scroll->direction = actor::mojom::ScrollAction::ScrollDirection::kDown;
       break;
-    default:
+    case ScrollAction_ScrollDirection::
+        ScrollAction_ScrollDirection_UNKNOWN_SCROLL_DIRECTION:
+    case ScrollAction_ScrollDirection::
+        ScrollAction_ScrollDirection_ScrollAction_ScrollDirection_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case ScrollAction_ScrollDirection::
+        ScrollAction_ScrollDirection_ScrollAction_ScrollDirection_INT_MAX_SENTINEL_DO_NOT_USE_:
       // TODO(issuetracker.google.com/412700289): Revert once this is set.
       scroll->direction = actor::mojom::ScrollAction::ScrollDirection::kDown;
       break;
-      //      return false;
+      // return false;
   }
   scroll->distance = action_info.scroll().distance();
   return true;
@@ -149,12 +171,6 @@ void SetDragAndReleaseToolArgs(
                 drag_and_release->from_target);
   SetMojoTarget(action_info.drag_and_release().to_target(),
                 drag_and_release->to_target);
-}
-
-void DelayedInvokeCallback(actor::Tool::InvokeCallback callback, bool success) {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, base::BindOnce(std::move(callback), success),
-      actor::ActorCoordinator::GetActionObservationDelay());
 }
 
 }  // namespace
@@ -225,16 +241,54 @@ void PageTool::Invoke(InvokeCallback callback) {
       request->action = mojom::ToolAction::NewSelect(std::move(select));
       break;
     }
-    default:
+    case ActionInformation::ActionInfoCase::kNavigate:
+    case ActionInformation::ActionInfoCase::kBack:
+    case ActionInformation::ActionInfoCase::kForward:
+    case ActionInformation::ActionInfoCase::kWait:
+    case ActionInformation::ActionInfoCase::ACTION_INFO_NOT_SET:
       NOTREACHED();
   }
 
-  // TODO(crbug.com/409564704): Delay the callback to give the page a chance to
-  // react to the tool's effects. Temporary until we can do this more reliably
-  // in the renderer.
-  chrome_render_frame_->InvokeTool(
-      std::move(request),
-      base::BindOnce(DelayedInvokeCallback, std::move(callback)));
+  chrome_render_frame_->InvokeTool(std::move(request), std::move(callback));
+}
+
+std::string PageTool::DebugString() const {
+  std::string tool_type;
+  // TODO(crbug.com/402210051): Add more details here about tool params.
+  switch (invocation_.GetActionInfo().action_info_case()) {
+    case ActionInformation::ActionInfoCase::kClick: {
+      tool_type = "Click";
+      break;
+    }
+    case ActionInformation::ActionInfoCase::kType: {
+      tool_type = "Type";
+      break;
+    }
+    case ActionInformation::ActionInfoCase::kScroll: {
+      tool_type = "Scroll";
+      break;
+    }
+    case ActionInformation::ActionInfoCase::kMoveMouse: {
+      tool_type = "MoveMouse";
+      break;
+    }
+    case ActionInformation::ActionInfoCase::kDragAndRelease: {
+      tool_type = "DragAndRelease";
+      break;
+    }
+    case ActionInformation::ActionInfoCase::kSelect: {
+      tool_type = "Select";
+      break;
+    }
+    case ActionInformation::ActionInfoCase::kNavigate:
+    case ActionInformation::ActionInfoCase::kBack:
+    case ActionInformation::ActionInfoCase::kForward:
+    case ActionInformation::ActionInfoCase::kWait:
+    case ActionInformation::ActionInfoCase::ACTION_INFO_NOT_SET:
+      NOTREACHED();
+  }
+
+  return absl::StrFormat("PageTool:%s", tool_type.c_str());
 }
 
 }  // namespace actor

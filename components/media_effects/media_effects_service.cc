@@ -13,16 +13,20 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "components/media_effects/media_effects_model_provider.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/gpu_client.h"
 #include "media/capture/mojom/video_effects_manager.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/video_effects/public/cpp/buildflags.h"
+
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+#include "components/media_effects/media_effects_model_provider.h"
+#include "content/public/browser/gpu_client.h"
 #include "services/video_effects/public/cpp/video_effects_service_host.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
 #include "services/video_effects/public/mojom/video_effects_service.mojom.h"
-#include "services/viz/public/mojom/gpu.mojom.h"
+#endif
 
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 MediaEffectsService::MediaEffectsService(
     PrefService* prefs,
     std::unique_ptr<MediaEffectsModelProvider> model_provider)
@@ -33,8 +37,12 @@ MediaEffectsService::MediaEffectsService(
     model_provider_->AddObserver(this);
   }
 }
+#endif
+
+MediaEffectsService::MediaEffectsService(PrefService* prefs) : prefs_(prefs) {}
 
 MediaEffectsService::~MediaEffectsService() {
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
   if (model_provider_) {
     model_provider_->RemoveObserver(this);
   }
@@ -46,6 +54,7 @@ MediaEffectsService::~MediaEffectsService() {
                                base::DoNothingWithBoundArgs(
                                    std::move(latest_segmentation_model_file_)));
   }
+#endif
 }
 
 void MediaEffectsService::BindReadonlyVideoEffectsManager(
@@ -58,6 +67,7 @@ void MediaEffectsService::BindReadonlyVideoEffectsManager(
   effects_manager.Bind(std::move(effects_manager_receiver));
 }
 
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 void MediaEffectsService::BindVideoEffectsProcessor(
     const std::string& device_id,
     mojo::PendingReceiver<video_effects::mojom::VideoEffectsProcessor>
@@ -149,6 +159,7 @@ void MediaEffectsService::OnBackgroundSegmentationModelOpened(
         base::DoNothingWithBoundArgs(std::move(model_file)));
   }
 }
+#endif
 
 VideoEffectsManagerImpl& MediaEffectsService::GetOrCreateVideoEffectsManager(
     const std::string& device_id) {

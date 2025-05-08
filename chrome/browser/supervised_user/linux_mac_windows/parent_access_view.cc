@@ -462,7 +462,7 @@ void ParentAccessView::UpdateDialogBorderAndChildrenBackgroundColors() {
     SetBackground(nullptr);
   }
 
-  border->SetCornerRadius(corner_radius_);
+  border->set_rounded_corners(gfx::RoundedCornersF(corner_radius_));
   widget->widget_delegate()
       ->AsDialogDelegate()
       ->GetBubbleFrameView()

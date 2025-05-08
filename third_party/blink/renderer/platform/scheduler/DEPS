@@ -23,6 +23,7 @@ include_rules = [
   "+base/task/task_executor.h",
   "+base/task/task_features.h",
   "+base/task/task_traits.h",
+  "+base/threading/hang_watcher.h",
   "+base/threading/sequenced_task_runner_handle.h",
   "+base/threading/thread.h",
   "+base/traits_bag.h",

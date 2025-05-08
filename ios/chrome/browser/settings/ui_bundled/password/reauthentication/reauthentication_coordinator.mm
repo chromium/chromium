@@ -7,9 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/check.h"
-#import "base/debug/dump_without_crashing.h"
 #import "base/metrics/histogram_functions.h"
-#import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
@@ -287,17 +285,6 @@ enum class ReauthenticationState {
   UIViewController* presentedViewController =
       topViewController.presentedViewController;
 
-  // Add some crash keys with usefull information for debugging failures when
-  // pushing the reauth controller.
-  SCOPED_CRASH_KEY_STRING64(
-      "ReauthCoordinator", "topVC",
-      base::SysNSStringToUTF8(NSStringFromClass(topViewController.class)));
-  SCOPED_CRASH_KEY_STRING64("ReauthCoordinator", "presentedVC",
-                            presentedViewController
-                                ? base::SysNSStringToUTF8(NSStringFromClass(
-                                      presentedViewController.class))
-                                : "none");
-
   // Do not dismiss the Search Controller, otherwise pushViewController does not
   // add the new view controller to the top of the navigation stack.
   if (![presentedViewController isKindOfClass:[UISearchController class]] &&
@@ -318,11 +305,6 @@ enum class ReauthenticationState {
 
   if (![_baseNavigationController.topViewController
           isEqual:_reauthViewController]) {
-    SCOPED_CRASH_KEY_NUMBER("ReauthCoordinator", "sceneActivation",
-                            self.browser->GetSceneState().activationLevel);
-    SCOPED_CRASH_KEY_BOOL("ReauthCoordinator", "hasWindow",
-                          _baseNavigationController.view.window != nil);
-    base::debug::DumpWithoutCrashing();
     _reauthViewController.delegate = nil;
     _reauthViewController = nil;
     return NO;
@@ -342,19 +324,6 @@ enum class ReauthenticationState {
 
   if (_baseNavigationController.topViewController == _reauthViewController) {
     [_baseNavigationController popViewControllerAnimated:NO];
-  } else {
-    SCOPED_CRASH_KEY_STRING64(
-        "ReauthCoordinator", "topVC",
-        base::SysNSStringToUTF8(NSStringFromClass(
-            _baseNavigationController.topViewController.class)));
-    SCOPED_CRASH_KEY_BOOL("ReauthCoordinator", "reauthIsInStack",
-                          [_baseNavigationController.viewControllers
-                              containsObject:_reauthViewController]);
-    SCOPED_CRASH_KEY_NUMBER("ReauthCoordinator", "sceneActivation",
-                            self.browser->GetSceneState().activationLevel);
-    SCOPED_CRASH_KEY_BOOL("ReauthCoordinator", "hasWindow",
-                          _baseNavigationController.view.window != nil);
-    base::debug::DumpWithoutCrashing();
   }
 
   _reauthViewController.delegate = nil;

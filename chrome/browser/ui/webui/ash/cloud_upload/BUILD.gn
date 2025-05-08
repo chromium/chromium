@@ -79,6 +79,7 @@ static_library("cloud_upload") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/arc/fileapi",
+    "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ash/file_manager/virtual_tasks",
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/policy/skyvault",

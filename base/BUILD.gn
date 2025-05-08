@@ -231,6 +231,7 @@ component("base") {
     "component_export.h",
     "containers/adapters.h",
     "containers/adapters_internal.h",
+    "containers/auto_spanification_helper.h",
     "containers/buffer_iterator.h",
     "containers/checked_iterators.h",
     "containers/circular_deque.h",
@@ -1232,6 +1233,7 @@ component("base") {
       "message_loop/message_pump_android.h",
       "os_compat_android.cc",
       "os_compat_android.h",
+      "power_monitor/energy_monitor_android.h",
       "process/process_android.cc",
       "profiler/native_unwinder_android_map_delegate.h",
       "profiler/native_unwinder_android_memory_regions_map.h",
@@ -2566,6 +2568,24 @@ rust_static_library("rust_logger") {
     # TODO(collinbaker): determine how to handle these cxx bindings-induced
     # circular dependencies more robustly.
     "//base/allocator/partition_allocator:raw_ptr",
+
+    # Needed because logging/rust_logger.rs contains:
+    #   include!("base/logging/rust_log_integration.h");
+    # rust_log_integration.h ends up transitively #including
+    # debug/debugging_buildflags.h, which is a generated header that needs to
+    # be written first.
+    #
+    # Technically it would be more correct to depend on :base, which is the
+    # target for rust_log_integration.h, but that's not possible due to circular
+    # dependencies.
+    #
+    # Note if this is removed the build may still work by accident because
+    # debug/debugging_buildflags.h still ends up being generated through a
+    # dependency chain via :logging_log_severity_bindgen. But we should not
+    # rely on that.
+    #
+    # See also https://crbug.com/406267472.
+    ":debugging_buildflags",
   ]
   visibility = [ ":base" ]
   sources = [ "logging/rust_logger.rs" ]
@@ -3336,6 +3356,7 @@ test("base_unittests") {
     "command_line_unittest.cc",
     "component_export_unittest.cc",
     "containers/adapters_unittest.cc",
+    "containers/auto_spanification_helper_unittest.cc",
     "containers/buffer_iterator_unittest.cc",
     "containers/checked_iterators_unittest.cc",
     "containers/circular_deque_unittest.cc",
@@ -4433,6 +4454,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/LocaleUtils.java",
       "android/java/src/org/chromium/base/PathService.java",
       "android/java/src/org/chromium/base/PowerMonitor.java",
+      "android/java/src/org/chromium/base/PowerMonitorReading.java",
       "android/java/src/org/chromium/base/RadioUtils.java",
       "android/java/src/org/chromium/base/TimezoneUtils.java",
     ]
@@ -4551,7 +4573,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/process_launcher/ChildServiceConnectionDelegate.java",
       "android/java/src/org/chromium/base/process_launcher/ChildServiceConnectionFactory.java",
       "android/java/src/org/chromium/base/process_launcher/ChildServiceConnectionImpl.java",
-      "android/java/src/org/chromium/base/process_launcher/FileDescriptorInfo.java",
+      "android/java/src/org/chromium/base/process_launcher/RebindServiceConnection.java",
     ]
   }
 
@@ -4574,6 +4596,7 @@ if (is_android) {
     # do no append to this list.
     sources = [
       "android/java/src/org/chromium/base/ApkAssets.java",
+      "android/java/src/org/chromium/base/BaseFeatureList.java",
       "android/java/src/org/chromium/base/BaseFeatureMap.java",
       "android/java/src/org/chromium/base/BinderCallsListener.java",
       "android/java/src/org/chromium/base/CallbackController.java",
@@ -4599,6 +4622,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/PostNativeFlag.java",
       "android/java/src/org/chromium/base/PowerMonitor.java",
       "android/java/src/org/chromium/base/PowerMonitorForQ.java",
+      "android/java/src/org/chromium/base/PowerMonitorReading.java",
       "android/java/src/org/chromium/base/RadioUtils.java",
       "android/java/src/org/chromium/base/RequiredCallback.java",
       "android/java/src/org/chromium/base/TimezoneUtils.java",
@@ -5279,7 +5303,9 @@ if (is_android) {
   android_aidl("process_launcher_aidl") {
     import_include = [ "android/java/src" ]
     sources = [
+      "android/java/src/org/chromium/base/process_launcher/IChildProcessArgs.aidl",
       "android/java/src/org/chromium/base/process_launcher/IChildProcessService.aidl",
+      "android/java/src/org/chromium/base/process_launcher/IFileDescriptorInfo.aidl",
       "android/java/src/org/chromium/base/process_launcher/IParentProcess.aidl",
     ]
   }
@@ -5391,9 +5417,7 @@ if (is_android) {
     ]
 
     sources = [
-      "test/android/java/src/org/chromium/base/multidex/ChromiumMultiDexInstaller.java",
       "test/android/javatests/src/org/chromium/base/test/ActivityFinisher.java",
-      "test/android/javatests/src/org/chromium/base/test/BaseActivityTestRule.java",
       "test/android/javatests/src/org/chromium/base/test/BaseChromiumAndroidJUnitRunner.java",
       "test/android/javatests/src/org/chromium/base/test/BaseJUnit4ClassRunner.java",
       "test/android/javatests/src/org/chromium/base/test/LoadNative.java",
@@ -5445,11 +5469,11 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/util/InMemorySharedPreferencesContext.java",
       "test/android/javatests/src/org/chromium/base/test/util/IntegrationTest.java",
       "test/android/javatests/src/org/chromium/base/test/util/JniMocker.java",
+      "test/android/javatests/src/org/chromium/base/test/util/KeyUtils.java",
       "test/android/javatests/src/org/chromium/base/test/util/LooperUtils.java",
       "test/android/javatests/src/org/chromium/base/test/util/Manual.java",
       "test/android/javatests/src/org/chromium/base/test/util/MaxAndroidSdkLevel.java",
       "test/android/javatests/src/org/chromium/base/test/util/MinAndroidSdkLevel.java",
-      "test/android/javatests/src/org/chromium/base/test/util/PackageManagerWrapper.java",
       "test/android/javatests/src/org/chromium/base/test/util/PayloadCallbackHelper.java",
       "test/android/javatests/src/org/chromium/base/test/util/RawFailureHandler.java",
       "test/android/javatests/src/org/chromium/base/test/util/RequiresRestart.java",
@@ -5465,6 +5489,15 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/util/ViewActionOnDescendant.java",
       "test/android/javatests/src/org/chromium/base/test/util/ViewPrinter.java",
     ]
+    if (is_cronet_for_aosp_build) {
+      sources += [ "//components/cronet/android/platform-only/org/chromium/base/test/util/PackageManagerWrapper.java" ]
+    } else {
+      sources += [
+        "test/android/java/src/org/chromium/base/multidex/ChromiumMultiDexInstaller.java",
+        "test/android/javatests/src/org/chromium/base/test/BaseActivityTestRule.java",
+        "test/android/javatests/src/org/chromium/base/test/util/PackageManagerWrapper.java",
+      ]
+    }
     if (use_clang_coverage) {
       mergeable_android_manifests = [
         "test/android/javatests/AndroidManifest_NativeCoverageListener.xml",
@@ -5522,7 +5555,6 @@ if (is_android) {
       "test/android/junit/src/org/chromium/base/test/BaseRobolectricTestListener.java",
       "test/android/junit/src/org/chromium/base/test/BaseRobolectricTestRule.java",
       "test/android/junit/src/org/chromium/base/test/BaseRobolectricTestRunner.java",
-      "test/android/junit/src/org/chromium/base/test/ShadowBuildInfo.java",
       "test/android/junit/src/org/chromium/base/test/util/BaseFlagTestRule.java",
       "test/android/junit/src/org/chromium/base/test/util/TestRunnerTestRule.java",
     ]

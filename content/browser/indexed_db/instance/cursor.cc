@@ -311,10 +311,8 @@ Status Cursor::PrefetchIterationOperation(
         found_values.push_back(IndexedDBValue());
         break;
       case indexed_db::CursorType::kKeyAndValue: {
-        IndexedDBValue value;
-        value.swap(cursor_->GetValue());
-        size_estimate += value.SizeEstimate();
-        found_values.push_back(value);
+        found_values.push_back(std::move(cursor_->GetValue()));
+        size_estimate += found_values.back().SizeEstimate();
         break;
       }
       default:

@@ -258,7 +258,7 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmGapGeometry) {
 
   BuildGridGeometry(algorithm);
   algorithm.Layout();
-  const GapGeometry* gap_geometry = algorithm.GetGapGeometryForTest();
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
 
   Vector<GapIntersectionList> expected_column_intersections = {
       {
@@ -339,7 +339,7 @@ TEST_F(GridLayoutAlgorithmTest, GapIntersectionsForGridWithSpanners) {
 
   BuildGridGeometry(algorithm);
   algorithm.Layout();
-  const GapGeometry* gap_geometry = algorithm.GetGapGeometryForTest();
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
 
   Vector<GapIntersectionList> expected_column_intersections = {
       {

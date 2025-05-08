@@ -15,11 +15,11 @@ import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.bookmarks.R;
 import org.chromium.ui.base.LocalizationUtils;
 
@@ -30,6 +30,7 @@ import java.util.List;
  * provides users with bookmark access from top chrome. Note that the layout manager is *not*
  * scrollable and will only render as many items as will fit completely within its viewport.
  */
+@NullMarked
 class BookmarkBarItemsLayoutManager extends RecyclerView.LayoutManager {
 
     private final int mItemSpacing;
@@ -42,7 +43,7 @@ class BookmarkBarItemsLayoutManager extends RecyclerView.LayoutManager {
      *
      * @param context The context in which to render items.
      */
-    public BookmarkBarItemsLayoutManager(@NonNull Context context) {
+    public BookmarkBarItemsLayoutManager(Context context) {
         final Resources resources = context.getResources();
         mItemMaxWidth = resources.getDimensionPixelSize(R.dimen.bookmark_bar_item_max_width);
         mItemSpacing = resources.getDimensionPixelSize(R.dimen.bookmark_bar_item_spacing);
@@ -57,7 +58,7 @@ class BookmarkBarItemsLayoutManager extends RecyclerView.LayoutManager {
     /**
      * @return The supplier for the current state of items overflow.
      */
-    public @NonNull ObservableSupplier<Boolean> getItemsOverflowSupplier() {
+    public ObservableSupplier<Boolean> getItemsOverflowSupplier() {
         return mItemsOverflowSupplier;
     }
 
@@ -67,8 +68,7 @@ class BookmarkBarItemsLayoutManager extends RecyclerView.LayoutManager {
     }
 
     @Override
-    public void onLayoutChildren(
-            @NonNull RecyclerView.Recycler recycler, @NonNull RecyclerView.State state) {
+    public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
         detachAndScrapAttachedViews(recycler);
 
         final var visibleBounds = new Rect(0, 0, getWidth(), getHeight());
@@ -101,7 +101,7 @@ class BookmarkBarItemsLayoutManager extends RecyclerView.LayoutManager {
     }
 
     @Override
-    public void onLayoutCompleted(@NonNull RecyclerView.State state) {
+    public void onLayoutCompleted(RecyclerView.State state) {
         super.onLayoutCompleted(state);
 
         // NOTE: Items overflow when there are more items in the adapter than are rendered.
@@ -123,7 +123,7 @@ class BookmarkBarItemsLayoutManager extends RecyclerView.LayoutManager {
         return LocalizationUtils.isLayoutRtl() ? getWidth() : 0;
     }
 
-    private int layoutChild(@NonNull View child, int startOffset) {
+    private int layoutChild(View child, int startOffset) {
         final boolean isLayoutRtl = LocalizationUtils.isLayoutRtl();
 
         final int height = getDecoratedMeasuredHeight(child);
@@ -137,7 +137,7 @@ class BookmarkBarItemsLayoutManager extends RecyclerView.LayoutManager {
         return startOffset + layoutDirection * (width + mItemSpacing);
     }
 
-    private void measureChild(@NonNull View child) {
+    private void measureChild(View child) {
         // NOTE: Max width constraint must be set before measure/layout.
         assert mItemMaxWidth > 0;
 

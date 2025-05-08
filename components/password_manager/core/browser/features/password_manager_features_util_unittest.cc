@@ -183,6 +183,8 @@ TEST_F(PasswordManagerFeaturesUtilTest, MigrateDefaultProfileStorePref) {
       prefs::kObsoleteAccountStoragePerAccountSettings);
   pref_service_.registry()->RegisterBooleanPref(::prefs::kExplicitBrowserSignin,
                                                 false);
+  pref_service_.registry()->RegisterBooleanPref(
+      ::prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, false);
 
   // Set up 2 account storage users, with default stores "profile" and
   // "account", respectively.

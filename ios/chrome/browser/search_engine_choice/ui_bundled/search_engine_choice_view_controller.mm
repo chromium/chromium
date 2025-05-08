@@ -630,7 +630,7 @@ CGFloat ConvertVerticalCoordonateWithMainViewReference(UIView* mainView,
 //     SetAsDefault is not visible yet).
 //  3- Scrolls up the scrollview to avoid covering the selected search engine.
 - (void)animateFloatingSetAsDefaultContainer {
-  CHECK(!_moreOrContinueButton, base::NotFatalUntil::M127);
+  CHECK(!_moreOrContinueButton);
 
   // 1- Fades grey color to blue color to have better animation.
   UIButton* fakeButtonForGreyToBlueFading = nil;

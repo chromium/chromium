@@ -1753,7 +1753,8 @@ GLenum DrawingBuffer::StorageFormat() const {
   return requested_format_;
 }
 
-sk_sp<SkData> DrawingBuffer::PaintRenderingResultsToRGBADataArray(
+scoped_refptr<StaticBitmapImage>
+DrawingBuffer::GetRGBAUnacceleratedStaticBitmapImage(
     SourceDrawingBuffer source_buffer) {
   ScopedStateRestorer scoped_state_restorer(this);
 
@@ -1808,7 +1809,11 @@ sk_sp<SkData> DrawingBuffer::PaintRenderingResultsToRGBADataArray(
     front_color_buffer_->EndAccess();
   }
 
-  return dst_buffer;
+  return StaticBitmapImage::Create(
+      std::move(dst_buffer),
+      SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
+                        color_type, kUnpremul_SkAlphaType,
+                        color_space_.ToSkColorSpace()));
 }
 
 void DrawingBuffer::ReadBackFramebuffer(base::span<uint8_t> pixels,
@@ -1957,11 +1962,11 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
 
   SkAlphaType back_buffer_alpha_type = kPremul_SkAlphaType;
   if (using_swap_chain_) {
+    usage = usage | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+    usage = usage | gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
     gpu::SharedImageInterface::SwapChainSharedImages shared_images =
-        sii->CreateSwapChain(
-            color_buffer_format_, size, color_space_, origin,
-            back_buffer_alpha_type,
-            gpu::SharedImageUsageSet(usage | gpu::SHARED_IMAGE_USAGE_SCANOUT));
+        sii->CreateSwapChain(color_buffer_format_, size, color_space_, origin,
+                             back_buffer_alpha_type, usage);
     back_buffer_shared_image = std::move(shared_images.back_buffer);
     front_buffer_shared_image = std::move(shared_images.front_buffer);
   } else {

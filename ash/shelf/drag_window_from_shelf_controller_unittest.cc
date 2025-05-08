@@ -21,6 +21,8 @@
 #include "ash/shelf/window_scale_animation.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_widget_builder.h"
+#include "ash/test/test_widget_delegates.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_drop_target.h"
@@ -1418,6 +1420,34 @@ TEST_F(DragWindowFromShelfControllerTest,
   EXPECT_FALSE(window->IsVisible());
   EXPECT_FALSE(transient_child_win1->IsVisible());
   EXPECT_FALSE(transient_child_win2->IsVisible());
+}
+
+TEST_F(DragWindowFromShelfControllerTest, DragWindowWithBubbleDialog) {
+  // Create a widget-anchored bubble and start shelf dragging with it.
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  auto widget =
+      TestWidgetBuilder().SetTestWidgetDelegate().BuildClientOwnsWidget();
+  widget->Show();
+
+  auto dialog_host = std::make_unique<CenteredBubbleDialogModelHost>(
+      widget.get(), gfx::Size(100, 100), /*close_on_deactivate=*/false);
+
+  auto* bubble_widget =
+      views::BubbleDialogDelegate::CreateBubble(std::move(dialog_host));
+
+  bubble_widget->Show();
+
+  auto weak_bubble_widget = bubble_widget->GetWeakPtr();
+
+  const gfx::Rect shelf_bounds = GetShelfBounds();
+
+  StartDrag(widget->GetNativeWindow(), shelf_bounds.left_center());
+  Drag(gfx::Point(10, 200), 1.f, 1.f);
+  EndDrag(shelf_bounds.bottom_left(), /*velocity_y=*/std::nullopt);
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().CenterPoint(),
+            bubble_widget->GetWindowBoundsInScreen().CenterPoint());
 }
 
 // Tests that destroying a trasient child that is being dragged from the shelf

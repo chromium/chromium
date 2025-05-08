@@ -37,6 +37,7 @@
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "components/live_caption/translation_dispatcher.h"
 #include "components/prefs/pref_service.h"
+#include "components/soda/constants.h"
 #include "components/user_manager/user.h"
 #include "google_apis/google_api_keys.h"
 
@@ -49,6 +50,7 @@ std::unique_ptr<boca::BabelOrcaManager> CreateBabelOrcaManager(
     PrefService* global_prefs,
     babelorca::SodaInstaller* soda_installer,
     const std::string& application_locale,
+    const std::string& caption_language,
     bool is_consumer) {
   // Passing `DoNothing` since we do not currently show settings for BabelOrca.
   auto caption_bubble_context =
@@ -73,7 +75,7 @@ std::unique_ptr<boca::BabelOrcaManager> CreateBabelOrcaManager(
         account_id.GetGaiaId(),
         boca::BocaAppClient::Get()->GetSchoolToolsServerBaseUrl(),
         std::move(babel_orca_translator), on_caption_disabled_cb,
-        profile->GetPrefs(), application_locale);
+        profile->GetPrefs(), application_locale, caption_language);
   }
   // Producer
   if (!base::FeatureList::IsEnabled(
@@ -83,12 +85,13 @@ std::unique_ptr<boca::BabelOrcaManager> CreateBabelOrcaManager(
 
   auto speech_recognizer =
       std::make_unique<babelorca::BabelOrcaSpeechRecognizerImpl>(
-          profile, soda_installer, application_locale);
+          profile, soda_installer, application_locale, caption_language);
   auto babel_orca_manager = boca::BabelOrcaManager::CreateAsProducer(
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetURLLoaderFactory(), std::move(caption_bubble_context),
       std::move(speech_recognizer), std::move(babel_orca_translator),
-      on_caption_disabled_cb, profile->GetPrefs(), application_locale);
+      on_caption_disabled_cb, profile->GetPrefs(), application_locale,
+      caption_language);
   // Safe to use base::Unretained since the callback is removed in
   // `BocaManager::Shutdown()` before `babel_orca_manager_` destruction.
   auto session_caption_initializer =
@@ -129,14 +132,18 @@ BocaManager::BocaManager(Profile* profile,
   boca_session_manager_ = std::make_unique<boca::BocaSessionManager>(
       session_client_impl_.get(), user->GetProfilePrefs(), user->GetAccountId(),
       /*is_producer=*/!is_consumer);
-  if (!is_consumer) {
-    soda_installer_ = std::make_unique<babelorca::SodaInstaller>(
-        global_prefs, profile->GetPrefs(), application_locale);
-  }
   if (ash::features::IsBabelOrcaAvailable()) {
+    const std::string caption_language = speech::GetDefaultLiveCaptionLanguage(
+        application_locale, profile->GetPrefs());
+    if (!is_consumer && base::FeatureList::IsEnabled(
+                            ash::features::kOnDeviceSpeechRecognition)) {
+      soda_installer_ = std::make_unique<babelorca::SodaInstaller>(
+          global_prefs, profile->GetPrefs(), caption_language);
+    }
     babel_orca_manager_ = CreateBabelOrcaManager(
         boca_session_manager_.get(), profile, global_prefs,
-        soda_installer_.get(), application_locale, is_consumer);
+        soda_installer_.get(), application_locale, caption_language,
+        is_consumer);
   }
   if (is_consumer) {
     on_task_session_manager_ = std::make_unique<boca::OnTaskSessionManager>(

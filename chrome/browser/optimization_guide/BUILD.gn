@@ -66,6 +66,7 @@ source_set("impl") {
     "//components/no_state_prefetch/browser:browser",
     "//components/user_prefs:user_prefs",
     "//components/variations/service:service",
+    "//components/version_info:version_info",
     "//ui/webui",
   ]
   if (is_android) {

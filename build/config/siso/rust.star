@@ -180,6 +180,9 @@ def __step_config(ctx, step_config):
     ]
     if win_sdk.enabled(ctx):
         clang_inputs.append(win_sdk.toolchain_dir(ctx) + ":libs")
+    else:
+        remote = False
+        remote_link = False
 
     rust_toolchain = [
         # TODO(b/285225184): use precomputed subtree

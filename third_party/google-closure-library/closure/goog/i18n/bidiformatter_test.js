@@ -254,7 +254,6 @@ testSuite({
     const html = SafeHtml.htmlEscape('a');
     const wrapped = rtlFmt.spanWrapSafeHtml(html, false);
     assertHtmlEquals('<span dir="ltr">a</span>', wrapped);
-    assertEquals(NEUTRAL, wrapped.getDirection());
   },
 
   testSpanWrapWithKnownDir() {

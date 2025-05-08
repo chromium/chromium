@@ -9,7 +9,6 @@
 #include "base/containers/contains.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/origin_agent_cluster_isolation_state.h"
-#include "content/browser/security/coop/coop_related_group.h"
 #include "content/browser/site_info.h"
 #include "content/browser/site_instance_group.h"
 #include "content/browser/site_instance_impl.h"
@@ -32,9 +31,7 @@ BrowsingInstance::BrowsingInstance(
     const WebExposedIsolationInfo& web_exposed_isolation_info,
     bool is_guest,
     bool is_fenced,
-    bool is_fixed_storage_partition,
-    const scoped_refptr<CoopRelatedGroup>& coop_related_group,
-    std::optional<url::Origin> common_coop_origin)
+    bool is_fixed_storage_partition)
     : isolation_context_(
           BrowsingInstanceId::FromUnsafeValue(next_browsing_instance_id_++),
           BrowserOrResourceContext(browser_context),
@@ -45,23 +42,11 @@ BrowsingInstance::BrowsingInstance(
       active_contents_count_(0u),
       default_site_instance_(nullptr),
       web_exposed_isolation_info_(web_exposed_isolation_info),
-      coop_related_group_(coop_related_group),
-      common_coop_origin_(common_coop_origin),
       is_fixed_storage_partition_(is_fixed_storage_partition) {
   DCHECK(browser_context);
   if (is_guest) {
     CHECK(is_fixed_storage_partition);
   }
-
-  // If we get passed an empty group, build a new one. This is the common case.
-  if (!coop_related_group_) {
-    coop_related_group_ =
-        base::WrapRefCounted<CoopRelatedGroup>(new CoopRelatedGroup(
-            browser_context, is_guest, is_fenced, is_fixed_storage_partition_));
-  }
-  DCHECK(coop_related_group_);
-
-  coop_related_group_->RegisterBrowsingInstance(this);
 }
 
 BrowserContext* BrowsingInstance::GetBrowserContext() const {
@@ -140,14 +125,6 @@ BrowsingInstance::GetMaybeGroupRelatedSiteInstanceForURL(
   scoped_refptr<SiteInstanceImpl> instance = GetSiteInstanceForURL(
       url_info, creation_group, /*allow_default_instance=*/false);
   return instance;
-}
-
-scoped_refptr<SiteInstanceImpl>
-BrowsingInstance::GetCoopRelatedSiteInstanceForURL(
-    const UrlInfo& url_info,
-    bool allow_default_instance) {
-  return coop_related_group_->GetCoopRelatedSiteInstanceForURL(
-      url_info, allow_default_instance);
 }
 
 scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForURLHelper(
@@ -260,8 +237,6 @@ BrowsingInstance::~BrowsingInstance() {
       ChildProcessSecurityPolicyImpl::GetInstance();
   policy->RemoveOptInIsolatedOriginsForBrowsingInstance(
       isolation_context_.browsing_instance_id());
-
-  coop_related_group_->UnregisterBrowsingInstance(this);
 }
 
 SiteInfo BrowsingInstance::ComputeSiteInfoForURL(
@@ -339,21 +314,13 @@ int BrowsingInstance::EstimateOriginAgentClusterOverhead() {
   return result;
 }
 
-size_t BrowsingInstance::GetCoopRelatedGroupActiveContentsCount() {
-  return coop_related_group_->active_contents_count();
-}
-
 void BrowsingInstance::IncrementActiveContentsCount() {
   active_contents_count_++;
-
-  coop_related_group_->increment_active_contents_count();
 }
 
 void BrowsingInstance::DecrementActiveContentsCount() {
   DCHECK_LT(0u, active_contents_count_);
   active_contents_count_--;
-
-  coop_related_group_->decrement_active_contents_count();
 }
 
 }  // namespace content

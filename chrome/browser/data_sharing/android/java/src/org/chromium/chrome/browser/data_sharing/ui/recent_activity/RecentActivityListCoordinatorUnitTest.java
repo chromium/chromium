@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityListCoordinator.AvatarProvider;
 import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityListCoordinator.FaviconProvider;
@@ -92,7 +93,8 @@ public class RecentActivityListCoordinatorUnitTest {
                         mTabGroupSyncService,
                         mFaviconProvider,
                         mAvatarProvider,
-                        mRecentActivityActionHandler);
+                        mRecentActivityActionHandler,
+                        CallbackUtils.emptyRunnable());
         verify(mBottomSheetController).addObserver(any());
     }
 

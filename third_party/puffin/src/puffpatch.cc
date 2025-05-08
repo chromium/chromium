@@ -77,7 +77,7 @@ Status DecodePatch(const uint8_t* patch,
 
   // Read the header size from big-endian mode.
   const auto header_size_span = header_span.first<sizeof header_size>();
-  header_size = base::numerics::U32FromBigEndian(header_size_span);
+  header_size = base::U32FromBigEndian(header_size_span);
   header_span = header_span.subspan<sizeof header_size>();
   TEST_AND_RETURN_VALUE(header_size <= header_span.size(),
                         Status::P_BAD_PUFFIN_HEADER);

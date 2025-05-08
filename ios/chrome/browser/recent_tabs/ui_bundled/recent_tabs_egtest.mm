@@ -675,7 +675,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
               l10n_util::GetNSString(IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE))]
       performAction:grey_tap()];
 
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+              waitForSyncTransportActive:NO];
 
   OpenRecentTabsPanel();
   [[EarlGrey

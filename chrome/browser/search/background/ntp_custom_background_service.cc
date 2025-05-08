@@ -281,16 +281,6 @@ void NtpCustomBackgroundService::SetCustomBackgroundInfo(
   if (IsCustomBackgroundDisabledByPolicy()) {
     return;
   }
-  // Store current background info before it is changed so it can be used if
-  // RevertBackgroundChanges is called.
-  if (previous_background_info_ == std::nullopt) {
-    previous_background_info_ = std::make_optional(
-        pref_service_
-            ->GetValue(GetThemePrefNameInMigration(
-                ThemePrefInMigration::kNtpCustomBackgroundDict))
-            .Clone());
-    previous_local_background_ = false;
-  }
 
   bool is_backdrop_collection =
       background_service_ &&
@@ -380,8 +370,6 @@ void NtpCustomBackgroundService::SelectLocalBackgroundImage(
   if (IsCustomBackgroundDisabledByPolicy()) {
     return;
   }
-  previous_background_info_.reset();
-  previous_local_background_ = true;
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&CopyFileToProfilePath, path, profile_->GetPath()),
@@ -414,24 +402,6 @@ void NtpCustomBackgroundService::RefreshBackgroundIfNeeded() {
         background_info.Find(kNtpCustomBackgroundResumeToken)->GetString();
     background_service_->FetchNextCollectionImage(collection_id, resume_token);
   }
-}
-
-void NtpCustomBackgroundService::RevertBackgroundChanges() {
-  if (previous_background_info_.has_value()) {
-    pref_service_->Set(GetThemePrefNameInMigration(
-                           ThemePrefInMigration::kNtpCustomBackgroundDict),
-                       *previous_background_info_);
-  }
-  if (previous_local_background_) {
-    SetBackgroundToLocalResource();
-  }
-  previous_background_info_.reset();
-  previous_local_background_ = false;
-}
-
-void NtpCustomBackgroundService::ConfirmBackgroundChanges() {
-  previous_background_info_.reset();
-  previous_local_background_ = false;
 }
 
 std::optional<CustomBackground>

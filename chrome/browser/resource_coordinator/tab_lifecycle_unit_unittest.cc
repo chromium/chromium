@@ -472,6 +472,12 @@ TEST_F(TabLifecycleUnitTest, CannotDiscardDesktopCapture) {
   devices.video_device = blink::MediaStreamDevice(
       blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
       "fake_media_device", "fake_media_device");
+  devices.video_device->display_media_info =
+      media::mojom::DisplayMediaInformation::New(
+          media::mojom::DisplayCaptureSurfaceType::MONITOR,
+          /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
+          /*capture_handle=*/nullptr,
+          /*initial_zoom_level=*/100);
   std::unique_ptr<content::MediaStreamUI> ui =
       MediaCaptureDevicesDispatcher::GetInstance()
           ->GetMediaStreamCaptureIndicator()

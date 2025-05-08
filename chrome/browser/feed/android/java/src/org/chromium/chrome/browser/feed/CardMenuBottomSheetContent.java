@@ -7,13 +7,14 @@ package org.chromium.chrome.browser.feed;
 import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** Provide data that the bottom sheet manager needs to show a bottom sheet. */
+@NullMarked
 public class CardMenuBottomSheetContent implements BottomSheetContent {
     private View mContentView;
 
@@ -26,9 +27,8 @@ public class CardMenuBottomSheetContent implements BottomSheetContent {
         return mContentView;
     }
 
-    @Nullable
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -61,7 +61,7 @@ public class CardMenuBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public @NonNull String getSheetContentDescription(Context context) {
+    public String getSheetContentDescription(Context context) {
         return context.getString(R.string.feed_card_menu_description);
     }
 

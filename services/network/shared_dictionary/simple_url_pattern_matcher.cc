@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "components/url_pattern/url_pattern_util.h"
+#include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/liburlpattern/constructor_string_parser.h"
 #include "third_party/liburlpattern/parse.h"
 #include "third_party/liburlpattern/pattern.h"
@@ -127,9 +128,9 @@ SimpleUrlPatternMatcher::Component::Create(
     std::optional<std::string_view> pattern,
     liburlpattern::EncodeCallback encode_callback,
     const liburlpattern::Options& options) {
-  absl::StatusOr<liburlpattern::Pattern> parse_result =
+  base::expected<liburlpattern::Pattern, absl::Status> parse_result =
       liburlpattern::Parse(pattern.value_or("*"), encode_callback, options);
-  if (!parse_result.ok()) {
+  if (!parse_result.has_value()) {
     return base::unexpected("Failed to parse pattern");
   }
   if (parse_result->HasRegexGroups()) {
@@ -202,15 +203,16 @@ SimpleUrlPatternMatcher::CreatePatternInit(
   bool protocol_matches_a_special_scheme_flag = false;
   absl::Status result = constructor_string_parser.Parse(
       [&protocol_component, &protocol_matches_a_special_scheme_flag](
-          std::string_view protocol_string) -> absl::StatusOr<bool> {
+          std::string_view protocol_string)
+          -> base::expected<bool, absl::Status> {
         // Spec: Let protocol component be the result of compiling a component
         // given protocol string, canonicalize a protocol, and default options.
         auto component_result = Component::Create(
             protocol_string, url_pattern::ProtocolEncodeCallback,
             kDefaultOptions);
         if (!component_result.has_value()) {
-          return absl::InvalidArgumentError(
-              base::StrCat({component_result.error(), " for protocol"}));
+          return base::unexpected(absl::InvalidArgumentError(
+              base::StrCat({component_result.error(), " for protocol"})));
         }
         protocol_component = std::move(component_result.value());
         // Spec: If the result of running protocol component matches a special

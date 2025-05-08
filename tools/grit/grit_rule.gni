@@ -120,8 +120,23 @@ template("grit") {
     _output_dir = target_gen_dir
   }
 
-  _grit_outputs =
-      get_path_info(rebase_path(invoker.outputs, ".", _output_dir), "abspath")
+  if (defined(invoker.outputs)) {
+    _grit_outputs =
+        get_path_info(rebase_path(invoker.outputs, ".", _output_dir), "abspath")
+  } else {
+    _grit_outputs = []
+  }
+
+  _create_android_resources = defined(invoker.create_android_resources) &&
+                              invoker.create_android_resources
+  if (_create_android_resources) {
+    if (defined(invoker.resources_zip)) {
+      _resources_zip = invoker.resources_zip
+    } else {
+      _resources_zip = "$target_out_dir/$target_name.resources.zip"
+    }
+    _grit_outputs += [ _resources_zip ]
+  }
 
   # Add .info output for all pak files
   _pak_info_outputs = []
@@ -195,6 +210,13 @@ template("grit") {
              "--depend-on-stamp",
            ] + _grit_flags
 
+    if (_create_android_resources) {
+      args += [
+        "--android-output-zip",
+        rebase_path(_resources_zip, root_build_dir),
+      ]
+    }
+
     # Add brotli executable if using brotli.
     if (defined(invoker.use_brotli) && invoker.use_brotli) {
       _brotli_target = "//third_party/brotli:brotli($host_toolchain)"
@@ -241,7 +263,7 @@ template("grit") {
     _asserted_list_file =
         "$target_out_dir/${_grit_output_name}_expected_outputs.txt"
     write_file(_asserted_list_file,
-               rebase_path(invoker.outputs, root_build_dir, _output_dir))
+               rebase_path(_grit_outputs, root_build_dir, _output_dir))
     inputs += [ _asserted_list_file ]
     args += [
       "--assert-file-list",
@@ -307,14 +329,12 @@ template("grit") {
 
     # Since we generate a file, we need to be run before the targets that
     # depend on us.
-    sources = []
-    foreach(_output, _grit_outputs) {
-      _extension = get_path_info(_output, "extension")
-      if (_extension != "json" && _extension != "gz" && _extension != "pak" &&
-          _extension != "xml") {
-        sources += [ _output ]
-      }
-    }
+    sources = filter_include(_grit_outputs,
+                             [
+                               "*.h",
+                               "*.cc",
+                               "*.rc",
+                             ])
 
     # Deps set on the template invocation will go on the action that runs
     # grit above rather than this library. This target needs to depend on the
@@ -356,93 +376,55 @@ if (is_android) {
   #    grd_file = "foo_strings.grd"
   #  }
   template("java_strings_grd") {
-    forward_variables_from(invoker, [ "testonly" ])
-
-    _resources_zip = "$target_out_dir/$target_name.resources.zip"
     _grit_target_name = "${target_name}__grit"
-    _grit_output_dir = "$target_gen_dir/${target_name}_grit_output"
-
+    _resources_zip = "$target_out_dir/$target_name.resources.zip"
     grit(_grit_target_name) {
       forward_variables_from(invoker,
-                             [
-                               "deps",
-                               "defines",
-                             ])
+                             TESTONLY_AND_VISIBILITY + [
+                                   "deps",
+                                   "defines",
+                                 ])
+
+      # TODO(agrieve): Remove outputs from callers.
+      not_needed(invoker, [ "outputs" ])
+      create_android_resources = true
+      resources_zip = _resources_zip
       grit_flags = [
         "-E",
         "ANDROID_JAVA_TAGGED_ONLY=false",
       ]
-      output_dir = _grit_output_dir
+
+      # Ignore pak file IDs since they are not relevant.
       resource_ids = ""
       source = invoker.grd_file
-      outputs = invoker.outputs
-    }
-
-    _zip_target_name = "${target_name}__zip"
-
-    zip(_zip_target_name) {
-      base_dir = _grit_output_dir
-
-      # No need to depend on the source_set().
-      _grit_dep = ":${_grit_target_name}_grit"
-      deps = [ _grit_dep ]
-      inputs = filter_exclude(get_target_outputs(_grit_dep), [ "*.stamp" ])
-      output = _resources_zip
     }
 
     android_generated_resources(target_name) {
       forward_variables_from(invoker,
-                             [
-                               "resource_overlay",
-                               "visibility",
-                             ])
-      generating_target = ":$_zip_target_name"
+                             TESTONLY_AND_VISIBILITY + [ "resource_overlay" ])
       generated_resources_zip = _resources_zip
+      generating_target = ":$_grit_target_name"
     }
   }
 
-  # Declare a target that packages strings.xml generated from a grd file.
+  # An android_generated_resources() for an existing grit() target.
   #
-  # If this target is included in the deps of an android resources/library/apk,
-  # the strings.xml will be included with that target.
-  #
-  # Variables
-  #  grit_output_dir: directory containing grit-generated files.
-  #  generated_files: list of android resource files to package.
+  # The grit target must have set create_android_resources = true
   #
   # Example
   #  java_strings_grd_prebuilt("foo_strings_grd") {
-  #    grit_output_dir = "$root_gen_dir/foo/grit"
-  #    generated_files = [
-  #      "values/strings.xml"
-  #    ]
+  #    generating_target = ":my_grit_rule"
   #  }
   template("java_strings_grd_prebuilt") {
-    forward_variables_from(invoker, [ "testonly" ])
-
-    _resources_zip = "$target_out_dir/$target_name.resources.zip"
-    _zip_target_name = "${target_name}__zip"
-
-    zip(_zip_target_name) {
-      base_dir = invoker.grit_output_dir
-      inputs = rebase_path(invoker.generated_files, ".", base_dir)
-      output = _resources_zip
-      if (defined(invoker.deps)) {
-        deps = []
-        foreach(_dep, invoker.deps) {
-          deps += [ "${_dep}_grit" ]
-        }
-      }
-    }
-
     android_generated_resources(target_name) {
       forward_variables_from(invoker,
-                             [
-                               "resource_overlay",
-                               "visibility",
-                             ])
-      generating_target = ":$_zip_target_name"
-      generated_resources_zip = _resources_zip
+                             TESTONLY_AND_VISIBILITY + [
+                                   "generating_target",
+                                   "resource_overlay",
+                                 ])
+      generated_resources_zip =
+          get_label_info(invoker.generating_target, "target_out_dir") + "/" +
+          get_label_info(invoker.generating_target, "name") + ".resources.zip"
     }
   }
 }

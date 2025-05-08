@@ -130,6 +130,17 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   // hierarchy.
   virtual void ViewRemoved(View* view) = 0;
 
+  // Notifies the NativeWidget that its Widget was destroyed by the client.
+  // NativeWidgets should override this to clear any references to its
+  // associated Widget. The NativeWidget destruction will be initiated
+  // separately by the host platform.
+  //
+  // Only relevant for CLIENT_OWNS_WIDGET ownership schemes. Not relevant for
+  // other widget ownership schemes
+  //  - NATIVE_WIDGET_OWNS_WIDGET - NativeWidget initiates Widget destruction.
+  //  - WIDGET_OWNS_NATIVE_WIDGET - Widget synchronously destroys NativeWidget.
+  virtual void ClientDestroyedWidget();
+
   // Sets/Gets a native window property on the underlying native window object.
   // Returns NULL if the property does not exist. Setting the property value to
   // NULL removes the property.
@@ -196,6 +207,7 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
                     const gfx::Rect& restore_bounds) = 0;
   virtual void Hide() = 0;
   virtual bool IsVisible() const = 0;
+  virtual bool IsVisibleOnScreen() const = 0;
   virtual void Activate() = 0;
   virtual void Deactivate() = 0;
   virtual bool IsActive() const = 0;

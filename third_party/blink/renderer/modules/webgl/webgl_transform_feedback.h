@@ -5,16 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_TRANSFORM_FEEDBACK_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_TRANSFORM_FEEDBACK_H_
 
-#include "third_party/blink/renderer/modules/webgl/webgl_context_object.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_program.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_object.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
 
-class WebGL2RenderingContextBase;
 class WebGLBuffer;
+class WebGLProgram;
 
-class WebGLTransformFeedback : public WebGLContextObject {
+class WebGLTransformFeedback : public WebGLObject {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -23,17 +22,18 @@ class WebGLTransformFeedback : public WebGLContextObject {
     kUser,
   };
 
-  explicit WebGLTransformFeedback(WebGL2RenderingContextBase*, TFType);
+  explicit WebGLTransformFeedback(
+      WebGLContextObjectSupport*,
+      TFType,
+      GLint max_transform_feedback_separate_attribs);
   ~WebGLTransformFeedback() override;
-
-  GLuint Object() const { return object_; }
 
   bool IsDefaultObject() const { return type_ == TFType::kDefault; }
 
   GLenum GetTarget() const { return target_; }
   void SetTarget(GLenum);
 
-  bool HasEverBeenBound() const { return object_ && target_; }
+  bool HasEverBeenBound() const { return HasObject() && target_; }
 
   WebGLProgram* GetProgram() const { return program_.Get(); }
   void SetProgram(WebGLProgram*);
@@ -74,10 +74,7 @@ class WebGLTransformFeedback : public WebGLContextObject {
 
  private:
   void DispatchDetached(gpu::gles2::GLES2Interface*);
-  bool HasObject() const override { return object_ != 0; }
   void DeleteObjectImpl(gpu::gles2::GLES2Interface*) override;
-
-  GLuint object_;
 
   TFType type_;
   GLenum target_;

@@ -90,12 +90,8 @@ class OnDeviceTailModelExecutor {
     RnnCellStates& operator=(RnnCellStates&& other) noexcept;
     ~RnnCellStates();
 
-    bool operator==(const RnnCellStates& other) const {
-      return c_i == other.c_i && m_i == other.m_i;
-    }
-    bool operator!=(const RnnCellStates& other) const {
-      return !(*this == other);
-    }
+    friend bool operator==(const RnnCellStates&,
+                           const RnnCellStates&) = default;
 
     // Cell states, see definitions at
     // https://github.com/tensorflow/lingvo/blob/master/lingvo/core/rnn_cell.py#L221.

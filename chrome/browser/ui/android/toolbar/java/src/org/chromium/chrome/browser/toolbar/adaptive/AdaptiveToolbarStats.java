@@ -9,12 +9,14 @@ import android.content.Context;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor.UiState;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Utility methods related to metrics collection for adaptive toolbar button. */
+@NullMarked
 public class AdaptiveToolbarStats {
     // Please treat this list as append only and keep it in sync with
     // AdaptiveToolbarRadioButtonState in enums.xml.

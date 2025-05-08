@@ -1,0 +1,53 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+protoc_convert("key_distribution_binary") {
+  sources = [ "key_distribution.textproto" ]
+  inputs =
+      [ "//components/webapps/isolated_web_apps/proto/key_distribution.proto" ]
+
+  # Output becomes:
+  output_pattern = "$target_gen_dir/{{source_name_part}}.pb"
+  args = [
+    "--encode=web_app.IwaKeyDistribution",
+    "-I",
+    rebase_path("//", root_build_dir),
+    "components/webapps/isolated_web_apps/proto/key_distribution.proto",
+  ]
+}
+
+copy("generated_key_distribution_pb") {
+  sources = [ "$target_gen_dir/key_distribution.pb" ]
+  outputs = [ "$target_gen_dir/iwa-key-distribution.pb" ]
+  deps = [ ":key_distribution_binary" ]
+}
+
+iwa_key_distribution_resources = [
+  "$target_gen_dir/iwa-key-distribution.pb",
+  "manifest.json",
+]
+
+iwa_key_distribution_component = "IwaKeyDistribution"
+
+# TODO(crbug.com/359599875): Support this in Win/Mac/Linux installers.
+copy("component") {
+  sources = iwa_key_distribution_resources
+
+  outputs =
+      [ "$root_out_dir/$iwa_key_distribution_component/{{source_file_part}}" ]
+
+  deps = [ ":generated_key_distribution_pb" ]
+}
+
+if (is_mac) {
+  bundle_data("component_bundle") {
+    sources = iwa_key_distribution_resources
+
+    outputs = [ "{{bundle_contents_dir}}/Libraries/$iwa_key_distribution_component/{{source_file_part}}" ]
+
+    public_deps = [ ":generated_key_distribution_pb" ]
+  }
+}

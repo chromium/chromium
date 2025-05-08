@@ -11,6 +11,7 @@
 #include <string_view>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/callback.h"
@@ -26,10 +27,10 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/chrome_schema.h"
-#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/external_data_manager.h"
 #include "components/policy/core/common/policy_map.h"
@@ -735,6 +736,40 @@ base::Value::Dict DecodeDeviceLocalAccountInfoProto(
     if (entry.isolated_kiosk_app().has_update_manifest_url()) {
       entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyIwaKioskUpdateUrl,
                      entry.isolated_kiosk_app().update_manifest_url());
+    }
+    if (entry.isolated_kiosk_app().has_update_channel()) {
+      entry_dict.Set(
+          ash::kAccountsPrefDeviceLocalAccountsKeyIwaKioskUpdateChannel,
+          entry.isolated_kiosk_app().update_channel());
+    }
+    if (entry.isolated_kiosk_app().has_pinned_version()) {
+      entry_dict.Set(
+          ash::kAccountsPrefDeviceLocalAccountsKeyIwaKioskPinnedVersion,
+          entry.isolated_kiosk_app().pinned_version());
+    }
+    if (entry.isolated_kiosk_app().has_allow_downgrades()) {
+      entry_dict.Set(
+          ash::kAccountsPrefDeviceLocalAccountsKeyIwaKioskAllowDowngrades,
+          entry.isolated_kiosk_app().allow_downgrades());
+    }
+  }
+  if (ash::features::IsHeliumArcvmKioskEnabled()) {
+    if (entry.arcvm_kiosk_app().has_package_name()) {
+      entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcvmKioskPackage,
+                     entry.arcvm_kiosk_app().package_name());
+    }
+    if (entry.arcvm_kiosk_app().has_class_name()) {
+      entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcvmKioskClass,
+                     entry.arcvm_kiosk_app().class_name());
+    }
+    if (entry.arcvm_kiosk_app().has_action()) {
+      entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcvmKioskAction,
+                     entry.arcvm_kiosk_app().action());
+    }
+    if (entry.arcvm_kiosk_app().has_display_name()) {
+      entry_dict.Set(
+          ash::kAccountsPrefDeviceLocalAccountsKeyArcvmKioskDisplayName,
+          entry.arcvm_kiosk_app().display_name());
     }
   }
   return entry_dict;
@@ -1871,6 +1906,16 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                   ash::tpm_firmware_update::DecodeSettingsProto(
                       policy.tpm_firmware_update_settings()),
                   nullptr);
+  }
+  if (policy.has_deviceuserinitiatedfirmwareupdatesenabled()) {
+    const em::BooleanPolicyProto& container(
+        policy.deviceuserinitiatedfirmwareupdatesenabled());
+    if (container.has_value()) {
+      policies->Set(key::kDeviceUserInitiatedFirmwareUpdatesEnabled,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.value()),
+                    nullptr);
+    }
   }
 
   if (policy.has_device_minimum_version()) {

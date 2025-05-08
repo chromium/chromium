@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include <memory>
 #include <sstream>
@@ -70,7 +66,6 @@
 #include "extensions/common/extension_builder.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -1815,7 +1810,7 @@ class WebAuthnImmediateGetTest : public WebAuthnBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kWebAuthenticationImmediateGet};
+      device::kWebAuthnImmediateGet};
 };
 
 IN_PROC_BROWSER_TEST_F(WebAuthnImmediateGetTest, NoCreds_NotFoundError) {

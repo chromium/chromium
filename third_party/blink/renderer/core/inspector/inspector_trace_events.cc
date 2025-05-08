@@ -294,13 +294,9 @@ void InspectorTraceEvents::FrameStartedLoading(LocalFrame* frame) {
 
 namespace {
 
-void SetNodeInfo(perfetto::TracedDictionary& dict,
-                 Node* node,
-                 perfetto::StaticString id_field_name,
-                 perfetto::StaticString name_field_name = nullptr) {
-  dict.Add(id_field_name, IdentifiersFactory::IntIdForNode(node));
-  if (name_field_name.value)
-    dict.Add(name_field_name, node->DebugName());
+void SetNodeInfo(perfetto::TracedDictionary& dict, Node* node) {
+  dict.Add("nodeId", IdentifiersFactory::IntIdForNode(node));
+  dict.Add("nodeName", node->DebugName());
 }
 
 const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
@@ -538,7 +534,7 @@ void FillCommonPart(perfetto::TracedDictionary& dict,
                     const InvalidationSet& invalidation_set,
                     const char* invalidated_selector) {
   dict.Add("frame", IdentifiersFactory::FrameId(node.GetDocument().GetFrame()));
-  SetNodeInfo(dict, &node, "nodeId", "nodeName");
+  SetNodeInfo(dict, &node);
   dict.Add("invalidationSet",
            DescendantInvalidationSetToIdString(invalidation_set));
   dict.Add("invalidatedSelectorId", invalidated_selector);
@@ -662,7 +658,7 @@ void FillCommonPart(perfetto::TracedDictionary& dict,
                     ContainerNode& node,
                     const char* reason) {
   dict.Add("frame", IdentifiersFactory::FrameId(node.GetDocument().GetFrame()));
-  SetNodeInfo(dict, &node, "nodeId", "nodeName");
+  SetNodeInfo(dict, &node);
   dict.Add("reason", reason);
 }
 void FillSelectors(
@@ -754,7 +750,7 @@ void inspector_style_recalc_invalidation_tracking_event::Data(
   auto dict = std::move(context).WriteDictionary();
   dict.Add("frame",
            IdentifiersFactory::FrameId(node->GetDocument().GetFrame()));
-  SetNodeInfo(dict, node, "nodeId", "nodeName");
+  SetNodeInfo(dict, node);
   dict.Add("subtree", change_type == kSubtreeStyleChange);
   dict.Add("reason", reason.ReasonString());
   dict.Add("extraData", reason.GetExtraData());
@@ -804,24 +800,21 @@ static void CreateQuad(perfetto::TracedValue context, const gfx::QuadF& quad) {
   array.Append(quad.p4().y());
 }
 
-static void SetGeneratingNodeInfo(
-    perfetto::TracedDictionary& dict,
-    const LayoutObject* layout_object,
-    perfetto::StaticString id_field_name,
-    perfetto::StaticString name_field_name = nullptr) {
+static void SetGeneratingNodeInfo(perfetto::TracedDictionary& dict,
+                                  const LayoutObject* layout_object) {
   Node* node = nullptr;
   for (; layout_object && !node; layout_object = layout_object->Parent())
     node = layout_object->GeneratingNode();
   if (!node)
     return;
 
-  SetNodeInfo(dict, node, id_field_name, name_field_name);
+  SetNodeInfo(dict, node);
 }
 
 static void CreateLayoutRoot(perfetto::TracedValue context,
                              const LayoutObjectWithDepth& layout_root) {
   auto dict = std::move(context).WriteDictionary();
-  SetGeneratingNodeInfo(dict, layout_root.object, "nodeId");
+  SetGeneratingNodeInfo(dict, layout_root.object);
   dict.Add("depth", static_cast<int>(layout_root.depth));
   Vector<gfx::QuadF> quads;
   layout_root.object->AbsoluteQuads(quads);
@@ -909,7 +902,7 @@ void inspector_layout_invalidation_tracking_event::Data(
   DCHECK(layout_object);
   auto dict = std::move(context).WriteDictionary();
   dict.Add("frame", IdentifiersFactory::FrameId(layout_object->GetFrame()));
-  SetGeneratingNodeInfo(dict, layout_object, "nodeId", "nodeName");
+  SetGeneratingNodeInfo(dict, layout_object);
   dict.Add("reason", reason);
   auto source_location = CaptureSourceLocation();
   if (source_location->HasStackTrace())
@@ -1301,7 +1294,7 @@ void inspector_paint_event::Data(perfetto::TracedValue context,
   auto dict = std::move(context).WriteDictionary();
   dict.Add("frame", IdentifiersFactory::FrameId(frame));
   CreateQuad(dict.AddItem("clip"), gfx::QuadF(gfx::RectF(contents_cull_rect)));
-  SetGeneratingNodeInfo(dict, layout_object, "nodeId");
+  SetGeneratingNodeInfo(dict, layout_object);
   dict.Add("layerId", 0);  // For backward compatibility.
   SetCallStack(frame->DomWindow()->GetIsolate(), dict);
 }
@@ -1362,7 +1355,7 @@ void inspector_scroll_layer_event::Data(perfetto::TracedValue context,
                                         LayoutObject* layout_object) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("frame", IdentifiersFactory::FrameId(layout_object->GetFrame()));
-  SetGeneratingNodeInfo(dict, layout_object, "nodeId");
+  SetGeneratingNodeInfo(dict, layout_object);
 }
 
 namespace {
@@ -1544,7 +1537,7 @@ void inspector_paint_image_event::Data(perfetto::TracedValue context,
                                        const gfx::RectF& src_rect,
                                        const gfx::RectF& dest_rect) {
   auto dict = std::move(context).WriteDictionary();
-  SetGeneratingNodeInfo(dict, &layout_image, "nodeId");
+  SetGeneratingNodeInfo(dict, &layout_image);
   if (const ImageResourceContent* content = layout_image.CachedImage())
     dict.Add("url", content->Url().ElidedString());
 
@@ -1574,7 +1567,7 @@ void inspector_paint_image_event::Data(perfetto::TracedValue context,
                                        const LayoutObject& owning_layout_object,
                                        const StyleImage& style_image) {
   auto dict = std::move(context).WriteDictionary();
-  SetGeneratingNodeInfo(dict, &owning_layout_object, "nodeId");
+  SetGeneratingNodeInfo(dict, &owning_layout_object);
   if (const ImageResourceContent* content = style_image.CachedImage())
     dict.Add("url", content->Url().ElidedString());
 }
@@ -1586,7 +1579,7 @@ void inspector_paint_image_event::Data(perfetto::TracedValue context,
                                        const gfx::RectF& dest_rect) {
   auto dict = std::move(context).WriteDictionary();
   if (node) {
-    SetNodeInfo(dict, node, "nodeId", nullptr);
+    SetNodeInfo(dict, node);
     if (LocalFrame* frame = node->GetDocument().GetFrame()) {
       dict.Add("frame", IdentifiersFactory::FrameId(frame));
     }
@@ -1608,7 +1601,7 @@ void inspector_paint_image_event::Data(
     const LayoutObject* owning_layout_object,
     const ImageResourceContent& image_content) {
   auto dict = std::move(context).WriteDictionary();
-  SetGeneratingNodeInfo(dict, owning_layout_object, "nodeId");
+  SetGeneratingNodeInfo(dict, owning_layout_object);
   dict.Add("url", image_content.Url().ElidedString());
 }
 
@@ -1833,15 +1826,13 @@ void inspector_dom_stats::Data(perfetto::TracedValue context,
   if (dom_stats->max_children_node) {
     auto max_children_dict = dict.AddDictionary("maxChildren");
     max_children_dict.Add("numChildren", dom_stats->max_children);
-    SetNodeInfo(max_children_dict, dom_stats->max_children_node, "nodeId",
-                "nodeName");
+    SetNodeInfo(max_children_dict, dom_stats->max_children_node);
   }
 
   if (dom_stats->max_depth_node) {
     auto max_depth_dict = dict.AddDictionary("maxDepth");
     max_depth_dict.Add("depth", dom_stats->max_depth);
-    SetNodeInfo(max_depth_dict, dom_stats->max_depth_node, "nodeId",
-                "nodeName");
+    SetNodeInfo(max_depth_dict, dom_stats->max_depth_node);
   }
 }
 
@@ -1858,7 +1849,7 @@ void inspector_animation_event::Data(perfetto::TracedValue context,
     dict.Add("name", animation.id());
     if (auto* frame_effect = DynamicTo<KeyframeEffect>(effect)) {
       if (Element* target = frame_effect->EffectTarget())
-        SetNodeInfo(dict, target, "nodeId", "nodeName");
+        SetNodeInfo(dict, target);
     }
   }
 }
@@ -1904,7 +1895,7 @@ void inspector_hit_test_event::EndData(perfetto::TracedValue context,
   if (request.ListBased())
     dict.Add("listBased", true);
   else if (Node* node = result.InnerNode())
-    SetNodeInfo(dict, node, "nodeId", "nodeName");
+    SetNodeInfo(dict, node);
 }
 
 void inspector_async_task::Data(perfetto::TracedValue context,

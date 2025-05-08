@@ -83,9 +83,9 @@ try_.builder(
 )
 
 try_.builder(
-    name = "layout_test_leak_detection",
+    name = "linux-blink-leak-rel",
     mirrors = [
-        "ci/WebKit Linux Leak",
+        "ci/linux-blink-leak-rel",
     ],
     gn_args = gn_args.config(
         configs = [
@@ -95,6 +95,7 @@ try_.builder(
             "x64",
         ],
     ),
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -552,6 +553,7 @@ try_.builder(
             "testing/xvfb\\.py",
             "third_party/wayland/.+",
             "third_party/wayland-protocols/.+",
+            "third_party/weston/.+",
             "ui/ozone/platform/wayland/.+",
             "ui/views/widget/.+test.+",
         ],
@@ -594,6 +596,8 @@ try_.builder(
     #         "ui/views/widget/.+test.+",
     #     ],
     # ),
+    # TODO(crbug.com/401284929): Remove this when noble pool is increased.
+    execution_timeout = 7 * time.hour,
     use_clang_coverage = True,
 )
 
@@ -610,20 +614,22 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-webkit-asan-rel",
+    name = "linux-blink-asan-rel",
     mirrors = [
-        "ci/WebKit Linux ASAN",
+        "ci/linux-blink-asan-rel",
     ],
-    gn_args = "ci/WebKit Linux ASAN",
+    gn_args = "ci/linux-blink-asan-rel",
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
-    name = "linux-webkit-msan-rel",
+    name = "linux-blink-msan-rel",
     mirrors = [
-        "ci/WebKit Linux MSAN",
+        "ci/linux-blink-msan-rel",
     ],
-    gn_args = "ci/WebKit Linux MSAN",
+    gn_args = "ci/linux-blink-msan-rel",
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -692,7 +698,14 @@ try_.orchestrator_builder(
         "ci/Linux ASan LSan Builder",
         "ci/Linux ASan LSan Tests (1)",
     ],
-    gn_args = "ci/Linux ASan LSan Builder",
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Linux ASan LSan Builder",
+            # TODO(crbug.com/416191043): Restore symbol_level=1 if/when CAS
+            # errors are fixed.
+            "no_symbols",
+        ],
+    ),
     compilator = "linux_chromium_asan_rel_ng-compilator",
     experiments = {
         # go/nplus1shardsproposal
@@ -929,7 +942,9 @@ try_.orchestrator_builder(
         configs = [
             "ci/Linux TSan Builder",
             "release_try_builder",
-            "minimal_symbols",
+            # TODO(crbug.com/416191043): Restore symbol_level=1 if/when CAS
+            # errors are fixed.
+            "no_symbols",
         ],
     ),
     compilator = "linux_chromium_tsan_rel_ng-compilator",
@@ -1103,8 +1118,13 @@ try_.gpu.optional_tests_builder(
         browser_config = targets.browser_config.RELEASE,
         os_type = targets.os_type.LINUX,
     ),
+    pool = "luci.chromium.gpu.try",
+    builderless = True,
+    ssd = None,
+    free_space = None,
     contact_team_email = "chrome-gpu-infra@google.com",
     main_list_view = "try",
+    max_concurrent_builds = 7,
     tryjob = try_.job(
         location_filters = [
             # Inclusion filters.

@@ -259,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(NaClExtensionTest, MainFrameIsRemote) {
             subframe->GetProcess());
 
   // Insert a plugin element into the subframe.  Before the fix from
-  // https://crrev.com/2932703005 this would have trigerred a crash reported in
+  // https://crrev.com/2932703005 this would have triggered a crash reported in
   // https://crbug.com/728295.
   std::string script = R"(
       var embed = document.createElement("embed");

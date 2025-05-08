@@ -26,7 +26,7 @@ import org.chromium.build.annotations.Nullable;
  * @param <E> The type of the wrapped object.
  */
 @NullMarked
-public interface ObservableSupplier<E extends @Nullable Object> extends Supplier<E> {
+public interface ObservableSupplier<E extends @Nullable Object> extends Supplier<@Nullable E> {
     /**
      * A bitmask of flags that control the notification behavior of {@link #addObserver(Callback,
      * int)}.

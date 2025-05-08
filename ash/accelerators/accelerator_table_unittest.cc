@@ -8,7 +8,7 @@
 #include <tuple>
 
 #include "ash/public/cpp/accelerators.h"
-#include "base/hash/md5.h"
+#include "ash/test/ash_test_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,9 +19,9 @@ namespace {
 
 // The number of non-Search-based accelerators.
 constexpr int kNonSearchAcceleratorsNum = 113;
-// The hash of non-Search-based accelerators. See HashAcceleratorData().
+// The hash of non-Search-based accelerators.
 constexpr char kNonSearchAcceleratorsHash[] =
-    "d8d437fd800f34f648c5bc4bb47926b0";
+    "911675569c0f8f713f08027577f21eb620e16996f21f3aa172a6c805b9124ad8";
 
 struct Cmp {
   bool operator()(const AcceleratorData& lhs,
@@ -40,18 +40,6 @@ std::string AcceleratorDataToString(const AcceleratorData& accelerator) {
       (accelerator.modifiers & ui::EF_CONTROL_DOWN) ? "true" : "false",
       (accelerator.modifiers & ui::EF_ALT_DOWN) ? "true" : "false",
       (accelerator.modifiers & ui::EF_COMMAND_DOWN) ? "true" : "false");
-}
-
-std::string HashAcceleratorData(
-    const std::vector<AcceleratorData>& accelerators) {
-  base::MD5Context context;
-  base::MD5Init(&context);
-  for (const AcceleratorData& accelerator : accelerators) {
-    base::MD5Update(&context, AcceleratorDataToString(accelerator));
-  }
-  base::MD5Digest digest;
-  base::MD5Final(&digest, &context);
-  return MD5DigestToBase16(digest);
 }
 
 }  // namespace
@@ -155,8 +143,8 @@ TEST(AcceleratorTableTest, CheckSearchBasedAccelerators) {
 
   std::stable_sort(non_search_accelerators.begin(),
                    non_search_accelerators.end(), Cmp());
-  const std::string non_search_accelerators_hash =
-      HashAcceleratorData(non_search_accelerators);
+  const std::string non_search_accelerators_hash = ash::StableHashOfCollection(
+      non_search_accelerators, AcceleratorDataToString);
 
   EXPECT_EQ(non_search_accelerators_hash, kNonSearchAcceleratorsHash)
       << "New accelerators must use the Search key. Please talk to the UX "

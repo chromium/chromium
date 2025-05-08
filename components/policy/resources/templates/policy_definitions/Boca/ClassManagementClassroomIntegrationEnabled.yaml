@@ -3,12 +3,12 @@ default: true
 desc: |-
   Setting the policy specifies if teachers can connect to students using a Google Classroom class roster. See <ph name="GOOGLE_CLASSROOM_LINK">https://support.google.com/edu/classroom/answer/10495270</ph>.
 
-      If value set to true or unset, they can use Google Classroom class roster.
+  If value set to true or unset, they can use Google Classroom class roster.
 
-      If set to false they cannot access the feature.
+  If set to false they cannot access the feature.
 example_value: true
 features:
-  dynamic_refresh: true
+  dynamic_refresh: false
   per_profile: true
 items:
 - caption: Allow teachers to use Google Classroom class roster.

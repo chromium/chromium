@@ -36,7 +36,7 @@ class SessionRestoreStatsCollector : public content::RenderWidgetHostObserver {
   // Values other than PAINT_FINISHED_UMA_DONE indicate why FirstPaint time
   // was not recorded.
   enum SessionRestorePaintFinishReasonUma {
-    // SessionRestore.ForegroundTabFirstPaint4_XX successfully recorded.
+    // SessionRestore.ForegroundTabFirstPaint4 successfully recorded.
     PAINT_FINISHED_UMA_DONE = 0,
     // No tabs were visible the whole time before first paint.
     PAINT_FINISHED_UMA_NO_COMPLETELY_VISIBLE_TABS = 1,
@@ -65,7 +65,7 @@ class SessionRestoreStatsCollector : public content::RenderWidgetHostObserver {
     // any of the tabs involved in the session restore. If this is zero it is
     // because it has not been recorded (all restored tabs were closed or
     // hidden before they were painted, or were never painted). Corresponds to
-    // "SessionRestore.ForegroundTabFirstPaint4" and its _XX variants.
+    // "SessionRestore.ForegroundTabFirstPaint4" and its ".NTabs" variants.
     base::TimeDelta foreground_tab_first_paint;
 
     // Whether we recorded |foreground_tab_first_paint| and if not, why.

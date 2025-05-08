@@ -234,7 +234,7 @@ TEST(RenderPassIOTest, QuadList) {
           render_pass0->CreateAndAppendDrawQuad<TextureDrawQuad>();
       quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
                    gfx::Rect(10, 10, 300, 400), gfx::Rect(10, 10, 200, 400),
-                   false, ResourceId(100), false, gfx::PointF(0.f, 0.f),
+                   false, ResourceId(100), true, gfx::PointF(0.f, 0.f),
                    gfx::PointF(1.f, 1.f), SkColors::kTransparent, false, false,
                    gfx::ProtectedVideoType::kHardwareProtected);
       quad->is_stream_video = true;
@@ -256,7 +256,7 @@ TEST(RenderPassIOTest, QuadList) {
           render_pass0->CreateAndAppendDrawQuad<TextureDrawQuad>();
       quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
                    gfx::Rect(0, 0, 100, 50), gfx::Rect(0, 0, 100, 50), false,
-                   ResourceId(9u), false, gfx::PointF(0.f, 0.f),
+                   ResourceId(9u), true, gfx::PointF(0.f, 0.f),
                    gfx::PointF(1.f, 1.f), SkColors::kBlue, true, false,
                    gfx::ProtectedVideoType::kHardwareProtected);
 

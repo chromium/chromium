@@ -90,6 +90,7 @@ if (is_win) {
                   # We handle UAC by adding explicit .manifest files instead.
                   "/manifestuac:no",
                 ] + manifests
+      inputs = invoker.sources
     }
 
     # This group only exists to add a dep on the invoker's deps and to
@@ -100,7 +101,7 @@ if (is_win) {
 
       # Apply any dependencies from the invoker to this target, since those
       # dependencies may have created the input manifest files.
-      forward_variables_from(invoker, [ "deps" ])
+      forward_variables_from(invoker, [ "public_deps" ])
     }
   }
 } else {

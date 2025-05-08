@@ -8,7 +8,7 @@
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/fast_checkout/fast_checkout_enums.h"
 
-constexpr char kUmaKeyFastCheckoutTriggerOutcome[] =
+inline constexpr char kUmaKeyFastCheckoutTriggerOutcome[] =
     "Autofill.FastCheckout.TriggerOutcome";
 
 // Checks whether a Fast Checkout run should be permitted or not.

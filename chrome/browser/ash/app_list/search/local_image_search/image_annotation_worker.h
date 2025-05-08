@@ -116,6 +116,10 @@ class ImageAnnotationWorker {
                     screen_ai::mojom::VisualAnnotationPtr visual_annotation);
 
   void OnIcaDisconnected();
+  void OnOcrDisconnected();
+
+  // Disconnects the annotators for ICA and OCR if set.
+  void DisconnectAnnotators();
 
   std::unique_ptr<base::FilePathWatcher> file_watcher_;
   base::FilePath root_path_;
@@ -148,6 +152,7 @@ class ImageAnnotationWorker {
   bool ocr_in_use_ = false;
 
   int num_ica_disconnection_ = 0;
+  int num_ocr_disconnection_ = 0;
 
   // Fake delay for image processing callback. Used in tests only.
   std::optional<base::TimeDelta> image_processing_delay_for_test_ =
@@ -164,7 +169,10 @@ class ImageAnnotationWorker {
   // the majority of the functions of this class runs on.
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
+  // `weak_ptr_factory_` is bound to the `main_task_runner_`.
   base::WeakPtrFactory<ImageAnnotationWorker> weak_ptr_factory_{this};
+  // `ocr_weak_ptr_factory_` is bound to the ui thread, and used for ocr only.
+  base::WeakPtrFactory<ImageAnnotationWorker> ocr_weak_ptr_factory_{this};
 };
 }  // namespace app_list
 

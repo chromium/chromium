@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "base/types/zip.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -709,14 +710,8 @@ TEST_F(PreProcessStateMatchingTypesTest, PreProcessStateMatchingTypes) {
     ASSERT_EQ(form_structure.field_count(), 2U);
     form_structure.fields()[0]->set_value(u"Test");
     form_structure.fields()[1]->set_value(base::UTF8ToUTF16(valid_match));
-    if (base::FeatureList::IsEnabled(features::kAutofillFixValueSemantics)) {
-      // If kAutofillFixValueSemantics is disabled, there's no distinction
-      // between the current and initial value.
-      ASSERT_EQ(form_structure.fields()[0]->value(ValueSemantics::kInitial),
-                u"");
-      ASSERT_EQ(form_structure.fields()[1]->value(ValueSemantics::kInitial),
-                u"");
-    }
+    ASSERT_EQ(form_structure.fields()[0]->initial_value(), u"");
+    ASSERT_EQ(form_structure.fields()[1]->initial_value(), u"");
 
     EXPECT_THAT(PreProcessStateMatchingTypes({profile()}, form_structure,
                                              client().GetAppLocale()),
@@ -760,12 +755,8 @@ TEST_F(PreProcessStateMatchingTypesTest, PreProcessStateMatchingTypes) {
   ASSERT_EQ(form_structure.field_count(), 2U);
   form_structure.fields()[0]->set_value(u"Test");
   form_structure.fields()[1]->set_value(u"CA");
-  if (base::FeatureList::IsEnabled(features::kAutofillFixValueSemantics)) {
-    // If kAutofillFixValueSemantics is disabled, there's no distinction between
-    // the current and initial value.
-    ASSERT_EQ(form_structure.fields()[0]->value(ValueSemantics::kInitial), u"");
-    ASSERT_EQ(form_structure.fields()[1]->value(ValueSemantics::kInitial), u"");
-  }
+  ASSERT_EQ(form_structure.fields()[0]->initial_value(), u"");
+  ASSERT_EQ(form_structure.fields()[1]->initial_value(), u"");
 
   EXPECT_THAT(PreProcessStateMatchingTypes({profile()}, form_structure,
                                            client().GetAppLocale()),
@@ -980,15 +971,15 @@ TEST_P(DeterminePossibleFormatStringsForUploadTest_MultipleTextInput,
 
   std::vector<Matcher<std::pair<FieldGlobalId, base::flat_set<std::u16string>>>>
       expectations;
-  for (size_t i = 0; i < GetParam().fields.size(); ++i) {
-    std::vector<std::u16string> format_strings =
-        base::ToVector(GetParam().fields[i].format_strings,
-                       [](std::string_view format_string) {
-                         return base::UTF8ToUTF16(format_string);
-                       });
+  for (auto [form_field, autofill_field] :
+       base::zip(GetParam().fields, fields)) {
+    std::vector<std::u16string> format_strings = base::ToVector(
+        form_field.format_strings, [](std::string_view format_string) {
+          return base::UTF8ToUTF16(format_string);
+        });
     if (!format_strings.empty()) {
       expectations.emplace_back(
-          Pair(fields[i]->global_id(),
+          Pair(autofill_field->global_id(),
                UnorderedElementsAreArray(std::move(format_strings))));
     }
   }

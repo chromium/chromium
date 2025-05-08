@@ -102,13 +102,13 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
       base::OnceCallback<void(scoped_refptr<const ContentHash>)>;
 
   // Creates, adds to cache, and returns ContentHash for an extension through
-  // |callback|.
+  // `callback`.
   // Must be called on IO thread.
-  // |callback| is called on IO thread.
-  // |force_missing_computed_hashes_creation| should be true if
+  // `callback` is called on IO thread.
+  // `force_missing_computed_hashes_creation` should be true if
   // computed_hashes.json is required to be created if that file is missing or
   // unreadable.
-  // TODO(lazyboy): |force_missing_computed_hashes_creation| should always be
+  // TODO(lazyboy): `force_missing_computed_hashes_creation` should always be
   // true, handing its behavior adds extra complexity in HashHelper and this
   // param should be removed when we can unify/fix computed_hashes.json
   // treatment, see https://crbug.com/819832 for details.
@@ -143,11 +143,11 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
   void VerifyFailedForTest(const ExtensionId& extension_id,
                            ContentVerifyJob::FailureReason reason);
 
-  // Test helper to recompute |io_data_| for |extension| without having to
-  // call |OnExtensionLoaded|.
+  // Test helper to recompute `io_data_` for `extension` without having to
+  // call `OnExtensionLoaded`.
   void ResetIODataForTesting(const Extension* extension);
 
-  // Test helper to clear all cached ContentHash entries from |cache_|.
+  // Test helper to clear all cached ContentHash entries from `cache_`.
   void ClearCacheForTesting();
 
   // Test helper to normalize relative path of file.
@@ -232,10 +232,10 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
                     ContentVerifyJob::FailureReason reason);
 
   // Returns the HashHelper instance, making sure we create it at most once.
-  // Must *not* be called after |shutdown_on_io_| is set to true.
+  // Must *not* be called after `shutdown_on_io_` is set to true.
   HashHelper* GetOrCreateHashHelper();
 
-  // Set to true once |Start| is called to enable content verification. Updated
+  // Set to true once `Start` is called to enable content verification. Updated
   // and accessed only on IO thread.
   bool verification_enabled_ = false;
 
@@ -258,7 +258,7 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
 
   const raw_ptr<content::BrowserContext, AcrossTasksDanglingUntriaged> context_;
 
-  // Guards creation of |hash_helper_|, limiting number of creation to <= 1.
+  // Guards creation of `hash_helper_`, limiting number of creation to <= 1.
   // Accessed only on IO thread.
   bool hash_helper_created_ = false;
 

@@ -262,8 +262,8 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
       ash::input_method::InputMethodManager::Get());
   ime_controller_client_->Init();
 
-  in_session_auth_dialog_client_ =
-      std::make_unique<InSessionAuthDialogClient>();
+  in_session_auth_dialog_client_ = std::make_unique<InSessionAuthDialogClient>(
+      g_browser_process->local_state());
 
   in_session_auth_token_provider_ =
       std::make_unique<ash::InSessionAuthTokenProviderImpl>();
@@ -381,9 +381,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
           g_browser_process->GetFeatures()->application_locale_storage(),
           g_browser_process->shared_url_loader_factory());
 
-  if (base::FeatureList::IsEnabled(ash::features::kReadaheadForLogin)) {
-    login_readahead_performer_.emplace(ash::SessionManagerClient::Get());
-  }
+  login_readahead_performer_.emplace(ash::SessionManagerClient::Get());
 }
 
 void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,

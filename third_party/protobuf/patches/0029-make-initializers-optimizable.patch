@@ -57,6 +57,27 @@ index 989734e57f5d5..f7e29d6028ebc 100644
      InitProtobufDefaultsSlow();
    }
  }
+diff --git a/src/google/protobuf/port_def.inc b/src/google/protobuf/port_def.inc
+index b800697578986..31f2a7f6d8999 100644
+--- a/src/google/protobuf/port_def.inc
++++ b/src/google/protobuf/port_def.inc
+@@ -573,16 +573,6 @@ static_assert(PROTOBUF_ABSL_MIN(20230125, 3),
+ #define PROTOBUF_FINAL final
+ #endif
+ 
+-// Determines the platforms where descriptor weak messages can be used.
+-#ifdef PROTOBUF_DESCRIPTOR_WEAK_MESSAGES_ALLOWED
+-#error PROTOBUF_DESCRIPTOR_WEAK_MESSAGES_ALLOWED was previously defined
+-#endif
+-#if defined(__GNUC__) && defined(__clang__) && !defined(__APPLE__) && \
+-    !defined(_MSC_VER)
+-#define PROTOBUF_DESCRIPTOR_WEAK_MESSAGES_ALLOWED
+-#endif
+-
+-
+ // TODO: Enable the feature by default and remove this flag.
+ #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+ #error PROTOBUF_PREFETCH_PARSE_TABLE was previously defined
 -- 
-2.49.0.rc1.451.g8f38331e32-goog
+2.49.0.901.g37484f566f-goog
 

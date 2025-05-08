@@ -215,6 +215,8 @@ constexpr base::TimeDelta kNewCodeLinkCooldownTime = base::Seconds(5);
                       itemIdentifier:(ItemIdentifier)itemIdentifier {
   TableViewTextEditCell* cell =
       DequeueTableViewCell<TableViewTextEditCell>(self.tableView);
+  cell.accessibilityLabelValue = _content.textFieldPlaceholder;
+
   [cell setIdentifyingIcon:nil];
   if (_errorTitle) {
     [cell setIcon:TableViewTextEditItemIconTypeError];

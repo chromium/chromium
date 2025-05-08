@@ -150,10 +150,6 @@ COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kRelatedWebsiteSetsDevUI);
 
 // Privacy UX features start
-// See go/ps-privacy-ux-launch-features for more information
-
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kAddLimit3pcsSetting);
 
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kAlwaysBlock3pcsIncognito);
@@ -231,10 +227,6 @@ extern const base::FeatureParam<bool>
 
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxAdTopicsContentParity);
-
-// If true, provides a link to the Privacy Policy on the Topics Consent notice.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kPrivacySandboxPrivacyPolicy);
 
 // If true, adds the privacy sandbox notice to product messaging controller
 // queue.

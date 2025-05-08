@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -55,7 +50,7 @@ TEST_F(ShapeResultRunTest, GlyphOffsetArrayReverse) {
   ASSERT_TRUE(offsets.HasStorage());
   offsets.Reverse();
   EXPECT_EQ(GlyphOffset(), offsets.GetStorage()[0]);
-  EXPECT_EQ(GlyphOffset(1, 1), offsets.GetStorage()[1]);
+  EXPECT_EQ(GlyphOffset(1, 1), UNSAFE_TODO(offsets.GetStorage()[1]));
 }
 
 TEST_F(ShapeResultRunTest, GlyphOffsetArraySetAddOffsetHeightAt) {
@@ -63,11 +58,11 @@ TEST_F(ShapeResultRunTest, GlyphOffsetArraySetAddOffsetHeightAt) {
 
   offsets.AddHeightAt(1, 1.5f, 2);
   ASSERT_TRUE(offsets.HasStorage());
-  EXPECT_EQ(GlyphOffset(0, 1.5f), offsets.GetStorage()[1]);
+  EXPECT_EQ(GlyphOffset(0, 1.5f), UNSAFE_TODO(offsets.GetStorage()[1]));
 
   offsets.AddHeightAt(1, 2.0f, 2);
   ASSERT_TRUE(offsets.HasStorage());
-  EXPECT_EQ(GlyphOffset(0, 3.5f), offsets.GetStorage()[1]);
+  EXPECT_EQ(GlyphOffset(0, 3.5f), UNSAFE_TODO(offsets.GetStorage()[1]));
 }
 
 TEST_F(ShapeResultRunTest, GlyphOffsetArraySetAddOffsetWidthAt) {
@@ -75,11 +70,11 @@ TEST_F(ShapeResultRunTest, GlyphOffsetArraySetAddOffsetWidthAt) {
 
   offsets.AddWidthAt(1, 1.5f, 2);
   ASSERT_TRUE(offsets.HasStorage());
-  EXPECT_EQ(GlyphOffset(1.5f, 0), offsets.GetStorage()[1]);
+  EXPECT_EQ(GlyphOffset(1.5f, 0), UNSAFE_TODO(offsets.GetStorage()[1]));
 
   offsets.AddWidthAt(1, 2.0f, 2);
   ASSERT_TRUE(offsets.HasStorage());
-  EXPECT_EQ(GlyphOffset(3.5f, 0), offsets.GetStorage()[1]);
+  EXPECT_EQ(GlyphOffset(3.5f, 0), UNSAFE_TODO(offsets.GetStorage()[1]));
 }
 
 TEST_F(ShapeResultRunTest, GlyphOffsetArraySetAt) {

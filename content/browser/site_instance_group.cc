@@ -106,11 +106,6 @@ bool SiteInstanceGroup::IsRelatedSiteInstanceGroup(SiteInstanceGroup* group) {
   return browsing_instance_id() == group->browsing_instance_id();
 }
 
-bool SiteInstanceGroup::IsCoopRelatedSiteInstanceGroup(
-    SiteInstanceGroup* group) {
-  return coop_related_group_token() == group->coop_related_group_token();
-}
-
 void SiteInstanceGroup::RenderProcessHostDestroyed(RenderProcessHost* host) {
   DCHECK_EQ(process_->GetDeprecatedID(), host->GetDeprecatedID());
   process_->RemoveObserver(this);
@@ -149,9 +144,7 @@ SiteInstanceGroup* SiteInstanceGroup::CreateForTesting(
                            WebExposedIsolationInfo::CreateNonIsolated(),
                            /*is_guest=*/false,
                            /*is_fenced=*/false,
-                           /*is_fixed_storage_partition=*/false,
-                           /*coop_related_group=*/nullptr,
-                           /*common_coop_origin=*/std::nullopt),
+                           /*is_fixed_storage_partition=*/false),
       process);
 }
 

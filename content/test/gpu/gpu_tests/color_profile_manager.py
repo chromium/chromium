@@ -32,9 +32,8 @@ def ForceUntilExitSRGB(skip_restoring_color_profile: bool = False) -> None:
     if skip_restoring_color_profile:
       print('Skipping restoring the original color profile')
       return
-    for display_id in display_profile_url_map:
-      color_profile_manager_mac.SetDisplayCustomProfile(
-          display_id, display_profile_url_map[display_id])
+    for display_id, profile_url in display_profile_url_map.items():
+      color_profile_manager_mac.SetDisplayCustomProfile(display_id, profile_url)
 
   atexit.register(Restore)
 

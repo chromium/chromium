@@ -82,6 +82,7 @@ export class DriveModuleElement extends DriveModuleElementBase {
 
   protected onDisableButtonClick_() {
     const disableEvent = new CustomEvent('disable-module', {
+      bubbles: true,
       composed: true,
       detail: {
         message: loadTimeData.getStringF(

@@ -1124,7 +1124,7 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
   }
 
   const bool allow_payment_swapping =
-      IsPaymentsFieldSwappingEnabled() && trigger_field.is_autofilled();
+      trigger_field.is_autofilled() && IsPaymentsFieldSwappingEnabled();
 
   std::map<std::string, const AutofillOfferData*> card_linked_offers_map =
       GetCardLinkedOffers(client);

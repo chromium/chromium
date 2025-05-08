@@ -239,28 +239,34 @@ IntegrityMetadataSet ModulatorImplBase::GetIntegrityMetadata(
   return integrity_metadata;
 }
 
+// <specdef
+// href="https://html.spec.whatwg.org/#module-type-from-module-request">
 ModuleType ModulatorImplBase::ModuleTypeFromRequest(
     const ModuleRequest& module_request) const {
   String module_type_string = module_request.GetModuleTypeString();
   if (module_type_string.IsNull()) {
-    // <spec href="https://html.spec.whatwg.org/#fetch-a-single-module-script"
-    // step="1">Let module type be "javascript".</spec> If no type assertion is
-    // provided, the import is treated as a JavaScript module.
-    return ModuleType::kJavaScript;
+    // <spec step="1">Let moduleType be "javascript-or-wasm".</spec>
+    // If no type assertion is provided, the import is treated as a JavaScript
+    // or WebAssembly module.
+    return ModuleType::kJavaScriptOrWasm;
   } else if (module_type_string == "json") {
-    // <spec href="https://html.spec.whatwg.org/#fetch-a-single-module-script"
-    // step="17"> If...module type is "json", then set module script to the
-    // result of creating a JSON module script...</spec>
+    // <spec step="2">If moduleRequest.[[Attributes]] has a Record entry such
+    // that entry.[[Key]] is "type", then:</spec>
+    // <spec step="2.2"> Otherwise, set moduleType to entry.[[Value]].</spec>
     return ModuleType::kJSON;
   } else if (module_type_string == "css" && GetExecutionContext()->IsWindow()) {
-    // <spec href="https://html.spec.whatwg.org/#fetch-a-single-module-script"
-    // step="16"> If...module type is "css", then set module script to the
-    // result of creating a CSS module script...</spec>
+    // <spec step="2">If moduleRequest.[[Attributes]] has a Record entry such
+    // that entry.[[Key]] is "type", then:</spec>
+    // <spec step="2.2"> Otherwise, set moduleType to entry.[[Value]].</spec>
     return ModuleType::kCSS;
   } else {
-    // Per https://github.com/whatwg/html/pull/7066, unrecognized type
-    // assertions or "css" type assertions in a non-document context should be
-    // treated as an error similar to an invalid module specifier.
+    // <spec step="2.1">If entry.[[Value]] is "javascript-or-wasm", then set
+    // moduleType to null. </spec>
+    //
+    // As per "https://html.spec.whatwg.org/#module-type-allowed".
+    // Unrecognized type assertions or "css" type assertions in a non-document
+    // context should be treated as an error similar to an invalid module
+    // specifier.
     return ModuleType::kInvalid;
   }
 }
@@ -286,13 +292,11 @@ void ModulatorImplBase::ProduceCacheModuleTree(
 
   discovered_set->insert(module_script);
 
-  v8::Local<v8::Module> record = module_script->V8Module();
-  DCHECK(!record.IsEmpty());
+  DCHECK(!module_script->HasEmptyRecord());
 
   module_script->ProduceCache();
-
   Vector<ModuleRequest> child_specifiers =
-      ModuleRecord::ModuleRequests(GetScriptState(), record);
+      module_script->GetModuleRecordRequests();
 
   for (const auto& module_request : child_specifiers) {
     KURL child_url =

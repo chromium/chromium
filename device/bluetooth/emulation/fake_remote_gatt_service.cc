@@ -12,7 +12,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
-#include "device/bluetooth/bluetooth_device.h"
+#include "device/bluetooth/emulation/fake_peripheral.h"
 #include "device/bluetooth/emulation/fake_remote_gatt_characteristic.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/public/mojom/emulation/fake_bluetooth.mojom.h"
@@ -23,11 +23,11 @@ FakeRemoteGattService::FakeRemoteGattService(
     const std::string& service_id,
     const device::BluetoothUUID& service_uuid,
     bool is_primary,
-    device::BluetoothDevice* device)
+    FakePeripheral* device)
     : service_id_(service_id),
       service_uuid_(service_uuid),
       is_primary_(is_primary),
-      device_(device) {}
+      fake_peripheral_(*device) {}
 
 FakeRemoteGattService::~FakeRemoteGattService() = default;
 
@@ -72,7 +72,7 @@ bool FakeRemoteGattService::IsPrimary() const {
 }
 
 device::BluetoothDevice* FakeRemoteGattService::GetDevice() const {
-  return device_;
+  return &fake_peripheral_.get();
 }
 
 std::vector<device::BluetoothRemoteGattService*>

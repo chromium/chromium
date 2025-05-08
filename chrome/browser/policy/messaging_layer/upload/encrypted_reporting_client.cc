@@ -4,6 +4,7 @@
 
 #include "chrome/browser/policy/messaging_layer/upload/encrypted_reporting_client.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -45,6 +46,7 @@
 #include "net/base/backoff_entry.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace reporting {
 
@@ -176,15 +178,16 @@ struct UploadState {
 
   // Upload counters per sequence id. Incremented every time an event is sent to
   // server, sampled in UMA and removed from map once the event is confirmed or
-  // if the state is reset.
+  // if the state is reset. Map is unordered because of the way it is used.
   // UMA is expected to see counter of 1 for the majority of events.
-  base::flat_map<int64_t /*sequence_id*/, size_t> upload_counters;
+  absl::flat_hash_map<int64_t /*sequence_id*/, size_t> upload_counters;
 
   // Cached events counters per sequence id. Incremented every time an event is
   // received for upload and added to cache; sampled in UMA and removed from map
-  // once the event is confirmed or if the state is reset.
+  // once the event is confirmed or if the state is reset. Map is unordered
+  // because of the way it is used.
   // UMA is expected to see counter of 1 for the majority of events.
-  base::flat_map<int64_t /*sequence_id*/, size_t> cached_counters;
+  absl::flat_hash_map<int64_t /*sequence_id*/, size_t> cached_counters;
 
   // Highest sequence id that has been successfully sent to server
   // (but not confirmed, so it remains in `cached_records`). Events until
@@ -228,30 +231,31 @@ UploadState* GetState(Priority priority, int64_t generation_id) {
 
 // Removes confirmed events from cache.
 void RemoveConfirmedEventsFromCache(UploadState* state) {
-  // Remove no longer needed events from cache.
-  while (!state->cached_records.empty() &&
-         state->cached_records.begin()->first <= state->last_sequence_id) {
-    // Sample upload counter.
-    if (const auto it =
-            state->upload_counters.find(state->cached_records.begin()->first);
-        it != state->upload_counters.end()) {
-      const auto event_upload_count = it->second;
-      base::UmaHistogramCounts1M(kEventsUploadCount,
-                                 /*sample=*/event_upload_count);
-      state->upload_counters.erase(it);
-    }
-    // Sample incoming counter.
-    if (const auto it =
-            state->cached_counters.find(state->cached_records.begin()->first);
-        it != state->cached_counters.end()) {
-      const auto event_cached_count = it->second;
-      base::UmaHistogramCounts1M(kCachedEventsCount,
-                                 /*sample=*/event_cached_count);
-      state->cached_counters.erase(it);
-    }
-    // Remove record from cache.
-    state->cached_records.erase(state->cached_records.begin());
-  }
+  // Collect no longer needed events from cache: [begin, last_sequence_id]
+  auto first_event_to_keep =
+      state->cached_records.upper_bound(state->last_sequence_id);
+  std::for_each(
+      state->cached_records.begin(), first_event_to_keep,
+      [&state](const auto& event_it) {
+        // Sample upload counter.
+        if (const auto it = state->upload_counters.find(event_it.first);
+            it != state->upload_counters.end()) {
+          const auto event_upload_count = it->second;
+          base::UmaHistogramCounts1M(kEventsUploadCount,
+                                     /*sample=*/event_upload_count);
+          state->upload_counters.erase(it);
+        }
+        // Sample incoming counter.
+        if (const auto it = state->cached_counters.find(event_it.first);
+            it != state->cached_counters.end()) {
+          const auto event_cached_count = it->second;
+          base::UmaHistogramCounts1M(kCachedEventsCount,
+                                     /*sample=*/event_cached_count);
+          state->cached_counters.erase(it);
+        }
+      });
+  state->cached_records.erase(state->cached_records.begin(),
+                              first_event_to_keep);
   // Reduce reserved memory.
   uint64_t records_memory = 0u;
   for (const auto& [_, record] : state->cached_records) {

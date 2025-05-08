@@ -35,7 +35,7 @@ namespace image_writer {
 class ImageWriterFakeImageBurnerClient;
 #endif
 
-const char kDummyExtensionId[] = "DummyExtension";
+inline constexpr char kDummyExtensionId[] = "DummyExtension";
 
 // Default file size to use in tests.  Currently 32kB.
 const size_t kTestFileSize = 32 * 1024;
@@ -44,7 +44,7 @@ const uint8_t kImagePattern = 0x55;  // 01010101
 // Pattern to use in the device file.
 const uint8_t kDevicePattern = 0xAA;  // 10101010
 // Disk file system type
-const char kTestFileSystemType[] = "vfat";
+inline constexpr char kTestFileSystemType[] = "vfat";
 
 // A mock around the operation manager for tracking callbacks.  Note that there
 // are non-virtual methods on this class that should not be called in tests.
@@ -112,8 +112,8 @@ class FakeImageWriterClient : public ImageWriterUtilityClient {
 
   void Shutdown() override;
 
-  // Issues Operation::Progress() calls with items in |progress_list| on
-  // Operation Write(). Sends Operation::Success() iff |will_succeed| is true,
+  // Issues Operation::Progress() calls with items in `progress_list` on
+  // Operation Write(). Sends Operation::Success() iff `will_succeed` is true,
   // otherwise issues an error.
   void SimulateProgressOnWrite(const std::vector<int>& progress_list,
                                bool will_succeed);
@@ -164,7 +164,7 @@ class ImageWriterTestUtils {
   // may be larger than the image.
   bool ImageWrittenToDevice();
 
-  // Fills |file| with |length| bytes of |pattern|, overwriting any existing
+  // Fills `file` with `length` bytes of `pattern`, overwriting any existing
   // data.
   bool FillFile(const base::FilePath& file, uint8_t pattern, size_t length);
 

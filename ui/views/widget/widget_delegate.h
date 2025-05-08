@@ -165,10 +165,6 @@ namespace crostini {
 class AppRestartDialog;
 }
 
-namespace data_controls {
-class DesktopDataControlsDialog;
-}
-
 namespace enterprise_connectors {
 class ContentAnalysisDialog;
 class ContentAnalysisDialogBehaviorBrowserTest;
@@ -434,7 +430,6 @@ class VIEWS_EXPORT WidgetDelegate {
     friend class ::constrained_window::BrowserModalHelper;
     friend class ::content::ShellPlatformDelegate;
     friend class ::crostini::AppRestartDialog;
-    friend class ::data_controls::DesktopDataControlsDialog;
     friend class ::enterprise_connectors::ContentAnalysisDialog;
     friend class ::enterprise_connectors::
         ContentAnalysisDialogBehaviorBrowserTest;

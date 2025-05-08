@@ -47,14 +47,15 @@ GpuMemoryBufferImplNativePixmap::CreateFromHandle(
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     DestructionCallback callback) {
+  const auto id = handle.id;
   std::unique_ptr<gfx::ClientNativePixmap> native_pixmap =
       client_native_pixmap_factory->ImportFromHandle(
-          std::move(handle.native_pixmap_handle), size, format, usage);
+          std::move(handle).native_pixmap_handle(), size, format, usage);
   if (!native_pixmap)
     return nullptr;
 
   return base::WrapUnique(new GpuMemoryBufferImplNativePixmap(
-      handle.id, size, format, std::move(callback), std::move(native_pixmap)));
+      id, size, format, std::move(callback), std::move(native_pixmap)));
 }
 
 // static
@@ -77,8 +78,7 @@ base::OnceClosure GpuMemoryBufferImplNativePixmap::AllocateForTesting(
                  << gfx::BufferFormatToString(format) << " + "
                  << gfx::BufferUsageToString(usage);
   } else {
-    handle->native_pixmap_handle = pixmap->ExportHandle();
-    handle->type = gfx::NATIVE_PIXMAP;
+    *handle = gfx::GpuMemoryBufferHandle(pixmap->ExportHandle());
   }
   // It's safe to bind FreeNativePixmapForTesting even if pixmap is not created
   // as it does nothing with the pixmap. See the comment in
@@ -134,10 +134,8 @@ gfx::GpuMemoryBufferType GpuMemoryBufferImplNativePixmap::GetType() const {
 
 gfx::GpuMemoryBufferHandle GpuMemoryBufferImplNativePixmap::CloneHandle()
     const {
-  gfx::GpuMemoryBufferHandle handle;
-  handle.type = gfx::NATIVE_PIXMAP;
+  gfx::GpuMemoryBufferHandle handle(pixmap_->CloneHandleForIPC());
   handle.id = id_;
-  handle.native_pixmap_handle = pixmap_->CloneHandleForIPC();
   return handle;
 }
 

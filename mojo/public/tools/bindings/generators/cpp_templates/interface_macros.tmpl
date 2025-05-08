@@ -66,12 +66,17 @@ base::expected<
 
 {%- macro declare_sync_method_params(prefix, method) -%}
 {{declare_params(prefix, method.parameters)}}
-{%-   if method.response_parameters %}
-{%-     if method.parameters %}, {% endif %}
-{%-     for param in method.response_parameters -%}
+{%-   if method.result_response != None %}
+{%-       if method.parameters %},{% endif %}
+{{result_response_to_expected(method.result_response)}}* out_{{prefix}}{{method.response_parameters[0].name}}
+{%-   else -%}
+{%-     if method.response_parameters %}
+{%-       if method.parameters %}, {% endif %}
+{%-       for param in method.response_parameters -%}
 {{param.kind|cpp_wrapper_call_type}}* out_{{prefix}}{{param.name}}
-{%-       if not loop.last %}, {% endif %}
-{%-     endfor %}
+{%-         if not loop.last %}, {% endif %}
+{%-       endfor %}
+{%-     endif -%}
 {%-   endif -%}
 {%- endmacro -%}
 

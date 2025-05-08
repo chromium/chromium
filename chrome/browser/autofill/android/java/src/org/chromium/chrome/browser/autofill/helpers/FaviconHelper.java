@@ -11,14 +11,16 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.chrome.browser.autofill.R;
 import org.chromium.url.GURL;
 
 /** Provides default favicons and helps to fetch and set favicons. */
+@NullMarked
 public class FaviconHelper {
     private final Context mContext;
     private final Profile mProfile;

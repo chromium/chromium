@@ -127,6 +127,9 @@ struct PasswordNote {
                          const PasswordNote& rhs) = default;
   friend auto operator<=>(const PasswordNote&, const PasswordNote&) = default;
 
+  static constexpr char16_t kPasswordChangeBackupNoteName[] =
+      u"PasswordChangeBackup";
+
   // The name displayed in the UI labeling this note. Currently unused and added
   // for future compatibility.
   std::u16string unique_display_name;
@@ -544,12 +547,21 @@ struct PasswordForm {
   // Returns true when |password_value| or |new_password_value| are non-empty.
   bool HasNonEmptyPasswordValue() const;
 
-  // Returns the value of the note with an empty `unique_display_name`, returns
-  // an empty string if none exists.
+  // Returns the value of the note with an empty `unique_display_name`,
+  // returns an empty string if none exists.
   std::u16string GetNoteWithEmptyUniqueDisplayName() const;
 
   // Updates the note with an empty `unique_display_name`.
   void SetNoteWithEmptyUniqueDisplayName(const std::u16string& new_note_value);
+
+  // Returns the value of the note with a password change backup specific
+  // `unique_display_name`.
+  // returns an empty string if none exists.
+  std::u16string GetPasswordBackupNote() const;
+
+  // Updates the note with a password change backup specific
+  // `unique_display_name`.
+  void SetPasswordBackupNote(const std::u16string& new_note_value);
 
   PasswordForm();
   PasswordForm(const PasswordForm& other);
@@ -563,8 +575,6 @@ struct PasswordForm {
   // An exact equality comparison of all the fields is only useful for tests.
   // Production code should be using `ArePasswordFormUniqueKeysEqual` instead.
   friend bool operator==(const PasswordForm&, const PasswordForm&) = default;
-  friend bool operator!=(const PasswordForm& lhs,
-                         const PasswordForm& rhs) = default;
 #endif
 };
 

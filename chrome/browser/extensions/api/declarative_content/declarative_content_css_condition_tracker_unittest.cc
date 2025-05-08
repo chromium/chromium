@@ -163,11 +163,11 @@ class DeclarativeContentCssConditionTrackerTest
     int evaluation_requests() { return evaluation_requests_; }
 
     // ContentPredicateEvaluator::Delegate:
-    void RequestEvaluation(content::WebContents* contents) override {
+    void NotifyPredicateStateUpdated(content::WebContents* contents) override {
       ++evaluation_requests_;
     }
 
-    bool ShouldManageConditionsForBrowserContext(
+    bool ShouldManagePredicatesForBrowserContext(
         content::BrowserContext* context) override {
       return true;
     }

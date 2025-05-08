@@ -1,0 +1,24 @@
+{#  Adds the appropriate Serialize call
+    |type| is the serializer type
+    |args| is the list of args, already formatted#}
+{%- macro get_serialize_call(type, args) -%}
+mojo::internal::Serialize<{{type}}>(
+{%-  for arg in args %}
+{%-    if not loop.last %}
+  {{arg}},
+{%-    else %}
+  {{arg}});
+{%-    endif %}
+{%-  endfor -%}
+{%- endmacro %}
+
+{#  Adds the appropriate Validation Check based on the compiler setting
+    |check| is the check
+    |error_code| is the error code
+    |description| is the already formatted description #}
+{%- macro get_validation_check(check, error_code, description) -%}
+MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(
+  {{check}},
+  {{error_code}},
+  "{{description}}");
+{%- endmacro %}

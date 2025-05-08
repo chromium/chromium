@@ -169,8 +169,7 @@ void DrawGainmapImageRect(SkCanvas* canvas,
       auto shader = SkGainmapShader::Make(
           tile_source_images[0], tile_source_rects[0], tile_sampling[0],
           tile_source_images[1], tile_source_rects[1], tile_sampling[1],
-          gainmap_info, tile_dest_rect, hdr_headroom,
-          canvas->imageInfo().refColorSpace());
+          gainmap_info, tile_dest_rect, hdr_headroom);
       tile_paint.setShader(std::move(shader));
       canvas->drawRect(tile_dest_rect, tile_paint);
     }

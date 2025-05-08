@@ -123,7 +123,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa
   // a different window.
   void ImmersiveModeViewWillMoveToWindow(NSWindow* window);
 
-  // Returns true if kImmersiveFullscreenTabs is being used.
+  // Returns true if immersive fullscreen is being used.
   virtual bool IsTabbed();
   bool IsContentFullscreen();
 

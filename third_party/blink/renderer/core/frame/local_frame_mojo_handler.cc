@@ -575,6 +575,10 @@ void LocalFrameMojoHandler::NotifyContextMenuInsetsObservers(
   frame_->NotifyContextMenuInsetsObservers(safe_area);
 }
 
+void LocalFrameMojoHandler::ShowInterestInElement(int nodeID) {
+  frame_->ShowInterestInElement(nodeID);
+}
+
 void LocalFrameMojoHandler::AddMessageToConsole(
     mojom::blink::ConsoleMessageLevel level,
     const WTF::String& message,
@@ -1302,16 +1306,14 @@ void LocalFrameMojoHandler::ZoomToFindInPageRect(
 void LocalFrameMojoHandler::InstallCoopAccessMonitor(
     const FrameToken& accessed_window,
     network::mojom::blink::CrossOriginOpenerPolicyReporterParamsPtr
-        coop_reporter_params,
-    bool is_in_same_virtual_coop_related_group) {
+        coop_reporter_params) {
   blink::Frame* accessed_frame = Frame::ResolveFrame(accessed_window);
   // The Frame might have been deleted during the cross-process communication.
   if (!accessed_frame)
     return;
 
   accessed_frame->DomWindow()->InstallCoopAccessMonitor(
-      frame_, std::move(coop_reporter_params),
-      is_in_same_virtual_coop_related_group);
+      frame_, std::move(coop_reporter_params));
 }
 
 void LocalFrameMojoHandler::UpdateBrowserControlsState(

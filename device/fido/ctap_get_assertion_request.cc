@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "device/fido/ctap_get_assertion_request.h"
 
@@ -14,6 +10,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "crypto/hash.h"
 #include "device/fido/device_response_converter.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
@@ -328,8 +325,7 @@ CtapGetAssertionRequest::CtapGetAssertionRequest(
     std::string in_client_data_json)
     : rp_id(std::move(in_rp_id)),
       client_data_json(std::move(in_client_data_json)),
-      client_data_hash(fido_parsing_utils::CreateSHA256Hash(client_data_json)) {
-}
+      client_data_hash(crypto::hash::Sha256(client_data_json)) {}
 
 CtapGetAssertionRequest::CtapGetAssertionRequest(
     const CtapGetAssertionRequest& that) = default;
@@ -347,7 +343,7 @@ CtapGetAssertionRequest::~CtapGetAssertionRequest() = default;
 
 void CtapGetAssertionRequest::SetClientDataJson(
     std::string in_client_data_json) {
-  client_data_hash = fido_parsing_utils::CreateSHA256Hash(in_client_data_json);
+  client_data_hash = crypto::hash::Sha256(in_client_data_json);
   client_data_json = std::move(in_client_data_json);
 }
 

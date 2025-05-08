@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.pwd_migration;
 import android.content.Context;
 
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.annotations.NullMarked;
 
 /** Provides helper methods for the password migration warning. */
+@NullMarked
 public class PasswordMigrationWarningUtil {
     /** Returns the display name of the Chrome channel. */
     public static String getChannelString(Context context) {

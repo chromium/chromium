@@ -60,7 +60,8 @@ class WebTestWebFrameWidgetImpl : public WebFrameWidgetImpl,
 
   // FrameWidget overrides.
   void RequestDecode(const cc::DrawImage&,
-                     base::OnceCallback<void(bool)>) override;
+                     base::OnceCallback<void(bool)>,
+                     bool speculative) override;
 
  private:
   // WebFrameWidgetImpl overrides.

@@ -5,6 +5,7 @@
 package org.chromium.components.credential_management;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 
@@ -25,11 +26,13 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 
@@ -40,23 +43,22 @@ import java.util.concurrent.Executor;
 @Batch(Batch.PER_CLASS)
 public class ThirdPartyCredentialManagerBridgeTest {
 
-    private static final long FAKE_RECEIVER_BRIDGE_POINTER = 7;
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
     private static final String ORIGIN = "www.example.com";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private ThirdPartyCredentialManagerBridge.Natives mReceiverBridgeJniMock;
     @Mock private CredentialManager mCredentialManager;
     @Mock private GetCredentialException mGetCredentialException;
     @Mock private CreateCredentialException mCreateCredentialException;
+    @Mock private Callback<PasswordCredentialResponse> mCredentialResponseCallback;
+    @Mock private Callback<Boolean> mStoreCallback;
 
     private ThirdPartyCredentialManagerBridge mBridge;
 
     @Before
     public void setUp() {
-        ThirdPartyCredentialManagerBridgeJni.setInstanceForTesting(mReceiverBridgeJniMock);
-        mBridge = new ThirdPartyCredentialManagerBridge(FAKE_RECEIVER_BRIDGE_POINTER);
+        mBridge = new ThirdPartyCredentialManagerBridge();
         mBridge.setCredentialManagerForTesting(mCredentialManager);
     }
 
@@ -74,7 +76,7 @@ public class ThirdPartyCredentialManagerBridgeTest {
                         any(Executor.class),
                         any(CredentialManagerCallback.class));
 
-        mBridge.get(ORIGIN);
+        mBridge.get(true, ORIGIN, mCredentialResponseCallback);
 
         verify(mCredentialManager)
                 .getCredentialAsync(
@@ -83,9 +85,11 @@ public class ThirdPartyCredentialManagerBridgeTest {
                         any(),
                         any(Executor.class),
                         any(CredentialManagerCallback.class));
-        verify(mReceiverBridgeJniMock)
-                .onPasswordCredentialReceived(
-                        FAKE_RECEIVER_BRIDGE_POINTER, USERNAME, PASSWORD, ORIGIN);
+        verify(mCredentialResponseCallback)
+                .onResult(
+                        argThat(
+                                new PasswordCredentialResponseMatcher(
+                                        new PasswordCredentialResponse(true, USERNAME, PASSWORD))));
     }
 
     @Test
@@ -99,7 +103,7 @@ public class ThirdPartyCredentialManagerBridgeTest {
                         any(Executor.class),
                         any(CredentialManagerCallback.class));
 
-        mBridge.get(ORIGIN);
+        mBridge.get(false, ORIGIN, mCredentialResponseCallback);
 
         verify(mCredentialManager)
                 .getCredentialAsync(
@@ -108,7 +112,11 @@ public class ThirdPartyCredentialManagerBridgeTest {
                         any(),
                         any(Executor.class),
                         any(CredentialManagerCallback.class));
-        verify(mReceiverBridgeJniMock).onGetPasswordCredentialError(FAKE_RECEIVER_BRIDGE_POINTER);
+        verify(mCredentialResponseCallback)
+                .onResult(
+                        argThat(
+                                new PasswordCredentialResponseMatcher(
+                                        new PasswordCredentialResponse(false, "", ""))));
     }
 
     @Test
@@ -123,7 +131,7 @@ public class ThirdPartyCredentialManagerBridgeTest {
                         any(Executor.class),
                         any(CredentialManagerCallback.class));
 
-        mBridge.store(USERNAME, PASSWORD, ORIGIN);
+        mBridge.store(USERNAME, PASSWORD, ORIGIN, mStoreCallback);
 
         verify(mCredentialManager)
                 .createCredentialAsync(
@@ -132,8 +140,7 @@ public class ThirdPartyCredentialManagerBridgeTest {
                         any(),
                         any(Executor.class),
                         any(CredentialManagerCallback.class));
-        verify(mReceiverBridgeJniMock)
-                .onCreateCredentialResponse(FAKE_RECEIVER_BRIDGE_POINTER, true);
+        verify(mStoreCallback).onResult(true);
     }
 
     @Test
@@ -147,7 +154,7 @@ public class ThirdPartyCredentialManagerBridgeTest {
                         any(Executor.class),
                         any(CredentialManagerCallback.class));
 
-        mBridge.store(USERNAME, PASSWORD, ORIGIN);
+        mBridge.store(USERNAME, PASSWORD, ORIGIN, mStoreCallback);
 
         verify(mCredentialManager)
                 .createCredentialAsync(
@@ -156,8 +163,7 @@ public class ThirdPartyCredentialManagerBridgeTest {
                         any(),
                         any(Executor.class),
                         any(CredentialManagerCallback.class));
-        verify(mReceiverBridgeJniMock)
-                .onCreateCredentialResponse(FAKE_RECEIVER_BRIDGE_POINTER, false);
+        verify(mStoreCallback).onResult(false);
     }
 
     private Object respondToGetCallback(
@@ -198,5 +204,22 @@ public class ThirdPartyCredentialManagerBridgeTest {
                     }
                 });
         return null;
+    }
+
+    static class PasswordCredentialResponseMatcher
+            implements ArgumentMatcher<PasswordCredentialResponse> {
+        private final PasswordCredentialResponse mExpected;
+
+        public PasswordCredentialResponseMatcher(PasswordCredentialResponse expected) {
+            mExpected = expected;
+        }
+
+        @Override
+        public boolean matches(PasswordCredentialResponse actual) {
+            return actual != null
+                    && actual.getSuccess() == mExpected.getSuccess()
+                    && actual.getUsername().equals(mExpected.getUsername())
+                    && actual.getPassword().equals(mExpected.getPassword());
+        }
     }
 }

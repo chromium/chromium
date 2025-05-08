@@ -33,7 +33,7 @@ class BrowserContext;
 
 namespace policy::local_user_files {
 
-constexpr char kSkyVaultMigrationNotificationId[] = "skyvault-migration";
+inline constexpr char kSkyVaultMigrationNotificationId[] = "skyvault-migration";
 
 // Shows notifications and dialogs related to SkyVault migration status.
 class MigrationNotificationManager : public KeyedService {

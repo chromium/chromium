@@ -79,6 +79,20 @@ void ProfileSignalsCollector::GetProfileSignals(
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   signal_response.realtime_url_check_mode =
       connectors_service_->GetAppliedRealTimeUrlCheck();
+  signal_response.file_downloaded_providers =
+      connectors_service_->GetAnalysisServiceProviderNames(
+          enterprise_connectors::FILE_DOWNLOADED);
+  signal_response.file_attached_providers =
+      connectors_service_->GetAnalysisServiceProviderNames(
+          enterprise_connectors::FILE_ATTACHED);
+  signal_response.bulk_data_entry_providers =
+      connectors_service_->GetAnalysisServiceProviderNames(
+          enterprise_connectors::BULK_DATA_ENTRY);
+  signal_response.print_providers =
+      connectors_service_->GetAnalysisServiceProviderNames(
+          enterprise_connectors::PRINT);
+  signal_response.security_event_providers =
+      connectors_service_->GetReportingServiceProviderNames();
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
   response.profile_signals_response = std::move(signal_response);

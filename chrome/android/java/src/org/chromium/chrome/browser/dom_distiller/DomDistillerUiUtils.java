@@ -32,7 +32,7 @@ public final class DomDistillerUiUtils {
         Activity activity = ActivityUtils.getActivityFromWebContents(webContents);
         if (activity == null) return;
 
-        RecordUserAction.record("DomDistiller_DistilledPagePrefsOpened");
+        RecordUserAction.record("DomDistiller.Android.DistilledPagePrefsOpened");
         AlertDialog.Builder builder =
                 new AlertDialog.Builder(activity, R.style.ThemeOverlay_BrowserUI_AlertDialog);
         builder.setView(

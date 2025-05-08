@@ -51,12 +51,14 @@ class TabDialogManager : public content::WebContentsObserver {
   // TODO(kylixrd):
   //   (1) Call-sites expect to own the Widget using CLIENT_OWNS_WIDGET and be
   //       updated accordingly.
-  void ShowDialogAndBlockTabInteraction(views::Widget* dialog);
+  void ShowDialogAndBlockTabInteraction(views::Widget* dialog,
+                                        bool close_on_navigation = true);
   // Combines the above two functions into a single invocation. This is the most
   // commonly used version. Only use the other APIs if the caller must do
   // something unique to the Widget before showing it.
   std::unique_ptr<views::Widget> CreateShowDialogAndBlockTabInteraction(
-      views::DialogDelegate* delegate);
+      views::DialogDelegate* delegate,
+      bool close_on_navigation = true);
 
   void CloseDialog();
 
@@ -90,6 +92,8 @@ class TabDialogManager : public content::WebContentsObserver {
   std::unique_ptr<TabDialogWidgetObserver> tab_dialog_widget_observer_;
   std::unique_ptr<BrowserWindowWidgetObserver> browser_window_widget_observer_;
   std::unique_ptr<ScopedTabModalUI> showing_modal_ui_;
+
+  bool close_on_navigation_ = true;
 };
 
 }  // namespace tabs

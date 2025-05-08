@@ -10,15 +10,15 @@
 #include "third_party/blink/renderer/core/animation/interpolation_value.h"
 #include "third_party/blink/renderer/core/animation/keyframe.h"
 #include "third_party/blink/renderer/core/animation/pairwise_interpolation_value.h"
-#include "third_party/blink/renderer/core/animation/primitive_interpolation.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
-#include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 class CSSInterpolationEnvironment;
+class UnderlyingValueOwner;
 
 // Subclasses of InterpolationType implement the logic for a specific value type
 // of a specific PropertyHandle to:
@@ -27,9 +27,8 @@ class CSSInterpolationEnvironment;
 // - Convert the target Element's property value to an InterpolationValue:
 // maybeConvertUnderlyingValue()
 // - Apply an InterpolationValue to a target Element's property: apply().
-class CORE_EXPORT InterpolationType {
-  USING_FAST_MALLOC(InterpolationType);
-
+class CORE_EXPORT InterpolationType
+    : public GarbageCollected<InterpolationType> {
  public:
   InterpolationType(const InterpolationType&) = delete;
   InterpolationType& operator=(const InterpolationType&) = delete;
@@ -46,16 +45,16 @@ class CORE_EXPORT InterpolationType {
     ConversionChecker(const ConversionChecker&) = delete;
     ConversionChecker& operator=(const ConversionChecker&) = delete;
     virtual ~ConversionChecker() = default;
-    virtual void Trace(Visitor*) const {}
+    virtual void Trace(Visitor* v) const { v->Trace(type_); }
 
-    void SetType(const InterpolationType& type) { type_ = &type; }
-    const InterpolationType& GetType() const { return *type_; }
+    void SetType(const InterpolationType* type) { type_ = type; }
+    const InterpolationType* GetType() const { return type_; }
     virtual bool IsValid(const CSSInterpolationEnvironment&,
                          const InterpolationValue& underlying) const = 0;
 
    protected:
     ConversionChecker() : type_(nullptr) {}
-    const InterpolationType* type_;
+    Member<const InterpolationType> type_;
   };
   using ConversionCheckers = HeapVector<Member<ConversionChecker>>;
 
@@ -95,15 +94,10 @@ class CORE_EXPORT InterpolationType {
   virtual InterpolationValue MaybeConvertUnderlyingValue(
       const CSSInterpolationEnvironment&) const = 0;
 
-  virtual void Composite(UnderlyingValueOwner& underlying_value_owner,
+  virtual void Composite(UnderlyingValueOwner&,
                          double underlying_fraction,
-                         const InterpolationValue& value,
-                         double interpolation_fraction) const {
-    DCHECK(!underlying_value_owner.Value().non_interpolable_value);
-    DCHECK(!value.non_interpolable_value);
-    underlying_value_owner.MutableValue().interpolable_value->ScaleAndAdd(
-        underlying_fraction, *value.interpolable_value);
-  }
+                         const InterpolationValue&,
+                         double interpolation_fraction) const;
 
   virtual void Apply(const InterpolableValue&,
                      const NonInterpolableValue*,
@@ -118,12 +112,14 @@ class CORE_EXPORT InterpolationType {
 
   // Implement reference equality checking via pointer equality checking as
   // these are singletons.
-  bool operator==(const InterpolationType& other) const {
-    return this == &other;
+  bool operator==(const InterpolationType* other) const {
+    return this == other;
   }
-  bool operator!=(const InterpolationType& other) const {
-    return this != &other;
+  bool operator!=(const InterpolationType* other) const {
+    return this != other;
   }
+
+  virtual void Trace(Visitor* v) const {}
 
  protected:
   explicit InterpolationType(PropertyHandle property) : property_(property) {}

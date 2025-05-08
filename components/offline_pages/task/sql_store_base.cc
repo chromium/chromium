@@ -51,9 +51,6 @@ bool InitializeSync(
     DLOG(ERROR) << "Failed to open database, in memory: " << in_memory;
     return false;
   }
-  if (!base::FeatureList::IsEnabled(sql::features::kPreOpenPreloadDatabase)) {
-    db->Preload();
-  }
 
   return std::move(initialize_schema).Run(db);
 }
@@ -100,10 +97,8 @@ void SqlStoreBase::Initialize(base::OnceClosure pending_command) {
   // This is how we reset a pointer and provide deleter. This is necessary to
   // ensure that we can close the store more than once.
   db_ = DatabaseUniquePtr(
-      new sql::Database(
-          sql::DatabaseOptions().set_preload(base::FeatureList::IsEnabled(
-              sql::features::kPreOpenPreloadDatabase)),
-          histogram_tag_),
+      new sql::Database(sql::DatabaseOptions().set_preload(true),
+                        histogram_tag_),
       base::OnTaskRunnerDeleter(background_task_runner_));
 
   background_task_runner_->PostTaskAndReplyWithResult(

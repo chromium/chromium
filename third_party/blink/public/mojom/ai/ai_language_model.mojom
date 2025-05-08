@@ -77,7 +77,7 @@ union AILanguageModelPromptContent {
   string text;
 
   // Bitmap provided as input.
-  skia.mojom.BitmapMappedFromTrustedProcess bitmap;
+  skia.mojom.BitmapN32 bitmap;
 
   // Audio provided as input.
   on_device_model.mojom.AudioData audio;
@@ -92,8 +92,6 @@ struct AILanguageModelPrompt {
 // This is used when creating a new AILanguageModel.
 struct AILanguageModelCreateOptions {
   AILanguageModelSamplingParams? sampling_params;
-  // This can be any arbitrary string taken from the JavaScript API.
-  string? system_prompt;
   array<AILanguageModelPrompt> initial_prompts;
   array<AILanguageModelExpectedInput>? expected_inputs;
 };
@@ -124,10 +122,11 @@ interface AILanguageModelMeasureInputUsageClient {
 // A session for prompting a model with inputs to obtain streaming responses.
 interface AILanguageModel {
   // Prompts the model with arbitrary content provided via the JavaScript API.
-  // A JSON schema can be provided to define structured output requirements
-  // for the response. The schema is optional, and is expected to be valid JSON.
+  // An optional JSON schema or regex can be provided to define structured
+  // output requirements for the response. Note that only one of the JSON schema
+  // or regex should be provided.
   Prompt(array<AILanguageModelPrompt> prompts,
-         string? response_json_schema,
+         on_device_model.mojom.ResponseConstraint? constraint,
          pending_remote<ModelStreamingResponder> pending_responder);
 
   // Creates a new session with the same configuration and existing context
@@ -146,6 +145,6 @@ interface AILanguageModel {
   // Counts the number of token in the given prompt text `input` which can
   // be an arbitrary string from the JavaScript API.
   MeasureInputUsage(
-      string input,
+      array<AILanguageModelPrompt> input,
       pending_remote<AILanguageModelMeasureInputUsageClient> client);
 };

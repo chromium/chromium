@@ -13,7 +13,6 @@ include_rules = [
     "+base/containers/span_or_size.h",
     "+base/cpu.h",
     "+base/files",
-    "+base/functional/bind_internal.h",
     "+base/i18n/icu_util.h",
     "+base/json",
     "+base/lazy_instance.h",

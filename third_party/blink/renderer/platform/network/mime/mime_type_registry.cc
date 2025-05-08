@@ -117,6 +117,10 @@ bool MIMETypeRegistry::IsSupportedJavaScriptMIMEType(const String& mime_type) {
   return blink::IsSupportedJavascriptMimeType(ToLowerASCIIOrEmpty(mime_type));
 }
 
+bool MIMETypeRegistry::IsWasmMIMEType(const String& mime_type) {
+  return blink::IsWasmMIMEType(ToLowerASCIIOrEmpty(mime_type));
+}
+
 bool MIMETypeRegistry::IsJSONMimeType(const String& mime_type) {
   return blink::IsJSONMimeType(ToLowerASCIIOrEmpty(mime_type));
 }

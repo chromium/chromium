@@ -22,7 +22,7 @@
 
 // Stores the member role for a Family Link user, otherwise this
 // property is not populated.
-@property(nonatomic, strong) NSString* familyMemberRole;
+@property(nonatomic, copy) NSString* familyMemberRole;
 
 // Stores a screenshot of the application suitable for attaching to the
 // user generated report.

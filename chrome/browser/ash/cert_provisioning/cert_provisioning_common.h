@@ -53,7 +53,7 @@ BASE_DECLARE_FEATURE(
 // Used for both DeleteVaKey and DeleteVaKeysByPrefix
 using DeleteVaKeyCallback = base::OnceCallback<void(bool)>;
 
-const char kKeyNamePrefix[] = "cert-provis-";
+inline constexpr char kKeyNamePrefix[] = "cert-provis-";
 
 // The type for variables containing an error from DM Server response.
 using CertProvisioningResponseErrorType =
@@ -163,13 +163,14 @@ using CertProfileId = std::string;
 // Names of CertProfile fields in a base::Value representation. Must be in sync
 // with policy schema definitions in RequiredClientCertificateForDevice.yaml and
 // RequiredClientCertificateForUser.yaml.
-const char kCertProfileIdKey[] = "cert_profile_id";
-const char kCertProfileNameKey[] = "name";
-const char kCertProfileRenewalPeroidSec[] = "renewal_period_seconds";
-const char kCertProfilePolicyVersionKey[] = "policy_version";
-const char kCertProfileProtocolVersion[] = "protocol_version";
-const char kCertProfileIsVaEnabledKey[] = "enable_remote_attestation_check";
-const char kCertProfileKeyType[] = "key_algorithm";
+inline constexpr char kCertProfileIdKey[] = "cert_profile_id";
+inline constexpr char kCertProfileNameKey[] = "name";
+inline constexpr char kCertProfileRenewalPeroidSec[] = "renewal_period_seconds";
+inline constexpr char kCertProfilePolicyVersionKey[] = "policy_version";
+inline constexpr char kCertProfileProtocolVersion[] = "protocol_version";
+inline constexpr char kCertProfileIsVaEnabledKey[] =
+    "enable_remote_attestation_check";
+inline constexpr char kCertProfileKeyType[] = "key_algorithm";
 
 // The version of the certificate provisioning protocol between ChromeOS client
 // and device management server.
@@ -232,8 +233,7 @@ struct CertProfile {
   // all functions that fail to compile because of it).
   static constexpr int kVersion = 7;
 
-  bool operator==(const CertProfile& other) const;
-  bool operator!=(const CertProfile& other) const;
+  friend bool operator==(const CertProfile&, const CertProfile&) = default;
 };
 
 struct CertProfileComparator {

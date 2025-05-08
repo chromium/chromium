@@ -150,6 +150,20 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Foreground XFA (XFAF)"/>
 </enum>
 
+<!-- LINT.IfChange(PDFInfoBarUserInteraction) -->
+
+<enum name="PDFInfoBarUserInteraction">
+  <int value="0" label="Accepted">
+    The user clicked the &quot;Set as default&quot; button.
+  </int>
+  <int value="1" label="Dismissed">The user explicitly closed the infobar.</int>
+  <int value="2" label="Ignored">
+    The user did not interact with the infobar, logged at object destruction.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/pdf/infobar/pdf_infobar_delegate.h:PdfInfoBarUserInteraction) -->
+
 <!-- LINT.IfChange(PDFInk2StrokeBrushSize) -->
 
 <enum name="PDFInk2StrokeBrushSize">

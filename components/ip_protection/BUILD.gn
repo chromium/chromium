@@ -77,11 +77,13 @@ test("components_ip_protection_fuzztests") {
 
   deps = [
     "//base",
+    "//components/ip_protection:get_probabilistic_reveal_token_proto",
     "//components/ip_protection/common:ip_protection_probabilistic_reveal_token_crypter",
+    "//components/ip_protection/common:probabilistic_reveal_token_test_issuer",
+    "//testing/gmock",
     "//third_party/abseil-cpp:absl",
     "//third_party/boringssl",
     "//third_party/fuzztest:fuzztest_gtest_main",
-    "//third_party/private-join-and-compute/src:ec_commutative_cipher",
 
     # Select UMA as the implementation of `ip_protection::Telemetry()`.
     "//components/ip_protection/common:ip_protection_telemetry_uma",

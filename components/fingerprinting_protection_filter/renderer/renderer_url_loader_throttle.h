@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -123,6 +124,7 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
 
   GURL current_url_;
   network::mojom::RequestDestination request_destination_;
+  std::optional<std::string> devtools_request_id_;
   bool deferred_ = false;
   std::optional<subresource_filter::mojom::ActivationState> activation_state_;
 

@@ -246,6 +246,8 @@ class OptimizationGuideKeyedServiceBrowserTest
         SetUpBrowserContextKeyedServices(context);
     IdentityTestEnvironmentProfileAdaptor::
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+    // Note: Behavior for unofficial builds is tested by unit tests.
+    SetIsOfficialBuildForTesting(true);
   }
 
   void SetUpOnMainThread() override {
@@ -421,6 +423,11 @@ class OptimizationGuideKeyedServiceBrowserTest
         is_dogfood_client);
   }
 
+  void SetIsOfficialBuildForTesting(bool is_official_build) {
+    OptimizationGuideKeyedService::SetIsOfficialBuildForTesting(
+        is_official_build);
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   ::testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
@@ -489,6 +496,21 @@ class DogfoodOptimizationGuideKeyedServiceBrowserTest
         context);
     SetIsDogfoodClient(true);
   }
+};
+
+class OptimizationGuideKeyedServiceStartupLogDisabledBrowserTest
+    : public OptimizationGuideKeyedServiceBrowserTest {
+ public:
+  OptimizationGuideKeyedServiceStartupLogDisabledBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {
+            {features::kOptimizationGuideOnDeviceModel, {}},
+        },
+        {features::kLogOnDeviceMetricsOnStartup});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
@@ -1056,6 +1078,50 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
 
   EXPECT_FALSE(otr_ogks->ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey::kWallpaperSearch));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    OptimizationGuideKeyedServiceStartupLogDisabledBrowserTest,
+    PerformanceClassOnlyComputedOnce) {
+  constexpr auto kKey = optimization_guide::ModelBasedCapabilityKey::kCompose;
+  auto* service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
+
+  base::RunLoop loop1;
+  base::RunLoop loop2;
+  base::RunLoop loop3;
+  // Call multiple times, should only get performance class once.
+  service->GetOnDeviceModelEligibilityAsync(
+      kKey,
+      base::IgnoreArgs<optimization_guide::OnDeviceModelEligibilityReason>(
+          loop1.QuitClosure()));
+  service->GetOnDeviceModelEligibilityAsync(
+      kKey,
+      base::IgnoreArgs<optimization_guide::OnDeviceModelEligibilityReason>(
+          loop2.QuitClosure()));
+  service->GetOnDeviceModelEligibilityAsync(
+      kKey,
+      base::IgnoreArgs<optimization_guide::OnDeviceModelEligibilityReason>(
+          loop3.QuitClosure()));
+
+  loop1.Run();
+  histogram_tester()->ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass", 1);
+
+  loop2.Run();
+  loop3.Run();
+  histogram_tester()->ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass", 1);
+
+  // Call again after waiting, should not get performance class again..
+  base::RunLoop loop4;
+  service->GetOnDeviceModelEligibilityAsync(
+      kKey,
+      base::IgnoreArgs<optimization_guide::OnDeviceModelEligibilityReason>(
+          loop4.QuitClosure()));
+  loop4.Run();
+  histogram_tester()->ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,

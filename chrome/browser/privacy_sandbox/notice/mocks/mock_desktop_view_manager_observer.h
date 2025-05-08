@@ -13,7 +13,7 @@
 namespace privacy_sandbox {
 
 class MockDesktopViewManagerObserver
-    : public privacy_sandbox::DesktopViewManager::Observer {
+    : public privacy_sandbox::DesktopViewManagerInterface::Observer {
  public:
   MockDesktopViewManagerObserver();
   ~MockDesktopViewManagerObserver();

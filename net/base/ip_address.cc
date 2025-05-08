@@ -13,6 +13,7 @@
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/logging.h"
@@ -36,14 +37,13 @@ constexpr uint8_t kIPv4MappedPrefix[] = {0, 0, 0, 0, 0,    0,
 // * |ip_address| is at least |prefix_length_in_bits| (bits) long;
 // * |ip_prefix| is at least |prefix_length_in_bits| (bits) long.
 bool IPAddressPrefixCheck(const IPAddressBytes& ip_address,
-                          const uint8_t* ip_prefix,
+                          base::span<const uint8_t> ip_prefix,
                           size_t prefix_length_in_bits) {
   // Compare all the bytes that fall entirely within the prefix.
   size_t num_entire_bytes_in_prefix = prefix_length_in_bits / 8;
-  for (size_t i = 0; i < num_entire_bytes_in_prefix; ++i) {
-    if (ip_address[i] != UNSAFE_TODO(ip_prefix[i])) {
-      return false;
-    }
+  if (ip_address.span().first(num_entire_bytes_in_prefix) !=
+      ip_prefix.first(num_entire_bytes_in_prefix)) {
+    return false;
   }
 
   // In case the prefix was not a multiple of 8, there will be 1 byte
@@ -52,7 +52,7 @@ bool IPAddressPrefixCheck(const IPAddressBytes& ip_address,
   if (remaining_bits != 0) {
     uint8_t mask = 0xFF << (8 - remaining_bits);
     size_t i = num_entire_bytes_in_prefix;
-    if ((ip_address[i] & mask) != UNSAFE_TODO((ip_prefix[i] & mask))) {
+    if ((ip_address[i] & mask) != (ip_prefix[i] & mask)) {
       return false;
     }
   }
@@ -107,9 +107,9 @@ bool IsPubliclyRoutableIPv4(const IPAddressBytes& ip_address) {
   // Different IP versions have different range reservations.
   DCHECK_EQ(IPAddress::kIPv4AddressSize, ip_address.size());
   struct {
-    const uint8_t address[4];
+    uint8_t address[4];
     size_t prefix_length_in_bits;
-  } static const kReservedIPv4Ranges[] = {
+  } static constexpr kReservedIPv4Ranges[] = {
       {{0, 0, 0, 0}, 8},      {{10, 0, 0, 0}, 8},     {{100, 64, 0, 0}, 10},
       {{127, 0, 0, 0}, 8},    {{169, 254, 0, 0}, 16}, {{172, 16, 0, 0}, 12},
       {{192, 0, 0, 0}, 24},   {{192, 0, 2, 0}, 24},   {{192, 88, 99, 0}, 24},
@@ -134,12 +134,12 @@ bool IsPubliclyRoutableIPv4(const IPAddressBytes& ip_address) {
 bool IsPubliclyRoutableIPv6(const IPAddressBytes& ip_address) {
   DCHECK_EQ(IPAddress::kIPv6AddressSize, ip_address.size());
   struct {
-    const uint8_t address_prefix[2];
+    uint8_t address_prefix[2];
     size_t prefix_length_in_bits;
-  } static const kPublicIPv6Ranges[] = {// 2000::/3  -- Global Unicast
-                                        {{0x20, 0}, 3},
-                                        // ff00::/8  -- Multicast
-                                        {{0xff, 0}, 8}};
+  } static constexpr kPublicIPv6Ranges[] = {// 2000::/3  -- Global Unicast
+                                            {{0x20, 0}, 3},
+                                            // ff00::/8  -- Multicast
+                                            {{0xff, 0}, 8}};
 
   for (const auto& range : kPublicIPv6Ranges) {
     if (IPAddressPrefixCheck(ip_address, range.address_prefix,
@@ -160,9 +160,12 @@ bool IsPubliclyRoutableIPv6(const IPAddressBytes& ip_address) {
 }  // namespace
 
 bool IPAddressBytes::operator<(const IPAddressBytes& other) const {
-  if (size_ == other.size_)
-    return std::lexicographical_compare(begin(), end(), other.begin(),
-                                        other.end());
+  // While `span() < other.span()` alone would be sufficient to give a
+  // consistent ordering, there's no need to sort lexicographically when sizes
+  // are different.
+  if (size_ == other.size_) {
+    return span() < other.span();
+  }
   return size_ < other.size_;
 }
 
@@ -335,9 +338,9 @@ std::string IPAddress::ToString() const {
   url::StdStringCanonOutput output(&str);
 
   if (IsIPv4()) {
-    url::AppendIPv4Address(ip_address_.data(), &output);
+    url::AppendIPv4Address(ip_address_.span().data(), &output);
   } else if (IsIPv6()) {
-    url::AppendIPv6Address(ip_address_.data(), &output);
+    url::AppendIPv6Address(ip_address_.span().data(), &output);
   }
 
   output.Complete();
@@ -365,11 +368,6 @@ std::string IPAddressToStringWithPort(const IPAddress& address, uint16_t port) {
   return base::StringPrintf("%s:%d", address_str.c_str(), port);
 }
 
-std::string IPAddressToPackedString(const IPAddress& address) {
-  return std::string(reinterpret_cast<const char*>(address.bytes().data()),
-                     address.size());
-}
-
 IPAddress ConvertIPv4ToIPv4MappedIPv6(const IPAddress& address) {
   CHECK(address.IsIPv4());
   // IPv4-mapped addresses are formed by:
@@ -381,12 +379,10 @@ IPAddress ConvertIPv4ToIPv4MappedIPv6(const IPAddress& address) {
 }
 
 IPAddress ConvertIPv4MappedIPv6ToIPv4(const IPAddress& address) {
-  DCHECK(address.IsIPv4MappedIPv6());
+  CHECK(address.IsIPv4MappedIPv6());
 
-  IPAddressBytes bytes;
-  bytes.Append(
-      base::span(address.bytes()).subspan(std::size(kIPv4MappedPrefix)));
-  return IPAddress(bytes);
+  return IPAddress(
+      address.bytes().span().subspan(std::size(kIPv4MappedPrefix)));
 }
 
 bool IPAddressMatchesPrefix(const IPAddress& ip_address,
@@ -411,7 +407,7 @@ bool IPAddressMatchesPrefix(const IPAddress& ip_address,
                                   96 + prefix_length_in_bits);
   }
 
-  return IPAddressPrefixCheck(ip_address.bytes(), ip_prefix.bytes().data(),
+  return IPAddressPrefixCheck(ip_address.bytes(), ip_prefix.bytes().span(),
                               prefix_length_in_bits);
 }
 
@@ -476,7 +472,7 @@ size_t CommonPrefixLength(const IPAddress& a1, const IPAddress& a2) {
 size_t MaskPrefixLength(const IPAddress& mask) {
   IPAddressBytes all_ones;
   all_ones.Resize(mask.size());
-  std::fill(all_ones.begin(), all_ones.end(), 0xFF);
+  std::ranges::fill(all_ones.span(), 0xFF);
   return CommonPrefixLength(mask, IPAddress(all_ones));
 }
 

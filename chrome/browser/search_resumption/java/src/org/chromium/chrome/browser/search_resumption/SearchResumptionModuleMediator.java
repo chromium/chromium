@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.search_resumption;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.view.ViewStub;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
@@ -37,6 +41,7 @@ import org.chromium.url.GURL;
 import java.util.List;
 
 /** This class holds querying search suggestions related business logic. */
+@NullMarked
 public class SearchResumptionModuleMediator
         implements OnSuggestionsReceivedListener,
                 SignInStateObserver,
@@ -49,8 +54,8 @@ public class SearchResumptionModuleMediator
     private final SyncService mSyncService;
     private final TemplateUrlService mTemplateUrlService;
     private final TemplateUrlServiceObserver mTemplateUrlServiceObserver;
-    private AutocompleteController mAutoComplete;
-    private PropertyModel mModel;
+    private @Nullable AutocompleteController mAutoComplete;
+    private @Nullable PropertyModel mModel;
     // Set the default values of these variable true since all of them have been checked before
     // creating the coordinator in SearchResumptionModuleUtils#shouldShowSearchResumptionModule.
     private boolean mIsDefaultSearchEngineGoogle = true;
@@ -67,7 +72,7 @@ public class SearchResumptionModuleMediator
             Tab currentTab,
             Profile profile,
             SearchResumptionTileBuilder tileBuilder,
-            SuggestionResult cachedSuggestions) {
+            @Nullable SuggestionResult cachedSuggestions) {
         mStub = moduleStub;
         mTabToTrackSuggestion = tabToTrack;
         mCurrentTab = currentTab;
@@ -86,9 +91,9 @@ public class SearchResumptionModuleMediator
         } else {
             start(profile);
         }
-        mSignInManager = IdentityServicesProvider.get().getSigninManager(profile);
+        mSignInManager = assumeNonNull(IdentityServicesProvider.get().getSigninManager(profile));
         mSignInManager.addSignInStateObserver(this);
-        mSyncService = SyncServiceFactory.getForProfile(profile);
+        mSyncService = assumeNonNull(SyncServiceFactory.getForProfile(profile));
         mSyncService.addSyncStateChangedListener(this);
     }
 
@@ -144,6 +149,7 @@ public class SearchResumptionModuleMediator
 
     /**
      * Inflates the search_resumption_layout and shows the suggestions on the module.
+     *
      * @param autocompleteMatches The suggestions to show on the module.
      */
     void showSearchSuggestionModule(
@@ -215,13 +221,16 @@ public class SearchResumptionModuleMediator
 
     private void showCachedSuggestions(SuggestionResult cachedSuggestions) {
         if (mUseNewServiceEnabled) {
+            assumeNonNull(cachedSuggestions.getSuggestionTexts());
+            assumeNonNull(cachedSuggestions.getSuggestionUrls());
             showSearchSuggestionModule(
                     cachedSuggestions.getSuggestionTexts(),
                     cachedSuggestions.getSuggestionUrls(),
                     /* useCachedResults= */ true);
         } else {
-            showSearchSuggestionModule(
-                    cachedSuggestions.getSuggestions(), /* useCachedResults= */ true);
+            List<AutocompleteMatch> suggestions = cachedSuggestions.getSuggestions();
+            assumeNonNull(suggestions);
+            showSearchSuggestionModule(suggestions, /* useCachedResults= */ true);
         }
     }
 
@@ -281,11 +290,15 @@ public class SearchResumptionModuleMediator
 
     /**
      * Inflates the module and initializes the property model.
+     *
      * @return Whether the module is inflated.
      */
+    @EnsuresNonNull({"mModuleLayoutView", "mModel"})
     private boolean initializeModule() {
-        if (mModel != null) return false;
-
+        if (mModel != null) {
+            assumeNonNull(mModuleLayoutView);
+            return false;
+        }
         mModuleLayoutView = (SearchResumptionModuleView) mStub.inflate();
         mModel = new PropertyModel(SearchResumptionModuleProperties.ALL_KEYS);
         PropertyModelChangeProcessor.create(

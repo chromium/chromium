@@ -29,10 +29,10 @@ import org.chromium.base.UnguessableToken;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.memory.MemoryPressureUma;
 import org.chromium.base.process_launcher.ChildProcessServiceDelegate;
+import org.chromium.base.process_launcher.IChildProcessArgs;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.ChildProcessCreationParamsImpl;
-import org.chromium.content.browser.ContentChildProcessConstants;
 import org.chromium.content.common.IGpuProcessCallback;
 import org.chromium.content.common.InputTransferTokenWrapper;
 import org.chromium.content.common.SurfaceWrapper;
@@ -79,18 +79,18 @@ public class ContentChildProcessServiceDelegate implements ChildProcessServiceDe
 
     @Override
     public void onConnectionSetup(
-            Bundle connectionBundle, List<IBinder> clientInterfaces, IBinder binderBox) {
+            IChildProcessArgs args, List<IBinder> clientInterfaces, IBinder binderBox) {
         mBinderBox = binderBox;
         mGpuCallback =
                 clientInterfaces != null && !clientInterfaces.isEmpty()
                         ? IGpuProcessCallback.Stub.asInterface(clientInterfaces.get(0))
                         : null;
 
-        mCpuCount = connectionBundle.getInt(ContentChildProcessConstants.EXTRA_CPU_COUNT);
-        mCpuFeatures = connectionBundle.getLong(ContentChildProcessConstants.EXTRA_CPU_FEATURES);
+        mCpuCount = args.cpuCount;
+        mCpuFeatures = args.cpuFeatures;
         assert mCpuCount > 0;
 
-        LibraryLoader.getInstance().getMediator().takeSharedRelrosFromBundle(connectionBundle);
+        LibraryLoader.getInstance().getMediator().takeSharedRelrosFromBundle(args.relroBundle);
     }
 
     @Override

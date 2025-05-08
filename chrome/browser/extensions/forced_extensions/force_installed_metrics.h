@@ -80,7 +80,7 @@ class ForceInstalledMetrics : public ForceInstalledTracker::Observer {
   // loaded.
   void ReportDisableReason(const ExtensionId& extension_id);
 
-  // If |kInstallationTimeout| report time elapsed for extensions load,
+  // If `kInstallationTimeout` report time elapsed for extensions load,
   // otherwise amount of not yet loaded extensions and reasons
   // why they were not installed.
   void ReportMetrics();

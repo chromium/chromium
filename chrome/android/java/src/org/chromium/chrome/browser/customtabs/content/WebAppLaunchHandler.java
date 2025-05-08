@@ -4,18 +4,33 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
+import static androidx.browser.trusted.LaunchHandlerClientMode.AUTO;
 import static androidx.browser.trusted.LaunchHandlerClientMode.FOCUS_EXISTING;
 import static androidx.browser.trusted.LaunchHandlerClientMode.NAVIGATE_EXISTING;
 import static androidx.browser.trusted.LaunchHandlerClientMode.NAVIGATE_NEW;
 
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.net.Uri;
+import android.text.TextUtils;
 
+import androidx.browser.trusted.FileHandlingData;
 import androidx.browser.trusted.LaunchHandlerClientMode.ClientMode;
 
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Log;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
+import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
+import org.chromium.chrome.browser.customtabs.content.WebAppLaunchHandlerHistogram.ClientModeAction;
+import org.chromium.chrome.browser.customtabs.content.WebAppLaunchHandlerHistogram.FailureReasonAction;
+import org.chromium.chrome.browser.customtabs.content.WebAppLaunchHandlerHistogram.FileHandlingAction;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.Arrays;
@@ -27,11 +42,13 @@ import java.util.List;
  */
 @JNINamespace("webapps")
 public class WebAppLaunchHandler {
-
-    public static final @ClientMode int DEFAULT_CLIENT_MODE = NAVIGATE_EXISTING;
-
-    /** The LaunchParams value to be sent to a web app launch queue on app launch. */
-    private final WebAppLaunchParams mLaunchParams;
+    private static final String TAG = WebAppLaunchHandler.class.getSimpleName();
+    private static final @ClientMode int DEFAULT_CLIENT_MODE = NAVIGATE_EXISTING;
+    private final WebContents mWebContents;
+    private final CustomTabActivityNavigationController mNavigationController;
+    private final Verifier mVerifier;
+    private final CurrentPageVerifier mCurrentPageVerifier;
+    private final Activity mActivity;
 
     /**
      * Retrieves the ClientMode enum value from a given AndroidX enum. Defaults to
@@ -48,48 +65,208 @@ public class WebAppLaunchHandler {
         }
     }
 
-    public WebAppLaunchHandler(
-            @ClientMode int clientMode, String targetUrl, String packageName, List<Uri> fileUris) {
-        mLaunchParams = getLaunchParams(clientMode, targetUrl, packageName, fileUris);
-    }
-
-    /** Returns whether this launch triggers a navigation */
-    public boolean getStartNewNavigation() {
-        return mLaunchParams.startNewNavigation;
-    }
-
     /**
-     * Initiates the launch process for a web application tab notifying a launch queue.
+     * Creates a new instance of {@link WebAppLaunchHandler}.
      *
-     * @param webContents Web contents object of the tab is being launched.
+     * @param verifier The {@link Verifier} to use for verifying the target url.
+     * @param currentPageVerifier The {@link CurrentPageVerifier} to use for verifying the current
+     *     page.
+     * @param navigationController The {@link CustomTabActivityNavigationController} to handle
+     *     navigation within the Custom Tab.
+     * @param webContents The {@link WebContents} associated with the tab.
+     * @return A new {@link WebAppLaunchHandler} instance.
      */
-    public void notifyLaunchQueue(WebContents webContents) {
-        WebAppLaunchHandlerJni.get()
-                .notifyLaunchQueue(
-                        webContents,
-                        mLaunchParams.startNewNavigation,
-                        mLaunchParams.targetUrl,
-                        mLaunchParams.packageName,
-                        mLaunchParams.fileUris);
+    public static WebAppLaunchHandler create(
+            Verifier verifier,
+            CurrentPageVerifier currentPageVerifier,
+            CustomTabActivityNavigationController navigationController,
+            WebContents webContents,
+            Activity activity) {
+        return new WebAppLaunchHandler(
+                verifier, currentPageVerifier, navigationController, webContents, activity);
+    }
+
+    private WebAppLaunchHandler(
+            Verifier verifier,
+            CurrentPageVerifier currentPageVerifier,
+            CustomTabActivityNavigationController navigationController,
+            WebContents webContents,
+            Activity activity) {
+        mWebContents = webContents;
+        mNavigationController = navigationController;
+        mVerifier = verifier;
+        mCurrentPageVerifier = currentPageVerifier;
+        mActivity = activity;
     }
 
     /**
      * Generates WebAppLaunchParams based on the AndroidX representation of the client mode.
      *
-     * @param clientModeParam The AndroidX representation of the client mode.
+     * @param newNavigationStarted Whether this launch triggered a navigation.
      * @param targetUrl The URL to launch.
      * @param packageName Android package name of the web app is being launched.
+     * @param fileHandlingData Files to be opened for a case it's file open launch. Optional param.
      * @return The generated WebAppLaunchParams object.
      */
-    private static WebAppLaunchParams getLaunchParams(
-            @ClientMode int clientModeParam,
+    private WebAppLaunchParams getLaunchParams(
+            boolean newNavigationStarted,
             String targetUrl,
             String packageName,
-            List<Uri> fileUris) {
-        @ClientMode int clientMode = getClientMode(clientModeParam);
+            @Nullable FileHandlingData fileHandlingData) {
+        List<Uri> fileUris = null;
+        if (fileHandlingData != null && !fileHandlingData.uris.isEmpty()) {
+            if (fileHandlingData.uris.size() == 1) {
+                WebAppLaunchHandlerHistogram.logFileHandling(FileHandlingAction.SINGLE_FILE);
+            } else {
+                WebAppLaunchHandlerHistogram.logFileHandling(FileHandlingAction.MULTIPLE_FILES);
+            }
+            fileUris = fileHandlingData.uris;
+        } else {
+            WebAppLaunchHandlerHistogram.logFileHandling(FileHandlingAction.NO_FILES);
+        }
 
-        boolean startedNewNavigation = clientMode != FOCUS_EXISTING;
-        return new WebAppLaunchParams(startedNewNavigation, targetUrl, packageName, fileUris);
+        return new WebAppLaunchParams(newNavigationStarted, targetUrl, packageName, fileUris);
+    }
+
+    /**
+     * Handles an intent that triggers a TWA creation. It doesn't trigger a url loading because in
+     * the case of initial intent it has been triggered earlier. Passes launch params to a launch
+     * queue. Always uses startNewNavigation = true because opening new custom tab is always url
+     * loading. In case if the target url provided in the intentDataProvider is out of scope of the
+     * TWA a launch queue will not be notified.
+     *
+     * @param intentDataProvider Provides incoming intent with Custom Tabs specific customization
+     *     data.
+     */
+    public void handleInitialIntent(BrowserServicesIntentDataProvider intentDataProvider) {
+        WebAppLaunchHandlerHistogram.logClientMode(ClientModeAction.INITIAL_INTENT);
+
+        WebAppLaunchParams launchParams =
+                getLaunchParams(
+                        /* newNavigationStarted= */ true,
+                        intentDataProvider.getUrlToLoad(),
+                        intentDataProvider.getClientPackageName(),
+                        intentDataProvider.getFileHandlingData());
+
+        maybeNotifyLaunchQueue(launchParams);
+    }
+
+    /**
+     * Handles an intent that comes after a TWA creation. It triggers a url loading in case of
+     * navigate-existing mode. It opens a new TWA in a new task in a case of navigate-new mode. It
+     * Passes launch params to a launch queue. In case if the target url provided in the
+     * intentDataProvider is out of scope of the TWA a launch queue will not be notified. If
+     * currently open page is out of scope of the TWA and it's not going to be reloaded a launch
+     * queue will not be notified as well.
+     *
+     * @param intentDataProvider Provides incoming intent with Custom Tabs specific customization
+     *     data.
+     */
+    public void handleNewIntent(BrowserServicesIntentDataProvider intentDataProvider) {
+        @ClientMode int clientModeFromIntent = intentDataProvider.getLaunchHandlerClientMode();
+        recordClientMode(clientModeFromIntent);
+        @ClientMode int clientMode = getClientMode(clientModeFromIntent);
+
+        if (clientMode == NAVIGATE_NEW) {
+            launchNewIntent(
+                    intentDataProvider.getUrlToLoad(), intentDataProvider.getClientPackageName());
+        } else {
+            boolean startNavigation =
+                    clientMode == NAVIGATE_EXISTING
+                            && !TextUtils.isEmpty(intentDataProvider.getUrlToLoad());
+
+            if (startNavigation) {
+                LoadUrlParams params = new LoadUrlParams(intentDataProvider.getUrlToLoad());
+                mNavigationController.navigate(params, intentDataProvider.getIntent());
+            }
+
+            WebAppLaunchParams launchParams =
+                    getLaunchParams(
+                            startNavigation,
+                            intentDataProvider.getUrlToLoad(),
+                            intentDataProvider.getClientPackageName(),
+                            intentDataProvider.getFileHandlingData());
+
+            maybeNotifyLaunchQueue(launchParams);
+        }
+    }
+
+    private void recordClientMode(@ClientMode int clientMode) {
+        switch (clientMode) {
+            case NAVIGATE_EXISTING:
+                WebAppLaunchHandlerHistogram.logClientMode(ClientModeAction.MODE_NAVIGATE_EXISTING);
+                break;
+            case FOCUS_EXISTING:
+                WebAppLaunchHandlerHistogram.logClientMode(ClientModeAction.MODE_FOCUS_EXISTING);
+                break;
+            case NAVIGATE_NEW:
+                WebAppLaunchHandlerHistogram.logClientMode(ClientModeAction.MODE_NAVIGATE_NEW);
+                break;
+            case AUTO:
+                WebAppLaunchHandlerHistogram.logClientMode(ClientModeAction.MODE_AUTO);
+                break;
+        }
+    }
+
+    /**
+     * Launches a new instance of TWA in a separate task. In order to support navigate-new client
+     * mode we need to support several running instances of the same TWA app simultaneously in
+     * separate tasks. If client_mode is navigate-new we will resend an intent with action VIEW to
+     * create one more running instance of the TWA app. We achieve it adding FLAG_ACTIVITY_NEW_TASK
+     * and FLAG_ACTIVITY_MULTIPLE_TASK to the new intent
+     *
+     * @param targetUrl The URL the web app was launched with
+     * @param packageName Chrome will take a package name from the TWA session to ensure the intent
+     *     is sent to the application it is received from
+     */
+    private void launchNewIntent(String targetUrl, String packageName) {
+        if (packageName == null) {
+            return;
+        }
+
+        Intent newIntent = new Intent();
+        newIntent.setAction(Intent.ACTION_VIEW);
+        newIntent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        newIntent.setData(Uri.parse(targetUrl));
+        newIntent.setPackage(packageName);
+        try {
+            mActivity.startActivity(newIntent);
+        } catch (ActivityNotFoundException exception) {
+            Log.w(TAG, "Couldn't start new activity in a separate task.");
+        }
+    }
+
+    private void maybeNotifyLaunchQueue(WebAppLaunchParams launchParams) {
+
+        if (!launchParams.newNavigationStarted) {
+            // Check if the URL of the current page is in the web app scope.
+            // Launch params should not be sent to a not verified origin.
+            CurrentPageVerifier.VerificationState state = mCurrentPageVerifier.getState();
+            if (state == null || state.status != CurrentPageVerifier.VerificationStatus.SUCCESS) {
+                WebAppLaunchHandlerHistogram.logFailureReason(
+                        FailureReasonAction.CURRENT_PAGE_VERIFICATION_FAILED);
+                return;
+            }
+        }
+
+        mVerifier
+                .verify(launchParams.targetUrl)
+                .then(
+                        (verified) -> {
+                            if (!verified) {
+                                WebAppLaunchHandlerHistogram.logFailureReason(
+                                        FailureReasonAction.TARGET_URL_VERIFICATION_FAILED);
+                                return;
+                            }
+                            WebAppLaunchHandlerJni.get()
+                                    .notifyLaunchQueue(
+                                            mWebContents,
+                                            launchParams.newNavigationStarted,
+                                            launchParams.targetUrl,
+                                            launchParams.packageName,
+                                            launchParams.fileUris);
+                        });
     }
 
     /**

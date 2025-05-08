@@ -17,20 +17,20 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.R;
-
-import java.util.function.IntConsumer;
+import org.chromium.ui.util.ClickWithMetaStateCallback;
 
 /**
  * View for a button in the bookmark bar which provides users with bookmark access from top chrome.
  */
+@NullMarked
 class BookmarkBarButton extends LinearLayout {
 
     private ImageView mIcon;
@@ -45,7 +45,7 @@ class BookmarkBarButton extends LinearLayout {
      * @param context the context the bookmark bar button is running in.
      * @param attrs the attributes of the XML tag that is inflating the bookmark bar button.
      */
-    public BookmarkBarButton(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public BookmarkBarButton(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -57,7 +57,7 @@ class BookmarkBarButton extends LinearLayout {
     }
 
     @Override
-    public boolean onKeyUp(int keyCode, @NonNull KeyEvent event) {
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
         // NOTE: Update `mLastEventMetaState` in anticipation of a potential click.
         mLastEventMetaState = event.getMetaState();
         return super.onKeyUp(keyCode, event);
@@ -65,7 +65,7 @@ class BookmarkBarButton extends LinearLayout {
 
     @Override
     @SuppressLint("ClickableViewAccessibility")
-    public boolean onTouchEvent(@NonNull MotionEvent event) {
+    public boolean onTouchEvent(MotionEvent event) {
         // NOTE: Update `mLastEventMetaState` in anticipation of a potential click.
         mLastEventMetaState = event.getMetaState();
         return super.onTouchEvent(event);
@@ -77,8 +77,9 @@ class BookmarkBarButton extends LinearLayout {
      *
      * @param callback the callback to notify.
      */
-    public void setClickCallback(@Nullable IntConsumer callback) {
-        setOnClickListener(callback != null ? (v) -> callback.accept(mLastEventMetaState) : null);
+    public void setClickCallback(@Nullable ClickWithMetaStateCallback callback) {
+        setOnClickListener(
+                callback != null ? (v) -> callback.onClickWithMeta(mLastEventMetaState) : null);
     }
 
     /**
@@ -130,24 +131,21 @@ class BookmarkBarButton extends LinearLayout {
     /**
      * @return the icon which is rendered in the bookmark bar button.
      */
-    @Nullable
-    Drawable getIconForTesting() {
+    @Nullable Drawable getIconForTesting() {
         return mIcon.getDrawable();
     }
 
     /**
      * @return the tint list of the icon which is rendered in the bookmark bar button.
      */
-    @Nullable
-    ColorStateList getIconTintListForTesting() {
+    @Nullable ColorStateList getIconTintListForTesting() {
         return ImageViewCompat.getImageTintList(mIcon);
     }
 
     /**
      * @return the title which is rendered in the bookmark bar button.
      */
-    @Nullable
-    CharSequence getTitleForTesting() {
+    @Nullable CharSequence getTitleForTesting() {
         return mTitle.getText();
     }
 }

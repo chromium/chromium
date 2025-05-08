@@ -104,6 +104,10 @@ LensViewFinderTransition TransitionFromPresentationStyle(
 
   _lensViewController =
       ios::provider::NewChromeLensViewFinderController(configuration);
+  if (!_lensViewController) {
+    return;
+  }
+
   [_lensViewController setLensViewFinderDelegate:self];
 
   _lensViewController.transitioningDelegate = _transitionManager;
@@ -113,9 +117,10 @@ LensViewFinderTransition TransitionFromPresentationStyle(
       UIModalTransitionStyleCrossDissolve;
 
   [_metricsRecorder recordLensViewFinderOpened];
-  [self.baseViewController presentViewController:_lensViewController
-                                        animated:YES
-                                      completion:nil];
+  [self.baseViewController
+      presentViewController:_lensViewController
+                   animated:YES
+                 completion:command.presentationCompletion];
 }
 
 - (void)lensOverlayWillDismissWithCause:
@@ -155,6 +160,7 @@ LensViewFinderTransition TransitionFromPresentationStyle(
   [_lensOverlayCommands
       searchWithLensImageMetadata:imageMetadata
                        entrypoint:entrypoint
+          initialPresentationBase:_lensViewController
                        completion:^(BOOL success) {
                          [weakLensViewController tearDownCaptureInfrastructure];
                        }];

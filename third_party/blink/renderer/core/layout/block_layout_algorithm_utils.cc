@@ -224,4 +224,106 @@ void AlignBlockContent(const ComputedStyle& style,
   }
 }
 
+LogicalStaticPosition::InlineEdge InlineStaticPositionEdge(
+    const BlockNode& oof_node,
+    const ComputedStyle* justify_items_style,
+    WritingDirectionMode parent_writing_direction,
+    bool should_swap_inline_axis) {
+  CHECK(oof_node.IsOutOfFlowPositioned());
+  if (!RuntimeEnabledFeatures::CSSAlignBlockAndInlineOutOfFlowsEnabled()) {
+    return should_swap_inline_axis ? LogicalStaticPosition::kInlineEnd
+                                   : LogicalStaticPosition::kInlineStart;
+  }
+
+  StyleSelfAlignmentData normal_value_behavior = {ItemPosition::kStart,
+                                                  OverflowAlignment::kDefault};
+  const ItemPosition align_self =
+      oof_node.Style()
+          .ResolvedJustifySelf(normal_value_behavior, justify_items_style)
+          .GetPosition();
+
+  switch (align_self) {
+    case ItemPosition::kEnd:
+    case ItemPosition::kFlexEnd:
+    case ItemPosition::kLastBaseline:
+    case ItemPosition::kRight: {
+      return should_swap_inline_axis ? LogicalStaticPosition::kInlineStart
+                                     : LogicalStaticPosition::kInlineEnd;
+    }
+    case ItemPosition::kAnchorCenter:
+    case ItemPosition::kCenter:
+      return LogicalStaticPosition::kInlineCenter;
+    case ItemPosition::kBaseline:
+    case ItemPosition::kFlexStart:
+    case ItemPosition::kLeft:
+    case ItemPosition::kStart:
+    case ItemPosition::kStretch: {
+      return should_swap_inline_axis ? LogicalStaticPosition::kInlineEnd
+                                     : LogicalStaticPosition::kInlineStart;
+    }
+    case ItemPosition::kSelfEnd:
+    case ItemPosition::kSelfStart: {
+      LogicalToLogical<LogicalStaticPosition::InlineEdge> logical(
+          oof_node.Style().GetWritingDirection(), parent_writing_direction,
+          LogicalStaticPosition::kInlineStart,
+          LogicalStaticPosition::kInlineEnd,
+          LogicalStaticPosition::kInlineStart,
+          LogicalStaticPosition::kInlineEnd);
+      return (align_self == ItemPosition::kSelfStart) ? logical.InlineStart()
+                                                      : logical.InlineEnd();
+    }
+    case ItemPosition::kAuto:
+    case ItemPosition::kLegacy:
+    case ItemPosition::kNormal:
+      NOTREACHED();
+  }
+}
+
+LogicalStaticPosition::BlockEdge BlockStaticPositionEdge(
+    const BlockNode& oof_node,
+    const ComputedStyle* align_items_style,
+    WritingDirectionMode parent_writing_direction) {
+  CHECK(oof_node.IsOutOfFlowPositioned());
+  if (!RuntimeEnabledFeatures::CSSAlignBlockAndInlineOutOfFlowsEnabled()) {
+    return LogicalStaticPosition::kBlockStart;
+  }
+
+  StyleSelfAlignmentData normal_value_behavior = {ItemPosition::kStart,
+                                                  OverflowAlignment::kDefault};
+  const ItemPosition align_self =
+      oof_node.Style()
+          .ResolvedAlignSelf(normal_value_behavior, align_items_style)
+          .GetPosition();
+
+  switch (align_self) {
+    case ItemPosition::kEnd:
+    case ItemPosition::kFlexEnd:
+    case ItemPosition::kLastBaseline:
+      return LogicalStaticPosition::kBlockEnd;
+    case ItemPosition::kAnchorCenter:
+    case ItemPosition::kCenter:
+      return LogicalStaticPosition::kBlockCenter;
+    case ItemPosition::kBaseline:
+    case ItemPosition::kFlexStart:
+    case ItemPosition::kStart:
+    case ItemPosition::kStretch:
+      return LogicalStaticPosition::kBlockStart;
+    case ItemPosition::kSelfEnd:
+    case ItemPosition::kSelfStart: {
+      LogicalToLogical<LogicalStaticPosition::BlockEdge> logical(
+          oof_node.Style().GetWritingDirection(), parent_writing_direction,
+          LogicalStaticPosition::kBlockStart, LogicalStaticPosition::kBlockEnd,
+          LogicalStaticPosition::kBlockStart, LogicalStaticPosition::kBlockEnd);
+      return (align_self == ItemPosition::kSelfStart) ? logical.BlockStart()
+                                                      : logical.BlockEnd();
+    }
+    case ItemPosition::kAuto:
+    case ItemPosition::kLeft:
+    case ItemPosition::kRight:
+    case ItemPosition::kLegacy:
+    case ItemPosition::kNormal:
+      NOTREACHED();
+  }
+}
+
 }  // namespace blink

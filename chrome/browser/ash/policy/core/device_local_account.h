@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "components/policy/core/common/device_local_account_type.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 
 namespace ash {
 class CrosSettings;
@@ -37,9 +37,14 @@ struct WebKioskAppBasicInfo {
 struct IsolatedWebAppKioskBasicInfo {
  public:
   IsolatedWebAppKioskBasicInfo(std::string web_bundle_id,
-                               std::string update_manifest_url);
-  IsolatedWebAppKioskBasicInfo() = default;
-  ~IsolatedWebAppKioskBasicInfo() = default;
+                               std::string update_manifest_url,
+                               std::string update_channel,
+                               std::string pinned_version,
+                               bool allow_downgrades);
+  IsolatedWebAppKioskBasicInfo();
+  ~IsolatedWebAppKioskBasicInfo();
+  IsolatedWebAppKioskBasicInfo(const IsolatedWebAppKioskBasicInfo& other);
+  IsolatedWebAppKioskBasicInfo& operator=(const IsolatedWebAppKioskBasicInfo&);
 
   [[nodiscard]] const std::string& web_bundle_id() const {
     return web_bundle_id_;
@@ -49,9 +54,48 @@ struct IsolatedWebAppKioskBasicInfo {
     return update_manifest_url_;
   }
 
+  [[nodiscard]] const std::string& update_channel() const {
+    return update_channel_;
+  }
+
+  [[nodiscard]] const std::string& pinned_version() const {
+    return pinned_version_;
+  }
+
+  [[nodiscard]] bool allow_downgrades() const { return allow_downgrades_; }
+
  private:
   std::string web_bundle_id_;
   std::string update_manifest_url_;
+  std::string update_channel_;
+  std::string pinned_version_;
+  bool allow_downgrades_ = false;
+};
+
+struct ArcvmKioskAppBasicInfo {
+  ArcvmKioskAppBasicInfo(const std::string& package_name,
+                         const std::string& class_name,
+                         const std::string& action,
+                         const std::string& display_name);
+  ArcvmKioskAppBasicInfo();
+  ~ArcvmKioskAppBasicInfo();
+  ArcvmKioskAppBasicInfo(const ArcvmKioskAppBasicInfo& other);
+  ArcvmKioskAppBasicInfo& operator=(const ArcvmKioskAppBasicInfo&);
+
+  [[nodiscard]] const std::string& package_name() const {
+    return package_name_;
+  }
+  [[nodiscard]] const std::string& class_name() const { return class_name_; }
+  [[nodiscard]] const std::string& action() const { return action_; }
+  [[nodiscard]] const std::string& display_name() const {
+    return display_name_;
+  }
+
+ private:
+  std::string package_name_;
+  std::string class_name_;
+  std::string action_;
+  std::string display_name_;
 };
 
 // This must match DeviceLocalAccountInfoProto.AccountType in
@@ -85,6 +129,10 @@ struct DeviceLocalAccount {
                      const IsolatedWebAppKioskBasicInfo& kiosk_iwa_info,
                      const std::string& account_id);
 
+  DeviceLocalAccount(EphemeralMode ephemeral_mode,
+                     const ArcvmKioskAppBasicInfo& arcvm_kiosk_app_info,
+                     const std::string& account_id);
+
   DeviceLocalAccount(const DeviceLocalAccount& other);
   ~DeviceLocalAccount();
 
@@ -114,6 +162,7 @@ struct DeviceLocalAccount {
 
   WebKioskAppBasicInfo web_kiosk_app_info;
   IsolatedWebAppKioskBasicInfo kiosk_iwa_info;
+  ArcvmKioskAppBasicInfo arcvm_kiosk_app_info;
 };
 
 // Retrieves a list of device-local accounts from `cros_settings`.

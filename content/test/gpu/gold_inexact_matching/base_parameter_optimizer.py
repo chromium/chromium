@@ -14,7 +14,6 @@ import os
 import shutil
 import subprocess
 import tempfile
-from typing import Dict, List, Optional, Set, Tuple
 
 from PIL import Image  # pylint: disable=import-error
 
@@ -42,10 +41,10 @@ GOLDCTL_PATHS = [
 #     }
 #   }
 # }
-ExpectationJson = Dict[str, Dict[str, Dict[str, str]]]
+ExpectationJson = dict[str, dict[str, dict[str, str]]]
 
 
-class BaseParameterOptimizer():
+class BaseParameterOptimizer:
   """Abstract base class for running a parameter optimization for a test."""
   MIN_EDGE_THRESHOLD = 0
   MAX_EDGE_THRESHOLD = 255
@@ -62,16 +61,16 @@ class BaseParameterOptimizer():
     """
     self._args = args
     self._test_name = test_name
-    self._goldctl_binary: Optional[str] = None
-    self._working_dir: Optional[str] = None
-    self._expectations: Optional[ExpectationJson] = None
+    self._goldctl_binary: str | None = None
+    self._working_dir: str | None = None
+    self._expectations: ExpectationJson | None = None
     # TODO(skbug.com/10610): Switch away from the public instance once
     # authentication is fixed for the non-public instance.
     self._gold_url = f'https://{args.gold_instance}-public-gold.skia.org'
     self._pool = multiprocessing.Pool()
     # A map of strings, denoting a resolution or trace, to a set of strings,
     # denoting images that are that dimension or belong to that trace.
-    self._images: Dict[str, Set[str]] = collections.defaultdict(set)
+    self._images: dict[str, set[str]] = collections.defaultdict(set)
     self._VerifyArgs()
     parameter_set.ParameterSet.ignored_border_thickness = \
         self._args.ignored_border_thickness
@@ -367,7 +366,7 @@ class BaseParameterOptimizer():
     return self._goldctl_binary
 
   def _RunComparisonForParameters(
-      self, parameters: parameter_set.ParameterSet) -> Tuple[bool, int, int]:
+      self, parameters: parameter_set.ParameterSet) -> tuple[bool, int, int]:
     """Runs a comparison for all image combinations using some parameters.
 
     Args:
@@ -419,7 +418,7 @@ class BaseParameterOptimizer():
 
   def _GenerateComparisonCmd(
       self, left_digest: str, right_digest: str,
-      parameters: parameter_set.ParameterSet) -> List[str]:
+      parameters: parameter_set.ParameterSet) -> list[str]:
     """Generates a comparison command for the given arguments.
 
     The returned command can be passed directly to a subprocess call.
@@ -445,7 +444,7 @@ class BaseParameterOptimizer():
     return cmd
 
 
-def RunCommandAndExtractData(cmd: List[str]) -> Tuple[bool, int, int]:
+def RunCommandAndExtractData(cmd: list[str]) -> tuple[bool, int, int]:
   """Runs a comparison command and extracts data from it.
 
   This is outside of the parameter optimizers because it is meant to be run via

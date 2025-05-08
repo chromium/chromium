@@ -96,8 +96,8 @@ TEST_F(MostVisitedTilesMediatorTest, TestOpenMostVisited) {
       [[ContentSuggestionsMostVisitedItem alloc] init];
   item.URL = url;
   ContentSuggestionsMostVisitedTileView* view =
-      [[ContentSuggestionsMostVisitedTileView alloc] initInMagicStack:YES
-                                                    withConfiguration:item];
+      [[ContentSuggestionsMostVisitedTileView alloc]
+          initWithConfiguration:item];
   UIGestureRecognizer* recognizer = [[UIGestureRecognizer alloc] init];
   [view addGestureRecognizer:recognizer];
   OCMExpect([mediator_.NTPActionsDelegate mostVisitedTileOpened]);

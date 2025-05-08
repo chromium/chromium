@@ -197,6 +197,13 @@ class GlicFocusedTabManager : public BrowserListObserver,
   // because of animation.
   void OnWidgetShowStateChanged(views::Widget* widget) override;
 
+  // Callback for browser window visibility changes (e.g. cmd+h on Mac).
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
+
+  // Callback for visibility on screen changes (e.g. Spaces on Mac).
+  void OnWidgetVisibilityOnScreenChanged(views::Widget* widget,
+                                         bool visible) override;
+
   // Callback for browser window widget being destroyed.
   void OnWidgetDestroyed(views::Widget* widget) override;
 

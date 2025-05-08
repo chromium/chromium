@@ -660,6 +660,14 @@ blink::UserAgentMetadata GetUserAgentMetadata(const PrefService* pref_service,
       base::StringPrintf("%d.%d.%d", major, minor, bugfix);
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+  // TODO(crbug.com/40245146): Remove this Blink feature
+  if (base::FeatureList::IsEnabled(
+          blink::features::kReduceUserAgentDataLinuxPlatformVersion)) {
+    metadata.platform_version = std::string();
+  }
+#endif
+
   return metadata;
 }
 

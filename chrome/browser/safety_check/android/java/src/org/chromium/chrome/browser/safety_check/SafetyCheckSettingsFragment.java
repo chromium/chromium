@@ -16,11 +16,14 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.widget.ButtonCompat;
 
 /** Settings fragment containing Safety check. This class represents a View in the MVC paradigm. */
+@NullMarked
 public class SafetyCheckSettingsFragment extends PreferenceFragmentCompat
         implements EmbeddableSettingsPage {
     private static final String SAFETY_CHECK_IMMEDIATE_RUN =
@@ -39,7 +42,7 @@ public class SafetyCheckSettingsFragment extends PreferenceFragmentCompat
 
     /** Initializes all the objects related to the preferences page. */
     @Override
-    public void onCreatePreferences(Bundle bundle, String s) {
+    public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         // Add all preferences and set the title.
         SettingsUtils.addPreferencesFromResource(this, R.xml.safety_check_preferences);
         mPageTitle.set(getString(R.string.prefs_safety_check));
@@ -57,7 +60,9 @@ public class SafetyCheckSettingsFragment extends PreferenceFragmentCompat
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         LinearLayout view =
                 (LinearLayout) super.onCreateView(inflater, container, savedInstanceState);
         // Add a button to the bottom of the preferences view.

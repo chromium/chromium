@@ -9,16 +9,14 @@
 
 namespace blink {
 
-class WebGL2RenderingContextBase;
-
 class WebGLFenceSync : public WebGLSync {
  public:
-  WebGLFenceSync(WebGL2RenderingContextBase*,
+  WebGLFenceSync(WebGLContextObjectSupport*,
                  GLenum condition,
                  GLbitfield flags);
 
  private:
-  GLuint insertQuery(WebGL2RenderingContextBase*);
+  GLuint insertQuery(WebGLContextObjectSupport*);
 };
 
 }  // namespace blink

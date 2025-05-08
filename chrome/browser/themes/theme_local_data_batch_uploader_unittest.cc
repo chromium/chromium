@@ -111,7 +111,7 @@ class ThemeLocalDataBatchUploaderTestBase
         extensions::mojom::ManifestLocation::kInternal, kCustomThemeUrl);
     extensions::ExtensionPrefs::Get(profile())->AddGrantedPermissions(
         theme_extension_->id(), extensions::PermissionSet());
-    registrar()->AddExtension(theme_extension_.get());
+    registrar()->AddExtension(theme_extension_);
     ASSERT_EQ(1u, extensions::ExtensionRegistry::Get(profile())
                       ->enabled_extensions()
                       .size());
@@ -178,8 +178,7 @@ class ThemeLocalDataBatchUploaderTestWithFlagDisabled
  public:
   ThemeLocalDataBatchUploaderTestWithFlagDisabled() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kMoveThemePrefsToSpecifics,
-                              syncer::kSeparateLocalAndAccountThemes},
+        /*enabled_features=*/{syncer::kSeparateLocalAndAccountThemes},
         /*disabled_features=*/{syncer::kThemesBatchUpload});
   }
 
@@ -229,8 +228,7 @@ class ThemeLocalDataBatchUploaderTest
  public:
   ThemeLocalDataBatchUploaderTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kMoveThemePrefsToSpecifics,
-                              syncer::kSeparateLocalAndAccountThemes,
+        /*enabled_features=*/{syncer::kSeparateLocalAndAccountThemes,
                               syncer::kThemesBatchUpload},
         /*disabled_features=*/{});
   }

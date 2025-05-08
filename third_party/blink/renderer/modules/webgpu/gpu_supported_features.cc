@@ -24,6 +24,8 @@ std::optional<V8GPUFeatureName::Enum> GPUSupportedFeatures::ToV8FeatureNameEnum(
       return V8GPUFeatureName::Enum::kTextureCompressionEtc2;
     case wgpu::FeatureName::TextureCompressionASTC:
       return V8GPUFeatureName::Enum::kTextureCompressionAstc;
+    case wgpu::FeatureName::TextureCompressionASTCSliced3D:
+      return V8GPUFeatureName::Enum::kTextureCompressionAstcSliced3d;
     case wgpu::FeatureName::IndirectFirstInstance:
       return V8GPUFeatureName::Enum::kIndirectFirstInstance;
     case wgpu::FeatureName::DepthClipControl:
@@ -52,6 +54,8 @@ std::optional<V8GPUFeatureName::Enum> GPUSupportedFeatures::ToV8FeatureNameEnum(
       return V8GPUFeatureName::Enum::kChromiumExperimentalUnorm16TextureFormats;
     case wgpu::FeatureName::Snorm16TextureFormats:
       return V8GPUFeatureName::Enum::kChromiumExperimentalSnorm16TextureFormats;
+    case wgpu::FeatureName::ChromiumExperimentalSubgroupMatrix:
+      return V8GPUFeatureName::Enum::kChromiumExperimentalSubgroupMatrix;
     default:
       return std::nullopt;
   }

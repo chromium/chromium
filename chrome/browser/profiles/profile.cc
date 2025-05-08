@@ -58,7 +58,7 @@
 #include "chrome/browser/profiles/android/jni_headers/OtrProfileId_jni.h"
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/extension_pref_store.h"              // nogncheck
 #include "extensions/browser/extension_pref_value_map_factory.h"  // nogncheck
 #include "extensions/browser/pref_names.h"                        // nogncheck
@@ -332,7 +332,7 @@ void Profile::RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 #endif  // BUILDFLAG(IS_ANDROID)
   registry->RegisterStringPref(prefs::kSessionExitType, std::string());
   registry->RegisterBooleanPref(prefs::kDisableExtensions, false);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   registry->RegisterBooleanPref(extensions::pref_names::kAlertsInitialized,
                                 false);
 #endif
@@ -478,7 +478,7 @@ void Profile::MaybeSendDestroyedNotification() {
 // static
 PrefStore* Profile::CreateExtensionPrefStore(Profile* profile,
                                              bool incognito_pref_store) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (ExtensionPrefValueMap* pref_value_map =
           ExtensionPrefValueMapFactory::GetForBrowserContext(profile)) {
     return new ExtensionPrefStore(pref_value_map, incognito_pref_store);

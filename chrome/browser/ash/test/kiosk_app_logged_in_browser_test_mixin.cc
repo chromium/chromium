@@ -4,38 +4,31 @@
 
 #include "chrome/browser/ash/test/kiosk_app_logged_in_browser_test_mixin.h"
 
+#include <utility>
+
 #include "ash/constants/ash_switches.h"
+#include "base/check.h"
 #include "base/values.h"
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
-#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
+#include "chromeos/ash/components/settings/device_settings_cache_test_support.h"
 #include "components/account_id/account_id.h"
-#include "components/policy/core/common/device_local_account_type.h"
+#include "components/policy/proto/chrome_device_policy.pb.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/test_helper.h"
+
+namespace em = enterprise_management;
 
 namespace ash {
 
 KioskAppLoggedInBrowserTestMixin::KioskAppLoggedInBrowserTestMixin(
     InProcessBrowserTestMixinHost* host,
-    std::string_view account_id)
+    std::string account_id)
     : InProcessBrowserTestMixin(host),
+      account_id_(std::move(account_id)),
       user_id_(policy::GenerateDeviceLocalAccountUserId(
-          account_id,
-          policy::DeviceLocalAccountType::kKioskApp)) {
-  scoped_testing_cros_settings_.device_settings()->Set(
-      ash::kAccountsPrefDeviceLocalAccounts,
-      base::Value(base::Value::List().Append(
-          base::Value::Dict()
-              .Set(ash::kAccountsPrefDeviceLocalAccountsKeyId, account_id)
-              .Set(ash::kAccountsPrefDeviceLocalAccountsKeyType,
-                   static_cast<int>(policy::DeviceLocalAccountType::kKioskApp))
-              .Set(ash::kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
-                   static_cast<int>(false))
-              .Set(ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppId,
-                   "fake-kiosk-app-id")
-              .Set(ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL,
-                   "fake-kiosk-url"))));
-}
+          account_id_,
+          policy::DeviceLocalAccountType::kKioskApp)) {}
 
 KioskAppLoggedInBrowserTestMixin::~KioskAppLoggedInBrowserTestMixin() = default;
 
@@ -52,7 +45,27 @@ void KioskAppLoggedInBrowserTestMixin::SetUpCommandLine(
 
 void KioskAppLoggedInBrowserTestMixin::SetUpLocalStatePrefService(
     PrefService* local_state) {
+  // Update local_state cache used in UserManager.
   user_manager::TestHelper::RegisterKioskAppUser(*local_state, user_id_);
+
+  // Update device settings cache.
+  CHECK(device_settings_cache::Update(
+      local_state, [&](em::PolicyData& policy_data) {
+        em::ChromeDeviceSettingsProto settings;
+        if (policy_data.has_policy_value()) {
+          CHECK(settings.ParseFromString(policy_data.policy_value()));
+        }
+        auto* account = settings.mutable_device_local_accounts()->add_account();
+        account->set_account_id(account_id_);
+        account->set_type(
+            em::DeviceLocalAccountInfoProto::ACCOUNT_TYPE_KIOSK_APP);
+        account->set_ephemeral_mode(
+            em::DeviceLocalAccountInfoProto::EPHEMERAL_MODE_UNSET);
+        account->mutable_kiosk_app()->set_app_id("fake-kiosk-app-id");
+        account->mutable_kiosk_app()->set_update_url("fake-kiosk-url");
+
+        policy_data.set_policy_value(settings.SerializeAsString());
+      }));
 }
 
 }  // namespace ash

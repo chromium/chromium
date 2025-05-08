@@ -86,6 +86,41 @@ Position GetNextSoftBreak(const OffsetMapping& mapping, InlineCursor& cursor) {
   return Position();
 }
 
+void AppendWrappedNode(const Element& container,
+                       const Node& node,
+                       const OffsetMapping& mapping,
+                       InlineCursor& cursor,
+                       Position& break_position,
+                       StringBuilder& result) {
+  if (IsA<HTMLBRElement>(node)) {
+    if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled() &&
+        !TextControlElement::IsPlaceholderBreakElement(&node)) {
+      result.Append(kNewlineCharacter);
+    } else {
+      DCHECK_EQ(&node, container.lastChild());
+    }
+  } else if (auto* text_node = DynamicTo<Text>(node)) {
+    String data = text_node->data();
+    unsigned length = data.length();
+    unsigned position = 0;
+    while (break_position.AnchorNode() == node &&
+           static_cast<unsigned>(break_position.OffsetInContainerNode()) <=
+               length) {
+      unsigned break_offset = break_position.OffsetInContainerNode();
+      if (break_offset > position) {
+        result.Append(data, position, break_offset - position);
+        position = break_offset;
+        result.Append(kNewlineCharacter);
+      }
+      break_position = GetNextSoftBreak(mapping, cursor);
+    }
+    result.Append(data, position, length - position);
+  }
+  while (break_position.AnchorNode() == node) {
+    break_position = GetNextSoftBreak(mapping, cursor);
+  }
+}
+
 }  // namespace
 
 TextControlElement::TextControlElement(const QualifiedName& tag_name,
@@ -865,7 +900,21 @@ bool TextControlElement::LastChangeWasUserEdit() const {
 }
 
 Node* TextControlElement::CreatePlaceholderBreakElement() const {
-  return MakeGarbageCollected<HTMLBRElement>(GetDocument());
+  auto* element = MakeGarbageCollected<HTMLBRElement>(GetDocument());
+  if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
+    element->setAttribute(html_names::kIdAttr,
+                          shadow_element_names::kIdPlaceholderBreak);
+  }
+  return element;
+}
+
+bool TextControlElement::IsPlaceholderBreakElement(const Node* node) {
+  if (!RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
+    return IsA<HTMLBRElement>(node);
+  }
+  return IsA<HTMLBRElement>(node) &&
+         To<Element>(node)->GetIdAttribute() ==
+             shadow_element_names::kIdPlaceholderBreak;
 }
 
 void TextControlElement::AddPlaceholderBreakElementIfNecessary() {
@@ -874,7 +923,14 @@ void TextControlElement::AddPlaceholderBreakElementIfNecessary() {
       inner_editor->GetLayoutObject()->Style()->ShouldCollapseBreaks()) {
     return;
   }
-  auto* last_child_text_node = DynamicTo<Text>(inner_editor->lastChild());
+  const Node* last_child = inner_editor->lastChild();
+  if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled() &&
+      IsA<HTMLBRElement>(last_child) &&
+      !IsPlaceholderBreakElement(last_child)) {
+    inner_editor->AppendChild(CreatePlaceholderBreakElement());
+    return;
+  }
+  auto* last_child_text_node = DynamicTo<Text>(last_child);
   if (!last_child_text_node)
     return;
   if (last_child_text_node->data().EndsWith('\n') ||
@@ -894,22 +950,50 @@ void TextControlElement::SetInnerEditorValue(const String& value) {
 
   // If the last child is a trailing <br> that's appended below, remove it
   // first so as to enable setInnerText() fast path of updating a text node.
-  if (IsA<HTMLBRElement>(inner_editor->lastChild()))
+  if (IsPlaceholderBreakElement(inner_editor->lastChild())) {
     inner_editor->RemoveChild(inner_editor->lastChild(), ASSERT_NO_EXCEPTION);
+  }
 
   // We don't use setTextContent.  It triggers unnecessary paint.
-  if (value.empty())
+  if (value.empty()) {
     inner_editor->RemoveChildren();
-  else
+  } else if (!RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled() ||
+             IsA<HTMLInputElement>(this)) {
     ReplaceChildrenWithText(inner_editor, value, ASSERT_NO_EXCEPTION);
+  } else {
+    inner_editor->RemoveChildren();
+    // For <textarea>, \n is replaced with <br>.
+    AppendTextOrBr(value, *inner_editor);
+  }
 
-  // Add <br> so that we can put the caret at the next line of the last
-  // newline.
+  // Add a placeholder <br> so that we can put the caret at the next line of
+  // the last newline.
   AddPlaceholderBreakElementIfNecessary();
 
   if (text_is_changed && GetLayoutObject()) {
     if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache())
       cache->HandleTextFormControlChanged(this);
+  }
+}
+
+void TextControlElement::AppendTextOrBr(const String& value,
+                                        ContainerNode& container) {
+  Document& doc = container.GetDocument();
+  wtf_size_t start = 0;
+  while (start < value.length()) {
+    wtf_size_t i = value.find('\n', start);
+    if (i == WTF::kNotFound) {
+      container.AppendChild(Text::Create(doc, value.Substring(start)));
+      break;
+    }
+    if (start != i) {
+      // Append [start, i).
+      container.AppendChild(
+          Text::Create(doc, value.Substring(start, i - start)));
+    }
+    // Append a BR.
+    container.AppendChild(MakeGarbageCollected<HTMLBRElement>(doc));
+    start = i + 1;
   }
 }
 
@@ -925,19 +1009,28 @@ String TextControlElement::InnerEditorValue() const {
   Node& first_child = *inner_editor->firstChild();
   if (auto* first_child_text_node = DynamicTo<Text>(first_child)) {
     Node* second_child = first_child.nextSibling();
-    if (!second_child ||
-        (!second_child->nextSibling() && IsA<HTMLBRElement>(*second_child)))
+    if (!second_child || (!second_child->nextSibling() &&
+                          IsPlaceholderBreakElement(second_child))) {
       return first_child_text_node->data();
-  } else if (!first_child.nextSibling() && IsA<HTMLBRElement>(first_child)) {
+    }
+  } else if (!first_child.nextSibling() &&
+             IsPlaceholderBreakElement(&first_child)) {
     return g_empty_string;
   }
 
   StringBuilder result;
   for (Node& node : NodeTraversal::InclusiveDescendantsOf(*inner_editor)) {
     if (IsA<HTMLBRElement>(node)) {
-      DCHECK_EQ(&node, inner_editor->lastChild());
-      if (&node != inner_editor->lastChild())
-        result.Append(kNewlineCharacter);
+      if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
+        if (!IsPlaceholderBreakElement(&node)) {
+          result.Append(kNewlineCharacter);
+        }
+      } else {
+        DCHECK_EQ(&node, inner_editor->lastChild());
+        if (&node != inner_editor->lastChild()) {
+          result.Append(kNewlineCharacter);
+        }
+      }
     } else if (auto* text_node = DynamicTo<Text>(node)) {
       result.Append(text_node->data());
     }
@@ -957,6 +1050,34 @@ String TextControlElement::ValueWithHardLineBreaks() const {
   if (!layout_object)
     return Value();
 
+  if (RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled()) {
+    StringBuilder result;
+    bool has_valid_ifcs = false;
+    for (auto* anonymous = To<LayoutBlockFlow>(layout_object->FirstChild());
+         anonymous; anonymous = To<LayoutBlockFlow>(anonymous->NextSibling())) {
+      InlineCursor cursor(*anonymous);
+      if (!cursor) {
+        continue;
+      }
+      const auto* mapping = InlineNode::GetOffsetMapping(anonymous);
+      if (!mapping) {
+        continue;
+      }
+      has_valid_ifcs = true;
+      Position break_position = GetNextSoftBreak(*mapping, cursor);
+      const Node* node = anonymous->FirstChild()
+                             ? anonymous->FirstChild()->GetNode()
+                             : nullptr;
+      for (; node && node->GetLayoutObject() &&
+             node->GetLayoutObject()->Parent() == anonymous;
+           node = node->nextSibling()) {
+        AppendWrappedNode(*inner_text, *node, *mapping, cursor, break_position,
+                          result);
+      }
+    }
+    return has_valid_ifcs ? result.ReleaseString() : Value();
+  }
+
   if (layout_object->IsLayoutNGObject()) {
     InlineCursor cursor(*layout_object);
     if (!cursor)
@@ -967,27 +1088,8 @@ String TextControlElement::ValueWithHardLineBreaks() const {
     Position break_position = GetNextSoftBreak(*mapping, cursor);
     StringBuilder result;
     for (Node& node : NodeTraversal::DescendantsOf(*inner_text)) {
-      if (IsA<HTMLBRElement>(node)) {
-        DCHECK_EQ(&node, inner_text->lastChild());
-      } else if (auto* text_node = DynamicTo<Text>(node)) {
-        String data = text_node->data();
-        unsigned length = data.length();
-        unsigned position = 0;
-        while (break_position.AnchorNode() == node &&
-               static_cast<unsigned>(break_position.OffsetInContainerNode()) <=
-                   length) {
-          unsigned break_offset = break_position.OffsetInContainerNode();
-          if (break_offset > position) {
-            result.Append(data, position, break_offset - position);
-            position = break_offset;
-            result.Append(kNewlineCharacter);
-          }
-          break_position = GetNextSoftBreak(*mapping, cursor);
-        }
-        result.Append(data, position, length - position);
-      }
-      while (break_position.AnchorNode() == node)
-        break_position = GetNextSoftBreak(*mapping, cursor);
+      AppendWrappedNode(*inner_text, node, *mapping, cursor, break_position,
+                        result);
     }
     return result.ToString();
   }

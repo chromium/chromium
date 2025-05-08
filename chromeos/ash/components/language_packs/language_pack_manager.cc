@@ -18,6 +18,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -45,24 +46,20 @@ namespace {
 
 LanguagePackManager* g_instance = nullptr;
 
-const base::flat_map<std::string, std::string>& GetAllBasePackDlcIds() {
-  // Map of all features and corresponding Base Pack DLC IDs.
-  static const base::NoDestructor<base::flat_map<std::string, std::string>>
-      all_dlc_ids({
-          {kHandwritingFeatureId, "handwriting-base"},
-      });
-
-  return *all_dlc_ids;
-}
-
 // Finds the ID of the DLC corresponding to the Base Pack for a feature.
 // Returns the DLC ID if the feature has a Base Pack or std::nullopt
 // otherwise.
-std::optional<std::string> GetDlcIdForBasePack(const std::string& feature_id) {
-  // We search in the static list for the given |feature_id|.
-  const auto it = GetAllBasePackDlcIds().find(feature_id);
+std::optional<std::string_view> GetDlcIdForBasePack(
+    const std::string& feature_id) {
+  // Map of all features and corresponding Base Pack DLC IDs.
+  static constexpr auto kAllBasePackDlcIds =
+      base::MakeFixedFlatMap<std::string_view, std::string_view>({
+          {kHandwritingFeatureId, "handwriting-base"},
+      });
 
-  if (it == GetAllBasePackDlcIds().end()) {
+  // We search in the static list for the given |feature_id|.
+  const auto it = kAllBasePackDlcIds.find(feature_id);
+  if (it == kAllBasePackDlcIds.end()) {
     return std::nullopt;
   }
 
@@ -75,7 +72,7 @@ void RunCallbackLater(base::OnceClosure task) {
                                                               std::move(task));
 }
 
-void InstallDlc(const std::string& dlc_id,
+void InstallDlc(std::string_view dlc_id,
                 DlcserviceClient::InstallCallback callback) {
   DlcserviceClient* client = DlcserviceClient::Get();
   if (client) {
@@ -512,7 +509,8 @@ void LanguagePackManager::RemovePack(const std::string& feature_id,
 void LanguagePackManager::InstallBasePack(
     const std::string& feature_id,
     OnInstallBasePackCompleteCallback callback) {
-  const std::optional<std::string> dlc_id = GetDlcIdForBasePack(feature_id);
+  const std::optional<std::string_view> dlc_id =
+      GetDlcIdForBasePack(feature_id);
 
   // If the given |feature_id| doesn't have a Base Pack, run callback and
   // don't reach the DLC Service.

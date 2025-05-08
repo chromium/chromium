@@ -5,6 +5,7 @@
 #include "chrome/browser/autofill/valuables_data_manager_factory.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/autofill/autofill_image_fetcher_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
@@ -32,6 +33,7 @@ ValuablesDataManagerFactory::ValuablesDataManagerFactory()
           "AutofillValuablesDataManager",
           ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(WebDataServiceFactory::GetInstance());
+  DependsOn(AutofillImageFetcherFactory::GetInstance());
 }
 
 ValuablesDataManagerFactory::~ValuablesDataManagerFactory() = default;
@@ -44,6 +46,10 @@ ValuablesDataManagerFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);
+  // The AutofillImageFetcherFactory redirects to the original profile.
+  AutofillImageFetcherBase* image_fetcher =
+      AutofillImageFetcherFactory::GetForProfile(profile);
+
   scoped_refptr<autofill::AutofillWebDataService> account_storage =
       WebDataServiceFactory::GetAutofillWebDataForAccount(
           profile, ServiceAccessType::EXPLICIT_ACCESS);
@@ -52,7 +58,8 @@ ValuablesDataManagerFactory::BuildServiceInstanceForBrowserContext(
     // WebDataServiceFactory::ServiceIsNULLWhileTesting() is true.
     return nullptr;
   }
-  return std::make_unique<ValuablesDataManager>(std::move(account_storage));
+  return std::make_unique<ValuablesDataManager>(std::move(account_storage),
+                                                image_fetcher);
 }
 
 bool ValuablesDataManagerFactory::ServiceIsCreatedWithBrowserContext() const {

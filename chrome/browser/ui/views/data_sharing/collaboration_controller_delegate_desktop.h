@@ -84,7 +84,7 @@ class CollaborationControllerDelegateDesktop
       std::optional<data_sharing::mojom::GroupAction> action,
       std::optional<data_sharing::mojom::GroupActionProgress> progress);
 
-  void ShowErrorDialog();
+  void ShowErrorDialog(const ErrorInfo& error);
   void MaybeShowSignInAndSyncUi();
   void MaybeShowSignInOrSyncPromptDialog();
   void OnPromptDialogOk();

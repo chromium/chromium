@@ -6,11 +6,17 @@ package org.chromium.base.test.transit;
 
 import static org.junit.Assert.fail;
 
+import static org.chromium.base.test.transit.ViewSpec.viewSpec;
+
+import android.app.Activity;
+import android.view.View;
+
 import androidx.annotation.IntDef;
 
-import org.chromium.build.annotations.EnsuresNonNull;
+import org.hamcrest.Matcher;
+
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -43,7 +49,9 @@ import java.util.List;
 @NullMarked
 public abstract class ConditionalState {
     @Phase private int mLifecyclePhase = Phase.NEW;
-    private @Nullable Elements mElements;
+    private final Elements mConsolidatedElements = new Elements(this);
+    protected final Elements.Builder mElements = mConsolidatedElements.newBuilder();
+    private boolean mDeclareElementsCalled;
 
     /** Lifecycle phases of ConditionalState. */
     @IntDef({
@@ -65,27 +73,20 @@ public abstract class ConditionalState {
     /**
      * Declare the {@link BaseElements} that define this ConditionalState, such as Views.
      *
-     * <p>Transit-layer {@link Station}s and {@link Facility}s should override this and use the
-     * |elements| param to declare what elements need to be waited for for the state to be
-     * considered active.
+     * <p>Transit-layer {@link Station}s and {@link Facility}s can declare Elements in their
+     * constructor and/or override this method.
      *
      * @param elements use the #declare___() methods to describe the Elements that define the state.
      */
-    public abstract void declareElements(Elements.Builder elements);
+    public void declareElements(Elements.Builder elements) {}
 
     Elements getElements() {
-        initElements();
-        return mElements;
-    }
-
-    @EnsuresNonNull("mElements")
-    private void initElements() {
-        if (mElements == null) {
-            mElements = new Elements(this);
-            Elements.Builder builder = mElements.newBuilder();
-            declareElements(builder);
-            builder.consolidate();
+        if (!mDeclareElementsCalled) {
+            declareElements(mElements);
+            mElements.consolidate();
+            mDeclareElementsCalled = true;
         }
+        return mConsolidatedElements;
     }
 
     void setStateTransitioningTo() {
@@ -223,5 +224,87 @@ public abstract class ConditionalState {
                                     + " but was %s",
                             this, phaseToString(phase)));
         }
+    }
+
+    /** Declare as an element an Android Activity of type |activityClass|. */
+    protected <T extends Activity> ActivityElement<T> declareActivity(Class<T> activityClass) {
+        return mElements.declareActivity(activityClass);
+    }
+
+    /** Declare as an element a View that matches |viewMatcher|. */
+    protected <ViewT extends View> ViewElement<ViewT> declareView(ViewSpec<ViewT> viewSpec) {
+        return mElements.declareView(viewSpec);
+    }
+
+    /** Declare as an element a View that matches |viewMatcher| with extra Options. */
+    protected <ViewT extends View> ViewElement<ViewT> declareView(
+            ViewSpec<ViewT> viewSpec, ViewElement.Options options) {
+        return mElements.declareView(viewSpec, options);
+    }
+
+    /** Declare as a Condition that a View is not displayed. */
+    protected void declareNoView(ViewSpec viewSpec) {
+        mElements.declareNoView(viewSpec);
+    }
+
+    /** Declare as a Condition that a View is not displayed. */
+    protected void declareNoView(Matcher<View> viewMatcher) {
+        mElements.declareNoView(viewMatcher);
+    }
+
+    /**
+     * Declare as an element a generic enter Condition. It must be true for a transition into this
+     * ConditionalState to be complete.
+     *
+     * <p>No promises are made that the Condition is true as long as the ConditionalState is ACTIVE.
+     * For these cases, use {@link LogicalElement}.
+     *
+     * <p>Further, no promises are made that the Condition is false after exiting the State. Use a
+     * scoped {@link LogicalElement} in this case.
+     */
+    protected final void declareEnterCondition(Condition condition) {
+        mElements.declareEnterCondition(condition);
+    }
+
+    /**
+     * Declare as an element a generic enter Condition. It must be true for a transition into this
+     * ConditionalState to be complete.
+     *
+     * <p>No promises are made that the Condition is true as long as the ConditionalState is ACTIVE.
+     * For these cases, use {@link LogicalElement}.
+     *
+     * <p>Further, no promises are made that the Condition is false after exiting the State. Use a
+     * scoped {@link LogicalElement} in this case.
+     */
+    protected <ProductT, T extends ConditionWithResult<ProductT>>
+            Element<ProductT> declareEnterConditionAsElement(T condition) {
+        return mElements.declareEnterConditionAsElement(condition);
+    }
+
+    /**
+     * Declare as an element a generic exit Condition. It must be true for a transition out of this
+     * ConditionalState to be complete.
+     *
+     * <p>No promises are made that the Condition is false as long as the ConditionalState is
+     * ACTIVE. For these cases, use a scoped {@link LogicalElement}.
+     */
+    protected final void declareExitCondition(Condition condition) {
+        mElements.declareExitCondition(condition);
+    }
+
+    /**
+     * Declare an {@link ElementFactory} gated by an {@link Element}'s enter Condition.
+     *
+     * <p>When the {@link Element}'s enter Condition becomes fulfilled, |delayedDeclarations| will
+     * be run to declare new Elements.
+     */
+    protected void declareElementFactory(
+            Element<?> element, Callback<Elements.Builder> delayedDeclarations) {
+        mElements.declareElementFactory(element, delayedDeclarations);
+    }
+
+    /** Declare a custom Element. */
+    protected <T extends Element<?>> T declareElement(T element) {
+        return mElements.declareElement(element);
     }
 }

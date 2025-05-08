@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/fonts/shaping/text_auto_space.h"
 
 #include <unicode/uchar.h>
@@ -42,7 +37,7 @@ TextAutoSpace::CharType TextAutoSpace::GetPrevType(const String& text,
   DCHECK_GT(offset, 0u);
   CHECK(!text.Is8Bit());
   UChar32 last_ch;
-  U16_PREV(text.Characters16(), 0, offset, last_ch);
+  UNSAFE_TODO(U16_PREV(text.Characters16(), 0, offset, last_ch));
   return GetType(last_ch);
 }
 

@@ -40,8 +40,8 @@ void MediaFoundationServiceBroker::GetService(
   bool success = MediaFoundationCdmModule::GetInstance()->Initialize(cdm_path);
   std::move(ensure_sandboxed_cb_).Run();
 
-  media_foundation_service_ =
-      std::make_unique<MediaFoundationService>(std::move(service_receiver));
+  media_foundation_service_ = std::make_unique<MediaFoundationService>(
+      /*is_os_cdm=*/cdm_path.empty(), std::move(service_receiver));
 
   DVLOG(1) << __func__ << ": success=" << success;
   if (!success) {

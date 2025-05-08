@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -253,10 +254,10 @@ public class SingleActionMessageTest {
         createAndShowSingleActionMessage(container, m2, view2, Position.FRONT, Position.BACK);
         Assert.assertTrue(
                 "front view's elevation "
-                        + view1.getElevation()
+                        + view1.getElevationForTesting()
                         + " should be larger than the back one "
-                        + view2.getElevation(),
-                view1.getElevation() > view2.getElevation());
+                        + view2.getElevationForTesting(),
+                view1.getElevationForTesting() > view2.getElevationForTesting());
 
         PropertyModel m3 = createBasicSingleActionMessageModel();
         final MessageBannerView view3 = createMessageBannerView(container);
@@ -264,10 +265,10 @@ public class SingleActionMessageTest {
         createAndShowSingleActionMessage(container, m3, view3, Position.INVISIBLE, Position.FRONT);
         Assert.assertTrue(
                 "front view's elevation "
-                        + view3.getElevation()
+                        + view3.getElevationForTesting()
                         + " should be larger than the back one "
-                        + view2.getElevation(),
-                view3.getElevation() > view2.getElevation());
+                        + view2.getElevationForTesting(),
+                view3.getElevationForTesting() > view2.getElevationForTesting());
     }
 
     @Test(expected = IllegalStateException.class)
@@ -409,9 +410,11 @@ public class SingleActionMessageTest {
     }
 
     private MessageBannerView createMessageBannerView(MessageContainer container) {
-        return (MessageBannerView)
-                LayoutInflater.from(container.getContext())
-                        .inflate(R.layout.message_banner_view, container, false);
+        return ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        (MessageBannerView)
+                                LayoutInflater.from(container.getContext())
+                                        .inflate(R.layout.message_banner_view, container, false));
     }
 
     private PropertyModel createBasicSingleActionMessageModel(int id) {

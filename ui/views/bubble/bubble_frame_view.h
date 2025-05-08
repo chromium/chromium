@@ -180,8 +180,8 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   }
 
   // Set the corner radius of the bubble border.
-  void SetCornerRadius(int radius);
-  int GetCornerRadius() const;
+  void SetRoundedCorners(const gfx::RoundedCornersF& radii);
+  gfx::RoundedCornersF GetRoundedCorners() const;
 
   // Set the arrow of the bubble border.
   void SetArrow(BubbleBorder::Arrow arrow);

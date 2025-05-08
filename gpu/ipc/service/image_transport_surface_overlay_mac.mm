@@ -61,9 +61,6 @@ BASE_FEATURE(kAVFoundationOverlays,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC)
-BASE_FEATURE(kPresentationDelayForInteractiveFrames,
-             "PresentationDelayForInteractiveFrames",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Record the delay from the system CVDisplayLink or CADisplaylink source to
 // CrGpuMain OnVSyncPresentation().
@@ -72,48 +69,6 @@ void RecordVSyncCallbackDelay(base::TimeDelta delay) {
       "GPU.Presentation.VSyncCallbackDelay", delay,
       /*min=*/base::Microseconds(10),
       /*max=*/base::Milliseconds(33), /*bucket_count=*/50);
-}
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(AnimationOrInteractionType)
-enum class AnimationOrInteractionType {
-  kNone = 0,
-  kInteractionOnly = 1,
-  kAnimationOnly = 2,
-  kAnimationAndInteraction = 3,
-  kMaxValue = kAnimationAndInteraction,
-};
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:FrameHandlingType)
-
-void RecordFrameTypes(bool is_handling_interaction,
-                      bool is_handling_animation,
-                      bool has_prev_pending_frame) {
-  AnimationOrInteractionType type;
-  if (is_handling_interaction && is_handling_animation) {
-    type = AnimationOrInteractionType::kAnimationAndInteraction;
-  } else if (is_handling_interaction) {
-    type = AnimationOrInteractionType::kInteractionOnly;
-  } else if (is_handling_animation) {
-    type = AnimationOrInteractionType::kAnimationOnly;
-  } else {
-    type = AnimationOrInteractionType::kNone;
-  }
-
-  UMA_HISTOGRAM_ENUMERATION(
-      "GPU.Presentation.FrameHandlesAnimationOrInteraction", type);
-
-  // Although the current frame is free of interation and animation, the pending
-  // frame blocks the current frame from being swapped immediately when
-  // VSyncAlignedPresent and kPresentationDelayForInteractiveFrames are enabled.
-  // Note: |num_pending_frames| is always 0 when VSyncAlignedPresent is
-  // disabled.
-  if (type == AnimationOrInteractionType::kNone) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "GPU.Presentation.NonAnimatedOrInteractiveFrameWithPendingFrame",
-        has_prev_pending_frame);
-  }
 }
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -237,26 +192,27 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
             weak_ptr_factory_.GetWeakPtr()));
   }
 
+  const std::string target_name = features::kTargetForVSync.Get();
+  const bool finch_target_interaction =
+      target_name == features::kTargetForVSyncInteraction;
+  const bool finch_target_animation =
+      target_name == features::kTargetForVSyncAnimation;
+  const bool finch_target_all_frames =
+      target_name == features::kTargetForVSyncAllFrames;
   bool delay_presenetation_until_next_vsync =
-      features::IsVSyncAlignedPresentEnabled();
+      features::IsVSyncAlignedPresentEnabled() &&
+      (finch_target_all_frames ||
+       (finch_target_animation && data.is_handling_animation) ||
+       (finch_target_interaction && data.is_handling_interaction));
 
   // The current frame has been added to
   // ca_layer_tree_coordinator_->NumPendingSwaps() after calling
   // ca_layer_tree_coordinator_->Present(). Check NumPendingSwaps() > 1 to see
   // whether there is any previous pending frame. The current frame must wait in
   // the queue if there is already one before this.
-  if (base::FeatureList::IsEnabled(kPresentationDelayForInteractiveFrames) &&
-      ca_layer_tree_coordinator_->NumPendingSwaps() > 1 &&
-      !data.is_handling_interaction && !data.is_handling_animation) {
-    delay_presenetation_until_next_vsync = false;
-  }
-
   if (features::IsVSyncAlignedPresentEnabled() &&
-      base::FeatureList::IsEnabled(kPresentationDelayForInteractiveFrames)) {
-    bool has_prev_pending_frame =
-        ca_layer_tree_coordinator_->NumPendingSwaps() > 1;
-    RecordFrameTypes(data.is_handling_interaction, data.is_handling_animation,
-                     has_prev_pending_frame);
+      ca_layer_tree_coordinator_->NumPendingSwaps() > 1) {
+    delay_presenetation_until_next_vsync = true;
   }
 
   if (vsync_callback_mac_) {

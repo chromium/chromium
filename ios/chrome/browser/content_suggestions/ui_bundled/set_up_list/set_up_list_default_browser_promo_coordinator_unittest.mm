@@ -9,7 +9,6 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
-#import "base/test/task_environment.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_default_browser_promo_coordinator_delegate.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -19,6 +18,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
@@ -37,11 +37,9 @@ class SetUpListDefaultBrowserPromoCoordinatorTest : public PlatformTest {
     UIView.animationsEnabled = NO;
     mock_application_ = OCMStrictClassMock([UIApplication class]);
     coordinator_ = [[SetUpListDefaultBrowserPromoCoordinator alloc]
-            initWithBaseViewController:window_.rootViewController
-                               browser:browser_.get()
-                           application:mock_application_
-                   segmentationService:nullptr
-        deviceSwitcherResultDispatcher:nullptr];
+        initWithBaseViewController:window_.rootViewController
+                           browser:browser_.get()
+                       application:mock_application_];
     delegate_ = OCMProtocolMock(
         @protocol(SetUpListDefaultBrowserPromoCoordinatorDelegate));
     coordinator_.delegate = delegate_;
@@ -64,7 +62,7 @@ class SetUpListDefaultBrowserPromoCoordinatorTest : public PlatformTest {
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;

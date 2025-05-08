@@ -183,25 +183,9 @@ void ConvertAudioDecoderConfigToProto(
       audio_config.seek_preroll().InMicroseconds());
   audio_message->set_codec_delay(audio_config.codec_delay());
 
-  // We choose to not expose the "aac_extra_data" field to the remoting
-  // protobuf, because it is due to an internal Chrome bug. Instead, use the
-  // "extra_data" field as receivers should expect.
-  //
-  // TODO(crbug.com/40198159): Remove all references to "aac_extra_data" when it
-  // is removed as part of a media/ cleanup.
-#if DCHECK_IS_ON()
-  if (!audio_config.extra_data().empty() &&
-      !audio_config.aac_extra_data().empty() &&
-      audio_config.extra_data() != audio_config.aac_extra_data()) {
-    LOG(WARNING) << "mismatch between extra data and AAC extra data.";
-  }
-#endif
-  const bool is_aac = audio_config.codec() == media::AudioCodec::kAAC;
-  const std::vector<uint8_t>& extra_data =
-      is_aac ? audio_config.aac_extra_data() : audio_config.extra_data();
-
-  if (!extra_data.empty()) {
-    audio_message->set_extra_data(extra_data.data(), extra_data.size());
+  if (!audio_config.extra_data().empty()) {
+    audio_message->set_extra_data(audio_config.extra_data().data(),
+                                  audio_config.extra_data().size());
   }
 }
 
@@ -210,27 +194,16 @@ bool ConvertProtoToAudioDecoderConfig(
     media::AudioDecoderConfig* audio_config) {
   DCHECK(audio_config);
 
-  // Either "extra_data" or "aac_extra_data" should be populated but not both.
-  const bool is_aac =
-      audio_message.codec() == openscreen::cast::AudioDecoderConfig::kCodecAAC;
   const auto extra_data = base::span(audio_message.extra_data());
   audio_config->Initialize(
       ToMediaAudioCodec(audio_message.codec()).value(),
       ToMediaSampleFormat(audio_message.sample_format()).value(),
       ToMediaChannelLayout(audio_message.channel_layout()).value(),
       audio_message.samples_per_second(),
-      is_aac ? std::vector<uint8_t>{}
-             : std::vector<uint8_t>(extra_data.begin(), extra_data.end()),
+      std::vector<uint8_t>(extra_data.begin(), extra_data.end()),
       media::EncryptionScheme::kUnencrypted,
       base::Microseconds(audio_message.seek_preroll_usec()),
       audio_message.codec_delay());
-
-  // TODO(crbug.com/40198159): Remove all references to "aac_extra_data" when it
-  // is removed as part of a media/ cleanup.
-  if (is_aac) {
-    audio_config->set_aac_extra_data(
-        std::vector<uint8_t>(extra_data.begin(), extra_data.end()));
-  }
 
   return audio_config->IsValidConfig();
 }

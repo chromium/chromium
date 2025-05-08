@@ -62,8 +62,8 @@ const char kRemoteBoundWebRtcEventLogFileNamePrefix[] = "webrtc_event_log";
 
 // Important! These values may be relied on by web-apps. Do not change.
 const char kStartRemoteLoggingFailureAlreadyLogging[] = "Already logging.";
-const char kStartRemoteLoggingFailureDeadRenderProcessHost[] =
-    "RPH already dead.";
+// const char OBSOLETE_kStartRemoteLoggingFailureDeadRenderProcessHost[] =
+//     "RPH already dead.";
 const char kStartRemoteLoggingFailureFeatureDisabled[] = "Feature disabled.";
 const char kStartRemoteLoggingFailureFileCreationError[] =
     "Could not create file.";
@@ -84,6 +84,7 @@ const char kStartRemoteLoggingFailureUnknownOrInactivePeerConnection[] =
     "Unknown or inactive peer connection.";
 const char kStartRemoteLoggingFailureUnlimitedSizeDisallowed[] =
     "Unlimited size disallowed.";
+const char kBrowserContextNotFound[] = "BrowserContext not found.";
 
 const BrowserContextId kNullBrowserContextId =
     reinterpret_cast<BrowserContextId>(nullptr);

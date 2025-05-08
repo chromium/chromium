@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/boca/babelorca/pref_names.h"
@@ -22,7 +23,11 @@ CaptionBubbleSettingsImpl::CaptionBubbleSettingsImpl(
     base::RepeatingClosure on_local_caption_closed_cb)
     : profile_prefs_(profile_prefs),
       caption_language_code_(caption_language_code),
-      on_local_caption_closed_cb_(on_local_caption_closed_cb) {}
+      on_local_caption_closed_cb_(on_local_caption_closed_cb) {
+  if (GetLiveTranslateTargetLanguageCode().empty()) {
+    SetLiveTranslateTargetLanguageCode(caption_language_code_);
+  }
+}
 
 CaptionBubbleSettingsImpl::~CaptionBubbleSettingsImpl() = default;
 
@@ -76,6 +81,10 @@ void CaptionBubbleSettingsImpl::SetLiveCaptionBubbleExpanded(bool expanded) {
 void CaptionBubbleSettingsImpl::SetLiveTranslateTargetLanguageCode(
     std::string_view language_code) {
   profile_prefs_->SetString(prefs::kTranslateTargetLanguageCode, language_code);
+}
+
+bool CaptionBubbleSettingsImpl::ShouldAdjustPositionOnExpand() {
+  return features::IsBocaAdjustCaptionBubbleOnExpandEnabled();
 }
 
 void CaptionBubbleSettingsImpl::SetLiveTranslateEnabled(bool enabled) {

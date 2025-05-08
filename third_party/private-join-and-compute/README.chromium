@@ -3,7 +3,7 @@ Short Name: private-join-and-compute
 URL: https://github.com/google/private-join-and-compute
 Version: N/A
 Date: 2025-02-14
-Revision: b4137857c71153ca99d315dc3797e7c71ea07ed5
+Revision: 08df854f9fa14304fb4f19df48c7b6bc31f140d3
 License: Apache-2.0
 License File: src/LICENSE
 Security Critical: yes
@@ -15,10 +15,11 @@ The package contains a communicative cipher. It's used to communicate with the l
 Local Modifications:
 Stripped all the dependencies except for BoringSSL. chromium_patch.h is the only new file. Other modifications are removing the includes, fixing the macroses to those used in Chrome and removing unused functions and classes. The diff files are in order of modifications:
 
-files.diff - the files deleted from the original library. Generated using following command in `chromium/src` where private-join-and-compute.b413785 HEAD is at Revision given above, `diff -qr /tmp/private-join-and-compute.b413785/private_join_and_compute/ third_party/private-join-and-compute/src/`.
+files.diff - the files deleted from the original library. Generated using following command in `chromium/src` where private-join-and-compute.08df854 HEAD is at Revision given above, `diff -qr /tmp/private-join-and-compute.08df854/private_join_and_compute/ third_party/private-join-and-compute/src/ > third_party/private-join-and-compute/patches/files.diff`.
 dependencies.diff - removes all the dependencies on Abseil and other libraries replacing them with Chrome's analogues.
 compilation.diff - fixes compilation/static analyzers in Chrome.
 fix_nulls.diff - makes the presubmit happy by replacing NULL with nullptr.
 Use-absil-statusor.diff - removes existing status/statusor library's version, and uses absl::status and absl::statusor as source of truth.
 private_key_inverse.diff - makes private key inverse use Fermat's Little Theorem instead of ModInverseBlinded
-version-b413785.diff - Copy files from version b4137857c71153ca99d315dc3797e7c71ea07ed5 and edit them to fix include macros, include header guards. Export classes. Assume macro OPENSSL_IS_BORINGSSL is defined and remove OpensslInit() call in `context.cc`. Pathc file is created using the following command `diff -r /tmp/private-join-and-compute.b413785/private_join_and_compute/ third_party/private-join-and-compute/src/ > version-b413785.diff`.
+version-b413785.diff - Copy files from version b4137857c71153ca99d315dc3797e7c71ea07ed5 and edit them to fix include macros, include header guards. Export classes. Assume macro OPENSSL_IS_BORINGSSL is defined and remove OpensslInit() call in `context.cc`. Patch file is created using the following command `diff -r /tmp/private-join-and-compute.b413785/private_join_and_compute/ third_party/private-join-and-compute/src/ > version-b413785.diff`.
+version-08df854.diff - Only util/status_macros.h is changed among the files imported to chromium between versions b413785 and 08df854. This is verified using `git diff b413785..08df854 --stat util/LICENSE util/status.inc util/status_macros.h crypto/big_num.* crypto/context.* crypto/ec_commutative_cipher.* crypto/ec_group.* crypto/ec_point.* crypto/elgamal.*`. Patch file is created using the following command `diff -r /tmp/private-join-and-compute.08df854/private_join_and_compute/ third_party/private-join-and-compute/src/ > third_party/private-join-and-compute/patches/version-08df854.diff`, where private-join-and-compute.08df854 HEAD is at Revision given above

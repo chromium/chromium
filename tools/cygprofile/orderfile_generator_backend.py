@@ -44,6 +44,10 @@ sys.path.append(str(_SRC_PATH / 'build/android'))
 import devil_chromium
 
 _OUT_PATH = _SRC_PATH / 'out'
+# use depot_tools/gn to find actual binary path for any platforms.
+_GN_PATH = _SRC_PATH / 'third_party/depot_tools/gn.py'
+_NINJA_PATH = _SRC_PATH / 'third_party/ninja/ninja'
+_SISO_PATH = _SRC_PATH / 'third_party/siso/cipd/siso'
 
 # Architecture specific GN args. Trying to build an orderfile for an
 # architecture not listed here will eventually throw.
@@ -220,10 +224,31 @@ class ClankCompiler:
     self._native_library_build_variant = native_library_build_variant
 
     self._ninja_command = ['autoninja']
-    if options.ninja_path:
-      self._ninja_command = [options.ninja_path]
-      if self._options.ninja_j:
+    if options.buildbot:
+      # we can't use autoninja on buildbot.
+      if options.use_siso:
+        # assume recipe sets siso context (e.g. SISO_PROJECT etc).
+        # rather than reading .sisoenv by depot_tools/siso.py
+        self._ninja_command = [_SISO_PATH, 'ninja']
+        # enable cloud logging on bot
+        self._ninja_command += ['--enable_cloud_logging']
+      else:
+        # assume "preprocess for reclient" step.
+        if options.ninja_path:
+          self._ninja_command = [options.ninja_path]
+        else:
+          self._ninja_command = [_NINJA_PATH]
+    else:
+      # use ninja_path if it is explicitly given.
+      if options.ninja_path:
+        self._ninja_command = [options.ninja_path]
+
+    if self._options.ninja_j:
+      if options.use_siso:
+        self._ninja_command = ['-remote_jobs', options.ninja_j]
+      else:
         self._ninja_command += ['-j', options.ninja_j]
+
     self._ninja_command += ['-C']
 
     # WebView targets
@@ -274,9 +299,11 @@ class ClankCompiler:
     """
     self._step_recorder.BeginStep('Compile %s' % target)
     gn_args = self._GenerateGnArgs(instrumented)
-    self._step_recorder.RunCommand(
-        ['gn', 'gen',
-         str(self._out_dir), '--args=' + ' '.join(gn_args)])
+    self._step_recorder.RunCommand([
+        sys.executable,
+        str(_GN_PATH), 'gen',
+        str(self._out_dir), '--args=' + ' '.join(gn_args)
+    ])
     # At times there is a cyclic dependency, so if the initial ninja command
     # fails, we can retry after cleaning the output directory.
     process = self._step_recorder.RunCommand(self._ninja_command +
@@ -285,7 +312,10 @@ class ClankCompiler:
     if process.returncode == 0:
       return
     # The first ninja command failed, try cleaning and re-running.
-    self._step_recorder.RunCommand(['gn', 'clean', str(self._out_dir)])
+    self._step_recorder.RunCommand(
+        [sys.executable,
+         str(_GN_PATH), 'clean',
+         str(self._out_dir)])
     self._step_recorder.RunCommand(self._ninja_command +
                                    [str(self._out_dir), target])
 

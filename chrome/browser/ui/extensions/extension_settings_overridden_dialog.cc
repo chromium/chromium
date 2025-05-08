@@ -10,12 +10,12 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/supports_user_data.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extensions_overrides/simple_overrides.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/management_policy.h"
@@ -174,10 +174,9 @@ void ExtensionSettingsOverriddenDialog::HandleDialogResult(
 }
 
 void ExtensionSettingsOverriddenDialog::DisableControllingExtension() {
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(profile_)->extension_service();
-  service->DisableExtension(params_.controlling_extension_id,
-                            extensions::disable_reason::DISABLE_USER_ACTION);
+  extensions::ExtensionRegistrar::Get(profile_)->DisableExtension(
+      params_.controlling_extension_id,
+      {extensions::disable_reason::DISABLE_USER_ACTION});
 }
 
 void ExtensionSettingsOverriddenDialog::AcknowledgeControllingExtension() {

@@ -3,14 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/webshare/share_service_impl.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/safe_browsing/content/common/file_type_policies_test_util.h"
@@ -37,10 +35,6 @@
 
 class ShareServiceBrowserTest : public InProcessBrowserTest {
  public:
-  ShareServiceBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kWebShare);
-  }
-
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 #if BUILDFLAG(IS_CHROMEOS)
@@ -82,7 +76,6 @@ class ShareServiceBrowserTest : public InProcessBrowserTest {
 #endif
 
  private:
-  base::test::ScopedFeatureList feature_list_;
 #if BUILDFLAG(IS_WIN)
   webshare::ScopedShareOperationFakeComponents scoped_fake_components_;
 #endif

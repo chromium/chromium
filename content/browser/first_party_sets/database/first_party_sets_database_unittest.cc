@@ -317,18 +317,18 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB) {
       /*entries=*/
       {{net::SchemefulSite(GURL(site)),
         net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
-                                net::SiteType::kAssociated, std::nullopt)},
+                                net::SiteType::kAssociated)},
        {net::SchemefulSite(GURL(primary)),
         net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
-                                net::SiteType::kPrimary, std::nullopt)}},
+                                net::SiteType::kPrimary)}},
       /*aliases=*/{});
   base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> manual_sets = {
       {net::SchemefulSite(GURL(manual_site)),
        net::FirstPartySetEntry(net::SchemefulSite(GURL(manual_primary)),
-                               net::SiteType::kAssociated, std::nullopt)},
+                               net::SiteType::kAssociated)},
       {net::SchemefulSite(GURL(manual_primary)),
        net::FirstPartySetEntry(net::SchemefulSite(GURL(manual_primary)),
-                               net::SiteType::kPrimary, std::nullopt)}};
+                               net::SiteType::kPrimary)}};
   global_sets.ApplyManuallySpecifiedSet(
       net::LocalSetDeclaration::Create(/*set_entries=*/manual_sets,
                                        /*aliases=*/{})
@@ -337,9 +337,9 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB) {
   net::FirstPartySetsContextConfig config =
       net::FirstPartySetsContextConfig::Create(
           {{net::SchemefulSite(GURL(site_member1)),
-            net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-                net::SchemefulSite(GURL(primary_site)),
-                net::SiteType::kAssociated, std::nullopt))},
+            net::FirstPartySetEntryOverride(
+                net::FirstPartySetEntry(net::SchemefulSite(GURL(primary_site)),
+                                        net::SiteType::kAssociated))},
            {net::SchemefulSite(GURL(site_member2)),
             net::FirstPartySetEntryOverride()}})
           .value();
@@ -435,19 +435,19 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB_NoPublicSets) {
       /*entries=*/
       {{net::SchemefulSite(GURL(site)),
         net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
-                                net::SiteType::kAssociated, std::nullopt)},
+                                net::SiteType::kAssociated)},
        {net::SchemefulSite(GURL(primary)),
         net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
-                                net::SiteType::kPrimary, std::nullopt)}},
+                                net::SiteType::kPrimary)}},
       /*aliases=*/{});
 
   base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> manual_sets = {
       {net::SchemefulSite(GURL(manual_site)),
        net::FirstPartySetEntry(net::SchemefulSite(GURL(manual_primary)),
-                               net::SiteType::kAssociated, std::nullopt)},
+                               net::SiteType::kAssociated)},
       {net::SchemefulSite(GURL(manual_primary)),
        net::FirstPartySetEntry(net::SchemefulSite(GURL(manual_primary)),
-                               net::SiteType::kPrimary, std::nullopt)}};
+                               net::SiteType::kPrimary)}};
   global_sets.ApplyManuallySpecifiedSet(
       net::LocalSetDeclaration::Create(/*set_entries=*/manual_sets,
                                        /*aliases=*/{})
@@ -456,9 +456,9 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB_NoPublicSets) {
   net::FirstPartySetsContextConfig config =
       net::FirstPartySetsContextConfig::Create(
           {{net::SchemefulSite(GURL(site_member1)),
-            net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-                net::SchemefulSite(GURL(primary_site)),
-                net::SiteType::kAssociated, std::nullopt))},
+            net::FirstPartySetEntryOverride(
+                net::FirstPartySetEntry(net::SchemefulSite(GURL(primary_site)),
+                                        net::SiteType::kAssociated))},
            {net::SchemefulSite(GURL(site_member2)),
             net::FirstPartySetEntryOverride()}})
           .value();
@@ -586,19 +586,19 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingDB) {
       /*entries=*/
       {{net::SchemefulSite(GURL(site)),
         net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
-                                net::SiteType::kAssociated, std::nullopt)},
+                                net::SiteType::kAssociated)},
        {net::SchemefulSite(GURL(primary)),
         net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
-                                net::SiteType::kPrimary, std::nullopt)}},
+                                net::SiteType::kPrimary)}},
       /*aliases=*/{});
 
   base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> manual_sets = {
       {net::SchemefulSite(GURL(manual_site)),
        net::FirstPartySetEntry(net::SchemefulSite(GURL(manual_primary)),
-                               net::SiteType::kAssociated, std::nullopt)},
+                               net::SiteType::kAssociated)},
       {net::SchemefulSite(GURL(manual_primary)),
        net::FirstPartySetEntry(net::SchemefulSite(GURL(manual_primary)),
-                               net::SiteType::kPrimary, std::nullopt)}};
+                               net::SiteType::kPrimary)}};
   global_sets.ApplyManuallySpecifiedSet(
       net::LocalSetDeclaration::Create(/*set_entries=*/manual_sets,
                                        /*aliases=*/{})
@@ -607,9 +607,9 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingDB) {
   net::FirstPartySetsContextConfig config =
       net::FirstPartySetsContextConfig::Create(
           {{net::SchemefulSite(GURL(site_member1)),
-            net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-                net::SchemefulSite(GURL(primary_site)),
-                net::SiteType::kAssociated, std::nullopt))},
+            net::FirstPartySetEntryOverride(
+                net::FirstPartySetEntry(net::SchemefulSite(GURL(primary_site)),
+                                        net::SiteType::kAssociated))},
            {net::SchemefulSite(GURL(site_member2)),
             net::FirstPartySetEntryOverride()}})
           .value();
@@ -720,10 +720,10 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingVersion) {
       /*entries=*/
       {{net::SchemefulSite(GURL(site)),
         net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
-                                net::SiteType::kAssociated, std::nullopt)},
+                                net::SiteType::kAssociated)},
        {net::SchemefulSite(GURL(primary)),
         net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
-                                net::SiteType::kPrimary, std::nullopt)}},
+                                net::SiteType::kPrimary)}},
       /*aliases=*/{});
 
   OpenDatabase();
@@ -989,19 +989,15 @@ TEST_F(FirstPartySetsDatabaseTest, GetSets_NoPublicSets) {
   net::GlobalFirstPartySets global_sets(
       base::Version(),
       /*entries=*/
-      {{site, net::FirstPartySetEntry(primary, net::SiteType::kAssociated,
-                                      std::nullopt)},
-       {primary, net::FirstPartySetEntry(primary, net::SiteType::kPrimary,
-                                         std::nullopt)}},
+      {{site, net::FirstPartySetEntry(primary, net::SiteType::kAssociated)},
+       {primary, net::FirstPartySetEntry(primary, net::SiteType::kPrimary)}},
       /*aliases=*/{});
 
   base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> manual_sets = {
       {manual_site,
-       net::FirstPartySetEntry(manual_primary, net::SiteType::kAssociated,
-                               std::nullopt)},
+       net::FirstPartySetEntry(manual_primary, net::SiteType::kAssociated)},
       {manual_primary,
-       net::FirstPartySetEntry(manual_primary, net::SiteType::kPrimary,
-                               std::nullopt)}};
+       net::FirstPartySetEntry(manual_primary, net::SiteType::kPrimary)}};
   global_sets.ApplyManuallySpecifiedSet(
       net::LocalSetDeclaration::Create(/*set_entries=*/manual_sets,
                                        /*aliases=*/{})
@@ -1022,12 +1018,10 @@ TEST_F(FirstPartySetsDatabaseTest, GetSets_NoPublicSets) {
       res->first.FindEntries({manual_site, manual_primary},
                              net::FirstPartySetsContextConfig()),
       UnorderedElementsAre(
-          Pair(manual_site,
-               net::FirstPartySetEntry(
-                   manual_primary, net::SiteType::kAssociated, std::nullopt)),
-          Pair(manual_primary,
-               net::FirstPartySetEntry(manual_primary, net::SiteType::kPrimary,
-                                       std::nullopt))));
+          Pair(manual_site, net::FirstPartySetEntry(
+                                manual_primary, net::SiteType::kAssociated)),
+          Pair(manual_primary, net::FirstPartySetEntry(
+                                   manual_primary, net::SiteType::kPrimary))));
   EXPECT_TRUE(res->second.empty());
 }
 
@@ -1054,13 +1048,12 @@ TEST_F(FirstPartySetsDatabaseTest, GetSets_PublicSetsHaveSingleton) {
       res = db()->GetGlobalSetsAndConfig("b0");
   EXPECT_TRUE(res.has_value());
   // The singleton set should be deleted.
-  EXPECT_THAT(res->first.FindEntries({aaa, bbb, ccc, ddd},
-                                     net::FirstPartySetsContextConfig()),
-              UnorderedElementsAre(
-                  Pair(ccc, net::FirstPartySetEntry(
-                                ddd, net::SiteType::kAssociated, std::nullopt)),
-                  Pair(ddd, net::FirstPartySetEntry(
-                                ddd, net::SiteType::kPrimary, std::nullopt))));
+  EXPECT_THAT(
+      res->first.FindEntries({aaa, bbb, ccc, ddd},
+                             net::FirstPartySetsContextConfig()),
+      UnorderedElementsAre(
+          Pair(ccc, net::FirstPartySetEntry(ddd, net::SiteType::kAssociated)),
+          Pair(ddd, net::FirstPartySetEntry(ddd, net::SiteType::kPrimary))));
   EXPECT_EQ(res->second, net::FirstPartySetsContextConfig());
 }
 
@@ -1087,13 +1080,12 @@ TEST_F(FirstPartySetsDatabaseTest, GetSets_PublicSetsHaveOrphan) {
       res = db()->GetGlobalSetsAndConfig("b0");
   EXPECT_TRUE(res.has_value());
   // The singleton set should be deleted.
-  EXPECT_THAT(res->first.FindEntries({aaa, bbb, ccc, ddd},
-                                     net::FirstPartySetsContextConfig()),
-              UnorderedElementsAre(
-                  Pair(ccc, net::FirstPartySetEntry(
-                                ddd, net::SiteType::kAssociated, std::nullopt)),
-                  Pair(ddd, net::FirstPartySetEntry(
-                                ddd, net::SiteType::kPrimary, std::nullopt))));
+  EXPECT_THAT(
+      res->first.FindEntries({aaa, bbb, ccc, ddd},
+                             net::FirstPartySetsContextConfig()),
+      UnorderedElementsAre(
+          Pair(ccc, net::FirstPartySetEntry(ddd, net::SiteType::kAssociated)),
+          Pair(ddd, net::FirstPartySetEntry(ddd, net::SiteType::kPrimary))));
   EXPECT_EQ(res->second, net::FirstPartySetsContextConfig());
 }
 
@@ -1119,17 +1111,14 @@ TEST_F(FirstPartySetsDatabaseTest, GetSets) {
       std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>>
       res = db()->GetGlobalSetsAndConfig("b0");
   EXPECT_TRUE(res.has_value());
-  EXPECT_THAT(res->first.FindEntries({aaa, bbb, ccc, ddd},
-                                     net::FirstPartySetsContextConfig()),
-              UnorderedElementsAre(
-                  Pair(aaa, net::FirstPartySetEntry(
-                                bbb, net::SiteType::kAssociated, std::nullopt)),
-                  Pair(bbb, net::FirstPartySetEntry(
-                                bbb, net::SiteType::kPrimary, std::nullopt)),
-                  Pair(ccc, net::FirstPartySetEntry(
-                                ddd, net::SiteType::kAssociated, std::nullopt)),
-                  Pair(ddd, net::FirstPartySetEntry(
-                                ddd, net::SiteType::kPrimary, std::nullopt))));
+  EXPECT_THAT(
+      res->first.FindEntries({aaa, bbb, ccc, ddd},
+                             net::FirstPartySetsContextConfig()),
+      UnorderedElementsAre(
+          Pair(aaa, net::FirstPartySetEntry(bbb, net::SiteType::kAssociated)),
+          Pair(bbb, net::FirstPartySetEntry(bbb, net::SiteType::kPrimary)),
+          Pair(ccc, net::FirstPartySetEntry(ddd, net::SiteType::kAssociated)),
+          Pair(ddd, net::FirstPartySetEntry(ddd, net::SiteType::kPrimary))));
   EXPECT_EQ(res->second, net::FirstPartySetsContextConfig());
 }
 
@@ -1173,23 +1162,18 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_FormatCheck) {
       version,
       /*entries=*/
       {{associated_site,
-        net::FirstPartySetEntry(primary, net::SiteType::kAssociated,
-                                std::nullopt)},
-       {service_site, net::FirstPartySetEntry(primary, net::SiteType::kService,
-                                              std::nullopt)},
-       {primary, net::FirstPartySetEntry(primary, net::SiteType::kPrimary,
-                                         std::nullopt)}},
+        net::FirstPartySetEntry(primary, net::SiteType::kAssociated)},
+       {service_site,
+        net::FirstPartySetEntry(primary, net::SiteType::kService)},
+       {primary, net::FirstPartySetEntry(primary, net::SiteType::kPrimary)}},
       /*aliases=*/{});
   base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> manual_sets = {
       {manual_associated_site,
-       net::FirstPartySetEntry(manual_primary, net::SiteType::kAssociated,
-                               std::nullopt)},
+       net::FirstPartySetEntry(manual_primary, net::SiteType::kAssociated)},
       {manual_service_site,
-       net::FirstPartySetEntry(manual_primary, net::SiteType::kService,
-                               std::nullopt)},
+       net::FirstPartySetEntry(manual_primary, net::SiteType::kService)},
       {manual_primary,
-       net::FirstPartySetEntry(manual_primary, net::SiteType::kPrimary,
-                               std::nullopt)}};
+       net::FirstPartySetEntry(manual_primary, net::SiteType::kPrimary)}};
   global_sets.ApplyManuallySpecifiedSet(
       net::LocalSetDeclaration::Create(/*set_entries=*/manual_sets,
                                        /*aliases=*/{})
@@ -1199,8 +1183,7 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_FormatCheck) {
       net::FirstPartySetsContextConfig::Create(
           {{config_site_member1,
             net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
-                config_primary_site, net::SiteType::kAssociated,
-                std::nullopt))},
+                config_primary_site, net::SiteType::kAssociated))},
            {config_site_member2, net::FirstPartySetEntryOverride()}})
           .value();
 

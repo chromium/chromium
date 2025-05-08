@@ -86,7 +86,7 @@ std::vector<std::u16string> GenerateMessage(
   message.reserve(forbidden.size());
 
   // Currently, this ignores the case where there may be an extension that is
-  // blockedlisted by enterprise and another extension blocklisted by Safe
+  // blocklisted by enterprise and another extension blocklisted by Safe
   // Browsing.
   if (item_blocked_by_policy_exists) {
     return GenerateEnterpriseMessage(forbidden);

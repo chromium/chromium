@@ -45,7 +45,7 @@ class ChromeBluetoothLeScanner {
     @Retention(RetentionPolicy.SOURCE)
     @interface ScanState {}
 
-    private final Supplier<BluetoothLeScannerWrapper> mScannerSupplier;
+    private final Supplier<@Nullable BluetoothLeScannerWrapper> mScannerSupplier;
     private final ChromeBluetoothScanCallback mChromeScanCallback;
 
     /**
@@ -59,7 +59,7 @@ class ChromeBluetoothLeScanner {
     private @Nullable ScanCallback mScanCallback;
 
     ChromeBluetoothLeScanner(
-            Supplier<BluetoothLeScannerWrapper> scannerSupplier,
+            Supplier<@Nullable BluetoothLeScannerWrapper> scannerSupplier,
             ChromeBluetoothScanCallback chromeScanCallback) {
         mScannerSupplier = scannerSupplier;
         mChromeScanCallback = chromeScanCallback;

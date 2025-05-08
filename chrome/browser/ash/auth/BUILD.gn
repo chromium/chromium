@@ -22,7 +22,6 @@ static_library("auth") {
   deps = [
     "//ash/constants",
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/login/users",
     "//chrome/browser/ash/profiles",

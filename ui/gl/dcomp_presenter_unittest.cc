@@ -391,12 +391,14 @@ TEST_P(DCompPresenterTest, NoPresentTwice) {
   }
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
-      presenter_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(
+          gfx::OverlayLayerId::MakeForTesting(0));
   ASSERT_FALSE(swap_chain);
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
-  swap_chain = presenter_->GetLayerSwapChainForTesting(0);
+  swap_chain = presenter_->GetLayerSwapChainForTesting(
+      gfx::OverlayLayerId::MakeForTesting(0));
   ASSERT_TRUE(swap_chain);
 
   UINT last_present_count = 0;
@@ -419,7 +421,8 @@ TEST_P(DCompPresenterTest, NoPresentTwice) {
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain2 =
-      presenter_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(
+          gfx::OverlayLayerId::MakeForTesting(0));
   EXPECT_EQ(swap_chain2.Get(), swap_chain.Get());
 
   // It's the same image, so it should have the same swapchain.
@@ -443,7 +446,8 @@ TEST_P(DCompPresenterTest, NoPresentTwice) {
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain3 =
-      presenter_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(
+          gfx::OverlayLayerId::MakeForTesting(0));
   EXPECT_HRESULT_SUCCEEDED(
       swap_chain3->GetLastPresentCount(&last_present_count));
   // The present count should increase with the new present
@@ -479,7 +483,8 @@ TEST_P(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
-      presenter_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(
+          gfx::OverlayLayerId::MakeForTesting(0));
   ASSERT_TRUE(swap_chain);
 
   DXGI_SWAP_CHAIN_DESC desc;
@@ -508,7 +513,8 @@ TEST_P(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain2 =
-      presenter_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(
+          gfx::OverlayLayerId::MakeForTesting(0));
   ASSERT_TRUE(swap_chain2);
 
   EXPECT_HRESULT_SUCCEEDED(swap_chain2->GetDesc(&desc));
@@ -541,7 +547,8 @@ TEST_P(DCompPresenterTest, SwapchainSizeWithoutScaledOverlays) {
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
-      presenter_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(
+          gfx::OverlayLayerId::MakeForTesting(0));
   ASSERT_TRUE(swap_chain);
 
   DXGI_SWAP_CHAIN_DESC desc;
@@ -565,7 +572,8 @@ TEST_P(DCompPresenterTest, SwapchainSizeWithoutScaledOverlays) {
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain2 =
-      presenter_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(
+          gfx::OverlayLayerId::MakeForTesting(0));
   ASSERT_TRUE(swap_chain2);
 
   EXPECT_HRESULT_SUCCEEDED(swap_chain2->GetDesc(&desc));
@@ -598,7 +606,8 @@ TEST_P(DCompPresenterTest, ProtectedVideos) {
     ScheduleOverlay(std::move(params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
-        presenter_->GetLayerSwapChainForTesting(0);
+        presenter_->GetLayerSwapChainForTesting(
+            gfx::OverlayLayerId::MakeForTesting(0));
     ASSERT_TRUE(swap_chain);
 
     DXGI_SWAP_CHAIN_DESC desc;
@@ -622,7 +631,8 @@ TEST_P(DCompPresenterTest, ProtectedVideos) {
     ScheduleOverlay(std::move(params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
-        presenter_->GetLayerSwapChainForTesting(0);
+        presenter_->GetLayerSwapChainForTesting(
+            gfx::OverlayLayerId::MakeForTesting(0));
     ASSERT_TRUE(swap_chain);
 
     DXGI_SWAP_CHAIN_DESC Desc;
@@ -720,8 +730,10 @@ TEST_P(DCompPresenterTest, BackgroundColorSurfaceMultipleReused) {
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
     EXPECT_EQ(2u, layer_tree->GetNumSurfacesInPoolForTesting());
 
-    surfaces_frame1[0] = layer_tree->GetBackgroundColorSurfaceForTesting(0);
-    surfaces_frame1[1] = layer_tree->GetBackgroundColorSurfaceForTesting(1);
+    surfaces_frame1[0] = layer_tree->GetBackgroundColorSurfaceForTesting(
+        gfx::OverlayLayerId::MakeForTesting(0));
+    surfaces_frame1[1] = layer_tree->GetBackgroundColorSurfaceForTesting(
+        gfx::OverlayLayerId::MakeForTesting(1));
     // The overlays should have different background color surfaces since they
     // have different background colors.
     EXPECT_NE(surfaces_frame1[0], surfaces_frame1[1]);
@@ -744,8 +756,10 @@ TEST_P(DCompPresenterTest, BackgroundColorSurfaceMultipleReused) {
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
     EXPECT_EQ(2u, layer_tree->GetNumSurfacesInPoolForTesting());
 
-    surfaces_frame2[0] = layer_tree->GetBackgroundColorSurfaceForTesting(0);
-    surfaces_frame2[1] = layer_tree->GetBackgroundColorSurfaceForTesting(1);
+    surfaces_frame2[0] = layer_tree->GetBackgroundColorSurfaceForTesting(
+        gfx::OverlayLayerId::MakeForTesting(0));
+    surfaces_frame2[1] = layer_tree->GetBackgroundColorSurfaceForTesting(
+        gfx::OverlayLayerId::MakeForTesting(1));
     EXPECT_NE(surfaces_frame2[0], surfaces_frame2[1]);
 
     // We reversed the order of the color overlays. We expect the background
@@ -815,11 +829,20 @@ TEST_P(DCompPresenterTest, VisualsReused) {
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
   DCLayerTree* dcLayerTree = presenter_->GetLayerTreeForTesting();
+
+#if DCHECK_IS_ON()
+  EXPECT_TRUE(dcLayerTree->DcompVisualContentChangedFromPreviousFrameForTesting(
+      gfx::OverlayLayerId::MakeForTesting(0)));
+#endif  // DCHECK_IS_ON()
+
   EXPECT_EQ(2u, dcLayerTree->GetDcompLayerCountForTesting());
   Microsoft::WRL::ComPtr<IDCompositionVisual2> visual0 =
-      dcLayerTree->GetContentVisualForTesting(0);
+      dcLayerTree->GetContentVisualForTesting(
+          gfx::OverlayLayerId::MakeVizInternal(
+              gfx::OverlayLayerId::VizInternalId::kPrimaryPlane));
   Microsoft::WRL::ComPtr<IDCompositionVisual2> visual1 =
-      dcLayerTree->GetContentVisualForTesting(1);
+      dcLayerTree->GetContentVisualForTesting(
+          gfx::OverlayLayerId::MakeForTesting(0));
 
   // Frame 2:
   // overlay 0: root dcomp surface
@@ -841,11 +864,16 @@ TEST_P(DCompPresenterTest, VisualsReused) {
   EXPECT_EQ(2u, dcLayerTree->GetDcompLayerCountForTesting());
   // Verify that the visuals are reused from the previous frame but attached
   // to the root visual in a reversed order.
-  EXPECT_EQ(visual0.Get(), dcLayerTree->GetContentVisualForTesting(1));
-  EXPECT_EQ(visual1.Get(), dcLayerTree->GetContentVisualForTesting(0));
+  EXPECT_EQ(visual0.Get(),
+            dcLayerTree->GetContentVisualForTesting(
+                gfx::OverlayLayerId::MakeVizInternal(
+                    gfx::OverlayLayerId::VizInternalId::kPrimaryPlane)));
+  EXPECT_EQ(visual1.Get(), dcLayerTree->GetContentVisualForTesting(
+                               gfx::OverlayLayerId::MakeForTesting(0)));
 #if DCHECK_IS_ON()
-  EXPECT_TRUE(dcLayerTree->GetAttachedToRootFromPreviousFrameForTesting(0));
-  EXPECT_FALSE(dcLayerTree->GetAttachedToRootFromPreviousFrameForTesting(1));
+  EXPECT_FALSE(
+      dcLayerTree->DcompVisualContentChangedFromPreviousFrameForTesting(
+          gfx::OverlayLayerId::MakeForTesting(0)));
 #endif  // DCHECK_IS_ON()
 }
 
@@ -946,27 +974,44 @@ TEST_P(DCompPresenterTest, MatchedAndUnmatchedVisualsReused) {
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
   DCLayerTree* dc_layer_tree = presenter_->GetLayerTreeForTesting();
+
+#if DCHECK_IS_ON()
+  for (int i = 1; i <= 6; i++) {
+    EXPECT_TRUE(
+        dc_layer_tree->DcompVisualContentChangedFromPreviousFrameForTesting(
+            gfx::OverlayLayerId::MakeForTesting(i)));
+  }
+#endif  // DCHECK_IS_ON()
+
   EXPECT_EQ(7u, dc_layer_tree->GetDcompLayerCountForTesting());
   Microsoft::WRL::ComPtr<IDCompositionVisual2> visualRS =
-      dc_layer_tree->GetContentVisualForTesting(0);
+      dc_layer_tree->GetContentVisualForTesting(
+          gfx::OverlayLayerId::MakeVizInternal(
+              gfx::OverlayLayerId::VizInternalId::kPrimaryPlane));
   EXPECT_NE(visualRS, nullptr);
   Microsoft::WRL::ComPtr<IDCompositionVisual2> visualA =
-      dc_layer_tree->GetContentVisualForTesting(1);
+      dc_layer_tree->GetContentVisualForTesting(
+          gfx::OverlayLayerId::MakeForTesting(1));
   EXPECT_NE(visualA, nullptr);
   Microsoft::WRL::ComPtr<IDCompositionVisual2> visualB =
-      dc_layer_tree->GetContentVisualForTesting(2);
+      dc_layer_tree->GetContentVisualForTesting(
+          gfx::OverlayLayerId::MakeForTesting(2));
   EXPECT_NE(visualB, nullptr);
   Microsoft::WRL::ComPtr<IDCompositionVisual2> visualC =
-      dc_layer_tree->GetContentVisualForTesting(3);
+      dc_layer_tree->GetContentVisualForTesting(
+          gfx::OverlayLayerId::MakeForTesting(3));
   EXPECT_NE(visualC, nullptr);
   Microsoft::WRL::ComPtr<IDCompositionVisual2> visualD =
-      dc_layer_tree->GetContentVisualForTesting(4);
+      dc_layer_tree->GetContentVisualForTesting(
+          gfx::OverlayLayerId::MakeForTesting(4));
   EXPECT_NE(visualD, nullptr);
   Microsoft::WRL::ComPtr<IDCompositionVisual2> visualE =
-      dc_layer_tree->GetContentVisualForTesting(5);
+      dc_layer_tree->GetContentVisualForTesting(
+          gfx::OverlayLayerId::MakeForTesting(5));
   EXPECT_NE(visualE, nullptr);
   Microsoft::WRL::ComPtr<IDCompositionVisual2> visualF =
-      dc_layer_tree->GetContentVisualForTesting(6);
+      dc_layer_tree->GetContentVisualForTesting(
+          gfx::OverlayLayerId::MakeForTesting(6));
   EXPECT_NE(visualF, nullptr);
 
   // Frame 2: RootSurface, A L D C M
@@ -989,19 +1034,35 @@ TEST_P(DCompPresenterTest, MatchedAndUnmatchedVisualsReused) {
   // C is matched to C and reattached to the root.
   // M is reused from E and kept attached to the root.
   EXPECT_EQ(visualRS.Get(),
-            dc_layer_tree->GetContentVisualForTesting(0) /*RS*/);
-  EXPECT_EQ(visualA.Get(), dc_layer_tree->GetContentVisualForTesting(1) /*A*/);
-  EXPECT_EQ(visualB.Get(), dc_layer_tree->GetContentVisualForTesting(2) /*L*/);
-  EXPECT_EQ(visualD.Get(), dc_layer_tree->GetContentVisualForTesting(3) /*D*/);
-  EXPECT_EQ(visualC.Get(), dc_layer_tree->GetContentVisualForTesting(4) /*C*/);
-  EXPECT_EQ(visualE.Get(), dc_layer_tree->GetContentVisualForTesting(5) /*M*/);
+            dc_layer_tree->GetContentVisualForTesting(
+                gfx::OverlayLayerId::MakeVizInternal(
+                    gfx::OverlayLayerId::VizInternalId::kPrimaryPlane)) /*RS*/);
+  EXPECT_EQ(visualA.Get(), dc_layer_tree->GetContentVisualForTesting(
+                               gfx::OverlayLayerId::MakeForTesting(1)) /*A*/);
+  EXPECT_EQ(visualB.Get(), dc_layer_tree->GetContentVisualForTesting(
+                               gfx::OverlayLayerId::MakeForTesting(2)) /*L*/);
+  EXPECT_EQ(visualD.Get(), dc_layer_tree->GetContentVisualForTesting(
+                               gfx::OverlayLayerId::MakeForTesting(3)) /*D*/);
+  EXPECT_EQ(visualC.Get(), dc_layer_tree->GetContentVisualForTesting(
+                               gfx::OverlayLayerId::MakeForTesting(4)) /*C*/);
+  EXPECT_EQ(visualE.Get(), dc_layer_tree->GetContentVisualForTesting(
+                               gfx::OverlayLayerId::MakeForTesting(5)) /*M*/);
 #if DCHECK_IS_ON()
-  EXPECT_TRUE(dc_layer_tree->GetAttachedToRootFromPreviousFrameForTesting(0));
-  EXPECT_TRUE(dc_layer_tree->GetAttachedToRootFromPreviousFrameForTesting(1));
-  EXPECT_TRUE(dc_layer_tree->GetAttachedToRootFromPreviousFrameForTesting(2));
-  EXPECT_TRUE(dc_layer_tree->GetAttachedToRootFromPreviousFrameForTesting(3));
-  EXPECT_FALSE(dc_layer_tree->GetAttachedToRootFromPreviousFrameForTesting(4));
-  EXPECT_TRUE(dc_layer_tree->GetAttachedToRootFromPreviousFrameForTesting(5));
+  EXPECT_FALSE(
+      dc_layer_tree->DcompVisualContentChangedFromPreviousFrameForTesting(
+          gfx::OverlayLayerId::MakeForTesting(1)));
+  EXPECT_TRUE(
+      dc_layer_tree->DcompVisualContentChangedFromPreviousFrameForTesting(
+          gfx::OverlayLayerId::MakeForTesting(2)));
+  EXPECT_FALSE(
+      dc_layer_tree->DcompVisualContentChangedFromPreviousFrameForTesting(
+          gfx::OverlayLayerId::MakeForTesting(3)));
+  EXPECT_FALSE(
+      dc_layer_tree->DcompVisualContentChangedFromPreviousFrameForTesting(
+          gfx::OverlayLayerId::MakeForTesting(4)));
+  EXPECT_TRUE(
+      dc_layer_tree->DcompVisualContentChangedFromPreviousFrameForTesting(
+          gfx::OverlayLayerId::MakeForTesting(5)));
 #endif  // DCHECK_IS_ON()
 }
 
@@ -1049,15 +1110,17 @@ TEST_P(DCompPresenterTest, VeryLargeOnscreenSize) {
     ScheduleOverlay(std::move(params));
   }
 
-  EXPECT_FALSE(presenter_->GetLayerSwapChainForTesting(0));
-  EXPECT_FALSE(presenter_->GetLayerSwapChainForTesting(1));
+  EXPECT_FALSE(presenter_->GetLayerSwapChainForTesting(
+      gfx::OverlayLayerId::MakeForTesting(0)));
+  EXPECT_FALSE(presenter_->GetLayerSwapChainForTesting(
+      gfx::OverlayLayerId::MakeForTesting(1)));
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
-  auto ExpectSwapChainAndMaintainsAspectRatio = [&](size_t index,
+  auto ExpectSwapChainAndMaintainsAspectRatio = [&](gfx::OverlayLayerId id,
                                                     gfx::SizeF expected_size) {
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
-        presenter_->GetLayerSwapChainForTesting(index);
+        presenter_->GetLayerSwapChainForTesting(id);
     EXPECT_TRUE(swap_chain);
 
     DXGI_SWAP_CHAIN_DESC1 desc;
@@ -1076,9 +1139,11 @@ TEST_P(DCompPresenterTest, VeryLargeOnscreenSize) {
   // Maintaining the aspect ratio is not a requirement for the video to appear,
   // but doing so will improve the quality of the resulting image.
   ExpectSwapChainAndMaintainsAspectRatio(
-      0, gfx::SizeF(D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION + 1, 10));
+      gfx::OverlayLayerId::MakeForTesting(0),
+      gfx::SizeF(D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION + 1, 10));
   ExpectSwapChainAndMaintainsAspectRatio(
-      1, gfx::SizeF(10, D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION + 1));
+      gfx::OverlayLayerId::MakeForTesting(1),
+      gfx::SizeF(10, D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION + 1));
 }
 
 INSTANTIATE_TEST_SUITE_P(DCompPresenterTest,
@@ -1558,7 +1623,8 @@ TEST_P(DCompPresenterPixelTest, BGRASwapChain) {
                          false);
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
-      presenter_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(
+          gfx::OverlayLayerId::MakeForTesting(0));
   ASSERT_TRUE(swap_chain);
 
   DXGI_SWAP_CHAIN_DESC1 desc;
@@ -1590,7 +1656,8 @@ TEST_P(DCompPresenterPixelTest, NV12SwapChain) {
                          false);
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
-      presenter_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(
+          gfx::OverlayLayerId::MakeForTesting(0));
   ASSERT_TRUE(swap_chain);
 
   DXGI_SWAP_CHAIN_DESC1 desc;
@@ -1632,7 +1699,8 @@ TEST_P(DCompPresenterPixelTest, YUY2SwapChain) {
                          false);
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
-      presenter_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(
+          gfx::OverlayLayerId::MakeForTesting(0));
   ASSERT_TRUE(swap_chain);
 
   DXGI_SWAP_CHAIN_DESC1 desc;
@@ -1671,7 +1739,8 @@ TEST_P(DCompPresenterPixelTest, P010SwapChain) {
                          true);
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
-      presenter_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(
+          gfx::OverlayLayerId::MakeForTesting(0));
   ASSERT_TRUE(swap_chain);
 
   DXGI_SWAP_CHAIN_DESC1 desc;
@@ -1756,7 +1825,8 @@ TEST_P(DCompPresenterPixelTest, ResizeVideoLayer) {
   }
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
-      presenter_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(
+          gfx::OverlayLayerId::MakeForTesting(0));
   ASSERT_TRUE(swap_chain);
 
   DXGI_SWAP_CHAIN_DESC1 desc;
@@ -1777,7 +1847,8 @@ TEST_P(DCompPresenterPixelTest, ResizeVideoLayer) {
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   }
-  swap_chain = presenter_->GetLayerSwapChainForTesting(0);
+  swap_chain = presenter_->GetLayerSwapChainForTesting(
+      gfx::OverlayLayerId::MakeForTesting(0));
   EXPECT_HRESULT_SUCCEEDED(swap_chain->GetDesc1(&desc));
   // Onscreen window_size is (100, 100).
   EXPECT_EQ(100u, desc.Width);
@@ -1804,7 +1875,8 @@ TEST_P(DCompPresenterPixelTest, ResizeVideoLayer) {
   }
 
   // Swap chain is set to monitor/onscreen size.
-  swap_chain = presenter_->GetLayerSwapChainForTesting(0);
+  swap_chain = presenter_->GetLayerSwapChainForTesting(
+      gfx::OverlayLayerId::MakeForTesting(0));
   EXPECT_HRESULT_SUCCEEDED(swap_chain->GetDesc1(&desc));
   EXPECT_EQ(static_cast<UINT>(monitor_size.width()), desc.Width);
   EXPECT_EQ(static_cast<UINT>(monitor_size.height()), desc.Height);
@@ -1812,8 +1884,8 @@ TEST_P(DCompPresenterPixelTest, ResizeVideoLayer) {
   gfx::Transform transform;
   gfx::Point offset;
   gfx::Rect clip_rect;
-  presenter_->GetSwapChainVisualInfoForTesting(0, &transform, &offset,
-                                               &clip_rect);
+  presenter_->GetSwapChainVisualInfoForTesting(
+      gfx::OverlayLayerId::MakeForTesting(0), &transform, &offset, &clip_rect);
   EXPECT_TRUE(transform.IsIdentity());
   EXPECT_EQ(gfx::Rect(monitor_size), clip_rect);
 
@@ -1835,15 +1907,16 @@ TEST_P(DCompPresenterPixelTest, ResizeVideoLayer) {
   }
 
   // Swap chain is set to monitor size (100, 100).
-  swap_chain = presenter_->GetLayerSwapChainForTesting(0);
+  swap_chain = presenter_->GetLayerSwapChainForTesting(
+      gfx::OverlayLayerId::MakeForTesting(0));
   EXPECT_HRESULT_SUCCEEDED(swap_chain->GetDesc1(&desc));
   EXPECT_EQ(100u, desc.Width);
   EXPECT_EQ(100u, desc.Height);
 
   // Make sure the new transform matrix is adjusted, so it transforms the swap
   // chain to |new_on_screen_rect| which fits the monitor.
-  presenter_->GetSwapChainVisualInfoForTesting(0, &transform, &offset,
-                                               &clip_rect);
+  presenter_->GetSwapChainVisualInfoForTesting(
+      gfx::OverlayLayerId::MakeForTesting(0), &transform, &offset, &clip_rect);
   EXPECT_EQ(gfx::Rect(monitor_size), transform.MapRect(gfx::Rect(100, 100)));
 }
 
@@ -2136,11 +2209,13 @@ TEST_P(DCompPresenterPixelTest, BackgroundColorSurfaceReuse) {
 
     if (background_color_surface == nullptr) {
       background_color_surface =
-          layer_tree->GetBackgroundColorSurfaceForTesting(0);
+          layer_tree->GetBackgroundColorSurfaceForTesting(
+              gfx::OverlayLayerId::MakeForTesting(0));
     }
     EXPECT_NE(background_color_surface, nullptr);
     EXPECT_EQ(background_color_surface,
-              layer_tree->GetBackgroundColorSurfaceForTesting(0))
+              layer_tree->GetBackgroundColorSurfaceForTesting(
+                  gfx::OverlayLayerId::MakeForTesting(0)))
         << "DComp content for solid color overlay expected to be reused across "
            "frames";
   }
@@ -3186,7 +3261,8 @@ TEST_P(DCompPresenterBufferCountTest, VideoSwapChainBufferCount) {
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
-  auto swap_chain = presenter_->GetLayerSwapChainForTesting(0);
+  auto swap_chain = presenter_->GetLayerSwapChainForTesting(
+      gfx::OverlayLayerId::MakeForTesting(0));
   ASSERT_TRUE(swap_chain);
 
   DXGI_SWAP_CHAIN_DESC1 desc;
@@ -3301,7 +3377,8 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
   // Swap chain size is set to onscreen content size.
   DXGI_SWAP_CHAIN_DESC1 desc;
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
-      presenter_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(
+          gfx::OverlayLayerId::MakeForTesting(0));
   ASSERT_TRUE(swap_chain);
   EXPECT_HRESULT_SUCCEEDED(swap_chain->GetDesc1(&desc));
   EXPECT_EQ(1920u, desc.Width);
@@ -3313,7 +3390,8 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
   gfx::Point visual_offset;
   gfx::Rect visual_clip_rect;
   presenter_->GetSwapChainVisualInfoForTesting(
-      0, &visual_transform, &visual_offset, &visual_clip_rect);
+      gfx::OverlayLayerId::MakeForTesting(0), &visual_transform, &visual_offset,
+      &visual_clip_rect);
 
   if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
     // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
@@ -3351,7 +3429,8 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
   // Swap chain size is set to onscreen content size.
   DXGI_SWAP_CHAIN_DESC1 desc2;
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain2 =
-      presenter_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(
+          gfx::OverlayLayerId::MakeForTesting(0));
   ASSERT_TRUE(swap_chain2);
   EXPECT_HRESULT_SUCCEEDED(swap_chain2->GetDesc1(&desc2));
 
@@ -3372,7 +3451,8 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
   gfx::Point visual_offset2;
   gfx::Rect visual_clip_rect2;
   presenter_->GetSwapChainVisualInfoForTesting(
-      0, &visual_transform2, &visual_offset2, &visual_clip_rect2);
+      gfx::OverlayLayerId::MakeForTesting(0), &visual_transform2,
+      &visual_offset2, &visual_clip_rect2);
 
   if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
     // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
@@ -3410,7 +3490,8 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
   // Swap chain size is set to onscreen content size
   DXGI_SWAP_CHAIN_DESC1 desc3;
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain3 =
-      presenter_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(
+          gfx::OverlayLayerId::MakeForTesting(0));
   ASSERT_TRUE(swap_chain3);
   EXPECT_HRESULT_SUCCEEDED(swap_chain3->GetDesc1(&desc3));
   if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
@@ -3430,7 +3511,8 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
   gfx::Point visual_offset3;
   gfx::Rect visual_clip_rect3;
   presenter_->GetSwapChainVisualInfoForTesting(
-      0, &visual_transform3, &visual_offset3, &visual_clip_rect3);
+      gfx::OverlayLayerId::MakeForTesting(0), &visual_transform3,
+      &visual_offset3, &visual_clip_rect3);
 
   if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
     // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
@@ -3492,7 +3574,8 @@ TEST_P(DCompPresenterLetterboxingTest,
   // Swap chain size is set to onscreen content size.
   DXGI_SWAP_CHAIN_DESC1 desc;
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
-      presenter_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(
+          gfx::OverlayLayerId::MakeForTesting(0));
   ASSERT_TRUE(swap_chain);
   EXPECT_HRESULT_SUCCEEDED(swap_chain->GetDesc1(&desc));
   EXPECT_EQ(1920u, desc.Width);
@@ -3521,7 +3604,8 @@ TEST_P(DCompPresenterLetterboxingTest,
   gfx::Point visual_offset;
   gfx::Rect visual_clip_rect;
   presenter_->GetSwapChainVisualInfoForTesting(
-      0, &visual_transform, &visual_offset, &visual_clip_rect);
+      gfx::OverlayLayerId::MakeForTesting(0), &visual_transform, &visual_offset,
+      &visual_clip_rect);
   if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
     // Check desktop plane removal part 2.
     // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
@@ -3581,7 +3665,8 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingKeepVisualInfo) {
 
   // Make sure it's a valid swap chain presentation
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
-      presenter_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(
+          gfx::OverlayLayerId::MakeForTesting(0));
   ASSERT_TRUE(swap_chain);
 
   // One present is normal, and a second present because it's the first frame
@@ -3596,7 +3681,8 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingKeepVisualInfo) {
   gfx::Point visual_offset1;
   gfx::Rect visual_clip_rect1;
   presenter_->GetSwapChainVisualInfoForTesting(
-      0, &visual_transform1, &visual_offset1, &visual_clip_rect1);
+      gfx::OverlayLayerId::MakeForTesting(0), &visual_transform1,
+      &visual_offset1, &visual_clip_rect1);
 
   // Followed by second presentation with the same image.
   {
@@ -3616,7 +3702,8 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingKeepVisualInfo) {
 
   // It's the same image, so it should have the same swapchain.
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain2 =
-      presenter_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(
+          gfx::OverlayLayerId::MakeForTesting(0));
   EXPECT_EQ(swap_chain2.Get(), swap_chain.Get());
 
   // No new presentation happened and no present count increase since it's with
@@ -3630,7 +3717,8 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingKeepVisualInfo) {
   gfx::Point visual_offset2;
   gfx::Rect visual_clip_rect2;
   presenter_->GetSwapChainVisualInfoForTesting(
-      0, &visual_transform2, &visual_offset2, &visual_clip_rect2);
+      gfx::OverlayLayerId::MakeForTesting(0), &visual_transform2,
+      &visual_offset2, &visual_clip_rect2);
   EXPECT_EQ(visual_transform1, visual_transform2);
   EXPECT_EQ(visual_offset1, visual_offset2);
   EXPECT_EQ(visual_clip_rect1, visual_clip_rect2);
@@ -3655,7 +3743,8 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingKeepVisualInfo) {
   }
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain3 =
-      presenter_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(
+          gfx::OverlayLayerId::MakeForTesting(0));
   EXPECT_HRESULT_SUCCEEDED(
       swap_chain3->GetLastPresentCount(&last_present_count));
   // The present count should increase with the new image presentation.
@@ -3709,7 +3798,8 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenPillarboxingResizeVideoLayer) {
   // Swap chain size is set to onscreen content size.
   DXGI_SWAP_CHAIN_DESC1 desc;
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
-      presenter_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(
+          gfx::OverlayLayerId::MakeForTesting(0));
   ASSERT_TRUE(swap_chain);
   EXPECT_HRESULT_SUCCEEDED(swap_chain->GetDesc1(&desc));
   EXPECT_EQ(1800u, desc.Width);
@@ -3721,7 +3811,8 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenPillarboxingResizeVideoLayer) {
   gfx::Point visual_offset;
   gfx::Rect visual_clip_rect;
   presenter_->GetSwapChainVisualInfoForTesting(
-      0, &visual_transform, &visual_offset, &visual_clip_rect);
+      gfx::OverlayLayerId::MakeForTesting(0), &visual_transform, &visual_offset,
+      &visual_clip_rect);
 
   if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
     // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
@@ -3759,7 +3850,8 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenPillarboxingResizeVideoLayer) {
   // Swap chain size is set to onscreen content size.
   DXGI_SWAP_CHAIN_DESC1 desc2;
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain2 =
-      presenter_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(
+          gfx::OverlayLayerId::MakeForTesting(0));
   ASSERT_TRUE(swap_chain2);
   EXPECT_HRESULT_SUCCEEDED(swap_chain2->GetDesc1(&desc2));
 
@@ -3780,7 +3872,8 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenPillarboxingResizeVideoLayer) {
   gfx::Point visual_offset2;
   gfx::Rect visual_clip_rect2;
   presenter_->GetSwapChainVisualInfoForTesting(
-      0, &visual_transform2, &visual_offset2, &visual_clip_rect2);
+      gfx::OverlayLayerId::MakeForTesting(0), &visual_transform2,
+      &visual_offset2, &visual_clip_rect2);
 
   if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
     // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
@@ -3818,7 +3911,8 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenPillarboxingResizeVideoLayer) {
   // Swap chain size is set to onscreen content size
   DXGI_SWAP_CHAIN_DESC1 desc3;
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain3 =
-      presenter_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(
+          gfx::OverlayLayerId::MakeForTesting(0));
   ASSERT_TRUE(swap_chain3);
   EXPECT_HRESULT_SUCCEEDED(swap_chain3->GetDesc1(&desc3));
   if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
@@ -3838,7 +3932,8 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenPillarboxingResizeVideoLayer) {
   gfx::Point visual_offset3;
   gfx::Rect visual_clip_rect3;
   presenter_->GetSwapChainVisualInfoForTesting(
-      0, &visual_transform3, &visual_offset3, &visual_clip_rect3);
+      gfx::OverlayLayerId::MakeForTesting(0), &visual_transform3,
+      &visual_offset3, &visual_clip_rect3);
 
   if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
     // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
@@ -3900,7 +3995,8 @@ TEST_P(DCompPresenterLetterboxingTest,
   // Swap chain size is set to onscreen content size.
   DXGI_SWAP_CHAIN_DESC1 desc;
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
-      presenter_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(
+          gfx::OverlayLayerId::MakeForTesting(0));
   ASSERT_TRUE(swap_chain);
   EXPECT_HRESULT_SUCCEEDED(swap_chain->GetDesc1(&desc));
   EXPECT_EQ(1800u, desc.Width);
@@ -3929,7 +4025,8 @@ TEST_P(DCompPresenterLetterboxingTest,
   gfx::Point visual_offset;
   gfx::Rect visual_clip_rect;
   presenter_->GetSwapChainVisualInfoForTesting(
-      0, &visual_transform, &visual_offset, &visual_clip_rect);
+      gfx::OverlayLayerId::MakeForTesting(0), &visual_transform, &visual_offset,
+      &visual_clip_rect);
   if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
     // Check desktop plane removal part 2.
     // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
@@ -4038,7 +4135,8 @@ TEST_P(DCompPresenterLetterboxingTest,
   gfx::Point visual_offset;
   gfx::Rect visual_clip_rect;
   presenter_->GetSwapChainVisualInfoForTesting(
-      0, &visual_transform, &visual_offset, &visual_clip_rect);
+      gfx::OverlayLayerId::MakeForTesting(0), &visual_transform, &visual_offset,
+      &visual_clip_rect);
   if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
     // Check desktop plane removal part 2.
     // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
@@ -4127,7 +4225,8 @@ TEST_P(DCompPresenterLetterboxingTest,
   gfx::Point visual_offset;
   gfx::Rect visual_clip_rect;
   presenter_->GetSwapChainVisualInfoForTesting(
-      0, &visual_transform, &visual_offset, &visual_clip_rect);
+      gfx::OverlayLayerId::MakeForTesting(0), &visual_transform, &visual_offset,
+      &visual_clip_rect);
   if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
     // Check desktop plane removal part 2.
     // In case DirectCompositionLetterboxVideoOptimization feature is enabled,
@@ -4210,7 +4309,8 @@ TEST_P(DCompPresenterLetterboxingTest,
   gfx::Point visual_offset;
   gfx::Rect visual_clip_rect;
   presenter_->GetSwapChainVisualInfoForTesting(
-      0, &visual_transform, &visual_offset, &visual_clip_rect);
+      gfx::OverlayLayerId::MakeForTesting(0), &visual_transform, &visual_offset,
+      &visual_clip_rect);
 
   // `use_letterbox_video_optimization` enabled or disabled should both have
   // the same result because DWM optimizations are not used for non-uniform
@@ -4266,7 +4366,8 @@ TEST_F(DCompPresenterFullscreenRoundingTest,
   // Swap chain size is set to onscreen content size.
   DXGI_SWAP_CHAIN_DESC1 desc;
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
-      presenter_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(
+          gfx::OverlayLayerId::MakeForTesting(0));
   ASSERT_TRUE(swap_chain);
   EXPECT_HRESULT_SUCCEEDED(swap_chain->GetDesc1(&desc));
 
@@ -4295,7 +4396,8 @@ TEST_F(DCompPresenterFullscreenRoundingTest,
   gfx::Point visual_offset;
   gfx::Rect visual_clip_rect;
   presenter_->GetSwapChainVisualInfoForTesting(
-      0, &visual_transform, &visual_offset, &visual_clip_rect);
+      gfx::OverlayLayerId::MakeForTesting(0), &visual_transform, &visual_offset,
+      &visual_clip_rect);
   DVLOG(1) << "visual_transform" << visual_transform.ToString();
 
   EXPECT_TRUE(visual_transform.IsIdentity());
@@ -4347,7 +4449,8 @@ TEST_F(DCompPresenterFullscreenRoundingTest, FullScreenContentWithClipping) {
   // Swap chain size is set to onscreen content size.
   DXGI_SWAP_CHAIN_DESC1 desc;
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
-      presenter_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(
+          gfx::OverlayLayerId::MakeForTesting(0));
   ASSERT_TRUE(swap_chain);
   EXPECT_HRESULT_SUCCEEDED(swap_chain->GetDesc1(&desc));
   EXPECT_EQ(3840u, desc.Width);
@@ -4373,7 +4476,8 @@ TEST_F(DCompPresenterFullscreenRoundingTest, FullScreenContentWithClipping) {
   gfx::Point visual_offset;
   gfx::Rect visual_clip_rect;
   presenter_->GetSwapChainVisualInfoForTesting(
-      0, &visual_transform, &visual_offset, &visual_clip_rect);
+      gfx::OverlayLayerId::MakeForTesting(0), &visual_transform, &visual_offset,
+      &visual_clip_rect);
   DVLOG(1) << "visual_transform" << visual_transform.ToString();
   EXPECT_TRUE(visual_transform.IsIdentity());
   EXPECT_EQ(clip_rect, visual_clip_rect);

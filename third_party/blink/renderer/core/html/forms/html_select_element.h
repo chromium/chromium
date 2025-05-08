@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/tree_ordered_list.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element_with_state.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_selected_content_element.h"
 #include "third_party/blink/renderer/core/html/forms/option_list.h"
 #include "third_party/blink/renderer/core/html/forms/type_ahead.h"
@@ -286,22 +287,30 @@ class CORE_EXPORT HTMLSelectElement final
   static bool IsPopoverForAppearanceBase(const Element*);
 
   // <select> supports appearance:base-select on both the main element and
-  // ::picker(select). When the main element has appearance:base-select,
-  // IsAppearanceBaseButton will return true and the in-page button part of the
-  // <select> will have base appearance and support rendering of the
-  // author-provided <button>. When both the element and its ::picker(select)
-  // has appearance:base-select, IsAppearanceBasePicker will return true and the
-  // popup will be a popover element. The SelectType must also support base
-  // appearance, which is currently only MenuListSelectType.
-  // IsAppearanceBaseButton should be used for code which is concerned with the
-  // in-page rendering of the button, and IsAppearanceBasePicker should be used
-  // for code which is concerned with the popup/popover and the other elements
-  // which are rendered in it.
+  // ::picker(select). IsAppearanceBase returns true if the main element has
+  // base appearance, and IsAppearanceBasePicker returns true if
+  // ::picker(select) has base appearance.
+  //
+  // If this select is rendered as an in-page list of options, where
+  // ListBoxSelectType is used and UsesMenuList() returns false,
+  // IsAppearanceBasePicker will always return false because there is no picker.
+  // IsAppearanceBase is used to control all base appearance behavior in this
+  // case.
+  //
+  // If this select is rendered as a button with a popup, where
+  // MenuListSelectType is used and UsesMenuList() returns true,
+  // IsAppearanceBasePicker will only return true if both the select element and
+  // its ::picker(select) have appearance:base-select. IsAppearanceBase should
+  // be used for code which is concerned with the in-page button part, and
+  // IsAppearanceBasePicker should be used for code which is concerned with the
+  // popup that shows options.
+  bool IsAppearanceBase() const;
+  bool IsAppearanceBasePicker() const;
+
   // SetIsAppearanceBasePickerForDisplayNone is called during style recalc for
   // the case where the picker is closed and is therefore display:none and
   // doesn't have a computed style to look at inside IsAppearanceBasePicker.
-  bool IsAppearanceBaseButton() const;
-  bool IsAppearanceBasePicker() const;
+  // This should only be called when UsesMenuList() returns true.
   void SetIsAppearanceBasePickerForDisplayNone(bool);
 
   void SelectedContentElementInserted(
@@ -309,9 +318,16 @@ class CORE_EXPORT HTMLSelectElement final
   void SelectedContentElementRemoved(
       HTMLSelectedContentElement* selectedcontent);
 
-  // This will only return an element if IsAppearanceBaseButton(). The element
+  // These methods are used to track all descendant <input>s elements of this
+  // <select>. This is only used for customizable select and is populated by
+  // this select's MutationObserver.
+  void AddDescendantTextInput(HTMLInputElement* input);
+  void RemoveDescendantTextInput(HTMLInputElement* input);
+  HTMLInputElement* FirstDescendantTextInput() const;
+
+  // This will only return an element if IsAppearanceBase(). The element
   // is a popover inside the UA shadowroot which is used to show the user a
-  // preview of what is going to be autofilled.
+  // preview of what is going to be autofilled. This should only be called if
   SelectAutofillPreviewElement* GetAutofillPreviewElement() const;
 
   // Getter and setter for the selectedcontentelement attribute
@@ -337,6 +353,7 @@ class CORE_EXPORT HTMLSelectElement final
   void DispatchBlurEvent(Element* new_focused_element,
                          mojom::blink::FocusType,
                          InputDeviceCapabilities* source_capabilities) override;
+  FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
 
   bool CanStartSelection() const override { return false; }
 
@@ -425,6 +442,7 @@ class CORE_EXPORT HTMLSelectElement final
   Member<HTMLOptionElement> last_on_change_option_;
   Member<HTMLOptionElement> suggested_option_;
   TreeOrderedList<HTMLSelectedContentElement> descendant_selectedcontents_;
+  TreeOrderedList<HTMLInputElement> descendant_text_inputs_;
   bool uses_menu_list_ = true;
   bool is_multiple_;
   mutable bool should_recalc_list_items_;

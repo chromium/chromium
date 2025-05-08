@@ -14,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/post_async_results.h"
@@ -23,7 +22,6 @@
 #include "chrome/browser/webshare/win/fake_data_transfer_manager.h"
 #include "chrome/browser/webshare/win/fake_data_transfer_manager_interop.h"
 #include "chrome/browser/webshare/win/scoped_share_operation_fake_components.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -63,9 +61,6 @@ constexpr uint64_t kMaxSharedFileBytesForTest = 1024 * 100;
 
 class ShareOperationUnitTest : public ChromeRenderViewHostTestHarness {
  public:
-  ShareOperationUnitTest() {
-    feature_list_.InitAndEnableFeature(features::kWebShare);
-  }
   ~ShareOperationUnitTest() override = default;
 
   void SetUp() override {
@@ -203,7 +198,6 @@ class ShareOperationUnitTest : public ChromeRenderViewHostTestHarness {
  private:
   raw_ptr<FakeDataTransferManager, DanglingUntriaged>
       fake_data_transfer_manager_ = nullptr;
-  base::test::ScopedFeatureList feature_list_;
   ScopedShareOperationFakeComponents scoped_fake_components_;
 };
 

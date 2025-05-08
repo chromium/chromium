@@ -169,14 +169,15 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
      *     other app menu items if necessary.
      * @param headerResourceId The resource id for a view to add as the first item in menu list. Can
      *     be null if no such view is required. See {@link ListView#addHeaderView(View)}.
+     * @param groupDividerResourceId The resource id of divider menu items. This will be used to
+     *     determine the number of dividers that appear in the menu.
      * @param highlightedItemId The resource id of the menu item that should be highlighted. Can be
      *     {@code null} if no item should be highlighted. Note that {@code 0} is dedicated to custom
      *     menu items and can be declared by external apps.
-     * @param groupDividerResourceId The resource id of divider menu items. This will be used to
-     *     determine the number of dividers that appear in the menu.
      * @param customViewBinders See {@link AppMenuPropertiesDelegate#getCustomViewBinders()}.
      * @param isMenuIconAtStart Whether the menu is being shown from a menu icon positioned at the
      *     start.
+     * @param addTopPaddingBeforeFirstRow Whether top padding is needed above the first row.
      */
     void show(
             Context context,
@@ -190,7 +191,8 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
             @Nullable Integer highlightedItemId,
             @Nullable List<CustomViewBinder> customViewBinders,
             boolean isMenuIconAtStart,
-            @ControlsPosition int controlsPosition) {
+            @ControlsPosition int controlsPosition,
+            boolean addTopPaddingBeforeFirstRow) {
         mPopup = new PopupWindow(context);
         mPopup.setFocusable(true);
         mPopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
@@ -253,9 +255,7 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
             heightList.add(getMenuItemHeight(itemId, context, customViewBinders));
         }
 
-        ViewGroup contentView =
-                (ViewGroup) LayoutInflater.from(context).inflate(R.layout.app_menu_layout, null);
-        contentView.setBackgroundResource(R.drawable.app_menu_bottom_padding_bg);
+        View contentView = createAppMenuContentView(context, addTopPaddingBeforeFirstRow);
 
         if (SysUtils.isLowEndDevice()) {
             var sharedDrawable = AppCompatResources.getDrawable(context, R.drawable.popup_bg_8dp);
@@ -566,8 +566,8 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
             PropertyModel model = mModelList.get(i).model;
             if (model.get(AppMenuItemProperties.MENU_ITEM_ID) == itemId) {
                 return model;
-            } else if (model.get(AppMenuItemProperties.SUBMENU) != null) {
-                ModelList subList = model.get(AppMenuItemProperties.SUBMENU);
+            } else if (model.get(AppMenuItemProperties.ADDITIONAL_ICONS) != null) {
+                ModelList subList = model.get(AppMenuItemProperties.ADDITIONAL_ICONS);
                 for (int j = 0; j < subList.size(); j++) {
                     PropertyModel subModel = subList.get(j).model;
                     if (subModel.get(AppMenuItemProperties.MENU_ITEM_ID) == itemId) {
@@ -707,6 +707,17 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         }
 
         mMenuItemEnterAnimator.start();
+    }
+
+    private View createAppMenuContentView(Context context, boolean addTopPaddingBeforeFirstRow) {
+        ViewGroup contentView =
+                (ViewGroup) LayoutInflater.from(context).inflate(R.layout.app_menu_layout, null);
+        if (addTopPaddingBeforeFirstRow) {
+            contentView.setBackgroundResource(R.drawable.default_popup_menu_bg);
+        } else {
+            contentView.setBackgroundResource(R.drawable.app_menu_bottom_padding_bg);
+        }
+        return contentView;
     }
 
     private int inflateFooter(int footerResourceId, View contentView, int menuWidth) {

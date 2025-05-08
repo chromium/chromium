@@ -34,7 +34,7 @@ const CGFloat kSwitchTrailingPadding = 22;
 // "accessibility" category.
 @property(nonatomic, strong) NSArray* standardConstraints;
 // Custom label defined via the setter, if any.
-@property(nonatomic, strong) NSString* customAccessibilityLabel;
+@property(nonatomic, copy) NSString* customAccessibilityLabel;
 
 @end
 

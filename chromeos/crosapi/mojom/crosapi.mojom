@@ -162,22 +162,9 @@ interface Crosapi {
   // BindEmojiPicker@89 was removed.
   // BindExtensionInfoPrivate@75 was removed.
   // REMOVED_105@105 was removed.
-
-  // NetworkingPrivate is a service that allows users to modify
-  // network settings in Lacros. Implemented in Ash.
-  [MinVersion=80] BindNetworkingPrivate@83(
-      pending_receiver<NetworkingPrivate> receiver);
-
+  // BindNetworkingPrivate@83 was removed.
   // BindExtensionPublisher@73 was removed.
-
-  // Binds the bridge implemented in Ash which is connected to the
-  // `FileChangeServiceBridge` in Lacros via crosapi. This bridge enables file
-  // change events originating from Lacros to be propagated to the
-  // `FileChangeService`, and its observers, in Ash.
-  // Added in M122.
-  [MinVersion=128]
-  BindFileChangeServiceBridge@130(
-      pending_receiver<FileChangeServiceBridge> receiver);
+  // BindFileChangeServiceBridge@130 was removed.
 
   // Binds the provider for cloud identifiers for files and folders used through
   // the file system access web API.
@@ -193,11 +180,7 @@ interface Crosapi {
       pending_receiver<FileSystemProviderService> receiver);
 
   // BindForceInstalledTracker@57 was removed.
-
-  // Binds the full restore interface for getting session restore data needed
-  // to display the pine dialog.
-  [MinVersion=135] BindFullRestore@137(
-      pending_receiver<FullRestore> receiver);
+  // BindFullRestore@137 was removed.
 
   // Binds the full screen controller which determines whether to keep or exit
   // full screen mode.
@@ -205,12 +188,7 @@ interface Crosapi {
       pending_receiver<FullscreenController> receiver);
 
   // BindGeolocationService@48 was removed.
-
-  // Binds the IdentityManager interface for reading identity information.
-  // Added in M96.
-  [MinVersion=51]
-  BindIdentityManager@55(pending_receiver<IdentityManager> receiver);
-
+  // BindIdentityManager@55 was removed.
   // BindIdleService@21 was removed.
   // BindImageWriter@42 was removed.
 
@@ -283,17 +261,9 @@ interface Crosapi {
   BindParentAccess@101(pending_receiver<ParentAccess> receiver);
 
   // BindPasskeyAuthenticatorDeprecated@126 was removed.
+  // BindPaymentAppInstance@116 was removed.
 
-  // Binds the PaymentAppInstance to allow Playstore payment to be made for
-  // web apps listing in Playstore.
-  [MinVersion=113] BindPaymentAppInstance@116(
-    pending_receiver<chromeos.payments.mojom.PaymentAppInstance> receiver);
-
-  // Binds the Policy service to allow Lacros request policy data from Ash when
-  // needed.
-  [MinVersion=56] BindPolicyService@60(
-      pending_receiver<PolicyService> receiver);
-
+  // BindPolicyService@60 was removed.
   // BindPrefs@16 was removed.
   // BindNonclosableAppToastService@131 was removed.
 
@@ -303,11 +273,7 @@ interface Crosapi {
       pending_receiver<chromeos.remote_apps.mojom.RemoteAppsLacrosBridge>
           receiver);
 
-  // Binds the Remoting service to allow websites running in Lacros to interact
-  // with Chrome Remote Desktop functionality available in ash-chrome.
-  // Added in M93.
-  [MinVersion=32] BindRemoting@37(pending_receiver<Remoting> receiver);
-
+  // BindRemoting@37 was removed.
   // BindScreenAIDownloader@113 was removed.
   // BindScreenManager@1 was removed.
 

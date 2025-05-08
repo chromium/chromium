@@ -130,6 +130,19 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Mouse click"/>
 </enum>
 
+<!-- LINT.IfChange(BookmarksExistInStorageType) -->
+
+<enum name="BookmarksExistInStorageType">
+  <summary>
+    The storage in which bookmarks are stored in permanent nodes.
+  </summary>
+  <int value="0" label="Local only"/>
+  <int value="1" label="Account only"/>
+  <int value="2" label="Local and Account"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/bookmarks/common/bookmark_metrics.h:BookmarksExistInStorageType) -->
+
 <enum name="BookmarksSidePanelSearchCTREvent">
   <int value="0" label="Shown"/>
   <int value="1" label="Searched"/>

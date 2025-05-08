@@ -36,21 +36,6 @@ class MatchResultListener;
 namespace content {
 
 constexpr char kStorageAccessScript[] = R"(
-    async function accessDatabase() {
-      var my_db = openDatabase('my_db', '1.0', 'description', 1024);
-      var num_rows;
-      await new Promise((resolve, reject) => {
-        my_db.transaction((tx) => {
-          tx.executeSql('CREATE TABLE IF NOT EXISTS tbl (id unique, data)');
-          tx.executeSql('INSERT INTO tbl (id, data) VALUES (1, "foo")');
-          tx.executeSql('SELECT * FROM tbl', [], (tx, results) => {
-            num_rows = results.rows.length;
-          });
-        }, reject, resolve);
-      });
-      if(num_rows <= 0) {throw new Error('Failed to access!')}
-    }
-
     function accessLocalStorage() {
       localStorage.setItem('foo', 'bar');
       return localStorage.getItem('foo');
@@ -169,16 +154,16 @@ bool NavigateToSetCookie(WebContents* web_contents,
 void CreateImageAndWaitForCookieAccess(WebContents* web_contents,
                                        const GURL& image_url);
 
-// Helper function to block until all DIPS storage requests are complete.
-inline void WaitOnStorage(BtmServiceImpl* dips_service) {
-  dips_service->storage()->FlushPostedTasksForTesting();
+// Helper function to block until all BTM storage requests are complete.
+inline void WaitOnStorage(BtmServiceImpl* btm_service) {
+  btm_service->storage()->FlushPostedTasksForTesting();
 }
 
-// Helper function to query the `url` state from DIPS storage.
-std::optional<StateValue> GetBtmState(BtmServiceImpl* dips_service,
+// Helper function to query the `url` state from BTM storage.
+std::optional<StateValue> GetBtmState(BtmServiceImpl* btm_service,
                                       const GURL& url);
 
-inline BtmServiceImpl* GetDipsService(WebContents* web_contents) {
+inline BtmServiceImpl* GetBtmService(WebContents* web_contents) {
   return BtmServiceImpl::Get(web_contents->GetBrowserContext());
 }
 
@@ -279,7 +264,7 @@ class ScopedInitFeature {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Enables/disables the DIPS Feature.
+// Enables/disables the BTM Feature.
 class ScopedInitBtmFeature {
  public:
   explicit ScopedInitBtmFeature(bool enable,
@@ -339,10 +324,12 @@ class TpcBlockingBrowserClient : public ContentBrowserClient,
 
   void SetBlockThirdPartyCookiesByDefault(bool block) { block_3pcs_ = block; }
 
-  bool IsFullCookieAccessAllowed(BrowserContext* browser_context,
-                                 WebContents* web_contents,
-                                 const GURL& url,
-                                 const blink::StorageKey& storage_key) override;
+  bool IsFullCookieAccessAllowed(
+      BrowserContext* browser_context,
+      WebContents* web_contents,
+      const GURL& url,
+      const blink::StorageKey& storage_key,
+      net::CookieSettingOverrides overrides) override;
 
   void GrantCookieAccessDueToHeuristic(BrowserContext* browser_context,
                                        const net::SchemefulSite& top_frame_site,
@@ -350,7 +337,7 @@ class TpcBlockingBrowserClient : public ContentBrowserClient,
                                        base::TimeDelta ttl,
                                        bool ignore_schemes) override;
 
-  bool ShouldDipsDeleteInteractionRecords(uint64_t remove_mask) override;
+  bool ShouldBtmDeleteInteractionRecords(uint64_t remove_mask) override;
 
   void AllowThirdPartyCookiesOnSite(const GURL& url);
   void GrantCookieAccessTo3pSite(const GURL& url);

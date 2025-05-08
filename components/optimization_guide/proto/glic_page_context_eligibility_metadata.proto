@@ -1,0 +1,15 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "GlicPageContextEligibilityMetadataProto";
+
+package optimization_guide.proto;
+
+message GlicPageContextEligibilityMetadata {
+  optional bool is_eligible = 1;
+}

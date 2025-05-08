@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gtest_util.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/timer/timer.h"
@@ -561,6 +562,17 @@ TEST_F(ScrollViewTest, BoundedViewportSizedToFit) {
   // Make sure the width of |contents| is set properly not to overflow the
   // viewport.
   EXPECT_EQ(96, contents->width());
+}
+
+// Verifies that the scroll view calls post-layout callback on every layout.
+TEST_F(ScrollViewTest, LayoutCallbackCalledOnEveryLayout) {
+  auto mock_post_layout_cb_ =
+      base::MockCallback<base::RepeatingCallback<void(ScrollView*)>>();
+  scroll_view_->RegisterPostLayoutCallback(mock_post_layout_cb_.Get());
+  EXPECT_CALL(mock_post_layout_cb_, Run(scroll_view_.get())).Times(1);
+  InstallContents();
+  ASSERT_FALSE(scroll_view_->GetContentsBounds().IsEmpty());
+  views::test::RunScheduledLayout(scroll_view_.get());
 }
 
 // Verifies that the vertical scrollbar does not unnecessarily appear for a

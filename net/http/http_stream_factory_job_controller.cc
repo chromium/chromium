@@ -1525,7 +1525,8 @@ void HttpStreamFactory::JobController::SwitchToHttpStreamPool() {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&JobController::CallOnSwitchesToHttpStreamPool,
-                     ptr_factory_.GetWeakPtr(), std::move(pool_request_info)));
+                     ptr_factory_.GetWeakPtr(), std::move(pool_request_info),
+                     base::TimeTicks::Now()));
 }
 
 void HttpStreamFactory::JobController::OnPoolPreconnectsComplete(int rv) {
@@ -1535,9 +1536,13 @@ void HttpStreamFactory::JobController::OnPoolPreconnectsComplete(int rv) {
 }
 
 void HttpStreamFactory::JobController::CallOnSwitchesToHttpStreamPool(
-    HttpStreamPoolRequestInfo request_info) {
+    HttpStreamPoolRequestInfo request_info,
+    base::TimeTicks post_task_time) {
   CHECK(request_);
   CHECK(delegate_);
+
+  base::UmaHistogramTimes("Net.HttpStreamPool.SwitchesToPoolPostTaskTime",
+                          base::TimeTicks::Now() - post_task_time);
 
   // `request_` and `delegate_` will be reset later.
 

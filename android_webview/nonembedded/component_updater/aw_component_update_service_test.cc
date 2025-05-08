@@ -103,6 +103,7 @@ class FailingNetworkFetcher : public update_client::NetworkFetcher {
              /* network_error= */ -2,
              /* header_etag= */ "",
              /* header_x_cup_server_proof= */ "",
+             /* header_cookie= */ "",
              /* x_header_retry_after_sec= */ 0ll);
   }
 
@@ -144,6 +145,7 @@ class OnDemandNetworkFetcher : public update_client::NetworkFetcher {
              /* network_error= */ -2,
              /* header_etag= */ "",
              /* header_x_cup_server_proof= */ "",
+             /* header_cookie= */ "",
              /* x_header_retry_after_sec= */ 0ll);
   }
 
@@ -200,6 +202,7 @@ class FakeCrxNetworkFetcher : public update_client::NetworkFetcher {
              /* network_error= */ network_error,
              /* header_etag= */ "",
              /* header_x_cup_server_proof= */ "",
+             /* header_cookie= */ "",
              /* x_header_retry_after_sec= */ 0ll);
   }
 

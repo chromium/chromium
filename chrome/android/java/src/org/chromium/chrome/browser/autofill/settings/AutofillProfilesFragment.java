@@ -27,9 +27,9 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
+import org.chromium.chrome.browser.autofill.AutofillFallbackSurfaceLauncher;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
-import org.chromium.chrome.browser.autofill.PlusAddressesHelper;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
@@ -286,7 +286,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         }
 
         if (editorPreference.getKey().equals(MANAGE_PLUS_ADDRESSES)) {
-            PlusAddressesHelper.openManagePlusAddresses(getActivity(), getProfile());
+            AutofillFallbackSurfaceLauncher.openManagePlusAddresses(getActivity(), getProfile());
             PlusAddressesUserActions.MANAGE_OPTION_ON_SETTINGS_SELECTED.log();
             return;
         }

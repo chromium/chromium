@@ -110,7 +110,9 @@ bool IsProfileStateReady(Browser* browser) {
 }  // namespace
 
 UserActivityBrowserAgent::UserActivityBrowserAgent(Browser* browser)
-    : browser_(browser), profile_(browser->GetProfile()) {
+    : BrowserUserData(browser),
+      browser_(browser),
+      profile_(browser->GetProfile()) {
   SceneState* scene_state = browser_->GetSceneState();
   connection_information_ = scene_state.controller;
   tab_opener_ = scene_state.controller;

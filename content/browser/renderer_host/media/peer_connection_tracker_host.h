@@ -65,6 +65,8 @@ class PeerConnectionTrackerHost
   // side.
   void StartEventLog(int peer_connection_local_id, int output_period_ms);
   void StopEventLog(int lid);
+  void StartDataChannelLog(int peer_connection_local_id);
+  void StopDataChannelLog(int lid);
   void GetStandardStats();
   void GetCurrentState();
 
@@ -111,6 +113,8 @@ class PeerConnectionTrackerHost
                               const std::string& error_message) override;
   void WebRtcEventLogWrite(int lid,
                            const std::vector<uint8_t>& output) override;
+  void WebRtcDataChannelLogWrite(int lid,
+                                 const std::vector<uint8_t>& output) override;
   void AddStandardStats(int lid, base::Value::List value) override;
 
   GlobalRenderFrameHostId frame_id_;

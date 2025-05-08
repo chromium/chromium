@@ -17,13 +17,8 @@
 #endif  // defined(COMPONENTS_DRIVE_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(COMPONENTS_DRIVE_IMPLEMENTATION)
 #define COMPONENTS_DRIVE_EXPORT __attribute__((visibility("default")))
 #define COMPONENTS_DRIVE_EXPORT_PRIVATE __attribute__((visibility("default")))
-#else
-#define COMPONENTS_DRIVE_EXPORT
-#define COMPONENTS_DRIVE_EXPORT_PRIVATE
-#endif
 #endif
 
 #else  /// defined(COMPONENT_BUILD)

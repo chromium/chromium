@@ -87,8 +87,7 @@ class StarboardApiWrapperBase : public StarboardApiWrapper {
   // Converts the version-agnostic StarboardPlayerCreationParam to starboard's
   // SbPlayerCreationParam.
   virtual SbPlayerCreationParam ToSbPlayerCreationParam(
-      const StarboardPlayerCreationParam& in_param,
-      void* drm_system) = 0;
+      const StarboardPlayerCreationParam& in_param) = 0;
 
   // Converts from cast's version-agnostic struct to starboard's version.
   virtual SbMediaVideoSampleInfo ToSbMediaVideoSampleInfo(

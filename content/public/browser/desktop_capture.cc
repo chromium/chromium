@@ -37,6 +37,15 @@ bool CGDisplayStreamCreateIsAvailable() {
 }
 #endif  // BUILDFLAG(IS_MAC)
 
+// Enabled-by-default, but exists as a kill-switch.
+// TODO(crbug.com/409473386): Remove this flag once it has been in stable for a
+// few milestones.
+#if BUILDFLAG(IS_WIN)
+BASE_FEATURE(kUseHeuristicForWindowsFullScreenPowerPoint,
+             "UseHeuristicForWindowsFullScreenPowerPoint",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 namespace content::desktop_capture {
 
 webrtc::DesktopCaptureOptions CreateDesktopCaptureOptions() {
@@ -44,6 +53,10 @@ webrtc::DesktopCaptureOptions CreateDesktopCaptureOptions() {
   // Leave desktop effects enabled during WebRTC captures.
   options.set_disable_effects(false);
 #if BUILDFLAG(IS_WIN)
+  options.full_screen_window_detector()
+      ->SetUseHeuristicFullscreenPowerPointWindows(base::FeatureList::IsEnabled(
+          kUseHeuristicForWindowsFullScreenPowerPoint));
+
   // TODO(crbug.com/webrtc/15045): Possibly remove this flag. Keeping for now
   // to force fallback to GDI.
   static BASE_FEATURE(kDirectXCapturer, "DirectXCapturer",

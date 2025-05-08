@@ -51,6 +51,7 @@
 #include "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #include "components/autofill/core/browser/studies/autofill_ablation_study.h"
+#include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/suggestions/suggestions_context.h"
@@ -164,7 +165,7 @@ class BrowserAutofillManager : public AutofillManager {
       FieldType field_type_used_to_build_suggestion,
       const std::string& profile_used_guid);
 
-  // Calls UndoAutofillImpl and logs metrics. Virtual for testing.
+  // Calls FormFiller::UndoAutofill and logs metrics. Virtual for testing.
   virtual void UndoAutofill(mojom::ActionPersistence action_persistence,
                             const FormData& form,
                             const FormFieldData& trigger_field);
@@ -483,6 +484,29 @@ class BrowserAutofillManager : public AutofillManager {
       SuggestionsContext& context,
       autofill_metrics::SuggestionRankingContext& ranking_context);
 
+  // Called when all suggestion generators have finished fetching their data.
+  // It schedules the generation of the individual suggestions for each
+  // `FillingProduct` and calls `OnIndividualSuggestionsGenerated` when done.
+  void OnSuggestionDataFetched(
+      const FormData& form,
+      const FormFieldData& field,
+      AutofillSuggestionTriggerSource trigger_source,
+      SuggestionsContext context,
+      std::vector<std::pair<FillingProduct,
+                            std::vector<SuggestionGenerator::SuggestionData>>>
+          suggestion_data);
+
+  // Called when all suggestion generators have finished generating their
+  // suggestions. It combines the returned suggestions respecting their
+  // priorities and calls `OnGenerateSuggestionsComplete` to show them.
+  void OnIndividualSuggestionsGenerated(
+      const FormData& form,
+      const FormFieldData& field,
+      AutofillSuggestionTriggerSource trigger_source,
+      SuggestionsContext context,
+      std::vector<SuggestionGenerator::ReturnedSuggestions>
+          returned_suggestions);
+
   // Generates and prioritizes different kinds of suggestions and
   // suggestion surfaces accordingly (e.g. Fast Checkout, Autofill AI,
   // SingleFieldFiller(s), address and credit card popups).
@@ -526,8 +550,7 @@ class BrowserAutofillManager : public AutofillManager {
   // email override.
   void OnEmailOverrideUndone(const std::u16string& original_email,
                              const FormGlobalId& form_id,
-                             const FieldGlobalId& field_id,
-                             const FormFieldData& field_after_last_autofill);
+                             const FieldGlobalId& field_id);
 
   // The function receives a the list of `suggestions` from
   // `GenerateSuggestionsAndMaybeShowUIPhase2` and displays them if
@@ -658,6 +681,7 @@ class BrowserAutofillManager : public AutofillManager {
   std::vector<std::string> four_digit_combinations_in_dom_;
 
   std::u16string last_unlocked_credit_card_cvc_;
+  std::vector<std::unique_ptr<SuggestionGenerator>> suggestion_generators_;
 
   base::WeakPtrFactory<BrowserAutofillManager> weak_ptr_factory_{this};
 };

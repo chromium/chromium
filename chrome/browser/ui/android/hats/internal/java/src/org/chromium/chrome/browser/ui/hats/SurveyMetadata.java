@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.hats;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -110,7 +112,9 @@ class SurveyMetadata {
      */
     SurveyMetadata(String triggerId, Supplier<Integer> encodedDateSupplier) {
         mCurrentDateSupplier =
-                sDateForTesting == null ? encodedDateSupplier : () -> sDateForTesting;
+                sDateForTesting == null
+                        ? encodedDateSupplier
+                        : () -> assumeNonNull(sDateForTesting);
         mPrefKeyPromptDisplayedDate = KEY_PREFIX_DATE_PROMPT_DISPLAYED + triggerId;
         mPrefKeyDiceRolledDate = KEY_PREFIX_DATE_DICE_ROLLED + triggerId;
     }

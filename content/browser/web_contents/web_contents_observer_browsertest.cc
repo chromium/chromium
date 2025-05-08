@@ -148,6 +148,7 @@ class ServiceWorkerAccessContentBrowserClient
       const GURL& scope,
       const net::SiteForCookies& site_for_cookies,
       const std::optional<url::Origin>& top_frame_origin,
+      const blink::StorageKey& storage_key,
       const GURL& script_url,
       BrowserContext* context) override {
     return AllowServiceWorkerResult::FromPolicy(!javascript_allowed_,

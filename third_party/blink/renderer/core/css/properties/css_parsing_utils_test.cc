@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_progress_value.h"
 #include "third_party/blink/renderer/core/css/css_scroll_value.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_view_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
@@ -53,13 +54,20 @@ TEST(CSSParsingUtilsTest, Revert) {
 
 double ConsumeAngleValue(String target) {
   CSSParserTokenStream stream(target);
-  return ConsumeAngle(stream, *MakeContext(), std::nullopt)->ComputeDegrees();
+  // This function only works on calc() expressions that can be resolved at
+  // parse time.
+  CSSToLengthConversionData conversion_data(/*element=*/nullptr);
+  return ConsumeAngle(stream, *MakeContext(), std::nullopt)
+      ->ComputeDegrees(conversion_data);
 }
 
 double ConsumeAngleValue(String target, double min, double max) {
   CSSParserTokenStream stream(target);
+  // This function only works on calc() expressions that can be resolved at
+  // parse time.
+  CSSToLengthConversionData conversion_data(/*element=*/nullptr);
   return ConsumeAngle(stream, *MakeContext(), std::nullopt, min, max)
-      ->ComputeDegrees();
+      ->ComputeDegrees(conversion_data);
 }
 
 TEST(CSSParsingUtilsTest, ConsumeAngles) {

@@ -248,6 +248,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
             int sourceTabId, int destinationTabId, boolean skipUpdateTabModel) {
         Tab sourceTab = getTabModel().getTabByIdChecked(sourceTabId);
         Tab destinationTab = getTabModel().getTabByIdChecked(destinationTabId);
+        boolean wasDestinationTabInAGroup = isTabInTabGroup(destinationTab);
 
         assert sourceTab != null
                         && destinationTab != null
@@ -287,6 +288,12 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                     getOrCreateTabGroupIdWithDefault(destinationTab, sourceTab.getTabGroupId());
             mGroupIdToRootIdMap.put(destinationTabGroupId, destinationRootId);
 
+            if (!wasDestinationTabInAGroup) {
+                for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
+                    observer.willMergeTabToGroup(
+                            destinationTab, destinationRootId, destinationTabGroupId);
+                }
+            }
             for (int i = 0; i < tabsToMerge.size(); i++) {
                 Tab tab = tabsToMerge.get(i);
                 for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
@@ -313,6 +320,11 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
             }
             resetFilterState();
 
+            if (!wasDestinationTabInAGroup) {
+                for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
+                    observer.didMergeTabToGroup(destinationTab);
+                }
+            }
             for (int i = 0; i < tabsToMerge.size(); i++) {
                 Tab tab = tabsToMerge.get(i);
                 for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
@@ -380,6 +392,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         int destinationRootId = destinationTab.getRootId();
         int destinationTabIndex =
                 TabModelUtils.getTabIndexById(getTabModel(), destinationTab.getId());
+        boolean wasDestinationTabInAGroup = isTabInTabGroup(destinationTab);
         assert destinationTabIndex != TabModel.INVALID_TAB_INDEX;
         mergedTabs.add(destinationTab);
         originalIndexes.add(destinationTabIndex);
@@ -387,7 +400,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         originalTabGroupIds.add(destinationTab.getTabGroupId());
 
         Token destinationTabGroupId;
-        if (isTabInTabGroup(destinationTab)) {
+        if (wasDestinationTabInAGroup) {
             destinationTabGroupId = destinationTab.getTabGroupId();
         } else {
             Token mergedTabGroupId = null;
@@ -404,6 +417,15 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         int destinationGroupColorId = TabGroupColorUtils.getTabGroupColor(destinationRootId);
 
         final boolean destinationGroupTitleCollapsed = getTabGroupCollapsed(destinationRootId);
+        if (!wasDestinationTabInAGroup) {
+            for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
+                observer.willMergeTabToGroup(
+                        destinationTab, destinationRootId, destinationTabGroupId);
+            }
+            for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
+                observer.didMergeTabToGroup(destinationTab);
+            }
+        }
 
         // Iterate through all tabs to set the proper new group creation status.
         for (int i = 0; i < tabs.size(); i++) {
@@ -724,11 +746,13 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         return Collections.unmodifiableList(tabs);
     }
 
+    /** Whether {@param tab}'s {@code TabLaunchType} should be part of a group with its parent. */
     private boolean shouldUseParentIds(Tab tab) {
         @TabLaunchType int tabLaunchType = tab.getLaunchType();
         return isTabModelRestored()
                 && !mIsResetting
                 && (tabLaunchType == TabLaunchType.FROM_TAB_GROUP_UI
+                        || tabLaunchType == TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP
                         || tabLaunchType == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
                         || tabLaunchType == TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP);
     }

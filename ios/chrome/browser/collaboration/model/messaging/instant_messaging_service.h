@@ -5,8 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_COLLABORATION_MODEL_MESSAGING_INSTANT_MESSAGING_SERVICE_H_
 #define IOS_CHROME_BROWSER_COLLABORATION_MODEL_MESSAGING_INSTANT_MESSAGING_SERVICE_H_
 
+#import "base/memory/raw_ptr.h"
 #import "components/collaboration/public/messaging/messaging_backend_service.h"
 #import "components/keyed_service/core/keyed_service.h"
+
+class ProfileIOS;
 
 namespace collaboration::messaging {
 
@@ -18,7 +21,7 @@ class InstantMessagingService
       public collaboration::messaging::MessagingBackendService::
           InstantMessageDelegate {
  public:
-  InstantMessagingService();
+  InstantMessagingService(ProfileIOS* profile);
   InstantMessagingService(const InstantMessagingService&) = delete;
   InstantMessagingService& operator=(const InstantMessagingService&) = delete;
   ~InstantMessagingService() override;
@@ -28,6 +31,14 @@ class InstantMessagingService
       collaboration::messaging::InstantMessage message,
       MessagingBackendService::InstantMessageDelegate::SuccessCallback
           success_callback) override;
+
+ private:
+  // Shows a collaboration group infobar for the given `instant_message`.
+  // Returns `true` if the infobar has been displayed.
+  bool ShowCollaborationGroupInfobar(
+      collaboration::messaging::InstantMessage instant_message);
+
+  raw_ptr<ProfileIOS> profile_ = nullptr;
 };
 
 }  // namespace collaboration::messaging

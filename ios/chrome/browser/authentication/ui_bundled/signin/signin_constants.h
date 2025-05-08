@@ -75,16 +75,6 @@ extern NSString* const kKeepBrowsingDataSeparateCellId;
 // Name of the accessibility identifier for the merge browsing data cell.
 extern NSString* const kMergeBrowsingDataCellId;
 
-// Intent for TrustedVaultReauthenticationCoordinator to display either
-// the reauthentication or degraded recoverability dialog.
-typedef NS_ENUM(NSUInteger, SigninTrustedVaultDialogIntent) {
-  // Show reauthentication dialog for fetch keys.
-  SigninTrustedVaultDialogIntentFetchKeys,
-  // Show reauthentication degraded recoverability dialog (to enroll additional
-  // recovery factors).
-  SigninTrustedVaultDialogIntentDegradedRecoverability,
-};
-
 // Max dismissal count for web sign-in consistency dialog (the dismissal value
 // is reset as soon as the user shows sign-in intent).
 extern const int kDefaultWebSignInDismissalCount;

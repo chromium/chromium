@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.creator;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 /** Interface for opening URLS in a new tab.*/
+@NullMarked
 public interface NewTabCreator {
     /**
      * Creates a new tab with the given params.

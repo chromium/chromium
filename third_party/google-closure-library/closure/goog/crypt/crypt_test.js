@@ -7,8 +7,10 @@
 goog.module('goog.cryptTest');
 goog.setTestOnly();
 
+const PropertyReplacer = goog.require('goog.testing.PropertyReplacer');
 const crypt = goog.require('goog.crypt');
 const googString = goog.require('goog.string');
+const recordFunction = goog.require('goog.testing.recordFunction');
 const testSuite = goog.require('goog.testing.testSuite');
 
 const UTF8_RANGES_BYTE_ARRAY =
@@ -52,6 +54,26 @@ testSuite({
         crypt.stringToUtf8ByteArray(UTF8_SURROGATE_PAIR_RANGES_STRING));
   },
 
+  testTextToByteArray() {
+    // Known encodings taken from Java's String.getBytes("UTF8")
+
+    assertArrayEquals(
+        'ASCII', [72, 101, 108, 108, 111, 44, 32, 119, 111, 114, 108, 100],
+        crypt.textToByteArray('Hello, world'));
+
+    assertArrayEquals(
+        'Latin', [83, 99, 104, 195, 182, 110],
+        crypt.textToByteArray('Sch\u00f6n'));
+
+    assertArrayEquals(
+        'limits of the first 3 UTF-8 character ranges', UTF8_RANGES_BYTE_ARRAY,
+        crypt.textToByteArray(UTF8_RANGES_STRING));
+
+    assertArrayEquals(
+        'Surrogate Pair', UTF8_SURROGATE_PAIR_RANGES_BYTE_ARRAY,
+        crypt.textToByteArray(UTF8_SURROGATE_PAIR_RANGES_STRING));
+  },
+
   testUtf8ByteArrayToString() {
     // Known encodings taken from Java's String.getBytes("UTF8")
 
@@ -83,6 +105,37 @@ testSuite({
         crypt.utf8ByteArrayToString(UTF8_SURROGATE_PAIR_RANGES_BYTE_ARRAY));
   },
 
+  testByteArrayToText() {
+    // Known encodings taken from Java's String.getBytes("UTF8")
+
+    assertEquals('ASCII', 'Hello, world', crypt.byteArrayToText([
+      72,
+      101,
+      108,
+      108,
+      111,
+      44,
+      32,
+      119,
+      111,
+      114,
+      108,
+      100,
+    ]));
+
+    assertEquals(
+        'Latin', 'Sch\u00f6n',
+        crypt.byteArrayToText([83, 99, 104, 195, 182, 110]));
+
+    assertEquals(
+        'limits of the first 3 UTF-8 character ranges', UTF8_RANGES_STRING,
+        crypt.byteArrayToText(UTF8_RANGES_BYTE_ARRAY));
+
+    assertEquals(
+        'Surrogate Pair', UTF8_SURROGATE_PAIR_RANGES_STRING,
+        crypt.byteArrayToText(UTF8_SURROGATE_PAIR_RANGES_BYTE_ARRAY));
+  },
+
   /**
    * Same as testUtf8ByteArrayToString but with Uint8Array instead of
    * Array<number>.
@@ -106,9 +159,78 @@ testSuite({
         crypt.utf8ByteArrayToString(arr));
   },
 
+  /**
+   * Same as testByteArrayToText but with Uint8Array instead of
+   * Array<number>.
+   */
+  testByteArrayToText_Uint8Array() {
+    if (!globalThis.Uint8Array) {
+      // Uint8Array not supported.
+      return;
+    }
+
+    let arr = new Uint8Array(
+        [72, 101, 108, 108, 111, 44, 32, 119, 111, 114, 108, 100]);
+    assertEquals('ASCII', 'Hello, world', crypt.byteArrayToText(arr));
+
+    arr = new Uint8Array([83, 99, 104, 195, 182, 110]);
+    assertEquals('Latin', 'Sch\u00f6n', crypt.byteArrayToText(arr));
+
+    arr = new Uint8Array(UTF8_RANGES_BYTE_ARRAY);
+    assertEquals(
+        'limits of the first 3 UTF-8 character ranges', UTF8_RANGES_STRING,
+        crypt.byteArrayToText(arr));
+  },
+
   testByteArrayToString() {
     assertEquals('', crypt.byteArrayToString([]));
     assertEquals('abc', crypt.byteArrayToString([97, 98, 99]));
+    assertEquals('\xa0\x12\xa1', crypt.byteArrayToString([0xa0, 0x12, 0xa1]));
+  },
+
+  testByteArrayToBinaryString() {
+    assertEquals('', crypt.byteArrayToBinaryString([]));
+    assertEquals('abc', crypt.byteArrayToBinaryString([97, 98, 99]));
+    assertEquals(
+        '\xa0\x12\xa1', crypt.byteArrayToBinaryString([0xa0, 0x12, 0xa1]));
+  },
+
+  testStringToByteArray() {
+    assertArrayEquals([], crypt.stringToByteArray(''));
+    assertArrayEquals([97, 98, 99], crypt.stringToByteArray('abc'));
+    assertArrayEquals(
+        [0xa0, 0x12, 0xa1], crypt.stringToByteArray('\xa0\x12\xa1'));
+    assertThrows(() => crypt.stringToByteArray('\u0102'));
+  },
+
+  testStringToByteArray_asyncThrow() {
+    const stubs = new PropertyReplacer();
+    const stubThrowException = recordFunction();
+    stubs.replace(crypt.TEST_ONLY, 'throwException', stubThrowException);
+    stubs.replace(crypt.TEST_ONLY, 'alwaysThrowSynchronously', false);
+    try {
+      assertArrayEquals([], crypt.stringToByteArray(''));
+      assertArrayEquals([97, 98, 99], crypt.stringToByteArray('abc'));
+      assertArrayEquals(
+          [0xa0, 0x12, 0xa1], crypt.stringToByteArray('\xa0\x12\xa1'));
+      if (stubThrowException.getCallCount() > 0) {
+        throw stubThrowException.getLastCall().getArgument(0);
+      }
+
+      // Test async throwing behavior.
+      assertArrayEquals([2, 1], crypt.stringToByteArray('\u0102'));
+      assertEquals(1, stubThrowException.getCallCount());
+    } finally {
+      stubs.reset();
+    }
+  },
+
+  testBinaryStringToByteArray() {
+    assertArrayEquals([], crypt.binaryStringToByteArray(''));
+    assertArrayEquals([97, 98, 99], crypt.binaryStringToByteArray('abc'));
+    assertArrayEquals(
+        [0xa0, 0x12, 0xa1], crypt.binaryStringToByteArray('\xa0\x12\xa1'));
+    assertThrows(() => crypt.binaryStringToByteArray('\u0100'));
   },
 
   testHexToByteArray() {

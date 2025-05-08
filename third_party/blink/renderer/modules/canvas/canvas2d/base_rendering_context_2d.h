@@ -276,6 +276,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   void TryRestoreContextEvent(TimerBase*);
   void RestoreFromInvalidSizeIfNeeded() override;
 
+  bool IsDrawElementEligible(Element* element, ExceptionState& exception_state);
+
   // `CanvasRenderingContext2D` and `OffscreenCanvasRenderingContext2D` do not
   // create resource providers the same way. Thus, `BaseRenderingContext2D`
   // needs a dedicated function to create the provider the right way. Returns

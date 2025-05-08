@@ -34,15 +34,11 @@ const CGFloat kCornerRadius = 8.0;
   ContentSuggestionsTileType _type;
 }
 
-@synthesize inMagicStack = _inMagicStack;
-
 - (instancetype)initWithFrame:(CGRect)frame
-                     tileType:(ContentSuggestionsTileType)type
-                 inMagicStack:(BOOL)inMagicStack {
+                     tileType:(ContentSuggestionsTileType)type {
   self = [super initWithFrame:frame];
   if (self) {
     _type = type;
-    _inMagicStack = inMagicStack;
     _titleLabel = [[UILabel alloc] init];
     _titleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _titleLabel.font = [self titleLabelFont];
@@ -50,7 +46,6 @@ const CGFloat kCornerRadius = 8.0;
     _titleLabel.preferredMaxLayoutWidth = kPreferredMaxWidth;
     _titleLabel.numberOfLines = kLabelNumLines;
     _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    [self updateTitleLabelNumberOfLines];
 
     _imageContainerView = [[UIView alloc] init];
     _imageContainerView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -162,34 +157,12 @@ const CGFloat kCornerRadius = 8.0;
   return [UIPointerStyle styleWithEffect:effect shape:shape];
 }
 
-// Updates the title label's number of rows depending on the preferred content
-// size if it is in the Magic Stack since the Magic Stack has a fixed height,
-// limiting the space available for multiple lines of text.
-- (void)updateTitleLabelNumberOfLines {
-  if (!self.inMagicStack) {
-    return;
-  }
-
-  UIContentSizeCategory category =
-      self.traitCollection.preferredContentSizeCategory;
-  NSComparisonResult result = UIContentSizeCategoryCompareToCategory(
-      category, UIContentSizeCategoryExtraExtraExtraLarge);
-  if (result == NSOrderedAscending) {
-    self.titleLabel.numberOfLines = kLabelNumLines;
-    self.titleLabel.lineBreakMode = NSLineBreakByCharWrapping;
-  } else {
-    self.titleLabel.numberOfLines = 1;
-    self.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-  }
-}
-
 #pragma mark - Private
 
 // Updates the `titleLabel`'s font and numberOfLines property when a change in
 // the device's UITraits is detected.
 - (void)updateTitleLabelOnTraitChange {
   self.titleLabel.font = [self titleLabelFont];
-  [self updateTitleLabelNumberOfLines];
 }
 
 @end

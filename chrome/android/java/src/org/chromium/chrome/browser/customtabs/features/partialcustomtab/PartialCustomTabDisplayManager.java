@@ -26,6 +26,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy.PartialCustomTabType;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsCoordinator;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
@@ -70,6 +71,7 @@ public class PartialCustomTabDisplayManager extends CustomTabHeightStrategy
     private View mToolbarCoordinatorView;
     private CustomTabToolbar mCustomTabToolbar;
     private int mToolbarCornerRadius;
+    private CustomTabToolbarButtonsCoordinator mToolbarButtonsCoordinator;
     private PartialCustomTabHandleStrategyFactory mHandleStrategyFactory;
     private SizeStrategyCreator mSizeStrategyCreator = this::createSizeStrategy;
     private Supplier<TouchEventProvider> mTouchEventProvider;
@@ -148,7 +150,10 @@ public class PartialCustomTabDisplayManager extends CustomTabHeightStrategy
 
     private void relayoutStrategy() {
         mStrategy.onToolbarInitialized(
-                mToolbarCoordinatorView, mCustomTabToolbar, mToolbarCornerRadius);
+                mToolbarCoordinatorView,
+                mCustomTabToolbar,
+                mToolbarCornerRadius,
+                mToolbarButtonsCoordinator);
         mStrategy.onPostInflationStartup();
         // TODO(http://crbug.com/40887082): Creating a new strategy type is basically a resize
         // so we need to make sure to call #onActivityResized here as well
@@ -172,18 +177,25 @@ public class PartialCustomTabDisplayManager extends CustomTabHeightStrategy
      * Provide this class with the required views and values so it can set up the strategy.
      *
      * @param coordinatorView Coordinator view to insert the UI handle for the users to resize the
-     *                        custom tab.
+     *     custom tab.
      * @param toolbar The {@link CustomTabToolbar} to set up the strategy.
      * @param toolbarCornerRadius The custom tab corner radius in pixels.
+     * @param toolbarButtonsCoordinator The {@link CustomTabToolbarButtonsCoordinator} to
+     *     communicate with the toolbar buttons.
      */
     @Override
     public void onToolbarInitialized(
-            View coordinatorView, CustomTabToolbar toolbar, @Px int toolbarCornerRadius) {
+            View coordinatorView,
+            CustomTabToolbar toolbar,
+            @Px int toolbarCornerRadius,
+            CustomTabToolbarButtonsCoordinator toolbarButtonsCoordinator) {
         mToolbarCoordinatorView = coordinatorView;
         mCustomTabToolbar = toolbar;
         mToolbarCornerRadius = toolbarCornerRadius;
+        mToolbarButtonsCoordinator = toolbarButtonsCoordinator;
 
-        mStrategy.onToolbarInitialized(coordinatorView, toolbar, toolbarCornerRadius);
+        mStrategy.onToolbarInitialized(
+                coordinatorView, toolbar, toolbarCornerRadius, toolbarButtonsCoordinator);
     }
 
     /**

@@ -17,5 +17,4 @@ specific_include_rules = {
     "+ios/chrome/browser/shared/ui/util/rtl_geometry.h",
     "+ios/chrome/browser/shared/ui/util/uikit_ui_util.h",
   ],
-
 }

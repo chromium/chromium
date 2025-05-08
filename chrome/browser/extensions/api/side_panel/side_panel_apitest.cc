@@ -88,8 +88,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelApiWithExtensionTest, ExtensionRegistry) {
          extensions::TestExtensionRegistryObserver* observer,
          ExtensionService* extension_service,
          ExtensionRegistrar* extension_registrar) {
-        extension_service->DisableExtension(
-            id, disable_reason::DISABLE_USER_ACTION);
+        extension_registrar->DisableExtension(
+            id, {disable_reason::DISABLE_USER_ACTION});
         observer->WaitForExtensionUnloaded();
       },
       // "Uninstall extension",

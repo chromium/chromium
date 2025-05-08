@@ -1046,8 +1046,7 @@ goog.ui.AbstractSpellChecker.prototype.processTextAsync = function(node, text) {
     if (word) {
       var status = this.spellCheck.checkWord(word);
       if (status != goog.spell.SpellCheck.WordStatus.VALID) {
-        var precedingText =
-            text.substr(stringSegmentStart, result.index - stringSegmentStart);
+        var precedingText = text.slice(stringSegmentStart, result.index);
         if (precedingText) {
           this.processRange(node, precedingText);
         }
@@ -1065,7 +1064,7 @@ goog.ui.AbstractSpellChecker.prototype.processTextAsync = function(node, text) {
     }
   }
 
-  var leftoverText = text.substr(stringSegmentStart);
+  var leftoverText = text.slice(stringSegmentStart);
   if (leftoverText) {
     this.processRange(node, leftoverText);
   }
@@ -1100,8 +1099,7 @@ goog.ui.AbstractSpellChecker.prototype.continueAsyncProcessing = function() {
     if (word) {
       var status = this.spellCheck.checkWord(word);
       if (status != goog.spell.SpellCheck.WordStatus.VALID) {
-        var precedingText =
-            text.substr(stringSegmentStart, result.index - stringSegmentStart);
+        var precedingText = text.slice(stringSegmentStart, result.index);
         if (precedingText) {
           this.processRange(node, precedingText);
         }
@@ -1120,7 +1118,7 @@ goog.ui.AbstractSpellChecker.prototype.continueAsyncProcessing = function() {
   this.asyncRangeStart_ = 0;
   delete this.asyncNode_;
 
-  var leftoverText = text.substr(stringSegmentStart);
+  var leftoverText = text.slice(stringSegmentStart);
   if (leftoverText) {
     this.processRange(node, leftoverText);
   }

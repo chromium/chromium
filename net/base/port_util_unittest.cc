@@ -7,6 +7,9 @@
 #include <array>
 #include <string>
 
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "net/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -24,6 +27,24 @@ TEST(NetUtilTest, SetExplicitlyAllowedPortsTest) {
     SetExplicitlyAllowedPorts(valid[i]);
     EXPECT_EQ(i, GetCountOfExplicitlyAllowedPorts());
   }
+}
+
+TEST(NetUtilTest, RestrictedAbusePortsTest) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kRestrictAbusePorts,
+      {{"restrict_ports", "12345,23456,34567"}, {"monitor_ports", "45678"}});
+  EXPECT_TRUE(IsPortAllowedForScheme(443, "https"));
+  for (int port : {12345, 23456, 34567}) {
+    EXPECT_FALSE(IsPortAllowedForScheme(port, "https"));
+  }
+  EXPECT_TRUE(IsPortAllowedForScheme(45678, "https"));
+  histogram_tester.ExpectTotalCount("Net.RestrictedPorts", 4);
+  histogram_tester.ExpectBucketCount("Net.RestrictedPorts", 12345, 1);
+  histogram_tester.ExpectBucketCount("Net.RestrictedPorts", 23456, 1);
+  histogram_tester.ExpectBucketCount("Net.RestrictedPorts", 34567, 1);
+  histogram_tester.ExpectBucketCount("Net.RestrictedPorts", 45678, 1);
 }
 
 }  // namespace net

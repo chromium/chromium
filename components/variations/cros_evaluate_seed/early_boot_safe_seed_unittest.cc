@@ -42,10 +42,6 @@ TEST(EarlyBootSafeSeed, Milestone) {
   EXPECT_EQ(early_boot_safe_seed.GetMilestone(), 100);
 
   // Should not change.
-  early_boot_safe_seed.SetMilestone(101);
-  EXPECT_EQ(early_boot_safe_seed.GetMilestone(), 100);
-
-  // Still should not change.
   early_boot_safe_seed.ClearState();
   EXPECT_EQ(early_boot_safe_seed.GetMilestone(), 100);
 }
@@ -83,11 +79,15 @@ TEST(EarlyBootSafeSeed, GetSignature) {
   details.set_signature("signature");
 
   EarlyBootSafeSeed early_boot_safe_seed(details);
-  EXPECT_EQ(early_boot_safe_seed.GetSignature(), "signature");
+  EXPECT_EQ(early_boot_safe_seed.GetCompressedSeed().signature, "signature");
 
   // Should not change.
-  early_boot_safe_seed.SetSignature("asdf");
-  EXPECT_EQ(early_boot_safe_seed.GetSignature(), "signature");
+  early_boot_safe_seed.SetCompressedSeed(
+      ValidatedSeedInfo{.compressed_seed_data = "data",
+                        .base64_seed_data = "base64_data",
+                        .signature = "asdf",
+                        .milestone = 100});
+  EXPECT_EQ(early_boot_safe_seed.GetCompressedSeed().signature, "signature");
 }
 
 TEST(EarlyBootSafeSeed, GetLocale) {
@@ -131,10 +131,12 @@ TEST(EarlyBootSafeSeed, MutatorsDontCrash) {
   EarlyBootSafeSeed early_boot_safe_seed(details);
 
   early_boot_safe_seed.SetFetchTime(base::Time::Now());
-  early_boot_safe_seed.SetMilestone(100);
   early_boot_safe_seed.SetTimeForStudyDateChecks(base::Time::Now());
-  early_boot_safe_seed.SetCompressedSeed("data", "base64_data");
-  early_boot_safe_seed.SetSignature("signature");
+  early_boot_safe_seed.SetCompressedSeed(
+      ValidatedSeedInfo{.compressed_seed_data = "data",
+                        .base64_seed_data = "base64_data",
+                        .signature = "signature",
+                        .milestone = 100});
   early_boot_safe_seed.SetLocale("locale");
   early_boot_safe_seed.SetPermanentConsistencyCountry("us");
   early_boot_safe_seed.SetSessionConsistencyCountry("us");

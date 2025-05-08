@@ -164,15 +164,12 @@ std::vector<const char*> GetEnabledToggles(
 
   if (backend_type == wgpu::BackendType::Vulkan) {
 #if BUILDFLAG(IS_ANDROID)
-    const auto* build_info = base::android::BuildInfo::GetInstance();
-    // Samsung devices are failing validation checks that texture allocation
-    // size is bigger than AHB size when they should. See
-    // https://crbug.com/377935752 for details.
-    // TODO(crbug.com/407497928): Enable this toggle over GpuInfoCollector.
-    if (std::string_view(build_info->brand()) == "samsung") {
-      enabled_toggles.push_back(
-          "ignore_imported_ahardwarebuffer_vulkan_image_size");
-    }
+    // Enable this toggle for all Android devices suspecting vulkan image size
+    // mismatch causing SharedTextureMemory creation failures, leading to
+    // promise image creation failures. See https://crbug.com/377935752 for
+    // details.
+    enabled_toggles.push_back(
+        "ignore_imported_ahardwarebuffer_vulkan_image_size");
 #endif
 
     // Use a single VkPipelineCache inside dawn.
@@ -935,11 +932,16 @@ bool DawnSharedContext::OnMemoryDump(
         ->AddScalar(MemoryAllocatorDump::kNameSize,
                     MemoryAllocatorDump::kUnitsBytes,
                     mem_usage.depthStencilTexturesUsage);
-    pmd->GetOrCreateAllocatorDump(
-           base::JoinString({kDawnMemoryDumpPrefix, "textures/msaa"}, "/"))
-        ->AddScalar(MemoryAllocatorDump::kNameSize,
-                    MemoryAllocatorDump::kUnitsBytes,
-                    mem_usage.msaaTexturesUsage);
+    auto* msaa_dump = pmd->GetOrCreateAllocatorDump(
+        base::JoinString({kDawnMemoryDumpPrefix, "textures/msaa"}, "/"));
+    msaa_dump->AddScalar(MemoryAllocatorDump::kNameSize,
+                         MemoryAllocatorDump::kUnitsBytes,
+                         mem_usage.msaaTexturesUsage);
+    msaa_dump->AddScalar(MemoryAllocatorDump::kNameObjectCount,
+                         MemoryAllocatorDump::kUnitsObjects,
+                         mem_usage.msaaTexturesCount);
+    msaa_dump->AddScalar("biggest_size", MemoryAllocatorDump::kUnitsBytes,
+                         mem_usage.largestMsaaTextureUsage);
     pmd->GetOrCreateAllocatorDump(
            base::JoinString({kDawnMemoryDumpPrefix, "buffers"}, "/"))
         ->AddScalar(MemoryAllocatorDump::kNameSize,

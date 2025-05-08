@@ -23,6 +23,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card_test_api.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -525,8 +526,10 @@ IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
   card.set_record_type(CreditCard::RecordType::kVirtualCard);
   card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
-  card.SetNickname(BnplIssuerIdToDisplayName(kBnplAffirmIssuerId));
-  test_api(card).set_issuer_id_for_card(kBnplAffirmIssuerId);
+  card.SetNickname(
+      BnplIssuerIdToDisplayName(BnplIssuer::IssuerId::kBnplAffirm));
+  test_api(card).set_issuer_id_for_card(
+      ConvertToBnplIssuerIdString(BnplIssuer::IssuerId::kBnplAffirm));
   ShowBubble(&card, u"345");
 
   // Verify Affirm-specific title.
@@ -565,7 +568,7 @@ IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
   card.set_record_type(CreditCard::RecordType::kVirtualCard);
   card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
-  card.SetNickname(BnplIssuerIdToDisplayName(kBnplZipIssuerId));
+  card.SetNickname(BnplIssuerIdToDisplayName(BnplIssuer::IssuerId::kBnplZip));
   test_api(card).set_issuer_id_for_card(kBnplZipIssuerId);
   ShowBubble(&card, u"345");
 
@@ -605,7 +608,7 @@ IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
   card.set_record_type(CreditCard::RecordType::kVirtualCard);
   card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
-  card.SetNickname(BnplIssuerIdToDisplayName(kBnplZipIssuerId));
+  card.SetNickname(BnplIssuerIdToDisplayName(BnplIssuer::IssuerId::kBnplZip));
   test_api(card).set_issuer_id_for_card(kBnplZipIssuerId);
   ShowBubble(&card, u"345");
   ASSERT_TRUE(GetBubbleViews());
@@ -670,11 +673,17 @@ IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
 }
 
 // Test BNPL-specific card image and name views.
+// Consistently fails on multiple ChromeOS bots, see also crbug.com/414487274
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_BnplCardImageAndName DISABLED_BnplCardImageAndName
+#else
+#define MAYBE_BnplCardImageAndName BnplCardImageAndName
+#endif
 IN_PROC_BROWSER_TEST_F(FilledCardInformationBubbleViewsInteractiveUiTest,
-                       BnplCardImageAndName) {
+                       MAYBE_BnplCardImageAndName) {
   CreditCard card = test::GetVirtualCard();
   card.set_is_bnpl_card(true);
-  card.SetNickname(BnplIssuerIdToDisplayName(kBnplZipIssuerId));
+  card.SetNickname(BnplIssuerIdToDisplayName(BnplIssuer::IssuerId::kBnplZip));
   test_api(card).set_issuer_id_for_card(kBnplZipIssuerId);
   ShowBubble(&card, u"345");
 

@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {AnnotationText} from '../constants.js';
+import type {TextAttributes} from '../constants.js';
 import {TextAlignment} from '../constants.js';
 import {Ink2Manager} from '../ink2_manager.js';
 
@@ -49,8 +49,8 @@ export class TextAlignmentSelectorElement extends
     Ink2Manager.getInstance().setTextAlignment(newAlignment);
   }
 
-  override onTextChanged(text: AnnotationText) {
-    this.currentAlignment_ = text.alignment;
+  override onTextAttributesChanged(attributes: TextAttributes) {
+    this.currentAlignment_ = attributes.alignment;
   }
 }
 

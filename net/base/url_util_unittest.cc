@@ -768,6 +768,42 @@ TEST(UrlUtilTest, SchemeHasNetworkHost) {
   EXPECT_FALSE(IsStandardSchemeWithNetworkHost(kNonStandardScheme));
 }
 
+TEST(UrlUtilTest, GetOriginRelation) {
+  using enum OriginRelation;
+
+  const url::Origin kExampleOrigin =
+      url::Origin::Create(GURL("https://example.test"));
+  EXPECT_EQ(GetOriginRelation(kExampleOrigin, kExampleOrigin), kSameOrigin);
+
+  EXPECT_EQ(GetOriginRelation(
+                kExampleOrigin,
+                url::Origin::Create(GURL("https://other.example.test"))),
+            kSameSite);
+
+  EXPECT_EQ(
+      GetOriginRelation(kExampleOrigin,
+                        url::Origin::Create(GURL("https://cross-site.test"))),
+      kCrossSite);
+
+  // Same-site rules about schemes are followed.
+  const url::Origin cross_scheme_origin =
+      url::Origin::Create(GURL("http://example.test"));
+  EXPECT_EQ(GetOriginRelation(kExampleOrigin, cross_scheme_origin), kCrossSite);
+
+  // Same-site rules about opaque origins are followed.
+  EXPECT_EQ(
+      GetOriginRelation(kExampleOrigin, kExampleOrigin.DeriveNewOpaqueOrigin()),
+      kCrossSite);
+
+  // Cross-port origins are same-site.
+  EXPECT_EQ(
+      GetOriginRelation(kExampleOrigin,
+                        url::Origin::CreateFromNormalizedTuple(
+                            kExampleOrigin.scheme(), kExampleOrigin.host(),
+                            kExampleOrigin.port() + 1)),
+      kSameSite);
+}
+
 TEST(UrlUtilTest, GetIdentityFromURL) {
   struct {
     const char* const input_url;

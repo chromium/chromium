@@ -29,9 +29,6 @@ class CrostiniFileSelector : public ui::SelectFileDialog::Listener {
       base::OnceCallback<void(void)> cancelled_callback);
 
  private:
-  // Returns handle to browser window or NULL if it can't be found
-  gfx::NativeWindow GetBrowserWindow();
-
   void FileSelected(const ui::SelectedFileInfo& file, int index) override;
 
   void FileSelectionCanceled() override;

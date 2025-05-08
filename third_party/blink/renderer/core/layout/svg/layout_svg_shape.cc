@@ -57,9 +57,9 @@ void ClampBoundsToFinite(gfx::RectF& bounds) {
   bounds.set_height(ClampTo<float>(bounds.height()));
 }
 
-// Returns true if style would make this object have relative lengths i.e.
-// lengths as percentage of the viewport.
-bool ComputeHasRelativeLengths(const ComputedStyle& style) {
+// Returns true if the stroke style would make this object have relative
+// lengths i.e. lengths as percentage of the viewport.
+bool ComputeStrokeHasRelativeLengths(const ComputedStyle& style) {
   return style.StrokeWidth().length().HasPercent();
 }
 
@@ -337,9 +337,12 @@ bool LayoutSVGShape::StrokeContains(const HitTestLocation& location,
 SVGLayoutResult LayoutSVGShape::UpdateSVGLayout(
     const SVGLayoutInfo& layout_info) {
   NOT_DESTROYED();
-  if (layout_info.viewport_changed && HasViewportDependence()) {
-    // TODO: Only invalidate the shape if it depends on the viewport.
-    SetNeedsShapeUpdate();
+  if (layout_info.viewport_changed) {
+    if (geometry_depends_on_viewport_) {
+      SetNeedsShapeUpdate();
+    } else if (ComputeStrokeHasRelativeLengths(StyleRef())) {
+      needs_boundaries_update_ = true;
+    }
   }
 
   // The cached stroke may be affected by the ancestor transform, and so needs
@@ -371,8 +374,8 @@ SVGLayoutResult LayoutSVGShape::UpdateSVGLayout(
   }
 
   const bool has_viewport_dependence =
-      GetElement()->SelfHasRelativeLengths() ||
-      ComputeHasRelativeLengths(StyleRef()) ||
+      geometry_depends_on_viewport_ ||
+      ComputeStrokeHasRelativeLengths(StyleRef()) ||
       (transform_uses_reference_box_ &&
        StyleRef().TransformBox() == ETransformBox::kViewBox);
 
@@ -386,9 +389,6 @@ SVGLayoutResult LayoutSVGShape::UpdateSVGLayout(
 bool LayoutSVGShape::UpdateAfterSVGLayout(const SVGLayoutInfo& layout_info,
                                           bool bbox_changed) {
   bool needs_paint_invalidation = false;
-  if (layout_info.viewport_changed && ComputeHasRelativeLengths(StyleRef())) {
-    needs_paint_invalidation = true;
-  }
   if (bbox_changed) {
     needs_paint_invalidation = true;
 
@@ -397,6 +397,11 @@ bool LayoutSVGShape::UpdateAfterSVGLayout(const SVGLayoutInfo& layout_info,
       SVGResourceInvalidator resource_invalidator(*this);
       resource_invalidator.InvalidateEffects();
       resource_invalidator.InvalidatePaints();
+    }
+  } else if (layout_info.viewport_changed) {
+    if (geometry_depends_on_viewport_ ||
+        ComputeStrokeHasRelativeLengths(StyleRef())) {
+      needs_paint_invalidation = true;
     }
   }
 

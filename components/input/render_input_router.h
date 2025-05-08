@@ -207,6 +207,8 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
     return fling_scheduler_.get();
   }
 
+  void RenderProcessBlockedStateChanged(bool blocked);
+
   // Stops all existing hang monitor timeouts and assumes the renderer is
   // responsive.
   void StopInputEventAckTimeout();
@@ -240,6 +242,8 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
   // This value denotes the number of input events yet to be acknowledged
   // by the renderer.
   int in_flight_event_count_ = 0;
+
+  bool is_blocked_ = false;
 
   base::OneShotTimer input_event_ack_timeout_;
 

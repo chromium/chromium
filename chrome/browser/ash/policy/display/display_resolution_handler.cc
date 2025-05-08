@@ -26,13 +26,8 @@ struct DisplayResolutionHandler::InternalDisplaySettings {
   explicit InternalDisplaySettings(int scale_percentage)
       : scale_percentage(scale_percentage) {}
 
-  bool operator==(const InternalDisplaySettings& rhs) const {
-    return scale_percentage == rhs.scale_percentage;
-  }
-
-  bool operator!=(const InternalDisplaySettings& rhs) const {
-    return !(*this == rhs);
-  }
+  friend bool operator==(const InternalDisplaySettings&,
+                         const InternalDisplaySettings&) = default;
 
   // Create display config for the internal display using policy settings from
   // |internal_display_settings_|.

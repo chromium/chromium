@@ -6,7 +6,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/account_extension_tracker.h"
-#include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_safety_check_utils.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -36,80 +35,11 @@ namespace extensions {
 
 namespace developer = api::developer_private;
 
-namespace {
-
-// Constructs any commands for the extension with the given `id`, and adds them
-// to the list of `commands`.
-void ConstructCommands(CommandService* command_service,
-                       const ExtensionId& extension_id,
-                       std::vector<developer::Command>* commands) {
-  auto construct_command = [](const ui::Command& command, bool active,
-                              bool is_extension_action) {
-    developer::Command command_value;
-    command_value.description =
-        is_extension_action
-            ? l10n_util::GetStringUTF8(IDS_EXTENSION_COMMANDS_GENERIC_ACTIVATE)
-            : base::UTF16ToUTF8(command.description());
-    command_value.keybinding =
-        base::UTF16ToUTF8(command.accelerator().GetShortcutText());
-    command_value.name = command.command_name();
-    command_value.is_active = active;
-    command_value.scope = command.global() ? developer::CommandScope::kGlobal
-                                           : developer::CommandScope::kChrome;
-    command_value.is_extension_action = is_extension_action;
-    return command_value;
-  };
-  // TODO(crbug.com/40124879): Extensions shouldn't be able to specify
-  // commands for actions they don't have, so we should just be able to query
-  // for a single action type.
-  for (auto action_type : {ActionInfo::Type::kBrowser, ActionInfo::Type::kPage,
-                           ActionInfo::Type::kAction}) {
-    bool active = false;
-    Command action_command;
-    if (command_service->GetExtensionActionCommand(extension_id, action_type,
-                                                   CommandService::ALL,
-                                                   &action_command, &active)) {
-      commands->push_back(construct_command(action_command, active, true));
-    }
-  }
-
-  ui::CommandMap named_commands;
-  if (command_service->GetNamedCommands(extension_id, CommandService::ALL,
-                                        CommandService::ANY_SCOPE,
-                                        &named_commands)) {
-    for (auto& pair : named_commands) {
-      ui::Command& command_to_use = pair.second;
-      // TODO(devlin): For some reason beyond my knowledge, FindCommandByName
-      // returns different data than GetNamedCommands, including the
-      // accelerators, but not the descriptions - and even then, only if the
-      // command is active.
-      // Unfortunately, some systems may be relying on the other data (which
-      // more closely matches manifest data).
-      // Until we can sort all this out, we merge the two command structures.
-      Command active_command = command_service->FindCommandByName(
-          extension_id, command_to_use.command_name());
-      command_to_use.set_accelerator(active_command.accelerator());
-      command_to_use.set_global(active_command.global());
-      bool active = command_to_use.accelerator().key_code() != ui::VKEY_UNKNOWN;
-      commands->push_back(construct_command(command_to_use, active, false));
-    }
-  }
-}
-
-}  // namespace
-
 ExtensionInfoGenerator::ExtensionInfoGenerator(
     content::BrowserContext* browser_context)
-    : ExtensionInfoGeneratorShared(browser_context),
-      command_service_(CommandService::Get(browser_context)) {}
+    : ExtensionInfoGeneratorShared(browser_context) {}
 
 ExtensionInfoGenerator::~ExtensionInfoGenerator() = default;
-
-void ExtensionInfoGenerator::OnProfileWillBeDestroyed(Profile* profile) {
-  command_service_ = nullptr;
-  ExtensionInfoGeneratorShared::OnProfileWillBeDestroyed(profile);
-  // WARNING: `this` is possibly deleted after this line!
-}
 
 void ExtensionInfoGenerator::FillExtensionInfo(
     const Extension& extension,
@@ -144,17 +74,6 @@ void ExtensionInfoGenerator::FillExtensionInfo(
     }
   }
 
-  bool is_enabled = state == developer::ExtensionState::kEnabled;
-
-  // Commands.
-  if (is_enabled) {
-    ConstructCommands(command_service_, extension.id(), &info.commands);
-  }
-  info.is_command_registration_handled_externally =
-      ui::GlobalAcceleratorListener::GetInstance() &&
-      ui::GlobalAcceleratorListener::GetInstance()
-          ->IsRegistrationHandledExternally();
-
   // Dependent extensions.
   if (extension.is_shared_module()) {
     std::unique_ptr<ExtensionSet> dependent_extensions =
@@ -168,20 +87,9 @@ void ExtensionInfoGenerator::FillExtensionInfo(
       info.dependent_extensions.push_back(std::move(dependent_extension));
     }
   }
-
-  DisableReasonSet disable_reasons =
-      extension_prefs_->GetDisableReasons(extension.id());
-  bool custodian_approval_required = disable_reasons.contains(
-      disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
-  bool permissions_increase =
-      disable_reasons.contains(disable_reason::DISABLE_PERMISSIONS_INCREASE);
-  info.disable_reasons.parent_disabled_permissions =
-      supervised_user::AreExtensionsPermissionsEnabled(profile) &&
-      !supervised_user::
-          IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled() &&
-      !profile->GetPrefs()->GetBoolean(
-          prefs::kSupervisedUserExtensionsMayRequestPermissions) &&
-      (custodian_approval_required || permissions_increase);
+  // TODO(crbug.com/413650880): Investigate if `parent_disabled_permissions`
+  // can be removed.
+  info.disable_reasons.parent_disabled_permissions = false;
 
   // Location.
   bool updates_from_web_store =

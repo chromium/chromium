@@ -156,7 +156,7 @@ export function isNatural(voice: SpeechSynthesisVoice) {
   return voice.name.includes(NATURAL_STRING_IDENTIFIER);
 }
 
-export function isEspeak(voice: SpeechSynthesisVoice|undefined) {
+export function isEspeak(voice?: SpeechSynthesisVoice|null) {
   return voice && voice.name.includes(ESPEAK_STRING_IDENTIFIER);
 }
 
@@ -165,9 +165,9 @@ export function isGoogle(voice: SpeechSynthesisVoice|undefined) {
 }
 
 export function getNaturalVoiceOrDefault(voices: SpeechSynthesisVoice[]):
-    SpeechSynthesisVoice|undefined {
+    SpeechSynthesisVoice|null {
   if (voices.length === 0) {
-    return undefined;
+    return null;
   }
 
   const naturalVoice = voices.find(v => isNatural(v));
@@ -177,7 +177,7 @@ export function getNaturalVoiceOrDefault(voices: SpeechSynthesisVoice[]):
 
   const defaultVoice =
       voices.find(({default: isDefaultVoice}) => isDefaultVoice);
-  return defaultVoice ? defaultVoice : voices[0];
+  return defaultVoice ? defaultVoice : (voices[0] || null);
 }
 
 export function getNotification(
@@ -407,8 +407,8 @@ export function convertLangOrLocaleToExactVoicePackLocale(langOrLocale: string):
       locale => locale.startsWith(possibleConvertedLang.toLowerCase()));
 }
 
-export function isWaitingForInstallLocally(status: VoiceClientSideStatusCode|
-                                           undefined) {
+export function isWaitingForInstallLocally(
+    status: VoiceClientSideStatusCode|undefined) {
   return status === VoiceClientSideStatusCode.SENT_INSTALL_REQUEST ||
       status === VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY;
 }
@@ -533,8 +533,8 @@ export const AVAILABLE_GOOGLE_TTS_LOCALES = new Set([
 ]);
 
 export function areVoicesEqual(
-    voice1: SpeechSynthesisVoice|undefined,
-    voice2: SpeechSynthesisVoice|undefined): boolean {
+    voice1?: SpeechSynthesisVoice|null,
+    voice2?: SpeechSynthesisVoice|null): boolean {
   if (!voice1 || !voice2) {
     return false;
   }

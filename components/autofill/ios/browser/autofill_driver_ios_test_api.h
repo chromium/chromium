@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_DRIVER_IOS_TEST_API_H_
 #define COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_DRIVER_IOS_TEST_API_H_
 
-#include "components/autofill/core/browser/foundations/autofill_driver_test_api.h"
-#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
-#include "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/autofill/core/browser/foundations/autofill_driver_test_api.h"
+#import "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
+#import "components/autofill/ios/browser/autofill_driver_ios.h"
 
 namespace autofill {
 

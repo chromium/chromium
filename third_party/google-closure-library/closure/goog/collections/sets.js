@@ -79,7 +79,7 @@ exports.intersection = function(a, b) {
  */
 exports.union = function(a, b) {
   const set = new Set(a);
-  iters.forEach(b, elem => set.add(elem));
+  iters.forEach(b[Symbol.iterator](), elem => set.add(elem));
   return set;
 };
 
@@ -95,7 +95,7 @@ exports.union = function(a, b) {
  */
 exports.difference = function(a, b) {
   const set = new Set(a);
-  iters.forEach(b, elem => set.delete(elem));
+  iters.forEach(b[Symbol.iterator](), elem => set.delete(elem));
   return set;
 };
 

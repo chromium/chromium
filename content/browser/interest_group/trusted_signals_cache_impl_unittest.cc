@@ -113,6 +113,7 @@ struct BiddingParams {
   url::Origin coordinator;
   std::optional<std::vector<std::string>> trusted_bidding_signals_keys;
   base::Value::Dict additional_params;
+  std::optional<std::string> buyer_tkv_signals;
 };
 
 // Struct with input parameters for RequestTrustedScoringSignals().
@@ -134,6 +135,7 @@ struct ScoringParams {
   GURL render_url;
   std::vector<GURL> component_render_urls;
   base::Value::Dict additional_params;
+  std::optional<std::string> seller_tkv_signals;
 };
 
 // Just like TrustedSignalsFetcher::BiddingPartition, but owns its arguments.
@@ -142,6 +144,7 @@ struct FetcherBiddingPartitionArgs {
   std::set<std::string> interest_group_names;
   std::set<std::string> keys;
   base::Value::Dict additional_params;
+  std::optional<std::string> buyer_tkv_signals;
 };
 
 // Just like TrustedSignalsFetcher::ScoringPartition, but owns its arguments.
@@ -150,6 +153,7 @@ struct FetcherScoringPartitionArgs {
   GURL render_url;
   std::set<GURL> component_render_urls;
   base::Value::Dict additional_params;
+  std::optional<std::string> seller_tkv_signals;
 };
 
 // Creates a BiddingAndAuctionServerKey that embeds the signals and coordinator
@@ -255,7 +259,10 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
           bidding_partitions_copy.emplace_back(
               bidding_partition.partition_id,
               *bidding_partition.interest_group_names, *bidding_partition.keys,
-              bidding_partition.additional_params->Clone());
+              bidding_partition.additional_params->Clone(),
+              bidding_partition.buyer_tkv_signals
+                  ? std::make_optional(*bidding_partition.buyer_tkv_signals)
+                  : std::nullopt);
         }
       }
 
@@ -296,7 +303,10 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
           scoring_partitions_copy.emplace_back(
               scoring_partition.partition_id, *scoring_partition.render_url,
               *scoring_partition.component_render_urls,
-              scoring_partition.additional_params->Clone());
+              scoring_partition.additional_params->Clone(),
+              scoring_partition.seller_tkv_signals
+                  ? std::make_optional(*scoring_partition.seller_tkv_signals)
+                  : std::nullopt);
         }
       }
 
@@ -501,6 +511,7 @@ void ValidateFetchParamsForPartition(
   }
   EXPECT_EQ(partition.additional_params, params.additional_params);
   EXPECT_EQ(partition.partition_id, expected_partition_id);
+  EXPECT_EQ(partition.buyer_tkv_signals, params.buyer_tkv_signals);
 }
 
 // Validates that `partition` has a single partition corresponding to the
@@ -514,6 +525,7 @@ void ValidateFetchParamsForPartition(
               testing::ElementsAreArray(params.component_render_urls));
   EXPECT_EQ(partition.additional_params, params.additional_params);
   EXPECT_EQ(partition.partition_id, expected_partition_id);
+  EXPECT_EQ(partition.seller_tkv_signals, params.seller_tkv_signals);
 }
 
 // Validates that `partitions` has a single partition corresponding to the
@@ -988,6 +1000,24 @@ class TrustedSignalsCacheTest : public testing::Test {
       out.back().request_relation = RequestRelation::kDifferentPartitions;
       out.back().params2.additional_params.Set("additional", "param");
 
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description =
+          "Requests have one null and one valid buyer_tkv_signals";
+      out.back().request_relation = RequestRelation::kDifferentPartitions;
+      out.back().params2.buyer_tkv_signals = "signals";
+
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Requests have two different buyer_tkv_signals";
+      out.back().request_relation = RequestRelation::kDifferentPartitions;
+      out.back().params1.buyer_tkv_signals = "signals1";
+      out.back().params2.buyer_tkv_signals = "signals2";
+
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Requests have same buyer_tkv_signals";
+      out.back().request_relation = RequestRelation::kSamePartitionUnmodified;
+      out.back().params1.buyer_tkv_signals = "signals";
+      out.back().params2.buyer_tkv_signals = "signals";
+
       // Group-by-origin tests.
 
       // Same interest group name is unlikely when other fields don't match, but
@@ -1075,6 +1105,39 @@ class TrustedSignalsCacheTest : public testing::Test {
       out.back().params2.interest_group_names = {"group2"};
       out.back().params2.joining_origin =
           url::Origin::Create(GURL("https://other.joining.origin.test"));
+
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description =
+          "Group-by-origin: Requests have one null and one valid "
+          "buyer_tkv_signals";
+      out.back().request_relation = RequestRelation::kDifferentPartitions;
+      out.back().params1.execution_mode =
+          blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+      out.back().params2.execution_mode =
+          blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+      out.back().params2.buyer_tkv_signals = "signals";
+
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description =
+          "Group-by-origin: Requests have two different buyer_tkv_signals";
+      out.back().request_relation = RequestRelation::kDifferentPartitions;
+      out.back().params1.execution_mode =
+          blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+      out.back().params2.execution_mode =
+          blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+      out.back().params1.buyer_tkv_signals = "signals1";
+      out.back().params2.buyer_tkv_signals = "signals2";
+
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description =
+          "Group-by-origin: Requests have same buyer_tkv_signals";
+      out.back().request_relation = RequestRelation::kSamePartitionUnmodified;
+      out.back().params1.execution_mode =
+          blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+      out.back().params2.execution_mode =
+          blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+      out.back().params1.buyer_tkv_signals = "signals";
+      out.back().params2.buyer_tkv_signals = "signals";
 
       // Different coordinators.
       out.emplace_back(CreateDefaultTestCase());
@@ -1171,6 +1234,18 @@ class TrustedSignalsCacheTest : public testing::Test {
       out.back().request_relation = RequestRelation::kDifferentPartitions;
       out.back().params2.additional_params.Set("additional", "param");
 
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description =
+          "Requests have one null and one valid seller_tkv_signals";
+      out.back().request_relation = RequestRelation::kDifferentPartitions;
+      out.back().params2.seller_tkv_signals = "signals";
+
+      out.emplace_back(CreateDefaultTestCase());
+      out.back().description = "Requests have two different seller_tkv_signals";
+      out.back().request_relation = RequestRelation::kDifferentPartitions;
+      out.back().params1.seller_tkv_signals = "signals1";
+      out.back().params2.seller_tkv_signals = "signals2";
+
       // Different coordinators.
       out.emplace_back(CreateDefaultTestCase());
       out.back().description = "Requests have different coordinators.";
@@ -1230,6 +1305,8 @@ class TrustedSignalsCacheTest : public testing::Test {
     EXPECT_EQ(bidding_params1.coordinator, bidding_params2.coordinator);
     EXPECT_EQ(bidding_params1.additional_params,
               bidding_params2.additional_params);
+    EXPECT_EQ(bidding_params1.buyer_tkv_signals,
+              bidding_params2.buyer_tkv_signals);
 
     BiddingParams merged_bidding_params{
         bidding_params1.url_loader_factory,
@@ -1244,7 +1321,8 @@ class TrustedSignalsCacheTest : public testing::Test {
         bidding_params1.trusted_signals_url,
         bidding_params1.coordinator,
         bidding_params1.trusted_bidding_signals_keys,
-        bidding_params1.additional_params.Clone()};
+        bidding_params1.additional_params.Clone(),
+        bidding_params1.buyer_tkv_signals};
 
     merged_bidding_params.devtools_auction_ids.insert(
         bidding_params2.devtools_auction_ids.begin(),
@@ -1296,7 +1374,8 @@ class TrustedSignalsCacheTest : public testing::Test {
         bidding_params.execution_mode, bidding_params.joining_origin,
         bidding_params.trusted_signals_url, bidding_params.coordinator,
         bidding_params.trusted_bidding_signals_keys,
-        bidding_params.additional_params.Clone(), partition_id);
+        bidding_params.additional_params.Clone(),
+        bidding_params.buyer_tkv_signals, partition_id);
 
     // The call should never fail.
     CHECK(handle);
@@ -1322,7 +1401,8 @@ class TrustedSignalsCacheTest : public testing::Test {
         scoring_params.coordinator, scoring_params.interest_group_owner,
         scoring_params.joining_origin, scoring_params.render_url,
         scoring_params.component_render_urls,
-        scoring_params.additional_params.Clone(), partition_id);
+        scoring_params.additional_params.Clone(),
+        scoring_params.seller_tkv_signals, partition_id);
 
     // The call should never fail.
     CHECK(handle);

@@ -970,26 +970,20 @@ void Annotator::OnServerResponseReceived(
 
   ReportServerResponseSizeBytes(json_response->size());
 
-  // Send JSON string to a dedicated service for safe parsing.
-  GetJsonParser()->Parse(
-      *json_response, base::JSON_PARSE_RFC,
-      base::BindOnce(&Annotator::OnResponseJsonParsed,
-                     weak_factory_.GetWeakPtr(), request_keys));
-}
+  base::JSONReader::Result result =
+      base::JSONReader::ReadAndReturnValueWithError(*json_response,
+                                                    base::JSON_PARSE_RFC);
 
-void Annotator::OnResponseJsonParsed(const std::set<RequestKey>& request_keys,
-                                     const std::optional<base::Value> json_data,
-                                     const std::optional<std::string>& error) {
-  const bool success = json_data.has_value() && !error.has_value();
+  const bool success = result.has_value();
   ReportJsonParseSuccess(success);
 
   // Extract annotation results for each request key with valid results.
   if (success) {
     ProcessResults(request_keys,
-                   UnpackJsonResponse(*json_data, min_ocr_confidence_));
+                   UnpackJsonResponse(*result, min_ocr_confidence_));
   } else {
     DVLOG(1) << "Parsing server response JSON failed with error: "
-             << error.value_or("No reason reported.");
+             << result.error().message;
     ProcessResults(request_keys, {});
   }
 }
@@ -1045,15 +1039,6 @@ void Annotator::ProcessResults(
   for (const RequestKey& request_key : request_keys) {
     ProcessResult(request_key, results);
   }
-}
-
-data_decoder::mojom::JsonParser* Annotator::GetJsonParser() {
-  if (!json_parser_) {
-    client_->BindJsonParser(json_parser_.BindNewPipeAndPassReceiver());
-    json_parser_.reset_on_disconnect();
-  }
-
-  return json_parser_.get();
 }
 
 void Annotator::RemoveRequestInfo(
@@ -1177,22 +1162,22 @@ void Annotator::OnServerLangsResponseReceived(
     return;
   }
 
-  GetJsonParser()->Parse(
-      *json_response, base::JSON_PARSE_RFC,
-      base::BindOnce(&Annotator::OnServerLangsResponseJsonParsed,
-                     weak_factory_.GetWeakPtr()));
-}
+  base::JSONReader::Result result =
+      base::JSONReader::ReadAndReturnValueWithError(*json_response,
+                                                    base::JSON_PARSE_RFC);
 
-void Annotator::OnServerLangsResponseJsonParsed(
-    std::optional<base::Value> json_data,
-    const std::optional<std::string>& error) {
-  if (!json_data.has_value() || error.has_value()) {
+  if (!result.has_value()) {
     DVLOG(1) << "Parsing server langs response JSON failed with error: "
-             << error.value_or("No reason reported.");
+             << result.error().message;
     return;
   }
 
-  const base::Value::List* const langs = json_data->GetDict().FindList("langs");
+  if (!result->is_dict()) {
+    DVLOG(1) << "Server langs response JSON is not a dictionary.";
+    return;
+  }
+
+  const base::Value::List* const langs = result->GetDict().FindList("langs");
   if (!langs) {
     DVLOG(1) << "No langs in response JSON";
     return;

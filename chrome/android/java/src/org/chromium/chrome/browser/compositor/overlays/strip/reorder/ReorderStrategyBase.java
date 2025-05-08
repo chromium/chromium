@@ -188,7 +188,7 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
     protected void setTrailingMarginForView(
             StripLayoutView stripView,
             StripLayoutGroupTitle[] groupTitles,
-            boolean isInteracting,
+            boolean shouldHaveTrailingMargin,
             @NonNull List<Animator> animationList) {
         final StripLayoutGroupTitle groupTitle;
         if (stripView instanceof StripLayoutTab stripTab) {
@@ -199,26 +199,7 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
             groupTitle = (StripLayoutGroupTitle) stripView;
         }
 
-        setTrailingMarginForView(
-                stripView,
-                groupTitle,
-                shouldHaveTrailingMargin(stripView, isInteracting),
-                animationList);
-    }
-
-    private boolean shouldHaveTrailingMargin(
-            StripLayoutView interactingView, boolean isInteracting) {
-        // Skip applying trailing margin for grouped views (like expanded group titles or tabs) when
-        // merging on drop is not allowed.
-        if (!TabDragSource.canMergeIntoGroupOnDrop() && isInteracting) {
-            if (interactingView instanceof StripLayoutGroupTitle groupTitle) {
-                return groupTitle.isCollapsed();
-            } else if (interactingView instanceof StripLayoutTab stripTab) {
-                return !StripLayoutUtils.isNonTrailingTabInGroup(
-                        mTabGroupModelFilter, mModel, stripTab);
-            }
-        }
-        return isInteracting;
+        setTrailingMarginForView(stripView, groupTitle, shouldHaveTrailingMargin, animationList);
     }
 
     /**
@@ -242,9 +223,10 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
         if (stripView.getTrailingMargin() == trailingMargin) return;
 
         // Update group title bottom indicator width if needed.
-        if (groupTitle != null
-                && !groupTitle.isCollapsed()
-                && TabDragSource.canMergeIntoGroupOnDrop()) {
+        boolean isExpandedGroup = groupTitle != null && !groupTitle.isCollapsed();
+        boolean shouldAnimateBottomIndicator =
+                !shouldHaveTrailingMargin || TabDragSource.canMergeIntoGroupOnDrop();
+        if (isExpandedGroup && shouldAnimateBottomIndicator) {
             float startWidth = groupTitle.getBottomIndicatorWidth();
             float endWidth =
                     StripLayoutUtils.calculateBottomIndicatorWidth(
@@ -283,7 +265,10 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
         //  don't use trailing margins to demarcate tab group bounds.
         for (int i = 0; i < stripViews.length; i++) {
             setTrailingMarginForView(
-                    stripViews[i], groupTitles, /* isInteracting= */ false, animationList);
+                    stripViews[i],
+                    groupTitles,
+                    /* shouldHaveTrailingMargin= */ false,
+                    animationList);
         }
         mScrollDelegate.setReorderStartMargin(/* newStartMargin= */ 0.f);
     }

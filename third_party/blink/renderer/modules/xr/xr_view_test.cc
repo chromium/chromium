@@ -47,9 +47,10 @@ TEST(XRViewTest, ViewMatrices) {
 
   device::mojom::blink::XRViewPtr xr_view = device::mojom::blink::XRView::New();
   xr_view->eye = device::mojom::blink::XREye::kLeft;
-  xr_view->field_of_view =
+  xr_view->geometry = device::mojom::blink::XRViewGeometry::New();
+  xr_view->geometry->field_of_view =
       device::mojom::blink::VRFieldOfView::New(kFov, kFov, kFov, kFov);
-  xr_view->mojo_from_view = mojo_from_view;
+  xr_view->geometry->mojo_from_view = mojo_from_view;
   xr_view->viewport = gfx::Rect(0, 0, kRenderSize, kRenderSize);
 
   auto device_config = device::mojom::blink::XRSessionDeviceConfig::New();
@@ -64,7 +65,7 @@ TEST(XRViewTest, ViewMatrices) {
   AssertMatrixEquals(GetMatrixDataForTest(view_data->MojoFromView()),
                      GetMatrixDataForTest(mojo_from_view));
   AssertMatrixEquals(
-      GetMatrixDataForTest(view->refSpaceFromView()->TransformMatrix()),
+      GetMatrixDataForTest(view->viewGeometryTransform()->TransformMatrix()),
       GetMatrixDataForTest(ref_space_from_view));
   AssertMatrixEquals(GetMatrixDataForTest(view_data->ProjectionMatrix()),
                      GetMatrixDataForTest(gfx::Transform::ColMajor(

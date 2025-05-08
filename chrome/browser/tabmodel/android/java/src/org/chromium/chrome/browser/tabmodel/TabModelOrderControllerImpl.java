@@ -33,7 +33,7 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
         if (type == TabLaunchType.FROM_BROWSER_ACTIONS || type == TabLaunchType.FROM_RECENT_TABS) {
             return -1;
         }
-        if (linkClicked(type)) {
+        if (mightBeAdjacent(type)) {
             position = determineInsertionIndex(type, newTab);
         }
 
@@ -138,13 +138,16 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
         }
     }
 
-    /** Determine if a launch type is the result of linked being clicked. */
-    static boolean linkClicked(@TabLaunchType int type) {
+    /** Determine if a launch type requires calculation to determine the position of the new tab. */
+    static boolean mightBeAdjacent(@TabLaunchType int type) {
         return type == TabLaunchType.FROM_LINK
                 || type == TabLaunchType.FROM_LONGPRESS_FOREGROUND
+                || type == TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP
                 || type == TabLaunchType.FROM_LONGPRESS_BACKGROUND
                 || type == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
-                || type == TabLaunchType.FROM_LONGPRESS_INCOGNITO;
+                || type == TabLaunchType.FROM_LONGPRESS_INCOGNITO
+                || type == TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND
+                || type == TabLaunchType.FROM_HISTORY_NAVIGATION_FOREGROUND;
     }
 
     @Override
@@ -161,9 +164,15 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
                         && type != TabLaunchType.FROM_SYNC_BACKGROUND
                         && type != TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP
                         && type != TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND
-                        && type != TabLaunchType.FROM_REPARENTING_BACKGROUND)
-                || (!mTabModelSelector.isIncognitoBrandedModelSelected()
-                        && isNewTabIncognitoBranded);
+                        && type != TabLaunchType.FROM_REPARENTING_BACKGROUND
+                        && type != TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND)
+                || isDifferentModel(isNewTabIncognitoBranded);
+    }
+
+    private boolean isDifferentModel(boolean isNewTabIncognitoBranded) {
+        return mTabModelSelector.isIncognitoBrandedModelSelected()
+                ? !isNewTabIncognitoBranded
+                : isNewTabIncognitoBranded;
     }
 
     /**

@@ -78,10 +78,18 @@
     </Property>
     <Property Id="AllowDowngradeSubstitution" Value="false" />
 
+    <!-- Allows running the `updater` with a `--force-install` option. This
+         force-installs the installer that is run with this switch and makes it
+         the active `updater`. In addition, if the MSI is tagged, this also
+         installs the application(s) that are implicitly specified in the tag.
+    -->
+    <Property Id="RUNFORCEINSTALL" Secure="yes" />
+
     <!-- Eliminates "warning LGHT1076 : ICE71: The Media table has no entries." -->
     <Media Id="1" />
 
-    <Feature Id="Complete" Level="1">
+    <Feature Id="Complete" Level="1" AllowAbsent="yes">
+      <Level Value="0" Condition="RUNFORCEINSTALL &lt;&gt; &quot;&quot;" />
       <ComponentRef Id="ProductClientState" />
     </Feature>
 
@@ -216,12 +224,21 @@
       Return="check"
     />
 
+    <CustomAction
+      Id="DoRunForceInstall"
+      Impersonate="no"
+      Execute="deferred"
+      ExeCommand="--force-install --system"
+      Return="check"
+      BinaryRef="$(var.ProductNameLegalIdentifier)Installer"
+    />
+
     <InstallExecuteSequence>
       <RemoveExistingProducts After="InstallValidate" />
 
       <Custom Action="NewerVersionError"
         After="FindRelatedProducts"
-        Condition="(NEWPRODUCTFOUND AND (ALLOWDOWNGRADE = &quot;&quot;))"
+        Condition="((RUNFORCEINSTALL = &quot;&quot;) AND NEWPRODUCTFOUND AND (ALLOWDOWNGRADE = &quot;&quot;))"
       />
 
       <!-- The conditions in the following custom actions trigger the action when either:
@@ -238,19 +255,19 @@
       <Custom
         Action="ExtractTagInfoFromInstaller"
         Before="SetProductTagProperty"
-        Condition="(((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL))"
+        Condition="((RUNFORCEINSTALL = &quot;&quot;) AND ((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL))"
       />
       <!-- Now start forming [ProdutTag], first with the appguid and name. -->
       <Custom
         Action="SetProductTagProperty"
         Before="AppendCustomParamsToProductTagProperty"
-        Condition="(((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL))"
+        Condition="((RUNFORCEINSTALL = &quot;&quot;) AND ((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL))"
       />
       <!-- Add on the build-time string. -->
       <Custom
         Action="AppendCustomParamsToProductTagProperty"
         Before="TaggedMSIOverrideProductTagProperty"
-        Condition="(((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL))"
+        Condition="((RUNFORCEINSTALL = &quot;&quot;) AND ((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL))"
       />
       <!-- Override the tag completely if the MSI is tagged, or if the caller
            has set the `TAGSTRING` property. Among all actions that change
@@ -260,46 +277,46 @@
       <Custom
         Action="TaggedMSIOverrideProductTagProperty"
         Before="BuildInstallCommand"
-        Condition="(((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL)) AND (TAGSTRING &lt;&gt; &quot;&quot;)"
+        Condition="((RUNFORCEINSTALL = &quot;&quot;) AND ((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL)) AND (TAGSTRING &lt;&gt; &quot;&quot;)"
       />
       <Custom
         Action="SetOptArgsProperty"
         Before="AppendEnterpriseToOptArgsProperty"
-        Condition="(((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL))"
+        Condition="((RUNFORCEINSTALL = &quot;&quot;) AND ((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL))"
       />
       <Custom
         Action="AppendEnterpriseToOptArgsProperty"
         Before="BuildInstallCommand"
-        Condition="(((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL)) AND (NOGOOGLEUPDATEPING &lt;&gt; &quot;&quot;)"
+        Condition="((RUNFORCEINSTALL = &quot;&quot;) AND ((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL)) AND (NOGOOGLEUPDATEPING &lt;&gt; &quot;&quot;)"
       />
 
       <!-- Set [AllowDowngradeSubstitution] to true if downgrades are allowed. -->
       <Custom
         Action="DoAllowDowngradeSubstitution"
         Before="BuildInstallCommand"
-        Condition="(((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL)) AND (ALLOWDOWNGRADE &lt;&gt; &quot;&quot;)"
+        Condition="((RUNFORCEINSTALL = &quot;&quot;) AND ((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL)) AND (ALLOWDOWNGRADE &lt;&gt; &quot;&quot;)"
       />
 
       <Custom
         Action="BuildInstallCommand"
         Before="SetAppGuidProperty"
-        Condition="(((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL))"
+        Condition="((RUNFORCEINSTALL = &quot;&quot;) AND ((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL))"
       />
       <Custom
         Action="SetAppGuidProperty"
         Before="ShowInstallerResultUIString"
-        Condition="(((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL))"
+        Condition="((RUNFORCEINSTALL = &quot;&quot;) AND ((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL))"
       />
       <Custom
         Action="ShowInstallerResultUIString"
         Before="DoInstall"
-        Condition="(((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL))"
+        Condition="((RUNFORCEINSTALL = &quot;&quot;) AND ((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL))"
       />
 
       <Custom
         Action="DoInstall"
         After="InstallFiles"
-        Condition="(((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL))"
+        Condition="((RUNFORCEINSTALL = &quot;&quot;) AND ((?ProductClientState=2) AND ($ProductClientState=3)) OR ((?ProductClientState=3) AND REINSTALL))"
       />
 
       <!-- The conditions in the following custom actions trigger the action when the product is
@@ -308,20 +325,25 @@
       <Custom
         Action="CallUninstallerArgs.SetProperty"
         Before="CallUninstaller.SetProperty"
-        Condition="((?ProductClientState=3) AND ($ProductClientState=2) AND NOT UPGRADINGPRODUCTCODE)"
+        Condition="((RUNFORCEINSTALL = &quot;&quot;) AND (?ProductClientState=3) AND ($ProductClientState=2) AND NOT UPGRADINGPRODUCTCODE)"
       />
       <Custom
         Action="CallUninstaller.SetProperty"
         Before="CallUninstaller"
-        Condition="((?ProductClientState=3) AND ($ProductClientState=2) AND NOT UPGRADINGPRODUCTCODE)"
+        Condition="((RUNFORCEINSTALL = &quot;&quot;) AND (?ProductClientState=3) AND ($ProductClientState=2) AND NOT UPGRADINGPRODUCTCODE)"
       />
       <Custom
         Action="CallUninstaller"
         Before="RemoveFiles"
-        Condition="((?ProductClientState=3) AND ($ProductClientState=2) AND NOT UPGRADINGPRODUCTCODE)"
+        Condition="((RUNFORCEINSTALL = &quot;&quot;) AND (?ProductClientState=3) AND ($ProductClientState=2) AND NOT UPGRADINGPRODUCTCODE)"
       />
       <!-- Google Update will uninstall itself if the product is the only app it
            so no need to have an uninstall operation. -->
+
+      <Custom Action="DoRunForceInstall"
+        After="InstallInitialize"
+        Condition="RUNFORCEINSTALL &lt;&gt; &quot;&quot;"
+      />
     </InstallExecuteSequence>
 
     <!-- Use the ProductCode as the ComponentId since we want the latter to

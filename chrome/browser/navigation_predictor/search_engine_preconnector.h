@@ -123,12 +123,41 @@ class SearchEnginePreconnector : public predictors::PreconnectManager::Delegate,
   }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(
+      SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest,
+      PreconnectSearchAfterOnCloseWithShortSession);
+  FRIEND_TEST_ALL_PREFIXES(
+      SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest,
+      PreconnectSearchAfterOnFailure);
+  FRIEND_TEST_ALL_PREFIXES(
+      SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest,
+      PreconnectSearchAfterOnConnect);
+
+  // Enum to represent the preconnect triggering event. This is used to record
+  // the histogram.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(PreconnectTriggerEvent)
+  enum class PreconnectTriggerEvent {
+    kInitialPreconnect = 0,
+    kPeriodicPreconnect = 1,  // This represents non SearchEnginePreconnect2
+                              // preconnects.
+    kSessionClosed = 2,
+    kNetworkEvent = 3,
+    kConnectionFailed = 4,
+    kMaxValue = kConnectionFailed
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:PreconnectTriggerEvent)
+
   // Preconnects to the default search engine synchronously. Preconnects in
   // uncredentialed mode.
   void PreconnectDSE();
 
   // Runs `PreconnectDSE` after the `delay`.
-  void StartPreconnectWithDelay(base::TimeDelta delay);
+  void StartPreconnectWithDelay(base::TimeDelta delay,
+                                PreconnectTriggerEvent event);
 
   // Queries template service for the current DSE URL.
   GURL GetDefaultSearchEngineOriginURL() const;
@@ -142,6 +171,9 @@ class SearchEnginePreconnector : public predictors::PreconnectManager::Delegate,
 
   // Invoked when the mojo pipe to the reconnect observer is disconnected.
   void OnReconnectObserverPipeDisconnected();
+
+  void RecordPreconnectAttemptHistogram(base::TimeDelta delay,
+                                        PreconnectTriggerEvent event);
 
   base::WeakPtr<SearchEnginePreconnector> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();

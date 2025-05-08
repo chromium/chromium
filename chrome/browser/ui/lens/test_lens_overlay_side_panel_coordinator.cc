@@ -4,13 +4,13 @@
 
 #include "test_lens_overlay_side_panel_coordinator.h"
 
-#include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
 
 namespace lens {
 
 TestLensOverlaySidePanelCoordinator::TestLensOverlaySidePanelCoordinator(
-    LensOverlayController* lens_overlay_controller)
-    : LensOverlaySidePanelCoordinator(lens_overlay_controller) {}
+    LensSearchController* lens_search_controller)
+    : LensOverlaySidePanelCoordinator(lens_search_controller) {}
 
 TestLensOverlaySidePanelCoordinator::~TestLensOverlaySidePanelCoordinator() =
     default;

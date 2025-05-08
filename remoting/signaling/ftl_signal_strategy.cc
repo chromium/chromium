@@ -259,6 +259,11 @@ void FtlSignalStrategy::Core::OnGetOAuthTokenResponse(
   }
 
   user_email_ = token_info.user_email();
+  if (user_email_.empty()) {
+    LOG(WARNING) << "No user email in the OAuth token response";
+    Disconnect();
+    return;
+  }
   StartReceivingMessages();
 }
 

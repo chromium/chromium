@@ -1,0 +1,50 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions,
+       "Cannot depend on extensions because enable_extensions=false.")
+
+source_set("debugger") {
+  sources = [
+    "debugger_api.cc",
+    "debugger_api.h",
+    "extension_dev_tools_infobar_delegate.cc",
+    "extension_dev_tools_infobar_delegate.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/common/extensions/api",
+    "//components/infobars/core",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/common",
+  ]
+
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/browser/devtools",
+    "//chrome/browser/extensions",
+    "//chrome/browser/lifetime:termination_notification",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
+    "//components/pdf/common:util",
+    "//components/security_interstitials/content:security_interstitial_page",
+    "//content/public/common",
+    "//extensions/common:common_constants",
+    "//extensions/common:extension_features",
+    "//pdf:buildflags",
+    "//pdf:features",
+    "//ui/base",
+    "//ui/gfx",
+    "//url",
+  ]
+}

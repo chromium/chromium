@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -21,7 +21,7 @@ if __name__ == '__main__':
     sys.stderr.write(__doc__)
     sys.exit(1)
 
-  source_file = 'third_party/blink/public/mojom/permissions_policy/' \
+  source_file = 'services/network/public/mojom/permissions_policy/' \
                 'permissions_policy_feature.mojom'
   UpdateHistogramEnum('tools/metrics/histograms/metadata/blink/enums.xml',
                       histogram_enum_name='FeaturePolicyFeature',

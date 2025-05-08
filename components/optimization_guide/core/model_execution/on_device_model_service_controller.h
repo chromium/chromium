@@ -11,6 +11,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
@@ -103,14 +104,6 @@ class OnDeviceModelServiceController
       base::WeakPtr<OptimizationGuideLogger> logger,
       const std::optional<SessionConfigParams>& config_params);
 
-  // Starts the service and executes a benchmark to determine the performance
-  // class, returning the result via `callback`. The controller will be kept
-  // alive until the benchmark completes. Returns kServiceCrash if the service
-  // crashes.
-  static void GetEstimatedPerformanceClass(
-      scoped_refptr<OnDeviceModelServiceController> controller,
-      base::OnceCallback<void(OnDeviceModelPerformanceClass)> callback);
-
   // Sets the language detection model to be used by the ODM service when text
   // safety evaluation is restricted to a specific set of languages.
   void SetLanguageDetectionModel(
@@ -150,6 +143,13 @@ class OnDeviceModelServiceController
   void BindBroker(mojo::PendingReceiver<mojom::ModelBroker> receiver) {
     receivers_.Add(this, std::move(receiver));
   }
+
+  // Ensures the performance class will be up to date and available when
+  // `complete` runs.
+  void EnsurePerformanceClassAvailable(base::OnceClosure complete);
+
+  virtual void RegisterPerformanceClassSyntheticTrial(
+      OnDeviceModelPerformanceClass perf_class) {}
 
  protected:
   ~OnDeviceModelServiceController() override;
@@ -365,6 +365,12 @@ class OnDeviceModelServiceController
   void Subscribe(mojom::ModelSubscriptionOptionsPtr opts,
                  mojo::PendingRemote<mojom::ModelSubscriber> client) override;
 
+  void SubscribeInternal(mojom::ModelSubscriptionOptionsPtr opts,
+                         mojo::PendingRemote<mojom::ModelSubscriber> client);
+
+  // Called when performance class has finished updating.
+  void PerformanceClassUpdated(OnDeviceModelPerformanceClass perf_class);
+
   // This may be null in the destructor, otherwise non-null.
   std::unique_ptr<OnDeviceModelAccessController> access_controller_;
   std::optional<OnDeviceModelMetadataLoader> model_metadata_loader_;
@@ -387,6 +393,17 @@ class OnDeviceModelServiceController
   std::optional<BaseModelController> base_model_controller_;
 
   mojo::ReceiverSet<mojom::ModelBroker> receivers_;
+
+  enum class PerformanceClassState {
+    kNotSet,
+    kComputing,
+    kComplete,
+  };
+  PerformanceClassState performance_class_state_ =
+      PerformanceClassState::kNotSet;
+
+  // Callbacks waiting for performance class to finish computing.
+  base::OnceClosureList performance_class_callbacks_;
 
   // Used to get `weak_ptr_` to self.
   base::WeakPtrFactory<OnDeviceModelServiceController> weak_ptr_factory_{this};

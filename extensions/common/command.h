@@ -33,7 +33,7 @@ class Command : public ui::Command {
   static ui::Accelerator StringToAccelerator(std::string_view accelerator,
                                              std::string_view command_name);
 
-  // Return true if the |command_name| is one of the following action events:
+  // Return true if the `command_name` is one of the following action events:
   // Action Command Event, Browser Action Command Event, Page Action Command
   // Event.
   static bool IsActionRelatedCommand(std::string_view command_name);

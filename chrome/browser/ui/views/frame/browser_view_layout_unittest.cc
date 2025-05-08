@@ -6,10 +6,8 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
-#include "base/containers/flat_set.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/memory/raw_ptr.h"
-#include "base/no_destructor.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout_delegate.h"
 #include "chrome/browser/ui/views/frame/contents_layout_manager.h"
@@ -85,14 +83,14 @@ class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
   }
   bool SupportsWindowFeature(
       const Browser::WindowFeature feature) const override {
-    static const base::NoDestructor<base::flat_set<Browser::WindowFeature>>
-        supported_features{{
+    static constexpr auto kSupportedFeatures =
+        base::MakeFixedFlatSet<Browser::WindowFeature>({
             Browser::FEATURE_TABSTRIP,
             Browser::FEATURE_TOOLBAR,
             Browser::FEATURE_LOCATIONBAR,
             Browser::FEATURE_BOOKMARKBAR,
-        }};
-    return base::Contains(*supported_features, feature);
+        });
+    return kSupportedFeatures.contains(feature);
   }
   gfx::NativeView GetHostViewForAnchoring() const override {
     return gfx::NativeView();
@@ -215,6 +213,9 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
     devtools_web_view_ = contents_container_->AddChildView(
         CreateFixedSizeView(gfx::Size(800, 600)));
     devtools_web_view_->SetVisible(false);
+    devtools_scrim_view_ = contents_container_->AddChildView(
+        CreateFixedSizeView(gfx::Size(800, 600)));
+    devtools_scrim_view_->SetVisible(false);
     contents_web_view_ = contents_container_->AddChildView(
         CreateFixedSizeView(gfx::Size(800, 600)));
     contents_scrim_view_ = contents_container_->AddChildView(
@@ -223,8 +224,8 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
         CreateFixedSizeView(gfx::Size(800, 600)));
     contents_container_->SetLayoutManager(
         std::make_unique<ContentsLayoutManager>(
-            devtools_web_view_, contents_web_view_, lens_overlay_view_,
-            contents_scrim_view_,
+            devtools_web_view_, devtools_scrim_view_, contents_web_view_,
+            lens_overlay_view_, contents_scrim_view_,
             /*contents_border_view=*/nullptr, /*watermark_view=*/nullptr));
 
     auto delegate = std::make_unique<MockBrowserViewLayoutDelegate>();
@@ -278,6 +279,7 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
   raw_ptr<views::View> contents_container_;
   raw_ptr<views::View> contents_web_view_;
   raw_ptr<views::View> devtools_web_view_;
+  raw_ptr<views::View> devtools_scrim_view_;
   raw_ptr<views::View> contents_scrim_view_;
   raw_ptr<views::View> lens_overlay_view_;
 
@@ -301,7 +303,7 @@ TEST_F(BrowserViewLayoutTest, Layout) {
   // Top views are zero-height.
   EXPECT_EQ(gfx::Rect(0, 0, 0, 0), tab_strip()->bounds());
   EXPECT_EQ(gfx::Rect(0, 0, 800, 0), toolbar()->bounds());
-  EXPECT_EQ(gfx::Rect(0, 0, 800, 0), infobar_container()->bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 0, 0), infobar_container()->bounds());
   // Contents split fills the window.
   EXPECT_EQ(gfx::Rect(0, 0, 800, 600), contents_container()->bounds());
 
@@ -314,7 +316,7 @@ TEST_F(BrowserViewLayoutTest, Layout) {
   EXPECT_EQ(gfx::Rect(0, 0, 800, kToolbarHeight), toolbar()->bounds());
   EXPECT_EQ(gfx::Rect(0, kToolbarHeight, 800, views::Separator::kThickness),
             separator()->bounds());
-  EXPECT_EQ(gfx::Rect(0, 30, 800, 0), infobar_container()->bounds());
+  EXPECT_EQ(gfx::Rect(0, 30, 0, 0), infobar_container()->bounds());
   EXPECT_EQ(gfx::Rect(0, 30, 800, 570), contents_container()->bounds());
 
   // Disable the contents separator.
@@ -325,7 +327,7 @@ TEST_F(BrowserViewLayoutTest, Layout) {
   EXPECT_EQ(gfx::Rect(0, 0, 0, 0), tab_strip()->bounds());
   EXPECT_EQ(gfx::Rect(0, 0, 800, kToolbarHeight), toolbar()->bounds());
   EXPECT_FALSE(separator()->GetVisible());
-  EXPECT_EQ(gfx::Rect(0, 29, 800, 0), infobar_container()->bounds());
+  EXPECT_EQ(gfx::Rect(0, 29, 0, 0), infobar_container()->bounds());
   EXPECT_EQ(gfx::Rect(0, 29, 800, 571), contents_container()->bounds());
 
   // TODO(jamescook): Tab strip and bookmark bar.

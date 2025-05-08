@@ -1,0 +1,30 @@
+# TODO(crbug.com/348590032) Failing as test relies on window.devicePixelRatio
+# which doesn't work with per-window scaling.
+-All/GetDisplayMediaHiDpiBrowserTest.Capture/1
+
+# Very flaky/failing on mutter (less flaky/passing on weston)
+-All/OmniboxSearchAggregatorHTTPErrorTest.HTTPErrorResponse/404
+-BackForwardCachePageLoadMetricsObserverBrowserTest.LayoutShiftNormalization_AfterBackForwardCacheRestore
+-All/PDFExtensionJSInk2Test.Ink2/*
+-All/PDFExtensionJSInk2Test.Ink2BottomToolbar/*
+-All/PDFExtensionJSInk2Test.Ink2TextBottomToolbar/*
+-All/PDFExtensionScrollTest.WithArrowLeftRightScrollToPage/*
+-PageLoadMetricsBrowserTest.MainFrameIntersectionsMainFrame
+-AdsPageLoadMetricsObserverBrowserTest.PageAdDensityMultipleFrames
+-AdsPageLoadMetricsObserverBrowserTest.PageAdDensityRecordsPageMax
+-ProfilePickerEnterpriseCreationFlowBrowserTest.CreateSignedInProfileWithSuggestedTwoFactorAuthSetup
+-WebAppBrowserTest.SetBounds
+-PrintBrowserTest.NoResizeEvent
+
+# Failing on both mutter and weston
+-BackForwardCachePageLoadMetricsObserverBrowserTest.CumulativeLayoutShiftAfterBackForwardCacheRestore
+-BrowserViewTest.GetAccessibleTabModalDialogTree
+-ProfileHelperTest.OpenNewWindowForProfile
+
+# TODO(crbug.com/40688401) This test requires full Picture-in-Picture support.
+-FedCmAccountSelectionViewBrowserTest.DisabledWhenOccluded
+
+# TODO(crbug.com/395595608) Also disabled in weston, but maybe this could work
+# in mutter with some additional steps.
+-All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideo/1
+-All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideoAndAudio/1

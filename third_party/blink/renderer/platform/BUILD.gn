@@ -138,6 +138,7 @@ executable("character_data_generator") {
     "text/character_property.h",
     "text/character_property_data.h",
     "text/character_property_data_generator.cc",
+    "text/east_asian_spacing_type.h",
     "text/han_kerning_char_type.h",
     "wtf/text/character_names.h",
     "wtf/text/wtf_uchar.h",
@@ -1484,6 +1485,7 @@ component("platform") {
     "text/date_time_format.cc",
     "text/date_time_format.h",
     "text/decode_escape_sequences.h",
+    "text/east_asian_spacing_type.h",
     "text/emoji_segmentation_category.h",
     "text/emoji_segmentation_category_inline_header.h",
     "text/han_kerning_char_type.h",
@@ -1975,7 +1977,10 @@ static_library("test_support") {
   ]
   testonly = true
 
+  defines = [ "BLINK_PLATFORM_TEST_IMPLEMENTATION" ]
+
   sources = [
+    "graphics/gpu/drawing_buffer_test_helpers.cc",
     "graphics/gpu/drawing_buffer_test_helpers.h",
     "graphics/paint/paint_controller_test.h",
     "graphics/test/fake_canvas_resource_host.h",
@@ -1988,6 +1993,7 @@ static_library("test_support") {
     "graphics/test/mock_compositor_frame_sink_client.h",
     "graphics/test/mock_embedded_frame_sink_provider.h",
     "graphics/test/mock_frame_sink_bundle.h",
+    "graphics/test/mock_image_decoder.cc",
     "graphics/test/mock_image_decoder.h",
     "graphics/test/mock_paint_canvas.h",
     "graphics/test/stub_image.h",
@@ -2082,6 +2088,7 @@ static_library("test_support") {
     "//testing/gtest:gtest",
     "//testing/perf",
     "//third_party/blink/public:test_headers",
+    "//third_party/blink/public/test/mojom:modules_test_automation_blink",
     "//third_party/blink/renderer/platform/blob:test_support",
     "//third_party/blink/renderer/platform/heap:test_support",
     "//third_party/blink/renderer/platform/loader:test_support",

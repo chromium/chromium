@@ -85,7 +85,7 @@ export class ReadAnythingLogger {
     this.metrics.recordHighlightGranularity(highlight);
   }
 
-  private logVoiceTypeUsedForReading_(voice: SpeechSynthesisVoice|undefined) {
+  private logVoiceTypeUsedForReading_(voice: SpeechSynthesisVoice|null) {
     if (!voice) {
       return;
     }
@@ -112,7 +112,7 @@ export class ReadAnythingLogger {
       return;
     }
 
-    // See tools/metrics/histograms/enums.xml enum LocaleCodeISO639. The enum
+    // See tools/metrics/histograms/enums.xml enum LocaleCodeBCP47. The enum
     // there doesn't always have locales where the base lang and the locale
     // are the same (e.g. they don't have id-id, but do have id). So if the
     // base lang and the locale are the same, just use the base lang.
@@ -136,8 +136,7 @@ export class ReadAnythingLogger {
     this.metrics.recordVoiceSpeed(index);
   }
 
-  logSpeechPlaySession(
-      startTime: number, voice: SpeechSynthesisVoice|undefined) {
+  logSpeechPlaySession(startTime: number, voice: SpeechSynthesisVoice|null) {
     this.logVoiceTypeUsedForReading_(voice);
     this.logLanguageUsedForReading_(voice?.lang);
     this.metrics.recordSpeechPlaybackLength(Date.now() - startTime);

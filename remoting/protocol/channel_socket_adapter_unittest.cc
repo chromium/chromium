@@ -90,11 +90,10 @@ TEST_F(TransportChannelSocketAdapterTest, ReadClose) {
 }
 
 // Verify that Send sends the packet and returns correct result.
-// TODO(bugs.webrtc.org/367395350): re-enable after webrtc roll.
-TEST_F(TransportChannelSocketAdapterTest, DISABLED_Send) {
+TEST_F(TransportChannelSocketAdapterTest, Send) {
   auto buffer = base::MakeRefCounted<IOBufferWithSize>(kTestDataSize);
 
-  // EXPECT_CALL(channel_, writable()).WillOnce(Return(true));
+  EXPECT_CALL(channel_, writable()).WillOnce(Return(true));
   EXPECT_CALL(channel_, SendPacket(buffer->data(), kTestDataSize, _, 0))
       .WillOnce(Return(kTestDataSize));
 
@@ -104,11 +103,10 @@ TEST_F(TransportChannelSocketAdapterTest, DISABLED_Send) {
 
 // Verify that the message is still sent if Send() is called while
 // socket is not open yet. The result is the packet is lost.
-// TODO(bugs.webrtc.org/367395350): re-enable after webrtc roll.
-TEST_F(TransportChannelSocketAdapterTest, DISABLED_SendPending) {
+TEST_F(TransportChannelSocketAdapterTest, SendPending) {
   auto buffer = base::MakeRefCounted<IOBufferWithSize>(kTestDataSize);
 
-  // EXPECT_CALL(channel_, writable()).WillOnce(Return(true));
+  EXPECT_CALL(channel_, writable()).WillOnce(Return(true));
   EXPECT_CALL(channel_, SendPacket(buffer->data(), kTestDataSize, _, 0))
       .Times(1)
       .WillOnce(Return(SOCKET_ERROR));

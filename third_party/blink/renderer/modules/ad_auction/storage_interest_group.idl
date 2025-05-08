@@ -6,6 +6,14 @@ typedef (long long or AuctionAd) PreviousWinElement;
 
 typedef sequence<PreviousWinElement> PreviousWin;
 
+dictionary ViewOrClickCounts {
+  long pastHour;
+  long pastDay;
+  long pastWeek;
+  long past30Days;
+  long past90Days;
+};
+
 dictionary StorageInterestGroup : AuctionAdInterestGroup {
   unsigned long long joinCount;
   unsigned long long bidCount;
@@ -16,4 +24,6 @@ dictionary StorageInterestGroup : AuctionAdInterestGroup {
   long long timeSinceLastUpdateMs;
   long long timeUntilNextUpdateMs;
   unsigned long long estimatedSize;
+  [RuntimeEnabled=FledgeClickiness] ViewOrClickCounts viewCounts;
+  [RuntimeEnabled=FledgeClickiness] ViewOrClickCounts clickCounts;
 };

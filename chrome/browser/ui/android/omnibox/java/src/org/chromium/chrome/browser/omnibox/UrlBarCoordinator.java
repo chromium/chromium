@@ -11,11 +11,11 @@ import android.view.View.OnLongClickListener;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -29,6 +29,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Optional;
 
 /** Coordinates the interactions with the UrlBar text component. */
+@NullMarked
 public class UrlBarCoordinator
         implements UrlBarEditingTextStateProvider,
                 UrlFocusChangeListener,
@@ -46,11 +47,11 @@ public class UrlBarCoordinator
         int SELECT_END = 1;
     }
 
-    private final @NonNull UrlBar mUrlBar;
-    private final @NonNull UrlBarMediator mMediator;
-    private final @NonNull KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
-    private final @NonNull Callback<Boolean> mFocusChangeCallback;
-    private @NonNull Optional<Runnable> mKeyboardHideTask = Optional.empty();
+    private final UrlBar mUrlBar;
+    private final UrlBarMediator mMediator;
+    private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
+    private final Callback<Boolean> mFocusChangeCallback;
+    private Optional<Runnable> mKeyboardHideTask = Optional.empty();
 
     /**
      * Constructs a coordinator for the given UrlBar view.
@@ -70,12 +71,12 @@ public class UrlBarCoordinator
      *     for the url bar.
      */
     public UrlBarCoordinator(
-            @NonNull Context context,
-            @NonNull UrlBar urlBar,
-            @NonNull ActionMode.Callback actionModeCallback,
-            @NonNull Callback<Boolean> focusChangeCallback,
-            @NonNull UrlBarDelegate delegate,
-            @NonNull KeyboardVisibilityDelegate keyboardVisibilityDelegate,
+            Context context,
+            UrlBar urlBar,
+            ActionMode.Callback actionModeCallback,
+            Callback<Boolean> focusChangeCallback,
+            UrlBarDelegate delegate,
+            KeyboardVisibilityDelegate keyboardVisibilityDelegate,
             boolean isIncognitoBranded,
             @Nullable OnLongClickListener onLongClickListener) {
         mUrlBar = urlBar;
@@ -88,7 +89,6 @@ public class UrlBarCoordinator
                         .with(UrlBarProperties.DELEGATE, delegate)
                         .with(UrlBarProperties.INCOGNITO_COLORS_ENABLED, isIncognitoBranded)
                         .with(UrlBarProperties.LONG_CLICK_LISTENER, onLongClickListener)
-                        .with(UrlBarProperties.USE_SMALL_TEXT, false)
                         .build();
         PropertyModelChangeProcessor.create(model, urlBar, UrlBarViewBinder::bind);
 
@@ -137,12 +137,12 @@ public class UrlBarCoordinator
      * @see UrlBarMediator#setUrlBarData(UrlBarData, int, int)
      */
     public boolean setUrlBarData(
-            @NonNull UrlBarData data, @ScrollType int scrollType, @SelectionState int state) {
+            UrlBarData data, @ScrollType int scrollType, @SelectionState int state) {
         return mMediator.setUrlBarData(data, scrollType, state);
     }
 
     /** Returns the UrlBarData representing the current contents of the UrlBar. */
-    public @NonNull UrlBarData getUrlBarData() {
+    public UrlBarData getUrlBarData() {
         return mMediator.getUrlBarData();
     }
 
@@ -150,9 +150,7 @@ public class UrlBarCoordinator
      * @see UrlBarMediator#setAutocompleteText(String, String, String)
      */
     public void setAutocompleteText(
-            @NonNull String userText,
-            @Nullable String autocompleteText,
-            @Nullable String additionalText) {
+            String userText, @Nullable String autocompleteText, @Nullable String additionalText) {
         mMediator.setAutocompleteText(userText, autocompleteText, additionalText);
     }
 
@@ -241,7 +239,7 @@ public class UrlBarCoordinator
     /**
      * @see UrlBar#getVisibleTextPrefixHint()
      */
-    public CharSequence getVisibleTextPrefixHint() {
+    public @Nullable CharSequence getVisibleTextPrefixHint() {
         return mUrlBar.getVisibleTextPrefixHint();
     }
 

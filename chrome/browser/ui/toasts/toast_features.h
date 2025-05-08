@@ -31,10 +31,12 @@ extern const base::FeatureParam<base::TimeDelta> kToastWithoutActionTimeout;
 // Individual toasts
 BASE_DECLARE_FEATURE(kLinkCopiedToast);
 BASE_DECLARE_FEATURE(kImageCopiedToast);
+BASE_DECLARE_FEATURE(kVideoFrameCopiedToast);
 BASE_DECLARE_FEATURE(kLinkToHighlightCopiedToast);
 BASE_DECLARE_FEATURE(kReadingListToast);
 BASE_DECLARE_FEATURE(kLensOverlayToast);
 BASE_DECLARE_FEATURE(kClearBrowsingDataToast);
+BASE_DECLARE_FEATURE(kPinnedTabToastOnClose);
 
 // Wrapper function used to check if a specific toast feature is enabled. Must
 // be used for toasts that are part of demo mode.

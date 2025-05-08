@@ -1,0 +1,16 @@
+[document web]
+++[push button] name='up' controller-for=[section]
+++[push button] name='prev' controller-for=[section]
+++[push button] name='next' controller-for=[section]
+++[push button] name='down' controller-for=[section]
+++[section] controlled-by=[page tab list,push button,push button,push button,push button]
+++++[section] details-for=[page tab]
+++++++[static] name='One'
+++++[section] details-for=[page tab]
+++++++[static] name='Two'
+++++[section] details-for=[page tab]
+++++++[static] name='Three'
+++[page tab list] horizontal controller-for=[section]
+++++[page tab] selectable selected details=[section] details-from:css-scroll-marker-pseudo-element
+++++[page tab] selectable details=[section] details-from:css-scroll-marker-pseudo-element
+++++[page tab] selectable details=[section] details-from:css-scroll-marker-pseudo-element

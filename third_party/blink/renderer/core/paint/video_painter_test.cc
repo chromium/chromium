@@ -238,7 +238,8 @@ class VideoPaintPreviewTest : public testing::Test,
     GetLocalMainFrame().CapturePaintPreview(
         bounds(), canvas,
         /*include_linked_destinations=*/true,
-        /*skip_accelerated_content=*/skip_accelerated_content);
+        /*skip_accelerated_content=*/skip_accelerated_content,
+        /*allow_scrollbars=*/false);
     return recorder.finishRecordingAsPicture();
   }
 

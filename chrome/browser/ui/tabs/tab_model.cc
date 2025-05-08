@@ -15,15 +15,15 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/tabs/split_tab_collection.h"
-#include "chrome/browser/ui/tabs/tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/tabs/public/split_tab_collection.h"
 #include "components/tabs/public/split_tab_id.h"
+#include "components/tabs/public/tab_collection.h"
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/visibility.h"
@@ -47,6 +47,7 @@ class TabLookupFromWebContents
   ~TabLookupFromWebContents() override = default;
 
   TabModel* model() { return model_; }
+  const TabModel* model() const { return model_; }
 
  private:
   friend WebContentsUserData;
@@ -264,6 +265,10 @@ BrowserWindowInterface* TabModel::GetBrowserWindowInterface() {
   return GetModelForTabInterface()->delegate()->GetBrowserWindowInterface();
 }
 
+const BrowserWindowInterface* TabModel::GetBrowserWindowInterface() const {
+  return GetModelForTabInterface()->delegate()->GetBrowserWindowInterface();
+}
+
 tabs::TabFeatures* TabModel::GetTabFeatures() {
   return tab_features_.get();
 }
@@ -392,6 +397,12 @@ void TabModel::DestroyTabFeatures() {
 // static
 TabInterface* TabInterface::GetFromContents(
     content::WebContents* web_contents) {
+  return TabLookupFromWebContents::FromWebContents(web_contents)->model();
+}
+
+// static
+const TabInterface* TabInterface::GetFromContents(
+    const content::WebContents* web_contents) {
   return TabLookupFromWebContents::FromWebContents(web_contents)->model();
 }
 

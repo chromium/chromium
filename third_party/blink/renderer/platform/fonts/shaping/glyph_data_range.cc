@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_data_range.h"
 
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
@@ -36,11 +31,12 @@ base::span<const HarfBuzzRunGlyphData> GlyphDataRange::Glyphs() const {
 }
 
 GlyphDataRange::const_iterator GlyphDataRange::begin() const {
-  return run_ ? run_->glyph_data_.begin() + index_ : nullptr;
+  return run_ ? UNSAFE_TODO(run_->glyph_data_.begin() + index_) : nullptr;
 }
 
 GlyphDataRange::const_iterator GlyphDataRange::end() const {
-  return run_ ? run_->glyph_data_.begin() + index_ + size_ : nullptr;
+  return run_ ? UNSAFE_TODO(run_->glyph_data_.begin() + index_ + size_)
+              : nullptr;
 }
 
 bool GlyphDataRange::HasOffsets() const {
@@ -88,8 +84,8 @@ GlyphDataRange GlyphDataRange::FindGlyphDataRange(
       std::lower_bound(start_glyph_it, rend, end_character_index, comparer);
   // Convert reverse iterators to pointers. Then increment to make |begin|
   // inclusive and |end| exclusive.
-  const HarfBuzzRunGlyphData* start_glyph = &*end_glyph_it + 1;
-  const HarfBuzzRunGlyphData* end_glyph = &*start_glyph_it + 1;
+  const HarfBuzzRunGlyphData* start_glyph = UNSAFE_TODO(&*end_glyph_it + 1);
+  const HarfBuzzRunGlyphData* end_glyph = UNSAFE_TODO(&*start_glyph_it + 1);
   return {*this, start_glyph, end_glyph};
 }
 

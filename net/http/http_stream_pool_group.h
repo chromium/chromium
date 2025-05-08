@@ -193,13 +193,6 @@ class HttpStreamPool::Group {
 
   void CleanupTimedoutIdleStreamSocketsForTesting();
 
-  AttemptManager* GetAttemptManagerForTesting() const {
-    return attempt_manager_.get();
-  }
-
-  void SetOnAttemptManagerCompleteCallbackForTesting(
-      base::OnceClosure callback);
-
  private:
   FRIEND_TEST_ALL_PREFIXES(HttpStreamPoolGroupTest, ComparePausedJobSet);
 
@@ -275,8 +268,6 @@ class HttpStreamPool::Group {
   // Keeps jobs that are previously paused and already resumed. We need to keep
   // them to avoid dangling pointers.
   PausedJobSet resumed_jobs_;
-
-  base::OnceClosure on_attempt_manager_complete_callback_for_testing_;
 
   base::WeakPtrFactory<Group> weak_ptr_factory_{this};
 };

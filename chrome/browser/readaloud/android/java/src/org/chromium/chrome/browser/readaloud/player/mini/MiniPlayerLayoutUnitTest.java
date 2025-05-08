@@ -40,6 +40,7 @@ import org.robolectric.shadows.ShadowSystemClock;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.R;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
@@ -148,10 +149,10 @@ public class MiniPlayerLayoutUnitTest {
     }
 
     @Test
-    public void testSetPublisher() {
+    public void testSetSubtitle() {
         mLayout.onPlaybackStateChanged(PlaybackListener.State.PLAYING);
-        mLayout.setPublisher("Publisher");
-        assertEquals("Publisher", ((TextView) mLayout.findViewById(R.id.publisher)).getText());
+        mLayout.setPlaybackMode(PlaybackMode.OVERVIEW);
+        assertEquals("AI audio playback", ((TextView) mLayout.findViewById(R.id.subtitle)).getText());
     }
 
     @Test

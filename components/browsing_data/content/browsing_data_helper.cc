@@ -186,6 +186,11 @@ void RemoveSiteSettingsData(const base::Time& delete_begin,
       ContentSettingsType::SMART_CARD_DATA, delete_begin, delete_end,
       HostContentSettingsMap::PatternSourcePredicate());
 #endif
+
+  host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::ON_DEVICE_SPEECH_RECOGNITION_LANGUAGES_DOWNLOADED,
+      delete_begin, delete_end,
+      HostContentSettingsMap::PatternSourcePredicate());
 }
 
 void RemoveFederatedSiteSettingsData(

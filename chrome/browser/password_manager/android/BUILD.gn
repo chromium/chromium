@@ -472,6 +472,18 @@ android_library("backend_interface_java") {
   ]
 }
 
+android_library("sms_otp_fetching_interface_java") {
+  deps = [
+    "//base:base_java",
+    "//base:service_loader_java",
+  ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/password_manager/AndroidSmsOtpFetcher.java",
+    "java/src/org/chromium/chrome/browser/password_manager/AndroidSmsOtpFetcherFactory.java",
+    "java/src/org/chromium/chrome/browser/password_manager/AndroidSmsOtpFetcherFactoryUpstreamImpl.java",
+  ]
+}
+
 generate_jni("test_support_jni_headers") {
   testonly = true
   sources = [ "test_support/java/src/org/chromium/chrome/browser/password_manager/PasswordManagerTestUtilsBridge.java" ]
@@ -649,8 +661,11 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser/autofill",
     "//chrome/browser/keyboard_accessory/test_utils/android",
+    "//chrome/browser/password_edit_dialog/android:android",
     "//chrome/browser/password_manager/android/access_loss:test_support",
     "//chrome/browser/password_manager/android/add_username_dialog:android",
+    "//chrome/browser/plus_addresses",
+    "//chrome/browser/plus_addresses:impl",
     "//chrome/browser/prefs",
     "//chrome/browser/sync",
     "//chrome/browser/touch_to_fill/password_manager/password_generation/android:public",

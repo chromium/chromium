@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/types/id_type.h"
 #include "chrome/browser/actor/tools/tool_controller.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -68,6 +69,17 @@ class ActorCoordinator {
   //   - Unable to create a new tab.
   void StartTask(const optimization_guide::proto::BrowserAction& action,
                  StartTaskCallback callback);
+
+  // Stops the currently running task, if one is active. Callbacks for
+  // in-progress actions are invoked.
+  void StopTask();
+
+  // Returns true if a task is currently active.
+  bool HasTask() const;
+
+  // Returns true if a task is currently active in `tab`.
+  bool HasTaskForTab(const content::WebContents* tab) const;
+
   // Starts new task with an existing tab, for testing only. Intended for unit
   // tests that do not use a browser and actual navigation.
   void StartTaskForTesting(tabs::TabInterface* tab);
@@ -79,6 +91,8 @@ class ActorCoordinator {
 
  private:
   class NewTabWebContentsObserver;
+  struct Task;
+  using TaskId = base::IdType32<Task>;
 
   // Starts a new task, after validating there isn't already a task being
   // initialized or in progress.
@@ -97,22 +111,56 @@ class ActorCoordinator {
   void OnNewTabCreated(StartTaskCallback callback,
                        content::WebContents* web_contents);
 
-  void OnMayActOnTabResponse(
-      base::WeakPtr<tabs::TabInterface> tab,
-      const optimization_guide::proto::BrowserAction& action,
-      const url::Origin& evaluated_origin,
-      ActionResultCallback callback,
-      bool may_act);
+  void OnMayActOnTabResponse(TaskId task_id,
+                             const url::Origin& evaluated_origin,
+                             bool may_act);
+
+  void CompleteAction(bool success);
 
   base::WeakPtr<ActorCoordinator> GetWeakPtr();
 
-  static base::TimeDelta action_observation_delay_;
+  static std::optional<base::TimeDelta> action_observation_delay_for_testing_;
 
   bool initializing_new_task_ = false;
   raw_ptr<Profile> profile_;
-  base::WeakPtr<tabs::TabInterface> task_tab_;
+
+  struct Action {
+    Action(const optimization_guide::proto::BrowserAction& action,
+           ActionResultCallback callback);
+    ~Action();
+    Action(const Action&) = delete;
+    Action& operator=(const Action&) = delete;
+
+    optimization_guide::proto::BrowserAction proto;
+    ActionResultCallback callback;
+  };
+
+  // In order to perform actions, the client must start a "task". A task is
+  // associated with a single tab that cannot change. Only a single task can be
+  // active at a time.
+  struct Task {
+    explicit Task(tabs::TabInterface& task_tab);
+    ~Task();
+    Task(const Task&) = delete;
+    Task& operator=(const Task&) = delete;
+
+    TaskId id;
+
+    base::WeakPtr<tabs::TabInterface> tab;
+    ToolController tool_controller;
+
+    std::optional<Action> current_action;
+
+    bool HasTab() const { return !!tab; }
+
+    bool HasAction() const { return !!current_action; }
+
+   private:
+    static TaskId::Generator id_generator_;
+  };
+  std::unique_ptr<Task> task_state_;
+
   std::unique_ptr<NewTabWebContentsObserver> new_tab_web_contents_observer_;
-  ToolController tool_controller_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<ActorCoordinator> weak_ptr_factory_{this};

@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "media/base/media_switches.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/native_theme/native_theme.h"
 
@@ -131,6 +132,10 @@ bool IsLiveCaptionFeatureSupported() {
 #else
   return false;
 #endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
+}
+
+bool IsHeadlessCaptionFeatureSupported() {
+  return base::FeatureList::IsEnabled(media::kHeadlessLiveCaption);
 }
 
 std::string GetCaptionSettingsUrl() {

@@ -4,12 +4,17 @@
 
 static_library("chrome_urls") {
   sources = [
-    "features.cc",
-    "features.h",
     "pref_names.cc",
     "pref_names.h",
   ]
 
-  public_deps = [ "//base" ]
+  if (is_ios) {
+    sources += [
+      "features.cc",
+      "features.h",
+    ]
+    public_deps = [ "//base" ]
+  }
+
   deps = [ "//components/prefs" ]
 }

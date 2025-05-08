@@ -129,6 +129,12 @@ public class AppMenuTest {
 
     @After
     public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (mAppMenuHandler.isAppMenuShowing()) {
+                        mAppMenuHandler.getAppMenu().dismiss();
+                    }
+                });
         NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
     }
 
@@ -347,15 +353,15 @@ public class AppMenuTest {
         showMenuAndAssert();
         AppMenu spiedMenu = Mockito.spy(mAppMenuHandler.getAppMenu());
 
-        View dummyView = new View(sActivity);
+        View testView = new View(sActivity);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     spiedMenu.onItemLongClick(
                             mAppMenuHandler.getAppMenu().getMenuItemPropertyModel(R.id.icon_one),
-                            dummyView);
+                            testView);
                 });
 
-        Mockito.verify(spiedMenu, Mockito.times(1)).showToastForItem("Icon One", dummyView);
+        Mockito.verify(spiedMenu, Mockito.times(1)).showToastForItem("Icon One", testView);
     }
 
     @Test
@@ -365,15 +371,15 @@ public class AppMenuTest {
         showMenuAndAssert();
         AppMenu spiedMenu = Mockito.spy(mAppMenuHandler.getAppMenu());
 
-        View dummyView = new View(sActivity);
+        View testView = new View(sActivity);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     spiedMenu.onItemLongClick(
                             mAppMenuHandler.getAppMenu().getMenuItemPropertyModel(R.id.icon_two),
-                            dummyView);
+                            testView);
                 });
 
-        Mockito.verify(spiedMenu, Mockito.times(1)).showToastForItem("2", dummyView);
+        Mockito.verify(spiedMenu, Mockito.times(1)).showToastForItem("2", testView);
     }
 
     @Test
@@ -383,12 +389,12 @@ public class AppMenuTest {
         showMenuAndAssert();
         AppMenu spiedMenu = Mockito.spy(mAppMenuHandler.getAppMenu());
 
-        View dummyView = new View(sActivity);
+        View testView = new View(sActivity);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     spiedMenu.onItemLongClick(
                             mAppMenuHandler.getAppMenu().getMenuItemPropertyModel(R.id.icon_three),
-                            dummyView);
+                            testView);
                 });
 
         Mockito.verify(spiedMenu, Mockito.times(0))
@@ -737,7 +743,7 @@ public class AppMenuTest {
         KeyEvent down = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MENU);
         Assert.assertFalse(
                 "#onKeyEvent should return false when app menu hidden",
-                appMenu.onKey(null, KeyEvent.KEYCODE_MENU, null));
+                appMenu.onKey(null, KeyEvent.KEYCODE_MENU, down));
     }
 
     @Test

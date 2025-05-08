@@ -12,6 +12,8 @@ import androidx.annotation.IntDef;
 import org.chromium.base.CallbackController;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.safety_hub.SafetyHubLocalPasswordsDataSource.ModuleType;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleOption;
@@ -28,6 +30,7 @@ import java.lang.annotation.RetentionPolicy;
  * reused. It gets notified of changes of local passwords and their state by {@link
  * SafetyHubLocalPasswordsDataSource}, and updates the preference to reflect these.
  */
+@NullMarked
 public class SafetyHubLocalPasswordsModuleMediator
         implements SafetyHubModuleMediator, SafetyHubLocalPasswordsDataSource.Observer {
 
@@ -58,16 +61,16 @@ public class SafetyHubLocalPasswordsModuleMediator
     private final SafetyHubExpandablePreference mPreference;
     private final SafetyHubModuleMediatorDelegate mMediatorDelegate;
     private final SafetyHubModuleDelegate mModuleDelegate;
+    private final PropertyModel mModel;
 
     private SafetyHubLocalPasswordsDataSource mLocalPasswordsDataSource;
-    private SafetyHubModuleHelper mModuleHelper;
-    private PropertyModel mModel;
+    private @Nullable SafetyHubModuleHelper mModuleHelper;
 
     private @IndicatorState int mIndicatorState = IndicatorState.IDLE;
     // Callback when the minimum time showing the loading indicator has elapsed.
-    private CallbackController mMinLoadingCallbackController;
+    private @Nullable CallbackController mMinLoadingCallbackController;
     // Callback when the maximum time showing the loading indicator has elapsed.
-    private CallbackController mMaxLoadingCallbackController;
+    private @Nullable CallbackController mMaxLoadingCallbackController;
 
     private boolean mStateChangedCalled;
     private boolean mOrderUpdated;
@@ -81,16 +84,14 @@ public class SafetyHubLocalPasswordsModuleMediator
         mLocalPasswordsDataSource = localPasswordsDataSource;
         mMediatorDelegate = mediatorDelegate;
         mModuleDelegate = moduleDelegate;
+        mModel = new PropertyModel.Builder(SafetyHubModuleProperties.ALL_KEYS).build();
     }
 
     @Override
     public void setUpModule() {
         assert ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE);
-        mModel =
-                new PropertyModel.Builder(SafetyHubModuleProperties.ALL_KEYS)
-                        .with(SafetyHubModuleProperties.IS_VISIBLE, true)
-                        .build();
 
+        mModel.set(SafetyHubModuleProperties.IS_VISIBLE, true);
         PropertyModelChangeProcessor.create(
                 mModel, mPreference, SafetyHubModuleViewBinder::bindProperties);
 
@@ -131,7 +132,6 @@ public class SafetyHubLocalPasswordsModuleMediator
 
         if (mLocalPasswordsDataSource != null) {
             mLocalPasswordsDataSource.destroy();
-            mLocalPasswordsDataSource = null;
         }
     }
 
@@ -176,7 +176,11 @@ public class SafetyHubLocalPasswordsModuleMediator
                 return new SafetyHubLocalPasswordsUnavailableAllPasswordsModuleHelper(
                         context, mModuleDelegate);
             case ModuleType.NO_SAVED_PASSWORDS:
-                return new SafetyHubLocalPasswordsNoPasswordsModuleHelper(context, mModuleDelegate);
+                return new SafetyHubNoSavedPasswordsModuleHelper(
+                        context,
+                        mModuleDelegate,
+                        /* noAccountPasswords= */ false,
+                        /* noLocalPasswords= */ true);
             case ModuleType.HAS_COMPROMISED_PASSWORDS:
                 return new SafetyHubCompromisedPasswordsModuleHelper(
                         context,
@@ -185,16 +189,22 @@ public class SafetyHubLocalPasswordsModuleMediator
                         mLocalPasswordsDataSource.getCompromisedPasswordCount(),
                         /* unifiedModule= */ false);
             case ModuleType.NO_COMPROMISED_PASSWORDS:
-                return new SafetyHubLocalPasswordsNoCompromisedPasswordsModuleHelper(
-                        context, mModuleDelegate);
+                return new SafetyHubNoCompromisedPasswordsModuleHelper(
+                        context, mModuleDelegate, /* account= */ null, /* unifiedModule= */ false);
             case ModuleType.HAS_WEAK_PASSWORDS:
-                return new SafetyHubLocalPasswordsHasWeakPasswordsModuleHelper(
-                        context, mModuleDelegate, mLocalPasswordsDataSource.getWeakPasswordCount());
-            case ModuleType.HAS_REUSED_PASSWORDS:
-                return new SafetyHubLocalPasswordsHasReusedPasswordsModuleHelper(
+                return new SafetyHubWeakPasswordsModuleHelper(
                         context,
                         mModuleDelegate,
-                        mLocalPasswordsDataSource.getReusedPasswordCount());
+                        /* accountWeakPasswordsCount= */ 0,
+                        mLocalPasswordsDataSource.getWeakPasswordCount(),
+                        /* unifiedModule= */ false);
+            case ModuleType.HAS_REUSED_PASSWORDS:
+                return new SafetyHubReusedPasswordsModuleHelper(
+                        context,
+                        mModuleDelegate,
+                        /* accountReusedPasswordsCount= */ 0,
+                        mLocalPasswordsDataSource.getReusedPasswordCount(),
+                        /* unifiedModule= */ false);
             default:
                 throw new IllegalArgumentException();
         }
@@ -206,6 +216,9 @@ public class SafetyHubLocalPasswordsModuleMediator
     }
 
     private void updatePreference() {
+        if (mModuleHelper == null) {
+            return;
+        }
         mModel.set(SafetyHubModuleProperties.TITLE, mModuleHelper.getTitle());
         mModel.set(SafetyHubModuleProperties.SUMMARY, mModuleHelper.getSummary());
         mModel.set(

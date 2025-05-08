@@ -29,7 +29,7 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
     const TemplateURL& template_url) {
   SnippetSearchEngineElement* element = nil;
   // Only works for prepopulated search engines.
-  CHECK_GT(template_url.prepopulate_id(), 0, base::NotFatalUntil::M127)
+  CHECK_GT(template_url.prepopulate_id(), 0)
       << base::UTF16ToUTF8(template_url.short_name());
   element = [[SnippetSearchEngineElement alloc] init];
   // Add the name and snippet to the element.
@@ -41,8 +41,7 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
   element.faviconImage = SearchEngineFaviconFromTemplateURL(template_url);
   // With the choice screen, all the search engines should have embedded icons,
   // since the search engine list cannot modified by the user.
-  CHECK(element.faviconImage, base::NotFatalUntil::M127)
-      << base::SysNSStringToUTF8(element.name);
+  CHECK(element.faviconImage) << base::SysNSStringToUTF8(element.name);
   element.keyword = base::SysUTF16ToNSString(template_url.keyword());
   return element;
 }

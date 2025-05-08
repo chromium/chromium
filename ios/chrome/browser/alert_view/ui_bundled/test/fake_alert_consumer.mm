@@ -10,4 +10,6 @@
         darkModeLottieName:imageDarkModeLottieName {
 }
 
+- (void)setProgressState:(ProgressIndicatorState)progressState {
+}
 @end

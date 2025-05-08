@@ -44,6 +44,7 @@ import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -316,10 +317,13 @@ public class TabUiUtils {
             String tabGroupDisplayName,
             @CollaborationServiceShareOrManageEntryPoint int entry) {
         Tab tab = filter.getTabModel().getTabById(tabId);
+        // The tab may have been closed in parallel with the share starting. Skip if this happens.
+        if (tab == null) return;
+
         LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(tab);
 
         dataSharingTabManager.createOrManageFlow(
-                activity, /* syncId= */ null, localTabGroupId, entry, (ignored) -> {});
+                activity, EitherGroupId.createLocalId(localTabGroupId), entry, (ignored) -> {});
     }
 
     /**

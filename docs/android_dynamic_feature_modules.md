@@ -677,11 +677,6 @@ Then, create a new GRD target and add it as a dependency on `java_resources` in
 java_strings_grd("java_strings_grd") {
   defines = chrome_grit_defines
   grd_file = "android/resources/strings/android_foo_strings.grd"
-  outputs = [
-    "values-am/android_foo_strings.xml",
-    # Here, too, list output files for other supported languages.
-    ...
-  ]
 }
 ...
 android_resources("java_resources") {

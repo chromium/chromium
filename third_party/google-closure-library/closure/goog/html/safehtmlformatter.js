@@ -62,7 +62,7 @@ class SafeHtmlFormatter {
     assert(
         openedTags.length == 0,
         'Expected no unclosed tags, got <' + openedTags.join('>, <') + '>.');
-    return SafeHtml.createSafeHtmlSecurityPrivateDoNotAccessOrElse(html, null);
+    return SafeHtml.createSafeHtmlSecurityPrivateDoNotAccessOrElse(html);
   }
 
   /**

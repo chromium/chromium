@@ -15,7 +15,7 @@
 
 namespace blink {
 
-class AICreateMonitor;
+class CreateMonitor;
 
 class CreateTranslatorClient
     : public GarbageCollected<CreateTranslatorClient>,
@@ -40,7 +40,7 @@ class CreateTranslatorClient
   void ResetReceiver() override;
 
  private:
-  Member<AICreateMonitor> monitor_;
+  Member<CreateMonitor> monitor_;
   String source_language_;
   String target_language_;
 

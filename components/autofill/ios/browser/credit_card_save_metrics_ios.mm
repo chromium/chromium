@@ -17,6 +17,8 @@ std::string_view SaveCreditCardPromptOverlayTypeToMetricSuffix(
   switch (type) {
     case SaveCreditCardPromptOverlayType::kBanner:
       return ".Banner";
+    case SaveCreditCardPromptOverlayType::kBottomSheet:
+      return ".BottomSheet";
     case SaveCreditCardPromptOverlayType::kModal:
       return ".Modal";
   }

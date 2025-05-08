@@ -13,6 +13,8 @@
 #include <dawn/wire/WireClient.h>
 #include <dawn/wire/WireServer.h>
 
+#include <array>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/client/webgpu_interface_stub.h"
@@ -158,15 +160,17 @@ class WebGPUSwapBufferProviderForTests : public WebGPUSwapBufferProvider {
 
 class WireSerializer : public dawn::wire::CommandSerializer {
  public:
-  size_t GetMaximumAllocationSize() const override { return sizeof(buf_); }
+  size_t GetMaximumAllocationSize() const override {
+    return (buf_.size() * sizeof(decltype(buf_)::value_type));
+  }
 
   void SetHandler(dawn::wire::CommandHandler* handler) { handler_ = handler; }
 
   void* GetCmdSpace(size_t size) override {
-    if (size > sizeof(buf_)) {
+    if (size > (buf_.size() * sizeof(decltype(buf_)::value_type))) {
       return nullptr;
     }
-    if (sizeof(buf_) - size < offset_) {
+    if ((buf_.size() * sizeof(decltype(buf_)::value_type)) - size < offset_) {
       if (!Flush()) {
         return nullptr;
       }
@@ -177,14 +181,14 @@ class WireSerializer : public dawn::wire::CommandSerializer {
   }
 
   bool Flush() override {
-    bool success = handler_->HandleCommands(buf_, offset_) != nullptr;
+    bool success = handler_->HandleCommands(buf_.data(), offset_) != nullptr;
     offset_ = 0;
     return success;
   }
 
  private:
   size_t offset_ = 0;
-  char buf_[1024 * 1024];
+  std::array<char, 1024 * 1024> buf_;
   raw_ptr<dawn::wire::CommandHandler> handler_;
 };
 
@@ -333,17 +337,16 @@ TEST_F(WebGPUSwapBufferProviderTest,
   EXPECT_TRUE(
       provider_->PrepareTransferableResource(&resource3, &release_callback3));
 
-  // Release resources one by one, the provider should only be freed when the
-  // last one is called.
+  // Release resources one by one and expect shared images to be destroyed.
   provider_ = nullptr;
   std::move(release_callback1).Run(gpu::SyncToken(), false /* lostResource */);
-  ASSERT_EQ(provider_alive_, true);
+  EXPECT_EQ(sii_->shared_image_count(), 2u);
 
   std::move(release_callback2).Run(gpu::SyncToken(), false /* lostResource */);
-  ASSERT_EQ(provider_alive_, true);
+  EXPECT_EQ(sii_->shared_image_count(), 1u);
 
   std::move(release_callback3).Run(gpu::SyncToken(), false /* lostResource */);
-  ASSERT_EQ(provider_alive_, false);
+  EXPECT_EQ(sii_->shared_image_count(), 0u);
 }
 
 TEST_F(WebGPUSwapBufferProviderTest, VerifyResizingProperlyAffectsResources) {

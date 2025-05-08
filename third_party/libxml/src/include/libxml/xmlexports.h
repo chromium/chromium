@@ -78,58 +78,6 @@
 #endif
 
 /*
- * Warnings pragmas, should be moved from public headers
- */
-
-#if defined(__LCC__)
-
-  #define XML_IGNORE_FPTR_CAST_WARNINGS
-  #define XML_POP_WARNINGS \
-    _Pragma("diag_default 1215")
-
-#elif defined(__clang__) || (__GNUC__ * 100 + __GNUC_MINOR__ >= 406)
-
-  #if defined(__clang__) || (__GNUC__ * 100 + __GNUC_MINOR__ >= 800)
-    #define XML_IGNORE_FPTR_CAST_WARNINGS \
-      _Pragma("GCC diagnostic push") \
-      _Pragma("GCC diagnostic ignored \"-Wpedantic\"") \
-      _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
-  #else
-    #define XML_IGNORE_FPTR_CAST_WARNINGS \
-      _Pragma("GCC diagnostic push") \
-      _Pragma("GCC diagnostic ignored \"-Wpedantic\"")
-  #endif
-  #define XML_POP_WARNINGS \
-    _Pragma("GCC diagnostic pop")
-
-#elif defined(_MSC_VER) && _MSC_VER >= 1400
-
-  #define XML_IGNORE_FPTR_CAST_WARNINGS __pragma(warning(push))
-  #define XML_POP_WARNINGS __pragma(warning(pop))
-
-#else
-
-  #define XML_IGNORE_FPTR_CAST_WARNINGS
-  #define XML_POP_WARNINGS
-
-#endif
-
-/*
- * Accessors for globals
- */
-
-#define XML_NO_ATTR
-
-#ifdef LIBXML_THREAD_ENABLED
-  #define XML_DECLARE_GLOBAL(name, type, attrs) \
-    attrs XMLPUBFUN type *__##name(void);
-  #define XML_GLOBAL_MACRO(name) (*__##name())
-#else
-  #define XML_DECLARE_GLOBAL(name, type, attrs) \
-    attrs XMLPUBVAR type name;
-#endif
-
-/*
  * Originally declared in xmlversion.h which is generated
  */
 

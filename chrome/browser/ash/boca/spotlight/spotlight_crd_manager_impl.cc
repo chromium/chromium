@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/public/crd_session_result_codes.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/public/shared_crd_session.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/public/shared_crd_session_provider.h"
@@ -23,10 +24,11 @@
 namespace ash::boca {
 namespace {
 using SessionParameters = policy::SharedCrdSession::SessionParameters;
+constexpr char kCrdResultUma[] = "Enterprise.Boca.Spotlight.Crd.Result";
 
-// TODO: dorianbrandon - Log result to UMA.
 void LogCrdError(policy::ExtendedStartCrdSessionResultCode result_code,
                  const std::string& message) {
+  base::UmaHistogramEnumeration(kCrdResultUma, result_code);
   LOG(WARNING) << "[Boca] Failed to start Spotlight session on student due to "
                << "CRD error (code " << static_cast<int>(result_code)
                << ", message '" << message << "')";
@@ -65,6 +67,7 @@ void SpotlightCrdManagerImpl::OnSessionEnded() {
   }
   teacher_email_ = "";
   crd_session_->TerminateSession();
+  persistent_bubble_controller_->OnSessionEnded();
 }
 
 void SpotlightCrdManagerImpl::InitiateSpotlightSession(

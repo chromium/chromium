@@ -19,7 +19,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/webdata/token_web_data.h"
 #include "components/webdata_services/web_data_service_wrapper.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -89,12 +88,6 @@ enum class AutofillAccountStorageResult {
 // enum that is useful for logging metrics.
 AutofillAccountStorageResult DetermineAutofillAccountStorage(
     PrefService* pref_service) {
-  // Historically, and before the flag rollout represented by the predicate
-  // below, desktop platforms have used an in-memory database for autofill
-  // account data.
-  if (!switches::IsImprovedSigninUIOnDesktopEnabled()) {
-    return AutofillAccountStorageResult::kInMemory_FlagDisabled;
-  }
   CHECK(pref_service);
   // The interpretation of the pref mimics what PrimaryAccountManager's
   // constructor does.

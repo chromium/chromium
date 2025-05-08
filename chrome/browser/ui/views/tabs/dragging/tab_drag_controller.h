@@ -430,12 +430,6 @@ class TabDragController : public views::WidgetObserver
   // Returns true if currently dragging a tab with `contents`.
   bool IsDraggingTab(content::WebContents* contents) const;
 
-  // Returns the index of the first Tab, since the first dragging view may
-  // instead be a TabGroupHeader.
-  int first_tab_index() {
-    return drag_data_.group_drag_data_.has_value() ? 1 : 0;
-  }
-
   // Returns the Widget of the currently attached TabDragContext's
   // BrowserView.
   views::Widget* GetAttachedBrowserWidget();

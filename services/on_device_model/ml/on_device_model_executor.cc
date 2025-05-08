@@ -311,8 +311,14 @@ void SessionImpl::Generate(
       std::move(response), std::move(on_complete), std::move(cloned));
   ChromeMLExecutionOutputFn output_fn = responder_->CreateOutputFn();
   ChromeMLConstraint constraint = 0;
-  if (options->response_json_schema) {
-    constraint = executor_->CreateConstraint(*options->response_json_schema);
+  if (options->response_json_schema &&
+      !options->response_json_schema->empty()) {
+    options->constraint =
+        on_device_model::mojom::ResponseConstraint::NewJsonSchema(
+            *options->response_json_schema);
+  }
+  if (options->constraint) {
+    constraint = executor_->CreateConstraint(*options->constraint);
     if (!constraint) {
       // TODO(crbug.com/391919456): Propagate error.
       responder_.reset();
@@ -465,7 +471,7 @@ OnDeviceModelExecutor::LoadAdaptation(
 
 DISABLE_CFI_DLSYM
 ChromeMLConstraint OnDeviceModelExecutor::CreateConstraint(
-    const std::string& json_schema) {
+    const on_device_model::mojom::ResponseConstraint& response_constraint) {
 #if defined(ENABLE_ON_DEVICE_CONSTRAINTS)
   if (!tokenizer_) {
     CHECK(chrome_ml_->api().GetTokenizerParams(
@@ -475,7 +481,7 @@ ChromeMLConstraint OnDeviceModelExecutor::CreateConstraint(
               .tok_eos = params.eos_token_id,
               .token_lens = params.token_lens,
               .token_bytes = params.token_bytes,
-              .tokenizer_json = params.model_path,
+              .tokenizer_json = params.tokenizer_json_file_content,
               .tokenize_fn = params.tokenize_fn,
               .tokenize_user_data = params.tokenize_user_data,
           };
@@ -496,8 +502,20 @@ ChromeMLConstraint OnDeviceModelExecutor::CreateConstraint(
 
   LlgConstraintInit init;
   llg_constraint_init_set_defaults(&init, tokenizer_);
-  LlgConstraint* constraint =
-      llg_new_constraint_json(&init, json_schema.c_str());
+  LlgConstraint* constraint = nullptr;
+  switch (response_constraint.which()) {
+    case on_device_model::mojom::ResponseConstraint::Tag::kJsonSchema:
+      constraint = llg_new_constraint_json(
+          &init, response_constraint.get_json_schema().c_str());
+      break;
+    case on_device_model::mojom::ResponseConstraint::Tag::kRegex:
+      constraint = llg_new_constraint_regex(
+          &init, response_constraint.get_regex().c_str());
+      break;
+    case on_device_model::mojom::ResponseConstraint::Tag::kUnknownType:
+      LOG(ERROR) << "Unknown constraint type.";
+      return 0;
+  }
   const char* error = llg_get_error(constraint);
   if (error) {
     LOG(ERROR) << "Error creating constraint: " << error;
@@ -521,15 +539,12 @@ LoadModelResult OnDeviceModelExecutor::Init(
   ChromeMLModelData data;
   std::string weights_path_str = assets.weights_path.AsUTF8Unsafe();
   std::string sp_model_path_str = assets.sp_model_path.AsUTF8Unsafe();
-  switch (params->backend_type) {
-    case ModelBackendType::kGpuBackend:
-    case ModelBackendType::kCpuBackend:
-      data.weights_file = assets.weights.TakePlatformFile();
-      break;
-    case ModelBackendType::kApuBackend:
-      data.model_path = weights_path_str.data();
-      data.sentencepiece_model_path = sp_model_path_str.data();
-      break;
+  // Prefer to load the model from a file descriptor if possible.
+  if (assets.weights.IsValid()) {
+    data.weights_file = assets.weights.TakePlatformFile();
+  } else {
+    data.model_path = weights_path_str.data();
+    data.sentencepiece_model_path = sp_model_path_str.data();
   }
   ChromeMLModelDescriptor descriptor = {
       .backend_type = params->backend_type,

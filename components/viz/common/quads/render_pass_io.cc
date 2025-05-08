@@ -1097,7 +1097,6 @@ void ContentDrawQuadCommonToDict(const ContentDrawQuadBase* draw_quad,
   DCHECK(dict);
   dict->Set("tex_coord_rect", RectFToDict(draw_quad->tex_coord_rect));
   dict->Set("texture_size", SizeToDict(draw_quad->texture_size));
-  dict->Set("is_premultiplied", draw_quad->is_premultiplied);
   dict->Set("nearest_neighbor", draw_quad->nearest_neighbor);
   dict->Set("force_anti_aliasing_off", draw_quad->force_anti_aliasing_off);
 }
@@ -1280,6 +1279,11 @@ void TileDrawQuadToDict(const TileDrawQuad* draw_quad,
                         base::Value::Dict* dict) {
   DCHECK(draw_quad);
   DCHECK(dict);
+
+  // Set is_premultiplied to not break backwards-compatibility with unit test
+  // data.
+  dict->Set("is_premultiplied", true);
+
   ContentDrawQuadCommonToDict(draw_quad, dict);
 }
 

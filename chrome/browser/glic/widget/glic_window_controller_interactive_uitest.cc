@@ -26,6 +26,7 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
@@ -452,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kAttached),
       ClickMockGlicElement(kMockGlicClientHangButton, true),
-      ObserveState(test::internal::kGlicAppState, &window_controller()),
+      ObserveState(test::internal::kGlicAppState, &host()),
       WaitForState(test::internal::kGlicAppState,
                    mojom::WebUiState::kUnresponsive),
       // Client should show error after showing the unresponsive UI for 5s.
@@ -462,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        InvalidatedAccountWhileLoadingGlic) {
   RunTestSequence(
-      ObserveState(test::internal::kGlicAppState, &window_controller()),
+      ObserveState(test::internal::kGlicAppState, &host()),
       SimulateGlicHotkey(), CheckControllerHasWidget(true),
       ForceInvalidateAccount(), WaitForAndInstrumentGlic(kHostOnly),
       WaitForState(test::internal::kGlicAppState, mojom::WebUiState::kSignIn),
@@ -480,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        InvalidatedAccountSignInOnGlicOpenFlow) {
   RunTestSequence(
-      ObserveState(test::internal::kGlicAppState, &window_controller()),
+      ObserveState(test::internal::kGlicAppState, &host()),
       ForceInvalidateAccount(), SimulateGlicHotkey(),
       CheckControllerHasWidget(false), InstrumentTab(kFirstTab),
       WaitForWebContentsReady(kFirstTab),
@@ -496,7 +497,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        AccountInvalidatedWhileGlicOpen) {
   RunTestSequence(
       SimulateGlicHotkey(), CheckControllerHasWidget(true),
-      ObserveState(test::internal::kGlicAppState, &window_controller()),
+      ObserveState(test::internal::kGlicAppState, &host()),
       WaitForState(test::internal::kGlicAppState, mojom::WebUiState::kReady),
       ForceInvalidateAccount(),
       WaitForState(test::internal::kGlicAppState, mojom::WebUiState::kSignIn),
@@ -505,39 +506,102 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, TestInitialBounds) {
-  // Check that with no saved position the default location is used.
-  gfx::Rect initial_bounds = window_controller().GetInitialBounds(nullptr);
+  // The GlicButton and Tabstrip are not actually shown until a tab is created.
+  chrome::AddTabAt(browser(), GURL("about:blank"), 0, true);
+  // Calculate default location offset from work area.
   gfx::Point top_right =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area().top_right();
   int expected_x = top_right.x() - GlicWidget::GetInitialSize().width() -
                    glic::kDefaultDetachedTopRightDistance;
   int expected_y = top_right.y() + glic::kDefaultDetachedTopRightDistance;
   gfx::Point default_origin(expected_x, expected_y);
-  ASSERT_EQ(initial_bounds.origin(), default_origin);
 
-  // A position set on an active GlicService is used over the default.
-  window_controller().previous_position_ = {10, 20};
-  initial_bounds = window_controller().GetInitialBounds(nullptr);
-  ASSERT_EQ(initial_bounds.origin(), gfx::Point(10, 20));
+  // Check that with no saved position the default location is used.
+  gfx::Rect initial_bounds = window_controller().GetInitialBounds(nullptr);
+  EXPECT_EQ(initial_bounds.origin(), default_origin);
 
-  // A position just off of the screen is still used
-  window_controller().previous_position_ = {-5, -5};
-  initial_bounds = window_controller().GetInitialBounds(nullptr);
-  ASSERT_EQ(initial_bounds.origin(), gfx::Point(-5, -5));
+  // Initial bounds with browser are valid and not default location.
+  initial_bounds = window_controller().GetInitialBounds(browser());
+  EXPECT_NE(initial_bounds.origin(), default_origin);
 
-  // A position off the screen is reset back to the default location.
-  window_controller().previous_position_ = {-100, 20};
-  initial_bounds = window_controller().GetInitialBounds(nullptr);
-  ASSERT_EQ(initial_bounds.origin(), default_origin);
+  // Use default location if Glic button location results in an invalid widget
+  // location. Move browser window so that it is mostly off the screen to the
+  // right.
+  browser()->window()->SetBounds(
+      {{top_right.x() + 500, top_right.y() + 50}, {900, 900}});
+  initial_bounds = window_controller().GetInitialBounds(browser());
+  EXPECT_EQ(initial_bounds.origin(), default_origin);
+
+  gfx::Rect screen_bounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+
+  struct TestPair {
+    gfx::Point test;
+    gfx::Point expected;
+    std::string msg;
+  };
+
+  std::vector<TestPair> test_points = {
+      {{10, 20}, {10, 20}, "Valid position on screen"},
+
+      // Valid positions off each corner.
+      {{-20, -2}, {-20, -2}, "Valid top-left"},
+      {{-20, screen_bounds.height() - 100},
+       {-20, screen_bounds.height() - 100},
+       "Valid bottom left"},
+      {{screen_bounds.width() - initial_bounds.width() + 20,
+        screen_bounds.height() - 100},
+       {screen_bounds.width() - initial_bounds.width() + 20,
+        screen_bounds.height() - 100},
+       "Valid bottom right"},
+      {{screen_bounds.width() - initial_bounds.width() + 20, -2},
+       {screen_bounds.width() - initial_bounds.width() + 20, -2},
+       "Valid top right"},
+
+      // Invalid positions off of each edge
+      {{10, -5}, default_origin, "Invalid top"},
+      {{-400, 10}, default_origin, "Invalid left"},
+      {{10, screen_bounds.height() + 600}, default_origin, "Invalid bottom"},
+      {{screen_bounds.width() + 400, 10}, default_origin, "Invalid right"},
+  };
+
+  for (auto& t : test_points) {
+    window_controller().SetPreviousPositionForTesting(t.test);
+    initial_bounds = window_controller().GetInitialBounds(nullptr);
+    EXPECT_EQ(initial_bounds.origin(), t.expected) << t.msg;
+  }
+}
+
+class GlicWindowControllerWithPreviousPostionUiTest
+    : public GlicWindowControllerUiTest {
+ public:
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    // Set initial bounds via pref and check that they are used.
+    Profile::FromBrowserContext(context)->GetPrefs()->SetInteger(
+        prefs::kGlicPreviousPositionX, 20);
+    Profile::FromBrowserContext(context)->GetPrefs()->SetInteger(
+        prefs::kGlicPreviousPositionY, 10);
+    test::InteractiveGlicTest::SetUpBrowserContextKeyedServices(context);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerWithPreviousPostionUiTest,
+                       TestInitialBounds) {
+  // Check that the saved initial bounds are used.
+  gfx::Rect initial_bounds = window_controller().GetInitialBounds(nullptr);
+  ASSERT_EQ(initial_bounds.origin(), gfx::Point(20, 10));
 }
 
 class GlicWindowControllerWithMemoryPressureUiTest
     : public GlicWindowControllerUiTest {
  public:
   GlicWindowControllerWithMemoryPressureUiTest() {
-    features_.InitWithFeatures(
+    features_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {features::kGlicWarming},
+        {{features::kGlicWarming,
+          {{features::kGlicWarmingDelayMs.name, "0"},
+           {features::kGlicWarmingJitterMs.name, "0"}}}},
         /*disabled_features=*/{});
   }
   ~GlicWindowControllerWithMemoryPressureUiTest() override = default;

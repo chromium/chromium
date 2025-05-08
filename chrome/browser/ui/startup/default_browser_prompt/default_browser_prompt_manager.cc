@@ -77,14 +77,14 @@ void DefaultBrowserPromptManager::InitTabStripTracker() {
   browser_tab_strip_tracker_->Init();
 }
 
-void DefaultBrowserPromptManager::MaybeShowPrompt() {
+bool DefaultBrowserPromptManager::MaybeShowPrompt() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   NOTREACHED() << "Unsupported platforms for showing default browser prompts.";
 #else
   SetAppMenuItemVisibility(true);
 
   if (!ShouldShowPrompts()) {
-    return;
+    return false;
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -98,11 +98,12 @@ void DefaultBrowserPromptManager::MaybeShowPrompt() {
         ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
         base::BindOnce(&DefaultBrowserPromptManager::OnCanPinToTaskbarResult,
                        base::Unretained(this)));
-    return;
+    return true;
   }
 #endif  // BUILDFLAG(IS_WIN)
 
   InitTabStripTracker();
+  return true;
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 }
 

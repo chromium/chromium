@@ -213,7 +213,7 @@ DictationE2ETestBase = class extends E2ETestBase {
   // Timeout methods.
 
   mockSetTimeoutMethod() {
-    setTimeout = (callback, delay) => {
+    globalThis.setTimeout = (callback, delay) => {
       // setTimeout can be called from several different sources, so track
       // them using an Array.
       this.setTimeoutData_.push({delay, callback});

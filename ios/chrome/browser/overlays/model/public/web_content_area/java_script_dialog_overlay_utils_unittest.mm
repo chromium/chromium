@@ -15,7 +15,6 @@
 #import "ui/base/l10n/l10n_util.h"
 
 using java_script_dialog_overlay::BlockDialogsButtonConfig;
-using java_script_dialog_overlay::DialogMessage;
 using java_script_dialog_overlay::DialogTitle;
 using java_script_dialog_overlay::ShouldAddBlockDialogsButton;
 
@@ -47,19 +46,3 @@ TEST_F(JavaScriptDialogOverlayUtilsTest, BlockDialogsButtonConfig) {
       config.title);
 }
 
-// Tests that DialogTitle and DialogMessage return the expected values.
-TEST_F(JavaScriptDialogOverlayUtilsTest, DialogTitleAndMessage) {
-  NSString* dialog_message = @"message";
-
-  EXPECT_NSEQ(dialog_message, DialogTitle(
-                                  /*is_main_frame=*/true, dialog_message));
-  EXPECT_NSEQ(nil, DialogMessage(
-                       /*is_main_frame=*/true, dialog_message));
-
-  NSString* iframe_title = l10n_util::GetNSString(
-      IDS_JAVASCRIPT_MESSAGEBOX_TITLE_NONSTANDARD_URL_IFRAME);
-  EXPECT_NSEQ(iframe_title,
-              DialogTitle(/*is_main_frame=*/false, dialog_message));
-  EXPECT_NSEQ(dialog_message, DialogMessage(
-                                  /*is_main_frame=*/false, dialog_message));
-}

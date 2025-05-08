@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/logging.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 
@@ -294,6 +295,34 @@ std::ostream& operator<<(std::ostream& os, const IbanInfo& iban_info) {
   return os;
 }
 
+LoyaltyCardInfo::LoyaltyCardInfo(std::string merchant_name,
+                                 GURL program_logo_url,
+                                 std::u16string loyalty_card_number)
+    : merchant_name_(std::move(merchant_name)),
+      program_logo_url_(std::move(program_logo_url)),
+      value_(AccessorySheetField::Builder()
+                 .SetSuggestionType(AccessorySuggestionType::kLoyaltyCard)
+                 .SetDisplayText(loyalty_card_number)
+                 .SetSelectable(true)
+                 .Build()) {}
+
+LoyaltyCardInfo::LoyaltyCardInfo(const LoyaltyCardInfo&) = default;
+
+LoyaltyCardInfo& LoyaltyCardInfo::operator=(const LoyaltyCardInfo&) = default;
+
+LoyaltyCardInfo::LoyaltyCardInfo(LoyaltyCardInfo&&) = default;
+
+LoyaltyCardInfo& LoyaltyCardInfo::operator=(LoyaltyCardInfo&&) = default;
+
+LoyaltyCardInfo::~LoyaltyCardInfo() = default;
+
+std::ostream& operator<<(std::ostream& os,
+                         const LoyaltyCardInfo& loyalty_card) {
+  os << "merchant_name: \"" << loyalty_card.merchant_name()
+     << "\", loyalty_card_number=\"" << loyalty_card.value() << "\"";
+  return os;
+}
+
 FooterCommand::FooterCommand(std::u16string display_text,
                              AccessoryAction action)
     : display_text_(std::move(display_text)), accessory_action_(action) {}
@@ -403,6 +432,11 @@ std::ostream& operator<<(std::ostream& os, const AccessorySheetData& data) {
   os << "], and iban info list: [";
   for (const IbanInfo& iban_info : data.iban_info_list()) {
     os << iban_info << ", ";
+  }
+  os << "], and loyalty card info list: [";
+  for (const LoyaltyCardInfo& loyatly_card_info :
+       data.loyalty_card_info_list()) {
+    os << loyatly_card_info << ", ";
   }
   os << "], and plus address section: " << data.plus_address_section();
   os << ", footer commands: [";
@@ -639,6 +673,26 @@ AccessorySheetData::Builder& AccessorySheetData::Builder::AddIbanInfo(
     std::string id) & {
   accessory_sheet_data_.add_iban_info(
       (IbanInfo(std::move(value), std::move(text_to_fill), std::move(id))));
+  return *this;
+}
+
+AccessorySheetData::Builder&& AccessorySheetData::Builder::AddLoyaltyCardInfo(
+    std::string merchant_name,
+    GURL program_logo_url,
+    std::u16string loyalty_card_number) && {
+  // Calls AddLoyaltyCardInfo(...)& since `this` is an lvalue.
+  return std::move(AddLoyaltyCardInfo(std::move(merchant_name),
+                                      std::move(program_logo_url),
+                                      std::move(loyalty_card_number)));
+}
+
+AccessorySheetData::Builder& AccessorySheetData::Builder::AddLoyaltyCardInfo(
+    std::string merchant_name,
+    GURL program_logo_url,
+    std::u16string loyalty_card_number) & {
+  accessory_sheet_data_.add_loyalty_card_info(
+      (LoyaltyCardInfo(std::move(merchant_name), std::move(program_logo_url),
+                       std::move(loyalty_card_number))));
   return *this;
 }
 

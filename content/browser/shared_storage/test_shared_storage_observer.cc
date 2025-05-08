@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <optional>
 #include <ostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/time/time.h"
 #include "content/browser/shared_storage/shared_storage_event_params.h"
 #include "content/browser/shared_storage/shared_storage_runtime_manager.h"
-#include "content/public/browser/frame_tree_node_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -76,16 +76,38 @@ std::string SerializeMethod(AccessMethod method) {
   NOTREACHED();
 }
 
+template <typename T>
+void ExpectObservations(const std::string& observation_name,
+                        const std::vector<T>& expected_observations,
+                        const std::vector<T>& actual_observations) {
+  ASSERT_EQ(expected_observations.size(), actual_observations.size());
+  for (size_t i = 0; i < actual_observations.size(); ++i) {
+    EXPECT_EQ(expected_observations[i], actual_observations[i]);
+    if (expected_observations[i] != actual_observations[i]) {
+      LOG(ERROR) << observation_name << " differs at index " << i;
+    }
+  }
+}
+
 }  // namespace
 
 TestSharedStorageObserver::TestSharedStorageObserver() = default;
 TestSharedStorageObserver::~TestSharedStorageObserver() = default;
 
+GlobalRenderFrameHostId TestSharedStorageObserver::AssociatedFrameHostId()
+    const {
+  return GlobalRenderFrameHostId();
+}
+
+bool TestSharedStorageObserver::ShouldReceiveAllReports() const {
+  return true;
+}
+
 void TestSharedStorageObserver::OnSharedStorageAccessed(
-    const base::Time& access_time,
+    base::Time access_time,
     AccessScope scope,
     AccessMethod method,
-    FrameTreeNodeId main_frame_id,
+    GlobalRenderFrameHostId main_frame_id,
     const std::string& owner_origin,
     const SharedStorageEventParams& params) {
   accesses_.emplace_back(scope, method, main_frame_id, owner_origin, params);
@@ -98,16 +120,28 @@ void TestSharedStorageObserver::OnUrnUuidGenerated(const GURL& urn_uuid) {
 void TestSharedStorageObserver::OnConfigPopulated(
     const std::optional<FencedFrameConfig>& config) {}
 
+void TestSharedStorageObserver::OnWorkletOperationExecutionFinished(
+    base::Time finished_time,
+    base::TimeDelta execution_time,
+    AccessMethod method,
+    int operation_id,
+    int worklet_id,
+    GlobalRenderFrameHostId main_frame_id,
+    const std::string& owner_origin) {
+  operation_finished_infos_.emplace_back(execution_time, method, operation_id,
+                                         worklet_id, main_frame_id,
+                                         owner_origin);
+}
 
 void TestSharedStorageObserver::ExpectAccessObserved(
     const std::vector<Access>& expected_accesses) {
-  ASSERT_EQ(expected_accesses.size(), accesses_.size());
-  for (size_t i = 0; i < accesses_.size(); ++i) {
-    EXPECT_EQ(expected_accesses[i], accesses_[i]);
-    if (expected_accesses[i] != accesses_[i]) {
-      LOG(ERROR) << "Event access differs at index " << i;
-    }
-  }
+  ExpectObservations("Event access", expected_accesses, accesses_);
+}
+
+void TestSharedStorageObserver::ExpectOperationFinishedInfosObserved(
+    const std::vector<OperationFinishedInfo>& expected_infos) {
+  ExpectObservations("Operation finished info", expected_infos,
+                     operation_finished_infos_);
 }
 
 bool operator==(const TestSharedStorageObserver::Access& lhs,
@@ -117,9 +151,30 @@ std::ostream& operator<<(std::ostream& os,
                          const TestSharedStorageObserver::Access& access) {
   os << "{ Access Scope: " << SerializeScope(access.scope)
      << "; Access Method: " << SerializeMethod(access.method)
-     << "; Main Frame Id: " << access.main_frame_id.GetUnsafeValue()
+     << "; Main Frame ID: " << access.main_frame_id
      << "; Owner Origin: " << access.owner_origin
      << "; Params: " << access.params << " }";
+  return os;
+}
+
+bool operator==(const TestSharedStorageObserver::OperationFinishedInfo& lhs,
+                const TestSharedStorageObserver::OperationFinishedInfo& rhs) {
+  // Do not compare `execution_time` when checking for equality in tests.
+  return lhs.method == rhs.method && lhs.operation_id == rhs.operation_id &&
+         lhs.worklet_id == rhs.worklet_id &&
+         lhs.main_frame_id == rhs.main_frame_id &&
+         lhs.owner_origin == rhs.owner_origin;
+}
+
+std::ostream& operator<<(
+    std::ostream& os,
+    const TestSharedStorageObserver::OperationFinishedInfo& info) {
+  os << "{ Execution Time: " << info.execution_time.InMicroseconds()
+     << "; Access Method: " << SerializeMethod(info.method)
+     << "; Operation ID: " << info.operation_id
+     << "; Worklet ID: " << info.worklet_id
+     << "; Main Frame ID: " << info.main_frame_id
+     << "; Owner Origin: " << info.owner_origin << " }";
   return os;
 }
 

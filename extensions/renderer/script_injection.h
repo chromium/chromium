@@ -64,14 +64,14 @@ class ScriptInjection {
 
   ~ScriptInjection();
 
-  // Try to inject the script at the |current_location|. This returns
+  // Try to inject the script at the `current_location`. This returns
   // INJECTION_FINISHED if injection has injected or will never inject, returns
   // INJECTION_BLOCKED if injection is running asynchronously and has not
   // finished yet, returns INJECTION_WAITING if injections is delayed (either
-  // for permission purposes or because |current_location| is not the designated
-  // |run_location_|).
+  // for permission purposes or because `current_location` is not the designated
+  // `run_location_`).
   // If INJECTION_BLOCKED or INJECTION_WAITING is returned,
-  // |async_updated_callback| will be called upon the status updated.
+  // `async_updated_callback` will be called upon the status updated.
   InjectionResult TryToInject(mojom::RunLocation current_location,
                               ScriptsRunInfo* scripts_run_info,
                               StatusUpdatedCallback async_updated_callback);
@@ -100,12 +100,12 @@ class ScriptInjection {
   class FrameWatcher;
 
   // Sends a message to the browser to request permission to inject.
-  // |async_updated_callback| should be called if the permission is handled.
+  // `async_updated_callback` should be called if the permission is handled.
   void RequestPermissionFromBrowser(
       StatusUpdatedCallback async_updated_callback);
 
-  // Handles the injection permission calling |async_updated_callback| if
-  // |granted| is true.
+  // Handles the injection permission calling `async_updated_callback` if
+  // `granted` is true.
   void HandlePermission(StatusUpdatedCallback async_updated_callback,
                         bool granted);
 

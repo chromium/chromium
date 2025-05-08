@@ -16,11 +16,21 @@ TestSelectURLFencedFrameConfigObserverImpl::
 TestSelectURLFencedFrameConfigObserverImpl::
     ~TestSelectURLFencedFrameConfigObserverImpl() = default;
 
+GlobalRenderFrameHostId
+TestSelectURLFencedFrameConfigObserverImpl::AssociatedFrameHostId() const {
+  return GlobalRenderFrameHostId();
+}
+
+bool TestSelectURLFencedFrameConfigObserverImpl::ShouldReceiveAllReports()
+    const {
+  return true;
+}
+
 void TestSelectURLFencedFrameConfigObserverImpl::OnSharedStorageAccessed(
-    const base::Time& access_time,
+    base::Time access_time,
     AccessScope scope,
     AccessMethod method,
-    FrameTreeNodeId main_frame_id,
+    GlobalRenderFrameHostId main_frame_id,
     const std::string& owner_origin,
     const SharedStorageEventParams& params) {}
 
@@ -46,6 +56,15 @@ void TestSelectURLFencedFrameConfigObserverImpl::OnConfigPopulated(
   config_observed_ = true;
   config_ = config;
 }
+
+void TestSelectURLFencedFrameConfigObserverImpl::
+    OnWorkletOperationExecutionFinished(base::Time finished_time,
+                                        base::TimeDelta execution_time,
+                                        AccessMethod method,
+                                        int operation_id,
+                                        int worklet_id,
+                                        GlobalRenderFrameHostId main_frame_id,
+                                        const std::string& owner_origin) {}
 
 const std::optional<GURL>&
 TestSelectURLFencedFrameConfigObserverImpl::GetUrnUuid() const {

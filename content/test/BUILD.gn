@@ -264,6 +264,8 @@ static_library("test_support") {
     "../public/test/mock_media_session.h",
     "../public/test/mock_navigation_handle.cc",
     "../public/test/mock_navigation_handle.h",
+    "../public/test/mock_navigation_throttle_registry.cc",
+    "../public/test/mock_navigation_throttle_registry.h",
     "../public/test/mock_permission_controller.cc",
     "../public/test/mock_permission_controller.h",
     "../public/test/mock_permission_manager.cc",
@@ -692,6 +694,7 @@ static_library("test_support") {
         "../browser/speech/fake_speech_recognition_manager_delegate.h",
       ]
       deps += [ "//components/soda:soda" ]
+      public_deps += [ "//components/soda:test_support" ]
     }
 
     if (is_win) {
@@ -1458,7 +1461,6 @@ test("content_browsertests") {
     "../browser/cookie_deprecation_label/cookie_deprecation_label_browsertest.cc",
     "../browser/cross_site_transfer_browsertest.cc",
     "../browser/data_decoder_browsertest.cc",
-    "../browser/device_posture/foldable_apis_origin_trial_browsertest.cc",
     "../browser/device_sensors/device_sensor_browsertest.cc",
     "../browser/devtools/devtools_issue_storage_browsertest.cc",
     "../browser/devtools/devtools_trust_token_browsertest.cc",
@@ -1980,15 +1982,20 @@ test("content_browsertests") {
   if (is_ios) {
     entitlements_path = "//content/app/ios/appex/app.entitlements"
     bundle_deps = [
-      ":content_process_bundle",
       ":content_test_bundle_data",
       ":content_test_perfetto_bundle_data",
-      ":gpu_process_bundle",
-      ":network_process_bundle",
       "//media/test:media_bundle_data",
       "//mojo/public/interfaces/bindings/tests:validation_unittest_bundle_data",
       "//testing/buildbot/filters:content_browsertests_filter_bundle_data",
     ]
+
+    if (target_platform == "iphoneos") {
+      bundle_deps += [
+        ":content_process_bundle",
+        ":gpu_process_bundle",
+        ":network_process_bundle",
+      ]
+    }
   } else {
     data_deps += [
       "//testing/buildbot/filters:content_browsertests_filters",
@@ -2600,6 +2607,7 @@ test("content_unittests") {
     "../browser/interest_group/data_decoder_manager_unittest.cc",
     "../browser/interest_group/dwa_auction_metrics_unittest.cc",
     "../browser/interest_group/for_debugging_only_report_util_unittest.cc",
+    "../browser/interest_group/group_by_origin_key_unittest.cc",
     "../browser/interest_group/header_direct_from_seller_signals_unittest.cc",
     "../browser/interest_group/interest_group_auction_reporter_unittest.cc",
     "../browser/interest_group/interest_group_caching_storage_unittest.cc",
@@ -2645,6 +2653,7 @@ test("content_unittests") {
     "../browser/media/media_devices_util_unittest.cc",
     "../browser/media/media_internals_unittest.cc",
     "../browser/media/media_power_experiment_manager_unittest.cc",
+    "../browser/media/media_web_contents_observer_unittest.cc",
     "../browser/media/midi_host_unittest.cc",
     "../browser/media/session/media_players_callback_aggregator_unittest.cc",
     "../browser/media/session/media_session_controller_unittest.cc",
@@ -3135,6 +3144,7 @@ test("content_unittests") {
     "//components/payments/mojom",
     "//components/performance_manager/public/mojom",
     "//components/performance_manager/scenario_api",
+    "//components/performance_manager/scenario_api:test_support",
     "//components/permissions:permissions_common",
     "//components/permissions:test_support",
     "//components/services/quarantine/public/mojom",
@@ -3242,7 +3252,6 @@ test("content_unittests") {
     "//third_party/blink/public:test_support",
     "//third_party/blink/public/common:font_enumeration_table_proto",
     "//third_party/blink/public/common:headers",
-    "//third_party/distributed_point_functions/shim:buildflags",
     "//third_party/icu",
     "//third_party/inspector_protocol:crdtp",
     "//third_party/inspector_protocol:crdtp_test",

@@ -19,6 +19,7 @@
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/threading/thread_local.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/switches.h"
@@ -96,6 +97,18 @@ Window GetWindowPropertyAsWindow(const GetPropertyResponse& value) {
     return *wm_window;
   }
   return Window::None;
+}
+
+std::map<std::string, std::string> ParseXResources(std::string_view resources) {
+  std::map<std::string, std::string> result;
+  base::StringPairs pairs;
+  base::SplitStringIntoKeyValuePairs(resources, ':', '\n', &pairs);
+  for (const auto& pair : pairs) {
+    auto key = base::TrimWhitespaceASCII(pair.first, base::TRIM_ALL);
+    auto value = base::TrimWhitespaceASCII(pair.second, base::TRIM_ALL);
+    result[std::string(key)] = std::string(value);
+  }
+  return result;
 }
 
 }  // namespace
@@ -188,7 +201,7 @@ Connection::Connection(const std::string& address)
   root_props_ = std::make_unique<PropertyCache>(
       this, default_root(),
       std::vector<Atom>{GetAtom("_NET_SUPPORTING_WM_CHECK"),
-                        GetAtom("_NET_SUPPORTED")},
+                        GetAtom("_NET_SUPPORTED"), Atom::RESOURCE_MANAGER},
       base::BindRepeating(&Connection::OnRootPropertyChanged,
                           base::Unretained(this)));
 }
@@ -341,6 +354,13 @@ bool Connection::WmSupportsHint(Atom atom) const {
     return base::Contains(supported, atom);
   }
   return false;
+}
+
+const std::map<std::string, std::string> Connection::GetXResources() {
+  // Fetch the initial property value which will call `OnPropertyChanged` and
+  // populate `xresources_` if it is not already populated.
+  root_props_->Get(Atom::RESOURCE_MANAGER);
+  return xresources_;
 }
 
 Connection::Request::Request(ResponseCallback callback)
@@ -934,6 +954,8 @@ uint32_t Connection::GenerateIdImpl() {
 
 void Connection::OnRootPropertyChanged(Atom property,
                                        const GetPropertyResponse& value) {
+  // `root_props_` may be null during initialization, so this function should
+  // rely on `value` directly.
   Atom check_atom = GetAtom("_NET_SUPPORTING_WM_CHECK");
   if (property == check_atom) {
     // We've detected a new window manager, which may have different behavior
@@ -947,6 +969,10 @@ void Connection::OnRootPropertyChanged(Atom property,
           this, wm_window,
           std::vector<Atom>{check_atom, GetAtom("_NET_WM_NAME")});
     }
+  } else if (property == Atom::RESOURCE_MANAGER) {
+    auto xresources = PropertyCache::GetAsSpan<char>(value);
+    xresources_ =
+        ParseXResources(std::string_view(xresources.begin(), xresources.end()));
   }
 }
 
@@ -957,7 +983,7 @@ bool Connection::WmSupportsEwmh() const {
   if (!wm_props_) {
     return false;
   }
-  if (const x11::Window* wm_check = wm_props_->GetAs<Window>(check_atom)) {
+  if (const Window* wm_check = wm_props_->GetAs<Window>(check_atom)) {
     return *wm_check == wm_window;
   }
   return false;
@@ -974,7 +1000,7 @@ void Connection::OnWmSynced() {
   synced_with_wm_ = true;
 }
 
-ScopedXGrabServer::ScopedXGrabServer(x11::Connection* connection)
+ScopedXGrabServer::ScopedXGrabServer(Connection* connection)
     : connection_(connection) {
   connection_->GrabServer();
 }

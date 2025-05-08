@@ -4,11 +4,16 @@
 
 package org.chromium.chrome.browser.ui.signin.signin_promo;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -27,6 +32,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** {@link SigninPromoDelegate} for recent tabs signin promo. */
+@NullMarked
 public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
 
     /** Indicates the type of content the should be shown in the visible promo. */
@@ -40,6 +46,7 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
         int SIGNIN = 1;
     }
 
+    private final String mPromoShowCountPreferenceName;
     private @PromoState int mPromoState = PromoState.NONE;
 
     public RecentTabsSigninPromoDelegate(
@@ -48,6 +55,10 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
             SigninAndHistorySyncActivityLauncher launcher,
             Runnable onPromoStateChange) {
         super(context, profile, launcher, onPromoStateChange);
+
+        mPromoShowCountPreferenceName =
+                ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
+                        SigninPreferencesManager.SigninPromoAccessPointId.RECENT_TABS);
     }
 
     @Override
@@ -106,15 +117,27 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
+    void recordImpression() {
+        ChromeSharedPreferences.getInstance().incrementInt(mPromoShowCountPreferenceName);
+    }
+
+    @Override
     @HistorySyncConfig.OptInMode
     int getHistoryOptInMode() {
         return HistorySyncConfig.OptInMode.REQUIRED;
     }
 
+    @Override
+    int getPromoShownCount() {
+        return ChromeSharedPreferences.getInstance().readInt(mPromoShowCountPreferenceName);
+    }
+
     private @PromoState int computePromoState() {
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);
+        assumeNonNull(identityManager);
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
+        assumeNonNull(signinManager);
         if (!identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
                 && !signinManager.isSigninAllowed()) {
             // If sign-in is not possible, then history sync isn't possible either.

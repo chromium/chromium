@@ -128,7 +128,7 @@ export class KeySequence {
    * @param requireStickyMode Whether to require sticky mode.
    */
   constructor(
-      originalEvent: KeyboardEvent | EventLikeObject, cvoxModifier?: boolean,
+      originalEvent: EventLikeObject, cvoxModifier?: boolean,
       doubleTap?: boolean, skipStripping?: boolean,
       requireStickyMode?: boolean) {
     this.doubleTap = Boolean(doubleTap);
@@ -160,7 +160,7 @@ export class KeySequence {
    * @return Whether or not we were able to add a key. Returns false
    * if there are already two keys attached to this event.
    */
-  addKeyEvent(additionalKeyEvent: KeyboardEvent | EventLikeObject): boolean {
+  addKeyEvent(additionalKeyEvent: EventLikeObject): boolean {
     if (this.keys.keyCode.length > 1) {
       return false;
     }
@@ -217,7 +217,7 @@ export class KeySequence {
    * event and adds them to the object map.
    * @param keyEvent The keyEvent or event-shaped object to extract from.
    */
-  private extractKey_(keyEvent: KeyboardEvent | EventLikeObject): void {
+  private extractKey_(keyEvent: EventLikeObject): void {
     let keyCode;
     // TODO (rshearer): This is temporary until we find a library that can
     // convert between ASCII charcodes and keycodes.
@@ -349,7 +349,7 @@ export class KeySequence {
    * @param keyEvent The keyEvent or event-shaped object to check.
    * @return Whether or not the modifier key was active during the keyEvent.
    */
-  isCVoxModifierActive(keyEvent: KeyboardEvent | EventLikeObject): boolean {
+  isCVoxModifierActive(keyEvent: EventLikeObject): boolean {
     // TODO (rshearer): Update this when the modifier key becomes customizable
     let modifierKeyCombo = KeySequence.modKeyStr.split(/\+/g);
 
@@ -383,8 +383,7 @@ export class KeySequence {
    * @param modifier The modifier to check.
    * @return Whether or not the modifier key was active during the keyEvent.
    */
-  isKeyModifierActive(
-      keyEvent: KeyboardEvent | EventLikeObject, modifier: string): boolean {
+  isKeyModifierActive(keyEvent: EventLikeObject, modifier: string): boolean {
     // We need to check the key event modifier and the keyCode because Linux
     // will not set the keyEvent.modKey property if it is the modKey by itself.
     // This bug filed as crbug.com/74044

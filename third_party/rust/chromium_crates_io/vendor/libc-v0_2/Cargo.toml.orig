@@ -1,6 +1,6 @@
 [package]
 name = "libc"
-version = "0.2.171"
+version = "0.2.172"
 authors = ["The Rust Project Developers"]
 license = "MIT OR Apache-2.0"
 readme = "README.md"
@@ -151,4 +151,7 @@ align = []
 use_std = ['std']
 
 [workspace]
-members = ["libc-test"]
+members = [
+    "ctest",
+    "libc-test",
+]

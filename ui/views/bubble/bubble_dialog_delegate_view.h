@@ -286,10 +286,10 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // bubble is active, and will optionally resize itself to fit within the
   // anchor widget if the anchor widget's size changes.
   //
-  // The anchor widget is implied by the anchor view - bubbles with no anchor
-  // view cannot be anchored to a widget.
-
+  // The anchor widget can be explicitly set, or is implied by the anchor view.
+  void SetAnchorWidget(views::Widget* anchor_widget);
   Widget* anchor_widget() { return anchor_widget_; }
+  const Widget* anchor_widget() const { return anchor_widget_; }
 
   //////////////////////////////////////////////////////////////////////////////
   // The arrow:
@@ -448,7 +448,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // be a good fit for the UI you are building.
 
   ui::ColorVariant background_color() const { return color_; }
-  void set_background_color(ui::ColorVariant color) { color_ = color; }
+  void SetBackgroundColor(ui::ColorVariant color);
 
   void set_force_create_contents_background(
       bool force_create_contents_background) {
@@ -609,7 +609,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   void OnBubbleWidgetPaintAsActiveChanged();
 
   void OnDeactivate();
-  void UpdateFrameColors();
+  void UpdateFrameColor();
 
   // Notify this bubble that it is now the primary anchored bubble. When a new
   // bubble becomes the primary anchor, the previous primary silently loses its
@@ -674,7 +674,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   bool paint_client_to_layer_ = false;
 
   // If true, contents view will be forced to create a solid color background in
-  // `UpdateFrameColors()`.
+  // `UpdateFrameColor()`.
   bool force_create_contents_background_ = false;
 
 #if BUILDFLAG(IS_MAC)

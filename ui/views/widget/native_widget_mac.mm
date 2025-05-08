@@ -750,6 +750,10 @@ bool NativeWidgetMac::IsVisible() const {
   return ns_window_host_ && ns_window_host_->IsVisible();
 }
 
+bool NativeWidgetMac::IsVisibleOnScreen() const {
+  return ns_window_host_ && ns_window_host_->IsVisibleOnScreen();
+}
+
 void NativeWidgetMac::Activate() {
   if (!GetNSWindowHost()) {
     return;

@@ -373,7 +373,7 @@ Refer to README.md for content description and update process.
  <item id="promise_app_service" added_in_milestone="114" content_hash_code="07856112" os_list="chromeos" file_path="chrome/browser/apps/app_service/promise_apps/promise_app_almanac_connector.cc" />
  <item id="safe_browsing_hashprefix_realtime_lookup_ohttp" added_in_milestone="114" content_hash_code="0817ae7d" os_list="linux,windows,chromeos,android" file_path="components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.cc" />
  <item id="gaia_auth_rotate_bound_cookies" added_in_milestone="115" content_hash_code="04014185" os_list="linux,windows" file_path="chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.cc" />
- <item id="crash_file_uploader" added_in_milestone="115" content_hash_code="05f6902f" os_list="linux,windows" file_path="remoting/host/crash/crash_file_uploader.cc" />
+ <item id="crash_file_uploader" added_in_milestone="115" content_hash_code="05f6902f" os_list="windows" file_path="remoting/host/crash/crash_file_uploader.cc" />
  <item id="glanceables_classroom_integration" added_in_milestone="115" content_hash_code="048f5ccb" os_list="chromeos" file_path="chrome/browser/ui/ash/glanceables/glanceables_classroom_client_impl.cc" />
  <item id="promise_app_service_download_icon" added_in_milestone="115" content_hash_code="00521032" os_list="chromeos" file_path="chrome/browser/apps/app_service/promise_apps/promise_app_service.cc" />
  <item id="iwa_update_manifest_fetcher" added_in_milestone="116" type="completing" content_hash_code="0031297e" os_list="linux,windows,chromeos" semantics_fields="4,5,7,8,9" policy_fields="-1" file_path="chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.cc" />
@@ -478,8 +478,6 @@ Refer to README.md for content description and update process.
  <item id="chromeos_emoji_picker_posts_fetcher" added_in_milestone="131" content_hash_code="069ed9b2" os_list="chromeos" file_path="chromeos/ash/components/emoji/gif_tenor_api_fetcher.cc" />
  <item id="remoting_cloud_generate_ice_config" added_in_milestone="131" content_hash_code="067b6408" os_list="linux,windows,android,chromeos" file_path="remoting/base/cloud_service_client.cc" />
  <item id="demo_login_controller" added_in_milestone="131" content_hash_code="06f0d8af" os_list="chromeos" file_path="chrome/browser/ash/login/demo_mode/demo_login_controller.cc" />
- <item id="forms_annotations_model_execution" added_in_milestone="131" content_hash_code="00add55e" os_list="linux,windows,android,chromeos" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher.cc" />
- <item id="forms_predictions_model_execution" added_in_milestone="131" content_hash_code="02b70ea8" os_list="linux,windows,android,chromeos" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher.cc" />
  <item id="ash_babelorca_tachyon_registrar" added_in_milestone="132" content_hash_code="03b91268" os_list="chromeos" file_path="chromeos/ash/components/boca/babelorca/tachyon_registrar.cc" />
  <item id="ash_babelorca_transcript_receiver" added_in_milestone="132" content_hash_code="05e0545b" os_list="chromeos" file_path="chromeos/ash/components/boca/babelorca/transcript_receiver.cc" />
  <item id="ash_babelorca_transcript_sender_impl" added_in_milestone="132" content_hash_code="03bd3254" os_list="chromeos" file_path="chromeos/ash/components/boca/babelorca/transcript_sender_impl.cc" />
@@ -512,4 +510,7 @@ Refer to README.md for content description and update process.
  <item id="baguette_image_download" added_in_milestone="136" content_hash_code="0416bbbe" os_list="chromeos" file_path="chrome/browser/ash/crostini/baguette_download.cc" />
  <item id="chromeos_walrus_provider" added_in_milestone="136" content_hash_code="0671ae94" os_list="chromeos" file_path="components/manta/walrus_provider.cc" />
  <item id="autofill_image_fetcher" added_in_milestone="137" content_hash_code="019e07fc" os_list="linux,windows,chromeos" file_path="components/autofill/core/browser/ui/autofill_image_fetcher.cc" />
+ <item id="forms_classifications_model_execution" added_in_milestone="137" content_hash_code="051d9c71" os_list="linux,windows,chromeos,android" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher.cc" />
+ <item id="gemini_user_status" added_in_milestone="137" content_hash_code="03062011" os_list="linux,windows" file_path="chrome/browser/glic/glic_user_status_fetcher.cc" />
+ <item id="notification_telemetry" added_in_milestone="137" content_hash_code="07930dca" os_list="linux,windows,android,chromeos" file_path="chrome/browser/safe_browsing/notification_telemetry/notification_telemetry_service.cc" />
 </annotations>

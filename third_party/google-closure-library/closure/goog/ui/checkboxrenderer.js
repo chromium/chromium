@@ -6,11 +6,12 @@
 
 /**
  * @fileoverview Default renderer for {@link goog.ui.Checkbox}s.
+ * @suppress {missingRequire} goog.ui.Checkbox.State
  */
 
 goog.provide('goog.ui.CheckboxRenderer');
 
-goog.forwardDeclare('goog.ui.Checkbox.State');
+goog.forwardDeclare('goog.ui.Checkbox.State');  // TODO(user): remove this
 goog.require('goog.a11y.aria');
 goog.require('goog.a11y.aria.Role');
 goog.require('goog.a11y.aria.State');
@@ -51,6 +52,7 @@ goog.ui.CheckboxRenderer.prototype.createDom = function(checkbox) {
   var element = checkbox.getDomHelper().createDom(
       goog.dom.TagName.SPAN, this.getClassNames(checkbox).join(' '));
 
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var state = checkbox.getChecked();
   this.setCheckboxState(element, state);
 
@@ -58,7 +60,10 @@ goog.ui.CheckboxRenderer.prototype.createDom = function(checkbox) {
 };
 
 
-/** @override */
+/**
+ * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
+ */
 goog.ui.CheckboxRenderer.prototype.decorate = function(checkbox, element) {
   'use strict';
   // The superclass implementation takes care of common attributes; we only

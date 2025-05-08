@@ -83,7 +83,7 @@ import java.util.concurrent.Executor;
     }
 
     @Override
-    public void updateGroupImportance(int group, int importanceInGroup) {
+    public boolean updateGroupImportance(int group, int importanceInGroup) {
         // ChildProcessConnection checks there is a real connection to the service before calling
         // this, and this `isBound` check should in theory be unnecessary. However this is still
         // tripped on some devices where another service connection bound successfully but this
@@ -91,20 +91,19 @@ import java.util.concurrent.Executor;
         // behavior and is not handled. However, avoid crashing in `updateServiceGroup` by doing
         // this check here.
         if (!isBound()) {
-            return;
+            return false;
         }
         if (BindService.supportVariableConnections()) {
             try {
                 mContext.updateServiceGroup(this, group, importanceInGroup);
+                return true;
             } catch (IllegalArgumentException e) {
                 // There is an unavoidable race here binding might be removed for example due to a
                 // crash, which has not been processed on the launcher thread.
                 // Ignore these. See crbug.com/1026626 and crbug.com/1026626 for context.
-                return;
             }
-            BindService.doBindService(
-                    mContext, mBindIntent, this, mBindFlags, mHandler, mExecutor, mInstanceName);
         }
+        return false;
     }
 
     @Override

@@ -102,6 +102,8 @@ class InfoBarManager {
   // Opens a URL according to the specified |disposition|.
   virtual void OpenURL(const GURL& url, WindowOpenDisposition disposition) = 0;
 
+  bool ShouldHideInFullscreen() const;
+
  protected:
   void set_animations_enabled(bool animations_enabled) {
     animations_enabled_ = animations_enabled;

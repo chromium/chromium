@@ -167,6 +167,9 @@ class BrowserWindow : public ui::BaseWindow,
   // will return an error.
   virtual bool IsOnCurrentWorkspace() const = 0;
 
+  // Returns true if the browser window is visible on the screen.
+  virtual bool IsVisibleOnScreen() const = 0;
+
   // Sets the shown |ratio| of the browser's top controls (a.k.a. top-chrome) as
   // a result of gesture scrolling in |web_contents|.
   virtual void SetTopControlsShownRatio(content::WebContents* web_contents,
@@ -257,12 +260,13 @@ class BrowserWindow : public ui::BaseWindow,
   virtual void SetStarredState(bool is_starred) = 0;
 
   // Checks if the browser popup is a tab modal popup.
-  virtual bool IsTabModalPopup() const = 0;
+  virtual bool IsTabModalPopupDeprecated() const = 0;
 
   // Sets whether the browser popup is a tab modal popup. Tab modal popups, used
   // by autofill features, intentionally disable save card prompts because they
   // are not intended for saving new card details.
-  virtual void SetIsTabModalPopup(bool is_tab_modal_popup) = 0;
+  virtual void SetIsTabModalPopupDeprecated(
+      bool is_tab_modal_popup_deprecated) = 0;
 
   // Called when the active tab changes.  Subclasses which implement
   // TabStripModelObserver should implement this instead of ActiveTabChanged();
@@ -339,6 +343,9 @@ class BrowserWindow : public ui::BaseWindow,
 
   // Updates the visibility of the scrim that covers the content area.
   virtual void SetContentScrimVisibility(bool visible) = 0;
+
+  // Updates the visibility of the scrim that covers the devtools area.
+  virtual void SetDevToolsScrimVisibility(bool visible) = 0;
 
   // Resets the toolbar's tab state for |contents|.
   virtual void ResetToolbarTabState(content::WebContents* contents) = 0;

@@ -8,13 +8,12 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.magic_stack.ModuleConfigChecker;
@@ -29,6 +28,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** {@link ModuleProviderBuilder} that builds the Safety Hub Magic Stack module. */
+@NullMarked
 public class SafetyHubMagicStackBuilder implements ModuleProviderBuilder, ModuleConfigChecker {
     private final Context mContext;
     private final ObservableSupplier<Profile> mProfileSupplier;
@@ -36,10 +36,10 @@ public class SafetyHubMagicStackBuilder implements ModuleProviderBuilder, Module
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     public SafetyHubMagicStackBuilder(
-            @NonNull Context context,
-            @NonNull ObservableSupplier<Profile> profileSupplier,
-            @NonNull TabModelSelector tabModelSelector,
-            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            Context context,
+            ObservableSupplier<Profile> profileSupplier,
+            TabModelSelector tabModelSelector,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         mContext = context;
         mProfileSupplier = profileSupplier;
         mTabModelSelector = tabModelSelector;

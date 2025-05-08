@@ -13,6 +13,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -30,6 +31,13 @@
 namespace audio {
 
 namespace {
+
+// Requests data before reading in OutputController::OnMoreData, which may
+// reduce audio output latency but may increase the probability of audio
+// glitches.
+BASE_FEATURE(kAudioOutputControllerRequestBeforeRead,
+             "AudioOutputControllerRequestBeforeRead",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Time in seconds between two successive measurements of audio power levels.
 constexpr base::TimeDelta kPowerMonitorLogInterval = base::Seconds(15);
@@ -135,7 +143,9 @@ OutputController::OutputController(
       state_(kEmpty),
       sync_reader_(sync_reader),
       power_monitor_(params.sample_rate(),
-                     base::Milliseconds(kPowerMeasurementTimeConstantMillis)) {
+                     base::Milliseconds(kPowerMeasurementTimeConstantMillis)),
+      request_before_read_(base::FeatureList::IsEnabled(
+          kAudioOutputControllerRequestBeforeRead)) {
   DCHECK(audio_manager);
   DCHECK(handler_);
   DCHECK(sync_reader_);
@@ -285,8 +295,10 @@ void OutputController::StartStream() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(state_ == kCreated || state_ == kPaused);
 
-  // Ask for first packet.
-  sync_reader_->RequestMoreData(base::TimeDelta(), base::TimeTicks(), {});
+  if (!request_before_read_) {
+    // Ask for first packet.
+    sync_reader_->RequestMoreData(base::TimeDelta(), base::TimeTicks(), {});
+  }
 
   state_ = kPlaying;
   SendLogMessage("%s => (state=%s)", __func__, StateToString(state_));
@@ -410,6 +422,10 @@ int OutputController::OnMoreData(base::TimeDelta delay,
 
   stats_tracker_->OnMoreDataCalled();
 
+  if (request_before_read_) {
+    sync_reader_->RequestMoreData(delay, delay_timestamp, glitch_info);
+  }
+
   const bool received_data = sync_reader_->Read(dest, is_mixing);
 
   const base::TimeTicks reference_time = delay_timestamp + delay;
@@ -428,10 +444,12 @@ int OutputController::OnMoreData(base::TimeDelta delay,
 
   const int frames =
       dest->is_bitstream_format() ? dest->GetBitstreamFrames() : dest->frames();
-  delay +=
-      media::AudioTimestampHelper::FramesToTime(frames, params_.sample_rate());
+  if (!request_before_read_) {
+    delay += media::AudioTimestampHelper::FramesToTime(frames,
+                                                       params_.sample_rate());
 
-  sync_reader_->RequestMoreData(delay, delay_timestamp, glitch_info);
+    sync_reader_->RequestMoreData(delay, delay_timestamp, glitch_info);
+  }
 
 #if !BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
   constexpr bool is_bitstream = false;

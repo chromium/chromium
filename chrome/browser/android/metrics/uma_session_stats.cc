@@ -300,7 +300,7 @@ static void JNI_UmaSessionStats_UpdateMetricsAndCrashReportingForTesting(
   DCHECK(g_browser_process);
 
   g_metrics_consent_for_testing = consent;
-  g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(true);
+  g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions();
 }
 
 // Starts/stops the MetricsService based on existing consent and upload

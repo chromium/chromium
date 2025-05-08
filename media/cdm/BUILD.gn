@@ -142,9 +142,14 @@ source_set("cdm") {
       "win/media_foundation_cdm_session.h",
       "win/media_foundation_cdm_util.cc",
       "win/media_foundation_cdm_util.h",
+      "win/pmp_host_app_impl.cc",
+      "win/pmp_host_app_impl.h",
     ]
 
-    libs = [ "Propsys.lib" ]
+    libs = [
+      "mfuuid.lib",
+      "Propsys.lib",
+    ]
 
     deps += [
       ":cdm_paths",
@@ -252,6 +257,7 @@ source_set("unit_tests") {
       "win/media_foundation_cdm_factory_unittest.cc",
       "win/media_foundation_cdm_session_unittest.cc",
       "win/media_foundation_cdm_unittest.cc",
+      "win/media_foundation_cdm_util_unittest.cc",
     ]
   }
 }

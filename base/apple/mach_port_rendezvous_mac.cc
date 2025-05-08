@@ -376,10 +376,10 @@ GetPeerValidationPolicyFromEnvironment() {
   static MachPortRendezvousPeerValidationPolicy policy = [] {
     std::unique_ptr<Environment> environment = Environment::Create();
     int policy_int = INT_MAX;
-    std::string policy_str;
-    if (environment->GetVar(kPeerValidationPolicyEnvironmentVariable,
-                            &policy_str)) {
-      if (!StringToInt(policy_str, &policy_int)) {
+    std::optional<std::string> policy_str =
+        environment->GetVar(kPeerValidationPolicyEnvironmentVariable);
+    if (policy_str.has_value()) {
+      if (!StringToInt(policy_str.value(), &policy_int)) {
         // StringToInt modifies the output value even on failure.
         policy_int = INT_MAX;
       }

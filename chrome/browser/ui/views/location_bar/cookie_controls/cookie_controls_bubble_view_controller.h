@@ -14,6 +14,7 @@
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
+#include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/favicon_base/favicon_types.h"
 #include "url/gurl.h"
 
@@ -32,8 +33,7 @@ class CookieControlsBubbleViewController
       content_settings::CookieControlsController* controller);
 
   // CookieControlsObserver:
-  void OnStatusChanged(bool controls_visible,
-                       bool protections_on,
+  void OnStatusChanged(CookieControlsState controls_state,
                        CookieControlsEnforcement enforcement,
                        CookieBlocking3pcdStatus blocking_status,
                        base::Time expiration) override;
@@ -80,9 +80,6 @@ class CookieControlsBubbleViewController
 
   std::u16string GetSubjectUrlName(content::WebContents* web_contents) const;
 
-  // Whether protections are enabled for the given site.
-  bool protections_on_ = true;
-
   // Whether the page is reloading in the background after UB is toggled.
   bool is_reloading_state_ = false;
 
@@ -90,6 +87,9 @@ class CookieControlsBubbleViewController
   // determine the user's 3PCD status.
   CookieBlocking3pcdStatus blocking_status_ =
       CookieBlocking3pcdStatus::kNotIn3pcd;
+
+  // The state of the controls to display.
+  CookieControlsState controls_state_ = CookieControlsState::k3pcsBlocked;
 
   raw_ptr<CookieControlsBubbleView> bubble_view_ = nullptr;
 

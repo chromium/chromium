@@ -29,19 +29,22 @@ class CORE_EXPORT NavigationTransition final : public ScriptWrappable {
     return V8NavigationType(navigation_type_);
   }
   NavigationHistoryEntry* from() { return from_.Get(); }
+  ScriptPromise<IDLUndefined> committed(ScriptState* script_state);
   ScriptPromise<IDLUndefined> finished(ScriptState* script_state);
 
+  void ResolveCommittedPromise();
   void ResolveFinishedPromise();
   void RejectFinishedPromise(ScriptValue ex);
 
   void Trace(Visitor*) const final;
 
  private:
-  using FinishedProperty = ScriptPromiseProperty<IDLUndefined, IDLAny>;
+  using TransitionPromise = ScriptPromiseProperty<IDLUndefined, IDLAny>;
 
   V8NavigationType::Enum navigation_type_;
   Member<NavigationHistoryEntry> from_;
-  Member<FinishedProperty> finished_;
+  Member<TransitionPromise> committed_;
+  Member<TransitionPromise> finished_;
 };
 
 }  // namespace blink

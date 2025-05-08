@@ -334,7 +334,13 @@ pub const ATF_PERM: c_int = 0x04;
 pub const ATF_PUBL: c_int = 0x08;
 pub const ATF_USETRAILERS: c_int = 0x10;
 
-pub const FNM_PERIOD: c_int = 1 << 2;
+cfg_if! {
+    if #[cfg(target_os = "nto")] {
+        pub const FNM_PERIOD: c_int = 1 << 1;
+    } else {
+        pub const FNM_PERIOD: c_int = 1 << 2;
+    }
+}
 pub const FNM_NOMATCH: c_int = 1;
 
 cfg_if! {
@@ -351,11 +357,25 @@ cfg_if! {
         target_os = "freebsd",
         target_os = "android",
         target_os = "openbsd",
+        target_os = "cygwin",
     ))] {
         pub const FNM_PATHNAME: c_int = 1 << 1;
-        pub const FNM_NOESCAPE: c_int = 1 << 0;
     } else {
         pub const FNM_PATHNAME: c_int = 1 << 0;
+    }
+}
+
+cfg_if! {
+    if #[cfg(any(
+        target_os = "macos",
+        target_os = "freebsd",
+        target_os = "android",
+        target_os = "openbsd",
+    ))] {
+        pub const FNM_NOESCAPE: c_int = 1 << 0;
+    } else if #[cfg(target_os = "nto")] {
+        pub const FNM_NOESCAPE: c_int = 1 << 2;
+    } else {
         pub const FNM_NOESCAPE: c_int = 1 << 1;
     }
 }
@@ -538,11 +558,18 @@ cfg_if! {
     }
 }
 
+cfg_if! {
+    if #[cfg(not(target_env = "gnu"))] {
+        missing! {
+            #[cfg_attr(feature = "extra_traits", derive(Debug))]
+            pub enum fpos_t {} // FIXME(unix): fill this out with a struct
+        }
+    }
+}
+
 missing! {
     #[cfg_attr(feature = "extra_traits", derive(Debug))]
     pub enum FILE {}
-    #[cfg_attr(feature = "extra_traits", derive(Debug))]
-    pub enum fpos_t {} // FIXME(unix): fill this out with a struct
 }
 
 extern "C" {
@@ -577,17 +604,20 @@ extern "C" {
         all(target_os = "macos", target_arch = "x86"),
         link_name = "fopen$UNIX2003"
     )]
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "fopen64")]
     pub fn fopen(filename: *const c_char, mode: *const c_char) -> *mut FILE;
     #[cfg_attr(
         all(target_os = "macos", target_arch = "x86"),
         link_name = "freopen$UNIX2003"
     )]
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "freopen64")]
     pub fn freopen(filename: *const c_char, mode: *const c_char, file: *mut FILE) -> *mut FILE;
 
     pub fn fflush(file: *mut FILE) -> c_int;
     pub fn fclose(file: *mut FILE) -> c_int;
     pub fn remove(filename: *const c_char) -> c_int;
     pub fn rename(oldname: *const c_char, newname: *const c_char) -> c_int;
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "tmpfile64")]
     pub fn tmpfile() -> *mut FILE;
     pub fn setvbuf(stream: *mut FILE, buffer: *mut c_char, mode: c_int, size: size_t) -> c_int;
     pub fn setbuf(stream: *mut FILE, buf: *mut c_char);
@@ -613,8 +643,10 @@ extern "C" {
     pub fn ftell(stream: *mut FILE) -> c_long;
     pub fn rewind(stream: *mut FILE);
     #[cfg_attr(target_os = "netbsd", link_name = "__fgetpos50")]
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "fgetpos64")]
     pub fn fgetpos(stream: *mut FILE, ptr: *mut fpos_t) -> c_int;
     #[cfg_attr(target_os = "netbsd", link_name = "__fsetpos50")]
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "fsetpos64")]
     pub fn fsetpos(stream: *mut FILE, ptr: *const fpos_t) -> c_int;
     pub fn feof(stream: *mut FILE) -> c_int;
     pub fn ferror(stream: *mut FILE) -> c_int;
@@ -826,6 +858,7 @@ extern "C" {
         all(target_os = "freebsd", any(freebsd11, freebsd10)),
         link_name = "fstat@FBSD_1.0"
     )]
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "fstat64")]
     pub fn fstat(fildes: c_int, buf: *mut stat) -> c_int;
 
     pub fn mkdir(path: *const c_char, mode: mode_t) -> c_int;
@@ -839,6 +872,7 @@ extern "C" {
         all(target_os = "freebsd", any(freebsd11, freebsd10)),
         link_name = "stat@FBSD_1.0"
     )]
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "stat64")]
     pub fn stat(path: *const c_char, buf: *mut stat) -> c_int;
 
     pub fn pclose(stream: *mut crate::FILE) -> c_int;
@@ -853,16 +887,19 @@ extern "C" {
         all(target_os = "macos", target_arch = "x86"),
         link_name = "open$UNIX2003"
     )]
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "open64")]
     pub fn open(path: *const c_char, oflag: c_int, ...) -> c_int;
     #[cfg_attr(
         all(target_os = "macos", target_arch = "x86"),
         link_name = "creat$UNIX2003"
     )]
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "creat64")]
     pub fn creat(path: *const c_char, mode: mode_t) -> c_int;
     #[cfg_attr(
         all(target_os = "macos", target_arch = "x86"),
         link_name = "fcntl$UNIX2003"
     )]
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "__fcntl_time64")]
     pub fn fcntl(fd: c_int, cmd: c_int, ...) -> c_int;
 
     #[cfg_attr(
@@ -885,6 +922,7 @@ extern "C" {
         all(target_os = "freebsd", any(freebsd11, freebsd10)),
         link_name = "readdir@FBSD_1.0"
     )]
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "readdir64")]
     pub fn readdir(dirp: *mut crate::DIR) -> *mut crate::dirent;
     #[cfg_attr(
         all(target_os = "macos", target_arch = "x86"),
@@ -923,6 +961,7 @@ extern "C" {
         all(target_os = "freebsd", any(freebsd11, freebsd10)),
         link_name = "fstatat@FBSD_1.1"
     )]
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "fstatat64")]
     pub fn fstatat(dirfd: c_int, pathname: *const c_char, buf: *mut stat, flags: c_int) -> c_int;
     pub fn linkat(
         olddirfd: c_int,
@@ -997,6 +1036,7 @@ extern "C" {
     pub fn isatty(fd: c_int) -> c_int;
     #[cfg_attr(target_os = "solaris", link_name = "__link_xpg4")]
     pub fn link(src: *const c_char, dst: *const c_char) -> c_int;
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "lseek64")]
     pub fn lseek(fd: c_int, offset: off_t, whence: c_int) -> off_t;
     pub fn pathconf(path: *const c_char, name: c_int) -> c_long;
     pub fn pipe(fds: *mut c_int) -> c_int;
@@ -1059,11 +1099,13 @@ extern "C" {
         all(target_os = "macos", target_arch = "x86"),
         link_name = "pread$UNIX2003"
     )]
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "pread64")]
     pub fn pread(fd: c_int, buf: *mut c_void, count: size_t, offset: off_t) -> ssize_t;
     #[cfg_attr(
         all(target_os = "macos", target_arch = "x86"),
         link_name = "pwrite$UNIX2003"
     )]
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "pwrite64")]
     pub fn pwrite(fd: c_int, buf: *const c_void, count: size_t, offset: off_t) -> ssize_t;
     pub fn umask(mask: mode_t) -> mode_t;
 
@@ -1090,6 +1132,7 @@ extern "C" {
         all(target_os = "macos", target_arch = "x86"),
         link_name = "mmap$UNIX2003"
     )]
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "mmap64")]
     pub fn mmap(
         addr: *mut c_void,
         len: size_t,
@@ -1116,6 +1159,7 @@ extern "C" {
         all(target_os = "freebsd", any(freebsd11, freebsd10)),
         link_name = "lstat@FBSD_1.0"
     )]
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "lstat64")]
     pub fn lstat(path: *const c_char, buf: *mut stat) -> c_int;
 
     #[cfg_attr(
@@ -1138,7 +1182,9 @@ extern "C" {
 
     pub fn symlink(path1: *const c_char, path2: *const c_char) -> c_int;
 
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "truncate64")]
     pub fn truncate(path: *const c_char, length: off_t) -> c_int;
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "ftruncate64")]
     pub fn ftruncate(fd: c_int, length: off_t) -> c_int;
 
     pub fn signal(signum: c_int, handler: sighandler_t) -> sighandler_t;
@@ -1443,7 +1489,9 @@ extern "C" {
     pub fn sem_wait(sem: *mut sem_t) -> c_int;
     pub fn sem_trywait(sem: *mut sem_t) -> c_int;
     pub fn sem_post(sem: *mut sem_t) -> c_int;
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "statvfs64")]
     pub fn statvfs(path: *const c_char, buf: *mut statvfs) -> c_int;
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "fstatvfs64")]
     pub fn fstatvfs(fd: c_int, buf: *mut statvfs) -> c_int;
 
     #[cfg_attr(target_os = "netbsd", link_name = "__sigemptyset14")]
@@ -1467,7 +1515,9 @@ extern "C" {
 
     pub fn mkfifo(path: *const c_char, mode: mode_t) -> c_int;
 
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "fseeko64")]
     pub fn fseeko(stream: *mut crate::FILE, offset: off_t, whence: c_int) -> c_int;
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "ftello64")]
     pub fn ftello(stream: *mut crate::FILE) -> off_t;
     #[cfg_attr(
         all(target_os = "macos", target_arch = "x86"),
@@ -1484,6 +1534,7 @@ extern "C" {
     pub fn tcflush(fd: c_int, action: c_int) -> c_int;
     pub fn tcgetsid(fd: c_int) -> crate::pid_t;
     pub fn tcsendbreak(fd: c_int, duration: c_int) -> c_int;
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "mkstemp64")]
     pub fn mkstemp(template: *mut c_char) -> c_int;
     pub fn mkdtemp(template: *mut c_char) -> *mut c_char;
 
@@ -1508,6 +1559,7 @@ extern "C" {
     pub fn strcasestr(cs: *const c_char, ct: *const c_char) -> *mut c_char;
     pub fn getline(lineptr: *mut *mut c_char, n: *mut size_t, stream: *mut FILE) -> ssize_t;
 
+    #[cfg_attr(gnu_file_offset_bits64, link_name = "lockf64")]
     pub fn lockf(fd: c_int, cmd: c_int, len: off_t) -> c_int;
 
 }
@@ -1608,6 +1660,7 @@ cfg_if! {
             pub fn pause() -> c_int;
 
             pub fn mkdirat(dirfd: c_int, pathname: *const c_char, mode: crate::mode_t) -> c_int;
+            #[cfg_attr(gnu_file_offset_bits64, link_name = "openat64")]
             pub fn openat(dirfd: c_int, pathname: *const c_char, flags: c_int, ...) -> c_int;
 
             #[cfg_attr(
@@ -1636,6 +1689,7 @@ cfg_if! {
             /// https://illumos.org/man/3lib/libc
             /// https://docs.oracle.com/cd/E36784_01/html/E36873/libc-3lib.html
             /// https://www.unix.com/man-page/opensolaris/3LIB/libc/
+            #[cfg_attr(gnu_file_offset_bits64, link_name = "readdir64_r")]
             pub fn readdir_r(
                 dirp: *mut crate::DIR,
                 entry: *mut crate::dirent,

@@ -10,12 +10,15 @@
 #include "ui/events/ozone/evdev/touch_filter/palm_model/onedevice_train_palm_detection_filter_inference_beta.h"
 
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <cmath>
 #include <cstdint>
 #include <cstring>
 #include <limits>
 #include <tuple>
+
+#include "base/containers/span.h"
 
 #ifndef USE_EIGEN
 #define USE_EIGEN 0
@@ -911,16 +914,16 @@ void StridedSlice(const int32_t input_rank,
   assert(input_rank < MAX_RANK);
 
   // Compute the address strides for each dimension.
-  int32_t dim_addr_strides[MAX_RANK] = {};
+  std::array<int32_t, MAX_RANK> dim_addr_strides = {};
   dim_addr_strides[input_rank - 1] = 1;
   for (int32_t dim = input_rank - 2; dim >= 0; --dim) {
     dim_addr_strides[dim] = dim_addr_strides[dim + 1] * input_shape[dim + 1];
   }
 
   // Resolve the masks and get explicit ranges for each dimension.
-  int32_t dim_begin[MAX_RANK];
-  int32_t dim_end[MAX_RANK];
-  bool dim_is_full_range[MAX_RANK];
+  std::array<int32_t, MAX_RANK> dim_begin;
+  std::array<int32_t, MAX_RANK> dim_end;
+  std::array<bool, MAX_RANK> dim_is_full_range;
   for (int32_t dim = 0; dim < input_rank; ++dim) {
     const int32_t stride = strides[dim];
     dim_begin[dim] =
@@ -953,7 +956,7 @@ void StridedSlice(const int32_t input_rank,
   }
 
   // Initialize the read pos for each dimension according to the begin offsets.
-  int32_t read_pos[MAX_RANK] = {};
+  std::array<int32_t, MAX_RANK> read_pos = {};
   for (int32_t dim = 0; dim < input_rank; ++dim) {
     read_pos[dim] = dim_begin[dim];
   }
@@ -990,7 +993,7 @@ void TransposeRank3(const int32_t* __restrict input_shape,
                     const int32_t* __restrict perm,
                     T* __restrict output_values) {
   BENCHMARK_TIMER("TransposeRank3");
-  const int32_t in_strides[3] = {
+  const std::array<int32_t, 3> in_strides = {
       input_shape[1] * input_shape[2],
       input_shape[2],
       1,
@@ -1019,7 +1022,7 @@ void TransposeRank4(const int32_t* __restrict input_shape,
                     const int32_t* __restrict perm,
                     T* __restrict output_values) {
   BENCHMARK_TIMER("TransposeRank4");
-  const int32_t in_strides[4] = {
+  const std::array<int32_t, 4> in_strides = {
       input_shape[1] * input_shape[2] * input_shape[3],
       input_shape[2] * input_shape[3],
       input_shape[3],
@@ -1239,7 +1242,7 @@ void OpInnerBroadcast(int32_t left_rank,
 // E.g. if shape is (2, 3) and indices is [1, 2], indices is incremented to [2,
 // 0].
 inline bool IncrementIndices(int32_t rank,
-                             const int32_t* shape,
+                             base::span<const int32_t> shape,
                              int32_t* indices) {
   int32_t i = rank - 1;
   while (i >= 0 && indices[i] == shape[i] - 1) {
@@ -1258,7 +1261,7 @@ inline bool IncrementIndices(int32_t rank,
 // Returns the offset in a values array given its shape and indices.
 // E.g. if the shape is (2, 3) and indices are [1, 2] the offset is 1*3 + 2.
 inline int32_t Offset(int32_t rank,
-                      const int32_t* shape,
+                      base::span<const int32_t> shape,
                       const int32_t* indices) {
   int32_t offset = 0;
   int32_t mul = 1;
@@ -1304,7 +1307,7 @@ void OpGenericBroadcast(int32_t left_rank,
   const int32_t kMaxRank = 8;
   assert(output_rank <= kMaxRank);
 
-  int32_t output_shape[kMaxRank];
+  std::array<int32_t, kMaxRank> output_shape;
   for (int32_t i = 0; i < output_rank; ++i) {
     int32_t left_i = i - output_rank + left_rank;
     int32_t right_i = i - output_rank + right_rank;

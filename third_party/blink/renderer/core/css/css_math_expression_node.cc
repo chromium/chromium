@@ -363,12 +363,13 @@ ProgressArgsSimplificationStatus CanEagerlySimplifyProgressArgs(
                   })) {
     return ProgressArgsSimplificationStatus::kAllArgsResolveToCanonical;
   }
-  if (std::all_of(operands.begin(), operands.end(),
-                  [&](const CSSMathExpressionNode* node) {
-                    return node->IsNumericLiteral() &&
-                           node->ResolvedUnitType() ==
-                               operands.front()->ResolvedUnitType();
-                  })) {
+  if (std::all_of(
+          operands.begin(), operands.end(),
+          [&](const CSSMathExpressionNode* node) {
+            return node->IsNumericLiteral() &&
+                   node->ResolvedUnitTypeForSimplification() ==
+                       operands.front()->ResolvedUnitTypeForSimplification();
+          })) {
     return ProgressArgsSimplificationStatus::kAllArgsHaveSameType;
   }
   return ProgressArgsSimplificationStatus::kCanNotSimplify;
@@ -433,7 +434,8 @@ CSSMathExpressionNodeWithOperator MaybeReplaceNodeWithCombined(
   if (!node->IsNumericLiteral()) {
     return {op, node};
   }
-  CSSPrimitiveValue::UnitType unit_type = node->ResolvedUnitType();
+  CSSPrimitiveValue::UnitType unit_type =
+      node->ResolvedUnitTypeForSimplification();
   auto it = units_map.find(unit_type);
   if (it != units_map.end()) {
     double value = it->value;
@@ -459,7 +461,8 @@ void CombineNumericChildrenFromNode(const CSSMathExpressionNode* root,
                                     UnitsHashMap& numeric_children,
                                     UnitsVector& all_children,
                                     bool is_in_nesting = false) {
-  const CSSPrimitiveValue::UnitType unit_type = root->ResolvedUnitType();
+  const CSSPrimitiveValue::UnitType unit_type =
+      root->ResolvedUnitTypeForSimplification();
   // Go deeper inside the operation node if possible.
   if (auto* operation = DynamicTo<CSSMathExpressionOperation>(root);
       operation &&
@@ -523,7 +526,8 @@ void CollectNumericChildrenFromNode(const CSSMathExpressionNode* root,
                                    is_in_nesting);
     return;
   }
-  CSSPrimitiveValue::UnitType unit_type = root->ResolvedUnitType();
+  CSSPrimitiveValue::UnitType unit_type =
+      root->ResolvedUnitTypeForSimplification();
   // If we have numeric with double value - collect in numeric_children.
   if (IsNumericNodeWithDoubleValue(root)) {
     if (auto it = numeric_children.find(unit_type);
@@ -628,7 +632,9 @@ CSSMathExpressionNode* MaybeSimplifySumOrProductNode(
   for (const auto& child : all_children) {
     auto [op, node] = MaybeReplaceNodeWithCombined(
         child.node, child.op, numeric_children, is_multiply);
-    CSSPrimitiveValue::UnitType unit_type = node->ResolvedUnitType();
+    CSSPrimitiveValue::UnitType unit_type =
+        node->ResolvedUnitTypeForSimplification();
+
     // Skip already used unit types, as they have been already combined.
     if (IsNumericNodeWithDoubleValue(node)) {
       if (used_units.Contains(unit_type)) {
@@ -636,15 +642,34 @@ CSSMathExpressionNode* MaybeSimplifySumOrProductNode(
       }
       used_units.insert(unit_type);
     }
+
+    // Skip a constant factor of unity, unless it is the only factor.
+    if (is_multiply && unit_type == CSSPrimitiveValue::UnitType::kNumber &&
+        node->IsNumericLiteral() && node->DoubleValue() == 1.0 &&
+        (numeric_children.size() + all_children.size()) > 1) {
+      continue;
+    }
+
     if (!final_node) {
       // First child.
       final_node = MaybeNegateFirstNode(op, node)->Copy();
       continue;
     }
-    final_node = MakeGarbageCollected<CSSMathExpressionOperation>(
-        final_node, node, op, root->Category());
+    final_node =
+        CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+            final_node, node, op);
   }
   return final_node;
+}
+
+const CSSMathExpressionNode* MaybeSimplifyIfSumOrProductNode(
+    const CSSMathExpressionNode* node) {
+  if (const auto* op = DynamicTo<CSSMathExpressionOperation>(node)) {
+    if (op->IsAddOrSubtract() || op->IsMultiplyOrDivide()) {
+      return MaybeSimplifySumOrProductNode(op);
+    }
+  }
+  return node;
 }
 
 CSSMathExpressionNode* MaybeDistributeArithmeticOperation(
@@ -1746,9 +1771,11 @@ CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
   // Simplify addition and subtraction between same types.
   if (op == CSSMathOperator::kAdd || op == CSSMathOperator::kSubtract) {
     if (left_category == right_side->Category()) {
-      CSSPrimitiveValue::UnitType left_type = left_side->ResolvedUnitType();
+      CSSPrimitiveValue::UnitType left_type =
+          left_side->ResolvedUnitTypeForSimplification();
       if (HasDoubleValue(left_type)) {
-        CSSPrimitiveValue::UnitType right_type = right_side->ResolvedUnitType();
+        CSSPrimitiveValue::UnitType right_type =
+            right_side->ResolvedUnitTypeForSimplification();
         if (left_type == right_type) {
           return CSSMathExpressionNumericLiteral::Create(
               EvaluateOperator(
@@ -1795,7 +1822,8 @@ CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
 
     double number = number_side->DoubleValue();
 
-    CSSPrimitiveValue::UnitType other_type = other_side->ResolvedUnitType();
+    CSSPrimitiveValue::UnitType other_type =
+        other_side->ResolvedUnitTypeForSimplification();
     if (HasDoubleValue(other_type)) {
       return CSSMathExpressionNumericLiteral::Create(
           EvaluateOperator({other_side->DoubleValue(), number}, op),
@@ -1838,9 +1866,11 @@ std::tuple<const CSSMathExpressionNode*, wtf_size_t> SubstituteForSizeKeyword(
       return std::make_tuple(source, 0);
     }
 
-    return std::make_tuple(MakeGarbageCollected<CSSMathExpressionOperation>(
-                               operation->Category(), std::move(dest_operands),
-                               operation->OperatorType()),
+    CSSMathExpressionOperation* new_op =
+        MakeGarbageCollected<CSSMathExpressionOperation>(
+            operation->Category(), std::move(dest_operands),
+            operation->OperatorType());
+    return std::make_tuple(MaybeSimplifyIfSumOrProductNode(new_op),
                            total_substitution_count);
   }
 
@@ -1981,7 +2011,7 @@ const CSSMathExpressionOperation* MakeBasisCanonical(
 }  // namespace
 
 // static
-CSSMathExpressionNode*
+const CSSMathExpressionNode*
 CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
     const CSSMathExpressionNode* left_side,
     const CSSMathExpressionNode* right_side,
@@ -2059,16 +2089,18 @@ CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
       const CSSMathExpressionNode* right_calculation =
           right_calc_size->GetOperands()[1];
       return CreateCalcSizeOperation(
-          final_basis, CreateArithmeticOperationSimplified(
-                           left_calculation, right_calculation, op));
+          final_basis,
+          MaybeSimplifyIfSumOrProductNode(CreateArithmeticOperationSimplified(
+              left_calculation, right_calculation, op)));
     } else {
       const CSSMathExpressionNode* left_basis =
           left_calc_size->GetOperands()[0];
       const CSSMathExpressionNode* left_calculation =
           left_calc_size->GetOperands()[1];
       return CreateCalcSizeOperation(
-          left_basis, CreateArithmeticOperationSimplified(left_calculation,
-                                                          right_side, op));
+          left_basis,
+          MaybeSimplifyIfSumOrProductNode(CreateArithmeticOperationSimplified(
+              left_calculation, right_side, op)));
     }
   } else if (right_calc_size) {
     const CSSMathExpressionNode* right_basis =
@@ -2077,10 +2109,12 @@ CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
         right_calc_size->GetOperands()[1];
     return CreateCalcSizeOperation(
         right_basis,
-        CreateArithmeticOperationSimplified(left_side, right_calculation, op));
+        MaybeSimplifyIfSumOrProductNode(CreateArithmeticOperationSimplified(
+            left_side, right_calculation, op)));
   }
 
-  return CreateArithmeticOperationSimplified(left_side, right_side, op);
+  return MaybeSimplifyIfSumOrProductNode(
+      CreateArithmeticOperationSimplified(left_side, right_side, op));
 }
 
 CSSMathExpressionOperation::CSSMathExpressionOperation(
@@ -2531,11 +2565,16 @@ bool CSSMathExpressionOperation::AccumulateLengthArray(
       DCHECK_NE((operands_[0]->Category() == kCalcNumber),
                 (operands_[1]->Category() == kCalcNumber));
       if (operands_[0]->Category() == kCalcNumber) {
-        return operands_[1]->AccumulateLengthArray(
-            length_array, multiplier * operands_[0]->DoubleValue());
-      } else {
+        if (IsNumericNodeWithDoubleValue(operands_[0])) {
+          return operands_[1]->AccumulateLengthArray(
+              length_array, multiplier * operands_[0]->DoubleValue());
+        }
+        return false;
+      } else if (IsNumericNodeWithDoubleValue(operands_[1])) {
         return operands_[0]->AccumulateLengthArray(
             length_array, multiplier * operands_[1]->DoubleValue());
+      } else {
+        return false;
       }
     case CSSMathOperator::kInvert:
       // We don't support this yet.
@@ -4730,19 +4769,16 @@ double CSSMathExpressionSiblingFunction::ComputeDouble(
     return nth_index_cache->NthChildIndex(const_cast<Element&>(*element),
                                           /*filter=*/nullptr,
                                           /*selector_checker=*/nullptr,
-                                          /*context=*/nullptr,
-                                          NthIndexData::kFlatTree);
+                                          /*context=*/nullptr);
   } else {
     return nth_index_cache->NthChildIndex(const_cast<Element&>(*element),
                                           /*filter=*/nullptr,
                                           /*selector_checker=*/nullptr,
-                                          /*context=*/nullptr,
-                                          NthIndexData::kFlatTree) +
+                                          /*context=*/nullptr) +
            nth_index_cache->NthLastChildIndex(const_cast<Element&>(*element),
                                               /*filter=*/nullptr,
                                               /*selector_checker=*/nullptr,
-                                              /*context=*/nullptr,
-                                              NthIndexData::kFlatTree) -
+                                              /*context=*/nullptr) -
            1;
   }
 }

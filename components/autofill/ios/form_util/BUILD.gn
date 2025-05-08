@@ -110,7 +110,6 @@ optimize_ts("child_frame_registration_ts") {
   deps = [
     ":autofill_form_features_ts",
     ":fill_js_namespace",
-    "//ios/web/public/js_messaging:frame_id",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
   ]
@@ -151,7 +150,6 @@ optimize_ts("fill_js") {
   deps = [
     ":fill_js_dependencies",
     ":fill_js_namespace",
-    "//ios/web/public/js_messaging:frame_id",
     "//ios/web/public/js_messaging:gcrweb",
   ]
 }
@@ -338,6 +336,7 @@ source_set("unit_tests") {
     "//components/autofill/ios/common",
     "//ios/web/public/js_messaging",
     "//ios/web/public/js_messaging:content_world_header",
+    "//ios/web/public/js_messaging:web_view_js_utils",
     "//ios/web/public/test:javascript_test",
     "//ios/web/public/test:test_fixture",
     "//ios/web/public/test:util",

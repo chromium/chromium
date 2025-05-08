@@ -26,9 +26,8 @@ namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabPageElementId);
 
 using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
-const DeepQuery kModulesV2Container = {"ntp-app", "ntp-modules-v2",
-                                       "#container"};
-const DeepQuery kModulesV2Wrapper = {"ntp-app", "ntp-modules-v2", "#container",
+const DeepQuery kModulesV2Container = {"ntp-app", "ntp-modules", "#container"};
+const DeepQuery kModulesV2Wrapper = {"ntp-app", "ntp-modules", "#container",
                                      "ntp-module-wrapper"};
 const DeepQuery kMicrosoftAuthIframe = {"ntp-app", "#microsoftAuth"};
 
@@ -53,18 +52,18 @@ ModuleDetails kMostRelevantTabResumptionModuleDetails = {
     {{ntp_features::kNtpMostRelevantTabResumptionModule,
       {{ntp_features::kNtpMostRelevantTabResumptionModuleDataParam,
         "Fake Data"}}}},
-    {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+    {"ntp-app", "ntp-modules", "ntp-module-wrapper",
      "ntp-most-relevant-tab-resumption"},
-    {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+    {"ntp-app", "ntp-modules", "ntp-module-wrapper",
      "ntp-most-relevant-tab-resumption", "ntp-module-header-v2", "#menuButton"},
-    {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+    {"ntp-app", "ntp-modules", "ntp-module-wrapper",
      "ntp-most-relevant-tab-resumption", "ntp-module-header-v2",
      "cr-action-menu", "dialog"},
-    {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+    {"ntp-app", "ntp-modules", "ntp-module-wrapper",
      "ntp-most-relevant-tab-resumption", "ntp-module-header-v2", "#dismiss"},
-    {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+    {"ntp-app", "ntp-modules", "ntp-module-wrapper",
      "ntp-most-relevant-tab-resumption", "ntp-module-header-v2", "#disable"},
-    {{{"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+    {{{"ntp-app", "ntp-modules", "ntp-module-wrapper",
        "ntp-most-relevant-tab-resumption", "#urlVisits", "a"},
       "https://www.google.com"}},
 };
@@ -73,29 +72,29 @@ ModuleDetails kGoogleCalendarModuleDetails = {
     ntp_features::kNtpCalendarModule,
     {{ntp_features::kNtpCalendarModule,
       {{ntp_features::kNtpCalendarModuleDataParam, "fake"}}}},
-    {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+    {"ntp-app", "ntp-modules", "ntp-module-wrapper",
      "ntp-google-calendar-module"},
-    {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+    {"ntp-app", "ntp-modules", "ntp-module-wrapper",
      "ntp-google-calendar-module", "ntp-module-header-v2", "#menuButton"},
-    {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+    {"ntp-app", "ntp-modules", "ntp-module-wrapper",
      "ntp-google-calendar-module", "ntp-module-header-v2", "cr-action-menu",
      "dialog"},
-    {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+    {"ntp-app", "ntp-modules", "ntp-module-wrapper",
      "ntp-google-calendar-module", "ntp-module-header-v2", "#dismiss"},
-    {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+    {"ntp-app", "ntp-modules", "ntp-module-wrapper",
      "ntp-google-calendar-module", "ntp-module-header-v2", "#disable"},
-    {{{"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+    {{{"ntp-app", "ntp-modules", "ntp-module-wrapper",
        "ntp-google-calendar-module", "ntp-calendar", "ntp-calendar-event",
        "#header"},
       "https://foo.com/0"},
-     {{"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+     {{"ntp-app", "ntp-modules", "ntp-module-wrapper",
        "ntp-google-calendar-module", "ntp-calendar", "#seeMore", "a"},
       "https://calendar.google.com"},
-     {{"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+     {{"ntp-app", "ntp-modules", "ntp-module-wrapper",
        "ntp-google-calendar-module", "ntp-calendar", "ntp-calendar-event",
        "cr-chip"},
       "https://foo.com/attachment0"},
-     {{"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+     {{"ntp-app", "ntp-modules", "ntp-module-wrapper",
        "ntp-google-calendar-module", "ntp-calendar", "ntp-calendar-event",
        "cr-button"},
       "https://foo.com/conference0"}},
@@ -237,8 +236,11 @@ INSTANTIATE_TEST_SUITE_P(All,
                          NewTabPageModulesInteractiveUiTest,
                          ::testing::ValuesIn(kAllModules));
 
+// TODO(crbug.com/416206296): Re-enable once we have a workaround for querying
+// the `module_wrapper.html` slotted element.
+// @see chrome/browser/resources/new_tab_page/modules/module_wrapper.html
 IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveUiTest,
-                       ClickingHideButtonDismissesModule) {
+                       DISABLED_ClickingHideButtonDismissesModule) {
   RunTestSequence(
       // 1. Wait for new tab page to load.
       LoadNewTabPage(),
@@ -269,8 +271,11 @@ IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveUiTest,
       WaitForElementChildElementCount(kModulesV2Container, 0));
 }
 
+// TODO(crbug.com/416206296): Re-enable once we have a workaround for querying
+// the `module_wrapper.html` slotted element.
+// @see chrome/browser/resources/new_tab_page/modules/module_wrapper.html
 IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveUiTest,
-                       ClickingDisableButtonDisablesModule) {
+                       DISABLED_ClickingDisableButtonDisablesModule) {
   const auto& module_details = ModuleDetails();
   RunTestSequence(
       // 1. Wait for new tab page to load.
@@ -334,8 +339,11 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::ValuesIn(GetAllModuleLinks(kAllModules)));
 #endif
 
+// TODO(crbug.com/416206296): Re-enable once we have a workaround for querying
+// the `module_wrapper.html` slotted element.
+// @see chrome/browser/resources/new_tab_page/modules/module_wrapper.html
 IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveLinkUiTest,
-                       ClickingEntryNavigatesToCorrectPage) {
+                       DISABLED_ClickingEntryNavigatesToCorrectPage) {
   RunTestSequence(
       // 1. Wait for new tab page to load.
       LoadNewTabPage(),

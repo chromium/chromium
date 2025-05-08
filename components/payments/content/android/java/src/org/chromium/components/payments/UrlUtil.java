@@ -8,6 +8,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
 
@@ -21,7 +22,7 @@ public class UrlUtil {
      * @param url The payment method name.
      * @return TRUE if given url is valid and not a relative URI.
      */
-    public static boolean isURLValid(GURL url) {
+    public static boolean isURLValid(@Nullable GURL url) {
         return url != null
                 && url.isValid()
                 && !url.getScheme().isEmpty()

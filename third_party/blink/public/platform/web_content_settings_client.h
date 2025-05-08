@@ -23,7 +23,6 @@ class WebContentSettingsClient {
   virtual std::unique_ptr<WebContentSettingsClient> Clone() { return nullptr; }
 
   enum class StorageType {
-    kDatabase,
     kCacheStorage,
     kIndexedDB,
     kFileSystem,

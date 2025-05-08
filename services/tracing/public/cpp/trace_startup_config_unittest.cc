@@ -7,18 +7,38 @@
 #include <algorithm>
 
 #include "base/at_exit.h"
+#include "base/base64.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
+#include "base/path_service.h"
+#include "base/test/test_proto_loader.h"
+#include "base/threading/thread_restrictions.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
 #include "third_party/perfetto/protos/perfetto/config/data_source_config.gen.h"
+#include "third_party/perfetto/protos/perfetto/config/trace_config.gen.h"
 
 namespace tracing {
 
 namespace {
+
+perfetto::protos::gen::TraceConfig ParseTracingConfigFromText(
+    const std::string& proto_text) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::TestProtoLoader config_loader(
+      base::PathService::CheckedGet(base::DIR_GEN_TEST_DATA_ROOT)
+          .Append(FILE_PATH_LITERAL(
+              "third_party/perfetto/protos/perfetto/config/config.descriptor")),
+      "perfetto.protos.TraceConfig");
+  std::string serialized_message;
+  config_loader.ParseFromText(proto_text, serialized_message);
+  perfetto::protos::gen::TraceConfig destination;
+  destination.ParseFromString(serialized_message);
+  return destination;
+}
 
 const char kTraceConfig[] =
     "{"
@@ -31,6 +51,20 @@ const char kTraceConfig[] =
     "\"disabled-by-default-cc\"],"
     "\"record_mode\":\"record-continuously\""
     "}";
+
+constexpr const char kPerfettoConfig[] = R"pb(
+  duration_ms: 10000
+  buffers: { size_kb: 4 fill_policy: RING_BUFFER }
+  data_sources: {
+    config: {
+      name: "track_event"
+      track_event_config: {
+        disabled_categories: [ "excluded" ]
+        enabled_categories: [ "included" ]
+      }
+    }
+  }
+)pb";
 
 std::string GetTraceConfigFileContent(std::string trace_config,
                                       std::string startup_duration,
@@ -105,7 +139,7 @@ TEST_F(TraceStartupConfigTest, TraceStartupConfigEnabledWithInvalidPath) {
   EXPECT_FALSE(startup_config_->IsEnabled());
 }
 
-TEST_F(TraceStartupConfigTest, ValidContent) {
+TEST_F(TraceStartupConfigTest, ValidJsonContent) {
   std::string content =
       GetTraceConfigFileContent(kTraceConfig, "10", "trace_result_file.log");
 
@@ -130,6 +164,47 @@ TEST_F(TraceStartupConfigTest, ValidContent) {
   EXPECT_EQ(10000U, config.duration_ms());
   EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("trace_result_file.log")),
             startup_config_->GetResultFile());
+}
+
+TEST_F(TraceStartupConfigTest, ValidProtoContent) {
+  std::string config_string =
+      ParseTracingConfigFromText(kPerfettoConfig).SerializeAsString();
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath config_file =
+      temp_dir.GetPath().Append(FILE_PATH_LITERAL("config.pb"));
+  ASSERT_TRUE(base::WriteFile(config_file, config_string));
+  base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
+      switches::kTracePerfettoConfigFile, config_file);
+
+  Initialize();
+  ASSERT_TRUE(startup_config_->IsEnabled());
+  auto config = startup_config_->GetPerfettoConfig();
+  ASSERT_EQ(1, config.data_sources_size());
+  EXPECT_EQ("track_event", config.data_sources()[0].config().name());
+  EXPECT_EQ(10000U, config.duration_ms());
+}
+
+TEST_F(TraceStartupConfigTest, ValidBase64Content) {
+  std::string config_string =
+      ParseTracingConfigFromText(kPerfettoConfig).SerializeAsString();
+  std::string serialized_config = base::Base64Encode(config_string);
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath config_file =
+      temp_dir.GetPath().Append(FILE_PATH_LITERAL("config.txt"));
+  ASSERT_TRUE(base::WriteFile(config_file, serialized_config));
+  base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
+      switches::kTracePerfettoConfigFile, config_file);
+
+  Initialize();
+  ASSERT_TRUE(startup_config_->IsEnabled());
+  auto config = startup_config_->GetPerfettoConfig();
+  ASSERT_EQ(1, config.data_sources_size());
+  EXPECT_EQ("track_event", config.data_sources()[0].config().name());
+  EXPECT_EQ(10000U, config.duration_ms());
 }
 
 TEST_F(TraceStartupConfigTest, ValidContentWithOnlyTraceConfig) {
@@ -228,7 +303,7 @@ TEST_F(TraceStartupConfigTest, ContentWithoutTraceConfig) {
   EXPECT_FALSE(startup_config_->IsEnabled());
 }
 
-TEST_F(TraceStartupConfigTest, InvalidContent) {
+TEST_F(TraceStartupConfigTest, InvalidJsonContent) {
   std::string content = "invalid trace config file content";
 
   base::FilePath trace_config_file;
@@ -239,6 +314,22 @@ TEST_F(TraceStartupConfigTest, InvalidContent) {
   ASSERT_TRUE(base::WriteFile(trace_config_file, content));
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
       switches::kTraceConfigFile, trace_config_file);
+
+  Initialize();
+  EXPECT_FALSE(startup_config_->IsEnabled());
+}
+
+TEST_F(TraceStartupConfigTest, InvalidProtoContent) {
+  std::string content = "invalid trace config file content";
+
+  base::FilePath trace_config_file;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  ASSERT_TRUE(
+      base::CreateTemporaryFileInDir(temp_dir.GetPath(), &trace_config_file));
+  ASSERT_TRUE(base::WriteFile(trace_config_file, content));
+  base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
+      switches::kTracePerfettoConfigFile, trace_config_file);
 
   Initialize();
   EXPECT_FALSE(startup_config_->IsEnabled());

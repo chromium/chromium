@@ -75,7 +75,7 @@ void LensRegionSearchInstructionsView::Init() {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_close_on_deactivate(false);
   set_corner_radius(kCornerRadius);
-  set_background_color(kColorFeatureLensPromoBubbleBackground);
+  SetBackgroundColor(kColorFeatureLensPromoBubbleBackground);
 
   // Add the leading drag selection icon.
   auto selection_icon_view =

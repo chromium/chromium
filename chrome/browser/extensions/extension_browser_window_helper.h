@@ -17,7 +17,7 @@ namespace extensions {
 // A helper object for extensions-related management for Browser* objects.
 class ExtensionBrowserWindowHelper : public ExtensionRegistryObserver {
  public:
-  // Note: |browser| must outlive this object.
+  // Note: `browser` must outlive this object.
   explicit ExtensionBrowserWindowHelper(Browser* browser);
 
   ExtensionBrowserWindowHelper(const ExtensionBrowserWindowHelper&) = delete;

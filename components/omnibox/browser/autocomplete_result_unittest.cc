@@ -286,9 +286,15 @@ ACMatches AutocompleteResultTest::PopulateAutocompleteMatches(
 void AutocompleteResultTest::AssertResultMatches(
     const AutocompleteResult& result,
     base::span<const TestData> expected) {
-  ASSERT_EQ(expected.size(), result.size());
-  for (size_t i = 0; i < expected.size(); ++i)
-    AssertMatch(*(result.begin() + i), expected[i], i);
+  std::vector<int> relevances = {};
+  std::ranges::transform(
+      expected, std::back_inserter(relevances),
+      [](const auto& test_data) { return test_data.relevance; });
+  std::vector<int> expected_relevances = {};
+  std::ranges::transform(
+      result, std::back_inserter(expected_relevances),
+      [&](const AutocompleteMatch& match) { return match.relevance; });
+  EXPECT_THAT(relevances, testing::ElementsAreArray(expected_relevances));
 }
 
 void AutocompleteResultTest::AssertMatch(AutocompleteMatch match,
@@ -2580,24 +2586,9 @@ TEST_F(AutocompleteResultTest, Desktop_MostVisitedSitesGrouping) {
   scoped_config.Get().max_url_suggestions = 4U;
   scoped_config.Get().max_search_suggestions = 4U;
 
-  const auto group1 = omnibox::GROUP_MOST_VISITED;
-  const auto group2 = omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST;
-  TestData data[] = {
-      {0, 1, 500, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
-      {1, 1, 490, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
-      {2, 1, 480, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
-      {3, 1, 470, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
-      {4, 1, 460, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
-      {5, 1, 450, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
-      {6, 1, 440, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
-      {7, 1, 430, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
-      {8, 1, 420, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
-      {9, 1, 420, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
-  };
-  ACMatches matches;
-  PopulateAutocompleteMatches(data, std::size(data), &matches);
-
   // Suggestion groups have the omnibox::SECTION_DEFAULT by default.
+  const auto group1 = omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST;
+  const auto group2 = omnibox::GROUP_MOST_VISITED;
   omnibox::GroupConfigMap suggestion_groups_map;
   suggestion_groups_map[group1];
   suggestion_groups_map[group2];
@@ -2613,23 +2604,38 @@ TEST_F(AutocompleteResultTest, Desktop_MostVisitedSitesGrouping) {
   {
     SCOPED_TRACE("Query from omnibox in srp");
 
+    TestData data[] = {
+        {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_HISTORY, group1},
+        {1, 1, 490, false, {}, AutocompleteMatchType::SEARCH_HISTORY, group1},
+        {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_HISTORY, group1},
+        {3, 1, 470, false, {}, AutocompleteMatchType::SEARCH_HISTORY, group1},
+        {4, 1, 460, false, {}, AutocompleteMatchType::SEARCH_HISTORY, group1},
+        {5, 1, 450, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+        {6, 1, 440, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+        {7, 1, 430, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+        {8, 1, 420, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+        {9, 1, 410, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+    };
+    ACMatches matches;
+    PopulateAutocompleteMatches(data, std::size(data), &matches);
+
     AutocompleteResult result;
     result.MergeSuggestionGroupsMap(suggestion_groups_map);
     result.AppendMatches(matches);
     result.SortAndCull(omnibox_srp_zps_input, &template_url_service(),
                        triggered_feature_service());
 
-    // There should be 8 total suggestions, 4 from the group2 and 4 from group1.
-    // Group 1 should follow group 2 since this is a search results page.
+    // There should be 8 total suggestions, 4 from the group 1 and 4 from group
+    // 2. Group 2 should follow group 1 since this is a search results page.
     const std::array<TestData, 8> expected_data{{
-        {5, 1, 450, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
-        {6, 1, 440, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
-        {7, 1, 430, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
-        {8, 1, 420, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
-        {0, 1, 500, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
-        {1, 1, 490, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
-        {2, 1, 480, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
-        {3, 1, 470, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
+        {5, 1, 500, false, {}, AutocompleteMatchType::SEARCH_HISTORY, group1},
+        {6, 1, 490, false, {}, AutocompleteMatchType::SEARCH_HISTORY, group1},
+        {7, 1, 480, false, {}, AutocompleteMatchType::SEARCH_HISTORY, group1},
+        {8, 1, 470, false, {}, AutocompleteMatchType::SEARCH_HISTORY, group1},
+        {0, 1, 450, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+        {1, 1, 440, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+        {2, 1, 430, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+        {3, 1, 420, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
     }};
     AssertResultMatches(result, expected_data);
   }
@@ -2647,19 +2653,35 @@ TEST_F(AutocompleteResultTest, Desktop_MostVisitedSitesGrouping) {
 
   {
     SCOPED_TRACE("Query from web page");
+
+    TestData data[] = {
+        {0, 1, 500, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+        {1, 1, 490, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+        {2, 1, 480, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+        {3, 1, 470, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+        {4, 1, 460, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+        {5, 1, 450, false, {}, AutocompleteMatchType::SEARCH_HISTORY, group1},
+        {6, 1, 440, false, {}, AutocompleteMatchType::SEARCH_HISTORY, group1},
+        {7, 1, 430, false, {}, AutocompleteMatchType::SEARCH_HISTORY, group1},
+        {8, 1, 420, false, {}, AutocompleteMatchType::SEARCH_HISTORY, group1},
+        {9, 1, 410, false, {}, AutocompleteMatchType::SEARCH_HISTORY, group1},
+    };
+    ACMatches matches;
+    PopulateAutocompleteMatches(data, std::size(data), &matches);
+
     AutocompleteResult result;
     result.MergeSuggestionGroupsMap(suggestion_groups_map);
     result.AppendMatches(matches);
     result.SortAndCull(web_zps_input, &template_url_service(),
                        triggered_feature_service());
 
-    // There should be 6 suggestions total, 2 from group1 (url) and 4 from
-    // group2 (search), since search suggestions backfill url suggestions.
+    // There should be 4 total suggestions, 2 from the group 1 and 2 from group
+    // 2. Group 1 should follow group 2 since this is a web page.
     const std::array<TestData, 4> expected_data{{
-        {0, 1, 500, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
-        {1, 1, 490, false, {}, AutocompleteMatchType::HISTORY_URL, group1},
-        {5, 1, 450, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
-        {6, 1, 440, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+        {0, 1, 500, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+        {1, 1, 490, false, {}, AutocompleteMatchType::HISTORY_URL, group2},
+        {5, 1, 450, false, {}, AutocompleteMatchType::SEARCH_HISTORY, group1},
+        {6, 1, 440, false, {}, AutocompleteMatchType::SEARCH_HISTORY, group1},
     }};
     AssertResultMatches(result, expected_data);
   }

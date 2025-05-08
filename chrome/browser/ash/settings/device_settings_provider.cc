@@ -30,7 +30,6 @@
 #include "chrome/browser/ash/policy/handlers/device_dlc_predownload_list_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/system_proxy_handler.h"
 #include "chrome/browser/ash/policy/off_hours/off_hours_proto_parser.h"
-#include "chrome/browser/ash/settings/device_settings_cache.h"
 #include "chrome/browser/ash/settings/hardware_data_usage_controller.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/ash/tpm/tpm_firmware_update.h"
@@ -38,8 +37,10 @@
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/device_settings_cache.h"
 #include "components/policy/core/common/chrome_schema.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -115,6 +116,7 @@ constexpr auto kKnownSettings = base::MakeFixedFlatSet<std::string_view>({
     kDeviceScheduledUpdateCheck,
     kDeviceSecondFactorAuthenticationMode,
     kDeviceUnaffiliatedCrostiniAllowed,
+    kDeviceUserInitiatedFirmwareUpdatesEnabled,
     kDeviceWebBasedAttestationAllowedUrls,
     kDeviceWiFiAllowed,
     kDisplayRotationDefault,
@@ -431,6 +433,25 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
         entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL,
                        entry.kiosk_app().update_url());
       }
+      if (ash::features::IsHeliumArcvmKioskEnabled()) {
+        if (entry.arcvm_kiosk_app().has_package_name()) {
+          entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyArcvmKioskPackage,
+                         entry.arcvm_kiosk_app().package_name());
+        }
+        if (entry.arcvm_kiosk_app().has_class_name()) {
+          entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyArcvmKioskClass,
+                         entry.arcvm_kiosk_app().class_name());
+        }
+        if (entry.arcvm_kiosk_app().has_action()) {
+          entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyArcvmKioskAction,
+                         entry.arcvm_kiosk_app().action());
+        }
+        if (entry.arcvm_kiosk_app().has_display_name()) {
+          entry_dict.Set(
+              kAccountsPrefDeviceLocalAccountsKeyArcvmKioskDisplayName,
+              entry.arcvm_kiosk_app().display_name());
+        }
+      }
       if (entry.web_kiosk_app().has_url()) {
         entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyWebKioskUrl,
                        entry.web_kiosk_app().url());
@@ -460,6 +481,21 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
         if (entry.isolated_kiosk_app().has_update_manifest_url()) {
           entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyIwaKioskUpdateUrl,
                          entry.isolated_kiosk_app().update_manifest_url());
+        }
+        if (entry.isolated_kiosk_app().has_update_channel()) {
+          entry_dict.Set(
+              kAccountsPrefDeviceLocalAccountsKeyIwaKioskUpdateChannel,
+              entry.isolated_kiosk_app().update_channel());
+        }
+        if (entry.isolated_kiosk_app().has_pinned_version()) {
+          entry_dict.Set(
+              kAccountsPrefDeviceLocalAccountsKeyIwaKioskPinnedVersion,
+              entry.isolated_kiosk_app().pinned_version());
+        }
+        if (entry.isolated_kiosk_app().has_allow_downgrades()) {
+          entry_dict.Set(
+              kAccountsPrefDeviceLocalAccountsKeyIwaKioskAllowDowngrades,
+              entry.isolated_kiosk_app().allow_downgrades());
         }
       }
     } else if (entry.has_deprecated_public_session_id()) {
@@ -1323,6 +1359,15 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     if (container.has_enabled()) {
       new_values_cache->SetValue(kDeviceHindiInscriptLayoutEnabled,
                                  base::Value(container.enabled()));
+    }
+  }
+
+  if (policy.has_deviceuserinitiatedfirmwareupdatesenabled()) {
+    const em::BooleanPolicyProto& container(
+        policy.deviceuserinitiatedfirmwareupdatesenabled());
+    if (container.has_value()) {
+      new_values_cache->SetValue(kDeviceUserInitiatedFirmwareUpdatesEnabled,
+                                 base::Value(container.value()));
     }
   }
 

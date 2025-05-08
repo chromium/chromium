@@ -7,8 +7,7 @@
  * the native code.
  */
 
-import {getFrameId, registerFrame} from '//ios/web/public/js_messaging/resources/frame_id.js';
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 /**
  * Registers this frame with the native code and forwards the message to any
@@ -22,7 +21,7 @@ import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
  *                         function with a pageshow event listener.
  */
 function getExistingFrames() {
-  registerFrame();
+  gCrWeb.registerFrame();
 
   const framecount = window.frames.length;
   for (let i = 0; i < framecount; i++) {
@@ -36,6 +35,5 @@ function getExistingFrames() {
 }
 
 gCrWebLegacy.message = {
-  getFrameId,
   getExistingFrames,
 };

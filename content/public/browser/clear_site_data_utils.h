@@ -25,10 +25,12 @@ enum class ClearSiteDataType {
   kStorage,
   kCache,
   kClientHints,
+  kPrefetchCache,
+  kPrerenderCache,
 };
 using ClearSiteDataTypeSet = base::EnumSet<ClearSiteDataType,
                                            ClearSiteDataType::kCookies,
-                                           ClearSiteDataType::kClientHints>;
+                                           ClearSiteDataType::kPrerenderCache>;
 
 // Removes browsing data associated with |origin|. Used when the Clear-Site-Data
 // header is sent.

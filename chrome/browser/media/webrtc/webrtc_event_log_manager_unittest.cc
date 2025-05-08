@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager.h"
 
@@ -658,6 +654,23 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
     webrtc_state_change_instructions_.pop();
   }
 
+  void SetWebRtcDataChannelLoggingState(const PeerConnectionKey& key,
+                                        bool data_channel_logging_enabled) {
+    data_channel_state_change_instructions_.emplace(
+        key, data_channel_logging_enabled);
+  }
+
+  void ExpectWebRtcDataChannelStateChangeInstruction(
+      const PeerConnectionKey& key,
+      bool enabled) {
+    ASSERT_FALSE(data_channel_state_change_instructions_.empty());
+    auto& instruction = data_channel_state_change_instructions_.front();
+    EXPECT_EQ(instruction.key.render_process_id, key.render_process_id);
+    EXPECT_EQ(instruction.key.lid, key.lid);
+    EXPECT_EQ(instruction.enabled, enabled);
+    data_channel_state_change_instructions_.pop();
+  }
+
   void SetPeerConnectionTrackerProxyForTesting(
       std::unique_ptr<WebRtcEventLogManager::PeerConnectionTrackerProxy>
           pc_tracker_proxy) {
@@ -931,6 +944,8 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
     bool enabled;
   };
   std::queue<WebRtcStateChangeInstruction> webrtc_state_change_instructions_;
+  std::queue<WebRtcStateChangeInstruction>
+      data_channel_state_change_instructions_;
 
   // Observers for local/remote logging being started/stopped. By having them
   // here, we achieve two goals:
@@ -1305,6 +1320,13 @@ class PeerConnectionTrackerProxyForTesting
   }
   void DisableWebRtcEventLogging(const PeerConnectionKey& key) override {
     test_->SetWebRtcEventLoggingState(key, false);
+  }
+
+  void EnableWebRtcDataChannelLogging(const PeerConnectionKey& key) override {
+    test_->SetWebRtcDataChannelLoggingState(key, true);
+  }
+  void DisableWebRtcDataChannelLogging(const PeerConnectionKey& key) override {
+    test_->SetWebRtcDataChannelLoggingState(key, false);
   }
 
  private:
@@ -1925,6 +1947,51 @@ TEST_F(WebRtcEventLogManagerTest, DataChannelLogOnlyWritesTheLogsAfterStarted) {
   ASSERT_TRUE(OnPeerConnectionRemoved(key));
 
   ExpectLocalFileContents(*file_path, log2);
+}
+
+TEST_F(WebRtcEventLogManagerTest,
+       OnDataChannelLogCalledAfterDataChannelLoggingEnabledDisabled) {
+  const auto key = GetPeerConnectionKey(rph_.get(), kLid);
+  SetPeerConnectionTrackerProxyForTesting(
+      std::make_unique<PeerConnectionTrackerProxyForTesting>(this));
+  ASSERT_TRUE(OnPeerConnectionAdded(key));
+
+  ASSERT_TRUE(EnableDataChannelLogging());
+  ExpectWebRtcDataChannelStateChangeInstruction(key, true);
+
+  ASSERT_TRUE(DisableDataChannelLogging());
+  ExpectWebRtcDataChannelStateChangeInstruction(key, false);
+}
+
+TEST_F(WebRtcEventLogManagerTest,
+       OnWebRtcDataChannelLogWriteReturnsFalseWhenLoggingDisabled) {
+  const auto key = GetPeerConnectionKey(rph_.get(), kLid);
+  ASSERT_TRUE(OnPeerConnectionAdded(key));
+  EXPECT_EQ(OnWebRtcDataChannelLogWrite(key, "log"), false);
+}
+
+TEST_F(WebRtcEventLogManagerTest,
+       OnWebRtcDataChannelLogWriteReturnsFalseForUnknownPeerConnection) {
+  const auto key = GetPeerConnectionKey(rph_.get(), kLid);
+  ASSERT_TRUE(EnableDataChannelLogging());
+  EXPECT_EQ(OnWebRtcDataChannelLogWrite(key, "log"), false);
+}
+
+TEST_F(WebRtcEventLogManagerTest,
+       OnWebRtcDataChannelLogWriteReturnsTrueWhenPcKnownAndLoggingOn) {
+  const auto key = GetPeerConnectionKey(rph_.get(), kLid);
+  ASSERT_TRUE(EnableDataChannelLogging());
+  ASSERT_TRUE(OnPeerConnectionAdded(key));
+  EXPECT_EQ(OnWebRtcDataChannelLogWrite(key, "log"), true);
+}
+
+TEST_F(WebRtcEventLogManagerTest,
+       OnWebRtcDataChannelLogWriteReturnsFalseWhenRphIsDestroyed) {
+  const auto key = GetPeerConnectionKey(rph_.get(), kLid);
+  ASSERT_TRUE(EnableDataChannelLogging());
+  ASSERT_TRUE(OnPeerConnectionAdded(key));
+  rph_.reset();
+  EXPECT_EQ(OnWebRtcDataChannelLogWrite(key, "log"), false);
 }
 
 TEST_F(WebRtcEventLogManagerTest, LocalLogMultipleActiveFiles) {
@@ -3706,7 +3773,7 @@ TEST_F(WebRtcEventLogManagerTest,
   rph_.reset();
   std::string error_message;
   EXPECT_FALSE(StartRemoteLogging(key, nullptr, &error_message));
-  EXPECT_EQ(error_message, kStartRemoteLoggingFailureDeadRenderProcessHost);
+  EXPECT_EQ(error_message, kBrowserContextNotFound);
 }
 
 TEST_F(WebRtcEventLogManagerTest,

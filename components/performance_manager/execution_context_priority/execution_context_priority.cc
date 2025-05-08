@@ -27,36 +27,9 @@ int ReasonCompare(const char* reason1, const char* reason2) {
 /////////////////////////////////////////////////////////////////////
 // PriorityAndReason
 
-int PriorityAndReason::Compare(const PriorityAndReason& other) const {
-  if (priority_ > other.priority_)
-    return 1;
-  if (priority_ < other.priority_)
-    return -1;
-  return ReasonCompare(reason_, other.reason_);
-}
-
-bool PriorityAndReason::operator==(const PriorityAndReason& other) const {
-  return Compare(other) == 0;
-}
-
-bool PriorityAndReason::operator!=(const PriorityAndReason& other) const {
-  return Compare(other) != 0;
-}
-
-bool PriorityAndReason::operator<=(const PriorityAndReason& other) const {
-  return Compare(other) <= 0;
-}
-
-bool PriorityAndReason::operator>=(const PriorityAndReason& other) const {
-  return Compare(other) >= 0;
-}
-
-bool PriorityAndReason::operator<(const PriorityAndReason& other) const {
-  return Compare(other) < 0;
-}
-
-bool PriorityAndReason::operator>(const PriorityAndReason& other) const {
-  return Compare(other) > 0;
+bool operator==(const PriorityAndReason& lhs, const PriorityAndReason& rhs) {
+  return lhs.priority_ == rhs.priority_ &&
+         ReasonCompare(lhs.reason_, rhs.reason_) == 0;
 }
 
 }  // namespace execution_context_priority

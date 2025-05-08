@@ -4,16 +4,19 @@
 
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
+#include "components/user_manager/user.h"
 #include "components/webapps/browser/launch_queue/launch_queue.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
@@ -23,66 +26,65 @@
 
 namespace ash {
 
-Browser* SystemWebAppDelegate::GetWindowForLaunch(Profile* profile,
-                                                  const GURL& url) const {
+BrowserDelegate* SystemWebAppDelegate::GetWindowForLaunch(
+    Profile* profile,
+    const GURL& url) const {
   DCHECK(!ShouldShowNewWindowMenuOption())
       << "App can't show 'new window' menu option and reuse windows at "
          "the same time.";
-  return FindSystemWebAppBrowser(profile, GetType(), Browser::TYPE_APP);
+  return FindSystemWebAppBrowser(profile, GetType(), BrowserType::kApp);
 }
 
 // TODO(crbug.com/40190893): Reduce code duplication between SWA launch code and
 // web app launch code, so SWAs can easily maintain feature parity with regular
 // web apps (e.g. launch_handler behaviours).
-Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
+BrowserDelegate* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
     Profile* profile,
     web_app::WebAppProvider* provider,
     const GURL& url,
     const apps::AppLaunchParams& params) const {
-  // System Web App windows can't be properly restored without storing the app
-  // type. Until that is implemented, skip them for session restore.
-  // TODO(crbug.com/40098476): Enable session restore for System Web Apps by
-  // passing through the underlying value of params.omit_from_session_restore.
-  constexpr bool kOmitFromSessionRestore = true;
-
   // Always reuse an existing browser for popups. Otherwise let the app decide.
   // TODO(crbug.com/40679012): Allow apps to control whether popups are single.
-  Browser* browser =
-      (params.disposition == WindowOpenDisposition::NEW_POPUP)
-          ? FindSystemWebAppBrowser(profile, GetType(), Browser::TYPE_APP_POPUP)
+  const bool popup = params.disposition == WindowOpenDisposition::NEW_POPUP;
+  BrowserDelegate* browser =
+      popup
+          ? FindSystemWebAppBrowser(profile, GetType(), BrowserType::kAppPopup)
           : GetWindowForLaunch(profile, url);
 
   bool started_new_navigation = false;
   if (!browser) {
-    Browser::CreateParams create_params = web_app::CreateParamsForApp(
-        params.app_id, params.disposition == WindowOpenDisposition::NEW_POPUP,
-        /*trusted_source=*/true, /*window_bounds=*/gfx::Rect(), profile,
-        /*user_gesture=*/true);
+    BrowserController::CreateParams create_params;
+    create_params.allow_resize = ShouldAllowResize();
+    create_params.allow_maximize = ShouldAllowMaximize();
+    create_params.allow_fullscreen = ShouldAllowFullscreen();
+    // System Web App windows can't be properly restored without storing the app
+    // type. Until that is implemented, skip them for session restore.
+    // TODO(crbug.com/40098476): Enable session restore for System Web Apps by
+    // passing through the underlying value of params.omit_from_session_restore.
     create_params.restore_id = params.restore_id;
-    create_params.omit_from_session_restore = kOmitFromSessionRestore;
-    create_params.initial_show_state = ui::mojom::WindowShowState::kDefault;
-    create_params.can_resize = ShouldAllowResize();
-    create_params.can_maximize = ShouldAllowMaximize();
-    create_params.can_fullscreen = ShouldAllowFullscreen();
-    browser = web_app::CreateWebAppWindowMaybeWithHomeTab(params.app_id,
-                                                          create_params);
+
+    browser = BrowserController::GetInstance()->CreateWebApp(
+        CHECK_DEREF(
+            BrowserContextHelper::Get()->GetUserByBrowserContext(profile)),
+        params.app_id, popup ? BrowserType::kAppPopup : BrowserType::kApp,
+        create_params);
+    if (!browser) {
+      return nullptr;
+    }
+
     started_new_navigation = true;
   }
 
   // Navigate application window to application's |url| if necessary.
   // Help app always navigates because its url might not match the url inside
   // the iframe, and the iframe's url is the one that matters.
-  content::WebContents* web_contents =
-      browser->tab_strip_model()->GetWebContentsAt(0);
+  content::WebContents* web_contents = browser->GetWebContentsAt(0);
   if (!web_contents || web_contents->GetURL() != url ||
       GetType() == SystemWebAppType::HELP) {
-    NavigateParams nav_params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-    // TODO(crbug.com/1308961): Migrate to use PWA pinned home tab when ready.
-    if (ShouldPinTab(url)) {
-      nav_params.tabstrip_add_types |= AddTabTypes::ADD_PINNED;
-    }
-    web_contents =
-        web_app::NavigateWebAppUsingParams(params.app_id, nav_params);
+    // TODO(crbug.com/1308962): Migrate to use PWA pinned home tab when ready.
+    web_contents = browser->NavigateWebApp(
+        url, ShouldPinTab(url) ? BrowserDelegate::TabPinning::kYes
+                               : BrowserDelegate::TabPinning::kNo);
     started_new_navigation = true;
   }
 

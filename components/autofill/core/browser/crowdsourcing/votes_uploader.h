@@ -61,8 +61,7 @@ class BrowserAutofillManager;
 //       ▼                                       │
 //   Store PendingVote, which is uploaded when   │
 //   - a submission happens in the frame;        │
-//   - the frame becomes inactive                │
-//     kAutofillVoteWhenInactive is enabled;     │
+//   - the frame becomes inactive;               │
 //   - the frame is reset;                       │
 //   - the frame is deleted;                     │
 //   - the queue becomes too large.              │

@@ -22,7 +22,7 @@ public interface OmniboxActionFactory {
      * @return new instance of an OmniboxPedal
      */
     @CalledByNative
-    OmniboxAction buildOmniboxPedal(
+    @Nullable OmniboxAction buildOmniboxPedal(
             long instance, String hint, String accessibilityHint, @OmniboxPedalId int pedalId);
 
     /**
@@ -36,7 +36,7 @@ public interface OmniboxActionFactory {
      * @return new instance of an OmniboxActionInSuggest
      */
     @CalledByNative
-    OmniboxAction buildActionInSuggest(
+    @Nullable OmniboxAction buildActionInSuggest(
             long instance,
             String hint,
             String accessibilityHint,

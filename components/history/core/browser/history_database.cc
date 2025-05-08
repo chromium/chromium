@@ -90,8 +90,8 @@ HistoryDatabase::HistoryDatabase(
               // TODO(crbug.com/40159106) Remove this dependency on normal
               // locking mode.
               .set_exclusive_locking(false)
-              .set_preload(base::FeatureList::IsEnabled(
-                  sql::features::kPreOpenPreloadDatabase))
+              // Prime the cache.
+              .set_preload(true)
               // Set the database page size to something a little larger to give
               // us better performance (we're typically seek rather than
               // bandwidth limited). Must be a power of 2 and a max of 65536.
@@ -119,11 +119,6 @@ sql::InitStatus HistoryDatabase::Init(const base::FilePath& history_name) {
   // Exclude the history file from backups.
   base::apple::SetBackupExclusion(history_name);
 #endif
-
-  // Prime the cache.
-  if (!base::FeatureList::IsEnabled(sql::features::kPreOpenPreloadDatabase)) {
-    db_.Preload();
-  }
 
   // Create the tables and indices. If you add something here, also add it to
   // `RecreateAllTablesButURL()`.

@@ -56,8 +56,7 @@ const std::vector<ModuleIdDetail> MakeModuleIdDetails(bool is_managed_profile,
         IDS_NTP_MICROSOFT_AUTHENTICATION_SIDE_PANEL_DESCRIPTION);
   }
 
-  if (base::FeatureList::IsEnabled(
-          ntp_features::kNtpMostRelevantTabResumptionModule)) {
+  if (IsMostRelevantTabResumeModuleEnabled()) {
     details.emplace_back(ntp_modules::kMostRelevantTabResumptionModuleId,
                          IDS_NTP_MODULES_MOST_RELEVANT_TAB_RESUMPTION_TITLE);
   }

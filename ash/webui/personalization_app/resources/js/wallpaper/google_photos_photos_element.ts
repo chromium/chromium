@@ -547,6 +547,22 @@ export class GooglePhotosPhotosElement extends WithPersonalizationStore {
     return undefined;
   }
 
+  private getPhotoDescriptionId_(photo: GooglePhotosPhotoWithIndex|null): string
+      |undefined {
+    if (!photo) {
+      return undefined;
+    }
+    const id = photo.id === PLACEHOLDER_ID ? `${photo.index}` : photo.id;
+    return `photo-${id}-description`;
+  }
+
+  private getPhotoDate_(photo: GooglePhotosPhoto|null): string|undefined {
+    if (!photo || photo.id === PLACEHOLDER_ID) {
+      return undefined;
+    }
+    return mojoString16ToString(photo.date);
+  }
+
   /** Returns the aria posinset index for the photo at index |i|. */
   private getPhotoAriaIndex_(i: number): number {
     return i + 1;

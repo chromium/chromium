@@ -238,8 +238,21 @@ UIImage* DefaultFavicon() {
       NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
       [self registerForTraitChanges:traits withAction:@selector(updateColors)];
     }
+
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(handleFocusUpdate:)
+               name:UIFocusDidUpdateNotification
+             object:nil];
   }
   return self;
+}
+
+- (void)dealloc {
+  [[NSNotificationCenter defaultCenter]
+      removeObserver:self
+                name:UIFocusDidUpdateNotification
+              object:nil];
 }
 
 - (void)setFaviconImage:(UIImage*)image {
@@ -593,9 +606,11 @@ UIImage* DefaultFavicon() {
 // Updates view colors.
 - (void)updateColors {
   BOOL isSelected = self.isSelected;
-
-  if (self.isHighlighted || self.configurationState.cellDragState !=
-                                UICellConfigurationDragStateNone) {
+  if (self.focused) {
+    _selectedBackground.backgroundColor = [UIColor clearColor];
+    _accessibilityContainerView.backgroundColor = [UIColor clearColor];
+  } else if (self.highlighted || self.configurationState.cellDragState !=
+                                     UICellConfigurationDragStateNone) {
     // Before a cell is dragged, it is highlighted.
     // The cell's background color must be updated at this moment, otherwise it
     // will not be applied correctly.
@@ -1230,6 +1245,15 @@ UIImage* DefaultFavicon() {
 // Hides the blue dot view.
 - (void)hideBlueDotView {
   _blueDotView.hidden = YES;
+}
+
+- (void)handleFocusUpdate:(NSNotification*)notification {
+  UIFocusUpdateContext* context =
+      notification.userInfo[UIFocusUpdateContextKey];
+  if (context.nextFocusedView == self ||
+      context.previouslyFocusedView == self) {
+    [self updateColors];
+  }
 }
 
 @end

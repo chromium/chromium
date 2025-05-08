@@ -522,11 +522,6 @@ public class AwContents implements SmartClipProvider {
     private AwViewMethods mAwViewMethods;
     private final FullScreenTransitionsState mFullScreenTransitionsState;
 
-    // The framework may temporarily detach our container view, for example during layout if
-    // we are a child of a ListView. This may cause many toggles of View focus, which we suppress
-    // when in this state.
-    private boolean mTemporarilyDetached;
-
     // True when this AwContents has been destroyed.
     // Do not use directly, call isDestroyed() instead.
     private boolean mIsDestroyed;
@@ -551,10 +546,6 @@ public class AwContents implements SmartClipProvider {
     private final AwDisplayCutoutController mDisplayCutoutController;
     private final AwDisplayModeController mDisplayModeController;
     private final Rect mCachedSafeAreaRect = new Rect();
-
-    // The current AwWindowCoverageTracker, if any. This will be non-null when the AwContents is
-    // attached to the Window and size tracking is enabled. It will be null otherwise.
-    private AwWindowCoverageTracker mAwWindowCoverageTracker;
 
     private AwFrameMetricsListener mAwFrameMetricsListener;
 
@@ -689,17 +680,6 @@ public class AwContents implements SmartClipProvider {
     private CleanupReference mCleanupReference;
 
     @AnyThread
-    public void setAsyncShouldInterceptRequestCallback(
-            AsyncShouldInterceptRequestCallback callback) {
-        mShouldInterceptRequestMediator.setAsyncCallback(callback);
-    }
-
-    @AnyThread
-    public void clearAsyncShouldInterceptRequestCallback() {
-        mShouldInterceptRequestMediator.setAsyncCallback(null);
-    }
-
-    @AnyThread
     public void onWebViewClientUpdated(WebViewClient client) {
         mShouldInterceptRequestMediator.onWebViewClientUpdated(client);
     }
@@ -710,9 +690,7 @@ public class AwContents implements SmartClipProvider {
 
         @Override
         public void shouldInterceptRequest(
-                AwWebResourceRequest request,
-                WebResponseCallback callback,
-                @Nullable AsyncShouldInterceptRequestCallback asyncShouldInterceptRequestCallback) {
+                AwWebResourceRequest request, WebResponseCallback callback) {
             String url = request.getUrl();
             WebResourceResponseInfo webResourceResponseInfo;
             callback.setAwContentsClient(mContentsClient);
@@ -723,12 +701,8 @@ public class AwContents implements SmartClipProvider {
                 return;
             }
 
-            if (asyncShouldInterceptRequestCallback == null) {
-                webResourceResponseInfo = mContentsClient.shouldInterceptRequest(request);
-                callback.intercept(webResourceResponseInfo);
-            } else {
-                asyncShouldInterceptRequestCallback.shouldInterceptRequestAsync(request, callback);
-            }
+            webResourceResponseInfo = mContentsClient.shouldInterceptRequest(request);
+            callback.intercept(webResourceResponseInfo);
         }
     }
 
@@ -2121,12 +2095,7 @@ public class AwContents implements SmartClipProvider {
     // --------------------------------------------------------------------------------------------
 
     public void onDraw(Canvas canvas) {
-        try {
-            TraceEvent.begin("AwContents.onDraw");
-            mAwViewMethods.onDraw(canvas);
-        } finally {
-            TraceEvent.end("AwContents.onDraw");
-        }
+        mAwViewMethods.onDraw(canvas);
     }
 
     public void setLayoutParams(final ViewGroup.LayoutParams layoutParams) {
@@ -2576,7 +2545,6 @@ public class AwContents implements SmartClipProvider {
 
     /** @see android.view.View#setLayerType() */
     public void setLayerType(int layerType, Paint paint) {
-        if (TRACE) Log.i(TAG, "%s setLayerType", this);
         mAwViewMethods.setLayerType(layerType, paint);
     }
 
@@ -3362,36 +3330,34 @@ public class AwContents implements SmartClipProvider {
 
     /** @see android.view.View#onGenericMotionEvent() */
     public boolean onGenericMotionEvent(MotionEvent event) {
-        return isDestroyed(NO_WARN) ? false : mAwViewMethods.onGenericMotionEvent(event);
+        return mAwViewMethods.onGenericMotionEvent(event);
     }
 
     /** @see android.view.View#onConfigurationChanged() */
     public void onConfigurationChanged(Configuration newConfig) {
-        if (TRACE) Log.i(TAG, "%s onConfigurationChanged", this);
         mAwViewMethods.onConfigurationChanged(newConfig);
-        if (!isDestroyed(NO_WARN)) {
-            AwContentsJni.get().onConfigurationChanged(mNativeAwContents);
-        }
     }
 
     /** @see android.view.View#onAttachedToWindow() */
     public void onAttachedToWindow() {
-        if (TRACE) Log.i(TAG, "%s onAttachedToWindow", this);
-        mTemporarilyDetached = false;
+        // Before adding to this method, consider whether your could would make more sense living
+        // in AwViewMethodsImpl#onAttachedToWindow. The difference is that:
+        //
+        // - AwContents#onAttachedToWindow is called when the WebView is attached to the window.
+        // - AwViewMethodsImpl#onAttachedToWindow is called when the View that holds the AwContents
+        //   is attached to the window.
+        //
+        // The difference is important when the user enters full screen and the AwContents is
+        // instead attached to a FullScreenView.
         mAwViewMethods.onAttachedToWindow();
-        mWindowAndroid.getWindowAndroid().getDisplay().addObserver(mDisplayObserver);
-
-        mAwWindowCoverageTracker =
-                AwWindowCoverageTracker.getOrCreateForRootView(this, mContainerView.getRootView());
-        mAwWindowCoverageTracker.trackContents(this);
-
-        if (mDisplayCutoutController != null) mDisplayCutoutController.onAttachedToWindow();
 
         mAwFrameMetricsListener =
                 AwFrameMetricsListener.maybeCreate(
                         mContainerView, mWindowAndroid.getWindowAndroid());
+    }
 
-        ViewGroup.LayoutParams viewGroupParams = mContainerView.getRootView().getLayoutParams();
+    private static void recordIfAttachedToPopupWindow(View view) {
+        ViewGroup.LayoutParams viewGroupParams = view.getRootView().getLayoutParams();
         if (viewGroupParams instanceof WindowManager.LayoutParams params) {
             if (params.type == WindowManager.LayoutParams.TYPE_APPLICATION_PANEL
                     || params.type == WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DIALOG) {
@@ -3409,19 +3375,9 @@ public class AwContents implements SmartClipProvider {
                 "Android.WebView.UsedInPopupWindow", value, UsedInPopupWindow.COUNT);
     }
 
-    private void detachWindowCoverageTracker() {
-        if (mAwWindowCoverageTracker == null) return;
-        mAwWindowCoverageTracker.untrackContents(this);
-        mAwWindowCoverageTracker = null;
-    }
-
     /** @see android.view.View#onDetachedFromWindow() */
     @SuppressLint("MissingSuperCall")
     public void onDetachedFromWindow() {
-        if (TRACE) Log.i(TAG, "%s onDetachedFromWindow", this);
-
-        detachWindowCoverageTracker();
-        mWindowAndroid.getWindowAndroid().getDisplay().removeObserver(mDisplayObserver);
         mAwViewMethods.onDetachedFromWindow();
 
         mAwFrameMetricsListener = AwFrameMetricsListener
@@ -3436,19 +3392,17 @@ public class AwContents implements SmartClipProvider {
 
     /** @see android.view.View#onFocusChanged() */
     public void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
-        if (!mTemporarilyDetached) {
-            mAwViewMethods.onFocusChanged(focused, direction, previouslyFocusedRect);
-        }
+        mAwViewMethods.onFocusChanged(focused, direction, previouslyFocusedRect);
     }
 
     /** @see android.view.View#onStartTemporaryDetach() */
     public void onStartTemporaryDetach() {
-        mTemporarilyDetached = true;
+        mAwViewMethods.onStartTemporaryDetach();
     }
 
     /** @see android.view.View#onFinishTemporaryDetach() */
     public void onFinishTemporaryDetach() {
-        mTemporarilyDetached = false;
+        mAwViewMethods.onFinishTemporaryDetach();
     }
 
     /**
@@ -3456,7 +3410,6 @@ public class AwContents implements SmartClipProvider {
      */
     public void onSizeChanged(int w, int h, int ow, int oh) {
         mAwViewMethods.onSizeChanged(w, h, ow, oh);
-        if (mDisplayCutoutController != null) mDisplayCutoutController.onSizeChanged();
     }
 
     /** @see android.view.View#onVisibilityChanged() */
@@ -4388,9 +4341,27 @@ public class AwContents implements SmartClipProvider {
 
         private boolean mSizeIsSmallForFrameRateHints;
 
-        @SuppressLint("DrawAllocation") // For new AwFunctor.
+        // The current AwWindowCoverageTracker, if any. This will be non-null when the AwContents is
+        // attached to the Window and size tracking is enabled. It will be null otherwise.
+        private AwWindowCoverageTracker mAwWindowCoverageTracker;
+
+        // The framework may temporarily detach our container view, for example during layout if
+        // we are a child of a ListView. This may cause many toggles of View focus, which we
+        // suppress when in this state.
+        private boolean mTemporarilyDetached;
+
         @Override
         public void onDraw(Canvas canvas) {
+            try {
+                TraceEvent.begin("AwContents.onDraw");
+                onDrawInner(canvas);
+            } finally {
+                TraceEvent.end("AwContents.onDraw");
+            }
+        }
+
+        @SuppressLint("DrawAllocation") // For new AwFunctor.
+        private void onDrawInner(Canvas canvas) {
             if (isDestroyed(NO_WARN)) {
                 TraceEvent.instant("EarlyOut_destroyed");
                 canvas.drawColor(getEffectiveBackgroundColor());
@@ -4513,6 +4484,7 @@ public class AwContents implements SmartClipProvider {
 
         @Override
         public void setLayerType(int layerType, Paint paint) {
+            if (TRACE) Log.i(TAG, "%s setLayerType", AwContents.this);
             mLayerType = layerType;
             updateHardwareAcceleratedFeaturesToggle();
         }
@@ -4629,20 +4601,28 @@ public class AwContents implements SmartClipProvider {
 
         @Override
         public void onConfigurationChanged(Configuration newConfig) {
+            if (TRACE) Log.i(TAG, "%s onConfigurationChanged", AwContents.this);
+
             if (!isDestroyed(NO_WARN)) {
                 mViewEventSink.onConfigurationChanged(newConfig);
                 mInternalAccessAdapter.super_onConfigurationChanged(newConfig);
+                mWebContents.notifyRendererPreferenceUpdate();
             }
         }
 
         @Override
         public void onAttachedToWindow() {
+            if (TRACE) Log.i(TAG, "%s onAttachedToWindow", AwContents.this);
+
             if (isDestroyed(NO_WARN)) return;
             if (mIsAttachedToWindow) {
                 Log.w(TAG, "onAttachedToWindow called when already attached. Ignoring");
                 return;
             }
             mIsAttachedToWindow = true;
+            mTemporarilyDetached = false;
+
+            mWindowAndroid.getWindowAndroid().getDisplay().addObserver(mDisplayObserver);
 
             mViewEventSink.onAttachedToWindow();
             AwContentsJni.get()
@@ -4653,6 +4633,11 @@ public class AwContents implements SmartClipProvider {
             updateHardwareAcceleratedFeaturesToggle();
             postUpdateWebContentsVisibility();
 
+            // Web Contents preferences depends on the device configuration for dark mode. While
+            // the View was detached from the Window, we may have missed an onConfigurationChanged,
+            // so trigger an update when reattached.
+            mWebContents.notifyRendererPreferenceUpdate();
+
             updateDefaultLocale();
 
             if (mComponentCallbacks != null) return;
@@ -4662,15 +4647,30 @@ public class AwContents implements SmartClipProvider {
                     StylusHandwritingFeatureMap.CACHE_STYLUS_SETTINGS)) {
                 StylusWritingSettingsState.getInstance().registerObserver(mStylusWritingController);
             }
+
+            if (mDisplayCutoutController != null) mDisplayCutoutController.onAttachedToWindow();
+
+            mAwWindowCoverageTracker =
+                    AwWindowCoverageTracker.getOrCreateForRootView(
+                            AwContents.this, mContainerView.getRootView());
+            mAwWindowCoverageTracker.trackContents(AwContents.this);
+
+            recordIfAttachedToPopupWindow(mContainerView);
         }
 
         @Override
         public void onDetachedFromWindow() {
+            if (TRACE) Log.i(TAG, "%s onDetachedFromWindow", AwContents.this);
+
             if (isDestroyed(NO_WARN)) return;
             if (!mIsAttachedToWindow) {
                 Log.w(TAG, "onDetachedFromWindow called when already detached. Ignoring");
                 return;
             }
+
+            mWindowAndroid.getWindowAndroid().getDisplay().removeObserver(mDisplayObserver);
+            detachWindowCoverageTracker();
+
             mIsAttachedToWindow = false;
             hideAutofillPopup();
             AwContentsJni.get().onDetachedFromWindow(mNativeAwContents);
@@ -4695,6 +4695,12 @@ public class AwContents implements SmartClipProvider {
             mZoomControls.dismissZoomPicker();
         }
 
+        private void detachWindowCoverageTracker() {
+            if (mAwWindowCoverageTracker == null) return;
+            mAwWindowCoverageTracker.untrackContents(AwContents.this);
+            mAwWindowCoverageTracker = null;
+        }
+
         @Override
         public void onWindowFocusChanged(boolean hasWindowFocus) {
             if (isDestroyed(NO_WARN)) return;
@@ -4706,7 +4712,7 @@ public class AwContents implements SmartClipProvider {
 
         @Override
         public void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
-            if (isDestroyed(NO_WARN)) return;
+            if (isDestroyed(NO_WARN) || mTemporarilyDetached) return;
             mContainerViewFocused = focused;
             mViewEventSink.onViewFocusChanged(focused);
         }
@@ -4714,6 +4720,8 @@ public class AwContents implements SmartClipProvider {
         @Override
         public void onSizeChanged(int w, int h, int ow, int oh) {
             if (isDestroyed(NO_WARN)) return;
+
+            if (mDisplayCutoutController != null) mDisplayCutoutController.onSizeChanged();
 
             DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
             float pixelCount = (float) displayMetrics.widthPixels * displayMetrics.heightPixels;
@@ -4822,6 +4830,16 @@ public class AwContents implements SmartClipProvider {
         @Override
         public boolean performAccessibilityAction(final int action, final Bundle arguments) {
             return false;
+        }
+
+        @Override
+        public void onStartTemporaryDetach() {
+            mTemporarilyDetached = true;
+        }
+
+        @Override
+        public void onFinishTemporaryDetach() {
+            mTemporarilyDetached = false;
         }
     }
 
@@ -4991,8 +5009,6 @@ public class AwContents implements SmartClipProvider {
 
         @JniType("std::vector")
         StartupJavascriptInfo[] getDocumentStartupJavascripts(long nativeAwContents);
-
-        void onConfigurationChanged(long nativeAwContents);
 
         void flushBackForwardCache(long nativeAwContents, int reason);
 

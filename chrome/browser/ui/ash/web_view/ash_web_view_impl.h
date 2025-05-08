@@ -56,6 +56,7 @@ class AshWebViewImpl : public ash::AshWebView,
 
   // content::WebContentsDelegate:
   bool IsWebContentsCreationOverridden(
+      content::RenderFrameHost* opener,
       content::SiteInstance* source_site_instance,
       content::mojom::WindowContainerType window_container_type,
       const GURL& opener_url,

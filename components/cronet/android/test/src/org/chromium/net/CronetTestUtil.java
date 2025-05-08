@@ -4,6 +4,8 @@
 
 package org.chromium.net;
 
+import static com.google.common.truth.Truth.assertWithMessage;
+
 import android.net.Network;
 
 import org.jni_zero.JNINamespace;
@@ -106,6 +108,14 @@ public class CronetTestUtil {
      */
     public static long nativeGetTaggedBytes(int expectedTag) {
         return CronetTestUtilJni.get().getTaggedBytes(expectedTag);
+    }
+
+    /** Helper method to assert that the request is negotiated over QUIC. */
+    public static void assertIsQuic(UrlResponseInfo responseInfo) {
+        String protocol = responseInfo.getNegotiatedProtocol();
+        assertWithMessage("Expected the negotiatedProtocol to be QUIC but was " + protocol)
+                .that(protocol.startsWith("http/2+quic") || protocol.startsWith("h3"))
+                .isTrue();
     }
 
     @NativeMethods("cronet_tests")

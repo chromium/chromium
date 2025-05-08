@@ -5,9 +5,10 @@
 package org.chromium.chrome.browser.ui.signin;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 
@@ -17,6 +18,7 @@ import java.util.Objects;
  * Class containing IDs of resources for the fullscreen sign-in view and the history sync opt-in
  * view.
  */
+@NullMarked
 public final class FullscreenSigninAndHistorySyncConfig {
     public final FullscreenSigninConfig signinConfig;
     public final HistorySyncConfig historySyncConfig;

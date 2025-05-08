@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.ui.accessibility.KeyboardFocusUtil.setFocusOnFirstFocusableDescendant;
 
 import android.animation.Animator;
@@ -28,7 +29,6 @@ import android.util.FloatProperty;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewDebug;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -38,8 +38,6 @@ import android.widget.ImageView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
@@ -52,6 +50,12 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
@@ -61,6 +65,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
@@ -73,15 +78,14 @@ import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordin
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator.TransitionType;
 import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
+import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColorObserver;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.UrlExpansionObserver;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.LocalizationUtils;
@@ -97,10 +101,9 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 
 /** Phone specific toolbar implementation. */
+@NullMarked
 public class ToolbarPhone extends ToolbarLayout
-        implements OnClickListener,
-                OmniboxSuggestionsDropdownScrollListener,
-                ToolbarDataProvider.Observer {
+        implements OmniboxSuggestionsDropdownScrollListener, ToolbarDataProvider.Observer {
     /** The amount of time transitioning from one theme color to another should take in ms. */
     public static final long THEME_COLOR_TRANSITION_DURATION = 250;
 
@@ -137,9 +140,9 @@ public class ToolbarPhone extends ToolbarLayout
 
     private ViewGroup mToolbarButtonsContainer;
     // Non-null after inflation occurs.
-    private @NonNull ImageView mHomeButton;
+    private ImageView mHomeButton;
     protected View mUrlActionContainer;
-    private OptionalButtonCoordinator mOptionalButtonCoordinator;
+    private @MonotonicNonNull OptionalButtonCoordinator mOptionalButtonCoordinator;
 
     @ViewDebug.ExportedProperty(category = "chrome")
     protected int mTabSwitcherState;
@@ -163,12 +166,12 @@ public class ToolbarPhone extends ToolbarLayout
      * width of the omnibox is not interpolated linearly from this value. The value will be the
      * maximum of {@link #mUrlFocusChangeFraction} and {@link #mNtpSearchBoxScrollFraction}.
      *
-     * 0.0 == no expansion, 1.0 == fully expanded.
+     * <p>0.0 == no expansion, 1.0 == fully expanded.
      */
     @ViewDebug.ExportedProperty(category = "chrome")
     protected float mUrlExpansionFraction;
 
-    private AnimatorSet mUrlFocusLayoutAnimator;
+    private @Nullable AnimatorSet mUrlFocusLayoutAnimator;
 
     protected boolean mDisableLocationBarRelayout;
     protected boolean mLayoutLocationBarInFocusedMode;
@@ -219,12 +222,12 @@ public class ToolbarPhone extends ToolbarLayout
     private final int mToolbarSidePaddingForNtp;
     private final int mBackgroundHeightIncreaseWhenFocus;
 
-    private ValueAnimator mBrandColorTransitionAnimation;
+    private @Nullable ValueAnimator mBrandColorTransitionAnimation;
     private boolean mBrandColorTransitionActive;
 
     private boolean mIsHomeButtonEnabled;
 
-    private Runnable mLayoutUpdater;
+    private @Nullable Runnable mLayoutUpdater;
 
     /** The vertical inset of the location bar background. */
     private int mLocationBarBackgroundVerticalInset;
@@ -232,8 +235,8 @@ public class ToolbarPhone extends ToolbarLayout
     /** The current color of the location bar. */
     private @ColorInt int mCurrentLocationBarColor;
 
-    private PhoneCaptureStateToken mPhoneCaptureStateToken;
-    private ButtonData mButtonData;
+    private @Nullable PhoneCaptureStateToken mPhoneCaptureStateToken;
+    private @Nullable ButtonData mButtonData;
 
     private @ColorInt int mToolbarBackgroundColorForNtp;
     private @ColorInt int mLocationBarBackgroundColorForNtp;
@@ -312,10 +315,14 @@ public class ToolbarPhone extends ToolbarLayout
         float LocationBarBackgroundColorAlphaForNtp =
                 ResourcesCompat.getFloat(
                         getResources(), R.dimen.home_surface_search_box_background_alpha);
+        // Explicitly checking the flag value since the default color value is colorPrimary tinted.
         mLocationBarBackgroundColorForNtp =
-                ColorUtils.setAlphaComponentWithFloat(
-                        SemanticColorUtils.getDefaultIconColorAccent1(context),
-                        LocationBarBackgroundColorAlphaForNtp);
+                ChromeFeatureList.sAndroidSurfaceColorUpdate.isEnabled()
+                        ? SurfaceColorUpdateUtils.getOmniboxBackgroundColor(
+                                getContext(), /* isIncognito= */ false)
+                        : ColorUtils.setAlphaComponentWithFloat(
+                                SemanticColorUtils.getDefaultIconColorAccent1(context),
+                                LocationBarBackgroundColorAlphaForNtp);
         mTabCountSupplierObserver = this::onTabCountChanged;
     }
 
@@ -343,25 +350,24 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     @Override
+    @Initializer
     public void initialize(
             ToolbarDataProvider toolbarDataProvider,
             ToolbarTabController tabController,
             MenuButtonCoordinator menuButtonCoordinator,
             ToggleTabStackButtonCoordinator tabSwitcherButtonCoordinator,
-            NavigationPopup.HistoryDelegate historyDelegate,
-            BooleanSupplier partnerHomepageEnabledSupplier,
+            HistoryDelegate historyDelegate,
             UserEducationHelper userEducationHelper,
             ObservableSupplier<Tracker> trackerSupplier,
             ToolbarProgressBar progressBar,
-            ReloadButtonCoordinator reloadButtonCoordinator,
-            BackButtonCoordinator backButtonCoordinator) {
+            @Nullable ReloadButtonCoordinator reloadButtonCoordinator,
+            @Nullable BackButtonCoordinator backButtonCoordinator) {
         super.initialize(
                 toolbarDataProvider,
                 tabController,
                 menuButtonCoordinator,
                 tabSwitcherButtonCoordinator,
                 historyDelegate,
-                partnerHomepageEnabledSupplier,
                 userEducationHelper,
                 trackerSupplier,
                 progressBar,
@@ -374,9 +380,14 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     @Override
+    @Initializer
     public void setLocationBarCoordinator(LocationBarCoordinator locationBarCoordinator) {
         mLocationBar = locationBarCoordinator;
-        initLocationBarBackground();
+        Resources res = getResources();
+        mLocationBarBackgroundVerticalInset =
+                res.getDimensionPixelSize(R.dimen.location_bar_vertical_margin);
+        mLocationBarBackground = createModernLocationBarBackground(getContext());
+        mActiveLocationBarBackground = mLocationBarBackground;
     }
 
     @Override
@@ -396,15 +407,6 @@ public class ToolbarPhone extends ToolbarLayout
         super.destroy();
     }
 
-    /** Initializes the background, padding, margins, etc. for the location bar background. */
-    private void initLocationBarBackground() {
-        Resources res = getResources();
-        mLocationBarBackgroundVerticalInset =
-                res.getDimensionPixelSize(R.dimen.location_bar_vertical_margin);
-        mLocationBarBackground = createModernLocationBarBackground(getContext());
-        mActiveLocationBarBackground = mLocationBarBackground;
-    }
-
     /**
      * @param context The activity {@link Context}.
      * @return The drawable for the modern location bar background.
@@ -414,8 +416,11 @@ public class ToolbarPhone extends ToolbarLayout
                 (GradientDrawable)
                         context.getDrawable(
                                 R.drawable.modern_toolbar_text_box_background_with_primary_color);
+        assumeNonNull(drawable);
         drawable.mutate();
-        drawable.setColor(ContextCompat.getColor(context, R.color.toolbar_text_box_bg_color));
+        drawable.setColor(
+                SurfaceColorUpdateUtils.getOmniboxBackgroundColor(
+                        context, /* isIncognito= */ false));
         return drawable;
     }
 
@@ -489,7 +494,7 @@ public class ToolbarPhone extends ToolbarLayout
             return OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
                     getContext(), mThemeColorProvider.getBrandedColorScheme());
         }
-        return ChromeColors.getDefaultThemeColor(getContext(), isIncognitoBranded());
+        return SurfaceColorUpdateUtils.getDefaultThemeColor(getContext(), isIncognitoBranded());
     }
 
     /**
@@ -516,7 +521,6 @@ public class ToolbarPhone extends ToolbarLayout
     @Override
     protected void onNativeLibraryReady() {
         super.onNativeLibraryReady();
-        mHomeButton.setOnClickListener(this);
         updateVisualsForLocationBarState();
     }
 
@@ -544,21 +548,6 @@ public class ToolbarPhone extends ToolbarLayout
         }
 
         return super.onTouchEvent(ev);
-    }
-
-    @Override
-    public void onClick(View v) {
-        // Don't allow clicks while the omnibox is being focused.
-        if (mLocationBar != null && urlHasFocus()) {
-            return;
-        }
-        if (mHomeButton == v) {
-            recordHomeModuleClickedIfNTPVisible();
-            openHomepage();
-            if (mTrackerSupplier.hasValue() && mPartnerHomepageEnabledSupplier.getAsBoolean()) {
-                mTrackerSupplier.get().notifyEvent(EventConstants.PARTNER_HOME_PAGE_BUTTON_PRESSED);
-            }
-        }
     }
 
     @Override
@@ -811,9 +800,11 @@ public class ToolbarPhone extends ToolbarLayout
                 if (mIsInLoadingPhaseFromNtpToWebpage) {
                     return mToolbarBackgroundColorForNtp;
                 }
-                return ChromeColors.getDefaultThemeColor(getContext(), false);
+                return SurfaceColorUpdateUtils.getDefaultThemeColor(
+                        getContext(), /* isIncognito= */ false);
             case VisualState.INCOGNITO:
-                return ChromeColors.getDefaultThemeColor(getContext(), true);
+                return SurfaceColorUpdateUtils.getDefaultThemeColor(
+                        getContext(), /* isIncognito= */ true);
             case VisualState.BRAND_COLOR:
                 if (urlHasFocus()) {
                     return getToolbarDefaultColor(/* shouldUseFocusColor= */ false);
@@ -821,7 +812,8 @@ public class ToolbarPhone extends ToolbarLayout
                 return getToolbarDataProvider().getPrimaryColor();
             default:
                 assert false;
-                return SemanticColorUtils.getToolbarBackgroundPrimary(getContext());
+                return SurfaceColorUpdateUtils.getDefaultThemeColor(
+                        getContext(), /* isIncognito= */ false);
         }
     }
 
@@ -929,12 +921,12 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     /**
-     * @return The difference in the location bar width when the optional button is hidden
-     *         rather than showing. This is effectively the width of the optional button with
-     *         some adjustment to account for possible padding differences when the button
-     *         visibility changes.
+     * @return The difference in the location bar width when the optional button is hidden rather
+     *     than showing. This is effectively the width of the optional button with some adjustment
+     *     to account for possible padding differences when the button visibility changes.
      */
     @VisibleForTesting
+    @NullUnmarked
     float getLocationBarWidthOffsetForOptionalButton() {
         float widthChange = mOptionalButtonCoordinator.getViewWidth();
 
@@ -1652,6 +1644,7 @@ public class ToolbarPhone extends ToolbarLayout
         VisibleUrlText visibleUrlText =
                 new VisibleUrlText(
                         urlBarData.displayText, mLocationBar.getOmniboxVisibleTextPrefixHint());
+        assumeNonNull(getTint());
         return new PhoneCaptureStateToken(
                 getTint().getDefaultColor(),
                 mTabCountSupplier == null ? 0 : mTabCountSupplier.get(),
@@ -1659,7 +1652,7 @@ public class ToolbarPhone extends ToolbarLayout
                 mVisualState,
                 visibleUrlText,
                 securityIconResource,
-                ImageViewCompat.getImageTintList(mHomeButton),
+                assumeNonNull(ImageViewCompat.getImageTintList(mHomeButton)),
                 mHomeButton.getVisibility() == View.VISIBLE,
                 getMenuButtonCoordinator().isShowingUpdateBadge(),
                 getToolbarDataProvider().isPaintPreview(),
@@ -1686,7 +1679,7 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     @Override
-    public void onHomeButtonUpdate(boolean homeButtonEnabled) {
+    public void onHomeButtonIsEnabledUpdate(boolean homeButtonEnabled) {
         mIsHomeButtonEnabled = homeButtonEnabled;
         updateButtonVisibility();
     }
@@ -1709,8 +1702,8 @@ public class ToolbarPhone extends ToolbarLayout
 
     @Override
     public void onTintChanged(
-            ColorStateList tint,
-            ColorStateList activityFocusTint,
+            @Nullable ColorStateList tint,
+            @Nullable ColorStateList activityFocusTint,
             @BrandedColorScheme int brandedColorScheme) {
         ImageViewCompat.setImageTintList(mHomeButton, tint);
 
@@ -1976,6 +1969,7 @@ public class ToolbarPhone extends ToolbarLayout
         updateBackground(hasFocus);
         updateLocationBarForNtp(mVisualState, urlHasFocus());
         getTabSwitcherButtonCoordinator().getContainerView().setClickable(!hasFocus);
+        mHomeButton.setClickable(!hasFocus);
         triggerUrlFocusAnimation(hasFocus);
     }
 
@@ -1995,8 +1989,12 @@ public class ToolbarPhone extends ToolbarLayout
             mUrlFocusLayoutAnimator.cancel();
             mUrlFocusLayoutAnimator = null;
         }
-        if (mOptionalButtonAnimationRunning) mOptionalButtonCoordinator.cancelTransition();
+        if (mOptionalButtonAnimationRunning) {
+            assumeNonNull(mOptionalButtonCoordinator);
+            mOptionalButtonCoordinator.cancelTransition();
+        }
         if (hasFocus && mBrandColorTransitionActive) {
+            assumeNonNull(mBrandColorTransitionAnimation);
             mBrandColorTransitionAnimation.cancel();
         }
 
@@ -2077,7 +2075,6 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private void onTabCountChanged(int numberOfTabs) {
-        mHomeButton.setEnabled(true);
         setTabSwitcherDrawableColorScheme();
     }
 
@@ -2146,7 +2143,10 @@ public class ToolbarPhone extends ToolbarLayout
     @Override
     public void onPrimaryColorChanged(boolean shouldAnimate) {
         super.onPrimaryColorChanged(shouldAnimate);
-        if (mBrandColorTransitionActive) mBrandColorTransitionAnimation.end();
+        if (mBrandColorTransitionActive) {
+            assumeNonNull(mBrandColorTransitionAnimation);
+            mBrandColorTransitionAnimation.end();
+        }
 
         final @ColorInt int initialColor = mToolbarBackground.getColor();
         final @ColorInt int finalColor =
@@ -2581,7 +2581,7 @@ public class ToolbarPhone extends ToolbarLayout
             mHomeButton.setOnKeyListener(
                     new KeyboardNavigationListener() {
                         @Override
-                        public View getNextFocusForward() {
+                        public @Nullable View getNextFocusForward() {
                             // If the url_bar is outside the toolbar's bounds, optional button is
                             // the next button to go in order to bypass the url_bar when navigating
                             // forward.
@@ -2603,7 +2603,7 @@ public class ToolbarPhone extends ToolbarLayout
                     .setOnKeyListener(
                             new KeyboardNavigationListener() {
                                 @Override
-                                public View getNextFocusBackward() {
+                                public @Nullable View getNextFocusBackward() {
                                     // If the url_bar is outside the toolbar's bounds and the home
                                     // button is visible, the
                                     // home button is the next button to go in order to bypass the
@@ -2623,7 +2623,8 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     @Override
-    protected void updateOptionalButton(ButtonData buttonData) {
+    @SuppressWarnings("NullAway")
+    protected void updateOptionalButton(@Nullable ButtonData buttonData) {
         mButtonData = buttonData;
 
         if (mOptionalButtonCoordinator == null) {
@@ -2653,7 +2654,7 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     @Override
-    public View getOptionalButtonViewForTesting() {
+    public @Nullable View getOptionalButtonViewForTesting() {
         if (mOptionalButtonCoordinator != null) {
             return mOptionalButtonCoordinator.getButtonView();
         }
@@ -2728,7 +2729,7 @@ public class ToolbarPhone extends ToolbarLayout
      * @param toolbarColorObserver The observer that observes toolbar color change.
      */
     @Override
-    public void setToolbarColorObserver(@NonNull ToolbarColorObserver toolbarColorObserver) {
+    public void setToolbarColorObserver(ToolbarColorObserver toolbarColorObserver) {
         super.setToolbarColorObserver(toolbarColorObserver);
         notifyToolbarColorChanged(mToolbarBackground.getColor());
     }

@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -29,6 +30,7 @@
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "ui/base/ozone_buildflags.h"
@@ -85,8 +87,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetLastFocusedWindow) {
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryLastFocusedWindowTabs) {
   const size_t kExtraWindows = 2;
-  for (size_t i = 0; i < kExtraWindows; ++i)
+  for (size_t i = 0; i < kExtraWindows; ++i) {
     CreateBrowser(browser()->profile());
+  }
 
   Browser* focused_window = CreateBrowser(browser()->profile());
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(focused_window));
@@ -513,6 +516,86 @@ IN_PROC_BROWSER_TEST_F(TabsApiInteractiveTest,
   // EXPECT_TRUE(views::test::WidgetTest::IsWindowStackedAbove(
   //     BrowserView::GetBrowserViewForBrowser(browser())->frame(),
   //     BrowserView::GetBrowserViewForBrowser(new_browser)->frame()));
+}
+
+// Test for crbug.com/405283740
+// Verifies that an extension popup does not immediately close after calling
+// chrome.windows.create with focus: false, allowing subsequent JS to run.
+IN_PROC_BROWSER_TEST_F(TabsApiInteractiveTest,
+                       PopupDoesNotCloseOnUnfocusedWindowCreate) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  static constexpr char kManifest[] =
+      R"({
+        "name": "Popup Window Create Test",
+        "version": "1.0",
+        "manifest_version": 3,
+        "action": { "default_popup": "popup.html" },
+        "permissions": ["tabs"]
+      })";
+
+  static constexpr char kPopupHtml[] =
+      R"(
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <script src="popup.js"></script>
+      </head>
+      <body>
+        Creating window...
+      </body>
+      </html>
+    )";
+
+  // popup.js: Calls chrome.windows.create, then sends a message.
+  // If the popup closes, the message won't be sent.
+  static constexpr char kPopupJs[] =
+      R"(
+      // Use an async function to so that we can await the create call.
+      async function createWindowAndSignal() {
+        const win = await chrome.windows.create(
+            { focused: false, url: 'about:blank' });
+        chrome.test.assertEq(undefined, chrome.runtime.lastError);
+        chrome.test.assertNe(null, win);
+        // Crucial part: This message is sent *after* create call
+        chrome.test.sendMessage('popup_still_open');
+      }
+      createWindowAndSignal();
+   )";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("popup.html"), kPopupHtml);
+  test_dir.WriteFile(FILE_PATH_LITERAL("popup.js"), kPopupJs);
+
+  // Load the extension
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Prepare to listen for the message from the popup
+  ExtensionTestMessageListener listener("popup_still_open");
+
+  // Create a BrowserActionTestUtil to trigger the popup.
+  std::unique_ptr<ExtensionActionTestHelper> browser_action_test_util =
+      ExtensionActionTestHelper::Create(browser());
+  ASSERT_EQ(1, browser_action_test_util->NumberOfBrowserActions());
+  browser_action_test_util->Press(extension->id());
+
+  // Wait for the 'popup_still_open' message.
+  // If the popup closed prematurely, this will time out or fail.
+  ASSERT_TRUE(listener.WaitUntilSatisfied())
+      << "Listener failed to hear from popup.";
+
+  // Additional Verification.
+  BrowserList* browser_list = BrowserList::GetInstance();
+  // We should have the original browser and the new one
+  ASSERT_EQ(2u, browser_list->size());
+
+  // Check Z-Order.
+  // Under the hood, the original browser was temporarily pinned to the front by
+  // setting its z-order to kFloatingWindow. This checks that the original
+  // browser's z-order is reset.
+  EXPECT_EQ(ui::ZOrderLevel::kNormal, browser()->window()->GetZOrderLevel());
 }
 
 }  // namespace extensions

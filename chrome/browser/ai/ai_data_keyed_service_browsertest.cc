@@ -48,6 +48,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/test_frame_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -55,6 +56,8 @@
 
 namespace {
 
+using ::base::test::TestFuture;
+using ::optimization_guide::proto::ClickAction;
 using ::testing::ReturnRef;
 using AiData = AiDataKeyedService::AiData;
 using AiDataSpecifier = AiDataKeyedService::AiDataSpecifier;
@@ -96,12 +99,13 @@ class AiDataKeyedServiceBrowserTest : public InProcessBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  void LoadSimplePage() {
-    content::NavigateToURLBlockUntilNavigationsComplete(
-        web_contents(), https_server_->GetURL("/simple.html"), 1);
+  void LoadPage(const GURL& url) {
+    content::NavigateToURLBlockUntilNavigationsComplete(web_contents(), url, 1);
     content::WaitForCopyableView(
         browser()->tab_strip_model()->GetActiveWebContents());
   }
+
+  void LoadSimplePage() { LoadPage(https_server_->GetURL("/simple.html")); }
 
   AiData QueryAiData() {
     base::test::TestFuture<AiData> ai_data;
@@ -127,6 +131,8 @@ class AiDataKeyedServiceBrowserTest : public InProcessBrowserTest {
     return QueryAiDataWithSpecifier(std::move(specifier));
   }
 
+  net::EmbeddedTestServer* https_server() { return https_server_.get(); }
+
  private:
   autofill::test::AutofillBrowserTestEnvironment autofill_test_environment_;
   passage_embeddings::TestEnvironment passage_embeddings_test_env_;
@@ -140,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest,
   std::vector<std::string> expected_allowlisted_extensions = {
       "hpkopmikdojpadgmioifjjodbmnjjjca", "bgbpcgpcobgjpnpiginpidndjpggappi",
       "eefninhhiifgcimjkmkongegpoaikmhm", "fjhpgileahdpnmfmaggobehbipojhlce",
-      "abdciamfdmknaeggbnmafmbdfdmhfgfa"};
+      "abdciamfdmknaeggbnmafmbdfdmhfgfa", "fiamdfnbelfkjlacoaeiclobkdmckaoa"};
 
   for (const auto& extension_id : expected_allowlisted_extensions) {
     EXPECT_TRUE(
@@ -160,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest,
   std::vector<std::string> expected_not_allowlisted_extensions = {
       "hpkopmikdojpadgmioifjjodbmnjjjca", "bgbpcgpcobgjpnpiginpidndjpggappi",
       "eefninhhiifgcimjkmkongegpoaikmhm", "fjhpgileahdpnmfmaggobehbipojhlce",
-      "abdciamfdmknaeggbnmafmbdfdmhfgfa"};
+      "abdciamfdmknaeggbnmafmbdfdmhfgfa", "fiamdfnbelfkjlacoaeiclobkdmckaoa"};
   for (const auto& extension_id : expected_not_allowlisted_extensions) {
     EXPECT_FALSE(
         AiDataKeyedService::IsExtensionAllowlistedForActions(extension_id));
@@ -300,7 +306,9 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, SiteEngagementScores) {
 }
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, AIPageContent) {
-  AiData ai_data = LoadSimplePageAndData();
+  LoadPage(
+      https_server()->GetURL("/optimization_guide/actionable_elements.html"));
+  AiData ai_data = QueryAiData();
   ASSERT_TRUE(ai_data.has_value());
 
   {
@@ -312,6 +320,7 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, AIPageContent) {
     EXPECT_EQ(content_attributes.attribute_type(),
               optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
     EXPECT_FALSE(content_attributes.has_interaction_info());
+    EXPECT_EQ(page_content.root_node().children_nodes().size(), 0);
   }
 
   {
@@ -324,6 +333,15 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, AIPageContent) {
     EXPECT_EQ(content_attributes.attribute_type(),
               optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
     EXPECT_TRUE(content_attributes.has_interaction_info());
+    EXPECT_FALSE(content_attributes.interaction_info().is_clickable());
+
+    const auto& html = page_content.root_node().children_nodes().at(0);
+    const auto& body = html.children_nodes().at(0);
+
+    ASSERT_EQ(body.children_nodes().size(), 1);
+    const auto& child = body.children_nodes().at(0);
+    EXPECT_TRUE(child.content_attributes().has_interaction_info());
+    EXPECT_TRUE(child.content_attributes().interaction_info().is_clickable());
   }
 }
 
@@ -429,7 +447,8 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTestWithBlocklistedExtensions,
                        BlockedExtensionList) {
   std::vector<std::string> expected_allowlisted_extensions = {
       "bgbpcgpcobgjpnpiginpidndjpggappi", "eefninhhiifgcimjkmkongegpoaikmhm",
-      "fjhpgileahdpnmfmaggobehbipojhlce", "abdciamfdmknaeggbnmafmbdfdmhfgfa"};
+      "fjhpgileahdpnmfmaggobehbipojhlce", "abdciamfdmknaeggbnmafmbdfdmhfgfa",
+      "fiamdfnbelfkjlacoaeiclobkdmckaoa"};
 
   EXPECT_FALSE(AiDataKeyedService::IsExtensionAllowlistedForData(
       "hpkopmikdojpadgmioifjjodbmnjjjca"));
@@ -462,7 +481,8 @@ IN_PROC_BROWSER_TEST_F(
       "bgbpcgpcobgjpnpiginpidndjpggappi",
       "eefninhhiifgcimjkmkongegpoaikmhm",
       "fjhpgileahdpnmfmaggobehbipojhlce",
-      "abdciamfdmknaeggbnmafmbdfdmhfgfa"};
+      "abdciamfdmknaeggbnmafmbdfdmhfgfa",
+      "fiamdfnbelfkjlacoaeiclobkdmckaoa"};
 
   for (const auto& extension : expected_allowlisted_extensions) {
     EXPECT_TRUE(AiDataKeyedService::IsExtensionAllowlistedForData(extension));
@@ -595,6 +615,55 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest,
       base::BindLambdaForTesting(start_task_callback_2));
   run_loop->Run();
 }
+
+// See ActorCoordinatorBrowserTest.ForceSameTabNavigation
+IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceActorBrowserTest,
+                       ForceSameTabNavigation) {
+  TestFuture<optimization_guide::proto::BrowserStartTaskResult>
+      start_task_result;
+  int id = 1;
+  ai_data_service().StartTask(/*task=*/{}, start_task_result.GetCallback());
+  auto& task = start_task_result.Get();
+  EXPECT_EQ(task.task_id(), id);
+  EXPECT_EQ(task.tab_id(), id);
+
+  const GURL url = https_server()->GetURL("/actor/target_blank_links.html");
+  TestFuture<optimization_guide::proto::BrowserActionResult> navigate_result;
+  optimization_guide::proto::BrowserAction action_request;
+  action_request.set_task_id(id);
+  action_request.set_tab_id(id);
+  action_request.add_action_information()->mutable_navigate()->set_url(
+      url.spec());
+  ai_data_service().ExecuteAction(std::move(action_request),
+                                  navigate_result.GetCallback());
+  auto& navigate_response = navigate_result.Get();
+  EXPECT_EQ(navigate_response.task_id(), id);
+  EXPECT_EQ(navigate_response.tab_id(), id);
+
+  std::optional<int> anchor_dom_node_id = content::GetDOMNodeId(
+      *web_contents()->GetPrimaryMainFrame(), "#anchorTarget");
+  ASSERT_TRUE(anchor_dom_node_id);
+
+  TestFuture<optimization_guide::proto::BrowserActionResult> click_result;
+  optimization_guide::proto::BrowserAction click_request;
+  click_request.set_task_id(id);
+  click_request.set_tab_id(id);
+  ClickAction* click = click_request.add_action_information()->mutable_click();
+  click->mutable_target()->set_content_node_id(anchor_dom_node_id.value());
+  click->set_click_type(ClickAction::LEFT);
+  click->set_click_count(ClickAction::SINGLE);
+
+  // Check specifically that it's the existing frame that navigates.
+  content::TestFrameNavigationObserver frame_nav_observer(
+      web_contents()->GetPrimaryMainFrame());
+  ai_data_service().ExecuteAction(std::move(click_request),
+                                  click_result.GetCallback());
+  auto& click_response = click_result.Get();
+  EXPECT_EQ(click_response.task_id(), id);
+  EXPECT_EQ(click_response.tab_id(), id);
+  frame_nav_observer.Wait();
+}
+
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 }  // namespace

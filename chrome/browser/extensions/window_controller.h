@@ -50,7 +50,7 @@ class WindowController {
     REASON_NOT_EDITABLE,
   };
 
-  // A bitmaks used as filter on window types.
+  // A bitmask used as filter on window types.
   using TypeFilter = uint32_t;
 
   // Represents the lack of any window filter, implying
@@ -84,13 +84,13 @@ class WindowController {
   // TODO(devlin): Remove this in favor of the method on ExtensionTabUtil.
   virtual std::string GetWindowTypeText() const = 0;
 
-  // Sets the window's fullscreen state. |extension_url| provides the url
+  // Sets the window's fullscreen state. `extension_url` provides the url
   // associated with the extension (used by FullscreenController).
   virtual void SetFullscreenMode(bool is_fullscreen,
                                  const GURL& extension_url) const = 0;
 
   // Returns false if the window is in a state where closing the window is not
-  // permitted and sets |reason| if not NULL.
+  // permitted and sets `reason` if not NULL.
   virtual bool CanClose(Reason* reason) const = 0;
 
   // Returns a Browser if available. Defaults to returning NULL.
@@ -125,15 +125,15 @@ class WindowController {
   virtual content::WebContents* GetWebContentsAt(int i) const = 0;
 
   // Returns true if the window is visible to the tabs API, when used by the
-  // given |extension|.
-  // |allow_dev_tools_windows| indicates whether dev tools windows should be
+  // given `extension`.
+  // `allow_dev_tools_windows` indicates whether dev tools windows should be
   // treated as visible.
   // TODO(devlin): Remove include_dev_tools_windows.
   virtual bool IsVisibleToTabsAPIForExtension(
       const Extension* extension,
       bool include_dev_tools_windows) const = 0;
 
-  // Returns true if the window type of the controller matches the |filter|.
+  // Returns true if the window type of the controller matches the `filter`.
   bool MatchesFilter(TypeFilter filter) const;
 
   // Notifies that a window's bounds are changed.

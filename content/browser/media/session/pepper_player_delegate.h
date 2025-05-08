@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "content/browser/media/session/media_session_player_observer.h"
+#include "media/base/picture_in_picture_events_info.h"
 
 namespace content {
 
@@ -57,7 +58,8 @@ class PepperPlayerDelegate : public MediaSessionPlayerObserver {
   media::MediaContentType GetMediaContentType() const override;
   void OnAutoPictureInPictureInfoChanged(
       int player_id,
-      std::string_view auto_picture_in_picture_info) override {}
+      const media::PictureInPictureEventsInfo::AutoPipInfo&
+          auto_picture_in_picture_info) override {}
 
  private:
   void SetVolume(int player_id, double volume);

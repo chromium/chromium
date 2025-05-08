@@ -456,8 +456,7 @@ class HistoryEmbeddingsService
   std::atomic<size_t> query_id_ = 0u;
 
   // Used to cancel the in-flight embedding task for the previous stale query.
-  passage_embeddings::Embedder::TaskId query_embedding_task_id_ =
-      passage_embeddings::Embedder::kInvalidTaskId;
+  std::optional<passage_embeddings::Embedder::TaskId> query_embedding_task_id_;
 
   // Callback subscription for receiving OsCryptAsync ready event.
   base::CallbackListSubscription os_crypt_async_subscription_;

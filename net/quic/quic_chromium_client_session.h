@@ -789,6 +789,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
                 const quic::QuicSocketAddress& local_address,
                 const quic::QuicSocketAddress& peer_address) override;
   void OnStreamClosed(quic::QuicStreamId stream_id) override;
+  bool ShouldKeepConnectionAlive() const override;
 
   // MultiplexedSession methods:
   int GetRemoteEndpoint(IPEndPoint* endpoint) override;
@@ -952,6 +953,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
   quic::ParsedQuicVersion GetQuicVersion() const;
 
+  // Send a ping frame to the peer to check the liveness of the connection.
+  void SendPing();
+
   bool require_confirmation() const { return require_confirmation_; }
 
   // Retrieves any DNS aliases for the given session key from the map stored
@@ -963,6 +967,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
   const std::set<url::SchemeHostPort>& received_origins() const {
     return received_origins_;
+  }
+
+  void SetPeriodicConnectionKeepAlive(bool enable_periodic_ping) {
+    enable_periodic_ping_ = enable_periodic_ping;
   }
 
   void SetGoingAwayForTesting(bool going_away) { going_away_ = going_away; }
@@ -1243,6 +1251,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   const bool allow_server_preferred_address_;
 
   const MultiplexedSessionCreationInitiator session_creation_initiator_;
+
+  // Enable periodic ping to keep the connection alive even when the session
+  // does not have any outstanding requests.
+  bool enable_periodic_ping_ = false;
 
   base::WeakPtrFactory<QuicChromiumClientSession> weak_factory_{this};
 };

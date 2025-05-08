@@ -245,6 +245,17 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   bool IsMouseCaptureActive() const { return is_mouse_capture_active_; }
   bool IsZoomed() const { return is_zoomed_; }
 
+  // This tracks -[NSWindow isOnActiveSpace].
+  // A screen has one active space and may have several hidden spaces.
+  // For a visible window, this value indicates if the window is on an active
+  // space. For a non-visible window, this value indicates whether it will be on
+  // an active space if made visible.
+  bool IsOnActiveSpace() const { return is_on_active_space_; }
+
+  // A window is physically visible on screen if it is visible and on an active
+  // space.
+  bool IsVisibleOnScreen() const { return is_visible_ && is_on_active_space_; }
+
   void SetVisibilityState(remote_cocoa::mojom::WindowVisibilityState new_state);
 
   // Add a NSEvent local event monitor, which will send events to `client`
@@ -314,6 +325,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
 
   // remote_cocoa::mojom::NativeWidgetNSWindowHost:
   void OnVisibilityChanged(bool visible) override;
+  void OnSpaceActivationChanged(bool is_on_active_space) override;
   void OnWindowNativeThemeChanged() override;
   void OnViewSizeChanged(const gfx::Size& new_size) override;
   bool GetSheetOffsetY(int32_t* offset_y) override;
@@ -527,6 +539,8 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   gfx::Rect content_bounds_in_screen_;
   std::vector<uint8_t> state_restoration_data_;
   bool is_visible_ = false;
+  // This tracks -[NSWindow isOnActiveSpace].
+  bool is_on_active_space_ = false;
   bool target_fullscreen_state_ = false;
   bool in_fullscreen_transition_ = false;
   bool is_miniaturized_ = false;

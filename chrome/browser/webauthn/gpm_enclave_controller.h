@@ -43,13 +43,16 @@ enum class FidoRequestType : uint8_t;
 enum class UserVerificationRequirement;
 namespace enclave {
 struct CredentialRequest;
-class ICloudRecoveryKey;
 }  // namespace enclave
 }  // namespace device
 
 namespace sync_pb {
 class WebauthnCredentialSpecifics;
 }  // namespace sync_pb
+
+namespace trusted_vault {
+class ICloudRecoveryKey;
+}  // namespace trusted_vault
 
 enum class EnclaveEnabledStatus;
 class Profile;
@@ -171,18 +174,18 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
   // Called when Chrome has retrieved the iCloud recovery keys present in the
   // current device.
   void OnICloudKeysRetrievedForEnrollment(
-      std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>
+      std::vector<std::unique_ptr<trusted_vault::ICloudRecoveryKey>>
           local_icloud_keys);
 
   // Enrolls a specific iCloud keychain recovery key. |key| may be null, in
   // which case we skip to the next step.
   void EnrollICloudRecoveryKey(
-      std::unique_ptr<device::enclave::ICloudRecoveryKey> key);
+      std::unique_ptr<trusted_vault::ICloudRecoveryKey> key);
 
   // Called when Chrome has retrieved the iCloud recovery keys present in the
   // current device.
   void OnICloudKeysRetrievedForRecovery(
-      std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>
+      std::vector<std::unique_ptr<trusted_vault::ICloudRecoveryKey>>
           local_icloud_keys);
 #endif  // BUILDFLAG(IS_MAC)
 

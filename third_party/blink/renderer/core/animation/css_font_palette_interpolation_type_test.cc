@@ -25,12 +25,11 @@ namespace blink {
 
 class CSSFontPaletteInterpolationTypeTest : public PageTestBase {
  protected:
-  std::unique_ptr<CSSFontPaletteInterpolationType>
-  CreateFontPaletteInterpolationType() {
+  CSSFontPaletteInterpolationType* CreateFontPaletteInterpolationType() {
     const CSSProperty& css_property =
         CSSProperty::Get(CSSPropertyID::kFontPalette);
     PropertyHandle property = PropertyHandle(css_property);
-    return std::make_unique<CSSFontPaletteInterpolationType>(property);
+    return MakeGarbageCollected<CSSFontPaletteInterpolationType>(property);
   }
 };
 
@@ -52,8 +51,8 @@ TEST_F(CSSFontPaletteInterpolationTypeTest,
   StyleResolverState state(document, *element, nullptr,
                            StyleRequest(element->GetComputedStyle()));
 
-  std::unique_ptr<CSSFontPaletteInterpolationType>
-      font_palette_interpolation_type = CreateFontPaletteInterpolationType();
+  CSSFontPaletteInterpolationType* font_palette_interpolation_type =
+      CreateFontPaletteInterpolationType();
 
   InterpolationValue result = font_palette_interpolation_type
                                   ->MaybeConvertStandardPropertyUnderlyingValue(
@@ -68,8 +67,8 @@ TEST_F(CSSFontPaletteInterpolationTypeTest,
 }
 
 TEST_F(CSSFontPaletteInterpolationTypeTest, MaybeConvertValue) {
-  std::unique_ptr<CSSFontPaletteInterpolationType>
-      font_palette_interpolation_type = CreateFontPaletteInterpolationType();
+  CSSFontPaletteInterpolationType* font_palette_interpolation_type =
+      CreateFontPaletteInterpolationType();
   CSSFontPaletteInterpolationType::ConversionCheckers conversion_checkers;
   CSSValue* value =
       MakeGarbageCollected<CSSCustomIdentValue>(AtomicString("--palette"));

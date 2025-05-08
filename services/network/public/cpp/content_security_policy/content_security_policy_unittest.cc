@@ -1220,13 +1220,72 @@ TEST(ContentSecurityPolicy, ParseSandbox) {
                 ~mojom::WebSandboxFlags::kAutomaticFeatures);
 }
 
+TEST(ContentSecurityPolicy,
+     ParseSerializedSourceList_ScriptSrcWithScriptSrcV2Disabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(network::features::kCSPScriptSrcV2);
+  scoped_refptr<net::HttpResponseHeaders> headers(
+      new net::HttpResponseHeaders("HTTP/1.1 200 OK"));
+
+  std::string directive_value =
+      "'sha256-YWJj' 'nonce-cde' 'sha256-QUJD' 'url-sha256-Y2Q='";
+  headers->SetHeader("Content-Security-Policy",
+                     "script-src " + directive_value);
+  std::vector<mojom::ContentSecurityPolicyPtr> policies;
+  AddContentSecurityPolicyFromHeaders(*headers, GURL("https://example.com/"),
+                                      &policies);
+  auto expected_csp = mojom::CSPSourceList::New();
+  expected_csp->hashes.push_back(mojom::CSPHashSource::New(
+      mojom::IntegrityAlgorithm::kSha256, std::vector<uint8_t>{'a', 'b', 'c'}));
+  expected_csp->hashes.push_back(mojom::CSPHashSource::New(
+      mojom::IntegrityAlgorithm::kSha256, std::vector<uint8_t>{'A', 'B', 'C'}));
+  expected_csp->nonces.push_back("cde");
+
+  EXPECT_TRUE(expected_csp.Equals(
+      policies[0]->directives[mojom::CSPDirectiveName::ScriptSrc]));
+  EXPECT_EQ(
+      policies[0]->raw_directives[mojom::CSPDirectiveName::ScriptSrc],
+      std::string(base::TrimString(directive_value, " ", base::TRIM_ALL)));
+
+  EXPECT_EQ(
+      "The Content-Security-Policy directive 'script-src' contains "
+      "'url-sha256-Y2Q=' as a source expression that is permitted only for "
+      "'script-src-v2' directive. It will be ignored.",
+      policies[0]->parsing_errors[0]);
+}
+
+TEST(ContentSecurityPolicy,
+     ParseSerializedSourceList_ScriptSrcV2WithScriptSrcV2Disabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(network::features::kCSPScriptSrcV2);
+  scoped_refptr<net::HttpResponseHeaders> headers(
+      new net::HttpResponseHeaders("HTTP/1.1 200 OK"));
+
+  std::string directive_value =
+      "'sha256-YWJj' 'nonce-cde' 'sha256-QUJD' 'url-sha256-Y2Q='";
+  headers->SetHeader("Content-Security-Policy",
+                     "script-src-v2 " + directive_value);
+  std::vector<mojom::ContentSecurityPolicyPtr> policies;
+  AddContentSecurityPolicyFromHeaders(*headers, GURL("https://example.com/"),
+                                      &policies);
+  EXPECT_EQ(0u, policies[0]->directives.size());
+  EXPECT_EQ(0u, policies[0]->raw_directives.size());
+  EXPECT_EQ("Unrecognized Content-Security-Policy directive 'script-src-v2'.",
+            policies[0]->parsing_errors[0]);
+}
+
 TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(network::features::kCSPScriptSrcV2);
+
   struct TestCase {
+    mojom::CSPDirectiveName directive_name;
     std::string directive_value;
     base::OnceCallback<mojom::CSPSourceListPtr()> expected;
     std::string expected_error;
   } cases[] = {
       {
+          mojom::CSPDirectiveName::ScriptSrc,
           "'nonce-a' 'nonce-a=' 'nonce-a==' 'nonce-a===' 'nonce-==' 'nonce-' "
           "'nonce 'nonce-cde' 'nonce-cde=' 'nonce-cde==' 'nonce-cde==='",
           base::BindOnce([] {
@@ -1239,9 +1298,21 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
             csp->nonces.push_back("cde==");
             return csp;
           }),
-          "",
+          "The source list for the Content Security Policy directive "
+          "'script-src' contains an invalid source: ''nonce-a===''. It will be "
+          "ignored.",
       },
       {
+          // Invalid hash:
+          mojom::CSPDirectiveName::ScriptSrc,
+          "'sha256-'",
+          base::BindOnce([] { return mojom::CSPSourceList::New(); }),
+          "The source list for the Content Security Policy directive "
+          "'script-src' contains an invalid source: ''sha256-''. It will be "
+          "ignored.",
+      },
+      {
+          mojom::CSPDirectiveName::ScriptSrc,
           "'sha256-YWJj' 'nonce-cde' 'sha256-QUJD'",
           base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
@@ -1257,11 +1328,73 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
           "",
       },
       {
+          mojom::CSPDirectiveName::ScriptSrc,
+          "'sha256-YWJj' 'nonce-cde' 'sha256-QUJD' 'url-sha256-Y2Q='",
+          base::BindOnce([] {
+            auto csp = mojom::CSPSourceList::New();
+            csp->hashes.push_back(
+                mojom::CSPHashSource::New(mojom::IntegrityAlgorithm::kSha256,
+                                          std::vector<uint8_t>{'a', 'b', 'c'}));
+            csp->hashes.push_back(
+                mojom::CSPHashSource::New(mojom::IntegrityAlgorithm::kSha256,
+                                          std::vector<uint8_t>{'A', 'B', 'C'}));
+            csp->nonces.push_back("cde");
+            return csp;
+          }),
+          "The Content-Security-Policy directive 'script-src' contains "
+          "'url-sha256-Y2Q=' as a source expression that is permitted only for "
+          "'script-src-v2' directive. It will be ignored.",
+      },
+      {
+          mojom::CSPDirectiveName::ScriptSrcV2,
+          "'sha256-YWJj' 'nonce-cde' 'sha256-QUJD' 'url-sha256-Y2Q='",
+          base::BindOnce([] {
+            auto csp = mojom::CSPSourceList::New();
+            csp->hashes.push_back(
+                mojom::CSPHashSource::New(mojom::IntegrityAlgorithm::kSha256,
+                                          std::vector<uint8_t>{'a', 'b', 'c'}));
+            csp->hashes.push_back(
+                mojom::CSPHashSource::New(mojom::IntegrityAlgorithm::kSha256,
+                                          std::vector<uint8_t>{'A', 'B', 'C'}));
+            csp->nonces.push_back("cde");
+
+            csp->url_hashes.push_back(
+                mojom::CSPHashSource::New(mojom::IntegrityAlgorithm::kSha256,
+                                          std::vector<uint8_t>{'c', 'd'}));
+            return csp;
+          }),
+          "",
+      },
+      {
+          mojom::CSPDirectiveName::ScriptSrcV2,
+          "'sha256-YWJj' 'nonce-cde' 'sha256-QUJD' 'url-sha256-Y2Q=' "
+          "https://a.com/",
+          base::BindOnce([] {
+            auto csp = mojom::CSPSourceList::New();
+            csp->hashes.push_back(
+                mojom::CSPHashSource::New(mojom::IntegrityAlgorithm::kSha256,
+                                          std::vector<uint8_t>{'a', 'b', 'c'}));
+            csp->hashes.push_back(
+                mojom::CSPHashSource::New(mojom::IntegrityAlgorithm::kSha256,
+                                          std::vector<uint8_t>{'A', 'B', 'C'}));
+            csp->nonces.push_back("cde");
+
+            csp->url_hashes.push_back(
+                mojom::CSPHashSource::New(mojom::IntegrityAlgorithm::kSha256,
+                                          std::vector<uint8_t>{'c', 'd'}));
+            return csp;
+          }),
+          "The Content-Security-Policy directive 'script-src-v2' doesn't "
+          "permit source expression https://a.com/. It will be ignored.",
+      },
+      {
+          mojom::CSPDirectiveName::ScriptSrc,
           "'none' ",
           base::BindOnce([] { return mojom::CSPSourceList::New(); }),
           "",
       },
       {
+          mojom::CSPDirectiveName::ScriptSrc,
           "'none' 'self'",
           base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
@@ -1274,6 +1407,7 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
           "otherwise it is ignored.",
       },
       {
+          mojom::CSPDirectiveName::ScriptSrc,
           "'self' 'none'",
           base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
@@ -1286,6 +1420,7 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
           "otherwise it is ignored.",
       },
       {
+          mojom::CSPDirectiveName::ScriptSrc,
           "'none' 'report-sample'",
           base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
@@ -1295,6 +1430,7 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
           "",
       },
       {
+          mojom::CSPDirectiveName::ScriptSrc,
           "'none' 'self' 'report-sample'",
           base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
@@ -1308,33 +1444,46 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
           "otherwise it is ignored.",
       },
       {
+          mojom::CSPDirectiveName::ScriptSrc,
           "'none' 'report-sha256'",
           base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
             csp->report_hash_algorithm = mojom::IntegrityAlgorithm::kSha256;
             return csp;
           }),
-          "",
+          "The Content-Security-Policy directive 'script-src' contains the "
+          "keyword 'none' alongside with other source expressions. The keyword "
+          "'none' must be the only source expression in the directive value, "
+          "otherwise it is ignored.",
       },
       {
+          mojom::CSPDirectiveName::ScriptSrc,
           "'none' 'report-sha384'",
           base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
             csp->report_hash_algorithm = mojom::IntegrityAlgorithm::kSha384;
             return csp;
           }),
-          "",
+          "The Content-Security-Policy directive 'script-src' contains the "
+          "keyword 'none' alongside with other source expressions. The keyword "
+          "'none' must be the only source expression in the directive value, "
+          "otherwise it is ignored.",
       },
       {
+          mojom::CSPDirectiveName::ScriptSrc,
           "'none' 'report-sha512'",
           base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
             csp->report_hash_algorithm = mojom::IntegrityAlgorithm::kSha512;
             return csp;
           }),
-          "",
+          "The Content-Security-Policy directive 'script-src' contains the "
+          "keyword 'none' alongside with other source expressions. The keyword "
+          "'none' must be the only source expression in the directive value, "
+          "otherwise it is ignored.",
       },
       {
+          mojom::CSPDirectiveName::ScriptSrc,
           "'self'",
           base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
@@ -1343,6 +1492,7 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
           }),
       },
       {
+          mojom::CSPDirectiveName::ScriptSrc,
           "'wrong' *",
           base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
@@ -1354,6 +1504,19 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
           "ignored.",
       },
       {
+          mojom::CSPDirectiveName::ScriptSrcV2,
+          "'wrong' *",
+          base::BindOnce([] {
+            auto csp = mojom::CSPSourceList::New();
+            csp->allow_star = true;
+            return csp;
+          }),
+          "The source list for the Content Security Policy directive "
+          "'script-src-v2' contains an invalid source: ''wrong''. It will be "
+          "ignored.",
+      },
+      {
+          mojom::CSPDirectiveName::ScriptSrc,
           "'wrong' 'unsafe-inline'",
           base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
@@ -1365,6 +1528,7 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
           "ignored.",
       },
       {
+          mojom::CSPDirectiveName::ScriptSrc,
           "'wrong' 'unsafe-eval'",
           base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
@@ -1376,6 +1540,7 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
           "ignored.",
       },
       {
+          mojom::CSPDirectiveName::ScriptSrc,
           "'wrong' 'wasm-eval'",
           base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
@@ -1387,6 +1552,7 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
           "ignored.",
       },
       {
+          mojom::CSPDirectiveName::ScriptSrc,
           "'wrong' 'wasm-unsafe-eval'",
           base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
@@ -1398,6 +1564,7 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
           "ignored.",
       },
       {
+          mojom::CSPDirectiveName::ScriptSrc,
           "'wrong' 'strict-dynamic'",
           base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
@@ -1409,6 +1576,7 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
           "ignored.",
       },
       {
+          mojom::CSPDirectiveName::ScriptSrc,
           "'wrong' 'unsafe-hashes'",
           base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
@@ -1420,6 +1588,7 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
           "ignored.",
       },
       {
+          mojom::CSPDirectiveName::ScriptSrc,
           "'wrong' 'report-sample'",
           base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
@@ -1433,26 +1602,29 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
   };
 
   for (auto& test : cases) {
-    SCOPED_TRACE(test.directive_value);
+    SCOPED_TRACE(ToString(test.directive_name) + " " + test.directive_value);
     scoped_refptr<net::HttpResponseHeaders> headers(
         new net::HttpResponseHeaders("HTTP/1.1 200 OK"));
-    headers->SetHeader("Content-Security-Policy",
-                       "script-src " + test.directive_value);
+    headers->SetHeader(
+        "Content-Security-Policy",
+        ToString(test.directive_name) + "  " + test.directive_value);
     std::vector<mojom::ContentSecurityPolicyPtr> policies;
     AddContentSecurityPolicyFromHeaders(*headers, GURL("https://example.com/"),
                                         &policies);
-    EXPECT_TRUE(
-        std::move(test.expected)
-            .Run()
-            .Equals(
-                policies[0]->directives[mojom::CSPDirectiveName::ScriptSrc]));
+    EXPECT_TRUE(std::move(test.expected)
+                    .Run()
+                    .Equals(policies[0]->directives[test.directive_name]));
 
-    EXPECT_EQ(policies[0]->raw_directives[mojom::CSPDirectiveName::ScriptSrc],
+    EXPECT_EQ(policies[0]->raw_directives[test.directive_name],
               std::string(
                   base::TrimString(test.directive_value, " ", base::TRIM_ALL)));
 
-    if (!test.expected_error.empty())
+    if (test.expected_error.empty()) {
+      EXPECT_TRUE(policies[0]->parsing_errors.empty());
+    } else {
+      ASSERT_FALSE(policies[0]->parsing_errors.empty());
       EXPECT_EQ(test.expected_error, policies[0]->parsing_errors[0]);
+    }
   }
 }
 

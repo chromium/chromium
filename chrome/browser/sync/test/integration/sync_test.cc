@@ -1154,8 +1154,7 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics) &&
-      base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)) {
+  if (base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)) {
     allowed_types.Put(syncer::THEMES);
   }
 

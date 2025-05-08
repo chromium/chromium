@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.ui.accessibility.KeyboardFocusUtil.setFocusOnFirstFocusableDescendant;
 
 import android.animation.Animator;
@@ -16,7 +17,6 @@ import android.content.res.ColorStateList;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewStub;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageButton;
@@ -31,8 +31,10 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
@@ -40,6 +42,7 @@ import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
@@ -54,37 +57,37 @@ import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbar
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.interpolators.Interpolators;
+import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.function.BooleanSupplier;
 
 /** The Toolbar object for Tablet screens. */
 @SuppressLint("Instantiatable")
-public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
+@NullMarked
+public class ToolbarTablet extends ToolbarLayout {
     private static final int ICON_FADE_IN_ANIMATION_DELAY_MS = 75;
     private static final int ICON_FADE_ANIMATION_DURATION_MS = 150;
 
     private ImageButton mHomeButton;
     private ImageButton mBackButton;
-    private ImageButton mForwardButton;
+    private ChromeImageButton mForwardButton;
     private ImageButton mReloadButton;
     private ImageButton mBookmarkButton;
     private ImageButton mSaveOfflineButton;
-    private View mIncognitoIndicator;
+    private @Nullable View mIncognitoIndicator;
 
     private boolean mIsInTabSwitcherMode;
     private boolean mToolbarButtonsVisible;
-    private ImageButton mOptionalButton;
+    private @Nullable ImageButton mOptionalButton;
     private boolean mOptionalButtonUsesTint;
 
-    private NavigationPopup mNavigationPopup;
+    private @Nullable NavigationPopup mNavigationPopup;
 
     private Boolean mIsIncognitoBranded;
     private LocationBarCoordinator mLocationBar;
@@ -94,10 +97,10 @@ public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
     private final int mStartPaddingWithButtons;
     private final int mStartPaddingWithoutButtons;
     private boolean mShouldAnimateButtonVisibilityChange;
-    private AnimatorSet mButtonVisibilityAnimators;
+    private @Nullable AnimatorSet mButtonVisibilityAnimators;
     private HistoryDelegate mHistoryDelegate;
-    private ObservableSupplier<Integer> mTabCountSupplier;
-    private TabletCaptureStateToken mLastCaptureStateToken;
+    private @Nullable ObservableSupplier<Integer> mTabCountSupplier;
+    private @Nullable TabletCaptureStateToken mLastCaptureStateToken;
     private @DrawableRes int mBookmarkButtonImageRes;
 
     /**
@@ -133,6 +136,7 @@ public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
     }
 
     @Override
+    @Initializer
     public void setLocationBarCoordinator(LocationBarCoordinator locationBarCoordinator) {
         mLocationBar = locationBarCoordinator;
         final @ColorInt int color = SemanticColorUtils.getColorSurfaceContainer(getContext());
@@ -146,9 +150,7 @@ public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
     @Override
     public void onNativeLibraryReady() {
         super.onNativeLibraryReady();
-        mHomeButton.setOnClickListener(this);
-
-        mForwardButton.setOnClickListener(this);
+        mForwardButton.setClickCallback(metaState -> forward(metaState, "MobileToolbarForward"));
         mForwardButton.setLongClickable(true);
     }
 
@@ -184,17 +186,6 @@ public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
                         getToolbarDataProvider()::getTab,
                         mHistoryDelegate);
         mNavigationPopup.show(anchorView);
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (mHomeButton == v) {
-            recordHomeModuleClickedIfNTPVisible();
-            openHomepage();
-        } else if (mForwardButton == v) {
-            forward();
-            RecordUserAction.record("MobileToolbarForward");
-        }
     }
 
     @Override
@@ -268,7 +259,8 @@ public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
             // TODO (amaralp): Have progress bar observe theme color and incognito changes directly.
             getProgressBar()
                     .setThemeColor(
-                            ChromeColors.getDefaultThemeColor(getContext(), incognitoBranded),
+                            SurfaceColorUpdateUtils.getDefaultThemeColor(
+                                    getContext(), incognitoBranded),
                             incognitoBranded);
             updateRippleBackground();
             mIsIncognitoBranded = incognitoBranded;
@@ -280,8 +272,8 @@ public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
 
     @Override
     public void onTintChanged(
-            ColorStateList tint,
-            ColorStateList activityFocusTint,
+            @Nullable ColorStateList tint,
+            @Nullable ColorStateList activityFocusTint,
             @BrandedColorScheme int brandedColorScheme) {
         ImageViewCompat.setImageTintList(mHomeButton, activityFocusTint);
         ImageViewCompat.setImageTintList(mForwardButton, activityFocusTint);
@@ -402,33 +394,32 @@ public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
     }
 
     @Override
+    @Initializer
     public void initialize(
             ToolbarDataProvider toolbarDataProvider,
             ToolbarTabController tabController,
             MenuButtonCoordinator menuButtonCoordinator,
             ToggleTabStackButtonCoordinator tabSwitcherButtonCoordinator,
             HistoryDelegate historyDelegate,
-            BooleanSupplier partnerHomepageEnabledSupplier,
             UserEducationHelper userEducationHelper,
             ObservableSupplier<Tracker> trackerSupplier,
             ToolbarProgressBar progressBar,
-            ReloadButtonCoordinator reloadButtonCoordinator,
-            BackButtonCoordinator backButtonCoordinator) {
+            @Nullable ReloadButtonCoordinator reloadButtonCoordinator,
+            @Nullable BackButtonCoordinator backButtonCoordinator) {
         super.initialize(
                 toolbarDataProvider,
                 tabController,
                 menuButtonCoordinator,
                 tabSwitcherButtonCoordinator,
                 historyDelegate,
-                partnerHomepageEnabledSupplier,
                 userEducationHelper,
                 trackerSupplier,
                 progressBar,
                 reloadButtonCoordinator,
                 backButtonCoordinator);
         mHistoryDelegate = historyDelegate;
-        mReloadButtonCoordinator = reloadButtonCoordinator;
-        mBackButtonCoordinator = backButtonCoordinator;
+        mReloadButtonCoordinator = assertNonNull(reloadButtonCoordinator);
+        mBackButtonCoordinator = assertNonNull(backButtonCoordinator);
         menuButtonCoordinator.setVisibility(true);
     }
 
@@ -453,7 +444,7 @@ public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
     }
 
     @Override
-    void onHomeButtonUpdate(boolean homeButtonEnabled) {
+    void onHomeButtonIsEnabledUpdate(boolean homeButtonEnabled) {
         mHomeButton.setVisibility(homeButtonEnabled ? VISIBLE : GONE);
     }
 
@@ -494,7 +485,7 @@ public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
 
         ButtonSpec buttonSpec = buttonData.getButtonSpec();
 
-        // Set hover highlight for profile, voice search, share and new tab button on tablets. Set
+        // Set hover highlight for buttons requesting a custom highlight. Set
         // box hover highlight for the rest of button variants.
         if (buttonData.getButtonSpec().shouldShowBackgroundHighlight()) {
             mOptionalButton.setBackgroundResource(
@@ -571,7 +562,7 @@ public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
     }
 
     @Override
-    public View getOptionalButtonViewForTesting() {
+    public @Nullable View getOptionalButtonViewForTesting() {
         return mOptionalButton;
     }
 

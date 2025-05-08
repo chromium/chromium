@@ -101,6 +101,18 @@ message OnDeviceModelExecutionInputConfig {
   optional uint32 max_execute_tokens = 6;
 }
 
+// Rules that generated output must follow.
+message ResponseConstraint {
+  oneof format {
+    // A JSON Schema describing an llguidance constraint on the output. See
+    // https://github.com/guidance-ai/llguidance/blob/main/docs/json_schema.md
+    string json_schema = 1;
+    // A regex describing the llguidance constraint on the output.
+    // See https://docs.rs/regex/latest/regex/#syntax for syntax.
+    string regex = 2;
+  }
+}
+
 message OnDeviceModelExecutionOutputConfig {
   reserved 7;
 
@@ -121,6 +133,9 @@ message OnDeviceModelExecutionOutputConfig {
 
   // The maximum number of tokens that can be generated as output.
   optional uint32 max_output_tokens = 6;
+
+  // The response constraint to use when generating output.
+  optional ResponseConstraint response_constraint = 8;
 }
 
 message TextSafetyFallbackConfig {

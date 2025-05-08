@@ -22,6 +22,7 @@ goog.require('goog.events');
 goog.require('goog.events.EventType');
 goog.require('goog.events.FocusHandler');
 goog.require('goog.fx.Transition');
+goog.require('goog.math.Size');
 goog.require('goog.string');
 goog.require('goog.style');
 goog.require('goog.ui.Component');
@@ -83,6 +84,14 @@ goog.ui.ModalPopup = function(opt_useIframeMask, opt_domHelper) {
    */
   this.resizeBackgroundTask_ = goog.dom.animationFrame.createTask(
       {mutate: this.resizeBackground_}, this);
+
+  /**
+   * The animation task that update the modal and background, scheduled to run
+   * in the next animation frame.
+   * @private @const {function(...?)}
+   */
+  this.updateModalAndBackgroundTask_ = goog.dom.animationFrame.createTask(
+      {mutate: this.updateModalAndBackground_}, this);
 };
 goog.inherits(goog.ui.ModalPopup, goog.ui.Component);
 
@@ -136,6 +145,23 @@ goog.ui.ModalPopup.prototype.tabCatcherElement_ = null;
  * @private
  */
 goog.ui.ModalPopup.prototype.backwardTabWrapInProgress_ = false;
+
+
+/**
+ * Whether to center the popup and the background inside the parent element.
+ * Otherwise, the default is to center inside the document body.
+ * @type {boolean}
+ * @private
+ */
+goog.ui.ModalPopup.prototype.centerInsideParent_ = false;
+
+
+/**
+ * An observable to update the modal and background size and position when
+ * centered inside a parent element.
+ * @private {?ResizeObserver}
+ */
+goog.ui.ModalPopup.prototype.parentElementResizeObserver_ = null;
 
 
 /**
@@ -380,6 +406,9 @@ goog.ui.ModalPopup.prototype.exitDocument = function() {
   goog.dom.removeNode(this.bgIframeEl_);
   goog.dom.removeNode(this.bgEl_);
   goog.dom.removeNode(this.tabCatcherElement_);
+  if (this.parentElementResizeObserver_) {
+    this.parentElementResizeObserver_.disconnect();
+  }
 };
 
 
@@ -451,11 +480,25 @@ goog.ui.ModalPopup.prototype.setTransition = function(
 
 
 /**
+ * Sets the parent element to center the popup and the background inside the
+ * parent element.
+ * @param {boolean} centerInsideParent
+ */
+goog.ui.ModalPopup.prototype.setCenterInsideParentElement = function(
+    centerInsideParent) {
+  if (this.isInDocument()) {
+    throw new Error(
+        'Can\'t set parent element after component is already in document.');
+  }
+  this.centerInsideParent_ = centerInsideParent;
+};
+
+
+/**
  * Shows the popup.
  * @private
  */
 goog.ui.ModalPopup.prototype.show_ = function() {
-  'use strict';
   if (!this.dispatchEvent(goog.ui.PopupBase.EventType.BEFORE_SHOW)) {
     return;
   }
@@ -466,17 +509,28 @@ goog.ui.ModalPopup.prototype.show_ = function() {
     // Focus-related actions often throw exceptions.
     // Sample past issue: https://bugzilla.mozilla.org/show_bug.cgi?id=656283
   }
-  this.resizeBackground_();
-  this.reposition();
+  this.updateModalAndBackground_();
 
-  // Listen for keyboard and resize events while the modal popup is visible.
-  this.getHandler()
-      .listen(
-          this.getDomHelper().getWindow(), goog.events.EventType.RESIZE,
-          this.resizeBackground_)
-      .listen(
-          this.getDomHelper().getWindow(),
-          goog.events.EventType.ORIENTATIONCHANGE, this.resizeBackgroundTask_);
+  if (this.centerInsideParent_ && window.ResizeObserver !== undefined) {
+    this.parentElementResizeObserver_ = new ResizeObserver(() => {
+      if (this.isVisible()) this.updateModalAndBackground_();
+    });
+    this.parentElementResizeObserver_.observe(
+        goog.asserts.assert(this.getElement().parentElement));
+    this.getHandler().listen(
+        this.getDomHelper().getWindow(),
+        goog.events.EventType.ORIENTATIONCHANGE,
+        this.updateModalAndBackgroundTask_);
+  } else {
+    this.getHandler()
+        .listen(
+            this.getDomHelper().getWindow(), goog.events.EventType.RESIZE,
+            this.resizeBackground_)
+        .listen(
+            this.getDomHelper().getWindow(),
+            goog.events.EventType.ORIENTATIONCHANGE,
+            this.resizeBackgroundTask_);
+  }
 
   this.showPopupElement_(true);
   this.focus();
@@ -491,6 +545,16 @@ goog.ui.ModalPopup.prototype.show_ = function() {
   } else {
     this.onShow();
   }
+};
+
+
+/**
+ * Resizes and positions the modal and background.
+ * @private
+ */
+goog.ui.ModalPopup.prototype.updateModalAndBackground_ = function() {
+  this.resizeBackground_();
+  this.reposition();
 };
 
 
@@ -646,20 +710,26 @@ goog.ui.ModalPopup.prototype.resizeBackground_ = function() {
     goog.style.setElementShown(this.bgEl_, false);
   }
 
-  var doc = this.getDomHelper().getDocument();
-  var win = goog.dom.getWindow(doc) || window;
-
-  // Take the max of document height and view height, in case the document does
-  // not fill the viewport. Read from both the body element and the html element
-  // to account for browser differences in treatment of absolutely-positioned
-  // content.
-  var viewSize = goog.dom.getViewportSize(win);
-  var w = Math.max(
-      viewSize.width,
-      Math.max(doc.body.scrollWidth, doc.documentElement.scrollWidth));
-  var h = Math.max(
-      viewSize.height,
-      Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight));
+  // Take the max of document height and parent element height, in case the
+  // document does not fill the parent element. Read from both the body element
+  // and the html element to account for browser differences in treatment of
+  // absolutely-positioned content.
+  let w;
+  let h;
+  if (this.centerInsideParent_) {
+    const parentEl = this.getElement().parentElement;
+    w = parentEl.clientWidth;
+    h = parentEl.clientHeight;
+  } else {
+    const doc = this.getDomHelper().getDocument();
+    const viewportSize = this.getDocumentViewportSize_();
+    w = Math.max(
+        viewportSize.width,
+        Math.max(doc.body.scrollWidth, doc.documentElement.scrollWidth));
+    h = Math.max(
+        viewportSize.height,
+        Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight));
+  }
 
   if (this.bgIframeEl_) {
     goog.style.setElementShown(this.bgIframeEl_, true);
@@ -680,8 +750,6 @@ goog.ui.ModalPopup.prototype.reposition = function() {
   // TODO(chrishenry): Make this use goog.positioning as in goog.ui.PopupBase?
 
   // Get the current viewport to obtain the scroll offset.
-  var doc = this.getDomHelper().getDocument();
-  var win = goog.dom.getWindow(doc) || window;
   if (goog.style.getComputedPosition(this.getElement()) == 'fixed') {
     var x = 0;
     var y = 0;
@@ -691,12 +759,20 @@ goog.ui.ModalPopup.prototype.reposition = function() {
     var y = scroll.y;
   }
 
-  var popupSize = goog.style.getSize(this.getElement());
-  var viewSize = goog.dom.getViewportSize(win);
+  // The popupSize should get calculated before viewSize to avoid losing focus
+  // on the action button.
+  const popupSize = goog.style.getSize(this.getElement());
+  let viewSize;
+  if (this.centerInsideParent_) {
+    const parentEl = this.getElement().parentElement;
+    viewSize = new goog.math.Size(parentEl.clientWidth, parentEl.clientHeight);
+  } else {
+    viewSize = this.getDocumentViewportSize_();
+  }
 
   // Make sure left and top are non-negatives.
-  var left = Math.max(x + viewSize.width / 2 - popupSize.width / 2, 0);
-  var top = Math.max(y + viewSize.height / 2 - popupSize.height / 2, 0);
+  const left = Math.max(x + viewSize.width / 2 - popupSize.width / 2, 0);
+  const top = Math.max(y + viewSize.height / 2 - popupSize.height / 2, 0);
   goog.style.setPosition(this.getElement(), left, top);
 
   // We place the tab catcher at the same position as the dialog to
@@ -753,6 +829,18 @@ goog.ui.ModalPopup.prototype.focusElement_ = function() {
   } catch (e) {
     // Swallow this. IE can throw an error if the element can not be focused.
   }
+};
+
+
+/**
+ * Returns the size of the element containing the background and the modal.
+ * @return {!goog.math.Size}
+ * @private
+ */
+goog.ui.ModalPopup.prototype.getDocumentViewportSize_ = function() {
+  const doc = this.getDomHelper().getDocument();
+  const win = goog.dom.getWindow(doc) || window;
+  return goog.dom.getViewportSize(win);
 };
 
 

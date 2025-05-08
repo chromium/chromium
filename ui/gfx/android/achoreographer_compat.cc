@@ -47,7 +47,8 @@ const AChoreographerCompat33& AChoreographerCompat33::Get() {
 }
 
 AChoreographerCompat33::AChoreographerCompat33() {
-  if (!base::android::BuildInfo::GetInstance()->is_at_least_t()) {
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SDK_VERSION_T) {
     supported = false;
     return;
   }

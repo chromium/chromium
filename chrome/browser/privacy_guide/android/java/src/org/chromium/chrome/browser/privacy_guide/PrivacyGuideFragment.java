@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.privacy_guide;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.privacy_guide.PrivacyGuideUtils.getFragmentFocusViewId;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,10 +14,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.IntDef;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
@@ -32,6 +35,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.widget.ButtonCompat;
 
@@ -46,7 +50,7 @@ import java.util.List;
  */
 @NullMarked
 public class PrivacyGuideFragment extends Fragment
-        implements BackPressHandler, ProfileDependentSetting {
+        implements BackPressHandler, ProfileDependentSetting, SettingsFragment {
     /**
      * The types of fragments supported. Each fragment corresponds to a step in the privacy guide.
      */
@@ -96,6 +100,7 @@ public class PrivacyGuideFragment extends Fragment
     private PrivacyGuideMetricsDelegate mPrivacyGuideMetricsDelegate;
     private NavbarVisibilityDelegate mNavbarVisibilityDelegate;
     private Profile mProfile;
+    private ViewPager2.OnPageChangeCallback mOnPageChangeCallback;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -125,11 +130,45 @@ public class PrivacyGuideFragment extends Fragment
         mViewPager.setPageTransformer(new PrivacyGuidePageTransformer());
         mViewPager.setUserInputEnabled(false);
 
+        // Workaround for ViewPager2 bug: https://issuetracker.google.com/issues/284429851.
+        for (int i = 0; i < mViewPager.getChildCount(); i++) {
+            var child = mViewPager.getChildAt(i);
+            if (child instanceof RecyclerView) {
+                child.setFocusable(false);
+            }
+        }
+
+        mOnPageChangeCallback =
+                new ViewPager2.OnPageChangeCallback() {
+                    @Override
+                    public void onPageScrollStateChanged(int state) {
+                        super.onPageScrollStateChanged(state);
+
+                        // We only want to send the accessibility event when the view pager
+                        // transition is complete.
+                        if (state != ViewPager2.SCROLL_STATE_IDLE) {
+                            return;
+                        }
+
+                        View targetView =
+                                mView.findViewById(
+                                        getFragmentFocusViewId(
+                                                mPagerAdapter.getFragmentType(
+                                                        mViewPager.getCurrentItem())));
+                        if (targetView != null) {
+                            targetView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                        }
+                    }
+                };
+        mViewPager.registerOnPageChangeCallback(mOnPageChangeCallback);
+
         mTabLayout = mView.findViewById(R.id.tab_layout);
+        mTabLayout.setFocusable(false);
         new TabLayoutMediator(
                         mTabLayout,
                         mViewPager,
                         (tab, position) -> {
+                            tab.view.setFocusable(false);
                             tab.view.setClickable(false);
                             tab.view.setImportantForAccessibility(
                                     View.IMPORTANT_FOR_ACCESSIBILITY_NO);
@@ -162,10 +201,23 @@ public class PrivacyGuideFragment extends Fragment
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        updateButtonVisibility();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
-        updateButtonVisibility();
         mHandleBackPressChangedSupplier.set(shouldHandleBackPress());
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mOnPageChangeCallback != null) {
+            mViewPager.unregisterOnPageChangeCallback(mOnPageChangeCallback);
+        }
     }
 
     private void modifyAppBar() {
@@ -310,5 +362,10 @@ public class PrivacyGuideFragment extends Fragment
     @Override
     public void setProfile(Profile profile) {
         mProfile = profile;
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }

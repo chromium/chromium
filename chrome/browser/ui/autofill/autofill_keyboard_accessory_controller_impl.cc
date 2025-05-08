@@ -359,6 +359,7 @@ void AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed(
     case FillingProduct::kPlusAddresses:
     case FillingProduct::kAutofillAi:
     case FillingProduct::kLoyaltyCard:
+    case FillingProduct::kIdentityCredential:
       break;
   }
 
@@ -561,6 +562,17 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
             pdm->address_data_manager().GetProfileByGUID(
                 std::get<Suggestion::AutofillProfilePayload>(payload)
                     .guid.value())) {
+      // Home & Work addresses can't be deleted through the chrome UI.
+      switch (profile->record_type()) {
+        case AutofillProfile::RecordType::kAccountHome:
+        case AutofillProfile::RecordType::kAccountWork:
+          return false;
+        default:
+        case AutofillProfile::RecordType::kLocalOrSyncable:
+        case AutofillProfile::RecordType::kAccount:
+          break;
+      }
+
       if (title) {
         std::u16string street_address = profile->GetRawInfo(ADDRESS_HOME_CITY);
         if (!street_address.empty()) {

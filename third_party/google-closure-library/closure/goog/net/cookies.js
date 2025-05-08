@@ -244,7 +244,7 @@ goog.net.Cookies.prototype.get = function(name, opt_default) {
     part = goog.string.trim(parts[i]);
     // startsWith
     if (part.lastIndexOf(nameEq, 0) == 0) {
-      return part.substr(nameEq.length);
+      return part.slice(nameEq.length);
     }
     if (part == name) {
       return '';

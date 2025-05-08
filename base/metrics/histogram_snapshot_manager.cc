@@ -80,7 +80,7 @@ void HistogramSnapshotManager::PrepareSamples(const HistogramBase* histogram,
     for (size_t index = 0; index < ranges->size(); ++index) {
       ranges_string += base::StringPrintf("%d ", ranges->range(index));
     }
-    SCOPED_CRASH_KEY_STRING32("PrepareSamples", "ranges", ranges_string);
+    SCOPED_CRASH_KEY_STRING1024("PrepareSamples", "ranges", ranges_string);
 
     // The checksum should have caught this, so crash separately if it didn't.
     CHECK_NE(0U, HistogramBase::RANGE_CHECKSUM_ERROR & corruption);

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.web_app_header;
 import android.graphics.Rect;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -16,6 +17,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import java.util.List;
 
 /** Properties of the {@link PropertyModel} that reflect the state of webapp header */
+@NullMarked
 class WebAppHeaderLayoutProperties {
 
     /** The paddings rect that indicates how much to offset children. */
@@ -33,10 +35,18 @@ class WebAppHeaderLayoutProperties {
     static final WritableObjectPropertyKey<Callback<Integer>> WIDTH_CHANGED_CALLBACK =
             new WritableObjectPropertyKey<>();
 
+    /** Background color of the header */
+    static final WritableIntPropertyKey BACKGROUND_COLOR = new WritableIntPropertyKey();
+
     /** The set of all model properties. */
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                PADDINGS, IS_VISIBLE, MIN_HEIGHT, NON_DRAGGABLE_AREAS, WIDTH_CHANGED_CALLBACK
+                PADDINGS,
+                IS_VISIBLE,
+                MIN_HEIGHT,
+                NON_DRAGGABLE_AREAS,
+                WIDTH_CHANGED_CALLBACK,
+                BACKGROUND_COLOR,
             };
 
     private WebAppHeaderLayoutProperties() {}

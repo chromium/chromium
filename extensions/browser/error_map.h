@@ -63,11 +63,11 @@ class ErrorMap {
   // Return the list of all errors associated with the given extension.
   const ErrorList& GetErrorsForExtension(const ExtensionId& extension_id) const;
 
-  // Add the |error| to the ErrorMap.
+  // Add the `error` to the ErrorMap.
   const ExtensionError* AddError(std::unique_ptr<ExtensionError> error);
 
-  // Removes errors that match the given |filter| from the map. If non-null,
-  // |affected_ids| will be populated with the set of extension ids that were
+  // Removes errors that match the given `filter` from the map. If non-null,
+  // `affected_ids` will be populated with the set of extension ids that were
   // affected by this removal.
   void RemoveErrors(const Filter& filter, std::set<ExtensionId>* affected_ids);
 

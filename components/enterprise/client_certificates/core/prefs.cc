@@ -20,6 +20,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kProvisionManagedClientCertificateForUserPrefs,
       /*default_value=*/0);
+  registry->RegisterDictionaryPref(kManagedProfileIdentityName);
+  registry->RegisterDictionaryPref(kTemporaryManagedProfileIdentityName);
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

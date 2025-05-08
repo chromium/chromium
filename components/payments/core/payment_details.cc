@@ -57,10 +57,6 @@ bool PaymentDetails::operator==(const PaymentDetails& other) const {
          modifiers == other.modifiers && error == other.error;
 }
 
-bool PaymentDetails::operator!=(const PaymentDetails& other) const {
-  return !(*this == other);
-}
-
 bool PaymentDetails::FromValueDict(const base::Value::Dict& dict,
                                    bool requires_total) {
   display_items.clear();

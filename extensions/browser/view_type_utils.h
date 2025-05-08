@@ -16,7 +16,7 @@ namespace extensions {
 
 // Get the type of a WebContents.
 // Use GetViewType(RenderFrameHost) where applicable.
-// GetViewType handles a NULL |tab| for convenience by returning
+// GetViewType handles a NULL `tab` for convenience by returning
 // mojom::ViewType::kInvalid.
 mojom::ViewType GetViewType(content::WebContents* tab);
 

@@ -11,6 +11,8 @@
 
 #include <errno.h>
 #include <stddef.h>
+
+#include <array>
 #include <string_view>
 
 #include "base/strings/string_number_conversions.h"
@@ -371,38 +373,18 @@ TEST_F(URLCanonTest, Scheme) {
   EXPECT_EQ(0, out_comp.len);
 }
 
-// IDNA mode to use in CanonHost tests.
-enum class IDNAMode { kTransitional, kNonTransitional };
-
-class URLCanonHostTest
-    : public ::testing::Test,
-      public ::testing::WithParamInterface<IDNAMode> {
+class URLCanonHostTest : public ::testing::Test {
  public:
   URLCanonHostTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (GetParam() == IDNAMode::kNonTransitional) {
-      enabled_features.push_back(kUseIDNA2008NonTransitional);
-    } else {
-      disabled_features.push_back(kUseIDNA2008NonTransitional);
-    }
-
-    enabled_features.push_back(url::kDisallowSpaceCharacterInURLHostParsing);
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitAndEnableFeature(
+        kDisallowSpaceCharacterInURLHostParsing);
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         URLCanonHostTest,
-                         ::testing::Values(IDNAMode::kTransitional,
-                                           IDNAMode::kNonTransitional));
-
-TEST_P(URLCanonHostTest, Host) {
-  bool use_idna_non_transitional = IsUsingIDNA2008NonTransitional();
-
+TEST_F(URLCanonHostTest, Host) {
   // clang-format off
   IPAddressCase host_cases[] = {
       // Basic canonicalization, uppercase should be converted to lowercase.
@@ -495,14 +477,14 @@ TEST_P(URLCanonHostTest, Host) {
        "ball.de",
        L"fu\x00df"
        L"ball.de",
-       use_idna_non_transitional ? "xn--fuball-cta.de" : "fussball.de",
-       use_idna_non_transitional ? Component(0, 17) : Component(0, 11),
+       "xn--fuball-cta.de",
+       Component(0, 17),
        CanonHostInfo::NEUTRAL, -1, ""},
 
       // Final-sigma (U+03C3) was mapped to regular sigma (U+03C2).
       // Previously, it'd be "xn--wxaikc9b".
       {"\xcf\x83\xcf\x8c\xce\xbb\xce\xbf\xcf\x82", L"\x3c3\x3cc\x3bb\x3bf\x3c2",
-       use_idna_non_transitional ? "xn--wxaijb9b" : "xn--wxaikc6b",
+       "xn--wxaijb9b",
        Component(0, 12), CanonHostInfo::NEUTRAL, -1, ""},
 
       // ZWNJ (U+200C) and ZWJ (U+200D) are mapped away in UTS 46 transitional
@@ -513,8 +495,8 @@ TEST_P(URLCanonHostTest, Host) {
        L"a\x200c"
        L"b\x200d"
        L"c",
-       use_idna_non_transitional ? "xn--abc-9m0ag" : "abc",
-       use_idna_non_transitional ? Component(0, 13) : Component(0, 3),
+       "xn--abc-9m0ag",
+       Component(0, 13),
        CanonHostInfo::NEUTRAL, -1, ""},
 
       // ZWJ between Devanagari characters was still mapped away in UTS 46
@@ -522,8 +504,8 @@ TEST_P(URLCanonHostTest, Host) {
       // Previously "xn--11bo0m".
       {"\xe0\xa4\x95\xe0\xa5\x8d\xe2\x80\x8d\xe0\xa4\x9c",
        L"\x915\x94d\x200d\x91c",
-       use_idna_non_transitional ? "xn--11bo0mv54g" : "xn--11bo0m",
-       use_idna_non_transitional ? Component(0, 14) : Component(0, 10),
+       "xn--11bo0mv54g",
+       Component(0, 14),
        CanonHostInfo::NEUTRAL, -1, ""},
 
       // Fullwidth exclamation mark is disallowed. UTS 46, table 4, row (b)
@@ -1034,7 +1016,7 @@ TEST_F(URLCanonTest, IPv4) {
 }
 
 TEST_F(URLCanonTest, IPv6) {
-  IPAddressCase cases[] = {
+  auto cases = std::to_array<IPAddressCase>({
       // Empty is not an IP address.
       {"", L"", "", Component(), CanonHostInfo::NEUTRAL, -1, ""},
       // Non-IPs with [:] characters are marked BROKEN.
@@ -1189,7 +1171,7 @@ TEST_F(URLCanonTest, IPv6) {
       // Spaces should be rejected.
       {"[::1 hello]", L"[::1 hello]", "", Component(), CanonHostInfo::BROKEN,
        -1, ""},
-  };
+  });
 
   for (size_t i = 0; i < std::size(cases); i++) {
     // 8-bit version.
@@ -2531,53 +2513,44 @@ TEST_F(URLCanonTest, CanonicalizeMailtoURL) {
     bool expected_success;
     Component expected_path;
     Component expected_query;
-  } cases[] = {
-    // Null character should be escaped to %00.
-    // Keep this test first in the list as it is handled specially below.
-    {"mailto:addr1\0addr2?foo",
-     "mailto:addr1%00addr2?foo",
-     true, Component(7, 13), Component(21, 3)},
-    {"mailto:addr1",
-     "mailto:addr1",
-     true, Component(7, 5), Component()},
-    {"mailto:addr1@foo.com",
-     "mailto:addr1@foo.com",
-     true, Component(7, 13), Component()},
-    // Trailing whitespace is stripped.
-    {"MaIlTo:addr1 \t ",
-     "mailto:addr1",
-     true, Component(7, 5), Component()},
-    {"MaIlTo:addr1?to=jon",
-     "mailto:addr1?to=jon",
-     true, Component(7, 5), Component(13,6)},
-    {"mailto:addr1,addr2",
-     "mailto:addr1,addr2",
-     true, Component(7, 11), Component()},
-    // Embedded spaces must be encoded.
-    {"mailto:addr1, addr2",
-     "mailto:addr1,%20addr2",
-     true, Component(7, 14), Component()},
-    {"mailto:addr1, addr2?subject=one two ",
-     "mailto:addr1,%20addr2?subject=one%20two",
-     true, Component(7, 14), Component(22, 17)},
-    {"mailto:addr1%2caddr2",
-     "mailto:addr1%2caddr2",
-     true, Component(7, 13), Component()},
-    {"mailto:\xF0\x90\x8C\x80",
-     "mailto:%F0%90%8C%80",
-     true, Component(7, 12), Component()},
-    // Invalid -- UTF-8 encoded surrogate value.
-    {"mailto:\xed\xa0\x80",
-     "mailto:%EF%BF%BD%EF%BF%BD%EF%BF%BD",
-     false, Component(7, 27), Component()},
-    {"mailto:addr1?",
-     "mailto:addr1?",
-     true, Component(7, 5), Component(13, 0)},
-    // Certain characters have special meanings and must be encoded.
-    {"mailto:! \x22$&()+,-./09:;<=>@AZ[\\]&_`az{|}~\x7f?Query! \x22$&()+,-./09:;<=>@AZ[\\]&_`az{|}~",
-     "mailto:!%20%22$&()+,-./09:;%3C=%3E@AZ[\\]&_%60az%7B%7C%7D~%7F?Query!%20%22$&()+,-./09:;%3C=%3E@AZ[\\]&_`az{|}~",
-     true, Component(7, 53), Component(61, 47)},
   };
+  auto cases = std::to_array<URLCase>({
+      // Null character should be escaped to %00.
+      // Keep this test first in the list as it is handled specially below.
+      {"mailto:addr1\0addr2?foo", "mailto:addr1%00addr2?foo", true,
+       Component(7, 13), Component(21, 3)},
+      {"mailto:addr1", "mailto:addr1", true, Component(7, 5), Component()},
+      {"mailto:addr1@foo.com", "mailto:addr1@foo.com", true, Component(7, 13),
+       Component()},
+      // Trailing whitespace is stripped.
+      {"MaIlTo:addr1 \t ", "mailto:addr1", true, Component(7, 5), Component()},
+      {"MaIlTo:addr1?to=jon", "mailto:addr1?to=jon", true, Component(7, 5),
+       Component(13, 6)},
+      {"mailto:addr1,addr2", "mailto:addr1,addr2", true, Component(7, 11),
+       Component()},
+      // Embedded spaces must be encoded.
+      {"mailto:addr1, addr2", "mailto:addr1,%20addr2", true, Component(7, 14),
+       Component()},
+      {"mailto:addr1, addr2?subject=one two ",
+       "mailto:addr1,%20addr2?subject=one%20two", true, Component(7, 14),
+       Component(22, 17)},
+      {"mailto:addr1%2caddr2", "mailto:addr1%2caddr2", true, Component(7, 13),
+       Component()},
+      {"mailto:\xF0\x90\x8C\x80", "mailto:%F0%90%8C%80", true, Component(7, 12),
+       Component()},
+      // Invalid -- UTF-8 encoded surrogate value.
+      {"mailto:\xed\xa0\x80", "mailto:%EF%BF%BD%EF%BF%BD%EF%BF%BD", false,
+       Component(7, 27), Component()},
+      {"mailto:addr1?", "mailto:addr1?", true, Component(7, 5),
+       Component(13, 0)},
+      // Certain characters have special meanings and must be encoded.
+      {"mailto:! \x22$&()+,-./09:;<=>@AZ[\\]&_`az{|}~\x7f?Query! "
+       "\x22$&()+,-./09:;<=>@AZ[\\]&_`az{|}~",
+       "mailto:!%20%22$&()+,-./"
+       "09:;%3C=%3E@AZ[\\]&_%60az%7B%7C%7D~%7F?Query!%20%22$&()+,-./"
+       "09:;%3C=%3E@AZ[\\]&_`az{|}~",
+       true, Component(7, 53), Component(61, 47)},
+  });
 
   // Define outside of loop to catch bugs where components aren't reset
   Parsed out_parsed;

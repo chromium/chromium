@@ -8,7 +8,9 @@
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
+#include "base/types/optional_ref.h"
 #include "net/url_request/url_request.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/mojom/ad_auction.mojom-forward.h"
 #include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom-forward.h"
@@ -33,7 +35,9 @@ class AdAuctionEventRecordRequestHelper {
   // parses the Ad-Auction-Record-Event header in `request`, sending the result
   // to `OnAdAuctionEventRecordHeaderReceived()` on
   // `url_loader_network_observer_`.
-  void HandleResponse(const net::URLRequest& request);
+  void HandleResponse(
+      const net::URLRequest& request,
+      base::optional_ref<const network::PermissionsPolicy> permissions_policy);
 
  private:
   mojom::AttributionReportingEligibility attribution_reporting_eligibility_ =

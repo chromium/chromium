@@ -21,7 +21,11 @@ TabEventTrackerImpl::TabEventTrackerImpl(
     OnNewEventCallback on_new_event_callback)
     : on_new_event_callback_(on_new_event_callback),
       tab_switcher_trigger_only_(
-          features::kGroupSuggestionEnableTabSwitcherOnly.Get()) {}
+          features::kGroupSuggestionEnableTabSwitcherOnly.Get()),
+      trigger_on_navigation_(
+          features::kGroupSuggestionEnableRecentlyOpened.Get() ||
+          features::kGroupSuggestionEnableSameOrigin.Get() ||
+          features::kGroupSuggestionTriggerCalculationOnPageLoad.Get()) {}
 TabEventTrackerImpl::~TabEventTrackerImpl() = default;
 
 TabEventTrackerImpl::TabSelection::TabSelection() = default;
@@ -49,8 +53,8 @@ void TabEventTrackerImpl::DidSelectTab(int tab_id,
       last_tab_id == tab_id || url.spec() == kAndroidNativeNewTabPageURL) {
     return;
   }
-  current_selection_.committed = true;
-  tab_id_selection_map_[tab_id].emplace_back(current_selection_);
+  current_selection_->committed = true;
+  tab_id_selection_map_[tab_id].emplace_back(*current_selection_);
   if (!tab_switcher_trigger_only_) {
     on_new_event_callback_.Run();
   }
@@ -85,11 +89,12 @@ void TabEventTrackerImpl::OnDidFinishNavigation(
       (page_transition & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) == 0) {
     return;
   }
-  if (current_selection_.tab_id == tab_id && !current_selection_.committed) {
-    current_selection_.committed = true;
-    tab_id_selection_map_[tab_id].emplace_back(current_selection_);
+  DCHECK(current_selection_.has_value());
+  if (current_selection_->tab_id == tab_id && !current_selection_->committed) {
+    current_selection_->committed = true;
+    tab_id_selection_map_[tab_id].emplace_back(*current_selection_);
   }
-  if (!tab_switcher_trigger_only_) {
+  if (!tab_switcher_trigger_only_ && trigger_on_navigation_) {
     on_new_event_callback_.Run();
   }
 }

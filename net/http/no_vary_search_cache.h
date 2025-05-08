@@ -95,7 +95,7 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
 
     // Called when an entry is inserted or refreshed by the MaybeInsert()
     // method. Not called when MaybeInsert() results in no changes to the
-    // database.
+    // database. Also called by MergeFrom() for each merged entry.
     virtual void OnInsert(const std::string& base_url_cache_key,
                           const HttpNoVarySearchData& nvs_data,
                           const std::optional<std::string>& query,
@@ -198,15 +198,20 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
 
   // Merge entries from `newer` in order from the least-recently-used to the
   // most-recently-used, treating them as newly used. Less recently-used entries
-  // will be evicted if necessary to avoid exceeding the maximum size. Journal
-  // methods are not called.
+  // will be evicted if necessary to avoid exceeding the maximum size.
+  // Journal::OnInsert() is called as if the entries were newly inserted (but
+  // with the original update_time).
   void MergeFrom(const NoVarySearchCache& newer);
 
   // Returns the size (number of stored original query strings) of the cache.
-  size_t GetSizeForTesting() const;
+  size_t size() const { return size_; }
+
+  // Return the maximum size for the cache. Attempting to add more than this
+  // many entries will result in older entries being evicted.
+  size_t max_size() const { return max_size_; }
 
   // Returns true if the top-level map is empty. This should be equivalent to
-  // GetSizeForTesting() == 0 in the absence of bugs.
+  // size() == 0 in the absence of bugs.
   bool IsTopLevelMapEmptyForTesting() const;
 
  private:

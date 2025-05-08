@@ -63,6 +63,7 @@ using OptimizationGuideModelExecutionError = optimization_guide::
 using ::testing::_;
 using ::testing::An;
 using ::testing::Contains;
+using ::testing::DoAll;
 using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -205,18 +206,29 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
                 ExecuteModel(optimization_guide::ModelBasedCapabilityKey::
                                  kPasswordChangeSubmission,
                              _, _, _))
-        .WillOnce(WithArg<3>(Invoke([response,
-                                     logs_uploader_weak_ptr](auto callback) {
-          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-              FROM_HERE,
-              base::BindOnce(
-                  std::move(callback),
-                  optimization_guide::OptimizationGuideModelExecutionResult(
-                      optimization_guide::AnyWrapProto(response),
-                      /*execution_info=*/nullptr),
-                  std::make_unique<optimization_guide::ModelQualityLogEntry>(
-                      logs_uploader_weak_ptr)));
-        })));
+        .WillOnce(DoAll(
+            WithArg<1>([&](const google::protobuf::MessageLite& request) {
+              auto& password_change_request = static_cast<
+                  const optimization_guide::proto::PasswordChangeRequest&>(
+                  request);
+              ASSERT_TRUE(password_change_request.page_context()
+                              .has_annotated_page_content());
+              ASSERT_TRUE(
+                  password_change_request.page_context().has_ax_tree_data());
+            }),
+            WithArg<3>(Invoke([response,
+                               logs_uploader_weak_ptr](auto callback) {
+              base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(
+                      std::move(callback),
+                      optimization_guide::OptimizationGuideModelExecutionResult(
+                          optimization_guide::AnyWrapProto(response),
+                          /*execution_info=*/nullptr),
+                      std::make_unique<
+                          optimization_guide::ModelQualityLogEntry>(
+                          logs_uploader_weak_ptr)));
+            }))));
   }
 
   void CheckPasswordsSavedOnFailure(const std::string& username,
@@ -966,4 +978,33 @@ IN_PROC_BROWSER_TEST_F(
       browser()->tab_strip_model()->GetWebContentsAt(0));
   browser()->tab_strip_model()->ActivateTabAt(0);
   EXPECT_TRUE(prompt_observer.IsBubbleDisplayedAutomatically());
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OTPDetectionHaltsTheFlow) {
+  SetPrivacyNoticeAcceptedPref();
+  const GURL main_url = WebContents()->GetLastCommittedURL();
+  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
+      .WillOnce(testing::Return(
+          embedded_test_server()->GetURL("/password/done.html")));
+
+  StartPasswordChange(main_url, u"test", u"pa$$word", WebContents());
+
+  base::WeakPtr<PasswordChangeDelegate> delegate =
+      password_change_service()
+          ->GetPasswordChangeDelegate(
+              browser()->tab_strip_model()->GetWebContentsAt(0))
+          ->AsWeakPtr();
+  ASSERT_TRUE(delegate);
+  EXPECT_EQ(PasswordChangeDelegate::State::kWaitingForChangePasswordForm,
+            delegate->GetCurrentState());
+
+  BubbleObserver prompt_observer(WebContents());
+
+  delegate->OnOtpFieldDetected(
+      browser()->tab_strip_model()->GetWebContentsAt(1));
+
+  EXPECT_EQ(PasswordChangeDelegate::State::kOtpDetected,
+            delegate->GetCurrentState());
+  EXPECT_TRUE(prompt_observer.IsBubbleDisplayedAutomatically());
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
 }

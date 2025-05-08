@@ -42,7 +42,11 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FILL_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.IBAN;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.LOYALTY_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.TERMS_LABEL;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.LOYALTY_CARD_NUMBER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.MERCHANT_NAME;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.NON_TRANSFORMING_LOYALTY_CARD_KEYS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.ALL_TERMS_LABEL_KEYS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.CARD_BENEFITS_TERMS_AVAILABLE;
@@ -85,6 +89,7 @@ import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionIn
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.autofill.LoyaltyCard;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -95,6 +100,8 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.url.GURL;
+
+import java.util.Collections;
 
 /** Tests for {@link TouchToFillPaymentMethodView} */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -258,6 +265,14 @@ public class TouchToFillPaymentMethodViewTest {
                     /* label= */ "CH56 **** **** **** *800 9",
                     /* nickname= */ "",
                     /* value= */ "CH5604835012345678009");
+    private static final LoyaltyCard CVS_LOYALTY_CARD =
+            new LoyaltyCard(
+                    /* loyaltyCardId= */ "cvs",
+                    /* merchantName= */ "CVS Pharmacy",
+                    /* programName= */ "Loyalty program",
+                    /* programLogo= */ new GURL("https://site.com/icon.png"),
+                    /* loyaltyCardNumber= */ "1234",
+                    /* merchantDomains= */ Collections.emptyList());
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -952,6 +967,33 @@ public class TouchToFillPaymentMethodViewTest {
         assertThat(ibanSecondaryText.getVisibility(), is(View.GONE));
     }
 
+    @Test
+    @MediumTest
+    public void testLoyaltyCardTouchToFillItem() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(
+                                    new ListItem(
+                                            LOYALTY_CARD,
+                                            createLoyaltyCardModel(CVS_LOYALTY_CARD)));
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        TextView loyaltyCardNumber =
+                mTouchToFillPaymentMethodView
+                        .getContentView()
+                        .findViewById(R.id.loyalty_card_number);
+        assertThat(
+                loyaltyCardNumber.getText().toString(),
+                is(CVS_LOYALTY_CARD.getLoyaltyCardNumber()));
+        TextView merchantName =
+                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.merchant_name);
+        assertThat(merchantName.getText().toString(), is(CVS_LOYALTY_CARD.getMerchantName()));
+    }
+
     private RecyclerView getCreditCardSuggestions() {
         return mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.sheet_item_list);
     }
@@ -1021,6 +1063,14 @@ public class TouchToFillPaymentMethodViewTest {
                         .with(IBAN_NICKNAME, iban.getNickname())
                         .with(ON_IBAN_CLICK_ACTION, actionCallback);
         return ibanModelBuilder.build();
+    }
+
+    private static PropertyModel createLoyaltyCardModel(LoyaltyCard loyaltyCard) {
+        PropertyModel.Builder loyaltyCardModelBuilder =
+                new PropertyModel.Builder(NON_TRANSFORMING_LOYALTY_CARD_KEYS)
+                        .with(LOYALTY_CARD_NUMBER, loyaltyCard.getLoyaltyCardNumber())
+                        .with(MERCHANT_NAME, loyaltyCard.getMerchantName());
+        return loyaltyCardModelBuilder.build();
     }
 
     private static PropertyModel createTermsLabelModel(boolean cardBenefitsTermsAvailable) {

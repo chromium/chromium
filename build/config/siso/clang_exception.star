@@ -46,24 +46,18 @@ def __step_config(ctx, step_config):
             # need 9G for debug build
             "use_large": True,
         },
-    ]
-    cc_exceptions = [
         {
-            # TODO: crbug.com/411537162 - Make compile faster
-            "name": "xnnpack_slow_compile",
+            # TODO: crbug.com/413423339 - improve compile speed
+            "name": "slow_compile",
             "action_outs": [
                 # keep-sorted start
-                "./clang_arm64_v8_x64/obj/third_party/xnnpack/qs8-packw_arm64/qs8-packw-x128c4-gemm-gio-scalar.o",
-                "./clang_arm64_v8_x64/obj/third_party/xnnpack/qs8-packw_arm64/qs8-packw-x128c4-gemm-goi-scalar.o",
-                "./obj/third_party/xnnpack/qs8-packw_x64/qs8-packw-x128c4-gemm-gio-scalar.o",
-                "./obj/third_party/xnnpack/qs8-packw_x64/qs8-packw-x128c4-gemm-goi-scalar.o",
-                "./obj/third_party/xnnpack/qs8-packw_x64_standalone/qs8-packw-x128c4-gemm-gio-scalar.o",
-                "./obj/third_party/xnnpack/qs8-packw_x64_standalone/qs8-packw-x128c4-gemm-goi-scalar.o",
+                "./obj/content/test/content_unittests/auction_runner_unittest.o",
                 # keep-sorted end
             ],
-            "timeout": "15m",
+            "timeout": "4m",
         },
     ]
+    cc_exceptions = []
     new_rules = []
     for rule in step_config["rules"]:
         if rule["name"].endswith("/cxx") or rule["name"].endswith("/cc"):

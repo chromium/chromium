@@ -59,7 +59,7 @@ class SyncBundle {
   // the list of synced extensions.
   void ApplySyncData(const ExtensionSyncData& extension_sync_data);
 
-  // Checks if there is pending sync data for the extension with the given |id|,
+  // Checks if there is pending sync data for the extension with the given `id`,
   // i.e. data to be sent to the sync server until the extension is installed
   // locally.
   bool HasPendingExtensionData(const ExtensionId& id) const;

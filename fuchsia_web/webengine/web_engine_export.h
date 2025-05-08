@@ -7,11 +7,7 @@
 
 #if defined(COMPONENT_BUILD)
 
-#if defined(WEB_ENGINE_IMPLEMENTATION)
 #define WEB_ENGINE_EXPORT __attribute__((visibility("default")))
-#else
-#define WEB_ENGINE_EXPORT
-#endif
 
 #else  // defined(COMPONENT_BUILD)
 #define WEB_ENGINE_EXPORT

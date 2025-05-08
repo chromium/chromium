@@ -609,6 +609,8 @@ void MessagingBackendServiceImpl::ClearDirtyTabMessagesForGroup(
     return;
   }
 
+  std::vector<base::Uuid> cleared_tab_ids;
+
   // Since the dirty bits are cleared from DB, hide any dirty dots from the tabs
   // and tab groups if they are already showing.
   for (auto& message : cleared_messages) {
@@ -620,6 +622,11 @@ void MessagingBackendServiceImpl::ClearDirtyTabMessagesForGroup(
     NotifyHidePersistentMessagesForTypes(
         persistent_message, {PersistentNotificationType::CHIP,
                              PersistentNotificationType::DIRTY_TAB});
+    if (persistent_message.attribution.tab_metadata.has_value() &&
+        persistent_message.attribution.tab_metadata->sync_tab_id.has_value()) {
+      cleared_tab_ids.emplace_back(
+          persistent_message.attribution.tab_metadata->sync_tab_id.value());
+    }
 
     if (persistent_message.attribution.tab_group_metadata &&
         persistent_message.attribution.tab_group_metadata->sync_tab_group_id) {
@@ -629,6 +636,11 @@ void MessagingBackendServiceImpl::ClearDirtyTabMessagesForGroup(
       DisplayOrHideTabGroupDirtyDotForTabGroup(collaboration_group_id,
                                                tab_group_id);
     }
+  }
+
+  for (const base::Uuid& tab_id : cleared_tab_ids) {
+    tab_group_sync_service_->UpdateTabLastSeenTime(
+        tab_group->saved_guid(), tab_id, tab_groups::TriggerSource::LOCAL);
   }
 }
 
@@ -698,9 +710,16 @@ void MessagingBackendServiceImpl::OnTabGroupRemoved(
     return;
   }
 
-  // Remove all messages from the DB related to this tab group. The only message
-  // that will stay will be the group removal message which will be added in the
-  // next section.
+  // Clear any the dirty persistent messages related to the group that are
+  // already showing in UI. This is important in unshare flow since the tab
+  // group continues to exist in the UI. This will also clear the dirty bits in
+  // the DB and notify all the observers to update the UI.
+  ClearDirtyTabMessagesForGroup(*collaboration_group_id, removed_group);
+
+  // Remove all messages from the DB related to this tab group (including the
+  // ones that were just cleared from dirty state). The only message that will
+  // stay will be the group removal message which will be added in the next
+  // section.
   std::vector<collaboration_pb::Message> messages =
       store_->GetRecentMessagesForGroup(*collaboration_group_id);
   std::set<std::string> message_uuids;
@@ -1061,6 +1080,14 @@ void MessagingBackendServiceImpl::OnTabLastSeenTimeChanged(
 
   store_->ClearDirtyMessageForTab(
       *collaboration_group_id, tab->saved_tab_guid(), DirtyType::kDotAndChip);
+
+  // Hide any existing persistent dot or chip messages already showing.
+  PersistentMessage persistent_message =
+      CreatePersistentMessageFromTabGroupAndTab(*collaboration_group_id, *tab,
+                                                CollaborationEvent::UNDEFINED);
+  NotifyHidePersistentMessagesForTypes(persistent_message,
+                                       {PersistentNotificationType::CHIP,
+                                        PersistentNotificationType::DIRTY_TAB});
 
   DisplayOrHideTabGroupDirtyDotForTabGroup(*collaboration_group_id,
                                            tab->saved_group_guid());

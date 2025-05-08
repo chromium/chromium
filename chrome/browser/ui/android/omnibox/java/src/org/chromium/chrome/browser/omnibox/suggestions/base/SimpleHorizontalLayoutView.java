@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * SimpleHorizontalLayoutView is a fast and specialized horizontal layout view. It is based on a
  * premise that no more than one child view can expand dynamically, while all other views must have
@@ -22,6 +24,7 @@ import android.view.ViewGroup;
  *   <li>The height of the view will be the result of measurement of the dynamically sized view.
  * </ul>
  */
+@NullMarked
 public class SimpleHorizontalLayoutView extends ViewGroup {
     /**
      * SimpleHorizontalLayoutView's LayoutParams.

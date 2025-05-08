@@ -52,35 +52,8 @@ const AudioParamDescriptor*
   return nullptr;
 }
 
-V8BlinkAudioWorkletProcessCallback*
-AudioWorkletProcessorDefinition::ProcessFunction() {
-  if (!process_function_) {
-    v8::Isolate* isolate = constructor_->GetIsolate();
-    ExceptionState exception_state(isolate);
-
-    CallbackMethodRetriever retriever(constructor_);
-    retriever.GetPrototypeObject(exception_state);
-    if (exception_state.HadException()) {
-      return nullptr;
-    }
-
-    v8::Local<v8::Value> v8_value =
-        retriever.GetMethodOrUndefined("process", exception_state);
-    if (exception_state.HadException() || v8_value->IsUndefined()) {
-      return nullptr;
-    }
-
-    CHECK(v8_value->IsFunction());
-    process_function_ =
-        V8BlinkAudioWorkletProcessCallback::Create(v8_value.As<v8::Function>());
-  }
-
-  return process_function_;
-}
-
 void AudioWorkletProcessorDefinition::Trace(Visitor* visitor) const {
   visitor->Trace(constructor_);
-  visitor->Trace(process_function_);
   visitor->Trace(audio_param_descriptors_);
 }
 

@@ -17,6 +17,8 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using endpoint_fetcher::MockEndpointFetcher;
+
 namespace data_sharing {
 
 const std::string kExpectedResponse = "foo";
@@ -33,7 +35,7 @@ class MockDataSharingNetworkLoaderImpl : public DataSharingNetworkLoaderImpl {
       const MockDataSharingNetworkLoaderImpl&) = delete;
   ~MockDataSharingNetworkLoaderImpl() override = default;
 
-  MOCK_METHOD(std::unique_ptr<EndpointFetcher>,
+  MOCK_METHOD(std::unique_ptr<endpoint_fetcher::EndpointFetcher>,
               CreateEndpointFetcher,
               (const GURL& url,
                const std::vector<std::string>& scopes,

@@ -136,6 +136,8 @@ struct COLOR_SPACE_EXPORT HdrMetadataAgtm {
   HdrMetadataAgtm& operator=(const HdrMetadataAgtm& other);
   ~HdrMetadataAgtm();
 
+  // Return whether or not use of AGTM metadata is enabled by default or not.
+  static bool IsEnabled();
   std::string ToString() const;
 
   bool operator==(const HdrMetadataAgtm& rhs) const;
@@ -175,6 +177,19 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
     return (cta_861_3 && cta_861_3->IsValid()) ||
            (smpte_st_2086 && smpte_st_2086->IsValid()) || extended_range;
   }
+
+  // Compute the maximum luminance for the specified HDR metadata. This will
+  // - return the CTA 861.3 max content light level metadata, if present
+  // - return the SMPTE ST 2086 luminance max metadata, if present
+  // - otherwise return 1,000 nits
+  static float GetContentMaxLuminance(
+      const std::optional<gfx::HDRMetadata>& metadata);
+
+  // Compute the reference white luminance. This will:
+  // - return the NDWL value, if present
+  // - otherwise return 203 nits
+  static float GetReferenceWhiteLuminance(
+      const std::optional<gfx::HDRMetadata>& metadata);
 
   // Return a copy of `hdr_metadata` with its `smpte_st_2086` fully
   // populated. Any unspecified values are set to default values (in particular,

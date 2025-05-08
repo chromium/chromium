@@ -25,6 +25,7 @@ goog.require('goog.asserts');
 goog.require('goog.events.EventTarget');
 goog.require('goog.fs');
 goog.require('goog.log');
+goog.requireType('goog.crypt.Hash');
 
 
 

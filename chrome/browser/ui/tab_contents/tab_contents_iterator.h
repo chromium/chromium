@@ -65,8 +65,6 @@ class AllTabContentsesList {
 
     bool operator==(const Iterator& other) const { return cur_ == other.cur_; }
 
-    bool operator!=(const Iterator& other) const { return !(*this == other); }
-
     // Returns the Browser instance associated with the current tab contents.
     // Valid as long as this iterator != the AllTabContentses().end() iterator.
     Browser* browser() const {

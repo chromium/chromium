@@ -156,62 +156,43 @@ Some metrics of interest:
 
 ### UseCounter Feature in HTTP Archive
 
-HTTP Archive crawls the top 10K sites on the web and records everything from
+HTTP Archive crawls the top sites on the web and records everything from
 request and response headers. The data is available on Google BigQuery.
 
-You can find pages that trigger a particular UseCounter using the following
-script:
+You can find usage and sample pages that trigger a particular UseCounter using
+the following script:
 
 ```sql
 SELECT
-  DATE(yyyymmdd) AS date,
+  date,
   client AS platform,
-  num_url AS url_count,
-  pct_urls AS urls_percentile,
+  num_urls AS url_count,
+  pct_urls AS urls_percent,
   sample_urls AS url
-FROM [httparchive:blink_features.usage]
-WHERE feature = 'MyFeature'
-ORDER BY url_percentile DESC
+FROM `httparchive.blink_features.usage`
+WHERE
+  feature = 'MyFeature' AND
+  date = (SELECT MAX(date) FROM `httparchive.blink_features.usage`)
+ORDER BY date DESC
 ```
-OR
+
+
+Or to see or filter my more data available in the HTTP Archive you can query the main `httparchive.crawl.pages` table like this:
 
 ```sql
-SELECT
-  url
-FROM [httparchive:pages.yyyy_mm_dd_mobile]
+SELECT DISTINCT
+  client,
+  page,
+  rank
+FROM
+  `httparchive.crawl.pages`,
+  UNNEST (features) As feats
 WHERE
-  JSON_EXTRACT(payload, '$._blinkFeatureFirstUsed.Features.MyFeature') IS NOT
-  NULL
-LIMIT 500
+  date = '2024-11-01' AND     -- update date to latest month
+  feats.feature = 'MyFeature' -- update feature
+ORDER BY
+  rank
 ```
-
-You can also find pages that trigger a particular CSS property (during parsing):
-
-```sql
-SELECT
-  url
-FROM [httparchive:pages.yyyy_mm_dd_mobile]
-WHERE
-  JSON_EXTRACT(payload, '$._blinkFeatureFirstUsed.CSSFeatures.MyCSSProperty')
-  IS NOT NULL
-LIMIT 500
-```
-
-To find pages that trigger a UseCounter and sort by page rank:
-
-```sql
-SELECT
-  IFNULL(runs.rank, 1000000) AS rank,
-  har.url AS url,
-FROM [httparchive:latest.pages_desktop] AS har
-LEFT JOIN [httparchive:runs.latest_pages] AS runs
-  ON har.url = runs.url
-WHERE
-  JSON_EXTRACT(payload, '$._blinkFeatureFirstUsed.Features.MyFeature') IS NOT
-  NULL
-ORDER BY rank;
-```
-
 
 ### UMA Usage on Fraction of Users
 You may also see the fraction of users that trigger your feature at lease once a

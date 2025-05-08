@@ -53,6 +53,11 @@ class VIZ_COMMON_EXPORT RendererSettings {
     int minimum_fragments_reduced = 128 * 128;
     // The minimum visible quad size to be considered an occluder.
     int occluder_minium_visible_quad_size = 32 * 32;
+    // If true, complex occluders are generated for quads with rounded corners,
+    bool generate_complex_occluder_for_rounded_corners = false;
+    // The minimum size of quads with rounded corners to qualify for generating
+    // complex occluders.
+    int minumum_quad_size_with_rounded_corners = 128 * 128;
   };
 
   OcclusionCullerSettings occlusion_culler_settings;

@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Drawable.ConstantState;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,13 +23,13 @@ import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 import android.widget.ImageView;
 
 import androidx.annotation.ColorRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -52,6 +53,7 @@ import java.util.List;
  *
  * @param <T> The inner content view type being updated.
  */
+@NullMarked
 public final class BaseSuggestionViewBinder<T extends View>
         implements ViewBinder<PropertyModel, BaseSuggestionView<T>, PropertyKey> {
     /**
@@ -59,11 +61,11 @@ public final class BaseSuggestionViewBinder<T extends View>
      * allows us to avoid calling setters when the current state of the view is already correct.
      */
     private static class BaseSuggestionViewMetadata {
-        @Nullable public Drawable.ConstantState backgroundConstantState;
+        public @Nullable ConstantState backgroundConstantState;
     }
 
     /** Drawable ConstantState used to expedite creation of Focus ripples. */
-    @VisibleForTesting static Drawable.ConstantState sFocusableDrawableState;
+    @VisibleForTesting static @Nullable ConstantState sFocusableDrawableState;
 
     private static @BrandedColorScheme int sFocusableDrawableStateTheme;
     private static boolean sFocusableDrawableStateInNightMode;
@@ -184,7 +186,7 @@ public final class BaseSuggestionViewBinder<T extends View>
 
                         @Override
                         public boolean performAccessibilityAction(
-                                View host, int accessibilityAction, Bundle arguments) {
+                                View host, int accessibilityAction, @Nullable Bundle arguments) {
                             if (accessibilityAction == AccessibilityNodeInfo.ACTION_CLICK
                                     && action.onClickAnnouncement != null) {
                                 actionView.setContentDescription(action.onClickAnnouncement);
@@ -213,6 +215,7 @@ public final class BaseSuggestionViewBinder<T extends View>
         final List<ImageView> actionViews = view.getActionButtons();
         for (int index = 0; index < actionViews.size(); index++) {
             ImageView actionView = actionViews.get(index);
+
             applySelectableBackground(model, actionView);
             updateIcon(
                     actionView,
@@ -261,7 +264,7 @@ public final class BaseSuggestionViewBinder<T extends View>
      * Access the BaseSuggestionViewMetadata for the given view, creating and attaching a new one if
      * none is currently associated.
      */
-    private static @NonNull BaseSuggestionViewMetadata ensureViewMetadata(View view) {
+    private static BaseSuggestionViewMetadata ensureViewMetadata(View view) {
         BaseSuggestionViewMetadata metadata =
                 (BaseSuggestionViewMetadata) view.getTag(R.id.base_suggestion_view_metadata_key);
         if (metadata == null) {
@@ -346,6 +349,7 @@ public final class BaseSuggestionViewBinder<T extends View>
         }
 
         view.setImageDrawable(sds.drawable);
+        view.setForegroundTintList(tint);
         ImageViewCompat.setImageTintList(view, tint);
     }
 
@@ -390,7 +394,7 @@ public final class BaseSuggestionViewBinder<T extends View>
     /**
      * @return Cached ConstantState for testing.
      */
-    public static Drawable.ConstantState getFocusableDrawableStateForTesting() {
+    public static @Nullable ConstantState getFocusableDrawableStateForTesting() {
         return sFocusableDrawableState;
     }
 }

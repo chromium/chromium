@@ -4,11 +4,10 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
-
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColorObserver;
 import org.chromium.ui.util.ColorUtils;
 
@@ -16,6 +15,7 @@ import org.chromium.ui.util.ColorUtils;
  * A class to receive toolbar color change updates from toolbar components and send the rendering
  * toolbar color to the ToolbarColorObserver.
  */
+@NullMarked
 class ToolbarColorObserverManager implements ToolbarColorObserver {
     private @Nullable ToolbarColorObserver mToolbarColorObserver;
     private @ColorInt int mToolbarColor;
@@ -25,7 +25,7 @@ class ToolbarColorObserverManager implements ToolbarColorObserver {
      *
      * @param toolbarColorObserver The observer to listen to toolbar color change.
      */
-    void setToolbarColorObserver(@NonNull ToolbarColorObserver toolbarColorObserver) {
+    void setToolbarColorObserver(ToolbarColorObserver toolbarColorObserver) {
         mToolbarColorObserver = toolbarColorObserver;
         notifyToolbarColorChanged();
     }

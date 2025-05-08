@@ -128,7 +128,8 @@ development and testing purposes.
 
 ## Setting up the build
 
-Chromium uses [Ninja](https://ninja-build.org) as its main build tool along with
+Chromium uses [Siso](https://pkg.go.dev/go.chromium.org/infra/build/siso#section-readme)
+as its main build tool along with
 a tool called [GN](https://gn.googlesource.com/gn/+/main/docs/quick_start.md)
 to generate `.ninja` files. You can create any number of *build directories*
 with different configurations. To create a build directory, run:
@@ -137,7 +138,7 @@ with different configurations. To create a build directory, run:
 $ gn gen out/Default
 ```
 
-* You only have to run this once for each new build directory, Ninja will
+* You only have to run this once for each new build directory, Siso will
   update the build files as needed.
 * You can replace `Default` with another name, but
   it should be a subdirectory of `out`.
@@ -237,7 +238,7 @@ If `args.gn` contains `use_reclient=true`, drop it or replace it with
 `use_reclient=false`.
 
 That's it. Remember to always use `autoninja` for building Chromium as described
-below, instead of directly invoking `ninja`.
+below, instead of directly invoking `siso` or `ninja`.
 
 Reach out to
 [build@chromium.org](https://groups.google.com/a/chromium.org/g/build)
@@ -344,23 +345,23 @@ mode, with the GN arg `is_official_build = true`.
 
 ## Build Chromium
 
-Build Chromium (the "chrome" target) with Ninja using the command:
+Build Chromium (the "chrome" target) with Siso or Ninja using the command:
 
 ```shell
 $ autoninja -C out/Default chrome
 ```
 
 (`autoninja` is a wrapper that automatically provides optimal values for the
-arguments passed to `ninja`.)
+arguments passed to `siso` or `ninja`.)
 
 You can get a list of all of the other build targets from GN by running `gn ls
-out/Default` from the command line. To compile one, pass the GN label to Ninja
-with no preceding "//" (so, for `//chrome/test:unit_tests` use `autoninja -C
-out/Default chrome/test:unit_tests`).
+out/Default` from the command line. To compile one, pass the GN label to
+Siso/Ninja with no preceding "//" (so, for `//chrome/test:unit_tests` use
+`autoninja -C out/Default chrome/test:unit_tests`).
 
 ## Compile a single file
 
-Ninja supports a special [syntax `^`][ninja hat syntax] to compile a single object file specyfing
+Siso/Ninja supports a special [syntax `^`][ninja hat syntax] to compile a single object file specifying
 the source file. For example, `autoninja -C out/Default ../../base/logging.cc^`
 compiles `obj/base/base/logging.o`.
 

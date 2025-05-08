@@ -114,6 +114,17 @@ class NET_EXPORT ProxyInfo {
   // TODO(crbug.com/40947771): Remove once the experiment is concluded.
   bool is_mdl_match() const { return is_mdl_match_; }
 
+  // Sets `prt_header_value_` to given `prt_header_value`. This value will be
+  // used in "Sec-Probabilistic-Reveal-Token" header if the right flags are
+  // enabled.
+  void set_prt_header_value(std::optional<std::string> prt_header_value) {
+    prt_header_value_ = std::move(prt_header_value);
+  }
+
+  std::optional<std::string> prt_header_value() const {
+    return prt_header_value_;
+  }
+
   // Returns the first valid proxy chain. is_empty() must be false to be able
   // to call this function.
   const ProxyChain& proxy_chain() const { return proxy_list_.First(); }
@@ -204,6 +215,8 @@ class NET_EXPORT ProxyInfo {
   // determined synchronously without running a PAC.
   base::TimeTicks proxy_resolve_start_time_;
   base::TimeTicks proxy_resolve_end_time_;
+
+  std::optional<std::string> prt_header_value_;
 };
 
 }  // namespace net

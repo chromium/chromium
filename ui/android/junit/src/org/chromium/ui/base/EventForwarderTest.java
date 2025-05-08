@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -159,7 +160,8 @@ public class EventForwarderTest {
                         0,
                         dragEvent.getButtonState(),
                         dragEvent.getMetaState(),
-                        false);
+                        false,
+                        null);
     }
 
     @Test
@@ -200,7 +202,8 @@ public class EventForwarderTest {
                         anyInt(),
                         anyInt(),
                         anyInt(),
-                        anyBoolean());
+                        anyBoolean(),
+                        nullable(Boolean.class));
         verify(mNativeMock, never())
                 .onMouseEvent(
                         anyLong(),
@@ -365,6 +368,55 @@ public class EventForwarderTest {
     }
 
     @Test
+    public void testCapturedPointerTrackpadRightClickEvent() {
+        testCapturedPointerTrackpadMultiTouchClickEvent(2, MotionEvent.BUTTON_SECONDARY);
+    }
+
+    @Test
+    public void testCapturedPointerTrackpadMiddleClickEvent() {
+        testCapturedPointerTrackpadMultiTouchClickEvent(3, MotionEvent.BUTTON_TERTIARY);
+    }
+
+    private void testCapturedPointerTrackpadMultiTouchClickEvent(int pointersCnt, int buttonState) {
+        EventForwarder eventForwarder = new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true);
+
+        MotionEvent moveEvent =
+                MotionEvent.obtain(
+                        0,
+                        0,
+                        MotionEvent.ACTION_BUTTON_PRESS,
+                        pointersCnt,
+                        getToolTypeFingerProperties(pointersCnt),
+                        getPointerCoords(pointersCnt),
+                        0,
+                        MotionEvent.BUTTON_PRIMARY,
+                        0,
+                        0,
+                        0,
+                        0,
+                        InputDevice.SOURCE_TOUCHPAD,
+                        0);
+
+        eventForwarder.onCapturedPointerEvent(moveEvent);
+        verify(mNativeMock, times(1))
+                .onMouseEvent(
+                        NATIVE_EVENT_FORWARDER_ID,
+                        eventForwarder,
+                        MotionEventUtils.getEventTimeNanos(moveEvent),
+                        moveEvent.getActionMasked(),
+                        0,
+                        0,
+                        moveEvent.getPointerId(0),
+                        moveEvent.getPressure(0),
+                        moveEvent.getOrientation(0),
+                        moveEvent.getAxisValue(MotionEvent.AXIS_TILT, 0),
+                        EventForwarder.getMouseEventActionButton(moveEvent),
+                        buttonState,
+                        moveEvent.getMetaState(),
+                        MotionEvent.TOOL_TYPE_MOUSE);
+    }
+
+    @Test
     public void testCapturedPointerMouseMoveEvent() {
         EventForwarder eventForwarder = new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true);
 
@@ -484,8 +536,8 @@ public class EventForwarderTest {
                 0,
                 action,
                 1,
-                getToolTypeFingerProperties(),
-                getPointerCoords(),
+                getToolTypeFingerProperties(1),
+                getPointerCoords(1),
                 0,
                 buttonState,
                 0,
@@ -496,22 +548,26 @@ public class EventForwarderTest {
                 0);
     }
 
-    private static MotionEvent.PointerProperties[] getToolTypeFingerProperties() {
+    private static MotionEvent.PointerProperties[] getToolTypeFingerProperties(int pointersCnt) {
         MotionEvent.PointerProperties[] pointerPropertiesArray =
-                new MotionEvent.PointerProperties[1];
-        MotionEvent.PointerProperties trackpadProperties = new MotionEvent.PointerProperties();
-        trackpadProperties.id = 7;
-        trackpadProperties.toolType = MotionEvent.TOOL_TYPE_FINGER;
-        pointerPropertiesArray[0] = trackpadProperties;
+                new MotionEvent.PointerProperties[pointersCnt];
+        for (int i = 0; i < pointersCnt; i++) {
+            MotionEvent.PointerProperties trackpadProperties = new MotionEvent.PointerProperties();
+            trackpadProperties.id = 7 + i;
+            trackpadProperties.toolType = MotionEvent.TOOL_TYPE_FINGER;
+            pointerPropertiesArray[i] = trackpadProperties;
+        }
         return pointerPropertiesArray;
     }
 
-    private static MotionEvent.PointerCoords[] getPointerCoords() {
-        MotionEvent.PointerCoords[] pointerCoordsArray = new MotionEvent.PointerCoords[1];
-        MotionEvent.PointerCoords coords = new MotionEvent.PointerCoords();
-        coords.x = 14;
-        coords.y = 21;
-        pointerCoordsArray[0] = coords;
+    private static MotionEvent.PointerCoords[] getPointerCoords(int pointersCnt) {
+        MotionEvent.PointerCoords[] pointerCoordsArray = new MotionEvent.PointerCoords[pointersCnt];
+        for (int i = 0; i < pointersCnt; i++) {
+            MotionEvent.PointerCoords coords = new MotionEvent.PointerCoords();
+            coords.x = 14 + i;
+            coords.y = 21 + i;
+            pointerCoordsArray[i] = coords;
+        }
         return pointerCoordsArray;
     }
 

@@ -176,4 +176,9 @@ constexpr base::FeatureParam<bool> kGroupSuggestionEnableTabSwitcherOnly{
     /*name=*/"group_suggestion_enable_tab_switcher_only",
     /*default_value=*/false};
 
+constexpr base::FeatureParam<bool> kGroupSuggestionTriggerCalculationOnPageLoad{
+    &kGroupSuggestionService,
+    /*name=*/"group_suggestion_trigger_calculation_on_page_load",
+    /*default_value=*/true};
+
 }  // namespace visited_url_ranking::features

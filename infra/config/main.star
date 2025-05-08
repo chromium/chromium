@@ -131,7 +131,7 @@ luci.project(
         # Role for builder health indicators
         luci.binding(
             roles = "role/buildbucket.healthUpdater",
-            users = ["guterman@google.com", "generate-builder@cr-builder-health-indicators.iam.gserviceaccount.com", "tne@google.com"],
+            users = ["generate-builder@cr-builder-health-indicators.iam.gserviceaccount.com"],
         ),
     ],
 )

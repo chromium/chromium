@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_ghost_rules.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "third_party/blink/renderer/core/css/css_grouping_rule.h"
 #include "third_party/blink/renderer/core/css/css_nested_declarations_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
@@ -144,10 +145,6 @@ wtf_size_t NumItems(CSSRule& rule) {
 
 CSSRule* ItemAt(CSSRule& rule, wtf_size_t index) {
   if (auto* style_rule = DynamicTo<CSSStyleRule>(rule)) {
-    // These checks are for investigating https://crbug.com/389011795.
-    CHECK_EQ(style_rule->length(), style_rule->WrapperCountForDebugging());
-    CHECK_LE(index, style_rule->length());
-    CHECK_LE(index, style_rule->WrapperCountForDebugging());
     return style_rule->ItemInternal(index);
   }
   return To<CSSGroupingRule>(rule).ItemInternal(index);
@@ -172,6 +169,14 @@ void InspectorGhostRules::PopulateSheet(
     // https://drafts.csswg.org/css-nesting-1/#nested-group-rules
     if (IsA<CSSGroupingRule>(rule)) {
       if (!IsA<CSSStyleRule>(rule.parentRule())) {
+        return;
+      }
+    } else {
+      // For investigating crbug.com/389011795.
+      auto& style_rule = To<CSSStyleRule>(rule);
+      if (style_rule.length() != style_rule.WrapperCountForDebugging()) {
+        base::debug::DumpWithoutCrashing();
+        DCHECK(false) << "Mismatched wrapper count";
         return;
       }
     }
@@ -201,6 +206,11 @@ void InspectorGhostRules::PopulateSheet(
       inserted_rules_.insert(inserted_rule);
       inner_rules_.insert(To<CSSStyleRule>(inserted_rule->InnerCSSStyleRule()));
     }
+
+    // For investigating crbug.com/389011795.
+    if (auto* style_rule = DynamicTo<CSSStyleRule>(rule)) {
+      CHECK_EQ(style_rule->length(), style_rule->WrapperCountForDebugging());
+    }
   });
 }
 
@@ -216,6 +226,11 @@ void InspectorGhostRules::DepopulateSheet(CSSStyleSheet& sheet) {
           inserted_rules_.Contains(nested_declarations_rule)) {
         QuietlyDeleteRule(rule, i);
       }
+    }
+
+    // For investigating crbug.com/389011795.
+    if (auto* style_rule = DynamicTo<CSSStyleRule>(rule)) {
+      CHECK_EQ(style_rule->length(), style_rule->WrapperCountForDebugging());
     }
   });
 }

@@ -7,6 +7,7 @@ import 'chrome://print/print_preview.js';
 import type {PrintPreviewModelElement, PrintPreviewScalingSettingsElement} from 'chrome://print/print_preview.js';
 import {ScalingType} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {selectOption, triggerInputEvent} from './print_preview_test_utils.js';
 
@@ -26,33 +27,41 @@ suite('ScalingSettingsTest', function() {
     document.body.appendChild(scalingSection);
   });
 
-  test(
-      'ShowCorrectDropdownOptions', function() {
-        // Not a PDF document -> No fit to page or fit to paper options.
-        const fitToPageOption =
-            scalingSection.shadowRoot.querySelector<HTMLOptionElement>(
-                `[value="${ScalingType.FIT_TO_PAGE}"]`)!;
-        const fitToPaperOption =
-            scalingSection.shadowRoot.querySelector<HTMLOptionElement>(
-                `[value="${ScalingType.FIT_TO_PAPER}"]`)!;
-        const defaultOption =
-            scalingSection.shadowRoot.querySelector<HTMLOptionElement>(
-                `[value="${ScalingType.DEFAULT}"]`)!;
-        const customOption =
-            scalingSection.shadowRoot.querySelector<HTMLOptionElement>(
-                `[value="${ScalingType.CUSTOM}"]`)!;
-        assertTrue(fitToPageOption.hidden && fitToPageOption.disabled);
-        assertTrue(fitToPaperOption.hidden && fitToPaperOption.disabled);
-        assertFalse(defaultOption.hidden && !defaultOption.disabled);
-        assertFalse(customOption.hidden && !customOption.disabled);
+  test('ShowCorrectDropdownOptions', function() {
+    const select = scalingSection.shadowRoot.querySelector('select');
+    assertTrue(!!select);
 
-        // Fit to page and paper available -> All 4 options.
-        setDocumentPdf(true);
-        assertFalse(fitToPageOption.hidden && !fitToPageOption.disabled);
-        assertFalse(fitToPaperOption.hidden && !fitToPaperOption.disabled);
-        assertFalse(defaultOption.hidden && !defaultOption.disabled);
-        assertFalse(customOption.hidden && !customOption.disabled);
-      });
+    // Not a PDF document -> No fit to page or fit to paper options.
+    const fitToPageOption = select.querySelector<HTMLOptionElement>(
+        `[value="${ScalingType.FIT_TO_PAGE}"]`)!;
+    const fitToPaperOption = select.querySelector<HTMLOptionElement>(
+        `[value="${ScalingType.FIT_TO_PAPER}"]`)!;
+    const defaultOption = select.querySelector<HTMLOptionElement>(
+        `[value="${ScalingType.DEFAULT}"]`)!;
+    const customOption = select.querySelector<HTMLOptionElement>(
+        `[value="${ScalingType.CUSTOM}"]`)!;
+    assertTrue(fitToPageOption.hidden && fitToPageOption.disabled);
+    assertTrue(fitToPaperOption.hidden && fitToPaperOption.disabled);
+    assertFalse(defaultOption.hidden && !defaultOption.disabled);
+    assertFalse(customOption.hidden && !customOption.disabled);
+
+    // Check selected option.
+    assertEquals(ScalingType.DEFAULT, model.getSettingValue('scalingType'));
+    assertEquals(ScalingType.DEFAULT.toString(), select.value);
+    assertTrue(defaultOption.selected);
+
+    // Fit to page and paper available -> All 4 options.
+    setDocumentPdf(true);
+    assertFalse(fitToPageOption.hidden && !fitToPageOption.disabled);
+    assertFalse(fitToPaperOption.hidden && !fitToPaperOption.disabled);
+    assertFalse(defaultOption.hidden && !defaultOption.disabled);
+    assertFalse(customOption.hidden && !customOption.disabled);
+
+    // Check selected option.
+    assertEquals(ScalingType.DEFAULT, model.getSettingValue('scalingTypePdf'));
+    assertEquals(ScalingType.DEFAULT.toString(), select.value);
+    assertTrue(defaultOption.selected);
+  });
 
   /**
    * @param expectedScaling The expected scaling value.
@@ -109,7 +118,7 @@ suite('ScalingSettingsTest', function() {
     setDocumentPdf(true);
 
     // Default is 100
-    await scalingCrInput.updateComplete;
+    await microtasksFinished();
     validateState('100', true, ScalingType.DEFAULT, ScalingType.DEFAULT, '100');
     assertFalse(scalingSection.getSetting('scaling').setFromUi);
     assertFalse(scalingSection.getSetting('scalingType').setFromUi);
@@ -146,7 +155,7 @@ suite('ScalingSettingsTest', function() {
 
     // Select fit to page. Should clear the invalid value.
     await selectOption(scalingSection, ScalingType.FIT_TO_PAGE.toString());
-    await scalingCrInput.updateComplete;
+    await microtasksFinished();
     validateState(
         '105', true, ScalingType.CUSTOM, ScalingType.FIT_TO_PAGE, '105');
 
@@ -161,7 +170,7 @@ suite('ScalingSettingsTest', function() {
 
     // Pick default scaling. This should clear the error.
     await selectOption(scalingSection, ScalingType.DEFAULT.toString());
-    await scalingCrInput.updateComplete;
+    await microtasksFinished();
     validateState('105', true, ScalingType.DEFAULT, ScalingType.DEFAULT, '105');
 
     // Custom scaling should set to last valid.

@@ -335,17 +335,13 @@ void MediaStreamRemoteVideoSource::OnSourceTerminated() {
 }
 
 void MediaStreamRemoteVideoSource::StartSourceImpl(
-    VideoCaptureDeliverFrameCB frame_callback,
-    EncodedVideoFrameCB encoded_frame_callback,
-    VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_callback,
-    // The remote track does not not report frame drops.
-    VideoCaptureNotifyFrameDroppedCB) {
+    MediaStreamVideoSourceCallbacks media_stream_callbacks) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!delegate_.get());
   delegate_ = base::MakeRefCounted<RemoteVideoSourceDelegate>(
-      video_task_runner(), std::move(frame_callback),
-      std::move(encoded_frame_callback),
-      std::move(sub_capture_target_version_callback));
+      video_task_runner(), std::move(media_stream_callbacks.deliver_frame_cb),
+      std::move(media_stream_callbacks.encoded_frame_cb),
+      std::move(media_stream_callbacks.sub_capture_target_version_cb));
   scoped_refptr<webrtc::VideoTrackInterface> video_track(
       static_cast<webrtc::VideoTrackInterface*>(observer_->track().get()));
   video_track->AddOrUpdateSink(delegate_.get(), webrtc::VideoSinkWants());

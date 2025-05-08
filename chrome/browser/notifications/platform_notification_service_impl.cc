@@ -776,28 +776,18 @@ void PlatformNotificationServiceImpl::UpdatePersistentMetadataThenDisplay(
   if (base::FeatureList::IsEnabled(
           safe_browsing::kReportNotificationContentDetectionData) &&
       serialized_content_detection_metadata.has_value()) {
-    // Obtain the storage partition for the url and if found, update
-    // `NotificationDatabase` with metadata.
-    auto storage_partition_config = content::StoragePartitionConfig::Create(
-        profile_, notification.origin_url().host(), /*partition_name=*/"",
-        /*in_memory=*/false);
-    // If there is no storage partition for the url, then there is also no
-    // notification data so do not create a partition to store metadata.
-    content::StoragePartition* current_storage_partition_ =
-        profile_->GetStoragePartition(storage_partition_config,
-                                      /*can_create=*/false);
-    if (current_storage_partition_ &&
-        current_storage_partition_->GetPlatformNotificationContext()) {
-      current_storage_partition_->GetPlatformNotificationContext()
-          ->WriteNotificationMetadata(
-              notification.id(), notification.origin_url(),
-              safe_browsing::kMetadataDictionaryKey,
-              serialized_content_detection_metadata.value(),
-              base::BindOnce(
-                  &PlatformNotificationServiceImpl::DidUpdatePersistentMetadata,
-                  weak_ptr_factory_.GetWeakPtr(),
-                  std::move(persistent_metadata), notification,
-                  should_show_warning));
+    scoped_refptr<content::PlatformNotificationContext> notification_context =
+        profile_->GetStoragePartitionForUrl(notification.origin_url())
+            ->GetPlatformNotificationContext();
+    if (notification_context) {
+      notification_context->WriteNotificationMetadata(
+          notification.id(), notification.origin_url(),
+          safe_browsing::kMetadataDictionaryKey,
+          serialized_content_detection_metadata.value(),
+          base::BindOnce(
+              &PlatformNotificationServiceImpl::DidUpdatePersistentMetadata,
+              weak_ptr_factory_.GetWeakPtr(), std::move(persistent_metadata),
+              notification, should_show_warning));
       return;
     }
   }

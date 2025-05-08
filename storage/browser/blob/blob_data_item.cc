@@ -84,15 +84,6 @@ scoped_refptr<BlobDataItem> BlobDataItem::CreateBytesDescription(
 // static
 scoped_refptr<BlobDataItem> BlobDataItem::CreateFile(
     base::FilePath path,
-    file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
-        file_access) {
-  return CreateFile(path, 0, blink::BlobUtils::kUnknownSize, base::Time(),
-                    nullptr, std::move(file_access));
-}
-
-// static
-scoped_refptr<BlobDataItem> BlobDataItem::CreateFile(
-    base::FilePath path,
     uint64_t offset,
     uint64_t length,
     base::Time expected_modification_time,

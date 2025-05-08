@@ -3,5 +3,5 @@ monorail: {
 }
 team_email: "koilos@google.com"
 buganizer_public: {
-  component_id: 1697287
+  component_id: 1706459
 }

@@ -4,13 +4,15 @@
 
 #include "chrome/browser/ui/web_applications/web_app_launch_navigation_handle_user_data.h"
 
+#include "base/time/time.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/navigation_capturing_metrics.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_handle_user_data.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 
 namespace web_app {
@@ -21,10 +23,12 @@ WebAppLaunchNavigationHandleUserData::~WebAppLaunchNavigationHandleUserData() =
 WebAppLaunchNavigationHandleUserData::WebAppLaunchNavigationHandleUserData(
     content::NavigationHandle& navigation_handle,
     webapps::AppId launched_app,
-    bool force_iph_off)
+    bool force_iph_off,
+    base::TimeTicks time_navigation_started)
     : navigation_handle_(navigation_handle),
       launched_app_(std::move(launched_app)),
-      force_iph_off_(force_iph_off) {}
+      force_iph_off_(force_iph_off),
+      time_navigation_started_(time_navigation_started) {}
 
 void WebAppLaunchNavigationHandleUserData::
     MaybePerformAppHandlingTasksInWebContents() {
@@ -33,7 +37,8 @@ void WebAppLaunchNavigationHandleUserData::
 
   EnqueueLaunchParams(
       web_contents, app_id, navigation_handle_->GetURL(),
-      /*wait_for_navigation_to_complete=*/!navigation_handle_->HasCommitted());
+      /*wait_for_navigation_to_complete=*/!navigation_handle_->HasCommitted(),
+      time_navigation_started_);
 
   WebAppTabHelper* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
   CHECK(tab_helper);
@@ -45,6 +50,9 @@ void WebAppLaunchNavigationHandleUserData::
   RecordLaunchMetrics(app_id, container,
                       apps::LaunchSource::kFromNavigationCapturing,
                       navigation_handle_->GetURL(), web_contents);
+
+  RecordNavigationCapturingDisplayModeMetrics(app_id, web_contents,
+                                              !tab_helper->is_in_app_window());
 
   if (!force_iph_off_) {
     // TODO(crbug.com/371237535): Avoid reliance on FindBrowserWithTab and

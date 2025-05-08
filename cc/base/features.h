@@ -73,11 +73,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseMapRectForPixelMovement);
 // viz::Surface.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kEvictionThrottlesDraw);
 
-// Permits adjusting the threshold we use for determining if main thread updates
-// are fast. Specifically, via a scalar on the range [0,1] that we multiply with
-// the existing threshold. I.e., |new_threshold| = |scalar| * |old_threshold|.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kAdjustFastMainThreadThreshold);
-
 // When a LayerTreeHostImpl is not visible, clear its transferable resources
 // that haven't been imported into viz.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kClearCanvasResourcesInBackground);
@@ -110,12 +105,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDontAlwaysPushPictureLayerImpls);
 // When enabled, image quality settings will be preserved in the discardable
 // image map.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kPreserveDiscardableImageMapQuality);
-
-// When enabled, the renderer asks the compositor to request warming up and
-// create FrameSink speculatively even if invisible. Currently, this is intended
-// to be used when prerender initial navigation is happening in background.
-// Please see crbug.com/41496019 for more details.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kWarmUpCompositor);
 
 // Kill switch for a bunch of optimizations for cc-slimming project.
 // Please see crbug.com/335450599 for more details.
@@ -175,12 +164,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kTreeAnimationsInViz);
 // away rather than piggy-backing on the next BeginMainFrame.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSendExplicitDecodeRequestsImmediately);
 
-// Whether frame rate should be throttled when there were many "did not produce
-// frame" recently.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kThrottleFrameRateOnManyDidNotProduceFrame);
-CC_BASE_EXPORT extern const base::FeatureParam<int>
-    kNumDidNotProduceFrameBeforeThrottle;
-
 // When enabled, the CC tree priority will be switched to
 // NEW_CONTENT_TAKES_PRIORITY during long scroll that cause checkerboarding.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kNewContentForCheckerboardedScrolls);
@@ -227,10 +210,6 @@ CC_BASE_EXPORT void SetIsEligibleForThrottleMainFrameTo60Hz(bool is_eligible);
 // instead displays the properly constructed frame while at the same doing
 // capture.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kViewTransitionCaptureAndDisplay);
-
-// When enabled, stops the export of most DFCMetrics.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kStopExportDFCMetrics);
-CC_BASE_EXPORT extern bool StopExportDFCMetrics();
 
 // When enabled, we save the `EventMetrics` for a scroll, even when the result
 // is no damage. So that the termination can be per properly attributed to the

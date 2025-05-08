@@ -10,30 +10,31 @@ import android.animation.LayoutTransition;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Outline;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.widget.ImageViewCompat;
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import org.chromium.base.SysUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.browser_ui.widget.BoundedLinearLayout;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
@@ -45,10 +46,13 @@ import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.listmenu.ListMenuHost.PopupMenuShownListener;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.MotionEventUtils;
+import org.chromium.ui.widget.ChromeImageButton;
 
 /** View representing the message banner. */
 @NullMarked
-public class MessageBannerView extends BoundedLinearLayout {
+public class MessageBannerView extends RelativeLayout {
+    private View mMessageBanner;
     private ImageView mIconView;
     private TextView mTitle;
     private TextViewWithCompoundDrawables mDescription;
@@ -56,8 +60,10 @@ public class MessageBannerView extends BoundedLinearLayout {
             PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET;
     private TextView mPrimaryButton;
     private @Nullable String mPrimaryButtonText;
-    private Drawable mPrimaryButtonDrawable;
+    private View mProgressIndicator;
     private ListMenuButton mSecondaryButton;
+    private boolean mEnableCloseButton;
+    private ChromeImageButton mCloseButton;
     private View mDivider;
     private @Nullable String mSecondaryButtonMenuText;
     private @Nullable Runnable mSecondaryActionCallback;
@@ -77,11 +83,14 @@ public class MessageBannerView extends BoundedLinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        mMessageBanner = findViewById(R.id.message_banner);
         mTitle = findViewById(R.id.message_title);
         mDescription = findViewById(R.id.message_description);
         mPrimaryButton = findViewById(R.id.message_primary_button);
+        mProgressIndicator = findViewById(R.id.message_primary_progress_indicator);
         mIconView = findViewById(R.id.message_icon);
         mSecondaryButton = findViewById(R.id.message_secondary_button);
+        mCloseButton = findViewById(R.id.message_close_button);
         mDivider = findViewById(R.id.message_divider);
         mSecondaryButton.setOnClickListener(
                 (View v) -> {
@@ -91,10 +100,12 @@ public class MessageBannerView extends BoundedLinearLayout {
         mainContent.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
         // Elevation does not work on low end device.
         if (SysUtils.isLowEndDevice()) {
-            setBackground(
+            mMessageBanner.setBackground(
                     AppCompatResources.getDrawable(getContext(), R.drawable.dialog_bg_baseline));
         }
-        mPrimaryButtonDrawable = mPrimaryButton.getBackground();
+        int radius = getResources().getDimensionPixelOffset(R.dimen.message_close_button_size) / 2;
+        mCloseButton.setOutlineProvider(new CloseButtonOutlineProvider(radius));
+        mCloseButton.setClipToOutline(true);
     }
 
     void enableA11y(boolean enabled) {
@@ -202,23 +213,13 @@ public class MessageBannerView extends BoundedLinearLayout {
     }
 
     private void updatePrimaryWidgetAppearance() {
-        if (mPrimaryWidgetAppearance == PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET
-                && !TextUtils.isEmpty(mPrimaryButtonText)) {
-            mPrimaryButton.setBackground(mPrimaryButtonDrawable);
-            mPrimaryButton.setText(mPrimaryButtonText);
-            mPrimaryButton.setVisibility(VISIBLE);
-        } else if (mPrimaryWidgetAppearance == PrimaryWidgetAppearance.PROGRESS_SPINNER) {
-            mPrimaryButton.setText("");
-            var spinner = new CircularProgressDrawable(getContext());
-            spinner.setStyle(CircularProgressDrawable.DEFAULT);
-            spinner.setColorSchemeColors(
-                    SemanticColorUtils.getDefaultIconColorAccent1(getContext()));
-            mPrimaryButton.setBackground(spinner);
-            spinner.start();
-            mPrimaryButton.setVisibility(VISIBLE);
-        } else {
-            mPrimaryButton.setVisibility(GONE);
-        }
+        boolean showSpinner = mPrimaryWidgetAppearance == PrimaryWidgetAppearance.PROGRESS_SPINNER;
+        boolean showButton =
+                mPrimaryWidgetAppearance == PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET
+                        && !TextUtils.isEmpty(mPrimaryButtonText);
+        assert !(showButton && showSpinner) : "Spinner and button cannot show at the same time. ";
+        mProgressIndicator.setVisibility(showSpinner ? VISIBLE : GONE);
+        mPrimaryButton.setVisibility(showButton ? VISIBLE : GONE);
     }
 
     void setPrimaryButtonClickListener(OnClickListener listener) {
@@ -230,6 +231,14 @@ public class MessageBannerView extends BoundedLinearLayout {
                         listener.onClick(view);
                     }
                 });
+    }
+
+    void enableCloseButton(boolean enable) {
+        mEnableCloseButton = enable;
+    }
+
+    void setCloseButtonClickListener(OnClickListener listener) {
+        mCloseButton.setOnClickListener(listener);
     }
 
     void setSecondaryIcon(Drawable icon) {
@@ -287,7 +296,7 @@ public class MessageBannerView extends BoundedLinearLayout {
     void enableLargeIcon(boolean enabled) {
         int smallSize = getResources().getDimensionPixelSize(R.dimen.message_icon_size);
         int largeSize = getResources().getDimensionPixelSize(R.dimen.message_icon_size_large);
-        LayoutParams params = (LayoutParams) mIconView.getLayoutParams();
+        ViewGroup.LayoutParams params = mIconView.getLayoutParams();
         if (enabled) {
             params.height = largeSize;
             params.width = largeSize;
@@ -385,6 +394,27 @@ public class MessageBannerView extends BoundedLinearLayout {
         mPrimaryButton.setEllipsize(null);
     }
 
+    @Override
+    public void setElevation(float elevation) {
+        mMessageBanner.setElevation(elevation);
+    }
+
+    @Override
+    protected boolean dispatchHoverEvent(MotionEvent event) {
+        // TODO(crbug.com/315815559): pressing the button will trigger an unexpected exit, which
+        // will make the close button disappear. Check #isPrimaryButton to prevent from that.
+        // Remove the check once the fix lands.
+        if (mEnableCloseButton && MotionEventUtils.isMouseEvent(event)) {
+            if (event.getAction() == MotionEvent.ACTION_HOVER_ENTER) {
+                mCloseButton.setVisibility(VISIBLE);
+            } else if (event.getAction() == MotionEvent.ACTION_HOVER_EXIT
+                    && MotionEventUtils.isPrimaryButton(event.getActionButton())) {
+                mCloseButton.setVisibility(GONE);
+            }
+        }
+        return super.dispatchHoverEvent(event);
+    }
+
     /**
      * Overriding onMeasure for set a proper height for primary button. By design, the primary
      * button should fill all the remaining vertical space. If it includes very long text which
@@ -395,7 +425,7 @@ public class MessageBannerView extends BoundedLinearLayout {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         mPrimaryButton.setMinHeight(0); // Reset min height for measuring.
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int containerHeight = getMeasuredHeight();
+        int containerHeight = mMessageBanner.getMeasuredHeight();
         int btnWidth = mPrimaryButton.getMeasuredWidth();
         int wSpec = MeasureSpec.makeMeasureSpec(btnWidth, MeasureSpec.EXACTLY);
         int hSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
@@ -462,7 +492,28 @@ public class MessageBannerView extends BoundedLinearLayout {
         }
     }
 
+    // A circular view without shadow.
+    private static class CloseButtonOutlineProvider extends RoundedCornerOutlineProvider {
+        public CloseButtonOutlineProvider(int radius) {
+            super(radius);
+        }
+
+        @Override
+        public void getOutline(View view, Outline outline) {
+            super.getOutline(view, outline);
+            outline.setAlpha(0f);
+        }
+    }
+
     ListMenuButton getSecondaryButtonForTesting() {
         return mSecondaryButton;
+    }
+
+    float getElevationForTesting() {
+        return mMessageBanner.getElevation();
+    }
+
+    public View getMainContentForTesting() {
+        return findViewById(R.id.message_banner);
     }
 }

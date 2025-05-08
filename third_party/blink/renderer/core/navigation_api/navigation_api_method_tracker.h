@@ -46,6 +46,9 @@ class NavigationApiMethodTracker final
   SerializedScriptValue* GetSerializedState() const {
     return serialized_state_.get();
   }
+  void SetSerializedState(scoped_refptr<SerializedScriptValue> state) {
+    serialized_state_ = state;
+  }
 
   void Trace(Visitor* visitor) const;
 

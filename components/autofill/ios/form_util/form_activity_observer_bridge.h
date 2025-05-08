@@ -7,8 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/memory/raw_ptr.h"
-#include "components/autofill/ios/form_util/form_activity_observer.h"
+#import "base/memory/raw_ptr.h"
+#import "components/autofill/ios/form_util/form_activity_observer.h"
 
 @protocol FormActivityObserver<NSObject>
 @optional

@@ -335,8 +335,12 @@ void ChipController::ShowPermissionUi(
 
   request_chip_shown_time_ = base::TimeTicks::Now();
 
-  AnnouncePermissionRequestForAccessibility(
-      permission_prompt_model_->GetAccessibilityChipText());
+  // The permission prompt bubble has its own accessibility announcement. We
+  // should not announce the chip.
+  if (!permission_prompt_model_->ShouldBubbleStartOpen()) {
+    AnnouncePermissionRequestForAccessibility(
+        permission_prompt_model_->GetAccessibilityChipText());
+  }
 
   chip_->SetVisible(true);
 

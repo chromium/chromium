@@ -12,9 +12,9 @@ class Browser;
 namespace safe_browsing {
 
 // UMA histogram names for the dialogs.
-const char kDisabledDialogOutcome[] =
+inline constexpr char kDisabledDialogOutcome[] =
     "SafeBrowsing.TailoredSecurity.ConsentedDesktopDialogDisabledOutcome";
-const char kEnabledDialogOutcome[] =
+inline constexpr char kEnabledDialogOutcome[] =
     "SafeBrowsing.TailoredSecurity.ConsentedDesktopDialogEnabledOutcome";
 
 inline constexpr char kTailoredSecurityNoticeDialog[] =

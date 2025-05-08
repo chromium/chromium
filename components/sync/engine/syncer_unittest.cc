@@ -20,13 +20,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/extensions_activity.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/active_devices_invalidation_info.h"
@@ -939,10 +937,6 @@ TEST_F(SyncerTest, ShouldNotPopulateTooManyFcmRegistrationTokens) {
 
 TEST_F(SyncerTest,
        ShouldNotPopulateOptimizationFlagsIfDeviceInfoRecentlyUpdated) {
-  base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(
-      kSkipInvalidationOptimizationsWhenDeviceInfoUpdated);
-
   EnableDatatype(DEVICE_INFO);
   mock_server_->AddUpdateSpecifics("id", /*parent_id=*/"", "name",
                                    /*version=*/1, /*sync_ts=*/10,

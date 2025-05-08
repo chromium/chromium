@@ -393,9 +393,8 @@ SearchResult HistoryEmbeddingsService::Search(
   }
 
   // Try to cancel the embedding task for the previous query, if any.
-  if (query_embedding_task_id_ !=
-      passage_embeddings::Embedder::kInvalidTaskId) {
-    embedder_->TryCancel(query_embedding_task_id_);
+  if (query_embedding_task_id_) {
+    embedder_->TryCancel(*query_embedding_task_id_);
   }
 
   query_embedding_task_id_ = embedder_->ComputePassagesEmbeddings(
@@ -423,13 +422,13 @@ void HistoryEmbeddingsService::OnQueryEmbeddingComputed(
           << (query_passages.empty() ? "(NONE)" : query_passages[0]) << "'";
 
   // Ignore the previous query if a new one has been submitted to the embedder.
-  if (query_embedding_task_id_ != task_id) {
+  if (query_embedding_task_id_ && *query_embedding_task_id_ != task_id) {
     std::move(callback).Run(std::move(result));
     return;
   }
 
   // Reset the query embedding task ID to avoid attempting to cancel it later.
-  query_embedding_task_id_ = passage_embeddings::Embedder::kInvalidTaskId;
+  query_embedding_task_id_.reset();
 
   if (!succeeded) {
     std::move(callback).Run(std::move(result));

@@ -26,25 +26,22 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/multi_animation.h"
 #include "ui/gfx/animation/slide_animation.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/widget/widget_observer.h"
 
-#if BUILDFLAG(IS_LINUX)
-#include "ui/linux/window_frame_provider.h"
-#endif
-
 class BrowserFrameBoundsChangeAnimation;
 
 namespace views {
-class FrameBackground;
 class Label;
 class View;
 }  // namespace views
 
 namespace {
 class WindowEventObserver;
-}
+}  // namespace
 
 class PictureInPictureBrowserFrameView
     : public BrowserNonClientFrameView,
@@ -87,11 +84,6 @@ class PictureInPictureBrowserFrameView
   void Layout(PassKey) override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
-#if BUILDFLAG(IS_LINUX)
-  gfx::Insets RestoredMirroredFrameBorderInsets() const override;
-  gfx::Insets GetInputInsets() const override;
-  SkRRect GetRestoredClipRegion() const override;
-#endif
   void SetFrameBounds(const gfx::Rect& bounds) override;
 
   // ChromeLocationBarModelDelegate:
@@ -133,10 +125,9 @@ class PictureInPictureBrowserFrameView
   void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationProgressed(const gfx::Animation* animation) override;
 
-  // views::View:
-  void OnPaint(gfx::Canvas* canvas) override;
-
   // PictureInPictureBrowserFrameView:
+  virtual gfx::Rect GetHitRegion() const;
+
   // Convert the bounds of a child control view of |top_bar_container_view_| to
   // use the system's coordinate system while we need to know the original
   // container view.
@@ -163,9 +154,6 @@ class PictureInPictureBrowserFrameView
   // - Dialogs are opened in the PiP window
   void UpdateTopBarView(bool render_active);
 
-  // Returns the insets of the window frame borders.
-  gfx::Insets FrameBorderInsets() const;
-
   // Returns the height of the top bar area, including the window top border.
   int GetTopAreaHeight() const;
 
@@ -178,15 +166,6 @@ class PictureInPictureBrowserFrameView
 
   // Returns true if there's an overlay view that's currently shown.
   bool IsOverlayViewVisible() const;
-
-#if BUILDFLAG(IS_LINUX)
-  // Returns whether a client-side shadow should be drawn for the window.
-  bool ShouldDrawFrameShadow() const;
-
-  // Gets the shadow metrics (radius, offset, and number of shadows) even if
-  // shadows are not drawn.
-  static gfx::ShadowValues GetShadowValues();
-#endif
 
 #if BUILDFLAG(IS_WIN)
   gfx::Insets GetClientAreaInsets(HMONITOR monitor) const;
@@ -241,6 +220,9 @@ class PictureInPictureBrowserFrameView
 
   // Returns the insets of the window frame borders for resizing.
   virtual gfx::Insets ResizeBorderInsets() const;
+
+  // Returns the insets of the window frame borders.
+  virtual gfx::Insets FrameBorderInsets() const;
 
  private:
   // Show `auto_pip_setting_overlay_` if we have it, and have a widget.
@@ -387,16 +369,6 @@ class PictureInPictureBrowserFrameView
   // The foreground color given the current state of the
   // `top_bar_color_animation_`.
   std::optional<SkColor> current_foreground_color_;
-
-#if BUILDFLAG(IS_LINUX)
-  // Used to draw window frame borders and shadow on Linux when GTK theme is
-  // enabled.
-  raw_ptr<ui::WindowFrameProvider> window_frame_provider_ = nullptr;
-
-  // Used to draw window frame borders and shadow on Linux when classic theme is
-  // enabled.
-  std::unique_ptr<views::FrameBackground> frame_background_;
-#endif
 
   // Used to monitor key and mouse events from native window.
   std::unique_ptr<WindowEventObserver> window_event_observer_;

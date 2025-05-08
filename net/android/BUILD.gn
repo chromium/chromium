@@ -13,7 +13,6 @@ android_library("net_java") {
     "java/src/org/chromium/net/AndroidNetworkLibrary.java",
     "java/src/org/chromium/net/AndroidTrafficStats.java",
     "java/src/org/chromium/net/ChromiumNetworkAdapter.java",
-    "java/src/org/chromium/net/ConnectivityManagerShim.java",
     "java/src/org/chromium/net/DnsStatus.java",
     "java/src/org/chromium/net/GURLUtils.java",
     "java/src/org/chromium/net/HttpNegotiateAuthenticator.java",
@@ -32,6 +31,11 @@ android_library("net_java") {
     "java/src/org/chromium/net/RegistrationPolicyApplicationStatus.java",
     "java/src/org/chromium/net/X509Util.java",
   ]
+  if (is_cronet_for_aosp_build) {
+    sources += [ "//components/cronet/android/platform-only/org/chromium/net/ConnectivityManagerShim.java" ]
+  } else {
+    sources += [ "java/src/org/chromium/net/ConnectivityManagerShim.java" ]
+  }
   deps = [
     ":net_thread_stats_uid_java",
     "//base:base_java",

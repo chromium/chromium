@@ -1,35 +1,50 @@
 <style include="settings-shared shared-style">
+  :host {
+    --cr-dialog-width: 368px;
+  }
+
   [slot=body] {
     display: flex;
+    gap: 16px;
     flex-direction: column;
-    height: 175px;
-    overflow: auto;
   }
 
   cr-checkbox::part(label-container) {
     white-space: nowrap;
   }
+
+  [slot=button-container] {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+
+  .subheading {
+    font: var(--cros-body-1-font);
+    color: var(--cros-sys-on_surface);
+  }
 </style>
 <cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
-  TODO(b/234790486): Add the correct contents here. this is
-  just a placeholder.
-  <div slot="title">Clear personalization data</div>
-  <div id="dialogBody" slot="body" scrollable>
-    <cr-checkbox class="list-item no-outline is-width-of-dialog"
-      checked="{{clearConversionHistory_}}">
-      Conversion History
-    </cr-checkbox>
-    <cr-checkbox class="list-item no-outline is-width-of-dialog"
-      checked="{{clearSuggestionHistory_}}">
-      Suggestion History
-    </cr-checkbox>
-    <div slot="button-container">
-      <cr-button class="action-button" on-click="onClearButtonClick_">
-        Clear Personalized data
-      </cr-button>
-      <cr-button class="cancel-button" on-click="onCancelButtonClick_">
-        $i18n{cancel}
-      </cr-button>
+  <div slot="title">$i18n{japaneseClearPersonalizationData}</div>
+  <div id="dialogBody" slot="body">
+    <div class="subheading">$i18n{japaneseDeleteItems}</div>
+    <div>
+      <cr-checkbox class="list-item no-outline is-width-of-dialog"
+        checked="{{clearConversionHistory_}}">
+        $i18n{japaneseConversationHistory}
+      </cr-checkbox>
+      <cr-checkbox class="list-item no-outline is-width-of-dialog"
+        checked="{{clearSuggestionHistory_}}">
+        $i18n{japaneseSuggestionHistory}
+      </cr-checkbox>
     </div>
+  </div>
+  <div slot="button-container">
+    <cr-button class="action-button" on-click="onClearButtonClick_">
+      $i18n{japaneseClearPersonalizationData}
+    </cr-button>
+    <cr-button class="cancel-button" on-click="onCancelButtonClick_">
+      $i18n{cancel}
+    </cr-button>
   </div>
 </cr-dialog>

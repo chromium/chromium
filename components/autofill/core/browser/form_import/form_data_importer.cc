@@ -223,7 +223,7 @@ bool ShouldProcessExtractedCreditCard(
   // no credit card save or feature enrollment should happen in this case.
   if (base::FeatureList::IsEnabled(
           features::kAutofillSkipSaveCardForTabModalPopup) &&
-      client->GetPaymentsAutofillClient()->IsTabModalPopup()) {
+      client->GetPaymentsAutofillClient()->IsTabModalPopupDeprecated()) {
     return false;
   }
 

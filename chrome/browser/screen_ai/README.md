@@ -13,18 +13,19 @@ approaches.
 1. If you are adding a new client for OCR, add a new enum value to
    `screen_ai::mojom::OcrClientType`, otherwise choose an appropriate one for it
    in the next steps.
+1. Join `chrome-ocr-clients@` group to get notifications on major updates.
 1. Using `OpticalCharacterRecognizer:CreateWithStatusCallback`, create an OCR
-    object, and wait until the callback is called. This will trigger download
-    and startup of the service (if needed) and reports the result.\
-    Once the callback is called with `true` value, use
-    `OpticalCharacterRecognizer:PerformOCR`.\
-    Creation of the object can only be done in the UI thread.
+   object, and wait until the callback is called. This will trigger download
+   and startup of the service (if needed) and reports the result.\
+   Once the callback is called with `true` value, use
+   `OpticalCharacterRecognizer:PerformOCR`.\
+   Creation of the object can only be done in the UI thread.
 1. If you cannot use the callback, create the object using
-    `OpticalCharacterRecognizer:Create` and keep calling
-    `OpticalCharacterRecognizer:is_ready` until it tells you that the service
-    is ready.\
-    Then use `OpticalCharacterRecognizer:PerformOCR` as above.\
-    Creation of the object can only be done in the UI thread.
+   `OpticalCharacterRecognizer:Create` and keep calling
+   `OpticalCharacterRecognizer:is_ready` until it tells you that the service
+   is ready.\
+   Then use `OpticalCharacterRecognizer:PerformOCR` as above.\
+   Creation of the object can only be done in the UI thread.
 1. If neither of the above work, in the browser process call
    `screen_ai:ScreenAIServiceRouterFactory:GetForBrowserContext:GetServiceStateAsync`
    to trigger library download and service initialization and receive the result
@@ -47,16 +48,29 @@ connecting to `screen_ai:mojom:Screen2xMainContentExtractor` interface.\
 Call `SetClientType` once to set the client type.\
 For an example see `chrome/renderer/accessibility/ax_tree_distiller.cc`.
 
-## Caution
-ScreenAI service has a large memory footprint and should be purged from memory
-when it's not needed. To do so, it monitors connections to itself and if all
-clients have disconnected, it shuts down.\
-To help with this process, please close your connections to the service as soon
-as you don't need them and reconnect again when needed.\
-Have support code for possible disconnecting form the service and reconnect if
-needed. This can happen due to a service crash, and also to ensure clients are
-disconnecting when they don't need the service, the service may in future shut
-down when it's idle without considering open connections.
+## Cautions and Best Practices
+1. OCR downsamples the images if they are larger than a certain threshold, which
+   you can get through `GetMaxImageDimension` function from version 138. Sending
+   images with higher resolution will not increase the recognition quality and
+   only increases allocated memory and adds extra processing time. If you are
+   resizing the image that you sent to OCR for any other reasons, consider this
+   threshold.
+1. ScreenAI service has a large memory footprint and should be purged from
+   memory when it's not needed. To do so, it monitors last used time and if it
+   is not used for sometime (currently 3 seconds), it shuts down and restarts
+   the next time it is needed.
+1. Have support code for possible disconnecting from the service and
+   reconnecting if needed. This can happen due to a service crash or shutdown on
+   being idle.
+1. If the service crashes, it suspends itself for sometime (increasing on
+   subsequent crashes). Make sure your usecase is consistent with it. You can
+   get the actual delay for the nth crash through
+   `SuggestedWaitTimeBeforeReAttempt` function.
+1. If you have a batch job, send one request at a time to the service to avoid
+   bloating the queue for tasks. Mechanisms may be added soon to kill the
+   process if it allocates too much memory. Also consider adding pauses after
+   every few requests so that system resources would not be allocated a lot for
+   a long continuous time.
 
 ## Bugs Component
   Chromium > UI > Accessibility > MachineIntelligence (component id: 1457124)

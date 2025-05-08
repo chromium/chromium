@@ -98,6 +98,10 @@ def main():
                         help="Alternates between 200 and" +
                         " 404 responses, every minute",
                         action="store_true")
+    parser.add_argument('--bind-all-interfaces',
+                        help='Serves on all interfaces' +
+                        ' (by default serves only localhost)',
+                        action='store_true')
     args = parser.parse_args()
 
     RequestHandler.directory = f'{args.outdir}/gen/chrome/test/data/webui/glic'
@@ -123,7 +127,9 @@ def main():
         os.path.join(args.outdir, 'pyproto', 'components',
                      'optimization_guide', 'proto', 'features'))
 
-    with socketserver.ThreadingTCPServer(("", args.port),
+    server_addr = '' if args.bind_all_interfaces else '127.0.0.1'
+
+    with socketserver.ThreadingTCPServer((server_addr, args.port),
                                          RequestHandler) as httpd:
         print("Server started at localhost:" + str(args.port))
         httpd.serve_forever()

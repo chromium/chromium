@@ -11,14 +11,11 @@
  * objects in the list contain a "next" property that can be used to maintain
  * the pool.
  */
+goog.module('goog.async.FreeList');
+goog.module.declareLegacyNamespace();
 
-goog.provide('goog.async.FreeList');
-
-
-/**
- * @template ITEM
- */
-goog.async.FreeList = class {
+/** @template ITEM */
+class FreeList {
   /**
    * @param {function():ITEM} create
    * @param {function(ITEM):void} reset
@@ -38,9 +35,7 @@ goog.async.FreeList = class {
     this.head_ = null;
   }
 
-  /**
-   * @return {ITEM}
-   */
+  /** @return {ITEM} */
   get() {
     let item;
     if (this.occupants_ > 0) {
@@ -54,9 +49,7 @@ goog.async.FreeList = class {
     return item;
   }
 
-  /**
-   * @param {ITEM} item An item available for possible future reuse.
-   */
+  /** @param {ITEM} item An item available for possible future reuse. */
   put(item) {
     this.reset_(item);
     if (this.occupants_ < this.limit_) {
@@ -68,10 +61,12 @@ goog.async.FreeList = class {
 
   /**
    * Visible for testing.
-   * @package
    * @return {number}
+   * @package
    */
   occupants() {
     return this.occupants_;
   }
-};
+}
+
+exports = FreeList;

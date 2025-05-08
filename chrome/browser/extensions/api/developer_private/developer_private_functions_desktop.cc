@@ -44,7 +44,6 @@
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
-#include "chrome/browser/extensions/webstore_reinstaller.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -71,14 +70,11 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/drop_data.h"
 #include "extensions/browser/api/file_handlers/app_file_handler_util.h"
-#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/error_map.h"
 #include "extensions/browser/extension_file_task_runner.h"
-#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/file_highlighter.h"
-#include "extensions/browser/management_policy.h"
 #include "extensions/browser/path_util.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/ui_util.h"
@@ -780,63 +776,6 @@ DeveloperPrivateLoadDirectoryFunction::DeveloperPrivateLoadDirectoryFunction()
 
 DeveloperPrivateLoadDirectoryFunction::
     ~DeveloperPrivateLoadDirectoryFunction() {}
-
-DeveloperPrivateRepairExtensionFunction::
-    ~DeveloperPrivateRepairExtensionFunction() = default;
-
-ExtensionFunction::ResponseAction
-DeveloperPrivateRepairExtensionFunction::Run() {
-  std::optional<developer::RepairExtension::Params> params =
-      developer::RepairExtension::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  const Extension* extension = GetExtensionById(params->extension_id);
-  if (!extension) {
-    return RespondNow(Error(kNoSuchExtensionError));
-  }
-
-  if (!ExtensionPrefs::Get(browser_context())
-           ->HasDisableReason(extension->id(),
-                              disable_reason::DISABLE_CORRUPTED)) {
-    return RespondNow(Error(kCannotRepairHealthyExtension));
-  }
-
-  ManagementPolicy* management_policy =
-      ExtensionSystem::Get(browser_context())->management_policy();
-  // If content verifier would repair this extension independently, then don't
-  // allow repair from here. This applies to policy extensions.
-  // Also note that if we let |reinstaller| continue with the repair, this would
-  // have uninstalled the extension but then we would have failed to reinstall
-  // it for policy check (see PolicyCheck::Start()).
-  if (management_policy->ShouldRepairIfCorrupted(extension)) {
-    return RespondNow(Error(kCannotRepairPolicyExtension));
-  }
-
-  content::WebContents* web_contents = GetSenderWebContents();
-  if (!web_contents) {
-    return RespondNow(Error(kCouldNotFindWebContentsError));
-  }
-
-  ExtensionManagement* extension_management =
-      ExtensionManagementFactory::GetForBrowserContext(browser_context());
-  if (!extension_management->UpdatesFromWebstore(*extension)) {
-    return RespondNow(Error(kCannotRepairNonWebstoreExtension));
-  }
-
-  auto reinstaller = base::MakeRefCounted<WebstoreReinstaller>(
-      web_contents, params->extension_id,
-      base::BindOnce(
-          &DeveloperPrivateRepairExtensionFunction::OnReinstallComplete, this));
-  reinstaller->BeginReinstall();
-
-  return RespondLater();
-}
-
-void DeveloperPrivateRepairExtensionFunction::OnReinstallComplete(
-    bool success,
-    const std::string& error,
-    webstore_install::Result result) {
-  Respond(success ? NoArguments() : Error(error));
-}
 
 DeveloperPrivateShowOptionsFunction::~DeveloperPrivateShowOptionsFunction() =
     default;

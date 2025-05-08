@@ -25,7 +25,8 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.build.annotations.MockedInTests;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
@@ -45,7 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Class containing functionality related to voice search. */
-@MockedInTests
+@NullMarked
 public class VoiceRecognitionHandler {
     private static final String TAG = "VoiceRecognition";
 
@@ -59,11 +60,11 @@ public class VoiceRecognitionHandler {
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final ApplicationStateListener mApplicationStateListener =
             this::onApplicationStateChange;
-    private Long mQueryStartTimeMs;
-    private WebContentsObserver mVoiceSearchWebContentsObserver;
+    private @Nullable Long mQueryStartTimeMs;
+    private @Nullable WebContentsObserver mVoiceSearchWebContentsObserver;
     private CallbackController mCallbackController = new CallbackController();
     private ObservableSupplier<Profile> mProfileSupplier;
-    private Boolean mIsVoiceSearchEnabledCached;
+    private @Nullable Boolean mIsVoiceSearchEnabledCached;
     private boolean mRegisteredActivityStateListener;
 
     /**
@@ -207,6 +208,7 @@ public class VoiceRecognitionHandler {
         mObservers.removeObserver(observer);
     }
 
+    @SuppressWarnings("NullAway")
     public void destroy() {
         if (mCallbackController != null) {
             mCallbackController.destroy();
@@ -365,7 +367,7 @@ public class VoiceRecognitionHandler {
 
     /** Convert the android voice intent bundle to a list of result objects. */
     @VisibleForTesting
-    protected List<VoiceResult> convertBundleToVoiceResults(Bundle extras) {
+    protected @Nullable List<VoiceResult> convertBundleToVoiceResults(@Nullable Bundle extras) {
         if (extras == null) return null;
 
         ArrayList<String> strings = extras.getStringArrayList(RecognizerIntent.EXTRA_RESULTS);

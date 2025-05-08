@@ -70,7 +70,8 @@ class BabelOrcaManager : public BocaSessionManager::Observer,
       std::unique_ptr<babelorca::BabelOrcaCaptionTranslator> translator,
       base::RepeatingClosure on_local_caption_closed_cb,
       PrefService* pref_service,
-      const std::string& application_locale);
+      const std::string& application_locale,
+      const std::string& caption_language);
 
   static std::unique_ptr<BabelOrcaManager> CreateAsConsumer(
       signin::IdentityManager* identity_manager,
@@ -81,7 +82,8 @@ class BabelOrcaManager : public BocaSessionManager::Observer,
       std::unique_ptr<babelorca::BabelOrcaCaptionTranslator> translator,
       base::RepeatingClosure on_local_caption_closed_cb,
       PrefService* pref_service,
-      const std::string& application_locale);
+      const std::string& application_locale,
+      const std::string& caption_language);
 
   BabelOrcaManager(
       PrefService* pref_service,
@@ -105,6 +107,7 @@ class BabelOrcaManager : public BocaSessionManager::Observer,
   void OnLocalCaptionConfigUpdated(
       const ::boca::CaptionsConfig& config) override;
   void OnLocalCaptionClosed() override;
+  void OnSessionCaptionClosed(bool is_error) override;
 
   bool IsCaptioningAvailable();
 

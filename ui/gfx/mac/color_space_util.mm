@@ -243,8 +243,29 @@ gfx::ColorSpace::MatrixID GetCoreVideoMatrix(CFTypeRef matrix_untyped) {
   auto matrix_id = gfx::ColorSpace::MatrixID::INVALID;
   if (!GetImageBufferProperty(matrix_untyped, GetSupportedImageMatrix(),
                               &matrix_id)) {
-    DLOG(ERROR) << "Failed to find CVImageBufferRef YUV matrix: "
-                << matrix_untyped;
+    CFStringRef value_as_string =
+        base::apple::CFCast<CFStringRef>(matrix_untyped);
+    if (value_as_string) {
+      // For matrices that macOS doesn't recognize it'll return a value of the
+      // form "YCbCrMatrix#n" where n seems to correspond to the ISO
+      // 23001-8:2016 id; see VideoColorSpace::MatrixID. We could add
+      // generalized code to handle this, but it's rarely seen so favor
+      // simplicity.
+      //
+      // Note: We don't include this value in GetSupportedImageMatrix() since
+      // we only want to translate this value when it comes from macOS.
+      // Note 2: The space after the number is intentional. Presumably it's to
+      // leave room for two digit matrix IDs.
+      if (CFStringCompare(value_as_string, CFSTR("YCbCrMatrix#5 "), 0)) {
+        return gfx::ColorSpace::MatrixID::BT470BG;
+      }
+
+      DLOG(ERROR) << "Failed to find CVImageBufferRef YUV matrix: \""
+                  << value_as_string << "\"";
+    } else {
+      DLOG(ERROR) << "Failed to find CVImageBufferRef YUV matrix: "
+                  << matrix_untyped;
+    }
   }
   return matrix_id;
 }

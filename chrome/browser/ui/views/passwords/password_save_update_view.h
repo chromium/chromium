@@ -28,7 +28,8 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
   METADATA_HEADER(PasswordSaveUpdateView, PasswordBubbleViewBase)
 
  public:
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPasswordBubble);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPasswordBubbleElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kExtraButtonElementId);
 
   PasswordSaveUpdateView(content::WebContents* web_contents,
                          views::View* anchor_view,
@@ -41,6 +42,11 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
   views::EditablePasswordCombobox* password_dropdown_for_testing() const {
     return password_dropdown_.get();
   }
+
+  views::MdTextButton* extra_view_for_testing() const {
+    return extra_view_.get();
+  }
+
 #endif  // #ifdef UNIT_TEST
 
  private:
@@ -96,6 +102,9 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
   // Hidden view that will contain status text for immediate output by
   // screen readers when the bubble changes state between Save and Update.
   raw_ptr<views::View> accessibility_alert_ = nullptr;
+
+  // Points to the "not now" button when present.
+  raw_ptr<views::MdTextButton> extra_view_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_SAVE_UPDATE_VIEW_H_

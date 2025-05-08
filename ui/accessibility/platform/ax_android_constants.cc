@@ -26,11 +26,14 @@ const char kAXListViewClassname[] = "android.widget.ListView";
 const char kAXMenuItemClassname[] = "android.view.MenuItem";
 const char kAXMultiAutoCompleteTextViewClassname[] =
     "android.widget.MultiAutoCompleteTextView";
+const char kAXNavigationViewClassname[] =
+    "com.google.android.material.navigation.NavigationView";
 const char kAXPagerClassname[] = "android.support.v4.view.ViewPager";
 const char kAXProgressBarClassname[] = "android.widget.ProgressBar";
 const char kAXRadioButtonClassname[] = "android.widget.RadioButton";
 const char kAXRadioGroupClassname[] = "android.widget.RadioGroup";
 const char kAXScrollViewClassname[] = "android.widget.ScrollView";
+const char kAXSearchViewClassname[] = "android.widget.SearchView";
 const char kAXSeekBarClassname[] = "android.widget.SeekBar";
 const char kAXSpinnerClassname[] = "android.widget.Spinner";
 const char kAXSwitchClassname[] = "android.widget.Switch";

@@ -88,7 +88,7 @@ enum class StorageAccessStatus {
 // LINT.IfChange(StorageAccessStatusOutcome)
 enum class StorageAccessStatusOutcome {
   // The feature is disabled.
-  kOmittedFeatureDisabled = 0,
+  // kOmittedFeatureDisabled = 0, // Deprecated (feature is always enabled).
   // The request is same-site.
   kOmittedSameSite = 1,
   // The storage access status is `none`.
@@ -131,7 +131,7 @@ enum class SecFetchStorageAccessOutcome {
 enum class ActivateStorageAccessLoadOutcome {
   // Applies when the `Activate-Storage-Access` header behavior is not enabled
   // under the existing feature flags or content settings.
-  kFailureHeaderDisabled = 0,
+  // kFailureHeaderDisabled = 0, // Deprecated (feature is always enabled).
   // Applies when a response includes the `Activate-Storage-Access: load`
   // header, but its corresponding request either has an omitted storage access
   // status, or has a storage access status of `none`.
@@ -152,7 +152,7 @@ enum class ActivateStorageAccessLoadOutcome {
 enum class ActivateStorageAccessRetryOutcome {
   // Applies when the `Activate-Storage-Access` header behavior is not enabled
   // under the existing feature flags or content settings.
-  kFailureHeaderDisabled = 0,
+  // kFailureHeaderDisabled = 0, // Deprecated (feature is always enabled).
   // Applies when a response includes a well-formed
   // `Activate-Storage-Access: retry; ..." header, but the corresponding
   // request's `Sec-Fetch-Storage-Access` header is not `inactive`.
@@ -410,9 +410,6 @@ NET_EXPORT bool IsSchemeBoundCookiesEnabled();
 NET_EXPORT bool IsOriginBoundCookiesPartiallyEnabled();
 
 NET_EXPORT bool IsTimeLimitedInsecureCookiesEnabled();
-
-// Returns whether the respective feature is enabled.
-NET_EXPORT bool IsSchemefulSameSiteEnabled();
 
 // Computes the First-Party Sets metadata and cache match information.
 // `isolation_info` must be fully populated.

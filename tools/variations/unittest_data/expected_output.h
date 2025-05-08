@@ -32,6 +32,7 @@ struct FieldTrialTestingExperiment {
   const base::span<const Study::Platform> platforms;
   const base::span<const Study::FormFactor> form_factors;
   const std::optional<bool> is_low_end_device;
+  const std::optional<bool> disable_benchmarking;
   const char* const min_os_version;
   const base::span<const FieldTrialTestingExperimentParams> params;
   const base::span<const char* const> enable_features;

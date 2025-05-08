@@ -32,6 +32,10 @@
 
 class Profile;
 
+namespace ash {
+class BrowserDelegate;
+}  // namespace ash
+
 namespace extensions::app_file_handler_util {
 class MimeTypeCollector;
 }  // namespace extensions::app_file_handler_util
@@ -63,15 +67,15 @@ struct ODFSFileSystemAndPath {
 };
 
 // The string conversions of ash::cloud_upload::mojom::UserAction.
-constexpr char kUserActionCancel[] = "cancel";
-constexpr char kUserActionCancelGoogleDrive[] = "cancel-drive";
-constexpr char kUserActionCancelOneDrive[] = "cancel-onedrive";
-constexpr char kUserActionSetUpOneDrive[] = "setup-onedrive";
-constexpr char kUserActionUploadToGoogleDrive[] = "upload-drive";
-constexpr char kUserActionUploadToOneDrive[] = "upload-onedrive";
-constexpr char kUserActionConfirmOrUploadToGoogleDrive[] =
+inline constexpr char kUserActionCancel[] = "cancel";
+inline constexpr char kUserActionCancelGoogleDrive[] = "cancel-drive";
+inline constexpr char kUserActionCancelOneDrive[] = "cancel-onedrive";
+inline constexpr char kUserActionSetUpOneDrive[] = "setup-onedrive";
+inline constexpr char kUserActionUploadToGoogleDrive[] = "upload-drive";
+inline constexpr char kUserActionUploadToOneDrive[] = "upload-onedrive";
+inline constexpr char kUserActionConfirmOrUploadToGoogleDrive[] =
     "confirm-or-upload-google-drive";
-constexpr char kUserActionConfirmOrUploadToOneDrive[] =
+inline constexpr char kUserActionConfirmOrUploadToOneDrive[] =
     "confirm-or-upload-onedrive";
 
 // Options for which setup or move confirmation sub-page/flow we want to show.
@@ -258,7 +262,7 @@ class CloudOpenTask : public BrowserListObserver,
   OfficeFilesTransferRequired transfer_required_ =
       OfficeFilesTransferRequired::kNotRequired;
   bool need_new_files_app_ = false;
-  raw_ptr<Browser> files_app_browser_;
+  raw_ptr<BrowserDelegate> files_app_browser_;
   bool files_app_closed_ = false;
 };
 

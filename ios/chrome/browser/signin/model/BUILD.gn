@@ -77,7 +77,7 @@ source_set("model") {
     "//google_apis",
     "//ios/chrome/app:change_profile_commands",
     "//ios/chrome/app:tests_hook",
-    "//ios/chrome/browser/authentication/ui_bundled/signin/account_menu:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/account_menu:constants",
     "//ios/chrome/browser/bookmarks/model:model_utils",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/crash_report/model",
@@ -199,7 +199,6 @@ source_set("signin_util") {
     "//base",
     "//components/prefs",
     "//components/signin/public/identity_manager",
-    "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features:system_flags",
@@ -237,8 +236,10 @@ source_set("signin_util_internal") {
   deps = [
     "//base",
     "//components/signin/public/identity_manager",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/common",
   ]
 }
 
@@ -311,7 +312,6 @@ source_set("fake_system_identity_manager") {
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//google_apis",
-    "//ios/chrome/browser/authentication/ui_bundled/signin:interruptible_chrome_coordinator",
     "//ios/public/provider/chrome/browser/signin:signin_error_api",
   ]
   frameworks = [ "Foundation.framework" ]
@@ -454,6 +454,7 @@ source_set("unit_tests") {
     "resized_avatar_cache_unittest.mm",
     "signin_profile_info_updater_unittest.mm",
     "signin_util_unittest.mm",
+    "system_account_updater_unittests.mm",
     "system_identity_manager_unittest.mm",
   ]
   deps = [
@@ -482,7 +483,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//google_apis",
     "//ios/chrome/app:change_profile_commands",
-    "//ios/chrome/browser/authentication/ui_bundled/signin/account_menu:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/account_menu:constants",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/lens/model",
     "//ios/chrome/browser/policy/model:policy_util",
@@ -500,6 +501,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
     "//ios/chrome/browser/web/model",
+    "//ios/chrome/browser/widget_kit/model:features",
+    "//ios/chrome/common/app_group",
     "//ios/chrome/test:test_support",
     "//ios/net",
     "//ios/web/common",

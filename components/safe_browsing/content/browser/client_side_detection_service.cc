@@ -103,6 +103,12 @@ void LogOnDeviceModelSessionAliveOnNewRequest(bool is_alive) {
       "SBClientPhishing.OnDeviceModelSessionAliveOnNewRequest", is_alive);
 }
 
+void LogOnDeviceModelCallbackStateOnSuccessfulResponse(bool is_alive) {
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.OnDeviceModelSuccessfulResponseCallbackAlive",
+      is_alive);
+}
+
 ClientSideDetectionService::CacheState::CacheState(bool phish, base::Time time)
     : is_phishing(phish), timestamp(time) {}
 
@@ -930,6 +936,8 @@ void ClientSideDetectionService::ModelExecutionCallback(
 
   ResetOnDeviceSession(/*inquiry_complete=*/true);
 
+  LogOnDeviceModelCallbackStateOnSuccessfulResponse(
+      !!inquire_on_device_model_callback_);
   if (inquire_on_device_model_callback_) {
     std::move(inquire_on_device_model_callback_).Run(scam_detection_response);
   }

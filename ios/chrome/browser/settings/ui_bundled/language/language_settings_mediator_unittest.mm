@@ -11,7 +11,6 @@
 #import "base/containers/contains.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "base/test/task_environment.h"
 #import "base/time/time.h"
 #import "components/language/core/browser/language_prefs.h"
 #import "components/language/core/browser/pref_names.h"
@@ -27,6 +26,7 @@
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -92,7 +92,7 @@ std::vector<std::string> ExtractLanguageCodesFromLanguageItems(
 class LanguageSettingsMediatorTest : public PlatformTest {
  protected:
   LanguageSettingsMediatorTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {
+      : task_environment_(web::WebTaskEnvironment::MainThreadType::UI) {
     // Create profile.
     TestProfileIOS::Builder builder;
     builder.SetPrefService(CreatePrefService());
@@ -140,7 +140,7 @@ class LanguageSettingsMediatorTest : public PlatformTest {
   }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<translate::TranslatePrefs> translate_prefs_;
   FakeLanguageSettingsConsumer* consumer_;

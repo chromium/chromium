@@ -32,7 +32,7 @@
 // `detailTextColor` is used, otherwise a default color is used.
 @property(nonatomic, strong) UIColor* thirdRowTextColor;
 // Detail text to be displayed instead of the URL.
-@property(nonatomic, strong) NSString* detailText;
+@property(nonatomic, copy) NSString* detailText;
 // Metadata text displayed at the trailing edge of the cell.
 @property(nonatomic, readwrite, copy) NSString* metadata;
 // Metadata image displayed at the trailing edge of the cell, before the
@@ -78,7 +78,7 @@
 @property(nonatomic, readonly, strong) UILabel* thirdRowLabel;
 
 // Unique identifier that matches with one URLItem.
-@property(nonatomic, strong) NSString* cellUniqueIdentifier;
+@property(nonatomic, copy) NSString* cellUniqueIdentifier;
 
 // Properly configure the subview layouts once all labels' properties have been
 // configured. This must be called at the end of configureCell: for all items

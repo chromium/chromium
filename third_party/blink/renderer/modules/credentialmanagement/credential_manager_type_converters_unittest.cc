@@ -242,7 +242,7 @@ TEST(CredentialManagerTypeConvertersTest,
 
   EXPECT_TRUE(blink_type->hasPayment());
   EXPECT_TRUE(blink_type->payment()->hasBrowserBoundSignature());
-  EXPECT_THAT(blink_type->payment()->browserBoundSignature()->signatureOutput(),
+  EXPECT_THAT(blink_type->payment()->browserBoundSignature()->signature(),
               DOMArrayBufferEqualTo(Vector<uint8_t>{1, 2, 3}));
 }
 

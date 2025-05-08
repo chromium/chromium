@@ -44,8 +44,6 @@ struct PLATFORM_EXPORT FontFeatureValue : public FontFeatureTag {
 //
 // Represents an OpenType font feature with its value and text range.
 //
-// This struct has the same size and layout as `hb_feature_t`.
-//
 struct PLATFORM_EXPORT FontFeatureRange : public FontFeatureValue {
   // The size produced by `FromFontDescription()` for the initial style.
   static constexpr wtf_size_t kInitialSize = 1;
@@ -58,6 +56,11 @@ struct PLATFORM_EXPORT FontFeatureRange : public FontFeatureValue {
   // True if the list is for the initial style.
   static bool IsInitial(base::span<const FontFeatureRange>);
 
+  // This struct has the same size and layout as `hb_feature_t`.
+  static const hb_feature_t* ToHarfBuzzData(const FontFeatureRange* features) {
+    return reinterpret_cast<const hb_feature_t*>(features);
+  }
+
   uint32_t start = 0;
   uint32_t end = static_cast<uint32_t>(-1);
 };
@@ -65,49 +68,7 @@ struct PLATFORM_EXPORT FontFeatureRange : public FontFeatureValue {
 //
 // Represents a list of `FontFeatureRange`.
 //
-class PLATFORM_EXPORT FontFeatures {
- public:
-  FontFeatures() = default;
-  explicit FontFeatures(base::span<const FontFeatureRange> features)
-      : features_(features) {}
-
-  // Initialize the list from |Font|.
-  void Initialize(const FontDescription&);
-
-  wtf_size_t size() const { return features_.size(); }
-  bool IsEmpty() const { return features_.empty(); }
-
-  const FontFeatureRange& operator[](wtf_size_t i) const {
-    return features_[i];
-  }
-  explicit operator base::span<const FontFeatureRange>() { return features_; }
-  const hb_feature_t* ToHarfBuzzData() const;
-
-  std::optional<uint32_t> FindValueForTesting(uint32_t tag) const;
-
-  void Reserve(wtf_size_t new_capacity) { features_.reserve(new_capacity); }
-
-  void Append(const FontFeatureRange& feature) { features_.push_back(feature); }
-  void Insert(const FontFeatureRange& feature) {
-    features_.push_front(feature);
-  }
-  void AppendVector(const FontFeatures& features) {
-    features_.AppendVector(features.features_);
-  }
-
-  void EraseAt(wtf_size_t position, wtf_size_t length) {
-    features_.EraseAt(position, length);
-  }
-  void Shrink(wtf_size_t size) { features_.Shrink(size); }
-
-  using FeatureArray = Vector<FontFeatureRange, 6>;
-  using const_iterator = FeatureArray::const_iterator;
-  const_iterator begin() const { return features_.begin(); }
-  const_iterator end() const { return features_.end(); }
-
- private:
-  FeatureArray features_;
-};
+using FontFeatures = Vector<FontFeatureRange, 6>;
 
 }  // namespace blink
 

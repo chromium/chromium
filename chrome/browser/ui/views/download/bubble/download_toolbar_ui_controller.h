@@ -8,8 +8,10 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/download/download_ui_model.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/download/download_bubble_row_list_view_info.h"
 #include "chrome/browser/ui/download/download_display.h"
@@ -58,6 +60,7 @@ class DownloadToolbarUIController
   // PinnedToolbarActionsContainer is available since the
   // DownloadDisplayController can call Show() immediately.
   void Init();
+  void TearDownPreBrowserViewDestruction();
 
   // DownloadDisplay:
   void Show() override;
@@ -239,6 +242,9 @@ class DownloadToolbarUIController
   bool use_auto_close_bubble_timer_ = true;
 
   base::TimeTicks button_click_time_;
+
+  base::ScopedObservation<BrowserList, BrowserListObserver>
+      browser_list_observation_{this};
 
   // Maps number of in-progress downloads to the corresponding tooltip text, to
   // avoid having to create the strings repeatedly. The entry for 0 is the

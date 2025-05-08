@@ -22,7 +22,6 @@
 #include "gpu/vulkan/buildflags.h"
 #include "media/gpu/buildflags.h"
 #include "third_party/skia/include/core/SkCanvas.h"
-#include "ui/gfx/color_conversion_sk_filter_cache.h"
 #include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/latency/latency_info.h"
@@ -249,23 +248,13 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
 
   // skia_renderer can draw most single-quad passes directly, regardless of
   // blend mode or image filtering.
-  const DrawQuad* CanPassBeDrawnDirectly(
+  std::optional<const DrawQuad*> CanPassBeDrawnDirectly(
       const AggregatedRenderPass* pass,
       const RenderPassRequirements& requirements) override;
 
   void DrawDelegatedInkTrail(
       const gfx::Transform& root_target_to_render_pass_transform);
 
-  // Get a color filter that converts from |src| color space to |dst| color
-  // space using a shader constructed from gfx::ColorTransform.  The color
-  // filters are cached in |color_filter_cache_|.
-  sk_sp<SkColorFilter> GetColorSpaceConversionFilter(
-      const gfx::ColorSpace& src,
-      std::optional<uint32_t> src_bit_depth,
-      std::optional<gfx::HDRMetadata> src_hdr_metadata,
-      const cc::PaintFlags::DynamicRangeLimitMixture& src_dynamic_range_limit,
-      const gfx::ColorSpace& dst,
-      bool is_video_frame);
   // Returns the color filter that should be applied to the current canvas.
   sk_sp<SkColorFilter> GetContentColorFilter();
 
@@ -536,8 +525,6 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
 #endif  // BUILDFLAG(IS_APPLE)
 
   const bool is_using_raw_draw_;
-
-  gfx::ColorConversionSkFilterCache color_filter_cache_;
 
   // Returns true if we need to push a color conversion layer to correctly draw
   // |render_pass|'s contents.

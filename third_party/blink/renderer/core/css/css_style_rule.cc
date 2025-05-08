@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -238,8 +239,9 @@ unsigned CSSStyleRule::insertRule(const ExecutionContext* execution_context,
     if (index > 0) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kIndexSizeError,
-          "the index " + String::Number(index) +
-              " must be less than or equal to the length of the rule list.");
+          WTF::StrCat(
+              {"the index ", String::Number(index),
+               " must be less than or equal to the length of the rule list."}));
       return 0;
     }
     style_rule_->EnsureChildRules();
@@ -257,7 +259,7 @@ unsigned CSSStyleRule::insertRule(const ExecutionContext* execution_context,
     return 0;
   } else {
     CSSStyleSheet::RuleMutationScope mutation_scope(this);
-    style_rule_->WrapperInsertRule(index, new_rule);
+    style_rule_->WrapperInsertRule(parentStyleSheet(), index, new_rule);
     child_rule_cssom_wrappers_.insert(index, Member<CSSRule>(nullptr));
     return index;
   }
@@ -278,7 +280,7 @@ void CSSStyleRule::deleteRule(unsigned index, ExceptionState& exception_state) {
 
   CSSStyleSheet::RuleMutationScope mutation_scope(this);
 
-  style_rule_->WrapperRemoveRule(index);
+  style_rule_->WrapperRemoveRule(parentStyleSheet(), index);
 
   if (child_rule_cssom_wrappers_[index]) {
     child_rule_cssom_wrappers_[index]->SetParentRule(nullptr);

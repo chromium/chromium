@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, PauseActionSource, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement, SpEmptyStateElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
@@ -15,6 +15,7 @@ import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.j
 suite('LoadingScreen', () => {
   let app: AppElement;
   let emptyState: SpEmptyStateElement;
+  let speechController: SpeechController;
 
   setup(async () => {
     // Clearing the DOM should always be done first.
@@ -23,6 +24,8 @@ suite('LoadingScreen', () => {
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     chrome.readingMode.isReadAloudEnabled = true;
+    speechController = new SpeechController();
+    SpeechController.setInstance(speechController);
 
     app = await createApp();
     app.showLoading();
@@ -38,20 +41,23 @@ suite('LoadingScreen', () => {
   });
 
   test('with flag clears read aloud state', () => {
-    app.speechPlayingState = {
+    speechController.setState({
       isSpeechActive: true,
       isSpeechTreeInitialized: true,
+      pauseSource: PauseActionSource.BUTTON_CLICK,
       isAudioCurrentlyPlaying: true,
       hasSpeechBeenTriggered: true,
-      isSpeechBeingRepositioned: false,
-    };
+      isSpeechBeingRepositioned: true,
+    });
 
     app.showLoading();
 
-    assertFalse(app.speechPlayingState.isSpeechActive);
-    assertFalse(app.speechPlayingState.isSpeechTreeInitialized);
-    assertFalse(app.speechPlayingState.isAudioCurrentlyPlaying);
-    assertFalse(app.speechPlayingState.hasSpeechBeenTriggered);
+    assertFalse(speechController.isSpeechActive());
+    assertFalse(speechController.isSpeechTreeInitialized());
+    assertEquals(PauseActionSource.DEFAULT, speechController.getPauseSource());
+    assertFalse(speechController.isAudioCurrentlyPlaying());
+    assertFalse(speechController.hasSpeechBeenTriggered());
+    assertFalse(speechController.isSpeechBeingRepositioned());
   });
 
   test('selection on loading screen does nothing', async () => {

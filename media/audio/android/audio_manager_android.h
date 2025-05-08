@@ -48,7 +48,7 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
       const LogCallback& log_callback) override;
   void ReleaseOutputStream(AudioOutputStream* stream) override;
   void ReleaseInputStream(AudioInputStream* stream) override;
-  const char* GetName() override;
+  const std::string_view GetName() override;
 
   // Implementation of AudioManagerBase.
   AudioOutputStream* MakeLinearOutputStream(
@@ -96,8 +96,16 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
       const AudioParameters& input_params) override;
 
  private:
+  enum class AudioDeviceDirection {
+    kInput,         // Audio source
+    kOutput,        // Audio sink
+    kCommunication  // Communication device, i.e. an input/output pair.
+  };
+
   const base::android::JavaRef<jobject>& GetJavaAudioManager();
   bool HasNoAudioInputStreams();
+  void GetDeviceNames(AudioDeviceNames* device_names,
+                      AudioDeviceDirection direction);
   void SetCommunicationAudioModeOn(bool on);
   bool SetCommunicationDevice(const std::string& device_id);
   int GetNativeOutputSampleRate();

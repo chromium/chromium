@@ -16,6 +16,7 @@
     { "field": "name", "type": "string16" },
     { "field": "keyword", "type": "string16" },
     { "field": "favicon_url", "type": "string" },
+    { "field": "base_builtin_resource_id", "type": "string", "optional": true },
     { "field": "search_url", "type": "string" },
     {
       "field": "encoding",

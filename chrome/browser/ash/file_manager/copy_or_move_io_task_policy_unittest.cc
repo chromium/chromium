@@ -209,7 +209,7 @@ class CopyOrMoveIOTaskWithScansTest
     file_system_context_ = storage::CreateFileSystemContextForTesting(
         nullptr, source_destination_testing_helper_->GetTempDirPath());
 
-    enterprise_connectors::FileTransferAnalysisDelegate::SetFactorForTesting(
+    enterprise_connectors::FileTransferAnalysisDelegate::SetFactoryForTesting(
         base::BindRepeating(
             [](base::RepeatingCallback<void(
                    enterprise_connectors::MockFileTransferAnalysisDelegate*,

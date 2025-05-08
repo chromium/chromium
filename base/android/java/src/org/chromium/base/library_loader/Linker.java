@@ -67,7 +67,7 @@ import javax.annotation.concurrent.GuardedBy;
  *   initialization runs implicitly as part of loading the library. In this case the behaviour is of
  *   a producer.
  *
- * - After loading the native library as a RELRO producer, the putSharedRelrosToBundle() becomes
+ * - After loading the native library as a RELRO producer, the getSharedRelroBundle() becomes
  *   available to then send the Bundle to Linkers in other processes, consumed
  *   by takeSharedRelrosFromBundle().
  */
@@ -80,10 +80,6 @@ class Linker {
 
     // Constant guarding debug logging.
     private static final boolean DEBUG = LibraryLoader.DEBUG;
-
-    // Constants used to pass the shared RELRO Bundle through Binder.
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    static final String SHARED_RELROS = "org.chromium.base.android.linker.shared_relros";
 
     private static final String BASE_LOAD_ADDRESS =
             "org.chromium.base.android.linker.base_load_address";
@@ -405,39 +401,40 @@ class Linker {
 
     /**
      * Serializes information about the RELRO region to be passed to a Linker in another process.
-     * @param bundle The Bundle to serialize to.
+     *
+     * @param args The IChildProcessArgs to serialize to.
      */
-    void putSharedRelrosToBundle(Bundle bundle) {
+    @Nullable Bundle getSharedRelrosBundle() {
         Bundle relros = null;
         synchronized (mLock) {
-            if (DEBUG) Log.i(TAG, "putSharedRelrosToBundle: state=%d", mState);
+            if (DEBUG) Log.i(TAG, "getSharedRelrosBundle: state=%d", mState);
             if (mState == State.DONE_PROVIDE_RELRO) {
                 assert mRelroProducer;
                 relros = assumeNonNull(mLocalLibInfo).toBundle();
             }
-            bundle.putBundle(SHARED_RELROS, relros);
             if (DEBUG && relros != null) {
                 assert mLocalLibInfo != null;
                 Log.i(
                         TAG,
-                        "putSharedRelrosToBundle() puts mLoadAddress=0x%x, mLoadSize=%d, "
+                        "getSharedRelrosBundle() puts mLoadAddress=0x%x, mLoadSize=%d, "
                                 + "mRelroFd=%d",
                         mLocalLibInfo.mLoadAddress,
                         mLocalLibInfo.mLoadSize,
                         mLocalLibInfo.mRelroFd);
             }
         }
+        return relros;
     }
 
     /**
-     * Deserializes the RELRO region information that was marshalled by
-     * {@link #putLoadAddressToBundle(Bundle)} and wakes up the threads waiting for it to replace
-     * the RELRO section in this process with shared memory.
+     * Deserializes the RELRO region information that was marshalled by {@link
+     * #putLoadAddressToBundle(Bundle)} and wakes up the threads waiting for it to replace the RELRO
+     * section in this process with shared memory.
+     *
      * @param bundle The Bundle to extract the information from.
      */
-    void takeSharedRelrosFromBundle(Bundle bundle) {
-        if (DEBUG) Log.i(TAG, "called takeSharedRelrosFromBundle(%s)", bundle);
-        Bundle relros = bundle.getBundle(SHARED_RELROS);
+    void takeSharedRelrosFromBundle(Bundle relros) {
+        if (DEBUG) Log.i(TAG, "called takeSharedRelrosFromBundle(%s)", relros);
         if (relros == null) return;
         LibInfo newRemote = LibInfo.fromBundle(relros);
         if (newRemote == null) return;

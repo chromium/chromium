@@ -45,7 +45,7 @@ testSuite({
     const m = new ModuleInfo();
 
     m.setModuleConstructor(TestModule);
-    m.onLoad(/** @type {?} */ (goog.nullFunction));
+    m.onLoad(/** @type {?} */ (() => {}));
     assertTrue(m.isLoaded());
 
     const module = m.getModule();
@@ -86,7 +86,7 @@ testSuite({
       d = index++;
     });
     cb.abort();
-    m.onLoad(/** @type {?} */ (goog.nullFunction));
+    m.onLoad(/** @type {?} */ (() => {}));
 
     assertTrue('callback A should have fired', a >= 0);
     assertFalse('callback B should have been aborted', b >= 0);
@@ -109,7 +109,7 @@ testSuite({
       throw new Error('boom2');
     });
     /** @suppress {checkTypes} suppression added to enable type checking */
-    const hadError = m.onLoad(goog.nullFunction);
+    const hadError = m.onLoad(() => {});
     assertTrue(hadError);
 
     const e = assertThrows(() => {

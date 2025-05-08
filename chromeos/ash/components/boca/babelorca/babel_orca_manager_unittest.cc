@@ -49,6 +49,7 @@ class MockBabelOrcaController : public babelorca::BabelOrcaController {
   MOCK_METHOD(void, OnSessionEnded, (), (override));
   MOCK_METHOD(void, OnSessionCaptionConfigUpdated, (bool, bool), (override));
   MOCK_METHOD(void, OnLocalCaptionConfigUpdated, (bool), (override));
+  MOCK_METHOD(bool, IsProducer, (), (override));
 };
 
 class BabelOrcaManagerTest : public testing::Test {
@@ -398,6 +399,51 @@ TEST_F(BabelOrcaManagerTest, OnLocalCaptionClosed) {
 
   EXPECT_CALL(*controller_ptr, OnLocalCaptionConfigUpdated(false)).Times(1);
   manager.OnLocalCaptionClosed();
+}
+
+TEST_F(BabelOrcaManagerTest, OnSessionCaptionClosedProducer) {
+  base::test::TestFuture<bool> test_future;
+  MockBabelOrcaController* controller_ptr;
+  auto controller_factory = base::BindLambdaForTesting(
+      [&controller_ptr](babelorca::TokenManager*,
+                        babelorca::TachyonRequestDataProvider* data_provider)
+          -> std::unique_ptr<babelorca::BabelOrcaController> {
+        auto controller =
+            std::make_unique<testing::NiceMock<MockBabelOrcaController>>();
+        controller_ptr = controller.get();
+        return controller;
+      });
+  BabelOrcaManager manager(
+      &pref_service_, identity_test_env_.identity_manager(),
+      url_loader_factory_.GetSafeWeakWrapper(), std::move(controller_factory));
+
+  EXPECT_CALL(*controller_ptr, IsProducer)
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*controller_ptr, OnSessionCaptionConfigUpdated(false, false))
+      .Times(1);
+  manager.OnSessionCaptionClosed(true);
+}
+
+TEST_F(BabelOrcaManagerTest, OnSessionCaptionClosedConsumer) {
+  base::test::TestFuture<bool> test_future;
+  MockBabelOrcaController* controller_ptr;
+  auto controller_factory = base::BindLambdaForTesting(
+      [&controller_ptr](babelorca::TokenManager*,
+                        babelorca::TachyonRequestDataProvider* data_provider)
+          -> std::unique_ptr<babelorca::BabelOrcaController> {
+        auto controller =
+            std::make_unique<testing::NiceMock<MockBabelOrcaController>>();
+        controller_ptr = controller.get();
+        return controller;
+      });
+  BabelOrcaManager manager(
+      &pref_service_, identity_test_env_.identity_manager(),
+      url_loader_factory_.GetSafeWeakWrapper(), std::move(controller_factory));
+
+  EXPECT_CALL(*controller_ptr, IsProducer)
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(*controller_ptr, OnSessionCaptionConfigUpdated).Times(0);
+  manager.OnSessionCaptionClosed(true);
 }
 
 TEST_F(BabelOrcaManagerTest, RequestDataProviderIsTheManager) {

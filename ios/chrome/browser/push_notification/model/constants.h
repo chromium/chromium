@@ -59,9 +59,9 @@ enum class PushNotificationClientManagerFailurePoint {
   // Failed to get Profile-based `PushNotificationClientManager` when the app
   // entered foreground (in `-appDidEnterForeground:`).
   kAppDidEnterForeground = 2,
-  // Failed to get Profile-based `PushNotificationClientManager` when handling a
-  // user interaction response (in `-handleNotificationResponse:`).
-  kHandleNotificationResponse = 3,
+  // DEPRECATED: This failure point is no longer used as the code path
+  // that logged it has been removed.
+  // kHandleNotificationResponse = 3,
   // Failed to get Profile-based `PushNotificationClientManager` when processing
   // an incoming remote notification in the background (in
   // `-applicationWillProcessIncomingRemoteNotification:`).
@@ -114,7 +114,11 @@ enum class PushNotificationClientManagerFailurePoint {
   // successfully obtained by mapping a Gaia ID, was not found in
   // `ProfileAttributesStorageIOS` (e.g., stale mapping).
   kGetProfileNameMappedNameNotFoundInStorage = 18,
-  kMaxValue = kGetProfileNameMappedNameNotFoundInStorage,
+  // Failed inside `GetClientManagerForUserInfo()` because the attempt to load
+  // an existing (but unloaded) Profile via `LoadProfileAsync()` failed
+  // (the completion callback received `nullptr`).
+  kGetClientManagerProfileLoadFailed = 19,
+  kMaxValue = kGetClientManagerProfileLoadFailed,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:PushNotificationClientManagerFailurePoint)
 
@@ -153,6 +157,27 @@ enum class ProfileNotificationRequestCreationFailureReason {
   kMaxValue = kTriggerCreationFailed,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ProfileNotificationRequestCreationFailureReason)
+
+// LINT.IfChange(PushNotificationTargetProfileHandlingResult)
+enum class PushNotificationTargetProfileHandlingResult {
+  // Success: The notification's target Profile was already the active Profile
+  // in the target UI scene when the interaction was received. No profile switch
+  // was needed.
+  kCorrectProfileActive = 0,
+  // Success: The notification's target Profile was *not* the active Profile in
+  // the target UI scene. A profile switch was successfully initiated to ensure
+  // the correct context handles the interaction.
+  kSwitchEnsuredCorrectProfile = 1,
+  // The originating Profile for the notification could not be determined from
+  // the notification's metadata (e.g., missing or invalid profile name/Gaia
+  // ID).
+  kProfileUnidentifiable = 2,
+  // Failure: No suitable UI scene (neither the specific target scene nor a
+  // foreground fallback) could be found to handle the notification interaction.
+  kFailureSceneUnavailable = 3,
+  kMaxValue = kFailureSceneUnavailable,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:PushNotificationTargetProfileHandlingResult)
 
 // Enum for the NAU implementation for Content notifications. Change
 // NotificationActionType enum when this one changes.

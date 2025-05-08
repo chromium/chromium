@@ -133,6 +133,8 @@ class AIManager : public base::SupportsUserData::Data,
                         on_device_model::Capabilities capabilities,
                         CanCreateLanguageModelCallback callback);
 
+  bool IsBuiltInAIAPIsEnabledByPolicy();
+
  private:
   void OnModelPathValidationComplete(const std::string& model_path,
                                      bool is_valid_path);
@@ -161,6 +163,12 @@ class AIManager : public base::SupportsUserData::Data,
                                          bool became_visible) override;
   void RenderWidgetHostDestroyed(
       content::RenderWidgetHost* widget_host) override;
+
+  void FinishCanCreateSession(
+      optimization_guide::ModelBasedCapabilityKey capability,
+      on_device_model::Capabilities capabilities,
+      CanCreateLanguageModelCallback callback,
+      optimization_guide::OnDeviceModelEligibilityReason eligibility);
 
   mojo::ReceiverSet<blink::mojom::AIManager> receivers_;
   mojo::RemoteSet<blink::mojom::ModelDownloadProgressObserver>

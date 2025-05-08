@@ -113,7 +113,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Input.ToolType.Android" units="tool type"
-    expires_after="2025-08-24">
+    expires_after="2025-10-26">
   <owner>alexmitra@chromium.org</owner>
   <owner>flackr@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
@@ -978,8 +978,20 @@ chromium-metrics-reviews@google.com.
   <token key="IMEMajorNames">
     <variant name=""/>
     <variant name=".FR" summary="The French keyboard input method"/>
+    <variant name=".FR.AC0"
+        summary="The French keyboard input method with auto-correct level 0"/>
+    <variant name=".FR.AC1"
+        summary="The French keyboard input method with auto-correct level 1"/>
+    <variant name=".FR.AC2"
+        summary="The French keyboard input method with auto-correct level 2"/>
     <variant name=".Pinyin" summary="The Chinse Pinyin input method"/>
     <variant name=".US" summary="The US keyboard input method"/>
+    <variant name=".US.AC0"
+        summary="The US keyboard input method with auto-correct level 0"/>
+    <variant name=".US.AC1"
+        summary="The US keyboard input method with auto-correct level 1"/>
+    <variant name=".US.AC2"
+        summary="The US keyboard input method with auto-correct level 2"/>
   </token>
 </histogram>
 

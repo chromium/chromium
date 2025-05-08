@@ -85,11 +85,6 @@ class SnapGroup : public aura::WindowObserver,
   // Returns false otherwise.
   bool IsSnapGroupLayoutHorizontal() const;
 
-  // Unified helper to handle mouse/touch events received from
-  // `ToplevelWindowEventHandler` to hide `snap_group_divider_` when either of
-  // the windows becomes unsnapped.
-  void OnLocatedEvent(ui::LocatedEvent* event);
-
   // Returns the topmost window in the snap group.
   aura::Window* GetTopMostWindowInGroup() const;
 

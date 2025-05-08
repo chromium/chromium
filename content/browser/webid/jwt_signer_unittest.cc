@@ -111,24 +111,25 @@ TEST_F(JwtSignerTest, CreateJwt) {
   payload.sub = "goto@google.com";
 
   Jwt issued;
-  issued.header = *header.Serialize();
-  issued.payload = *payload.Serialize();
+  issued.header = JSONString(header.Serialize()->value());
+  issued.payload = JSONString(payload.Serialize()->value());
 
   auto success = issued.Sign(CreateJwtSigner(std::move(private_key)));
 
   EXPECT_TRUE(success);
 
   auto signature = base::Base64UrlDecode(
-      issued.signature, base::Base64UrlDecodePolicy::IGNORE_PADDING);
+      issued.signature.value(), base::Base64UrlDecodePolicy::IGNORE_PADDING);
 
   EXPECT_TRUE(signature);
 
   std::string header_base64;
-  base::Base64UrlEncode(
-      issued.header, base::Base64UrlEncodePolicy::OMIT_PADDING, &header_base64);
+  base::Base64UrlEncode(issued.header.value(),
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &header_base64);
 
   std::string payload_base64;
-  base::Base64UrlEncode(issued.payload,
+  base::Base64UrlEncode(issued.payload.value(),
                         base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &payload_base64);
 
@@ -166,15 +167,15 @@ TEST_F(JwtSignerTest, CreateSdJwtKb) {
   EXPECT_TRUE(issuer_json->Serialize());
 
   Jwt issued;
-  issued.header = *header.Serialize();
-  issued.payload = *payload.Serialize();
+  issued.header = JSONString(header.Serialize()->value());
+  issued.payload = JSONString(payload.Serialize()->value());
   auto signer = CreateJwtSigner(std::move(issuer_private_key));
   auto success = issued.Sign(std::move(signer));
 
   EXPECT_TRUE(success);
 
-  auto presentation =
-      SdJwt::Disclose({{name.name, name.Serialize()}}, {"name"});
+  auto presentation = SdJwt::Disclose(
+      {{name.name, JSONString(name.Serialize().value())}}, {"name"});
   EXPECT_TRUE(presentation);
 
   SdJwt sd_jwt;

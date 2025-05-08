@@ -13,7 +13,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,8 +28,9 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
@@ -43,11 +43,10 @@ import org.chromium.components.content_settings.SessionModel;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class GeolocationHeaderTest {
-    public @ClassRule static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-    public @Rule BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, true);
+    public @Rule AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
 
+    private WebPageStation mStartingPage;
     private OmniboxTestUtils mOmniboxTestUtils;
 
     private static final String SEARCH_URL_1 = "https://www.google.com/search?q=potatoes";
@@ -59,8 +58,9 @@ public class GeolocationHeaderTest {
 
     @Before
     public void setUp() throws InterruptedException {
+        mStartingPage = mActivityTestRule.startOnBlankPage();
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
-        mOmniboxTestUtils = new OmniboxTestUtils(sActivityTestRule.getActivity());
+        mOmniboxTestUtils = new OmniboxTestUtils(mStartingPage.getActivity());
     }
 
     @Test
@@ -160,6 +160,7 @@ public class GeolocationHeaderTest {
     @Test
     @SmallTest
     @Feature({"Location"})
+    @DisabledTest(message = "https://crbug.com/414769376")
     public void testGpsFallbackYounger() {
         setPermission(ContentSettingValues.ALLOW);
         long now = System.currentTimeMillis();
@@ -242,13 +243,13 @@ public class GeolocationHeaderTest {
                             ProfileManager.getLastUsedRegularProfile(), httpsPermission);
                     String header =
                             GeolocationHeader.getGeoHeader(
-                                    SEARCH_URL_1, sActivityTestRule.getActivity().getActivityTab());
+                                    SEARCH_URL_1, mActivityTestRule.getActivity().getActivityTab());
                     assertHeaderState(header, locationTime, shouldBeNull);
                 });
     }
 
     private void checkHeaderPriming(boolean shouldPrimeHeader) {
-        sActivityTestRule.loadUrlInNewTab("about:blank", false);
+        mActivityTestRule.loadUrlInNewTab("about:blank", false);
         mOmniboxTestUtils.requestFocus();
         mOmniboxTestUtils.typeText("aaaaaaaaaa", false);
         mOmniboxTestUtils.waitAnimationsComplete();
@@ -286,7 +287,7 @@ public class GeolocationHeaderTest {
     }
 
     private void assertNullHeader(final String url, final boolean isIncognito) {
-        final Tab tab = sActivityTestRule.loadUrlInNewTab("about:blank", isIncognito);
+        final Tab tab = mActivityTestRule.loadUrlInNewTab("about:blank", isIncognito);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertNull(GeolocationHeader.getGeoHeader(url, tab));
@@ -295,7 +296,7 @@ public class GeolocationHeaderTest {
 
     private void assertNonNullHeader(
             final String url, final boolean isIncognito, final long locationTime) {
-        final Tab tab = sActivityTestRule.loadUrlInNewTab("about:blank", isIncognito);
+        final Tab tab = mActivityTestRule.loadUrlInNewTab("about:blank", isIncognito);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertHeaderEquals(locationTime, GeolocationHeader.getGeoHeader(url, tab));

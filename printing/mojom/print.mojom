@@ -53,6 +53,15 @@ enum ColorModel {
   kHpPjlColorAsGrayYes,  // Used in HP printer PPDs.
 };
 
+// Print job quality values (from rfc8011).
+[EnableIf=is_chromeos]
+enum Quality {
+  kUnknownQuality = -1,
+  kDraft = 3,
+  kNormal = 4,
+  kHigh = 5
+};
+
 // Print job duplex mode values.
 enum DuplexMode {
   kUnknownDuplexMode = -1,

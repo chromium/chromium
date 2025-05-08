@@ -721,9 +721,8 @@ void FormStructureRationalizer::RationalizeFormatStrings(
     if (data_util::IsValidDateFormat(field.placeholder())) {
       set_format(field, field.placeholder());
       continue;
-    } else if (data_util::IsValidDateFormat(
-                   field.value(ValueSemantics::kInitial))) {
-      set_format(field, field.value(ValueSemantics::kInitial));
+    } else if (data_util::IsValidDateFormat(field.initial_value())) {
+      set_format(field, field.initial_value());
       continue;
     }
 

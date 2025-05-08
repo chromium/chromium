@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "components/update_client/network.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -76,8 +77,8 @@ std::unique_ptr<FakeFetcher> MakeFakeFetcherForPost(
           [](base::OnceCallback<int(void)> error_supplier,
              update_client::NetworkFetcher::PostRequestCompleteCallback
                  callback) {
-            std::move(callback).Run(std::nullopt,
-                                    std::move(error_supplier).Run(), {}, {}, 0);
+            std::move(callback).Run(
+                std::nullopt, std::move(error_supplier).Run(), {}, {}, {}, 0);
           },
           std::move(error_supplier)),
       base::BindOnce(
@@ -94,7 +95,7 @@ std::unique_ptr<FakeFetcher> MakeFakeFetcherForDownload(
       base::BindOnce(
           [](update_client::NetworkFetcher::PostRequestCompleteCallback
                  callback) {
-            std::move(callback).Run(std::nullopt, 0, {}, {}, 0);
+            std::move(callback).Run(std::nullopt, 0, {}, {}, {}, 0);
           }),
       base::BindOnce(
           [](base::OnceCallback<int(void)> error_supplier,
@@ -120,12 +121,11 @@ TEST(FallbackNetFetcher, NoFallbackOnSuccess_Post) {
                        ran2 = true;
                        return 0;
                      })))
-      .PostRequest(
-          {}, {}, {}, {}, base::BindRepeating([](int, int64_t) {}),
-          base::BindRepeating([](int64_t) {}),
-          base::BindLambdaForTesting([&](std::optional<std::string>, int,
-                                         const std::string&, const std::string&,
-                                         int64_t) { called_back = true; }));
+      .PostRequest({}, {}, {}, {}, base::DoNothing(), base::DoNothing(),
+                   base::BindLambdaForTesting(
+                       [&](std::optional<std::string>, int, const std::string&,
+                           const std::string&, const std::string&,
+                           int64_t) { called_back = true; }));
   EXPECT_TRUE(ran1);
   EXPECT_FALSE(ran2);
   EXPECT_TRUE(called_back);
@@ -143,8 +143,7 @@ TEST(FallbackNetFetcher, NoFallbackOnSuccess_Download) {
                        ran2 = true;
                        return 0;
                      })))
-      .DownloadToFile({}, {}, base::BindRepeating([](int, int64_t) {}),
-                      base::BindRepeating([](int64_t) {}),
+      .DownloadToFile({}, {}, base::DoNothing(), base::DoNothing(),
                       base::BindLambdaForTesting(
                           [&](int, int64_t) { called_back = true; }));
   EXPECT_TRUE(ran1);
@@ -164,12 +163,11 @@ TEST(FallbackNetFetcher, FallbackOnFailure_Post) {
                        ran2 = true;
                        return 0;
                      })))
-      .PostRequest(
-          {}, {}, {}, {}, base::BindRepeating([](int, int64_t) {}),
-          base::BindRepeating([](int64_t) {}),
-          base::BindLambdaForTesting([&](std::optional<std::string>, int,
-                                         const std::string&, const std::string&,
-                                         int64_t) { called_back = true; }));
+      .PostRequest({}, {}, {}, {}, base::DoNothing(), base::DoNothing(),
+                   base::BindLambdaForTesting(
+                       [&](std::optional<std::string>, int, const std::string&,
+                           const std::string&, const std::string&,
+                           int64_t) { called_back = true; }));
   EXPECT_TRUE(ran1);
   EXPECT_TRUE(ran2);
   EXPECT_TRUE(called_back);
@@ -187,8 +185,7 @@ TEST(FallbackNetFetcher, FallbackOnFailure_Download) {
                        ran2 = true;
                        return 0;
                      })))
-      .DownloadToFile({}, {}, base::BindRepeating([](int, int64_t) {}),
-                      base::BindRepeating([](int64_t) {}),
+      .DownloadToFile({}, {}, base::DoNothing(), base::DoNothing(),
                       base::BindLambdaForTesting(
                           [&](int, int64_t) { called_back = true; }));
   EXPECT_TRUE(ran1);
@@ -204,12 +201,11 @@ TEST(FallbackNetFetcher, NoCrashOnNullptr_Post) {
                        return 1;
                      })),
                      nullptr)
-      .PostRequest(
-          {}, {}, {}, {}, base::BindRepeating([](int, int64_t) {}),
-          base::BindRepeating([](int64_t) {}),
-          base::BindLambdaForTesting([&](std::optional<std::string>, int,
-                                         const std::string&, const std::string&,
-                                         int64_t) { called_back = true; }));
+      .PostRequest({}, {}, {}, {}, base::DoNothing(), base::DoNothing(),
+                   base::BindLambdaForTesting(
+                       [&](std::optional<std::string>, int, const std::string&,
+                           const std::string&, const std::string&,
+                           int64_t) { called_back = true; }));
   EXPECT_TRUE(ran1);
   EXPECT_TRUE(called_back);
 }
@@ -222,8 +218,7 @@ TEST(FallbackNetFetcher, NoCrashOnNullptr_Download) {
                        return 1;
                      })),
                      nullptr)
-      .DownloadToFile({}, {}, base::BindRepeating([](int, int64_t) {}),
-                      base::BindRepeating([](int64_t) {}),
+      .DownloadToFile({}, {}, base::DoNothing(), base::DoNothing(),
                       base::BindLambdaForTesting(
                           [&](int, int64_t) { called_back = true; }));
   EXPECT_TRUE(ran1);

@@ -59,10 +59,12 @@ void DocumentModuleScriptFetcher::NotifyFinished(Resource* resource) {
 
   auto* script_resource = To<ScriptResource>(resource);
 
+  std::optional<ResolvedModuleType> resolved_module_type;
   {
     HeapVector<Member<ConsoleMessage>> error_messages;
-    if (!WasModuleLoadSuccessful(script_resource, expected_module_type_,
-                                 &error_messages)) {
+    resolved_module_type = WasModuleLoadSuccessful(
+        script_resource, expected_module_type_, &error_messages);
+    if (!resolved_module_type) {
       client_->NotifyFetchFinishedError(error_messages);
       return;
     }
@@ -101,7 +103,7 @@ void DocumentModuleScriptFetcher::NotifyFinished(Resource* resource) {
 
   client_->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
       /*source_url=*/url, /*base_url=*/url,
-      ScriptSourceLocationType::kExternalFile, expected_module_type_,
+      ScriptSourceLocationType::kExternalFile, resolved_module_type.value(),
       script_resource->SourceText(), script_resource->CacheHandler(),
       response_referrer_policy, streamer, not_streamed_reason));
 }

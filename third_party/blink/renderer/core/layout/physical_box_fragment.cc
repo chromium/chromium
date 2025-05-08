@@ -115,6 +115,30 @@ void ApplyOverflowClip(OverflowClipAxes overflow_clip_axes,
   }
 }
 
+int MaxGapDecorationsWidth(const GapDataList<int>& width_value) {
+  const auto widths = width_value.GetGapDataList();
+  CHECK(!widths.empty());
+
+  const auto& first_width = widths[0];
+  int max_width =
+      !first_width.IsRepeaterData()
+          ? first_width.GetValue()
+          : first_width.GetValueRepeater()->RepeatedValues().front();
+
+  for (const auto& width : widths) {
+    if (!width.IsRepeaterData()) {
+      max_width = std::max(max_width, width.GetValue());
+    } else {
+      const auto& repeated_values = width.GetValueRepeater()->RepeatedValues();
+      for (const auto& value : repeated_values) {
+        max_width = std::max(max_width, value);
+      }
+    }
+  }
+
+  return max_width;
+}
+
 }  // namespace
 
 // static
@@ -323,10 +347,10 @@ PhysicalBoxFragment::PhysicalBoxFragment(
   DCHECK(layout_object_->IsBoxModelObject());
   DCHECK(!builder->break_token_ || builder->break_token_->IsBlockType());
 
-  children_.ReserveInitialCapacity(builder->children_.size());
-  PhysicalSize size = Size();
   const WritingModeConverter converter(
-      {block_or_line_writing_mode, builder->Direction()}, size);
+      {block_or_line_writing_mode, builder->Direction()}, Size());
+
+  children_.ReserveInitialCapacity(builder->children_.size());
   for (auto& child : builder->children_) {
     children_.emplace_back(
         std::move(child.fragment),
@@ -811,6 +835,16 @@ void PhysicalBoxFragment::MutableForContainerLayout::SetMargins(
   fragment_.EnsureRareField(FieldId::kMargins).margins = margins;
 }
 
+void PhysicalBoxFragment::MutableForContainerLayout::
+    SetOffsetFromRootFragmentationContext(PhysicalOffset offset) {
+  const auto id =
+      PhysicalFragmentRareData::FieldId::kOffsetFromRootFragmentationContext;
+  if (offset.IsZero() && !fragment_.GetRareField(id)) {
+    return;
+  }
+  fragment_.EnsureRareField(id).offset_from_root_fragmentation_context = offset;
+}
+
 PhysicalBoxFragment::MutableForContainerLayout
 PhysicalBoxFragment::GetMutableForContainerLayout() const {
   DCHECK(layout_object_->GetFrameView()->IsInPerformLayout());
@@ -1051,6 +1085,18 @@ PhysicalRect PhysicalBoxFragment::ComputeSelfInkOverflow() const {
     rect.Inflate(LayoutUnit(OutlinePainter::OutlineOutsetExtent(style, info)));
     ink_overflow.Unite(rect);
   }
+
+  if (const GapGeometry* gap_geometry = GetGapGeometry()) {
+    LayoutUnit inline_thickness =
+        LayoutUnit(MaxGapDecorationsWidth(style.ColumnRuleWidth()));
+    LayoutUnit block_thickness =
+        LayoutUnit(MaxGapDecorationsWidth(style.RowRuleWidth()));
+    PhysicalRect rect = gap_geometry->ComputeInkOverflowForGaps(
+        Style().GetWritingDirection(), Size(), inline_thickness,
+        block_thickness);
+    ink_overflow.Unite(rect);
+  }
+
   return ink_overflow;
 }
 
@@ -1104,7 +1150,7 @@ void PhysicalBoxFragment::AddOutlineRects(
   DCHECK(IsOutlineOwner());
 
   // For anonymous blocks, the children add outline rects.
-  if (!IsAnonymousBlock() || GetBoxType() == kPageBorderBox) {
+  if (!IsAnonymousBlockFlow() || GetBoxType() == kPageBorderBox) {
     if (IsSvgText()) {
       if (Items()) {
         collector.AddRect(PhysicalRect::EnclosingRect(

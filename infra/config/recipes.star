@@ -162,6 +162,11 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:chromium/autosharder_test",
+    bootstrappable = True,
+)
+
+build_recipe(
     name = "recipe:chromium/generic_script_runner",
 )
 

@@ -68,36 +68,36 @@ class APIPermission {
   // Returns true if the given permission is allowed.
   virtual bool Check(const CheckParam* param) const = 0;
 
-  // Returns true if |rhs| is a subset of this.
+  // Returns true if `rhs` is a subset of this.
   virtual bool Contains(const APIPermission* rhs) const = 0;
 
-  // Returns true if |rhs| is equal to this.
+  // Returns true if `rhs` is equal to this.
   virtual bool Equal(const APIPermission* rhs) const = 0;
 
-  // Parses the APIPermission from |value|. Returns false if an error happens
-  // and optionally set |error| if |error| is not NULL. If |value| represents
-  // multiple permissions, some are invalid, and |unhandled_permissions| is
-  // not NULL, the invalid ones are put into |unhandled_permissions| and the
+  // Parses the APIPermission from `value`. Returns false if an error happens
+  // and optionally set `error` if `error` is not NULL. If `value` represents
+  // multiple permissions, some are invalid, and `unhandled_permissions` is
+  // not NULL, the invalid ones are put into `unhandled_permissions` and the
   // function returns true.
   virtual bool FromValue(const base::Value* value,
                          std::string* error,
                          std::vector<std::string>* unhandled_permissions) = 0;
 
-  // Stores this into a new created |value|.
+  // Stores this into a new created `value`.
   virtual std::unique_ptr<base::Value> ToValue() const = 0;
 
   // Clones this.
   virtual std::unique_ptr<APIPermission> Clone() const = 0;
 
-  // Returns a new API permission which equals this - |rhs|.
+  // Returns a new API permission which equals this - `rhs`.
   virtual std::unique_ptr<APIPermission> Diff(
       const APIPermission* rhs) const = 0;
 
-  // Returns a new API permission which equals the union of this and |rhs|.
+  // Returns a new API permission which equals the union of this and `rhs`.
   virtual std::unique_ptr<APIPermission> Union(
       const APIPermission* rhs) const = 0;
 
-  // Returns a new API permission which equals the intersect of this and |rhs|.
+  // Returns a new API permission which equals the intersect of this and `rhs`.
   virtual std::unique_ptr<APIPermission> Intersect(
       const APIPermission* rhs) const = 0;
 

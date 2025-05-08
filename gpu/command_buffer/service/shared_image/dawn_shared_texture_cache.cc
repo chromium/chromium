@@ -8,17 +8,31 @@
 
 namespace gpu {
 
+DawnSharedTextureCache::TextureMetadata::TextureMetadata(
+    wgpu::TextureUsage usage,
+    wgpu::TextureUsage internal_usage,
+    const std::vector<wgpu::TextureFormat>& view_formats)
+    : usage(usage),
+      internal_usage(internal_usage),
+      view_formats(view_formats) {}
+
+DawnSharedTextureCache::TextureMetadata::~TextureMetadata() = default;
+
+DawnSharedTextureCache::TextureMetadata::TextureMetadata(TextureMetadata&&) =
+    default;
+DawnSharedTextureCache::TextureMetadata&
+DawnSharedTextureCache::TextureMetadata::operator=(TextureMetadata&&) = default;
+
 DawnSharedTextureCache::SharedTextureData::SharedTextureData() = default;
 
 DawnSharedTextureCache::SharedTextureData::~SharedTextureData() {
-  for (auto [texture_usage, texture] : texture_cache) {
+  for (auto& [_, texture] : texture_cache) {
     texture.Destroy();
   }
 }
 
 DawnSharedTextureCache::SharedTextureData::SharedTextureData(
     SharedTextureData&&) = default;
-
 DawnSharedTextureCache::SharedTextureData&
 DawnSharedTextureCache::SharedTextureData::operator=(SharedTextureData&&) =
     default;
@@ -27,8 +41,8 @@ DawnSharedTextureCache::DawnSharedTextureCache() = default;
 
 DawnSharedTextureCache::~DawnSharedTextureCache() = default;
 
-DawnSharedTextureCache::WGPUTextureCache*
-DawnSharedTextureCache::GetWGPUTextureCache(const wgpu::Device& device) {
+DawnSharedTextureCache::TextureCache* DawnSharedTextureCache::GetTextureCache(
+    const wgpu::Device& device) {
   auto iter = shared_texture_data_cache_.find(device.Get());
   if (iter == shared_texture_data_cache_.end()) {
     return nullptr;
@@ -42,37 +56,39 @@ wgpu::SharedTextureMemory DawnSharedTextureCache::GetSharedTextureMemory(
   if (iter == shared_texture_data_cache_.end()) {
     return nullptr;
   }
-  return iter->second.memory;
+  return iter->second.shared_texture_memory;
 }
 
 void DawnSharedTextureCache::MaybeCacheSharedTextureMemory(
     const wgpu::Device& device,
-    const wgpu::SharedTextureMemory& memory) {
-  if (!memory) {
+    const wgpu::SharedTextureMemory& shared_texture_memory) {
+  if (!shared_texture_memory) {
     return;
   }
 
   // Return early if the STM is already cached.
   if (auto cached = GetSharedTextureMemory(device)) {
-    CHECK_EQ(cached.Get(), memory.Get());
+    CHECK_EQ(cached.Get(), shared_texture_memory.Get());
     return;
   }
 
   SharedTextureData shared_texture_data;
-  shared_texture_data.memory = memory;
+  shared_texture_data.shared_texture_memory = shared_texture_memory;
   shared_texture_data_cache_.emplace(device.Get(),
                                      std::move(shared_texture_data));
 }
 
 wgpu::Texture DawnSharedTextureCache::GetCachedWGPUTexture(
     const wgpu::Device& device,
-    wgpu::TextureUsage texture_usage) {
-  auto* texture_cache = GetWGPUTextureCache(device);
+    wgpu::TextureUsage usage,
+    wgpu::TextureUsage internal_usage,
+    const std::vector<wgpu::TextureFormat>& view_formats) {
+  auto* texture_cache = GetTextureCache(device);
   if (!texture_cache) {
     return nullptr;
   }
 
-  auto iter = texture_cache->find(texture_usage);
+  auto iter = texture_cache->find({usage, internal_usage, view_formats});
   if (iter == texture_cache->end()) {
     return nullptr;
   }
@@ -83,41 +99,54 @@ wgpu::Texture DawnSharedTextureCache::GetCachedWGPUTexture(
 void DawnSharedTextureCache::RemoveWGPUTextureFromCache(
     const wgpu::Device& device,
     const wgpu::Texture& texture) {
-  auto* texture_cache = GetWGPUTextureCache(device);
+  auto* texture_cache = GetTextureCache(device);
   if (!texture_cache) {
     return;
   }
 
-  texture_cache->erase(texture.GetUsage());
+  base::EraseIf(*texture_cache, [&](const auto& kv_pair) {
+    return kv_pair.second.Get() == texture.Get();
+  });
 }
 
 void DawnSharedTextureCache::MaybeCacheWGPUTexture(
     const wgpu::Device& device,
-    const wgpu::Texture& texture) {
+    const wgpu::Texture& texture,
+    wgpu::TextureUsage usage,
+    wgpu::TextureUsage internal_usage,
+    const std::vector<wgpu::TextureFormat>& view_formats) {
   if (!texture) {
     return;
   }
 
-  auto* texture_cache = GetWGPUTextureCache(device);
+  auto* texture_cache = GetTextureCache(device);
   if (!texture_cache) {
     return;
   }
 
-  // Determine whether `texture` needs to be cached.
-  auto texture_usage = texture.GetUsage();
-  auto [iter, _] = texture_cache->emplace(texture_usage, texture);
+  auto [iter, _] = texture_cache->try_emplace(
+      TextureMetadata{usage, internal_usage, view_formats}, texture);
   CHECK_EQ(texture.Get(), iter->second.Get());
 }
 
 void DawnSharedTextureCache::DestroyWGPUTextureIfNotCached(
     const wgpu::Device& device,
     const wgpu::Texture& texture) {
-  if (auto cached_texture = GetCachedWGPUTexture(device, texture.GetUsage())) {
-    CHECK_EQ(cached_texture.Get(), texture.Get());
+  if (!texture) {
     return;
   }
 
-  texture.Destroy();
+  auto* texture_cache = GetTextureCache(device);
+  if (!texture_cache) {
+    return;
+  }
+
+  auto iter = std::ranges::find_if(*texture_cache, [&](const auto& kv_pair) {
+    return kv_pair.second.Get() == texture.Get();
+  });
+  if (iter == texture_cache->end()) {
+    texture.Destroy();
+  }
 }
 
 void DawnSharedTextureCache::EraseDataIfDeviceLost() {
@@ -128,7 +157,7 @@ void DawnSharedTextureCache::EraseDataIfDeviceLost() {
   // now-lost Device.
   std::vector<WGPUDevice> devices_to_erase;
   for (auto& [wgpu_device, shared_texture_data] : shared_texture_data_cache_) {
-    if (!shared_texture_data.memory.IsDeviceLost()) {
+    if (!shared_texture_data.shared_texture_memory.IsDeviceLost()) {
       continue;
     }
     devices_to_erase.push_back(wgpu_device);

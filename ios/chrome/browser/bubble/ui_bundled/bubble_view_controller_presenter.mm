@@ -76,7 +76,7 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 // The type of the bubble view's content.
 @property(nonatomic, assign, readonly) BubbleViewType bubbleType;
 // Whether the bubble view controller is presented or dismissed.
-@property(nonatomic, assign, getter=isPresenting) BOOL presenting;
+@property(nonatomic, assign) BOOL presenting;
 // The block invoked when the bubble is dismissed (both via timer and via tap).
 // Is optional.
 @property(nonatomic, strong)
@@ -163,6 +163,24 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 - (void)presentInViewController:(UIViewController*)parentViewController
                     anchorPoint:(CGPoint)anchorPoint
                 anchorViewFrame:(CGRect)anchorViewFrame {
+  [self configureInParentViewController:parentViewController
+                            anchorPoint:anchorPoint
+                        anchorViewFrame:anchorViewFrame];
+  [self addGestureRecognizersToParentView:self.parentView];
+
+  [parentViewController addChildViewController:self.bubbleViewController];
+  [self.parentView addSubview:self.bubbleViewController.view];
+  [self.bubbleViewController
+      didMoveToParentViewController:parentViewController];
+  [self.bubbleViewController animateContentIn];
+
+  [self setUpDismissalTimer];
+  [self registerVoiceOverAnnouncement];
+}
+
+- (void)configureInParentViewController:(UIViewController*)parentViewController
+                            anchorPoint:(CGPoint)anchorPoint
+                        anchorViewFrame:(CGRect)anchorViewFrame {
   self.parentView = parentViewController.view;
   _anchorViewFrame = anchorViewFrame;
   CGPoint anchorPointInParent =
@@ -173,38 +191,10 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
   // The bubble's frame must be set. Call `canPresentInView` to make sure that
   // the frame can be set before calling `presentInViewController`.
   DCHECK(!CGRectIsEmpty(self.bubbleViewController.view.frame));
-
-  [self addGestureRecognizersToParentView:self.parentView];
-
   self.presenting = YES;
-  [parentViewController addChildViewController:self.bubbleViewController];
-  [self.parentView addSubview:self.bubbleViewController.view];
-  [self.bubbleViewController
-      didMoveToParentViewController:parentViewController];
-  [self.bubbleViewController animateContentIn];
+}
 
-  self.bubbleDismissalTimer = [NSTimer
-      scheduledTimerWithTimeInterval:[self bubbleVisibilityDuration]
-                              target:self
-                            selector:@selector(bubbleDismissalTimerFired:)
-                            userInfo:nil
-                             repeats:NO];
-
-  self.userEngaged = YES;
-  self.triggerFollowUpAction = YES;
-  self.engagementTimer =
-      [NSTimer scheduledTimerWithTimeInterval:kBubbleEngagementDuration
-                                       target:self
-                                     selector:@selector(engagementTimerFired:)
-                                     userInfo:nil
-                                      repeats:NO];
-
-  [[NSNotificationCenter defaultCenter]
-      addObserver:self
-         selector:@selector(onKeyboardHide:)
-             name:UIKeyboardWillHideNotification
-           object:nil];
-
+- (void)registerVoiceOverAnnouncement {
   if (self.voiceOverAnnouncement) {
     if (self.bubbleShouldAutoDismissUnderAccessibility) {
       // The VoiceOverAnnouncement should be dispatched after a delay to account
@@ -343,6 +333,33 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 
 #pragma mark - Private
 
+// Set up a timer that dismisses the bubble view.
+- (void)setUpDismissalTimer {
+  self.bubbleDismissalTimer = [NSTimer
+      scheduledTimerWithTimeInterval:[self bubbleVisibilityDuration]
+                              target:self
+                            selector:@selector(bubbleDismissalTimerFired:)
+                            userInfo:nil
+                             repeats:NO];
+
+  self.userEngaged = YES;
+  self.triggerFollowUpAction = YES;
+  self.engagementTimer =
+      [NSTimer scheduledTimerWithTimeInterval:kBubbleEngagementDuration
+                                       target:self
+                                     selector:@selector(engagementTimerFired:)
+                                     userInfo:nil
+                                      repeats:NO];
+
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(onKeyboardHide:)
+             name:UIKeyboardWillHideNotification
+           object:nil];
+}
+
+// Returns the time the bubble view should be shown before being automatically
+// dismissed.
 - (NSTimeInterval)bubbleVisibilityDuration {
   return _customBubbleVisibilityDuration > 0 ? _customBubbleVisibilityDuration
                                              : kBubbleVisibilityDuration;

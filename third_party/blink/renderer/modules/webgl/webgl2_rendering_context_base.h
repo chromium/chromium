@@ -930,9 +930,6 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
   void RestoreCurrentFramebuffer() override;
   void useProgram(WebGLProgram*) override;
 
-  /* Helpers */
-  GLint GetMaxTransformFeedbackSeparateAttribs() const;
-
   void Trace(Visitor*) const override;
 
  protected:

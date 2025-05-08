@@ -32,6 +32,10 @@ const char kForcePrefersNoReducedMotion[] = "force-prefers-no-reduced-motion";
 // Run in headless mode, i.e., without a UI or display server dependencies.
 const char kHeadless[] = "headless";
 
+// Headless screen info in the format: {0,0 800x600}{800,0 600x800}.
+// See //components/headless/screen_info/headless_screen_info.h for details.
+const char kScreenInfo[] = "screen-info";
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Which X11 display to connect to. Emulates the GTK+ "--display=" command line
 // argument. In use only with Ozone/X11.
@@ -64,4 +68,7 @@ BASE_FEATURE(kOddWidthMultiPlanarBuffers,
 BASE_FEATURE(kUseSmartRefForGPUFenceHandle,
              "UseSmartRefForGPUFenceHandle",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kHdrAgtm, "HdrAgtm", base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

@@ -2,7 +2,8 @@
 <script src="/priorities/resources/common.js"></script>
 <script type=module>
 import {setupLCPTest} from "../lcp_critical_path_predictor/resources/common.js";
-await setupLCPTest(["lcp_image_id.pb", "lcp_image_id_b.pb"]);
+await setupLCPTest({
+ lcp_locator_protos_all :["lcp_image_id.pb", "lcp_image_id_b.pb"]});
 </script>
 <?php
 // Do not output the HTML below this PHP block until the test is reloaded with

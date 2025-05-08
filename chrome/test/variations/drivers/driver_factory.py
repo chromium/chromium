@@ -19,8 +19,8 @@ from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common import service
 from selenium.webdriver.chrome.service import Service as ChromeService
 
-DEFAULT_WAIT_TIMEOUT = 60   # 60 seconds timeout
-DEFAULT_WAIT_INTERVAL = 1   # 1 second wait intervals
+DEFAULT_WAIT_TIMEOUT_SECONDS = 60
+DEFAULT_WAIT_INTERVAL_SECONDS = 1
 
 @attr.attrs()
 class DriverFactory:
@@ -85,17 +85,30 @@ class DriverFactory:
 
   def wait_for_window(self,
                       driver: webdriver.Remote,
-                      timeout: float = DEFAULT_WAIT_TIMEOUT):
+                      timeout: float = DEFAULT_WAIT_TIMEOUT_SECONDS):
     """Waits for the window handle to be available."""
     start_time = time.time()
     while time.time() - start_time <= timeout:
+      # Check if current window handle is set.
       try:
         driver.current_window_handle
         return
       except WebDriverException:
+        pass
+      # Wait for the window to become available.
+      time.sleep(DEFAULT_WAIT_INTERVAL_SECONDS)
+      # Try manually setting window handle to the first available window.
+      try:
+        driver.switch_to.window(driver.window_handles[0])
+        driver.current_window_handle
+        return
+      except (IndexError, WebDriverException):
         logging.info('continue to wait on window handles.')
-        time.sleep(DEFAULT_WAIT_INTERVAL)
     raise RuntimeError('Failed to get window handles.')
+
+  def wait_for_screenshot(self) -> None:
+    """Allows a platform to wait before the website screenshot is taken."""
+    return
 
   @contextmanager
   def create_driver(self,

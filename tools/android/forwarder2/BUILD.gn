@@ -45,7 +45,6 @@ if (current_toolchain == default_toolchain) {
       "//base",
       "//tools/android/common",
     ]
-    data_deps = [ "//build/android/pylib/device/commands" ]
   }
 
   create_native_executable_dist("device_forwarder_prepare_dist") {

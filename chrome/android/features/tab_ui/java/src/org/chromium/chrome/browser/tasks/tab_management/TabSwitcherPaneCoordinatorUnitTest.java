@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -144,6 +143,8 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Mock private TabBookmarker mTabBookmarker;
     @Mock private BookmarkModel mBookmarkModel;
     @Mock private UndoBarThrottle mUndoBarThrottle;
+    @Mock private TabGridContextMenuCoordinator mTabGridContextMenuCoordinator;
+    @Mock private TabListGroupMenuCoordinator mTabListGroupMenuCoordinator;
 
     private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
@@ -466,17 +467,16 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
     public void testOnLongPressOnTabCard_FeatureDisabled() {
-        TabGridContextMenuCoordinator contextMenuCoordinator = mock();
         View cardView = new View(mActivity);
-        mCoordinator.onLongPressOnTabCard(contextMenuCoordinator, 1, cardView);
+        mCoordinator.onLongPressOnTabCard(
+                mTabGridContextMenuCoordinator, mTabListGroupMenuCoordinator, 1, cardView);
 
-        verify(contextMenuCoordinator, never()).showMenu(any(), anyInt());
+        verify(mTabGridContextMenuCoordinator, never()).showMenu(any(), anyInt());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
     public void testOnLongPressOnTabCard_FeatureEnabled_NotGrouped() {
-        TabGridContextMenuCoordinator contextMenuCoordinator = mock();
         View cardView = new View(mActivity);
 
         @TabId int tabId = 1;
@@ -484,38 +484,44 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         mTabModel.addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
 
-        mCoordinator.onLongPressOnTabCard(contextMenuCoordinator, tabId, cardView);
-        verify(contextMenuCoordinator).showMenu(any(ViewRectProvider.class), eq(tabId));
+        mCoordinator.onLongPressOnTabCard(
+                mTabGridContextMenuCoordinator, mTabListGroupMenuCoordinator, tabId, cardView);
+        verify(mTabGridContextMenuCoordinator).showMenu(any(ViewRectProvider.class), eq(tabId));
+        verify(mTabListGroupMenuCoordinator, never())
+                .showMenuWithIcons(any(ViewRectProvider.class), any());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
     public void testOnLongPressOnTabCard_FeatureEnabled_Grouped() {
-        TabGridContextMenuCoordinator contextMenuCoordinator = mock();
         View cardView = new View(mActivity);
 
         @TabId int tabId = 1;
+        Token groupId = Token.createRandom();
+
         MockTab tab = MockTab.createAndInitialize(tabId, mProfile);
-        tab.setTabGroupId(Token.createRandom());
+        tab.setTabGroupId(groupId);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         mTabModel.addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
 
-        mCoordinator.onLongPressOnTabCard(contextMenuCoordinator, tabId, cardView);
-        verify(contextMenuCoordinator, never()).showMenu(any(), anyInt());
+        mCoordinator.onLongPressOnTabCard(
+                mTabGridContextMenuCoordinator, mTabListGroupMenuCoordinator, tabId, cardView);
+        verify(mTabGridContextMenuCoordinator, never()).showMenu(any(), anyInt());
+        verify(mTabListGroupMenuCoordinator).showMenuWithIcons(any(), eq(groupId));
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
     public void testOnLongPressOnTabCard_FeatureEnabled_NullCardView() {
-        TabGridContextMenuCoordinator contextMenuCoordinator = mock();
-
         @TabId int tabId = 1;
         MockTab tab = MockTab.createAndInitialize(tabId, mProfile);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         mTabModel.addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
 
-        mCoordinator.onLongPressOnTabCard(contextMenuCoordinator, tabId, null);
-        verify(contextMenuCoordinator, never()).showMenu(any(), anyInt());
+        mCoordinator.onLongPressOnTabCard(
+                mTabGridContextMenuCoordinator, mTabListGroupMenuCoordinator, tabId, null);
+        verify(mTabGridContextMenuCoordinator, never()).showMenu(any(), anyInt());
+        verify(mTabListGroupMenuCoordinator, never()).showMenuWithIcons(any(), any());
     }
 
     @Test

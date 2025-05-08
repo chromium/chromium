@@ -43,6 +43,17 @@ class AuthenticatorRequestSheetModel {
     const T light, dark;
   };
 
+  enum class AcceptButtonState {
+    // Button is not visible.
+    kNotVisible,
+    // Button is visible and interactive.
+    kEnabled,
+    // Button is visible but not interactive.
+    kDisabled,
+    // Button is visible, not interactive, and shows a spinner.
+    kDisabledWithSpinner,
+  };
+
   virtual ~AuthenticatorRequestSheetModel() = default;
 
   virtual bool IsActivityIndicatorVisible() const = 0;
@@ -50,8 +61,7 @@ class AuthenticatorRequestSheetModel {
   virtual bool IsCancelButtonVisible() const = 0;
   virtual std::u16string GetCancelButtonLabel() const = 0;
 
-  virtual bool IsAcceptButtonVisible() const = 0;
-  virtual bool IsAcceptButtonEnabled() const = 0;
+  virtual AcceptButtonState GetAcceptButtonState() const = 0;
   virtual std::u16string GetAcceptButtonLabel() const = 0;
 
   virtual bool IsManageDevicesButtonVisible() const;

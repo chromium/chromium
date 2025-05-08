@@ -34,6 +34,7 @@
 #include "ui/actions/actions.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interaction_test_util.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/test_event.h"
 #include "ui/gfx/animation/animation.h"
@@ -117,7 +118,6 @@ class PageActionViewWithControllerTest : public ChromeViewsTestBase {
 
   void TearDown() override {
     ChromeViewsTestBase::TearDown();
-    page_action_view_.reset();
     action_item_ = nullptr;
     actions::ActionManager::Get().ResetActions();
     pinned_actions_model_.reset();
@@ -139,7 +139,6 @@ class PageActionViewWithControllerTest : public ChromeViewsTestBase {
   TestingProfile profile_;
 
  private:
-  std::unique_ptr<PageActionView> page_action_view_;
   std::unique_ptr<PageActionView> test_page_action_view_;
   raw_ptr<actions::ActionItem> action_item_;
 
@@ -508,6 +507,14 @@ TEST_F(PageActionViewTriggerTest, PageActionGestureTriggerPropagation) {
   EXPECT_EQ(1, TotalTriggerCount());
 }
 
+TEST_F(PageActionViewTriggerTest, PageActionTriggersOnKeyboardClick) {
+  EXPECT_CALL(*model(), GetActionItemIsShowingBubble())
+      .WillRepeatedly(Return(false));
+  views::test::InteractionTestUtilSimulatorViews::PressButton(
+      page_action_view(), ui::test::InteractionTestUtil::InputType::kKeyboard);
+  EXPECT_EQ(1, TotalTriggerCount());
+}
+
 TEST_F(PageActionViewTriggerTest, PageActionTriggersOnMouseClick) {
   EXPECT_CALL(*model(), GetActionItemIsShowingBubble())
       .WillRepeatedly(Return(false));
@@ -516,8 +523,22 @@ TEST_F(PageActionViewTriggerTest, PageActionTriggersOnMouseClick) {
   EXPECT_EQ(1, TotalTriggerCount());
 }
 
+TEST_F(PageActionViewTriggerTest, PageActionMouseRightClickIgnored) {
+  ui::MouseEvent mouse_press(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(),
+                             ui::EF_RIGHT_MOUSE_BUTTON,
+                             ui::EF_RIGHT_MOUSE_BUTTON);
+  ui::MouseEvent mouse_release(ui::EventType::kMouseReleased, gfx::Point(),
+                               gfx::Point(), ui::EventTimeForNow(),
+                               ui::EF_RIGHT_MOUSE_BUTTON,
+                               ui::EF_RIGHT_MOUSE_BUTTON);
+  page_action_view()->OnMouseEvent(&mouse_press);
+  page_action_view()->OnMouseEvent(&mouse_release);
+  EXPECT_EQ(0, TotalTriggerCount());
+}
+
 // Action invocations are suppressed when the ActionItem is displaying UI.
-TEST_F(PageActionViewTriggerTest, PageActionDoesNotTriggersIfBubbleShowing) {
+TEST_F(PageActionViewTriggerTest, PageActionDoesNotTriggerIfBubbleShowing) {
   EXPECT_CALL(*model(), GetActionItemIsShowingBubble())
       .WillRepeatedly(Return(true));
   views::test::InteractionTestUtilSimulatorViews::PressButton(

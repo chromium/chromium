@@ -13,6 +13,14 @@
 #include "third_party/boringssl/src/include/openssl/evp.h"
 
 namespace crypto::obsolete {
+class Md5;
+}
+
+namespace policy {
+crypto::obsolete::Md5 MakeMd5HasherForPolicyEventId();
+}
+
+namespace crypto::obsolete {
 
 // This class is used for computing MD5 hashes, either one-shot via Md5::Hash(),
 // or streaming via constructing an Md5 instance, calling Update(), then calling
@@ -28,9 +36,14 @@ class CRYPTO_EXPORT Md5 {
   void Update(base::span<const uint8_t> data);
 
   void Finish(base::span<uint8_t, kSize> result);
+  std::array<uint8_t, kSize> Finish();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(Md5Test, KnownAnswer);
+
+  // The friends listed here are the areas required to continue using MD5 for
+  // compatibility with existing specs, on-disk data, or similar.
+  friend Md5 policy::MakeMd5HasherForPolicyEventId();
 
   Md5();
   static std::array<uint8_t, kSize> Hash(base::span<const uint8_t> data);

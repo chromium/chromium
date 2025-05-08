@@ -104,8 +104,7 @@ using segmentation_platform::home_modules::EnhancedSafeBrowsingEphemeralModule;
 using segmentation_platform::home_modules::LensEphemeralModule;
 using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 
-@interface MagicStackRankingModel () <MostVisitedTilesMediatorDelegate,
-                                      PriceTrackingPromoMediatorDelegate,
+@interface MagicStackRankingModel () <PriceTrackingPromoMediatorDelegate,
                                       SafetyCheckMagicStackMediatorDelegate,
                                       SendTabPromoMediatorDelegate,
                                       ShopCardMediatorDelegate,
@@ -178,7 +177,6 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
       if ([mediator isKindOfClass:[MostVisitedTilesMediator class]]) {
         _mostVisitedTilesMediator =
             static_cast<MostVisitedTilesMediator*>(mediator);
-        _mostVisitedTilesMediator.delegate = self;
       } else if ([mediator isKindOfClass:[SetUpListMediator class]]) {
         _setUpListMediator = static_cast<SetUpListMediator*>(mediator);
         _setUpListMediator.audience = self;
@@ -354,34 +352,6 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                                      BOOL* stop) {
         return config.type == moduleType;
       }];
-}
-
-#pragma mark - MostVisitedTilesMediatorDelegate
-
-- (void)didReceiveInitialMostVistedTiles {
-  if (![self isMagicStackOrderReady]) {
-    return;
-  }
-
-  NSArray<MagicStackModule*>* rank = [self latestMagicStackConfigRank];
-  NSUInteger index =
-      [rank indexOfObject:_mostVisitedTilesMediator.mostVisitedConfig];
-  [self.delegate
-      magicStackRankingModel:self
-               didInsertItem:_mostVisitedTilesMediator.mostVisitedConfig
-                     atIndex:index];
-}
-
-- (void)removeMostVisitedTilesModule {
-  if (![self isMagicStackOrderReady]) {
-    return;
-  }
-
-  [self.delegate
-      magicStackRankingModel:self
-               didRemoveItem:_mostVisitedTilesMediator.mostVisitedConfig
-                     animate:YES
-              withCompletion:nil];
 }
 
 #pragma mark - PriceTrackingPromoMediatorDelegate
@@ -831,26 +801,10 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         (ContentSuggestionsModuleType)[moduleNumber intValue];
     switch (moduleType) {
       case ContentSuggestionsModuleType::kMostVisited: {
-        BOOL shouldShowMostVisitedTileInMagicStack =
-            _mostVisitedTilesMediator.mostVisitedConfig.inMagicStack;
-        BOOL isMostVisitedTileVisible = _prefService->GetBoolean(
-            prefs::kHomeCustomizationMostVisitedEnabled);
-        BOOL hasMostVisitedItems = [_mostVisitedTilesMediator.mostVisitedConfig
-                                           .mostVisitedItems count] > 0;
-        if (shouldShowMostVisitedTileInMagicStack && isMostVisitedTileVisible &&
-            hasMostVisitedItems) {
-          [magicStackOrder
-              addObject:_mostVisitedTilesMediator.mostVisitedConfig];
-        }
         break;
       }
       case ContentSuggestionsModuleType::kTabResumption:
         if (![self shouldShowTabResumption]) {
-          break;
-        }
-        // If ShouldHideIrrelevantModules() is enabled and it is not ranked as
-        // the first two modules, do not add it to the Magic Stack.
-        if (ShouldHideIrrelevantModules() && [magicStackOrder count] > 1) {
           break;
         }
         if (PromoteTabResumptionShopCardToFrontOfStack()) {
@@ -893,11 +847,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
           break;
         }
 
-        // If ShouldHideIrrelevantModules() is enabled and it is not the first
-        // ranked module, do not add it to the Magic Stack.
-        if (!ShouldHideIrrelevantModules() || [magicStackOrder count] == 0) {
-          [magicStackOrder addObject:_safetyCheckMediator.safetyCheckState];
-        }
+        [magicStackOrder addObject:_safetyCheckMediator.safetyCheckState];
 
         break;
       }

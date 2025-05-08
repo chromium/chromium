@@ -109,7 +109,8 @@ public class MaterialSwitchWithText extends LinearLayout implements Checkable, O
      *
      * @see CompoundButton#setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener).
      */
-    public void setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener listener) {
+    public void setOnCheckedChangeListener(
+            CompoundButton.@Nullable OnCheckedChangeListener listener) {
         mSwitch.setOnCheckedChangeListener(listener);
     }
 }

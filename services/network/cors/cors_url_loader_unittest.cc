@@ -2423,8 +2423,7 @@ class StorageAccessHeadersCorsURLLoaderTest : public CorsURLLoaderTest {
  public:
   StorageAccessHeadersCorsURLLoaderTest() : CorsURLLoaderTest() {
     feature_list_.InitWithFeatures(
-        {network::features::kStorageAccessHeaders,
-         // TODO(crbug.com/382291442): Remove features when launched.
+        {// TODO(crbug.com/382291442): Remove features when launched.
          network::features::kPopulatePermissionsPolicyOnRequest,
          network::features::kStorageAccessHeadersRespectPermissionsPolicy},
         {});

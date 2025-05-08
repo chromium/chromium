@@ -86,10 +86,7 @@ class MockImageDecoder : public ImageDecoder {
 
   String FilenameExtension() const override { return "mock"; }
 
-  const AtomicString& MimeType() const override {
-    DEFINE_STATIC_LOCAL(const AtomicString, mock_mime_type, ("image/x-mock"));
-    return mock_mime_type;
-  }
+  const AtomicString& MimeType() const override;
 
   int RepetitionCount() const override { return client_->RepetitionCount(); }
 

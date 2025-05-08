@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Platform version and wow64-ness on Linux should contain fixed values
+  assert_true: expected true got false
+Harness: the test ran to completion.
+

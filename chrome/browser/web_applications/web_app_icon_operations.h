@@ -41,6 +41,11 @@ struct IconUrlWithSize {
 
 using IconUrlSizeSet = base::flat_set<IconUrlWithSize>;
 
+// Form a vector of manifest icons and their sizes. This does not include other
+// icons like shortcut menu, file handling, or hometab icons.
+std::vector<IconUrlWithSize> GetAppIconUrls(
+    const WebAppInstallInfo& web_app_info);
+
 // Form a list of icons and their sizes to download: Remove icons with invalid
 // urls.
 IconUrlSizeSet GetValidIconUrlsToDownload(

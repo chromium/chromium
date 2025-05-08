@@ -23,6 +23,7 @@ include_rules = [
   "+content/public/browser/content_browser_client.h",
   "+content/public/browser/remote_cocoa.h",
   "+content/public/browser/browser_accessibility_state.h",
+  "+content/public/browser/scoped_accessibility_mode.h",
   "+content/public/browser/render_widget_host_view_mac_delegate.h",
   "+content/public/common/content_client.h",
   "+content/public/common/content_features.h",

@@ -295,7 +295,8 @@ namespace sockets.udp {
     // multicast loopback mode. On Windows, the applications with loopback off
     // will not RECEIVE the loopback packets; while on Unix-like systems, the
     // applications with loopback off will not SEND the loopback packets to
-    // other applications on the same host. See MSDN: http://goo.gl/6vqbj
+    // other applications on the same host. See MSDN:
+    // https://learn.microsoft.com/en-us/windows/win32/winsock/ip-multicast-2
     //
     // Calling this method does not require multicast permissions.
     //

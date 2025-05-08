@@ -1038,10 +1038,16 @@ bool ViewTransition::IsGeneratingPseudo(
 
 void ViewTransition::NotifySkippedTransitionDOMCallbackScheduled() {
   pending_dom_callback_ = true;
+  if (delegate_) {
+    delegate_->OnSkipTransitionWithPendingCallback(this);
+  }
 }
 
 void ViewTransition::NotifyInvokeDOMChangeCallback() {
   pending_dom_callback_ = false;
+  if (delegate_) {
+    delegate_->OnSkippedTransitionDOMCallback(this);
+  }
   if (blocking_) {
     blocking_->blocked_on_ = nullptr;
     blocking_->ProcessCurrentState();
@@ -1051,6 +1057,40 @@ void ViewTransition::NotifyInvokeDOMChangeCallback() {
 
 bool ViewTransition::PendingDomCallback() {
   return pending_dom_callback_;
+}
+
+void ViewTransition::RecalcTransitionPseudoTreeStyle() const {
+  Element* scope = Scope();
+  if (!scope) {
+    scope = document_->documentElement();
+  }
+  if (!scope || !scope->InActiveDocument()) {
+    return;
+  }
+
+  if (style_tracker_) {
+    scope->RecalcTransitionPseudoTreeStyle(
+        style_tracker_->GetViewTransitionNames());
+  } else {
+    scope->RecalcTransitionPseudoTreeStyle({});
+  }
+}
+
+void ViewTransition::RebuildTransitionPseudoLayoutTree() const {
+  Element* scope = Scope();
+  if (!scope) {
+    scope = document_->documentElement();
+  }
+  if (!scope || !scope->InActiveDocument()) {
+    return;
+  }
+
+  if (style_tracker_) {
+    scope->RebuildTransitionPseudoLayoutTree(
+        style_tracker_->GetViewTransitionNames());
+  } else {
+    scope->RebuildTransitionPseudoLayoutTree({});
+  }
 }
 
 }  // namespace blink

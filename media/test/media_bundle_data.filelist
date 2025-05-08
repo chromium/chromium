@@ -355,6 +355,7 @@ data/four-colors.mp4
 data/four-colors.png
 data/four-colors.y4m
 data/frame_size_change-av_enc-v.webm
+data/front-discard.mp4
 data/gbrp-av1.mp4
 data/gbrp-h264.mp4
 data/gbrp-h265.mp4
@@ -392,6 +393,7 @@ data/load_many_videos.html
 data/media_foundation_fallback.html
 data/media_source_player.html
 data/media_suspend_test.html
+data/mid-file-start-time.mp4
 data/midstream_config_change.mp3
 data/mono_cpe.adts
 data/mse_config_change.html

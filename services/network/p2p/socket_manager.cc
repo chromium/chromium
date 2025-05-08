@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/p2p/socket_manager.h"
 
 #include <stddef.h>
@@ -270,8 +265,8 @@ void P2PSocketManager::DumpPacket(base::span<const uint8_t> packet,
     NOTREACHED();
   }
 
-  std::vector<uint8_t> header_buffer(rtp_packet.data(),
-                                     rtp_packet.data() + header_size);
+  std::vector<uint8_t> header_buffer(rtp_packet.begin(),
+                                     rtp_packet.begin() + header_size);
   trusted_socket_manager_client_->DumpPacket(header_buffer, rtp_packet.size(),
                                              incoming);
 }

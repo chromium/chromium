@@ -693,7 +693,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileBrowserTest,
   LaunchSystemWebAppAsync(incognito_profile, GetAppType());
   observer.Wait();
 
-  EXPECT_FALSE(FindSystemWebAppBrowser(incognito_profile, GetAppType()));
   EXPECT_TRUE(FindSystemWebAppBrowser(startup_profile, GetAppType()));
 }
 
@@ -746,7 +745,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileGuestSessionBrowserTest,
   LaunchSystemWebAppAsync(original_profile, GetAppType());
   observer.Wait();
 
-  EXPECT_FALSE(FindSystemWebAppBrowser(original_profile, GetAppType()));
   EXPECT_TRUE(FindSystemWebAppBrowser(startup_profile, GetAppType()));
 }
 

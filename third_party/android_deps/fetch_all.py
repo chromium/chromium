@@ -21,9 +21,11 @@ import contextlib
 import fnmatch
 import logging
 import os
+import pathlib
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 import textwrap
 import urllib.request
@@ -33,6 +35,9 @@ from typing import Dict
 
 # Assume this script is stored under third_party/android_deps/
 _CHROMIUM_SRC = os.path.normpath(os.path.join(__file__, '..', '..', '..'))
+
+sys.path.insert(1, os.path.join(_CHROMIUM_SRC, 'build/autoroll'))
+import fetch_util
 
 # Default android_deps directory.
 _PRIMARY_ANDROID_DEPS_DIR = os.path.join(_CHROMIUM_SRC, 'third_party',
@@ -56,7 +61,7 @@ _BUILD_GRADLE = 'build.gradle'
 # Location of the android_deps libs directory relative to custom 'android_deps' directory.
 _LIBS_DIR = 'libs'
 
-_GN_PATH = os.path.join(_CHROMIUM_SRC, 'third_party', 'depot_tools', 'gn')
+_GN_PATH = os.path.join(_CHROMIUM_SRC, 'third_party', 'depot_tools', 'gn.py')
 
 _GRADLEW = os.path.join(_CHROMIUM_SRC, 'third_party', 'android_build_tools',
                         'gradle_wrapper', 'gradlew')
@@ -69,7 +74,6 @@ _PRIMARY_ANDROID_DEPS_FILES = [
     'buildSrc',
     'licenses',
     'settings.gradle.template',
-    'vulnerability_supressions.xml',
 ]
 
 # Git-controlled files needed by and updated by this tool.
@@ -318,7 +322,7 @@ _RE_CIPD_PACKAGE = re.compile(r'package: (\S*)')
 def _ParseSubprojects(subproject_path):
     """Parses listing of subproject build.gradle files. Returns list of paths."""
     if not os.path.exists(subproject_path):
-        return None
+        return {}
 
     subprojects = {}
     for subproject in open(subproject_path):
@@ -354,46 +358,34 @@ def _GenerateSettingsGradle(subproject_dirs: Dict[str, str],
         f.write(template_content)
 
 
+def _InitSubprojects(android_deps_dir, build_android_deps_dir):
+    subprojects = _ParseSubprojects(
+        os.path.join(android_deps_dir, 'subprojects.txt'))
+    subdirs = {name: f'subproject_{name}' for name in subprojects}
+    for name, original_path in subprojects.items():
+        subdir = subdirs[name]
+        build_gradle = os.path.join(subdir, _BUILD_GRADLE)
+        src_path = pathlib.Path(android_deps_dir) / original_path
+        data = src_path.read_text()
+        if '// <ANDROIDX_REPO>' in data:
+            version = fetch_util.get_current_androidx_version()
+            repo_url = fetch_util.make_androidx_maven_url(version)
+            data = data.replace('// <ANDROIDX_REPO>',
+                                f'maven {{ url "{repo_url}" }}')
+        dst_path = pathlib.Path(build_android_deps_dir) / build_gradle
+        dst_path.parent.mkdir()
+        dst_path.write_text(data)
+
+    _GenerateSettingsGradle(
+        subdirs,
+        os.path.join(_PRIMARY_ANDROID_DEPS_DIR, 'settings.gradle.template'),
+        os.path.join(build_android_deps_dir, 'settings.gradle'))
+
 def _BuildGradleCmd(build_android_deps_dir, task):
     return [
         _GRADLEW, '-p', build_android_deps_dir, '--stacktrace',
         '--warning-mode', 'all', task
     ]
-
-
-def _CheckVulnerabilities(build_android_deps_dir, report_dst):
-    logging.warning('Running Gradle dependencyCheckAnalyze. This may take a '
-                    'few minutes the first time.')
-
-    # Separate command from main gradle command so that we can provide specific
-    # diagnostics in case of failure of this step.
-    gradle_cmd = _BuildGradleCmd(build_android_deps_dir,
-                                 'dependencyCheckAnalyze')
-
-    report_src = os.path.join(build_android_deps_dir, 'build', 'reports')
-    if os.path.exists(report_dst):
-        shutil.rmtree(report_dst)
-
-    try:
-        logging.info('CMD: %s', ' '.join(gradle_cmd))
-        RunCommand(gradle_cmd, print_stdout=True)
-    except Exception:
-        report_path = os.path.join(report_dst, 'dependency-check-report.html')
-        logging.error(
-            textwrap.dedent("""
-               =============================================================================
-               A package has a known vulnerability. It may not be in a package or packages
-               which you just added, but you need to resolve the problem before proceeding.
-               If you can't easily fix it by rolling the package to a fixed version now,
-               please file a crbug of type= Bug-Security providing all relevant information,
-               and then rerun this command with --ignore-vulnerabilities.
-               The html version of the report is avialable at: {}
-               =============================================================================
-               """.format(report_path)))
-        raise
-    finally:
-        if os.path.exists(report_src):
-            CopyFileOrDirectory(report_src, report_dst)
 
 
 def _ReduceNameLength(path_str):
@@ -549,15 +541,9 @@ def main():
     parser.add_argument('--ignore-licenses',
                         help='Ignores licenses for these deps.',
                         action='store_true')
-    parser.add_argument('--ignore-vulnerabilities',
-                        help='Ignores vulnerabilities for these deps.',
-                        action='store_true')
     parser.add_argument('--override-artifact',
                         action='append',
                         help='lib_subpath:url of .aar / .jar to override.')
-    parser.add_argument('--no-subprojects',
-                        action='store_true',
-                        help='Ignore subprojects.txt for faster runs.')
     parser.add_argument('--local',
                         help='Move .jar and .aar files to cipd/ directory '
                         'after running (3pp bot requires this to not '
@@ -615,30 +601,7 @@ def main():
         CopyFileOrDirectory(os.path.join(_CHROMIUM_SRC, _DEPS),
                             os.path.join(build_dir, _DEPS))
 
-        if args.no_subprojects:
-            subprojects = None
-        else:
-            subprojects = _ParseSubprojects(
-                os.path.join(args.android_deps_dir, 'subprojects.txt'))
-        subproject_subdirs = {}
-        if subprojects:
-            for subproject_name, original_path in subprojects.items():
-                subproject_subdir = f'subproject_{subproject_name}'
-                Copy(args.android_deps_dir, [original_path],
-                     build_android_deps_dir,
-                     [os.path.join(subproject_subdir, _BUILD_GRADLE)])
-                subproject_subdirs[subproject_name] = subproject_subdir
-
-        _GenerateSettingsGradle(
-            subproject_subdirs,
-            os.path.join(_PRIMARY_ANDROID_DEPS_DIR,
-                         'settings.gradle.template'),
-            os.path.join(build_android_deps_dir, 'settings.gradle'))
-
-        if not args.ignore_vulnerabilities:
-            report_dst = os.path.join(args.android_deps_dir,
-                                      'vulnerability_reports')
-            _CheckVulnerabilities(build_android_deps_dir, report_dst)
+        _InitSubprojects(args.android_deps_dir, build_android_deps_dir)
 
         logging.info('Running Gradle.')
 

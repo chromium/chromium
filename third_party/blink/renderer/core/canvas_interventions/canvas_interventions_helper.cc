@@ -127,8 +127,8 @@ bool CanvasInterventionsHelper::MaybeNoiseSnapshot(
   // of all channels, including the alpha channel.
   auto info = SkImageInfo::Make(
       snapshot->GetSize().width(), snapshot->GetSize().height(),
-      snapshot->GetSkColorType(), kUnpremul_SkAlphaType,
-      snapshot->GetSkColorSpace());
+      viz::ToClosestSkColorType(snapshot->GetSharedImageFormat()),
+      kUnpremul_SkAlphaType, snapshot->GetColorSpace().ToSkColorSpace());
   SkBitmap bm;
   if (!bm.tryAllocPixels(info)) {
     return false;
@@ -190,7 +190,7 @@ bool CanvasInterventionsHelper::MaybeNoiseSnapshot(
 
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(kNoiseDurationMetricName,
                                           elapsed_time, base::Microseconds(50),
-                                          base::Milliseconds(10), 50);
+                                          base::Milliseconds(50), 50);
   UMA_HISTOGRAM_COUNTS_1M(kCanvasSizeMetricName,
                           pixmap_to_noise.width() * pixmap_to_noise.height());
   UseCounter::Count(execution_context, WebFeature::kCanvasReadbackNoise);

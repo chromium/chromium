@@ -111,11 +111,11 @@ base::TimeDelta GetTimeDeltaForConnectionTypeFromFieldTrialOrDefault(
   return out;
 }
 
-std::string CreateNamePointer(uint16_t offset) {
+std::array<uint8_t, 2> CreateNamePointer(uint16_t offset) {
   DCHECK_EQ(offset & ~dns_protocol::kOffsetMask, 0);
   std::array<uint8_t, 2> buf = base::U16ToBigEndian(offset);
   buf[0u] |= dns_protocol::kLabelPointer;
-  return std::string(buf.begin(), buf.end());
+  return buf;
 }
 
 uint16_t DnsQueryTypeToQtype(DnsQueryType dns_query_type) {

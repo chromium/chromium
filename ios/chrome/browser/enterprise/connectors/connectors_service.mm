@@ -19,6 +19,8 @@
 #import "ios/chrome/browser/enterprise/connectors/features.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 namespace {
 std::string GetDomainFromEmail(const std::string& email) {
@@ -33,20 +35,13 @@ std::string GetDomainFromEmail(const std::string& email) {
 
 namespace enterprise_connectors {
 
-ConnectorsService::ConnectorsService(
-    bool off_the_record,
-    PrefService* pref_service,
-    policy::UserCloudPolicyManager* user_cloud_policy_manager,
-    signin::IdentityManager* identity_manager)
-    : off_the_record_(off_the_record),
-      prefs_(pref_service),
-      user_cloud_policy_manager_(user_cloud_policy_manager),
-      connectors_manager_(
-          std::make_unique<ConnectorsManager>(pref_service,
-                                              GetServiceProviderConfig())),
-      identity_manager_(identity_manager) {
-  DCHECK(prefs_);
-  CHECK(off_the_record_ || identity_manager_ != nullptr);
+ConnectorsService::ConnectorsService(ProfileIOS* profile) : profile_(profile) {
+  CHECK(profile_);
+  identity_manager_ = IdentityManagerFactory::GetForProfile(profile);
+
+  CHECK(profile_->IsOffTheRecord() || identity_manager_ != nullptr);
+  connectors_manager_ = std::make_unique<ConnectorsManager>(
+      profile_->GetPrefs(), GetServiceProviderConfig());
 }
 
 ConnectorsService::~ConnectorsService() = default;
@@ -116,8 +111,8 @@ std::optional<std::string> ConnectorsService::GetBrowserDmToken() const {
 
 std::optional<ConnectorsServiceBase::DmToken> ConnectorsService::GetDmToken(
     const char* scope_pref) const {
-  policy::PolicyScope scope =
-      static_cast<policy::PolicyScope>(prefs_->GetInteger(scope_pref));
+  policy::PolicyScope scope = static_cast<policy::PolicyScope>(
+      profile_->GetPrefs()->GetInteger(scope_pref));
   if (scope == policy::PolicyScope::POLICY_SCOPE_USER) {
     auto profile_dm_token = GetProfileDmToken();
     if (profile_dm_token) {
@@ -137,15 +132,15 @@ std::optional<ConnectorsServiceBase::DmToken> ConnectorsService::GetDmToken(
 }
 
 bool ConnectorsService::ConnectorsEnabled() const {
-  return !off_the_record_;
+  return !profile_->IsOffTheRecord();
 }
 
 PrefService* ConnectorsService::GetPrefs() {
-  return prefs_;
+  return profile_->GetPrefs();
 }
 
 const PrefService* ConnectorsService::GetPrefs() const {
-  return prefs_;
+  return profile_->GetPrefs();
 }
 
 ConnectorsManagerBase* ConnectorsService::GetConnectorsManagerBase() {
@@ -159,7 +154,7 @@ const ConnectorsManagerBase* ConnectorsService::GetConnectorsManagerBase()
 
 policy::CloudPolicyManager*
 ConnectorsService::GetManagedUserCloudPolicyManager() const {
-  return user_cloud_policy_manager_.get();
+  return profile_->GetUserCloudPolicyManager();
 }
 
 std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata(

@@ -121,7 +121,7 @@ class MainContentExtractionTest : public InProcessBrowserTest {
 
     base::test::TestFuture<ui::AXTreeUpdate&> future;
     web_contents->RequestAXTreeSnapshot(
-        future.GetCallback(), ui::kAXModeComplete,
+        future.GetCallback(), ui::kAXModeDefaultForTests,
         /* max_nodes= */ 0,
         /* timeout= */ {}, content::WebContents::AXTreeSnapshotPolicy::kAll);
     EXPECT_TRUE(future.Wait());

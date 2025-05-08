@@ -20,6 +20,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/api/developer_private/inspectable_views_finder.h"
+#include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -66,6 +67,10 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/skbitmap_operations.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"  // nogncheck
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace extensions {
 
@@ -326,6 +331,64 @@ void AddPermissionsInfo(content::BrowserContext* browser_context,
       CreateRuntimeHostPermissionsInfo(browser_context, extension);
 }
 
+// Constructs any commands for the extension with the given `id`, and adds them
+// to the list of `commands`.
+void ConstructCommands(CommandService* command_service,
+                       const ExtensionId& extension_id,
+                       std::vector<developer::Command>* commands) {
+  auto construct_command = [](const ui::Command& command, bool active,
+                              bool is_extension_action) {
+    developer::Command command_value;
+    command_value.description =
+        is_extension_action
+            ? l10n_util::GetStringUTF8(IDS_EXTENSION_COMMANDS_GENERIC_ACTIVATE)
+            : base::UTF16ToUTF8(command.description());
+    command_value.keybinding =
+        base::UTF16ToUTF8(command.accelerator().GetShortcutText());
+    command_value.name = command.command_name();
+    command_value.is_active = active;
+    command_value.scope = command.global() ? developer::CommandScope::kGlobal
+                                           : developer::CommandScope::kChrome;
+    command_value.is_extension_action = is_extension_action;
+    return command_value;
+  };
+  // TODO(crbug.com/40124879): Extensions shouldn't be able to specify
+  // commands for actions they don't have, so we should just be able to query
+  // for a single action type.
+  for (auto action_type : {ActionInfo::Type::kBrowser, ActionInfo::Type::kPage,
+                           ActionInfo::Type::kAction}) {
+    bool active = false;
+    Command action_command;
+    if (command_service->GetExtensionActionCommand(extension_id, action_type,
+                                                   CommandService::ALL,
+                                                   &action_command, &active)) {
+      commands->push_back(construct_command(action_command, active, true));
+    }
+  }
+
+  ui::CommandMap named_commands;
+  if (command_service->GetNamedCommands(extension_id, CommandService::ALL,
+                                        CommandService::ANY_SCOPE,
+                                        &named_commands)) {
+    for (auto& pair : named_commands) {
+      ui::Command& command_to_use = pair.second;
+      // TODO(devlin): For some reason beyond my knowledge, FindCommandByName
+      // returns different data than GetNamedCommands, including the
+      // accelerators, but not the descriptions - and even then, only if the
+      // command is active.
+      // Unfortunately, some systems may be relying on the other data (which
+      // more closely matches manifest data).
+      // Until we can sort all this out, we merge the two command structures.
+      Command active_command = command_service->FindCommandByName(
+          extension_id, command_to_use.command_name());
+      command_to_use.set_accelerator(active_command.accelerator());
+      command_to_use.set_global(active_command.global());
+      bool active = command_to_use.accelerator().key_code() != ui::VKEY_UNKNOWN;
+      commands->push_back(construct_command(command_to_use, active, false));
+    }
+  }
+}
+
 }  // namespace
 
 ExtensionInfoGeneratorShared::ExtensionInfoGeneratorShared(
@@ -335,7 +398,8 @@ ExtensionInfoGeneratorShared::ExtensionInfoGeneratorShared(
       extension_prefs_(ExtensionPrefs::Get(browser_context)),
       warning_service_(WarningService::Get(browser_context)),
       error_console_(ErrorConsole::Get(browser_context)),
-      image_loader_(ImageLoader::Get(browser_context)) {
+      image_loader_(ImageLoader::Get(browser_context)),
+      command_service_(CommandService::Get(browser_context)) {
   profile_observation_.Observe(Profile::FromBrowserContext(browser_context));
 }
 
@@ -351,6 +415,7 @@ void ExtensionInfoGeneratorShared::OnProfileWillBeDestroyed(Profile* profile) {
   warning_service_ = nullptr;
   error_console_ = nullptr;
   image_loader_ = nullptr;
+  command_service_ = nullptr;
 
   // Remove any WeakPtr to terminate any async tasks.
   weak_factory_.InvalidateWeakPtrs();
@@ -595,7 +660,7 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
       ExtensionSystem::Get(browser_context_)->user_script_manager();
   if (user_script_manager) {  // Not created in some unit tests.
     info.user_scripts_access.is_active =
-        user_script_manager->AreUserScriptsAllowed(extension, browser_context_);
+        user_script_manager->AreUserScriptsAllowed(extension);
   }
 
   // Install warnings, but only if unpacked, the error console isn't enabled
@@ -698,7 +763,18 @@ void ExtensionInfoGeneratorShared::FillExtensionInfo(
         extension, is_enabled);
   }
 
-  // The icon.
+  // Commands.
+  if (is_enabled) {
+    ConstructCommands(command_service_, extension.id(), &info.commands);
+  }
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  info.is_command_registration_handled_externally =
+      ui::GlobalAcceleratorListener::GetInstance() &&
+      ui::GlobalAcceleratorListener::GetInstance()
+          ->IsRegistrationHandledExternally();
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+  // The icon. This section must come last as it moves `info`.
   ExtensionResource icon = IconsInfo::GetIconResource(
       &extension, extension_misc::EXTENSION_ICON_MEDIUM,
       ExtensionIconSet::Match::kBigger);

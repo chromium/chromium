@@ -50,9 +50,10 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionView;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionInfo;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -84,14 +85,15 @@ public class MostVisitedTilesTest {
     private static final int MV_TILE_CAROUSEL_MATCH_POSITION = 1;
     private static final long MV_TILE_NATIVE_HANDLE = 0xfce2;
 
-    public final @Rule ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public final @Rule FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock AutocompleteController.Natives mAutocompleteControllerJniMock;
     private @Mock AutocompleteController mController;
     private @Captor ArgumentCaptor<AutocompleteController.OnSuggestionsReceivedListener> mListener;
 
+    private WebPageStation mPage;
     private ChromeTabbedActivity mActivity;
     private LocationBarLayout mLocationBarLayout;
 
@@ -111,19 +113,15 @@ public class MostVisitedTilesTest {
         AutocompleteControllerJni.setInstanceForTesting(mAutocompleteControllerJniMock);
         doReturn(mController).when(mAutocompleteControllerJniMock).getForProfile(any());
 
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mActivityTestRule.waitForActivityNativeInitializationComplete();
+        mPage = mActivityTestRule.startOnTestServerUrl(START_PAGE_LOCATION);
 
-        mActivity = mActivityTestRule.getActivity();
+        mActivity = mPage.getActivity();
         mOmnibox = new OmniboxTestUtils(mActivity);
         mLocationBarLayout = mActivity.findViewById(R.id.location_bar);
         mAutocomplete = mLocationBarLayout.getAutocompleteCoordinator();
-        mTab = mActivity.getActivityTab();
+        mTab = mPage.loadedTabElement.get();
         mStartUrl = mActivityTestRule.getTestServer().getURL(START_PAGE_LOCATION);
 
-        ChromeTabUtils.waitForInteractable(mTab);
-        ChromeTabUtils.loadUrlOnUiThread(mTab, mStartUrl);
-        ChromeTabUtils.waitForTabPageLoaded(mTab, null);
         verify(mController).addOnSuggestionsReceivedListener(mListener.capture());
 
         setUpSuggestionsToShow();

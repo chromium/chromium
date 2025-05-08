@@ -68,7 +68,13 @@ class ConsentDialogUiTest : public InProcessBrowserTest {
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 };
 
-IN_PROC_BROWSER_TEST_F(ConsentDialogUiTest, GetConsentDialogBodyTest) {
+// TODO(crbug.com/416157468): Enable the test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_GetConsentDialogBodyTest DISABLED_GetConsentDialogBodyTest
+#else
+#define MAYBE_GetConsentDialogBodyTest GetConsentDialogBodyTest
+#endif
+IN_PROC_BROWSER_TEST_F(ConsentDialogUiTest, MAYBE_GetConsentDialogBodyTest) {
   // Simulate a managed profile.
   AddEnterpriseManagedPolicies();
   policy::ScopedManagementServiceOverrideForTesting browser_management(

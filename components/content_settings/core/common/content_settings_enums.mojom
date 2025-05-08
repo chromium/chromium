@@ -68,6 +68,7 @@ enum SessionModel {
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: ProviderType
 enum ProviderType {
   kWebuiAllowlistProvider = 0,
+  kComponentExtensionProvider,
   kPolicyProvider,
   kSupervisedProvider,
   kCustomExtensionProvider,

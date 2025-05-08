@@ -38,6 +38,7 @@ source_set("model") {
     "//components/omnibox/browser",
     "//components/omnibox/resources:omnibox_pedal_synonyms",
     "//components/prefs",
+    "//components/saved_tab_groups/public",
     "//components/signin/public/identity_manager",
     "//components/strings",
     "//components/sync",
@@ -70,6 +71,7 @@ source_set("unit_tests") {
     ":model",
     "//base/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public/test",
     "//testing/gtest",
   ]
 }

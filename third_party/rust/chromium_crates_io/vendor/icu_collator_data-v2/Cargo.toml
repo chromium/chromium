@@ -2,11 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# @generated from third_party/rust/chromium_crates_io/removed_Cargo.toml
-# by tools/crates/gnrt. Do not edit!
-
-# This is an empty crate that has replaced the 'icu_collator_data' crate, since
-# it was listed in `resolve.remove_crates` in gnrt_config.toml.
+# @generated from `tools/crates/gnrt/removed_Cargo.toml.hbs`
+# by `tools/crates/run_gnrt.py vendor`. Do not edit!
+#
+# This is an empty placeholder that has replaced the
+# `icu_collator_data-2.0.0-beta2` crate.
+#
+# See `//tools/crates/gnrt/removed_crate.md` to learn more.
 
 [package]
 name = "icu_collator_data"

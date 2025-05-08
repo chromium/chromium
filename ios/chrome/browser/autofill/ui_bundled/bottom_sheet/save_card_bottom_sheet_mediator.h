@@ -9,6 +9,7 @@
 
 #import <memory>
 
+#import "components/autofill/ios/browser/credit_card_save_metrics_ios.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/save_card_bottom_sheet_model.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_mutator.h"
@@ -27,6 +28,21 @@
         autofillCommandsHandler:(id<AutofillCommands>)autofillCommandsHandler;
 
 - (void)disconnect;
+
+// Based on the current SaveCardState of the model, logs dismissal due to
+// bottomsheet being swiped away, tab changed or link clicked. When still in
+// offer state, informs the delegate that UI was canceled, to ensure a
+// strike is added against the card being offered. No-op when bottomsheet is
+// already in the process of dismissing (due to `No thanks` cancel button
+// pressed or on autodismissal in confirmation state).
+- (void)onBottomSheetDismissedWithLinkClicked:(BOOL)linkClicked;
+
+// Returns whether bottomsheet is already in the process of dismissing.
+- (BOOL)isDismissingForTesting;
+
+#pragma mark - SaveCardBottomSheetModel Observer methods
+
+- (void)onCreditCardUploadCompleted:(BOOL)cardSaved;
 
 @end
 

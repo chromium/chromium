@@ -208,7 +208,8 @@ public class AccessibilityNodeInfoBuilder {
             boolean selected,
             boolean visibleToUser,
             boolean hasCharacterLocations,
-            boolean isRequired) {
+            boolean isRequired,
+            boolean isHeading) {
         node.setCheckable(checkable);
         node.setClickable(clickable);
         node.setEnabled(enabled);
@@ -220,6 +221,7 @@ public class AccessibilityNodeInfoBuilder {
         node.setVisibleToUser(visibleToUser);
         node.setFieldRequired(isRequired);
         node.setContentInvalid(contentInvalid);
+        node.setHeading(isHeading);
 
         if (hasImage) {
             Bundle bundle = node.getExtras();

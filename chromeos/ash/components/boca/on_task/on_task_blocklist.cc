@@ -76,13 +76,12 @@ policy::URLBlocklist::URLBlocklistState OnTaskBlocklist::GetURLBlocklistState(
     return policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST;
   }
 
-  // Only allow users to navigate within Google domain URLs (except Google
-  // search) if the nav restriction is set to `WORKSPACE_NAVIGATION`.
+  // Only allow users to navigate within Google domain URLs if the nav
+  // restriction is set to `WORKSPACE_NAVIGATION`.
   if (current_page_restriction_level_ ==
       LockedNavigationOptions::WORKSPACE_NAVIGATION) {
     if (google_util::IsGoogleDomainUrl(url, google_util::ALLOW_SUBDOMAIN,
-                                       google_util::ALLOW_NON_STANDARD_PORTS) &&
-        !google_util::HasGoogleSearchQueryParam(url.query_piece())) {
+                                       google_util::ALLOW_NON_STANDARD_PORTS)) {
       return policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST;
     }
     return policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;

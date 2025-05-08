@@ -203,3 +203,9 @@ source_set("unit_tests_mobile") {
 java_cpp_enum("java_enums") {
   sources = [ "safe_browsing_api_handler_util.h" ]
 }
+
+java_cpp_strings("switches_srcjar") {
+  sources =
+      [ "//components/safe_browsing/core/common/safebrowsing_switches.cc" ]
+  template = "java_templates/SafeBrowsingSwitches.java.tmpl"
+}

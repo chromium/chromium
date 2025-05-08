@@ -6,5 +6,5 @@
 dictionary AuthenticationExtensionsPaymentOutputs {
   // A signature corresponding to the browser bound public key in
   // clientDataJson.
-  AuthenticationExtensionsPaymentBrowserBoundSignature browser_bound_signature;
+  AuthenticationExtensionsPaymentBrowserBoundSignature browserBoundSignature;
 };

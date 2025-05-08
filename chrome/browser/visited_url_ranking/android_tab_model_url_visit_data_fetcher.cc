@@ -55,6 +55,9 @@ TabMetadata::TabOrigin GetTabOriginFromLaunchType(int type) {
     case TabModel::TabLaunchType::FROM_OMNIBOX:
     case TabModel::TabLaunchType::FROM_BOOKMARK_BAR_BACKGROUND:
     case TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND:
+    case TabModel::TabLaunchType::FROM_HISTORY_NAVIGATION_BACKGROUND:
+    case TabModel::TabLaunchType::FROM_HISTORY_NAVIGATION_FOREGROUND:
+    case TabModel::TabLaunchType::FROM_LONGPRESS_FOREGROUND_IN_GROUP:
       return TabMetadata::TabOrigin::kOpenedByUserAction;
 
     case TabModel::TabLaunchType::FROM_RESTORE:
@@ -99,6 +102,13 @@ URLVisitAggregate::Tab MakeAggregateTab(
   tab.tab_metadata.local_tab_group_id =
       tab_group_id.has_value() ? std::make_optional(tab_group_id->token())
                                : std::nullopt;
+  auto* web_contents = tab_android->GetContents();
+  if (!web_contents || !web_contents->GetPrimaryMainFrame()) {
+    tab.tab_metadata.ukm_source_id = ukm::kInvalidSourceId;
+  } else {
+    tab.tab_metadata.ukm_source_id =
+        web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  }
   return tab;
 }
 

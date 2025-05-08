@@ -89,11 +89,6 @@ void SVGCircleElement::SvgAttributeChanged(
   SVGGeometryElement::SvgAttributeChanged(params);
 }
 
-bool SVGCircleElement::SelfHasRelativeLengths() const {
-  return cx_->CurrentValue()->IsRelative() ||
-         cy_->CurrentValue()->IsRelative() || r_->CurrentValue()->IsRelative();
-}
-
 LayoutObject* SVGCircleElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutSVGEllipse>(this);
 }

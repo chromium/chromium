@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.ui.signin.signin_promo;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
@@ -27,6 +28,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+@NullMarked
 final class SigninPromoMediator
         implements IdentityManager.Observer,
                 SyncService.SyncStateChangedListener,
@@ -69,8 +71,7 @@ final class SigninPromoMediator
         mProfileDataCache = profileDataCache;
         mDelegate = delegate;
 
-        @Nullable CoreAccountInfo visibleAccount = getVisibleAccount();
-        @Nullable
+        CoreAccountInfo visibleAccount = getVisibleAccount();
         DisplayableProfileData profileData =
                 visibleAccount == null
                         ? null
@@ -248,5 +249,15 @@ final class SigninPromoMediator
                 ChromeSharedPreferences.getInstance()
                         .readInt(ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT),
                 MAX_TOTAL_PROMO_SHOW_COUNT);
+
+        if (!Event.SHOWN.equals(actionType)) {
+            RecordHistogram.recordExactLinearHistogram(
+                    "Signin.Promo.ImpressionsUntil."
+                            + actionType
+                            + "."
+                            + mDelegate.getAccessPointName(),
+                    mDelegate.getPromoShownCount(),
+                    MAX_TOTAL_PROMO_SHOW_COUNT);
+        }
     }
 }

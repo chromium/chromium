@@ -167,6 +167,8 @@ message LlamaForcedTriggerInfo {
   repeated LlamaTriggerRuleInfo llama_trigger_rule_infos = 1;
   // True if requested by any of the trigger rules.
   optional bool intelligent_scan = 2;
+  // URL responsible to trigger the ping.
+  optional string trigger_url = 3;
 }
 
 message IntelligentScanInfo {

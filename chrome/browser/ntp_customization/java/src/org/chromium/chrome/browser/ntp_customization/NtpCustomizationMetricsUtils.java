@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.ntp_customization;
 import android.support.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 
 /** The utility class for logging the NTP customization bottom sheet's metrics. */
+@NullMarked
 public class NtpCustomizationMetricsUtils {
     @VisibleForTesting
     static final String HISTOGRAM_NTP_CUSTOMIZATION_PREFIX = "NewTabPage.Customization";

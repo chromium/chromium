@@ -7,7 +7,7 @@ desc: |-
 
   Leaving this policy unset or setting this policy to False will use the default behavior defined on the device.
 
-  Attempting to launch a disabled Chrome App will show the user a message explaining why the app was not lauched and suggesting to contact their IT department.
+  Attempting to launch a disabled Chrome App will show the user a message explaining why the app was not launched and suggesting to contact their IT department.
 features:
   dynamic_refresh: true
   per_profile: false

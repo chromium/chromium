@@ -9,7 +9,6 @@
 #include <map>
 #include <vector>
 
-#include "base/memory/weak_ptr.h"
 #include "components/payments/content/browser_binding/browser_bound_key_store.h"
 #include "components/payments/content/browser_binding/fake_browser_bound_key.h"
 
@@ -19,34 +18,33 @@ class BrowserBoundKey;
 
 // A fake used in tests to provide BrowserBoundKeyStore.
 //
-// // SetUp
-// auto fake_key_store = std::make_unique<FakeBrowserBoundKeyStore>();
-// fake_key_store_weak_ptr_ = fake_key_store.GetWeakPtr();
-// instance_under_test.SetKeyStoreForTesting(
-//     base::WrapUnique<BrowserBoundKeyStore*>(fake_key_store.release()));
-// ...
-// // Test
-// fake_key_store_weak_ptr_.PutFakeKey(credential_id,
-//     FakeBrowserBoundKey(/*public_key=*/...,
+// scoped_refptr<FakeBrowserBoundKeyStore> fake_key_store =
+//     base::MakeRefCounted<FakeBrowserBoundKeyStore>();
+// fake_key_store.PutFakeKey(
+//     FakeBrowserBoundKey(/*browser_bound_key_id=*/..., /*public_key=*/...,
 //         /*signature=*/..., expected_client_data=*/...);
 class FakeBrowserBoundKeyStore : public BrowserBoundKeyStore {
  public:
   FakeBrowserBoundKeyStore();
-  ~FakeBrowserBoundKeyStore() override;
 
+  // BrowserBoundKeyStore:
   std::unique_ptr<BrowserBoundKey> GetOrCreateBrowserBoundKeyForCredentialId(
       const std::vector<uint8_t>& credential_id,
       const std::vector<device::PublicKeyCredentialParams::CredentialInfo>&
           allowed_credentials) override;
+  void DeleteBrowserBoundKey(std::vector<uint8_t> bbk_id) override;
 
-  void PutFakeKey(const std::vector<uint8_t>& credential_id,
-                  FakeBrowserBoundKey bbk);
+  // Insert a fake key.
+  void PutFakeKey(FakeBrowserBoundKey bbk);
 
-  base::WeakPtr<FakeBrowserBoundKeyStore> GetWeakPtr();
+  // Return whether the key with identifier `bbk_id` is present.
+  bool ContainsFakeKey(std::vector<uint8_t> bbk_id) const;
+
+ protected:
+  ~FakeBrowserBoundKeyStore() override;
 
  private:
   std::map<std::vector<uint8_t>, FakeBrowserBoundKey> key_map_;
-  base::WeakPtrFactory<FakeBrowserBoundKeyStore> weak_ptr_factory_{this};
 };
 
 }  // namespace payments

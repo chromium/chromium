@@ -100,6 +100,7 @@ export class MicrosoftFilesModuleElement extends
 
   protected onDisableButtonClick_() {
     const disableEvent = new CustomEvent('disable-module', {
+      bubbles: true,
       composed: true,
       detail: {
         message: loadTimeData.getStringF(

@@ -144,10 +144,26 @@ TEST_F(PageLiveStateDecoratorHelperTest, OnIsBeingMirroredChanged) {
       &PageLiveStateDecorator::Data::IsBeingMirrored);
 }
 
+TEST_F(PageLiveStateDecoratorHelperTest, OnIsCapturingTabChanged) {
+  // Treat tab capture the same as window capture.
+  EndToEndStreamPropertyTest(
+      blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
+      media::mojom::DisplayMediaInformation::New(
+          media::mojom::DisplayCaptureSurfaceType::BROWSER,
+          /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
+          /*capture_handle=*/nullptr,
+          /*initial_zoom_level=*/100),
+      &PageLiveStateDecorator::Data::IsCapturingWindow);
+}
+
 TEST_F(PageLiveStateDecoratorHelperTest, OnIsCapturingWindowChanged) {
   EndToEndStreamPropertyTest(
       blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
-      /*display_media_info=*/nullptr,
+      media::mojom::DisplayMediaInformation::New(
+          media::mojom::DisplayCaptureSurfaceType::WINDOW,
+          /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
+          /*capture_handle=*/nullptr,
+          /*initial_zoom_level=*/100),
       &PageLiveStateDecorator::Data::IsCapturingWindow);
 }
 
@@ -294,7 +310,7 @@ TEST_F(PageLiveStateDecoratorHelperTabsTest, IsActiveTab) {
       contents2, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsActiveTab, true);
 
-  tab_model.GetObserver()->TabRemoved(tab2.get());
+  tab_model.GetObserver()->OnFinishingTabClosure(tab2.get());
   tab_model.GetObserver()->DidSelectTab(tab1.get(),
                                         TabModel::TabSelectionType::FROM_USER);
 
@@ -304,6 +320,63 @@ TEST_F(PageLiveStateDecoratorHelperTabsTest, IsActiveTab) {
   // The tab2 should not be updated.
   testing::TestPageNodeProperty(
       contents2, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsActiveTab, true);
+
+  TabModelList::RemoveTabModel(&tab_model);
+}
+
+TEST_F(PageLiveStateDecoratorHelperTabsTest, IsActiveTabAfterRemoved) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      chrome::android::kProcessRankPolicyAndroid);
+  auto helper = std::make_unique<PageLiveStateDecoratorHelper>();
+  TestTabModel tab_model(profile());
+  TabModelList::AddTabModel(&tab_model);
+  std::unique_ptr<content::WebContents> web_contents1(CreateTestWebContents());
+  std::unique_ptr<content::WebContents> web_contents2(CreateTestWebContents());
+  content::WebContents* contents1 = web_contents1.get();
+  content::WebContents* contents2 = web_contents2.get();
+  std::unique_ptr<TabAndroid> tab1 =
+      TabAndroid::CreateForTesting(profile(), 1, std::move(web_contents1));
+  std::unique_ptr<TabAndroid> tab2 =
+      TabAndroid::CreateForTesting(profile(), 2, std::move(web_contents2));
+
+  tab_model.GetObserver()->DidSelectTab(tab1.get(),
+                                        TabModel::TabSelectionType::FROM_USER);
+
+  testing::TestPageNodeProperty(
+      contents1, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsActiveTab, true);
+  testing::TestPageNodeProperty(
+      contents2, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsActiveTab, false);
+
+  tab_model.GetObserver()->DidSelectTab(tab2.get(),
+                                        TabModel::TabSelectionType::FROM_USER);
+
+  testing::TestPageNodeProperty(
+      contents1, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsActiveTab, false);
+  testing::TestPageNodeProperty(
+      contents2, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsActiveTab, true);
+
+  tab_model.GetObserver()->TabRemoved(tab2.get());
+
+  // After removed the tab should not be active anymore.
+  testing::TestPageNodeProperty(
+      contents2, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsActiveTab, false);
+
+  // Destroy tab2.
+  tab2.reset();
+
+  // Moving to the tab1 from tab2 does not cause invalid pointer access.
+  tab_model.GetObserver()->DidSelectTab(tab1.get(),
+                                        TabModel::TabSelectionType::FROM_USER);
+
+  testing::TestPageNodeProperty(
+      contents1, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsActiveTab, true);
 
   TabModelList::RemoveTabModel(&tab_model);

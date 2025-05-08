@@ -24,7 +24,7 @@ namespace v8_helpers {
 
 // Helper functions for V8 APIs.
 
-// Converts |str| to a V8 string. Returns true on success.
+// Converts `str` to a V8 string. Returns true on success.
 inline bool ToV8String(v8::Isolate* isolate,
                        const char* str,
                        v8::Local<v8::String>* out) {
@@ -38,7 +38,7 @@ inline bool ToV8String(v8::Isolate* isolate,
   return ToV8String(isolate, str.c_str(), out);
 }
 
-// Converts |str| to a V8 string.
+// Converts `str` to a V8 string.
 // This crashes when strlen(str) > v8::String::kMaxLength.
 inline v8::Local<v8::String> ToV8StringUnsafe(
     v8::Isolate* isolate,
@@ -56,7 +56,7 @@ inline v8::Local<v8::String> ToV8StringUnsafe(
   return ToV8StringUnsafe(isolate, str.c_str(), string_type);
 }
 
-// Returns true if |maybe| is both a value, and that value is true.
+// Returns true if `maybe` is both a value, and that value is true.
 inline bool IsTrue(v8::Maybe<bool> maybe) {
   return maybe.IsJust() && maybe.FromJust();
 }

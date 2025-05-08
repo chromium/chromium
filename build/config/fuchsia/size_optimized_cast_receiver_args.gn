@@ -39,5 +39,9 @@ optional_trace_events_enabled = false
 # PGO is disabled as it increases the binary size (https://crbug.com/1322959).
 chrome_pgo_phase = 0
 
+# TODO(http://crbug.com/407068989): Remove the default true value in
+# build/config/compiler/compiler.gni
+optimize_for_size = true
+
 # ThinLTO is only enabled in official builders.
 use_thin_lto = false

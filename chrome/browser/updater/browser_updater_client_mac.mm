@@ -16,7 +16,7 @@
 #include "components/version_info/version_info.h"
 
 std::string BrowserUpdaterClient::GetAppId() {
-  return base::apple::BaseBundleID();
+  return std::string(base::apple::BaseBundleID());
 }
 
 base::FilePath BrowserUpdaterClient::GetExpectedEcp() {

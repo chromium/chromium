@@ -23,6 +23,7 @@ static_library("user_session_activity") {
     "//chrome/browser/ash/power/ml",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/policy/messaging_layer/proto:user_session_activity_proto",
+    "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/settings",
     "//components/viz/host",
   ]

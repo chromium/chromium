@@ -50,7 +50,7 @@ pub(crate) fn rem_pio2(x: f64) -> (i32, f64, f64) {
 
     fn medium(x: f64, ix: u32) -> (i32, f64, f64) {
         /* rint(x/(pi/2)), Assume round-to-nearest. */
-        let tmp = x as f64 * INV_PIO2 + TO_INT;
+        let tmp = x * INV_PIO2 + TO_INT;
         // force rounding of tmp to it's storage format on x87 to avoid
         // excess precision issues.
         #[cfg(all(target_arch = "x86", not(target_feature = "sse2")))]
@@ -199,16 +199,28 @@ mod tests {
     fn test_near_pi() {
         let arg = 3.141592025756836;
         let arg = force_eval!(arg);
-        assert_eq!(rem_pio2(arg), (2, -6.278329573009626e-7, -2.1125998133974653e-23));
+        assert_eq!(
+            rem_pio2(arg),
+            (2, -6.278329573009626e-7, -2.1125998133974653e-23)
+        );
         let arg = 3.141592033207416;
         let arg = force_eval!(arg);
-        assert_eq!(rem_pio2(arg), (2, -6.20382377148128e-7, -2.1125998133974653e-23));
+        assert_eq!(
+            rem_pio2(arg),
+            (2, -6.20382377148128e-7, -2.1125998133974653e-23)
+        );
         let arg = 3.141592144966125;
         let arg = force_eval!(arg);
-        assert_eq!(rem_pio2(arg), (2, -5.086236681942706e-7, -2.1125998133974653e-23));
+        assert_eq!(
+            rem_pio2(arg),
+            (2, -5.086236681942706e-7, -2.1125998133974653e-23)
+        );
         let arg = 3.141592979431152;
         let arg = force_eval!(arg);
-        assert_eq!(rem_pio2(arg), (2, 3.2584135866119817e-7, -2.1125998133974653e-23));
+        assert_eq!(
+            rem_pio2(arg),
+            (2, 3.2584135866119817e-7, -2.1125998133974653e-23)
+        );
     }
 
     #[test]

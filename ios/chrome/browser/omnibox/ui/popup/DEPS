@@ -1,0 +1,8 @@
+include_rules = [
+  "+ios/chrome/browser/favicon/ui_bundled",
+  "+ios/chrome/browser/menu/ui_bundled",
+  "+ios/chrome/browser/sharing/ui_bundled",
+  "+ios/chrome/browser/toolbar/ui_bundled/buttons",
+  "+ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_layout_util.h",
+  "+ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h",
+]

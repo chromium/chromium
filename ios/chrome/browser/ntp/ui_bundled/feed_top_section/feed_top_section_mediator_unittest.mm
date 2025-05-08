@@ -49,12 +49,14 @@ class FeedTopSectionMediatorTest : public PlatformTest {
     feed_top_section_view_controller_ =
         [[FeedTopSectionViewController alloc] init];
     feed_top_section_mediator_ = [[FeedTopSectionMediator alloc]
-        initWithConsumer:feed_top_section_view_controller_
-         identityManager:IdentityManagerFactory::GetForProfile(
-                             fake_profile_.get())
-             authService:fake_authentication_service_
-               incognito:fake_profile_.get()->IsOffTheRecord()
-             prefService:fake_pref_service_];
+                          initWithConsumer:feed_top_section_view_controller_
+                           identityManager:IdentityManagerFactory::
+                                               GetForProfile(
+                                                   fake_profile_.get())
+                               authService:fake_authentication_service_
+        provisionalPushNotificationService:nullptr
+                                 incognito:fake_profile_.get()->IsOffTheRecord()
+                               prefService:fake_pref_service_];
     feed_top_section_view_controller_.feedTopSectionMutator =
         feed_top_section_mediator_;
     histogram_tester_ = std::make_unique<base::HistogramTester>();

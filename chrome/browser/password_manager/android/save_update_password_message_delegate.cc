@@ -10,6 +10,7 @@
 
 #include "base/android/build_info.h"
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
@@ -25,6 +26,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -452,15 +454,22 @@ bool SaveUpdatePasswordMessageDelegate::IsUsingAccountStorage(
     return false;
   }
 
-  // Pre-UPM the profile storage was used in fact as the account store (when
-  // sync is on). So this is the cut-off for the users who are not using UPM
-  // (this evaluates to using account store when the user is syncing and using
-  // profile store when they are not syncing).
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  if (!UsesSplitStoresAndUPMForLocal(profile->GetPrefs())) {
+
+  // Pre-UPM there was a single storage, which would either store account
+  // storage credentials (when sync was on for passwords) or local passwords.
+  // After login db deprecation, pre-UPM clients can no longer save passwords,
+  // so this code is only reached for clients that have access to split stores.
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kLoginDbDeprecationAndroid) &&
+      !UsesSplitStoresAndUPMForLocal(profile->GetPrefs())) {
     return account_email_.has_value();
   }
+
+  // After UPM, an updated credential can be saved either to the local or
+  // account storage, so the credential itself needs to be checked to determine
+  // whether account storage messaging needs to be displayed.
 
   // Copy the pending password form here and assign the new username.
   password_manager::PasswordForm updated_credentials =

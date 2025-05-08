@@ -61,11 +61,24 @@ void CreateOnDeviceSessionTask::Start() {
     return;
   }
 
+  SetState(State::kPending);
+  service->GetOnDeviceModelEligibilityAsync(
+      feature_, base::BindOnce(&CreateOnDeviceSessionTask::OnGetEligibility,
+                               weak_factory_.GetWeakPtr()));
+}
+
+void CreateOnDeviceSessionTask::OnGetEligibility(
+    optimization_guide::OnDeviceModelEligibilityReason eligibility) {
+  OptimizationGuideKeyedService* service = GetOptimizationGuideService();
+  if (!service) {
+    Finish(nullptr);
+    return;
+  }
+
   if (auto session = StartSession()) {
     Finish(std::move(session));
     return;
   }
-  auto eligibility = service->GetOnDeviceModelEligibility(feature_);
   CHECK_NE(eligibility,
            optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
 
@@ -75,7 +88,6 @@ void CreateOnDeviceSessionTask::Start() {
     Finish(nullptr);
     return;
   }
-  SetState(State::kPending);
   service->AddOnDeviceModelAvailabilityChangeObserver(feature_, this);
 }
 

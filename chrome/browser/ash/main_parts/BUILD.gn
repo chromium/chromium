@@ -60,6 +60,7 @@ static_library("main_parts") {
     "//chrome/browser/ash/login/lock",
     "//chrome/browser/ash/login/osauth",
     "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/login/signin",
     "//chrome/browser/ash/login/users/avatar",
     "//chrome/browser/ash/magic_boost",
     "//chrome/browser/ash/mahi/web_contents",

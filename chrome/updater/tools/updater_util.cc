@@ -702,7 +702,8 @@ void UpdaterUtilApp::ListPolicies() {
       FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
       base::BindOnce([] {
         auto configurator = base::MakeRefCounted<Configurator>(
-            CreateGlobalPrefs(Scope()), CreateDefaultExternalConstants());
+            CreateGlobalPrefs(Scope()), CreateDefaultExternalConstants(),
+            Scope());
         if (OutputInJSONFormat()) {
           std::cout << ValueToJSONString(
                            configurator->GetPolicyService()->GetAllPolicies())

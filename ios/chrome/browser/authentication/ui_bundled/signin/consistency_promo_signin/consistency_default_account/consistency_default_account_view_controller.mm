@@ -62,13 +62,13 @@ UIFont* GetNavigationBarTitleFont() {
 @property(nonatomic, strong) UIButton* primaryButton;
 // Title for `self.primaryButton` when it needs to show the text "Continue as…".
 // This property is needed to hide the title the activity indicator is shown.
-@property(nonatomic, strong) NSString* continueAsTitle;
+@property(nonatomic, copy) NSString* continueAsTitle;
 // Activity indicator on top of `self.primaryButton`.
 @property(nonatomic, strong) UIActivityIndicatorView* activityIndicatorView;
 // Label text, or nil if there's supposed to be none.
-@property(nonatomic, assign, readwrite) NSString* labelText;
+@property(nonatomic, copy, readwrite) NSString* labelText;
 // Text in the button that aborts the flow. Must be set before displaying.
-@property(nonatomic, assign, readwrite) NSString* skipButtonText;
+@property(nonatomic, copy, readwrite) NSString* skipButtonText;
 
 @end
 

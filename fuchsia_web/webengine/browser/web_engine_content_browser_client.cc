@@ -24,6 +24,7 @@
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_switches.h"
 #include "fuchsia_web/common/fuchsia_dir_scheme.h"
@@ -194,9 +195,6 @@ void WebEngineContentBrowserClient::OverrideWebPreferences(
     content::WebContents* web_contents,
     content::SiteInstance& main_frame_site,
     blink::web_pref::WebPreferences* web_prefs) {
-  // Disable WebSQL support since it is being removed from the web platform
-  // and does not work. See crbug.com/1317431.
-  web_prefs->databases_enabled = false;
 
   // TODO(crbug.com/40245916): Remove once supported in WebEngine.
   web_prefs->disable_webauthn = true;
@@ -309,32 +307,29 @@ base::OnceClosure WebEngineContentBrowserClient::SelectClientCertificate(
   return base::OnceClosure();
 }
 
-std::vector<std::unique_ptr<content::NavigationThrottle>>
-WebEngineContentBrowserClient::CreateThrottlesForNavigation(
-    content::NavigationHandle* navigation_handle) {
-  std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
+void WebEngineContentBrowserClient::CreateThrottlesForNavigation(
+    content::NavigationThrottleRegistry& registry) {
+  auto& navigation_handle = registry.GetNavigationHandle();
   auto* frame_impl =
-      FrameImpl::FromWebContents(navigation_handle->GetWebContents());
+      FrameImpl::FromWebContents(navigation_handle.GetWebContents());
   DCHECK(frame_impl);
 
   // Only create throttle if FrameImpl has a NavigationPolicyProvider,
   // indicating an interest in navigations.
   if (frame_impl->navigation_policy_handler()) {
-    throttles.push_back(std::make_unique<NavigationPolicyThrottle>(
-        navigation_handle, frame_impl->navigation_policy_handler()));
+    registry.AddThrottle(std::make_unique<NavigationPolicyThrottle>(
+        &navigation_handle, frame_impl->navigation_policy_handler()));
   }
 
   const std::optional<std::string>& explicit_sites_filter_error_page =
       frame_impl->explicit_sites_filter_error_page();
 
   if (explicit_sites_filter_error_page) {
-    throttles.push_back(std::make_unique<SafeSitesNavigationThrottle>(
-        navigation_handle,
-        navigation_handle->GetWebContents()->GetBrowserContext(),
+    registry.AddThrottle(std::make_unique<SafeSitesNavigationThrottle>(
+        &navigation_handle,
+        navigation_handle.GetWebContents()->GetBrowserContext(),
         *explicit_sites_filter_error_page));
   }
-
-  return throttles;
 }
 
 std::vector<std::unique_ptr<blink::URLLoaderThrottle>>

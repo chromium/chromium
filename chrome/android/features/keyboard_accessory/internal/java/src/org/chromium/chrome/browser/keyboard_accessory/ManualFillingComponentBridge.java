@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.FooterCommand;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.IbanInfo;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.LoyaltyCardInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.OptionToggle;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PasskeySection;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PlusAddressInfo;
@@ -333,6 +334,39 @@ class ManualFillingComponentBridge {
                                 .setId(guid)
                                 .setCallback(callback)
                                 .build());
+    }
+
+    @CalledByNative
+    private void addLoyaltyCardInfoToAccessorySheetData(
+            AccessorySheetData accessorySheetData,
+            @AccessoryTabType int sheetType,
+            @AccessorySuggestionType int suggestionType,
+            @JniType("std::string") String merchantName,
+            GURL programLogoUrl,
+            @JniType("std::u16string") String loyaltyCardNumber) {
+        Callback<UserInfoField> callback =
+                (field) -> {
+                    assert mNativeView != 0 : "Controller was destroyed but the bridge wasn't!";
+                    ManualFillingMetricsRecorder.recordSuggestionSelected(
+                            sheetType, suggestionType);
+                    ManualFillingComponentBridgeJni.get()
+                            .onFillingTriggered(mNativeView, this, sheetType, field);
+                };
+        accessorySheetData
+                .getLoyaltyCardInfoList()
+                .add(
+                        new LoyaltyCardInfo(
+                                merchantName,
+                                programLogoUrl,
+                                new UserInfoField.Builder()
+                                        .setSuggestionType(suggestionType)
+                                        .setDisplayText(loyaltyCardNumber)
+                                        .setTextToFill(loyaltyCardNumber)
+                                        .setA11yDescription(loyaltyCardNumber)
+                                        .setIsObfuscated(false)
+                                        .setId("")
+                                        .setCallback(callback)
+                                        .build()));
     }
 
     @CalledByNative

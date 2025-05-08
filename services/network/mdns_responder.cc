@@ -184,8 +184,7 @@ std::vector<uint8_t> CreateNsecRdata(const net::IPAddress& addr,
   // type AAAA;
   // X octet(s) for Bitmap, 0x40 for type A and 0x00000008 for type AAAA.
   std::vector<uint8_t> rdata;
-  std::string next_domain_name =
-      net::CreateNamePointer(containing_nsec_rr_offset);
+  auto next_domain_name = net::CreateNamePointer(containing_nsec_rr_offset);
   DCHECK_EQ(2u, next_domain_name.size());
   rdata.insert(rdata.end(), next_domain_name.begin(), next_domain_name.end());
   if (addr.IsIPv4()) {

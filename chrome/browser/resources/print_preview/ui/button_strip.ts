@@ -3,93 +3,77 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '/strings.m.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Destination} from '../data/destination.js';
 import {PrinterType} from '../data/destination.js';
 import {State} from '../data/state.js';
 
-import {getTemplate} from './button_strip.html.js';
+import {getCss} from './button_strip.css.js';
+import {getHtml} from './button_strip.html.js';
 
 
-export class PrintPreviewButtonStripElement extends PolymerElement {
+export class PrintPreviewButtonStripElement extends CrLitElement {
   static get is() {
     return 'print-preview-button-strip';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      destination: Object,
-
-      firstLoad: Boolean,
-
-      maxSheets: Number,
-
-      sheetCount: Number,
-
-      state: Number,
-
-      printButtonEnabled_: {
-        type: Boolean,
-        value: false,
-      },
-
-      printButtonLabel_: {
-        type: String,
-        value() {
-          return loadTimeData.getString('printButton');
-        },
-      },
+      destination: {type: Object},
+      firstLoad: {type: Boolean},
+      state: {type: Number},
+      printButtonEnabled_: {type: Boolean},
+      printButtonLabel_: {type: String},
     };
   }
 
-  static get observers() {
-    return [
-      'updatePrintButtonLabel_(destination.id)',
-      'updatePrintButtonEnabled_(state, destination.id, maxSheets, sheetCount)',
-    ];
-  }
-
-  declare destination: Destination;
-  declare firstLoad: boolean;
-  declare maxSheets: number;
-  declare sheetCount: number;
-  declare state: State;
-  declare private printButtonEnabled_: boolean;
-  declare private printButtonLabel_: string;
+  accessor destination: Destination;
+  accessor firstLoad: boolean;
+  accessor state: State;
+  protected accessor printButtonEnabled_: boolean = false;
+  protected accessor printButtonLabel_: string =
+      loadTimeData.getString('printButton');
   private lastState_: State = State.NOT_READY;
 
-  private fire_(eventName: string, detail?: any) {
-    this.dispatchEvent(
-        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('destination')) {
+      this.printButtonLabel_ =
+          loadTimeData.getString(this.isPdf_() ? 'saveButton' : 'printButton');
+    }
+
+    if (changedProperties.has('state')) {
+      this.updatePrintButtonEnabled_();
+    }
   }
 
-  private onPrintClick_() {
-    this.fire_('print-requested');
+  protected onPrintClick_() {
+    this.fire('print-requested');
   }
 
-  private onCancelClick_() {
-    this.fire_('cancel-requested');
+  protected onCancelClick_() {
+    this.fire('cancel-requested');
   }
 
   private isPdf_(): boolean {
     return this.destination &&
         this.destination.type === PrinterType.PDF_PRINTER;
-  }
-
-  private updatePrintButtonLabel_() {
-    this.printButtonLabel_ =
-        loadTimeData.getString(this.isPdf_() ? 'saveButton' : 'printButton');
   }
 
   private updatePrintButtonEnabled_() {
@@ -100,10 +84,10 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
       case (State.READY):
         this.printButtonEnabled_ = true;
         if (this.firstLoad || this.lastState_ === State.PRINTING) {
-          this.shadowRoot!
+          this.shadowRoot
               .querySelector<CrButtonElement>(
                   'cr-button.action-button')!.focus();
-          this.fire_('print-button-focused');
+          this.fire('print-button-focused');
         }
         break;
       default:
@@ -113,6 +97,8 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
     this.lastState_ = this.state;
   }
 }
+
+export type ButtonStripElement = PrintPreviewButtonStripElement;
 
 declare global {
   interface HTMLElementTagNameMap {

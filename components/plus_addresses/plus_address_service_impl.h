@@ -155,6 +155,9 @@ class PlusAddressServiceImpl : public PlusAddressService,
   bool IsEnabled() const override;
 
  private:
+  // KeyedService.
+  void Shutdown() override;
+
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
@@ -163,6 +166,8 @@ class PlusAddressServiceImpl : public PlusAddressService,
       const GoogleServiceAuthError& error,
       signin_metrics::SourceForRefreshTokenOperation token_operation_source)
       override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
 
   void HandleSignout();
 

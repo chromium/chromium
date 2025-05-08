@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_box_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_input_node.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
@@ -86,6 +87,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/transform_utils.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
@@ -909,8 +911,9 @@ void BlockNode::FinishLayout(
     }
 
     if (has_inline_children) {
-      if (items)
+      if (items && !RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
         CopyFragmentItemsToLayoutBox(physical_fragment, *items, break_token);
+      }
     } else {
       // We still need to clear |InlineNodeData| in case it had inline
       // children.
@@ -1239,6 +1242,21 @@ void BlockNode::CopyFragmentDataToLayoutBox(
   // the following line when all layout modes do this properly.
   UpdateMarginPaddingInfoIfNeeded(constraint_space, physical_fragment);
 
+  if (RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
+    // If this node doesn't participate in block fragmentation (either because
+    // there's no outer fragmentation context, or because we're in a monolithic
+    // subtree), update the box offset right away. Otherwise, we need to wait
+    // until layout of the outer fragmentation context is finished, in order to
+    // tell where the fragments are placed relatively to each other.
+    if (!InvolvedInBlockFragmentation(constraint_space, previous_break_token)) {
+      UpdateChildLayoutBoxLocations(physical_fragment);
+    }
+    if (is_last_fragment) {
+      box_->UpdateAfterLayout();
+    }
+    return;
+  }
+
   auto* block_flow = DynamicTo<LayoutBlockFlow>(box_.Get());
   LayoutMultiColumnFlowThread* flow_thread = GetFlowThread(block_flow);
 
@@ -1272,30 +1290,14 @@ void BlockNode::CopyFragmentDataToLayoutBox(
     return;
   }
 
-  box_->SetNeedsOverflowRecalc(
-      LayoutObject::OverflowRecalcType::kOnlyVisualOverflowRecalc);
-  box_->SetScrollableOverflowFromLayoutResults();
   box_->UpdateAfterLayout();
-
-  if (flow_thread && Style().HasColumnRule()) [[unlikely]] {
-    // Issue full invalidation, in case the number of column rules have changed.
-    box_->ClearNeedsLayoutWithFullPaintInvalidation();
-  } else {
-    box_->ClearNeedsLayout();
-  }
-
-  // We should notify the display lock that we've done layout on self, and if
-  // it's not blocked, on children.
-  if (auto* context = box_->GetDisplayLockContext()) {
-    if (!ChildLayoutBlockedByDisplayLock())
-      context->DidLayoutChildren();
-  }
 }
 
 void BlockNode::PlaceChildrenInLayoutBox(
     const PhysicalBoxFragment& physical_fragment,
     const BlockBreakToken* previous_break_token,
     bool needs_invalidation_check) const {
+  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
   for (const auto& child_fragment : physical_fragment.Children()) {
     // Skip any line-boxes we have as children, this is handled within
     // InlineNode at the moment.
@@ -1325,6 +1327,7 @@ void BlockNode::PlaceChildrenInFlowThread(
     const ConstraintSpace& space,
     const PhysicalBoxFragment& physical_fragment,
     const BlockBreakToken* previous_container_break_token) const {
+  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
   // Stitch the contents of the columns together in the legacy flow thread, and
   // update the position and size of column sets, spanners and spanner
   // placeholders. Create fragmentainer groups as needed. When in a nested
@@ -1405,6 +1408,7 @@ void BlockNode::CopyChildFragmentPosition(
     const PhysicalBoxFragment& container_fragment,
     const BlockBreakToken* previous_container_break_token,
     bool needs_invalidation_check) const {
+  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
   auto* layout_box = To<LayoutBox>(child_fragment.GetMutableLayoutObject());
   if (!layout_box)
     return;
@@ -1453,6 +1457,7 @@ void BlockNode::CopyFragmentItemsToLayoutBox(
     const PhysicalBoxFragment& container,
     const FragmentItems& items,
     const BlockBreakToken* previous_break_token) const {
+  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
   LayoutUnit previously_consumed_block_size;
   if (previous_break_token) {
     previously_consumed_block_size =

@@ -11,10 +11,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -33,11 +31,7 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(
 
 class SyncPassphraseDialogBrowserTest : public InteractiveBrowserTest {
  public:
-  SyncPassphraseDialogBrowserTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{switches::kImprovedSigninUIOnDesktop},
-        /*disabled_features=*/{});
-  }
+  SyncPassphraseDialogBrowserTest() = default;
 
   // Sets the password and waits for the state to be propagated.
   // `kPolledTextfieldContent` must be initialized with `PollState()` before
@@ -50,7 +44,6 @@ class SyncPassphraseDialogBrowserTest : public InteractiveBrowserTest {
  protected:
   const std::string kTextFieldName = "Texfield";
   const std::string kFooterLabelName = "FooterLabel";
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SyncPassphraseDialogBrowserTest, PixelTest) {

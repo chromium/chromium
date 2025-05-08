@@ -8,6 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
@@ -425,16 +426,33 @@ TEST_F(InlineCursorTest, MoveToEndOfLineWithNoCharsLtr) {
       textarea.InnerEditorElement()->GetLayoutObject();
   const LayoutBlockFlow& block_flow = *To<LayoutBlockFlow>(textarea_layout);
 
-  InlineCursor move_to_end_of_line(block_flow);
-  // Preparing the InlineCursor to start from beginning
-  // of second line(Empty Line).
-  move_to_end_of_line.MoveToNextLine();
+  // Preparing the InlineCursor to start from beginning of the second line
+  // (Empty Line).
+  const LayoutBlockFlow* second_anonymous =
+      RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled()
+          ? To<LayoutBlockFlow>(block_flow.FirstChild()->NextSibling())
+          : nullptr;
+  InlineCursor move_to_end_of_line(second_anonymous ? *second_anonymous
+                                                    : block_flow);
+  if (!second_anonymous) {
+    // Preparing the InlineCursor to start from beginning
+    // of second line(Empty Line).
+    move_to_end_of_line.MoveToNextLine();
+  }
   InlineCursor next_line = move_to_end_of_line.CursorForDescendants();
   // Verify if it has been successfully placed at the correct position.
-  EXPECT_EQ(4u, next_line.Current().TextStartOffset());
+  if (!second_anonymous) {
+    EXPECT_EQ(4u, next_line.Current().TextStartOffset());
+  } else {
+    EXPECT_EQ(0u, next_line.Current().TextStartOffset());
+  }
   const PositionWithAffinity end_position =
       move_to_end_of_line.PositionForEndOfLine();
-  EXPECT_EQ(4, end_position.GetPosition().OffsetInContainerNode());
+  if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
+    EXPECT_TRUE(end_position.AnchorNode()->HasTagName(html_names::kBrTag));
+  } else {
+    EXPECT_EQ(4, end_position.GetPosition().OffsetInContainerNode());
+  }
 }
 
 TEST_F(InlineCursorTest, MoveToEndOfLineWithNoCharsRtl) {
@@ -446,16 +464,33 @@ TEST_F(InlineCursorTest, MoveToEndOfLineWithNoCharsRtl) {
       textarea.InnerEditorElement()->GetLayoutObject();
   const LayoutBlockFlow& block_flow = *To<LayoutBlockFlow>(textarea_layout);
 
-  InlineCursor move_to_end_of_line(block_flow);
-  // Preparing the InlineCursor to start from beginning
-  // of second line(Empty Line).
-  move_to_end_of_line.MoveToNextLine();
+  // Preparing the InlineCursor to start from beginning of the second line
+  // (Empty Line).
+  const LayoutBlockFlow* second_anonymous =
+      RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled()
+          ? To<LayoutBlockFlow>(block_flow.FirstChild()->NextSibling())
+          : nullptr;
+  InlineCursor move_to_end_of_line(second_anonymous ? *second_anonymous
+                                                    : block_flow);
+  if (!second_anonymous) {
+    // Preparing the InlineCursor to start from beginning
+    // of second line(Empty Line).
+    move_to_end_of_line.MoveToNextLine();
+  }
   InlineCursor next_line = move_to_end_of_line.CursorForDescendants();
   // Verify if it has been successfully placed at the correct position.
-  EXPECT_EQ(4u, next_line.Current().TextStartOffset());
+  if (!second_anonymous) {
+    EXPECT_EQ(4u, next_line.Current().TextStartOffset());
+  } else {
+    EXPECT_EQ(0u, next_line.Current().TextStartOffset());
+  }
   const PositionWithAffinity end_position =
       move_to_end_of_line.PositionForEndOfLine();
-  EXPECT_EQ(4, end_position.GetPosition().OffsetInContainerNode());
+  if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
+    EXPECT_TRUE(end_position.AnchorNode()->HasTagName(html_names::kBrTag));
+  } else {
+    EXPECT_EQ(4, end_position.GetPosition().OffsetInContainerNode());
+  }
 }
 
 TEST_F(InlineCursorTest, FirstLastLogicalLeafWithInlineBlock) {

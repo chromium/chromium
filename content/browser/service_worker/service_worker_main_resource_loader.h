@@ -275,6 +275,10 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   void OnCompleteSyntheticNetworkRequest(
       const network::URLLoaderCompletionStatus& status);
 
+  void CreateAndRunCacheMatcher(
+      const std::optional<std::string>& cache_name,
+      scoped_refptr<ServiceWorkerVersion> active_worker);
+
   NavigationLoaderInterceptor::FallbackCallback fallback_callback_;
 
   int32_t request_id_ = 0;

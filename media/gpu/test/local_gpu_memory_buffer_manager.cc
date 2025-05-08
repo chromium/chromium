@@ -107,18 +107,18 @@ class GpuMemoryBufferImplGbm : public gfx::GpuMemoryBuffer {
 
   GpuMemoryBufferImplGbm(gfx::BufferFormat format, gbm_bo* buffer_object)
       : format_(format), buffer_object_(buffer_object), mapped_(false) {
-    handle_.type = gfx::NATIVE_PIXMAP;
-    // Set a dummy id since this is for testing only.
-    handle_.id = gfx::GpuMemoryBufferId(0);
-
+    gfx::NativePixmapHandle native_pixmap_handle;
     for (size_t i = 0;
          i < static_cast<size_t>(gbm_bo_get_plane_count(buffer_object)); ++i) {
-      handle_.native_pixmap_handle.planes.push_back(gfx::NativePixmapPlane(
+      native_pixmap_handle.planes.push_back(gfx::NativePixmapPlane(
           gbm_bo_get_stride_for_plane(buffer_object, i),
           gbm_bo_get_offset(buffer_object, i),
           gbm_bo_get_plane_size(buffer_object, i),
           base::ScopedFD(gbm_bo_get_plane_fd(buffer_object, i))));
     }
+    handle_ = gfx::GpuMemoryBufferHandle(std::move(native_pixmap_handle));
+    // Set a dummy id since this is for testing only.
+    handle_.id = gfx::GpuMemoryBufferId(0);
   }
 
   GpuMemoryBufferImplGbm(const GpuMemoryBufferImplGbm&) = delete;
@@ -200,11 +200,9 @@ class GpuMemoryBufferImplGbm : public gfx::GpuMemoryBuffer {
 
   gfx::GpuMemoryBufferHandle CloneHandle() const override {
     DCHECK_EQ(handle_.type, gfx::NATIVE_PIXMAP);
-    gfx::GpuMemoryBufferHandle handle;
-    handle.type = gfx::NATIVE_PIXMAP;
+    gfx::GpuMemoryBufferHandle handle(
+        gfx::CloneHandleForIPC(handle_.native_pixmap_handle()));
     handle.id = handle_.id;
-    handle.native_pixmap_handle =
-        gfx::CloneHandleForIPC(handle_.native_pixmap_handle);
     return handle;
   }
 

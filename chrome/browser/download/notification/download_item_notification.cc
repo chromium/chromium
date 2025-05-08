@@ -788,7 +788,11 @@ DownloadItemNotification::GetExtraActions() const {
       }
 #endif
 
-      actions->push_back(DownloadCommands::SHOW_IN_FOLDER);
+      // Do not include the Show in folder action for downloads we can't show in
+      // the folder.
+      if (item_->GetDownloadItem() != nullptr) {
+        actions->push_back(DownloadCommands::SHOW_IN_FOLDER);
+      }
       // We disable this functionality for now as the usage is very low, the
       // feature gets re-written at this time and there is currently no secure
       // way to determine the caller on the Ash side as the dialog is still

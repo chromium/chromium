@@ -13,7 +13,9 @@ class BrowserAccessibilityStateImplChromeOS
 
  protected:
   // BrowserAccessibilityStateImpl:
-  void SetScreenReaderAppActive(bool is_active) override {
+  void RefreshAssistiveTech() override {
+    bool is_active = GetAccessibilityMode().has_mode(ui::AXMode::kScreenReader);
+
     // Set/clear crash key (similar to crash keys for other screen readers).
     static auto* ax_chromevox_crash_key = base::debug::AllocateCrashKeyString(
         "ax_chromevox", base::debug::CrashKeySize::Size32);

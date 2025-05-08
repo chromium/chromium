@@ -14,8 +14,10 @@
 #include "components/history/core/browser/features.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/history/core/browser/top_sites_impl.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
+#include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -256,7 +258,7 @@ void MostVisitedSitesProviderTest::CheckMatchesEquivalentTo(
   } else if (ui_type == ExpectedUiType::kIndividualTiles) {
     ASSERT_EQ(data.size(), NumMostVisitedMatches())
         << "Unexpected number of TILE matches";
-    int expected_relevance = 1600;  // kMostVisitedTilesIndividualHighRelevance
+    int expected_relevance = omnibox::kMostVisitedTilesZeroSuggestHighRelevance;
     for (const auto& match : result) {
       if (data[match_index].is_search) {
         EXPECT_EQ(match.type, AutocompleteMatchType::TILE_REPEATABLE_QUERY);
@@ -276,12 +278,6 @@ void MostVisitedSitesProviderTest::CheckMatchesEquivalentTo(
       EXPECT_EQ(expected_relevance, match.relevance)
           << "Invalid Match Relevance at position " << match_index;
       ++match_index;
-      // Degrade relevance of partially visible and invisible matches.
-      if (match_index == 4 &&
-          ui::GetDeviceFormFactor() ==
-              ui::DeviceFormFactor::DEVICE_FORM_FACTOR_PHONE) {
-        expected_relevance = 100;  // kMostVisitedTilesIndividualLowRelevance
-      }
       --expected_relevance;
     }
   }
@@ -299,7 +295,7 @@ void MostVisitedSitesProviderTest::CheckDesktopMatchesEquivalentTo(
   size_t match_index = 0;
   ASSERT_EQ(url_limit, NumMostVisitedMatches())
       << "Unexpected number of TILE matches";
-  int expected_relevance = 1600;  // kMostVisitedTilesIndividualHighRelevance
+  int expected_relevance = omnibox::kMostVisitedTilesZeroSuggestHighRelevance;
   for (const auto& match : result) {
     EXPECT_EQ(match.type, AutocompleteMatchType::TILE_MOST_VISITED_SITE);
     EXPECT_TRUE(match.subtypes.contains(
@@ -351,11 +347,11 @@ TEST_F(MostVisitedSitesProviderTest, TestMostVisitedCallback) {
   EXPECT_TRUE(top_sites_->EmitURLs(test_data));
   CheckMatchesEquivalentTo(test_data, ExpectedUiType::kAggregateMatch);
   EXPECT_EQ(1, provider_update_count_);
-  provider_->Stop(false, false);
+  provider_->Stop(AutocompleteStopReason::kClobbered);
 
   // Observe that subsequent request does not return stale data.
   provider_->Start(input, true);
-  provider_->Stop(false, false);
+  provider_->Stop(AutocompleteStopReason::kClobbered);
   // Since this provider's async logic is still in-flight (`EmitURLs()` has not
   // been called yet), we should not be reporting anything from past runs.
   EXPECT_EQ(0ul, NumMostVisitedMatches());
@@ -372,7 +368,7 @@ TEST_F(MostVisitedSitesProviderTest, TestMostVisitedCallback) {
   EXPECT_EQ(1, provider_update_count_);
 
   provider_->Start(input, true);
-  provider_->Stop(false, false);
+  provider_->Stop(AutocompleteStopReason::kClobbered);
   provider_->Start(input, true);
 
   // Stale results (reported for the first of the two Start() requests) should
@@ -385,7 +381,7 @@ TEST_F(MostVisitedSitesProviderTest, TestMostVisitedCallback) {
   EXPECT_TRUE(top_sites_->EmitURLs(test_data));
   CheckMatchesEquivalentTo(test_data, ExpectedUiType::kAggregateMatch);
   EXPECT_EQ(2, provider_update_count_);
-  provider_->Stop(false, false);
+  provider_->Stop(AutocompleteStopReason::kClobbered);
 }
 
 TEST_F(MostVisitedSitesProviderTest, TestMostVisitedNavigateToSearchPage) {

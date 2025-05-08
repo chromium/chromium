@@ -400,7 +400,6 @@ TEST_F(ActionFactoryTest, SelectTabsAction) {
 // Tests that the add to new group action has the right title and image when in
 // a submenu.
 TEST_F(ActionFactoryTest, AddTabsToNewGroupInSubmenuAction) {
-  feature_list_.InitWithFeatures({kTabGroupsIPad}, {});
   if (!IsTabGroupInGridEnabled()) {
     // Disabled on iPadOS 16.
     return;
@@ -425,7 +424,6 @@ TEST_F(ActionFactoryTest, AddTabsToNewGroupInSubmenuAction) {
 // Tests that the add to new group action has the right title and image when
 // *not* in a submenu.
 TEST_F(ActionFactoryTest, AddTabsToNewGroupOutOfMenuAction) {
-  feature_list_.InitWithFeatures({kTabGroupsIPad}, {});
   if (!IsTabGroupInGridEnabled()) {
     // Disabled on iPadOS 16.
     return;
@@ -450,7 +448,6 @@ TEST_F(ActionFactoryTest, AddTabsToNewGroupOutOfMenuAction) {
 // Tests the different sub elements of the menu when adding to a group with
 // different groups available.
 TEST_F(ActionFactoryTest, AddTabsToGroupSeveralGroups) {
-  feature_list_.InitWithFeatures({kTabGroupsIPad}, {});
   if (!IsTabGroupInGridEnabled()) {
     // Disabled on iPadOS 16.
     return;
@@ -506,7 +503,6 @@ TEST_F(ActionFactoryTest, AddTabsToGroupSeveralGroups) {
 // Tests the different sub elements of the menu when adding to a group with no
 // group available.
 TEST_F(ActionFactoryTest, AddTabsToGroupNoGroups) {
-  feature_list_.InitWithFeatures({kTabGroupsIPad}, {});
   if (!IsTabGroupInGridEnabled()) {
     // Disabled on iPadOS 16.
     return;
@@ -534,7 +530,7 @@ TEST_F(ActionFactoryTest, AddTabsToGroupNoGroups) {
 
 // Tests the different sub elements of the menu when moving a tab to a group.
 TEST_F(ActionFactoryTest, MoveTabFromGroup) {
-  feature_list_.InitWithFeatures({kTabGroupsIPad, kTabGroupSync}, {});
+  feature_list_.InitWithFeatures({kTabGroupSync}, {});
   if (!IsTabGroupInGridEnabled()) {
     // Disabled on iPadOS 16.
     return;
@@ -589,7 +585,7 @@ TEST_F(ActionFactoryTest, MoveTabFromGroup) {
 
 // Tests that the ungroup tab group action has the right title and image.
 TEST_F(ActionFactoryTest, UngroupTabGroup) {
-  feature_list_.InitWithFeatures({kTabGroupsIPad, kTabGroupSync}, {});
+  feature_list_.InitWithFeatures({kTabGroupSync}, {});
   if (!IsTabGroupInGridEnabled()) {
     // Disabled on iPadOS 16.
     return;
@@ -611,7 +607,7 @@ TEST_F(ActionFactoryTest, UngroupTabGroup) {
 
 // Tests that the delete tab group action has the right title and image.
 TEST_F(ActionFactoryTest, DeleteTabGroup) {
-  feature_list_.InitWithFeatures({kTabGroupsIPad, kTabGroupSync}, {});
+  feature_list_.InitWithFeatures({kTabGroupSync}, {});
   if (!IsTabGroupInGridEnabled()) {
     // Disabled on iPadOS 16.
     return;
@@ -634,7 +630,7 @@ TEST_F(ActionFactoryTest, DeleteTabGroup) {
 
 // Tests that the close tab group action has the right title and image.
 TEST_F(ActionFactoryTest, CloseTabGroup) {
-  feature_list_.InitWithFeatures({kTabGroupsIPad, kTabGroupSync}, {});
+  feature_list_.InitWithFeatures({kTabGroupSync}, {});
   if (!IsTabGroupInGridEnabled()) {
     // Disabled on iPadOS 16.
     return;
@@ -657,7 +653,7 @@ TEST_F(ActionFactoryTest, CloseTabGroup) {
 
 // Tests that the manage tab group action has the right title and image.
 TEST_F(ActionFactoryTest, ManageTabGroup) {
-  feature_list_.InitWithFeatures({kTabGroupsIPad, kTabGroupSync}, {});
+  feature_list_.InitWithFeatures({kTabGroupSync}, {});
   if (!IsTabGroupInGridEnabled()) {
     // Disabled on iPadOS 16.
     return;
@@ -679,7 +675,7 @@ TEST_F(ActionFactoryTest, ManageTabGroup) {
 
 // Tests that the share tab group action has the right title and image.
 TEST_F(ActionFactoryTest, ShareTabGroup) {
-  feature_list_.InitWithFeatures({kTabGroupsIPad, kTabGroupSync}, {});
+  feature_list_.InitWithFeatures({kTabGroupSync}, {});
   if (!IsTabGroupInGridEnabled()) {
     // Disabled on iPadOS 16.
     return;
@@ -701,7 +697,7 @@ TEST_F(ActionFactoryTest, ShareTabGroup) {
 
 // Tests that the leave shared tab group action has the right title and image.
 TEST_F(ActionFactoryTest, LeaveSharedTabGroup) {
-  feature_list_.InitWithFeatures({kTabGroupsIPad, kTabGroupSync}, {});
+  feature_list_.InitWithFeatures({kTabGroupSync}, {});
   if (!IsTabGroupInGridEnabled()) {
     // Disabled on iPadOS 16.
     return;
@@ -724,7 +720,7 @@ TEST_F(ActionFactoryTest, LeaveSharedTabGroup) {
 
 // Tests that the delete shared tab group action has the right title and image.
 TEST_F(ActionFactoryTest, DeleteSharedTabGroup) {
-  feature_list_.InitWithFeatures({kTabGroupsIPad, kTabGroupSync}, {});
+  feature_list_.InitWithFeatures({kTabGroupSync}, {});
   if (!IsTabGroupInGridEnabled()) {
     // Disabled on iPadOS 16.
     return;

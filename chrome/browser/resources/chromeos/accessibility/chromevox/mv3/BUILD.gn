@@ -25,7 +25,8 @@ group("build") {
 closure_library_dir =
     "//third_party/chromevox/third_party/closure-library/closure/goog"
 
-chromevox_out_dir = "$root_out_dir/resources/chromeos/accessibility/chromevox/mv3"
+chromevox_out_dir =
+    "$root_out_dir/resources/chromeos/accessibility/chromevox/mv3"
 
 # Directory where typescript build will occur.
 ts_build_staging_dir = "$target_gen_dir/ts_build_staging"
@@ -118,6 +119,7 @@ ts_modules = [
   "background/panel/panel_background.ts",
   "background/panel/panel_node_menu_background.ts",
   "background/prefs.ts",
+  "background/primary_tts.ts",
   "background/tts_background.ts",
   "background/tts_interface.ts",
   "chromevox_loader.ts",
@@ -134,6 +136,7 @@ ts_modules = [
   "common/event_source_type.ts",
   "common/gesture.ts",
   "common/gesture_command_data.ts",
+  "common/internal_key_event.ts",
   "common/keyboard_handler.ts",
   "common/key_map.ts",
   "common/key_sequence.ts",
@@ -142,6 +145,7 @@ ts_modules = [
   "common/locale_output_helper.ts",
   "common/log_types.ts",
   "common/msgs.ts",
+  "common/offscreen_command_type.ts",
   "common/panel_bridge.ts",
   "common/panel_command.ts",
   "common/role_type.ts",
@@ -154,6 +158,7 @@ ts_modules = [
   "learn_mode/learn_mode.ts",
   "log_page/log.ts",
   "log_page/log_loader.ts",
+  "offscreen/offscreen.ts",
   "panel/i_search_ui.ts",
   "panel/menu_manager.ts",
   "panel/panel.ts",
@@ -171,7 +176,6 @@ js_modules = [
   "background/automation_object_constructor_installer.js",
   "background/composite_tts.js",
   "background/phonetic_data.js",
-  "background/primary_tts.js",
 ]
 
 # Closure library modules needed by chromevox.
@@ -219,6 +223,7 @@ ts_library("ts_build") {
     "../../definitions/goog_i18n.d.ts",
     "../../definitions/i18n.d.ts",
     "../../definitions/login_state.d.ts",
+    "../../definitions/offscreen.d.ts",
     "../../definitions/runtime.d.ts",
     "../../definitions/settings_private_mv2.d.ts",
     "../../definitions/storage_mv2.d.ts",
@@ -284,6 +289,7 @@ run_jsbundler("copied_files") {
     "learn_mode/learn_mode.html",
     "log_page/log.css",
     "log_page/log.html",
+    "offscreen/offscreen.html",
     "panel/panel.css",
     "panel/panel.html",
     "tutorial/practice_areas/jump_commands.html",

@@ -259,15 +259,12 @@ Element* TreeScope::HitTestPoint(double x,
   HitTestResult result =
       HitTestInDocument(&RootNode().GetDocument(), x, y, request);
   if (request.AllowsChildFrameContent()) {
-    return HitTestPointInternal(result.InnerNode(),
-                                HitTestPointType::kInternal);
+    return ElementForHitTest(result.InnerNode(), HitTestPointType::kInternal);
   }
-  return HitTestPointInternal(result.InnerNode(),
-                              HitTestPointType::kWebExposed);
+  return ElementForHitTest(result.InnerNode(), HitTestPointType::kWebExposed);
 }
 
-Element* TreeScope::HitTestPointInternal(Node* node,
-                                         HitTestPointType type) const {
+Element* TreeScope::ElementForHitTest(Node* node, HitTestPointType type) const {
   if (!node || node->IsDocumentNode())
     return nullptr;
   Element* element;
@@ -306,7 +303,7 @@ HeapVector<Member<Element>> TreeScope::ElementsFromHitTestResult(
     Node* node = rect_based_node.Get();
     if (!node->IsElementNode() && !ShouldAcceptNonElementNode(*node))
       continue;
-    node = HitTestPointInternal(node, HitTestPointType::kWebExposed);
+    node = ElementForHitTest(node, HitTestPointType::kWebExposed);
     // Prune duplicate entries. A pseduo ::before content above its parent
     // node should only result in a single entry.
     if (node == last_node)

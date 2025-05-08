@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
@@ -136,7 +137,8 @@ void SearchEnginePreconnector::StartPreconnecting(bool with_startup_delay) {
     StartPreconnectWithDelay(
         base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
             features::kPreconnectToSearch, "startup_delay_ms",
-            kDefaultStartupDelayMs)));
+            kDefaultStartupDelayMs)),
+        PreconnectTriggerEvent::kInitialPreconnect);
     return;
   }
 
@@ -213,7 +215,8 @@ void SearchEnginePreconnector::PreconnectDSE() {
   // Periodically preconnect to the DSE. If the browser app is likely in
   // background, we will reattempt preconnect later.
   if (!SearchEnginePreconnect2Enabled()) {
-    StartPreconnectWithDelay(GetPreconnectInterval());
+    StartPreconnectWithDelay(GetPreconnectInterval(),
+                             PreconnectTriggerEvent::kPeriodicPreconnect);
   }
 
   last_preconnect_attempt_time_ = base::TimeTicks::Now();
@@ -272,7 +275,10 @@ bool SearchEnginePreconnector::IsShortSession() const {
   return session_time < net::features::kShortSessionThreshold.Get();
 }
 
-void SearchEnginePreconnector::StartPreconnectWithDelay(base::TimeDelta delay) {
+void SearchEnginePreconnector::StartPreconnectWithDelay(
+    base::TimeDelta delay,
+    PreconnectTriggerEvent event) {
+  RecordPreconnectAttemptHistogram(delay, event);
   //  Set/Reset the timer to fire after the specified `delay`.
   timer_.Start(FROM_HERE, delay,
                base::BindOnce(&SearchEnginePreconnector::PreconnectDSE,
@@ -322,25 +328,28 @@ void SearchEnginePreconnector::OnSessionClosed() {
   } else {
     // If the last session was not short, then it must mean that the connection
     // was successful. Reset the failure count.
-    //
-    // TODO(crbug.com/406022435): Collect histograms here to determine how many
-    // consecutive_connection_failure_ we usually see.
+    base::UmaHistogramCounts1000(
+        "NavigationPredictor.SearchEnginePreconnector.ConsecutiveFailures",
+        consecutive_connection_failure_);
     consecutive_connection_failure_ = 0;
   }
-  StartPreconnectWithDelay(GetPreconnectInterval());
+  StartPreconnectWithDelay(GetPreconnectInterval(),
+                           PreconnectTriggerEvent::kSessionClosed);
 }
 
 void SearchEnginePreconnector::OnNetworkEvent(net::NetworkChangeEvent event) {
   // If the network event is `Connected`, we attempt preconnect. Otherwise,
   // we will ignore the events for now.
   if (event == net::NetworkChangeEvent::kConnected) {
-    StartPreconnectWithDelay(base::Milliseconds(kPreconnectRetryDelayMs));
+    StartPreconnectWithDelay(base::Milliseconds(kPreconnectRetryDelayMs),
+                             PreconnectTriggerEvent::kNetworkEvent);
   }
 }
 
 void SearchEnginePreconnector::OnConnectionFailed() {
   consecutive_connection_failure_++;
-  StartPreconnectWithDelay(GetPreconnectInterval());
+  StartPreconnectWithDelay(GetPreconnectInterval(),
+                           PreconnectTriggerEvent::kConnectionFailed);
 }
 
 void SearchEnginePreconnector::OnReconnectObserverPipeDisconnected() {
@@ -349,5 +358,20 @@ void SearchEnginePreconnector::OnReconnectObserverPipeDisconnected() {
   // might already be waiting for reconnect attempt from other reasons.
   if (!timer_.IsRunning()) {
     OnConnectionFailed();
+  }
+}
+
+void SearchEnginePreconnector::RecordPreconnectAttemptHistogram(
+    base::TimeDelta delay,
+    PreconnectTriggerEvent event) {
+  base::UmaHistogramEnumeration(
+      "NavigationPredictor.SearchEnginePreconnector.TriggerEvent", event);
+  base::UmaHistogramLongTimes(
+      "NavigationPredictor.SearchEnginePreconnector.PreconnectDelay", delay);
+  if (last_preconnect_attempt_time_.has_value()) {
+    base::UmaHistogramLongTimes(
+        "NavigationPredictor.SearchEnginePreconnector."
+        "PreconnectAttemptInterval",
+        base::TimeTicks::Now() - last_preconnect_attempt_time_.value());
   }
 }

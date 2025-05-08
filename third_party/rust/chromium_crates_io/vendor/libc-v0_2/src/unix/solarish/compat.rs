@@ -53,6 +53,7 @@ unsafe fn bail(fdm: c_int, fds: c_int) -> c_int {
     return -1;
 }
 
+#[cfg(target_os = "illumos")]
 pub unsafe fn openpty(
     amain: *mut c_int,
     asubord: *mut c_int,
@@ -123,6 +124,7 @@ pub unsafe fn openpty(
     0
 }
 
+#[cfg(target_os = "illumos")]
 pub unsafe fn forkpty(
     amain: *mut c_int,
     name: *mut c_char,

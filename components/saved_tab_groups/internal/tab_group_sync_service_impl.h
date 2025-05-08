@@ -163,6 +163,10 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void UpdateArchivalStatus(const base::Uuid& sync_id,
                             bool archival_status) override;
 
+  void UpdateTabLastSeenTime(const base::Uuid& group_id,
+                             const base::Uuid& tab_id,
+                             TriggerSource source) override;
+
   TabGroupSyncMetricsLogger* GetTabGroupSyncMetricsLogger() override;
 
   base::WeakPtr<syncer::DataTypeControllerDelegate>
@@ -351,6 +355,11 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // Find tab group by collaboration Id.
   std::optional<SavedTabGroup> FindGroupWithCollaborationId(
       const syncer::CollaborationId& collaboration_id);
+
+  // Updates the last seen time for any focused thab in the given tab group.
+  void UpdateLastSeenTimeForAnyFocusedTabForRemoteUpdates(
+      const SavedTabGroup* group,
+      TriggerSource source);
 
   // The in-memory model representing the currently present saved tab groups.
   std::unique_ptr<SavedTabGroupModel> model_;

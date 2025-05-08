@@ -137,9 +137,9 @@ class ErrorTag {};
 // can be useful for cases where an operation can fail, but there is no return
 // value in the success case.
 
-constexpr SuccessTag kSuccessTag = SuccessTag();
-constexpr ErrorTag kErrorTag = ErrorTag();
-constexpr std::monostate kMonostate = std::monostate();
+inline constexpr SuccessTag kSuccessTag = SuccessTag();
+inline constexpr ErrorTag kErrorTag = ErrorTag();
+inline constexpr std::monostate kMonostate = std::monostate();
 
 namespace internal {
 
@@ -325,12 +325,15 @@ class Result : public internal::DefaultConstructible<
   struct is_convertible_result<Result<OtherSuccessType, OtherErrorType>>
       : public std::integral_constant<
             bool,
-            std::is_convertible<OtherSuccessType&&, SuccessType>::value &&
-                std::is_convertible<OtherErrorType&&, ErrorType>::value> {};
+            std::is_convertible_v<OtherSuccessType&&, SuccessType> &&
+                std::is_convertible_v<OtherErrorType&&, ErrorType>> {};
 
-  typedef internal::DefaultConstructible<
-      std::is_default_constructible<SuccessType_>::value>
-      DefaultConstructible;
+  template <typename T>
+  static constexpr bool is_convertible_result_v =
+      is_convertible_result<T>::value;
+
+  using DefaultConstructible = internal::DefaultConstructible<
+      std::is_default_constructible_v<SuccessType_>>;
 
  public:
   // Default constructor. Will default construct the success value. This is for
@@ -343,39 +346,31 @@ class Result : public internal::DefaultConstructible<
   // in place. Usage: Result(kSuccessTag, success_type_constructor_args...) or
   // Result(kErrorTag, error_type_constructor_args...)
   template <typename... Args>
-  Result(typename std::enable_if<
-             std::is_constructible<SuccessType, Args...>::value,
-             SuccessTag>::type,
-         Args&&... args)
+    requires(std::is_constructible_v<SuccessType, Args...>)
+  Result(SuccessTag, Args&&... args)
       : DefaultConstructible(0),
         storage_(kSuccessTag, std::forward<Args>(args)...) {}
 
   template <typename... Args>
-  Result(
-      typename std::enable_if<std::is_constructible<ErrorType, Args...>::value,
-                              ErrorTag>::type,
-      Args&&... args)
+    requires(std::is_constructible_v<ErrorType, Args...>)
+  Result(ErrorTag, Args&&... args)
       : DefaultConstructible(0),
         storage_(kErrorTag, std::forward<Args>(args)...) {}
 
   // Allow implicit construction from objects implicitly convertible to
   // SuccessType xor ErrorType.
-  template <typename T,
-            typename std::enable_if<
-                std::is_convertible<T&&, SuccessType>::value &&
-                    !std::is_convertible<T&&, ErrorType>::value &&
-                    // Prefer move/copy/conversion to member construction.
-                    !is_convertible_result<typename std::decay<T>::type>::value,
-                int>::type = 0>
+  template <typename T>
+    requires(std::is_convertible_v<T &&, SuccessType> &&
+             !std::is_convertible_v<T &&, ErrorType> &&
+             // Prefer move/copy/conversion to member construction.
+             !is_convertible_result_v<std::decay_t<T>>)
   Result(T&& success_value)
       : Result(kSuccessTag, std::forward<T>(success_value)) {}
 
-  template <typename T,
-            typename std::enable_if<
-                !std::is_convertible<T&&, SuccessType>::value &&
-                    std::is_convertible<T&&, ErrorType>::value &&
-                    !is_convertible_result<typename std::decay<T>::type>::value,
-                int>::type = 0>
+  template <typename T>
+    requires(!std::is_convertible_v<T &&, SuccessType> &&
+             std::is_convertible_v<T &&, ErrorType> &&
+             !is_convertible_result_v<std::decay_t<T>>)
   Result(T&& error_value) : Result(kErrorTag, std::forward<T>(error_value)) {}
 
   // Copy / move constructors.
@@ -383,22 +378,15 @@ class Result : public internal::DefaultConstructible<
   Result(Result&& other) = default;
 
   // Conversion constructors.
-  template <
-      typename OtherSuccessType,
-      typename OtherErrorType,
-      typename std::enable_if<
-          std::is_convertible<const OtherSuccessType&, SuccessType>::value &&
-              std::is_convertible<const OtherErrorType&, ErrorType>::value,
-          int>::type = 0>
+  template <typename OtherSuccessType, typename OtherErrorType>
+    requires(std::is_convertible_v<const OtherSuccessType&, SuccessType> &&
+             std::is_convertible_v<const OtherErrorType&, ErrorType>)
   Result(const Result<OtherSuccessType, OtherErrorType>& other)
       : DefaultConstructible(0), storage_(other.storage_) {}
 
-  template <typename OtherSuccessType,
-            typename OtherErrorType,
-            typename std::enable_if<
-                std::is_convertible<OtherSuccessType&&, SuccessType>::value &&
-                    std::is_convertible<OtherErrorType&&, ErrorType>::value,
-                int>::type = 0>
+  template <typename OtherSuccessType, typename OtherErrorType>
+    requires(std::is_convertible_v<OtherSuccessType &&, SuccessType> &&
+             std::is_convertible_v<OtherErrorType &&, ErrorType>)
   Result(Result<OtherSuccessType, OtherErrorType>&& other)
       : DefaultConstructible(0), storage_(std::move(other.storage_)) {}
 
@@ -407,25 +395,18 @@ class Result : public internal::DefaultConstructible<
   Result& operator=(Result&& other) = default;
 
   // Conversion assignment.
-  template <
-      typename OtherSuccessType,
-      typename OtherErrorType,
-      typename std::enable_if<
-          std::is_convertible<const OtherSuccessType&, SuccessType>::value &&
-              std::is_convertible<const OtherErrorType&, ErrorType>::value,
-          int>::type = 0>
+  template <typename OtherSuccessType, typename OtherErrorType>
+    requires(std::is_convertible_v<const OtherSuccessType&, SuccessType> &&
+             std::is_convertible_v<const OtherErrorType&, ErrorType>)
   Result& operator=(const Result<OtherSuccessType, OtherErrorType>& other) {
     this->~Result();
     new (this) Result(other);
     return *this;
   }
 
-  template <typename OtherSuccessType,
-            typename OtherErrorType,
-            typename std::enable_if<
-                std::is_convertible<OtherSuccessType&&, SuccessType>::value &&
-                    std::is_convertible<OtherErrorType&&, ErrorType>::value,
-                int>::type = 0>
+  template <typename OtherSuccessType, typename OtherErrorType>
+    requires(std::is_convertible_v<OtherSuccessType &&, SuccessType> &&
+             std::is_convertible_v<OtherErrorType &&, ErrorType>)
   Result& operator=(Result<OtherSuccessType, OtherErrorType>&& other) {
     this->~Result();
     new (this) Result(std::move(other));
@@ -434,9 +415,8 @@ class Result : public internal::DefaultConstructible<
 
   // Emplaces new success value in the result and returns a reference to it.
   template <typename... Args>
-  typename std::enable_if<std::is_constructible<SuccessType, Args...>::value,
-                          SuccessType&>::type
-  EmplaceSuccess(Args&&... args) {
+    requires(std::is_constructible_v<SuccessType, Args...>)
+  SuccessType& EmplaceSuccess(Args&&... args) {
     this->~Result();
     new (this) Result(kSuccessTag, std::forward<Args>(args)...);
     return storage_.success;
@@ -444,9 +424,8 @@ class Result : public internal::DefaultConstructible<
 
   // Emplaces new error value in the result and returns a reference to it.
   template <typename... Args>
-  typename std::enable_if<std::is_constructible<ErrorType, Args...>::value,
-                          ErrorType&>::type
-  EmplaceError(Args&&... args) {
+    requires(std::is_constructible_v<ErrorType, Args...>)
+  ErrorType& EmplaceError(Args&&... args) {
     this->~Result();
     new (this) Result(kErrorTag, std::forward<Args>(args)...);
     return storage_.error;
@@ -512,13 +491,10 @@ class Result : public internal::DefaultConstructible<
   // provided Success->Result<NewSuccess, Error> functor with the success value,
   // if present. If this Result contains an error, it will be passed through
   // unchanged and the functor will not be called.
-  template <
-      typename SuccessFunctor,
-      typename ReturnType = typename std::
-          invoke_result<SuccessFunctor&&, const SuccessType&>::type,
-      typename std::enable_if<
-          std::is_convertible<typename ReturnType::ErrorType, ErrorType>::value,
-          int>::type = 0>
+  template <typename SuccessFunctor,
+            typename ReturnType =
+                std::invoke_result_t<SuccessFunctor&&, const SuccessType&>>
+    requires(std::is_convertible_v<typename ReturnType::ErrorType, ErrorType>)
   Result<typename ReturnType::SuccessType, ErrorType> AndThen(
       SuccessFunctor&& on_success) const& {
     if (storage_.is_success) {
@@ -528,13 +504,10 @@ class Result : public internal::DefaultConstructible<
     }
   }
 
-  template <
-      typename SuccessFunctor,
-      typename ReturnType =
-          typename std::invoke_result<SuccessFunctor&&, SuccessType&&>::type,
-      typename std::enable_if<
-          std::is_convertible<typename ReturnType::ErrorType, ErrorType>::value,
-          int>::type = 0>
+  template <typename SuccessFunctor,
+            typename ReturnType =
+                std::invoke_result_t<SuccessFunctor&&, SuccessType&&>>
+    requires(std::is_convertible_v<typename ReturnType::ErrorType, ErrorType>)
   Result<typename ReturnType::SuccessType, ErrorType> AndThen(
       SuccessFunctor&& on_success) && {
     if (storage_.is_success) {
@@ -549,14 +522,11 @@ class Result : public internal::DefaultConstructible<
   // provided Error->Result<Success, NewError> functor with the error value, if
   // present. If this Result contains a success value, it will be passed through
   // unchanged and the functor will not be called.
-  template <
-      typename ErrorFunctor,
-      typename ReturnType =
-          typename std::invoke_result<ErrorFunctor&&, const ErrorType&>::type,
-      typename std::enable_if<
-          std::is_convertible<typename ReturnType::SuccessType,
-                              SuccessType>::value,
-          int>::type = 0>
+  template <typename ErrorFunctor,
+            typename ReturnType =
+                std::invoke_result_t<ErrorFunctor&&, const ErrorType&>>
+    requires(
+        std::is_convertible_v<typename ReturnType::SuccessType, SuccessType>)
   Result<SuccessType, typename ReturnType::ErrorType> OrElse(
       ErrorFunctor&& on_error) const& {
     if (storage_.is_success) {
@@ -566,13 +536,11 @@ class Result : public internal::DefaultConstructible<
     }
   }
 
-  template <typename ErrorFunctor,
-            typename ReturnType =
-                typename std::invoke_result<ErrorFunctor&&, ErrorType&&>::type,
-            typename std::enable_if<
-                std::is_convertible<typename ReturnType::SuccessType,
-                                    SuccessType>::value,
-                int>::type = 0>
+  template <
+      typename ErrorFunctor,
+      typename ReturnType = std::invoke_result_t<ErrorFunctor&&, ErrorType&&>>
+    requires(
+        std::is_convertible_v<typename ReturnType::SuccessType, SuccessType>)
   Result<SuccessType, typename ReturnType::ErrorType> OrElse(
       ErrorFunctor&& on_error) && {
     if (storage_.is_success) {
@@ -584,14 +552,12 @@ class Result : public internal::DefaultConstructible<
 
   // Calls either success() or error() on the provided visitor depending on the
   // state of the result, passing the value of the corresponding state.
-  template <
-      typename Visitor,
-      typename SuccessReturn = decltype(std::declval<Visitor>().success(
-          std::declval<const SuccessType&>())),
-      typename ErrorReturn = decltype(std::declval<Visitor>().error(
-          std::declval<const ErrorType&>())),
-      typename std::enable_if<std::is_same<SuccessReturn, ErrorReturn>::value,
-                              int>::type = 0>
+  template <typename Visitor,
+            typename SuccessReturn = decltype(std::declval<Visitor>().success(
+                std::declval<const SuccessType&>())),
+            typename ErrorReturn = decltype(std::declval<Visitor>().error(
+                std::declval<const ErrorType&>()))>
+    requires(std::is_same_v<SuccessReturn, ErrorReturn>)
   SuccessReturn Visit(Visitor&& visitor) const& {
     if (storage_.is_success) {
       return std::forward<Visitor>(visitor).success(storage_.success);
@@ -600,14 +566,12 @@ class Result : public internal::DefaultConstructible<
     }
   }
 
-  template <
-      typename Visitor,
-      typename SuccessReturn = decltype(std::declval<Visitor>().success(
-          std::declval<SuccessType&>())),
-      typename ErrorReturn =
-          decltype(std::declval<Visitor>().error(std::declval<ErrorType&>())),
-      typename std::enable_if<std::is_same<SuccessReturn, ErrorReturn>::value,
-                              int>::type = 0>
+  template <typename Visitor,
+            typename SuccessReturn = decltype(std::declval<Visitor>().success(
+                std::declval<SuccessType&>())),
+            typename ErrorReturn = decltype(std::declval<Visitor>().error(
+                std::declval<ErrorType&>()))>
+    requires(std::is_same_v<SuccessReturn, ErrorReturn>)
   SuccessReturn Visit(Visitor&& visitor) & {
     if (storage_.is_success) {
       return std::forward<Visitor>(visitor).success(storage_.success);
@@ -616,14 +580,12 @@ class Result : public internal::DefaultConstructible<
     }
   }
 
-  template <
-      typename Visitor,
-      typename SuccessReturn = decltype(std::declval<Visitor>().success(
-          std::declval<SuccessType&&>())),
-      typename ErrorReturn =
-          decltype(std::declval<Visitor>().error(std::declval<ErrorType&&>())),
-      typename std::enable_if<std::is_same<SuccessReturn, ErrorReturn>::value,
-                              int>::type = 0>
+  template <typename Visitor,
+            typename SuccessReturn = decltype(std::declval<Visitor>().success(
+                std::declval<SuccessType&&>())),
+            typename ErrorReturn = decltype(std::declval<Visitor>().error(
+                std::declval<ErrorType&&>()))>
+    requires(std::is_same_v<SuccessReturn, ErrorReturn>)
   SuccessReturn Visit(Visitor&& visitor) && {
     if (storage_.is_success) {
       return std::forward<Visitor>(visitor).success(

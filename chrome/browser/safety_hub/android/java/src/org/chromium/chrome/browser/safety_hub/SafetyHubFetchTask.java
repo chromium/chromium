@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.safety_hub;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.background_task_scheduler.NativeBackgroundTask;
 import org.chromium.components.background_task_scheduler.TaskParameters;
 
 /** Task for fetching password check status from GMSCore. */
+@NullMarked
 public class SafetyHubFetchTask extends NativeBackgroundTask {
     @Override
     protected int onStartTaskBeforeNativeLoaded(

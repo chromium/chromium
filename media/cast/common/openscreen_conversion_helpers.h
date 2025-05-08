@@ -48,14 +48,6 @@ media::VideoCodec ToVideoCodec(openscreen::cast::VideoCodec codec);
 
 openscreen::IPAddress ToOpenscreenIPAddress(const net::IPAddress& address);
 
-// TODO(crbug.com/40266598): should be replaced with Open Screen's
-// internal conversion methods.
-constexpr int kAesKeyLength = 16;
-std::array<uint8_t, kAesKeyLength> AesKeyToArray(std::string aes_key);
-
-openscreen::cast::SessionConfig ToOpenscreenSessionConfig(
-    const FrameSenderConfig& config,
-    bool is_pli_enabled);
 openscreen::cast::AudioCaptureConfig ToOpenscreenAudioConfig(
     const FrameSenderConfig& config);
 openscreen::cast::VideoCaptureConfig ToOpenscreenVideoConfig(

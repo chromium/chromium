@@ -14,17 +14,16 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/sync_mode.h"
 #include "components/sync/engine/configure_reason.h"
 #include "components/sync/service/configure_context.h"
 #include "components/sync/test/mock_data_type_controller_delegate.h"
 #include "components/sync/test/mock_data_type_local_data_batch_uploader.h"
-#include "components/sync/test/test_sync_service.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,7 +51,7 @@ class PasswordDataTypeControllerTest : public ::testing::Test {
     controller_ = std::make_unique<PasswordDataTypeController>(
         std::move(full_sync_delegate), std::move(transport_only_delegate),
         std::make_unique<syncer::MockDataTypeLocalDataBatchUploader>(),
-        &pref_service_, identity_test_env_.identity_manager(), &sync_service_);
+        &pref_service_, identity_test_env_.identity_manager());
   }
 
   PasswordDataTypeController* controller() { return controller_.get(); }
@@ -73,21 +72,23 @@ class PasswordDataTypeControllerTest : public ::testing::Test {
   }
 
  private:
+  // Needed by IdentityTestEnvironment.
   base::test::SingleThreadTaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
   signin::IdentityTestEnvironment identity_test_env_;
-  syncer::TestSyncService sync_service_;
   std::unique_ptr<PasswordDataTypeController> controller_;
   raw_ptr<syncer::MockDataTypeControllerDelegate> full_sync_delegate_;
   raw_ptr<syncer::MockDataTypeControllerDelegate> transport_only_delegate_;
 };
 
 #if BUILDFLAG(IS_ANDROID)
-TEST_F(PasswordDataTypeControllerTest, OverrideFullSyncModeIfUPMLocalOn) {
+TEST_F(PasswordDataTypeControllerTest,
+       OverrideFullSyncModeIfUPMLocalOn_LoginDbDeprecationOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kLoginDbDeprecationAndroid);
   pref_service()->SetInteger(
-      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(
-          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
+      prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOn));
   // `transport_only_delegate` should be used, despite syncer::SyncMode::kFull
   // being passed below.
   EXPECT_CALL(*full_sync_delegate(), OnSyncStarting).Times(0);
@@ -103,7 +104,9 @@ TEST_F(PasswordDataTypeControllerTest, OverrideFullSyncModeIfUPMLocalOn) {
 }
 
 TEST_F(PasswordDataTypeControllerTest,
-       DoNotOverrideFullSyncModeIfUPMLocalOff) {
+       DoNotOverrideFullSyncModeIfUPMLocalOff_LoginDbDeprecationOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kLoginDbDeprecationAndroid);
   // `full_sync_delegate` should be used for syncer::SyncMode::kFull, as
   // expected.
   EXPECT_CALL(*full_sync_delegate(), OnSyncStarting);
@@ -119,26 +122,29 @@ TEST_F(PasswordDataTypeControllerTest,
 }
 
 TEST_F(PasswordDataTypeControllerTest,
-       SetNoticePrefOnSigninIfSyncToSigninEnabled) {
-  base::test::ScopedFeatureList enable_sync_to_signin(
-      syncer::kReplaceSyncPromosWithSignInPromos);
+       OverrideFullSyncMode_LoginDbDeprecationOn) {
+  base::test::ScopedFeatureList feature_list(
+      features::kLoginDbDeprecationAndroid);
+  // `transport_only_delegate` should be used, despite syncer::SyncMode::kFull
+  // being passed below.
+  EXPECT_CALL(*full_sync_delegate(), OnSyncStarting).Times(0);
+  EXPECT_CALL(*transport_only_delegate(), OnSyncStarting);
+
+  syncer::ConfigureContext context;
+  context.authenticated_gaia_id = GaiaId("gaia");
+  context.cache_guid = "cache_guid";
+  context.sync_mode = syncer::SyncMode::kFull;
+  context.reason = syncer::CONFIGURE_REASON_RECONFIGURATION;
+  context.configuration_start_time = base::Time::Now();
+  controller()->LoadModels(context, base::DoNothing());
+}
+
+TEST_F(PasswordDataTypeControllerTest, SetNoticePrefOnSignin) {
   ASSERT_FALSE(pref_service()->GetBoolean(prefs::kAccountStorageNoticeShown));
 
   SignIn();
 
   EXPECT_TRUE(pref_service()->GetBoolean(prefs::kAccountStorageNoticeShown));
-}
-
-TEST_F(PasswordDataTypeControllerTest,
-       DoNotSetNoticePrefOnSigninIfSyncToSigninDisabled) {
-  base::test::ScopedFeatureList disable_sync_to_signin;
-  disable_sync_to_signin.InitAndDisableFeature(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-  ASSERT_FALSE(pref_service()->GetBoolean(prefs::kAccountStorageNoticeShown));
-
-  SignIn();
-
-  EXPECT_FALSE(pref_service()->GetBoolean(prefs::kAccountStorageNoticeShown));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

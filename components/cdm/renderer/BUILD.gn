@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/cdm/common/playready.gni")
 import("//third_party/widevine/cdm/widevine.gni")
 
 static_library("renderer") {
@@ -21,6 +22,7 @@ static_library("renderer") {
   ]
   deps = [
     "//base",
+    "//components/cdm/common:buildflags",
     "//content/public/renderer",
     "//media",
     "//media:media_buildflags",
@@ -47,5 +49,13 @@ static_library("renderer") {
       "widevine_key_system_info.h",
     ]
     deps += [ "//third_party/widevine/cdm:headers" ]
+  }
+
+  if (enable_playready) {
+    sources += [
+      "playready_key_system_info.cc",
+      "playready_key_system_info.h",
+    ]
+    deps += [ "//components/cdm/common" ]
   }
 }

@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -65,8 +66,9 @@ void MarkBoxForRelayoutAfterSplit(LayoutBoxModelObject* box) {
 void CollapseLoneAnonymousBlockChild(LayoutBox* parent, LayoutObject* child) {
   auto* child_block_flow = DynamicTo<LayoutBlockFlow>(child);
   auto* parent_block_flow = DynamicTo<LayoutBlockFlow>(parent);
-  if (!child->IsAnonymousBlock() || !child_block_flow)
+  if (!child->IsAnonymousBlockFlow() || !child_block_flow) {
     return;
+  }
   if (!parent_block_flow)
     return;
   parent_block_flow->CollapseAnonymousBlockChild(child_block_flow);
@@ -728,7 +730,9 @@ PhysicalOffset LayoutBoxModelObject::AdjustedPositionRelativeTo(
            current && current->GetNode() != offset_parent;
            current = current->Container()) {
         // FIXME: What are we supposed to do inside SVG content?
-        reference_point += current->ColumnOffset(reference_point);
+        if (!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
+          reference_point += current->ColumnOffset(reference_point);
+        }
         if (current->IsBox()) {
           reference_point += To<LayoutBox>(current)->PhysicalLocation();
         }
@@ -758,20 +762,6 @@ PhysicalOffset LayoutBoxModelObject::AdjustedPositionRelativeTo(
   }
 
   return reference_point;
-}
-
-LayoutUnit LayoutBoxModelObject::OffsetLeft(const Element* parent) const {
-  NOT_DESTROYED();
-  // Note that LayoutInline and LayoutBox override this to pass a different
-  // startPoint to adjustedPositionRelativeTo.
-  return AdjustedPositionRelativeTo(PhysicalOffset(), parent).left;
-}
-
-LayoutUnit LayoutBoxModelObject::OffsetTop(const Element* parent) const {
-  NOT_DESTROYED();
-  // Note that LayoutInline and LayoutBox override this to pass a different
-  // startPoint to adjustedPositionRelativeTo.
-  return AdjustedPositionRelativeTo(PhysicalOffset(), parent).top;
 }
 
 LayoutUnit LayoutBoxModelObject::ComputedCSSPadding(

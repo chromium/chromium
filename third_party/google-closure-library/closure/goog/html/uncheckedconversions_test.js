@@ -10,7 +10,6 @@ goog.module('goog.html.uncheckedconversionsTest');
 goog.setTestOnly();
 
 const Const = goog.require('goog.string.Const');
-const Dir = goog.require('goog.i18n.bidi.Dir');
 const SafeHtml = goog.require('goog.html.SafeHtml');
 const SafeScript = goog.require('goog.html.SafeScript');
 const SafeStyle = goog.require('goog.html.SafeStyle');
@@ -25,9 +24,8 @@ testSuite({
     const html = '<div>irrelevant</div>';
     const safeHtml =
         uncheckedconversions.safeHtmlFromStringKnownToSatisfyTypeContract(
-            Const.from('Test'), html, Dir.LTR);
+            Const.from('Test'), html);
     assertEquals(html, SafeHtml.unwrap(safeHtml));
-    assertEquals(Dir.LTR, safeHtml.getDirection());
   },
 
   testSafeHtmlFromStringKnownToSatisfyTypeContract_error() {

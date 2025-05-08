@@ -9,7 +9,6 @@ import("//base/allocator/partition_allocator/partition_alloc.gni")
 group("android_tools") {
   testonly = true
   deps = [
-    "//build/android/pylib/device/commands",
     "//third_party/catapult/telemetry:bitmaptools($host_toolchain)",
     "//tools/android/adb_reboot",
     "//tools/android/forwarder2",

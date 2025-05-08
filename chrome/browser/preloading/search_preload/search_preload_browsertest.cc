@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
+#include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_preload_test_response_utils.h"
 #include "chrome/browser/preloading/search_preload/search_preload_features.h"
 #include "chrome/browser/preloading/search_preload/search_preload_service.h"
@@ -19,8 +20,10 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "components/omnibox/browser/omnibox.mojom.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -100,7 +103,14 @@ class SearchPreloadBrowserTest : public PlatformBrowserTest,
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
             {features::kPrefetchPrerenderIntegration, {}},
-            {features::kDsePreload2, {}},
+            {
+                features::kDsePreload2,
+                {
+                    {"kDsePreload2PredictorMouseDown", "true"},
+                    {"kDsePreload2PredictorUpOrDownArrowButton", "true"},
+                    {"kDsePreload2PredictorTouchDown", "true"},
+                },
+            },
         },
         /*disabled_features=*/{});
 
@@ -136,13 +146,15 @@ class SearchPreloadBrowserTest : public PlatformBrowserTest,
         base::BindRepeating(&SearchPreloadBrowserTest::HandleSearchRequest,
                             base::Unretained(this)));
     ASSERT_TRUE(https_server_->Start());
+  }
 
-    // Set up `TemplateURLService`.
+  void SetUpTemplateURLService(bool prefetch_likely_navigations = true) {
     TemplateURLService* model =
         TemplateURLServiceFactory::GetForProfile(&GetProfile());
     ASSERT_TRUE(model);
     search_test_utils::WaitForTemplateURLServiceToLoad(model);
     ASSERT_TRUE(model->loaded());
+
     TemplateURLData data;
     data.SetShortName(kSearchDomain16);
     data.SetKeyword(data.short_name());
@@ -154,6 +166,8 @@ class SearchPreloadBrowserTest : public PlatformBrowserTest,
                     .spec());
     data.suggestions_url =
         https_server_->GetURL(kSearchDomain, "/?q={searchTerms}").spec();
+    data.prefetch_likely_navigations = prefetch_likely_navigations;
+
     TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
     ASSERT_TRUE(template_url);
     model->SetUserSelectedDefaultSearchProvider(template_url);
@@ -184,31 +198,35 @@ class SearchPreloadBrowserTest : public PlatformBrowserTest,
     kReal,
     // For URLs that will be used for prefetch requests.
     kPrefetch,
+    // For URLs that will be used for prefetch requests for
+    // `OnNavigationLikely()`.
+    kPrefetchOnNavigationLikely,
     // For URLs that will be used for prerender requests.
     kPrerender
   };
 
   GURL GetSearchUrl(const std::string& search_terms, UrlType url_type) {
-    // $1: the search terms that will be retrieved.
-    // $2: parameter for prefetch request. Should be &pf=cs if the url is
-    // expected to declare itself as a prefetch request. Otherwise it should be
-    // an empty string.
-    std::string url_template = "/search_page.html?q=$1$2&type=test";
-    bool attach_prefetch_flag;
+    const char* pf;
     switch (url_type) {
       case UrlType::kReal:
       case UrlType::kPrerender:
-        attach_prefetch_flag = false;
+        pf = "";
         break;
       case UrlType::kPrefetch:
-        attach_prefetch_flag = true;
+        pf = "&pf=cs";
+        break;
+      case UrlType::kPrefetchOnNavigationLikely:
+        pf = "&pf=op";
         break;
     }
-    return https_server_->GetURL(
-        kSearchDomain,
-        base::ReplaceStringPlaceholders(
-            url_template, {search_terms, attach_prefetch_flag ? "&pf=cs" : ""},
-            nullptr));
+    std::string path = base::StrCat({
+        "/search_page.html",
+        "?q=",
+        search_terms,
+        pf,
+        "&type=test",
+    });
+    return https_server_->GetURL(kSearchDomain, path);
   }
 
   void ChangeAutocompleteResult(const std::string& original_query,
@@ -309,6 +327,8 @@ class SearchPreloadBrowserTest : public PlatformBrowserTest,
 // - Prefetch is used.
 IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
                        OnAutocompleteResultChanged_TriggersPrefetch) {
+  SetUpTemplateURLService();
+
   ASSERT_TRUE(content::NavigateToURL(
       &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
 
@@ -358,6 +378,8 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
 // - Prefetch is used.
 IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
                        OnAutocompleteResultChanged_TriggeredPrefetchIsHeld) {
+  SetUpTemplateURLService();
+
   ASSERT_TRUE(content::NavigateToURL(
       &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
 
@@ -412,6 +434,8 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     SearchPreloadBrowserTest,
     OnAutocompleteResultChanged_TriggersPrefetchAndPrerender) {
+  SetUpTemplateURLService();
+
   ASSERT_TRUE(content::NavigateToURL(
       &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
 
@@ -472,6 +496,8 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     SearchPreloadBrowserTest,
     OnAutocompleteResultChanged_TriggersPrefetchThenPrerender) {
+  SetUpTemplateURLService();
+
   ASSERT_TRUE(content::NavigateToURL(
       &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
 
@@ -523,6 +549,134 @@ IN_PROC_BROWSER_TEST_F(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
       "DefaultSearchEngine",
       alternative_content::PrerenderFinalStatus::kActivated, 1);
+}
+
+// Scenario:
+//
+// - A user inputs "he".
+// - A user clicks a suggestion "hello".
+// - `SearchPreloadService` starts prefetch with query "?q=hello&pf=op...".
+// - A user navigates to a page with query "?q=hello&..."
+// - Prefetch is used.
+IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
+                       OnNavigationLikely_TriggersPrefetch) {
+  SetUpTemplateURLService(/*prefetch_likely_navigations=*/true);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
+
+  std::string original_query = "he";
+  std::string search_terms = "hello";
+  GURL prefetch_url_on_navigation_likely =
+      GetSearchUrl(search_terms, UrlType::kPrefetchOnNavigationLikely);
+  GURL navigation_url = GetSearchUrl(search_terms, UrlType::kReal);
+
+  {
+    content::test::TestPrefetchWatcher watcher;
+
+    AutocompleteMatch autocomplete_match = CreateSearchSuggestionMatch(
+        original_query, search_terms, PrefetchHint::kEnabled,
+        PrerenderHint::kDisabled);
+
+    const bool is_triggered_prefetch =
+        GetSearchPreloadService().OnNavigationLikely(
+            1, autocomplete_match,
+            omnibox::mojom::NavigationPredictor::kMouseDown, &GetWebContents());
+    ASSERT_TRUE(is_triggered_prefetch);
+
+    watcher.WaitUntilPrefetchResponseCompleted(
+        std::nullopt, prefetch_url_on_navigation_likely);
+  }
+
+  EXPECT_EQ(1,
+            request_collector().CountByPath(prefetch_url_on_navigation_likely));
+
+  // Navigate.
+  ASSERT_TRUE(content::NavigateToURL(&GetWebContents(), navigation_url));
+
+  // Prefetch is used.
+  EXPECT_EQ(1,
+            request_collector().CountByPath(prefetch_url_on_navigation_likely));
+  EXPECT_EQ(0, request_collector().CountByPath(navigation_url));
+}
+
+// `OnNavigationLikely()` doesn't trigger prefetch if default search provider
+// doesn't opt in.
+IN_PROC_BROWSER_TEST_F(
+    SearchPreloadBrowserTest,
+    OnNavigationLikely_DoesntTriggerPrefetchIfDefaultSearchProviderDoesntOptIn) {
+  SetUpTemplateURLService(/*prefetch_likely_navigations=*/false);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
+
+  std::string original_query = "he";
+  std::string search_terms = "hello";
+
+  AutocompleteMatch autocomplete_match = CreateSearchSuggestionMatch(
+      original_query, search_terms, PrefetchHint::kEnabled,
+      PrerenderHint::kDisabled);
+
+  const bool is_triggered_prefetch =
+      GetSearchPreloadService().OnNavigationLikely(
+          1, autocomplete_match,
+          omnibox::mojom::NavigationPredictor::kMouseDown, &GetWebContents());
+  ASSERT_FALSE(is_triggered_prefetch);
+}
+
+// Scenario:
+//
+// - A user inputs "he".
+// - Autocomplete suggests to prefetch "hello".
+// - `SearchPreloadService` starts prefetch with query "?q=hello&pf=cs...".
+// - A user clicks a suggestion "hello".
+// - Prefetch is not triggered with query "?q=hello&pf=op..." as prefetch is
+// already triggered.
+// - A user navigates to a page with query "?q=hello&..."
+// - Prefetch is used.
+IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
+                       OnAutocompleteResultChanged_Then_OnNavigationLikely) {
+  SetUpTemplateURLService(/*prefetch_likely_navigations=*/true);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
+
+  std::string original_query = "he";
+  std::string search_terms = "hello";
+  GURL prefetch_url = GetSearchUrl(search_terms, UrlType::kPrefetch);
+  GURL prefetch_url_on_navigation_likely =
+      GetSearchUrl(search_terms, UrlType::kPrefetchOnNavigationLikely);
+  GURL navigation_url = GetSearchUrl(search_terms, UrlType::kReal);
+
+  {
+    content::test::TestPrefetchWatcher watcher;
+
+    ChangeAutocompleteResult(original_query, search_terms,
+                             PrefetchHint::kEnabled, PrerenderHint::kDisabled);
+
+    watcher.WaitUntilPrefetchResponseCompleted(std::nullopt, prefetch_url);
+  }
+
+  EXPECT_EQ(1, request_collector().CountByPath(prefetch_url));
+
+  AutocompleteMatch autocomplete_match = CreateSearchSuggestionMatch(
+      original_query, search_terms, PrefetchHint::kEnabled,
+      PrerenderHint::kDisabled);
+
+  const bool is_triggered_prefetch =
+      GetSearchPreloadService().OnNavigationLikely(
+          1, autocomplete_match,
+          omnibox::mojom::NavigationPredictor::kMouseDown, &GetWebContents());
+  ASSERT_FALSE(is_triggered_prefetch);
+
+  // Navigate.
+  ASSERT_TRUE(content::NavigateToURL(&GetWebContents(), navigation_url));
+
+  // Prefetch is used.
+  EXPECT_EQ(1, request_collector().CountByPath(prefetch_url));
+  EXPECT_EQ(0,
+            request_collector().CountByPath(prefetch_url_on_navigation_likely));
+  EXPECT_EQ(0, request_collector().CountByPath(navigation_url));
 }
 
 }  // namespace

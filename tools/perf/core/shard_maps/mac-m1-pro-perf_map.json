@@ -9,12 +9,8 @@
             }
         },
         "crossbench": {
-            "speedometer_3.0": {
+            "speedometer_3": {
                 "display_name": "speedometer3.crossbench",
-                "arguments": []
-            },
-            "speedometer_3.1": {
-                "display_name": "speedometer3.1.crossbench",
                 "arguments": []
             },
             "jetstream_2.2": {
@@ -30,12 +26,8 @@
             }
         },
         "crossbench": {
-            "speedometer_3.0": {
+            "speedometer_3": {
                 "display_name": "speedometer3.crossbench",
-                "arguments": []
-            },
-            "speedometer_3.1": {
-                "display_name": "speedometer3.1.crossbench",
                 "arguments": []
             },
             "motionmark_1.3": {
@@ -54,12 +46,8 @@
             }
         },
         "crossbench": {
-            "speedometer_3.0": {
+            "speedometer_3": {
                 "display_name": "speedometer3.crossbench",
-                "arguments": []
-            },
-            "speedometer_3.1": {
-                "display_name": "speedometer3.1.crossbench",
                 "arguments": []
             }
         }
@@ -74,29 +62,25 @@
             }
         },
         "crossbench": {
-            "speedometer_3.0": {
+            "speedometer_3": {
                 "display_name": "speedometer3.crossbench",
                 "arguments": []
             },
-            "speedometer_3.1": {
-                "display_name": "speedometer3.1.crossbench",
-                "arguments": []
-            },
-            "speedometer_2.1": {
-                "display_name": "speedometer2.1.crossbench",
+            "speedometer_2": {
+                "display_name": "speedometer2.crossbench",
                 "arguments": []
             }
         }
     },
     "extra_infos": {
-        "num_stories": 18,
-        "predicted_min_shard_time": 233.0,
+        "num_stories": 14,
+        "predicted_min_shard_time": 173.0,
         "predicted_min_shard_index": 3,
-        "predicted_max_shard_time": 509.0,
+        "predicted_max_shard_time": 449.0,
         "predicted_max_shard_index": 1,
-        "shard #0": 390.0,
-        "shard #1": 509.0,
-        "shard #2": 476.0,
-        "shard #3": 233.0
+        "shard #0": 330.0,
+        "shard #1": 449.0,
+        "shard #2": 416.0,
+        "shard #3": 173.0
     }
 }

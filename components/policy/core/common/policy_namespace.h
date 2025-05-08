@@ -40,12 +40,13 @@ struct POLICY_EXPORT PolicyNamespace {
   PolicyNamespace();
   PolicyNamespace(PolicyDomain domain, const std::string& component_id);
   PolicyNamespace(const PolicyNamespace& other);
+  PolicyNamespace& operator=(const PolicyNamespace& other);
   ~PolicyNamespace();
 
-  PolicyNamespace& operator=(const PolicyNamespace& other);
-  bool operator<(const PolicyNamespace& other) const;
-  bool operator==(const PolicyNamespace& other) const;
-  bool operator!=(const PolicyNamespace& other) const;
+  friend bool operator==(const PolicyNamespace&,
+                         const PolicyNamespace&) = default;
+  friend auto operator<=>(const PolicyNamespace&,
+                          const PolicyNamespace&) = default;
 
   PolicyDomain domain;
   std::string component_id;

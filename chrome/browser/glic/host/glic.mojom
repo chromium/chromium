@@ -108,6 +108,11 @@ interface PageHandler {
   // If `duration` is 0 or less, instantly resize, otherwise run an animation.
   ResizeWidget(gfx.mojom.Size size, mojo_base.mojom.TimeDelta duration) => ();
 
+  // Set whether the panel can be manually resized, or if the panel hasn't been
+  // created yet, whether it should be resizable when created. No effect if the
+  // GlicUserResize feature flag is disabled.
+  EnableDragResize(bool enabled);
+
   // Notifies the PageHandler that the state of the WebUI has changed.
   WebUiStateChanged(WebUiState new_state);
 };
@@ -166,8 +171,8 @@ struct UserProfileInfo {
   string email;
   // The user's given name.
   string given_name;
-  // Whether the profile or browser is managed.
-  // See `policy::ManagementService::IsManaged()`.
+  // Whether the profile's signed-in account is a managed account.
+  // See `policy::ManagementService::IsAccountManaged()`.
   bool is_managed;
 };
 
@@ -189,9 +194,6 @@ struct WebClientInitialState {
   bool panel_is_active;
   WebClientSizingMode sizing_mode;
   bool browser_is_open;
-  // Whether to enable the OpenOsPermissionSettingsMenu API for the client.
-  // Depends on platform. Currently only allowed for Mac.
-  bool open_os_settings_api_is_allowed;
   // Reflects the enabling state of always-detached mode.
   bool always_detached_mode;
   bool enable_zero_state_suggestions;
@@ -201,6 +203,10 @@ struct WebClientInitialState {
   bool enable_scroll_to;
   // Whether features::kGlicUserResize is enabled.
   bool enable_drag_to_resize_panel;
+  // Whether features::kGlicClosedCaptioning is enabled.
+  bool enable_closed_captioning_feature;
+  // Whether the glic closed captioning setting is enabled.
+  bool closed_captioning_setting_enabled;
 };
 
 // Options for getting tab context.
@@ -240,6 +246,7 @@ struct ScrollToParams {
 union ScrollToSelector {
   ScrollToTextSelector exact_text_selector;
   ScrollToTextFragmentSelector text_fragment_selector;
+  ScrollToNodeSelector node_selector;
 };
 
 // Used to specify exact text to scroll to and highlight.
@@ -264,6 +271,13 @@ struct ScrollToTextFragmentSelector {
   // the end of the document). If not specified, the search range will be the
   // entire document.
   int32? search_range_start_node_id;
+};
+
+// Used to specify a node to scroll to and highlight. All text within the node
+// will be highlighted.
+struct ScrollToNodeSelector {
+  // DOMNodeId of the node whose text will be highlighted (and scrolled to).
+  int32 node_id;
 };
 
 // Note: This must be kept in sync with the corresponding enum (same name) in
@@ -365,21 +379,28 @@ interface WebClientHandler {
   GetContextFromFocusedTab(GetTabContextOptions options)
       => (GetContextResult result);
 
-  // Returns the result of acting in the currently active tab.
-  // Action proto is a serialized proto of type .....
+  // Starts an action in the currently focused tab. `action_proto` is a
+  // serialized proto of type optimization_guide::proto::BrowserAction. Returns
+  // the result of the action when it is completed along with an observation of
+  // the page, taken using the given `options`.
+  //
+  // Actions can only be executed in a tab after act task has been started.  An
+  // act task is started by calling this function with a Navigate BrowserAction
+  // on a tab without an active task.
+  // TODO(crbug.com/407860715): Add an explicit method for starting a task.
   ActInFocusedTab(array<uint8> action_proto, GetTabContextOptions options)
       => (ActInFocusedTabResult result);
+
+  // Immediately stops the actor from taking any further actions and exits
+  // acting mode. Any in flight actions are canceled and their callbacks will be
+  // (asynchronously) invoked. No-op if the actor doesn't have an active task.
+  StopActorTask();
 
   // Resize the widget hosting the WebUI to the given size.
   // If `duration` is 0 or less, instantly resize, otherwise run an animation.
   // If the widget doesn't exist yet, `size` will be used as its initial size
   // when it's created later.
   ResizeWidget(gfx.mojom.Size size, mojo_base.mojom.TimeDelta duration) => ();
-
-  // Set whether the panel can be manually resized, or if the panel hasn't been
-  // created yet, whether it should be resizable when created. No effect if the
-  // GlicUserResize feature flag is disabled.
-  EnableDragResize(bool enabled);
 
   // Returns the screenshot result or error reason. 'screenshot' is null when an
   // error occurs during capture. This can also fail if the user cancels the
@@ -421,6 +442,11 @@ interface WebClientHandler {
   // prefs::kGlicTabContextEnabled. Returns when the browser has stored the new
   // pref value.
   SetTabContextPermissionState(bool enabled) => ();
+
+  // Set the state of the closed captioning glic setting pref:
+  // prefs::kGlicClosedCaptioningEnabled. Returns when the browser has stored
+  // the new pref value.
+  SetClosedCaptioningSetting(bool enabled) => ();
 
   // Returns whether a media permission request from the guest should be granted
   // or denied.
@@ -622,6 +648,9 @@ interface WebClient {
 
   // True if the browser has at least one open window.
   NotifyBrowserIsOpenChanged(bool browser_is_open);
+
+  // Notify that the closed captioning setting has changed.
+  NotifyClosedCaptioningSettingChanged(bool enabled);
 };
 
 // Information extracted from a tab.

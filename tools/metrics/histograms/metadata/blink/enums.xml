@@ -5493,7 +5493,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4927"
       label="OBSOLETE_V8ModelManager_DefaultGenericSessionOptions_Method"/>
   <int value="4928" label="QuirksModeCursorHandApplied"/>
-  <int value="4929" label="SkippedPreloadScanning"/>
+  <int value="4929" label="OBSOLETE_SkippedPreloadScanning"/>
   <int value="4930" label="CSSColor_SpaceRGB"/>
   <int value="4931" label="CSSColor_SpaceRGB_outOfRec2020"/>
   <int value="4932" label="CSSColor_SpaceOkLxx"/>
@@ -6172,6 +6172,14 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5545" label="RoleAttributeTreeitem"/>
   <int value="5546" label="InputParsedParentSelect"/>
   <int value="5547" label="InputParsedAncestorSelect"/>
+  <int value="5548" label="CSSSelectorPseudoHasSlotted"/>
+  <int value="5549" label="SelectMultipleShowPopup"/>
+  <int value="5550" label="SharedWorkerExtendedLifetimeFeatureEnabled"/>
+  <int value="5551" label="SharedWorkerExtendedLifetimeIsTrue"/>
+  <int value="5552" label="EditContextTextFormatUpdateAddListener"/>
+  <int value="5553" label="EditContextTextFormatUpdateFireEvent"/>
+  <int value="5554"
+      label="EditContextTextFormatUpdateTextFormatThicknessOrStyleNotNone"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -6318,6 +6326,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="133" label="Translator"/>
   <int value="134" label="LanguageDetector"/>
   <int value="135" label="DeviceAttributes"/>
+  <int value="136" label="LocalNetworkAccess"/>
+  <int value="137" label="RecordAdAuctionEvents"/>
 </enum>
 
 <enum name="FedCmAccountChooserResult">
@@ -7955,11 +7965,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="100" label="SlotAssign"/>
   <int value="101" label="Masks"/>
   <int value="102" label="DeviceOrientationEvents"/>
-  <int value="103" label="DRAFT_Gamepad"/>
+  <int value="103" label="Gamepad"/>
   <int value="104" label="ScreenWakeLock"/>
   <int value="105" label="WebBluetooth"/>
   <int value="106" label="WebNfc"/>
-  <int value="107" label="DRAFT_Serial"/>
+  <int value="107" label="Serial"/>
   <int value="108" label="JsModulesServiceWorkers"/>
   <int value="109" label="JsModulesSharedWorkers"/>
   <int value="110" label="JsModulesWorkers"/>
@@ -8122,7 +8132,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="267" label="WindowControlsOverlay"/>
   <int value="268" label="FetchPriority"/>
   <int value="269" label="Highlight"/>
-  <int value="270" label="DRAFT_ErrorIsError"/>
+  <int value="270" label="IsError"/>
   <int value="271" label="ClipboardCustomFormat"/>
   <int value="272" label="ClipboardSvg"/>
   <int value="273" label="ClipboardSupports"/>
@@ -8148,7 +8158,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="293" label="Interactivity"/>
   <int value="294" label="ScrollButtons"/>
   <int value="295" label="ScrollMarkers"/>
-  <int value="296" label="DRAFT_PopoverHint"/>
+  <int value="296" label="PopoverHint"/>
   <int value="297" label="RegexpEscape"/>
   <int value="298" label="Float16array"/>
   <int value="299" label="AppFileHandlers"/>
@@ -8162,14 +8172,32 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="307" label="DRAFT_WasmBranchHinting"/>
   <int value="308" label="DRAFT_ExplicitResourceManagement"/>
   <int value="309" label="AppLaunchHandler"/>
-  <int value="310" label="DRAFT_CssFunction"/>
-  <int value="311" label="DRAFT_CssIf"/>
+  <int value="310" label="Function"/>
+  <int value="311" label="If"/>
   <int value="312" label="WebAppManifestUpdateToken"/>
   <int value="313" label="ReadingFlow"/>
   <int value="314" label="ComposedRanges"/>
   <int value="315" label="CompressionDictionaryTransport"/>
   <int value="316" label="Http3"/>
   <int value="317" label="SpeculationRules"/>
+  <int value="318" label="TextBox"/>
+  <int value="319" label="ScrollInitialTarget"/>
+  <int value="320" label="HasSlotted"/>
+  <int value="321" label="ElementCapture"/>
+  <int value="322" label="RegionCapture"/>
+  <int value="323" label="RequestAnimationFrame"/>
+  <int value="324" label="RequestAnimationFrameWorkers"/>
+  <int value="325" label="IframeCredentialless"/>
+  <int value="326" label="Urlpattern"/>
+  <int value="327" label="WebauthnPublicKeyEasy"/>
+  <int value="328" label="IntlDisplayNames"/>
+  <int value="329" label="State"/>
+  <int value="330" label="PrintColorAdjust"/>
+  <int value="331" label="TextUnderlineOffset"/>
+  <int value="332" label="WindowManagement"/>
+  <int value="333" label="Requestclose"/>
+  <int value="334" label="DRAFT_Uint8ArrayToFromBase64AndHex"/>
+  <int value="335" label="LineBreak"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

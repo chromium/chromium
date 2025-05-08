@@ -125,4 +125,9 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
         if (mTab.isDestroyed() || mTab.isClosing()) return;
         mTab.loadUrl(loadUrlParams);
     }
+
+    @Override
+    public boolean isCustomTab() {
+        return mTab.isCustomTab();
+    }
 }

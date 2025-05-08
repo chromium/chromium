@@ -126,6 +126,7 @@ goog.ui.TabPane.prototype.selected_;
  * @const
  */
 goog.ui.TabPane.Events = {
+  /** @const {string} */
   CHANGE: 'change'
 };
 

@@ -208,7 +208,9 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToMemory(
   gfx::Point src_point;
   auto shared_image = txt_frame->shared_image();
   auto origin = shared_image->surface_origin();
-  ri->WaitSyncTokenCHROMIUM(txt_frame->acquire_sync_token().GetConstData());
+  std::unique_ptr<gpu::RasterScopedAccess> ri_access =
+      shared_image->BeginRasterAccess(ri, txt_frame->acquire_sync_token(),
+                                      /*readonly=*/true);
 
   gfx::Size texture_size = txt_frame->coded_size();
   ri->ReadbackARGBPixelsAsync(
@@ -216,8 +218,10 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToMemory(
       texture_size, src_point, info, base::saturated_cast<GLuint>(rgba_stide),
       dst_pixels,
       WTF::BindOnce(&BackgroundReadback::OnARGBPixelsFrameReadCompleted,
-                    WrapWeakPersistent(this), std::move(result_cb),
-                    std::move(txt_frame), std::move(result)));
+                    WrapWeakPersistent(this), std::move(result_cb), txt_frame,
+                    std::move(result)));
+  media::WaitAndReplaceSyncTokenClient client(ri, std::move(ri_access));
+  txt_frame->UpdateReleaseSyncToken(&client);
 }
 
 void BackgroundReadback::OnARGBPixelsFrameReadCompleted(
@@ -232,17 +236,13 @@ void BackgroundReadback::OnARGBPixelsFrameReadCompleted(
     ReadbackOnThread(std::move(txt_frame), std::move(result_cb));
     return;
   }
-  if (auto* ri = GetSharedGpuRasterInterface()) {
-    media::WaitAndReplaceSyncTokenClient client(ri);
-    txt_frame->UpdateReleaseSyncToken(&client);
-  } else {
-    success = false;
-  }
+
+  auto* ri = GetSharedGpuRasterInterface();
 
   result_frame->set_color_space(txt_frame->ColorSpace());
   result_frame->metadata().MergeMetadataFrom(txt_frame->metadata());
   result_frame->metadata().ClearTextureFrameMetadata();
-  std::move(result_cb).Run(success ? std::move(result_frame) : nullptr);
+  std::move(result_cb).Run(ri ? std::move(result_frame) : nullptr);
 }
 
 void BackgroundReadback::ReadbackRGBTextureBackedFrameToBuffer(

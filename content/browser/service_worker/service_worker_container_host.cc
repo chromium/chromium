@@ -729,8 +729,8 @@ bool ServiceWorkerContainerHostForClient::AllowServiceWorker(
           scope,
           service_worker_security_utils::site_for_cookies(
               service_worker_client().key()),
-          service_worker_client().top_frame_origin(), script_url,
-          browser_context);
+          service_worker_client().top_frame_origin(),
+          service_worker_client().key(), script_url, browser_context);
   base::UmaHistogramMicrosecondsTimes(
       "ServiceWorker.ContainerHostForClient.AllowServiceWorkerCallTime",
       base::TimeTicks::Now() - start_time);
@@ -759,7 +759,7 @@ bool ServiceWorkerContainerHostForServiceWorker::AllowServiceWorker(
   }
   return GetContentClient()->browser()->AllowServiceWorker(
       scope, service_worker_security_utils::site_for_cookies(key_),
-      top_frame_origin(), script_url, browser_context);
+      top_frame_origin(), key_, script_url, browser_context);
 }
 
 const base::WeakPtr<ServiceWorkerContextCore>&

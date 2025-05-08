@@ -99,6 +99,7 @@ class PDFDocumentHelper
   // document metadata such  as `GetPdfBytes`, `GetPageText` can be made.
   bool IsDocumentLoadComplete() const { return is_document_load_complete_; }
 
+  // Should not be called until after `IsDocumentLoadComplete()` is true.
   void GetPdfBytes(uint32_t size_limit,
                    pdf::mojom::PdfListener::GetPdfBytesCallback callback);
 

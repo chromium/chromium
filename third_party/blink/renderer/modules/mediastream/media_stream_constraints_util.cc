@@ -212,6 +212,28 @@ bool GetConstraintValueAsDouble(
   return ScanConstraintsForExactValue(constraints, picker, value);
 }
 
+bool IsPanTiltZoomConstraintPresentAndNotFalse(
+    const MediaConstraints& constraints) {
+  if (IsPanTiltZoomConstraintPresentAndNotFalse(constraints.Basic())) {
+    return true;
+  }
+
+  for (const auto& advanced_constraint_set : constraints.Advanced()) {
+    if (IsPanTiltZoomConstraintPresentAndNotFalse(advanced_constraint_set)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool IsPanTiltZoomConstraintPresentAndNotFalse(
+    const MediaTrackConstraintSetPlatform& constraint_set) {
+  return constraint_set.pan.IsPresentAndNotFalse() ||
+         constraint_set.tilt.IsPresentAndNotFalse() ||
+         constraint_set.zoom.IsPresentAndNotFalse();
+}
+
 VideoTrackAdapterSettings SelectVideoTrackAdapterSettings(
     const MediaTrackConstraintSetPlatform& basic_constraint_set,
     const media_constraints::ResolutionSet& resolution_set,

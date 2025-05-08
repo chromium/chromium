@@ -33,6 +33,7 @@ external/wpt/fedcm/fedcm-storage-access-api-autogrant.tentative.https.sub.html
 external/wpt/partitioned-popins/partitioned-popins.cookies-allowed.tentative.sub.https.window.html
 external/wpt/partitioned-popins/partitioned-popins.cookies-blocked.tentative.sub.https.window.html
 external/wpt/partitioned-popins/partitioned-popins.localStorage.tentative.sub.https.window.html
+external/wpt/FileAPI/BlobURL/*
 virtual/cross-partition-blob-url/external/wpt/*
 virtual/partitioned-popins-disabled/external/wpt/partitioned-popins/partitioned-popins.cookies-allowed.tentative.sub.https.window.html
 virtual/partitioned-popins-disabled/external/wpt/partitioned-popins/partitioned-popins.cookies-blocked.tentative.sub.https.window.html
@@ -40,6 +41,9 @@ virtual/partitioned-popins-disabled/external/wpt/partitioned-popins/partitioned-
 
 # Device Bound Session Credentials relies on the `//chrome` layer.
 virtual/dbsc-enabled/external/wpt/device-bound-session-credentials/*
+
+# DocumentIsolationPolicy requires SiteIsolation which is disabled on headless shell on Windows and Mac.
+external/wpt/html/document-isolation-policy/*
 
 # Tests fail on headless shell so run them on Chrome
 external/wpt/client-hints/accept-ch/answers.sub.https.html
@@ -66,16 +70,6 @@ external/wpt/speech-api/SpeechRecognition-basics.https.html
 external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html
 external/wpt/speech-api/SpeechRecognition-onerror.https.html
 external/wpt/speech-api/SpeechRecognition-onstart-onend.https.html
-virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/credentialless-cache-storage.https.tentative.window.html?document
-virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/credentialless-cache.tentative.window.html
-virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/credentialless-cross-origin-isolated.tentative.window.html
-virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/credentialless-fetch.https.tentative.window.html
-virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/credentialless-link.https.tentative.window.html
-virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/credentialless-redirect.tentative.window.html
-virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/credentialless-script.https.tentative.window.html
-virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/credentialless-video.https.tentative.window.html
-virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/isolate-and-require-corp-load-from-cache-storage.tentative.https.html
-virtual/document-isolation-policy/external/wpt/html/document-isolation-policy/isolate-and-require-corp.tentative.https.html
 virtual/force-eager/external/wpt/measure-memory/iframe.cross-origin.https.window.html
 virtual/force-eager/external/wpt/measure-memory/iframe.same-origin.https.window.html
 virtual/force-eager/external/wpt/measure-memory/main-frame.https.window.html

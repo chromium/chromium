@@ -22,7 +22,7 @@
 @property(nonatomic, readwrite) BOOL userVerificationRequired;
 
 // The relying party identifier for this request.
-@property(strong, nonatomic, readwrite) NSString* relyingPartyIdentifier;
+@property(copy, nonatomic, readwrite) NSString* relyingPartyIdentifier;
 
 // A list of allowed credential IDs for this request. An empty list means all
 // credentials are allowed.
@@ -33,7 +33,7 @@
 @property(nonatomic, readwrite) BOOL algorithmIsSupported;
 
 // The user name of the passkey credential.
-@property(strong, nonatomic, readwrite) NSString* userName;
+@property(copy, nonatomic, readwrite) NSString* userName;
 
 // The user handle of the passkey credential.
 @property(strong, nonatomic, readwrite) NSData* userHandle;

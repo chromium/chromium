@@ -17,6 +17,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/payments/content/browser_binding/passkey_browser_binder.h"
@@ -355,7 +356,7 @@ void SecurePaymentConfirmationAppFactory::Create(
 
 #if BUILDFLAG(IS_ANDROID)
 void SecurePaymentConfirmationAppFactory::SetBrowserBoundKeyStoreForTesting(
-    std::unique_ptr<BrowserBoundKeyStore> key_store) {
+    scoped_refptr<BrowserBoundKeyStore> key_store) {
   browser_bound_key_store_for_testing_ = std::move(key_store);
 }
 #endif  // BUILDFLAG(IS_ANDROID)

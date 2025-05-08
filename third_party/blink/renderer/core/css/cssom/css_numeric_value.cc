@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -376,7 +377,8 @@ CSSUnitValue* CSSNumericValue::to(const String& unit_string,
 
   CSSUnitValue* result = to(target_unit);
   if (!result) {
-    exception_state.ThrowTypeError("Cannot convert to " + unit_string);
+    exception_state.ThrowTypeError(
+        WTF::StrCat({"Cannot convert to ", unit_string}));
     return nullptr;
   }
 

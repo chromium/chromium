@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/omnibox/browser/answers_cache.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -131,8 +132,8 @@ class SearchProvider : public BaseSearchProvider,
     // by this class.
     bool equal(const std::u16string& default_provider,
                const std::u16string& keyword_provider) const {
-      return (default_provider == default_provider_) &&
-          (keyword_provider == keyword_provider_);
+      return default_provider == default_provider_ &&
+             keyword_provider == keyword_provider_;
     }
 
     // Resets the cached providers.
@@ -172,8 +173,7 @@ class SearchProvider : public BaseSearchProvider,
 
   // AutocompleteProvider:
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
-  void Stop(bool clear_cached_results,
-            bool due_to_user_inactivity) override;
+  void Stop(AutocompleteStopReason stop_reason) override;
 
   // BaseSearchProvider:
   bool ShouldAppendExtraParams(
@@ -424,7 +424,7 @@ class SearchProvider : public BaseSearchProvider,
   GURL top_navigation_suggestion_;
 
   // Answers prefetch management.
-  AnswersCache answers_cache_;  // Cache for last answers seen.
+  AnswersCache answers_cache_;      // Cache for last answers seen.
   AnswersQueryData prefetch_data_;  // Data to use for query prefetching.
 
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>

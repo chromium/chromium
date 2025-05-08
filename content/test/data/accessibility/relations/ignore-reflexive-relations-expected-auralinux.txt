@@ -1,3 +1,3 @@
 [document web]
-++[paragraph]
+++[paragraph] details-from:aria-details
 ++++[static] name='Self referential node'

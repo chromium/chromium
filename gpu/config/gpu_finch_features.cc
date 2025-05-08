@@ -228,7 +228,7 @@ BASE_FEATURE(kEnableDrDc,
 
 // Enable WebGPU on gpu service side only. This is used with origin trial and
 // enabled by default on supported platforms.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_ANDROID)
 #define WEBGPU_ENABLED base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -267,7 +267,7 @@ const base::FeatureParam<std::string> kWGSLUnsafeFeatures{
 
 BASE_FEATURE(kWebGPUUseTintIR,
              "WebGPUUseTintIR",
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -379,11 +379,10 @@ const base::FeatureParam<bool> kSkiaGraphiteDawnBackendValidation{
     &kSkiaGraphite, "dawn_backend_validation", false};
 
 // Whether Dawn backend debug labels are enabled for Skia Graphite.
-// Only enable backend labels by default on Windows or DCHECK builds on other
-// platforms since it can have non-trivial performance overhead e.g. with Metal.
+// Only enable backend labels by default on DCHECK builds since it
+// can have non-trivial performance overhead e.g. with Metal.
 const base::FeatureParam<bool> kSkiaGraphiteDawnBackendDebugLabels{
-    &kSkiaGraphite, "dawn_backend_debug_labels",
-    BUILDFLAG(IS_WIN) || DCHECK_IS_ON()};
+    &kSkiaGraphite, "dawn_backend_debug_labels", DCHECK_IS_ON()};
 
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kSkiaGraphiteDawnUseD3D12,

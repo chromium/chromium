@@ -33,7 +33,7 @@ class TemplateURLService;
 @property(nonatomic, strong) OmniboxPedalAnnotator* pedalAnnotator;
 
 /// Whether or not browser is in incognito mode.
-@property(nonatomic, assign) BOOL isIncognito;
+@property(nonatomic, assign) BOOL incognito;
 
 /// TemplateURLService to observe default search engine change.
 @property(nonatomic, assign) TemplateURLService* templateURLService;

@@ -5,6 +5,9 @@
 import 'chrome://resources/cr_elements/cr_lazy_list/cr_lazy_list.js';
 import '/strings.m.js';
 import './item.js';
+// <if expr="not is_chromeos">
+import './promo_card.js';
+// </if>
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrLazyListElement} from 'chrome://resources/cr_elements/cr_lazy_list/cr_lazy_list.js';
@@ -55,6 +58,7 @@ export class BookmarksListElement extends BookmarksListElementBase {
       selectedFolder_: {type: String},
       selectedItems_: {type: Object},
       focusedIndex_: {type: Number},
+      shouldShowPromoCard_: {type: Boolean},
     };
   }
 
@@ -64,6 +68,7 @@ export class BookmarksListElement extends BookmarksListElementBase {
   private accessor searchTerm_: string = '';
   protected accessor selectedFolder_: string = '';
   private accessor selectedItems_: Set<string> = new Set();
+  protected accessor shouldShowPromoCard_: boolean = false;
 
   override firstUpdated() {
     this.addEventListener('click', () => this.deselectItems_());
@@ -267,9 +272,8 @@ export class BookmarksListElement extends BookmarksListElementBase {
     getAnnouncerInstance().announce(loadTimeData.getString('importEnded'));
   }
 
-  protected async onItemKeydown_(e: KeyboardEvent) {
+  protected onItemKeydown_(e: KeyboardEvent) {
     let handled = true;
-    const list = this.$.list;
     let focusMoved = false;
     let focusedIndex = Number((e.target as HTMLElement).dataset['index']);
     const oldFocusedIndex = focusedIndex;
@@ -299,34 +303,21 @@ export class BookmarksListElement extends BookmarksListElementBase {
     }
 
     if (focusMoved) {
+      // Focus only moves if the key is an arrow key or page up/down, which
+      // means we've handled the key event.
       focusedIndex =
           Math.min(this.displayedIds_.length - 1, Math.max(0, focusedIndex));
       this.focusedIndex_ = focusedIndex;
-      const element = await list.ensureItemRendered(focusedIndex);
-      element.focus();
+      assert(handled);
+      e.stopPropagation();
 
-      if (cursorModifier && !e.shiftKey) {
-        this.dispatch(updateAnchor(this.displayedIds_[focusedIndex]!));
-      } else {
-        // If shift-selecting with no anchor, use the old focus index.
-        if (e.shiftKey && this.getState().selection.anchor === null) {
-          this.dispatch(updateAnchor(this.displayedIds_[oldFocusedIndex]!));
-        }
-
-        // If the focus moved from something other than a Ctrl + move event,
-        // update the selection.
-        const config = {
-          clear: !cursorModifier,
-          range: e.shiftKey,
-          toggle: false,
-        };
-
-        this.dispatch(selectItem(
-            this.displayedIds_[focusedIndex]!, this.getState(), config));
-      }
+      // Once the item is rendered, update the anchor and config if needed.
+      this.updateAnchorsAndSelectionForFocusChange_(
+          e.shiftKey, cursorModifier, oldFocusedIndex, focusedIndex);
+      return;
     }
 
-    // Prevent the iron-list from changing focus on enter.
+    // Prevent the cr-lazy-list from changing focus on enter.
     if (e.key === 'Enter') {
       if ((e.composedPath()[0] as HTMLElement).tagName === 'CR-ICON-BUTTON') {
         return;
@@ -343,6 +334,32 @@ export class BookmarksListElement extends BookmarksListElementBase {
 
     if (handled) {
       e.stopPropagation();
+    }
+  }
+
+  private async updateAnchorsAndSelectionForFocusChange_(
+      shiftKey: boolean, cursorModifier: boolean, oldFocusedIndex: number,
+      focusedIndex: number) {
+    const element = await this.$.list.ensureItemRendered(focusedIndex);
+    element.focus();
+
+    if (cursorModifier && !shiftKey) {
+      this.dispatch(updateAnchor(this.displayedIds_[focusedIndex]!));
+    } else {
+      // If shift-selecting with no anchor, use the old focus index.
+      if (shiftKey && this.getState().selection.anchor === null) {
+        this.dispatch(updateAnchor(this.displayedIds_[oldFocusedIndex]!));
+      }
+      // If the focus moved from something other than a Ctrl + move event,
+      // update the selection.
+      const config = {
+        clear: !cursorModifier,
+        range: shiftKey,
+        toggle: false,
+      };
+
+      this.dispatch(selectItem(
+          this.displayedIds_[focusedIndex]!, this.getState(), config));
     }
   }
 
@@ -382,6 +399,10 @@ export class BookmarksListElement extends BookmarksListElementBase {
 
   protected getAriaSelected_(id: string): boolean {
     return this.selectedItems_.has(id);
+  }
+
+  protected updateShouldShowPromoCard_(e: Event) {
+    this.shouldShowPromoCard_ = (e as CustomEvent).detail.shouldShowPromoCard;
   }
 
   setDisplayedIdsForTesting(ids: string[]) {

@@ -88,8 +88,7 @@ class TransactionTest : public testing::Test {
 
     bucket_context_->InitBackingStoreIfNeeded(true);
     db_ = bucket_context_->AddDatabase(
-        u"db", std::make_unique<Database>(u"db", *bucket_context_,
-                                          Database::Identifier()));
+        u"db", std::make_unique<Database>(u"db", *bucket_context_));
   }
 
   void TearDown() override { db_ = nullptr; }
@@ -109,11 +108,6 @@ class TransactionTest : public testing::Test {
 
   Status DummyOperation(Status result, Transaction* transaction) {
     return result;
-  }
-  Status AbortableOperation(AbortObserver* observer, Transaction* transaction) {
-    transaction->ScheduleAbortTask(
-        base::BindOnce(&AbortObserver::AbortTask, base::Unretained(observer)));
-    return Status::OK();
   }
 
   std::unique_ptr<Connection> CreateConnection(int priority = 0) {
@@ -160,8 +154,10 @@ class TransactionTest : public testing::Test {
         id, connection, object_store_ids, mode,
         blink::mojom::IDBTransactionDurability::Relaxed,
         BucketContextHandle(*bucket_context_),
-        std::make_unique<FakeTransaction>(commit_phase_two_error_status, mode,
-                                          *bucket_context_->backing_store()));
+        std::make_unique<FakeTransaction>(
+            commit_phase_two_error_status,
+            db_->backing_store_db()->CreateTransaction(
+                blink::mojom::IDBTransactionDurability::Relaxed, mode)));
 
     Transaction* transaction_reference = transaction.get();
     connection->transactions_[id] = std::move(transaction);
@@ -585,31 +581,6 @@ TEST_F(TransactionTest, SchedulePreemptiveTask) {
   EXPECT_FALSE(bucket_context_);
 }
 
-TEST_P(TransactionTestMode, AbortTasks) {
-  std::unique_ptr<Connection> connection = CreateConnection();
-  Transaction* transaction = CreateFakeTransactionWithCommitPhaseTwoError(
-      connection.get(), /*id=*/0, /*object_store_ids=*/{},
-      /*mode=*/GetParam(), Status::Corruption("Ouch."));
-  db_ = nullptr;
-
-  AbortObserver observer;
-  transaction->ScheduleTask(base::BindOnce(&TransactionTest::AbortableOperation,
-                                           base::Unretained(this),
-                                           base::Unretained(&observer)));
-
-  // Pump the message loop so that the transaction completes all pending tasks,
-  // otherwise it will defer the commit.
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(observer.abort_task_called());
-  transaction->SetCommitFlag();
-  RunPostedTasks();
-  EXPECT_TRUE(observer.abort_task_called());
-  // An error was reported which deletes the backing store, as well as the
-  // bucket context by way of `OnDbReadyForDestruction`.
-  EXPECT_FALSE(bucket_context_);
-}
-
 TEST_P(TransactionTestMode, AbortPreemptive) {
   std::unique_ptr<Connection> connection = CreateConnection();
   Transaction* transaction =
@@ -663,15 +634,17 @@ INSTANTIATE_TEST_SUITE_P(Transactions,
                          ::testing::ValuesIn(kTestModes));
 
 TEST_F(TransactionTest, AbortCancelsLockRequest) {
-  const int64_t id = 0;
+  std::unique_ptr<Connection> connection = CreateConnection();
+
   const int64_t object_store_id = 1ll;
 
   // Acquire a lock to block the transaction's lock acquisition.
   std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests;
   lock_requests.emplace_back(GetDatabaseLockId(u"name"),
                              PartitionedLockManager::LockType::kShared);
-  lock_requests.emplace_back(GetObjectStoreLockId(id, object_store_id),
-                             PartitionedLockManager::LockType::kExclusive);
+  lock_requests.emplace_back(
+      db_->backing_store_db()->GetLockId(object_store_id),
+      PartitionedLockManager::LockType::kExclusive);
   bool locks_received = false;
   PartitionedLockHolder temp_lock_receiver;
   lock_manager().AcquireLocks(lock_requests, temp_lock_receiver,
@@ -680,10 +653,9 @@ TEST_F(TransactionTest, AbortCancelsLockRequest) {
 
   // Create and register the transaction, which should request locks and wait
   // for `temp_lock_receiver` to release the locks.
-  std::unique_ptr<Connection> connection = CreateConnection();
-  Transaction* transaction =
-      CreateTransaction(connection.get(), id, {object_store_id},
-                        blink::mojom::IDBTransactionMode::ReadWrite);
+  Transaction* transaction = CreateTransaction(
+      connection.get(), /*transaction_id=*/0, {object_store_id},
+      blink::mojom::IDBTransactionMode::ReadWrite);
   EXPECT_EQ(transaction->state(), Transaction::CREATED);
 
   // Abort the transaction, which should cancel the

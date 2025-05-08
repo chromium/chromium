@@ -19,12 +19,9 @@
 #include "chrome/browser/ash/crosapi/device_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/device_oauth2_token_service_ash.h"
 #include "chrome/browser/ash/crosapi/document_scan_ash.h"
-#include "chrome/browser/ash/crosapi/file_change_service_bridge_ash.h"
 #include "chrome/browser/ash/crosapi/file_system_access_cloud_identifier_provider_ash.h"
 #include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
-#include "chrome/browser/ash/crosapi/full_restore_ash.h"
 #include "chrome/browser/ash/crosapi/fullscreen_controller_ash.h"
-#include "chrome/browser/ash/crosapi/identity_manager_ash.h"
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
 #include "chrome/browser/ash/crosapi/kiosk_session_service_ash.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
@@ -33,11 +30,7 @@
 #include "chrome/browser/ash/crosapi/media_ui_ash.h"
 #include "chrome/browser/ash/crosapi/multi_capture_service_ash.h"
 #include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
-#include "chrome/browser/ash/crosapi/networking_private_ash.h"
 #include "chrome/browser/ash/crosapi/parent_access_ash.h"
-#include "chrome/browser/ash/crosapi/payment_app_instance_ash.h"
-#include "chrome/browser/ash/crosapi/policy_service_ash.h"
-#include "chrome/browser/ash/crosapi/remoting_ash.h"
 #include "chrome/browser/ash/crosapi/structured_metrics_service_ash.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
@@ -118,9 +111,7 @@ CrosapiAsh::CrosapiAsh()
           std::make_unique<FileSystemAccessCloudIdentifierProviderAsh>()),
       file_system_provider_service_ash_(
           std::make_unique<FileSystemProviderServiceAsh>()),
-      full_restore_ash_(std::make_unique<FullRestoreAsh>()),
       fullscreen_controller_ash_(std::make_unique<FullscreenControllerAsh>()),
-      identity_manager_ash_(std::make_unique<IdentityManagerAsh>()),
       keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
       kiosk_session_service_ash_(std::make_unique<KioskSessionServiceAsh>()),
       local_printer_ash_(std::make_unique<LocalPrinterAsh>()),
@@ -129,10 +120,7 @@ CrosapiAsh::CrosapiAsh()
       media_ui_ash_(std::make_unique<MediaUIAsh>()),
       multi_capture_service_ash_(std::make_unique<MultiCaptureServiceAsh>()),
       networking_attributes_ash_(std::make_unique<NetworkingAttributesAsh>()),
-      networking_private_ash_(std::make_unique<NetworkingPrivateAsh>()),
       parent_access_ash_(std::make_unique<ParentAccessAsh>()),
-      payment_app_instance_ash_(std::make_unique<PaymentAppInstanceAsh>()),
-      policy_service_ash_(std::make_unique<PolicyServiceAsh>()),
       telemetry_diagnostic_routine_service_ash_(
           std::make_unique<ash::TelemetryDiagnosticsRoutineServiceAsh>()),
       telemetry_event_service_ash_(
@@ -140,7 +128,6 @@ CrosapiAsh::CrosapiAsh()
       telemetry_management_service_ash_(
           std::make_unique<ash::TelemetryManagementServiceAsh>()),
       probe_service_ash_(std::make_unique<ash::ProbeServiceAsh>()),
-      remoting_ash_(std::make_unique<RemotingAsh>()),
       print_preview_webcontents_adapter_ash_(
           std::make_unique<ash::printing::PrintPreviewWebcontentsAdapterAsh>()),
       structured_metrics_service_ash_(
@@ -220,19 +207,6 @@ void CrosapiAsh::BindDocumentScan(
   document_scan_ash_->BindReceiver(std::move(receiver));
 }
 
-void CrosapiAsh::BindFileChangeServiceBridge(
-    mojo::PendingReceiver<crosapi::mojom::FileChangeServiceBridge> receiver) {
-  // NOTE: The `FileChangeServiceBridgeAsh` is created lazily as the Ash profile
-  // is not yet ready on `CrosapiAsh` construction.
-  if (!file_change_service_bridge_ash_) {
-    Profile* const profile = GetAshProfile();
-    CHECK(profile);
-    file_change_service_bridge_ash_ =
-        std::make_unique<FileChangeServiceBridgeAsh>(profile);
-  }
-  file_change_service_bridge_ash_->BindReceiver(std::move(receiver));
-}
-
 void CrosapiAsh::BindFileSystemAccessCloudIdentifierProvider(
     mojo::PendingReceiver<
         crosapi::mojom::FileSystemAccessCloudIdentifierProvider> receiver) {
@@ -245,11 +219,6 @@ void CrosapiAsh::BindFileSystemProviderService(
   file_system_provider_service_ash_->BindReceiver(std::move(receiver));
 }
 
-void CrosapiAsh::BindFullRestore(
-    mojo::PendingReceiver<crosapi::mojom::FullRestore> receiver) {
-  full_restore_ash_->BindReceiver(std::move(receiver));
-}
-
 void CrosapiAsh::BindFullscreenController(
     mojo::PendingReceiver<crosapi::mojom::FullscreenController> receiver) {
   fullscreen_controller_ash_->BindReceiver(std::move(receiver));
@@ -258,11 +227,6 @@ void CrosapiAsh::BindFullscreenController(
 void CrosapiAsh::BindHidManager(
     mojo::PendingReceiver<device::mojom::HidManager> receiver) {
   content::GetDeviceService().BindHidManager(std::move(receiver));
-}
-
-void CrosapiAsh::BindIdentityManager(
-    mojo::PendingReceiver<crosapi::mojom::IdentityManager> receiver) {
-  identity_manager_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindInSessionAuth(
@@ -340,27 +304,9 @@ void CrosapiAsh::BindNetworkingAttributes(
   networking_attributes_ash_->BindReceiver(std::move(receiver));
 }
 
-void CrosapiAsh::BindNetworkingPrivate(
-    mojo::PendingReceiver<mojom::NetworkingPrivate> receiver) {
-  networking_private_ash_->BindReceiver(std::move(receiver));
-}
-
 void CrosapiAsh::BindParentAccess(
     mojo::PendingReceiver<mojom::ParentAccess> receiver) {
   parent_access_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindPaymentAppInstance(
-    mojo::PendingReceiver<chromeos::payments::mojom::PaymentAppInstance>
-        receiver) {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  payment_app_instance_ash_->Initialize(profile);
-  payment_app_instance_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindPolicyService(
-    mojo::PendingReceiver<mojom::PolicyService> receiver) {
-  policy_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindPrintPreviewCrosDelegate(
@@ -390,10 +336,6 @@ void CrosapiAsh::BindRemoteAppsLacrosBridge(
     return;
   }
   remote_apps_manager->BindLacrosBridgeInterface(std::move(receiver));
-}
-
-void CrosapiAsh::BindRemoting(mojo::PendingReceiver<mojom::Remoting> receiver) {
-  remoting_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindSensorHalClient(

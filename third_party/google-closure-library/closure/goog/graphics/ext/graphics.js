@@ -223,7 +223,7 @@ goog.graphics.ext.Graphics.prototype.render = function(parentElement) {
  * Never transform a surface.
  * @override
  */
-goog.graphics.ext.Graphics.prototype.transform = goog.nullFunction;
+goog.graphics.ext.Graphics.prototype.transform = function() {};
 
 
 /**

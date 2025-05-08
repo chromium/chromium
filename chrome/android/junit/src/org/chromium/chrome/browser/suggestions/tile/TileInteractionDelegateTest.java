@@ -53,6 +53,7 @@ public class TileInteractionDelegateTest {
                 SuggestionsUiDelegate uiDelegate,
                 ContextMenuManager contextMenuManager,
                 Delegate tileGroupDelegate,
+                TileDragDelegate tileDragDelegate,
                 Observer observer,
                 OfflinePageBridge offlinePageBridge) {
             super(
@@ -60,6 +61,7 @@ public class TileInteractionDelegateTest {
                     uiDelegate,
                     contextMenuManager,
                     tileGroupDelegate,
+                    tileDragDelegate,
                     observer,
                     offlinePageBridge);
         }
@@ -81,6 +83,7 @@ public class TileInteractionDelegateTest {
     @Mock SuggestionsUiDelegate mSuggestionsUiDelegate;
     @Mock ContextMenuManager mContextMenuManager;
     @Mock TileGroup.Delegate mTileGroupDelegate;
+    @Mock TileGroup.TileDragDelegate mTileDragDelegate;
     @Mock OfflinePageBridge mOfflinePageBridge;
     @Mock private Runnable mSnapshotTileGridChangedRunnable;
     @Mock private Runnable mTileCountChangedRunnable;
@@ -118,6 +121,7 @@ public class TileInteractionDelegateTest {
                         mSuggestionsUiDelegate,
                         mContextMenuManager,
                         mTileGroupDelegate,
+                        mTileDragDelegate,
                         mTileGroupObserver,
                         mOfflinePageBridge);
         tileGroup.onIconMadeAvailable(new GURL("https://example.com"));
@@ -150,6 +154,7 @@ public class TileInteractionDelegateTest {
                         mSuggestionsUiDelegate,
                         mContextMenuManager,
                         mTileGroupDelegate,
+                        mTileDragDelegate,
                         mTileGroupObserver,
                         mOfflinePageBridge);
         tileGroup.onIconMadeAvailable(new GURL("https://example.com"));
@@ -173,6 +178,7 @@ public class TileInteractionDelegateTest {
                         mSuggestionsUiDelegate,
                         mContextMenuManager,
                         mTileGroupDelegate,
+                        mTileDragDelegate,
                         mTileGroupObserver,
                         mOfflinePageBridge);
         tileGroup.setTileForTesting(mTile);

@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/scoped_native_library.h"
 #include "base/threading/sequence_local_storage_slot.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/hstring_reference.h"
 
@@ -23,15 +24,11 @@ using CreateDispatcherQueueControllerProc =
     decltype(&::CreateDispatcherQueueController);
 namespace WUC = ABI::Windows::UI::Composition;
 
-FARPROC LoadCoreMessagingFunction(const char* function_name) {
-  static HMODULE const handle = base::LoadSystemLibrary(L"CoreMessaging.dll");
-  return handle ? ::GetProcAddress(handle, function_name) : nullptr;
-}
-
 CreateDispatcherQueueControllerProc GetOrCreateDispatcherQueueControllerProc() {
   static CreateDispatcherQueueControllerProc const function =
       reinterpret_cast<CreateDispatcherQueueControllerProc>(
-          LoadCoreMessagingFunction("CreateDispatcherQueueController"));
+          WUCBackdrop::LoadCoreMessagingFunction(
+              "CreateDispatcherQueueController"));
   return function;
 }
 
@@ -142,6 +139,14 @@ void WUCBackdrop::UpdateBackdropColor(SkColor color) {
                                      static_cast<BYTE>(SkColorGetG(color)),
                                      static_cast<BYTE>(SkColorGetB(color))});
   CHECK_EQ(hr, S_OK);
+}
+
+FARPROC WUCBackdrop::LoadCoreMessagingFunction(const char* function_name) {
+  static HMODULE handle = [] {
+    base::ScopedAllowBlocking scoped_allow_blocking;
+    return base::LoadSystemLibrary(L"CoreMessaging.dll");
+  }();
+  return handle ? ::GetProcAddress(handle, function_name) : nullptr;
 }
 
 WUCBackdrop::~WUCBackdrop() = default;

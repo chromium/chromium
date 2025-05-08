@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_wallet_usage_data.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card_benefit.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
@@ -1435,12 +1436,12 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest, MaybeUpdateSuggestionsWithBnpl) {
 
   // Add BNPL issuers.
   payments_data().AddBnplIssuer(BnplIssuer(
-      /*instrument_id=*/1234, /*issuer_id=*/"zip",
+      /*instrument_id=*/1234, BnplIssuer::IssuerId::kBnplZip,
       {BnplIssuer::EligiblePriceRange("USD",
                                       /*price_lower_bound=*/50'000'000,
                                       /*price_upper_bound=*/200'000'000)}));
   payments_data().AddBnplIssuer(BnplIssuer(
-      /*instrument_id=*/5678, /*issuer_id=*/"dummy",
+      /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplAffirm,
       {BnplIssuer::EligiblePriceRange("USD",
                                       /*price_lower_bound=*/34'000'000,
                                       /*price_upper_bound=*/200'000'000)}));
@@ -1515,17 +1516,17 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
        GetBnplPriceLowerBound_ReturnLowerAmount) {
   std::vector<BnplIssuer> bnpl_issuers = {
       BnplIssuer(
-          /*instrument_id=*/5678, /*issuer_id=*/"dummy",
+          /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplAffirm,
           {BnplIssuer::EligiblePriceRange("USD",
                                           /*price_lower_bound=*/34'666'666,
                                           /*price_upper_bound=*/200'000'000)}),
       BnplIssuer(
-          /*instrument_id=*/5678, /*issuer_id=*/"dummy2",
+          /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplZip,
           {BnplIssuer::EligiblePriceRange("USD",
                                           /*price_lower_bound=*/34'000'000,
                                           /*price_upper_bound=*/200'000'000)}),
       BnplIssuer(
-          /*instrument_id=*/5678, /*issuer_id=*/"dummy3",
+          /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplAfterpay,
           {BnplIssuer::EligiblePriceRange("USD",
                                           /*price_lower_bound=*/22'000'000,
                                           /*price_upper_bound=*/200'000'000)})};
@@ -1539,7 +1540,7 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
        GetBnplPriceLowerBound_ReturnLowerAmountInUsd) {
   std::vector<BnplIssuer> bnpl_issuers = {
       BnplIssuer(
-          /*instrument_id=*/5678, /*issuer_id=*/"dummy",
+          /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplAffirm,
           {BnplIssuer::EligiblePriceRange("USD",
                                           /*price_lower_bound=*/34'000'000,
                                           /*price_upper_bound=*/200'000'000),
@@ -1547,7 +1548,7 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
                                           /*price_lower_bound=*/20'000'000,
                                           /*price_upper_bound=*/200'000'000)}),
       BnplIssuer(
-          /*instrument_id=*/5678, /*issuer_id=*/"dummy2",
+          /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplAfterpay,
           {BnplIssuer::EligiblePriceRange("USD",
                                           /*price_lower_bound=*/22'000'000,
                                           /*price_upper_bound=*/200'000'000)})};
@@ -1560,7 +1561,7 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
 TEST_F(PaymentsSuggestionGeneratorBnplTest,
        GetBnplPriceLowerBound_AmountInInteger) {
   std::vector<BnplIssuer> bnpl_issuers = {BnplIssuer(
-      /*instrument_id=*/5678, /*issuer_id=*/"dummy2",
+      /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplAffirm,
       {BnplIssuer::EligiblePriceRange("USD",
                                       /*price_lower_bound=*/34'000'000,
                                       /*price_upper_bound=*/200'000'000)})};
@@ -1574,7 +1575,7 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
 TEST_F(PaymentsSuggestionGeneratorBnplTest,
        GetBnplPriceLowerBound_NoMatchingPriceRange) {
   std::vector<BnplIssuer> bnpl_issuers = {BnplIssuer(
-      /*instrument_id=*/5678, /*issuer_id=*/"dummy2",
+      /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplAffirm,
       {BnplIssuer::EligiblePriceRange("GBP",
                                       /*price_lower_bound=*/34'000'000,
                                       /*price_upper_bound=*/200'000'000)})};
@@ -1588,7 +1589,7 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
 TEST_F(PaymentsSuggestionGeneratorBnplTest,
        GetBnplPriceLowerBound_AmountWithMoreThanTwoDecimal) {
   std::vector<BnplIssuer> bnpl_issuers = {BnplIssuer(
-      /*instrument_id=*/5678, /*issuer_id=*/"dummy",
+      /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplAffirm,
       {BnplIssuer::EligiblePriceRange("USD",
                                       /*price_lower_bound=*/34'666'666,
                                       /*price_upper_bound=*/200'000'000)})};
@@ -1601,7 +1602,7 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
 TEST_F(PaymentsSuggestionGeneratorBnplTest,
        GetBnplPriceLowerBound_AmountWithSingleDigitCents) {
   std::vector<BnplIssuer> bnpl_issuers = {BnplIssuer(
-      /*instrument_id=*/5678, /*issuer_id=*/"dummy2",
+      /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplAffirm,
       {BnplIssuer::EligiblePriceRange("USD",
                                       /*price_lower_bound=*/34'070'000,
                                       /*price_upper_bound=*/200'000'000)})};
@@ -1614,7 +1615,7 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
 TEST_F(PaymentsSuggestionGeneratorBnplTest,
        GetBnplPriceLowerBound_AmountWithMoreThanNintyNineCents) {
   std::vector<BnplIssuer> bnpl_issuers = {BnplIssuer(
-      /*instrument_id=*/5678, /*issuer_id=*/"dummy",
+      /*instrument_id=*/5678, BnplIssuer::IssuerId::kBnplAffirm,
       {BnplIssuer::EligiblePriceRange("USD",
                                       /*price_lower_bound=*/34'996'666,
                                       /*price_upper_bound=*/200'000'000)})};

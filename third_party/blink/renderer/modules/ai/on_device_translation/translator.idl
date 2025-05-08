@@ -12,7 +12,7 @@ dictionary TranslatorCreateCoreOptions {
 
 dictionary TranslatorCreateOptions : TranslatorCreateCoreOptions {
   AbortSignal signal;
-  AICreateMonitorCallback monitor;
+  CreateMonitorCallback monitor;
 };
 
 dictionary TranslatorTranslateOptions {
@@ -20,7 +20,7 @@ dictionary TranslatorTranslateOptions {
 };
 
 [
-  Exposed=(Window,Worker),
+  Exposed(Window TranslationAPI, Worker TranslationAPIForWorkers),
   RuntimeEnabled=TranslationAPI,
   SecureContext
 ]

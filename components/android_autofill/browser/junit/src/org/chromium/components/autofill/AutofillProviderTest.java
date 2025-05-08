@@ -54,7 +54,10 @@ import java.util.Collections;
 /** The unit tests for AutofillProvider. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.EnableFeatures({AndroidAutofillFeatures.ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND_NAME})
+@Features.EnableFeatures({
+    AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID_IN_CCT_NAME,
+    AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_PASSKEY_LONG_PRESS_NAME
+})
 public class AutofillProviderTest {
     private static final float EXPECTED_DIP_SCALE = 2;
     private static final int SCROLL_X = 15;
@@ -387,6 +390,18 @@ public class AutofillProviderTest {
         assertEquals(mFocusVirtualId, FormData.toFieldVirtualId(newSessionId, (short) focus));
 
         verify(mNativeMock, never()).onShowBottomSheetResult(anyLong(), anyBoolean(), anyBoolean());
+    }
+
+    @Test
+    public void testCallsNativeToTriggerPasskeys() {
+        mAutofillProvider.triggerPasskeyRequest();
+        verify(mNativeMock).onTriggerPasskeyRequest(eq(mMockedNativeAndroidAutofillProvider));
+    }
+
+    @Test
+    public void testCallsNativeToProvidePasskeyAvailability() {
+        mAutofillProvider.shouldOfferPasskeyEntry();
+        verify(mNativeMock).hasPasskeyRequest(eq(mMockedNativeAndroidAutofillProvider));
     }
 
     FormData setupPrefillRequest(int sessionId) {

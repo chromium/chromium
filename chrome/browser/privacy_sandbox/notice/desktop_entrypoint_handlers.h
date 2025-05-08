@@ -7,6 +7,7 @@
 #include "content/public/browser/navigation_handle.h"
 
 class Profile;
+class BrowserWindowInterface;
 
 namespace privacy_sandbox {
 
@@ -14,17 +15,18 @@ namespace privacy_sandbox {
 class EntryPointHandler {
  public:
   explicit EntryPointHandler(
-      base::RepeatingCallback<void()> entry_point_callback);
+      base::RepeatingCallback<void(BrowserWindowInterface*)>
+          entry_point_callback);
   virtual ~EntryPointHandler();
 
   // Alerts callback location that entrypoint checks have passed and that a view
   // may show.
-  void HandleEntryPoint();
+  void HandleEntryPoint(BrowserWindowInterface* browser_interface);
 
  protected:
   // Called when we want to inform the callback location a valid entrypoint has
   // been encountered.
-  base::RepeatingCallback<void()> entry_point_callback_;
+  base::RepeatingCallback<void(BrowserWindowInterface*)> entry_point_callback_;
 };
 
 // This class handles view manager entrypoints triggered by new navigation
@@ -32,7 +34,13 @@ class EntryPointHandler {
 class NavigationHandler : public EntryPointHandler {
  public:
   explicit NavigationHandler(
-      base::RepeatingCallback<void()> entry_point_callback);
+      base::RepeatingCallback<void(BrowserWindowInterface*)>
+          entry_point_callback);
+
+  // Returns whether |url| is suitable to display the Privacy Sandbox prompt
+  // over. Only about:blank and certain chrome:// URLs are considered
+  // suitable.
+  static bool IsUrlSuitableForPrompt(const GURL& url);
 
   // Performs checks required to determine whether a view can be shown on a
   // navigation.

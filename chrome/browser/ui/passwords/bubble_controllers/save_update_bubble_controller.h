@@ -27,6 +27,9 @@ class SaveUpdateBubbleController
   // by the user.
   void OnNeverForThisSiteClicked();
 
+  // Called by the view when the "Not now" button is clicked.
+  void OnNotNowClicked();
+
   // The password bubble can switch its state between "save" and "update"
   // depending on the user input. |state_| only captures the correct state on
   // creation. This method returns true iff the current state is "update".

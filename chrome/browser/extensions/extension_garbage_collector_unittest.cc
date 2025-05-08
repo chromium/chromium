@@ -29,6 +29,8 @@
 #include "content/public/browser/plugin_service.h"
 #endif
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 
 class ExtensionGarbageCollectorUnitTest : public ExtensionServiceTestBase {

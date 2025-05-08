@@ -586,4 +586,23 @@ TEST_F(SavedTabGroupBarUnitTest, GroupWithNoTabsDoesntShow) {
   EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
 }
 
+TEST_F(SavedTabGroupBarUnitTest, GroupLoadFromModelInOrder) {
+  base::Uuid uuid1 = AddGroupFromLocal();
+  base::Uuid uuid2 = AddGroupFromLocal();
+  base::Uuid uuid3 = AddGroupFromLocal();
+
+  auto saved_tab_group_bar =
+      std::make_unique<SavedTabGroupBar>(browser(), false);
+  auto children = saved_tab_group_bar->children();
+
+  // Verify groups are shown in reverse order(last added groups show first).
+  EXPECT_EQ(4u, children.size());
+  EXPECT_EQ(uuid3,
+            views::AsViewClass<SavedTabGroupButton>(children[0])->guid());
+  EXPECT_EQ(uuid2,
+            views::AsViewClass<SavedTabGroupButton>(children[1])->guid());
+  EXPECT_EQ(uuid1,
+            views::AsViewClass<SavedTabGroupButton>(children[2])->guid());
+}
+
 }  // namespace tab_groups

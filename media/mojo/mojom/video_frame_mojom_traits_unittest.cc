@@ -18,6 +18,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -25,7 +26,6 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_layout.h"
 #include "media/mojo/mojom/traits_test_service.test-mojom.h"
-#include "media/video/fake_gpu_memory_buffer.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -636,44 +636,36 @@ TEST_F(VideoFrameStructTraitsTest, DmabufsVideoFrameTooSmall) {
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-// BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) because
-// media::FakeGpuMemoryBuffer supports NativePixmapHandle backed
-// GpuMemoryBufferHandle only. !BUILDFLAG(IS_OZONE) so as to force
-// GpuMemoryBufferSupport to select gfx::ClientNativePixmapFactoryDmabuf for
-// gfx::ClientNativePixmapFactory.
-// TODO(crbug.com/40286368): Allow this test without !BUILDFLAG(IS_OZONE)
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !BUILDFLAG(IS_OZONE)
-TEST_F(VideoFrameStructTraitsTest, GpuMemoryBufferSharedImageVideoFrame) {
+TEST_F(VideoFrameStructTraitsTest, MappableSharedImageVideoFrame) {
+  auto test_sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+  test_sii->UseTestGMBInSharedImageCreationWithBufferUsage();
   gfx::Size coded_size = gfx::Size(256, 256);
   gfx::Rect visible_rect(coded_size);
   auto timestamp = base::Milliseconds(1);
-  std::unique_ptr<gfx::GpuMemoryBuffer> gmb =
-      std::make_unique<FakeGpuMemoryBuffer>(
-          coded_size, gfx::BufferFormat::YUV_420_BIPLANAR);
-  gfx::BufferFormat expected_gmb_format = gmb->GetFormat();
-  gfx::Size expected_gmb_size = gmb->GetSize();
-  scoped_refptr<gpu::ClientSharedImage> shared_image =
-      gpu::ClientSharedImage::CreateForTesting();
-  auto frame = VideoFrame::WrapExternalGpuMemoryBuffer(
-      visible_rect, visible_rect.size(), std::move(gmb), shared_image,
-      gpu::SyncToken(), base::NullCallback(), timestamp);
+  auto si_format = viz::SinglePlaneFormat::kRGBA_8888;
+  const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  auto shared_image = test_sii->CreateSharedImage(
+      {si_format, coded_size, gfx::ColorSpace(),
+       gpu::SharedImageUsageSet(si_usage), "VideoFrameStructTraitsTest"},
+      gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ);
+  ASSERT_TRUE(shared_image);
+  auto frame = VideoFrame::WrapMappableSharedImage(
+      shared_image, test_sii->GenVerifiedSyncToken(), base::NullCallback(),
+      visible_rect, visible_rect.size(), timestamp);
+  ASSERT_TRUE(frame);
   ASSERT_TRUE(RoundTrip(&frame));
   ASSERT_TRUE(frame);
   ASSERT_EQ(frame->storage_type(), VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
   EXPECT_TRUE(frame->HasMappableGpuBuffer());
   EXPECT_FALSE(frame->metadata().end_of_stream);
-  EXPECT_EQ(frame->format(), PIXEL_FORMAT_NV12);
+  EXPECT_EQ(frame->format(), PIXEL_FORMAT_ABGR);
   EXPECT_EQ(frame->coded_size(), coded_size);
   EXPECT_EQ(frame->visible_rect(), visible_rect);
   EXPECT_EQ(frame->natural_size(), visible_rect.size());
   EXPECT_EQ(frame->timestamp(), timestamp);
   ASSERT_TRUE(frame->HasSharedImage());
-  EXPECT_EQ(frame->mailbox_holder(0).mailbox, shared_image->mailbox());
-  EXPECT_EQ(frame->GetGpuMemoryBufferForTesting()->GetFormat(),
-            expected_gmb_format);
-  EXPECT_EQ(frame->GetGpuMemoryBufferForTesting()->GetSize(),
-            expected_gmb_size);
+  ASSERT_EQ(frame->shared_image()->mailbox(), shared_image->mailbox());
 }
-#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
-        // !BUILDFLAG(IS_OZONE)
+
 }  // namespace media

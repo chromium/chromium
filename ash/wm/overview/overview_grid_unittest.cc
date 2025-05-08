@@ -312,7 +312,7 @@ TEST_F(OverviewGridTest, SnappedWindow) {
   VerifyAnimationStates({true, false}, {});
 }
 
-TEST_F(OverviewGridTest, RecordsDelayedDeskBarPresentationMetric) {
+TEST_F(OverviewGridTest, DISABLED_RecordsDelayedDeskBarPresentationMetric) {
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
 

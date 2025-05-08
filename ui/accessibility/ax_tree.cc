@@ -19,6 +19,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/safety_checks.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -925,6 +926,10 @@ void AXTree::Destroy() {
   if (!root_)
     return;
 
+#if DCHECK_IS_ON()
+  is_destroyed_ = true;
+#endif
+
   std::set<AXNodeID> deleting_node_ids;
   RecursivelyNotifyNodeWillBeDeletedForTreeTeardown(*root_, deleting_node_ids);
 
@@ -1167,6 +1172,13 @@ const std::set<AXTreeID> AXTree::GetAllChildTreeIds() const {
 }
 
 bool AXTree::Unserialize(const AXTreeUpdate& update) {
+  // This function is known to be heap allocation heavy and performance
+  // critical. Extra memory safety checks can introduce regression
+  // (https://crbug.com/388873485) and these are disabled here.
+  // TODO(https://crbug.com/391797366): Optimize memory allocation patterns and
+  // remove this exclusion.
+  base::ScopedSafetyChecksExclusion scoped_unsafe;
+
 #if AX_FAIL_FAST_BUILD() && !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
   for (const auto& new_data : update.nodes)
     CHECK(new_data.id != kInvalidAXNodeID)
@@ -1178,6 +1190,13 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
   }
 #endif  // AX_FAIL_FAST_BUILD()
 
+#if DCHECK_IS_ON()
+  ++unserialize_count_;
+  DCHECK(!is_destroyed_) << "Attempt to unserialize on a destroyed tree: #"
+                         << unserialize_count_ << " on "
+                         << update.ToString(true).substr(0, 1000);
+#endif
+
   event_data_ = std::make_unique<AXEvent>();
   event_data_->event_from = update.event_from;
   event_data_->event_from_action = update.event_from_action;
@@ -1187,11 +1206,17 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
   AXTreeUpdateState update_state(*this, update);
   const AXNodeID old_root_id = root_ ? root_->id() : kInvalidAXNodeID;
   if (old_root_id == kInvalidAXNodeID && update.root_id == kInvalidAXNodeID) {
-#if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+#if defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+    return false;
+#elif DCHECK_IS_ON()
+    DCHECK(false)
+        << "Tree must have already a valid root or update must have a "
+           "valid root: update #"
+        << unserialize_count_ << " with update:\n"
+        << update.ToString(true).substr(0, 1000);
+#else
     NOTREACHED() << "Tree must have already a valid root or update must have a "
                     "valid root.";
-#else
-    return false;
 #endif
   }
   // Accumulates the work that will be required to update the AXTree.

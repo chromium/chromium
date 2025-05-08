@@ -110,7 +110,7 @@ class FileTransferAnalysisDelegate : public ContentAnalysisInfo {
   virtual ~FileTransferAnalysisDelegate();
 
   // Create the FileTransferAnalysisDelegate. This function uses the factory if
-  // it is set via `SetFactorForTesting()`.
+  // it is set via `SetFactoryForTesting()`.
   //
   // For `block_until_verdict == 0`, the `destination_url` has to point to the
   // copied file/directory and not its parent. If it points to the parent, all
@@ -125,7 +125,7 @@ class FileTransferAnalysisDelegate : public ContentAnalysisInfo {
 
   // Set a factory for the FileTransferAnalysisDelegate.
   // Can be used in testing to create `MockFileTransferAnalysisDelegate`s.
-  static void SetFactorForTesting(FileTransferAnalysisDelegateFactory factory);
+  static void SetFactoryForTesting(FileTransferAnalysisDelegateFactory factory);
 
   // Returns a vector with the AnalysisSettings for file transfers from the
   // respective source url to the destination_url.
@@ -168,6 +168,7 @@ class FileTransferAnalysisDelegate : public ContentAnalysisInfo {
 
   // ContentAnalysisInfo:
   const AnalysisSettings& settings() const override;
+  signin::IdentityManager* identity_manager() const override;
   int user_action_requests_count() const override;
   std::string tab_title() const override;
   std::string user_action_id() const override;
@@ -175,6 +176,8 @@ class FileTransferAnalysisDelegate : public ContentAnalysisInfo {
   std::string url() const override;
   const GURL& tab_url() const override;
   ContentAnalysisRequest::Reason reason() const override;
+  google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>
+  referrer_chain() const override;
 
  protected:
   // For `block_until_verdict == 0`, the `destination_url` has to point to the

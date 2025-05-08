@@ -17,6 +17,10 @@ namespace trusted_vault {
 BASE_DECLARE_FEATURE(kSetClientEncryptionKeysJsApi);
 #endif
 
+#if BUILDFLAG(IS_MAC)
+BASE_DECLARE_FEATURE(kEnableICloudKeychainRecoveryFactor);
+#endif
+
 }  // namespace trusted_vault
 
 #endif  // COMPONENTS_TRUSTED_VAULT_FEATURES_H_

@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 import android.content.Context;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionProcessor;
 import org.chromium.components.omnibox.AutocompleteInput;
@@ -16,8 +16,9 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** The base processor implementation for the Carousel suggestions. */
+@NullMarked
 public abstract class BaseCarouselSuggestionProcessor implements SuggestionProcessor {
-    protected final @NonNull Context mContext;
+    protected final Context mContext;
     private final int mCarouselViewDecorationHeightPx;
 
     /**

@@ -111,10 +111,12 @@ class FamilyLinkUserLogRecordTest : public ::testing::Test {
 
     switch (web_filter_type) {
       case WebFilterType::kAllowAllSites:
-        pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, false);
+        pref_service_.SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
+                                            base::Value(false));
         break;
       case WebFilterType::kTryToBlockMatureSites:
-        pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, true);
+        pref_service_.SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
+                                            base::Value(true));
         break;
       case WebFilterType::kCertainSites:
         filter.SetDefaultFilteringBehavior(

@@ -107,5 +107,8 @@ struct SpeculationCandidate {
   // - No tag (null tag) is represented as
   //   - null `WTF::String` in blink/
   //   - nullopt `std::optional<std::string>` in content/
+  //
+  // This must not be empty, as when no tags are specified in rules, this should
+  // contain the null tag.
   array<string?> tags;
 };

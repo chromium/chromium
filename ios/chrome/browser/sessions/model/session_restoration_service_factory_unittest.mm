@@ -6,7 +6,6 @@
 
 #import "base/run_loop.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/task_environment.h"
 #import "base/types/cxx23_to_underlying.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/sessions/model/proto/storage.pb.h"
@@ -14,6 +13,7 @@
 #import "ios/chrome/browser/sessions/model/session_internal_util.h"
 #import "ios/chrome/browser/sessions/model/session_window_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -118,7 +118,7 @@ class SessionRestorationServiceFactoryTest : public PlatformTest {
   }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   base::HistogramTester histogram_tester_;
 };

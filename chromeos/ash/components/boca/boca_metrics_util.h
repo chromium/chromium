@@ -6,6 +6,8 @@
 #define CHROMEOS_ASH_COMPONENTS_BOCA_BOCA_METRICS_UTIL_H_
 
 #include "base/time/time.h"
+#include "chromeos/ash/components/boca/session_api/session_client_impl.h"
+#include "google_apis/common/api_error_codes.h"
 
 namespace ash::boca {
 inline constexpr char kBocaActionOfStudentJoinedSession[] =
@@ -38,6 +40,33 @@ inline constexpr char kBocaOnTaskNumOfTabsWhenSessionEnded[] =
     "Ash.Boca.OnTask.NumberOfTabsWhenSessionEnded";
 inline constexpr char kBocaOnTaskMaxNumOfTabsDuringSession[] =
     "Ash.Boca.OnTask.MaxNumberOfTabsDuringSession";
+inline constexpr char kBocaSpotlightGoogleApiCallErrorCodeTemplate[] =
+    "Ash.Boca.Spotlight.$1.ErrorCode";
+inline constexpr char kBocaSpotlightOnRegisterScreenRequestSent[] =
+    "RegisterScreen";
+inline constexpr char kBocaSpotlightViewStudentScreen[] = "ViewStudentScreen";
+inline constexpr char kBocaSpotlightEndViewStudentScreen[] =
+    "EndViewStudentScreen";
+inline constexpr char kBocaSpotlightSetViewScreenSessionActive[] =
+    "SetViewScreenSessionActive";
+inline constexpr char kBocaGoogleApiCallErrorCodeTemplate[] =
+    "Ash.Boca.$1.ErrorCode";
+inline constexpr char kBocaGetSession[] = "GetSession";
+inline constexpr char kBocaCreateSession[] = "CreateSession";
+inline constexpr char kBocaEndSession[] = "EndSession";
+inline constexpr char kBocaUpdateSession[] = "UpdateSession";
+inline constexpr char kBocaJoinSessionViaAccessCode[] =
+    "JoinSessionViaAccessCode";
+inline constexpr char kBocaUpdateCaption[] = "UpdateCaption";
+inline constexpr char kBocaAddStudents[] = "AddStudents";
+inline constexpr char kBocaRemoveStudent[] = "RemoveStudent";
+inline constexpr char kBocaUpdateStudentActivities[] =
+    "UpdateStudentActivities";
+inline constexpr char kBocaStudentHeartbeat[] = "StudentHeartbeat";
+inline static constexpr char kPollingResult[] = "Ash.Boca.PollingResult";
+inline static constexpr char kBocaTokenRetrievalIsValidation[] =
+    "Ash.Boca.TokenRetrievalIsValidation";
+inline constexpr char kBocaUploadToken[] = "UploadToken";
 
 // Records the percentage of the duration that a session was in a particular
 // locked or unlocked state.
@@ -84,6 +113,70 @@ void RecordOnTaskPodToggleTabStripVisibilityClicked();
 // Records the action of a student clicks move left or move right buttons in
 // OnTask pod.
 void RecordOnTaskPodSetSnapLocationClicked(bool is_left);
+
+// Records the error code of the spotlight OnRegisterScreenRequestSent calls.
+void RecordOnRegisterScreenRequestSentErrorCode(
+    google_apis::ApiErrorCode error_code);
+
+// Records the error code of the spotlight view student screen calls.
+void RecordViewStudentScreenErrorCode(google_apis::ApiErrorCode error_code);
+
+// Records the error code of the spotlight end view student screen calls.
+void RecordEndViewStudentScreenErrorCode(google_apis::ApiErrorCode error_code);
+
+// Records the error code of the spotlight set view screen session active calls.
+void RecordSetViewScreenSessionActiveErrorCode(
+    google_apis::ApiErrorCode error_code);
+
+// Records the error code of the spotlight Google Api calls.
+void RecordSpotlightGoogleApiErrorCode(const std::string& name,
+                                       google_apis::ApiErrorCode error_code);
+
+// Records the error code of the GetSession calls.
+void RecordGetSessionErrorCode(google_apis::ApiErrorCode error_code);
+
+// Records the error code of the CreateSession calls.
+void RecordCreateSessionErrorCode(google_apis::ApiErrorCode error_code);
+
+// Records the error code of the EndSession calls.
+void RecordEndSessionErrorCode(google_apis::ApiErrorCode error_code);
+
+// Records the error code of the UpdateSession calls.
+void RecordUpdateSessionErrorCode(google_apis::ApiErrorCode error_code);
+
+// Records the error code of the JoinSessionViaAccessCode calls.
+void RecordJoinSessionViaAccessCodeErrorCode(
+    google_apis::ApiErrorCode error_code);
+
+// Records the error code of the UpdateCaption calls.
+void RecordUpdateCaptionErrorCode(google_apis::ApiErrorCode error_code);
+
+// Records the error code of the AddStudent calls.
+void RecordAddStudentsErrorCode(google_apis::ApiErrorCode error_code);
+
+// Records the error code of the RemoveStudent calls.
+void RecordRemoveStudentErrorCode(google_apis::ApiErrorCode error_code);
+
+// Records the error code of the UpdateStudentActivities calls.
+void RecordUpdateStudentActivitiesErrorCode(
+    google_apis::ApiErrorCode error_code);
+
+// Records the error code of the StudentHeartBeat calls.
+void RecordStudentHeartBeatErrorCode(google_apis::ApiErrorCode error_code);
+
+// Records the error code of the UploadToken calls.
+void RecordUploadTokenErrorCode(google_apis::ApiErrorCode error_code);
+
+// Records the error code of the Google Api calls.
+void RecordGoogleApiErrorCode(const std::string& name,
+                              google_apis::ApiErrorCode error_code);
+
+// Records the session polling result.
+void RecordPollingResult(const ::boca::Session* previous_session,
+                         const ::boca::Session* current_session);
+
+// Records the token retrieval is validation status.
+void RecordTokenRetrievalIsValidation(const bool is_validation);
 
 }  // namespace ash::boca
 

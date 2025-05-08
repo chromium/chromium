@@ -176,6 +176,11 @@ class SharingService : public KeyedService,
       const send_tab_to_self::SendTabToSelfEntry* entry) override;
 
  private:
+  void ResetConnectionToSyncService();
+
+  // Overrides for KeyedService
+  void Shutdown() override;
+
   // Overrides for syncer::SyncServiceObserver.
   void OnSyncShutdown(syncer::SyncService* sync) override;
   void OnStateChanged(syncer::SyncService* sync) override;

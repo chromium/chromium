@@ -43,7 +43,8 @@ void AllTabContentsesList::Iterator::Next() {
 
     if (tab_iterator_ != (*browser_iterator_)->tab_strip_model()->end()) {
       cur_ = tab_iterator_.value()->GetContents();
-      tab_iterator_.value()++;
+      // Increment by reference has better performance.
+      ++(tab_iterator_.value());
       return;
     } else {
       tab_iterator_ = std::nullopt;

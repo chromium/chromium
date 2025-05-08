@@ -21,6 +21,7 @@
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/schemeful_site.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -208,11 +209,11 @@ void CreateImageAndWaitForCookieAccess(WebContents* web_contents,
   observer.Wait();
 }
 
-std::optional<StateValue> GetBtmState(BtmServiceImpl* dips_service,
+std::optional<StateValue> GetBtmState(BtmServiceImpl* btm_service,
                                       const GURL& url) {
   std::optional<StateValue> state;
 
-  auto* storage = dips_service->storage();
+  auto* storage = btm_service->storage();
   DCHECK(storage);
   storage->AsyncCall(&BtmStorage::Read)
       .WithArgs(url)
@@ -221,7 +222,7 @@ std::optional<StateValue> GetBtmState(BtmServiceImpl* dips_service,
           state = loaded_state.ToStateValue();
         }
       }));
-  WaitOnStorage(dips_service);
+  WaitOnStorage(btm_service);
 
   return state;
 }
@@ -406,9 +407,10 @@ bool TpcBlockingBrowserClient::IsFullCookieAccessAllowed(
     BrowserContext* browser_context,
     WebContents* web_contents,
     const GURL& url,
-    const blink::StorageKey& storage_key) {
+    const blink::StorageKey& storage_key,
+    net::CookieSettingOverrides overrides) {
   return IsFullCookieAccessAllowed(url, storage_key.ToNetSiteForCookies(),
-                                   storage_key.origin(), /*overrides=*/{});
+                                   storage_key.origin(), overrides);
 }
 
 void TpcBlockingBrowserClient::GrantCookieAccessDueToHeuristic(
@@ -434,7 +436,7 @@ void TpcBlockingBrowserClient::GrantCookieAccessDueToHeuristic(
                                  /*metadata=*/{});
 }
 
-bool TpcBlockingBrowserClient::ShouldDipsDeleteInteractionRecords(
+bool TpcBlockingBrowserClient::ShouldBtmDeleteInteractionRecords(
     uint64_t remove_mask) {
   return remove_mask & TpcBlockingBrowserClient::DATA_TYPE_HISTORY;
 }

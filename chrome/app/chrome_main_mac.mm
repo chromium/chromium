@@ -68,13 +68,11 @@ bool IsHelperAppLaunchedBySafeExamBrowser() {
     return false;
   }
 
-  std::string bundle_identifier;
-  if (base::Environment::Create()->GetVar("__CFBundleIdentifier",
-                                          &bundle_identifier)) {
-    return bundle_identifier == "org.safeexambrowser.SafeExamBrowser";
-  }
+  std::string bundle_identifier = base::Environment::Create()
+                                      ->GetVar("__CFBundleIdentifier")
+                                      .value_or(std::string());
 
-  return false;
+  return bundle_identifier == "org.safeexambrowser.SafeExamBrowser";
 }
 
 }  // namespace
@@ -85,7 +83,8 @@ void SetUpBundleOverrides() {
         chrome::GetFrameworkBundlePath());
 
     NSBundle* base_bundle = chrome::OuterAppBundle();
-    base::apple::SetBaseBundleID(base_bundle.bundleIdentifier.UTF8String);
+    base::apple::SetBaseBundleIDOverride(
+        base::SysNSStringToUTF8(base_bundle.bundleIdentifier));
 
     base::FilePath child_exe_path =
         chrome::GetFrameworkBundlePath().Append("Helpers").Append(

@@ -549,9 +549,8 @@ fn default_span() {
     let end = Span::call_site().end();
     assert_eq!(end.line, 1);
     assert_eq!(end.column, 0);
-    let source_file = Span::call_site().source_file();
-    assert_eq!(source_file.path().to_string_lossy(), "<unspecified>");
-    assert!(!source_file.is_real());
+    assert_eq!(Span::call_site().file(), "<unspecified>");
+    assert!(Span::call_site().local_file().is_none());
 }
 
 #[cfg(procmacro2_semver_exempt)]
@@ -568,11 +567,8 @@ fn span_join() {
         .into_iter()
         .collect::<Vec<_>>();
 
-    assert!(source1[0].span().source_file() != source2[0].span().source_file());
-    assert_eq!(
-        source1[0].span().source_file(),
-        source1[1].span().source_file()
-    );
+    assert!(source1[0].span().file() != source2[0].span().file());
+    assert_eq!(source1[0].span().file(), source1[1].span().file());
 
     let joined1 = source1[0].span().join(source1[1].span());
     let joined2 = source1[0].span().join(source2[0].span());
@@ -586,10 +582,7 @@ fn span_join() {
     assert_eq!(end.line, 2);
     assert_eq!(end.column, 3);
 
-    assert_eq!(
-        joined1.unwrap().source_file(),
-        source1[0].span().source_file()
-    );
+    assert_eq!(joined1.unwrap().file(), source1[0].span().file());
 }
 
 #[test]

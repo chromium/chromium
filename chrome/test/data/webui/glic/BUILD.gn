@@ -14,6 +14,7 @@ group("generate_test_files") {
     ":move_html",
     ":test_client_api_deps",
     ":test_client_external_files",
+    ":test_glic_deps",
   ]
   deps = [ "//components/optimization_guide/proto:optimization_guide_proto" ]
 }
@@ -36,10 +37,16 @@ ts_library("build_extra_ts") {
   ]
   deps = [ "//chrome/browser/resources/glic:build_ts" ]
 
-  path_mappings =
-      [ "/glic/glic_api/*|" + rebase_path(
+  path_mappings = [
+    "/glic/glic_api/*|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/glic/tsc/glic_api/*",
-            target_gen_dir) ]
+            target_gen_dir),
+
+    # Not all files under glic/ are copied. See test_glic_deps.
+    "/glic/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/glic/tsc/*",
+                    target_gen_dir),
+  ]
   tsconfig_base = "tsconfig.base.json"
 }
 
@@ -62,6 +69,12 @@ copy("test_client_api_deps") {
   sources =
       [ "$root_gen_dir/chrome/browser/resources/glic/tsc/glic_api/glic_api.js" ]
   outputs = [ "$out_dir/glic_api/{{source_file_part}}" ]
+  deps = [ "//chrome/browser/resources/glic:build_ts" ]
+}
+
+copy("test_glic_deps") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/glic/tsc/observable.js" ]
+  outputs = [ "$out_dir/{{source_file_part}}" ]
   deps = [ "//chrome/browser/resources/glic:build_ts" ]
 }
 

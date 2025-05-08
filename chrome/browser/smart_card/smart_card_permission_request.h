@@ -36,9 +36,11 @@ class SmartCardPermissionRequest : public permissions::PermissionRequest {
   std::optional<std::u16string> GetAllowAlwaysText() const override;
   std::optional<std::u16string> GetBlockText() const override;
 
-  void OnPermissionDecided(ContentSetting result,
-                           bool is_one_time,
-                           bool is_final_decision);
+  void OnPermissionDecided(
+      ContentSetting result,
+      bool is_one_time,
+      bool is_final_decision,
+      const std::unique_ptr<permissions::PermissionRequestData>& request_data);
 
   void DeleteRequest();
 

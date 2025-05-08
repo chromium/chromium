@@ -85,8 +85,9 @@ bool SampleSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
   return true;
 }
 
-Browser* SampleSystemAppDelegate::GetWindowForLaunch(Profile* profile,
-                                                     const GURL& url) const {
+ash::BrowserDelegate* SampleSystemAppDelegate::GetWindowForLaunch(
+    Profile* profile,
+    const GURL& url) const {
   return nullptr;
 }
 

@@ -31,22 +31,20 @@ TEST(SetsMutationTest, Valid) {
       /*replacement_sets=*/
       {
           {
-              {primary1,
-               FirstPartySetEntry(primary1, SiteType::kPrimary, std::nullopt)},
+              {primary1, FirstPartySetEntry(primary1, SiteType::kPrimary)},
               {associated1,
-               FirstPartySetEntry(primary1, SiteType::kAssociated, 0)},
+               FirstPartySetEntry(primary1, SiteType::kAssociated)},
               {primary1_cctld,
-               FirstPartySetEntry(primary1, SiteType::kPrimary, std::nullopt)},
+               FirstPartySetEntry(primary1, SiteType::kPrimary)},
               {associated1_cctld,
-               FirstPartySetEntry(primary1, SiteType::kAssociated, 0)},
+               FirstPartySetEntry(primary1, SiteType::kAssociated)},
           },
           {
-              {primary2,
-               FirstPartySetEntry(primary2, SiteType::kPrimary, std::nullopt)},
+              {primary2, FirstPartySetEntry(primary2, SiteType::kPrimary)},
               {associated2,
-               FirstPartySetEntry(primary2, SiteType::kAssociated, 0)},
+               FirstPartySetEntry(primary2, SiteType::kAssociated)},
               {associated2_cctld,
-               FirstPartySetEntry(primary2, SiteType::kAssociated, 0)},
+               FirstPartySetEntry(primary2, SiteType::kAssociated)},
           },
       },
       /*addition_sets=*/{}, /*aliases=*/
@@ -61,22 +59,20 @@ TEST(SetsMutationTest, Valid) {
       /*addition_sets=*/
       {
           {
-              {primary1,
-               FirstPartySetEntry(primary1, SiteType::kPrimary, std::nullopt)},
+              {primary1, FirstPartySetEntry(primary1, SiteType::kPrimary)},
               {associated1,
-               FirstPartySetEntry(primary1, SiteType::kAssociated, 0)},
+               FirstPartySetEntry(primary1, SiteType::kAssociated)},
               {primary1_cctld,
-               FirstPartySetEntry(primary1, SiteType::kPrimary, std::nullopt)},
+               FirstPartySetEntry(primary1, SiteType::kPrimary)},
               {associated1_cctld,
-               FirstPartySetEntry(primary1, SiteType::kAssociated, 0)},
+               FirstPartySetEntry(primary1, SiteType::kAssociated)},
           },
           {
-              {primary2,
-               FirstPartySetEntry(primary2, SiteType::kPrimary, std::nullopt)},
+              {primary2, FirstPartySetEntry(primary2, SiteType::kPrimary)},
               {associated2,
-               FirstPartySetEntry(primary2, SiteType::kAssociated, 0)},
+               FirstPartySetEntry(primary2, SiteType::kAssociated)},
               {associated2_cctld,
-               FirstPartySetEntry(primary2, SiteType::kAssociated, 0)},
+               FirstPartySetEntry(primary2, SiteType::kAssociated)},
           },
       },
       /*aliases=*/
@@ -90,25 +86,23 @@ TEST(SetsMutationTest, Valid) {
       /*replacement_sets=*/
       {
           {
-              {primary1,
-               FirstPartySetEntry(primary1, SiteType::kPrimary, std::nullopt)},
+              {primary1, FirstPartySetEntry(primary1, SiteType::kPrimary)},
               {associated1,
-               FirstPartySetEntry(primary1, SiteType::kAssociated, 0)},
+               FirstPartySetEntry(primary1, SiteType::kAssociated)},
               {primary1_cctld,
-               FirstPartySetEntry(primary1, SiteType::kPrimary, std::nullopt)},
+               FirstPartySetEntry(primary1, SiteType::kPrimary)},
               {associated1_cctld,
-               FirstPartySetEntry(primary1, SiteType::kAssociated, 0)},
+               FirstPartySetEntry(primary1, SiteType::kAssociated)},
           },
       },
       /*addition_sets=*/
       {
           {
-              {primary2,
-               FirstPartySetEntry(primary2, SiteType::kPrimary, std::nullopt)},
+              {primary2, FirstPartySetEntry(primary2, SiteType::kPrimary)},
               {associated2,
-               FirstPartySetEntry(primary2, SiteType::kAssociated, 0)},
+               FirstPartySetEntry(primary2, SiteType::kAssociated)},
               {associated2_cctld,
-               FirstPartySetEntry(primary2, SiteType::kAssociated, 0)},
+               FirstPartySetEntry(primary2, SiteType::kAssociated)},
           },
       },
       /*aliases=*/
@@ -132,18 +126,18 @@ TEST(SetsMutationTest, Nondisjoint_death) {
             /*replacement_sets=*/
             {
                 {
-                    {primary1, FirstPartySetEntry(primary1, SiteType::kPrimary,
-                                                  std::nullopt)},
+                    {primary1,
+                     FirstPartySetEntry(primary1, SiteType::kPrimary)},
                     {associated1,
-                     FirstPartySetEntry(primary1, SiteType::kAssociated, 0)},
+                     FirstPartySetEntry(primary1, SiteType::kAssociated)},
                 },
                 {
-                    {primary2, FirstPartySetEntry(primary2, SiteType::kPrimary,
-                                                  std::nullopt)},
+                    {primary2,
+                     FirstPartySetEntry(primary2, SiteType::kPrimary)},
                     {associated1,
-                     FirstPartySetEntry(primary2, SiteType::kAssociated, 0)},
+                     FirstPartySetEntry(primary2, SiteType::kAssociated)},
                     {associated2,
-                     FirstPartySetEntry(primary2, SiteType::kAssociated, 0)},
+                     FirstPartySetEntry(primary2, SiteType::kAssociated)},
                 },
             },
             /*addition_sets=*/{}, /*aliases=*/{});

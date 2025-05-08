@@ -4,12 +4,12 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.TimeUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
@@ -20,13 +20,14 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 
 /** Manages fetching and setting the password information for Safety Hub. */
+@NullMarked
 public class SafetyHubPasswordsFetchService {
     private static final long CHECKUP_COOL_DOWN_PERIOD_IN_MS =
             60 * TimeUtils.MILLISECONDS_PER_MINUTE;
 
-    @NonNull private final PrefService mPrefService;
-    @NonNull private final PasswordManagerHelper mPasswordManagerHelper;
-    @NonNull private final AccountManagerFacade mAccountManagerFacade;
+    private final PrefService mPrefService;
+    private final PasswordManagerHelper mPasswordManagerHelper;
+    private final AccountManagerFacade mAccountManagerFacade;
 
     /**
      * These booleans indicate if the specific type of passwords count has returned. They are used
@@ -91,7 +92,7 @@ public class SafetyHubPasswordsFetchService {
      * also triggers several calls to GMSCore to fetch the compromised, weak and reuse password
      * counts.
      *
-     * <p>The password checkup has a holdback period of one hour. In other words, if the client has
+     * <p>The password checkup has a cool down period of one hour. In other words, if the client has
      * made a password checkup call to GMSCore for this account in the last hour, then it assumes
      * the results are still fresh and they can be reused.
      *
@@ -101,7 +102,7 @@ public class SafetyHubPasswordsFetchService {
      * counts.
      *
      * @return {@code true} if the checkup will be performed by GMSCore. Otherwise, returns {@code
-     *     false}, e.g. when the last checkup results are within the holdback period.
+     *     false}, e.g. when the last checkup results are within the cool down period.
      */
     public boolean runPasswordCheckup(Callback<Boolean> onFinishedCallback) {
         if (!canPerformFetch()) {
@@ -110,9 +111,9 @@ public class SafetyHubPasswordsFetchService {
             return false;
         }
 
-        boolean inHoldbackPeriod = getTimeSinceLastCheckupInMs() <= CHECKUP_COOL_DOWN_PERIOD_IN_MS;
+        boolean inCoolDownPeriod = getTimeSinceLastCheckupInMs() <= CHECKUP_COOL_DOWN_PERIOD_IN_MS;
 
-        if (inHoldbackPeriod) {
+        if (inCoolDownPeriod) {
             onFinishedCallback.onResult(/* errorOccurred */ false);
             return false;
         }

@@ -100,6 +100,11 @@ void TokenHandleStoreImpl::IsReauthRequired(
     return;
   }
 
+  if (invalid_token_for_testing_ == *token) {
+    std::move(callback).Run(account_id, *token, /*reauth_required=*/true);
+    return;
+  }
+
   pending_callbacks_[account_id].push_back(std::move(callback));
 
   // Overwriting the `TokenHandleChecker` for `account_id` while the check is
@@ -195,7 +200,13 @@ bool TokenHandleStoreImpl::HasTokenStatusInvalid(
   return status && *status == kTokenHandleStatusInvalid;
 }
 
-void TokenHandleStoreImpl::SetInvalidTokenForTesting(const char* token) {}
+void TokenHandleStoreImpl::SetInvalidTokenForTesting(const char* token) {
+  if (!token) {
+    invalid_token_for_testing_->clear();
+    return;
+  }
+  invalid_token_for_testing_ = token;
+}
 
 void TokenHandleStoreImpl::SetLastCheckedPrefForTesting(
     const AccountId& account_id,

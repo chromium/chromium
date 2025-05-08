@@ -81,4 +81,9 @@ bool ViewTransitionPseudoElementBase::IsBoundTo(
   return style_tracker_.Get() == tracker;
 }
 
+const Vector<AtomicString>&
+ViewTransitionPseudoElementBase::GetViewTransitionNames() const {
+  return style_tracker_->GetViewTransitionNames();
+}
+
 }  // namespace blink

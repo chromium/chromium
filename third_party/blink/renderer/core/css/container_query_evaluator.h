@@ -235,6 +235,10 @@ class CORE_EXPORT ContainerQueryEvaluator final
       static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone);
   ContainerScrollableFlags scrollable_vertical_ =
       static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone);
+  ContainerScrollDirection scroll_direction_horizontal_ =
+      ContainerScrollDirection::kNone;
+  ContainerScrollDirection scroll_direction_vertical_ =
+      ContainerScrollDirection::kNone;
   HeapHashMap<Member<const ContainerQuery>, Result> results_;
   Member<ScrollStateQuerySnapshot> scroll_state_snapshot_;
   // The MediaQueryExpValue::UnitFlags of all queries evaluated against this

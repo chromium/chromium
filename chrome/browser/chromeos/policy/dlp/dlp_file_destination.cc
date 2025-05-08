@@ -19,12 +19,7 @@ DlpFileDestination& DlpFileDestination::operator=(const DlpFileDestination&) =
 DlpFileDestination::DlpFileDestination(DlpFileDestination&&) = default;
 DlpFileDestination& DlpFileDestination::operator=(DlpFileDestination&&) =
     default;
-bool DlpFileDestination::operator==(const DlpFileDestination& other) const {
-  return component_ == other.component_ && url_ == other.url_;
-}
-bool DlpFileDestination::operator!=(const DlpFileDestination& other) const {
-  return !(*this == other);
-}
+
 bool DlpFileDestination::operator<(const DlpFileDestination& other) const {
   if (component_.has_value() && other.component_.has_value()) {
     return static_cast<int>(component_.value()) <

@@ -140,6 +140,9 @@ class AutofillDriverIOS final : public AutofillDriver,
   bool is_processed() const { return processed_; }
   void set_processed(bool processed) { processed_ = processed; }
   web::WebFrame* web_frame() const;
+  base::WeakPtr<AutofillDriverIOS> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
   // Methods routed by AutofillDriverRouter. These are a subset of the methods
   // in mojom::AutofillDriver; that interface is content-specific, but to

@@ -24,7 +24,7 @@ public class AsyncTabCreationParams implements AsyncTabParams {
     /** WebContents object to initialize the Tab with. Set only by the TabDelegate. */
     private final @Nullable WebContents mWebContents;
 
-    /** The tab launch request ID from the ServiceTabLauncher. * */
+    /** The tab launch request ID from the ServiceTabLauncher. */
     private final @Nullable Integer mRequestId;
 
     /** Specifies which component to fire the Intent at. */

@@ -51,8 +51,8 @@ class VIZ_COMMON_EXPORT RegionCaptureBounds {
     return bounds_;
   }
 
-  bool operator==(const RegionCaptureBounds& rhs) const;
-  bool operator!=(const RegionCaptureBounds& rhs) const;
+  friend bool operator==(const RegionCaptureBounds&,
+                         const RegionCaptureBounds&) = default;
   std::string ToString() const;
 
  private:

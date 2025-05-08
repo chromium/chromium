@@ -10,8 +10,6 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "components/omnibox/browser/omnibox_controller.h"
-#import "components/omnibox/browser/omnibox_edit_model.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/omnibox/common/omnibox_focus_state.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
@@ -22,22 +20,24 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/omnibox/coordinator/omnibox_mediator.h"
 #import "ios/chrome/browser/omnibox/coordinator/popup/omnibox_popup_coordinator.h"
+#import "ios/chrome/browser/omnibox/coordinator/zero_suggest_prefetch_helper.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_edit_model_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_pedal_annotator.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_popup_view_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_view_ios.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_util.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/keyboard_assist/omnibox_assistive_keyboard_mediator.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/keyboard_assist/omnibox_assistive_keyboard_views.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/keyboard_assist/omnibox_keyboard_accessory_view.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_ios.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_paste_delegate.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_view_controller.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_view_ios.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_view_ios.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/text_field_view_containing.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/zero_suggest_prefetch_helper.h"
+#import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
+#import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_assistive_keyboard_mediator.h"
+#import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_assistive_keyboard_views.h"
+#import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_keyboard_accessory_view.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_text_field_ios.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_text_field_paste_delegate.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_view_controller.h"
+#import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -138,9 +138,9 @@
       LayoutGuideCenterForBrowser(self.browser);
   self.viewController.searchOnlyUI = self.searchOnlyUI;
 
-  BOOL isIncognito = self.profile->IsOffTheRecord();
+  BOOL incognito = self.profile->IsOffTheRecord();
   self.mediator = [[OmniboxMediator alloc]
-      initWithIncognito:isIncognito
+      initWithIncognito:incognito
                 tracker:feature_engagement::TrackerFactory::GetForProfile(
                             self.profile)
           isLensOverlay:_isLensOverlay];
@@ -167,9 +167,9 @@
 
   id<OmniboxCommands> omniboxHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
-  _editView = std::make_unique<OmniboxViewIOS>(
-      self.textField, std::move(_client), self.profile, omniboxHandler,
-      self.focusDelegate, _toolbarHandler, _isLensOverlay);
+  _editView = std::make_unique<OmniboxViewIOS>(self.textField,
+                                               std::move(_client), self.profile,
+                                               omniboxHandler, _toolbarHandler);
   self.pasteDelegate = [[OmniboxTextFieldPasteDelegate alloc] init];
   [self.textField setPasteDelegate:self.pasteDelegate];
 
@@ -195,12 +195,12 @@
                 controller:_editView->controller()];
 
   _omniboxAutocompleteController = [[OmniboxAutocompleteController alloc]
-      initWithOmniboxController:_editView->controller()
-                 omniboxViewIOS:_editView.get()];
+      initWithOmniboxController:_editView->controller()];
 
   _omniboxTextController = [[OmniboxTextController alloc]
       initWithOmniboxController:_editView->controller()
-                 omniboxViewIOS:_editView.get()];
+                 omniboxViewIOS:_editView.get()
+                  inLensOverlay:_isLensOverlay];
   _omniboxTextController.delegate = self.mediator;
   _omniboxTextController.focusDelegate = self.focusDelegate;
   _omniboxTextController.omniboxAutocompleteController =
@@ -227,7 +227,7 @@
                                     : nullptr];
   autocompleteResultWrapper.pedalAnnotator = annotator;
   autocompleteResultWrapper.templateURLService = templateURLService;
-  autocompleteResultWrapper.isIncognito = isIncognito;
+  autocompleteResultWrapper.incognito = incognito;
   autocompleteResultWrapper.delegate = _omniboxAutocompleteController;
 
   _omniboxAutocompleteController.autocompleteResultWrapper =
@@ -315,8 +315,6 @@
       std::make_unique<OmniboxPopupViewIOS>(_editView->controller(),
                                             _omniboxAutocompleteController);
 
-  _editView->SetPopupProvider(popupView.get());
-
   OmniboxPopupCoordinator* coordinator = [[OmniboxPopupCoordinator alloc]
          initWithBaseViewController:nil
                             browser:self.browser
@@ -382,7 +380,7 @@
 
 #pragma mark - Testing
 
-- (OmniboxController*)omniboxController {
+- (OmniboxControllerIOS*)omniboxController {
   return _editView ? _editView->controller() : nullptr;
 }
 

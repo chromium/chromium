@@ -449,7 +449,7 @@ Color CalculateBorderStyleColor(const EBorderStyle& style,
   bool is_darken = (side == BoxSide::kTop || side == BoxSide::kLeft) ==
                    (style == EBorderStyle::kInset);
 
-  Color dark_color = color.Dark();
+  const Color dark_color = color.Dark();
   // Inset, outset, ridge, and groove paint a darkened or "shadow" edge:
   // https://w3c.github.io/csswg-drafts/css-backgrounds/#border-style. By
   // default, darken |color| for the darker edge and use |color| for the lighter
@@ -458,19 +458,19 @@ Color CalculateBorderStyleColor(const EBorderStyle& style,
     return dark_color;
   }
 
-  auto should_lighten_color = [color, dark_color]() -> bool {
+  const SkColor4f sk_color = color.toSkColor4f();
+  auto should_lighten_color = [sk_color, dark_color]() -> bool {
     // This constant is used to determine if there is enough contrast between
     // the darkened edge and |color|. If not, also lighten |color| for the
     // lighter edge.
     constexpr float kMinimumBorderEdgeContrastRatio = 1.75f;
-    return color_utils::GetContrastRatio(color.toSkColor4f(),
-                                         dark_color.toSkColor4f()) <
+    return color_utils::GetContrastRatio(sk_color, dark_color.toSkColor4f()) <
            kMinimumBorderEdgeContrastRatio;
   };
   // The following condition skips should_lighten_color() when the result is
-  // know to be false. The values came from a brute force search of r, b, g
+  // know to be false. The values came from a brute force search of r, g, b
   // values, see https://crrev.com/c/4200827/3.
-  if (color.Red() >= 150 || color.Green() >= 92) {
+  if (sk_color.fR >= (150 / 255.0f) || sk_color.fG >= (92 / 255.0f)) {
     DCHECK(!should_lighten_color());
     return color;
   }

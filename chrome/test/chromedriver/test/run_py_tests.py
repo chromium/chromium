@@ -802,9 +802,6 @@ class ChromeDriverTestWithCustomCapability(ChromeDriverBaseTestWithWebServer):
   def testBrowserWithUsedUserDataDir(self):
     """Verify that it is impossible to create a parallel Chrome session using
     the same user data directory.
-    Verify that it is possible to create a parallel chrome-headless-shell
-    session using the same user data directory.
-    See go/headless:user-data-directory
     """
     temp_dir = self.CreateTempDir()
     driver = self.CreateDriver(chrome_switches=[
@@ -812,11 +809,17 @@ class ChromeDriverTestWithCustomCapability(ChromeDriverBaseTestWithWebServer):
                                ])
     self.assertEqual(len(driver.GetWindowHandles()), 1)
 
-    if (_BROWSER_NAME == 'chrome-headless-shell'):
-      driver2 = self.CreateDriver(
-          chrome_switches=['--user-data-dir=%s' % temp_dir,])
-      self.assertEqual(len(driver2.GetWindowHandles()), 1)
-    else:
+    # TODO(crbug.com/40708010): Re-enable when chrome-headless-shell
+    # is compatible with crbug.com/411407649.
+    # if (_BROWSER_NAME == 'chrome-headless-shell'):
+      # Verify that it is possible to create a parallel chrome-headless-shell
+      # session using the same user data directory.
+      # See go/headless:user-data-directory
+      # driver2 = self.CreateDriver(
+      #     chrome_switches=['--user-data-dir=%s' % temp_dir,])
+      # self.assertEqual(len(driver2.GetWindowHandles()), 1)
+      #
+    if (_BROWSER_NAME != 'chrome-headless-shell'):
       with self.assertRaises(chromedriver.SessionNotCreated):
         self.CreateDriver(chrome_switches=['--user-data-dir=%s' % temp_dir,])
 
@@ -5282,9 +5285,14 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
     self.assertTrue(
         self.WaitForCondition(lambda: self._driver.ExecuteScript(
             'return changeEventReceived == true')))
-    self.assertTrue(self.WaitForCondition(lambda: self._driver.ExecuteScript(
-              'return window.viewport.segments === arguments[0]',
-              original_segments)))
+    script = """
+      return (window.viewport.segments[0].width === arguments[0][0].width
+        && window.viewport.segments[0].height === arguments[0][0].height)
+    """
+    self.assertTrue(
+      self.WaitForCondition(lambda: self._driver.ExecuteScript(
+          script,
+          original_segments)))
 
   def testCreateVirtualPressureSourceNotConnected(self):
     script = """
@@ -9450,9 +9458,11 @@ class ProtectedAudienceSpecificTest(ChromeDriverBaseTestWithWebServer):
 
     port = self._https_server._server.server_port
 
+    self._received_report = threading.Event()
     self._kanon_status = None
     def handleReport(request):
       self._kanon_status = request.GetPath().split('/')[-1]
+      self._received_report.set()
       return {}, bytes()
 
     self._https_server.SetCallbackForPath('/reportWin/passedNotEnforced',
@@ -9565,8 +9575,9 @@ class ProtectedAudienceSpecificTest(ChromeDriverBaseTestWithWebServer):
     self._driver.Load('https://owner.test/auction.html')
     self._driver.ExecuteScript('runAuction()')
 
-    time.sleep(0.5)
+    self._received_report.wait(10)
     self.assertEqual(self._kanon_status, 'belowThreshold')
+    self._received_report.clear()
 
     self._driver.SetProtectedAudienceKAnonymity(
       'https://owner.test/', 'testing', [base64.b64encode(bid_hash).decode()])
@@ -9574,7 +9585,7 @@ class ProtectedAudienceSpecificTest(ChromeDriverBaseTestWithWebServer):
     self._kanon_status = None
     self._driver.ExecuteScript('runAuction()')
 
-    time.sleep(0.5)
+    self._received_report.wait(10)
     self.assertEqual(self._kanon_status, 'passedNotEnforced')
 
 # 'Z' in the beginning is to make test executed in the end of suite.

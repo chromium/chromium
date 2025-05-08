@@ -37,7 +37,8 @@ void TextFinder::InitializeAndBindToAnnotationAgent(
   // Create an annotation agent for text finder, and bind to it.
   agent_container->CreateAgent(
       receiver_.BindNewPipeAndPassRemote(), agent_.BindNewPipeAndPassReceiver(),
-      blink::mojom::AnnotationType::kTextFinder, text_directive_,
+      blink::mojom::AnnotationType::kTextFinder,
+      blink::mojom::Selector::NewSerializedSelector(text_directive_),
       /*search_range_start_node_id=*/std::nullopt);
 }
 

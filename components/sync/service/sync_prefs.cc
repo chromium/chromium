@@ -162,6 +162,8 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::internal::kSyncInitialSyncFeatureSetupComplete, false);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+  registry->RegisterBooleanPref(
+      prefs::internal::kFirstSyncCompletedInFullSyncMode, false);
   registry->RegisterBooleanPref(kObsoleteAutofillWalletImportEnabledMigrated,
                                 false);
   registry->RegisterIntegerPref(prefs::internal::kSyncToSigninMigrationState,
@@ -252,6 +254,23 @@ void SyncPrefs::ClearInitialSyncFeatureSetupComplete() {
       prefs::internal::kSyncInitialSyncFeatureSetupComplete);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+bool SyncPrefs::IsFirstSyncCompletedInFullSyncMode() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return pref_service_->GetBoolean(
+      prefs::internal::kFirstSyncCompletedInFullSyncMode);
+}
+
+void SyncPrefs::SetFirstSyncCompletedInFullSyncMode() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pref_service_->SetBoolean(prefs::internal::kFirstSyncCompletedInFullSyncMode,
+                            true);
+}
+
+void SyncPrefs::ClearFirstSyncCompletedInFullSyncMode() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pref_service_->ClearPref(prefs::internal::kFirstSyncCompletedInFullSyncMode);
+}
 
 bool SyncPrefs::HasKeepEverythingSynced() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -789,9 +808,8 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
       return false;
 #else
-      return base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics) &&
-             base::FeatureList::IsEnabled(
-                 syncer::kSeparateLocalAndAccountThemes);
+      return base::FeatureList::IsEnabled(
+          syncer::kSeparateLocalAndAccountThemes);
 #endif
     case UserSelectableType::kApps:
     case UserSelectableType::kCookies:

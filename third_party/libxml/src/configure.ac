@@ -7,6 +7,7 @@ AC_INIT([libxml2],[version_macro])
 AC_CONFIG_SRCDIR([entities.c])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_AUX_DIR([.])
 AC_CANONICAL_HOST
 
 LIBXML_VERSION=version_macro
@@ -16,7 +17,7 @@ LIBXML_MICRO_VERSION=`echo $LIBXML_VERSION | cut -d . -f 3`
 LIBXML_MICRO_VERSION_SUFFIX=
 
 # The oldest minor version we are compatible with.
-LIBXML_MINOR_COMPAT=0
+LIBXML_MINOR_COMPAT=14
 LIBXML_CURRENT=`expr $LIBXML_MAJOR_VERSION + $LIBXML_MINOR_VERSION`
 LIBXML_AGE=`expr $LIBXML_MINOR_VERSION - $LIBXML_MINOR_COMPAT`
 LIBXML_VERSION_INFO=$LIBXML_CURRENT:$LIBXML_MICRO_VERSION:$LIBXML_AGE
@@ -40,7 +41,7 @@ AC_SUBST(LIBXML_VERSION_INFO)
 AC_SUBST(LIBXML_VERSION_NUMBER)
 AC_SUBST(LIBXML_VERSION_EXTRA)
 
-AM_INIT_AUTOMAKE([1.16.3 foreign no-dist-gzip dist-xz])
+AM_INIT_AUTOMAKE([1.16.3 foreign subdir-objects no-dist-gzip dist-xz])
 AM_MAINTAINER_MODE([enable])
 AM_SILENT_RULES([yes])
 
@@ -99,10 +100,12 @@ AC_ARG_WITH(reader,
 [  --with-reader           xmlReader parsing interface (on)])
 AC_ARG_WITH(regexps,
 [  --with-regexps          regular expressions support (on)])
+AC_ARG_WITH(relaxng,
+[  --with-relaxng          RELAX NG support (on)])
 AC_ARG_WITH(sax1,
 [  --with-sax1             older SAX1 interface (on)])
 AC_ARG_WITH(schemas,
-[  --with-schemas          XML Schemas 1.0 and RELAX NG support (on)])
+[  --with-schemas          XML Schemas 1.0 support (on)])
 AC_ARG_WITH(schematron,
 [  --with-schematron       Schematron support (on)])
 AC_ARG_WITH(threads,
@@ -134,12 +137,6 @@ dnl
 dnl Legacy defaults
 dnl
 if test "$with_legacy" = "yes"; then
-    if test "$with_http" = ""; then
-        with_http=yes
-    fi
-    if test "$with_lzma" = ""; then
-        with_lzma=yes
-    fi
     if test "$with_zlib" = ""; then
         with_zlib=yes
     fi
@@ -157,6 +154,16 @@ if test "$with_c14n" = "yes"; then
         echo WARNING: --with-c14n overrides --without-xpath
     fi
     with_xpath=yes
+fi
+if test "$with_relaxng" = "yes"; then
+    if test "$with_regexps" = "no"; then
+        echo WARNING: --with-relaxng overrides --without-regexps
+    fi
+    with_regexps=yes
+    if test "$with_schemas" = "no"; then
+        echo WARNING: --with-relaxng overrides --without-schemas
+    fi
+    with_schemas=yes
 fi
 if test "$with_schemas" = "yes"; then
     if test "$with_pattern" = "no"; then
@@ -193,12 +200,6 @@ if test "$with_writer" = "yes"; then
         echo WARNING: --with-writer overrides --without-push
     fi
     with_push=yes
-fi
-if test "$with_xinclude" = "yes"; then
-    if test "$with_xpath" = "no"; then
-        echo WARNING: --with-xinclude overrides --without-xpath
-    fi
-    with_xpath=yes
 fi
 if test "$with_xptr" = "yes"; then
     if test "$with_xpath" = "no"; then
@@ -237,6 +238,7 @@ if test "$with_minimum" = "yes"; then
     test "$with_reader" = "" && with_reader=no
     test "$with_readline" = "" && with_readline=no
     test "$with_regexps" = "" && with_regexps=no
+    test "$with_relaxng" = "" && with_relaxng=no
     test "$with_sax1" = "" && with_sax1=no
     test "$with_schemas" = "" && with_schemas=no
     test "$with_schematron" = "" && with_schematron=no
@@ -266,12 +268,15 @@ else
         with_writer=no
     fi
     if test "$with_regexps" = "no"; then
+        with_relaxng=no
         with_schemas=no
+    fi
+    if test "$with_schemas" = "no"; then
+        with_relaxng=no
     fi
     if test "$with_xpath" = "no"; then
         with_c14n=no
         with_schematron=no
-        with_xinclude=no
         with_xptr=no
     fi
 fi
@@ -349,33 +354,6 @@ if test "$with_tls" = "yes"; then
 fi
 
 dnl
-dnl Linker version scripts for symbol versioning
-dnl
-VERSION_SCRIPT_FLAGS=
-if test "$with_legacy" = "yes"; then
-    # lt_cv_prog_gnu_ld is from libtool 2.+
-    if test "$lt_cv_prog_gnu_ld" = yes; then
-        case $host in
-            *-*-cygwin* | *-*-mingw* | *-*-msys* )
-                ;;
-            *)
-                dnl lld 16 defaults to --no-undefined-version but the version
-                dnl script can contain symbols disabled by configuration
-                dnl options.
-                AX_APPEND_LINK_FLAGS([-Wl,--undefined-version], [VERSION_SCRIPT_FLAGS])
-                AX_APPEND_FLAG([-Wl,--version-script=], [VERSION_SCRIPT_FLAGS])
-                ;;
-        esac
-    else
-        case $host in
-        *-*-sunos*) VERSION_SCRIPT_FLAGS="-Wl,-M -Wl,";;
-        esac
-    fi
-    AC_SUBST(VERSION_SCRIPT_FLAGS)
-fi
-AM_CONDITIONAL([USE_VERSION_SCRIPT], [test -n "$VERSION_SCRIPT_FLAGS"])
-
-dnl
 dnl Workaround for native compilers
 dnl  HP  : http://bugs.gnome.org/db/31/3163.html
 dnl  DEC : Enable NaN/Inf
@@ -440,15 +418,6 @@ else
 fi
 AC_SUBST(WITH_HTTP)
 AM_CONDITIONAL(WITH_HTTP_SOURCES, test "$WITH_HTTP" = "1")
-
-if test "$with_legacy" != "yes" ; then
-    WITH_LEGACY=0
-else
-    echo Enabling deprecated APIs
-    WITH_LEGACY=1
-fi
-AC_SUBST(WITH_LEGACY)
-AM_CONDITIONAL(WITH_LEGACY_SOURCES, test "$WITH_LEGACY" = "1")
 
 if test "$with_reader" = "no" ; then
     echo Disabling the xmlReader parsing interface
@@ -583,8 +552,17 @@ else
 fi
 AC_SUBST(WITH_ISO8859X)
 
+if test "$with_relaxng" = "no" ; then
+    echo "Disabling Relax-NG support"
+    WITH_RELAXNG=0
+else
+    WITH_RELAXNG=1
+fi
+AC_SUBST(WITH_RELAXNG)
+AM_CONDITIONAL(WITH_RELAXNG_SOURCES, test "$WITH_RELAXNG" = "1")
+
 if test "$with_schemas" = "no" ; then
-    echo "Disabling Schemas/Relax-NG support"
+    echo "Disabling Schemas support"
     WITH_SCHEMAS=0
 else
     WITH_SCHEMAS=1

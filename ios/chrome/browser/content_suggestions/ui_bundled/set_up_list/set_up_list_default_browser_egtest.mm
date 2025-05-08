@@ -23,12 +23,11 @@ using l10n_util::GetNSString;
 
 namespace {
 
-// Returns a matcher to the Default Browser Set Up List item default title.
-id<GREYMatcher> DefaultItemTitle() {
+// Returns a matcher to the Default Browser Set Up List item default
+// description.
+id<GREYMatcher> DefaultItemDescription() {
   return grey_text(
-      GetNSString([ChromeEarlGrey isIPadIdiom]
-                      ? IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_TITLE_IPAD
-                      : IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_TITLE));
+      GetNSString(IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SHORT_DESCRIPTION));
 }
 
 // Returns a matcher to the Default Browser see more Set Up List item default
@@ -41,97 +40,21 @@ id<GREYMatcher> DefaultItemSeeMoreTitle() {
       grey_accessibilityID(set_up_list::kAccessibilityID), nil);
 }
 
-// Returns a matcher to the Default Browser Set Up List item default
-// description.
-id<GREYMatcher> DefaultItemDescription() {
-  return grey_text(
-      GetNSString(IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SHORT_DESCRIPTION));
-}
-
 // Returns a matcher to the Default Browser see more Set Up List item default
 // description.
 id<GREYMatcher> DefaultItemSeeMoreDescription() {
-  return grey_allOf(DefaultItemDescription(),
-                    grey_accessibilityID(set_up_list::kAccessibilityID), nil);
-}
-
-// Returns a matcher to the Default Browser Set Up List item description shown
-// to device switchers.
-id<GREYMatcher> DeviceSwitcherDescription() {
-  return grey_text(GetNSString(
-      IDS_IOS_SET_UP_LIST_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_SHORT_DESCRIPTION));
-}
-
-// Returns a matcher to the Default Browser see more Set Up List item
-// description shown to device switchers.
-id<GREYMatcher> DeviceSwitcherSeeMoreDescription() {
-  return grey_allOf(DeviceSwitcherDescription(),
-                    grey_accessibilityID(set_up_list::kAccessibilityID), nil);
-}
-
-// Returns a matcher to the Default Browser Set Up List item description shown
-// to shopping users.
-id<GREYMatcher> ShopperDescription() {
-  return grey_text(GetNSString(
-      IDS_IOS_SET_UP_LIST_SEGMENTED_DEFAULT_BROWSER_SHOPPER_SHORT_DESCRIPTION));
-}
-
-// Returns a matcher to the Default Browser see more Set Up List item
-// description shown to shopping users.
-id<GREYMatcher> ShopperSeeMoreDescription() {
-  return grey_allOf(ShopperDescription(),
-                    grey_accessibilityID(set_up_list::kAccessibilityID), nil);
-}
-
-// Returns a matcher to the Set Up List Default Browser promo title shown to
-// device switchers.
-id<GREYMatcher> DeviceSwitcherPromoTitle() {
   return grey_allOf(
       grey_text(GetNSString(
-          [ChromeEarlGrey isIPadIdiom]
-              ? IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_TITLE_IPAD
-              : IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_TITLE_IPHONE)),
-      grey_accessibilityID(kPromoStyleTitleAccessibilityIdentifier), nil);
+          IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SEE_MORE_DESCRIPTION)),
+      grey_accessibilityID(set_up_list::kAccessibilityID), nil);
 }
 
-// Returns a matcher to the Set Up List Default Browser promo subtitle shown to
-// desktop users.
-id<GREYMatcher> DesktopUserPromoSubtitle() {
-  return grey_allOf(
-      grey_text(GetNSString(
-          [ChromeEarlGrey isIPadIdiom]
-              ? IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DESKTOP_USER_SUBTITLE_IPAD
-              : IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DESKTOP_USER_SUBTITLE_IPHONE)),
-      grey_accessibilityID(kPromoStyleSubtitleAccessibilityIdentifier), nil);
-}
-
-// Returns a matcher to the Set Up List Default Browser promo subtitle shown to
-// android switchers.
-id<GREYMatcher> AndroidSwitcherPromoSubtitle() {
-  return grey_allOf(
-      grey_text(GetNSString(
-          [ChromeEarlGrey isIPadIdiom]
-              ? IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_ANDROID_SWITCHER_SUBTITLE_IPAD
-              : IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_ANDROID_SWITCHER_SUBTITLE_IPHONE)),
-      grey_accessibilityID(kPromoStyleSubtitleAccessibilityIdentifier), nil);
-}
-
-// Returns a matcher to the Set Up List Default Browser promo title shown to
-// shopping users.
-id<GREYMatcher> ShopperPromoTitle() {
-  return grey_allOf(
-      grey_text(
-          GetNSString(IDS_IOS_SEGMENTED_DEFAULT_BROWSER_SCREEN_SHOPPER_TITLE)),
-      grey_accessibilityID(kPromoStyleTitleAccessibilityIdentifier), nil);
-}
-
-// Returns a matcher to the Set Up List Default Browser promo subtitle shown to
-// shopping users.
-id<GREYMatcher> ShopperPromoSubtitle() {
-  return grey_allOf(
-      grey_text(GetNSString(
-          IDS_IOS_SEGMENTED_DEFAULT_BROWSER_SCREEN_SHOPPER_SUBTITLE)),
-      grey_accessibilityID(kPromoStyleSubtitleAccessibilityIdentifier), nil);
+// Returns a matcher to the Default Browser Set Up List item default title.
+id<GREYMatcher> DefaultItemTitle() {
+  return grey_text(
+      GetNSString([ChromeEarlGrey isIPadIdiom]
+                      ? IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_TITLE_IPAD
+                      : IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_TITLE));
 }
 
 // Returns a matcher to the Set Up List Default Browser promo default title.
@@ -164,8 +87,6 @@ id<GREYMatcher> DefaultPromoSubtitle() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  // Enable Segmented Default Browser promo strings.
-  config.features_enabled.push_back(kSegmentedDefaultBrowserPromo);
   // TODO(crbug.com/379305809): Re-enable if kSetUpListInFirstRun is launched
   // with the Default Browser item.
   config.features_disabled.push_back(set_up_list::kSetUpListInFirstRun);
@@ -175,24 +96,6 @@ id<GREYMatcher> DefaultPromoSubtitle() {
   // Relaunch app at each test to rewind the startup state.
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
 
-  if ([self isRunningTest:@selector(testDesktopUserPromo)] ||
-      [self isRunningTest:@selector(testDesktopUserCompactedItem)] ||
-      [self isRunningTest:@selector(testDesktopUserSeeMoreItem)]) {
-    config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
-    config.additional_args.push_back("Desktop");
-  }
-  if ([self isRunningTest:@selector(testAndroidSwitcherPromo)] ||
-      [self isRunningTest:@selector(testAndroidSwitcherCompactedItem)] ||
-      [self isRunningTest:@selector(testAndroidSwitcherSeeMoreItem)]) {
-    config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
-    config.additional_args.push_back("AndroidPhone");
-  }
-  if ([self isRunningTest:@selector(testShopperPromo)] ||
-      [self isRunningTest:@selector(testShopperCompactedItem)] ||
-      [self isRunningTest:@selector(testShopperSeeMoreItem)]) {
-    config.additional_args.push_back("-ForceExperienceForShopper");
-    config.additional_args.push_back("true");
-  }
   return config;
 }
 
@@ -203,69 +106,12 @@ id<GREYMatcher> DefaultPromoSubtitle() {
 
 #pragma mark - Tests
 
-// Tests that the text on the Default Browser compacted Set Up List item shown
-// to desktop users is correctly displayed.
-- (void)testDesktopUserCompactedItem {
-  [[EarlGrey selectElementWithMatcher:DefaultItemTitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:DeviceSwitcherDescription()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests that the text on the Default Browser compacted Set Up List item shown
-// to android switchers is correctly displayed.
-- (void)testAndroidSwitcherCompactedItem {
-  [[EarlGrey selectElementWithMatcher:DefaultItemTitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:DeviceSwitcherDescription()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests that the text on the Default Browser compacted Set Up List item shown
-// to shopping users is correctly displayed.
-- (void)testShopperCompactedItem {
-  [[EarlGrey selectElementWithMatcher:DefaultItemTitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:ShopperDescription()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
 // Tests that the default text on the Default Browser compacted Set Up List item
 // is correctly displayed.
 - (void)testDefaultCompactedItem {
   [[EarlGrey selectElementWithMatcher:DefaultItemTitle()]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:DefaultItemDescription()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests that the text on the Default Browser see more Set Up List item shown to
-// desktop users is correctly displayed.
-- (void)testDesktopUserSeeMoreItem {
-  [self openSeeMore];
-  [[EarlGrey selectElementWithMatcher:DefaultItemSeeMoreTitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:DeviceSwitcherSeeMoreDescription()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests that the text on the Default Browser see more Set Up List item shown to
-// android switchers is correctly displayed.
-- (void)testAndroidSwitcherSeeMoreItem {
-  [self openSeeMore];
-  [[EarlGrey selectElementWithMatcher:DefaultItemSeeMoreTitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:DeviceSwitcherSeeMoreDescription()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests that the text on the Default Browser see more Set Up List item shown to
-// shopping users is correctly displayed.
-- (void)testShopperSeeMoreItem {
-  [self openSeeMore];
-  [[EarlGrey selectElementWithMatcher:DefaultItemSeeMoreTitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:ShopperSeeMoreDescription()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -276,36 +122,6 @@ id<GREYMatcher> DefaultPromoSubtitle() {
   [[EarlGrey selectElementWithMatcher:DefaultItemSeeMoreTitle()]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:DefaultItemSeeMoreDescription()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests that the text on the Set Up List Default Browser promo shown to desktop
-// users is correctly displayed.
-- (void)testDesktopUserPromo {
-  [self openPromo];
-  [[EarlGrey selectElementWithMatcher:DeviceSwitcherPromoTitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:DesktopUserPromoSubtitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests that the text on the Set Up List Default Browser promo shown to android
-// switchers is correctly displayed.
-- (void)testAndroidSwitcherPromo {
-  [self openPromo];
-  [[EarlGrey selectElementWithMatcher:DeviceSwitcherPromoTitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:AndroidSwitcherPromoSubtitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests that the text on the Set Up List Default Browser promo shown to
-// shopping users is correctly displayed.
-- (void)testShopperPromo {
-  [self openPromo];
-  [[EarlGrey selectElementWithMatcher:ShopperPromoTitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:ShopperPromoSubtitle()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

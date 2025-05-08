@@ -16,7 +16,7 @@ BackgroundSyncPermissionContext::BackgroundSyncPermissionContext(
           network::mojom::PermissionsPolicyFeature::kNotFound) {}
 
 void BackgroundSyncPermissionContext::DecidePermission(
-    permissions::PermissionRequestData request_Data,
+    std::unique_ptr<permissions::PermissionRequestData> request_Data,
     permissions::BrowserPermissionCallback callback) {
   // The user should never be prompted to authorize background sync.
   NOTREACHED();

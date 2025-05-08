@@ -104,7 +104,6 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_compressed_texture_s3tc_srgb.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_context_attribute_helpers.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_context_event.h"
-#include "third_party/blink/renderer/modules/webgl/webgl_context_group.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_debug_renderer_info.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_debug_shaders.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_depth_texture.h"
@@ -872,11 +871,14 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
   // since there are uncommon paths which may use this snapshot for compositing.
   constexpr auto kShouldInitialize =
       CanvasResourceProvider::ShouldInitialize::kNo;
-  std::unique_ptr<CanvasResourceProvider> resource_provider =
-      CanvasResourceProvider::CreateSharedImageProvider(
-          size, GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
-          kShouldInitialize, SharedGpuContext::ContextProviderWrapper(),
-          RasterMode::kGPU, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
+
+  std::unique_ptr<CanvasResourceProvider> resource_provider;
+  if (SharedGpuContext::IsGpuCompositingEnabled()) {
+    resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
+        size, GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
+        kShouldInitialize, SharedGpuContext::ContextProviderWrapper(),
+        RasterMode::kGPU, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
+  }
   if (!resource_provider || !resource_provider->IsValid()) {
     resource_provider = CanvasResourceProvider::CreateBitmapProvider(
         size, GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
@@ -1259,12 +1261,14 @@ WebGLRenderingContextBase::WebGLRenderingContextBase(
     const Platform::GraphicsInfo& graphics_info,
     const CanvasContextCreationAttributesCore& requested_attributes,
     Platform::ContextType context_type)
-    : CanvasRenderingContext(host,
+    : WebGLContextObjectSupport(
+          task_runner,
+          /* is_webgl2 */ context_type == Platform::kWebGL2ContextType),
+      CanvasRenderingContext(host,
                              requested_attributes,
                              context_type == Platform::kWebGL2ContextType
                                  ? CanvasRenderingAPI::kWebgl2
                                  : CanvasRenderingAPI::kWebgl),
-      context_group_(MakeGarbageCollected<WebGLContextGroup>()),
       dispatch_context_lost_event_timer_(
           task_runner,
           this,
@@ -1272,15 +1276,12 @@ WebGLRenderingContextBase::WebGLRenderingContextBase(
       restore_timer_(task_runner,
                      this,
                      &WebGLRenderingContextBase::MaybeRestoreContext),
-      task_runner_(task_runner),
       num_gl_errors_to_console_allowed_(kMaxGLErrorsAllowedToConsole),
       context_type_(context_type),
       number_of_user_allocated_multisampled_renderbuffers_(0) {
   DCHECK(context_provider);
 
   xr_compatible_ = requested_attributes.xr_compatible;
-
-  context_group_->AddContext(this);
 
   max_viewport_dims_ = {};
   context_provider->ContextGL()->GetIntegerv(GL_MAX_VIEWPORT_DIMS,
@@ -1296,6 +1297,7 @@ WebGLRenderingContextBase::WebGLRenderingContextBase(
 
   drawing_buffer_ = std::move(buffer);
   GetDrawingBuffer()->Bind(GL_FRAMEBUFFER);
+  WebGLContextObjectSupport::OnContextRestored(drawing_buffer_->ContextGL());
   SetupFlags();
 
   String disabled_webgl_extensions(GetDrawingBuffer()
@@ -1449,7 +1451,7 @@ void WebGLRenderingContextBase::InitializeNewContext() {
   read_buffer_of_default_framebuffer_ = GL_BACK;
 
   default_vertex_array_object_ = MakeGarbageCollected<WebGLVertexArrayObject>(
-      this, WebGLVertexArrayObjectBase::kVaoTypeDefault);
+      this, WebGLVertexArrayObjectBase::kVaoTypeDefault, max_vertex_attribs_);
 
   bound_vertex_array_object_ = default_vertex_array_object_;
 
@@ -1474,9 +1476,6 @@ void WebGLRenderingContextBase::InitializeNewContext() {
   // This ensures that the context has a valid "lastFlushID" and won't be
   // mistakenly identified as the "least recently used" context.
   ContextGL()->Flush();
-
-  for (int i = 0; i < kWebGLExtensionNameCount; ++i)
-    extension_enabled_[i] = false;
 
   // This limits the count of threads if the extension is yet to be requested.
   if (String(ContextGL()->GetString(GL_EXTENSIONS))
@@ -1597,6 +1596,10 @@ void WebGLRenderingContextBase::DestroyContext() {
 
   extensions_util_.reset();
 
+  // Invalidate all objects associated with this version of the context (new
+  // objects can be created after context restoration).
+  WebGLContextObjectSupport::OnContextLost();
+
   base::RepeatingClosure null_closure;
   base::RepeatingCallback<void(const char*, int32_t)> null_function;
   GetDrawingBuffer()->ContextProvider()->SetLostContextCallback(
@@ -1644,11 +1647,6 @@ void WebGLRenderingContextBase::MarkContextChanged(
       cc_layer->SetNeedsDisplay();
     DidDraw(draw_type);
   }
-}
-
-scoped_refptr<base::SingleThreadTaskRunner>
-WebGLRenderingContextBase::GetContextTaskRunner() {
-  return task_runner_;
 }
 
 bool WebGLRenderingContextBase::PushFrame() {
@@ -2033,7 +2031,8 @@ gfx::Size WebGLRenderingContextBase::DrawingBufferSize() const {
   return GetDrawingBuffer()->Size();
 }
 
-sk_sp<SkData> WebGLRenderingContextBase::PaintRenderingResultsToRGBADataArray(
+scoped_refptr<StaticBitmapImage>
+WebGLRenderingContextBase::GetRGBAUnacceleratedStaticBitmapImage(
     SourceDrawingBuffer source_buffer) {
   if (isContextLost())
     return nullptr;
@@ -2045,7 +2044,7 @@ sk_sp<SkData> WebGLRenderingContextBase::PaintRenderingResultsToRGBADataArray(
   if (!GetDrawingBuffer()->ResolveAndBindForReadAndDraw())
     return nullptr;
   ScopedFramebufferRestorer restorer(this);
-  return GetDrawingBuffer()->PaintRenderingResultsToRGBADataArray(
+  return GetDrawingBuffer()->GetRGBAUnacceleratedStaticBitmapImage(
       source_buffer);
 }
 
@@ -2796,7 +2795,7 @@ void WebGLRenderingContextBase::cullFace(GLenum mode) {
 bool WebGLRenderingContextBase::DeleteObject(WebGLObject* object) {
   if (isContextLost() || !object)
     return false;
-  if (!object->Validate(ContextGroup(), this)) {
+  if (!object->Validate(this)) {
     SynthesizeGLError(GL_INVALID_OPERATION, "delete",
                       "object does not belong to this context");
     return false;
@@ -3017,7 +3016,7 @@ bool WebGLRenderingContextBase::ValidateWebGLObject(const char* function_name,
                       "attempt to use a deleted object");
     return false;
   }
-  if (!object->Validate(ContextGroup(), this)) {
+  if (!object->Validate(this)) {
     SynthesizeGLError(GL_INVALID_OPERATION, function_name,
                       "object does not belong to this context");
     return false;
@@ -3045,7 +3044,7 @@ bool WebGLRenderingContextBase::ValidateWebGLProgramOrShader(
                       "attempt to use a deleted object");
     return false;
   }
-  if (!object->Validate(ContextGroup(), this)) {
+  if (!object->Validate(this)) {
     SynthesizeGLError(GL_INVALID_OPERATION, function_name,
                       "object does not belong to this context");
     return false;
@@ -3438,25 +3437,25 @@ bool WebGLRenderingContextBase::ExtensionSupportedAndAllowed(
 
 WebGLExtension* WebGLRenderingContextBase::EnableExtensionIfSupported(
     const String& name) {
-  WebGLExtension* extension = nullptr;
-
-  if (!isContextLost()) {
-    for (ExtensionTracker* tracker : extensions_) {
-      if (tracker->MatchesName(name)) {
-        if (ExtensionSupportedAndAllowed(tracker)) {
-          extension = tracker->GetExtension(this);
-          if (extension) {
-            if (!extension_enabled_[extension->GetName()]) {
-              extension_enabled_[extension->GetName()] = true;
-            }
-          }
-        }
-        break;
-      }
-    }
+  if (isContextLost()) {
+    return nullptr;
   }
 
-  return extension;
+  for (ExtensionTracker* tracker : extensions_) {
+    if (!tracker->MatchesName(name) || !ExtensionSupportedAndAllowed(tracker)) {
+      continue;
+    }
+
+    WebGLExtension* extension = tracker->GetExtension(this);
+    if (!extension) {
+      continue;
+    }
+
+    MarkExtensionEnabled(extension->GetName());
+    return extension;
+  }
+
+  return nullptr;
 }
 
 bool WebGLRenderingContextBase::TimerQueryExtensionsEnabled() {
@@ -3502,7 +3501,7 @@ ScriptValue WebGLRenderingContextBase::getFramebufferAttachmentParameter(
     return ScriptValue::CreateNull(script_state->GetIsolate());
   }
 
-  WebGLSharedObject* attachment_object =
+  WebGLObject* attachment_object =
       framebuffer_binding_->GetAttachmentObject(attachment);
   if (!attachment_object) {
     if (pname == GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE)
@@ -4666,8 +4665,9 @@ void WebGLRenderingContextBase::hint(GLenum target, GLenum mode) {
 }
 
 bool WebGLRenderingContextBase::isBuffer(WebGLBuffer* buffer) {
-  if (!buffer || isContextLost() || !buffer->Validate(ContextGroup(), this))
+  if (!buffer || isContextLost() || !buffer->Validate(this)) {
     return false;
+  }
 
   if (!buffer->HasEverBeenBound())
     return false;
@@ -4694,9 +4694,9 @@ bool WebGLRenderingContextBase::isEnabled(GLenum cap) {
 }
 
 bool WebGLRenderingContextBase::isFramebuffer(WebGLFramebuffer* framebuffer) {
-  if (!framebuffer || isContextLost() ||
-      !framebuffer->Validate(ContextGroup(), this))
+  if (!framebuffer || isContextLost() || !framebuffer->Validate(this)) {
     return false;
+  }
 
   if (!framebuffer->HasEverBeenBound())
     return false;
@@ -4707,8 +4707,9 @@ bool WebGLRenderingContextBase::isFramebuffer(WebGLFramebuffer* framebuffer) {
 }
 
 bool WebGLRenderingContextBase::isProgram(WebGLProgram* program) {
-  if (!program || isContextLost() || !program->Validate(ContextGroup(), this))
+  if (!program || isContextLost() || !program->Validate(this)) {
     return false;
+  }
 
   // OpenGL ES special-cases the behavior of program objects; if they're deleted
   // while attached to the current context state, glIsProgram is supposed to
@@ -4719,9 +4720,9 @@ bool WebGLRenderingContextBase::isProgram(WebGLProgram* program) {
 
 bool WebGLRenderingContextBase::isRenderbuffer(
     WebGLRenderbuffer* renderbuffer) {
-  if (!renderbuffer || isContextLost() ||
-      !renderbuffer->Validate(ContextGroup(), this))
+  if (!renderbuffer || isContextLost() || !renderbuffer->Validate(this)) {
     return false;
+  }
 
   if (!renderbuffer->HasEverBeenBound())
     return false;
@@ -4732,8 +4733,9 @@ bool WebGLRenderingContextBase::isRenderbuffer(
 }
 
 bool WebGLRenderingContextBase::isShader(WebGLShader* shader) {
-  if (!shader || isContextLost() || !shader->Validate(ContextGroup(), this))
+  if (!shader || isContextLost() || !shader->Validate(this)) {
     return false;
+  }
 
   // OpenGL ES special-cases the behavior of shader objects; if they're deleted
   // while attached to a program, glIsShader is supposed to still return true.
@@ -4743,8 +4745,9 @@ bool WebGLRenderingContextBase::isShader(WebGLShader* shader) {
 }
 
 bool WebGLRenderingContextBase::isTexture(WebGLTexture* texture) {
-  if (!texture || isContextLost() || !texture->Validate(ContextGroup(), this))
+  if (!texture || isContextLost() || !texture->Validate(this)) {
     return false;
+  }
 
   if (!texture->HasEverBeenBound())
     return false;
@@ -7118,15 +7121,6 @@ void WebGLRenderingContextBase::ForceLostContext(
     return;
   }
 
-  context_group_->LoseContextGroup(mode, auto_recovery_method);
-}
-
-void WebGLRenderingContextBase::LoseContextImpl(
-    WebGLRenderingContextBase::LostContextMode mode,
-    AutoRecoveryMethod auto_recovery_method) {
-  if (isContextLost())
-    return;
-
   context_lost_mode_ = mode;
   DCHECK_NE(context_lost_mode_, kNotLostContext);
   auto_recovery_method_ = auto_recovery_method;
@@ -7135,9 +7129,6 @@ void WebGLRenderingContextBase::LoseContextImpl(
   for (ExtensionTracker* tracker : extensions_) {
     tracker->LoseExtension(false);
   }
-
-  for (wtf_size_t i = 0; i < kWebGLExtensionNameCount; ++i)
-    extension_enabled_[i] = false;
 
   // This resolver is non-null during a makeXRCompatible call, while waiting
   // for a response from the browser and XR process. If the WebGL context is
@@ -7161,7 +7152,7 @@ void WebGLRenderingContextBase::LoseContextImpl(
     // the event is done being handled. This causes a crash when an outstanding
     // AutoLock goes out of scope. To avoid this, we create a no-op task to hold
     // a reference to the DrawingBuffer until this function is done executing.
-    task_runner_->PostTask(
+    GetContextTaskRunner()->PostTask(
         FROM_HERE,
         WTF::BindOnce(&WebGLRenderingContextBase::HoldReferenceToDrawingBuffer,
                       WrapWeakPersistent(this),
@@ -7212,10 +7203,6 @@ void WebGLRenderingContextBase::ForceRestoreContext() {
 
   if (!restore_timer_.IsActive())
     restore_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
-}
-
-uint32_t WebGLRenderingContextBase::NumberOfContextLosses() const {
-  return context_group_->NumberOfContextLosses();
 }
 
 cc::Layer* WebGLRenderingContextBase::CcLayer() const {
@@ -8588,6 +8575,7 @@ void WebGLRenderingContextBase::MaybeRestoreContext(TimerBase*) {
 
   drawing_buffer_ = std::move(buffer);
   GetDrawingBuffer()->Bind(GL_FRAMEBUFFER);
+  WebGLContextObjectSupport::OnContextRestored(drawing_buffer_->ContextGL());
   lost_context_errors_.clear();
   context_lost_mode_ = kNotLostContext;
   auto_recovery_method_ = kManual;
@@ -8873,7 +8861,6 @@ void WebGLRenderingContextBase::TextureUnitState::Trace(
 }
 
 void WebGLRenderingContextBase::Trace(Visitor* visitor) const {
-  visitor->Trace(context_group_);
   visitor->Trace(dispatch_context_lost_event_timer_);
   visitor->Trace(restore_timer_);
   visitor->Trace(bound_array_buffer_);
@@ -8887,7 +8874,7 @@ void WebGLRenderingContextBase::Trace(Visitor* visitor) const {
   visitor->Trace(make_xr_compatible_resolver_);
   visitor->Trace(program_completion_query_list_);
   visitor->Trace(program_completion_query_map_);
-  ScriptWrappable::Trace(visitor);
+  WebGLContextObjectSupport::Trace(visitor);
   CanvasRenderingContext::Trace(visitor);
 }
 

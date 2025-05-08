@@ -160,7 +160,7 @@ goog.inherits(goog.fx.AbstractDragDrop, goog.events.EventTarget);
 /**
  * Minimum size (in pixels) for a dummy target. If the box for the target is
  * less than the specified size it's not created.
- * @type {number}
+ * @const {number}
  * @private
  */
 goog.fx.AbstractDragDrop.DUMMY_TARGET_MIN_SIZE_ = 10;
@@ -171,11 +171,17 @@ goog.fx.AbstractDragDrop.DUMMY_TARGET_MIN_SIZE_ = 10;
  * @const
  */
 goog.fx.AbstractDragDrop.EventType = {
+  /** @const */
   DRAGOVER: 'dragover',
+  /** @const */
   DRAGOUT: 'dragout',
+  /** @const */
   DRAG: 'drag',
+  /** @const */
   DROP: 'drop',
+  /** @const */
   DRAGSTART: 'dragstart',
+  /** @const */
   DRAGEND: 'dragend'
 };
 
@@ -620,13 +626,12 @@ goog.fx.AbstractDragDrop.prototype.moveDrag_ = function(event) {
 
   var activeTarget = this.activeTarget_;
 
-  this.dispatchEvent(
-      new goog.fx.DragDropEvent(
-          goog.fx.AbstractDragDrop.EventType.DRAG, this, this.dragItem_,
-          activeTarget ? activeTarget.target_ : undefined,
-          activeTarget ? activeTarget.item_ : undefined,
-          activeTarget ? activeTarget.element_ : undefined, event.clientX,
-          event.clientY, x, y));
+  this.dispatchEvent(new goog.fx.DragDropEvent(
+      goog.fx.AbstractDragDrop.EventType.DRAG, this, this.dragItem_,
+      activeTarget ? activeTarget.target_ : undefined,
+      activeTarget ? activeTarget.item_ : undefined,
+      activeTarget ? activeTarget.element_ : undefined, event.clientX,
+      event.clientY, x, y));
 
   // Check if we're still inside the bounds of the active target, if not fire
   // a dragout event and proceed to find a new target.

@@ -1445,13 +1445,13 @@ message SystemProfileProto {
       // text boxes for a specific node on-demand, asynchronously.
       INLINE_TEXT_BOXES = 2;
 
-      // The accessibility tree will contain extra accessibility
-      // attributes typically only needed by screen readers and other
-      // assistive technology for blind users. Examples include text style
-      // attributes, table cell information, live region properties, range
-      // values, and relationship attributes. Note that the HTML tag, ID, class,
-      // and display attributes will also be included.
-      SCREEN_READER = 3;
+      // The accessibility tree will contain extra accessibility attributes
+      // typically only needed by advanced assistive technologies. Examples
+      // include text style attributes, table cell information, live region
+      // properties, range values, and relationship attributes. Some HTML
+      // properties, including HTML tag, ID, class, and display attributes will
+      // also be included.
+      EXTENDED_PROPERTIES = 3;
 
       // The accessibility tree will contain all the HTML attributes for all
       // accessibility nodes that come from web content. This effectively dumps
@@ -1479,6 +1479,13 @@ message SystemProfileProto {
 
       // The accessibility tree will have the main node annotated.
       ANNOTATE_MAIN_NODE = 9;
+
+      // From platform is is filtered out and is never present.
+      // FROM_PLATFORM = 10;
+
+      // The accessibility tree will contain additional properties needed only
+      // by screen readers.
+      SCREEN_READER = 11;
     }
     // Indicates which accessibility mode flags are set.
     repeated AXMode enabled_modes = 1 [packed = true];

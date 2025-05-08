@@ -23,6 +23,8 @@ import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerProperties.AddAccountRowProperties;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerProperties.ExistingAccountRowProperties;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -30,10 +32,13 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.LEGACY)
 public class AccountPickerMediatorTest {
-    private static final String FULL_NAME1 = "Test Account1";
-    private static final String FULL_NAME2 = "Test Account2";
-    private static final String ACCOUNT_EMAIL1 = "test.account1@gmail.com";
-    private static final String ACCOUNT_EMAIL2 = "test.account2@gmail.com";
+    /* Used to simulate a name change event for TestAccounts.ACCOUNT1. */
+    public static final AccountInfo ACCOUNT1_DIFFERENT_NAME =
+            new AccountInfo.Builder(
+                            TestAccounts.ACCOUNT1.getEmail(), TestAccounts.ACCOUNT1.getGaiaId())
+                    .fullName("Different Test1 Full")
+                    .givenName("Different Test1 Given")
+                    .build();
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -56,46 +61,42 @@ public class AccountPickerMediatorTest {
 
     @Test
     public void testModelPopulation() {
-        mAccountManagerTestRule.addAccount(ACCOUNT_EMAIL1, FULL_NAME1, null, null);
-        mAccountManagerTestRule.addAccount(ACCOUNT_EMAIL2, FULL_NAME2, null, null);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
         mMediator =
                 new AccountPickerMediator(
-                        RuntimeEnvironment.application, mModelList, mListenerMock);
-        // ACCOUNT_NAME1, ACCOUNT_NAME2, ADD_ACCOUNT.
+                        RuntimeEnvironment.getApplication(), mModelList, mListenerMock);
+        // ACCOUNT1, ACCOUNT2, ADD_ACCOUNT.
         Assert.assertEquals(3, mModelList.size());
-        checkItemForExistingAccountRow(0, ACCOUNT_EMAIL1, FULL_NAME1);
-        checkItemForExistingAccountRow(1, ACCOUNT_EMAIL2, FULL_NAME2);
+        checkItemForExistingAccountRow(0, TestAccounts.ACCOUNT1);
+        checkItemForExistingAccountRow(1, TestAccounts.ACCOUNT2);
         checkItemForAddAccountRow(2);
     }
 
     @Test
     public void testProfileDataUpdateWhenAccountPickerIsShownFromSettings() {
-        mAccountManagerTestRule.addAccount(ACCOUNT_EMAIL1, FULL_NAME1, null, null);
-        mAccountManagerTestRule.addAccount(ACCOUNT_EMAIL2, FULL_NAME2, null, null);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mMediator =
                 new AccountPickerMediator(
-                        RuntimeEnvironment.application, mModelList, mListenerMock);
-        String newFullName2 = "Full Name2";
-        mAccountManagerTestRule.addAccount(ACCOUNT_EMAIL2, newFullName2, "", null);
-        // ACCOUNT_NAME1, ACCOUNT_NAME2, ADD_ACCOUNT
-        Assert.assertEquals(3, mModelList.size());
-        checkItemForExistingAccountRow(0, ACCOUNT_EMAIL1, FULL_NAME1);
-        checkItemForExistingAccountRow(1, ACCOUNT_EMAIL2, newFullName2);
-        checkItemForAddAccountRow(2);
+                        RuntimeEnvironment.getApplication(), mModelList, mListenerMock);
+        mAccountManagerTestRule.addAccount(ACCOUNT1_DIFFERENT_NAME);
+        // ACCOUNT_DIFFERENT_NAME, ADD_ACCOUNT
+        Assert.assertEquals(2, mModelList.size());
+        checkItemForExistingAccountRow(0, ACCOUNT1_DIFFERENT_NAME);
+        checkItemForAddAccountRow(1);
     }
 
-    private void checkItemForExistingAccountRow(
-            int position, String accountEmail, String fullName) {
+    private void checkItemForExistingAccountRow(int position, AccountInfo coreAccountInfo) {
         MVCListAdapter.ListItem item = mModelList.get(position);
         Assert.assertEquals(AccountPickerProperties.ItemType.EXISTING_ACCOUNT_ROW, item.type);
         PropertyModel model = item.model;
         DisplayableProfileData profileData = model.get(ExistingAccountRowProperties.PROFILE_DATA);
-        Assert.assertEquals(accountEmail, profileData.getAccountEmail());
-        Assert.assertEquals(fullName, profileData.getFullName());
+        Assert.assertEquals(coreAccountInfo.getEmail(), profileData.getAccountEmail());
+        Assert.assertEquals(coreAccountInfo.getFullName(), profileData.getFullName());
         Assert.assertNotNull("Profile avatar should not be null!", profileData.getImage());
 
-        model.get(ExistingAccountRowProperties.ON_CLICK_LISTENER).onResult(profileData);
-        verify(mListenerMock).onAccountSelected(accountEmail);
+        model.get(ExistingAccountRowProperties.ON_CLICK_LISTENER).run();
+        verify(mListenerMock).onAccountSelected(coreAccountInfo);
     }
 
     private void checkItemForAddAccountRow(int position) {

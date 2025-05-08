@@ -76,10 +76,6 @@ Status::Status(error::Code error_code, std::string error_message)
       error_message_{error_code != error::OK ? std::move(error_message)
                                              : std::string()} {}
 
-bool Status::operator==(const Status& x) const {
-  return error_code_ == x.error_code_ && error_message_ == x.error_message_;
-}
-
 std::string Status::ToString() const {
   if (error_code_ == error::OK) {
     return "OK";

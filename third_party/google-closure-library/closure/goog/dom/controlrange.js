@@ -33,7 +33,7 @@ goog.require('goog.dom.SavedCaretRange');
 goog.require('goog.dom.SavedRange');
 goog.require('goog.dom.TagWalkType');
 goog.require('goog.dom.TextRange');
-goog.require('goog.iter.StopIteration');
+goog.require('goog.iter');
 goog.require('goog.userAgent');
 
 
@@ -502,25 +502,24 @@ goog.dom.ControlRangeIterator.prototype.isLast = function() {
 /**
  * Move to the next position in the selection.
  * Throws `goog.iter.StopIteration` when it passes the end of the range.
- * @return {Node} The node at the next position.
+ * @return {!IIterableResult<!Node>} The node at the next position.
  * @override
  */
-goog.dom.ControlRangeIterator.prototype.nextValueOrThrow = function() {
+goog.dom.ControlRangeIterator.prototype.next = function() {
   'use strict';
   // Iterate over each element in the range, and all of its children.
   if (this.isLast()) {
-    throw goog.iter.StopIteration;
+    return goog.iter.ES6_ITERATOR_DONE;
   } else if (!this.depth) {
     var el = this.elements_.shift();
     this.setPosition(
         el, goog.dom.TagWalkType.START_TAG, goog.dom.TagWalkType.START_TAG);
-    return el;
+    return goog.iter.createEs6IteratorYield(/** @type {!Node} */ (el));
   }
 
   // Call the super function.
-  return goog.dom.ControlRangeIterator.superClass_.nextValueOrThrow.call(this);
+  return goog.dom.ControlRangeIterator.superClass_.next.call(this);
 };
-
 
 
 /** @override */

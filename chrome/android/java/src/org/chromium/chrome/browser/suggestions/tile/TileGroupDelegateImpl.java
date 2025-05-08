@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.suggestions.tile;
 
 import android.content.Context;
 
-import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
+import org.chromium.chrome.browser.suggestions.tile.TileGroup.PendingChanges;
 import org.chromium.chrome.browser.suggestions.tile.tile_edit_dialog.CustomTileEditCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -52,6 +53,7 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
     private final MostVisitedSites mMostVisitedSites;
 
     private @Nullable ModalDialogManager mModalDialogManager;
+    private @Nullable PendingChanges mPendingChanges;
 
     private boolean mIsDestroyed;
     private SnackbarController mTileRemovedSnackbarController;
@@ -63,8 +65,8 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
             SnackbarManager snackbarManager) {
         mContext = context;
         mProfile = profile;
-        mSnackbarManager = snackbarManager;
         mNavigationDelegate = navigationDelegate;
+        mSnackbarManager = snackbarManager;
         mMostVisitedSites =
                 SuggestionsDependencyFactory.getInstance().createMostVisitedSites(profile);
     }
@@ -94,13 +96,31 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
         return mMostVisitedSites.hasCustomLink(keyUrl);
     }
 
+    @Override
+    public boolean reorderCustomLink(GURL keyUrl, int newPos) {
+        assert !mIsDestroyed;
+        return mMostVisitedSites.reorderCustomLink(keyUrl, newPos);
+    }
+
     // TileGroup.Delegate implementation.
     @Override
-    public void removeMostVisitedItem(Tile item, Callback<GURL> removalUndoneCallback) {
+    @Initializer
+    public void setPendingChanges(PendingChanges pendingChanges) {
+        mPendingChanges = pendingChanges;
+    }
+
+    @Override
+    public void removeMostVisitedItem(Tile item) {
         assert !mIsDestroyed;
 
-        mMostVisitedSites.addBlocklistedUrl(item.getUrl());
-        showTileRemovedSnackbar(item.getUrl(), removalUndoneCallback);
+        GURL url = item.getUrl();
+        // Handle change detection. This only tracks the most recent removal, and not all removals.
+        // But if the removal is committed, this is good enough for change detection.
+        if (mPendingChanges != null) {
+            mPendingChanges.removalUrl = url;
+        }
+        mMostVisitedSites.addBlocklistedUrl(url);
+        showTileRemovedSnackbar(url);
     }
 
     @Override
@@ -187,7 +207,7 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
         mMostVisitedSites.destroy();
     }
 
-    private void showTileRemovedSnackbar(GURL url, final Callback<GURL> removalUndoneCallback) {
+    private void showTileRemovedSnackbar(GURL url) {
         if (mTileRemovedSnackbarController == null) {
             mTileRemovedSnackbarController =
                     new SnackbarController() {
@@ -199,7 +219,9 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
                         public void onAction(Object actionData) {
                             if (mIsDestroyed) return;
                             GURL url = (GURL) actionData;
-                            removalUndoneCallback.onResult(url);
+                            if (mPendingChanges != null) {
+                                mPendingChanges.insertionUrl = url;
+                            }
                             mMostVisitedSites.removeBlocklistedUrl(url);
                         }
                     };

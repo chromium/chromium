@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
+import org.chromium.chrome.browser.customtabs.features.toolbar.BrowserServicesThemeColorProvider;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -155,6 +156,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock private IdentityManager mIdentityManager;
+    @Mock private Supplier<BrowserServicesThemeColorProvider> mBrowserServicesColorProviderSupplier;
 
     private AppCompatActivity mActivity;
     private BaseCustomTabRootUiCoordinator mBaseCustomTabRootUiCoordinator;
@@ -217,7 +219,8 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                         mFeatureOverridesManagerSupplier,
                         CallbackUtils.emptyRunnable(),
                         mEdgeToEdgeManager,
-                        mDesktopWindowStateManager) {
+                        mDesktopWindowStateManager,
+                        mBrowserServicesColorProviderSupplier) {
 
                     @Nullable
                     @Override

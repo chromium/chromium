@@ -24,7 +24,34 @@ interface LensSidePanelPageHandler {
 
   // Gets whether the current searchbox is contextual.
   GetIsContextualSearchbox() => (bool is_contextual_searchbox);
+
+  // Called when the WebUI received a message from its child <iframe> to scroll
+  // to the text fragment or PDF page number of the latest contextualized local
+  // file:// URL being tracked on the browser. If the latest contextualized
+  // local file:// URL is not open on the main tab, then it opens in a new tab.
+  OnScrollToMessage(array<string> text_fragments, uint32 pdf_page_number);
+
+  // Request the browser to open the feedback dialog.
+  RequestSendFeedback();
 };
+
+// Enumerates the semantic events that can be logged by the Lens Overlay.
+// LINT.IfChange(SidePanelResultStatus)
+enum SidePanelResultStatus {
+  // The result status is unknown or uninitialized. Should not be logged.
+  kUnknown = 0,
+  // The result frame was shown in the side panel.
+  kResultShown = 1,
+  // The error page was shown due to the user being offline when the side panel
+  // attempted to load.
+  kErrorPageShownOffline = 2,
+  // The error page was shown due to the initial full image query failing due to
+  // error.
+  kErrorPageShownStartQueryError = 3,
+  // The error page was shown because page was protected.
+  kErrorPageShownProtected = 4,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlaySidePanelResultStatus)
 
 // Side Panel WebUI page handler for request from Browser side.
 // (C++ -> TypeScript)
@@ -48,8 +75,9 @@ interface LensSidePanelPage {
 
   // Sets whether to show a full error page in the side panel WebUI. This is
   // used when the user opens the side panel in an offline state or the full
-  // image request times out.
-  SetShowErrorPage(bool should_show_error_page);
+  // image request times out. The error type is denoted by `status`.
+  SetShowErrorPage(
+      bool should_show_error_page, SidePanelResultStatus status);
 
   // Suppress the ghost loader when no bytes are returned for the page.
   SuppressGhostLoader();

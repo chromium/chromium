@@ -282,7 +282,6 @@ if (use_fuzzing_engine_with_lpm) {
       "//chrome/browser",
       "//chrome/browser/ash/policy/remote_commands/crd",
       "//chrome/browser/ash/policy/remote_commands/crd:test_support",
-      "//components/exo/wayland:test_controller_stub",
       "//components/exo/wayland:ui_controls_protocol_stub",
       "//components/policy/proto",
     ]

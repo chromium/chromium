@@ -28,11 +28,13 @@
 #include "components/cbor/writer.h"
 #include "content/public/test/shared_storage_test_utils.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
 #include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
 #include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
 #include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
+#include "content/services/auction_worklet/public/mojom/in_progress_auction_download.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
@@ -810,12 +812,15 @@ class SellerWorkletTest : public testing::Test,
       SellerWorklet** out_seller_worklet_impl = nullptr,
       bool use_alternate_url_loader_factory = false) {
     mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory;
+    network::mojom::URLLoaderFactory* used_factory;
     if (use_alternate_url_loader_factory) {
       alternate_url_loader_factory_.Clone(
           url_loader_factory.InitWithNewPipeAndPassReceiver());
+      used_factory = &alternate_url_loader_factory_;
     } else {
       url_loader_factory_.Clone(
           url_loader_factory.InitWithNewPipeAndPassReceiver());
+      used_factory = &url_loader_factory_;
     }
 
     CHECK_EQ(v8_helpers_.size(), shared_storage_hosts_.size());
@@ -825,11 +830,15 @@ class SellerWorkletTest : public testing::Test,
     load_seller_worklet_client_receivers_.Add(
         this, load_seller_worklet_client.InitWithNewPipeAndPassReceiver());
     mojo::Remote<mojom::SellerWorklet> seller_worklet;
+    auto load = AuctionDownloader::StartDownload(
+        *used_factory, decision_logic_url_,
+        AuctionDownloader::MimeType::kJavascript,
+        auction_network_events_handler_);
     auto seller_worklet_impl = std::make_unique<SellerWorklet>(
         v8_helpers_, std::move(shared_storage_hosts_),
         pause_for_debugger_on_start, std::move(url_loader_factory),
         auction_network_events_handler_.CreateRemote(),
-        trusted_signals_kvv2_manager_.get(), decision_logic_url_,
+        trusted_signals_kvv2_manager_.get(), std::move(load),
         trusted_scoring_signals_url_, top_window_origin_,
         permissions_policy_state_.Clone(), experiment_group_id_,
         send_creative_scanning_metadata_,
@@ -4572,8 +4581,8 @@ TEST_F(SellerWorkletTest, ReportResultLoadCompletionOrder) {
   // 2,0,1
   for (size_t offset = 0; offset < std::size(kResponses); ++offset) {
     SCOPED_TRACE(offset);
-    mojo::Remote<mojom::SellerWorklet> seller_worklet = CreateWorklet();
     url_loader_factory_.ClearResponses();
+    mojo::Remote<mojom::SellerWorklet> seller_worklet = CreateWorklet();
     auto run_loop = std::make_unique<base::RunLoop>();
     RunReportResultExpectingResultAsync(
         seller_worklet.get(), "1", GURL("https://foo.test/"),
@@ -5246,8 +5255,8 @@ TEST_F(SellerWorkletTest, DeleteBeforeReportResultCallback) {
 
 TEST_F(SellerWorkletTest, PauseOnStart) {
   // If pause isn't working, this will be used and not the right script.
-  url_loader_factory_.AddResponse(decision_logic_url_.spec(), "",
-                                  net::HTTP_NOT_FOUND);
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        CreateScoreAdScript("10"));
 
   SellerWorklet* worklet_impl = nullptr;
   auto worklet =
@@ -5273,13 +5282,7 @@ TEST_F(SellerWorkletTest, PauseOnStart) {
       /*expected_signals_fetch_latency=*/std::nullopt,
       /*expected_code_ready_latency=*/std::nullopt, run_loop.QuitClosure());
 
-  // Give it a chance to fetch.
-  task_environment_.RunUntilIdle();
-  EXPECT_FALSE(run_loop.AnyQuitCalled());
-
-  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
-                        CreateScoreAdScript("10"));
-
+  // Give it a chance to run. It should not callback since it's paused.
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(run_loop.AnyQuitCalled());
 
@@ -7877,7 +7880,6 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
               /*bucket=*/123,
               /*value=*/45,
               /*filtering_id=*/std::nullopt)),
-      blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
   mojom::PrivateAggregationRequest kExpectedRequest2(
       mojom::AggregatableReportContribution::NewHistogramContribution(
@@ -7885,7 +7887,6 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
               /*bucket=*/absl::MakeInt128(/*high=*/1, /*low=*/0),
               /*value=*/1,
               /*filtering_id=*/std::nullopt)),
-      blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
 
   mojom::PrivateAggregationRequest kExpectedForEventRequest1(
@@ -7897,7 +7898,6 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
               /*event_type=*/
               mojom::EventType::NewReservedNonError(
                   mojom::ReservedNonErrorEventType::kReservedWin))),
-      blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
   mojom::PrivateAggregationRequest kExpectedForEventRequest2(
       mojom::AggregatableReportContribution::NewForEventContribution(
@@ -7910,7 +7910,6 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
               /*event_type=*/
               mojom::EventType::NewReservedNonError(
                   mojom::ReservedNonErrorEventType::kReservedWin))),
-      blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
 
   {
@@ -8038,12 +8037,10 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
     PrivateAggregationRequests expected_pa_requests;
     expected_pa_requests.push_back(mojom::PrivateAggregationRequest::New(
         kExpectedRequest1.contribution->Clone(),
-        blink::mojom::AggregationServiceMode::kDefault,
         blink::mojom::DebugModeDetails::New(
             /*is_enabled=*/true, blink::mojom::DebugKey::New(1234u))));
     expected_pa_requests.push_back(mojom::PrivateAggregationRequest::New(
         kExpectedForEventRequest1.contribution->Clone(),
-        blink::mojom::AggregationServiceMode::kDefault,
         blink::mojom::DebugModeDetails::New(
             /*is_enabled=*/true, blink::mojom::DebugKey::New(1234u))));
 
@@ -8069,12 +8066,10 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
     PrivateAggregationRequests expected_pa_requests;
     expected_pa_requests.push_back(mojom::PrivateAggregationRequest::New(
         kExpectedRequest1.contribution->Clone(),
-        blink::mojom::AggregationServiceMode::kDefault,
         blink::mojom::DebugModeDetails::New(
             /*is_enabled=*/true, /*debug_key=*/nullptr)));
     expected_pa_requests.push_back(mojom::PrivateAggregationRequest::New(
         kExpectedRequest2.contribution->Clone(),
-        blink::mojom::AggregationServiceMode::kDefault,
         blink::mojom::DebugModeDetails::New(
             /*is_enabled=*/true, /*debug_key=*/nullptr)));
 
@@ -8104,7 +8099,6 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
                 /*bucket=*/123,
                 /*value=*/45,
                 /*filtering_id=*/0)),
-        blink::mojom::AggregationServiceMode::kDefault,
         blink::mojom::DebugModeDetails::New()));
     expected_pa_requests.push_back(mojom::PrivateAggregationRequest::New(
         mojom::AggregatableReportContribution::NewForEventContribution(
@@ -8115,7 +8109,6 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
                 /*event_type=*/
                 mojom::EventType::NewReservedNonError(
                     mojom::ReservedNonErrorEventType::kReservedWin))),
-        blink::mojom::AggregationServiceMode::kDefault,
         blink::mojom::DebugModeDetails::New()));
 
     RunScoreAdWithJavascriptExpectingResult(
@@ -8143,7 +8136,6 @@ TEST_F(SellerWorkletPrivateAggregationErrorReportingEnabledTest, ScoreAd) {
               /*bucket=*/123,
               /*value=*/45,
               /*filtering_id=*/0)),
-      blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New()));
   expected_pa_requests.push_back(mojom::PrivateAggregationRequest::New(
       mojom::AggregatableReportContribution::NewForEventContribution(
@@ -8154,7 +8146,6 @@ TEST_F(SellerWorkletPrivateAggregationErrorReportingEnabledTest, ScoreAd) {
               /*event_type=*/
               mojom::EventType::NewReservedError(
                   mojom::ReservedErrorEventType::kReportSuccess))),
-      blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New()));
 
   RunScoreAdWithJavascriptExpectingResult(
@@ -8181,7 +8172,6 @@ TEST_F(SellerWorkletPrivateAggregationErrorReportingDisabledTest, ScoreAd) {
               /*bucket=*/123,
               /*value=*/45,
               /*filtering_id=*/0)),
-      blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New()));
 
   // If the error reporting feature is disabled, the call should be silently
@@ -8210,7 +8200,6 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
               /*bucket=*/123,
               /*value=*/45,
               /*filtering_id=*/std::nullopt)),
-      blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
   mojom::PrivateAggregationRequest kExpectedRequest2(
       mojom::AggregatableReportContribution::NewHistogramContribution(
@@ -8218,7 +8207,6 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
               /*bucket=*/absl::MakeInt128(/*high=*/1, /*low=*/0),
               /*value=*/1,
               /*filtering_id=*/std::nullopt)),
-      blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
   mojom::PrivateAggregationRequest kExpectedForEventRequest(
       mojom::AggregatableReportContribution::NewForEventContribution(
@@ -8229,7 +8217,6 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
               /*event_type=*/
               mojom::EventType::NewReservedNonError(
                   mojom::ReservedNonErrorEventType::kReservedWin))),
-      blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
 
   // Only contributeToHistogram() is called.
@@ -8384,7 +8371,6 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
     PrivateAggregationRequests expected_pa_requests;
     expected_pa_requests.push_back(mojom::PrivateAggregationRequest::New(
         kExpectedRequest1.contribution->Clone(),
-        blink::mojom::AggregationServiceMode::kDefault,
         blink::mojom::DebugModeDetails::New(
             /*is_enabled=*/true, blink::mojom::DebugKey::New(1234u))));
 
@@ -8405,12 +8391,10 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
     PrivateAggregationRequests expected_pa_requests;
     expected_pa_requests.push_back(mojom::PrivateAggregationRequest::New(
         kExpectedRequest1.contribution->Clone(),
-        blink::mojom::AggregationServiceMode::kDefault,
         blink::mojom::DebugModeDetails::New(
             /*is_enabled=*/true, /*debug_key=*/nullptr)));
     expected_pa_requests.push_back(mojom::PrivateAggregationRequest::New(
         kExpectedRequest2.contribution->Clone(),
-        blink::mojom::AggregationServiceMode::kDefault,
         blink::mojom::DebugModeDetails::New(
             /*is_enabled=*/true, /*debug_key=*/nullptr)));
 
@@ -8453,7 +8437,6 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
                 /*bucket=*/123,
                 /*value=*/45,
                 /*filtering_id=*/0)),
-        blink::mojom::AggregationServiceMode::kDefault,
         blink::mojom::DebugModeDetails::New()));
     expected_pa_requests.push_back(mojom::PrivateAggregationRequest::New(
         mojom::AggregatableReportContribution::NewForEventContribution(
@@ -8464,7 +8447,6 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
                 /*event_type=*/
                 mojom::EventType::NewReservedNonError(
                     mojom::ReservedNonErrorEventType::kReservedWin))),
-        blink::mojom::AggregationServiceMode::kDefault,
         blink::mojom::DebugModeDetails::New()));
 
     RunReportResultCreatedScriptExpectingResult(
@@ -8490,7 +8472,6 @@ TEST_F(SellerWorkletPrivateAggregationErrorReportingEnabledTest, ReportResult) {
               /*bucket=*/123,
               /*value=*/45,
               /*filtering_id=*/0)),
-      blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New()));
   expected_pa_requests.push_back(mojom::PrivateAggregationRequest::New(
       mojom::AggregatableReportContribution::NewForEventContribution(
@@ -8501,7 +8482,6 @@ TEST_F(SellerWorkletPrivateAggregationErrorReportingEnabledTest, ReportResult) {
               /*event_type=*/
               mojom::EventType::NewReservedError(
                   mojom::ReservedErrorEventType::kReportSuccess))),
-      blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New()));
 
   RunReportResultCreatedScriptExpectingResult(
@@ -8528,7 +8508,6 @@ TEST_F(SellerWorkletPrivateAggregationErrorReportingDisabledTest,
               /*bucket=*/123,
               /*value=*/45,
               /*filtering_id=*/0)),
-      blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New()));
 
   // If the error reporting feature is disabled, the call should be silently

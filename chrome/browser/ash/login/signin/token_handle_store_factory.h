@@ -31,6 +31,8 @@ class TokenHandleStoreFactory {
 
   TokenHandleStore* GetTokenHandleStore();
 
+  void DestroyTokenHandleStore();
+
  private:
   // Functor that determines if a given `account_id` has a gaia password.
   // The class maintains the invariant that at any given time, there is at most

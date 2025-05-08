@@ -10,6 +10,7 @@
 namespace sync_pb {
 class AutofillOfferSpecifics;
 class AutofillWalletSpecifics;
+class AutofillValuableSpecifics;
 }  // namespace sync_pb
 
 // TODO(crbug.com/41412176): Rename this file to data_type_util.h or something
@@ -30,6 +31,12 @@ std::string GetUnhashedClientTagFromAutofillWalletSpecifics(
 // populated by server.
 std::string GetUnhashedClientTagFromAutofillOfferSpecifics(
     const sync_pb::AutofillOfferSpecifics& specifics);
+
+// Helper function to extract client tag from the specifics. For valuable data,
+// every time it is synced, it will be a full sync and this client tag is not
+// populated by server.
+std::string GetUnhashedClientTagFromAutofillValuableSpecifics(
+    const sync_pb::AutofillValuableSpecifics& specifics);
 
 }  // namespace syncer
 

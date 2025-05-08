@@ -49,13 +49,10 @@ constexpr int kAutoDisableAccessibilityEventCount = 3;
 // good for perf. Instead, delay the update task.
 constexpr int kOnAccessibilityUsageUpdateDelaySecs = 5;
 
-// Used for validating the 'basic' bundle parameter for
-// --force-renderer-accessibility.
+// Parameter values for --force-renderer-accessibility=[bundle-name].
 const char kAXModeBundleBasic[] = "basic";
-
-// Used for validating the 'form-controls' bundle parameter for
-// --force-renderer-accessibility.
 const char kAXModeBundleFormControls[] = "form-controls";
+const char kAXModeBundleComplete[] = "complete";
 
 // A holder of a ScopedModeCollection targeting a specific BrowserContext or
 // WebContents. The collection is bound to the lifetime of the target.
@@ -189,7 +186,8 @@ BrowserAccessibilityStateImpl::Create() {
 }
 #endif
 
-BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl() {
+BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
+    : platform_ax_mode_(CreateScopedModeForProcess(ui::AXMode())) {
   DCHECK_EQ(g_instance, nullptr);
   g_instance = this;
 
@@ -216,27 +214,37 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl() {
 
     if (ax_mode_bundle.empty()) {
       // For backwards compatibility, when --force-renderer-accessibility has no
-      // parameter, use the complete bundle but allow changes.
-      initial_mode = ui::kAXModeComplete;
+      // parameter, use the screen reader bundle but allow changes.
+      // This is the best general choice in development and testing scenarios.
+      initial_mode = ui::kAXModeComplete | ui::AXMode::kScreenReader;
     } else {
-      // Support --force-renderer-accessibility=[basic|form-controls|complete]
+      // Support
+      // --force-renderer-accessibility=[basic|form-controls|complete|
+      //                                 screen-reader]
       if (ax_mode_bundle.compare(kAXModeBundleBasic) == 0) {
         initial_mode = ui::kAXModeBasic;
       } else if (ax_mode_bundle.compare(kAXModeBundleFormControls) == 0) {
         initial_mode = ui::kAXModeFormControls;
-      } else {
-        // If AXMode is 'complete' or invalid, default to complete bundle.
+      } else if (ax_mode_bundle.compare(kAXModeBundleComplete) == 0) {
         initial_mode = ui::kAXModeComplete;
+      } else {
+        // If 'screen-reader', or invalid, default to screen reader bundle,
+        // which is the most useful in development and testing scenarios.
+        initial_mode = ui::kAXModeComplete | ui::AXMode::kScreenReader;
       }
       disallow_changes = true;
     }
+  }
+
+  if (::features::IsAccessibilityOnScreenAXModeEnabled()) {
+    initial_mode |= ui::kAXModeOnScreen;
   }
 
   // Create an initial process-wide ScopedAccessibilityMode whether any flags
   // are enabled or not. Always creating a ScopedAccessibilityMode
   // (even if it holds a mode with all flags off) allows us to avoid null
   // checks elsewhere, thereby simplifying other logic.
-  process_accessibility_mode_ = CreateScopedModeForProcess(initial_mode);
+  forced_accessibility_mode_ = CreateScopedModeForProcess(initial_mode);
 
   UMA_HISTOGRAM_BOOLEAN("Accessibility.ManuallyEnabled",
                         !initial_mode.is_mode_off());
@@ -254,13 +262,28 @@ void BrowserAccessibilityStateImpl::OnAssistiveTechFound(
   ax_platform_.NotifyAssistiveTechChanged(assistive_tech);
 }
 
-void BrowserAccessibilityStateImpl::SetScreenReaderAppActive(bool is_active) {
-  OnAssistiveTechFound(is_active ? ui::AssistiveTech::kGenericScreenReader
+void BrowserAccessibilityStateImpl::RefreshAssistiveTech() {
+  bool sr_active = GetAccessibilityMode().has_mode(ui::AXMode::kScreenReader);
+  OnAssistiveTechFound(sr_active ? ui::AssistiveTech::kGenericScreenReader
                                  : ui::AssistiveTech::kNone);
 }
 
+void BrowserAccessibilityStateImpl::RefreshAssistiveTechIfNecessary(
+    ui::AXMode new_mode) {
+  // Platforms that use this default implementation have a perfect signal
+  // for screen reader launches. These platforms use AXMode::kScreenReader to
+  // actively indicate that a screen reader is active.
+  // Other platforms don't have this perfect signal and compute this off-thread,
+  // adding/removing AXMode::kScreenReader after detection is complete.
+  bool was_screen_reader_active = ax_platform_.IsScreenReaderActive();
+  bool has_screen_reader_mode = new_mode.has_mode(ui::AXMode::kScreenReader);
+  if (was_screen_reader_active != has_screen_reader_mode) {
+    RefreshAssistiveTech();
+  }
+}
+
 ui::AssistiveTech BrowserAccessibilityStateImpl::ActiveAssistiveTech() const {
-  return ui::AXPlatform::GetInstance().active_assistive_tech();
+  return ax_platform_.active_assistive_tech();
 }
 
 void BrowserAccessibilityStateImpl::SetPerformanceFilteringAllowed(
@@ -378,8 +401,9 @@ void BrowserAccessibilityStateImpl::OnUserInputEvent() {
                                   now - accessibility_enabled_time_);
 
       accessibility_disabled_time_ = now;
-      // TODO(aleventhal): prefer making a11y dormant for new page loads.
-      SetProcessMode(ui::AXMode());
+
+      // TODO(accessibility) Reimplement by making a11y dormant as opposed to
+      // turning off flags, which leads to thrashing.
     }
   }
 }
@@ -413,65 +437,24 @@ void BrowserAccessibilityStateImpl::NotifyWebContentsPreferencesChanged()
   }
 }
 
-void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
-  // Update process_accessibility_mode_ via SetProcessMode so that the remainder
-  // of processing is identical to when AXPlatformNode::NotifyAddAXModeFlags()
-  // is called -- it will defer to AXPlatform::SetMode() to update the global
-  // set of flags. AXPlatform, itself, defers to its Delegate, which is this
-  // instance. This ensures that calls to AddAccessibilityModeFlags() and direct
-  // calls to AXPlatformNode::NotifyAddAXModeFlags() down in //ui each follow
-  // the same codepath to set the global mode flags, notify observers, dispatch
-  // to WebContents, and record metrics.
-  SetProcessMode(process_accessibility_mode_->mode() | mode);
-}
-
-void BrowserAccessibilityStateImpl::RemoveAccessibilityModeFlags(
-    ui::AXMode mode) {
-  SetProcessMode(process_accessibility_mode_->mode() & ~mode);
-}
-
 base::CallbackListSubscription
 BrowserAccessibilityStateImpl::RegisterFocusChangedCallback(
     FocusChangedCallback callback) {
   return focus_changed_callbacks_.Add(std::move(callback));
 }
 
-// Returns the effective mode for the process, taking all process-wide scopers
-// into account.
-ui::AXMode BrowserAccessibilityStateImpl::GetProcessMode() {
-  return GetAccessibilityMode();
-}
-
-// Replaces the scoper that backs the legacy process-wide mode with one applying
-// `new_mode`.
-void BrowserAccessibilityStateImpl::SetProcessMode(ui::AXMode new_mode) {
-  if (!allow_ax_mode_changes_) {
-    return;
+void BrowserAccessibilityStateImpl::EnableAXModeFromPlatform(
+    ui::AXMode modes_to_add) {
+  ui::AXMode old_mode = platform_ax_mode_->mode();
+  ui::AXMode new_mode = old_mode | modes_to_add;
+  if (old_mode != new_mode) {
+    platform_ax_mode_ =
+        CreateScopedModeForProcess(new_mode | ui::AXMode::kFromPlatform);
   }
 
-  if (!new_mode.is_mode_off()) {
-    // Unless the mode is being turned off, setting accessibility flags is
-    // generally caused by accessibility API call, so we should also reset the
-    // auto-disable accessibility code.
-    OnAccessibilityApiUsage();
-  }
-
-  const ui::AXMode previous_mode = GetAccessibilityMode();
-  if (new_mode == previous_mode) {
-    return;
-  }
-
-  process_accessibility_mode_ =
-      CreateScopedModeForProcess(new_mode | ui::AXMode::kFromPlatform);
-
-  // If the AXMode changes, there's a good chance an assistive technology was
-  // activated. Allow platforms that must perform special detection to update
-  // their notion of which tech is running. The platform-specific implementation
-  // is responsible for calling `OnAssistiveTechFound()` in response.
-  RefreshAssistiveTech();
-}
-
-void BrowserAccessibilityStateImpl::OnAccessibilityApiUsage() {
+  // If AXMode::kWebContent is being requested, turn off auto-disable.
+  // TODO(accessibility) Re-work the auto-disable feature.
+  // Platform accessibility API usage affects auto-disable.
   // See OnUserInputEvent for how this is used to disable accessibility.
   user_input_event_count_ = 0;
 
@@ -486,6 +469,43 @@ void BrowserAccessibilityStateImpl::OnAccessibilityApiUsage() {
             base::Unretained(this)),
         base::Seconds(kOnAccessibilityUsageUpdateDelaySecs));
   }
+}
+
+void BrowserAccessibilityStateImpl::OnMinimalPropertiesUsed() {
+  // When only basic minimal functionality is used, just enable kNativeAPIs.
+  // Enabling kNativeAPIs gives little perf impact, but allows these APIs to
+  // interact with the BrowserAccessibilityManager allowing ATs to be able at
+  // least find the document without using any advanced APIs.
+  EnableAXModeFromPlatform(ui::AXMode::kNativeAPIs);
+}
+
+void BrowserAccessibilityStateImpl::OnPropertiesUsedInBrowserUI() {
+  EnableAXModeFromPlatform(ui::AXMode::kNativeAPIs);
+}
+
+void BrowserAccessibilityStateImpl::OnPropertiesUsedInWebContent() {
+  // When accessibility APIs have been used in content, enable basic web
+  // accessibility support. Full screen reader support is detected later when
+  // specific more advanced APIs are accessed.
+  EnableAXModeFromPlatform(ui::kAXModeBasic);
+}
+
+void BrowserAccessibilityStateImpl::OnInlineTextBoxesUsedInWebContent() {
+  EnableAXModeFromPlatform(ui::kAXModeBasic | ui::AXMode::kInlineTextBoxes);
+}
+
+void BrowserAccessibilityStateImpl::OnExtendedPropertiesUsedInWebContent() {
+  EnableAXModeFromPlatform(ui::kAXModeBasic | ui::AXMode::kExtendedProperties);
+}
+
+void BrowserAccessibilityStateImpl::OnHTMLAttributesUsed() {
+  EnableAXModeFromPlatform(ui::kAXModeBasic | ui::AXMode::kHTML);
+}
+
+void BrowserAccessibilityStateImpl::OnActionFromAssistiveTech() {
+  // Ensure that auto-disable is turned off, e.g. if screen reader scrolls
+  // content into view.
+  EnableAXModeFromPlatform(ui::AXMode::kNativeAPIs);
 }
 
 void BrowserAccessibilityStateImpl::OnPageNavigationComplete() {
@@ -529,6 +549,9 @@ void BrowserAccessibilityStateImpl::OnModeChanged(ui::AXMode old_mode,
     UMA_HISTOGRAM_COUNTS_10000("Accessibility.EngineUse.PageNavsUntilStart",
                                num_page_navs_before_first_use_);
   }
+
+  RefreshAssistiveTechIfNecessary(new_mode);
+
   // Add a crash key with the ax_mode, to enable searching for top crashes that
   // occur when accessibility is turned on. This adds it for the browser
   // process, and elsewhere the same key is added to renderer processes.

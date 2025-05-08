@@ -32,7 +32,6 @@
 #include "absl/container/internal/raw_hash_set_resize_impl.h"
 #include "absl/functional/function_ref.h"
 #include "absl/hash/hash.h"
-#include "absl/numeric/bits.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -190,15 +189,8 @@ constexpr bool is_small(size_t capacity) {
   return capacity < Group::kWidth - 1;
 }
 
-}  // namespace
-
-FindInfo find_first_non_full(const CommonFields& common, size_t hash) {
-  return find_first_non_full_from_h1(common.control(), H1(hash, common.seed()),
-                                     common.capacity());
-}
-
-void IterateOverFullSlots(const CommonFields& c, size_t slot_size,
-                          absl::FunctionRef<void(const ctrl_t*, void*)> cb) {
+template <class Fn>
+void IterateOverFullSlotsImpl(const CommonFields& c, size_t slot_size, Fn cb) {
   const size_t cap = c.capacity();
   const ctrl_t* ctrl = c.control();
   void* slot = c.slot_array();
@@ -245,6 +237,8 @@ void IterateOverFullSlots(const CommonFields& c, size_t slot_size,
                          "hash table was modified unexpectedly");
 }
 
+}  // namespace
+
 void ConvertDeletedToEmptyAndFullToDeleted(ctrl_t* ctrl, size_t capacity) {
   ABSL_SWISSTABLE_ASSERT(ctrl[capacity] == ctrl_t::kSentinel);
   ABSL_SWISSTABLE_ASSERT(IsValidCapacity(capacity));
@@ -254,6 +248,16 @@ void ConvertDeletedToEmptyAndFullToDeleted(ctrl_t* ctrl, size_t capacity) {
   // Copy the cloned ctrl bytes.
   std::memcpy(ctrl + capacity + 1, ctrl, NumClonedBytes());
   ctrl[capacity] = ctrl_t::kSentinel;
+}
+
+FindInfo find_first_non_full(const CommonFields& common, size_t hash) {
+  return find_first_non_full_from_h1(common.control(), H1(hash, common.seed()),
+                                     common.capacity());
+}
+
+void IterateOverFullSlots(const CommonFields& c, size_t slot_size,
+                          absl::FunctionRef<void(const ctrl_t*, void*)> cb) {
+  IterateOverFullSlotsImpl(c, slot_size, cb);
 }
 
 namespace {
@@ -466,7 +470,7 @@ ABSL_ATTRIBUTE_ALWAYS_INLINE inline void InitializeSingleElementControlBytes(
 
 // Initializes control bytes for growing after SOO to the next capacity.
 // `soo_ctrl` is placed in the position `SooSlotIndex()`.
-// `new_hash` is placed in the postion `new_offset`.
+// `new_hash` is placed in the position `new_offset`.
 // The table must be non-empty SOO.
 ABSL_ATTRIBUTE_ALWAYS_INLINE inline void
 InitializeThreeElementsControlBytesAfterSoo(ctrl_t soo_ctrl, size_t new_hash,
@@ -613,7 +617,7 @@ template <ResizeNonSooMode kMode>
 void ResizeNonSooImpl(CommonFields& common, const PolicyFunctions& policy,
                       size_t new_capacity, HashtablezInfoHandle infoz) {
   ABSL_SWISSTABLE_ASSERT(IsValidCapacity(new_capacity));
-  ABSL_SWISSTABLE_ASSERT(new_capacity > policy.soo_capacity);
+  ABSL_SWISSTABLE_ASSERT(new_capacity > policy.soo_capacity());
 
   const size_t old_capacity = common.capacity();
   [[maybe_unused]] ctrl_t* old_ctrl = common.control();
@@ -639,7 +643,7 @@ void ResizeNonSooImpl(CommonFields& common, const PolicyFunctions& policy,
   size_t total_probe_length = 0;
   ResetCtrl(common, slot_size);
   ABSL_SWISSTABLE_ASSERT(kMode != ResizeNonSooMode::kGuaranteedEmpty ||
-                         old_capacity == policy.soo_capacity);
+                         old_capacity == policy.soo_capacity());
   ABSL_SWISSTABLE_ASSERT(kMode != ResizeNonSooMode::kGuaranteedAllocated ||
                          old_capacity > 0);
   if constexpr (kMode == ResizeNonSooMode::kGuaranteedAllocated) {
@@ -666,9 +670,9 @@ void ResizeEmptyNonAllocatedTableImpl(CommonFields& common,
                                       const PolicyFunctions& policy,
                                       size_t new_capacity, bool force_infoz) {
   ABSL_SWISSTABLE_ASSERT(IsValidCapacity(new_capacity));
-  ABSL_SWISSTABLE_ASSERT(new_capacity > policy.soo_capacity);
-  ABSL_SWISSTABLE_ASSERT(!force_infoz || policy.soo_capacity > 0);
-  ABSL_SWISSTABLE_ASSERT(common.capacity() <= policy.soo_capacity);
+  ABSL_SWISSTABLE_ASSERT(new_capacity > policy.soo_capacity());
+  ABSL_SWISSTABLE_ASSERT(!force_infoz || policy.soo_enabled);
+  ABSL_SWISSTABLE_ASSERT(common.capacity() <= policy.soo_capacity());
   ABSL_SWISSTABLE_ASSERT(common.empty());
   const size_t slot_size = policy.slot_size;
   HashtablezInfoHandle infoz;
@@ -676,7 +680,7 @@ void ResizeEmptyNonAllocatedTableImpl(CommonFields& common,
       policy.is_hashtablez_eligible && (force_infoz || ShouldSampleNextTable());
   if (ABSL_PREDICT_FALSE(should_sample)) {
     infoz = ForcedTrySample(slot_size, policy.key_size, policy.value_size,
-                            policy.soo_capacity);
+                            policy.soo_capacity());
   }
   ResizeNonSooImpl<ResizeNonSooMode::kGuaranteedEmpty>(common, policy,
                                                        new_capacity, infoz);
@@ -690,8 +694,8 @@ void InsertOldSooSlotAndInitializeControlBytes(CommonFields& c,
                                                const PolicyFunctions& policy,
                                                size_t hash, ctrl_t* new_ctrl,
                                                void* new_slots) {
-  ABSL_SWISSTABLE_ASSERT(c.size() == policy.soo_capacity);
-  ABSL_SWISSTABLE_ASSERT(policy.soo_capacity == SooCapacity());
+  ABSL_SWISSTABLE_ASSERT(c.size() == policy.soo_capacity());
+  ABSL_SWISSTABLE_ASSERT(policy.soo_enabled);
   size_t new_capacity = c.capacity();
 
   c.generate_new_seed();
@@ -713,12 +717,21 @@ enum class ResizeFullSooTableSamplingMode {
   kForceSampleNoResizeIfUnsampled,
 };
 
+void AssertSoo([[maybe_unused]] CommonFields& common,
+               [[maybe_unused]] const PolicyFunctions& policy) {
+  ABSL_SWISSTABLE_ASSERT(policy.soo_enabled);
+  ABSL_SWISSTABLE_ASSERT(common.capacity() == policy.soo_capacity());
+}
+void AssertFullSoo([[maybe_unused]] CommonFields& common,
+                   [[maybe_unused]] const PolicyFunctions& policy) {
+  AssertSoo(common, policy);
+  ABSL_SWISSTABLE_ASSERT(common.size() == policy.soo_capacity());
+}
+
 void ResizeFullSooTable(CommonFields& common, const PolicyFunctions& policy,
                         size_t new_capacity,
                         ResizeFullSooTableSamplingMode sampling_mode) {
-  ABSL_SWISSTABLE_ASSERT(common.capacity() == policy.soo_capacity);
-  ABSL_SWISSTABLE_ASSERT(common.size() == policy.soo_capacity);
-  ABSL_SWISSTABLE_ASSERT(policy.soo_capacity == SooCapacity());
+  AssertFullSoo(common, policy);
   const size_t slot_size = policy.slot_size;
   const size_t slot_align = policy.slot_align;
 
@@ -727,7 +740,7 @@ void ResizeFullSooTable(CommonFields& common, const PolicyFunctions& policy,
       ResizeFullSooTableSamplingMode::kForceSampleNoResizeIfUnsampled) {
     if (ABSL_PREDICT_FALSE(policy.is_hashtablez_eligible)) {
       infoz = ForcedTrySample(slot_size, policy.key_size, policy.value_size,
-                              policy.soo_capacity);
+                              policy.soo_capacity());
     }
 
     if (!infoz.IsSampled()) {
@@ -761,6 +774,7 @@ void ResizeFullSooTable(CommonFields& common, const PolicyFunctions& policy,
   if (has_infoz) {
     common.set_has_infoz();
     common.set_infoz(infoz);
+    infoz.RecordStorageChanged(common.size(), new_capacity);
   }
 }
 
@@ -1213,11 +1227,11 @@ size_t GrowToNextCapacityAndPrepareInsert(CommonFields& common,
   ABSL_SWISSTABLE_ASSERT(common.growth_left() == 0);
   const size_t old_capacity = common.capacity();
   ABSL_SWISSTABLE_ASSERT(old_capacity == 0 ||
-                         old_capacity > policy.soo_capacity);
+                         old_capacity > policy.soo_capacity());
 
   const size_t new_capacity = NextCapacity(old_capacity);
   ABSL_SWISSTABLE_ASSERT(IsValidCapacity(new_capacity));
-  ABSL_SWISSTABLE_ASSERT(new_capacity > policy.soo_capacity);
+  ABSL_SWISSTABLE_ASSERT(new_capacity > policy.soo_capacity());
 
   ctrl_t* old_ctrl = common.control();
   void* old_slots = common.slot_array();
@@ -1233,7 +1247,7 @@ size_t GrowToNextCapacityAndPrepareInsert(CommonFields& common,
         policy.is_hashtablez_eligible && ShouldSampleNextTable();
     if (ABSL_PREDICT_FALSE(should_sample)) {
       infoz = ForcedTrySample(slot_size, policy.key_size, policy.value_size,
-                              policy.soo_capacity);
+                              policy.soo_capacity());
     }
   }
   const bool has_infoz = infoz.IsSampled();
@@ -1286,7 +1300,7 @@ size_t GrowToNextCapacityAndPrepareInsert(CommonFields& common,
       find_info = find_first_non_full(common, new_hash);
       SetCtrlInLargeTable(common, find_info.offset, new_h2, policy.slot_size);
     }
-    ABSL_SWISSTABLE_ASSERT(old_capacity > policy.soo_capacity);
+    ABSL_SWISSTABLE_ASSERT(old_capacity > policy.soo_capacity());
     (*policy.dealloc)(alloc, old_capacity, old_ctrl, slot_size, slot_align,
                       has_infoz);
   }
@@ -1410,9 +1424,9 @@ GrowEmptySooTableToNextCapacityForceSamplingAndPrepareInsert(
 
 // Resizes empty non-allocated table to the capacity to fit new_size elements.
 // Requires:
-//   1. `c.capacity() == policy.soo_capacity`.
+//   1. `c.capacity() == policy.soo_capacity()`.
 //   2. `c.empty()`.
-//   3. `new_size > policy.soo_capacity`.
+//   3. `new_size > policy.soo_capacity()`.
 // The table will be attempted to be sampled.
 void ReserveEmptyNonAllocatedTableToFitNewSize(CommonFields& common,
                                                const PolicyFunctions& policy,
@@ -1430,7 +1444,7 @@ void ReserveEmptyNonAllocatedTableToFitNewSize(CommonFields& common,
 // allocated backing array.
 //
 // Requires:
-//   1. `c.capacity() > policy.soo_capacity` OR `!c.empty()`.
+//   1. `c.capacity() > policy.soo_capacity()` OR `!c.empty()`.
 // Reserving already allocated tables is considered to be a rare case.
 ABSL_ATTRIBUTE_NOINLINE void ReserveAllocatedTable(
     CommonFields& common, const PolicyFunctions& policy, size_t new_size) {
@@ -1438,12 +1452,12 @@ ABSL_ATTRIBUTE_NOINLINE void ReserveAllocatedTable(
   ValidateMaxSize(new_size, policy.slot_size);
   ABSL_ASSUME(new_size > 0);
   const size_t new_capacity = SizeToCapacity(new_size);
-  if (cap == policy.soo_capacity) {
+  if (cap == policy.soo_capacity()) {
     ABSL_SWISSTABLE_ASSERT(!common.empty());
     ResizeFullSooTable(common, policy, new_capacity,
                        ResizeFullSooTableSamplingMode::kNoSampling);
   } else {
-    ABSL_SWISSTABLE_ASSERT(cap > policy.soo_capacity);
+    ABSL_SWISSTABLE_ASSERT(cap > policy.soo_capacity());
     // TODO(b/382423690): consider using GrowToNextCapacity, when applicable.
     ResizeAllocatedTableWithSeedChange(common, policy, new_capacity);
   }
@@ -1481,16 +1495,14 @@ size_t GrowSooTableToNextCapacityAndPrepareInsert(CommonFields& common,
                                                   const PolicyFunctions& policy,
                                                   size_t new_hash,
                                                   ctrl_t soo_slot_ctrl) {
-  ABSL_SWISSTABLE_ASSERT(common.capacity() == policy.soo_capacity);
-  ABSL_SWISSTABLE_ASSERT(policy.soo_capacity == SooCapacity());
+  AssertSoo(common, policy);
   if (ABSL_PREDICT_FALSE(soo_slot_ctrl == ctrl_t::kEmpty)) {
     // The table is empty, it is only used for forced sampling of SOO tables.
     return GrowEmptySooTableToNextCapacityForceSamplingAndPrepareInsert(
         common, policy, new_hash);
   }
-  ABSL_SWISSTABLE_ASSERT(common.size() == policy.soo_capacity);
+  ABSL_SWISSTABLE_ASSERT(common.size() == policy.soo_capacity());
   static constexpr size_t kNewCapacity = NextCapacity(SooCapacity());
-  ABSL_SWISSTABLE_ASSERT(kNewCapacity > policy.soo_capacity);
   const size_t slot_size = policy.slot_size;
   const size_t slot_align = policy.slot_align;
   common.set_capacity(kNewCapacity);
@@ -1555,9 +1567,7 @@ size_t GrowSooTableToNextCapacityAndPrepareInsert(CommonFields& common,
 
 void GrowFullSooTableToNextCapacityForceSampling(
     CommonFields& common, const PolicyFunctions& policy) {
-  ABSL_SWISSTABLE_ASSERT(common.capacity() == policy.soo_capacity);
-  ABSL_SWISSTABLE_ASSERT(common.size() == policy.soo_capacity);
-  ABSL_SWISSTABLE_ASSERT(policy.soo_capacity == SooCapacity());
+  AssertFullSoo(common, policy);
   ResizeFullSooTable(
       common, policy, NextCapacity(SooCapacity()),
       ResizeFullSooTableSamplingMode::kForceSampleNoResizeIfUnsampled);
@@ -1568,18 +1578,18 @@ void Rehash(CommonFields& common, const PolicyFunctions& policy, size_t n) {
 
   auto clear_backing_array = [&]() {
     ClearBackingArray(common, policy, policy.get_char_alloc(common),
-                      /*reuse=*/false, policy.soo_capacity > 0);
+                      /*reuse=*/false, policy.soo_enabled);
   };
 
   const size_t slot_size = policy.slot_size;
 
   if (n == 0) {
-    if (cap <= policy.soo_capacity) return;
+    if (cap <= policy.soo_capacity()) return;
     if (common.empty()) {
       clear_backing_array();
       return;
     }
-    if (common.size() <= policy.soo_capacity) {
+    if (common.size() <= policy.soo_capacity()) {
       // When the table is already sampled, we keep it sampled.
       if (common.infoz().IsSampled()) {
         static constexpr size_t kInitialSampledCapacity =
@@ -1613,7 +1623,7 @@ void Rehash(CommonFields& common, const PolicyFunctions& policy, size_t n) {
       NormalizeCapacity(n | SizeToCapacity(common.size()));
   // n == 0 unconditionally rehashes as per the standard.
   if (n == 0 || new_capacity > cap) {
-    if (cap == policy.soo_capacity) {
+    if (cap == policy.soo_capacity()) {
       if (common.empty()) {
         ResizeEmptyNonAllocatedTableImpl(common, policy, new_capacity,
                                          /*force_infoz=*/false);
@@ -1630,21 +1640,96 @@ void Rehash(CommonFields& common, const PolicyFunctions& policy, size_t n) {
   }
 }
 
+void Copy(CommonFields& common, const PolicyFunctions& policy,
+          const CommonFields& other,
+          absl::FunctionRef<void(void*, const void*)> copy_fn) {
+  const size_t size = other.size();
+  ABSL_SWISSTABLE_ASSERT(size > 0);
+  const size_t soo_capacity = policy.soo_capacity();
+  const size_t slot_size = policy.slot_size;
+  if (size <= soo_capacity) {
+    ABSL_SWISSTABLE_ASSERT(size == 1);
+    common.set_full_soo();
+    const void* other_slot =
+        other.capacity() <= soo_capacity
+            ? other.soo_data()
+            : SlotAddress(
+                  other.slot_array(),
+                  FindFirstFullSlot(0, other.capacity(), other.control()),
+                  slot_size);
+    copy_fn(common.soo_data(), other_slot);
+
+    if (policy.is_hashtablez_eligible && ShouldSampleNextTable()) {
+      GrowFullSooTableToNextCapacityForceSampling(common, policy);
+    }
+    return;
+  }
+
+  ReserveTableToFitNewSize(common, policy, size);
+  auto infoz = common.infoz();
+  ABSL_SWISSTABLE_ASSERT(other.capacity() > soo_capacity);
+  const size_t cap = common.capacity();
+  ABSL_SWISSTABLE_ASSERT(cap > soo_capacity);
+  // Note about single group tables:
+  // 1. It is correct to have any order of elements.
+  // 2. Order has to be non deterministic.
+  // 3. We are assigning elements with arbitrary `shift` starting from
+  //    `capacity + shift` position.
+  // 4. `shift` must be coprime with `capacity + 1` in order to be able to use
+  //     modular arithmetic to traverse all positions, instead of cycling
+  //     through a subset of positions. Odd numbers are coprime with any
+  //     `capacity + 1` (2^N).
+  size_t offset = cap;
+  const size_t shift = is_single_group(cap) ? (common.seed().seed() | 1) : 0;
+  const void* hash_fn = policy.hash_fn(common);
+  auto hasher = policy.hash_slot;
+  IterateOverFullSlotsImpl(
+      other, slot_size, [&](const ctrl_t* that_ctrl, void* that_slot) {
+        if (shift == 0) {
+          // Big tables case. Position must be searched via probing.
+          // The table is guaranteed to be empty, so we can do faster than
+          // a full `insert`.
+          const size_t hash = (*hasher)(hash_fn, that_slot);
+          FindInfo target = find_first_non_full(common, hash);
+          infoz.RecordInsert(hash, target.probe_length);
+          offset = target.offset;
+        } else {
+          // Small tables case. Next position is computed via shift.
+          offset = (offset + shift) & cap;
+        }
+        const h2_t h2 = static_cast<h2_t>(*that_ctrl);
+        // We rely on the hash not changing for small tables.
+        ABSL_SWISSTABLE_ASSERT(
+            H2((*hasher)(hash_fn, that_slot)) == h2 &&
+            "hash function value changed unexpectedly during the copy");
+        SetCtrl(common, offset, h2, slot_size);
+        copy_fn(SlotAddress(common.slot_array(), offset, slot_size), that_slot);
+        common.maybe_increment_generation_on_insert();
+      });
+  if (shift != 0) {
+    // On small table copy we do not record individual inserts.
+    // RecordInsert requires hash, but it is unknown for small tables.
+    infoz.RecordStorageChanged(size, cap);
+  }
+  common.increment_size(size);
+  common.growth_info().OverwriteManyEmptyAsFull(size);
+}
+
 void ReserveTableToFitNewSize(CommonFields& common,
                               const PolicyFunctions& policy, size_t new_size) {
   common.reset_reserved_growth(new_size);
   common.set_reservation_size(new_size);
-  ABSL_SWISSTABLE_ASSERT(new_size > policy.soo_capacity);
+  ABSL_SWISSTABLE_ASSERT(new_size > policy.soo_capacity());
   const size_t cap = common.capacity();
-  if (ABSL_PREDICT_TRUE(common.empty() && cap <= policy.soo_capacity)) {
+  if (ABSL_PREDICT_TRUE(common.empty() && cap <= policy.soo_capacity())) {
     return ReserveEmptyNonAllocatedTableToFitNewSize(common, policy, new_size);
   }
 
-  ABSL_SWISSTABLE_ASSERT(!common.empty() || cap > policy.soo_capacity);
+  ABSL_SWISSTABLE_ASSERT(!common.empty() || cap > policy.soo_capacity());
   ABSL_SWISSTABLE_ASSERT(cap > 0);
   const size_t max_size_before_growth =
-      cap <= policy.soo_capacity ? policy.soo_capacity
-                                 : common.size() + common.growth_left();
+      cap <= policy.soo_capacity() ? policy.soo_capacity()
+                                   : common.size() + common.growth_left();
   if (new_size <= max_size_before_growth) {
     return;
   }

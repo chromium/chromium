@@ -121,7 +121,11 @@ TEST(DumpInfoTest, AllOptionalFieldsIsValid) {
                      "\"js_build_label\": \"js_build_label\","
                      "\"js_exception_category\": \"js_exception_category\","
                      "\"js_exception_details\": \"js_exception_details\","
-                     "\"js_exception_signature\": \"js_exception_signature\""
+                     "\"js_exception_signature\": \"js_exception_signature\","
+                     "\"js_error_app\": \"js_error_app\","
+                     "\"previous_logfile\": \"previous_logfile\","
+                     "\"background_apps\": \"background_apps\","
+                     "\"server_url\": \"server_url\""
                      "}"));
   static constexpr base::Time::Exploded kTime = {.year = 2001,
                                                  .month = 11,

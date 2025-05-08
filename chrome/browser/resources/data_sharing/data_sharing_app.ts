@@ -307,7 +307,7 @@ export function createTranslationMap(): TranslationMap {
           loadTimeData.getStringF('manageGroupTitle', getTabGroupName()),
       [DynamicMessageKey.GET_CLOSE_FLOW_DESCRIPTION_FIRST_PARAGRAPH]:
           (params: DynamicMessageParams) => {
-            if (params.displayedUser!.name! === getGroupOwnerName(params)) {
+            if (params.loggedInUser.role === DataSharingMemberRoleEnum.OWNER) {
               return loadTimeData.getStringF('ownerDeleteLastTimeBody');
             } else {
               return loadTimeData.getStringF('memberDeleteLastTimeBody');
@@ -315,7 +315,7 @@ export function createTranslationMap(): TranslationMap {
           },
       [DynamicMessageKey.GET_CLOSE_FLOW_DESCRIPTION_SECOND_PARAGRAPH]:
           (params: DynamicMessageParams) => {
-            if (params.displayedUser!.name! === getGroupOwnerName(params)) {
+            if (params.loggedInUser.role === DataSharingMemberRoleEnum.OWNER) {
               return loadTimeData.getStringF(
                   'ownerDeleteLastTimeBody2', getTabGroupName());
             } else {
@@ -475,6 +475,20 @@ export class DataSharingApp extends CustomElement implements Logger {
       parent.classList.add('invite');
     } else {
       parent.classList.remove('invite');
+    }
+
+    switch (flow) {
+      case FlowValues.SHARE:
+        document.title =
+            loadTimeData.getStringF('shareGroupTitle', getTabGroupName());
+        break;
+      case FlowValues.MANAGE:
+        document.title =
+            loadTimeData.getStringF('manageGroupTitle', getTabGroupName());
+        break;
+      case FlowValues.JOIN:
+        document.title = loadTimeData.getStringF('previewA11yName');
+        break;
     }
 
     switch (flow) {

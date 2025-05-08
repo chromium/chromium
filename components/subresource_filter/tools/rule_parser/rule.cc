@@ -149,11 +149,6 @@ CssRule::~CssRule() = default;
 
 CssRule& CssRule::operator=(const CssRule&) = default;
 
-bool CssRule::operator==(const CssRule& other) const {
-  return is_allowlist == other.is_allowlist && domains == other.domains &&
-         css_selector == other.css_selector;
-}
-
 url_pattern_index::proto::CssRule CssRule::ToProtobuf() const {
   url_pattern_index::proto::CssRule result;
 

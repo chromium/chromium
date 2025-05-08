@@ -8,7 +8,10 @@ export interface GlicBrowserProxy {
   setGlicOsLauncherEnabled(enabled: boolean): void;
   getGlicShortcut(): Promise<string>;
   setGlicShortcut(shortcut: string): Promise<void>;
+  getGlicFocusToggleShortcut(): Promise<string>;
+  setGlicFocusToggleShortcut(shortcut: string): Promise<void>;
   setShortcutSuspensionState(isSuspended: boolean): void;
+  getDisallowedByAdmin(): Promise<boolean>;
 }
 
 export class GlicBrowserProxyImpl implements GlicBrowserProxy {
@@ -24,8 +27,20 @@ export class GlicBrowserProxyImpl implements GlicBrowserProxy {
     return sendWithPromise('setGlicShortcut', shortcut);
   }
 
+  getGlicFocusToggleShortcut() {
+    return sendWithPromise('getGlicFocusToggleShortcut');
+  }
+
+  setGlicFocusToggleShortcut(shortcut: string) {
+    return sendWithPromise('setGlicFocusToggleShortcut', shortcut);
+  }
+
   setShortcutSuspensionState(shouldSuspend: boolean) {
     chrome.send('setShortcutSuspensionState', [shouldSuspend]);
+  }
+
+  getDisallowedByAdmin() {
+    return sendWithPromise('getGlicDisallowedByAdmin');
   }
 
   static getInstance(): GlicBrowserProxy {

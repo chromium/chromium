@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadataExtractor;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -94,7 +95,7 @@ public class DragAndDropLauncherActivityTest {
     @Test
     @LargeTest
     public void testDraggedLink_newWindow() throws Exception {
-        Intent intent = createLinkDragDropIntent(mLinkUrl, MultiWindowUtils.INVALID_INSTANCE_ID);
+        Intent intent = createLinkDragDropIntent(mLinkUrl, TabWindowManager.INVALID_WINDOW_ID);
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.DragDrop.Tab.Type", DragDropType.LINK_TO_NEW_INSTANCE);
@@ -148,7 +149,7 @@ public class DragAndDropLauncherActivityTest {
         // the last accessed instance. Actual max # of instances will not be created as this would
         // cause a significant overhead for testing this scenario where a link is opened in an
         // existing instance.
-        Intent intent = createLinkDragDropIntent(mLinkUrl, MultiWindowUtils.INVALID_INSTANCE_ID);
+        Intent intent = createLinkDragDropIntent(mLinkUrl, TabWindowManager.INVALID_WINDOW_ID);
         ChromeTabbedActivity lastAccessedActivity =
                 ApplicationTestUtils.waitForActivityWithClass(
                         ChromeTabbedActivity.class,
@@ -195,7 +196,7 @@ public class DragAndDropLauncherActivityTest {
     @LargeTest
     public void testDraggedLink_invalidIntentCreationTimestamp() throws Exception {
         DragAndDropLauncherActivity.setDropTimeoutMsForTesting(500L);
-        Intent intent = createLinkDragDropIntent(mLinkUrl, MultiWindowUtils.INVALID_INSTANCE_ID);
+        Intent intent = createLinkDragDropIntent(mLinkUrl, TabWindowManager.INVALID_WINDOW_ID);
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newBuilder().expectNoRecords("Android.DragDrop.Tab.Type").build();
         Thread.sleep(DragAndDropLauncherActivity.getDropTimeoutMs() + 1);
@@ -378,7 +379,7 @@ public class DragAndDropLauncherActivityTest {
                             createTabDropData(tab, /* allowDragToCreateNewInstance= */ true),
                             mContext,
                             sourceWindowId,
-                            /* destWindowId= */ MultiWindowUtils.INVALID_INSTANCE_ID);
+                            /* destWindowId= */ TabWindowManager.INVALID_WINDOW_ID);
                 });
     }
 
@@ -400,7 +401,7 @@ public class DragAndDropLauncherActivityTest {
                                     tabGroupMetadata, /* allowDragToCreateNewInstance= */ true),
                             mContext,
                             sourceWindowId,
-                            /* destWindowId= */ MultiWindowUtils.INVALID_INSTANCE_ID);
+                            /* destWindowId= */ TabWindowManager.INVALID_WINDOW_ID);
                 });
     }
 

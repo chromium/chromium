@@ -9,6 +9,9 @@
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
+#import "ios/chrome/browser/collaboration/model/features.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -106,17 +109,27 @@
       [[CreateTabGroupViewController alloc] initWithEditMode:editMode
                                                    tabSynced:tabSynced];
 
+  FaviconLoader* faviconLoader = nil;
+  collaboration::CollaborationService* collaborationService =
+      collaboration::CollaborationServiceFactory::GetForProfile(profile);
+  // Fetch favicons if shared tab groups is enabled.
+  if (IsSharedTabGroupsJoinEnabled(collaborationService)) {
+    faviconLoader = IOSChromeFaviconLoaderFactory::GetForProfile(profile);
+  }
+
   if (_tabGroup) {
     _mediator = [[CreateTabGroupMediator alloc]
         initTabGroupEditionWithConsumer:_viewController
                                tabGroup:_tabGroup
-                           webStateList:browser->GetWebStateList()];
+                           webStateList:browser->GetWebStateList()
+                          faviconLoader:faviconLoader];
     _mediator.delegate = self;
   } else {
     _mediator = [[CreateTabGroupMediator alloc]
         initTabGroupCreationWithConsumer:_viewController
                             selectedTabs:_identifiers
-                                 browser:browser];
+                                 browser:browser
+                           faviconLoader:faviconLoader];
   }
   _viewController.mutator = _mediator;
   _viewController.delegate = self;

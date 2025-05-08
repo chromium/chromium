@@ -472,24 +472,13 @@ VideoProcessorWrapper* DCLayerTree::InitializeVideoProcessor(
   return &video_processor_wrapper;
 }
 
-Microsoft::WRL::ComPtr<IDXGISwapChain1>
-DCLayerTree::GetLayerSwapChainForTesting(size_t index) const {
+IDXGISwapChain1* DCLayerTree::GetLayerSwapChainForTesting(
+    const gfx::OverlayLayerId& layer_id) const {
   CHECK_IS_TEST();
-  if (index < video_swap_chains_.size())
-    return video_swap_chains_[index]->swap_chain();
-  return nullptr;
-}
-
-// Return properties of non root swap chain at given index.
-void DCLayerTree::GetSwapChainVisualInfoForTesting(size_t index,
-                                                   gfx::Transform* transform,
-                                                   gfx::Point* offset,
-                                                   gfx::Rect* clip_rect) const {
-  CHECK_IS_TEST();
-  if (visual_tree_) {
-    visual_tree_->GetSwapChainVisualInfoForTesting(index, transform,  // IN-TEST
-                                                   offset, clip_rect);
+  if (video_swap_chains_.contains(layer_id)) {
+    return video_swap_chains_.at(layer_id)->swap_chain().Get();
   }
+  return nullptr;
 }
 
 DCLayerTree::VisualTree::VisualSubtree::VisualSubtree() = default;
@@ -771,6 +760,10 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
     hr = content_visual_->SetContent(dcomp_visual_content_.Get());
     CHECK_EQ(hr, S_OK);
   }
+#if DCHECK_IS_ON()
+  dcomp_visual_content_changed_from_previous_frame_ =
+      dcomp_visual_content_changed;
+#endif
 
   if (dcomp_surface_serial_changed) {
     // The DComp surface has been drawn to and needs a commit to show its
@@ -823,13 +816,13 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
 }
 
 void DCLayerTree::VisualTree::VisualSubtree::GetSwapChainVisualInfoForTesting(
-    gfx::Transform* transform,
-    gfx::Point* offset,
-    gfx::Rect* clip_rect) const {
+    gfx::Transform* out_transform,
+    gfx::Point* out_offset,
+    gfx::Rect* out_clip_rect) const {
   CHECK_IS_TEST();
-  *transform = quad_to_root_transform_;
-  *offset = quad_rect_.origin();
-  *clip_rect = clip_rect_in_root_.value_or(gfx::Rect());
+  *out_transform = quad_to_root_transform_;
+  *out_offset = quad_rect_.origin();
+  *out_clip_rect = clip_rect_in_root_.value_or(gfx::Rect());
 }
 
 DCLayerTree::VisualTree::VisualTree(DCLayerTree* dc_layer_tree)
@@ -859,6 +852,9 @@ base::expected<void, CommitError> DCLayerTree::VisualTree::BuildTree(
   // |visual_subtrees| will become |visual_subtrees_| of the current frame;
   std::vector<std::unique_ptr<VisualSubtree>> visual_subtrees;
   visual_subtrees.resize(overlays.size());
+
+  decltype(layer_ids_for_testing_) layer_ids_for_testing;
+  layer_ids_for_testing.reserve(overlays.size());
 
   // Populate the map with visual content and assign matching subtrees to the
   // overlays.
@@ -977,11 +973,14 @@ base::expected<void, CommitError> DCLayerTree::VisualTree::BuildTree(
       needs_commit = true;
     }
     left_sibling_visual = visual_subtree->container_visual();
+
+    layer_ids_for_testing.push_back(overlays[i].layer_id);
   }
 
   // Update subtree_map_ and visual_subtrees_ with new values.
   subtree_map_ = std::move(subtree_map);
   visual_subtrees_ = std::move(visual_subtrees);
+  layer_ids_for_testing_ = std::move(layer_ids_for_testing);
 
   if (needs_commit) {
     TRACE_EVENT0("gpu", "DCLayerTree::CommitAndClearPendingOverlays::Commit");
@@ -1145,10 +1144,6 @@ bool DCLayerTree::VisualTree::DetachReusedSubtreesThatNeedRepositioningFromRoot(
     if (reused_subtree_index == prev_frame_subtree_index) {
       ++prev_frame_subtree_index;
     }
-#if DCHECK_IS_ON()
-    new_visual_subtrees[i]->attached_to_root_from_previous_frame_ =
-        prev_subtree_is_attached_to_root[reused_subtree_index];
-#endif  // DCHECK_IS_ON()
   }
   return needs_commit;
 }
@@ -1159,52 +1154,31 @@ void DCLayerTree::VisualTree::DetachSubtreeFromRoot(VisualSubtree* subtree) {
   CHECK_EQ(hr, S_OK);
 }
 
-void DCLayerTree::VisualTree::GetSwapChainVisualInfoForTesting(
-    size_t index,
-    gfx::Transform* transform,
-    gfx::Point* offset,
-    gfx::Rect* clip_rect) const {
-  CHECK_IS_TEST();
-  for (size_t i = 0, swapchain_i = 0; i < visual_subtrees_.size(); ++i) {
-    // Skip root layer.
-    if (visual_subtrees_[i]->z_order() == 0) {
-      continue;
-    }
-
-    if (swapchain_i == index) {
-      visual_subtrees_[i]->GetSwapChainVisualInfoForTesting(  // IN-TEST
-          transform, offset, clip_rect);
-      return;
-    }
-    swapchain_i++;
-  }
-}
-
 base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
     std::vector<DCLayerOverlayParams> overlays) {
   TRACE_EVENT1("gpu", "DCLayerTree::CommitAndClearPendingOverlays",
                "num_overlays", overlays.size());
-
-  Microsoft::WRL::ComPtr<IDXGISwapChain1> root_swap_chain;
-  auto it = std::ranges::find(overlays, 0, &DCLayerOverlayParams::z_order);
-  if (it != overlays.end() && (*it).overlay_image) {
-    Microsoft::WRL::ComPtr<IUnknown> root_visual_content =
-        (*it).overlay_image->dcomp_visual_content();
-    CHECK(root_visual_content);
-    HRESULT hr = root_visual_content.As(&root_swap_chain);
-    if (hr == E_NOINTERFACE) {
-      DCHECK_EQ(root_swap_chain, nullptr);
-    } else {
-      CHECK_EQ(S_OK, hr);
-      CHECK_NE(root_swap_chain, nullptr);
-    }
-  }
 
   // If delegated ink metadata exists for this frame, attempt to make an overlay
   // so that a visual subtree can be created for a delegated ink visual.
   // TODO(crbug.com/335553727) Consider clearing ink_renderer_ when there's no
   // metadata.
   if (pending_delegated_ink_metadata_) {
+    Microsoft::WRL::ComPtr<IDXGISwapChain1> root_swap_chain;
+    auto it = std::ranges::find(overlays, 0, &DCLayerOverlayParams::z_order);
+    if (it != overlays.end() && (*it).overlay_image) {
+      Microsoft::WRL::ComPtr<IUnknown> root_visual_content =
+          (*it).overlay_image->dcomp_visual_content();
+      CHECK(root_visual_content);
+      HRESULT hr = root_visual_content.As(&root_swap_chain);
+      if (hr == E_NOINTERFACE) {
+        DCHECK_EQ(root_swap_chain, nullptr);
+      } else {
+        CHECK_EQ(S_OK, hr);
+        CHECK_NE(root_swap_chain, nullptr);
+      }
+    }
+
     if (auto ink_layer = ink_renderer_->MakeDelegatedInkOverlay(
             dcomp_device_.Get(), root_swap_chain.Get(),
             std::move(pending_delegated_ink_metadata_))) {
@@ -1212,39 +1186,56 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
     }
   }
 
-  // Grow or shrink list of swap chain presenters to match pending overlays.
-  const size_t num_swap_chain_presenters = std::count_if(
-      overlays.begin(), overlays.end(),
-      [](const auto& overlay) { return NeedSwapChainPresenter(overlay); });
-  // Grow or shrink list of swap chain presenters to match pending overlays.
-  if (video_swap_chains_.size() != num_swap_chain_presenters) {
-    video_swap_chains_.resize(num_swap_chain_presenters);
-    // If we need to grow or shrink swap chain presenters, we'll need to add or
-    // remove visuals.
-  }
-
   // Sort layers by z-order.
-  std::sort(overlays.begin(), overlays.end(),
-            [](const auto& a, const auto& b) -> bool {
-              return a.z_order < b.z_order;
-            });
+  std::ranges::sort(overlays, std::ranges::less(),
+                    &DCLayerOverlayParams::z_order);
 
-  // |overlays| and |video_swap_chains_| do not have a 1:1 mapping because the
-  // root surface placeholder overlay does not have SwapChainPresenter, so there
-  // is one less element in |video_swap_chains_| than |overlays|.
-  auto video_swap_iter = video_swap_chains_.begin();
+  // Move unused video swap chains to `unused_video_swap_chains` for potential
+  // reuse (when adjacent frames have a videos that have different layer IDs
+  // which can sometimes happen when a video's src changes), then cleanup.
+  decltype(video_swap_chains_) unused_video_swap_chains;
+  {
+    // Move all video swap chains to `unused_video_swap_chains` and the move
+    // ones that are in the current frame back into `video_swap_chains_`.
+    unused_video_swap_chains = std::move(video_swap_chains_);
+
+    // We may be moving up to all of the swap chains back.
+    video_swap_chains_.reserve(unused_video_swap_chains.size());
+
+    size_t num_swap_chain_presenters = 0;
+    for (auto& overlay : overlays) {
+      if (NeedSwapChainPresenter(overlay)) {
+        auto reused_video_swap_chain_it =
+            unused_video_swap_chains.find(overlay.layer_id);
+        if (reused_video_swap_chain_it != unused_video_swap_chains.end()) {
+          video_swap_chains_.insert(std::move(*reused_video_swap_chain_it));
+          unused_video_swap_chains.erase(reused_video_swap_chain_it);
+        }
+        num_swap_chain_presenters++;
+      }
+    }
+
+    // If there are more videos this frame, reserve enough space for them.
+    video_swap_chains_.reserve(num_swap_chain_presenters);
+  }
 
   // Populate |overlays| with information required to build dcomp visual tree.
   for (auto& overlay : overlays) {
     if (NeedSwapChainPresenter(overlay)) {
       // Present to swap chain and update the overlay with transform, clip
       // and content.
-      auto& video_swap_chain = *(video_swap_iter++);
+      auto& video_swap_chain = video_swap_chains_[overlay.layer_id];
       if (!video_swap_chain) {
         // TODO(sunnyps): Try to find a matching swap chain based on size, type
         // of swap chain, gl image, etc.
-        video_swap_chain = std::make_unique<SwapChainPresenter>(
-            this, d3d11_device_, dcomp_device_);
+        auto unused_video_swap_chain_it = unused_video_swap_chains.begin();
+        if (unused_video_swap_chain_it != unused_video_swap_chains.end()) {
+          video_swap_chain = std::move(unused_video_swap_chain_it->second);
+          unused_video_swap_chains.erase(unused_video_swap_chain_it);
+        } else {
+          video_swap_chain = std::make_unique<SwapChainPresenter>(
+              this, d3d11_device_, dcomp_device_);
+        }
       }
       gfx::Transform transform;
       gfx::Rect clip_rect;
@@ -1283,24 +1274,6 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
   return status;
 }
 
-size_t DCLayerTree::GetNumSurfacesInPoolForTesting() const {
-  CHECK_IS_TEST();
-  return solid_color_surface_pool_
-      ->GetNumSurfacesInPoolForTesting();  // IN-TEST
-}
-
-#if DCHECK_IS_ON()
-bool DCLayerTree::GetAttachedToRootFromPreviousFrameForTesting(
-    size_t index) const {
-  CHECK_IS_TEST();
-  return visual_tree_
-             ? visual_tree_
-                   ->GetAttachedToRootFromPreviousFrameForTesting(  // IN-TEST
-                       index)
-             : false;
-}
-#endif  // DCHECK_IS_ON()
-
 bool DCLayerTree::SupportsDelegatedInk() {
   return ink_renderer_->DelegatedInkIsSupported(dcomp_device_);
 }
@@ -1318,5 +1291,108 @@ void DCLayerTree::InitDelegatedInkPointRendererReceiver(
 
   ink_renderer_->InitMessagePipeline(std::move(pending_receiver));
 }
+
+// Return properties of non root swap chain at given index.
+void DCLayerTree::GetSwapChainVisualInfoForTesting(
+    const gfx::OverlayLayerId& layer_id,
+    gfx::Transform* out_transform,
+    gfx::Point* out_offset,
+    gfx::Rect* out_clip_rect) const {
+  CHECK_IS_TEST();
+  visual_tree_->GetSwapChainVisualInfoForTesting(  // IN-TEST
+      layer_id, out_transform, out_offset, out_clip_rect);
+}
+
+size_t DCLayerTree::GetSwapChainPresenterCountForTesting() const {
+  CHECK_IS_TEST();
+  return video_swap_chains_.size();
+}
+
+size_t DCLayerTree::GetDcompLayerCountForTesting() const {
+  CHECK_IS_TEST();
+  return visual_tree_->GetDcompLayerCountForTesting();  // IN-TEST
+}
+
+IDCompositionVisual2* DCLayerTree::GetContentVisualForTesting(
+    const gfx::OverlayLayerId& layer_id) const {
+  CHECK_IS_TEST();
+  return visual_tree_->GetContentVisualForTesting(layer_id);  // IN-TEST
+}
+
+IDCompositionSurface* DCLayerTree::GetBackgroundColorSurfaceForTesting(
+    const gfx::OverlayLayerId& layer_id) const {
+  CHECK_IS_TEST();
+  return visual_tree_->GetBackgroundColorSurfaceForTesting(  // IN-TEST
+      layer_id);
+}
+
+size_t DCLayerTree::GetNumSurfacesInPoolForTesting() const {
+  CHECK_IS_TEST();
+  return solid_color_surface_pool_
+      ->GetNumSurfacesInPoolForTesting();  // IN-TEST
+}
+
+#if DCHECK_IS_ON()
+bool DCLayerTree::DcompVisualContentChangedFromPreviousFrameForTesting(
+    const gfx::OverlayLayerId& layer_id) const {
+  CHECK_IS_TEST();
+  return visual_tree_
+      ->DcompVisualContentChangedFromPreviousFrameForTesting(  // IN-TEST
+          layer_id);
+}
+#endif  // DCHECK_IS_ON()
+
+const DCLayerTree::VisualTree::VisualSubtree*
+DCLayerTree::VisualTree::GetSubtreeFromLayerIdForTesting(
+    const gfx::OverlayLayerId& layer_id) const {
+  CHECK_IS_TEST();
+  const auto it = std::ranges::find(layer_ids_for_testing_, layer_id);
+  CHECK(it != layer_ids_for_testing_.end());
+  const size_t index =
+      std::ranges::distance(layer_ids_for_testing_.begin(), it);
+  return visual_subtrees_.at(index).get();
+}
+
+// Return properties of non root swap chain at given index.
+void DCLayerTree::VisualTree::GetSwapChainVisualInfoForTesting(
+    const gfx::OverlayLayerId& layer_id,
+    gfx::Transform* out_transform,
+    gfx::Point* out_offset,
+    gfx::Rect* out_clip_rect) const {
+  CHECK_IS_TEST();
+  return GetSubtreeFromLayerIdForTesting(layer_id)                   // IN-TEST
+      ->GetSwapChainVisualInfoForTesting(out_transform, out_offset,  // IN-TEST
+                                         out_clip_rect);
+}
+
+size_t DCLayerTree::VisualTree::GetDcompLayerCountForTesting() const {
+  CHECK_IS_TEST();
+  return visual_subtrees_.size();
+}
+
+IDCompositionVisual2* DCLayerTree::VisualTree::GetContentVisualForTesting(
+    const gfx::OverlayLayerId& layer_id) const {
+  CHECK_IS_TEST();
+  return GetSubtreeFromLayerIdForTesting(layer_id)  // IN-TEST
+      ->container_visual();
+}
+
+IDCompositionSurface*
+DCLayerTree::VisualTree::GetBackgroundColorSurfaceForTesting(
+    const gfx::OverlayLayerId& layer_id) const {
+  CHECK_IS_TEST();
+  return GetSubtreeFromLayerIdForTesting(layer_id)  // IN-TEST
+      ->background_color_surface_for_testing();     // IN-TEST
+}
+
+#if DCHECK_IS_ON()
+bool DCLayerTree::VisualTree::
+    DcompVisualContentChangedFromPreviousFrameForTesting(
+        const gfx::OverlayLayerId& layer_id) const {
+  CHECK_IS_TEST();
+  return GetSubtreeFromLayerIdForTesting(layer_id)               // IN-TEST
+      ->DcompVisualContentChangedFromPreviousFrameForTesting();  // IN-TEST
+}
+#endif  // DCHECK_IS_ON()
 
 }  // namespace gl

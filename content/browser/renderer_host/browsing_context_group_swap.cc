@@ -23,11 +23,6 @@ BrowsingContextGroupSwap BrowsingContextGroupSwap::CreateCoopSwap() {
           ShouldSwapBrowsingInstance::kYes_ForceSwap};
 }
 
-BrowsingContextGroupSwap BrowsingContextGroupSwap::CreateRelatedCoopSwap() {
-  return {BrowsingContextGroupSwapType::kRelatedCoopSwap,
-          ShouldSwapBrowsingInstance::kYes_ForceSwap};
-}
-
 BrowsingContextGroupSwap BrowsingContextGroupSwap::CreateSecuritySwap() {
   return {BrowsingContextGroupSwapType::kSecuritySwap,
           ShouldSwapBrowsingInstance::kYes_ForceSwap};
@@ -44,7 +39,6 @@ bool BrowsingContextGroupSwap::ShouldSwap() const {
       return false;
 
     case BrowsingContextGroupSwapType::kCoopSwap:
-    case BrowsingContextGroupSwapType::kRelatedCoopSwap:
     case BrowsingContextGroupSwapType::kSecuritySwap:
     case BrowsingContextGroupSwapType::kProactiveSwap:
       return true;
@@ -57,7 +51,6 @@ bool BrowsingContextGroupSwap::ShouldClearProxiesOnCommit() const {
     case BrowsingContextGroupSwapType::kNoSwap:
     case BrowsingContextGroupSwapType::kSecuritySwap:
     case BrowsingContextGroupSwapType::kProactiveSwap:
-    case BrowsingContextGroupSwapType::kRelatedCoopSwap:
       return false;
 
     case BrowsingContextGroupSwapType::kCoopSwap:
@@ -74,7 +67,6 @@ bool BrowsingContextGroupSwap::ShouldClearWindowName() const {
       return false;
 
     case BrowsingContextGroupSwapType::kCoopSwap:
-    case BrowsingContextGroupSwapType::kRelatedCoopSwap:
       return true;
   }
   NOTREACHED();

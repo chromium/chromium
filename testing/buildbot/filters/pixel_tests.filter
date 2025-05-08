@@ -19,6 +19,7 @@ BookmarkEditorViewBrowserTestWithAccountBookmarks.*
 BrowserViewScrimPixelTest.*
 BubbleFrameViewBrowserTest.*
 BubbleSignInPromoInteractiveUITest.*
+CaptionBubbleBrowserTest.*
 ChromeLabs*UiTest.*
 ChromeSignoutConfirmationPromptPixelTest.*
 ChromeSignoutConfirmationPromptWithExtensionsPixelTest.*

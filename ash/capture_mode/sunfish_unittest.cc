@@ -770,7 +770,8 @@ TEST_F(SunfishTest, CaptureLabelView) {
   // select a capture region phase.
   EXPECT_FALSE(capture_button->GetVisible());
   EXPECT_TRUE(capture_label->GetVisible());
-  EXPECT_EQ(u"Drag to select an area to search", capture_label->GetText());
+  EXPECT_EQ(u"Drag or press Space to select an area to search",
+            capture_label->GetText());
 
   // Tests it can drag and select a region.
   auto* event_generator = GetEventGenerator();
@@ -868,7 +869,8 @@ TEST_F(SunfishTest, ResetCaptureRegion) {
   CaptureModeSessionTestApi test_api(controller->capture_mode_session());
   auto* capture_label = test_api.GetCaptureLabelInternalView();
   EXPECT_TRUE(capture_label->GetVisible());
-  EXPECT_EQ(u"Drag to select an area to search", capture_label->GetText());
+  EXPECT_EQ(u"Drag or press Space to select an area to search",
+            capture_label->GetText());
 }
 
 // Tests the sunfish capture mode bar view.
@@ -1131,7 +1133,8 @@ TEST_F(SunfishTest, StartRecordingThenStartSunfish) {
   auto* capture_label = test_api.GetCaptureLabelInternalView();
   EXPECT_FALSE(capture_button->GetVisible());
   EXPECT_TRUE(capture_label->GetVisible());
-  EXPECT_EQ(u"Drag to select an area to search", capture_label->GetText());
+  EXPECT_EQ(u"Drag or press Space to select an area to search",
+            capture_label->GetText());
 
   // Test we can select a region and show the search results panel.
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),

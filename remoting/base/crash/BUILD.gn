@@ -5,26 +5,19 @@
 import("//remoting/build/config/remoting_build.gni")
 
 source_set("crash") {
-  public_deps = [ ":breakpad_utils" ]
-  if (is_linux && enable_chromoting_crashpad) {
+  public_deps = []
+  if (is_linux || is_win) {
     public_deps += [ ":crashpad" ]
-  } else {
-    public_deps += [ ":breakpad" ]
+  }
+  if (is_win) {
+    public_deps += [
+      ":breakpad",
+      ":breakpad_utils",
+    ]
   }
 }
 
-source_set("breakpad_utils") {
-  sources = [
-    "breakpad_utils.cc",
-    "breakpad_utils.h",
-  ]
-  deps = [
-    "//base",
-    "//remoting/base:remoting_base_version",
-  ]
-}
-
-if (is_linux && enable_chromoting_crashpad) {
+if (is_linux || is_win) {
   source_set("crashpad_db_mgr") {
     sources = [
       "crashpad_database_manager.cc",
@@ -38,15 +31,27 @@ if (is_linux && enable_chromoting_crashpad) {
       "//third_party/crashpad/crashpad/util",
     ]
   }
+
   source_set("crashpad") {
     sources = [
-      "crash_reporting.cc",
-      "crash_reporting.h",
-      "crashpad.h",
-      "crashpad_linux.cc",
-      "crashpad_linux.h",
+      "crash_reporting_crashpad.cc",
+      "crash_reporting_crashpad.h",
     ]
+    if (is_linux) {
+      sources += [
+        "crashpad_linux.cc",
+        "crashpad_linux.h",
+      ]
+    }
+    if (is_win) {
+      sources += [
+        "crashpad_win.cc",
+        "crashpad_win.h",
+      ]
+    }
+
     configs += [ "//remoting/build/config:host_implementation" ]
+
     deps = [
       ":crashpad_db_mgr",
       "//base",
@@ -57,11 +62,27 @@ if (is_linux && enable_chromoting_crashpad) {
       "//third_party/crashpad/crashpad/util",
     ]
   }
-} else {
+}
+
+if (is_win) {
+  source_set("breakpad_utils") {
+    sources = [
+      "breakpad_utils.cc",
+      "breakpad_utils.h",
+    ]
+    deps = [
+      "//base",
+      "//remoting/base:remoting_base_version",
+    ]
+  }
+
   source_set("breakpad") {
     sources = [
-      "crash_reporting.cc",
-      "crash_reporting.h",
+      "breakpad_server.cc",
+      "breakpad_win.cc",
+      "breakpad_win.h",
+      "crash_reporting_breakpad.cc",
+      "crash_reporting_breakpad.h",
     ]
 
     configs += [
@@ -72,25 +93,9 @@ if (is_linux && enable_chromoting_crashpad) {
     deps = [
       ":breakpad_utils",
       "//base",
+      "//remoting/base:logging",
       "//remoting/base:remoting_base_version",
+      "//third_party/breakpad:breakpad_handler",
     ]
-
-    if (is_linux || is_chromeos) {
-      sources += [
-        "breakpad_linux.cc",
-        "breakpad_linux.h",
-      ]
-      deps += [ "//third_party/breakpad:client" ]
-    } else if (is_win) {
-      sources += [
-        "breakpad_server.cc",
-        "breakpad_win.cc",
-        "breakpad_win.h",
-      ]
-      deps += [
-        "//remoting/base:logging",
-        "//third_party/breakpad:breakpad_handler",
-      ]
-    }
   }
 }

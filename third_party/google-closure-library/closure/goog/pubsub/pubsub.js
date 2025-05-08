@@ -220,7 +220,7 @@ goog.pubsub.PubSub.prototype.unsubscribeByKey = function(key) {
       // Defer removal until after publishing is complete, but replace the
       // function with a no-op so it isn't called.
       this.pendingKeys_.push(key);
-      this.subscriptions_[key + 1] = goog.nullFunction;
+      this.subscriptions_[key + 1] = () => {};
     } else {
       if (keys) {
         goog.array.remove(keys, key);

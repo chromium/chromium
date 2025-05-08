@@ -253,7 +253,7 @@ class LensOverlayMediatorTest : public PlatformTest {
     EXPECT_OCMOCK_VERIFY(mock_toolbar_consumer_);
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
 
   LensOverlayMediator* mediator_;
 

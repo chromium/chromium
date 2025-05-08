@@ -37,6 +37,10 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -857,9 +861,11 @@ void MenuItemView::SetForcedVisualSelection(bool selected) {
   SchedulePaint();
 }
 
-void MenuItemView::SetCornerRadius(int radius) {
+void MenuItemView::SetBottomCornersRadius(int lower_left_radius,
+                                          int lower_right_radius) {
   DCHECK_EQ(Type::kHighlighted, type_);
-  corner_radius_ = radius;
+  bottom_rounded_corners_ =
+      gfx::RoundedCornersF(0, 0, lower_left_radius, lower_right_radius);
   invalidate_dimensions();  // Triggers preferred size recalculation.
 }
 
@@ -1150,14 +1156,19 @@ void MenuItemView::PaintBackground(gfx::Canvas* canvas,
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
     flags.setColor(color);
-    // Draw a rounded rect that spills outside of the clipping area, so that the
-    // rounded corners only show in the bottom 2 corners. Note that
-    // |corner_radius_| should only be set when the highlighted item is at the
-    // end of the menu.
-    gfx::RectF spilling_rect(GetLocalBounds());
-    spilling_rect.set_y(spilling_rect.y() - corner_radius_);
-    spilling_rect.set_height(spilling_rect.height() + corner_radius_);
-    canvas->DrawRoundRect(spilling_rect, corner_radius_, flags);
+
+    // Note that `bottom_rounded_corners_` should only be set when the
+    // highlighted item is at the bottom of the menu.
+    SkRRect rounded_rect;
+    SkVector radii[4]{{0, 0},
+                      {0, 0},
+                      {bottom_rounded_corners_.lower_right(),
+                       bottom_rounded_corners_.lower_right()},
+                      {bottom_rounded_corners_.lower_left(),
+                       bottom_rounded_corners_.lower_left()}};
+    rounded_rect.setRectRadii(gfx::RectFToSkRect(gfx::RectF(GetLocalBounds())),
+                              radii);
+    canvas->sk_canvas()->drawRRect(rounded_rect, flags);
   } else if (paint_as_selected) {
     gfx::Rect item_bounds = GetLocalBounds();
     if (type_ == Type::kActionableSubMenu) {

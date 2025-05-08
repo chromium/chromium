@@ -6,6 +6,8 @@
 
 #include "base/barrier_closure.h"
 #include "base/files/file_util.h"
+#include "base/memory/ref_counted.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -16,22 +18,26 @@
 #include "chrome/browser/extensions/chrome_zipfile_installer.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/devtools_util.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
+#include "chrome/browser/extensions/webstore_reinstaller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/common/drop_data.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/file_highlighter.h"
+#include "extensions/browser/management_policy.h"
 #include "extensions/browser/path_util.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/ui_util.h"
@@ -1416,6 +1422,63 @@ ExtensionFunction::ResponseAction DeveloperPrivateOpenDevToolsFunction::Run() {
       web_contents));  // Not through direct user gesture.
 #endif                 // BUILDFLAG(ENABLE_EXTENSIONS)
   return RespondNow(NoArguments());
+}
+
+DeveloperPrivateRepairExtensionFunction::
+    ~DeveloperPrivateRepairExtensionFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateRepairExtensionFunction::Run() {
+  std::optional<developer::RepairExtension::Params> params =
+      developer::RepairExtension::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  const Extension* extension = GetExtensionById(params->extension_id);
+  if (!extension) {
+    return RespondNow(Error(kNoSuchExtensionError));
+  }
+
+  if (!ExtensionPrefs::Get(browser_context())
+           ->HasDisableReason(extension->id(),
+                              disable_reason::DISABLE_CORRUPTED)) {
+    return RespondNow(Error(kCannotRepairHealthyExtension));
+  }
+
+  ManagementPolicy* management_policy =
+      ExtensionSystem::Get(browser_context())->management_policy();
+  // If content verifier would repair this extension independently, then don't
+  // allow repair from here. This applies to policy extensions.
+  // Also note that if we let |reinstaller| continue with the repair, this would
+  // have uninstalled the extension but then we would have failed to reinstall
+  // it for policy check (see PolicyCheck::Start()).
+  if (management_policy->ShouldRepairIfCorrupted(extension)) {
+    return RespondNow(Error(kCannotRepairPolicyExtension));
+  }
+
+  content::WebContents* web_contents = GetSenderWebContents();
+  if (!web_contents) {
+    return RespondNow(Error(kCouldNotFindWebContentsError));
+  }
+
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(browser_context());
+  if (!extension_management->UpdatesFromWebstore(*extension)) {
+    return RespondNow(Error(kCannotRepairNonWebstoreExtension));
+  }
+
+  auto reinstaller = base::MakeRefCounted<WebstoreReinstaller>(
+      web_contents, params->extension_id,
+      base::BindOnce(
+          &DeveloperPrivateRepairExtensionFunction::OnReinstallComplete, this));
+  reinstaller->BeginReinstall();
+
+  return RespondLater();
+}
+
+void DeveloperPrivateRepairExtensionFunction::OnReinstallComplete(
+    bool success,
+    const std::string& error,
+    webstore_install::Result result) {
+  Respond(success ? NoArguments() : Error(error));
 }
 
 }  // namespace api

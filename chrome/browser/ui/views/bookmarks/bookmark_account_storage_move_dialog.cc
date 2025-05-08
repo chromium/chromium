@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_account_storage_move_dialog_delegate.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -36,6 +38,40 @@
 namespace {
 
 const int kAvatarSize = 16;
+
+void RecordDialogMetrics(std::string_view action,
+                         BookmarkAccountStorageMoveDialogType type,
+                         bool is_local_node) {
+  if (is_local_node) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({"BookmarkAccountStorageMoveDialog.Upload.", action}),
+        type);
+  } else {
+    base::UmaHistogramBoolean(
+        base::StrCat({"BookmarkAccountStorageMoveDialog.Download.", action}),
+        true);
+  }
+}
+
+void RecordDialogAccepted(BookmarkAccountStorageMoveDialogType type,
+                          bool is_local_node) {
+  RecordDialogMetrics("Accepted", type, is_local_node);
+}
+
+void RecordDialogDeclined(BookmarkAccountStorageMoveDialogType type,
+                          bool is_local_node) {
+  RecordDialogMetrics("Declined", type, is_local_node);
+}
+
+void RecordDialogExplicitlyClosed(BookmarkAccountStorageMoveDialogType type,
+                                  bool is_local_node) {
+  RecordDialogMetrics("ExplicitlyClosed", type, is_local_node);
+}
+
+void RecordDialogShown(BookmarkAccountStorageMoveDialogType type,
+                       bool is_local_node) {
+  RecordDialogMetrics("Shown", type, is_local_node);
+}
 
 }  // namespace
 
@@ -63,12 +99,12 @@ void ShowBookmarkAccountStorageMoveDialog(
   CHECK_NE(is_local_node, bookmark_model->IsLocalOnlyNode(*target_folder));
 
   int title_id = IDS_UPLOAD_MOVE_TO_ACCOUNT_DIALOG_TITLE;
-  std::u16string subtitle;
+  std::u16string body_text;
   switch (dialog_type) {
     case BookmarkAccountStorageMoveDialogType::kDownloadOrUpload: {
       title_id = is_local_node ? IDS_BOOKMARKS_MOVE_TO_ACCOUNT_DIALOG_TITLE
                                : IDS_BOOKMARKS_MOVE_TO_DEVICE_DIALOG_TITLE;
-      subtitle = l10n_util::GetStringFUTF16(
+      body_text = l10n_util::GetStringFUTF16(
           is_local_node
               ? (node->is_folder()
                      ? IDS_BOOKMARKS_MOVE_TO_ACCOUNT_DIALOG_FOLDER_SUBTITLE
@@ -80,7 +116,7 @@ void ShowBookmarkAccountStorageMoveDialog(
       break;
     }
     case BookmarkAccountStorageMoveDialogType::kUpload: {
-      subtitle = l10n_util::GetStringFUTF16(
+      body_text = l10n_util::GetStringFUTF16(
           IDS_BOOKMARK_UPLOAD_MOVE_TO_ACCOUNT_DIALOG_SUBTITLE,
           node->GetTitle());
     }
@@ -93,22 +129,30 @@ void ShowBookmarkAccountStorageMoveDialog(
   auto [ok_callback, cancel_callback] =
       base::SplitOnceCallback(std::move(closed_callback));
 
-  ui::DialogModel::Builder builder;
+  auto delegate = std::make_unique<BookmarkAccountStorageMoveDialogDelegate>(
+      browser, node, target_folder);
+  ui::DialogModel::Builder builder(std::move(delegate));
   builder.SetInternalName("BookmarkAccountStorageMoveDialog")
       .SetTitle(l10n_util::GetStringUTF16(title_id))
-      .SetSubtitle(subtitle)
+      .AddParagraph(ui::DialogModelLabel(body_text))
       .AddOkButton(base::BindOnce(&bookmarks::BookmarkModel::Move,
                                   bookmark_model->AsWeakPtr(), node,
                                   target_folder, index)
-                       .Then(std::move(ok_callback)),
+                       .Then(std::move(ok_callback))
+                       .Then(base::BindOnce(RecordDialogAccepted, dialog_type,
+                                            is_local_node)),
                    ui::DialogModel::Button::Params()
                        .SetLabel(l10n_util::GetStringUTF16(ok_button_id))
                        .SetId(kBookmarkAccountStorageMoveDialogOkButton))
       .AddCancelButton(
-          std::move(cancel_callback),
+          std::move(cancel_callback)
+              .Then(base::BindOnce(RecordDialogDeclined, dialog_type,
+                                   is_local_node)),
           ui::DialogModel::Button::Params()
               .SetLabel(l10n_util::GetStringUTF16(IDS_CANCEL))
-              .SetId(kBookmarkAccountStorageMoveDialogCancelButton));
+              .SetId(kBookmarkAccountStorageMoveDialogCancelButton))
+      .SetCloseActionCallback(base::BindOnce(RecordDialogExplicitlyClosed,
+                                             dialog_type, is_local_node));
 
   if (is_local_node) {
     // If moving to the account, show the avatar and email of the signed-in
@@ -142,4 +186,5 @@ void ShowBookmarkAccountStorageMoveDialog(
   }
 
   chrome::ShowBrowserModal(browser, builder.Build());
+  RecordDialogShown(dialog_type, is_local_node);
 }

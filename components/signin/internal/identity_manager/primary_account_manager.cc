@@ -334,6 +334,8 @@ void PrimaryAccountManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                std::string());
   registry->RegisterStringPref(prefs::kGoogleServicesLastSignedInUsername,
                                std::string());
+  registry->RegisterStringPref(prefs::kGoogleServicesSecondLastSyncingGaiaId,
+                               std::string());
   registry->RegisterStringPref(prefs::kGoogleServicesAccountId, std::string());
   registry->RegisterBooleanPref(prefs::kGoogleServicesConsentedToSync, false);
   registry->RegisterStringPref(
@@ -360,21 +362,6 @@ void PrimaryAccountManager::PrepareToLoadPrefs() {
   CHECK(!primary_account_.has_value());
 
   PrefService* prefs = client_->GetPrefs();
-
-  // kGoogleServicesLastSignedInUsername was introduced much later than its
-  // "Syncing" counterpart, so backfill. Note that having different values for
-  // the 2 prefs is possible (user enabled sync, disabled, then signed-in with
-  // a different account) and we should not overwrite the "SignedIn" pref in
-  // that case.
-  // TODO(crbug.com/337112658): Remove migration after 04/25.
-  std::string last_syncing_username =
-      prefs->GetString(prefs::kGoogleServicesLastSyncingUsername);
-  std::string last_signed_in_username =
-      prefs->GetString(prefs::kGoogleServicesLastSignedInUsername);
-  if (!last_syncing_username.empty() && last_signed_in_username.empty()) {
-    prefs->SetString(prefs::kGoogleServicesLastSignedInUsername,
-                     last_syncing_username);
-  }
 
   // If the user is clearing the token service from the command line, then
   // clear their login info also (not valid to be logged in without any
@@ -573,6 +560,12 @@ void PrimaryAccountManager::SetSyncPrimaryAccountInternal(
 
   SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/true,
                             scoped_pref_commit);
+
+  // Before `kGoogleServicesLastSyncingGaiaId` is updated, keep a copy of the
+  // previous value, and store it in a separate pref.
+  scoped_pref_commit.SetString(
+      prefs::kGoogleServicesSecondLastSyncingGaiaId,
+      client_->GetPrefs()->GetString(prefs::kGoogleServicesLastSyncingGaiaId));
 
   // Go ahead and update the last signed in account info here as well. Once a
   // user is signed in the corresponding preferences should match. Doing it here
@@ -814,11 +807,19 @@ void PrimaryAccountManager::ComputeExplicitBrowserSignin(
   // If the user turns on sync, disable account storage for bookmarks. This
   // way the user does not get duplicate data if they turn off sync (and
   // choose to preserve their data locally) and then sign in again.
+  // This is safe to remove with the deprecation of
+  // `signin::ConsentLevel::kSync`.
   if (event_details.GetEventTypeFor(signin::ConsentLevel::kSync) ==
       signin::PrimaryAccountChangeEvent::Type::kSet) {
     auto current_gaia_id = event_details.GetCurrentState().primary_account.gaia;
-    SigninPrefs(*client_->GetPrefs())
-        .SetBookmarksExplicitBrowserSignin(current_gaia_id, false);
+    auto prefs = SigninPrefs(*client_->GetPrefs());
+
+    if (prefs.GetBookmarksExplicitBrowserSignin(current_gaia_id)) {
+      base::UmaHistogramBoolean(
+          "Signin.Bookmarks.SyncTurnedOnWithAccountStorageEnabled", true);
+    }
+
+    prefs.SetBookmarksExplicitBrowserSignin(current_gaia_id, false);
   }
 #endif
 }

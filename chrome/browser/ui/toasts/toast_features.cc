@@ -41,6 +41,11 @@ BASE_FEATURE(kImageCopiedToast,
              "ImageCopiedToast",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the video frame copied confirmation toast.
+BASE_FEATURE(kVideoFrameCopiedToast,
+             "VideoFrameCopiedToast",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables the link to highlight copied confirmation toast.
 BASE_FEATURE(kLinkToHighlightCopiedToast,
              "LinkToHighlightCopiedToast",
@@ -59,6 +64,11 @@ BASE_FEATURE(kLensOverlayToast,
 // Enabled the clear browsing data confirmation toast.
 BASE_FEATURE(kClearBrowsingDataToast,
              "ClearBrowsingDataToast",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the pinned tab closing notification toast.
+BASE_FEATURE(kPinnedTabToastOnClose,
+             "PinnedTabToastOnClose",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // static

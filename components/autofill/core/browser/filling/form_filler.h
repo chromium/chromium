@@ -39,8 +39,12 @@ enum class RefillTriggerReason {
   kMaxValue = kExpirationDateFormatted
 };
 
-using FillingPayload = std::
-    variant<const AutofillProfile*, const CreditCard*, const EntityInstance*>;
+using VerifiedProfile = std::map<FieldType, std::u16string>;
+
+using FillingPayload = std::variant<const AutofillProfile*,
+                                    const CreditCard*,
+                                    const EntityInstance*,
+                                    const VerifiedProfile*>;
 
 // Helper class responsible for [re]filling forms and fields.
 //
@@ -116,12 +120,13 @@ class FormFiller {
 
   // Reverts the last autofill operation on `form` that affected
   // `trigger_field`. `renderer_action` denotes whether this is an actual
-  // filling or a preview operation on the renderer side. Returns the filling
-  // product of the operation being undone.
-  FillingProduct UndoAutofill(mojom::ActionPersistence action_persistence,
-                              FormData form,
-                              FormStructure& form_structure,
-                              const FormFieldData& trigger_field);
+  // filling or a preview operation on the renderer side.
+  // TODO(crbug.com/40227496): Keep only one of `form` and `form_structure`.
+  void UndoAutofill(mojom::ActionPersistence action_persistence,
+                    FormData form,
+                    FormStructure& form_structure,
+                    const FormFieldData& trigger_field,
+                    FillingProduct filling_product);
 
   // Records filling information if possible and routes back to the renderer.
   void FillOrPreviewField(mojom::ActionPersistence action_persistence,

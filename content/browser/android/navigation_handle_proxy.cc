@@ -29,7 +29,17 @@ NavigationHandleProxy::NavigationHandleProxy(
   JNIEnv* env = AttachCurrentThread();
 
   java_navigation_handle_ = Java_NavigationHandle_Constructor(
-      env, reinterpret_cast<jlong>(cpp_navigation_handle));
+      env, reinterpret_cast<jlong>(cpp_navigation_handle),
+      url::GURLAndroid::FromNativeGURL(env, cpp_navigation_handle_->GetURL()),
+      cpp_navigation_handle_->IsRendererInitiated(),
+      cpp_navigation_handle_->GetReloadType() != content::ReloadType::NONE,
+      cpp_navigation_handle_->IsHistory(),
+      cpp_navigation_handle_->IsHistory() &&
+          cpp_navigation_handle_->GetNavigationEntryOffset() < 0,
+      cpp_navigation_handle_->IsHistory() &&
+          cpp_navigation_handle_->GetNavigationEntryOffset() > 0,
+      cpp_navigation_handle_->GetRestoreType() ==
+          content::RestoreType::kRestored);
 }
 
 void NavigationHandleProxy::DidStart() {
@@ -38,14 +48,12 @@ void NavigationHandleProxy::DidStart() {
   // Set all these methods on the Java side over JNI with a new JNI method.
   Java_NavigationHandle_didStart(
       env, java_navigation_handle_,
-      url::GURLAndroid::FromNativeGURL(env, cpp_navigation_handle_->GetURL()),
       url::GURLAndroid::FromNativeGURL(
           env, cpp_navigation_handle_->GetReferrer().url),
       url::GURLAndroid::FromNativeGURL(
           env, cpp_navigation_handle_->GetBaseURLForDataURL()),
       cpp_navigation_handle_->IsInPrimaryMainFrame(),
       cpp_navigation_handle_->IsSameDocument(),
-      cpp_navigation_handle_->IsRendererInitiated(),
       cpp_navigation_handle_->GetInitiatorOrigin()
           ? cpp_navigation_handle_->GetInitiatorOrigin()->ToJavaObject(env)
           : nullptr,
@@ -56,14 +64,6 @@ void NavigationHandleProxy::DidStart() {
       cpp_navigation_handle_->IsExternalProtocol(),
       cpp_navigation_handle_->GetNavigationId(),
       cpp_navigation_handle_->IsPageActivation(),
-      cpp_navigation_handle_->GetReloadType() != content::ReloadType::NONE,
-      cpp_navigation_handle_->IsHistory(),
-      cpp_navigation_handle_->IsHistory() &&
-          cpp_navigation_handle_->GetNavigationEntryOffset() < 0,
-      cpp_navigation_handle_->IsHistory() &&
-          cpp_navigation_handle_->GetNavigationEntryOffset() > 0,
-      cpp_navigation_handle_->GetRestoreType() ==
-          content::RestoreType::kRestored,
       cpp_navigation_handle_->IsPdf(),
       base::android::ConvertUTF8ToJavaString(env, GetMimeType()),
       GetContentClient()->browser()->IsSaveableNavigation(

@@ -7,12 +7,16 @@
 
 #include <optional>
 #include <variant>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/keyboard_accessory/android/payment_method_accessory_controller.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 class ManualFillingController;
@@ -27,6 +31,7 @@ class BrowserAutofillManager;
 class PaymentMethodAccessoryControllerImpl
     : public PaymentMethodAccessoryController,
       public PaymentsDataManager::Observer,
+      public ValuablesDataManager::Observer,
       public content::WebContentsUserData<
           PaymentMethodAccessoryControllerImpl> {
  public:
@@ -52,6 +57,7 @@ class PaymentMethodAccessoryControllerImpl
       content::WebContents* web_contents,
       base::WeakPtr<ManualFillingController> mf_controller,
       PaymentsDataManager* payments_data_manager,
+      ValuablesDataManager* valuables_data_manager,
       BrowserAutofillManager* af_manager,
       AutofillDriver* af_driver);
 
@@ -69,6 +75,7 @@ class PaymentMethodAccessoryControllerImpl
       content::WebContents* web_contents,
       base::WeakPtr<ManualFillingController> mf_controller,
       PaymentsDataManager* payments_data_manager,
+      ValuablesDataManager* valuables_data_manager,
       BrowserAutofillManager* af_manager,
       AutofillDriver* af_driver);
 
@@ -97,6 +104,9 @@ class PaymentMethodAccessoryControllerImpl
   // Gets IBANs from the personal data manager.
   std::vector<Iban> GetIbans() const;
 
+  // Gets Google Wallet loyalty cards from the valuables data manager.
+  base::span<const LoyaltyCard> GetLoyaltyCards() const;
+
   base::WeakPtr<ManualFillingController> GetManualFillingController();
   AutofillDriver* GetDriver();
   const BrowserAutofillManager* GetAutofillManager() const;
@@ -112,8 +122,15 @@ class PaymentMethodAccessoryControllerImpl
   // method also tries to fetch IBAN and fill the form field.
   bool FetchIfIban(const std::string& selection_id);
 
+  // ValuablesDataManager::Observer:
+  void OnValuablesDataChanged() override;
+
   const PaymentsDataManager* paydm() const {
     return paydm_observation_.GetSource();
+  }
+
+  const ValuablesDataManager* valuables_data_manager() const {
+    return valuables_data_manager_observation_.GetSource();
   }
 
   base::WeakPtr<ManualFillingController> mf_controller_;
@@ -130,6 +147,10 @@ class PaymentMethodAccessoryControllerImpl
   // Observes the `PaymentsDataManager` of the profile to react to updates.
   base::ScopedObservation<PaymentsDataManager, PaymentsDataManager::Observer>
       paydm_observation_{this};
+
+  // Observes the `ValuablesDataManager` of the profile to react to updates.
+  base::ScopedObservation<ValuablesDataManager, ValuablesDataManager::Observer>
+      valuables_data_manager_observation_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

@@ -54,6 +54,7 @@ import org.chromium.ui.base.TestActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /** Tests for {@link TabListEditorAddToGroupAction}. */
@@ -71,7 +72,7 @@ public class TabListEditorAddToGroupActionUnitTest {
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabModel mTabModel;
     @Mock private Supplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
-    @Mock private SelectionDelegate<Integer> mSelectionDelegate;
+    @Mock private SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegate;
     @Mock private TabListEditorAction.ActionDelegate mActionDelegate;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
@@ -106,7 +107,7 @@ public class TabListEditorAddToGroupActionUnitTest {
                         TEXT,
                         START,
                         mDrawable,
-                        (a, b, c, d, e, f, g) -> mCoordinator);
+                        (a, b, c, d, e, f, g, h) -> mCoordinator);
         mAction.configure(mTabGroupModelFilterSupplier, mSelectionDelegate, mActionDelegate, false);
     }
 
@@ -180,16 +181,20 @@ public class TabListEditorAddToGroupActionUnitTest {
 
     @Test
     public void testOnSelectionStateChange() {
-        List<Integer> tabIds = new ArrayList<>(Arrays.asList(1, 2));
-        when(mSelectionDelegate.getSelectedItemsAsList()).thenReturn(tabIds);
+        List<TabListEditorItemSelectionId> itemIds =
+                new ArrayList<>(
+                        Arrays.asList(
+                                TabListEditorItemSelectionId.createTabId(1),
+                                TabListEditorItemSelectionId.createTabId(2)));
+        when(mSelectionDelegate.getSelectedItemsAsList()).thenReturn(itemIds);
         mAction.configure(mTabGroupModelFilterSupplier, mSelectionDelegate, mActionDelegate, false);
 
         assertTrue(mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
         assertEquals(2, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
 
-        tabIds.clear();
-        when(mSelectionDelegate.getSelectedItemsAsList()).thenReturn(tabIds);
-        mAction.onSelectionStateChange(tabIds);
+        itemIds.clear();
+        when(mSelectionDelegate.getSelectedItemsAsList()).thenReturn(itemIds);
+        mAction.onSelectionStateChange(itemIds);
 
         assertFalse(mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
         assertEquals(0, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
@@ -197,7 +202,11 @@ public class TabListEditorAddToGroupActionUnitTest {
 
     @Test
     public void testOnSelectionStateChange_sharedGroupSelected() {
-        List<Integer> tabIds = new ArrayList<>(Arrays.asList(1, 2));
+        List<TabListEditorItemSelectionId> itemIds =
+                new ArrayList<>(
+                        Arrays.asList(
+                                TabListEditorItemSelectionId.createTabId(1),
+                                TabListEditorItemSelectionId.createTabId(2)));
         when(mTab1.getTabGroupId()).thenReturn(mTabGroupId);
 
         SavedTabGroup savedTabGroup = new SavedTabGroup();
@@ -205,15 +214,15 @@ public class TabListEditorAddToGroupActionUnitTest {
 
         when(mTabGroupSyncService.getGroup(new LocalTabGroupId(mTabGroupId)))
                 .thenReturn(savedTabGroup);
-        when(mSelectionDelegate.getSelectedItemsAsList()).thenReturn(tabIds);
+        when(mSelectionDelegate.getSelectedItemsAsList()).thenReturn(itemIds);
         mAction.configure(mTabGroupModelFilterSupplier, mSelectionDelegate, mActionDelegate, false);
 
         assertFalse(mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
         assertEquals(2, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
 
-        tabIds.clear();
-        when(mSelectionDelegate.getSelectedItemsAsList()).thenReturn(tabIds);
-        mAction.onSelectionStateChange(tabIds);
+        itemIds.clear();
+        when(mSelectionDelegate.getSelectedItemsAsList()).thenReturn(itemIds);
+        mAction.onSelectionStateChange(itemIds);
 
         assertFalse(mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
         assertEquals(0, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
@@ -224,7 +233,7 @@ public class TabListEditorAddToGroupActionUnitTest {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(1);
 
-        assertTrue(mAction.performAction(tabs));
+        assertTrue(mAction.performAction(tabs, Collections.emptyList()));
         verify(mCoordinator).showBottomSheet(tabs);
         verify(mTabGroupCreationDialogManager, never()).showDialog(any(), any());
     }
@@ -234,7 +243,7 @@ public class TabListEditorAddToGroupActionUnitTest {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(0);
 
-        assertTrue(mAction.performAction(tabs));
+        assertTrue(mAction.performAction(tabs, Collections.emptyList()));
         verify(mTabGroupModelFilter).mergeListOfTabsToGroup(eq(tabs), eq(mTab1), anyBoolean());
         verify(mTabGroupCreationDialogManager)
                 .showDialog(eq(mTab1.getTabGroupId()), eq(mTabGroupModelFilter));
@@ -243,7 +252,7 @@ public class TabListEditorAddToGroupActionUnitTest {
 
     @Test(expected = AssertionError.class)
     public void testPerformAction_NoTabs() {
-        mAction.performAction(new ArrayList<>());
+        mAction.performAction(Collections.emptyList(), Collections.emptyList());
     }
 
     @Test

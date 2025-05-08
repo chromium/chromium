@@ -11,7 +11,6 @@ import android.os.Build;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.UnownedUserData;
@@ -184,7 +183,6 @@ public class NotificationPermissionController implements UnownedUserData {
      */
     public boolean requestPermissionIfNeeded(boolean contextual) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
-                || !BuildInfo.targetsAtLeastT()
                 || ApiCompatibilityUtils.isDemoUser()) {
             return false;
         }
@@ -235,7 +233,7 @@ public class NotificationPermissionController implements UnownedUserData {
     int shouldRequestPermission() {
         // Notifications only require permission starting at Android T. And apps targeting < T can't
         // request permission as the OS prompts the user automatically.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || !BuildInfo.targetsAtLeastT()) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             return PermissionRequestMode.DO_NOT_REQUEST;
         }
 

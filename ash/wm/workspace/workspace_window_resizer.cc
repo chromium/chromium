@@ -24,6 +24,8 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/pip/pip_window_resizer.h"
+#include "ash/wm/snap_group/snap_group.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tile_group/window_splitter.h"
 #include "ash/wm/toplevel_window_event_handler.h"
@@ -769,7 +771,7 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
   // continue performing any snap or maximize logic. Otherwise, resize top edge
   // to the top of display will fire maximize |dwell_countdown_timer_|
   // (crbug.com/1251859).
-  if (details().window_component != HTCAPTION) {
+  if (details().bounds_change != WindowResizer::kBoundsChange_Repositions) {
     return;
   }
 
@@ -938,6 +940,15 @@ void WorkspaceWindowResizer::CompleteDrag() {
       // window at the bounds that the user has moved/resized the
       // window to.
       window_state()->SaveCurrentBoundsForRestore();
+
+      // Break the Snap Group when dragging a window out of it. Check
+      // `window_resizer_` to avoid breaking the group if it is tab dragging.
+      if (auto* snap_group =
+              SnapGroupController::Get()->GetSnapGroupForGivenWindow(
+                  window_state()->window())) {
+        SnapGroupController::Get()->RemoveSnapGroup(
+            snap_group, SnapGroupExitPoint::kDragWindowOut);
+      }
 
       // Since we saved the current bounds to the restore bounds, the restore
       // animation will use the current bounds as the target bounds, so we can

@@ -15,11 +15,17 @@ source_set("user_scripts") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
-    "//content/public/browser",
-    "//extensions/common",
+  public_deps = [
+    "//extensions/browser:browser_sources",
     "//extensions/common/api",
   ]
 
-  public_deps = [ "//extensions/browser:browser_sources" ]
+  deps = [
+    "//base",
+    "//extensions/common",
+    "//extensions/common:extension_features",
+    "//extensions/common:mojom",
+    "//extensions/common:mojom_shared",
+    "//extensions/common:mojom_shared_cpp_sources",
+  ]
 }

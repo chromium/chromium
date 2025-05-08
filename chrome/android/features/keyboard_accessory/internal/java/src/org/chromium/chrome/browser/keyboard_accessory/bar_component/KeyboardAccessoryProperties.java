@@ -15,6 +15,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupCoordinator.SheetOpenerCallbacks;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -80,18 +81,25 @@ class KeyboardAccessoryProperties {
     }
 
     /**
-     * This class wraps data used in ViewHolders of the accessory bar's {@link RecyclerView}.
-     * It can hold an {@link Action}s that defines a callback and a recording type.
+     * This class wraps data used in ViewHolders of the accessory bar's {@link RecyclerView}. It can
+     * hold an {@link Action}s that defines a callback and a recording type.
      */
     static class BarItem {
         /** This type is used to infer which type of view will represent this item. */
-        @IntDef({Type.ACTION_BUTTON, Type.SUGGESTION, Type.TAB_LAYOUT, Type.ACTION_CHIP})
+        @IntDef({
+            Type.ACTION_BUTTON,
+            Type.SUGGESTION,
+            Type.LOYALTY_CARD_SUGGESTION,
+            Type.TAB_LAYOUT,
+            Type.ACTION_CHIP
+        })
         @Retention(RetentionPolicy.SOURCE)
         @interface Type {
             int ACTION_BUTTON = 0;
             int SUGGESTION = 1;
-            int TAB_LAYOUT = 2;
-            int ACTION_CHIP = 3;
+            int LOYALTY_CARD_SUGGESTION = 2;
+            int TAB_LAYOUT = 3;
+            int ACTION_CHIP = 4;
         }
 
         private @Type int mType;
@@ -171,11 +179,12 @@ class KeyboardAccessoryProperties {
         /**
          * Creates a new autofill item with a suggestion for the view's representation and an action
          * to handle the interaction with the rendered View.
+         *
          * @param suggestion An {@link AutofillSuggestion}.
          * @param action An {@link Action}.
          */
         AutofillBarItem(AutofillSuggestion suggestion, Action action) {
-            super(Type.SUGGESTION, action, 0);
+            super(getBarItemType(suggestion.getSuggestionType()), action, 0);
             mSuggestion = suggestion;
         }
 
@@ -199,6 +208,12 @@ class KeyboardAccessoryProperties {
         @Override
         public String toString() {
             return "Autofill" + super.toString();
+        }
+
+        private static @Type int getBarItemType(@SuggestionType int suggestionType) {
+            return suggestionType == SuggestionType.LOYALTY_CARD_ENTRY
+                    ? Type.LOYALTY_CARD_SUGGESTION
+                    : Type.SUGGESTION;
         }
     }
 

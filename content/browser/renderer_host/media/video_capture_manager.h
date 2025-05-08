@@ -37,8 +37,12 @@
 #include "media/capture/video/video_capture_device_info.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
+#include "services/video_effects/public/cpp/buildflags.h"
 #include "ui/gfx/native_widget_types.h"
+
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
+#endif
 
 #if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
 #include "base/android/application_status_listener.h"
@@ -322,8 +326,10 @@ class CONTENT_EXPORT VideoCaptureManager
       const media::VideoCaptureSessionId& session_id,
       scoped_refptr<VideoCaptureController> controller,
       const media::VideoCaptureParams& params,
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
       mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
           video_effects_processor,
+#endif
       mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
           readonly_video_effects_manager);
   void DoStopDevice(VideoCaptureController* controller);

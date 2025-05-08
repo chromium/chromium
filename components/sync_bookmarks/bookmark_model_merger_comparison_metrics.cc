@@ -12,11 +12,13 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/sync/base/previously_syncing_gaia_id_info_for_metrics.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync_bookmarks/bookmark_model_merger.h"
 #include "components/sync_bookmarks/bookmark_model_view.h"
@@ -39,6 +41,81 @@ constexpr char16_t kMobileBookmarksFolderName[] = u"__Mobile bookmarks__";
 
 using RemoteForest = BookmarkModelMerger::RemoteForest;
 using RemoteTreeNode = BookmarkModelMerger::RemoteTreeNode;
+
+// Enum representing the number of URL bookmarks stored locally, bucketized into
+// a few notable ranges. This enum is used as suffix when recording metrics.
+enum BookmarkCountSuffix {
+  kZeroLocalUrlBookmarks,
+  kBetween1And19LocalUrlBookmarks,
+  kBetween20and999LocalUrlBookmarks,
+  k1000OrMoreLocalUrlBookmarks,
+};
+
+std::string_view SubtreeSelectionToInfix(SubtreeSelection value) {
+  // LINT.IfChange(BookmarkComparisonSubtreeSelection)
+  switch (value) {
+    case SubtreeSelection::kConsideringAllBookmarks:
+      return "ConsideringAllBookmarks";
+    case SubtreeSelection::kUnderBookmarksBar:
+      return "UnderBookmarksBar";
+  }
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/histograms.xml:BookmarkComparisonSubtreeSelection)
+  NOTREACHED();
+}
+
+std::string_view GroupingKeyInfixToString(GroupingKeyInfix value) {
+  // LINT.IfChange(BookmarkComparisonGroupingKey)
+  switch (value) {
+    case GroupingKeyInfix::kByUrl:
+      return "ByUrl";
+    case GroupingKeyInfix::kByUrlAndTitle:
+      return "ByUrlAndTitle";
+    case GroupingKeyInfix::kByUrlAndUuid:
+      return "ByUrlAndUuid";
+    case GroupingKeyInfix::kByUrlAndTitleAndPath:
+      return "ByUrlAndTitleAndPath";
+    case GroupingKeyInfix::kByUrlAndTitleAndPathAndUuid:
+      return "ByUrlAndTitleAndPathAndUuid";
+  }
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/histograms.xml:BookmarkComparisonGroupingKey)
+  NOTREACHED();
+}
+
+std::string_view BookmarkCountSuffixToString(BookmarkCountSuffix value) {
+  // LINT.IfChange(BookmarkComparisonBookmarkCount)
+  switch (value) {
+    case kZeroLocalUrlBookmarks:
+      return ".ZeroLocalUrlBookmarks";
+    case kBetween1And19LocalUrlBookmarks:
+      return ".Between1And19LocalUrlBookmarks";
+    case kBetween20and999LocalUrlBookmarks:
+      return ".Between20and999LocalUrlBookmarks";
+    case k1000OrMoreLocalUrlBookmarks:
+      return ".1000OrMoreLocalUrlBookmarks";
+  }
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/histograms.xml:BookmarkComparisonBookmarkCount)
+  NOTREACHED();
+}
+
+std::string_view PreviouslySyncingGaiaIdInfoToInfix(
+    syncer::PreviouslySyncingGaiaIdInfoForMetrics value) {
+  // LINT.IfChange(BookmarkComparisonPreviouslySyncingGaiaId)
+  switch (value) {
+    case syncer::PreviouslySyncingGaiaIdInfoForMetrics::kUnspecified:
+      NOTREACHED();
+    case syncer::PreviouslySyncingGaiaIdInfoForMetrics::
+        kSyncFeatureNeverPreviouslyTurnedOn:
+      return ".NoPreviousGaiaId";
+    case syncer::PreviouslySyncingGaiaIdInfoForMetrics::
+        kCurrentGaiaIdMatchesPreviousWithSyncFeatureOn:
+      return ".MatchesPreviousGaiaId";
+    case syncer::PreviouslySyncingGaiaIdInfoForMetrics::
+        kCurrentGaiaIdIfDiffersPreviousWithSyncFeatureOn:
+      return ".DiffersPreviousGaiaId";
+  }
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/histograms.xml:BookmarkComparisonPreviouslySyncingGaiaId)
+  NOTREACHED();
+}
 
 std::u16string_view GetBookmarkNodeTitle(const bookmarks::BookmarkNode* node) {
   CHECK(node);
@@ -77,7 +154,7 @@ std::vector<const bookmarks::BookmarkNode*> GetRelevantLocalSubtrees(
     case SubtreeSelection::kConsideringAllBookmarks:
       return {all_local_data.bookmark_bar_node(), all_local_data.other_node(),
               all_local_data.mobile_node()};
-    case SubtreeSelection::kUnderBookmarkBar:
+    case SubtreeSelection::kUnderBookmarksBar:
       return {all_local_data.bookmark_bar_node()};
   }
 }
@@ -94,7 +171,7 @@ std::vector<const RemoteTreeNode*> GetRelevantAccountSubtrees(
       relevant_tags.push_back(kMobileBookmarksTag);
       relevant_tags.push_back(kOtherBookmarksTag);
       [[fallthrough]];
-    case SubtreeSelection::kUnderBookmarkBar:
+    case SubtreeSelection::kUnderBookmarksBar:
       relevant_tags.push_back(kBookmarkBarTag);
       break;
   }
@@ -106,6 +183,37 @@ std::vector<const RemoteTreeNode*> GetRelevantAccountSubtrees(
     }
   }
   return result;
+}
+
+size_t CountUrlNodesInSubtree(const bookmarks::BookmarkNode* node) {
+  CHECK(node);
+  if (node->is_url()) {
+    return 1;
+  }
+  size_t result = 0;
+  for (const std::unique_ptr<bookmarks::BookmarkNode>& child :
+       node->children()) {
+    result += CountUrlNodesInSubtree(child.get());
+  }
+  return result;
+}
+
+BookmarkCountSuffix CountLocalBookmarks(
+    const std::vector<const bookmarks::BookmarkNode*>& local_data) {
+  size_t num_url_nodes = 0;
+  for (const bookmarks::BookmarkNode* permanent_node : local_data) {
+    num_url_nodes += CountUrlNodesInSubtree(permanent_node);
+  }
+  if (num_url_nodes == 0) {
+    return kZeroLocalUrlBookmarks;
+  }
+  if (num_url_nodes < 20) {
+    return kBetween1And19LocalUrlBookmarks;
+  }
+  if (num_url_nodes < 1000) {
+    return kBetween20and999LocalUrlBookmarks;
+  }
+  return k1000OrMoreLocalUrlBookmarks;
 }
 
 // Function template declaration that must be specialized per supported grouping
@@ -121,6 +229,24 @@ Key GroupingKeyFromLocalData(const bookmarks::BookmarkNode* node,
 template <typename Key>
 Key GroupingKeyFromAccountData(const sync_pb::BookmarkSpecifics& specifics,
                                std::u16string path);
+
+template <>
+UrlOnly GroupingKeyFromLocalData(const bookmarks::BookmarkNode* node,
+                                 std::u16string path) {
+  UrlOnly key;
+  key.url = node->url();
+  // `path` ignored but required in signture for template code.
+  return key;
+}
+
+template <>
+UrlOnly GroupingKeyFromAccountData(const sync_pb::BookmarkSpecifics& specifics,
+                                   std::u16string path) {
+  UrlOnly key;
+  key.url = GURL(specifics.url());
+  // `path` ignored but required in signture for template code.
+  return key;
+}
 
 template <>
 UrlAndTitle GroupingKeyFromLocalData(const bookmarks::BookmarkNode* node,
@@ -182,6 +308,30 @@ UrlAndTitleAndPath GroupingKeyFromAccountData(
   key.url = GURL(specifics.url());
   key.title = NodeTitleFromSpecifics(specifics);
   key.path = std::move(path);
+  return key;
+}
+
+template <>
+UrlAndTitleAndPathAndUuid GroupingKeyFromLocalData(
+    const bookmarks::BookmarkNode* node,
+    std::u16string path) {
+  UrlAndTitleAndPathAndUuid key;
+  key.url = node->url();
+  key.title = node->GetTitle();
+  key.path = std::move(path);
+  key.uuid = node->uuid();
+  return key;
+}
+
+template <>
+UrlAndTitleAndPathAndUuid GroupingKeyFromAccountData(
+    const sync_pb::BookmarkSpecifics& specifics,
+    std::u16string path) {
+  UrlAndTitleAndPathAndUuid key;
+  key.url = GURL(specifics.url());
+  key.title = NodeTitleFromSpecifics(specifics);
+  key.path = std::move(path);
+  key.uuid = base::Uuid::ParseLowercase(specifics.guid());
   return key;
 }
 
@@ -329,7 +479,75 @@ base::flat_set<Key> ExtractAccountDataSet(
   return base::flat_set<Key>(std::move(keys));
 }
 
+template <typename Key>
+void CompareAndLogHistogramsWithKey(
+    SubtreeSelection subtree_selection,
+    syncer::PreviouslySyncingGaiaIdInfoForMetrics
+        previously_syncing_gaia_id_info,
+    BookmarkCountSuffix bookmark_count_suffix,
+    const std::vector<const bookmarks::BookmarkNode*>& relevant_local_subtrees,
+    const std::vector<const RemoteTreeNode*>& relevant_account_subtrees) {
+  const base::flat_set<Key> local_data_set =
+      ExtractLocalDataSet<Key>(relevant_local_subtrees);
+  const base::flat_set<Key> account_data_set =
+      ExtractAccountDataSet<Key>(relevant_account_subtrees);
+
+  // When recording the metric, always record four metrics, resulting from
+  // the combinatorial cases for:
+  // 1. With and without the infix representing
+  //    PreviouslySyncingGaiaIdInfoForMetrics.
+  // 2. With and without the suffix representing the number of local URL
+  //    bookmarks.
+  for (std::string_view optional_previously_syncing_gaia_id_info_infix :
+       {std::string_view(),
+        PreviouslySyncingGaiaIdInfoToInfix(previously_syncing_gaia_id_info)}) {
+    for (std::string_view optional_bookmark_count_suffix :
+         {std::string_view(),
+          BookmarkCountSuffixToString(bookmark_count_suffix)}) {
+      const std::string histogram_name =
+          base::StrCat({"Sync.BookmarkModelMerger.Comparison",
+                        optional_previously_syncing_gaia_id_info_infix, ".",
+                        SubtreeSelectionToInfix(subtree_selection), ".",
+                        GroupingKeyInfixToString(Key::kGroupingKeyInfix),
+                        optional_bookmark_count_suffix});
+
+      base::UmaHistogramEnumeration(
+          histogram_name, CompareSets(local_data_set, account_data_set));
+    }
+  }
+}
+
 }  // namespace
+
+UrlAndTitleAndPathAndUuid::UrlAndTitleAndPathAndUuid() = default;
+
+UrlAndTitleAndPathAndUuid::UrlAndTitleAndPathAndUuid(
+    const GURL& url,
+    const std::u16string& title,
+    const std::u16string& path,
+    const base::Uuid& uuid)
+    : url(url), title(title), path(path), uuid(uuid) {}
+
+UrlAndTitleAndPathAndUuid::UrlAndTitleAndPathAndUuid(
+    const UrlAndTitleAndPathAndUuid&) = default;
+
+UrlAndTitleAndPathAndUuid::UrlAndTitleAndPathAndUuid(
+    UrlAndTitleAndPathAndUuid&&) = default;
+
+UrlAndTitleAndPathAndUuid::~UrlAndTitleAndPathAndUuid() = default;
+
+UrlAndTitleAndPathAndUuid& UrlAndTitleAndPathAndUuid::operator=(
+    const UrlAndTitleAndPathAndUuid&) = default;
+
+UrlAndTitleAndPathAndUuid& UrlAndTitleAndPathAndUuid::operator=(
+    UrlAndTitleAndPathAndUuid&&) = default;
+
+base::flat_set<UrlOnly> ExtractUniqueLocalNodesByUrlForTesting(
+    const BookmarkModelView& all_local_data,
+    SubtreeSelection subtree_selection) {
+  return ExtractLocalDataSet<UrlOnly>(
+      GetRelevantLocalSubtrees(all_local_data, subtree_selection));
+}
 
 base::flat_set<UrlAndTitle> ExtractUniqueLocalNodesByUrlAndTitleForTesting(
     const BookmarkModelView& all_local_data,
@@ -351,6 +569,21 @@ ExtractUniqueLocalNodesByUrlAndTitleAndPathForTesting(
     SubtreeSelection subtree_selection) {
   return ExtractLocalDataSet<UrlAndTitleAndPath>(
       GetRelevantLocalSubtrees(all_local_data, subtree_selection));
+}
+
+base::flat_set<UrlAndTitleAndPathAndUuid>
+ExtractUniqueLocalNodesByUrlAndTitleAndPathAndUuidForTesting(
+    const BookmarkModelView& all_local_data,
+    SubtreeSelection subtree_selection) {
+  return ExtractLocalDataSet<UrlAndTitleAndPathAndUuid>(
+      GetRelevantLocalSubtrees(all_local_data, subtree_selection));
+}
+
+base::flat_set<UrlOnly> ExtractUniqueAccountNodesByUrlForTesting(
+    const BookmarkModelMerger::RemoteForest& all_account_data,
+    SubtreeSelection subtree_selection) {
+  return ExtractAccountDataSet<UrlOnly>(
+      GetRelevantAccountSubtrees(all_account_data, subtree_selection));
 }
 
 base::flat_set<UrlAndTitle> ExtractUniqueAccountNodesByUrlAndTitleForTesting(
@@ -375,10 +608,60 @@ ExtractUniqueAccountNodesByUrlAndTitleAndPathForTesting(
       GetRelevantAccountSubtrees(all_account_data, subtree_selection));
 }
 
+base::flat_set<UrlAndTitleAndPathAndUuid>
+ExtractUniqueAccountNodesByUrlAndTitleAndPathAndUuidForTesting(
+    const BookmarkModelMerger::RemoteForest& all_account_data,
+    SubtreeSelection subtree_selection) {
+  return ExtractAccountDataSet<UrlAndTitleAndPathAndUuid>(
+      GetRelevantAccountSubtrees(all_account_data, subtree_selection));
+}
+
 SetComparisonOutcome CompareSetsForTesting(
     const base::flat_set<int>& account_data,
     const base::flat_set<int>& local_data) {
   return CompareSets<int>(account_data, local_data);
+}
+
+void CompareBookmarkModelAndLogHistograms(
+    const BookmarkModelView& all_local_data,
+    const BookmarkModelMerger::RemoteForest& all_account_data,
+    syncer::PreviouslySyncingGaiaIdInfoForMetrics
+        previously_syncing_gaia_id_info) {
+  CHECK_NE(previously_syncing_gaia_id_info,
+           syncer::PreviouslySyncingGaiaIdInfoForMetrics::kUnspecified);
+
+  for (SubtreeSelection subtree_selection :
+       {SubtreeSelection::kConsideringAllBookmarks,
+        SubtreeSelection::kUnderBookmarksBar}) {
+    const std::vector<const bookmarks::BookmarkNode*> relevant_local_subtrees =
+        GetRelevantLocalSubtrees(all_local_data, subtree_selection);
+    const std::vector<const RemoteTreeNode*> relevant_account_subtrees =
+        GetRelevantAccountSubtrees(all_account_data, subtree_selection);
+
+    const BookmarkCountSuffix bookmark_count_suffix =
+        CountLocalBookmarks(relevant_local_subtrees);
+
+    CompareAndLogHistogramsWithKey<UrlOnly>(
+        subtree_selection, previously_syncing_gaia_id_info,
+        bookmark_count_suffix, relevant_local_subtrees,
+        relevant_account_subtrees);
+    CompareAndLogHistogramsWithKey<UrlAndTitle>(
+        subtree_selection, previously_syncing_gaia_id_info,
+        bookmark_count_suffix, relevant_local_subtrees,
+        relevant_account_subtrees);
+    CompareAndLogHistogramsWithKey<UrlAndUuid>(
+        subtree_selection, previously_syncing_gaia_id_info,
+        bookmark_count_suffix, relevant_local_subtrees,
+        relevant_account_subtrees);
+    CompareAndLogHistogramsWithKey<UrlAndTitleAndPath>(
+        subtree_selection, previously_syncing_gaia_id_info,
+        bookmark_count_suffix, relevant_local_subtrees,
+        relevant_account_subtrees);
+    CompareAndLogHistogramsWithKey<UrlAndTitleAndPathAndUuid>(
+        subtree_selection, previously_syncing_gaia_id_info,
+        bookmark_count_suffix, relevant_local_subtrees,
+        relevant_account_subtrees);
+  }
 }
 
 }  // namespace sync_bookmarks::metrics

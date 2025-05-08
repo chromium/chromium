@@ -18,6 +18,7 @@ include_rules = [
   "+gpu/ipc/common/surface_handle.h",
   "+gpu/ipc/client/client_shared_image_interface.h",
   "+services/video_capture/public",
+  "+services/video_effects/public/cpp/buildflags.h",
   "+services/viz/privileged/mojom/compositing",
 ]
 

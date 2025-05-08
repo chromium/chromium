@@ -245,8 +245,7 @@ public class TabbedAppMenuTest {
 
         int requestDesktopSiteIndex =
                 AppMenuTestSupport.findIndexOfMenuItemById(
-                        mActivityTestRule.getAppMenuCoordinator(),
-                        R.id.request_desktop_site_row_menu_id);
+                        mActivityTestRule.getAppMenuCoordinator(), R.id.request_desktop_site_id);
         Assert.assertNotEquals("No request desktop site row found.", -1, requestDesktopSiteIndex);
 
         Callable<Boolean> isVisible =

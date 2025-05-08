@@ -330,19 +330,21 @@ bool AppBrowserController::HasTitlebarContentSettings() const {
 
 std::vector<actions::ActionId> AppBrowserController::GetTitleBarPageActions()
     const {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (system_app()) {
-    return {};
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   if (!base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
     return {};
   }
+#if BUILDFLAG(IS_CHROMEOS)
+  if (system_app()) {
+    return {
+        kActionZoomNormal,
+    };
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   std::vector<actions::ActionId> types_enabled = {
       kActionShowTranslate,
       kActionZoomNormal,
+      kActionShowFileSystemAccess,
   };
 
 #if DCHECK_IS_ON()

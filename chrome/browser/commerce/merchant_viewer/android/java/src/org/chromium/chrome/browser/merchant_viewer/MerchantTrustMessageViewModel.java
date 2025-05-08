@@ -13,10 +13,11 @@ import android.text.style.StyleSpan;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.content.res.ResourcesCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.merchant_viewer.RatingStarSpan.RatingStarType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.commerce.core.ShoppingService.MerchantInfo;
@@ -31,6 +32,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.text.NumberFormat;
 
 /** This is a util class for creating the property model of the MerchantTrustMessage. */
+@NullMarked
 class MerchantTrustMessageViewModel {
     private static final int BASELINE_RATING = 5;
 
@@ -57,23 +59,27 @@ class MerchantTrustMessageViewModel {
     interface MessageActionsHandler {
         /**
          * Called when message is dismissed.
+         *
          * @param dismissReason The reason why the message is dismissed.
          * @param messageAssociatedUrl The url associated with this message context.
          */
-        void onMessageDismissed(@DismissReason int dismissReason, String messageAssociatedUrl);
+        void onMessageDismissed(
+                @DismissReason int dismissReason, @Nullable String messageAssociatedUrl);
 
         /**
          * Called when message primary action is tapped.
+         *
          * @param trustSignals The signal associated with this message.
          * @param messageAssociatedUrl The url associated with this message context.
          */
-        void onMessagePrimaryAction(MerchantInfo merchantInfo, String messageAssociatedUrl);
+        void onMessagePrimaryAction(
+                MerchantInfo merchantInfo, @Nullable String messageAssociatedUrl);
     }
 
     public static PropertyModel create(
             Context context,
             MerchantInfo merchantInfo,
-            String messageAssociatedUrl,
+            @Nullable String messageAssociatedUrl,
             MessageActionsHandler actionsHandler) {
         var resources = context.getResources();
         return new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)

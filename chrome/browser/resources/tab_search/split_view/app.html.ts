@@ -4,8 +4,6 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {TabData} from '../tab_data.js';
-
 import type {SplitNewTabPageAppElement} from './app.js';
 
 export function getHtml(this: SplitNewTabPageAppElement) {
@@ -15,42 +13,24 @@ export function getHtml(this: SplitNewTabPageAppElement) {
     @click="${this.onClose_}">
 </cr-icon-button>
 ${
-      this.openTabs_.length === 0 && this.mediaTabs_.length === 0 ?
-          html`
+      this.allInvisibleTabs_.length === 0 ? html`
   <div class="title">$i18n{splitViewEmptyTitle}</div>
   <div class="body">$i18n{splitViewEmptyBody}</div>
   ` :
-          html`
+                                            html`
   <div class="title">$i18n{splitViewTitle}</div>
   <div class="contents">
-  ${
-              this.mediaTabs_.length > 0 ? html`
-    <div class="heading">$i18n{splitViewMediaHeading}</div>
-    ${getTabList.bind(this)(this.mediaTabs_)}
-  ` :
-                                           html``}
-  ${
-              this.openTabs_.length > 0 ? html`
-    <div class="heading">$i18n{splitViewOpenHeading}</div>
-    ${getTabList.bind(this)(this.openTabs_)}
-  ` :
-                                          html``}`}
-</div>
+  <div class="heading">$i18n{splitViewOpenHeading}</div>
+  <div class="tab-list">
+    ${this.allInvisibleTabs_.map(data => html`
+      <tab-search-item class="mwb-list-item"
+          hide-close-button
+          hide-timestamp
+          size="large"
+          .data="${data}"
+          @click="${this.onTabClick_}">
+      </tab-search-item>
+    `)}
+  </div>`}
 <!--_html_template_end_-->`;
-}
-
-function getTabList(this: SplitNewTabPageAppElement, tabDatas: TabData[]) {
-  return html`
-    <div class="tab-list">
-      ${tabDatas.map(data => html`
-        <tab-search-item class="mwb-list-item"
-            hide-close-button
-            hide-timestamp
-            size="large"
-            .data="${data}"
-            @click="${this.onTabClick_}">
-        </tab-search-item>
-      `)}
-    </div>
-  `;
 }

@@ -125,6 +125,10 @@ namespace glic {
 class GlicBorderView;
 }  // namespace glic
 
+namespace new_tab_footer {
+class NewTabFooterWebView;
+}  // namespace new_tab_footer
+
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView
 //
@@ -234,8 +238,7 @@ class BrowserView : public BrowserWindow,
   // In tabbed mode the tab strip is contained within the window's titlebar. In
   // non-tabbed mode the tab strip is positioned below the titlebar.
   // The return value is determined based on the state of
-  // `features::kImmersiveFullscreen` and `features::kImmersiveFullscreenTabs`
-  // as well as the type of browser.
+  // `features::kImmersiveFullscreen` as well as the type of browser.
   bool UsesImmersiveFullscreenTabbedMode() const;
 #endif
 
@@ -298,11 +301,17 @@ class BrowserView : public BrowserWindow,
 
   ScrimView* contents_scrim_view() { return contents_scrim_view_; }
 
+  ScrimView* devtools_scrim_view() { return devtools_scrim_view_; }
+
 #if BUILDFLAG(ENABLE_GLIC)
   glic::GlicBorderView* glic_border() const { return glic_border_; }
 #endif
 
   ScrimView* window_scrim_view() { return window_scrim_view_; }
+
+  new_tab_footer::NewTabFooterWebView* new_tab_footer_web_view() const {
+    return new_tab_footer_web_view_;
+  }
 
   base::WeakPtr<BrowserView> GetAsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -476,7 +485,7 @@ class BrowserView : public BrowserWindow,
 
   // Display the current active split view as a series of multiple side-by-side
   // web contents.
-  void ShowSplitView();
+  void ShowSplitView(bool focus_active_view);
 
   // Display only the current active tab's web contents, hiding any previous
   // side-by-side display.
@@ -484,6 +493,9 @@ class BrowserView : public BrowserWindow,
 
   // Update the index of the active split based on the active tab's web contents
   void UpdateActiveSplitView();
+
+  // Reverses the order of the tabs in the active split.
+  void SwapTabsInActiveSplit();
 
   // True if an activation from `old_contents` to `new_contents` happens between
   // tabs that are already in a split-view configuration.
@@ -508,6 +520,7 @@ class BrowserView : public BrowserWindow,
   void SetZOrderLevel(ui::ZOrderLevel order) override;
   gfx::NativeWindow GetNativeWindow() const override;
   bool IsOnCurrentWorkspace() const override;
+  bool IsVisibleOnScreen() const override;
   void SetTopControlsShownRatio(content::WebContents* web_contents,
                                 float ratio) override;
   bool DoBrowserControlsShrinkRendererSize(
@@ -569,6 +582,7 @@ class BrowserView : public BrowserWindow,
   bool UpdateToolbarSecurityState() override;
   void UpdateCustomTabBarVisibility(bool visible, bool animate) override;
   void SetContentScrimVisibility(bool visible) override;
+  void SetDevToolsScrimVisibility(bool visible) override;
   void ResetToolbarTabState(content::WebContents* contents) override;
   void FocusToolbar() override;
   ExtensionsContainer* GetExtensionsContainer() override;
@@ -703,14 +717,19 @@ class BrowserView : public BrowserWindow,
   void ShowIncognitoClearBrowsingDataDialog() override;
 
   void ShowIncognitoHistoryDisclaimerDialog() override;
-  bool IsTabModalPopup() const override;
-  void SetIsTabModalPopup(bool is_tab_modal_popup) override;
+  bool IsTabModalPopupDeprecated() const override;
+  void SetIsTabModalPopupDeprecated(
+      bool is_tab_modal_popup_deprecated) override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
+  void OnSplitTabContentsUpdated(
+      split_tabs::SplitTabId split_id,
+      std::vector<std::pair<tabs::TabInterface*, int>> prev_tabs,
+      std::vector<std::pair<tabs::TabInterface*, int>> new_tabs) override;
   void TabChangedAt(content::WebContents* contents,
                     int index,
                     TabChangeType change_type) override;
@@ -804,6 +823,7 @@ class BrowserView : public BrowserWindow,
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
   void AddedToWidget() override;
+  void RemovedFromWidget() override;
   void PaintChildren(const views::PaintInfo& paint_info) override;
   void OnThemeChanged() override;
   bool GetDropFormats(int* formats,
@@ -1273,6 +1293,11 @@ class BrowserView : public BrowserWindow,
   // The view that contains all visible WebContents.
   raw_ptr<MultiContentsView> multi_contents_view_ = nullptr;
 
+  // The view that shows a footer at the bottom of the contents
+  // container on new tab pages.
+  raw_ptr<new_tab_footer::NewTabFooterWebView> new_tab_footer_web_view_ =
+      nullptr;
+
   // The scrim view that covers the content area when a tab-modal dialog is
   // open.
   raw_ptr<ScrimView> contents_scrim_view_ = nullptr;
@@ -1284,6 +1309,10 @@ class BrowserView : public BrowserWindow,
 
   // The view that contains devtools window for the selected WebContents.
   raw_ptr<views::WebView> devtools_web_view_ = nullptr;
+
+  // The scrim view that covers the devtools area when a tab-modal dialog is
+  // open.
+  raw_ptr<ScrimView> devtools_scrim_view_ = nullptr;
 
   // The view that contains the Lens overlay. The Lens Overlay is a UI overlay
   // that is shown on top of the web contents. It therefore must always have the
@@ -1405,6 +1434,9 @@ class BrowserView : public BrowserWindow,
   base::ScopedObservation<webapps::AppBannerManager,
                           webapps::AppBannerManager::Observer>
       app_banner_manager_observation_{this};
+
+  base::ScopedObservation<views::FocusManager, views::FocusChangeListener>
+      focus_manager_observation_{this};
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};

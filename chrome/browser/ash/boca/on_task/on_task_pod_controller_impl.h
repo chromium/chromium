@@ -10,6 +10,7 @@
 #include "ash/boca/on_task/on_task_pod_controller.h"
 #include "ash/boca/on_task/on_task_pod_view.h"
 #include "ash/style/icon_button.h"
+#include "ash/wm/window_state_observer.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -25,7 +26,8 @@ namespace ash {
 // OnTask pod controller implementation for the `OnTaskPodView`. This controller
 // implementation also owns the widget that hosts the pod component view.
 class OnTaskPodControllerImpl : public OnTaskPodController,
-                                public aura::WindowObserver {
+                                public aura::WindowObserver,
+                                public WindowStateObserver {
  public:
   explicit OnTaskPodControllerImpl(Browser* browser);
   OnTaskPodControllerImpl(const OnTaskPodControllerImpl&) = delete;
@@ -51,6 +53,10 @@ class OnTaskPodControllerImpl : public OnTaskPodController,
                              ui::PropertyChangeReason reason) override;
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
 
+  // WindowStateObserver:
+  void OnPostWindowStateTypeChange(WindowState* window_state,
+                                   chromeos::WindowStateType old_type) override;
+
   // Component accessors used for testing purposes.
   views::Widget* GetPodWidgetForTesting();
   ImmersiveRevealedLock* GetTabStripRevealLockForTesting();
@@ -73,9 +79,6 @@ class OnTaskPodControllerImpl : public OnTaskPodController,
   // Height of the window frame header. This is used to track the frame header
   // height when in unlocked mode for consistent positioning in locked mode.
   int frame_header_height_;
-
-  // Whether the window is pinned or not.
-  bool is_window_pinned_;
 
   // Snap location for the OnTask pod. Top left by default.
   OnTaskPodSnapLocation pod_snap_location_ = OnTaskPodSnapLocation::kTopLeft;

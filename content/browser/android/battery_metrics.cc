@@ -13,7 +13,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/power_monitor/energy_monitor_android.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -31,6 +33,7 @@ namespace {
 using ScenarioScope = performance_scenarios::ScenarioScope;
 using LoadingScenario = performance_scenarios::LoadingScenario;
 using InputScenario = performance_scenarios::InputScenario;
+using Subsystem = AndroidBatteryMetrics::EnergyConsumedTracker::Subsystem;
 
 perfetto::protos::pbzero::DeviceThermalState ToTraceEnum(
     base::PowerThermalObserver::DeviceThermalState state) {
@@ -86,9 +89,73 @@ std::string GetInputScenarioSuffix(std::optional<InputScenario> scenario) {
   NOTREACHED();
 }
 
-void Report30SecondDrain(int capacity_consumed,
-                         bool is_exclusive_measurement,
-                         const std::string& scenario) {
+std::string GetSubsystemSuffix(Subsystem subsystem) {
+  // LINT.IfChange(SubsystemSuffix)
+  switch (subsystem) {
+    case Subsystem::kCpu:
+      return "Cpu";
+    case Subsystem::kGpu:
+      return "Gpu";
+    case Subsystem::kDisplay:
+      return "Display";
+    case Subsystem::kOther:
+      return "Other";
+  }
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/power/histograms.xml:SubsystemSuffix)
+  NOTREACHED();
+}
+
+Subsystem ClassifyConsumer(std::string_view consumer) {
+  if (consumer.find("CPU") != std::string::npos) {
+    return Subsystem::kCpu;
+  }
+  if (consumer.find("GPU") != std::string::npos) {
+    return Subsystem::kGpu;
+  }
+  if (consumer.find("DISPLAY") != std::string::npos) {
+    return Subsystem::kDisplay;
+  }
+  return Subsystem::kOther;
+}
+
+base::flat_map<Subsystem, int64_t> AttributePowerMonitorReadingsToSubsystems(
+    const std::vector<base::android::PowerMonitorReading>& readings) {
+  base::flat_map<Subsystem, int64_t> energy_per_subsystem;
+  for (const auto& reading : readings) {
+    energy_per_subsystem[ClassifyConsumer(reading.consumer)] +=
+        reading.total_energy;
+  }
+  return energy_per_subsystem;
+}
+
+void ReportPerSubsystemEnergyDeltas(
+    const std::vector<AndroidBatteryMetrics::EnergyConsumedTracker::Delta>&
+        energy_deltas,
+    const std::string& base_histogram_name) {
+  // If there're no energy deltas for any subsystem, there's an error in the
+  // latest or the previous reading. Do not report any metrics.
+  if (energy_deltas.empty()) {
+    return;
+  }
+
+  int64_t total_energy_consumed_mwh = 0;
+  for (const auto& delta : energy_deltas) {
+    total_energy_consumed_mwh += delta.energy_consumed_mwh;
+    base::UmaHistogramCounts100000(
+        base::StrCat(
+            {base_histogram_name, ".", GetSubsystemSuffix(delta.subsystem)}),
+        delta.energy_consumed_mwh);
+  }
+  base::UmaHistogramCounts100000(base_histogram_name,
+                                 total_energy_consumed_mwh);
+}
+
+void Report30SecondDrain(
+    int capacity_consumed,
+    const std::vector<AndroidBatteryMetrics::EnergyConsumedTracker::Delta>&
+        energy_deltas,
+    bool is_exclusive_measurement,
+    const std::string& scenario) {
   // Drain over the last 30 seconds in uAh. We assume a max current of 10A which
   // translates to a little under 100mAh capacity drain over 30 seconds.
   UMA_HISTOGRAM_COUNTS_100000("Power.ForegroundBatteryDrain.30Seconds",
@@ -97,6 +164,10 @@ void Report30SecondDrain(int capacity_consumed,
       std::string("Power.ForegroundBatteryDrainPerScenario.30Seconds.") +
           scenario,
       capacity_consumed);
+  ReportPerSubsystemEnergyDeltas(
+      energy_deltas,
+      std::string("Power.ForegroundEnergyConsumedPerScenario.30Seconds.") +
+          scenario);
 
   // Record a separate metric for power drain that was completely observed while
   // we were the foreground app. This avoids attributing power draw from other
@@ -109,6 +180,11 @@ void Report30SecondDrain(int capacity_consumed,
             "Power.ForegroundBatteryDrainPerScenario.30Seconds.Exclusive.") +
             scenario,
         capacity_consumed);
+    ReportPerSubsystemEnergyDeltas(
+        energy_deltas,
+        std::string(
+            "Power.ForegroundEnergyConsumedPerScenario.30Seconds.Exclusive.") +
+            scenario);
   }
 }
 
@@ -322,8 +398,10 @@ void AndroidBatteryMetrics::UpdateMetricsEnabled() {
 
   if (should_be_enabled && !metrics_timer_.IsRunning()) {
     // Capture first capacity measurement and enable the repeating timer.
-    last_remaining_capacity_uah_ =
-        base::PowerMonitor::GetInstance()->GetRemainingBatteryCapacity();
+    last_remaining_capacity_uah_ = base::android::GetRemainingBatteryCapacity();
+    energy_consumed_tracker_.UpdatePowerMonitorReadings(
+        base::android::GetTotalEnergyConsumed());
+
     skipped_timers_ = 0;
     observed_capacity_drops_ = 0;
     performance_scenario_tracker_.UseLatestScenarios();
@@ -341,11 +419,21 @@ void AndroidBatteryMetrics::UpdateMetricsEnabled() {
 }
 
 void AndroidBatteryMetrics::CaptureAndReportMetrics(bool disabling) {
-  int remaining_capacity_uah =
-      base::PowerMonitor::GetInstance()->GetRemainingBatteryCapacity();
+  int remaining_capacity_uah = base::android::GetRemainingBatteryCapacity();
+  const auto power_monitor_readings = base::android::GetTotalEnergyConsumed();
+  std::vector<EnergyConsumedTracker::Delta> energy_deltas;
+  // The underlying API has throttling (in which case the old value is reported
+  // again, but no errors), so if we call this method because the battery state
+  // is changing rather than by timer, the deltas are likely to be
+  // (misleadingly) 0. Let's not report such values.
+  if (!disabling) {
+    energy_deltas = energy_consumed_tracker_.GetDeltas(power_monitor_readings);
+  }
+  energy_consumed_tracker_.UpdatePowerMonitorReadings(power_monitor_readings);
 
   const std::string scenario = performance_scenario_tracker_.GetMetricSuffix();
   performance_scenario_tracker_.UseLatestScenarios();
+
 
   if (remaining_capacity_uah >= last_remaining_capacity_uah_) {
     // No change in battery capacity, or it increased. The latter could happen
@@ -353,7 +441,8 @@ void AndroidBatteryMetrics::CaptureAndReportMetrics(bool disabling) {
     // device reports bogus values. We don't change last_remaining_capacity_uah_
     // here to avoid overreporting in case of fluctuating values.
     skipped_timers_++;
-    Report30SecondDrain(0, IsMeasuringDrainExclusively(), scenario);
+    Report30SecondDrain(0, energy_deltas, IsMeasuringDrainExclusively(),
+                        scenario);
 
     if (disabling) {
       // Disabling the timer, but without a change in capacity counter -- We
@@ -372,8 +461,8 @@ void AndroidBatteryMetrics::CaptureAndReportMetrics(bool disabling) {
 
   // Report the consumed capacity delta over the last 30 seconds.
   int capacity_consumed = last_remaining_capacity_uah_ - remaining_capacity_uah;
-  Report30SecondDrain(capacity_consumed, IsMeasuringDrainExclusively(),
-                      scenario);
+  Report30SecondDrain(capacity_consumed, energy_deltas,
+                      IsMeasuringDrainExclusively(), scenario);
 
   // Also record drain over 30 second intervals, but averaged since the last
   // time we recorded an increase (or started recording samples). Because the
@@ -431,6 +520,37 @@ std::string AndroidBatteryMetrics::PerformanceScenarioTracker::GetMetricSuffix()
 void AndroidBatteryMetrics::PerformanceScenarioTracker::UseLatestScenarios() {
   loading_scenario_to_report_ = latest_loading_scenario_;
   input_scenario_to_report_ = latest_input_scenario_;
+}
+
+AndroidBatteryMetrics::EnergyConsumedTracker::EnergyConsumedTracker() = default;
+AndroidBatteryMetrics::EnergyConsumedTracker::~EnergyConsumedTracker() =
+    default;
+
+void AndroidBatteryMetrics::EnergyConsumedTracker::UpdatePowerMonitorReadings(
+    const std::vector<base::android::PowerMonitorReading>& readings) {
+  last_total_energy_uws_ = AttributePowerMonitorReadingsToSubsystems(readings);
+}
+
+std::vector<AndroidBatteryMetrics::EnergyConsumedTracker::Delta>
+AndroidBatteryMetrics::EnergyConsumedTracker::GetDeltas(
+    const std::vector<base::android::PowerMonitorReading>& readings) const {
+  base::flat_map<Subsystem, int64_t> total_energy_uws =
+      AttributePowerMonitorReadingsToSubsystems(readings);
+  std::vector<Delta> deltas;
+  for (const auto& [subsystem, energy_uws] : total_energy_uws) {
+    // 0 total energy means an error, in which case we can't report the detla.
+    if (energy_uws == 0) {
+      continue;
+    }
+    auto it = last_total_energy_uws_.find(subsystem);
+    if (it == last_total_energy_uws_.end() || it->second == 0) {
+      continue;
+    }
+    int64_t delta_mwh =
+        std::max(static_cast<int64_t>(0), (energy_uws - it->second) / 3600);
+    deltas.push_back({subsystem, delta_mwh});
+  }
+  return deltas;
 }
 
 }  // namespace content

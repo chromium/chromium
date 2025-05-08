@@ -228,7 +228,7 @@ views::ProposedLayout IconLabelBubbleView::CalculateProposedLayout(
   gfx::Size preferred_size = GetSizeForLabelWidth(preferred_label_width);
   if (size_bounds.width().is_bounded() &&
       preferred_size.width() > size_bounds.width()) {
-    preferred_size = GetSizeForLabelWidth(0);
+    preferred_size = GetMinimumSize();
     // If the label should be shown, and supports elision, then extend the
     // width to whatever space is available.
     if (ShouldShowLabel() && label()->GetElideBehavior() != gfx::NO_ELIDE) {
@@ -507,7 +507,7 @@ gfx::Size IconLabelBubbleView::CalculatePreferredSize(
 }
 
 gfx::Size IconLabelBubbleView::GetMinimumSize() const {
-  return views::View::GetMinimumSize();
+  return GetSizeForLabelWidth(0);
 }
 
 bool IconLabelBubbleView::OnMousePressed(const ui::MouseEvent& event) {

@@ -14,13 +14,15 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.DialogTitle;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.PostPasswordMigrationSheetOutcome;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -34,9 +36,10 @@ import org.chromium.ui.widget.TextViewWithLeading;
  * This class is responsible for rendering the bottom sheet that shows the post password migration
  * sheet.
  */
+@NullMarked
 class PostPasswordMigrationSheetView implements BottomSheetContent {
     private final BottomSheetController mBottomSheetController;
-    private Callback<Integer> mDismissHandler;
+    private @MonotonicNonNull Callback<Integer> mDismissHandler;
     private final RelativeLayout mContentView;
 
     private boolean mAcknowledged;
@@ -60,6 +63,7 @@ class PostPasswordMigrationSheetView implements BottomSheetContent {
                     if (newState != BottomSheetController.SheetState.HIDDEN) {
                         return;
                     }
+                    assert mDismissHandler != null;
                     // This is a fail-safe for cases where onSheetClosed isn't triggered.
                     mDismissHandler.onResult(StateChangeReason.NONE);
                     mBottomSheetController.removeObserver(mBottomSheetObserver);
@@ -97,6 +101,7 @@ class PostPasswordMigrationSheetView implements BottomSheetContent {
                 });
     }
 
+    @EnsuresNonNull("mDismissHandler")
     void setDismissHandler(Callback<Integer> dismissHandler) {
         mDismissHandler = dismissHandler;
     }
@@ -114,15 +119,13 @@ class PostPasswordMigrationSheetView implements BottomSheetContent {
         }
     }
 
-    @Nullable
     @Override
     public View getContentView() {
         return mContentView;
     }
 
-    @Nullable
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -145,7 +148,7 @@ class PostPasswordMigrationSheetView implements BottomSheetContent {
     }
 
     @Override
-    public @NonNull String getSheetContentDescription(Context context) {
+    public String getSheetContentDescription(Context context) {
         return context.getString(R.string.password_migration_warning_content_description);
     }
 

@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/browsing_data/core/pref_names.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -35,6 +36,13 @@ namespace {
 bool IsProfilePasswordSyncEnabled(PrefService* pref_service,
                                   const syncer::SyncService* sync_service) {
 #if BUILDFLAG(IS_ANDROID)
+  // After login db deprecation there won't be any more users syncing passwords
+  // from the profile store. All users will have split stores.
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kLoginDbDeprecationAndroid)) {
+    return false;
+  }
+
   // If UsesSplitStoresAndUPMForLocal() is true, the profile store is never
   // synced, only the account store is.
   if (password_manager::UsesSplitStoresAndUPMForLocal(pref_service)) {

@@ -93,6 +93,7 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem>, BackPres
             Context context,
             ToolbarActionDelegate delegate,
             ToolbarListActionDelegate listActionDelegate,
+            View listContentView,
             SelectionDelegate<ListItem> selectionDelegate,
             boolean hasCloseButton,
             Tracker tracker) {
@@ -112,6 +113,8 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem>, BackPres
                 R.id.selection_mode_menu_group,
                 hasCloseButton);
         mToolbar.setOnMenuItemClickListener(this::onMenuItemClick);
+        mToolbar.setFocusable(true);
+        mToolbar.setListContentView(listContentView);
 
         // TODO(crbug.com/41412009): Pass the visible group to the toolbar during initialization.
         mToolbar.initializeSearchView(

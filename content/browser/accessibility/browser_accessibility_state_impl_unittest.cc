@@ -58,9 +58,6 @@ TEST_F(BrowserAccessibilityStateImplTest,
 
   // Enable accessibility.
   ScopedAccessibilityModeOverride scoped_mode(ui::kAXModeComplete);
-  // Indicate that an actual screen reader is not running (a screen reader
-  // will prevent auto-disable from taking place).
-  state_->SetScreenReaderAppActive(false);
   EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::kAXModeComplete);
 
   // Send user input, wait 31 seconds, then send another user input event -
@@ -68,7 +65,7 @@ TEST_F(BrowserAccessibilityStateImplTest,
   state_->OnUserInputEvent();
   state_->OnUserInputEvent();
   task_environment_.FastForwardBy(base::Seconds(31));
-  state_->AddAccessibilityModeFlags(ui::kAXModeComplete);
+  ScopedAccessibilityModeOverride scoped_mode_2(ui::kAXModeComplete);
   state_->OnUserInputEvent();
 
   // Accessibility should still be enabled.

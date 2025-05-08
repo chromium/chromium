@@ -21,7 +21,7 @@ flags.mark_flag_as_required('url')
 flags.DEFINE_string('action', None, 'The action to trigger a DLP scan')
 flags.mark_flag_as_required('action')
 
-SafeBrowsingReportingUrl = "chrome://safe-browsing/#tab-reporting"
+_SAFE_BROWSING_REPORTING_URL = "chrome://safe-browsing/#tab-reporting"
 
 
 def main(argv):
@@ -30,66 +30,69 @@ def main(argv):
   chrome_options.add_experimental_option("localState",
                                          {"internal_only_uis_enabled": True})
   driver = create_chrome_webdriver(chrome_options=chrome_options)
-  time.sleep(10)
-  driver.get(SafeBrowsingReportingUrl)
+  driver.implicitly_wait(10)
 
-  if FLAGS.action == 'paste':
-    #use pyperclip to paste things in textbox
-    # paste content from clipboard to the form
-    driver.execute_script("window.open('%s');" % FLAGS.url)
-    driver.switch_to.window(driver.window_handles[1])
+  try:
+    # Wait for the initialization with the local system agent to complete.
+    time.sleep(10)
+    # Open the safe browsing URL first to start collecting events, which aren't
+    # stored persistently.
+    driver.get(_SAFE_BROWSING_REPORTING_URL)
 
-    form = driver.find_element(By.NAME, 'sensitive_data_scan')
-    pyperclip.copy('block')
-    form.send_keys(Keys.CONTROL, "v")
-    time.sleep(5)
+    report_window_handle = driver.current_window_handle
+    driver.switch_to.new_window('tab')
+    driver.get(FLAGS.url)
 
-  elif FLAGS.action == 'upload':
-    #Upload file into the website
-    driver.execute_script("window.open('%s');" % FLAGS.url)
-    driver.switch_to.window(driver.window_handles[1])
+    if FLAGS.action == 'paste':
+      #use pyperclip to paste things in textbox
+      # paste content from clipboard to the form
+      form = driver.find_element(By.NAME, 'sensitive_data_scan')
+      pyperclip.copy('block')
+      form.send_keys(Keys.CONTROL, "v")
+      time.sleep(5)
 
-    # Create a text file with block keyword
-    file_path = r'C:\temp\block.txt'
-    with open(file_path, 'w') as f:
-      f.write('block')
+    elif FLAGS.action == 'upload':
+      #Upload file into the website
+      # Create a text file with block keyword
+      file_path = r'C:\temp\block.txt'
+      with open(file_path, 'w') as f:
+        f.write('block')
 
-    form = driver.find_element(By.ID, 'fileToUpload')
-    form.send_keys(r'C:\temp\block.txt')
-    time.sleep(5)
+      form = driver.find_element(By.ID, 'fileToUpload')
+      form.send_keys(r'C:\temp\block.txt')
+      time.sleep(5)
 
-    # TODO: b/309044872 - trigger system dialogue for file upload
-    print("EVENT_RESULT_BLOCKED")
-    print("FILE_UPLOAD")
+      # TODO(crbug.com/309044872) - trigger system dialogue for file upload
+      print("EVENT_RESULT_BLOCKED")
+      print("FILE_UPLOAD")
 
-  elif FLAGS.action == 'print':
-    #Print a webpage which url has block
-    driver.execute_script("window.open('%s');" % FLAGS.url)
-    driver.switch_to.window(driver.window_handles[1])
-    # TODO: b/308885357 - upgrade to selenium 4 to support print
-    print("EVENT_RESULT_BLOCKED")
-    print("PAGE_PRINT")
-    # driver.execute_script('window.print();')
-    # time.sleep(5)
+    elif FLAGS.action == 'print':
+      #Print a webpage which url has block
+      # TODO(crbug.com/308885357) - upgrade to selenium 4 to support print
+      print("EVENT_RESULT_BLOCKED")
+      print("PAGE_PRINT")
+      # driver.execute_script('window.print();')
+      # time.sleep(5)
 
-    # Click Print button on the chrome://print page
-    # driver.switch_to.window(driver.window_handles[-1])
-    # print_app = driver.find_element(By.CSS_SELECTOR, 'print-preview-app')
-    # preview_sidebar = getElementFromShadowRoot(driver, print_app,
-    #                                            'print-preview-sidebar')
-    # button_strip = getElementFromShadowRoot(driver, preview_sidebar,
-    #                                         'print-preview-button-strip')
-    # print_button = getElementFromShadowRoot(driver, button_strip,
-    #                                         'div > cr-button.action-button')
-    # print_button.click()
+      # Click Print button on the chrome://print page
+      # driver.switch_to.window(driver.window_handles[-1])
+      # print_app = driver.find_element(By.CSS_SELECTOR, 'print-preview-app')
+      # preview_sidebar = getElementFromShadowRoot(driver, print_app,
+      #                                            'print-preview-sidebar')
+      # button_strip = getElementFromShadowRoot(driver, preview_sidebar,
+      #                                         'print-preview-button-strip')
+      # print_button = getElementFromShadowRoot(driver, button_strip,
+      #                                         'div > cr-button.action-button')
+      # print_button.click()
 
-  # print reporting content
-  driver.switch_to.window(driver.window_handles[0])
-  tabbox = driver.find_element(By.ID, 'tabbox')
-  events = tabbox.find_element(By.ID, 'reporting-events')
-  print(events.text)
+    # print reporting content
+    driver.switch_to.window(report_window_handle)
+    tabbox = driver.find_element(By.ID, 'tabbox')
+    events = tabbox.find_element(By.ID, 'reporting-events')
+    print(events.text)
 
-  driver.quit()
+  finally:
+    driver.quit()
 
 
 if __name__ == '__main__':

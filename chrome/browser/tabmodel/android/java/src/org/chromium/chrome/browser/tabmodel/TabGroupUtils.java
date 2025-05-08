@@ -170,4 +170,52 @@ public class TabGroupUtils {
         }
         return false;
     }
+
+    /**
+     * Returns whether the collapsed state should be applied when a group is dropped into another
+     * window. If the tab strip is hidden or no tab is selected, this skips collapsing and calls
+     * {@link TabModelUtils#setIndex} to ensure a tab in the group is selected.
+     *
+     * @param tabModel The tab model associated with the dropped group.
+     * @param isCollapsed Whether the group was previously collapsed.
+     * @param isTabStripVisible Whether the tablet tab strip is visible.
+     * @param dropIndex The index representing the group position after drop.
+     * @return {@code true} if the collapsed state should be applied, {@code false} otherwise.
+     */
+    public static boolean shouldApplyCollapsedState(
+            TabModel tabModel, boolean isCollapsed, boolean isTabStripVisible, int dropIndex) {
+        if (!isCollapsed) return true;
+        if (!isTabStripVisible) {
+            // If the tab strip is hidden due to window size, skip collapsing and select the first
+            // tab to avoid the group appearing lost.
+            TabModelUtils.setIndex(tabModel, dropIndex);
+            return false;
+        } else {
+            // Dragging a collapsed tab group to a new window can result in a window with a single
+            // collapsed group and no tab in foreground. To prevent this, we skip applying the
+            // collapsed state and select the first tab in the dropped group instead.
+            Tab selectedTab = TabModelUtils.getCurrentTab(tabModel);
+            if (selectedTab == null) {
+                TabModelUtils.setIndex(tabModel, /* index= */ 0);
+            }
+            return selectedTab != null;
+        }
+    }
+
+    /**
+     * Checks to see if the tabs in a list of tabs are a subset of the same tab group.
+     *
+     * @return The tab group id if they are, null otherwise.
+     */
+    public static @Nullable Token findSingleTabGroupIfPresent(List<Tab> tabs) {
+        @Nullable Token tabGroupId = null;
+        for (Tab tab : tabs) {
+            if (tabGroupId == null) {
+                tabGroupId = tab.getTabGroupId();
+            } else if (!Objects.equals(tabGroupId, tab.getTabGroupId())) {
+                return null;
+            }
+        }
+        return tabGroupId;
+    }
 }

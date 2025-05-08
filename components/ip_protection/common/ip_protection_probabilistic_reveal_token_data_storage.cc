@@ -5,10 +5,12 @@
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_data_storage.h"
 
 #include <optional>
+#include <string>
 
 #include "base/base64.h"
 #include "base/base64url.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/byte_conversions.h"
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_fetcher.h"
@@ -192,16 +194,10 @@ void IpProtectionProbabilisticRevealTokenDataStorage::StoreTokenOutcome(
     statement.BindBlob(1, token.u);
     statement.BindBlob(2, token.e);
 
-    std::string epoch_id_base64url;
-    // Align with server side's absl::WebSafeBase64Escape().
-    base::Base64UrlEncode(outcome.epoch_id,
-                          base::Base64UrlEncodePolicy::OMIT_PADDING,
-                          &epoch_id_base64url);
-    statement.BindString(3, epoch_id_base64url);
-
+    statement.BindString(3, base64url_encode(outcome.epoch_id));
     statement.BindInt64(4, outcome.expiration_time_seconds);
     statement.BindInt64(5, outcome.num_tokens_with_signal);
-    statement.BindString(6, base::Base64Encode(outcome.public_key));
+    statement.BindString(6, base64url_encode(outcome.public_key));
     statement.BindInt64(7, outcome.tokens.size());
 
     if (!statement.Run()) {
@@ -209,6 +205,13 @@ void IpProtectionProbabilisticRevealTokenDataStorage::StoreTokenOutcome(
                   << db_.GetErrorMessage();
     }
   }
+}
+
+std::string IpProtectionProbabilisticRevealTokenDataStorage::base64url_encode(
+    std::string x) {
+  std::string result;
+  base::Base64UrlEncode(x, base::Base64UrlEncodePolicy::OMIT_PADDING, &result);
+  return result;
 }
 
 }  // namespace ip_protection

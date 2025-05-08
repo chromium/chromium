@@ -798,6 +798,10 @@ public class WindowAndroid
         return mIsTopResumedActivity;
     }
 
+    public boolean isActivityTopResumedSupported() {
+        return mActivityTopResumedSupported;
+    }
+
     /**
      * @return Current state of the associated {@link Activity}. Can be overridden to return the
      *     correct state. {@code ActivityState.DESTROYED} by default.
@@ -1140,9 +1144,7 @@ public class WindowAndroid
                 .onAdaptiveRefreshRateInfoChanged(
                         mNativeWindowAndroid,
                         arrInfo.supportsAdaptiveRefreshRate,
-                        arrInfo.suggestedFrameRateNormal,
-                        arrInfo.suggestedFrameRateHigh,
-                        arrInfo.supportedFrameRates);
+                        arrInfo.suggestedFrameRateHigh);
     }
 
     @CalledByNative
@@ -1442,9 +1444,7 @@ public class WindowAndroid
         void onAdaptiveRefreshRateInfoChanged(
                 long nativeWindowAndroid,
                 boolean supportsAdaptiveRefreshRate,
-                float suggestedFrameRateNormal,
-                float suggestedFrameRateHigh,
-                float @Nullable [] supportedRefreshRates);
+                float suggestedFrameRateHigh);
 
         void onOverlayTransformUpdated(long nativeWindowAndroid, WindowAndroid caller);
 

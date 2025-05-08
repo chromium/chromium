@@ -53,16 +53,16 @@ class ChromePasswordChangeService
   // Indicates that password change will be proposed to the user for a given
   // `url`, `username` and `password`. `originator` belongs to a tab which
   // initiated the process.
-  void OfferPasswordChangeUi(const GURL& url,
-                             const std::u16string& username,
-                             const std::u16string& password,
-                             content::WebContents* originator);
+  virtual void OfferPasswordChangeUi(const GURL& url,
+                                     const std::u16string& username,
+                                     const std::u16string& password,
+                                     content::WebContents* originator);
 
   // Responds with PasswordChangeDelegate for a given `web_contents`.
   // The same object is returned for a tab which initiated password change and a
   // tab where password change is performed. Returns nullptr if `web_contents`
   // isn't associated with any delegate.
-  PasswordChangeDelegate* GetPasswordChangeDelegate(
+  virtual PasswordChangeDelegate* GetPasswordChangeDelegate(
       content::WebContents* web_contents);
 
   // PasswordChangeServiceInterface implementation.

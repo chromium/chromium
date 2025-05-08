@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.multiwindow;
 
+import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
@@ -12,6 +14,8 @@ import android.content.Intent;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.os.SystemClock;
+import android.provider.Browser;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Pair;
@@ -62,6 +66,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
@@ -82,8 +87,6 @@ import java.util.Set;
 class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements ActivityStateListener {
     private static final String TAG = "MIMApi31";
     private static final String TAG_MULTI_INSTANCE = "MultiInstance";
-
-    public static final int INVALID_INSTANCE_ID = MultiWindowUtils.INVALID_INSTANCE_ID;
     public static final int INVALID_TASK_ID = MultiWindowUtils.INVALID_TASK_ID;
 
     private static final String EMPTY_DATA = "";
@@ -94,7 +97,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     // Instance ID for the activity associated with this manager.
-    private int mInstanceId = INVALID_INSTANCE_ID;
+    private int mInstanceId = INVALID_WINDOW_ID;
 
     private Tab mActiveTab;
     private TabObserver mActiveTabObserver =
@@ -242,6 +245,12 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             ChromeTabbedActivity targetActivity,
             TabGroupMetadata tabGroupMetadata,
             int tabAtIndex) {
+        long startTime = SystemClock.elapsedRealtime();
+        int tabGroupSizeBeforeReparent = tabGroupMetadata.tabIdsToUrls.size();
+        // Records tab group reparenting group size histogram.
+        RecordHistogram.recordCount1000Histogram(
+                "Android.Reparent.TabGroup.GroupSize", tabGroupSizeBeforeReparent);
+
         // 1. Temporarily disable sync service from observing local changes to prevent unintended
         // updates during tab group re-parenting.
         @Nullable
@@ -269,6 +278,23 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                     // Re-enable sync service observation after re-parenting is completed to resume
                     // normal sync behavior.
                     setSyncServiceLocalObservationMode(syncService, /* shouldObserve= */ true);
+
+                    // Records tab group reparenting duration histogram.
+                    long currentTime = SystemClock.elapsedRealtime();
+                    RecordHistogram.recordLongTimesHistogram(
+                            "Android.Reparent.TabGroup.Duration", currentTime - startTime);
+
+                    // Records tab group reparenting group size diff histogram.
+                    int destWindowId =
+                            TabWindowManagerSingleton.getInstance().getIdForWindow(targetActivity);
+                    TabGroupModelFilter destWindowModelFilter =
+                            getTabGroupModelFilterByWindowId(
+                                    destWindowId, tabGroupMetadata.isIncognito);
+                    int tabGroupSizeAfterReparent =
+                            destWindowModelFilter.getTabCountForGroup(tabGroupMetadata.tabGroupId);
+                    RecordHistogram.recordCount1000Histogram(
+                            "Android.Reparent.TabGroup.GroupSize.Diff",
+                            tabGroupSizeBeforeReparent - tabGroupSizeAfterReparent);
                 });
     }
 
@@ -340,7 +366,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                             readTitle(i),
                             readTabCount(i),
                             readIncognitoTabCount(i),
-                            readIncognitoSelected(i)));
+                            readIncognitoSelected(i),
+                            readLastAccessedTime(i)));
         }
 
         // Move the current instance always to the top of the list.
@@ -352,7 +379,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     @Override
     public int getCurrentInstanceId() {
         List<InstanceInfo> allInstances = getInstanceInfo();
-        if (allInstances == null || allInstances.isEmpty()) return INVALID_INSTANCE_ID;
+        if (allInstances == null || allInstances.isEmpty()) return INVALID_WINDOW_ID;
         // Current instance is at top of list.
         return allInstances.get(0).instanceId;
     }
@@ -373,7 +400,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         // Explicitly specified window ID should be preferred. This comes from user selecting
         // a certain instance on UI when no task is present for it.
         // When out of range, ignore the ID and apply the normal allocation logic below.
-        if (windowId >= 0 && windowId < mMaxInstances && instanceId == INVALID_INSTANCE_ID) {
+        if (windowId >= 0 && windowId < mMaxInstances && instanceId == INVALID_WINDOW_ID) {
             Log.i(TAG_MULTI_INSTANCE, "Existing Instance - selected Id allocated: " + windowId);
             return Pair.create(windowId, InstanceAllocationType.EXISTING_INSTANCE_UNMAPPED_TASK);
         }
@@ -381,7 +408,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         // First, see if we have instance-task ID mapping. If we do, use the instance id. This
         // takes care of a task that had its activity destroyed and comes back to create a
         // new one. We pair them again.
-        if (instanceId != INVALID_INSTANCE_ID) {
+        if (instanceId != INVALID_WINDOW_ID) {
             Log.i(TAG_MULTI_INSTANCE, "Existing Instance - mapped Id allocated: " + instanceId);
             return Pair.create(instanceId, InstanceAllocationType.EXISTING_INSTANCE_MAPPED_TASK);
         }
@@ -395,7 +422,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 }
             }
             return Pair.create(
-                    INVALID_INSTANCE_ID, InstanceAllocationType.PREFER_NEW_INVALID_INSTANCE);
+                    INVALID_WINDOW_ID, InstanceAllocationType.PREFER_NEW_INVALID_INSTANCE);
         }
 
         // Search for an unassigned ID. The index is available for the assignment if:
@@ -403,7 +430,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         // b) the corresponding persistent state does not exist.
         // Prefer a over b. Pick the MRU instance if there is more than one. Type b returns 0
         // for |readLastAccessedTime|, so can be regarded as the least favored.
-        int id = INVALID_INSTANCE_ID;
+        int id = INVALID_WINDOW_ID;
         boolean newInstanceIdAllocated = false;
         @InstanceAllocationType int allocationType = InstanceAllocationType.INVALID_INSTANCE;
         for (int i = 0; i < mMaxInstances; ++i) {
@@ -411,7 +438,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             if (taskIdFromMap != INVALID_TASK_ID) {
                 continue;
             }
-            if (id == INVALID_INSTANCE_ID || readLastAccessedTime(i) > readLastAccessedTime(id)) {
+            if (id == INVALID_WINDOW_ID || readLastAccessedTime(i) > readLastAccessedTime(id)) {
                 id = i;
                 newInstanceIdAllocated = !instanceEntryExists(i);
                 allocationType =
@@ -423,7 +450,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
 
         if (newInstanceIdAllocated) {
             logNewInstanceId(id);
-        } else if (id != INVALID_INSTANCE_ID) {
+        } else if (id != INVALID_WINDOW_ID) {
             Log.i(
                     TAG_MULTI_INSTANCE,
                     "Existing Instance - persisted and unmapped Id allocated: " + id);
@@ -664,7 +691,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         for (int i = 0; i < mMaxInstances; ++i) {
             if (taskId == getTaskFromMap(i)) return i;
         }
-        return INVALID_INSTANCE_ID;
+        return INVALID_WINDOW_ID;
     }
 
     @Override
@@ -801,7 +828,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         return MultiWindowUtils.lastAccessedTimeKey(index);
     }
 
-    private static long readLastAccessedTime(int index) {
+    @VisibleForTesting
+    static long readLastAccessedTime(int index) {
         return MultiWindowUtils.readLastAccessedTime(index);
     }
 
@@ -870,20 +898,44 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
      * Launch the given intent in an existing ChromeTabbedActivity instance.
      *
      * @param intent The intent to launch.
-     * @param instanceId ID of the instance to launch the intent in.
+     * @param windowId ID of the window to launch the intent in.
+     * @return Whether the intent was launched successfully.
      */
-    static void launchIntentInInstance(Intent intent, int instanceId) {
-        Activity activity = getActivityById(instanceId);
-        if (!(activity instanceof ChromeTabbedActivity)) return;
+    static boolean launchIntentInExistingActivity(Intent intent, @WindowId int windowId) {
+        Activity activity = getActivityById(windowId);
+        if (!(activity instanceof ChromeTabbedActivity)) return false;
         int taskId = activity.getTaskId();
-        if (taskId != INVALID_TASK_ID) {
-            // Launch the intent in the existing activity and bring the task to foreground if it is
-            // alive.
-            ((ChromeTabbedActivity) activity).onNewIntent(intent);
-            var activityManager =
-                    (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
-            activityManager.moveTaskToFront(taskId, 0);
-        }
+        if (taskId == INVALID_TASK_ID) return false;
+
+        // Launch the intent in the existing activity and bring the task to foreground if it is
+        // alive.
+        ((ChromeTabbedActivity) activity).onNewIntent(intent);
+        var activityManager = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
+        activityManager.moveTaskToFront(taskId, 0);
+        return true;
+    }
+
+    /**
+     * Launch an intent in another window. It is unknown to our caller if the other window currently
+     * has a live task associated with it. This method will attempt to discern this and take the
+     * appropriate action.
+     *
+     * @param context The context used to launch the intent.
+     * @param intent The intent to launch.
+     * @param windowId The id to identify the target window/activity.
+     */
+    static void launchIntentInUnknown(Context context, Intent intent, @WindowId int windowId) {
+        // TODO(https://crbug.com/415375532): Remove the need for this to be a public method, and
+        // fold all of this functionality into a shared single public method with
+        // #launchIntentInExistingActivity.
+
+        if (launchIntentInExistingActivity(intent, windowId)) return;
+
+        intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        intent.putExtra(IntentHandler.EXTRA_WINDOW_ID, windowId);
+        IntentUtils.safeStartActivity(context, intent);
     }
 
     /**
@@ -950,7 +1002,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         // This handles a case where an instance is deleted within Chrome but not through
         // Window manager UI, and the task is removed by system. See https://crbug.com/1241719.
         removeInvalidInstanceData(/* cleanupApplicationStatus= */ false);
-        if (mInstanceId != INVALID_INSTANCE_ID) {
+        if (mInstanceId != INVALID_WINDOW_ID) {
             ApplicationStatus.unregisterActivityStateListener(this);
         }
         if (sState != null) {
@@ -977,8 +1029,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     @Override
-    public void onResumeWithNative() {
-        super.onResumeWithNative();
+    public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
+        super.onTopResumedActivityChanged(isTopResumedActivity);
         writeLastAccessedTime(mInstanceId);
     }
 
@@ -1037,7 +1089,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         if (MultiWindowUtils.getInstanceCount() < mMaxInstances) {
             moveAndReparentTabToNewWindow(
                     tab,
-                    INVALID_INSTANCE_ID,
+                    INVALID_WINDOW_ID,
                     /* preferNew= */ true,
                     /* openAdjacently= */ false,
                     /* addTrustedIntentExtras= */ true);
@@ -1109,7 +1161,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     private boolean canCloseChromeWindow(int instanceId) {
         // Close the source instance window after tab reparenting if permitted by the feature flag
         // or if the app is in a desktop window, and the source instance is known.
-        if (instanceId == INVALID_INSTANCE_ID) return false;
+        if (instanceId == INVALID_WINDOW_ID) return false;
 
         return TabUiFeatureUtilities.isTabDragAsWindowEnabled()
                 || AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManagerSupplier.get());

@@ -44,7 +44,7 @@ class ExternalInstallManager : public KeyedService,
   // Called when the associated profile will be destroyed.
   void Shutdown() override;
 
-  // Returns the instance for the given |browser_context|.
+  // Returns the instance for the given `browser_context`.
   static ExternalInstallManager* Get(content::BrowserContext* browser_context);
 
   // Removes the error associated with a given extension.
@@ -57,7 +57,7 @@ class ExternalInstallManager : public KeyedService,
   // acknowledged.
   void AcknowledgeExternalExtension(const std::string& extension_id);
 
-  // Notifies the manager that |external_install_error| has changed its alert
+  // Notifies the manager that `external_install_error` has changed its alert
   // visibility.
   void DidChangeInstallAlertVisibility(
       ExternalInstallError* external_install_error,
@@ -89,7 +89,7 @@ class ExternalInstallManager : public KeyedService,
                               extensions::UninstallReason reason) override;
 
   // Adds a global error informing the user that an external extension was
-  // installed. If |is_new_profile| is true, then this error is from the first
+  // installed. If `is_new_profile` is true, then this error is from the first
   // time our profile checked for new extensions.
   void AddExternalInstallError(const Extension* extension, bool is_new_profile);
 

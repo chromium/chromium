@@ -17,6 +17,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_format_provider.h"
@@ -133,8 +134,10 @@ void AddressComponent::CopyFrom(const AddressComponent& other) {
 
   CHECK_EQ(other.subcomponents_.size(), subcomponents_.size())
       << GetStorageTypeName();
-  for (size_t i = 0; i < other.subcomponents_.size(); i++)
-    subcomponents_[i]->CopyFrom(*other.subcomponents_[i]);
+  for (auto [subcomponent, other_subcomponent] :
+       base::zip(subcomponents_, other.subcomponents_)) {
+    subcomponent->CopyFrom(*other_subcomponent);
+  }
 
   PostAssignSanitization();
 }
@@ -154,8 +157,9 @@ bool AddressComponent::SameAs(const AddressComponent& other) const {
   if (subcomponents_.size() != other.subcomponents_.size()) {
     return false;
   }
-  for (size_t i = 0; i < other.subcomponents_.size(); i++) {
-    if (!(subcomponents_[i]->SameAs(*other.subcomponents_[i]))) {
+  for (auto [subcomponent, other_subcomponent] :
+       base::zip(subcomponents_, other.subcomponents_)) {
+    if (!subcomponent->SameAs(*other_subcomponent)) {
       return false;
     }
   }
@@ -930,9 +934,9 @@ void AddressComponent::MergeVerificationStatuses(
   }
   CHECK_EQ(newer_component.subcomponents_.size(), subcomponents_.size())
       << GetStorageTypeName();
-  for (size_t i = 0; i < newer_component.subcomponents_.size(); i++) {
-    subcomponents_[i]->MergeVerificationStatuses(
-        *newer_component.subcomponents_.at(i));
+  for (auto [subcomponent, newer_subcomponent] :
+       base::zip(subcomponents_, newer_component.subcomponents_)) {
+    subcomponent->MergeVerificationStatuses(*newer_subcomponent);
   }
 }
 
@@ -1045,20 +1049,15 @@ bool AddressComponent::IsMergeableWithComponent(
 
   // Checks if all child nodes are mergeable.
   if (merge_mode_ & kMergeChildrenAndReformatIfNeeded) {
-    bool is_mergeable = true;
-
     if (subcomponents_.size() != newer_component.subcomponents_.size()) {
       return false;
     }
-    for (size_t i = 0; i < newer_component.subcomponents_.size(); i++) {
-      if (!subcomponents_[i]->IsMergeableWithComponent(
-              *newer_component.subcomponents_[i])) {
-        is_mergeable = false;
-        break;
-      }
-    }
-    if (is_mergeable)
-      return true;
+    return std::ranges::all_of(
+        base::zip(subcomponents_, newer_component.subcomponents_),
+        [](const auto& p) {
+          auto [subcomponent, newer_subcomponent] = p;
+          return subcomponent->IsMergeableWithComponent(*newer_subcomponent);
+        });
   }
   return false;
 }
@@ -1251,14 +1250,16 @@ bool AddressComponent::MergeWithComponent(
   // If the corresponding mode is active, ignore this mode and pair-wise merge
   // the child tokens. Reformat this nodes from its children after the merge.
   if (merge_mode_ & kMergeChildrenAndReformatIfNeeded) {
-    CHECK_EQ(newer_component.subcomponents_.size(), subcomponents_.size());
-    for (size_t i = 0; i < newer_component.subcomponents_.size(); i++) {
-      if (!subcomponents_[i]->MergeWithComponent(
-              *newer_component.subcomponents_[i],
-              newer_was_more_recently_used)) {
-        return false;
-      }
+    if (std::ranges::any_of(
+            base::zip(subcomponents_, newer_component.subcomponents_),
+            [&](const auto& p) {
+              auto [subcomponent, newer_subcomponent] = p;
+              return !subcomponent->MergeWithComponent(
+                  *newer_subcomponent, newer_was_more_recently_used);
+            })) {
+      return false;
     }
+
     // If the two values are already token equivalent, use the value of the
     // component with the better verification status, or if both are the same,
     // use the newer one.
@@ -1343,8 +1344,9 @@ bool AddressComponent::MergeTokenEquivalentComponent(
   } else if (AllDescendantsAreEmpty()) {
     // Otherwise, replace this subtree with the other one if this subtree is
     // empty.
-    for (size_t i = 0; i < subcomponents_.size(); ++i) {
-      subcomponents_[i]->CopyFrom(*other_subcomponents[i]);
+    for (auto [subcomponent, other_subcomponent] :
+         base::zip(subcomponents_, other_subcomponents)) {
+      subcomponent->CopyFrom(*other_subcomponent);
     }
     return true;
   }

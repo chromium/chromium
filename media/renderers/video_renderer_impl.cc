@@ -41,6 +41,10 @@ namespace {
 // SetLatencyHint(), so we needed to peg this with a constant.
 constexpr int kAbsoluteMaxFrames = 24;
 
+BASE_FEATURE(kReportUnderflowForBackgroundRendering,
+             "ReportUnderflowForBackgroundRendering",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace
 
 VideoRendererImpl::VideoRendererImpl(
@@ -227,6 +231,24 @@ scoped_refptr<VideoFrame> VideoRendererImpl::Render(
   TRACE_EVENT_BEGIN1("media", "VideoRendererImpl::Render", "id", player_id_);
   base::AutoLock auto_lock(lock_);
   DCHECK_EQ(state_, kPlaying);
+
+  const bool background_rendering =
+      rendering_mode == RenderingMode::kBackground;
+
+  // Only skip signaling have nothing for a previous background rendering if any
+  // frames have been decoded since the last Render() call.
+  // HaveEnoughData_Locked() will abort the transition if any frames come in
+  // after this current render.
+  bool skip_have_nothing_for_background_rendering = false;
+  if (base::FeatureList::IsEnabled(kReportUnderflowForBackgroundRendering)) {
+    skip_have_nothing_for_background_rendering =
+        background_rendering || (was_background_rendering_ &&
+                                 last_frame_ready_time_ >= last_render_time_);
+  } else {
+    skip_have_nothing_for_background_rendering =
+        background_rendering || was_background_rendering_;
+  }
+
   last_render_time_ = tick_clock_->NowTicks();
 
   size_t frames_dropped = 0;
@@ -237,17 +259,14 @@ scoped_refptr<VideoFrame> VideoRendererImpl::Render(
   // we've had a proper startup sequence.
   DCHECK(result);
 
-  const bool background_rendering =
-      rendering_mode == RenderingMode::kBackground;
-
   // Declare HAVE_NOTHING if we reach a state where we can't progress playback
   // any further.  We don't want to do this if we've already done so, reached
   // end of stream, or have frames available.  We also don't want to do this in
   // background rendering mode, as the frames aren't visible anyways.
   MaybeFireEndedCallback_Locked(true);
   if (buffering_state_ == BUFFERING_HAVE_ENOUGH && !received_end_of_stream_ &&
-      !algorithm_->effective_frames_queued() && !background_rendering &&
-      !was_background_rendering_) {
+      !algorithm_->effective_frames_queued() &&
+      !skip_have_nothing_for_background_rendering) {
     // Do not set |buffering_state_| here as the lock in FrameReady() may be
     // held already and it fire the state changes in the wrong order.
     DVLOG(3) << __func__ << " posted TransitionToHaveNothing.";
@@ -365,6 +384,12 @@ void VideoRendererImpl::OnBufferingStateChange(BufferingState buffering_state) {
           buffering_state, reason});
 
   client_->OnBufferingStateChange(buffering_state, reason);
+
+  if (buffering_state == BUFFERING_HAVE_ENOUGH &&
+      buffering_state_ == BUFFERING_HAVE_ENOUGH && time_progressing_ &&
+      !sink_started_) {
+    OnTimeProgressing();
+  }
 }
 
 void VideoRendererImpl::OnWaiting(WaitingReason reason) {

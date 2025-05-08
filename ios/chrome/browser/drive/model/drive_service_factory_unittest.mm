@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 
 #import "base/test/scoped_feature_list.h"
-#import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
 class DriveServiceFactoryTest : public PlatformTest {
@@ -15,7 +15,7 @@ class DriveServiceFactoryTest : public PlatformTest {
   DriveServiceFactoryTest() { profile_ = TestProfileIOS::Builder().Build(); }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
 };
 

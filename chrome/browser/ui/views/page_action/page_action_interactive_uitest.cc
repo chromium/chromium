@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -479,10 +480,11 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
 
   ShowPageAction(kActionShowTranslate);
 
-  // Histogram should remain at 2 total samples; no new logging.
-  histogram_tester.ExpectTotalCount("PageActionController.ActionTypeShown2", 2);
+  // Histogram should increase at 3 total samples; since the url have changed in
+  // the same page.
+  histogram_tester.ExpectTotalCount("PageActionController.ActionTypeShown2", 3);
   histogram_tester.ExpectBucketCount("PageActionController.ActionTypeShown2",
-                                     PageActionIconType::kTranslate, 2);
+                                     PageActionIconType::kTranslate, 3);
 }
 
 IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
@@ -552,6 +554,184 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   browser()->tab_strip_model()->ActivateTabAt(0);
   ShowPageAction(kActionShowTranslate);
   histogram_tester.ExpectTotalCount("PageActionController.ActionTypeShown2", 4);
+}
+
+// Verifies that "…Icon.CTR2" histograms emit kShown once-per-context.
+// The test mirrors EphemeralPageActionUmaLoggedOncePerContext.
+IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
+                       CTR2HistogramsLoggedOncePerContext) {
+  base::HistogramTester histogram_tester;
+
+  constexpr char kGeneralHistogram[] = "PageActionController.Icon.CTR2";
+  constexpr char kTranslateHistogram[] =
+      "PageActionController.Translate.Icon.CTR2";
+
+  // 1. Initial page-context (tab[0], first navigation).
+  ShowPageAction(kActionShowTranslate);
+  histogram_tester.ExpectUniqueSample(kGeneralHistogram,
+                                      PageActionCTREvent::kShown, 1);
+  histogram_tester.ExpectUniqueSample(kTranslateHistogram,
+                                      PageActionCTREvent::kShown, 1);
+
+  // 2. Hide + re-show in the SAME context → no additional logging.
+  HidePageAction(kActionShowTranslate);
+  ShowPageAction(kActionShowTranslate);
+  histogram_tester.ExpectTotalCount(kGeneralHistogram, 1);
+  histogram_tester.ExpectTotalCount(kTranslateHistogram, 1);
+
+  // 3. New navigation in the SAME tab → new context, logs again.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://settings")));
+  ShowPageAction(kActionShowTranslate);
+  histogram_tester.ExpectTotalCount(kGeneralHistogram, 2);
+  histogram_tester.ExpectBucketCount(kTranslateHistogram,
+                                     PageActionCTREvent::kShown, 2);
+
+  // 4. Open a new tab → brand-new context.
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL("chrome://version"), ui::PAGE_TRANSITION_LINK));
+  browser()->tab_strip_model()->ActivateTabAt(1);
+
+  // 4-a) First show of Translate in tab[1] logs again.
+  ShowPageAction(kActionShowTranslate);
+  histogram_tester.ExpectTotalCount(kGeneralHistogram, 3);
+  histogram_tester.ExpectBucketCount(kTranslateHistogram,
+                                     PageActionCTREvent::kShown, 3);
+
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  ShowPageAction(kActionShowTranslate);
+  histogram_tester.ExpectTotalCount(kGeneralHistogram, 3);
+  histogram_tester.ExpectBucketCount(kTranslateHistogram,
+                                     PageActionCTREvent::kShown, 3);
+}
+
+class PageActionMetricsInteractiveUiTest : public InteractiveBrowserTest,
+                                           public PageActionUiTestBase {
+ public:
+  PageActionMetricsInteractiveUiTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPageActionsMigration,
+        {
+            {features::kPageActionsMigrationZoom.name, "true"},
+        });
+  }
+
+  PageActionMetricsInteractiveUiTest(
+      const PageActionMetricsInteractiveUiTest&) = delete;
+  PageActionMetricsInteractiveUiTest& operator=(
+      const PageActionInteractiveUiTest&) = delete;
+  ~PageActionMetricsInteractiveUiTest() override = default;
+
+  // PageActionUiTestBase:
+  Browser* GetBrowser() const override { return browser(); }
+
+ protected:
+  void SetZoomLevel(content::PageZoom zoom_level) {
+    chrome::Zoom(GetBrowser(), zoom_level);
+  }
+
+  auto DoZoomIn() {
+    return Do([&]() { SetZoomLevel(content::PAGE_ZOOM_IN); });
+  }
+
+  auto DoZoomOut() {
+    return Do([&]() { SetZoomLevel(content::PAGE_ZOOM_OUT); });
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageActionMetricsInteractiveUiTest, ClickHistogramLogs) {
+  base::HistogramTester histogram_tester;
+  const char* general_histogram = "PageActionController.Icon.CTR2";
+  const std::string specific_histogram = "PageActionController.Zoom.Icon.CTR2";
+
+  RunTestSequence(
+      DoZoomIn(), WaitForShow(kActionItemZoomElementId),
+
+      CheckResult(
+          [&]() { return histogram_tester.GetTotalSum(general_histogram); },
+          testing::Eq(0)),
+      CheckResult(
+          [&]() { return histogram_tester.GetTotalSum(specific_histogram); },
+          testing::Eq(0)),
+
+      PressButton(kActionItemZoomElementId),
+
+      CheckResult(
+          [&]() {
+            return histogram_tester.GetBucketCount(
+                general_histogram, PageActionCTREvent::kClicked);
+          },
+          testing::Eq(1)),
+      CheckResult(
+          [&]() {
+            return histogram_tester.GetBucketCount(
+                specific_histogram, PageActionCTREvent::kClicked);
+          },
+          testing::Eq(1)),
+
+      PressButton(kActionItemZoomElementId),
+
+      CheckResult(
+          [&]() {
+            return histogram_tester.GetBucketCount(
+                general_histogram, PageActionCTREvent::kClicked);
+          },
+          testing::Eq(2)),
+      CheckResult(
+          [&]() {
+            return histogram_tester.GetBucketCount(
+                specific_histogram, PageActionCTREvent::kClicked);
+          },
+          testing::Eq(2)));
+}
+
+// Verifies that the "NumberActionsShown3" exact-linear histogram records
+// the correct bucket for one vs. two simultaneously visible ephemeral actions.
+IN_PROC_BROWSER_TEST_F(PageActionMetricsInteractiveUiTest,
+                       NumberActionsShown3HistogramLogged) {
+  base::HistogramTester histogram_tester;
+
+  // 1) Show the Translate suggestion chip (1 visible ephemeral action).
+  ShowPageAction(kActionShowTranslate);
+
+  // 2) Show the Memory Saver suggestion chip (now 2 visible ephemeral actions).
+  ShowPageAction(kActionShowMemorySaverChip);
+
+  // Expect exactly one sample in bucket “1” and one in bucket “2”.
+  histogram_tester.ExpectBucketCount("PageActionController.NumberActionsShown3",
+                                     1, 1);
+  histogram_tester.ExpectBucketCount("PageActionController.NumberActionsShown3",
+                                     2, 1);
+}
+
+// Verifies that the "PagesWithActionsShown3" enumeration histogram records
+// a kPageShown on navigation, a kActionShown on the first ephemeral action,
+// and a kMultipleActionsShown once two appear.
+IN_PROC_BROWSER_TEST_F(PageActionMetricsInteractiveUiTest,
+                       PagesWithActionsShown3EventsLogged) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to a fresh URL to trigger a kPageShown event.
+  GURL test_url("chrome://version");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  // Show two ephemeral suggestion chips in sequence.
+  ShowPageAction(kActionShowTranslate);        // logs kActionShown
+  ShowPageAction(kActionShowMemorySaverChip);  // logs kMultipleActionsShown
+
+  // Verify each enumeration event was recorded exactly once.
+  histogram_tester.ExpectBucketCount(
+      "PageActionController.PagesWithActionsShown3",
+      PageActionPageEvent::kPageShown, 1);
+  histogram_tester.ExpectBucketCount(
+      "PageActionController.PagesWithActionsShown3",
+      PageActionPageEvent::kActionShown, 1);
+  histogram_tester.ExpectBucketCount(
+      "PageActionController.PagesWithActionsShown3",
+      PageActionPageEvent::kMultipleActionsShown, 1);
 }
 
 // TODO(crbug.com/411078148): Re-enable on Mac.

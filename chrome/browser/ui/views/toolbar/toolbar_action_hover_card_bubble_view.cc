@@ -22,6 +22,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/style/typography.h"
@@ -213,9 +214,10 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
   GetBubbleFrameView()->SetPreferredArrowAdjustment(
       views::BubbleFrameView::PreferredArrowAdjustment::kOffset);
   GetBubbleFrameView()->set_hit_test_transparent(true);
-  GetBubbleFrameView()->SetCornerRadius(
-      ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-          views::Emphasis::kHigh));
+
+  const int corner_radius = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kHigh);
+  GetBubbleFrameView()->SetRoundedCorners(gfx::RoundedCornersF(corner_radius));
 
   // Start in the fully "faded-in" position so that whatever text we initially
   // display is visible.

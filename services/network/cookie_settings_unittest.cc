@@ -1740,9 +1740,8 @@ TEST_P(CookieSettingsTestP, IsCookieAccessible_SitesInFirstPartySets) {
   EXPECT_FALSE(settings.IsCookieAccessible(
       *cookie, GURL(kRwsMemberURL), net::SiteForCookies(), top_level_origin,
       net::FirstPartySetMetadata(
-          net::FirstPartySetEntry(primary, net::SiteType::kAssociated, 1u),
-          net::FirstPartySetEntry(primary, net::SiteType::kPrimary,
-                                  std::nullopt)),
+          net::FirstPartySetEntry(primary, net::SiteType::kAssociated),
+          net::FirstPartySetEntry(primary, net::SiteType::kPrimary)),
       GetCookieSettingOverrides(), &status));
   if (IsTPCDEnabled()) {
     EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
@@ -2250,9 +2249,8 @@ TEST_P(CookieSettingsTestP,
   EXPECT_FALSE(settings.AnnotateAndMoveUserBlockedCookies(
       GURL(kRwsMemberURL), net::SiteForCookies(), &origin,
       net::FirstPartySetMetadata(
-          net::FirstPartySetEntry(primary, net::SiteType::kAssociated, 1u),
-          net::FirstPartySetEntry(primary, net::SiteType::kPrimary,
-                                  std::nullopt)),
+          net::FirstPartySetEntry(primary, net::SiteType::kAssociated),
+          net::FirstPartySetEntry(primary, net::SiteType::kPrimary)),
       GetCookieSettingOverrides(), maybe_included_cookies, excluded_cookies));
 
   EXPECT_EQ(0u, maybe_included_cookies.size());
@@ -2295,9 +2293,8 @@ TEST_P(
   url::Origin top_frame_origin = url::Origin::Create(GURL(kRwsOwnerURL));
 
   net::SchemefulSite primary((GURL(kRwsOwnerURL)));
-  net::FirstPartySetEntry frame_entry(primary, net::SiteType::kAssociated, 1u);
-  net::FirstPartySetEntry top_frame_entry(primary, net::SiteType::kPrimary,
-                                          std::nullopt);
+  net::FirstPartySetEntry frame_entry(primary, net::SiteType::kAssociated);
+  net::FirstPartySetEntry top_frame_entry(primary, net::SiteType::kPrimary);
 
   net::CookieAccessResultList maybe_included_cookies = {{*cookie, {}}};
   net::CookieAccessResultList excluded_cookies = {};

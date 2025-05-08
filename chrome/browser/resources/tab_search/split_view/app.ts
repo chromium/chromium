@@ -5,6 +5,7 @@
 import '/strings.m.js';
 import '../tab_search_item.js';
 
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -34,17 +35,19 @@ export class SplitNewTabPageAppElement extends CrLitElement {
 
   static override get properties() {
     return {
-      openTabs_: {type: Array},
-      mediaTabs_: {type: Array},
+      allInvisibleTabs_: {type: Array},
     };
   }
 
-  protected accessor openTabs_: TabData[] = [];
-  protected accessor mediaTabs_: TabData[] = [];
-  private allInvisibleTabs_: TabData[] = [];
+  protected accessor allInvisibleTabs_: TabData[] = [];
   private activeTabId_: number = -1;
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
+
+  constructor() {
+    super();
+    ColorChangeUpdater.forDocument().start();
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -97,7 +100,7 @@ export class SplitNewTabPageAppElement extends CrLitElement {
     this.allInvisibleTabs_ =
         activeWindow.tabs.filter(tab => !tab.visible)
             .map(tab => this.getTabData_(tab, true, TabItemType.OPEN_TAB));
-    this.updateFilteredTabs_();
+    this.sortTabs_();
   }
 
   private onTabUpdated_(tabUpdateInfo: TabUpdateInfo) {
@@ -114,7 +117,7 @@ export class SplitNewTabPageAppElement extends CrLitElement {
     } else {
       this.allInvisibleTabs_.push(tabData);
     }
-    this.updateFilteredTabs_();
+    this.sortTabs_();
   }
 
   private onTabsRemoved_(tabsRemovedInfo: TabsRemovedInfo) {
@@ -123,21 +126,27 @@ export class SplitNewTabPageAppElement extends CrLitElement {
     }
 
     const ids = new Set(tabsRemovedInfo.tabIds);
-    // Splicing in descending index order to avoid affecting preceding indices
-    // that are to be removed.
-    for (let i = this.allInvisibleTabs_.length - 1; i >= 0; i--) {
-      if (ids.has(this.allInvisibleTabs_[i]!.tab.tabId)) {
-        this.allInvisibleTabs_.splice(i, 1);
-      }
-    }
-    this.updateFilteredTabs_();
+    this.allInvisibleTabs_ =
+        this.allInvisibleTabs_.filter(tab => !ids.has(tab.tab.tabId));
+    this.sortTabs_();
   }
 
-  private updateFilteredTabs_() {
-    this.mediaTabs_ = this.allInvisibleTabs_.filter(
-        tabData => tabHasMediaAlerts(tabData.tab as Tab));
-    this.openTabs_ = this.allInvisibleTabs_.filter(
-        tabData => !tabHasMediaAlerts(tabData.tab as Tab));
+  private sortTabs_() {
+    this.allInvisibleTabs_.sort((a, b) => {
+      const tabA = a.tab as Tab;
+      const tabB = b.tab as Tab;
+      // Move tabs with media alerts to the top of the list.
+      if (tabHasMediaAlerts(tabA) && !tabHasMediaAlerts(tabB)) {
+        return -1;
+      } else if (!tabHasMediaAlerts(tabA) && tabHasMediaAlerts(tabB)) {
+        return 1;
+      }
+      return (tabB.lastActiveTimeTicks && tabA.lastActiveTimeTicks) ?
+          Number(
+              tabB.lastActiveTimeTicks.internalValue -
+              tabA.lastActiveTimeTicks.internalValue) :
+          0;
+    });
   }
 
   private getTabData_(tab: Tab, inActiveWindow: boolean, type: TabItemType):

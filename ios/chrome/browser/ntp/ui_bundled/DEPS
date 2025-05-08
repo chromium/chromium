@@ -13,7 +13,7 @@ include_rules = [
   "+ios/chrome/browser/first_run/ui_bundled/first_run_util.h",
   "+ios/chrome/browser/overscroll_actions/ui_bundled",
   "+ios/chrome/browser/toolbar/ui_bundled/buttons",
-  "+ios/chrome/browser/omnibox/ui_bundled",
+  "+ios/chrome/browser/omnibox/ui",
   "+ios/chrome/browser/omnibox/coordinator",
   "+ios/chrome/browser/omnibox/public",
   "+ios/chrome/browser/lens/ui_bundled",
@@ -39,7 +39,8 @@ include_rules = [
   "+ios/chrome/browser/metrics/model/constants.h",
   "+ios/chrome/browser/metrics/model/new_tab_page_uma.h",
   "+ios/chrome/browser/policy/model/policy_util.h",
-  "+ios/chrome/browser/push_notification/model/provisional_push_notification_util.h",
+  "+ios/chrome/browser/push_notification/model/provisional_push_notification_service.h",
+  "+ios/chrome/browser/push_notification/model/provisional_push_notification_service_factory.h",
   "+ios/chrome/browser/push_notification/model/push_notification_client_id.h",
   "+ios/chrome/browser/push_notification/model/push_notification_service.h",
   "+ios/chrome/browser/push_notification/model/push_notification_settings_util.h",
@@ -71,8 +72,5 @@ specific_include_rules = {
   # TODO(crbug.com/41259428): Remove this exception.
   "^new_tab_page_controller\.mm$": [
     "+ios/web/web_state/ui/crw_swipe_recognizer_provider.h",
-  ],
-  "new_tab_page_coordinator\.mm": [
-    "+ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h",
   ],
 }

@@ -42,6 +42,7 @@
 #include "net/cert/test_root_certs.h"
 #include "net/cert/time_conversions.h"
 #include "net/cert/x509_certificate.h"
+#include "net/cert/x509_certificate_net_log_param.h"
 #include "net/cert/x509_util.h"
 #include "net/log/net_log_values.h"
 #include "net/log/net_log_with_source.h"
@@ -127,7 +128,34 @@ void HistogramVerify1QwacResult(Verify1QwacResult result) {
   base::UmaHistogramEnumeration("Net.CertVerifier.Qwac.1Qwac", result);
 }
 
-QwacPoliciesStatus GetQwacPoliciesStatus(
+void HistogramVerify2QwacResult(Verify2QwacResult result) {
+  base::UmaHistogramEnumeration("Net.CertVerifier.Qwac.2Qwac", result);
+}
+
+Verify2QwacResult MapErrorTo2QwacResult(int err) {
+  switch (err) {
+    case ERR_CERT_COMMON_NAME_INVALID:
+      return Verify2QwacResult::kNameInvalid;
+    case ERR_CERT_DATE_INVALID:
+      return Verify2QwacResult::kDateInvalid;
+    case ERR_CERT_AUTHORITY_INVALID:
+      return Verify2QwacResult::kAuthorityInvalid;
+    case ERR_CERT_INVALID:
+      return Verify2QwacResult::kInvalid;
+    case ERR_CERT_WEAK_KEY:
+      return Verify2QwacResult::kWeakKey;
+    case ERR_CERT_NAME_CONSTRAINT_VIOLATION:
+      return Verify2QwacResult::kNameConstraintViolation;
+    default:
+      if (IsCertificateError(err)) {
+        return Verify2QwacResult::kOtherCertError;
+      } else {
+        return Verify2QwacResult::kOtherError;
+      }
+  }
+}
+
+QwacPoliciesStatus Get1QwacPoliciesStatus(
     const bssl::ParsedCertificate* target) {
   if (!target->has_policy_oids()) {
     return QwacPoliciesStatus::kNotQwac;
@@ -135,6 +163,16 @@ QwacPoliciesStatus GetQwacPoliciesStatus(
   std::set<bssl::der::Input> target_policy_oids(target->policy_oids().begin(),
                                                 target->policy_oids().end());
   return Has1QwacPolicies(target_policy_oids);
+}
+
+QwacPoliciesStatus Get2QwacPoliciesStatus(
+    const bssl::ParsedCertificate* target) {
+  if (!target->has_policy_oids()) {
+    return QwacPoliciesStatus::kNotQwac;
+  }
+  std::set<bssl::der::Input> target_policy_oids(target->policy_oids().begin(),
+                                                target->policy_oids().end());
+  return Has2QwacPolicies(target_policy_oids);
 }
 
 QwacQcStatementsStatus GetQwacQcStatementsStatus(
@@ -671,10 +709,6 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
       return false;
     }
 
-    // |enforce_anchor_expiry| and |enforce_anchor_constraints| are enforced
-    // internally in BoringSSL's certificate verifier when configured at the
-    // time of adding the trust anchor, so there is no need to check them here.
-
     return true;
   }
 
@@ -871,7 +905,7 @@ class QwacPathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
       bssl::CertPathBuilderResultPath* path) override {
     net_log_->BeginEvent(NetLogEventType::CERT_VERIFY_PROC_PATH_BUILT);
 
-    if (Has1QwacPolicies(path->user_constrained_policy_set) !=
+    if (HasQwacPolicies(path->user_constrained_policy_set) !=
         QwacPoliciesStatus::kHasQwacPolicies) {
       path->errors.GetErrorsForCert(0)->AddError(kPathLacksQwacPolicy);
     }
@@ -879,6 +913,9 @@ class QwacPathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
     net_log_->EndEvent(NetLogEventType::CERT_VERIFY_PROC_PATH_BUILT,
                        [&] { return NetLogPathBuilderResultPath(*path); });
   }
+
+  virtual QwacPoliciesStatus HasQwacPolicies(
+      const std::set<bssl::der::Input>& policy_set) = 0;
 
   bool IsDebugLogEnabled() override { return net_log_->IsCapturing(); }
 
@@ -889,6 +926,28 @@ class QwacPathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
 
  private:
   raw_ref<const NetLogWithSource> net_log_;
+};
+
+class OneQwacPathBuilderDelegateImpl : public QwacPathBuilderDelegateImpl {
+ public:
+  explicit OneQwacPathBuilderDelegateImpl(const NetLogWithSource& net_log)
+      : QwacPathBuilderDelegateImpl(net_log) {}
+
+  QwacPoliciesStatus HasQwacPolicies(
+      const std::set<bssl::der::Input>& policy_set) override {
+    return Has1QwacPolicies(policy_set);
+  }
+};
+
+class TwoQwacPathBuilderDelegateImpl : public QwacPathBuilderDelegateImpl {
+ public:
+  explicit TwoQwacPathBuilderDelegateImpl(const NetLogWithSource& net_log)
+      : QwacPathBuilderDelegateImpl(net_log) {}
+
+  QwacPoliciesStatus HasQwacPolicies(
+      const std::set<bssl::der::Input>& policy_set) override {
+    return Has2QwacPolicies(policy_set);
+  }
 };
 
 std::shared_ptr<const bssl::ParsedCertificate> ParseCertificateFromBuffer(
@@ -913,6 +972,8 @@ class CertVerifyProcBuiltin : public CertVerifyProc {
   ~CertVerifyProcBuiltin() override;
 
  private:
+  void LogChromeRootStoreVersion(const NetLogWithSource& net_log);
+
   int VerifyInternal(X509Certificate* cert,
                      const std::string& hostname,
                      const std::string& ocsp_response,
@@ -922,6 +983,15 @@ class CertVerifyProcBuiltin : public CertVerifyProc {
                      const NetLogWithSource& net_log) override;
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  int Verify2Qwac(X509Certificate* input_cert,
+                  const std::string& hostname,
+                  CertVerifyResult* verify_result,
+                  const NetLogWithSource& net_log) override;
+  int Verify2QwacInternal(X509Certificate* input_cert,
+                          const std::string& hostname,
+                          CertVerifyResult* verify_result,
+                          const NetLogWithSource& net_log);
+
   void MaybeVerify1QWAC(const bssl::CertPathBuilderResultPath* verified_path,
                         const bssl::der::GeneralizedTime& der_verification_time,
                         CertVerifyResult* verify_result,
@@ -1391,6 +1461,20 @@ bool CanTryAgainWithSystemTime(const bssl::CertPathBuilder::Result& result) {
              bssl::cert_errors::kUnableToCheckRevocation);
 }
 
+void CertVerifyProcBuiltin::LogChromeRootStoreVersion(
+    const NetLogWithSource& net_log) {
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  int64_t chrome_root_store_version =
+      system_trust_store_->chrome_root_store_version();
+  if (chrome_root_store_version != 0) {
+    net_log.AddEvent(
+        NetLogEventType::CERT_VERIFY_PROC_CHROME_ROOT_STORE_VERSION, [&] {
+          return NetLogChromeRootStoreVersion(chrome_root_store_version);
+        });
+  }
+#endif
+}
+
 int CertVerifyProcBuiltin::VerifyInternal(X509Certificate* input_cert,
                                           const std::string& hostname,
                                           const std::string& ocsp_response,
@@ -1421,16 +1505,8 @@ int CertVerifyProcBuiltin::VerifyInternal(X509Certificate* input_cert,
       custom_time_available = false;
     }
   }
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  int64_t chrome_root_store_version =
-      system_trust_store_->chrome_root_store_version();
-  if (chrome_root_store_version != 0) {
-    net_log.AddEvent(
-        NetLogEventType::CERT_VERIFY_PROC_CHROME_ROOT_STORE_VERSION, [&] {
-          return NetLogChromeRootStoreVersion(chrome_root_store_version);
-        });
-  }
-#endif
+
+  LogChromeRootStoreVersion(net_log);
 
   // TODO(crbug.com/40928765): Netlog extra configuration information stored
   // inside CertVerifyProcBuiltin (e.g. certs in additional_trust_store and
@@ -1587,6 +1663,184 @@ int CertVerifyProcBuiltin::VerifyInternal(X509Certificate* input_cert,
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+int CertVerifyProcBuiltin::Verify2Qwac(X509Certificate* cert,
+                                       const std::string& hostname,
+                                       CertVerifyResult* verify_result,
+                                       const NetLogWithSource& net_log) {
+  CHECK(cert);
+  CHECK(verify_result);
+
+  net_log.BeginEvent(NetLogEventType::CERT_VERIFY_PROC_2QWAC, [&] {
+    base::Value::Dict dict;
+    dict.Set("host", NetLogStringValue(hostname));
+    dict.Set("certificates", NetLogX509CertificateList(cert));
+    return dict;
+  });
+
+  verify_result->Reset();
+  verify_result->verified_cert = cert;
+
+  int rv = Verify2QwacInternal(cert, hostname, verify_result, net_log);
+
+  net_log.EndEvent(NetLogEventType::CERT_VERIFY_PROC_2QWAC,
+                   [&] { return verify_result->NetLogParams(rv); });
+  return rv;
+}
+
+int CertVerifyProcBuiltin::Verify2QwacInternal(
+    X509Certificate* input_cert,
+    const std::string& hostname,
+    CertVerifyResult* verify_result,
+    const NetLogWithSource& net_log) {
+  // TODO(crbug.com/392931070): EUTL anchor usage histograms
+
+  LogChromeRootStoreVersion(net_log);
+
+  // Parse the target certificate.
+  std::shared_ptr<const bssl::ParsedCertificate> target;
+  {
+    bssl::CertErrors parsing_errors;
+    target =
+        ParseCertificateFromBuffer(input_cert->cert_buffer(), &parsing_errors);
+    net_log.AddEvent(NetLogEventType::CERT_VERIFY_PROC_TARGET_CERT, [&] {
+      return NetLogCertParams(input_cert->cert_buffer(), parsing_errors);
+    });
+    if (!target) {
+      HistogramVerify2QwacResult(Verify2QwacResult::kLeafParsingError);
+      verify_result->cert_status |= CERT_STATUS_INVALID;
+      return ERR_CERT_INVALID;
+    }
+  }
+
+  // ETSI TS 119 411-5 V2.1.1 - 6.1.2 step 1:
+  //   the QWAC includes QCStatements as specified in clause 4.2 of ETSI EN 319
+  //   412-4 [4] and the appropriate Policy OID specified in ETSI EN 319 411-2
+  //   [3]
+  QwacQcStatementsStatus qc_statement_status =
+      GetQwacQcStatementsStatus(target.get());
+
+  // ETSI TS 119 411-5 V2.1.1 - 6.1.2 step 5:
+  //   that the QWAC's certificate profile conforms with:
+  //   b)For a 2-QWAC, clause 4.2.2 of the present document.
+  // ETSI TS 119 411-5 V2.1.1 - 4.2.2:
+  //   The 2-QWAC certificate shall be issued in accordance with ETSI EN 319
+  //   412-4 [4] for the relevant certificate policy as identified in clause
+  //   4.2.1 of the present document, except as described below:
+  //   * the extKeyUsage value shall only assert the extendedKeyUsage purpose of
+  //     id-kp-tls-binding as specified in Annex A.
+  QwacPoliciesStatus policy_status = Get2QwacPoliciesStatus(target.get());
+  QwacEkuStatus eku_status = Has2QwacEku(target.get());
+
+  if (policy_status != QwacPoliciesStatus::kHasQwacPolicies ||
+      qc_statement_status != QwacQcStatementsStatus::kHasQwacStatements ||
+      eku_status != QwacEkuStatus::kHasQwacEku) {
+    if (policy_status == QwacPoliciesStatus::kNotQwac &&
+        qc_statement_status == QwacQcStatementsStatus::kNotQwac &&
+        eku_status == QwacEkuStatus::kNotQwac) {
+      HistogramVerify2QwacResult(Verify2QwacResult::kNotQwac);
+    } else {
+      HistogramVerify2QwacResult(Verify2QwacResult::kInconsistentBits);
+    }
+    verify_result->cert_status |= CERT_STATUS_INVALID;
+    return ERR_CERT_INVALID;
+  }
+
+  // ETSI TS 119 411-5 V2.1.1 - 6.1.2 step 2:
+  //   that the QWAC chains back through appropriate & valid digital signatures
+  //   to an issuer on the EU Trusted List which is authorized to issue
+  //   Qualified Certificates for Website Authentication as specified in ETSI TS
+  //   119 615 [1];
+  // ETSI TS 119 411-5 V2.1.1 - 6.1.2 step 3:
+  //   that the QWAC's validity period covers the current date and time;
+
+  // Parse the provided intermediates.
+  bssl::CertIssuerSourceStatic intermediates;
+  AddIntermediatesToIssuerSource(input_cert, &intermediates, net_log);
+
+  std::set<bssl::der::Input> user_initial_policy_set = {
+      bssl::der::Input(bssl::kAnyPolicyOid)};
+
+  TwoQwacPathBuilderDelegateImpl path_builder_delegate(net_log);
+
+  // TODO(crbug.com/392931070): try with both system time and time_tracker_?
+  // It's less important here since the failure mode is just that it doesn't get
+  // marked as a qwac.
+  bssl::der::GeneralizedTime der_verification_system_time;
+  if (!EncodeTimeAsGeneralizedTime(base::Time::Now(),
+                                   &der_verification_system_time)) {
+    // This shouldn't be possible.
+    // We don't really have a good error code for this type of error.
+    HistogramVerify2QwacResult(Verify2QwacResult::kOtherError);
+    verify_result->cert_status |= CERT_STATUS_AUTHORITY_INVALID;
+    return ERR_CERT_AUTHORITY_INVALID;
+  }
+
+  net_log.BeginEvent(NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT, [&] {
+    base::Value::Dict results;
+    results.Set("is_qwac_attempt", true);
+    return results;
+  });
+
+  bssl::CertPathBuilder path_builder(
+      target, system_trust_store_->eutl_trust_store(), &path_builder_delegate,
+      der_verification_system_time, bssl::KeyPurpose::ANY_EKU,
+      bssl::InitialExplicitPolicy::kFalse, user_initial_policy_set,
+      bssl::InitialPolicyMappingInhibit::kFalse,
+      bssl::InitialAnyPolicyInhibit::kFalse);
+
+  // AIA is not supported here. ETSI TS 119 411-5 V2.1.1 Annex B defines the
+  // `x5c` as containing the signing certificate and full chain, so if
+  // intermediates are not already provided the 2-QWAC is not spec-compliant.
+  path_builder.AddCertIssuerSource(&intermediates);
+  path_builder.SetIterationLimit(kPathBuilderIterationLimit);
+  bssl::CertPathBuilder::Result qwac_result = path_builder.Run();
+
+  net_log.EndEvent(NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT,
+                   [&] { return NetLogPathBuilderResult(qwac_result); });
+
+  const bssl::CertPathBuilderResultPath* best_path_possibly_invalid =
+      qwac_result.GetBestPathPossiblyInvalid();
+
+  if (!best_path_possibly_invalid) {
+    verify_result->cert_status |= CERT_STATUS_AUTHORITY_INVALID;
+  } else {
+    if (!best_path_possibly_invalid->IsValid()) {
+      VLOG(1) << "Verify2QwacInternal for " << hostname << " failed:\n"
+              << best_path_possibly_invalid->errors.ToDebugString(
+                     best_path_possibly_invalid->certs);
+    }
+    verify_result->verified_cert =
+        CreateVerifiedCertChain(input_cert, *best_path_possibly_invalid);
+    AppendPublicKeyHashes(*best_path_possibly_invalid,
+                          &verify_result->public_key_hashes);
+    MapPathBuilderErrorsToCertStatus(best_path_possibly_invalid->errors,
+                                     &verify_result->cert_status);
+  }
+
+  if (!qwac_result.HasValidPath()) {
+    CHECK(IsCertStatusError(verify_result->cert_status));
+  }
+
+  // ETSI TS 119 411-5 V2.1.1 - 6.1.2 step 4:
+  //   that the website domain name in question appears in the QWAC's subject
+  //   alternative name(s);
+  if (!input_cert->VerifyNameMatch(hostname)) {
+    verify_result->cert_status |= CERT_STATUS_COMMON_NAME_INVALID;
+  }
+
+  if (IsCertStatusError(verify_result->cert_status)) {
+    int rv = MapCertStatusToNetError(verify_result->cert_status);
+    HistogramVerify2QwacResult(MapErrorTo2QwacResult(rv));
+    return rv;
+  }
+
+  // TODO(crbug.com/392931070): is there any point in setting this? This method
+  // only ever returns OK if it is a valid 2-qwac anyway.
+  verify_result->cert_status |= CERT_STATUS_IS_QWAC;
+  HistogramVerify2QwacResult(Verify2QwacResult::kValid2Qwac);
+  return OK;
+}
+
 void CertVerifyProcBuiltin::MaybeVerify1QWAC(
     const bssl::CertPathBuilderResultPath* verified_path,
     const bssl::der::GeneralizedTime& der_verification_time,
@@ -1605,7 +1859,7 @@ void CertVerifyProcBuiltin::MaybeVerify1QWAC(
   // doing the full verification if the certificate doesn't even have the
   // policies. The verified user_constrained_policy_set will be checked by
   // QwacPathBuilderDelegateImpl.
-  QwacPoliciesStatus policy_status = GetQwacPoliciesStatus(target.get());
+  QwacPoliciesStatus policy_status = Get1QwacPoliciesStatus(target.get());
 
   QwacQcStatementsStatus qc_statement_status =
       GetQwacQcStatementsStatus(target.get());
@@ -1634,7 +1888,7 @@ void CertVerifyProcBuiltin::MaybeVerify1QWAC(
       bssl::der::Input(bssl::kAnyPolicyOid)};
   // TODO(crbug.com/392931068): does not implement deadlines (right now there is
   // no OS or network interaction, so this should be fine.)
-  QwacPathBuilderDelegateImpl path_builder_delegate(net_log);
+  OneQwacPathBuilderDelegateImpl path_builder_delegate(net_log);
 
   net_log.BeginEvent(NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT, [&] {
     base::Value::Dict results;

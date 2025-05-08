@@ -395,7 +395,8 @@ class SunfishBehavior : public CaptureModeBehavior {
     return true;
   }
   const std::u16string GetCaptureLabelRegionText() const override {
-    return l10n_util::GetStringUTF16(IDS_ASH_SUNFISH_CAPTURE_LABEL);
+    return l10n_util::GetStringUTF16(
+        IDS_ASH_SUNFISH_CAPTURE_LABEL_KEYBOARD_NAVIGATION);
   }
   const std::u16string GetActionButtonContainerTitle() const override {
     return l10n_util::GetStringUTF16(
@@ -681,7 +682,7 @@ const std::string CaptureModeBehavior::GetCaptureModeOpenAnnouncement() const {
   }
 
   return l10n_util::GetStringFUTF8(
-      IDS_ASH_SCREEN_CAPTURE_ALERT_OPEN,
+      IDS_ASH_SCREEN_CAPTURE_KEYBOARD_NAVIGATION_ALERT_OPEN,
       l10n_util::GetStringUTF16(capture_source_id),
       l10n_util::GetStringUTF16(
           controller->type() == CaptureModeType::kImage

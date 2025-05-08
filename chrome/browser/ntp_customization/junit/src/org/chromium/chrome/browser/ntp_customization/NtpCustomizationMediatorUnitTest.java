@@ -39,7 +39,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.feed.FeedFeatures;
@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -70,20 +69,17 @@ public class NtpCustomizationMediatorUnitTest {
     @Mock private PrefService mPrefService;
     @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
     @Mock private Profile mProfile;
-    @Mock private ProfileProvider mProfileProvider;
 
     private NtpCustomizationMediator mMediator;
     private Map<Integer, Integer> mViewFlipperMap;
     private ListContainerViewDelegate mListDelegate;
     private Context mContext;
-    private OneshotSupplierImpl<ProfileProvider> mSupplier;
+    private Supplier<Profile> mProfileSupplier;
 
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
-        mSupplier = new OneshotSupplierImpl<>();
-        mSupplier.set(mProfileProvider);
-        when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
+        mProfileSupplier = () -> mProfile;
         NtpCustomizationMediator.setPrefForTesting(mPrefService);
         FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
         FeedFeatures.setFakePrefsForTest(mPrefService);
@@ -93,7 +89,7 @@ public class NtpCustomizationMediatorUnitTest {
                         mBottomSheetContent,
                         mViewFlipperPropertyModel,
                         mContainerPropertyModel,
-                        mSupplier);
+                        mProfileSupplier);
         mViewFlipperMap = mMediator.getViewFlipperMapForTesting();
         mListDelegate = mMediator.createListDelegate();
     }
@@ -166,7 +162,7 @@ public class NtpCustomizationMediatorUnitTest {
         mMediator.showBottomSheet(bottomSheetType);
 
         verify(mViewFlipperPropertyModel).set(eq(LAYOUT_TO_DISPLAY), eq(viewFlipperIndex));
-        assertEquals(bottomSheetType, (int) mMediator.getCurrentBottomSheetForTesting());
+        assertEquals(bottomSheetType, (int) mMediator.getCurrentBottomSheetType());
     }
 
     @Test
@@ -214,7 +210,7 @@ public class NtpCustomizationMediatorUnitTest {
 
         // Verifies that hideContent() is called and mCurrentBottomSheet is set to null.
         verify(mBottomSheetController).hideContent(eq(mBottomSheetContent), eq(true));
-        assertNull(mMediator.getCurrentBottomSheetForTesting());
+        assertNull(mMediator.getCurrentBottomSheetType());
 
         // Verifies that showBottomSheet() is not called.
         verify(mViewFlipperPropertyModel, never()).set(eq(LAYOUT_TO_DISPLAY), anyInt());
@@ -225,14 +221,25 @@ public class NtpCustomizationMediatorUnitTest {
         mViewFlipperMap.put(BottomSheetType.MAIN, 10);
         mMediator.setCurrentBottomSheetForTesting(BottomSheetType.NTP_CARDS);
 
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
         mMediator.backPressOnCurrentBottomSheet();
 
         // Verifies that hideContent() is not called and showBottomSheet() is called to change the
         // value of mCurrentBottomSheet and to set the value of mPropertyModel.
         verify(mBottomSheetController, never())
                 .hideContent(any(BottomSheetContent.class), anyBoolean());
-        assertEquals(BottomSheetType.MAIN, (int) mMediator.getCurrentBottomSheetForTesting());
+        assertEquals(BottomSheetType.MAIN, (int) mMediator.getCurrentBottomSheetType());
         verify(mViewFlipperPropertyModel).set(eq(LAYOUT_TO_DISPLAY), eq(10));
+
+        // Verifies that the subtitle of the feed item in the main bottom sheet is updated properly.
+        verify(mContainerPropertyModel)
+                .set(eq(MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE), eq(R.string.text_on));
+
+        mMediator.setCurrentBottomSheetForTesting(BottomSheetType.NTP_CARDS);
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(false);
+        mMediator.backPressOnCurrentBottomSheet();
+        verify(mContainerPropertyModel)
+                .set(eq(MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE), eq(R.string.text_off));
     }
 
     @Test

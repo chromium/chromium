@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/privacy_sandbox/dialog_origin_marker.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -12,16 +13,24 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
 
-class BaseDialogTest : public InProcessBrowserTest {};
+namespace {
 
-IN_PROC_BROWSER_TEST_F(BaseDialogTest, PageLoads) {
+using PrivacySandboxBaseDialogTest = InProcessBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxBaseDialogTest, PageLoads) {
   GURL kUrl(chrome::kChromeUIPrivacySandboxBaseDialogURL);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+  // Verify the marker is absent when the URL is loaded directly in a tab, as
+  // opposed to being instantiated via the dialog view.
+  EXPECT_EQ(privacy_sandbox::DialogOriginMarker::FromWebContents(web_contents),
+            nullptr);
   ASSERT_TRUE(web_contents);
   EXPECT_EQ(web_contents->GetLastCommittedURL(), kUrl);
   EXPECT_FALSE(web_contents->IsCrashed());
   EXPECT_EQ(web_contents->GetTitle(),
             l10n_util::GetStringUTF16(IDS_SETTINGS_AD_PRIVACY_PAGE_TITLE));
 }
+
+}  // namespace

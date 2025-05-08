@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB_GROUP;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.USE_SHRINK_CLOSE_ANIMATION;
 
 import android.animation.Animator;
@@ -444,7 +445,7 @@ public class TabListItemAnimator extends SimpleItemAnimator {
     private static boolean shouldUseShrinkCloseAnimation(ViewHolder holder) {
         if (holder instanceof SimpleRecyclerViewAdapter.ViewHolder adapterHolder) {
             var model = adapterHolder.model;
-            if (model.get(CARD_TYPE) == TAB) {
+            if (model.get(CARD_TYPE) == TAB || model.get(CARD_TYPE) == TAB_GROUP) {
                 return model.get(USE_SHRINK_CLOSE_ANIMATION);
             }
         }

@@ -55,6 +55,20 @@ std::string ProxyLayerToString(ProxyLayer proxy_layer) {
   }
 }
 
+// Converts an IpProtectionTokenCountEvent enum value to its corresponding
+// string representation for histogram naming.
+std::string TokenCountEventToString(IpProtectionTokenCountEvent event) {
+  switch (event) {
+    case IpProtectionTokenCountEvent::kIssued:
+      return "Issued";
+    case IpProtectionTokenCountEvent::kSpent:
+      return "Spent";
+    case IpProtectionTokenCountEvent::kExpired:
+      return "Expired";
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 IpProtectionTelemetry& Telemetry() {
@@ -323,6 +337,25 @@ void IpProtectionTelemetryUma::ProbabilisticRevealTokenRandomizationTime(
 void IpProtectionTelemetryUma::QuicProxiesFailed(int after_requests) {
   base::UmaHistogramCounts1000("NetworkService.IpProtection.QuicProxiesFailed",
                                after_requests);
+}
+
+void IpProtectionTelemetryUma::RecordTokenCountEvent(
+    ProxyLayer layer,
+    IpProtectionTokenCountEvent event,
+    int count) {
+  // Construct the histogram name dynamically based on the layer and event type.
+  // Example: "NetworkService.IpProtection.ProxyA.TokenCount.Issued"
+  std::string histogram_name = base::StrCat({
+      "NetworkService.IpProtection.",
+      ProxyLayerToString(layer),
+      ".TokenCount.",
+      TokenCountEventToString(event),
+  });
+
+  // Using a maximum of 1000 counts, since the maximum number of tokens per
+  // event would generally be around the batch or cache size which is typically
+  // much less than 1000.
+  base::UmaHistogramCounts1000(histogram_name, count);
 }
 
 }  // namespace ip_protection

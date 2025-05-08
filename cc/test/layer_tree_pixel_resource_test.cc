@@ -69,6 +69,7 @@ LayerTreeHostPixelResourceTest::CreateRasterBufferProvider(
       EXPECT_FALSE(use_software_renderer());
 
       return std::make_unique<GpuRasterBufferProvider>(
+          worker_context_provider->SharedImageInterface(),
           compositor_context_provider, worker_context_provider,
           /*is_overlay_candidate=*/false, gfx::Size(),
           host_impl->GetRasterQueryQueueForTesting());
@@ -85,7 +86,8 @@ LayerTreeHostPixelResourceTest::CreateRasterBufferProvider(
       EXPECT_FALSE(use_software_renderer());
 
       return std::make_unique<OneCopyRasterBufferProvider>(
-          task_runner, compositor_context_provider, worker_context_provider,
+          worker_context_provider->SharedImageInterface(), task_runner,
+          compositor_context_provider, worker_context_provider,
           max_bytes_per_copy_operation, false,
           max_staging_buffer_usage_in_bytes,
           /*is_overlay_candidate=*/false);

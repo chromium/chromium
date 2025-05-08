@@ -1330,7 +1330,7 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundWithDecorationData(
 
 void BoxFragmentPainter::PaintGapDecorations(const PaintInfo& paint_info,
                                              const PhysicalRect& paint_rect) {
-  if (const GapGeometry* gap_geometry = box_fragment_.GapGeometry()) {
+  if (const GapGeometry* gap_geometry = box_fragment_.GetGapGeometry()) {
     EGapRulePaintOrder paint_order = box_fragment_.Style().GapRulePaintOrder();
     // `gap-rule-paint-order` dictates whether to paint the columns over the
     // rows, or the rows over the columns. The default is to paint the rows over
@@ -1414,6 +1414,11 @@ void BoxFragmentPainter::PaintGaps(GridTrackSizingDirection track_direction,
                   ? gap_geometry.GetGapIntersections(kForRows)
                   : gap_geometry.GetGapIntersections(kForColumns);
 
+          // The following logic is only valid for grid containers.
+          if (gap_geometry.GetContainerType() !=
+              GapGeometry::ContainerType::kGrid) {
+            return false;
+          }
           // Get the matching intersection in the cross direction by
           // swapping the indices. This transpose allows us determine if the
           // intersection is flanked by spanning items on opposing sides.
@@ -1479,6 +1484,7 @@ void BoxFragmentPainter::PaintGaps(GridTrackSizingDirection track_direction,
 
     wtf_size_t start = 0;
     const auto gap = gaps[gap_index];
+    CHECK(!gap.empty());
     const auto num_intersections = gap.size();
 
     // Gap decorations are painted relative to (start, end) pairs of gap
@@ -1693,7 +1699,7 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundForBlockInInline(
 // is implemented for multi-column.
 void BoxFragmentPainter::PaintColumnRules(const PaintInfo& paint_info,
                                           const PhysicalOffset& paint_offset) {
-  if (box_fragment_.GapGeometry()) {
+  if (box_fragment_.GetGapGeometry()) {
     return;
   }
 

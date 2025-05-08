@@ -10,6 +10,7 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/feature_engagement/test/test_tracker.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/features.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
@@ -110,6 +112,7 @@ class EventExporterTest : public PlatformTest {
     }
   }
 
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::WebTaskEnvironment task_environment_;
   base::RunLoop run_loop_;
   std::unique_ptr<feature_engagement::Tracker> tracker_;
@@ -466,6 +469,9 @@ TEST_F(EventExporterTest, TestNonModalMigrationInteractionConditionNotMet) {
 }
 
 TEST_F(EventExporterTest, TestSigninFullscreenPromoImpressionsMigration) {
+  if (!IsFullscreenSigninPromoManagerMigrationEnabled()) {
+    return;
+  }
   // No events to export.
   RequestExportEventsAndVerifyCallback();
   EXPECT_EQ(GetExportEventsCount(), 0);

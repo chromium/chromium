@@ -85,8 +85,7 @@ void AsyncAudioDecoder::DecodeOnBackgroundThread(
     const ExceptionContext& exception_context) {
   DCHECK(!IsMainThread());
   scoped_refptr<AudioBus> bus = AudioBus::CreateBusFromInMemoryAudioFile(
-      audio_data_contents.Data(), audio_data_contents.DataLength(), false,
-      sample_rate);
+      audio_data_contents.ByteSpan(), false, sample_rate);
 
   // A reference to `bus` is retained by base::OnceCallback and will be removed
   // after `NotifyComplete()` is done.

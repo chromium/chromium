@@ -9,6 +9,8 @@ import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.record
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.PermissionsModuleInteractions;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleOption;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
@@ -23,6 +25,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * SafetyHubExpandablePreference} with the unused site permissions service state. It also listens to
  * changes of this service, and updates the preference to reflect these.
  */
+@NullMarked
 public class SafetyHubPermissionsRevocationModuleMediator
         implements SafetyHubModuleMediator, UnusedSitePermissionsBridge.Observer {
     private final UnusedSitePermissionsBridge mUnusedSitePermissionsBridge;
@@ -131,13 +134,13 @@ public class SafetyHubPermissionsRevocationModuleMediator
         return mPreference.getContext().getString(R.string.safety_hub_permissions_warning_summary);
     }
 
-    private String getPrimaryButtonText() {
+    private @Nullable String getPrimaryButtonText() {
         return mRevokedPermissionsCount == 0
                 ? null
                 : mPreference.getContext().getString(R.string.got_it);
     }
 
-    private View.OnClickListener getPrimaryButtonListener() {
+    private View.@Nullable OnClickListener getPrimaryButtonListener() {
         if (mRevokedPermissionsCount == 0) {
             return null;
         }
@@ -156,7 +159,7 @@ public class SafetyHubPermissionsRevocationModuleMediator
                     Snackbar.UMA_SAFETY_HUB_REGRANT_MULTIPLE_PERMISSIONS,
                     new SnackbarManager.SnackbarController() {
                         @Override
-                        public void onAction(Object actionData) {
+                        public void onAction(@Nullable Object actionData) {
                             mUnusedSitePermissionsBridge.restoreRevokedPermissionsReviewList(
                                     (PermissionsData[]) actionData);
                             recordRevokedPermissionsInteraction(

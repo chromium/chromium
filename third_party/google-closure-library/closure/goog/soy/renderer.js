@@ -128,11 +128,7 @@ class Renderer {
    * @template ARG_TYPES
    */
   renderText(template, templateData = undefined) {
-    const result = template(templateData || {}, this.getInjectedData_());
-    asserts.assertString(
-        result,
-        'renderText was called with a template of kind other than "text"');
-    return String(result);
+    return soy.renderAsText(template, templateData, this.getInjectedData_());
   }
 
   /**

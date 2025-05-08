@@ -42,7 +42,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/ax_inspect_factory.h"
-#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
@@ -237,9 +236,7 @@ class PDFExtensionAccessibilityTest : public PDFExtensionTestBase {
 
   void EnableScreenReader() {
     // Spoof a screen reader.
-    mode_override_.emplace(ui::kAXModeComplete);
-    content::BrowserAccessibilityState::GetInstance()->SetScreenReaderAppActive(
-        true);
+    mode_override_.emplace(ui::kAXModeDefaultForTests);
   }
 
   void TearDownOnMainThread() override {

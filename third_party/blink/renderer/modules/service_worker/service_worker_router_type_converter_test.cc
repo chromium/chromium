@@ -98,7 +98,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, Basic) {
     auto parse_result = liburlpattern::Parse(
         kFakeUrlPattern,
         [](std::string_view input) { return std::string(input); });
-    ASSERT_TRUE(parse_result.ok());
+    ASSERT_TRUE(parse_result.has_value());
     expected_url_pattern.pathname = parse_result.value().PartList();
   }
   expected_rule.condition =
@@ -146,21 +146,21 @@ TEST(ServiceWorkerRouterTypeConverterTest, BasicURLPatternInit) {
     auto parse_result = liburlpattern::Parse(
         kFakeProtoPattern,
         [](std::string_view input) { return std::string(input); });
-    ASSERT_TRUE(parse_result.ok());
+    ASSERT_TRUE(parse_result.has_value());
     expected_url_pattern.protocol = parse_result.value().PartList();
   }
   {
     auto parse_result = liburlpattern::Parse(
         kFakeHostPattern,
         [](std::string_view input) { return std::string(input); });
-    ASSERT_TRUE(parse_result.ok());
+    ASSERT_TRUE(parse_result.has_value());
     expected_url_pattern.hostname = parse_result.value().PartList();
   }
   {
     auto parse_result = liburlpattern::Parse(
         kFakePathPattern,
         [](std::string_view input) { return std::string(input); });
-    ASSERT_TRUE(parse_result.ok());
+    ASSERT_TRUE(parse_result.has_value());
     expected_url_pattern.pathname = parse_result.value().PartList();
   }
   expected_rule.condition =
@@ -211,14 +211,14 @@ TEST(ServiceWorkerRouterTypeConverterTest, URLPatternInitWithEmptyProtocol) {
     auto parse_result = liburlpattern::Parse(
         kFakeHostPattern,
         [](std::string_view input) { return std::string(input); });
-    ASSERT_TRUE(parse_result.ok());
+    ASSERT_TRUE(parse_result.has_value());
     expected_url_pattern.hostname = parse_result.value().PartList();
   }
   {
     auto parse_result = liburlpattern::Parse(
         kFakePathPattern,
         [](std::string_view input) { return std::string(input); });
-    ASSERT_TRUE(parse_result.ok());
+    ASSERT_TRUE(parse_result.has_value());
     expected_url_pattern.pathname = parse_result.value().PartList();
   }
   expected_rule.condition =
@@ -267,14 +267,14 @@ TEST(ServiceWorkerRouterTypeConverterTest, URLPatternInitWithEmptyPathname) {
     auto parse_result = liburlpattern::Parse(
         kFakeProtoPattern,
         [](std::string_view input) { return std::string(input); });
-    ASSERT_TRUE(parse_result.ok());
+    ASSERT_TRUE(parse_result.has_value());
     expected_url_pattern.protocol = parse_result.value().PartList();
   }
   {
     auto parse_result = liburlpattern::Parse(
         kFakeHostPattern,
         [](std::string_view input) { return std::string(input); });
-    ASSERT_TRUE(parse_result.ok());
+    ASSERT_TRUE(parse_result.has_value());
     expected_url_pattern.hostname = parse_result.value().PartList();
   }
   {
@@ -284,7 +284,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, URLPatternInitWithEmptyPathname) {
     auto parse_result = liburlpattern::Parse(
         kFakeBaseURLPathname,
         [](std::string_view input) { return std::string(input); });
-    ASSERT_TRUE(parse_result.ok());
+    ASSERT_TRUE(parse_result.has_value());
     expected_url_pattern.pathname = parse_result.value().PartList();
   }
   expected_rule.condition =
@@ -411,7 +411,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, Race) {
     auto parse_result = liburlpattern::Parse(
         kFakeUrlPattern,
         [](std::string_view input) { return std::string(input); });
-    ASSERT_TRUE(parse_result.ok());
+    ASSERT_TRUE(parse_result.has_value());
     expected_url_pattern.pathname = parse_result.value().PartList();
   }
   expected_rule.condition =
@@ -452,7 +452,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, FetchEvent) {
     auto parse_result = liburlpattern::Parse(
         kFakeUrlPattern,
         [](std::string_view input) { return std::string(input); });
-    ASSERT_TRUE(parse_result.ok());
+    ASSERT_TRUE(parse_result.has_value());
     expected_url_pattern.pathname = parse_result.value().PartList();
   }
   expected_rule.condition =
@@ -494,7 +494,7 @@ TEST(ServiceWorkerRouterTypeConverterTest,
     auto parse_result = liburlpattern::Parse(
         kFakeUrlPattern,
         [](std::string_view input) { return std::string(input); });
-    ASSERT_TRUE(parse_result.ok());
+    ASSERT_TRUE(parse_result.has_value());
     expected_url_pattern.pathname = parse_result.value().PartList();
   }
   expected_rule.condition =
@@ -908,7 +908,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, Cache) {
     auto parse_result = liburlpattern::Parse(
         kFakeUrlPattern,
         [](std::string_view input) { return std::string(input); });
-    ASSERT_TRUE(parse_result.ok());
+    ASSERT_TRUE(parse_result.has_value());
     expected_url_pattern.pathname = parse_result.value().PartList();
   }
   expected_rule.condition =
@@ -949,7 +949,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, CacheName) {
     auto parse_result = liburlpattern::Parse(
         kFakeUrlPattern,
         [](std::string_view input) { return std::string(input); });
-    ASSERT_TRUE(parse_result.ok());
+    ASSERT_TRUE(parse_result.has_value());
     expected_url_pattern.pathname = parse_result.value().PartList();
   }
   expected_rule.condition =

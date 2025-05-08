@@ -143,6 +143,10 @@ bool IsSupportedJavascriptMimeType(std::string_view mime_type) {
   return kSupportedJavascriptTypes.contains(mime_type);
 }
 
+bool IsWasmMIMEType(std::string_view mime_type) {
+  return net::MatchesMimeType("application/wasm", mime_type);
+}
+
 // TODO(crbug.com/362282752): Allow non-application `*/*+json` MIME types.
 // https://mimesniff.spec.whatwg.org/#json-mime-type
 bool IsJSONMimeType(std::string_view mime_type) {

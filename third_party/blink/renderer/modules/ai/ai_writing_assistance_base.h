@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
+#include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/ai_writing_assistance_create_client.h"
 #include "third_party/blink/renderer/modules/ai/availability.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
@@ -31,6 +32,53 @@ class SequencedTaskRunner;
 }  // namespace base
 
 namespace blink {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(WritingAssistanceMetricsOptionType)
+enum class WritingAssistanceMetricsOptionType {
+  kTldr = 0,
+  kKeyPoints = 1,
+  kTeaser = 2,
+  kHeadline = 3,
+  kMaxValue = kHeadline,
+
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:WritingAssistanceMetricsOptionType)
+
+// LINT.IfChange(WritingAssistanceMetricsOptionTone)
+enum class WritingAssistanceMetricsOptionTone {
+  kAsIs = 0,
+  kNeutral = 1,
+  kMoreFormal = 2,
+  kMoreCasual = 3,
+  kFormal = 4,
+  kCasual = 5,
+  kMaxValue = kCasual,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:WritingAssistanceMetricsOptionTone)
+
+// LINT.IfChange(WritingAssistanceMetricsOptionFormat)
+enum class WritingAssistanceMetricsOptionFormat {
+  kPlainText = 0,
+  kAsIs = 1,
+  kMarkdown = 2,
+  kMaxValue = kMarkdown,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:WritingAssistanceMetricsOptionFormat)
+
+// LINT.IfChange(WritingAssistanceMetricsOptionLength)
+enum class WritingAssistanceMetricsOptionLength {
+  kShort = 0,
+  kMedium = 1,
+  kLong = 2,
+  kAsIs = 3,
+  kShorter = 4,
+  kLonger = 5,
+  kMaxValue = kLonger,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:WritingAssistanceMetricsOptionLength)
 
 class ReadableStream;
 
@@ -75,6 +123,11 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
       ThrowInvalidContextException(exception_state);
       return ScriptPromise<V8Availability>();
     }
+    CHECK(options);
+    if (!ValidateAndCanonicalizeOptionLanguages(script_state->GetIsolate(),
+                                                options)) {
+      return ScriptPromise<V8Availability>();
+    }
 
     auto* resolver =
         MakeGarbageCollected<ScriptPromiseResolver<V8Availability>>(
@@ -99,7 +152,7 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
       RejectPromiseWithInternalError(resolver);
       return promise;
     }
-
+    RecordCreateOptionMetrics(*options, "availability");
     RemoteCanCreate(
         ai_manager_remote, options,
         WTF::BindOnce(
@@ -123,6 +176,11 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
       return ScriptPromise<V8SessionObjectType>();
     }
     CHECK(options);
+    if (!ValidateAndCanonicalizeOptionLanguages(script_state->GetIsolate(),
+                                                options)) {
+      return ScriptPromise<V8SessionObjectType>();
+    }
+
     auto* resolver =
         MakeGarbageCollected<ScriptPromiseResolver<V8SessionObjectType>>(
             script_state);
@@ -154,7 +212,7 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
       RejectPromiseWithInternalError(resolver);
       return promise;
     }
-
+    RecordCreateOptionMetrics(*options, "create");
     MakeGarbageCollected<AIWritingAssistanceCreateClient<
         AIMojoClient, AIMojoCreateClient, CreateOptions, V8SessionObjectType>>(
         script_state, resolver, options)
@@ -363,6 +421,10 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
   // Returns permission policy feature for session type.
   static network::mojom::PermissionsPolicyFeature GetPermissionsPolicy();
 
+  // Record metrics for options when creating or using a session.
+  static void RecordCreateOptionMetrics(const CreateCoreOptions& options,
+                                        std::string function_name);
+
   // Runs CanCreate* for the session type; defined in template specializations.
   static void RemoteCanCreate(
       HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote,
@@ -373,6 +435,39 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
   Member<CreateOptions> options_;
 
  private:
+  static bool ValidateAndCanonicalizeOptionLanguages(
+      v8::Isolate* isolate,
+      CreateCoreOptions* options) {
+    using LanguageList = std::optional<Vector<String>>;
+    if (options->hasExpectedContextLanguages()) {
+      LanguageList result = ValidateAndCanonicalizeBCP47Languages(
+          isolate, options->expectedContextLanguages());
+      if (!result) {
+        return false;
+      }
+      options->setExpectedContextLanguages(*result);
+    }
+
+    if (options->hasExpectedInputLanguages()) {
+      LanguageList result = ValidateAndCanonicalizeBCP47Languages(
+          isolate, options->expectedInputLanguages());
+      if (!result) {
+        return false;
+      }
+      options->setExpectedInputLanguages(*result);
+    }
+
+    if (options->hasOutputLanguage()) {
+      LanguageList result = ValidateAndCanonicalizeBCP47Languages(
+          isolate, {options->outputLanguage()});
+      if (!result) {
+        return false;
+      }
+      options->setOutputLanguage((*result)[0]);
+    }
+    return true;
+  }
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   AIMetrics::AISessionType metric_session_type_;
   // Whether to echo back the original input if it only contains whitespace.

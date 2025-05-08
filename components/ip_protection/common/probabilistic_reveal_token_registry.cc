@@ -9,6 +9,7 @@
 #include "base/containers/flat_set.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/values.h"
+#include "net/base/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 
@@ -18,7 +19,16 @@ namespace {
 constexpr char kDomainsFieldName[] = "domains";
 }  // namespace
 
-ProbabilisticRevealTokenRegistry::ProbabilisticRevealTokenRegistry() = default;
+ProbabilisticRevealTokenRegistry::ProbabilisticRevealTokenRegistry() {
+  if (net::features::kUseCustomProbabilisticRevealTokenRegistry.Get()) {
+    std::string custom_registry_csv =
+        net::features::kCustomProbabilisticRevealTokenRegistry.Get();
+    base::StringTokenizer registry_tokenizer(custom_registry_csv, ",");
+    while (registry_tokenizer.GetNext()) {
+      custom_domains_.insert(base::ToLowerASCII(registry_tokenizer.token()));
+    }
+  }
+}
 
 ProbabilisticRevealTokenRegistry::~ProbabilisticRevealTokenRegistry() = default;
 
@@ -38,6 +48,10 @@ bool ProbabilisticRevealTokenRegistry::IsRegistered(const GURL& request_url) {
   // Remove the trailing dot if it exists.
   if (request_domain.size() > 0 && request_domain.back() == '.') {
     request_domain = request_domain.substr(0, request_domain.length() - 1);
+  }
+
+  if (net::features::kUseCustomProbabilisticRevealTokenRegistry.Get()) {
+    return custom_domains_.contains(base::ToLowerASCII(request_domain));
   }
 
   return domains_.contains(base::ToLowerASCII(request_domain));

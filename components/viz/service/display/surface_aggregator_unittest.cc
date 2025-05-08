@@ -465,7 +465,7 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
     const gfx::PointF kUVBottomRight(1.0f, 1.0f);
     quad->SetNew(shared_state, output_rect, output_rect,
                  false /*needs_blending*/, ResourceId(1),
-                 false /*premultiplied_alpha*/, kUVTopLeft, kUVBottomRight,
+                 true /*premultiplied_alpha*/, kUVTopLeft, kUVBottomRight,
                  SkColors::kTransparent, false /*nearest_neighbor*/,
                  false /*secure_output_only*/, gfx::ProtectedVideoType::kClear);
 
@@ -5839,7 +5839,7 @@ CompositorFrame BuildCompositorFrameWithResources(
     const gfx::Rect rect;
     const gfx::Rect visible_rect;
     bool needs_blending = false;
-    bool premultiplied_alpha = false;
+    bool premultiplied_alpha = true;
     const gfx::PointF uv_top_left;
     const gfx::PointF uv_bottom_right;
     SkColor4f background_color = SkColors::kGreen;
@@ -6234,9 +6234,6 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ColorSpaceTestWin) {
   passes[1].damage_rect = partial_damage_rect;
   passes[0].damage_rect = child_pass_damage_rect;
 
-  const bool has_color_conversion_pass =
-      !base::FeatureList::IsEnabled(features::kColorConversionInRenderer);
-
   // The root pass of HDR content with a transparent background will get an
   // extra RenderPass converting to SCRGB-linear, if any content drawn to the
   // root pass requires blending.
@@ -6250,22 +6247,14 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ColorSpaceTestWin) {
 
     auto aggregated_frame = AggregateFrame(surface_id);
 
-    EXPECT_EQ(has_color_conversion_pass ? 3u : 2u,
-              aggregated_frame.render_pass_list.size());
+    EXPECT_EQ(2u, aggregated_frame.render_pass_list.size());
     EXPECT_EQ(gfx::ContentColorUsage::kHDR,
               aggregated_frame.render_pass_list[0]->content_color_usage);
     EXPECT_EQ(gfx::ContentColorUsage::kHDR,
               aggregated_frame.render_pass_list[1]->content_color_usage);
-    if (has_color_conversion_pass) {
-      EXPECT_EQ(gfx::ContentColorUsage::kHDR,
-                aggregated_frame.render_pass_list[2]->content_color_usage);
-    }
 
     // All passes will have full damage for the first frame.
-    if (has_color_conversion_pass) {
-      EXPECT_EQ(full_damage_rect,
-                aggregated_frame.render_pass_list[2]->damage_rect);
-    }
+
     EXPECT_EQ(full_damage_rect,
               aggregated_frame.render_pass_list[1]->damage_rect);
     EXPECT_EQ(full_damage_rect,
@@ -6285,25 +6274,12 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ColorSpaceTestWin) {
 
     auto aggregated_frame = AggregateFrame(surface_id);
 
-    EXPECT_EQ(has_color_conversion_pass ? 3u : 2u,
-              aggregated_frame.render_pass_list.size());
+    EXPECT_EQ(2u, aggregated_frame.render_pass_list.size());
     EXPECT_EQ(gfx::ContentColorUsage::kHDR,
               aggregated_frame.render_pass_list[0]->content_color_usage);
     EXPECT_EQ(gfx::ContentColorUsage::kHDR,
               aggregated_frame.render_pass_list[1]->content_color_usage);
-    if (has_color_conversion_pass) {
-      EXPECT_EQ(gfx::ContentColorUsage::kHDR,
-                aggregated_frame.render_pass_list[2]->content_color_usage);
-    }
 
-    if (has_color_conversion_pass) {
-      // The root pass (drawn to the backbuffer) and the intermediate pass
-      // (drawn to extended-sRGB) will now have partial damage. Note that the
-      // root pass will end up getting full damage due to the
-      // OutputSurface::Reshape call that will be made by DirectRenderer.
-      EXPECT_EQ(partial_damage_rect,
-                aggregated_frame.render_pass_list[2]->damage_rect);
-    }
     EXPECT_EQ(partial_damage_rect,
               aggregated_frame.render_pass_list[1]->damage_rect);
   }
@@ -6330,15 +6306,8 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ColorSpaceTestWin) {
     EXPECT_EQ(gfx::ContentColorUsage::kHDR,
               aggregated_frame.render_pass_list[1]->content_color_usage);
 
-    if (has_color_conversion_pass) {
-      // The root pass has full damage because the intermediate pass was
-      // removed.
-      EXPECT_EQ(full_damage_rect,
-                aggregated_frame.render_pass_list[1]->damage_rect);
-    } else {
-      EXPECT_EQ(partial_damage_rect,
-                aggregated_frame.render_pass_list[1]->damage_rect);
-    }
+    EXPECT_EQ(partial_damage_rect,
+              aggregated_frame.render_pass_list[1]->damage_rect);
   }
 
   // This simulates the situation where we don't have HDR capabilities. Opaque
@@ -6393,29 +6362,14 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ColorSpaceTestWin) {
 
     auto aggregated_frame = AggregateFrame(surface_id);
 
-    EXPECT_EQ(has_color_conversion_pass ? 3u : 2u,
-              aggregated_frame.render_pass_list.size());
+    EXPECT_EQ(2u, aggregated_frame.render_pass_list.size());
     EXPECT_EQ(gfx::ContentColorUsage::kHDR,
               aggregated_frame.render_pass_list[0]->content_color_usage);
     EXPECT_EQ(gfx::ContentColorUsage::kHDR,
               aggregated_frame.render_pass_list[1]->content_color_usage);
-    if (has_color_conversion_pass) {
-      EXPECT_EQ(gfx::ContentColorUsage::kHDR,
-                aggregated_frame.render_pass_list[2]->content_color_usage);
-    }
 
-    if (has_color_conversion_pass) {
-      // The root (drawn to backbuffer) and intermediate (drawn to
-      // extended-sRGB) passes have full damage because they were added this
-      // frame.
-      EXPECT_EQ(full_damage_rect,
-                aggregated_frame.render_pass_list[2]->damage_rect);
-      EXPECT_EQ(full_damage_rect,
-                aggregated_frame.render_pass_list[1]->damage_rect);
-    } else {
-      EXPECT_EQ(partial_damage_rect,
-                aggregated_frame.render_pass_list[1]->damage_rect);
-    }
+    EXPECT_EQ(partial_damage_rect,
+              aggregated_frame.render_pass_list[1]->damage_rect);
   }
 }
 
@@ -7861,8 +7815,8 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, PerQuadDamageSameSharedQuadState) {
     const gfx::PointF kUVBottomRight(1.0f, 1.0f);
     texure_quad->SetNew(
         sqs, quad_rects[i], quad_rects[i], false /*needs_blending*/,
-        ResourceId(1), false /*premultiplied_alpha*/, kUVTopLeft,
-        kUVBottomRight, SkColors::kTransparent, false /*nearest_neighbor*/,
+        ResourceId(1), true /*premultiplied_alpha*/, kUVTopLeft, kUVBottomRight,
+        SkColors::kTransparent, false /*nearest_neighbor*/,
         false /*secure_output_only*/, gfx::ProtectedVideoType::kClear);
 
     texure_quad->damage_rect = damage_rects[i];

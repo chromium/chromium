@@ -391,6 +391,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
         base::sequence_manager::SequenceManagerForTest::Create(
             nullptr, test_task_runner_, test_task_runner_->GetMockTickClock(),
             base::sequence_manager::SequenceManager::Settings::Builder()
+                .SetShouldSampleCPUTime(true)
                 .SetPrioritySettings(CreatePrioritySettings())
                 .Build())));
 
@@ -3285,6 +3286,7 @@ class MainThreadSchedulerImplWithInitalVirtualTimeTest
                 nullptr, test_task_runner_,
                 test_task_runner_->GetMockTickClock(),
                 base::sequence_manager::SequenceManager::Settings::Builder()
+                    .SetShouldSampleCPUTime(true)
                     .SetPrioritySettings(CreatePrioritySettings())
                     .Build()));
     main_thread_scheduler->EnableVirtualTime(

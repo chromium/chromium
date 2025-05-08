@@ -31,6 +31,14 @@ import java.security.spec.ECPoint;
 @RunWith(BaseRobolectricTestRunner.class)
 public class BrowserBoundKeyTest {
 
+    @Test
+    public void testReturnsIdentifier() {
+        byte[] identifier = new byte[] {0x10, 0x11, 0x12, 0x13};
+        BrowserBoundKey browserBoundKey = new BrowserBoundKey(identifier, /* keyPair= */ null);
+
+        assertArrayEquals(new byte[] {0x10, 0x11, 0x12, 0x13}, browserBoundKey.getIdentifier());
+    }
+
     // TODO(crbug.com/377278827): Create a test with an imported known key and literal signature
     // comparison.
     // TODO(crbug.com/377278827): Test with more algorithms than only ES256.
@@ -41,7 +49,8 @@ public class BrowserBoundKeyTest {
         // Use any parameter spec with 256bit size for this test.
         keyPairGenerator.initialize(new ECGenParameterSpec("prime256v1"));
         KeyPair keyPair = keyPairGenerator.generateKeyPair();
-        BrowserBoundKey browserBoundKey = new BrowserBoundKey(keyPair);
+        BrowserBoundKey browserBoundKey =
+                new BrowserBoundKey(/* identifier= */ new byte[0], keyPair);
         byte[] clientData = {0x01, 0x02, 0x03, 0x04};
 
         byte[] actualSignature = browserBoundKey.sign(clientData);
@@ -75,7 +84,9 @@ public class BrowserBoundKeyTest {
                 mockEcPublicKey(
                         new BigInteger(/* signum= */ 1, coordinate_with_leading_one),
                         new BigInteger(/* signum= */ 1, coordinate_with_leading_zero));
-        BrowserBoundKey bbk = new BrowserBoundKey(new KeyPair(publicKey, /* private= */ null));
+        BrowserBoundKey bbk =
+                new BrowserBoundKey(
+                        /* identifier= */ new byte[0], new KeyPair(publicKey, /* private= */ null));
 
         byte[] encodedKey = bbk.getPublicKeyAsCoseKey();
 
@@ -105,7 +116,9 @@ public class BrowserBoundKeyTest {
                 mockEcPublicKey(
                         new BigInteger(/* signum= */ 1, small_coordinate),
                         new BigInteger(/* signum= */ 1, small_coordinate));
-        BrowserBoundKey bbk = new BrowserBoundKey(new KeyPair(publicKey, /* private= */ null));
+        BrowserBoundKey bbk =
+                new BrowserBoundKey(
+                        /* identifier= */ new byte[0], new KeyPair(publicKey, /* private= */ null));
 
         byte[] encodedKey = bbk.getPublicKeyAsCoseKey();
 
@@ -118,7 +131,9 @@ public class BrowserBoundKeyTest {
     public void testEncodeCoseKeyReturnsNullOnNegativeCoordinate() {
         BigInteger negative_coordinate = BigInteger.valueOf(-1);
         ECPublicKey publicKey = mockEcPublicKey(negative_coordinate, negative_coordinate);
-        BrowserBoundKey bbk = new BrowserBoundKey(new KeyPair(publicKey, /* private= */ null));
+        BrowserBoundKey bbk =
+                new BrowserBoundKey(
+                        /* identifier= */ new byte[0], new KeyPair(publicKey, /* private= */ null));
 
         byte[] encodedKey = bbk.getPublicKeyAsCoseKey();
 
@@ -132,7 +147,9 @@ public class BrowserBoundKeyTest {
         large_coordinate_bytes[0] = 1;
         final BigInteger large_coordinate = new BigInteger(/* signum= */ 1, large_coordinate_bytes);
         ECPublicKey publicKey = mockEcPublicKey(large_coordinate, large_coordinate);
-        BrowserBoundKey bbk = new BrowserBoundKey(new KeyPair(publicKey, /* private= */ null));
+        BrowserBoundKey bbk =
+                new BrowserBoundKey(
+                        /* identifier= */ new byte[0], new KeyPair(publicKey, /* private= */ null));
 
         byte[] encodedKey = bbk.getPublicKeyAsCoseKey();
 

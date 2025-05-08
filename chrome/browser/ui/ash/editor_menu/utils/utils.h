@@ -83,6 +83,7 @@ inline constexpr int kBigEditorMenuMinWidthDip = 480;
 //
 gfx::Rect GetEditorMenuBounds(const gfx::Rect& anchor_view_bounds,
                               const views::View* target,
+                              const std::string& application_locale,
                               const CardType card_type = CardType::kDefault);
 
 }  // namespace chromeos::editor_menu

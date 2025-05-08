@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.11.0-alpha03" type="baseline" client="" dependencies="true" name="" variant="all" version="8.11.0-alpha03">
+<issues format="6" by="lint 8.11.0-alpha09" type="baseline" client="" dependencies="true" name="" variant="all" version="8.11.0-alpha09">
 
     <issue
         id="PictureInPictureIssue"
         message="An activity in this app supports picture-in-picture and the targetSdkVersion is 31 or above; it is therefore strongly recommended to call both `setAutoEnterEnabled(true)` and `setSourceRectHint(...)`"
-        errorLine1="  &lt;application android:name=&quot;org.chromium.chromecast.shell.CastApplication&quot; android:icon=&quot;@drawable/ic_settings_cast&quot;>"
+        errorLine1="  &lt;application android:name=&quot;org.chromium.chromecast.shell.CastBrowserApplication&quot; android:icon=&quot;@drawable/ic_settings_cast&quot;>"
         errorLine2="   ~~~~~~~~~~~">
         <location
             file="gen/chromecast/cast_browser_apk__lint/AndroidManifest.xml"

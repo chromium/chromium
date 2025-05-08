@@ -15,8 +15,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
+#include "chrome/browser/password_edit_dialog/android/password_edit_dialog_bridge_delegate.h"
 #include "chrome/browser/password_manager/android/access_loss/mock_password_access_loss_warning_bridge.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -25,6 +27,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/browser_ui/device_lock/android/device_lock_bridge.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
@@ -1502,5 +1505,54 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest, RecordsPromptShownWhenEnqueuing) {
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.FormSubmissionsVsSavePrompts",
       password_manager::metrics_util::SaveFlowStep::kSavePromptShown, 1);
+  DismissMessage(messages::DismissReason::UNKNOWN);
+}
+
+// Tests `IsUsingAccountStorage` returns false if the credential being
+// updated comes from the local storage, despite the user being signed in,
+// if the credential comes from the profile store.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       LocalCredentialNotUsingAccountStorage_DbDeprecationOn) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kLoginDbDeprecationAndroid);
+  profile()->GetPrefs()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
+  SetPendingCredentials(kUsername, kPassword, /*is_account_store=*/false);
+  auto form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
+                 /*update_password=*/true);
+  PasswordEditDialogBridgeDelegate* edit_dialog_delegate =
+      get_password_edit_dialog_bridge_delegate();
+
+  EXPECT_FALSE(edit_dialog_delegate->IsUsingAccountStorage(kUsername));
+
+  DismissMessage(messages::DismissReason::UNKNOWN);
+}
+
+// Tests `IsUsingAccountStorage` returns true if the crential comes from
+// the account store.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       CredentialUsingAccountStorage_DbDeprecationOn) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kLoginDbDeprecationAndroid);
+  profile()->GetPrefs()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
+  SetPendingCredentials(kUsername, kPassword, /*is_account_store=*/true);
+  auto form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
+                 /*update_password=*/true);
+  PasswordEditDialogBridgeDelegate* edit_dialog_delegate =
+      get_password_edit_dialog_bridge_delegate();
+
+  EXPECT_TRUE(edit_dialog_delegate->IsUsingAccountStorage(kUsername));
+
   DismissMessage(messages::DismissReason::UNKNOWN);
 }

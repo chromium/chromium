@@ -4,7 +4,7 @@
 
 //! Utilities to handle vendored third-party crates.
 
-use crate::config::BuildConfig;
+use crate::config::{BuildConfig, CrateConfig};
 use crate::deps;
 use crate::manifest;
 
@@ -322,8 +322,6 @@ pub fn collect_crate_files(
     config: &BuildConfig,
     include_targets: IncludeCrateTargets,
 ) -> Result<(VendoredCrate, CrateFiles)> {
-    let crate_config = config.per_crate_config.get(&p.crate_id().name);
-
     let mut files = CrateFiles::new();
 
     struct RootDir {
@@ -336,57 +334,26 @@ pub fn collect_crate_files(
         let lib_root = lib_target.root.parent().expect("lib target has no directory in its path");
         root_dirs.push(RootDir { path: lib_root.to_owned(), collect: CollectCrateFiles::Internal });
 
-        root_dirs.extend(
-            crate_config
-                .iter()
-                .flat_map(|crate_config| &crate_config.extra_src_roots)
-                .chain(&config.all_config.extra_src_roots)
-                .map(|path| RootDir {
-                    path: lib_root.join(path),
-                    collect: CollectCrateFiles::ExternalSourcesAndInputs,
-                }),
+        let mut extend_root_dirs = |entry_getter: &dyn Fn(&CrateConfig) -> &Vec<PathBuf>,
+                                    collect_kind| {
+            root_dirs.extend(
+                config
+                    .get_combined_set(&p.package_name, entry_getter)
+                    .into_iter()
+                    .map(|path| RootDir { path: lib_root.join(path), collect: collect_kind }),
+            );
+        };
+        extend_root_dirs(&|cfg| &cfg.extra_src_roots, CollectCrateFiles::ExternalSourcesAndInputs);
+        extend_root_dirs(&|cfg| &cfg.extra_input_roots, CollectCrateFiles::ExternalInputsOnly);
+        extend_root_dirs(
+            &|cfg| &cfg.extra_build_script_src_roots,
+            CollectCrateFiles::BuildScriptExternalSourcesAndInputs,
         );
-        root_dirs.extend(
-            crate_config
-                .iter()
-                .flat_map(|crate_config| &crate_config.extra_input_roots)
-                .chain(&config.all_config.extra_input_roots)
-                .map(|path| RootDir {
-                    path: lib_root.join(path),
-                    collect: CollectCrateFiles::ExternalInputsOnly,
-                }),
+        extend_root_dirs(
+            &|cfg| &cfg.extra_build_script_input_roots,
+            CollectCrateFiles::BuildScriptExternalInputsOnly,
         );
-        root_dirs.extend(
-            crate_config
-                .iter()
-                .flat_map(|crate_config| &crate_config.extra_build_script_src_roots)
-                .chain(&config.all_config.extra_build_script_src_roots)
-                .map(|path| RootDir {
-                    path: lib_root.join(path),
-                    collect: CollectCrateFiles::BuildScriptExternalSourcesAndInputs,
-                }),
-        );
-        root_dirs.extend(
-            crate_config
-                .iter()
-                .flat_map(|crate_config| &crate_config.extra_build_script_input_roots)
-                .chain(&config.all_config.extra_build_script_input_roots)
-                .map(|path| RootDir {
-                    path: lib_root.join(path),
-                    collect: CollectCrateFiles::BuildScriptExternalInputsOnly,
-                }),
-        );
-
-        root_dirs.extend(
-            crate_config
-                .iter()
-                .flat_map(|crate_config| &crate_config.native_libs_roots)
-                .chain(&config.all_config.native_libs_roots)
-                .map(|path| RootDir {
-                    path: lib_root.join(path),
-                    collect: CollectCrateFiles::LibsOnly,
-                }),
-        );
+        extend_root_dirs(&|cfg| &cfg.native_libs_roots, CollectCrateFiles::LibsOnly);
     }
     if include_targets == IncludeCrateTargets::LibAndBin {
         for bin in &p.bin_targets {
@@ -399,6 +366,13 @@ pub fn collect_crate_files(
     for root_dir in root_dirs {
         recurse_crate_files(&root_dir.path, &mut |filepath| {
             collect_crate_file(&mut files, root_dir.collect, filepath)
+        })
+        .with_context(|| {
+            format!(
+                "Failed to process `{}` path.  This path came from {} for {p}",
+                root_dir.path.display(),
+                root_dir.collect.as_origin_msg(),
+            )
         })?;
     }
     files.sort();
@@ -459,6 +433,24 @@ enum CollectCrateFiles {
     LibsOnly,
 }
 
+impl CollectCrateFiles {
+    fn as_origin_msg(&self) -> &'static str {
+        use CollectCrateFiles::*;
+        match self {
+            Internal => "crate metadata and sources",
+            ExternalSourcesAndInputs => "`extra_src_roots` entry in `gnrt_config.toml`",
+            ExternalInputsOnly => "`extra_input_roots` entry in `gnrt_config.toml`",
+            BuildScriptExternalSourcesAndInputs => {
+                "`extra_build_script_src_roots` entry in `gnrt_config.toml`"
+            }
+            BuildScriptExternalInputsOnly => {
+                "`extra_build_script_input_roots` entry in `gnrt_config.toml`"
+            }
+            LibsOnly => "`native_libs_roots` entry in `gnrt_config.toml`",
+        }
+    }
+}
+
 // Adds a `filepath` to `CrateFiles` depending on the type of file and the
 // `mode` of collection.
 fn collect_crate_file(files: &mut CrateFiles, mode: CollectCrateFiles, filepath: &Path) {
@@ -497,7 +489,8 @@ fn collect_crate_file(files: &mut CrateFiles, mode: CollectCrateFiles, filepath:
 /// The `path` may be a single file or a directory.
 pub fn recurse_crate_files(path: &Path, f: &mut dyn FnMut(&Path)) -> Result<()> {
     fn recurse(path: &Path, root: &Path, f: &mut dyn FnMut(&Path)) -> Result<()> {
-        let meta = std::fs::metadata(path).with_context(|| format!("missing path {:?}", path))?;
+        let meta = std::fs::metadata(path)
+            .with_context(|| format!("Couldn't read metadata of `{}`", path.display()))?;
         if !meta.is_dir() {
             // Working locally can produce files in tree that should not be considered, and
             // which are not part of the git repository.
@@ -517,8 +510,10 @@ pub fn recurse_crate_files(path: &Path, f: &mut dyn FnMut(&Path)) -> Result<()> 
             }
             f(path)
         } else {
-            for r in std::fs::read_dir(path).with_context(|| format!("dir at {:?}", path))? {
-                let entry = r?;
+            let context =
+                || format!("Couldn't read contents of the directory at `{}`", path.display(),);
+            for r in std::fs::read_dir(path).with_context(context)? {
+                let entry = r.with_context(context)?;
                 let path = entry.path();
                 recurse(&path, root, f)?;
             }

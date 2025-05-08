@@ -27,7 +27,9 @@ class PasswordFormManager;
 }  // namespace password_manager
 
 class ChangeFormSubmissionVerifier;
+class ChangePasswordFormFinder;
 class ChangePasswordFormWaiter;
+class ModelQualityLogsUploader;
 
 // This class controls password change process including acceptance of privacy
 // notice, opening of a new tab, navigation to the change password url, password
@@ -60,7 +62,7 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
     test_navigator_ = navigator;
   }
 
-  ChangePasswordFormWaiter* form_waiter() { return form_waiter_.get(); }
+  ChangePasswordFormFinder* form_finder() { return form_finder_.get(); }
 #endif
 
  private:
@@ -74,6 +76,7 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
   void OpenPasswordChangeTab() override;
 #endif
   void OnPasswordFormSubmission(content::WebContents* web_contents) override;
+  void OnOtpFieldDetected(content::WebContents* web_contents) override;
   void OnPrivacyNoticeAccepted() override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -92,7 +95,7 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
   // Updates `current_state_` and notifies `observers_`.
   void UpdateState(State new_state);
 
-  void OnPasswordChangeFormParsed(
+  void OnPasswordChangeFormFound(
       password_manager::PasswordFormManager* form_manager);
 
   void OnChangeFormSubmissionVerified(bool result);
@@ -111,6 +114,11 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
   base::WeakPtr<content::WebContents> executor_;
 
   State current_state_ = static_cast<State>(-1);
+
+  // Helper class which looks for a change password form.
+  std::unique_ptr<ChangePasswordFormFinder> form_finder_;
+  // Helper class which uploads model quality logs.
+  std::unique_ptr<ModelQualityLogsUploader> logs_uploader_;
 
   // Class which awaits for change password form to appear.
   std::unique_ptr<ChangePasswordFormWaiter> form_waiter_;

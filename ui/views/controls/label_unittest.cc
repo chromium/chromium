@@ -140,7 +140,8 @@ class LabelTest : public test::BaseControlTestWidget {
   ~LabelTest() override = default;
 
   void MockAXModeAdded() {
-    ui::AXMode mode = ui::AXPlatformForTest::GetInstance().GetProcessMode();
+    ui::AXMode mode =
+        ui::AXPlatformForTest::GetInstance().GetAccessibilityMode();
     widget()->OnAXModeAdded(mode);
   }
 

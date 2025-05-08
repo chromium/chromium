@@ -462,8 +462,8 @@ UNAuthorizationOptions AuthorizationOptions() {
 // this is a migration.
 + (void)ensureProvidesAppNotificationSettings:
     (UNNotificationSettings*)settings {
-  if (settings.authorizationStatus != UNAuthorizationStatusAuthorized ||
-      settings.authorizationStatus != UNAuthorizationStatusProvisional ||
+  if ((settings.authorizationStatus != UNAuthorizationStatusAuthorized &&
+       settings.authorizationStatus != UNAuthorizationStatusProvisional) ||
       settings.providesAppNotificationSettings) {
     // The app is not authorized yet, or the option is already enabled.
     return;

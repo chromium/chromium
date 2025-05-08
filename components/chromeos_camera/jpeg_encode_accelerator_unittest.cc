@@ -95,7 +95,7 @@ scoped_refptr<media::VideoFrame> GetVideoFrameFromGpuMemoryBuffer(
     gfx::GpuMemoryBuffer* buffer,
     gfx::Size size,
     media::VideoPixelFormat format) {
-  auto buffer_handle = buffer->CloneHandle().native_pixmap_handle;
+  auto buffer_handle = buffer->CloneHandle().native_pixmap_handle();
 
   size_t num_planes = media::VideoFrame::NumPlanes(format);
   std::vector<media::ColorPlaneLayout> planes(num_planes);

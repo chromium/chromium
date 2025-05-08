@@ -156,6 +156,22 @@ std::optional<size_t> RecentlyUsedFoldersComboModel::GetDefaultIndex() const {
   return it == items_.end() ? 0 : static_cast<int>(it - items_.begin());
 }
 
+std::optional<ui::ColorId>
+RecentlyUsedFoldersComboModel::GetDropdownForegroundColorIdAt(
+    size_t index) const {
+  switch (items_[index].type) {
+    case Item::TYPE_ACCOUNT_BOOKMARK_HEADING:
+    case Item::TYPE_DEVICE_BOOKMARK_HEADING:
+      return ui::kColorDisabledForeground;
+    case Item::TYPE_NODE:
+    case Item::TYPE_SEPARATOR:
+    case Item::TYPE_ALL_BOOKMARKS_NODE:
+    case Item::TYPE_CHOOSE_ANOTHER_FOLDER:
+      return std::nullopt;
+  }
+  NOTREACHED();
+}
+
 void RecentlyUsedFoldersComboModel::BookmarkModelLoaded(bool ids_reassigned) {}
 
 void RecentlyUsedFoldersComboModel::BookmarkModelBeingDeleted() {}

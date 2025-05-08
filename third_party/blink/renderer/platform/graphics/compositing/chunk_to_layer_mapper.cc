@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
@@ -63,10 +64,20 @@ void ChunkToLayerMapper::SwitchToChunkWithState(
 }
 
 gfx::Rect ChunkToLayerMapper::MapVisualRect(const gfx::Rect& rect) const {
-  if (rect.IsEmpty())
-    return gfx::Rect();
+  // It's possible for empty rects to map to non-empty rects due to filters.
+  if (has_filter_that_moves_pixels_ &&
+      RuntimeEnabledFeatures::EmptyReferenceFilterInvalidationEnabled())
+      [[unlikely]] {
+    return MapUsingGeometryMapper(rect);
+  }
 
-  if (has_filter_that_moves_pixels_) [[unlikely]] {
+  if (rect.IsEmpty()) {
+    return gfx::Rect();
+  }
+
+  if (has_filter_that_moves_pixels_ &&
+      !RuntimeEnabledFeatures::EmptyReferenceFilterInvalidationEnabled())
+      [[unlikely]] {
     return MapUsingGeometryMapper(rect);
   }
 

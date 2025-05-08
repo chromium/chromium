@@ -25,6 +25,7 @@ struct FlexItem {
            LayoutUnit base_content_size,
            MinMaxSizes main_axis_min_max_sizes,
            LayoutUnit main_axis_border_padding,
+           std::optional<LayoutUnit> max_content_contribution,
            PhysicalBoxStrut initial_margins,
            BoxStrut initial_scrollbars,
            uint8_t main_axis_auto_margin_count,
@@ -34,8 +35,7 @@ struct FlexItem {
            bool is_initial_block_size_indefinite,
            bool is_used_flex_basis_indefinite,
            bool depends_on_min_max_sizes,
-           bool is_horizontal_flow,
-           std::optional<LayoutUnit> max_content_contribution)
+           bool is_horizontal_flow)
       : block_node(block_node),
         item_index(item_index),
         flex_grow(flex_grow),
@@ -45,6 +45,7 @@ struct FlexItem {
             main_axis_min_max_sizes.ClampSizeToMinAndMax(base_content_size)),
         main_axis_min_max_sizes(main_axis_min_max_sizes),
         main_axis_border_padding(main_axis_border_padding),
+        max_content_contribution(max_content_contribution),
         initial_margins(initial_margins),
         initial_scrollbars(initial_scrollbars),
         main_axis_auto_margin_count(main_axis_auto_margin_count),
@@ -55,9 +56,7 @@ struct FlexItem {
         is_initial_block_size_indefinite(is_initial_block_size_indefinite),
         is_used_flex_basis_indefinite(is_used_flex_basis_indefinite),
         depends_on_min_max_sizes(depends_on_min_max_sizes),
-        is_horizontal_flow(is_horizontal_flow),
-        frozen(false),
-        max_content_contribution(max_content_contribution) {}
+        is_horizontal_flow(is_horizontal_flow) {}
 
   LayoutUnit HypotheticalMainAxisMarginBoxSize() const {
     return hypothetical_content_size + main_axis_border_padding +
@@ -107,6 +106,8 @@ struct FlexItem {
   const MinMaxSizes main_axis_min_max_sizes;
   const LayoutUnit main_axis_border_padding;
 
+  const std::optional<LayoutUnit> max_content_contribution;
+
   // `initial_margins` are the margins with auto-margins applied.
   // `initial_scrollbars` is the scrollbar state at the beginning of running
   // flex layout, so it can be compared to the final state.
@@ -123,14 +124,14 @@ struct FlexItem {
   const bool is_used_flex_basis_indefinite;
   const bool depends_on_min_max_sizes;
   const bool is_horizontal_flow;
-  bool frozen;
 
+  // Fields mutated within the line-flexer.
+  bool frozen = false;
   LayoutUnit flexed_content_size;
 
   // The above fields are used by the flex algorithm. The following fields, by
   // contrast, are just convenient storage.
   Member<const LayoutResult> layout_result;
-  std::optional<LayoutUnit> max_content_contribution;
 };
 
 }  // namespace blink

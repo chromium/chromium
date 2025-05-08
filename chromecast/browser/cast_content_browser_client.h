@@ -21,6 +21,7 @@
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/frame_tree_node_id.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/mojom/media_service.mojom.h"
 #include "media/mojo/mojom/renderer.mojom.h"
@@ -57,7 +58,7 @@ class MetricsService;
 namespace net {
 class SSLPrivateKey;
 class X509Certificate;
-}
+}  // namespace net
 
 namespace chromecast {
 class CastService;
@@ -79,7 +80,7 @@ class VideoGeometrySetterService;
 class VideoPlaneController;
 class VideoModeSwitcher;
 class VideoResolutionPolicy;
-}
+}  // namespace media
 
 namespace shell {
 class CastBrowserMainParts;
@@ -240,8 +241,8 @@ class CastContentBrowserClient
   std::unique_ptr<content::NavigationUIData> GetNavigationUIData(
       content::NavigationHandle* navigation_handle) override;
   bool ShouldEnableStrictSiteIsolation() override;
-  std::vector<std::unique_ptr<content::NavigationThrottle>>
-  CreateThrottlesForNavigation(content::NavigationHandle* handle) override;
+  void CreateThrottlesForNavigation(
+      content::NavigationThrottleRegistry& registry) override;
   void RegisterNonNetworkSubresourceURLLoaderFactories(
       int render_process_id,
       int render_frame_id,

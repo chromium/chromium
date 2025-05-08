@@ -111,7 +111,8 @@ bool SystemWebAppDelegate::IsAppEnabled() const {
   return true;
 }
 
-gfx::Rect SystemWebAppDelegate::GetDefaultBounds(Browser* browser) const {
+gfx::Rect SystemWebAppDelegate::GetDefaultBounds(
+    BrowserDelegate* browser) const {
   return {};
 }
 

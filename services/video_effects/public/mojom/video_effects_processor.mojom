@@ -10,6 +10,7 @@ import "media/mojo/mojom/media_types.mojom";
 
 // Returned as the active variant of `PostProcessResult` if the call to
 // `VideoEffectsProcessor::PostProcess()` failed.
+[EnableIf=enable_video_effects]
 enum PostProcessError {
   kUnknown = 1,
   // Returned when a postprocessor is no longer usable for some reason.
@@ -26,6 +27,7 @@ enum PostProcessError {
 
 // Returned as the active variant of `PostProcessResult` if the call to
 // `VideoEffectsProcessor::PostProcess()` succeeded.
+[EnableIf=enable_video_effects]
 struct PostProcessSuccess {
   // Describes the video frame placed into `result_frame_data` passed in to
   // the call to `VideoEffectsProcessor::PostProcess()`.
@@ -36,6 +38,7 @@ struct PostProcessSuccess {
 // `VideoEffectsProcessor::PostProcess()`.
 // TODO(crbug.com/40841428): Ideally, this should be replaced by a result<T, E>
 // where T is media.mojom.VideoFrameInfo and E is a PostProcessError.
+[EnableIf=enable_video_effects]
 union PostProcessResult {
   PostProcessError error;
   PostProcessSuccess success;
@@ -46,6 +49,7 @@ union PostProcessResult {
 // Capture Service to drive the post-processing of captured video frames; the
 // Video Capture Service itself is also hosted in a utility process, but with
 // no sandboxing.
+[EnableIf=enable_video_effects]
 interface VideoEffectsProcessor {
   // Runs post-processing of a single video frame. The configuration of video
   // effects is implicit to the processor - it is being driven by

@@ -439,6 +439,15 @@ std::optional<LayoutUnit> ResolveRowGapLength(const ComputedStyle&,
 LayoutUnit ResolveRowGapForMulticol(const ComputedStyle&,
                                     LayoutUnit available_size);
 
+// Return the used value of `item-tolerance` if it is a `<length-percentage>`.
+// Otherwise, if it's `normal`, whose resolution is algorithm-specific,
+// `std::nullopt` is returned.
+std::optional<LayoutUnit> ResolveItemToleranceLength(const ComputedStyle&,
+                                                     LayoutUnit available_size);
+
+LayoutUnit ResolveItemToleranceForMasonry(const ComputedStyle&,
+                                          const LogicalSize& available_size);
+
 CORE_EXPORT LayoutUnit ColumnInlineProgression(const ComputedStyle&,
                                                LayoutUnit available_size);
 
@@ -727,6 +736,10 @@ ComputeMinAndMaxContentContributionForTest(WritingMode writing_mode,
 // Otherwise, it returns std::nullopt and the caller has to compute the size
 // itself.
 std::optional<MinMaxSizesResult> CalculateMinMaxSizesIgnoringChildren(
+    const BlockNode&,
+    const BoxStrut& border_scrollbar_padding);
+
+LayoutUnit CalculateIntrinsicBlockSizeIgnoringChildren(
     const BlockNode&,
     const BoxStrut& border_scrollbar_padding);
 

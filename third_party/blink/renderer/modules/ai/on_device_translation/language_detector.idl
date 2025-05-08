@@ -11,7 +11,7 @@ dictionary LanguageDetectorCreateCoreOptions {
 
 dictionary LanguageDetectorCreateOptions : LanguageDetectorCreateCoreOptions {
   AbortSignal signal;
-  AICreateMonitorCallback monitor;
+  CreateMonitorCallback monitor;
 };
 
 dictionary LanguageDetectorDetectOptions {
@@ -24,7 +24,7 @@ dictionary LanguageDetectionResult {
 };
 
 [
-  Exposed=Window,
+  Exposed(Window LanguageDetectionAPI, Worker LanguageDetectionAPIForWorkers),
   RuntimeEnabled=LanguageDetectionAPI,
   SecureContext
 ]

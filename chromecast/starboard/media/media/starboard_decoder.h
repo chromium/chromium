@@ -24,8 +24,8 @@ namespace media {
 // logic common to all decoders. It manages interactions with Starboard and the
 // lifetime of buffers.
 //
-// This is an abstract class; child classes can implement InitializeInternal to
-// perform any necessary initialization logic.
+// This is an abstract class; child classes must implement InitializeInternal
+// and GetEncryptionScheme (see the function declarations for more information).
 //
 // All functions, including the constructor and destructor, must be called on
 // the same sequence (the media thread).
@@ -51,6 +51,12 @@ class StarboardDecoder {
   // Returns true if the decoder is initialized, false otherwise. After Stop(),
   // the decoder is no longer initialized.
   bool IsInitialized();
+
+  // Returns the encryption scheme for this decoder, or nullopt if the
+  // encryption scheme is not yet known.
+  //
+  // kUnencrypted will be returned if the content is known to not be encrypted.
+  virtual std::optional<EncryptionScheme> GetEncryptionScheme() = 0;
 
   // Called when a buffer has been processed by Starboard.
   void OnBufferWritten();

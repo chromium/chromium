@@ -7,16 +7,26 @@
 
 #import <UIKit/UIKit.h>
 
-#include "components/keyed_service/core/keyed_service.h"
+#import "base/memory/raw_ptr.h"
+#import "components/keyed_service/core/keyed_service.h"
+#import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 
-// A browser-context keyed service for glic.
+class AuthenticationService;
+
+// A browser-context keyed service for Glic.
 class GlicService : public KeyedService {
  public:
-  GlicService();
+  GlicService(AuthenticationService* auth_service);
   ~GlicService() override;
 
   // Presents the overlay on a given view controller.
-  void PresentOverlayOnViewController(UIViewController* base_view_controller);
+  void PresentOverlayOnViewController(
+      UIViewController* base_view_controller,
+      std::unique_ptr<optimization_guide::proto::PageContext> page_context);
+
+ private:
+  // AuthenticationService used to check if a user is signed in or not.
+  raw_ptr<AuthenticationService> auth_service_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_GLIC_MODEL_GLIC_SERVICE_H_

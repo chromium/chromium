@@ -22,7 +22,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.browser_ui.notifications.NotificationProxyUtils.NotificationEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -253,15 +252,9 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
     /** Helper method to run an runnable inside a scoped event. */
     private void runRunnable(@Nullable TraceEvent scopedEvent, Runnable runnable) {
         try (scopedEvent) {
-            NotificationProxyUtils.recordNotificationEventHistogram(
-                    NotificationEvent.NO_CALLBACK_START);
             runnable.run();
-            NotificationProxyUtils.recordNotificationEventHistogram(
-                    NotificationEvent.NO_CALLBACK_SUCCESS);
         } catch (Exception e) {
             Log.e(TAG, "unable to run a runnable.", e);
-            NotificationProxyUtils.recordNotificationEventHistogram(
-                    NotificationEvent.NO_CALLBACK_FAILED);
         }
     }
 
@@ -276,18 +269,12 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
             Callback<T> callback,
             T defaultValue) {
         T result;
-        @NotificationEvent int event;
         try (scopedEvent) {
-            NotificationProxyUtils.recordNotificationEventHistogram(
-                    NotificationEvent.HAS_CALLBACK_START);
             result = callable.call();
-            event = NotificationEvent.HAS_CALLBACK_SUCCESS;
         } catch (Exception e) {
             Log.e(TAG, "Unable to call method.", e);
-            event = NotificationEvent.HAS_CALLBACK_FAILED;
             result = defaultValue;
         }
-        NotificationProxyUtils.recordNotificationEventHistogram(event);
         T finalResult = result;
         PostTask.postTask(TaskTraits.UI_DEFAULT, () -> callback.onResult(finalResult));
     }

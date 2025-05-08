@@ -43,7 +43,7 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/mock_autofill_ai_delegate.h"
 #include "components/autofill/core/browser/integrators/compose/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/integrators/compose/mock_autofill_compose_delegate.h"
-#include "components/autofill/core/browser/integrators/mock_identity_credential_delegate.h"
+#include "components/autofill/core/browser/integrators/identity_credential/mock_identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/mock_autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/metrics/autofill_in_devtools_metrics.h"
@@ -792,7 +792,7 @@ TEST_F(AutofillExternalDelegateTest, AcceptedBnplEntry_FormIsFilled) {
   const uint64_t expected_amount = 50'000'000;
 
   EXPECT_CALL(*manager().GetPaymentsBnplManager(),
-              InitBnplFlow(expected_amount, _))
+              OnDidAcceptBnplSuggestion(expected_amount, _))
       .WillOnce(RunOnceCallback<1>(card));
   EXPECT_CALL(
       manager(),
@@ -1261,11 +1261,8 @@ TEST_F(AutofillExternalDelegateTest, TestVerifiedEmailSuggestion_Preview) {
 
   // Test preview.
   EXPECT_CALL(manager(),
-              FillOrPreviewField(mojom::ActionPersistence::kPreview,
-                                 mojom::FieldActionType::kReplaceAll,
-                                 HasQueriedFormId(), HasQueriedFieldId(), _,
-                                 SuggestionType::kIdentityCredential,
-                                 std::optional(EMAIL_ADDRESS)));
+              FillOrPreviewForm(mojom::ActionPersistence::kPreview,
+                                HasQueriedFormId(), IsQueriedFieldId(), _, _));
   external_delegate().DidSelectSuggestion(suggestion);
 }
 
@@ -1283,14 +1280,49 @@ TEST_F(AutofillExternalDelegateTest, TestVerifiedEmailSuggestion_Fill) {
 
   // Expect that the form filler gets notified.
   EXPECT_CALL(manager(),
-              FillOrPreviewField(mojom::ActionPersistence::kFill,
-                                 mojom::FieldActionType::kReplaceAll,
-                                 HasQueriedFormId(), HasQueriedFieldId(), _,
-                                 SuggestionType::kIdentityCredential,
-                                 std::optional(EMAIL_ADDRESS)));
+              FillOrPreviewForm(mojom::ActionPersistence::kFill,
+                                HasQueriedFormId(), IsQueriedFieldId(), _, _));
+  // Expect that the delegate gets notified.
+  EXPECT_CALL(mock, NotifySuggestionAccepted)
+      .WillOnce(::testing::WithArgs<1, 2>(
+          [](bool show_modal,
+             IdentityCredentialDelegate::OnFederatedTokenReceivedCallback
+                 callback) {
+            // Email verifications prompt the user
+            EXPECT_TRUE(show_modal);
+            // Pretend that the user has accepted the prompt
+            std::move(callback).Run(/*accepted=*/true);
+          }));
+
+  // Test fill.
+  external_delegate().DidAcceptSuggestion(suggestion,
+                                          SuggestionPosition{.row = 0});
+}
+
+// Test that an accepted verified email autofill suggestion will not fill the
+// form if the user later rejects the prompt.
+TEST_F(AutofillExternalDelegateTest,
+       TestVerifiedEmailSuggestion_PromptRejectedNoFill) {
+  IssueOnQuery();
+  const Suggestion suggestion = test::CreateAutofillSuggestion(
+      SuggestionType::kIdentityCredential, u"John Legend",
+      Suggestion::IdentityCredentialPayload());
+
+  // Set up a mock identity credential delegate.
+  MockIdentityCredentialDelegate mock;
+  ON_CALL(client(), GetIdentityCredentialDelegate).WillByDefault(Return(&mock));
 
   // Expect that the delegate gets notified.
-  EXPECT_CALL(mock, NotifySuggestionAccepted(suggestion, _));
+  EXPECT_CALL(mock, NotifySuggestionAccepted)
+      .WillOnce(::testing::WithArgs<1, 2>(
+          [](bool show_modal,
+             IdentityCredentialDelegate::OnFederatedTokenReceivedCallback
+                 callback) {
+            // Email verifications prompt the user
+            EXPECT_TRUE(show_modal);
+            // Pretend that the user has rejected the prompt
+            std::move(callback).Run(/*accepted=*/false);
+          }));
 
   // Test fill.
   external_delegate().DidAcceptSuggestion(suggestion,

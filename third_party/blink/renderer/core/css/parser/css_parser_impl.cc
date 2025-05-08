@@ -1646,7 +1646,11 @@ StyleRuleFontFeature* CSSParserImpl::ConsumeFontFeatureRule(
       if (!number_value) {
         return nullptr;
       }
-      parsed_numbers.push_back(number_value->GetIntValue());
+      std::optional<double> number = number_value->GetValueIfKnown();
+      if (!number.has_value()) {
+        return nullptr;
+      }
+      parsed_numbers.push_back(ClampTo<int>(number.value()));
     }
 
     const CSSParserToken& expected_semicolon = stream.Peek();
@@ -3074,8 +3078,9 @@ std::unique_ptr<Vector<KeyframeOffset>> CSSParserImpl::ConsumeKeyframeKeyList(
 
         auto stream_name = To<CSSIdentifierValue>(stream_name_percent->Item(0))
                                .ConvertTo<TimelineOffset::NamedRange>();
-        auto percent = To<CSSNumericLiteralValue>(stream_name_percent->Item(1))
-                           .GetFloatValue();
+        double percent =
+            To<CSSNumericLiteralValue>(stream_name_percent->Item(1))
+                .GetDoubleValue();
         result->push_back(KeyframeOffset(stream_name, percent / 100.0));
       }
     } else {

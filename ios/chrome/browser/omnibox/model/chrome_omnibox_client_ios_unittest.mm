@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/omnibox/model/chrome_omnibox_client_ios.h"
 
-#import "base/test/task_environment.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/feature_engagement/test/test_tracker.h"
 #import "components/omnibox/browser/autocomplete_provider.h"
@@ -18,6 +17,7 @@
 #import "ios/testing/nserror_util.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -57,7 +57,7 @@ class ChromeOmniboxClientIOSTest
   }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
 
   std::unique_ptr<TestWebLocationBar> web_location_bar_;
   std::unique_ptr<TestProfileIOS> profile_;

@@ -157,13 +157,74 @@ TEST_F(SkiaOutputSurfaceImplTest, MAYBE_EndPaint) {
       base::BindOnce([](bool* result) { *result = true; }, &on_finished_called);
   base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb;
 
-#if !BUILDFLAG(SKIA_USE_METAL)
+  gpu::SyncToken sync_token = PaintRootRenderPass(
+      output_rect, std::move(on_finished), std::move(return_release_fence_cb));
+  EXPECT_TRUE(sync_token.HasData());
+
+  // Copy the output
+  const gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
+  auto request = std::make_unique<CopyOutputRequest>(
+      CopyOutputRequest::ResultFormat::RGBA,
+      CopyOutputRequest::ResultDestination::kSystemMemory,
+      base::BindOnce(&SkiaOutputSurfaceImplTest::CopyRequestCallbackOnGpuThread,
+                     base::Unretained(this), output_rect, color_space));
+  request->set_result_task_runner(
+      TestGpuServiceHolder::GetInstance()->gpu_main_thread_task_runner());
+  copy_output::RenderPassGeometry geometry;
+  geometry.result_bounds = output_rect;
+  geometry.result_selection = output_rect;
+  geometry.sampling_bounds = output_rect;
+  geometry.readback_offset = gfx::Vector2d(0, 0);
+
+  output_surface_->CopyOutput(geometry, color_space, std::move(request),
+                              gpu::Mailbox());
+  output_surface_->SwapBuffersSkipped(kSurfaceRect);
+  output_surface_->Flush();
+  BlockMainThread();
+
+  // EndPaint draw is deferred until CopyOutput.
+  base::OnceClosure closure =
+      base::BindOnce(&SkiaOutputSurfaceImplTest::CheckSyncTokenOnGpuThread,
+                     base::Unretained(this), sync_token);
+
+  output_surface_->ScheduleGpuTaskForTesting(std::move(closure), {sync_token});
+  BlockMainThread();
+
+  // Let the cb to come back.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(on_finished_called);
+}
+
+// TODO(crbug.com/40922049): Re-enable this test
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_EndPaintReleaseFence DISABLED_EndPaintReleaseFence
+#else
+#define MAYBE_EndPaintReleaseFence EndPaintReleaseFence
+#endif
+TEST_F(SkiaOutputSurfaceImplTest, MAYBE_EndPaintReleaseFence) {
+  // Skip test for Skia Graphite
+  gpu::GrContextType gr_context_type =
+      GetGpuService()->gpu_preferences().gr_context_type;
+  if (gr_context_type == gpu::GrContextType::kGraphiteDawn ||
+      gr_context_type == gpu::GrContextType::kGraphiteMetal) {
+    GTEST_SKIP();
+  }
+  OutputSurface::ReshapeParams reshape_params;
+  reshape_params.size = kSurfaceRect.size();
+  output_surface_->Reshape(reshape_params);
+  constexpr gfx::Rect output_rect(0, 0, 10, 10);
+
+  bool on_finished_called = false;
+  base::OnceClosure on_finished =
+      base::BindOnce([](bool* result) { *result = true; }, &on_finished_called);
+  base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb;
+
   bool on_return_release_fence_called = false;
   // This callback is unsupported when using Metal.
   return_release_fence_cb = base::BindOnce(
       [](bool* result, gfx::GpuFenceHandle handle) { *result = true; },
       &on_return_release_fence_called);
-#endif  // !BUILDFLAG(SKIA_USE_METAL)
 
   gpu::SyncToken sync_token = PaintRootRenderPass(
       output_rect, std::move(on_finished), std::move(return_release_fence_cb));
@@ -202,9 +263,7 @@ TEST_F(SkiaOutputSurfaceImplTest, MAYBE_EndPaint) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(on_finished_called);
-#if !BUILDFLAG(SKIA_USE_METAL)
   EXPECT_TRUE(on_return_release_fence_called);
-#endif  // !BUILDFLAG(SKIA_USE_METAL)
 }
 
 // Draws two frames and calls Reshape() between the two frames changing the

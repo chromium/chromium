@@ -145,7 +145,6 @@ union AggregatableReportContribution {
 // on the type of contribution.
 struct PrivateAggregationRequest {
   AggregatableReportContribution contribution;
-  blink.mojom.AggregationServiceMode aggregation_mode;
   blink.mojom.DebugModeDetails debug_mode_details;
 };
 
@@ -154,7 +153,6 @@ struct PrivateAggregationRequest {
 // that condition is tracked outside this type).
 struct FinalizedPrivateAggregationRequest {
   blink.mojom.AggregatableReportHistogramContribution contribution;
-  blink.mojom.AggregationServiceMode aggregation_mode;
   blink.mojom.DebugModeDetails debug_mode_details;
 
   // If null, this contribution is unconditional. If populated, this

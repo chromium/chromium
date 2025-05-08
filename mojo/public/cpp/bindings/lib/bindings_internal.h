@@ -17,10 +17,8 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
-#include "mojo/public/cpp/bindings/interface_id.h"
-#include "mojo/public/cpp/bindings/lib/template_util.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/handle.h"
 

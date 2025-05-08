@@ -54,7 +54,8 @@
 #include "extensions/common/manifest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/preinstalled_apps.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #endif
 
@@ -73,8 +74,7 @@
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #else
-#include "chrome/browser/extensions/preinstalled_apps.h"
-#include "components/policy/core/common/device_local_account_type.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -869,7 +869,7 @@ void ExternalProviderImpl::CreateExternalProviders(
 #endif
   }
 
-#if !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
   // The pre-installed apps are installed as INTERNAL but use the external
   // extension installer codeflow.
   provider_list->push_back(std::make_unique<preinstalled_apps::Provider>(

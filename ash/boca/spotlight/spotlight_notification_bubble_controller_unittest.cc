@@ -44,6 +44,13 @@ TEST_F(SpotlightNotificationBubbleControllerTest, CanHideWidget) {
   EXPECT_FALSE(controller_->IsNotificationBubbleVisible());
 }
 
+TEST_F(SpotlightNotificationBubbleControllerTest, WidgetClosesOnSessionEnd) {
+  controller_->ShowNotificationBubble("Teacher");
+
+  controller_->OnSessionEnded();
+  EXPECT_FALSE(controller_->IsNotificationBubbleVisible());
+}
+
 TEST_F(SpotlightNotificationBubbleControllerTest,
        WidgetStartsInBottomRightCorner) {
   EXPECT_EQ(controller_->GetWidgetLocationForTesting(), WidgetLocation::kRight);

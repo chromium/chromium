@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.autofill.editors;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** A test-only observer for Editor UI. */
+@NullMarked
 public interface EditorObserverForTest {
     /** Called when edit dialog is showing. */
     void onEditorReadyToEdit();

@@ -38,6 +38,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/theme_tracking_image_view.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
@@ -344,5 +345,26 @@ gfx::ImageSkia CreateTiledGooglePayLogo(int width,
       /*x=*/0, /*y=*/0, width, height);
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+std::unique_ptr<views::View> CreateLabelAndTextfieldView(
+    const std::u16string& text) {
+  auto view_builder =
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .SetBetweenChildSpacing(
+              ChromeLayoutProvider::Get()->GetDistanceMetric(
+                  DISTANCE_RELATED_CONTROL_VERTICAL_SMALL));
+
+  view_builder.AddChild(views::Builder<views::Label>()
+                            .SetText(text)
+                            .SetTextContext(views::style::CONTEXT_LABEL)
+                            .SetTextStyle(views::style::STYLE_PRIMARY)
+                            .SetHorizontalAlignment(gfx::ALIGN_TO_HEAD));
+
+  view_builder.AddChild(
+      views::Builder<views::Textfield>().SetAccessibleName(text));
+
+  return std::move(view_builder).Build();
+}
 
 }  // namespace autofill

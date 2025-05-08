@@ -29,6 +29,8 @@ struct LocalDataItemModel {
   using DataId = std::variant<
       // BOOKMARKS.
       int64_t,  // bookmarks::BookmarkNode::id()
+      // READING_LIST.
+      GURL,
       // CONTACT_INFO, THEMES.
       std::string,
       // PASSWORDS.

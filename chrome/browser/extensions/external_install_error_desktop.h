@@ -106,7 +106,7 @@ class ExternalInstallErrorDesktop : public ExternalInstallError,
   std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt_;
 
   // The UI for the given error, which will take the form of either a menu
-  // alert or a bubble alert (depending on the |alert_type_|.
+  // alert or a bubble alert (depending on the `alert_type_`.
   std::unique_ptr<GlobalError> global_error_;
 
   // The WebstoreDataFetcher to use in order to populate the error with webstore

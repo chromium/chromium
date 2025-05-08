@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "ui/base/models/combobox_model.h"
 
@@ -29,13 +28,9 @@ class CountryComboboxModel : public ui::ComboboxModel {
 
   ~CountryComboboxModel() override;
 
-  // `filter` is passed each known country's country code. If `filter` returns
-  // true, an item for that country is added to the model (else it's omitted).
-  // Empty callback can be used to retain all countries.
   // `geo_ip_country_code` is used to determine the default choice of country.
   void SetCountries(
       const GeoIpCountryCode& geo_ip_country_code,
-      const base::RepeatingCallback<bool(const std::string&)>& filter,
       const std::string& app_locale);
 
   // ui::ComboboxModel implementation:

@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.search_resumption;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UserData;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -16,22 +18,24 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /** Helper class for the search suggestion module which shows search suggestions on NTP. */
+@NullMarked
 public class SearchResumptionUserData implements UserData {
     // The cached search suggestion results.
     static class SuggestionResult {
         private GURL mLastUrlToTrack;
-        private String[] mSuggestionTexts;
-        private GURL[] mSuggestionUrls;
-        private List<AutocompleteMatch> mSuggestions;
+        private String @Nullable [] mSuggestionTexts;
+        private GURL @Nullable [] mSuggestionUrls;
+        private @Nullable List<AutocompleteMatch> mSuggestions;
 
-        SuggestionResult(GURL gurl, String[] suggestionTexts, GURL[] suggestionUrls) {
+        SuggestionResult(
+                GURL gurl, String @Nullable [] suggestionTexts, GURL @Nullable [] suggestionUrls) {
             mLastUrlToTrack = gurl;
             mSuggestionTexts = suggestionTexts;
             mSuggestionUrls = suggestionUrls;
             mSuggestions = null;
         }
 
-        public SuggestionResult(GURL urlToTrack, List<AutocompleteMatch> suggestions) {
+        public SuggestionResult(GURL urlToTrack, @Nullable List<AutocompleteMatch> suggestions) {
             mLastUrlToTrack = urlToTrack;
             mSuggestions = suggestions;
             mSuggestionTexts = null;
@@ -42,15 +46,15 @@ public class SearchResumptionUserData implements UserData {
             return mLastUrlToTrack;
         }
 
-        String[] getSuggestionTexts() {
+        String @Nullable [] getSuggestionTexts() {
             return mSuggestionTexts;
         }
 
-        GURL[] getSuggestionUrls() {
+        GURL @Nullable [] getSuggestionUrls() {
             return mSuggestionUrls;
         }
 
-        List<AutocompleteMatch> getSuggestions() {
+        @Nullable List<AutocompleteMatch> getSuggestions() {
             return mSuggestions;
         }
     }
@@ -58,7 +62,7 @@ public class SearchResumptionUserData implements UserData {
     private static final Class<SearchResumptionUserData> USER_DATA_KEY =
             SearchResumptionUserData.class;
     private long mTimeStampMs = -1;
-    private SuggestionResult mCachedSuggestions;
+    private @Nullable SuggestionResult mCachedSuggestions;
 
     private static SearchResumptionUserData sInstance = new SearchResumptionUserData();
 
@@ -75,13 +79,17 @@ public class SearchResumptionUserData implements UserData {
 
     /**
      * Caches the fetched search suggestions.
+     *
      * @param tab: The tab which the suggestions live.
      * @param urlToTrack: The URL which the search suggestions are coming from.
      * @param suggestionTexts: The content texts of suggestions.
      * @param suggestionUrls: The URLs of the suggestions.
      */
     public void cacheSuggestions(
-            Tab tab, GURL urlToTrack, String[] suggestionTexts, GURL[] suggestionUrls) {
+            Tab tab,
+            GURL urlToTrack,
+            String @Nullable [] suggestionTexts,
+            GURL @Nullable [] suggestionUrls) {
         if (tab == null || !UrlUtilities.isNtpUrl(tab.getUrl())) return;
 
         SearchResumptionUserData searchResumptionUserData = get(tab);
@@ -96,11 +104,13 @@ public class SearchResumptionUserData implements UserData {
 
     /**
      * Caches the fetched search suggestions.
+     *
      * @param tab The tab which the suggestions live.
      * @param urlToTrack: The URL which the search suggestions are coming from.
      * @param suggestions: The suggestions fetched using Autocompelete API.
      */
-    public void cacheSuggestions(Tab tab, GURL urlToTrack, List<AutocompleteMatch> suggestions) {
+    public void cacheSuggestions(
+            Tab tab, GURL urlToTrack, @Nullable List<AutocompleteMatch> suggestions) {
         if (tab == null || !UrlUtilities.isNtpUrl(tab.getUrl())) return;
 
         SearchResumptionUserData searchResumptionUserData = get(tab);
@@ -113,7 +123,7 @@ public class SearchResumptionUserData implements UserData {
     }
 
     /** Returns the last cached search suggestions, null if the UserData isn't set or expired. */
-    public SuggestionResult getCachedSuggestions(Tab tab) {
+    public @Nullable SuggestionResult getCachedSuggestions(Tab tab) {
         SearchResumptionUserData searchResumptionUserData = get(tab);
         return searchResumptionUserData == null
                 ? null
@@ -124,7 +134,7 @@ public class SearchResumptionUserData implements UserData {
      * Returns an instance of SearchResumptionUserData if exists and isn't expired, null otherwise.
      * If the data is expired, remove it.
      */
-    private static SearchResumptionUserData get(Tab tab) {
+    private static @Nullable SearchResumptionUserData get(Tab tab) {
         SearchResumptionUserData searchResumptionUserData =
                 tab.getUserDataHost().getUserData(USER_DATA_KEY);
         if (searchResumptionUserData == null) return null;

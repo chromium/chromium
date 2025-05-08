@@ -621,7 +621,7 @@ public class GoogleBottomBarViewCreatorTest {
         mGoogleBottomBarViewCreator = getGoogleBottomBarViewCreator(bottomBarConfig);
 
         assertEquals(
-                ViewUtils.dpToPx(mActivity, (float) 123),
+                ViewUtils.dpToPx(mActivity, 123.0f),
                 mGoogleBottomBarViewCreator.getBottomBarHeightInPx());
     }
 

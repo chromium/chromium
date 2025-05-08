@@ -143,6 +143,10 @@ class TabStripLayoutHelper {
   // in `slots_`.
   int GetSlotIndexForGroupHeader(tab_groups::TabGroupId group) const;
 
+  // If the tab at `index` is split, returns the index of the adjacent split
+  // tab. Otherwise returns `std::nullopt`.
+  std::optional<int> GetAdjacentSplitTab(int index) const;
+
   // Updates the value of either `active_tab_width_` or `inactive_tab_width_`,
   // as appropriate.
   void UpdateCachedTabWidth(int tab_index, int tab_width, bool active);

@@ -145,10 +145,10 @@ void SecurePaymentConfirmationService::MakePaymentCredential(
           blink::features::kSecurePaymentConfirmationBrowserBoundKeys)) {
     relying_party_id = options->relying_party.id;
     if (!passkey_browser_binder_) {
-      if (std::unique_ptr<BrowserBoundKeyStore> key_store =
+      if (scoped_refptr<BrowserBoundKeyStore> key_store =
               GetBrowserBoundKeyStoreInstance()) {
         passkey_browser_binder_ = std::make_unique<PasskeyBrowserBinder>(
-            GetBrowserBoundKeyStoreInstance(), web_data_service_);
+            key_store, web_data_service_);
       }
     }
     if (passkey_browser_binder_) {

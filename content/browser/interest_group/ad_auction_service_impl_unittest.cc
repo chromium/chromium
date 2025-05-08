@@ -839,48 +839,6 @@ class MockPrivateAggregationHostForTest : public PrivateAggregationHost {
       check_coordinator_;
 };
 
-AggregatableReportRequest GenerateReportRequest(
-    PrivateAggregationHost::ReportRequestGenerator generator,
-    PrivateAggregationPendingContributions::Wrapper contributions) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kPrivateAggregationApiErrorReporting)) {
-    return std::move(generator).Run(
-        std::move(contributions.GetContributionsVector()));
-  }
-
-  EXPECT_TRUE(
-      contributions.GetPendingContributions().are_contributions_finalized());
-
-  // This function should only be used for flows that don't call
-  // `PrivateAggregationHost::ContributeToHistogramOnEvent()`.
-  EXPECT_TRUE(contributions.GetPendingContributions()
-                  .GetConditionalContributionsForTesting()
-                  .empty());
-
-  std::vector<PrivateAggregationPendingContributions::BudgeterResult>
-      all_approved(
-          /*n=*/contributions.GetPendingContributions()
-              .unconditional_contributions()
-              .size(),
-          PrivateAggregationPendingContributions::BudgeterResult::kApproved);
-
-  const std::vector<blink::mojom::AggregatableReportHistogramContribution>&
-      final_unmerged_contributions =
-          contributions.GetPendingContributions()
-              .CompileFinalUnmergedContributions(
-                  /*test_budgeter_results=*/all_approved,
-                  PrivateAggregationPendingContributions::
-                      PendingReportLimitResult::kNotAtLimit,
-                  PrivateAggregationPendingContributions::NullReportBehavior::
-                      kSendNullReport);
-
-  all_approved.resize(final_unmerged_contributions.size());
-
-  return std::move(generator).Run(
-      std::move(contributions.GetPendingContributions())
-          .TakeFinalContributions(all_approved));
-}
-
 }  // namespace
 
 // Tests the interest group management functionality of AdAuctionServiceImpl --
@@ -4265,78 +4223,6 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidJSONIgnored) {
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url(), "https://example.com/render");
 }
-
-// UpdateJSONParserCrash fails on Android or with the Rust parser because in
-// those conditions the data decoder doesn't use a separate process to parse
-// JSON. On other platforms, the C++ parser runs out-of-proc for safety.
-#if !BUILDFLAG(IS_ANDROID)
-
-// The server response is valid, but we simulate the JSON parser (which may
-// run in a separate process) crashing, so the update doesn't happen.
-TEST_F(AdAuctionServiceImplTest, UpdateJSONParserCrash) {
-  // Disable the Rust JSON parser, as it is in-process and cannot crash.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(base::features::kUseRustJsonParser, false);
-
-  network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
-"ads": [{"renderURL": "https://example.com/new_render"
-        }]
-})");
-
-  blink::InterestGroup interest_group = CreateInterestGroup();
-  // Set a long expiration delta so that we can advance to the next rate limit
-  // period without the interest group expiring.
-  interest_group.expiry = base::Time::Now() + base::Days(30);
-  interest_group.update_url = kUpdateUrlA;
-  interest_group.bidding_url = kBiddingLogicUrlA;
-  interest_group.trusted_bidding_signals_url = kTrustedBiddingSignalsUrlA;
-  interest_group.trusted_bidding_signals_keys.emplace();
-  interest_group.trusted_bidding_signals_keys->push_back("key1");
-  interest_group.ads.emplace();
-  blink::InterestGroup::Ad ad(
-      /*render_gurl=*/GURL("https://example.com/render"),
-      /*metadata=*/std::nullopt);
-  interest_group.ads->emplace_back(std::move(ad));
-  JoinInterestGroupAndFlush(interest_group);
-  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
-
-  // Simulate the JSON service crashing instead of returning a result.
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
-  in_process_data_decoder.SimulateJsonParserCrash(
-      /*drop=*/true);
-
-  UpdateInterestGroupNoFlush();
-  task_environment()->RunUntilIdle();
-
-  // Check that the ads didn't change.
-  scoped_refptr<StorageInterestGroups> groups =
-      GetInterestGroupsForOwner(kOriginA);
-  ASSERT_EQ(groups->size(), 1u);
-  auto group = groups->GetInterestGroups()[0]->interest_group;
-  ASSERT_TRUE(group.ads.has_value());
-  ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url(), "https://example.com/render");
-
-  // Try another IG update, this time with no crash. It should succceed.
-  // (We need to advance time since this next attempt is rate-limited).
-  in_process_data_decoder.SimulateJsonParserCrash(
-      /*drop=*/false);
-  task_environment()->FastForwardBy(
-      InterestGroupStorage::kUpdateSucceededBackoffPeriod);
-  UpdateInterestGroupNoFlush();
-  task_environment()->RunUntilIdle();
-
-  // Check that the ads *did* change this time.
-  groups = GetInterestGroupsForOwner(kOriginA);
-  ASSERT_EQ(groups->size(), 1u);
-  group = groups->GetInterestGroups()[0]->interest_group;
-  ASSERT_TRUE(group.ads.has_value());
-  ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(group.ads.value()[0].render_url(),
-            "https://example.com/new_render");
-}
-
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Trigger an update, but block it via ContentBrowserClient policy.
 // The update shouldn't happen.
@@ -12308,14 +12194,13 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithClickiness) {
       }));
   run_loop.Run();
   std::string expected =
-      "AgAAAQ+"
-      "mZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAwMC0wMDA"
+      "AgAAAQ6m"
+      "Z3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAwMC0wMDA"
       "wLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBzOi8vYS50ZXN"
-      "0WHYfiwgAAAAAAAAALci7DYNADADQ80gQNqCmokh92FYwEB+y+"
-      "YguFEwSiTkjUF759i9G8p2y/"
-      "FGQxjcTRnNtLK3OVstL4+Bn2wiVadYptKPx8hT1j3RJ9E4QY2TFrfLQLcLrvX6ES4+"
-      "DYP8fAIDwA5l1ceBzAAAAcnJlcXVlc3RUaW1lc3RhbXBNcwp0ZW5hYmxlRGVidWdSZXBvcnR"
-      "pbmf1AAAAAAA";
+      "0WHUfiwgAAAAAAAAALcg7DsIwDADQ5Eh8bsDMxMCc2FbrpDjIhlTdmqEnQeKcqBFvfO0DAa3"
+      "h4Xg6o4QHIQQ1iVpmI73xIGGy7xgZL+UtLzc+leqdxVZOhaWnZyUggeVqLlWmua9tbpdhYsj"
+      "/8bsfD0V2l3MAAABycmVxdWVzdFRpbWVzdGFtcE1zCnRlbmFibGVEZWJ1Z1JlcG9ydGluZ/"
+      "UAAAAAAAAAA";
   EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
 }
 
@@ -14343,6 +14228,133 @@ function reportResult(auctionConfig, browserSignals) {
 }
 
 TEST_F(AdAuctionServiceImplBAndATest,
+       RunBAndAAuctionWithPrivateAggregationWhenNoWinningBid) {
+  OverridePrivateAggregationManagerForTesting();
+
+  base::HistogramTester hist;
+  ProvideKeys();
+  NavigateAndCommit(kUrlA);
+  manager_->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(kOriginA, "cars")
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
+          .SetBiddingUrl(kBiddingLogicUrlA)
+          .Build(),
+      GURL("https://a.test/example.html"));
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  std::optional<AdAuctionDataAndId> auction_data =
+      GetAdAuctionDataAndFlushForFrame(kOriginA);
+  EXPECT_TRUE(auction_data.has_value());
+
+  AdAuctionPageData* page_data = PageUserData<AdAuctionPageData>::GetForPage(
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetPage());
+  ASSERT_TRUE(page_data);
+  ASSERT_TRUE(auction_data->request_id);
+  AdAuctionRequestContext* request_context =
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
+
+  std::string response;
+  // The response has no `adRenderURL` field, so no winning ad.
+  // CBOR response computed using https://cbor.me/
+  /* Response:
+  {
+    "interestGroupName":"cars",
+    "interestGroupOwner":"https://a.test/",
+    "biddingGroups": {
+      "https://a.test/": [0]
+    },
+    "paggResponse": [
+      {
+        "reportingOrigin": "https://a.test/",
+        "igContributions": [
+          {
+            "igIndex": 0,
+            "eventContributions": [
+              {
+                "event": "reserved.always",
+                "contributions": [
+                  {"bucket": h'01', "value": 10}
+                ]
+              },
+              {
+                "event": "reserved.loss",
+                "contributions": [
+                  {"bucket": h'02', "value": 20}
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+  */
+  // Converted to base64 with `cat | xxd -r -p | gzip |
+  //   xxd -ps -c0 | sed 's/^/02000000b9/' | xxd -r -p | base64 -w0`
+  EXPECT_TRUE(base::Base64Decode(
+      "AgAAALkfiwgAAAAAAAADdY09DsIwDEaBkZlztDsbYkAsVOIGaWOCRfOD7bQwlptQcVCiCpBa"
+      "ifU9P3+vOihjjsDBO4au92i23glhGQUT6nqDZu803GYEDTgZ2UcPA/"
+      "QEDNSAzlTdqjvbavwDGlVHWJ7KWF1ANvNPZn9Z7flPtPpGizQSPAk6UxAadP4sEnid5yoTYM"
+      "ltiVonuyMfAz+nuptd0QmkSRkuDsqCrhQxjXDROqBp+wYjhCgEJgEAAA==",
+      &response));
+
+  std::string encrypted_response =
+      quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
+          response, request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
+          ->EncapsulateAndSerialize();
+
+  page_data->AddAuctionResultWitnessForOrigin(
+      kOriginA, crypto::SHA256HashString(encrypted_response));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+  auction_config.server_response.emplace();
+  auction_config.server_response->request_id = *auction_data->request_id;
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_private_aggregation_cb_, Run)
+      .WillOnce(testing::Invoke(
+          [&](PrivateAggregationHost::ReportRequestGenerator generator,
+              PrivateAggregationPendingContributions::Wrapper contributions,
+              PrivateAggregationBudgetKey budget_key,
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
+            AggregatableReportRequest request = GenerateReportRequest(
+                std::move(generator), std::move(contributions));
+            EXPECT_THAT(
+                request.payload_contents().contributions,
+                testing::UnorderedElementsAre(
+                    blink::mojom::AggregatableReportHistogramContribution(
+                        /*bucket=*/1, /*value=*/10,
+                        /*filtering_id=*/std::nullopt),
+                    blink::mojom::AggregatableReportHistogramContribution(
+                        /*bucket=*/2, /*value=*/20,
+                        /*filtering_id=*/std::nullopt)));
+            EXPECT_EQ(request.shared_info().reporting_origin, kOriginA);
+            run_loop.Quit();
+          }));
+
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+      auction_config,
+      base::BindLambdaForTesting(
+          [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
+            runner->ResolvedAuctionAdResponsePromise(
+                blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
+          }),
+      main_rfh());
+  EXPECT_FALSE(result);
+  run_loop.Run();
+}
+
+TEST_F(AdAuctionServiceImplBAndATest,
        RunMultiSellerBAndAAuctionWithPrivateAggregation) {
   constexpr char kDecisionScript[] = R"(
 function scoreAd(
@@ -15612,6 +15624,161 @@ TEST_F(AdAuctionServiceImplBAndATest,
       main_rfh());
   EXPECT_TRUE(result);
   InvokeCallbackForURN(*result);
+  // Fast forward enough for all reports to be sent.
+  task_environment()->FastForwardBy(base::Hours(1));
+
+  // kOriginA is in cooldown, so its debug reports won't be sent.
+  EXPECT_EQ(network_responder_->ReportCount(), 1u);
+  EXPECT_TRUE(network_responder_->ReportSent("/buyer_b_debug_loss_report"));
+
+  // Get lockout and cooldowns from DB, which should have been updated after
+  // auction.
+  base::RunLoop run_loop;
+  DebugReportLockoutAndCooldowns new_debug_report_lockout_and_cooldowns;
+  manager_->GetDebugReportLockoutAndCooldowns(
+      base::flat_set<url::Origin>({kOriginA, kOriginB}),
+      base::BindLambdaForTesting(
+          [&](std::optional<DebugReportLockoutAndCooldowns>
+                  debug_report_lockout_and_cooldowns) {
+            ASSERT_TRUE(debug_report_lockout_and_cooldowns.has_value());
+            new_debug_report_lockout_and_cooldowns =
+                std::move(*debug_report_lockout_and_cooldowns);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+  EXPECT_TRUE(new_debug_report_lockout_and_cooldowns.lockout.has_value());
+  EXPECT_TRUE(
+      new_debug_report_lockout_and_cooldowns.debug_report_cooldown_map.contains(
+          kOriginB));
+}
+
+// Loss debug reports from B&A are collected when it has no winning bid, and
+// fDO lockout/cooldowns are respected/updated as well.
+TEST_F(AdAuctionServiceImplBAndATest,
+       RunBAndAAuctionWithDebugReportAndNoWinningBid) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kFledgeSampleDebugReports,
+        {{"fledge_enable_filtering_debug_report_starting_from", "100ms"}}},
+       {features::kEnableBandASampleDebugReports, {}}},
+      {});
+
+  ProvideKeys();
+  NavigateAndCommit(kUrlA);
+  manager_->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(kOriginA, "cars")
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
+          .SetBiddingUrl(kBiddingLogicUrlA)
+          .Build(),
+      GURL("https://a.test/example.html"));
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  manager_->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(kOriginB, "bikes")
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
+          .SetBiddingUrl(kUrlB.Resolve("/example.html"))
+          .Build(),
+      GURL("https://a.test/example.html"));
+  task_environment()->FastForwardBy(base::Seconds(1));
+  // Cooldown starts after fledge_enable_filtering_debug_report_starting_from,
+  // so will take effect.
+  manager_->RecordDebugReportCooldown(kOriginA, base::Time::Now(),
+                                      DebugReportCooldownType::kShortCooldown);
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  network_responder_->RegisterReportResponse("/buyer_b_debug_loss_report",
+                                             /*response=*/"");
+
+  std::optional<AdAuctionDataAndId> auction_data =
+      GetAdAuctionDataAndFlushForFrame(kOriginA);
+  EXPECT_TRUE(auction_data.has_value());
+
+  AdAuctionPageData* page_data = PageUserData<AdAuctionPageData>::GetForPage(
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetPage());
+  ASSERT_TRUE(page_data);
+  ASSERT_TRUE(auction_data->request_id);
+  AdAuctionRequestContext* request_context =
+      page_data->GetContextForAdAuctionRequest(
+          ContextMapKey(*auction_data->request_id, kOriginA));
+
+  std::string response;
+  // The response has no `adRenderURL` field, so no winning ad.
+  // CBOR response computed using https://cbor.me/
+  /* Response:
+  {
+    "interestGroupName":"cars",
+    "interestGroupOwner":"https://a.test/",
+    "biddingGroups": {
+      "https://a.test/": [0],
+      "https://b.test/": [0]
+    },
+    "debugReports": [
+      {
+        "adTechOrigin": "https://a.test/",
+        "reports": [
+          {
+            "url": "https://a.test/buyer_debug_loss_report"
+          },
+          {
+            "isSellerReport": true,
+            "url": "https://a.test/seller_debug_loss_report"
+          }
+        ]
+      },
+      {
+        "adTechOrigin": "https://b.test/",
+        "reports": [
+          {"url": "https://a.test/buyer_b_debug_loss_report"}
+        ]
+      }
+    ]
+  }
+  */
+  // Converted to base64 with `cat | xxd -r -p | gzip |
+  //   xxd -ps -c0 | sed 's/^/02000000b1/' | xxd -r -p | base64 -w0`
+  EXPECT_TRUE(base::Base64Decode(
+      "AgAAALEfiwgAAAAAAAADbY5LCsIwEIZ7GnVl917AnQV1X/"
+      "IY0kCaxJkEdVlvYvCK7pVEBGN3PzPf/"
+      "3gYCTyqPXiHgW5J4UfdRURzWQwheNq0LVsHoNDyeAXss6U3jqgveMrwsoIJjJmjraZDfpXWp"
+      "2HyCGLoUCttXRXyXTSVRavZRfy/"
+      "ZT6VF9fItZTaqi266CnVpVNTG6bmpG0AfOvs2bERpGBI+HPuzhawTnsB3uc71WQBAAA=",
+      &response));
+
+  std::string encrypted_response =
+      quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
+          response, request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
+          ->EncapsulateAndSerialize();
+
+  page_data->AddAuctionResultWitnessForOrigin(
+      kOriginA, crypto::SHA256HashString(encrypted_response));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+  auction_config.server_response.emplace();
+  auction_config.server_response->request_id = *auction_data->request_id;
+
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+      auction_config,
+      base::BindLambdaForTesting(
+          [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
+            runner->ResolvedAuctionAdResponsePromise(
+                blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
+          }),
+      main_rfh());
+  EXPECT_FALSE(result);
   // Fast forward enough for all reports to be sent.
   task_environment()->FastForwardBy(base::Hours(1));
 

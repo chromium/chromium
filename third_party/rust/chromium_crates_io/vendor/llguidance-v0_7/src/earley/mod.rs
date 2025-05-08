@@ -8,6 +8,7 @@ pub mod lexerspec;
 pub mod perf;
 pub mod regexvec;
 
+pub use from_guidance::ValidationResult;
 #[allow(unused_imports)]
 pub use grammar::{CGrammar, CSymIdx, Grammar, SymIdx, SymbolProps};
 pub use parser::{

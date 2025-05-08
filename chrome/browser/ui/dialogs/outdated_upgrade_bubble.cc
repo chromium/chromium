@@ -11,7 +11,6 @@
 #include "base/version_info/channel.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
@@ -92,7 +91,9 @@ const char* GetUpdateUrlChannelSuffix(version_info::Channel channel) {
 
 }  // namespace
 
-void ShowOutdatedUpgradeBubble(Browser* browser, bool auto_update_enabled) {
+void ShowOutdatedUpgradeBubble(ui::ElementContext element_context,
+                               content::PageNavigator* page_navigator,
+                               bool auto_update_enabled) {
   if (g_upgrade_bubble_is_showing) {
     return;
   }
@@ -106,8 +107,8 @@ void ShowOutdatedUpgradeBubble(Browser* browser, bool auto_update_enabled) {
       ui::DialogModel::Builder()
           .SetTitle(l10n_util::GetStringUTF16(IDS_UPGRADE_BUBBLE_TITLE))
           .AddOkButton(
-              base::BindOnce(&OnDialogAccepted, browser, auto_update_enabled,
-                             std::move(update_url)),
+              base::BindOnce(&OnDialogAccepted, page_navigator,
+                             auto_update_enabled, std::move(update_url)),
               ui::DialogModel::Button::Params().SetLabel(
                   l10n_util::GetStringUTF16(auto_update_enabled
                                                 ? IDS_REINSTALL_APP
@@ -120,7 +121,7 @@ void ShowOutdatedUpgradeBubble(Browser* browser, bool auto_update_enabled) {
               base::UserMetricsAction("OutdatedUpgradeBubble.Later")))
           .Build();
 
-  chrome::ShowBubble(browser, kToolbarAppMenuButtonElementId,
+  chrome::ShowBubble(element_context, kToolbarAppMenuButtonElementId,
                      std::move(dialog_model));
 
   base::RecordAction(

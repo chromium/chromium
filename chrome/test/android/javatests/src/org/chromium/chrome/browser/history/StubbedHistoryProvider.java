@@ -26,7 +26,7 @@ public class StubbedHistoryProvider implements HistoryProvider {
     private List<HistoryItem> mSearchItems = new ArrayList<>();
     private List<HistoryItem> mRemovedItems = new ArrayList<>();
 
-    /** The exclusive end position for the last query. **/
+    /** The exclusive end position for the last query. */
     private int mLastQueryEndPosition;
 
     private String mLastQuery;

@@ -1,0 +1,18 @@
+[
+    {
+      "os": [
+        "win",
+        "linux",
+        "mac"
+      ],
+      "simple_policy_pref_mapping_test": {
+        "pref_name": "ntp_footer.settings.management_notice",
+        "pref_location": "local_state",
+        "default_value": true,
+        "values_to_test": [
+          true,
+          false
+        ]
+      }
+    }
+]

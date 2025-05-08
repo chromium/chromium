@@ -98,6 +98,7 @@ public class HomeButtonTest {
                             new HomeButtonCoordinator(
                                     sActivity,
                                     homeButton,
+                                    (view) -> {},
                                     HomepageManager.getInstance()::onMenuClick,
                                     () -> false);
                     SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);

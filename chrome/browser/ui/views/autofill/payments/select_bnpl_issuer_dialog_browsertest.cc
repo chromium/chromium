@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller_impl.h"
 #include "content/public/test/browser_test.h"
@@ -74,8 +75,9 @@ IN_PROC_BROWSER_TEST_F(MAYBE_SelectBnplIssuerDialogBrowserTest,
                          BnplIssuerEligibilityForPage::kIsEligible),
        BnplIssuerContext(test::GetTestUnlinkedBnplIssuer(),
                          BnplIssuerEligibilityForPage::kIsEligible),
-       BnplIssuerContext(test::GetTestLinkedBnplIssuer(kBnplAfterpayIssuerId),
-                         BnplIssuerEligibilityForPage::kIsEligible)});
+       BnplIssuerContext(
+           test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplAfterpay),
+           BnplIssuerEligibilityForPage::kIsEligible)});
   ShowAndVerifyUi();
 }
 
@@ -86,10 +88,10 @@ IN_PROC_BROWSER_TEST_F(MAYBE_SelectBnplIssuerDialogBrowserTest,
                          BnplIssuerEligibilityForPage::
                              kNotEligibleIssuerDoesNotSupportMerchant),
        BnplIssuerContext(
-           test::GetTestLinkedBnplIssuer(kBnplZipIssuerId),
+           test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplZip),
            BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow),
        BnplIssuerContext(
-           test::GetTestLinkedBnplIssuer(kBnplAfterpayIssuerId),
+           test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplAfterpay),
            BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooHigh)});
   ShowAndVerifyUi();
 }

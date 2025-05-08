@@ -47,6 +47,7 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/back_forward_cache_util.h"
+#include "content/public/test/mock_navigation_throttle_registry.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
@@ -364,20 +365,22 @@ class ContentSubresourceFilterThrottleManagerTest
     }
 
     // Inject the proper throttles at this time.
-    std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
+    content::MockNavigationThrottleRegistry registry(
+        navigation_handle,
+        content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
     PageActivationNotificationTiming state =
         ::testing::UnitTest::GetInstance()->current_test_info()->value_param()
             ? GetParam()
             : WILL_PROCESS_RESPONSE;
-    throttles.push_back(std::make_unique<MockPageStateActivationThrottle>(
+    registry.AddThrottle(std::make_unique<MockPageStateActivationThrottle>(
         navigation_handle, state));
 
     ContentSubresourceFilterThrottleManager::FromNavigationHandle(
         *navigation_handle)
-        ->MaybeAppendNavigationThrottles(navigation_handle, &throttles);
+        ->MaybeAppendNavigationThrottles(registry);
 
     created_safe_browsing_throttle_for_last_navigation_ = false;
-    for (auto& it : throttles) {
+    for (auto& it : registry.throttles()) {
       if (strcmp(it->GetNameForLogging(),
                  "SafeBrowsingPageActivationThrottle") == 0) {
         created_safe_browsing_throttle_for_last_navigation_ = true;

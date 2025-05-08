@@ -10,6 +10,7 @@
 #include "base/containers/flat_set.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -233,19 +234,19 @@ void AutofillOptimizationGuide::OnDidParseForm(
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
   auto bnpl_issuer_allowlist_can_be_loaded =
-      [&payments_data_manager](std::string_view issuer_id) {
+      [&payments_data_manager](BnplIssuer::IssuerId issuer_id) {
         return base::Contains(payments_data_manager.GetBnplIssuers(), issuer_id,
                               &BnplIssuer::issuer_id) &&
                base::FeatureList::IsEnabled(
                    features::kAutofillEnableAmountExtractionAllowlistDesktop);
       };
 
-  if (bnpl_issuer_allowlist_can_be_loaded(kBnplAffirmIssuerId)) {
+  if (bnpl_issuer_allowlist_can_be_loaded(BnplIssuer::IssuerId::kBnplAffirm)) {
     optimization_types.insert(
         optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM);
   }
 
-  if (bnpl_issuer_allowlist_can_be_loaded(kBnplZipIssuerId)) {
+  if (bnpl_issuer_allowlist_can_be_loaded(BnplIssuer::IssuerId::kBnplZip)) {
     optimization_types.insert(
         optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP);
   }
@@ -420,24 +421,31 @@ bool AutofillOptimizationGuide::ShouldBlockBenefitSuggestionLabelsForCardAndUrl(
   return false;
 }
 
-bool AutofillOptimizationGuide::IsUrlEligibleForCheckoutAmountSearchForIssuerId(
-    std::string_view issuer_id,
+bool AutofillOptimizationGuide::IsUrlEligibleForBnplIssuer(
+    BnplIssuer::IssuerId issuer_id,
     const GURL& url) const {
-  if (issuer_id == kBnplAffirmIssuerId &&
-      base::FeatureList::IsEnabled(
+  auto can_apply_optimization = [&url, this](
+                                    optimization_guide::proto::OptimizationType
+                                        issuer_optimization_type) {
+    return decider_->CanApplyOptimization(url, issuer_optimization_type,
+                                          /*optimization_metadata=*/nullptr) ==
+           optimization_guide::OptimizationGuideDecision::kTrue;
+  };
+  if (base::FeatureList::IsEnabled(
           features::kAutofillEnableAmountExtractionAllowlistDesktop)) {
-    return decider_->CanApplyOptimization(
-               url,
-               optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM,
-               /*optimization_metadata=*/nullptr) ==
-           optimization_guide::OptimizationGuideDecision::kTrue;
-  } else if (issuer_id == kBnplZipIssuerId &&
-             base::FeatureList::IsEnabled(
-                 features::kAutofillEnableAmountExtractionAllowlistDesktop)) {
-    return decider_->CanApplyOptimization(
-               url, optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP,
-               /*optimization_metadata=*/nullptr) ==
-           optimization_guide::OptimizationGuideDecision::kTrue;
+    switch (issuer_id) {
+      case BnplIssuer::IssuerId::kBnplAffirm:
+        return can_apply_optimization(
+            optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM);
+      case BnplIssuer::IssuerId::kBnplZip:
+        return can_apply_optimization(
+            optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP);
+      // TODO(crbug.com/408268581): Handle Afterpay issuer enum value when
+      // adding Afterpay to the BNPL flow.
+      case BnplIssuer::IssuerId::kBnplAfterpay:
+        NOTREACHED();
+    }
+    NOTREACHED();
   }
   return false;
 }

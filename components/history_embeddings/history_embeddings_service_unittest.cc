@@ -188,10 +188,10 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
       url_passages.passages.add_passages(passage);
       url_passages.embeddings.emplace_back(std::vector<float>{});
     }
-    service_->OnPassagesEmbeddingsComputed(
-        std::move(url_passages), std::move(passages),
-        std::move(passages_embeddings),
-        passage_embeddings::Embedder::kInvalidTaskId, status);
+    service_->OnPassagesEmbeddingsComputed(std::move(url_passages),
+                                           std::move(passages),
+                                           std::move(passages_embeddings),
+                                           /*task_id=*/0, status);
   }
 
   void SetMetadataScoreThreshold(double threshold) {

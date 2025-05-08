@@ -65,22 +65,6 @@ void PopulateIconUrlsForSizeAnyIfNeeded(
   }
 }
 
-std::vector<IconUrlWithSize> GetAppIconUrls(
-    const WebAppInstallInfo& web_app_info) {
-  std::vector<IconUrlWithSize> urls;
-
-  for (const apps::IconInfo& info : web_app_info.manifest_icons) {
-    urls.push_back(IconUrlWithSize::CreateForUnspecifiedSize(info.url));
-  }
-
-  PopulateIconUrlsForSizeAnyIfNeeded(
-      std::ref(urls),
-      GetAllIconUrlsForSizeAny(web_app_info.icons_with_size_any.manifest_icons),
-      web_app_info.icons_with_size_any.manifest_icon_provided_sizes,
-      /*is_app_icon=*/true);
-  return urls;
-}
-
 std::vector<IconUrlWithSize> GetShortcutMenuIcons(
     const WebAppInstallInfo& web_app_info) {
   std::vector<IconUrlWithSize> urls;
@@ -190,6 +174,22 @@ bool IconUrlWithSize::operator==(const IconUrlWithSize& rhs) const = default;
 std::string IconUrlWithSize::ToString() const {
   return base::StringPrintf("icon_url: %s, size: %s", url.spec().c_str(),
                             size.ToString().c_str());
+}
+
+std::vector<IconUrlWithSize> GetAppIconUrls(
+    const WebAppInstallInfo& web_app_info) {
+  std::vector<IconUrlWithSize> urls;
+
+  for (const apps::IconInfo& info : web_app_info.manifest_icons) {
+    urls.push_back(IconUrlWithSize::CreateForUnspecifiedSize(info.url));
+  }
+
+  PopulateIconUrlsForSizeAnyIfNeeded(
+      std::ref(urls),
+      GetAllIconUrlsForSizeAny(web_app_info.icons_with_size_any.manifest_icons),
+      web_app_info.icons_with_size_any.manifest_icon_provided_sizes,
+      /*is_app_icon=*/true);
+  return urls;
 }
 
 IconUrlSizeSet GetValidIconUrlsToDownload(

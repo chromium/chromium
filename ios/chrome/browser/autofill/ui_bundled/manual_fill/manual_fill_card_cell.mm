@@ -62,7 +62,7 @@ using base::SysNSStringToUTF8;
 // The part of the cell's accessibility label that is used to indicate the
 // 1-based index at which the payment method represented by this item is
 // positioned in the list of payment methods to show.
-@property(nonatomic, strong) NSString* cellIndexAccessibilityLabel;
+@property(nonatomic, copy) NSString* cellIndexAccessibilityLabel;
 
 @end
 
@@ -86,7 +86,7 @@ using base::SysNSStringToUTF8;
     _card = card;
     _menuActions = menuActions;
     _cellIndex = cellIndex;
-    _cellIndexAccessibilityLabel = cellIndexAccessibilityLabel;
+    _cellIndexAccessibilityLabel = [cellIndexAccessibilityLabel copy];
     _showAutofillFormButton = showAutofillFormButton;
     self.cellClass = [ManualFillCardCell class];
   }
@@ -181,8 +181,9 @@ CGFloat GPayIconTopAnchorOffset() {
 // The menu button displayed in the cell's header.
 @property(nonatomic, strong) UIButton* overflowMenuButton;
 
-// The text view with instructions for how to use virtual cards.
-@property(nonatomic, strong) UITextView* virtualCardInstructionTextView;
+// The text view with instructions for how to use virtual or cardInfo retrieval
+// enrolled cards.
+@property(nonatomic, strong) UITextView* cardInstructionTextView;
 
 // A labeled chip showing the card number.
 @property(nonatomic, strong) ManualFillLabeledChip* cardNumberLabeledChip;
@@ -213,7 +214,7 @@ CGFloat GPayIconTopAnchorOffset() {
 
 // Separator line. Used to delimit the virtual card instruction text view from
 // the rest of the cell.
-@property(nonatomic, strong) UIView* virtualCardInstructionsSeparator;
+@property(nonatomic, strong) UIView* cardInstructionsSeparator;
 
 // Button to autofill the current form with the card's data.
 @property(nonatomic, strong) UIButton* autofillFormButton;
@@ -242,8 +243,8 @@ CGFloat GPayIconTopAnchorOffset() {
 
   self.cardLabel.text = @"";
 
-  self.virtualCardInstructionTextView.text = @"";
-  self.virtualCardInstructionTextView.hidden = NO;
+  self.cardInstructionTextView.text = @"";
+  self.cardInstructionTextView.hidden = NO;
 
   [self.cardNumberLabeledChip prepareForReuse];
   [self.expirationDateLabeledChip prepareForReuse];
@@ -335,14 +336,13 @@ CGFloat GPayIconTopAnchorOffset() {
 
   UILabel* expirationDateSeparatorLabel;
 
-  // Virtual card instruction textview is always created, but hidden for
-  // non-virtual cards.
-  self.virtualCardInstructionTextView =
-      [self createVirtualCardInstructionTextView];
-  [self.contentView addSubview:self.virtualCardInstructionTextView];
-  [accessibilityElements addObject:self.virtualCardInstructionTextView];
+  // Card instruction textview is always created, but is only visible for
+  // virtual and CardInfoRetrieval enrolled cards and hidden for rest.
+  self.cardInstructionTextView = [self createCardInstructionTextView];
+  [self.contentView addSubview:self.cardInstructionTextView];
+  [accessibilityElements addObject:self.cardInstructionTextView];
 
-  self.virtualCardInstructionsSeparator =
+  self.cardInstructionsSeparator =
       CreateGraySeparatorForContainer(self.contentView);
 
   self.cardNumberLabeledChip = [[ManualFillLabeledChip alloc]
@@ -395,9 +395,8 @@ CGFloat GPayIconTopAnchorOffset() {
   self.gPayIcon = [self createGPayIcon];
   [self.contentView addSubview:self.gPayIcon];
 
-  AppendHorizontalConstraintsForViews(staticConstraints,
-                                      @[ self.virtualCardInstructionTextView ],
-                                      self.layoutGuide);
+  AppendHorizontalConstraintsForViews(
+      staticConstraints, @[ self.cardInstructionTextView ], self.layoutGuide);
   AppendHorizontalConstraintsForViews(
       staticConstraints, @[ self.cardNumberLabeledChip ], self.layoutGuide,
       kChipsHorizontalMargin,
@@ -454,9 +453,13 @@ CGFloat GPayIconTopAnchorOffset() {
   self.cardLabel.attributedText = attributedString;
   self.cardLabel.accessibilityIdentifier = attributedString.string;
   if (card.recordType == kVirtualCard) {
-    self.virtualCardInstructionTextView.attributedText =
+    self.cardInstructionTextView.attributedText =
         [self createvirtualCardInstructionTextViewAttributedText];
-    self.virtualCardInstructionTextView.backgroundColor = UIColor.clearColor;
+  } else if (card.cardInfoRetrievalEnrollmentState ==
+             autofill::CreditCard::CardInfoRetrievalEnrollmentState::
+                 kRetrievalEnrolled) {
+    self.cardInstructionTextView.text = l10n_util::GetNSString(
+        IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_CARD_INFO_RETRIEVAL_INSTRUCTION_TEXT);
   }
   [self.cardNumberLabeledChip
       setLabelText:
@@ -476,7 +479,7 @@ CGFloat GPayIconTopAnchorOffset() {
           l10n_util::GetNSString(
               IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_NAME_ON_CARD_LABEL_VIRTUAL_CARD_IOS)
       buttonTitles:@[ card.cardHolder ]];
-  if (card.recordType == kVirtualCard) {
+  if (card.CVC != nil && [card.CVC length] > 0) {
     [self.CVCLabeledChip
         setLabelText:
             l10n_util::GetNSString(
@@ -527,23 +530,26 @@ CGFloat GPayIconTopAnchorOffset() {
   NSMutableArray<UIView*>* cardInfoGroupVerticalLeadChips =
       [[NSMutableArray alloc] init];
 
-  // Virtual card instruction.
-  if (card.recordType == kVirtualCard) {
+  // Card instruction.
+  if (card.recordType == kVirtualCard ||
+      card.cardInfoRetrievalEnrollmentState ==
+          autofill::CreditCard::CardInfoRetrievalEnrollmentState::
+              kRetrievalEnrolled) {
     AddViewToVerticalLeadViews(
-        self.virtualCardInstructionTextView,
+        self.cardInstructionTextView,
         ManualFillCellView::ElementType::kVirtualCardInstructions,
         verticalLeadViews);
     if (IsKeyboardAccessoryUpgradeEnabled()) {
       AddViewToVerticalLeadViews(
-          self.virtualCardInstructionsSeparator,
-          ManualFillCellView::ElementType::kVirtualCardInstructionsSeparator,
+          self.cardInstructionsSeparator,
+          ManualFillCellView::ElementType::kCardInstructionsSeparator,
           verticalLeadViews);
-      self.virtualCardInstructionsSeparator.hidden = NO;
+      self.cardInstructionsSeparator.hidden = NO;
     }
-    self.virtualCardInstructionTextView.hidden = NO;
+    self.cardInstructionTextView.hidden = NO;
   } else {
-    self.virtualCardInstructionTextView.hidden = YES;
-    self.virtualCardInstructionsSeparator.hidden = YES;
+    self.cardInstructionTextView.hidden = YES;
+    self.cardInstructionsSeparator.hidden = YES;
   }
 
   // Card number labeled chip button.
@@ -641,7 +647,6 @@ CGFloat GPayIconTopAnchorOffset() {
 }
 
 - (void)userDidTapCVC:(UIButton*)sender {
-  CHECK_EQ(self.card.recordType, kVirtualCard);
   base::RecordAction(
       base::UserMetricsAction([self createMetricsAction:@"SelectCvc"]));
   [self.navigationDelegate
@@ -755,20 +760,20 @@ CGFloat GPayIconTopAnchorOffset() {
   return virtualCardInstructionAttributedString;
 }
 
-- (UITextView*)createVirtualCardInstructionTextView {
-  UITextView* virtualCardInstructionTextView =
+- (UITextView*)createCardInstructionTextView {
+  UITextView* cardInstructionTextView =
       [[UITextView alloc] initWithFrame:self.contentView.frame];
-  virtualCardInstructionTextView.scrollEnabled = NO;
-  virtualCardInstructionTextView.editable = NO;
-  virtualCardInstructionTextView.delegate = self;
-  virtualCardInstructionTextView.translatesAutoresizingMaskIntoConstraints = NO;
-  virtualCardInstructionTextView.textColor =
-      [UIColor colorNamed:kTextSecondaryColor];
-  virtualCardInstructionTextView.backgroundColor = UIColor.clearColor;
-  virtualCardInstructionTextView.textContainerInset =
-      UIEdgeInsetsMake(0, 0, 0, 0);
-  virtualCardInstructionTextView.textContainer.lineFragmentPadding = 0;
-  return virtualCardInstructionTextView;
+  cardInstructionTextView.scrollEnabled = NO;
+  cardInstructionTextView.editable = NO;
+  cardInstructionTextView.delegate = self;
+  cardInstructionTextView.translatesAutoresizingMaskIntoConstraints = NO;
+  cardInstructionTextView.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  cardInstructionTextView.backgroundColor = UIColor.clearColor;
+  cardInstructionTextView.font =
+            [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  cardInstructionTextView.textContainerInset = UIEdgeInsetsMake(0, 0, 0, 0);
+  cardInstructionTextView.textContainer.lineFragmentPadding = 0;
+  return cardInstructionTextView;
 }
 
 // Creates and configures the card icon image view.
@@ -804,7 +809,7 @@ CGFloat GPayIconTopAnchorOffset() {
     shouldInteractWithURL:(NSURL*)URL
                   inRange:(NSRange)characterRange
               interaction:(UITextItemInteraction)interaction {
-  if (textView == self.virtualCardInstructionTextView) {
+  if (textView == self.cardInstructionTextView) {
     // The learn more link was clicked.
     [self.navigationDelegate
           openURL:[[CrURL alloc]
@@ -819,7 +824,7 @@ CGFloat GPayIconTopAnchorOffset() {
 - (UIAction*)textView:(UITextView*)textView
     primaryActionForTextItem:(UITextItem*)textItem
                defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
-  if (textView != self.virtualCardInstructionTextView) {
+  if (textView != self.cardInstructionTextView) {
     return defaultAction;
   }
 

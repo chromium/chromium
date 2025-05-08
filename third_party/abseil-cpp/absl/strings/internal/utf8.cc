@@ -16,6 +16,11 @@
 
 #include "absl/strings/internal/utf8.h"
 
+#include <cstddef>
+#include <cstdint>
+
+#include "absl/base/config.h"
+
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace strings_internal {
@@ -45,6 +50,47 @@ size_t EncodeUTF8Char(char *buffer, char32_t utf8_char) {
     utf8_char >>= 6;
     buffer[0] = static_cast<char>(0xF0 | utf8_char);
     return 4;
+  }
+}
+
+size_t WideToUtf8(wchar_t wc, char *buf, ShiftState &s) {
+  const auto v = static_cast<uint32_t>(wc);
+  if (v < 0x80) {
+    *buf = static_cast<char>(v);
+    return 1;
+  } else if (v < 0x800) {
+    *buf++ = static_cast<char>(0xc0 | (v >> 6));
+    *buf = static_cast<char>(0x80 | (v & 0x3f));
+    return 2;
+  } else if (v < 0xd800 || (v - 0xe000) < 0x2000) {
+    *buf++ = static_cast<char>(0xe0 | (v >> 12));
+    *buf++ = static_cast<char>(0x80 | ((v >> 6) & 0x3f));
+    *buf = static_cast<char>(0x80 | (v & 0x3f));
+    return 3;
+  } else if ((v - 0x10000) < 0x100000) {
+    *buf++ = static_cast<char>(0xf0 | (v >> 18));
+    *buf++ = static_cast<char>(0x80 | ((v >> 12) & 0x3f));
+    *buf++ = static_cast<char>(0x80 | ((v >> 6) & 0x3f));
+    *buf = static_cast<char>(0x80 | (v & 0x3f));
+    return 4;
+  } else if (v < 0xdc00) {
+    s.saw_high_surrogate = true;
+    s.bits = static_cast<uint8_t>(v & 0x3);
+    const uint8_t high_bits = ((v >> 6) & 0xf) + 1;
+    *buf++ = static_cast<char>(0xf0 | (high_bits >> 2));
+    *buf =
+        static_cast<char>(0x80 | static_cast<uint8_t>((high_bits & 0x3) << 4) |
+                          static_cast<uint8_t>((v >> 2) & 0xf));
+    return 2;
+  } else if (v < 0xe000 && s.saw_high_surrogate) {
+    *buf++ = static_cast<char>(0x80 | static_cast<uint8_t>(s.bits << 4) |
+                               static_cast<uint8_t>((v >> 6) & 0xf));
+    *buf = static_cast<char>(0x80 | (v & 0x3f));
+    s.saw_high_surrogate = false;
+    s.bits = 0;
+    return 2;
+  } else {
+    return static_cast<size_t>(-1);
   }
 }
 

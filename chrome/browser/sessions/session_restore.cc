@@ -1445,13 +1445,6 @@ void SessionRestore::NotifySessionRestoreStartedLoadingTabs() {
 }
 
 // static
-void SessionRestore::OnWillRestoreTab(content::WebContents* web_contents) {
-  for (auto& observer : *observers()) {
-    observer.OnWillRestoreTab(web_contents);
-  }
-}
-
-// static
 void SessionRestore::OnGotSession(Profile* profile,
                                   bool for_apps,
                                   int window_count) {

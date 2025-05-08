@@ -113,7 +113,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "device/fido/enclave/icloud_recovery_key_mac.h"
+#include "components/trusted_vault/icloud_recovery_key_mac.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 namespace enclave = device::enclave;
@@ -141,7 +141,7 @@ struct EnclaveManager::PendingAction {
   std::unique_ptr<EnclaveLocalState::WrappedPIN> wrapped_pin;
   std::optional<std::string> pin_public_key;  // the current PIN PK in the SDS.
 #if BUILDFLAG(IS_MAC)
-  std::unique_ptr<device::enclave::ICloudRecoveryKey> icloud_recovery_key;
+  std::unique_ptr<trusted_vault::ICloudRecoveryKey> icloud_recovery_key;
 #endif                      // BUILDFLAG(IS_MAC)
   bool unregister = false;  // whether to unregister from the enclave.
 };
@@ -2570,7 +2570,7 @@ class EnclaveManager::StateMachine {
 
 #if BUILDFLAG(IS_MAC)
   void JoinICloudKeychainToDomain(
-      std::unique_ptr<device::enclave::ICloudRecoveryKey> icloud_recovery_key) {
+      std::unique_ptr<trusted_vault::ICloudRecoveryKey> icloud_recovery_key) {
     std::vector<trusted_vault::TrustedVaultKeyAndVersion> member_keys_source =
         trusted_vault::GetTrustedVaultKeysWithVersions(
             {manager_->secret_}, manager_->secret_version_);
@@ -2879,7 +2879,7 @@ void EnclaveManager::RenewPIN(EnclaveManager::Callback callback) {
 
 #if BUILDFLAG(IS_MAC)
 void EnclaveManager::AddICloudRecoveryKey(
-    std::unique_ptr<device::enclave::ICloudRecoveryKey> icloud_recovery_key,
+    std::unique_ptr<trusted_vault::ICloudRecoveryKey> icloud_recovery_key,
     EnclaveManager::Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(user_->registered());

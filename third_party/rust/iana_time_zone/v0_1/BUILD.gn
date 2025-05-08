@@ -49,7 +49,7 @@ cargo_crate("lib") {
   if (is_android) {
     deps += [ "//third_party/rust/android_system_properties/v0_1:lib" ]
   }
-  if (is_apple) {
+  if (is_ios || is_mac) {
     deps += [ "//third_party/rust/core_foundation_sys/v0_8:lib" ]
   }
   if (is_win) {

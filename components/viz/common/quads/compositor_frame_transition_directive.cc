@@ -87,16 +87,4 @@ CompositorFrameTransitionDirective::SharedElement&
 CompositorFrameTransitionDirective::SharedElement::operator=(SharedElement&&) =
     default;
 
-bool CompositorFrameTransitionDirective::SharedElement::operator==(
-    const SharedElement& other) const {
-  return render_pass_id == other.render_pass_id &&
-         view_transition_element_resource_id ==
-             other.view_transition_element_resource_id;
-}
-
-bool CompositorFrameTransitionDirective::SharedElement::operator!=(
-    const SharedElement& other) const {
-  return !(other == *this);
-}
-
 }  // namespace viz

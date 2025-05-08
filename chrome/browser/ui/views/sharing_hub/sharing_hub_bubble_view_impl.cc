@@ -53,7 +53,7 @@ SharingHubBubbleViewImpl::SharingHubBubbleViewImpl(
   DCHECK(anchor_view);
   DCHECK(controller);
 
-  set_background_color(ui::kColorMenuBackground);
+  SetBackgroundColor(ui::kColorMenuBackground);
   SetAccessibleTitle(l10n_util::GetStringUTF16(IDS_SHARING_HUB_TOOLTIP));
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(

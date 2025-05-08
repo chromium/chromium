@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_OPTIMIZATION_GUIDE_MOCK_AUTOFILL_OPTIMIZATION_GUIDE_H_
 
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card_benefit.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide.h"
@@ -39,8 +40,8 @@ class MockAutofillOptimizationGuide : public AutofillOptimizationGuide {
               (const CreditCard& card, const GURL& url),
               (const override));
   MOCK_METHOD(bool,
-              IsUrlEligibleForCheckoutAmountSearchForIssuerId,
-              (std::string_view issuer_id, const GURL& url),
+              IsUrlEligibleForBnplIssuer,
+              (BnplIssuer::IssuerId issuer_id, const GURL& url),
               (const override));
 };
 

@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Permissions-Policy header digital-credentials-create=() disallows the top-level document.
+  promise_rejects_dom: function "function() { throw e; }" threw object "TypeError: Digital identity API needs at least one well-formed request." that is not a DOMException NotAllowedError: property "code" is equal to undefined, expected 0
+[FAIL] Permissions-Policy header digital-credentials-create=() disallows same-origin iframes.
+  assert_false: Digital Credential API expected false got true
+[FAIL] Permissions-Policy header digital-credentials-create=() cannot be overridden using the allow attribute.
+  assert_false: Digital Credential API expected false got true
+Harness: the test ran to completion.
+

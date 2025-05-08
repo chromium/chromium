@@ -1113,8 +1113,14 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportDataMaskingEventTest,
   RunTest(kTestJS);
 }
 
+// TODO(crbug.com/414870123): Flaky on win.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ReportingPolicyEnabled DISABLED_ReportingPolicyEnabled
+#else
+#define MAYBE_ReportingPolicyEnabled ReportingPolicyEnabled
+#endif
 IN_PROC_BROWSER_TEST_F(EnterpriseReportDataMaskingEventTest,
-                       ReportingPolicyEnabled) {
+                       MAYBE_ReportingPolicyEnabled) {
   auto event_validator = event_report_validator_helper_->CreateValidator();
 
   api::enterprise_reporting_private::TriggeredRuleInfo rule_info;

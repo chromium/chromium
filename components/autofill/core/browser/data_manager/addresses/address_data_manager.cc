@@ -318,17 +318,6 @@ bool AddressDataManager::IsEligibleForAddressAccountStorage() const {
   return sync_service_->GetActiveDataTypes().Has(syncer::CONTACT_INFO);
 }
 
-bool AddressDataManager::IsCountryEligibleForAccountStorage(
-    std::string_view country_code) const {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableAccountStorageForIneligibleCountries)) {
-    return true;
-  }
-  constexpr char const* kUnsupportedCountries[] = {"CU", "IR", "KP", "SD",
-                                                   "SY"};
-  return !base::Contains(kUnsupportedCountries, country_code);
-}
-
 void AddressDataManager::MigrateProfileToAccount(
     const AutofillProfile& profile) {
   CHECK_EQ(profile.record_type(),

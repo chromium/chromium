@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 
-#include "base/functional/bind_internal.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/scoped_environment_variable_override.h"
 #include "base/scoped_observation.h"

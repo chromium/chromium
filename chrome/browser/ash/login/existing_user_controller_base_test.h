@@ -22,14 +22,14 @@ class AuthEventsRecorder;
 namespace {
 
 const GaiaId::Literal kFirstSAMLUserId("12345");
-const char kFirstSAMLUserEmail[] = "bob@corp.example.com";
+inline constexpr char kFirstSAMLUserEmail[] = "bob@corp.example.com";
 const GaiaId::Literal kSecondSAMLUserId("67891");
-const char kSecondSAMLUserEmail[] = "alice@corp.example.com";
+inline constexpr char kSecondSAMLUserEmail[] = "alice@corp.example.com";
 
 const GaiaId::Literal kFirstGaiaUserId("88888");
-const char kFirstGaiaUserEmail[] = "bob@gaia.example.com";
+inline constexpr char kFirstGaiaUserEmail[] = "bob@gaia.example.com";
 const GaiaId::Literal kSecondGaiaUserId("88884");
-const char kSecondGaiaUserEmail[] = "alice@gaia.example.com";
+inline constexpr char kSecondGaiaUserEmail[] = "alice@gaia.example.com";
 
 }  // namespace
 

@@ -146,6 +146,58 @@ std::u16string GetProfileIdentifier(const ProfileAttributesEntry& entry) {
   }
 }
 
+std::u16string GetSyncPromoDescription(signin_metrics::AccessPoint access_point,
+                                       std::string_view email) {
+  switch (access_point) {
+    case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup:
+    case signin_metrics::AccessPoint::
+        kHistorySyncOptinExpansionPillOnInactivity:
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+      if (base::FeatureList::IsEnabled(
+              switches::kEnableHistorySyncOptinExpansionPill)) {
+        switch (switches::kHistorySyncOptinExpansionPillOption.Get()) {
+          case switches::HistorySyncOptinExpansionPillOption::
+              kBrowseAcrossDevices:
+            return l10n_util::GetStringFUTF16(
+                IDS_PROFILE_MENU_SYNC_PROMO_BROWSE_ACROSS_DEVICES_DESCRIPTION,
+                base::UTF8ToUTF16(email));
+          case switches::HistorySyncOptinExpansionPillOption::kSyncHistory:
+            return l10n_util::GetStringFUTF16(
+                IDS_PROFILE_MENU_SYNC_PROMO_SYNC_HISTORY_DESCRIPTION,
+                base::UTF8ToUTF16(email));
+          case switches::HistorySyncOptinExpansionPillOption::
+              kSeeTabsFromOtherDevices:
+            return l10n_util::GetStringFUTF16(
+                IDS_PROFILE_MENU_SYNC_PROMO_SEE_TABS_FROM_OTHER_DEVICES_DESCRIPTION,
+                base::UTF8ToUTF16(email));
+        }
+      }
+#endif
+      [[fallthrough]];
+    default:
+      return l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SYNC_PROMO);
+  }
+}
+
+std::u16string GetSyncPromoButtonLabel(
+    signin_metrics::AccessPoint access_point) {
+  switch (access_point) {
+    case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup:
+    case signin_metrics::AccessPoint::
+        kHistorySyncOptinExpansionPillOnInactivity:
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+      if (base::FeatureList::IsEnabled(
+              switches::kEnableHistorySyncOptinExpansionPill)) {
+        return l10n_util::GetStringUTF16(
+            IDS_PROFILE_MENU_SYNC_PROMO_BUTTON_LABEL);
+      }
+#endif
+      [[fallthrough]];
+    default:
+      return l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON);
+  }
+}
+
 }  // namespace
 
 // static
@@ -554,8 +606,6 @@ void ProfileMenuView::BuildGuestIdentity() {
 
 ProfileMenuViewBase::IdentitySectionParams
 ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
-  CHECK(switches::IsImprovedSigninUIOnDesktopEnabled());
-
   Profile* profile = browser()->profile();
   const std::optional<AvatarSyncErrorType> error =
       GetAvatarSyncErrorType(profile);
@@ -643,6 +693,10 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
             IDS_PROFILE_MENU_SIGNIN_PROMO_DESCRIPTION);
         params.button_text =
             l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON);
+        signin_metrics::LogSignInOffered(
+            explicit_signin_access_point_.value_or(access_point),
+            signin_metrics::PromoAction::
+                PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT);
       }
       break;
     case signin_util::SignedInState::kWebOnlySignedIn: {
@@ -680,12 +734,19 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
               account_image,
               /*width=*/kIdentityImageSizeForButton,
               /*height=*/kIdentityImageSizeForButton, profiles::SHAPE_CIRCLE));
+      signin_metrics::LogSignInOffered(
+          explicit_signin_access_point_.value_or(access_point),
+          signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT);
       break;
     }
     case signin_util::SignedInState::kSignedIn:
-      params.subtitle = l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SYNC_PROMO);
-      params.button_text =
-          l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON);
+      params.subtitle = GetSyncPromoDescription(
+          explicit_signin_access_point_.value_or(access_point),
+          primary_account_info.email);
+      params.button_text = GetSyncPromoButtonLabel(
+          explicit_signin_access_point_.value_or(access_point));
+      signin_metrics::LogSyncOptInOffered(
+          explicit_signin_access_point_.value_or(access_point));
       break;
     case signin_util::SignedInState::kSyncing:
       // No button.
@@ -706,12 +767,10 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
   }
 
   if (!params.button_text.empty()) {
-    if (explicit_signin_access_point_.has_value()) {
-      access_point = *explicit_signin_access_point_;
-    }
     params.button_action = base::BindRepeating(
         &ProfileMenuView::OnSigninButtonClicked, base::Unretained(this),
-        account_info_for_signin_action, button_type, access_point);
+        account_info_for_signin_action, button_type,
+        explicit_signin_access_point_.value_or(access_point));
   }
 
   return params;

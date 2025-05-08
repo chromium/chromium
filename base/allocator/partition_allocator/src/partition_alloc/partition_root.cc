@@ -6,9 +6,9 @@
 
 #include <cstdint>
 
+#include "partition_alloc/bucket_lookup.h"
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
-#include "partition_alloc/freeslot_bitmap.h"
 #include "partition_alloc/in_slot_metadata.h"
 #include "partition_alloc/oom.h"
 #include "partition_alloc/page_allocator.h"
@@ -501,11 +501,8 @@ static size_t PartitionPurgeSlotSpan(
       internal::MetadataKind::kReadOnly>::ToSlotSpanStart(slot_span);
   // First, walk the freelist for this slot span and make a bitmap of which
   // slots are not in use.
-  const PartitionFreelistDispatcher* freelist_dispatcher =
-      root->get_freelist_dispatcher();
-
-  for (PartitionFreelistEntry* entry = slot_span->get_freelist_head(); entry;
-       entry = freelist_dispatcher->GetNext(entry, slot_size)) {
+  for (FreelistEntry* entry = slot_span->get_freelist_head(); entry;
+       entry = entry->GetNext(slot_size)) {
     size_t slot_number =
         bucket->GetSlotNumber(SlotStartPtr2Addr(entry) - slot_span_start);
     PA_DCHECK(slot_number < num_provisioned_slots);
@@ -516,7 +513,7 @@ static size_t PartitionPurgeSlotSpan(
     // return the original content or 0. (Note that this optimization won't be
     // effective on big-endian machines because the masking function is
     // negation.)
-    if (freelist_dispatcher->IsEncodedNextPtrZero(entry)) {
+    if (entry->IsEncodedNextPtrZero()) {
       last_slot = slot_number;
     }
 #endif
@@ -580,7 +577,7 @@ static size_t PartitionPurgeSlotSpan(
         new_unprovisioned_slots;
 
     size_t num_new_freelist_entries = 0;
-    internal::PartitionFreelistEntry* back = nullptr;
+    internal::FreelistEntry* back = nullptr;
     if (straighten) {
       // Rewrite the freelist to "straighten" it. This achieves two things:
       // getting rid of unprovisioned entries, ordering etnries based on how
@@ -595,16 +592,16 @@ static size_t PartitionPurgeSlotSpan(
         }
         // Add the slot to the end of the list. The most proper thing to do
         // would be to null-terminate the new entry with:
-        //   auto* entry = PartitionFreelistEntry::EmplaceAndInitNull(
+        //   auto* entry = FreelistEntry::EmplaceAndInitNull(
         //       slot_span_start + (slot_size * slot_index));
         // But no need to do this, as it's last-ness is likely temporary, and
         // the next iteration's back->SetNext(), or the post-loop
-        // PartitionFreelistEntry::EmplaceAndInitNull(back) will override it
+        // FreelistEntry::EmplaceAndInitNull(back) will override it
         // anyway.
-        auto* entry = static_cast<PartitionFreelistEntry*>(
+        auto* entry = static_cast<FreelistEntry*>(
             SlotStartAddr2Ptr(slot_span_start + (slot_size * slot_index)));
         if (num_new_freelist_entries) {
-          freelist_dispatcher->SetNext(back, entry);
+          back->SetNext(entry);
         } else {
           slot_span->ToWritable(root)->SetFreelistHead(entry, root);
         }
@@ -617,8 +614,8 @@ static size_t PartitionPurgeSlotSpan(
       uintptr_t first_unprovisioned_slot =
           slot_span_start + (num_provisioned_slots * slot_size);
       bool skipped = false;
-      for (PartitionFreelistEntry* entry = slot_span->get_freelist_head();
-           entry; entry = freelist_dispatcher->GetNext(entry, slot_size)) {
+      for (FreelistEntry* entry = slot_span->get_freelist_head(); entry;
+           entry = entry->GetNext(slot_size)) {
         uintptr_t entry_addr = SlotStartPtr2Addr(entry);
         if (entry_addr >= first_unprovisioned_slot) {
           skipped = true;
@@ -629,7 +626,7 @@ static size_t PartitionPurgeSlotSpan(
         // if no entry exists). Otherwise the link is already correct.
         if (skipped) {
           if (num_new_freelist_entries) {
-            freelist_dispatcher->SetNext(back, entry);
+            back->SetNext(entry);
           } else {
             slot_span->ToWritable(root)->SetFreelistHead(entry, root);
           }
@@ -644,7 +641,7 @@ static size_t PartitionPurgeSlotSpan(
     if (straighten || unprovisioned_bytes) {
       if (num_new_freelist_entries) {
         PA_DCHECK(back);
-        freelist_dispatcher->EmplaceAndInitNull(back);
+        FreelistEntry::EmplaceAndInitNull(back);
 #if !PA_BUILDFLAG(IS_WIN)
         // Memorize index of the last slot in the list, as it may be able to
         // participate in an optimization related to page discaring (below), due
@@ -659,11 +656,6 @@ static size_t PartitionPurgeSlotSpan(
       PA_DCHECK(num_new_freelist_entries ==
                 num_provisioned_slots - slot_span->num_allocated_slots);
     }
-
-#if PA_BUILDFLAG(USE_FREESLOT_BITMAP)
-    FreeSlotBitmapReset(slot_span_start + (slot_size * num_provisioned_slots),
-                        end_addr, slot_size);
-#endif
 
     if (unprovisioned_bytes) {
       if (!kUseLazyCommit) {
@@ -710,12 +702,12 @@ static size_t PartitionPurgeSlotSpan(
     bool can_discard_free_list_pointer = false;
 #if !PA_BUILDFLAG(IS_WIN)
     if (i != last_slot) {
-      begin_addr += sizeof(internal::PartitionFreelistEntry);
+      begin_addr += sizeof(internal::FreelistEntry);
     } else {
       can_discard_free_list_pointer = true;
     }
 #else
-    begin_addr += sizeof(internal::PartitionFreelistEntry);
+    begin_addr += sizeof(internal::FreelistEntry);
 #endif
 
     uintptr_t rounded_up_begin_addr = RoundUpToSystemPage(begin_addr);
@@ -1184,9 +1176,6 @@ void PartitionRoot::Init(PartitionOptions opts) {
         opts.memory_tagging.reporting_mode;
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 
-    settings.use_pool_offset_freelists =
-        opts.use_pool_offset_freelists == PartitionOptions::kEnabled;
-
     // brp_enabled() is not supported in the configurable pool because
     // BRP requires objects to be in a different Pool.
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -1233,24 +1222,10 @@ void PartitionRoot::Init(PartitionOptions opts) {
         opts.use_small_single_slot_spans == PartitionOptions::kEnabled;
 
     // Set up the actual usable buckets first.
-    constexpr internal::BucketIndexLookup lookup{};
-    size_t bucket_index = 0;
-    while (lookup.bucket_sizes()[bucket_index] !=
-           internal::kInvalidBucketSize) {
-      buckets[bucket_index].Init(lookup.bucket_sizes()[bucket_index],
-                                 use_small_single_slot_spans);
-      bucket_index++;
-    }
-    PA_DCHECK(bucket_index < internal::kNumBuckets);
-
-    // Remaining buckets are not usable, and not real.
-    for (size_t index = bucket_index; index < internal::kNumBuckets; index++) {
-      // Cannot init with size 0 since it computes 1 / size, but make sure the
-      // bucket is invalid.
-      buckets[index].Init(internal::kInvalidBucketSize,
-                          use_small_single_slot_spans);
-      buckets[index].active_slot_spans_head = nullptr;
-      PA_DCHECK(!buckets[index].is_valid());
+    for (size_t bucket_index = 0; bucket_index < BucketIndexLookup::kNumBuckets;
+         ++bucket_index) {
+      const size_t slot_size = BucketIndexLookup::GetBucketSize(bucket_index);
+      buckets[bucket_index].Init(slot_size, use_small_single_slot_spans);
     }
 
 #if !PA_CONFIG(THREAD_CACHE_SUPPORTED)
@@ -1585,7 +1560,7 @@ void PartitionRoot::PurgeMemory(int flags) {
     }
 
     for (unsigned int bucket_index = local_purge_next_bucket_index;
-         bucket_index < internal::kNumBuckets; bucket_index++) {
+         bucket_index < BucketIndexLookup::kNumBuckets; bucket_index++) {
       // Only acquire the lock for a single iteration, so that if there is a
       // waiter blocked on it, it can steal it from us before the next
       // one.
@@ -1593,9 +1568,6 @@ void PartitionRoot::PurgeMemory(int flags) {
           internal::PartitionRootLock(this)};
 
       Bucket& bucket = buckets[bucket_index];
-      if (bucket.slot_size == internal::kInvalidBucketSize) {
-        continue;
-      }
 
       if (bucket.slot_size >= min_bucket_size_to_purge) {
         internal::PartitionPurgeBucket(this, &bucket);
@@ -1617,7 +1589,8 @@ void PartitionRoot::PurgeMemory(int flags) {
       if (flags & PurgeFlags::kLimitDuration &&
           (now_maybe_overridden_for_testing() - start > kMaxPurgeDuration)) {
         // Pick up where we stopped next time.
-        purge_next_bucket_index = (bucket_index + 1) % kNumBuckets;
+        purge_next_bucket_index =
+            (bucket_index + 1) % BucketIndexLookup::kNumBuckets;
         return;
       }
     }
@@ -1680,7 +1653,7 @@ void PartitionRoot::DumpStats(const char* partition_name,
     direct_map_lengths =
         std::unique_ptr<uint32_t[]>(new uint32_t[kMaxReportableDirectMaps]);
   }
-  PartitionBucketMemoryStats bucket_stats[internal::kNumBuckets];
+  PartitionBucketMemoryStats bucket_stats[BucketIndexLookup::kNumBuckets];
   size_t num_direct_mapped_allocations = 0;
   PartitionMemoryStats stats = {};
 
@@ -1718,7 +1691,7 @@ void PartitionRoot::DumpStats(const char* partition_name,
 #endif
 
     size_t direct_mapped_allocations_total_size = 0;
-    for (size_t i = 0; i < internal::kNumBuckets; ++i) {
+    for (size_t i = 0; i < BucketIndexLookup::kNumBuckets; ++i) {
       const Bucket* bucket = &bucket_at(i);
       // Don't report the pseudo buckets that the generic allocator sets up in
       // order to preserve a fast size->bucket map (see
@@ -2100,7 +2073,8 @@ EXPORT_TEMPLATE void* PartitionRoot::AlignedAlloc<AllocFlags::kNone>(size_t,
 #endif
 static_assert(offsetof(PartitionRoot, sentinel_bucket) ==
                   offsetof(PartitionRoot, buckets) +
-                      internal::kNumBuckets * sizeof(PartitionRoot::Bucket),
+                      BucketIndexLookup::kNumBuckets *
+                          sizeof(PartitionRoot::Bucket),
               "sentinel_bucket must be just after the regular buckets.");
 
 static_assert(

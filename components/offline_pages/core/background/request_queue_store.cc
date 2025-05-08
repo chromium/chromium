@@ -374,9 +374,6 @@ bool InitDatabaseSync(sql::Database* db, const base::FilePath& path) {
     if (!db->Open(path))
       return false;
   }
-  if (!base::FeatureList::IsEnabled(sql::features::kPreOpenPreloadDatabase)) {
-    db->Preload();
-  }
 
   return CreateSchemaSync(db);
 }
@@ -587,8 +584,7 @@ RequestQueueStore::~RequestQueueStore() {
 void RequestQueueStore::Initialize(InitializeCallback callback) {
   DCHECK(!db_);
   db_ = std::make_unique<sql::Database>(
-      sql::DatabaseOptions().set_preload(
-          base::FeatureList::IsEnabled(sql::features::kPreOpenPreloadDatabase)),
+      sql::DatabaseOptions().set_preload(true),
       sql::Database::Tag("BackgroundRequestQueue"));
 
   background_task_runner_->PostTaskAndReplyWithResult(

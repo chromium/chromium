@@ -183,10 +183,6 @@ class CORE_EXPORT ScrollbarTheme {
                             const Scrollbar&,
                             const gfx::Rect&);
 
-  virtual int MaxOverlapBetweenPages() const {
-    return std::numeric_limits<int>::max();
-  }
-
   virtual base::TimeDelta InitialAutoscrollTimerDelay() const;
   virtual base::TimeDelta AutoscrollTimerDelay() const;
 

@@ -382,6 +382,12 @@ suite('CombinedAdsApiUxEnhancementDisabled', function() {
     const consentStep = getActiveStep(page);
     assertEquals(
         getActiveStep(page).id, PrivacySandboxCombinedDialogStep.CONSENT);
+
+    // Privacy policy page is initially not loaded.
+    let privacyPolicyDialog = consentStep.shadowRoot!.querySelector(
+        'privacy-sandbox-privacy-policy-dialog');
+    assertFalse(!!privacyPolicyDialog);
+
     // The collapse section is opened.
     const learnMore: HTMLElement = consentStep.shadowRoot!.querySelector(
         'privacy-sandbox-dialog-learn-more')!;
@@ -404,7 +410,7 @@ suite('CombinedAdsApiUxEnhancementDisabled', function() {
         consentStep.shadowRoot!.querySelector('#privacyPolicyLinkV2')));
     privacyPolicyLink.click();
     await microtasksFinished();
-    const privacyPolicyDialog = consentStep.shadowRoot!.querySelector(
+    privacyPolicyDialog = consentStep.shadowRoot!.querySelector(
         'privacy-sandbox-privacy-policy-dialog');
     assertTrue(!!privacyPolicyDialog);
     const privacyPolicy =
@@ -506,6 +512,13 @@ suite('CombinedAdsApiUxEnhancement', function() {
         browserProxy, PrivacySandboxPromptAction.CONSENT_SHOWN);
     const consentStep = getActiveStep(page);
     assertEquals(consentStep.id, PrivacySandboxCombinedDialogStep.CONSENT);
+
+    // Privacy policy page is initially not loaded.
+    let privacyPolicyDialog = consentStep.shadowRoot!.querySelector(
+        'privacy-sandbox-privacy-policy-dialog');
+    assertFalse(!!privacyPolicyDialog);
+
+    // The collapse section is opened.
     const learnMore = consentStep.shadowRoot!.querySelector(
         'privacy-sandbox-dialog-learn-more');
     assertTrue(!!learnMore);
@@ -533,7 +546,7 @@ suite('CombinedAdsApiUxEnhancement', function() {
     privacyPolicyLinkV2.click();
     await microtasksFinished();
 
-    const privacyPolicyDialog = consentStep.shadowRoot!.querySelector(
+    privacyPolicyDialog = consentStep.shadowRoot!.querySelector(
         'privacy-sandbox-privacy-policy-dialog');
     assertTrue(!!privacyPolicyDialog);
     const privacyPolicy =
@@ -618,6 +631,13 @@ suite('CombinedAdsApiUxEnhancementAdTopicsContentParity', function() {
         browserProxy, PrivacySandboxPromptAction.CONSENT_SHOWN);
     const consentStep = getActiveStep(page);
     assertEquals(consentStep.id, PrivacySandboxCombinedDialogStep.CONSENT);
+
+    // Privacy policy page is initially not loaded.
+    let privacyPolicyDialog = consentStep.shadowRoot!.querySelector(
+        'privacy-sandbox-privacy-policy-dialog');
+    assertFalse(!!privacyPolicyDialog);
+
+    // The collapse section is opened.
     const learnMore = consentStep.shadowRoot!.querySelector(
         'privacy-sandbox-dialog-learn-more');
     assertTrue(!!learnMore);
@@ -658,7 +678,7 @@ suite('CombinedAdsApiUxEnhancementAdTopicsContentParity', function() {
     privacyPolicyLinkV3.click();
     await microtasksFinished();
 
-    const privacyPolicyDialog = consentStep.shadowRoot!.querySelector(
+    privacyPolicyDialog = consentStep.shadowRoot!.querySelector(
         'privacy-sandbox-privacy-policy-dialog');
     assertTrue(!!privacyPolicyDialog);
     const privacyPolicy =
@@ -1011,6 +1031,12 @@ suite('NoticeEEAAdsApiUxEnhancement', function() {
         browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     const noticeStep = getActiveStep(page);
     assertEquals(noticeStep.id, PrivacySandboxCombinedDialogStep.NOTICE);
+
+    let privacyPolicyDialog = noticeStep.shadowRoot!.querySelector(
+        'privacy-sandbox-privacy-policy-dialog');
+    assertFalse(!!privacyPolicyDialog);
+
+    // The collapse section is opened.
     const learnMore = noticeStep.shadowRoot!.querySelector(
         'privacy-sandbox-dialog-learn-more');
     assertTrue(!!learnMore);
@@ -1030,7 +1056,7 @@ suite('NoticeEEAAdsApiUxEnhancement', function() {
     privacyPolicyLinkV2.click();
     await microtasksFinished();
 
-    const privacyPolicyDialog = noticeStep.shadowRoot!.querySelector(
+    privacyPolicyDialog = noticeStep.shadowRoot!.querySelector(
         'privacy-sandbox-privacy-policy-dialog');
     assertTrue(!!privacyPolicyDialog);
     const privacyPolicy =
@@ -1225,6 +1251,12 @@ suite('NoticeROWAdsApiUxEnhancement', function() {
   test('privacyPolicyShown', async function() {
     await verifyActionOccured(
         browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
+
+    let privacyPolicyDialog = page!.shadowRoot!.querySelector(
+        'privacy-sandbox-privacy-policy-dialog');
+    assertFalse(!!privacyPolicyDialog);
+
+    // The collapse section is opened.
     const learnMore =
         page.shadowRoot!.querySelector('privacy-sandbox-dialog-learn-more');
     assertTrue(!!learnMore);
@@ -1241,7 +1273,7 @@ suite('NoticeROWAdsApiUxEnhancement', function() {
     privacyPolicyLinkV2.click();
     await microtasksFinished();
 
-    const privacyPolicyDialog = page!.shadowRoot!.querySelector(
+    privacyPolicyDialog = page!.shadowRoot!.querySelector(
         'privacy-sandbox-privacy-policy-dialog');
     assertTrue(!!privacyPolicyDialog);
     const privacyPolicy =

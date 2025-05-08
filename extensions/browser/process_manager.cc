@@ -47,6 +47,7 @@
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/process_manager_observer.h"
 #include "extensions/browser/renderer_startup_helper.h"
+#include "extensions/browser/service_worker/service_worker_task_queue.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -1034,6 +1035,8 @@ void ProcessManager::RenderProcessExited(
          all_running_extension_workers_.GetAllForExtension(extension_id,
                                                            render_process_id)) {
       StopTrackingServiceWorkerRunningInstance(worker_id);
+      ServiceWorkerTaskQueue::Get(browser_context_)
+          ->RenderProcessForWorkerExited(worker_id);
     }
   }
 #if DCHECK_IS_ON()

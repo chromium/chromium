@@ -15,14 +15,15 @@ namespace payments {
 // A fake used in tests to provide instances of BrowserBoundKey.
 class FakeBrowserBoundKey : public BrowserBoundKey {
  public:
-  // Constructs a fake browser bound key that returns `public_key_as_cose_key`,
-  // and `signature` from the respective calls. `algorithm_identifier` is the
-  // COSE Algorithm identifier that
+  // Constructs a fake browser bound key that returns `identifier`,
+  // `public_key_as_cose_key`, and `signature` from the respective calls.
+  // `algorithm_identifier` is the COSE Algorithm identifier that
   // `FakeBrowserBoundKeyStore::GetOrCreateBrowserBoundKeyForCredentialId()`
   // will match. `Sign()` will compare its input, against
   // `expected_client_data`, returning an empty signature when these do not
   // match.
-  FakeBrowserBoundKey(std::vector<uint8_t> public_key_as_cose_key,
+  FakeBrowserBoundKey(std::vector<uint8_t> identifier,
+                      std::vector<uint8_t> public_key_as_cose_key,
                       std::vector<uint8_t> signature,
                       int32_t algorithm_identifier,
                       std::vector<uint8_t> expected_client_data);
@@ -30,12 +31,14 @@ class FakeBrowserBoundKey : public BrowserBoundKey {
   FakeBrowserBoundKey& operator=(const FakeBrowserBoundKey& other);
   ~FakeBrowserBoundKey() override;
 
+  std::vector<uint8_t> GetIdentifier() const override;
   std::vector<uint8_t> Sign(const std::vector<uint8_t>& client_data) override;
   std::vector<uint8_t> GetPublicKeyAsCoseKey() const override;
 
   int32_t algorithm_identifier() const { return algorithm_identifier_; }
 
  private:
+  std::vector<uint8_t> identifier_;
   std::vector<uint8_t> public_key_as_cose_key_;
   std::vector<uint8_t> signature_;
   int32_t algorithm_identifier_;

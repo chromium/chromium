@@ -8,9 +8,11 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -18,6 +20,7 @@
 namespace content {
 class WebContents;
 }
+class ModelQualityLogsUploader;
 class OptimizationGuideKeyedService;
 namespace password_manager {
 class PasswordFormManager;
@@ -62,7 +65,15 @@ class ChangeFormSubmissionVerifier {
       "PasswordManager.PasswordChangeVerificationTriggeredAutomatically";
 
   ChangeFormSubmissionVerifier(content::WebContents* web_contents,
-                               FormSubmissionResultCallback callback);
+                               FormSubmissionResultCallback callback,
+                               ModelQualityLogsUploader* logs_uploader);
+  ChangeFormSubmissionVerifier(
+      base::PassKey<class ChangeFormSubmissionVerifierTest>,
+      content::WebContents* web_contents,
+      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
+          capture_annotated_page_content,
+      FormSubmissionResultCallback callback,
+      ModelQualityLogsUploader* logs_uploader);
   ~ChangeFormSubmissionVerifier();
 
   // Starts chain of actions:
@@ -100,9 +111,12 @@ class ChangeFormSubmissionVerifier {
       base::WeakPtr<password_manager::PasswordManagerDriver> driver,
       bool success);
 
-  void RequestAXTree();
+  void RequestPageContent();
 
-  void ProcessTree(ui::AXTreeUpdate& ax_tree_update);
+  void OnAnnotatedPageContentReceived(
+      std::optional<optimization_guide::AIPageContentResult> page_content);
+  void OnAxTreeReceived(ui::AXTreeUpdate& ax_tree_update);
+  void CheckSubmissionSuccessful();
   void OnExecutionResponseCallback(
       optimization_guide::OptimizationGuideModelExecutionResult
           execution_result,
@@ -110,12 +124,19 @@ class ChangeFormSubmissionVerifier {
           optimization_guide::proto::PasswordChangeSubmissionLoggingData>
           logging_data);
 
-  OptimizationGuideKeyedService* GetOptimizationService();
+  OptimizationGuideKeyedService* GetOptimizationService() const;
 
   base::OneShotTimer timeout_timer_;
   base::WeakPtr<content::WebContents> web_contents_;
+  base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
+      capture_annotated_page_content_;
   FormSubmissionResultCallback callback_;
+  raw_ptr<ModelQualityLogsUploader> logs_uploader_;
   std::unique_ptr<password_manager::PasswordFormManager> form_manager_;
+  // TODO(crbug.com/409946698): Delete this when removing support for AX tree
+  // prompts.
+  optimization_guide::proto::PasswordChangeRequest
+      check_submission_successful_request_;
 
   bool submission_detected_ = false;
   bool password_form_submitted_ = false;

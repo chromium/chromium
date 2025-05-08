@@ -88,6 +88,7 @@
   _accountPickerSelectionScreenCoordinator = nil;
   [_accountPickerConfirmationScreenCoordinator stop];
   _accountPickerConfirmationScreenCoordinator = nil;
+  [super stop];
 }
 
 #pragma mark - AccountPickerConsumer

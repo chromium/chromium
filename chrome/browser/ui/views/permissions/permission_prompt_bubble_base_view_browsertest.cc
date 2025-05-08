@@ -7,11 +7,9 @@
 #include <algorithm>
 #include <array>
 
-#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/download/download_permission_request.h"
@@ -28,7 +26,6 @@
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
@@ -36,7 +33,6 @@
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/custom_handlers/register_protocol_handler_permission_request.h"
 #include "components/permissions/constants.h"
-#include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/permission_util.h"
@@ -222,7 +218,6 @@ class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
       gfx::AnimationTestApi::SetRichAnimationRenderMode(
           gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;
   GURL embedding_origin_ = GURL("https://www.origin.test.com");
   GURL test_url_ = GURL("https://example.com");
@@ -240,15 +235,9 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
   ShowUi("geolocation");
 
-  ChipController* chip_controller = GetChipController();
-
-  // If chip UI is used, two notifications will be announced: one that
-  // permission was requested and second when bubble is opened.
-  if (chip_controller->IsPermissionPromptChipVisible()) {
-    EXPECT_EQ(2, counter.GetCount(ax::mojom::Event::kAlert));
-  } else {
-    EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
-  }
+  // Even though chip UI is used, only the event "permission prompt bubble is
+  // opened" will be announced.
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
 }
 
 // Test switching between PermissionChip and PermissionPromptBubbleBaseView and
@@ -595,46 +584,6 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
               permissions::PermissionPromptDisposition::
                   LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP);
   }
-}
-
-class PermissionPromptBubbleBaseViewAllowAlwaysFirstBrowserTest
-    : public PermissionPromptBubbleBaseViewBrowserTest {
- public:
-  PermissionPromptBubbleBaseViewAllowAlwaysFirstBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        permissions::features::kOneTimePermission,
-        {{"show_allow_always_as_first_button", "true"}});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    PermissionPromptBubbleBaseViewAllowAlwaysFirstBrowserTest,
-    InvokeUi_geolocation) {
-  ShowAndVerifyUi();
-}
-
-class PermissionPromptBubbleBaseViewAllowWhileVisitingFirstBrowserTest
-    : public PermissionPromptBubbleBaseViewBrowserTest {
- public:
-  PermissionPromptBubbleBaseViewAllowWhileVisitingFirstBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        permissions::features::kOneTimePermission,
-        {{"use_stronger_prompt_language", "true"},
-         {"use_while_visiting_language", "true"},
-         {"show_allow_always_as_first_button", "true"}});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    PermissionPromptBubbleBaseViewAllowWhileVisitingFirstBrowserTest,
-    InvokeUi_geolocation) {
-  ShowAndVerifyUi();
 }
 
 class LongOriginPermissionPromptBubbleBaseViewBrowserTest

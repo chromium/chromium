@@ -39,6 +39,7 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.TabStripUtils;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.util.MotionEventUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -148,6 +149,7 @@ public class UndoIntegrationTest {
     private void closeTabViaButton(ChromeTabbedActivity cta, int tabId) {
         final StripLayoutTab tab =
                 TabStripUtils.findStripLayoutTab(cta, /* incognito= */ false, tabId);
-        tab.getCloseButton().handleClick(SystemClock.uptimeMillis());
+        tab.getCloseButton()
+                .handleClick(SystemClock.uptimeMillis(), MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
     }
 }

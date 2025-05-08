@@ -763,10 +763,7 @@ bool IsLinkClick(Event& event) {
       !mouse_event) {
     return false;
   }
-  int16_t button = mouse_event->button();
-  return (button == static_cast<int16_t>(WebPointerProperties::Button::kLeft) ||
-          button ==
-              static_cast<int16_t>(WebPointerProperties::Button::kMiddle));
+  return mouse_event->IsLinkClickButton();
 }
 
 bool HTMLAnchorElementBase::WillRespondToMouseClickEvents() {

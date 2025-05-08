@@ -35,7 +35,7 @@ constexpr bool IsFileAccessCaseSensitive() {
 // TODO(https://crbug.com/400119351): Remove this in M138.
 bool IsDotSpaceFilenameSuffixIgnored();
 
-// Returns platform specific canonicalized version of |relative_path| for
+// Returns platform specific canonicalized version of `relative_path` for
 // content verification system.
 CanonicalRelativePath CanonicalizeRelativePath(
     const base::FilePath& relative_path);

@@ -24,11 +24,20 @@ void PutCommandInNSUserDefault(NSDictionary* command) {
   [shared_defaults setObject:command forKey:defaults_key];
   [shared_defaults synchronize];
 }
+
+void PutSearchImageCommandInNSUserDefaults(NSMutableDictionary* command,
+                                           NSData* imageData) {
+  NSString* dataPrefKey =
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupCommandDataPreference);
+  command[dataPrefKey] = imageData;
+  PutCommandInNSUserDefault(command);
+}
+
 }  // namespace
 
 @interface AppGroupCommand ()
 // The identifier of the extension that sent the order.
-@property(nonatomic, strong) NSString* sourceApp;
+@property(nonatomic, copy) NSString* sourceApp;
 
 // A block that can be used to open a URL.
 @property(nonatomic, strong) URLOpenerBlock opener;
@@ -39,7 +48,7 @@ void PutCommandInNSUserDefault(NSDictionary* command) {
                    URLOpenerBlock:(URLOpenerBlock)opener {
   self = [super init];
   if (self) {
-    _sourceApp = sourceApp;
+    _sourceApp = [sourceApp copy];
     _opener = opener;
   }
   return self;
@@ -103,24 +112,30 @@ void PutCommandInNSUserDefault(NSDictionary* command) {
   PutCommandInNSUserDefault(command);
 }
 
-- (void)prepareToSearchImage:(UIImage*)image {
+- (void)prepareToSearchImageData:(NSData*)imageData
+                      completion:(ProceduralBlock)completion {
   NSMutableDictionary* command = [self
       baseCommandDictionary:base::SysUTF8ToNSString(
                                 app_group::kChromeAppGroupSearchImageCommand)];
-  NSString* dataPrefKey =
-      base::SysUTF8ToNSString(app_group::kChromeAppGroupCommandDataPreference);
-  command[dataPrefKey] = UIImageJPEGRepresentation(image, 1.0);
-  PutCommandInNSUserDefault(command);
+  // Use the iOS standard thread system as Chrome thread are not available in
+  // extension process.
+  dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+    PutSearchImageCommandInNSUserDefaults(command, imageData);
+    dispatch_async(dispatch_get_main_queue(), completion);
+  });
 }
 
-- (void)prepareToIncognitoSearchImage:(UIImage*)image {
+- (void)prepareToIncognitoSearchImageData:(NSData*)imageData
+                               completion:(ProceduralBlock)completion {
   NSMutableDictionary* command =
       [self baseCommandDictionary:
                 app_group::kChromeAppGroupIncognitoSearchImageCommand];
-  NSString* dataPrefKey =
-      base::SysUTF8ToNSString(app_group::kChromeAppGroupCommandDataPreference);
-  command[dataPrefKey] = UIImageJPEGRepresentation(image, 1.0);
-  PutCommandInNSUserDefault(command);
+  // Use the iOS standard thread system as Chrome thread are not available in
+  // extension process.
+  dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+    PutSearchImageCommandInNSUserDefaults(command, imageData);
+    dispatch_async(dispatch_get_main_queue(), completion);
+  });
 }
 
 - (void)prepareToOpenItem:(NSURL*)URL index:(NSNumber*)index {

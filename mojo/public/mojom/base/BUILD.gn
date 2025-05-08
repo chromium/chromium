@@ -16,6 +16,7 @@ mojom_component("base") {
     "big_string.mojom",
     "binder.mojom",
     "byte_string.mojom",
+    "error.mojom",
     "file.mojom",
     "file_error.mojom",
     "file_info.mojom",

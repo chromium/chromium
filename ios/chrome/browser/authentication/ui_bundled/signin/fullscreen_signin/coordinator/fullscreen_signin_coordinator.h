@@ -5,16 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_FULLSCREEN_SIGNIN_COORDINATOR_FULLSCREEN_SIGNIN_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_FULLSCREEN_SIGNIN_COORDINATOR_FULLSCREEN_SIGNIN_COORDINATOR_H_
 
-#import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/animated_coordinator.h"
 
 @class ScreenProvider;
 
 // Main coordinator that manages the overall fullscreen sign-in flow.
 // It contains a child coordinator, FullscreenSigninScreenCoordinator,
 // which is responsible for presenting the actual fullscreen sign-in screen.
-@interface FullscreenSigninCoordinator
-    : SigninCoordinator <InterruptibleChromeCoordinator>
+@interface FullscreenSigninCoordinator : SigninCoordinator
 
 // Initiate the coordinator.
 // `browser` used for authentication. It must not be off the record (incognito).

@@ -275,9 +275,9 @@ class FaceGazeTestUtils {
   void ExecuteAccessibilityCommonScript(const std::string& script);
 
   // Setup-related methods.
-  void SetUpMediapipeDir();
+  void SetUpMediapipeDir(const char* mediapipe_dir);
   void WaitForJSReady();
-  void SetUpJSTestSupport();
+  void SetUpJSTestSupport(const char* test_support_dir);
   void CancelMouseControllerInterval();
   void ConfigureFaceGaze(const Config& config);
 

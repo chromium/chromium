@@ -23,7 +23,6 @@
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sync_channel.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
-#include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"
 #include "third_party/blink/public/mojom/page/prerender_page_param.mojom.h"
@@ -297,7 +296,7 @@ blink::WebView* AgentSchedulingGroup::CreateWebView(
       opener_frame ? opener_frame->View() : nullptr,
       std::move(params->blink_page_broadcast), agent_group_scheduler(),
       params->session_storage_namespace_id, params->base_background_color,
-      params->browsing_context_group_info, &params->color_provider_colors,
+      params->browsing_context_group_token, &params->color_provider_colors,
       std::move(params->partitioned_popin_params));
 
   web_view->SetRendererPreferences(params->renderer_preferences);

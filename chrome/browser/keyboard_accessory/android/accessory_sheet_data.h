@@ -330,6 +330,38 @@ class IbanInfo final {
 
 std::ostream& operator<<(std::ostream& out, const IbanInfo& iban);
 
+// Represents data pertaining to Google Wallet loyalty cards to be shown on the
+// Payments methods tab of manual fallback UI.
+class LoyaltyCardInfo final {
+ public:
+  LoyaltyCardInfo(std::string merchant_name,
+                  GURL program_logo_url,
+                  std::u16string loyalty_card_number);
+
+  LoyaltyCardInfo(const LoyaltyCardInfo&);
+  LoyaltyCardInfo& operator=(const LoyaltyCardInfo&);
+  LoyaltyCardInfo(LoyaltyCardInfo&&);
+  LoyaltyCardInfo& operator=(LoyaltyCardInfo&&);
+
+  ~LoyaltyCardInfo();
+
+  const std::string& merchant_name() const { return merchant_name_; }
+
+  const GURL& program_logo_url() const { return program_logo_url_; }
+
+  const AccessorySheetField& value() const { return value_; }
+
+  bool operator==(const LoyaltyCardInfo&) const = default;
+
+ private:
+  std::string merchant_name_;
+  GURL program_logo_url_;
+  AccessorySheetField value_;
+};
+
+std::ostream& operator<<(std::ostream& out,
+                         const LoyaltyCardInfo& loyalty_card);
+
 // Represents a command below the suggestions, such as "Manage password...".
 class FooterCommand final {
  public:
@@ -478,6 +510,14 @@ class AccessorySheetData final {
     return iban_info_list_;
   }
 
+  void add_loyalty_card_info(LoyaltyCardInfo loyalty_card_info) {
+    loyalty_card_info_list_.emplace_back(std::move(loyalty_card_info));
+  }
+
+  const std::vector<LoyaltyCardInfo>& loyalty_card_info_list() const {
+    return loyalty_card_info_list_;
+  }
+
   void add_footer_command(FooterCommand footer_command) {
     footer_commands_.emplace_back(std::move(footer_command));
   }
@@ -497,6 +537,7 @@ class AccessorySheetData final {
   UserInfoSection user_info_section_;
   std::vector<PromoCodeInfo> promo_code_info_list_;
   std::vector<IbanInfo> iban_info_list_;
+  std::vector<LoyaltyCardInfo> loyalty_card_info_list_;
   std::vector<FooterCommand> footer_commands_;
 };
 
@@ -611,6 +652,13 @@ class AccessorySheetData::Builder final {
   Builder& AddIbanInfo(std::u16string value,
                        std::u16string text_to_fill,
                        std::string id) &;
+
+  Builder&& AddLoyaltyCardInfo(std::string merchant_name,
+                               GURL program_logo_url,
+                               std::u16string loyalty_card_number) &&;
+  Builder& AddLoyaltyCardInfo(std::string merchant_name,
+                              GURL program_logo_url,
+                              std::u16string loyalty_card_number) &;
 
   // Appends a new footer command to |accessory_sheet_data_|.
   Builder&& AppendFooterCommand(std::u16string display_text,

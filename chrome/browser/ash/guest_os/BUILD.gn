@@ -71,6 +71,7 @@ static_library("guest_os") {
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/arc/adbd",
     "//chrome/browser/ash/borealis",
+    "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ash/bruschetta",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/crostini/ansible",

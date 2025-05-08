@@ -8,6 +8,7 @@
 
 #include "base/containers/to_vector.h"
 #include "base/notreached.h"
+#include "base/version_info/version_info.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -271,11 +272,12 @@ void AddressDataCleaner::MaybeCleanupAddressData() {
   }
   are_cleanups_pending_ = false;
 
+  int chrome_version_major = version_info::GetMajorVersionNumberAsInt();
   // Ensure that deduplication is only run one per milestone.
   if (pref_service_->GetInteger(prefs::kAutofillLastVersionDeduped) <
-      CHROME_VERSION_MAJOR) {
+      chrome_version_major) {
     pref_service_->SetInteger(prefs::kAutofillLastVersionDeduped,
-                              CHROME_VERSION_MAJOR);
+                              chrome_version_major);
     // Since the milesone changed the extra deduplication can be run again.
     pref_service_->ClearPref(
         prefs::kAutofillRanExtraDeduplication);

@@ -12,7 +12,6 @@ import("//build/config/locales.gni")
 import("//build/config/ozone.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
-import("//build/util/branding.gni")
 import("//skia/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
@@ -28,6 +27,7 @@ if (is_android) {
   import("//build/config/apple/mobile_config.gni")
 } else if (is_mac) {
   import("//build/config/mac/rules.gni")
+  import("//build/util/branding.gni")
 }
 
 build_ime = !is_ios
@@ -405,13 +405,6 @@ component("base") {
       sources += [
         "menu_source_utils.cc",
         "menu_source_utils.h",
-      ]
-    }
-
-    if (is_linux) {
-      sources += [
-        "linux/xdg_shortcut.cc",
-        "linux/xdg_shortcut.h",
       ]
     }
 
@@ -1312,10 +1305,6 @@ test("ui_base_unittests") {
   if (use_glib) {
     sources += [ "glib/scoped_gsignal_unittest.cc" ]
     deps += [ "//ui/base/glib" ]
-  }
-
-  if (is_linux) {
-    sources += [ "linux/xdg_shortcut_unittest.cc" ]
   }
 
   if (is_linux && use_dbus) {

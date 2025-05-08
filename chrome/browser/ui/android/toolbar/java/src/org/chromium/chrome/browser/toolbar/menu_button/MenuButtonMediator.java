@@ -4,14 +4,15 @@
 
 package org.chromium.chrome.browser.toolbar.menu_button;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.view.View;
-
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
@@ -20,6 +21,8 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -43,12 +46,13 @@ import org.chromium.ui.util.TokenHolder;
  * Mediator for the MenuButton. Listens for MenuButton state changes and drives corresponding
  * changes to the property model that backs the MenuButton view.
  */
+@NullMarked
 class MenuButtonMediator implements AppMenuObserver {
     private Callback<AppMenuCoordinator> mAppMenuCoordinatorSupplierObserver;
     private @Nullable AppMenuPropertiesDelegate mAppMenuPropertiesDelegate;
-    private AppMenuButtonHelper mAppMenuButtonHelper;
+    private @Nullable AppMenuButtonHelper mAppMenuButtonHelper;
     private ObservableSupplierImpl<AppMenuButtonHelper> mAppMenuButtonHelperSupplier;
-    private AppMenuHandler mAppMenuHandler;
+    private @Nullable AppMenuHandler mAppMenuHandler;
     private final BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
     private final SetFocusFunction mSetUrlBarFocusFunction;
     private final PropertyModel mPropertyModel;
@@ -111,7 +115,7 @@ class MenuButtonMediator implements AppMenuObserver {
         mAppMenuCoordinatorSupplierObserver = this::onAppMenuInitialized;
         mAppMenuCoordinatorSupplier = appMenuCoordinatorSupplier;
         mAppMenuCoordinatorSupplier.onAvailable(mAppMenuCoordinatorSupplierObserver);
-        mActivity = windowAndroid.getActivity().get();
+        mActivity = assertNonNull(windowAndroid.getActivity().get());
         mResources = mActivity.getResources();
         mAppMenuButtonHelperSupplier = new ObservableSupplierImpl<>();
         mKeyboardDelegate = windowAndroid.getKeyboardDelegate();
@@ -191,6 +195,7 @@ class MenuButtonMediator implements AppMenuObserver {
 
     void destroy() {
         if (mAppMenuButtonHelper != null) {
+            assumeNonNull(mAppMenuHandler);
             mAppMenuHandler.removeObserver(this);
             mAppMenuButtonHelper = null;
         }
@@ -225,8 +230,8 @@ class MenuButtonMediator implements AppMenuObserver {
     }
 
     private void onTintChanged(
-            ColorStateList tintList,
-            ColorStateList activityFocusTintList,
+            @Nullable ColorStateList tintList,
+            @Nullable ColorStateList activityFocusTintList,
             @BrandedColorScheme int brandedColorScheme) {
         mPropertyModel.set(
                 MenuButtonProperties.THEME,

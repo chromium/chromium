@@ -53,9 +53,14 @@ void WebUIContentsPreloadManagerTestAPI::PreloadUrl(
       preload_manager()->CreateNewContents(browser_context, url));
 }
 
-void WebUIContentsPreloadManagerTestAPI::SetPreloadedContents(
+std::unique_ptr<content::WebContents>
+WebUIContentsPreloadManagerTestAPI::SetPreloadedContents(
     std::unique_ptr<content::WebContents> web_contents) {
-  preload_manager()->SetPreloadedContents(std::move(web_contents));
+  return preload_manager()->SetPreloadedContents(std::move(web_contents));
+}
+
+void WebUIContentsPreloadManagerTestAPI::DisableDelayPreload(bool disable) {
+  preload_manager()->is_delay_preload_disabled_for_test_ = disable;
 }
 
 void WebUIContentsPreloadManagerTestAPI::SetPreloadCandidateSelector(

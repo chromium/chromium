@@ -20,6 +20,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
+#include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface_base.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
@@ -188,10 +189,10 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
           callback);
 
   // Determine if the user meets the conditions to link a BNPL partner, such as
-  // Affirm. The `request_details` uses `issuer_id` and
-  // `billing_customer_number` to determine the appropriate legal message to
-  // display. The `issuer_id` indicates the BNPL partner to be linked. The
-  // callback function is triggered when the server responds. This function
+  // Affirm. The `request_details` contains `issuer_id`, `app_locale` and
+  // `billing_customer_number` that are used to determine the appropriate legal
+  // message to display.
+  // The callback function is triggered when the server responds. This function
   // receives the result of the response. Both the context token and legal
   // message are always returned in the callback upon a successful response.
   virtual void GetDetailsForCreateBnplPaymentInstrument(
@@ -199,7 +200,7 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
           request_details,
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult result,
                               std::string context_token,
-                              std::unique_ptr<base::Value::Dict>)> callback);
+                              LegalMessageLines legal_message)> callback);
 
   // The user has indicated that they would like to create a BNPL payment
   // instrument. This request will fail server side if a successful call to

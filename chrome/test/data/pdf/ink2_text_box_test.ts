@@ -2,18 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {hexToColor, Ink2Manager, TEXT_COLORS, TextAlignment, TextStyle} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {hexToColor, Ink2Manager, PluginController, PluginControllerEventType, TEXT_COLORS, TextAlignment, TextBoxState, TextStyle, TextTypeface} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {TextAnnotation} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {getRequiredElement, setupTestViewportAndMockPluginForInk} from './test_util.js';
+import {assertDeepEquals, getRequiredElement, setupTestViewportAndMockPluginForInk} from './test_util.js';
 
 // Set up a dummy viewport so that we can get a predictable initial state.
-setupTestViewportAndMockPluginForInk();
+const {viewport, mockPlugin} = setupTestViewportAndMockPluginForInk();
 const manager = Ink2Manager.getInstance();
-// Initialize a font, since this starts out empty.
-manager.setTextFont('Roboto');
 const textbox = document.createElement('ink-text-box');
 document.body.appendChild(textbox);
+
+function initializeBox(
+    width: number, height: number, x: number, y: number, existing?: boolean) {
+  manager.dispatchEvent(new CustomEvent('initialize-text-box', {
+    detail: {
+      annotation: {
+        text: existing ? 'Hello World' : '',
+        textAttributes: {
+          size: 12,
+          typeface: TextTypeface.SANS_SERIF,
+          styles: {
+            [TextStyle.BOLD]: false,
+            [TextStyle.ITALIC]: false,
+          },
+          alignment: TextAlignment.LEFT,
+          color: hexToColor(TEXT_COLORS[0]!.color),
+        },
+        textBoxRect: {height, locationX: x, locationY: y, width},
+        id: 0,
+        pageNumber: 0,
+      },
+      pageCoordinates: {x: 10, y: 3},
+    },
+  }));
+}
 
 function assertPositionAndSize(
     el: HTMLElement, expectedWidth: string, expectedHeight: string,
@@ -48,48 +72,35 @@ async function dragHandle(handle: HTMLElement, deltaX: number, deltaY: number) {
 }
 
 chrome.test.runTests([
-  // Test drawing the box based on position from the backend.
+  // Test drawing the box based on data from the manager.
   async function testDrawsBox() {
     // Initial state. Textbox is not visible because it hasn't received an
-    // update-text-box event yet.
+    // initialize-text-box event yet.
     chrome.test.assertTrue(textbox.hidden);
     chrome.test.assertFalse(isVisible(textbox));
 
     // Create a 160x40 box at 80, 120.
-    manager.dispatchEvent(new CustomEvent(
-        'update-text-box',
-        {detail: {height: 40, locationX: 80, locationY: 120, width: 160}}));
+    initializeBox(160, 40, 80, 120);
     await microtasksFinished();
     chrome.test.assertFalse(textbox.hidden);
     chrome.test.assertTrue(isVisible(textbox));
-    // Positions are offset by 10px for x and 3px for y, due to PDF viewer
-    // default margins for a 90x90 page (dummy viewport data).
-    assertPositionAndSize(textbox, '160px', '40px', '90px', '123px');
+    assertPositionAndSize(textbox, '160px', '40px', '80px', '120px');
+    chrome.test.assertEq('Sample Text', textbox.$.textbox.value);
 
-    // Update to a 100x200 box at 400, 300.
-    manager.dispatchEvent(new CustomEvent(
-        'update-text-box',
-        {detail: {height: 200, locationX: 400, locationY: 300, width: 100}}));
+    // Update to a 100x200 box at 400, 300 with existing "Hello World" text.
+    initializeBox(100, 200, 400, 300, true);
     await microtasksFinished();
     chrome.test.assertFalse(textbox.hidden);
     chrome.test.assertTrue(isVisible(textbox));
-    assertPositionAndSize(textbox, '100px', '200px', '410px', '303px');
-
-    manager.dispatchEvent(new CustomEvent(
-        'update-text-box',
-        {detail: {height: 0, locationX: 400, locationY: 300, width: 0}}));
-    await microtasksFinished();
-    chrome.test.assertTrue(textbox.hidden);
-    chrome.test.assertFalse(isVisible(textbox));
+    assertPositionAndSize(textbox, '100px', '200px', '400px', '300px');
+    chrome.test.assertEq('Hello World', textbox.$.textbox.value);
     chrome.test.succeed();
   },
 
   // Test that the textbox styles change based on an update event.
   async function testTextbox() {
     // Update to a 100x200 box at 400, 300.
-    manager.dispatchEvent(new CustomEvent(
-        'update-text-box',
-        {detail: {height: 200, locationX: 400, locationY: 300, width: 100}}));
+    initializeBox(100, 200, 400, 300);
     await microtasksFinished();
     chrome.test.assertFalse(textbox.hidden);
     chrome.test.assertTrue(isVisible(textbox));
@@ -99,7 +110,7 @@ chrome.test.runTests([
     // Initial state
     chrome.test.assertEq('12px', textboxStyles.getPropertyValue('font-size'));
     chrome.test.assertEq(
-        'Roboto', textboxStyles.getPropertyValue('font-family'));
+        'sans-serif', textboxStyles.getPropertyValue('font-family'));
     chrome.test.assertEq('400', textboxStyles.getPropertyValue('font-weight'));
     chrome.test.assertEq(
         'normal', textboxStyles.getPropertyValue('font-style'));
@@ -111,112 +122,129 @@ chrome.test.runTests([
     chrome.test.assertEq(colorStyle, textboxStyles.getPropertyValue('color'));
 
     // Confirm updating styles in the manager updates the style of the textbox.
-    manager.setTextFont('Serif');
+    // Each type of update should independently trigger a change.
+    // Typeface
+    manager.setTextTypeface(TextTypeface.SERIF);
+    await microtasksFinished();
+    chrome.test.assertEq(
+        'serif', textboxStyles.getPropertyValue('font-family'));
+
+    // Size
     manager.setTextSize(20);
+    await microtasksFinished();
+    chrome.test.assertEq('20px', textboxStyles.getPropertyValue('font-size'));
+
+    // Styles
     manager.setTextStyles({
       [TextStyle.BOLD]: true,
       [TextStyle.ITALIC]: true,
-      [TextStyle.UNDERLINE]: true,
-      [TextStyle.STRIKETHROUGH]: false,
     });
-    const newColor = hexToColor(TEXT_COLORS[1]!.color);
-    manager.setTextColor(newColor);
-    manager.setTextAlignment(TextAlignment.RIGHT);
     await microtasksFinished();
-    chrome.test.assertEq('20px', textboxStyles.getPropertyValue('font-size'));
-    chrome.test.assertEq(
-        'serif', textboxStyles.getPropertyValue('font-family'));
     chrome.test.assertEq('700', textboxStyles.getPropertyValue('font-weight'));
     chrome.test.assertEq(
         'italic', textboxStyles.getPropertyValue('font-style'));
-    chrome.test.assertEq('right', textboxStyles.getPropertyValue('text-align'));
-    chrome.test.assertTrue(textboxStyles.getPropertyValue('text-decoration')
-                               .includes('underline'));
+
+    // Color
+    const newColor = hexToColor(TEXT_COLORS[1]!.color);
+    manager.setTextColor(newColor);
     const newColorStyle = `rgb(${newColor.r}, ${newColor.g}, ${newColor.b})`;
     chrome.test.assertEq(
         newColorStyle, textboxStyles.getPropertyValue('color'));
 
+    // Alignment
+    manager.setTextAlignment(TextAlignment.RIGHT);
+    await microtasksFinished();
+    chrome.test.assertEq('right', textboxStyles.getPropertyValue('text-align'));
+
+    // Reset everything for later tests.
+    manager.setTextTypeface(TextTypeface.SANS_SERIF);
+    manager.setTextSize(12);
+    manager.setTextStyles({
+      [TextStyle.BOLD]: false,
+      [TextStyle.ITALIC]: false,
+    });
+    manager.setTextColor(hexToColor(TEXT_COLORS[0]!.color));
+    manager.setTextAlignment(TextAlignment.LEFT);
+    await microtasksFinished();
     chrome.test.succeed();
   },
 
   async function testDragHandles() {
     // Initialize to a 100x200 box at 400, 300.
-    manager.dispatchEvent(new CustomEvent(
-        'update-text-box',
-        {detail: {height: 200, locationX: 400, locationY: 300, width: 100}}));
+    initializeBox(100, 200, 400, 300);
     await microtasksFinished();
     chrome.test.assertFalse(textbox.hidden);
     chrome.test.assertTrue(isVisible(textbox));
-    assertPositionAndSize(textbox, '100px', '200px', '410px', '303px');
+    assertPositionAndSize(textbox, '100px', '200px', '400px', '300px');
 
     // Drag the top left handle up and left to make the box 100px bigger in
     // each dimension.
     const topLeft = getRequiredElement(textbox, '.handle.top.left');
     await dragHandle(topLeft, -100, -100);
-    assertPositionAndSize(textbox, '200px', '300px', '310px', '203px');
+    assertPositionAndSize(textbox, '200px', '300px', '300px', '200px');
 
     // Try to drag the top left handle down and right to make the box too small.
     // It should clamp at the size needed to render the text box in the bottom
-    // right corner (at 510, 503);
+    // right corner (at 500, 500);
     await dragHandle(topLeft, 400, 400);
     const clampedWidth = textbox.$.textbox.clientWidth;
     const clampedHeight = textbox.$.textbox.clientHeight;
     chrome.test.assertTrue(clampedHeight >= textbox.$.textbox.scrollHeight);
     // Min width is 36px.
     chrome.test.assertEq(36, clampedWidth);
-    const clampedTop = 503 - clampedHeight;
+    const clampedTop = 500 - clampedHeight;
     assertPositionAndSize(
-        textbox, '36px', `${clampedHeight}px`, '474px', `${clampedTop}px`);
+        textbox, '36px', `${clampedHeight}px`, '464px', `${clampedTop}px`);
 
     // Drag the top handle up and left to make the box 212px tall. Left
     // motion is ignored.
     const top = getRequiredElement(textbox, '.handle.top.center');
     await dragHandle(top, -100, -212 + clampedHeight);
     // height 212, width the same, x same, y 288
-    assertPositionAndSize(textbox, '36px', '212px', '474px', '291px');
+    assertPositionAndSize(textbox, '36px', '212px', '464px', '288px');
 
     // Drag the top right handle down and right to make the box 12px shorter
     // and 100px wide.
     const topRight = getRequiredElement(textbox, '.handle.top.right');
     await dragHandle(topRight, 64, 12);
-    assertPositionAndSize(textbox, '100px', '200px', '474px', '303px');
+    assertPositionAndSize(textbox, '100px', '200px', '464px', '300px');
 
     // Drag the left handle right and up. Upward motion is ignored. Left motion
     // makes the box 40px narrower.
     const left = getRequiredElement(textbox, '.handle.left.center');
     await dragHandle(left, 40, -200);
-    assertPositionAndSize(textbox, '60px', '200px', '514px', '303px');
+    assertPositionAndSize(textbox, '60px', '200px', '504px', '300px');
 
     // Drag the right handle right and down. Downward motion is ignored. Right
     // motion makes the box 100px wider.
     const right = getRequiredElement(textbox, '.handle.right.center');
     await dragHandle(right, 100, 100);
-    assertPositionAndSize(textbox, '160px', '200px', '514px', '303px');
+    assertPositionAndSize(textbox, '160px', '200px', '504px', '300px');
 
     // Drag the bottom left handle down and left to make the box 100px bigger
     // in both dimensions.
     const bottomLeft = getRequiredElement(textbox, '.handle.bottom.left');
     await dragHandle(bottomLeft, -100, 100);
-    assertPositionAndSize(textbox, '260px', '300px', '414px', '303px');
+    assertPositionAndSize(textbox, '260px', '300px', '404px', '300px');
 
     // Drag the bottom handle down and left to make the box 100px taller.
     // Motion left is ignored.
     const bottom = getRequiredElement(textbox, '.handle.bottom.center');
     await dragHandle(bottom, -100, 100);
-    assertPositionAndSize(textbox, '260px', '400px', '414px', '303px');
+    assertPositionAndSize(textbox, '260px', '400px', '404px', '300px');
 
     // Drag the bottom right handle down and right to make the box 20px bigger
     // in both dimensions.
     const bottomRight = getRequiredElement(textbox, '.handle.bottom.right');
     await dragHandle(bottomRight, 20, 20);
-    assertPositionAndSize(textbox, '280px', '420px', '414px', '303px');
+    assertPositionAndSize(textbox, '280px', '420px', '404px', '300px');
 
     // Drag the bottom right handle up and left to try to make the box too
     // small. Make sure it clamps at the same minimum size, anchored on the top
     // left corner.
     await dragHandle(bottomRight, -400, -400);
     assertPositionAndSize(
-        textbox, '36px', `${clampedHeight}px`, '414px', '303px');
+        textbox, '36px', `${clampedHeight}px`, '404px', '300px');
 
     chrome.test.succeed();
   },
@@ -227,7 +255,7 @@ chrome.test.runTests([
     const clampedHeight = textbox.$.textbox.clientHeight;
     chrome.test.assertEq(36, clampedWidth);
     assertPositionAndSize(
-        textbox, '36px', `${clampedHeight}px`, '414px', '303px');
+        textbox, '36px', `${clampedHeight}px`, '404px', '300px');
 
     // Simulate putting in a really long input that won't fit in the clamped
     // size.
@@ -249,14 +277,14 @@ chrome.test.runTests([
     // Wider box is still just as tall since the user didn't resize it
     // vertically yet.
     assertPositionAndSize(
-        textbox, '300px', `${updatedHeight}px`, '414px', '303px');
+        textbox, '300px', `${updatedHeight}px`, '404px', '300px');
 
     // User should now be able to shrink the box vertically, since the text
     // should fit in a shorter height with the updated width.
     const bottom = getRequiredElement(textbox, '.handle.bottom.center');
     await dragHandle(bottom, 0, -100);
     assertPositionAndSize(
-        textbox, '300px', `${updatedHeight - 100}px`, '414px', '303px');
+        textbox, '300px', `${updatedHeight - 100}px`, '404px', '300px');
 
     // Reset the sample text for later tests.
     textbox.$.textbox.value = 'Sample Text';
@@ -268,35 +296,31 @@ chrome.test.runTests([
 
   async function testMove() {
     // Initialize to a 100x100 box at 400, 300.
-    manager.dispatchEvent(new CustomEvent(
-        'update-text-box',
-        {detail: {height: 100, locationX: 400, locationY: 300, width: 100}}));
+    initializeBox(100, 100, 400, 300);
     await microtasksFinished();
-    assertPositionAndSize(textbox, '100px', '100px', '410px', '303px');
+    assertPositionAndSize(textbox, '100px', '100px', '400px', '300px');
     await dragHandle(textbox, 100, 100);
-    assertPositionAndSize(textbox, '100px', '100px', '510px', '403px');
+    assertPositionAndSize(textbox, '100px', '100px', '500px', '400px');
     await dragHandle(textbox, -200, 100);
-    assertPositionAndSize(textbox, '100px', '100px', '310px', '503px');
+    assertPositionAndSize(textbox, '100px', '100px', '300px', '500px');
     await dragHandle(textbox, 0, -200);
-    assertPositionAndSize(textbox, '100px', '100px', '310px', '303px');
+    assertPositionAndSize(textbox, '100px', '100px', '300px', '300px');
 
     // Make sure that clicking and trying to drag the textarea itself does
     // not move the textbox.
     await dragHandle(textbox.$.textbox, -200, -200);
-    assertPositionAndSize(textbox, '100px', '100px', '310px', '303px');
+    assertPositionAndSize(textbox, '100px', '100px', '300px', '300px');
     chrome.test.succeed();
   },
 
   async function testViewportChanges() {
-    // Initialize to a 100x100 box at 400, 300.
-    manager.dispatchEvent(new CustomEvent(
-        'update-text-box',
-        {detail: {height: 100, locationX: 400, locationY: 300, width: 100}}));
+    // Initialize to a 100x100 box at 410, 303.
+    initializeBox(100, 100, 410, 303);
     await microtasksFinished();
 
     assertPositionAndSize(textbox, '100px', '100px', '410px', '303px');
     chrome.test.assertEq(
-        '20px',
+        '12px',
         getComputedStyle(textbox.$.textbox).getPropertyValue('font-size'));
 
     // Simulate a zoom change to 0.5. This also comes with x and y changes
@@ -306,7 +330,7 @@ chrome.test.runTests([
     await microtasksFinished();
     assertPositionAndSize(textbox, '50px', '50px', '230px', '151.5px');
     chrome.test.assertEq(
-        '10px',
+        '6px',
         getComputedStyle(textbox.$.textbox).getPropertyValue('font-size'));
 
     // Simulate a zoom change to 2.0. This also comes with x and y changes
@@ -316,7 +340,7 @@ chrome.test.runTests([
     await microtasksFinished();
     assertPositionAndSize(textbox, '200px', '200px', '810px', '606px');
     chrome.test.assertEq(
-        '40px',
+        '24px',
         getComputedStyle(textbox.$.textbox).getPropertyValue('font-size'));
 
     // Simulate a scroll + resetting zoom to 1.0.
@@ -325,7 +349,7 @@ chrome.test.runTests([
     await microtasksFinished();
     assertPositionAndSize(textbox, '100px', '100px', '500px', '400px');
     chrome.test.assertEq(
-        '20px',
+        '12px',
         getComputedStyle(textbox.$.textbox).getPropertyValue('font-size'));
 
     // Scroll where start of page is no longer in the viewport.
@@ -334,7 +358,7 @@ chrome.test.runTests([
     await microtasksFinished();
     assertPositionAndSize(textbox, '100px', '100px', '300px', '200px');
     chrome.test.assertEq(
-        '20px',
+        '12px',
         getComputedStyle(textbox.$.textbox).getPropertyValue('font-size'));
 
     // Scroll where textbox ends up off screen.
@@ -343,8 +367,205 @@ chrome.test.runTests([
     await microtasksFinished();
     assertPositionAndSize(textbox, '100px', '100px', '-100px', '-200px');
     chrome.test.assertEq(
-        '20px',
+        '12px',
         getComputedStyle(textbox.$.textbox).getPropertyValue('font-size'));
+    chrome.test.succeed();
+  },
+
+  async function testCommit() {
+    // Initialize to a 100x100 box at 400, 300.
+    initializeBox(100, 100, 400, 300);
+    chrome.test.assertTrue(isVisible(textbox));
+    await microtasksFinished();
+    // Reset viewport to less offset page values and a non-1.0 zoom to validate
+    // coordinate conversion.
+    viewport.setZoom(2.0);
+    await microtasksFinished();
+
+    // With no edits, starting a new box just deletes the existing one; the
+    // plugin won't get a message.
+    mockPlugin.clearMessages();
+    initializeBox(100, 100, 400, 300);
+    await microtasksFinished();
+    chrome.test.assertTrue(isVisible(textbox));
+    chrome.test.assertEq(
+        undefined, mockPlugin.findMessage('finishTextAnnotation'));
+
+    // Editing text --> commit annotation on event.
+    initializeBox(100, 100, 400, 300);
+    await microtasksFinished();
+    chrome.test.assertTrue(isVisible(textbox));
+    const testAnnotation: TextAnnotation = {
+      text: 'Hello World',
+      id: 0,
+      pageNumber: 0,
+      textAttributes: {
+        size: 12,
+        typeface: TextTypeface.SANS_SERIF,
+        styles: {
+          [TextStyle.BOLD]: false,
+          [TextStyle.ITALIC]: false,
+        },
+        alignment: TextAlignment.LEFT,
+        color: hexToColor(TEXT_COLORS[0]!.color),
+      },
+      // Messages to the backend are in page coordinates.
+      textBoxRect: {locationX: 195, locationY: 147, height: 50, width: 50},
+    };
+
+    function startNewAnnotationAndVerifyMessage(existing: boolean = false) {
+      mockPlugin.clearMessages();
+      initializeBox(100, 100, 400, 300, existing);
+      const message = mockPlugin.findMessage('finishTextAnnotation');
+      chrome.test.assertTrue(message !== undefined);
+      chrome.test.assertEq('finishTextAnnotation', message.type);
+      assertDeepEquals(testAnnotation, message.data);
+    }
+
+    textbox.$.textbox.value = testAnnotation.text;
+    textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
+    await microtasksFinished();
+    startNewAnnotationAndVerifyMessage();
+    await microtasksFinished();
+    // Reset expectation.
+    testAnnotation.text = 'Sample Text';
+
+    // Moving (or resizing) the box is an edit.
+    chrome.test.assertTrue(isVisible(textbox));
+    await dragHandle(textbox, 100, 100);
+    // Adjust expectations for new box. Text is reset.
+    // At 2x zoom, a 100px move in screen coordinates is a 50px move in page
+    // coordinates.
+    testAnnotation
+        .textBoxRect = {height: 50, width: 50, locationX: 245, locationY: 197};
+    startNewAnnotationAndVerifyMessage();
+    await microtasksFinished();
+    // Reset expectation.
+    testAnnotation
+        .textBoxRect = {height: 50, width: 50, locationX: 195, locationY: 147};
+
+    // Any modifications to font are an edit.
+    chrome.test.assertTrue(isVisible(textbox));
+    manager.setTextTypeface(TextTypeface.MONOSPACE);
+    await microtasksFinished();
+    testAnnotation.textAttributes.typeface = TextTypeface.MONOSPACE;
+    startNewAnnotationAndVerifyMessage();
+    await microtasksFinished();
+    // Reset expectation.
+    testAnnotation.textAttributes.typeface = TextTypeface.SANS_SERIF;
+
+    // If all the text is deleted, there is also no commit message.
+    chrome.test.assertTrue(isVisible(textbox));
+    textbox.$.textbox.value = '';
+    textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
+    await microtasksFinished();
+    mockPlugin.clearMessages();
+    // Initialize an existing box to set up the next test.
+    initializeBox(100, 100, 400, 300, true);
+    await microtasksFinished();
+    chrome.test.assertEq(
+        undefined, mockPlugin.findMessage('finishTextAnnotation'));
+
+    // If we are editing an existing box, a finish message should be sent
+    // regardless of edits or text.
+    chrome.test.assertTrue(isVisible(textbox));
+    testAnnotation.text = 'Hello World';
+    startNewAnnotationAndVerifyMessage(/* existing= */ true);
+    await microtasksFinished();
+
+    // Existing box, text cleared.
+    chrome.test.assertTrue(isVisible(textbox));
+    textbox.$.textbox.value = '';
+    textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
+    await microtasksFinished();
+    testAnnotation.text = '';
+    startNewAnnotationAndVerifyMessage(/* existing= */ true);
+    await microtasksFinished();
+
+    // Message should also be sent if the element is disconnected.
+    chrome.test.assertTrue(isVisible(textbox));
+    testAnnotation.text = 'Hello World';
+    await microtasksFinished();
+    mockPlugin.clearMessages();
+    // This happens if the user changes annotation mode.
+    textbox.remove();
+    const message = mockPlugin.findMessage('finishTextAnnotation');
+    chrome.test.assertTrue(message !== undefined);
+    chrome.test.assertEq('finishTextAnnotation', message.type);
+    assertDeepEquals(testAnnotation, message.data);
+
+    // Reset for future tests.
+    document.body.appendChild(textbox);
+
+    chrome.test.succeed();
+  },
+
+  async function testCloseAndEvents() {
+    let textBoxStates: TextBoxState[] = [];
+    textbox.addEventListener('state-changed', e => {
+      textBoxStates.push((e as CustomEvent<TextBoxState>).detail);
+    });
+
+    let finishInkStrokeEvents = 0;
+    PluginController.getInstance().getEventTarget().addEventListener(
+        PluginControllerEventType.FINISH_INK_STROKE, () => {
+          finishInkStrokeEvents++;
+        });
+
+    // Initialize to a 100x100 box at 400, 300.
+    initializeBox(100, 100, 400, 300);
+    await microtasksFinished();
+    chrome.test.assertTrue(isVisible(textbox));
+    assertDeepEquals([TextBoxState.NEW], textBoxStates);
+
+    // When a new box has no edits, commitTextAnnotation() will not trigger a
+    // plugin message or a PluginControllerEventType.FINISH_INK_STROKE event.
+    mockPlugin.clearMessages();
+    textbox.commitTextAnnotation();
+    await microtasksFinished();
+    chrome.test.assertFalse(isVisible(textbox));
+    chrome.test.assertEq(
+        undefined, mockPlugin.findMessage('finishTextAnnotation'));
+    chrome.test.assertEq(0, finishInkStrokeEvents);
+    assertDeepEquals([TextBoxState.NEW, TextBoxState.INACTIVE], textBoxStates);
+
+    // When text is edited, commitTextAnnotation() will trigger a plugin message
+    // and a PluginControllerEventType.FINISH_INK_STROKE event.
+    textBoxStates = [];
+    initializeBox(100, 100, 400, 300);
+    await microtasksFinished();
+    chrome.test.assertTrue(isVisible(textbox));
+    assertDeepEquals([TextBoxState.NEW], textBoxStates);
+    textbox.$.textbox.value = 'Hello';
+    textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
+    await microtasksFinished();
+    assertDeepEquals([TextBoxState.NEW, TextBoxState.EDITED], textBoxStates);
+
+    textbox.commitTextAnnotation();
+    await microtasksFinished();
+    chrome.test.assertFalse(isVisible(textbox));
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('finishTextAnnotation') !== undefined);
+    chrome.test.assertEq(1, finishInkStrokeEvents);
+    assertDeepEquals(
+        [TextBoxState.NEW, TextBoxState.EDITED, TextBoxState.INACTIVE],
+        textBoxStates);
+
+    // When existing text is not edited, commitTextAnnotation() will trigger a
+    // plugin message but no PluginControllerEventType.FINISH_INK_STROKE event.
+    textBoxStates = [];
+    initializeBox(100, 100, 400, 300, true);
+    await microtasksFinished();
+    chrome.test.assertTrue(isVisible(textbox));
+    assertDeepEquals([TextBoxState.NEW], textBoxStates);
+    textbox.commitTextAnnotation();
+    await microtasksFinished();
+    chrome.test.assertFalse(isVisible(textbox));
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('finishTextAnnotation') !== undefined);
+    chrome.test.assertEq(1, finishInkStrokeEvents);
+    assertDeepEquals([TextBoxState.NEW, TextBoxState.INACTIVE], textBoxStates);
+
     chrome.test.succeed();
   },
 ]);

@@ -19,6 +19,7 @@
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/typed_macros.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
@@ -59,9 +60,13 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/favicon/content/content_favicon_driver.h"
@@ -115,6 +120,12 @@ using predictors::AutocompleteActionPredictor;
 LensOverlayController* GetLensOverlayController(
     content::WebContents* web_contents) {
   return web_contents ? LensOverlayController::FromTabWebContents(web_contents)
+                      : nullptr;
+}
+
+LensSearchController* GetLensSearchController(
+    content::WebContents* web_contents) {
+  return web_contents ? LensSearchController::FromTabWebContents(web_contents)
                       : nullptr;
 }
 
@@ -377,10 +388,10 @@ void ChromeOmniboxClient::OnKeywordModeChanged(bool entered,
     return;
   }
 
-  if (LensOverlayController* lens_overlay_controller =
-          GetLensOverlayController(location_bar_->GetWebContents())) {
+  if (LensSearchController* lens_search_controller =
+          GetLensSearchController(location_bar_->GetWebContents())) {
     // TODO(crbug.com/408073216): Create and use new dismissal source.
-    lens_overlay_controller->CloseUIAsync(
+    lens_search_controller->CloseLensAsync(
         lens::LensOverlayDismissalSource::kEscapeKeyPress);
   }
 }
@@ -428,37 +439,72 @@ void ChromeOmniboxClient::MaybeShowOnFocusHatsSurvey(
       omnibox_feature_configs::HappinessTrackingSurveyForOmniboxOnFocusZps::
           Get()
               .survey_delay;
-  HatsService* hats_service =
-      HatsServiceFactory::GetForProfile(profile_, /*create_if_necessary=*/true);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&ChromeOmniboxClient::CheckConditionsAndLaunchSurvey,
+                     weak_factory_.GetWeakPtr()),
+      base::Milliseconds(survey_delay_time_ms));
+}
+
+void ChromeOmniboxClient::CheckConditionsAndLaunchSurvey() {
   // Roll the dice as we want to show one of two surveys to the treatment
   // group but only one survey to the control group.
   bool show_happiness_survey = base::RandInt(0, 1) == 0;
-  if (omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get().enabled) {
-    if (show_happiness_survey) {
-      hats_service->LaunchDelayedSurvey(
-          kHatsSurveyTriggerOnFocusZpsSuggestionsHappiness,
-          survey_delay_time_ms, {},
-          {{"page classification",
-            metrics::OmniboxEventProto::PageClassification_Name(
-                classification)}});
-    } else {
-      hats_service->LaunchDelayedSurvey(
-          kHatsSurveyTriggerOnFocusZpsSuggestionsUtility, survey_delay_time_ms,
-          {},
-          {{"page classification",
-            metrics::OmniboxEventProto::PageClassification_Name(
-                classification)}});
-    }
-  } else {
-    // Control
-    if (show_happiness_survey) {
-      hats_service->LaunchDelayedSurvey(
-          kHatsSurveyTriggerOnFocusZpsSuggestionsHappiness,
-          survey_delay_time_ms, {},
-          {{"page classification",
-            metrics::OmniboxEventProto::PageClassification_Name(
-                classification)}});
-    }
+
+  // Don't show the suggestions utility survey to control group.
+  if (!omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get().enabled &&
+      !show_happiness_survey) {
+    return;
+  }
+
+  // Get channel string to return as PSD.
+  std::string channel;
+  switch (chrome::GetChannel()) {
+    case version_info::Channel::STABLE:
+      channel = "stable";
+      break;
+    case version_info::Channel::BETA:
+      channel = "beta";
+      break;
+    case version_info::Channel::DEV:
+      channel = "dev";
+      break;
+    case version_info::Channel::CANARY:
+      channel = "canary";
+      break;
+    default:
+      channel = "unknown";
+  }
+
+  const std::string& survey_trigger =
+      show_happiness_survey ? kHatsSurveyTriggerOnFocusZpsSuggestionsHappiness
+                            : kHatsSurveyTriggerOnFocusZpsSuggestionsUtility;
+
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(profile_, /*create_if_necessary=*/true);
+
+  if (!browser_) {
+    return;
+  }
+
+  auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+
+  if (!browser_view) {
+    return;
+  }
+
+  auto* location_bar_view = browser_view->GetLocationBarView();
+
+  // Don't show the HaTS survey if the location bar has focus.
+  if (location_bar_view &&
+      !location_bar_view->Contains(
+          location_bar_view->GetFocusManager()->GetFocusedView())) {
+    hats_service->LaunchSurvey(
+        survey_trigger, base::DoNothing(), base::DoNothing(), {},
+        {{"page classification",
+          metrics::OmniboxEventProto::PageClassification_Name(
+              GetPageClassification(/*is_prefetch=*/false))},
+         {"channel", channel}});
   }
 }
 
@@ -496,20 +542,21 @@ void ChromeOmniboxClient::OnResultChanged(
       request_ids_.push_back(bitmap_fetcher_service->RequestImage(
           match.icon_url,
           base::BindOnce(on_bitmap_fetched, result_index, match.icon_url)));
-    } else if (match.associated_keyword) {
-      // - Fetch the favicon here for non-featured matches that have the search
-      // aggregator keyword hint attached to them (e.g., verbatim match when
-      // user types 'aggregator') use the policy favicon only in location bar
-      // keyword UI.
-      // - Featured search aggregator matches (e.g., when user types
-      // '@aggregator') use the match icon_url in both the popup keyword row UI
-      // and the location bar keyword UI.
-      // - Site search matches do not use the policy favicon so do not fetch the
-      // favicon here.
-      const TemplateURL* turl = match.associated_keyword->GetTemplateURL(
-          GetTemplateURLService(), false);
-      if (turl && turl->policy_origin() ==
-                      TemplateURLData::PolicyOrigin::kSearchAggregator) {
+    } else {
+      const TemplateURL* turl = nullptr;
+      if (match.associated_keyword) {
+        turl = match.associated_keyword->GetTemplateURL(GetTemplateURLService(),
+                                                        false);
+      } else if (!match.keyword.empty()) {
+        turl = match.GetTemplateURL(GetTemplateURLService(), false);
+      }
+      // Fetch the favicon if the `TemplateURL` is from the enterprise search
+      // aggregator policy. This covers both cases:
+      // 1. Non-featured matches with an associated keyword hint (e.g.,
+      //    verbatim match when typing 'aggregator').
+      // 2. Matches originating from the aggregator keyword mode itself (e.g.
+      //    shortcut suggestions in default mode).
+      if (turl && turl->CreatedByEnterpriseSearchAggregatorPolicy()) {
         request_ids_.push_back(bitmap_fetcher_service->RequestImage(
             turl->favicon_url(), base::BindOnce(on_bitmap_fetched, result_index,
                                                 turl->favicon_url())));

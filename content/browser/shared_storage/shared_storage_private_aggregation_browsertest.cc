@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(),
         a_test_origin_.Serialize(),
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/true,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(),
             blink::CloneableMessage(), /*worklet_id=*/0)}});
 }
@@ -600,7 +600,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(),
         a_test_origin_.Serialize(),
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/true,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(
                 /*aggregation_coordinator_origin=*/std::nullopt,
                 /*context_id=*/"example_context_id",
@@ -673,7 +673,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(),
         a_test_origin_.Serialize(),
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/true,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(
                 /*aggregation_coordinator_origin=*/std::nullopt,
                 /*context_id=*/std::string(), /*filtering_id_max_bytes=*/1,
@@ -750,7 +750,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(),
         a_test_origin_.Serialize(),
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/true,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(
                 /*aggregation_coordinator_origin=*/std::nullopt, /*context_id=*/
                 "an_example_of_a_context_id_with_the_exact_maximum_allowed_"
@@ -1316,7 +1316,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(),
         a_test_origin_.Serialize(),
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/true,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(
                 /*aggregation_coordinator_origin=*/std::nullopt,
                 /*context_id=*/std::nullopt, /*filtering_id_max_bytes=*/8,
@@ -1406,7 +1406,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(),
         a_test_origin_.Serialize(),
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/true,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(
                 /*aggregation_coordinator_origin=*/std::nullopt,
                 /*context_id=*/std::nullopt, /*filtering_id_max_bytes=*/8,
@@ -1487,7 +1487,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(),
         a_test_origin_.Serialize(),
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/true,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(
                 /*aggregation_coordinator_origin=*/std::nullopt,
                 /*context_id=*/std::nullopt, /*filtering_id_max_bytes=*/8,
@@ -1516,8 +1516,14 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                 null_report_behavior);
             ASSERT_EQ(request.payload_contents().contributions.size(), 0u);
             EXPECT_EQ(request.payload_contents().filtering_id_max_bytes, 8u);
+
+            // Debug mode details are dropped for null reports if the error
+            // reporting feature is disabled.
             EXPECT_EQ(request.shared_info().debug_mode,
-                      AggregatableReportSharedInfo::DebugMode::kDisabled);
+                      base::FeatureList::IsEnabled(
+                          blink::features::kPrivateAggregationApiErrorReporting)
+                          ? AggregatableReportSharedInfo::DebugMode::kEnabled
+                          : AggregatableReportSharedInfo::DebugMode::kDisabled);
             run_loop.Quit();
           }));
 
@@ -2196,8 +2202,8 @@ IN_PROC_BROWSER_TEST_P(
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(),
         a_test_origin_.Serialize(),
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/true, expected_config_to_observe,
-            blink::CloneableMessage(),
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/true,
+            expected_config_to_observe, blink::CloneableMessage(),
             /*worklet_id=*/0)}});
 }
 
@@ -3278,7 +3284,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(),
         a_test_origin_.Serialize(),
         SharedStorageEventParams::CreateForRunForTesting(
-            "test-operation", /*keep_alive=*/false,
+            "test-operation", /*operation_id=*/0, /*keep_alive=*/false,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(
                 /*aggregation_coordinator_origin=*/aggregation_service::
                     GetDefaultAggregationCoordinatorOrigin(),
@@ -3406,7 +3412,8 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
        {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
         a_test_origin_.Serialize(),
         SharedStorageEventParams::CreateForSelectURLForTesting(
-            "test-url-selection-operation", /*keep_alive=*/false,
+            "test-url-selection-operation", /*operation_id=*/0,
+            /*keep_alive=*/false,
             SharedStorageEventParams::PrivateAggregationConfigWrapper(
                 /*aggregation_coordinator_origin=*/aggregation_service::
                     GetDefaultAggregationCoordinatorOrigin(),

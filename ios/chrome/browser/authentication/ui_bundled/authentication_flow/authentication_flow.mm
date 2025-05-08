@@ -15,8 +15,8 @@
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/policy/core/browser/signin/profile_separation_policies.h"
 #import "components/prefs/pref_service.h"
-#import "components/reading_list/features/reading_list_switches.h"
 #import "components/signin/core/browser/active_primary_accounts_metrics_recorder.h"
+#import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/base/account_pref_utils.h"
@@ -30,7 +30,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_request_helper.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
-#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_capabilities_fetcher.h"
 #import "ios/chrome/browser/flags/ios_chrome_flag_descriptions.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
@@ -61,14 +60,6 @@
 using signin_ui::SigninCompletionCallback;
 
 namespace {
-
-// Returns a reference to the global used by tests to force the
-// next policy fetch to terminate with this policy value if set.
-std::optional<policy::ProfileSeparationDataMigrationSettings>&
-GetForcedPolicyResponseForNextFetchRequestForTesting() {
-  static std::optional<policy::ProfileSeparationDataMigrationSettings> instance;
-  return instance;
-}
 
 // The states of the sign-in flow state machine.
 enum class AuthenticationState {
@@ -595,20 +586,6 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     return;
   }
 
-  auto& optionalForcedPolicy =
-      GetForcedPolicyResponseForNextFetchRequestForTesting();
-  if (optionalForcedPolicy.has_value()) {
-    auto policy = optionalForcedPolicy.value();
-    optionalForcedPolicy = std::nullopt;
-
-    __weak __typeof(self) weakSelf = self;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(^{
-          [weakSelf didFetchProfileSeparationPolicies:policy];
-        }));
-    return;
-  }
-
   ProfileIOS* profile = [self originalProfile];
   [_performer fetchProfileSeparationPolicies:profile
                                  forIdentity:_identityToSignIn];
@@ -684,17 +661,19 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
       identityManager->GetAccountsOnDevice();
   BOOL isValidIdentityOnDevice = base::Contains(
       accountsOnDevice, GaiaId(_identityToSignIn.gaiaID), &AccountInfo::gaia);
-  if (!isValidIdentityOnDevice) {
-    // Handle the case where the identity is no longer valid.
-    NSError* error = ios::provider::CreateMissingIdentitySigninError();
-    [self handleAuthenticationError:error];
-    return;
-  }
   std::vector<CoreAccountInfo> accountsInProfile =
       identityManager->GetAccountsWithRefreshTokens();
   BOOL isValidIdentityInProfile =
       base::Contains(accountsInProfile, GaiaId(_identityToSignIn.gaiaID),
                      &CoreAccountInfo::gaia);
+  if (!isValidIdentityOnDevice ||
+      (!isValidIdentityInProfile &&
+       !AreSeparateProfilesForManagedAccountsEnabled())) {
+    // Handle the case where the identity is no longer valid.
+    NSError* error = ios::provider::CreateMissingIdentitySigninError();
+    [self handleAuthenticationError:error];
+    return;
+  }
   if (isValidIdentityInProfile) {
     // If the identity is in the current profile, the flow should continue,
     // without switching profile.
@@ -715,8 +694,21 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
       UnsyncedDataTypeHistogram::kUnsyncedDataOnProfileSwitching,
       _unsyncedDataTypes.value());
   SceneState* sceneState = _browser->GetSceneState();
+  // Determine the reason for the profile switch. In general, AuthenticationFlow
+  // handles cases where the user has chosen a new account to use. This can be
+  // either a signin or a change-account:
+  // * If the *current* profile (pre-switch) has a primary account, then the
+  //   profile switch must be due to an account change.
+  // * Otherwise, it must be due to a signin with a managed account (because a
+  //   signin with a non-managed account wouldn't cause a profile switch - that
+  //   case is handled in the `isValidIdentityInProfile` check above).
+  ChangeProfileReason reason =
+      identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)
+          ? ChangeProfileReason::kSwitchAccounts
+          : ChangeProfileReason::kManagedAccountSignIn;
   [_performer switchToProfileWithIdentity:_identityToSignIn
                                sceneState:sceneState
+                                   reason:reason
                             requestHelper:[self takeRequestHelper]];
 }
 
@@ -818,11 +810,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 #pragma mark AuthenticationFlowPerformerDelegate
 
 - (void)didSignOutForAccountSwitch {
-  [self continueFlow];
-}
-
-- (void)didClearData {
-  [self continueFlow];
+  NOTREACHED();
 }
 
 - (void)didFetchUnsyncedDataWithUnsyncedDataTypes:
@@ -941,6 +929,10 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   [self continueFlow];
 }
 
+- (void)didFetchAccountCapabilities {
+  NOTREACHED();
+}
+
 #pragma mark - Private methods
 
 // Returns the request helper exactly once. CHECK fail if its accessed twice.
@@ -961,15 +953,6 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 
 - (PrefService*)prefs {
   return [self originalProfile]->GetPrefs();
-}
-
-+ (void)forcePolicyResponseForNextRequestForTesting:
-    (policy::ProfileSeparationDataMigrationSettings)
-        profileSeparationDataMigrationSettings {
-  auto& optionalForcedPolicy =
-      GetForcedPolicyResponseForNextFetchRequestForTesting();
-  CHECK(!optionalForcedPolicy.has_value());
-  optionalForcedPolicy = profileSeparationDataMigrationSettings;
 }
 
 @end

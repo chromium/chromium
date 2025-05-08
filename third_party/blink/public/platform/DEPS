@@ -37,6 +37,7 @@ include_rules = [
     "+media/base/media_content_type.h",
     "+media/base/media_log.h",
     "+media/base/output_device_info.h",
+    "+media/base/picture_in_picture_events_info.h",
     "+media/base/stream_parser.h",
     "+media/base/video_frame.h",
     "+media/base/video_frame_metadata.h",
@@ -55,6 +56,7 @@ include_rules = [
     "+net/url_request/redirect_info.h",
     "+services/network/public/cpp/cors/cors_error_status.h",
     "+services/network/public/cpp/cors/preflight_result.h",
+    "+services/network/public/cpp/integrity_policy.h",
     "+services/network/public/cpp/resource_request_body.h",
     "+services/network/public/cpp/shared_url_loader_factory.h",
 
@@ -70,6 +72,7 @@ include_rules = [
     "+services/network/public/mojom/fetch_api.mojom-forward.h",
     "+services/network/public/mojom/fetch_api.mojom-shared.h",
     "+services/network/public/mojom/integrity_algorithm.mojom-shared.h",
+    "+services/network/public/mojom/integrity_policy.mojom-forward.h",
     "+services/network/public/mojom/ip_address_space.mojom-shared.h",
     "+services/network/public/mojom/referrer_policy.mojom-shared.h",
     "+services/network/public/mojom/trust_tokens.mojom-shared.h",

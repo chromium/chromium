@@ -98,6 +98,11 @@ void ExtensionRegistrar::Init(
   delayed_install_manager_ = DelayedInstallManager::Get(browser_context_);
 }
 
+bool ExtensionRegistrar::IsInitialized() const {
+  // The registrar is initialized if a delegate has been assigned.
+  return !!delegate_;
+}
+
 base::WeakPtr<ExtensionRegistrar> ExtensionRegistrar::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
@@ -343,6 +348,7 @@ void ExtensionRegistrar::DisableExtensionWithRawReasons(
   scoped_refptr<const Extension> extension =
       registry_->GetExtensionById(extension_id, ExtensionRegistry::EVERYTHING);
 
+  CHECK(delegate_);
   bool is_controlled_extension =
       !delegate_->CanDisableExtension(extension.get());
 

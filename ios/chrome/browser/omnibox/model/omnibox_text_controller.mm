@@ -9,15 +9,15 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "components/omnibox/browser/omnibox_controller.h"
-#import "components/omnibox/browser/omnibox_view.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_suggestion.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_controller_ios.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_edit_model_ios.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller_delegate.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_view_ios.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_metrics_helper.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_focus_delegate.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_ios.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_view_ios.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_focus_delegate.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "net/base/apple/url_conversions.h"
@@ -31,22 +31,27 @@
 
 @implementation OmniboxTextController {
   /// Controller of the omnibox.
-  raw_ptr<OmniboxController> _omniboxController;
+  raw_ptr<OmniboxControllerIOS> _omniboxController;
   /// Controller of the omnibox view.
   raw_ptr<OmniboxViewIOS> _omniboxViewIOS;
   /// Omnibox edit model. Should only be used for text interactions.
-  raw_ptr<OmniboxEditModel> _omniboxEditModel;
+  raw_ptr<OmniboxEditModelIOS> _omniboxEditModel;
   /// Whether the popup was scrolled during this omnibox interaction.
   BOOL _suggestionsListScrolled;
+  /// Whether it's the lens overlay omnibox.
+  BOOL _inLensOverlay;
 }
 
-- (instancetype)initWithOmniboxController:(OmniboxController*)omniboxController
-                           omniboxViewIOS:(OmniboxViewIOS*)omniboxViewIOS {
+- (instancetype)initWithOmniboxController:
+                    (OmniboxControllerIOS*)omniboxController
+                           omniboxViewIOS:(OmniboxViewIOS*)omniboxViewIOS
+                            inLensOverlay:(BOOL)inLensOverlay {
   self = [super init];
   if (self) {
     _omniboxController = omniboxController;
     _omniboxEditModel = omniboxController->edit_model();
     _omniboxViewIOS = omniboxViewIOS;
+    _inLensOverlay = inLensOverlay;
   }
   return self;
 }
@@ -84,16 +89,12 @@
 }
 
 - (void)endEditing {
-  // This check is a tentative fix for a crash that happens when calling
-  // `resignFirstResponder`. TODO(crbug.com/375429786): Verify the crash rate
-  // and remove the comment or check if needed.
-  if (self.textField.window) {
-    [self.textField resignFirstResponder];
-  }
+  [self hideKeyboard];
+
   if (!_omniboxEditModel || !_omniboxEditModel->has_focus()) {
     return;
   }
-  [self.omniboxAutocompleteController endEditing];
+  [self.omniboxAutocompleteController closeOmniboxPopup];
 
   if (OmniboxClient* client = self.client) {
     RecordSuggestionsListScrolled(
@@ -169,9 +170,7 @@
                                      /*prevent_inline_autocomplete=*/true);
     }
   } else {
-    if (_omniboxViewIOS) {
-      _omniboxViewIOS->CloseOmniboxPopup();
-    }
+    [self.omniboxAutocompleteController closeOmniboxPopup];
   }
 }
 
@@ -238,8 +237,50 @@
 }
 
 - (void)onDidBeginEditing {
+  // If Open from Clipboard offers a suggestion, the popup may be opened when
+  // `OnSetFocus` is called on the model. The state of the popup is saved early
+  // to ignore that case.
+  BOOL popupOpenBeforeEdit = self.omniboxAutocompleteController.hasSuggestions;
+
+  OmniboxTextFieldIOS* textField = self.textField;
+
+  // Make sure the omnibox popup's semantic content attribute is set correctly.
+  [self.omniboxAutocompleteController
+      setSemanticContentAttribute:[textField bestSemanticContentAttribute]];
+
   if (_omniboxViewIOS) {
-    _omniboxViewIOS->OnDidBeginEditing();
+    _omniboxViewIOS->OnBeforePossibleChange();
+  }
+
+  if (_omniboxEditModel) {
+    _omniboxEditModel->OnSetFocus(/*control_down=*/false);
+
+    if (_inLensOverlay && textField.userText.length) {
+      _omniboxEditModel->SetUserText(textField.userText.cr_UTF16String);
+      _omniboxEditModel->StartAutocomplete(
+          /*has_selected_text=*/false,
+          /*prevent_inline_autocomplete=*/true);
+    } else {
+      _omniboxEditModel->StartZeroSuggestRequest();
+    }
+  }
+
+  // If the omnibox is displaying a URL and the popup is not showing, set the
+  // field into pre-editing state.  If the omnibox is displaying search terms,
+  // leave the default behavior of positioning the cursor at the end of the
+  // text.  If the popup is already open, that means that the omnibox is
+  // regaining focus after a popup scroll took focus away, so the pre-edit
+  // behavior should not be invoked. When `is_lens_overlay_` is true, the
+  // omnibox only display search terms.
+  if (!popupOpenBeforeEdit && !_inLensOverlay) {
+    [textField enterPreEditState];
+  }
+
+  // `location_bar_` is only forwarding the call to the BVC. This should only
+  // happen when the omnibox is being focused and it starts showing the popup;
+  // if the popup was already open, no need to call this.
+  if (!popupOpenBeforeEdit) {
+    [self.focusDelegate omniboxDidBecomeFirstResponder];
   }
 }
 
@@ -323,8 +364,26 @@
 }
 
 - (void)onDeleteBackward {
-  if (_omniboxViewIOS) {
-    _omniboxViewIOS->OnDeleteBackward();
+  OmniboxTextFieldIOS* textField = self.textField;
+  if (textField.text.length == 0) {
+    // If the user taps backspace while the pre-edit text is showing,
+    // OnWillChange is invoked before this method and sets the text to an empty
+    // string, so use the `clearingPreEditText` to determine if the chip should
+    // be cleared or not.
+    if ([textField clearingPreEditText]) {
+      // In the case where backspace is tapped while in pre-edit mode,
+      // OnWillChange is called but OnDidChange is never called so ensure the
+      // clearingPreEditText flag is set to false again.
+      [textField setClearingPreEditText:NO];
+      // Explicitly set the input-in-progress flag. Normally this is set via
+      // in model()->OnAfterPossibleChange, but in this case the text has been
+      // set to the empty string by OnWillChange so when OnAfterPossibleChange
+      // checks if the text has changed it does not see any difference so it
+      // never sets the input-in-progress flag.
+      if (_omniboxEditModel) {
+        _omniboxEditModel->SetInputInProgress(YES);
+      }
+    }
   }
 }
 
@@ -344,9 +403,35 @@
 }
 
 - (void)onScroll {
-  /// Hides the keyboard.
-  [self.textField resignFirstResponder];
+  [self hideKeyboard];
   _suggestionsListScrolled = YES;
+}
+
+- (void)hideKeyboard {
+  // This check is a tentative fix for a crash that happens when calling
+  // `resignFirstResponder`. TODO(crbug.com/375429786): Verify the crash rate
+  // and remove the comment or check if needed.
+  if (self.textField.window) {
+    [self.textField resignFirstResponder];
+  }
+}
+
+- (void)refineWithText:(const std::u16string&)text {
+  OmniboxTextFieldIOS* textField = self.textField;
+  if (!_omniboxViewIOS) {
+    return;
+  }
+  // Exit preedit state and append the match. Refocus if necessary.
+  [textField exitPreEditState];
+  _omniboxViewIOS->SetUserText(text);
+  // Calling setText: does not trigger UIControlEventEditingChanged, so
+  // trigger that manually.
+  [textField sendActionsForControlEvents:UIControlEventEditingChanged];
+  [textField becomeFirstResponder];
+  if (@available(iOS 17, *)) {
+    // Set the caret pos to the end of the text (crbug.com/331622199).
+    [self setCaretPos:text.length()];
+  }
 }
 
 #pragma mark - Private
@@ -362,6 +447,93 @@
   [textModel setText:previewText userTextLength:previewText.length];
 }
 
+/// Updates the appearance of popup to have proper text alignment.
+- (void)updatePopupLayoutDirection {
+  OmniboxTextFieldIOS* textField = self.textField;
+  [self.omniboxAutocompleteController
+      setTextAlignment:[textField bestTextAlignment]];
+  [self.omniboxAutocompleteController
+      setSemanticContentAttribute:[textField bestSemanticContentAttribute]];
+}
+
+/// Sets the caret position. Removes any selection. Clamps the requested caret
+/// position to the length of the current text.
+- (void)setCaretPos:(NSUInteger)caretPos {
+  OmniboxTextFieldIOS* textField = self.textField;
+  DCHECK(caretPos <= textField.text.length || caretPos == 0);
+  UITextPosition* start = textField.beginningOfDocument;
+  UITextPosition* newPosition = [textField positionFromPosition:start
+                                                         offset:caretPos];
+  textField.selectedTextRange = [textField textRangeFromPosition:newPosition
+                                                      toPosition:newPosition];
+}
+
+/// Updates the autocomplete popup and other state after the text has been
+/// changed by the user.
+- (void)startAutocompleteAfterEdit {
+  if (_omniboxEditModel) {
+    _omniboxEditModel->SetInputInProgress(true);
+  }
+
+  if (!_omniboxEditModel || !_omniboxEditModel->has_focus() ||
+      !_omniboxViewIOS) {
+    return;
+  }
+
+  OmniboxTextFieldIOS* textField = self.textField;
+  // Prevent inline-autocomplete if the IME is currently composing or if the
+  // cursor is not at the end of the text.
+  const BOOL IMEComposing = [textField markedTextRange] != nil;
+  NSRange currentSelection = _omniboxViewIOS->GetCurrentSelection();
+  BOOL preventInlineAutocomplete =
+      IMEComposing || NSMaxRange(currentSelection) != [textField.text length];
+  _omniboxEditModel->StartAutocomplete(currentSelection.length != 0,
+                                       preventInlineAutocomplete);
+
+  [self updatePopupLayoutDirection];
+}
+
+/// Sets the window text and the caret position. `notifyTextChanged` is true if
+/// the model should be notified of the change. Clears the additional text.
+- (void)setWindowText:(const std::u16string&)text
+             caretPos:(size_t)caretPos
+    startAutocomplete:(BOOL)startAutocomplete
+    notifyTextChanged:(BOOL)notifyTextChanged {
+  OmniboxTextFieldIOS* textField = self.textField;
+  // Do not call SetUserText() here, as the user has not triggered this change.
+  // Instead, set the field's text directly.
+  [textField setText:[NSString cr_fromString16:text]];
+
+  NSAttributedString* as = [[NSMutableAttributedString alloc]
+      initWithString:[NSString cr_fromString16:text]];
+  [textField setText:as userTextLength:[as length]];
+
+  if (startAutocomplete) {
+    [self startAutocompleteAfterEdit];
+  }
+
+  if (notifyTextChanged && _omniboxEditModel) {
+    _omniboxEditModel->OnChanged();
+  }
+
+  [self setCaretPos:caretPos];
+}
+
+/// Updates inline autocomplete if the full text is different.
+- (void)updateAutocompleteIfTextChanged:(const std::u16string&)userText
+                         autocompletion:
+                             (const std::u16string&)inlineAutocomplete {
+  std::u16string displayedText = userText + inlineAutocomplete;
+  if (displayedText == self.textField.displayedText.cr_UTF16String) {
+    return;
+  }
+
+  NSAttributedString* as = [[NSMutableAttributedString alloc]
+      initWithString:[NSString cr_fromString16:displayedText]];
+  [self.textField setText:as userTextLength:userText.size()];
+}
+
+/// Returns the omnibox client.
 - (OmniboxClient*)client {
   return _omniboxController ? _omniboxController->client() : nullptr;
 }

@@ -85,6 +85,7 @@ class BLINK_EXPORT WebNode {
 
   WebNode ParentNode() const;
   WebNode ParentOrShadowHostNode() const;
+  bool IsInUserAgentShadowRoot() const;
   WebString NodeValue() const;
   WebDocument GetDocument() const;
   WebNode FirstChild() const;

@@ -2,3 +2,4 @@ ci/fuchsia-fyi-arm64-dbg
 ci/fuchsia-fyi-x64-asan
 ci/fuchsia-fyi-x64-dbg-persistent-emulator
 ci/fuchsia-netstack2-x64-cast-receiver-rel
+ci/fuchsia-x64-perf-cast-receiver-rel

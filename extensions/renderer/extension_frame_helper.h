@@ -47,8 +47,8 @@ class ExtensionFrameHelper
   ~ExtensionFrameHelper() override;
 
   // Returns a list of extension RenderFrames that match the given filter
-  // criteria. A |browser_window_id| of extension_misc::kUnknownWindowId
-  // specifies "all", as does a |view_type| of mojom::ViewType::kInvalid.
+  // criteria. A `browser_window_id` of extension_misc::kUnknownWindowId
+  // specifies "all", as does a `view_type` of mojom::ViewType::kInvalid.
   static std::vector<content::RenderFrame*> GetExtensionFrames(
       const ExtensionId& extension_id,
       int browser_window_id,
@@ -56,7 +56,7 @@ class ExtensionFrameHelper
       mojom::ViewType view_type);
   // Same as above, but returns a v8::Array of the v8 global objects for those
   // frames, and only includes outermost main frames. Note: This only returns
-  // contexts that are accessible by |context|, and |context| must be the
+  // contexts that are accessible by `context`, and `context` must be the
   // current context.
   // Returns an empty v8::Array if no frames are found.
   static v8::Local<v8::Array> GetV8MainFrames(v8::Local<v8::Context> context,
@@ -78,7 +78,7 @@ class ExtensionFrameHelper
       const ExtensionId& extension_id);
 
   // Finds a neighboring extension frame with the same extension as the one
-  // owning |relative_to_frame| (if |relative_to_frame| is not an extension
+  // owning `relative_to_frame` (if `relative_to_frame` is not an extension
   // frame, returns nullptr). Pierces the browsing instance boundary because
   // certain extensions rely on this behavior.
   // TODO(devlin, lukasza): https://crbug.com/786411: Remove this behavior, and
@@ -94,7 +94,7 @@ class ExtensionFrameHelper
       v8::Isolate* isolate,
       v8::Local<v8::Value> v8_frame_token_string);
 
-  // Returns true if the given |context| is for any frame in the extension's
+  // Returns true if the given `context` is for any frame in the extension's
   // event page.
   // TODO(devlin): This isn't really used properly, and should probably be
   // deleted.

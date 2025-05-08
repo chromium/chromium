@@ -99,6 +99,23 @@ const size_t kMaxReadersPerQuicSession = 5;
 const handles::NetworkHandle kDefaultNetworkForTests = 1;
 const handles::NetworkHandle kNewNetworkForTests = 2;
 
+class TestingQuicConnection : public quic::QuicConnection {
+ public:
+  using quic::QuicConnection::QuicConnection;
+
+  void OnKeepAliveTimeout() override {
+    keep_alive_timeout_callback_.Run();
+    quic::QuicConnection::OnKeepAliveTimeout();
+  }
+
+  void SetKeepAliveTimeoutCallback(base::RepeatingCallback<void()> callback) {
+    keep_alive_timeout_callback_ = std::move(callback);
+  }
+
+ private:
+  base::RepeatingCallback<void()> keep_alive_timeout_callback_;
+};
+
 // A subclass of QuicChromiumClientSession that allows OnPathDegrading to be
 // mocked.
 class TestingQuicChromiumClientSession : public QuicChromiumClientSession {
@@ -174,11 +191,16 @@ class QuicChromiumClientSessionTest
     socket->Connect(kIpEndPoint);
     QuicChromiumPacketWriter* writer = new net::QuicChromiumPacketWriter(
         socket.get(), base::SingleThreadTaskRunner::GetCurrentDefault().get());
-    quic::QuicConnection* connection = new quic::QuicConnection(
+    auto* connection = new TestingQuicConnection(
         quic::QuicUtils::CreateRandomConnectionId(&random_),
         quic::QuicSocketAddress(), ToQuicSocketAddress(kIpEndPoint), &helper_,
         &alarm_factory_, writer, true, quic::Perspective::IS_CLIENT,
         quic::test::SupportedVersions(version_), connection_id_generator_);
+    ping_alarm_ = quic::test::QuicTestAlarmProxy(
+        quic::test::QuicConnectionPeer::GetPingAlarm(connection));
+    connection->SetKeepAliveTimeoutCallback(
+        base::BindRepeating(&QuicChromiumClientSessionTest::OnKeepAliveTimeout,
+                            base::Unretained(this)));
     session_ = std::make_unique<TestingQuicChromiumClientSession>(
         connection, std::move(socket),
         /*stream_factory=*/nullptr, &crypto_client_stream_factory_, &clock_,
@@ -241,6 +263,8 @@ class QuicChromiumClientSessionTest
     ASSERT_THAT(session_->CryptoConnect(callback_.callback()), IsOk());
   }
 
+  void OnKeepAliveTimeout() { keep_alive_timeouts_++; }
+
   std::unique_ptr<QuicChromiumPacketWriter> CreateQuicChromiumPacketWriter(
       DatagramClientSocket* socket,
       QuicChromiumClientSession* session) const {
@@ -295,6 +319,8 @@ class QuicChromiumClientSessionTest
   bool allow_port_migration_ = false;
   quic::test::MockConnectionIdGenerator connection_id_generator_;
   quic::test::NoopQpackStreamSenderDelegate noop_qpack_stream_sender_delegate_;
+  int keep_alive_timeouts_ = 0;
+  std::optional<quic::test::QuicTestAlarmProxy> ping_alarm_;
 };
 
 INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
@@ -2462,6 +2488,40 @@ TEST_P(QuicChromiumClientSessionTest,
   quic_data.Resume();
   EXPECT_TRUE(quic_data.AllReadDataConsumed());
   EXPECT_TRUE(quic_data.AllWriteDataConsumed());
+}
+
+// Test whether we arm pings after send a ping for periodic keep alive.
+TEST_P(QuicChromiumClientSessionTest, SendPeriodicPings) {
+  MockQuicData quic_data(version_);
+  int packet_num = 1;
+  quic_data.AddWrite(SYNCHRONOUS,
+                     client_maker_.MakeInitialSettingsPacket(packet_num++));
+  quic_data.AddWrite(SYNCHRONOUS,
+                     client_maker_.Packet(packet_num++).AddPingFrame().Build());
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+
+  Initialize();
+  // Set the keep alive ping to a relatively short timeout.
+  session_->connection()->set_keep_alive_ping_timeout(
+      quic::QuicTime::Delta::FromSeconds(10));
+  // Set connection keep alive true.
+  session_->SetPeriodicConnectionKeepAlive(true);
+  CompleteCryptoHandshake();
+  EXPECT_TRUE(ping_alarm_.has_value());
+
+  // Check that we do not have any outstanding streams, but have the alarm set.
+  EXPECT_EQ(0u, session_->GetNumActiveStreams());
+  EXPECT_TRUE(ping_alarm_->IsSet());
+
+  EXPECT_EQ(quic::QuicTime::Delta::FromSeconds(10),
+            ping_alarm_->deadline() - clock_.ApproximateNow());
+  clock_.AdvanceTime(quic::QuicTime::Delta::FromSeconds(10));
+  ping_alarm_->Fire();
+
+  // Check if we call keep alive timeout even without any outstanding packets.
+  CHECK_EQ(1, keep_alive_timeouts_);
 }
 
 }  // namespace

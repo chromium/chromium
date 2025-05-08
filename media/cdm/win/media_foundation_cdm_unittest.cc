@@ -463,6 +463,9 @@ TEST_F(MediaFoundationCdmTest, UpdateSession) {
   Initialize();
   CreateSessionAndGenerateRequest();
 
+  COM_EXPECT_CALL(mf_cdm_, QueryInterface(IID_IMFAttributes, _))
+      .WillOnce(Return(E_FAIL));
+
   std::vector<uint8_t> response = StringToVector("response");
   COM_EXPECT_CALL(mf_cdm_session_, Update(NotNull(), response.size()))
       .WillOnce(DoAll([&] { mf_cdm_session_callbacks_->KeyStatusChanged(); },

@@ -214,8 +214,8 @@ TEST_F(IDBCursorTest, PrefetchTest) {
         blob_info.emplace_back(WebBlobInfo::BlobForTesting(
             WebString("blobuuid"), "text/plain", 123));
       }
-      values.emplace_back(
-          std::make_unique<IDBValue>(Vector<char>(), std::move(blob_info)));
+      values.emplace_back(std::make_unique<IDBValue>());
+      values.back()->SetBlobInfo(std::move(blob_info));
     }
     cursor_->SetPrefetchData(std::move(keys), std::move(primary_keys),
                              std::move(values));
@@ -284,8 +284,8 @@ TEST_F(IDBCursorTest, AdvancePrefetchTest) {
       blob_info.emplace_back(WebBlobInfo::BlobForTesting(WebString("blobuuid"),
                                                          "text/plain", 123));
     }
-    values.emplace_back(
-        std::make_unique<IDBValue>(Vector<char>(), std::move(blob_info)));
+    values.emplace_back(std::make_unique<IDBValue>());
+    values.back()->SetBlobInfo(std::move(blob_info));
   }
   cursor_->SetPrefetchData(std::move(keys), std::move(primary_keys),
                            std::move(values));
@@ -368,8 +368,7 @@ TEST_F(IDBCursorTest, PrefetchReset) {
   Vector<std::unique_ptr<IDBKey>> primary_keys(prefetch_count);
   Vector<std::unique_ptr<IDBValue>> values;
   for (int i = 0; i < prefetch_count; ++i) {
-    values.emplace_back(
-        std::make_unique<IDBValue>(Vector<char>(), Vector<WebBlobInfo>()));
+    values.emplace_back(std::make_unique<IDBValue>());
   }
   cursor_->SetPrefetchData(std::move(keys), std::move(primary_keys),
                            std::move(values));

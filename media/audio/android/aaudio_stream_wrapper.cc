@@ -9,11 +9,14 @@
 
 #include "media/audio/android/aaudio_stream_wrapper.h"
 
+#include <aaudio/AAudio.h>
+
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/trace_event/trace_event.h"
+#include "media/audio/android/audio_device_id.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
 
@@ -158,8 +161,10 @@ void SetChannelMask(AAudioStreamBuilder* builder,
 AAudioStreamWrapper::AAudioStreamWrapper(DataCallback* callback,
                                          StreamType stream_type,
                                          const AudioParameters& params,
+                                         android::AudioDeviceId device_id,
                                          aaudio_usage_t usage)
     : params_(params),
+      device_id_(std::move(device_id)),
       stream_type_(stream_type),
       usage_(usage),
       callback_(callback),
@@ -236,6 +241,7 @@ bool AAudioStreamWrapper::Open() {
   AAudioStreamBuilder_setPerformanceMode(builder, performance_mode_);
   AAudioStreamBuilder_setFramesPerDataCallback(builder,
                                                params_.frames_per_buffer());
+  AAudioStreamBuilder_setDeviceId(builder, device_id_.ToAAudioDeviceId());
 
   if (__builtin_available(android AAUDIO_CHANNEL_MASK_MIN_API, *)) {
     SetChannelMask(builder, params_);
@@ -275,6 +281,18 @@ bool AAudioStreamWrapper::Open() {
   }
 
   CHECK_EQ(AAUDIO_FORMAT_PCM_FLOAT, AAudioStream_getFormat(aaudio_stream_));
+
+  if (!device_id_.IsDefault()) {
+    // `AAudioStreamBuilder_setDeviceId` is not guaranteed to set the specified
+    // device.
+    const int32_t expected_device_id = device_id_.ToAAudioDeviceId();
+    const int32_t actual_device_id = AAudioStream_getDeviceId(aaudio_stream_);
+    if (expected_device_id != actual_device_id) {
+      DLOG(WARNING) << "Failed to set device ID for AAudio stream. Expected: "
+                    << expected_device_id << "; actual: " << actual_device_id;
+      return false;
+    }
+  }
 
   // After opening the stream, sets the effective buffer size to 3X the burst
   // size to prevent glitching if the burst is small (e.g. < 128). On some

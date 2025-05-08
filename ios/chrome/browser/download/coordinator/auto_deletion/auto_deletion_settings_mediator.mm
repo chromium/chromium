@@ -46,6 +46,8 @@
 
 - (void)disconnect {
   _localState = nullptr;
+  [_autoDeletionEnabled stop];
+  [_autoDeletionEnabled setObserver:nil];
   _autoDeletionEnabled = nullptr;
 }
 

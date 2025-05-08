@@ -123,7 +123,7 @@ TextureDrawQuad* CreateCandidateQuadAt(
     const gfx::Rect& rect,
     gfx::ProtectedVideoType protected_video_type) {
   bool needs_blending = false;
-  bool premultiplied_alpha = false;
+  bool premultiplied_alpha = true;
   bool nearest_neighbor = false;
   gfx::Size resource_size_in_pixels = rect.size();
   bool is_overlay_candidate = true;
@@ -359,7 +359,7 @@ TEST_F(CALayerOverlayTest, TextureDrawQuadVideoOverlay) {
     texture_video_quad->SetNew(pass->shared_quad_state_list.back(),
                                gfx::Rect(size), gfx::Rect(size),
                                /*needs_blending=*/false, resource_id,
-                               /*premultiplied_alpha=*/false, kUVTopLeft,
+                               /*premultiplied_alpha=*/true, kUVTopLeft,
                                kUVBottomRight, SkColors::kTransparent,
                                /*nearest_neighbor=*/false,
                                /*secure_output_only=*/false,

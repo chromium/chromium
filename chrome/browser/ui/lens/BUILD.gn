@@ -43,6 +43,8 @@ source_set("lens") {
     "lens_overlay_url_builder.h",
     "lens_permission_bubble_controller.h",
     "lens_preselection_bubble.h",
+    "lens_search_contextualization_controller.h",
+    "lens_searchbox_controller.h",
     "page_content_type_conversions.h",
     "ref_counted_lens_overlay_client_logs.h",
   ]
@@ -52,7 +54,7 @@ source_set("lens") {
     "//chrome/browser/companion/text_finder",
     "//chrome/browser/content_extraction",
     "//chrome/browser/lens/core/mojom:mojo_bindings",
-    "//chrome/browser/search_engines:search_engines",
+    "//chrome/browser/search_engines",
     "//chrome/browser/themes",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/omnibox",
@@ -63,6 +65,8 @@ source_set("lens") {
     "//components/endpoint_fetcher",
     "//components/find_in_page",
     "//components/lens",
+    "//components/optimization_guide/content/browser",
+    "//components/optimization_guide/content/browser:page_context_eligibility",
     "//components/user_education/webui",
     "//content/public/browser",
     "//third_party/lens_server_proto:lens_overlay_proto",
@@ -76,7 +80,6 @@ source_set("lens") {
 }
 
 source_set("impl") {
-  public = []
   sources = [
     "lens_overlay_blur_layer_delegate.cc",
     "lens_overlay_controller.cc",
@@ -96,12 +99,13 @@ source_set("impl") {
     "lens_overlay_url_builder.cc",
     "lens_permission_bubble_controller.cc",
     "lens_preselection_bubble.cc",
+    "lens_search_contextualization_controller.cc",
     "lens_search_controller.cc",
+    "lens_searchbox_controller.cc",
     "lens_side_panel_untrusted_ui.cc",
     "page_content_type_conversions.cc",
   ]
 
-  public_deps = []
   deps = [
     ":lens",
     "//build:branding_buildflags",
@@ -124,6 +128,7 @@ source_set("impl") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/hats",
+    "//chrome/browser/ui/user_education",
     "//chrome/browser/ui/views/bubble",
     "//chrome/browser/ui/views/page_action",
     "//chrome/browser/ui/views/toolbar",
@@ -142,6 +147,7 @@ source_set("impl") {
     "//components/lens/proto/server:proto",
     "//components/metrics_services_manager:metrics_services_manager",
     "//components/optimization_guide/content/browser",
+    "//components/optimization_guide/content/browser:page_context_eligibility",
     "//components/prefs",
     "//components/sessions",
     "//components/signin/public/identity_manager",
@@ -155,7 +161,7 @@ source_set("impl") {
     "//components/web_modal:web_modal",
     "//components/zoom",
     "//google_apis",
-    "//google_apis/common:common",
+    "//google_apis/common",
     "//google_apis/common:request_util",
     "//mojo/public/cpp/bindings",
     "//net",
@@ -169,9 +175,9 @@ source_set("impl") {
     "//third_party/zlib/google:compression_utils",
     "//third_party/zstd:compress",
     "//ui/base:types",
-    "//ui/gfx:gfx",
-    "//ui/gfx/codec:codec",
-    "//ui/gfx/geometry:geometry",
+    "//ui/gfx",
+    "//ui/gfx/codec",
+    "//ui/gfx/geometry",
     "//ui/menus",
     "//ui/webui",
     "//url",
@@ -200,7 +206,9 @@ source_set("test_support") {
 
   deps = [
     ":lens",
+    "//base/test:test_support",
     "//google_apis/common",
+    "//testing/gtest",
   ]
 }
 
@@ -289,13 +297,15 @@ source_set("interactive_ui_tests") {
     "//components/feature_engagement/public",
     "//components/lens:enterprise_policy",
     "//components/lens:features",
-    "//components/pdf/browser:browser",
     "//components/prefs",
     "//components/search_engines",
     "//components/user_education/views",
     "//content/test:test_support",
     "//testing/gtest",
   ]
+  if (enable_pdf) {
+    deps += [ "//components/pdf/browser:browser" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -324,6 +334,7 @@ source_set("unit_tests") {
     "//components/base32",
     "//components/endpoint_fetcher",
     "//components/lens:features",
+    "//components/optimization_guide/content/browser:page_context_eligibility",
     "//content/public/browser",
     "//content/test:test_support",
     "//google_apis/common",

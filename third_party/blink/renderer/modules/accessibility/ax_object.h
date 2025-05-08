@@ -938,8 +938,16 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // added to the aria-details list.
   AXObject* GetPositionedObjectForAnchor(ui::AXNodeData* node_data) const;
 
+  // Scroll marker pseudo-elements target their originating element which
+  // is located under a different parent in the layout tree.
+  AXObject* GetScrollMarkerTarget() const;
+
   // Heuristic to get the listbox for an <input role="combobox">.
   AXObject* GetControlsListboxForTextfieldCombobox() const;
+
+  // Scroll buttons and scroll marker groups are controls for the scrolling
+  // element.
+  AXObject* GetControlsForOverflowNavigation() const;
 
   // Returns true if this object is within or at the root of an editable region,
   // such as a contenteditable. Also, returns true if this object is an atomic

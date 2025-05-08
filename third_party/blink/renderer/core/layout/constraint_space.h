@@ -156,7 +156,10 @@ class CORE_EXPORT ConstraintSpace final {
     return copy;
   }
 
-  void Trace(Visitor* visitor) const { visitor->Trace(rare_data_); }
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(exclusion_space_);
+    visitor->Trace(rare_data_);
+  }
 
   // If `this` needs to be modified for a block-in-inline child, creates a clone
   // in `space`, modifies it, and returns it. Otherwise returns `*this`.

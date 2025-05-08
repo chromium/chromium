@@ -18,7 +18,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/permissions/features.h"
+#include "components/permissions/permission_context_base.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/smart_card_delegate.h"
 #include "content/public/test/browser_task_environment.h"
@@ -462,8 +462,7 @@ TEST_F(SmartCardPermissionContextTest, EphemeralGrantExpiryOnLongTimeout) {
   EXPECT_TRUE(HasReaderPermission(permission_context, origin_1, kDummyReader));
 
   task_environment_.FastForwardBy(
-      permissions::feature_params::kOneTimePermissionLongTimeout.Get() -
-      base::Seconds(1));
+      permissions::kOneTimePermissionMaximumLifetime - base::Seconds(1));
   EXPECT_TRUE(HasReaderPermission(permission_context, origin_1, kDummyReader));
   EXPECT_TRUE(observer.GetRevokedOriginsSequence().empty());
 

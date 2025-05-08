@@ -41,6 +41,7 @@ goog.inherits(goog.ui.ac.RichInputHandler, goog.ui.ac.InputHandler);
  * @param {Object} row The row to select.
  * @return {boolean} Whether to suppress the update event.
  * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.ac.RichInputHandler.prototype.selectRow = function(row) {
   'use strict';

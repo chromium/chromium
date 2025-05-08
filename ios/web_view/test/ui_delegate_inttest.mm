@@ -14,6 +14,7 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "url/gurl.h"
+#import "url/origin.h"
 
 using base::test::ios::kWaitForUIElementTimeout;
 
@@ -29,6 +30,11 @@ class UIDelegateTest : public ios_web_view::WebViewInttestBase {
   void SetUp() override {
     ios_web_view::WebViewInttestBase::SetUp();
     ASSERT_TRUE(test_server_->Start());
+  }
+
+  NSURL* GetEchoOriginURL() {
+    return net::NSURLWithGURL(
+        test_server_->GetURL("/echo").DeprecatedGetOriginAsURL());
   }
 
   NSURL* GetEchoURL() {
@@ -71,7 +77,7 @@ TEST_F(UIDelegateTest, RunJavaScriptAlertPanel) {
 
   OCMExpect([mock_delegate_ webView:web_view_
       runJavaScriptAlertPanelWithMessage:@"message"
-                                 pageURL:GetEchoURL()
+                                 pageURL:GetEchoOriginURL()
                        completionHandler:mock_completion_handler]);
 
   ASSERT_TRUE(test::LoadUrl(web_view_, GetEchoURL()));
@@ -93,7 +99,7 @@ TEST_F(UIDelegateTest, RunJavaScriptConfirmPanel) {
 
   OCMExpect([mock_delegate_ webView:web_view_
       runJavaScriptConfirmPanelWithMessage:@"message"
-                                   pageURL:GetEchoURL()
+                                   pageURL:GetEchoOriginURL()
                          completionHandler:mock_completion_handler]);
 
   ASSERT_TRUE(test::LoadUrl(web_view_, GetEchoURL()));
@@ -117,7 +123,7 @@ TEST_F(UIDelegateTest, RunJavaScriptTextInputPanel) {
   OCMExpect([mock_delegate_ webView:web_view_
       runJavaScriptTextInputPanelWithPrompt:@"prompt"
                                 defaultText:@"default"
-                                    pageURL:GetEchoURL()
+                                    pageURL:GetEchoOriginURL()
                           completionHandler:mock_completion_handler]);
 
   ASSERT_TRUE(test::LoadUrl(web_view_, GetEchoURL()));

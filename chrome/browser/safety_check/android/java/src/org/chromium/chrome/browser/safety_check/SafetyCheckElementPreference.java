@@ -15,23 +15,26 @@ import androidx.annotation.DrawableRes;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 
 /**
- * A {@link Preference} for each Safety check element. In addition to the
- * functionality, provided by the {@link IconPreference}, has a status indicator
- * in the widget area that displays a progress bar or a status icon.
+ * A {@link Preference} for each Safety check element. In addition to the functionality, provided by
+ * the {@link IconPreference}, has a status indicator in the widget area that displays a progress
+ * bar or a status icon.
  */
+@NullMarked
 public class SafetyCheckElementPreference extends ChromeBasePreference {
-    private View mProgressBar;
-    private ImageView mStatusView;
+    private @Nullable View mProgressBar;
+    private @Nullable ImageView mStatusView;
 
     /**
-     * Represents an action to take once the view elements are available.
-     * This is needed because |SafetyCheckMediator::setInitialState()| is invoked before all the
-     * nested views are available, so setting icons should be delayed.
+     * Represents an action to take once the view elements are available. This is needed because
+     * |SafetyCheckMediator::setInitialState()| is invoked before all the nested views are
+     * available, so setting icons should be delayed.
      */
-    private Callback<Void> mDelayedAction;
+    private @Nullable Callback<@Nullable Void> mDelayedAction;
 
     /** Creates a new object and sets the widget layout. */
     public SafetyCheckElementPreference(Context context, AttributeSet attrs) {

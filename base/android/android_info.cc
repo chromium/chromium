@@ -53,14 +53,10 @@ struct AndroidInfo {
 
   const char* hardware;
 
-  bool is_at_least_u;
-
   const char* codename;
 
   // Available only on android S+. For S-, this method returns empty string.
   const char* soc_manufacturer;
-
-  bool is_at_least_t;
 
   const char* abi_name;
 };
@@ -96,9 +92,7 @@ static void JNI_AndroidInfo_FillFields(
     const jni_zero::JavaParamRef<jstring>& socManufacturer,
     const jni_zero::JavaParamRef<jstring>& supportedAbis,
     jint sdkInt,
-    jboolean isDebugAndroid,
-    jboolean isAtleastU,
-    jboolean isAtleastT) {
+    jboolean isDebugAndroid) {
   DCHECK(!holder.has_value());
   auto java_string_to_const_char =
       [](const jni_zero::JavaParamRef<jstring>& str) {
@@ -117,12 +111,9 @@ static void JNI_AndroidInfo_FillFields(
       .is_debug_android = static_cast<bool>(isDebugAndroid),
       .version_incremental = java_string_to_const_char(versionIncremental),
       .hardware = java_string_to_const_char(hardware),
-      .is_at_least_u = static_cast<bool>(isAtleastU),
       .codename = java_string_to_const_char(codeName),
       .soc_manufacturer = java_string_to_const_char(socManufacturer),
-      .is_at_least_t = static_cast<bool>(isAtleastT),
-      .abi_name = java_string_to_const_char(supportedAbis),
-  };
+      .abi_name = java_string_to_const_char(supportedAbis)};
 }
 
 const char* device() {
@@ -173,10 +164,6 @@ const char* hardware() {
   return get_android_info().hardware;
 }
 
-bool is_at_least_u() {
-  return get_android_info().is_at_least_u;
-}
-
 const char* codename() {
   return get_android_info().codename;
 }
@@ -184,10 +171,6 @@ const char* codename() {
 // Available only on android S+. For S-, this method returns empty string.
 const char* soc_manufacturer() {
   return get_android_info().soc_manufacturer;
-}
-
-bool is_at_least_t() {
-  return get_android_info().is_at_least_t;
 }
 
 const char* abi_name() {

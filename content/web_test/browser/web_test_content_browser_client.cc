@@ -30,6 +30,7 @@
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -89,7 +90,7 @@
 #include "storage/browser/quota/quota_settings.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
-#include "third_party/blink/public/mojom/device_posture/device_posture_provider_automation.mojom.h"
+#include "third_party/blink/public/test/mojom/device_posture/device_posture_provider_automation.test-mojom.h"
 #include "ui/base/ui_base_switches.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -419,19 +420,14 @@ void WebTestContentBrowserClient::OverrideWebPreferences(
     WebTestControlHost::Get()->OverrideWebPreferences(prefs);
 }
 
-std::vector<std::unique_ptr<content::NavigationThrottle>>
-WebTestContentBrowserClient::CreateThrottlesForNavigation(
-    content::NavigationHandle* navigation_handle) {
-  std::vector<std::unique_ptr<content::NavigationThrottle>> throttles =
-      ShellContentBrowserClient::CreateThrottlesForNavigation(
-          navigation_handle);
-
-  throttles.push_back(std::make_unique<WebTestOriginTrialThrottle>(
-      navigation_handle, navigation_handle->GetWebContents()
-                             ->GetBrowserContext()
-                             ->GetOriginTrialsControllerDelegate()));
-
-  return throttles;
+void WebTestContentBrowserClient::CreateThrottlesForNavigation(
+    content::NavigationThrottleRegistry& registry) {
+  ShellContentBrowserClient::CreateThrottlesForNavigation(registry);
+  content::NavigationHandle& navigation_handle = registry.GetNavigationHandle();
+  registry.AddThrottle(std::make_unique<WebTestOriginTrialThrottle>(
+      &navigation_handle, navigation_handle.GetWebContents()
+                              ->GetBrowserContext()
+                              ->GetOriginTrialsControllerDelegate()));
 }
 
 void WebTestContentBrowserClient::AppendExtraCommandLineSwitches(
@@ -628,12 +624,14 @@ void WebTestContentBrowserClient::BindCookieManagerAutomation(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::test::mojom::CookieManagerAutomation>
         receiver) {
-  cookie_managers_.Add(std::make_unique<WebTestCookieManager>(
-                           GetWebTestBrowserContext()
-                               ->GetDefaultStoragePartition()
-                               ->GetCookieManagerForBrowserProcess(),
-                           render_frame_host->GetLastCommittedURL()),
-                       std::move(receiver));
+  cookie_managers_.Add(
+      std::make_unique<WebTestCookieManager>(
+          GetWebTestBrowserContext()
+              ->GetDefaultStoragePartition()
+              ->GetCookieManagerForBrowserProcess(),
+          render_frame_host->GetLastCommittedURL(),
+          render_frame_host->GetIsolationInfoForSubresources()),
+      std::move(receiver));
 }
 
 void WebTestContentBrowserClient::BindDevicePostureProviderAutomation(

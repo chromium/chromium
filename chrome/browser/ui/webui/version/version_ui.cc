@@ -260,8 +260,6 @@ void VersionUI::AddVersionDetailStrings(content::WebUIDataSource* html_source) {
       version_ui::kTargetSdkVersion,
       base::NumberToString(
           base::android::BuildInfo::GetInstance()->target_sdk_version()));
-  html_source->AddString(version_ui::kTargetsU,
-                         AndroidAboutAppInfo::GetTargetsUInfo());
   html_source->AddString(version_ui::kGmsVersion,
                          AndroidAboutAppInfo::GetGmsInfo());
   html_source->AddString(

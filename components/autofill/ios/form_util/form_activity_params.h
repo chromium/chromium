@@ -64,8 +64,6 @@ std::ostream& operator<<(std::ostream& buffer,
 // value: "LouisLane" (assuming that was the password typed)
 // has_user_gesture:  true
 // input_missing:  false
-// frame_id: will be the unique ID generated in for the frame containing the
-// form (see __gCrWeb.message.getFrameId for details).
 struct FormActivityParams : public BaseFormActivityParams {
   FormActivityParams();
   FormActivityParams(const FormActivityParams& other);

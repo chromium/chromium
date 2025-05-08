@@ -6,7 +6,6 @@
 
 #import <memory>
 
-#import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -18,7 +17,7 @@ class BrowserListFactoryTest : public PlatformTest {
   ProfileIOS* profile() { return profile_.get(); }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<ProfileIOS> profile_;
 };
 

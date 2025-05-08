@@ -234,11 +234,10 @@ class GLES2InterfaceForTests : public gpu::gles2::GLES2InterfaceStub,
     }
   }
 
-  void GenTextures(GLsizei n, GLuint* textures) override {
-    static GLuint id = 1;
-    for (GLsizei i = 0; i < n; ++i)
-      textures[i] = id++;
-  }
+  void GenTextures(GLsizei n, GLuint* textures) override;
+
+  // ImplementationBase implementation
+  void GenSyncTokenCHROMIUM(GLbyte* sync_token) override;
 
   MOCK_METHOD1(CreateAndTexStorage2DSharedImageCHROMIUMMock,
                void(const GLbyte*));
@@ -251,14 +250,6 @@ class GLES2InterfaceForTests : public gpu::gles2::GLES2InterfaceStub,
     last_imported_shared_image_.SetName(
         reinterpret_cast<const gpu::Mailbox*>(mailbox)->name);
     return texture_id;
-  }
-
-  // ImplementationBase implementation
-  void GenSyncTokenCHROMIUM(GLbyte* sync_token) override {
-    static gpu::CommandBufferId::Generator command_buffer_id_generator;
-    gpu::SyncToken source(gpu::GPU_IO,
-                          command_buffer_id_generator.GenerateNextId(), 2);
-    memcpy(sync_token, &source, sizeof(source));
   }
 
   MOCK_METHOD1(WaitSyncTokenCHROMIUMMock, void(const GLbyte* sync_token));

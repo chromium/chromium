@@ -37,15 +37,6 @@ source_set("content_world_header") {
   sources = [ "content_world.h" ]
 }
 
-compile_ts("frame_id") {
-  sources = [ "resources/frame_id.ts" ]
-
-  deps = [
-    ":gcrweb",
-    ":util_scripts",
-  ]
-}
-
 compile_ts("util_scripts") {
   sources = [ "resources/utils.ts" ]
 }
@@ -61,6 +52,8 @@ compile_ts("error_reporting") {
 # compiled TypeScript to be used as a dependency by other TypeScript targets.
 compile_ts("gcrweb") {
   sources = [ "resources/gcrweb.ts" ]
+
+  deps = [ ":util_scripts" ]
 }
 
 optimize_js("gcrweb_js") {
@@ -76,6 +69,7 @@ source_set("unittests") {
   testonly = true
 
   deps = [
+    ":gcrweb_test_api",
     ":util_test_api",
     "//base",
     "//base/test:test_support",
@@ -85,7 +79,10 @@ source_set("unittests") {
     "//url",
   ]
 
-  sources = [ "utils_javascript_test.mm" ]
+  sources = [
+    "gcrweb_javascript_test.mm",
+    "utils_javascript_test.mm",
+  ]
 }
 
 optimize_ts("util_test_api") {
@@ -97,4 +94,12 @@ optimize_ts("util_test_api") {
     ":gcrweb",
     ":util_scripts",
   ]
+}
+
+optimize_ts("gcrweb_test_api") {
+  testonly = true
+
+  sources = [ "resources/gcrweb_test_api.ts" ]
+
+  deps = [ ":gcrweb" ]
 }

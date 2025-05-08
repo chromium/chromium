@@ -27,69 +27,99 @@ std::string_view SuccessToString(bool success) {
   return success ? "Success" : "Failure";
 }
 
+std::string_view WithRetryToString(bool with_retry) {
+  return with_retry ? "WithRetry" : "NoRetry";
+}
+
 }  // namespace
 
-void LogProvisioningError(ProvisioningError provisioning_error,
+void LogProvisioningError(const std::string& logging_context,
+                          ProvisioningError provisioning_error,
                           std::optional<StoreError> store_error) {
   static constexpr char kProvisioningErrorHistogram[] =
-      "Enterprise.ClientCertificate.Profile.Provisioning.Error";
-  base::UmaHistogramEnumeration(kProvisioningErrorHistogram,
-                                provisioning_error);
+      "Enterprise.ClientCertificate.%s.Provisioning.Error";
+  base::UmaHistogramEnumeration(
+      base::StringPrintf(kProvisioningErrorHistogram, logging_context.c_str()),
+      provisioning_error);
 
   if (store_error.has_value()) {
     static constexpr char kProvisioningStoreErrorHistogram[] =
-        "Enterprise.ClientCertificate.Profile.Provisioning.Store.Error";
-    base::UmaHistogramEnumeration(kProvisioningStoreErrorHistogram,
-                                  store_error.value());
+        "Enterprise.ClientCertificate.%s.Provisioning.Store.Error";
+    base::UmaHistogramEnumeration(
+        base::StringPrintf(kProvisioningStoreErrorHistogram,
+                           logging_context.c_str()),
+        store_error.value());
   }
 }
 
-void LogCertificateCreationResponse(HttpCodeOrClientError upload_code,
+void LogCertificateCreationResponse(const std::string& logging_context,
+                                    HttpCodeOrClientError upload_code,
                                     bool has_certificate) {
   if (!upload_code.has_value()) {
     static constexpr char kCreateCertificateClientErrorHistogram[] =
-        "Enterprise.ClientCertificate.Profile.CreateCertificate.ClientError";
-    base::UmaHistogramEnumeration(kCreateCertificateClientErrorHistogram,
-                                  upload_code.error());
+        "Enterprise.ClientCertificate.%s.CreateCertificate.ClientError";
+    base::UmaHistogramEnumeration(
+        base::StringPrintf(kCreateCertificateClientErrorHistogram,
+                           logging_context.c_str()),
+        upload_code.error());
     return;
   }
 
   static constexpr char kCreateCertificateCodeHistogram[] =
-      "Enterprise.ClientCertificate.Profile.CreateCertificate.UploadCode";
-  base::UmaHistogramSparse(kCreateCertificateCodeHistogram,
+      "Enterprise.ClientCertificate.%s.CreateCertificate.UploadCode";
+  base::UmaHistogramSparse(base::StringPrintf(kCreateCertificateCodeHistogram,
+                                              logging_context.c_str()),
                            upload_code.value());
 
   if (upload_code.value() / 100 == 2) {
     static constexpr char kCreateCertificateSuccessHasCertHistogram[] =
-        "Enterprise.ClientCertificate.Profile.CreateCertificate.Success."
+        "Enterprise.ClientCertificate.%s.CreateCertificate.Success."
         "HasCert";
-    base::UmaHistogramBoolean(kCreateCertificateSuccessHasCertHistogram,
-                              has_certificate);
+    base::UmaHistogramBoolean(
+        base::StringPrintf(kCreateCertificateSuccessHasCertHistogram,
+                           logging_context.c_str()),
+        has_certificate);
   }
 }
 
-void LogProvisioningContext(ProvisioningContext context, bool success) {
+void LogProvisioningContext(const std::string& logging_context,
+                            ProvisioningContext context,
+                            bool success) {
   static constexpr char kProvisioningOutcomeHistogramFormat[] =
-      "Enterprise.ClientCertificate.Profile.Provisioning.%s.Outcome";
+      "Enterprise.ClientCertificate.%s.Provisioning.%s.Outcome";
   static constexpr char kProvisioningLatencyHistogramFormat[] =
-      "Enterprise.ClientCertificate.Profile.Provisioning.%s.%s.Latency";
+      "Enterprise.ClientCertificate.%s.Provisioning.%s.%s.Latency";
 
   auto scenario_string = ProvisioningScenarioToString(context.scenario);
   base::UmaHistogramBoolean(
       base::StringPrintf(kProvisioningOutcomeHistogramFormat,
-                         scenario_string.data()),
+                         logging_context.c_str(), scenario_string.data()),
       success);
   base::UmaHistogramTimes(
       base::StringPrintf(kProvisioningLatencyHistogramFormat,
-                         scenario_string.data(),
+                         logging_context.c_str(), scenario_string.data(),
                          SuccessToString(success).data()),
       base::TimeTicks::Now() - context.start_time);
 }
 
-void LogPrivateKeyCreationSource(PrivateKeySource source) {
+void LogPrivateKeyCreationSource(const std::string& logging_context,
+                                 PrivateKeySource source) {
   static constexpr char kCreatePrivateKeySourceHistogram[] =
-      "Enterprise.ClientCertificate.Profile.CreatePrivateKey.Source";
-  base::UmaHistogramEnumeration(kCreatePrivateKeySourceHistogram, source);
+      "Enterprise.ClientCertificate.%s.CreatePrivateKey.Source";
+  base::UmaHistogramEnumeration(
+      base::StringPrintf(kCreatePrivateKeySourceHistogram,
+                         logging_context.c_str()),
+      source);
+}
+
+void LogLevelDBInitStatus(leveldb_proto::Enums::InitStatus status,
+                          bool with_retry) {
+  static constexpr char kLevelDBInitHistogramFormat[] =
+      "Enterprise.CertificateStore.LevelDB.InitStatus.%s";
+  base::UmaHistogramSparse(
+      base::StringPrintf(kLevelDBInitHistogramFormat,
+                         WithRetryToString(with_retry).data()),
+      status);
 }
 
 }  // namespace client_certificates

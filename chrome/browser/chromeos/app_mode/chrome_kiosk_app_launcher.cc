@@ -11,18 +11,18 @@
 #include "base/syslog_logging.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/publishers/chrome_app_deprecation.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_service_launcher.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/browser/delayed_install_manager.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_registrar.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/kiosk_mode_info.h"
 #include "extensions/common/manifest_handlers/offline_enabled_info.h"
@@ -50,12 +50,20 @@ void ChromeKioskAppLauncher::LaunchApp(LaunchCallback callback) {
   on_ready_callback_ = std::move(callback);
 
   const extensions::Extension* primary_app = GetPrimaryAppExtension();
+
   // Verify that required apps are installed. While the apps should be
   // present at this point, crash recovery flow skips app installation steps -
   // this means that the kiosk app might not yet be downloaded. If that is
   // the case, bail out from the app launch.
   if (!primary_app) {
     ReportLaunchFailure(LaunchResult::kUnableToLaunch);
+    return;
+  }
+
+  if (apps::chrome_app_deprecation::HandleDeprecation(primary_app->id(),
+                                                      profile_) ==
+      apps::chrome_app_deprecation::DeprecationStatus::kLaunchBlocked) {
+    ReportLaunchFailure(LaunchResult::kChromeAppDeprecated);
     return;
   }
 
@@ -174,8 +182,7 @@ bool ChromeKioskAppLauncher::AreSecondaryAppsInstalled() const {
 }
 
 bool ChromeKioskAppLauncher::PrimaryAppHasPendingUpdate() const {
-  return extensions::ExtensionSystem::Get(profile_)
-      ->extension_service()
+  return extensions::DelayedInstallManager::Get(profile_)
       ->GetPendingExtensionUpdate(app_id_);
 }
 
@@ -197,8 +204,6 @@ void ChromeKioskAppLauncher::SetSecondaryAppsEnabledState(
 void ChromeKioskAppLauncher::SetAppEnabledState(
     const extensions::ExtensionId& id,
     bool new_enabled_state) {
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(profile_)->extension_service();
   auto* registrar = extensions::ExtensionRegistrar::Get(profile_);
   extensions::ExtensionPrefs* prefs = extensions::ExtensionPrefs::Get(profile_);
 
@@ -213,11 +218,11 @@ void ChromeKioskAppLauncher::SetAppEnabledState(
     prefs->RemoveDisableReason(id,
                                extensions::disable_reason::DISABLE_USER_ACTION);
     if (prefs->GetDisableReasons(id).empty()) {
-      service->EnableExtension(id);
+      registrar->EnableExtension(id);
     }
   } else {
-    service->DisableExtension(id,
-                              extensions::disable_reason::DISABLE_USER_ACTION);
+    registrar->DisableExtension(
+        id, {extensions::disable_reason::DISABLE_USER_ACTION});
   }
 }
 

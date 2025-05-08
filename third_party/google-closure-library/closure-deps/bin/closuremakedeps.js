@@ -244,7 +244,7 @@ async function main(opt_args) {
   if (!args.file && !args.root) {
     console.error('Must supply inputs and/or roots.');
     yargs.showHelp();
-    return;
+    process.exit(1);
   }
 
   const sources = new Set((args.file || []).map(resolve));
@@ -308,17 +308,21 @@ async function main(opt_args) {
 if (require.main == module) {
   (async () => {
     // Log any uncaught exceptions as these are frowned upon in Node.
+    let fatal = false;
     try {
       const result = await main();
       for (const error of result.errors) {
         console.error(error.toString());
+        fatal = fatal || error.fatal;
       }
       if (result.text) {
         console.log(result.text);
       }
     } catch (e) {
       console.error(e);
+      fatal = true;
     }
+    if (fatal) process.exit(1);
   })();
 }
 

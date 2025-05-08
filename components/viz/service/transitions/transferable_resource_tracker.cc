@@ -59,22 +59,10 @@ TransferableResourceTracker::ImportResources(
 TransferableResourceTracker::PositionedResource
 TransferableResourceTracker::ImportResource(
     SurfaceSavedFrame::OutputCopyResult output_copy) {
-  TransferableResource resource;
-
-  DCHECK(output_copy.shared_image);
-  if (output_copy.is_software) {
-      resource = TransferableResource::MakeSoftwareSharedImage(
-          output_copy.shared_image, gpu::SyncToken(),
-          output_copy.draw_data.size, output_copy.shared_image->format());
-      resource.color_space = output_copy.shared_image->color_space();
-  } else {
-      resource = TransferableResource::MakeGpu(
-          output_copy.shared_image, GL_TEXTURE_2D, output_copy.sync_token,
-          output_copy.draw_data.size, output_copy.shared_image->format(),
-          /*is_overlay_candidate=*/false,
-          TransferableResource::ResourceSource::kViewTransition);
-      resource.color_space = output_copy.shared_image->color_space();
-  }
+  auto resource = TransferableResource::Make(
+      output_copy.shared_image,
+      TransferableResource::ResourceSource::kViewTransition,
+      output_copy.sync_token);
 
   TransferableResourceHolder::ResourceReleaseCallback release_callback;
   if (output_copy.release_callback) {
@@ -94,7 +82,6 @@ TransferableResourceTracker::ImportResource(
 
   PositionedResource result;
   result.resource = resource;
-  result.draw_data = output_copy.draw_data;
   return result;
 }
 

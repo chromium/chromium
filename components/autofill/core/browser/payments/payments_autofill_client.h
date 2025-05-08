@@ -398,6 +398,7 @@ class PaymentsAutofillClient : public RiskDataLoader {
 
   // Show the OTP unmask dialog to accept user-input OTP value.
   virtual void ShowCardUnmaskOtpInputDialog(
+      CreditCard::RecordType card_type,
       const CardUnmaskChallengeOption& challenge_option,
       base::WeakPtr<OtpUnmaskDelegate> delegate);
 
@@ -535,6 +536,14 @@ class PaymentsAutofillClient : public RiskDataLoader {
   virtual bool ShowTouchToFillIban(base::WeakPtr<TouchToFillDelegate> delegate,
                                    base::span<const Iban> ibans_to_suggest);
 
+  // Shows the Touch To Fill surface for filling Wallet loyalty card
+  // information, if possible, returning `true` on success. `delegate` will be
+  // notified of events. This function is not implemented on iOS and iOS
+  // WebView, and should not be used on those platforms.
+  virtual bool ShowTouchToFillLoyaltyCard(
+      base::WeakPtr<TouchToFillDelegate> delegate,
+      base::span<const LoyaltyCard> loyalty_cards_to_suggest);
+
   // Hides the Touch To Fill surface for filling payment information if one is
   // currently shown. Should be called only if the feature is supported by the
   // platform.
@@ -577,7 +586,7 @@ class PaymentsAutofillClient : public RiskDataLoader {
   virtual void DismissSelectBnplIssuerDialog();
 
   // Checks if the browser popup is a tab modal popup.
-  virtual bool IsTabModalPopup() const;
+  virtual bool IsTabModalPopupDeprecated() const;
 };
 
 }  // namespace payments

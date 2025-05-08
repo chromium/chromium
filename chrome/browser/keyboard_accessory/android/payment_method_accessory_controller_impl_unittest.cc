@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_controller.h"
+#include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_manual_filling_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -18,7 +19,10 @@
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/test_valuables_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -28,6 +32,7 @@
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/valuables_data_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
@@ -40,6 +45,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 using testing::_;
+using testing::InSequence;
 using testing::SaveArg;
 using IsFillingSourceAvailable = AccessoryController::IsFillingSourceAvailable;
 
@@ -96,7 +102,7 @@ class PaymentMethodAccessoryControllerTestBase
             std::make_unique<TestAccessManager>(&autofill_manager(), nullptr));
     PaymentMethodAccessoryControllerImpl::CreateForWebContentsForTesting(
         web_contents(), mock_mf_controller_.AsWeakPtr(), &paydm(),
-        &autofill_manager(), &autofill_driver());
+        &valuables_data_manager(), &autofill_manager(), &autofill_driver());
     controller()->RegisterFillingSourceObserver(filling_source_observer_.Get());
     paydm().SetPrefService(profile()->GetPrefs());
     paydm().SetSyncServiceForTest(&sync_service_);
@@ -137,11 +143,16 @@ class PaymentMethodAccessoryControllerTestBase
 
   TestPaymentsDataManager& paydm() { return paydm_; }
 
+  TestValuablesDataManager& valuables_data_manager() {
+    return valuables_data_manager_;
+  }
+
   base::MockCallback<AccessoryController::FillingSourceObserver>
       filling_source_observer_;
  private:
   syncer::TestSyncService sync_service_;
   TestPaymentsDataManager paydm_;
+  TestValuablesDataManager valuables_data_manager_;
   testing::NiceMock<MockManualFillingController> mock_mf_controller_;
   GURL url_;
   TestAutofillClientInjector<TestContentAutofillClient>
@@ -673,6 +684,109 @@ TEST_F(PaymentMethodAccessoryControllerTest, FetchServerIban) {
   EXPECT_CALL(iban_access_manager(), FetchValue);
 
   controller()->OnFillingTriggered(field_id, field);
+}
+
+TEST_F(PaymentMethodAccessoryControllerTest,
+       RefreshSuggestionsWithLoyaltyCards) {
+  LoyaltyCard loyalty_card = test::CreateLoyaltyCard();
+  test_api(valuables_data_manager()).AddLoyaltyCard(loyalty_card);
+
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
+  ASSERT_TRUE(controller());
+  controller()->RefreshSuggestions();
+
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      AccessorySheetData::Builder(
+          AccessoryTabType::CREDIT_CARDS,
+          /*user_info_title=*/
+          l10n_util::GetStringUTF16(
+              IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_EMPTY_MESSAGE),
+          /*plus_address_title=*/std::u16string())
+          .AddLoyaltyCardInfo(
+              loyalty_card.merchant_name(), loyalty_card.program_logo(),
+              base::UTF8ToUTF16(loyalty_card.loyalty_card_number()))
+          .AppendFooterCommand(
+              l10n_util::GetStringUTF16(
+                  IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_ALL_ADDRESSES_LINK),
+              AccessoryAction::MANAGE_CREDIT_CARDS)
+          .AppendFooterCommand(
+              l10n_util::GetStringUTF16(
+                  IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_ALL_LOYALTY_CARDS_LINK),
+              AccessoryAction::MANAGE_LOYALTY_CARDS)
+          .Build());
+}
+
+TEST_F(PaymentMethodAccessoryControllerTest, LoyaltyCardDataIsChangedBySync) {
+  {
+    InSequence seq;
+    // First, there're no loyalty cards, so the filling source is not available.
+    EXPECT_CALL(filling_source_observer_,
+                Run(controller(), IsFillingSourceAvailable(false)));
+    // The filling source should become available after a loyalty card is added.
+    EXPECT_CALL(filling_source_observer_,
+                Run(controller(), IsFillingSourceAvailable(true)));
+  }
+
+  ASSERT_TRUE(controller());
+  controller()->RefreshSuggestions();
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      AccessorySheetData::Builder(
+          AccessoryTabType::CREDIT_CARDS,
+          /*user_info_title=*/
+          l10n_util::GetStringUTF16(
+              IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_EMPTY_MESSAGE),
+          /*plus_address_title=*/std::u16string())
+          .AppendFooterCommand(
+              l10n_util::GetStringUTF16(
+                  IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_ALL_ADDRESSES_LINK),
+              AccessoryAction::MANAGE_CREDIT_CARDS)
+          .Build());
+
+  LoyaltyCard loyalty_card = test::CreateLoyaltyCard();
+  test_api(valuables_data_manager()).AddLoyaltyCard(loyalty_card);
+  test_api(valuables_data_manager()).NotifyObservers();
+
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      AccessorySheetData::Builder(
+          AccessoryTabType::CREDIT_CARDS,
+          /*user_info_title=*/
+          l10n_util::GetStringUTF16(
+              IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_EMPTY_MESSAGE),
+          /*plus_address_title=*/std::u16string())
+          .AddLoyaltyCardInfo(
+              loyalty_card.merchant_name(), loyalty_card.program_logo(),
+              base::UTF8ToUTF16(loyalty_card.loyalty_card_number()))
+          .AppendFooterCommand(
+              l10n_util::GetStringUTF16(
+                  IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_ALL_ADDRESSES_LINK),
+              AccessoryAction::MANAGE_CREDIT_CARDS)
+          .AppendFooterCommand(
+              l10n_util::GetStringUTF16(
+                  IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_ALL_LOYALTY_CARDS_LINK),
+              AccessoryAction::MANAGE_LOYALTY_CARDS)
+          .Build());
+}
+
+TEST_F(PaymentMethodAccessoryControllerTest, FillLoyaltyCardNumber) {
+  content::RenderFrameHost* rfh = web_contents()->GetFocusedFrame();
+  ASSERT_TRUE(rfh);
+  FieldGlobalId field_id{.frame_token = LocalFrameToken(*rfh->GetFrameToken()),
+                         .renderer_id = FieldRendererId(123)};
+
+  LoyaltyCard loyalty_card = test::CreateLoyaltyCard();
+  LoyaltyCardInfo loyalty_card_info(
+      loyalty_card.merchant_name(), loyalty_card.program_logo(),
+      base::UTF8ToUTF16(loyalty_card.loyalty_card_number()));
+  EXPECT_CALL(autofill_driver(),
+              ApplyFieldAction(mojom::FieldActionType::kReplaceAll,
+                               mojom::ActionPersistence::kFill, field_id,
+                               loyalty_card_info.value().text_to_fill()));
+
+  controller()->OnFillingTriggered(field_id, loyalty_card_info.value());
 }
 
 }  // namespace autofill

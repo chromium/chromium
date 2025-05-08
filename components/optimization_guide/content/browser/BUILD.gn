@@ -44,6 +44,28 @@ static_library("browser") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
+source_set("page_context_eligibility_api") {
+  public = [ "page_context_eligibility_api.h" ]
+  sources = [ "page_context_eligibility_api.cc" ]
+}
+
+static_library("page_context_eligibility") {
+  public = [ "page_context_eligibility.h" ]
+  sources = [ "page_context_eligibility.cc" ]
+
+  public_deps = [
+    ":page_context_eligibility_api",
+    "//base",
+    "//components/optimization_guide/core:optimization_guide_library_holder",
+  ]
+
+  if (build_with_internal_optimization_guide) {
+    data_deps = [
+      "//components/optimization_guide/internal:optimization_guide_internal",
+    ]
+  }
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [

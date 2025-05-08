@@ -13,34 +13,15 @@
 
 #include "base/base64.h"
 #include "base/strings/string_split.h"
-#include "third_party/zlib/google/compression_utils_portable.h"
 #include "third_party/zlib/zlib.h"
 
 Crc32Hasher::Crc32Hasher() = default;
 
 Crc32Hasher::~Crc32Hasher() = default;
 
-std::vector<std::string> Crc32Hasher::MakeFileListFromCompressedList(
-    std::string_view data) {
-  std::string gzipdata;
-  // Expected compressed input is using Base64 encoding, we got convert it
-  // to a regular string before passing it to zlib.
-  base::Base64Decode(data, &gzipdata);
-
-  size_t compressed_size = gzipdata.size();
-  unsigned long decompressed_size = zlib_internal::GetGzipUncompressedSize(
-      reinterpret_cast<const Bytef*>(gzipdata.c_str()), compressed_size);
-  std::string decompressed(decompressed_size, '\0');
-
-  // We can skip an extraneous copy by relying on a C++11 std::string guarantee
-  // of contiguous memory access to a string.
-  zlib_internal::UncompressHelper(
-      zlib_internal::WrapperType::GZIP,
-      reinterpret_cast<unsigned char*>(&decompressed[0]), &decompressed_size,
-      reinterpret_cast<const unsigned char*>(gzipdata.c_str()),
-      compressed_size);
-
-  return SplitString(decompressed, kFilePathDelimiter, base::KEEP_WHITESPACE,
+std::vector<std::string> Crc32Hasher::ParseFileList(
+    const std::string& combined_paths) {
+  return SplitString(combined_paths, kFilePathDelimiter, base::KEEP_WHITESPACE,
                      base::SPLIT_WANT_ALL);
 }
 

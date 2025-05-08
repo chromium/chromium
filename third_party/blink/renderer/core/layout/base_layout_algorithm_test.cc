@@ -79,6 +79,21 @@ const PhysicalBoxFragment* BaseLayoutAlgorithmTest::CurrentFragmentFor(
   return block_flow->GetPhysicalFragment(0);
 }
 
+void BaseLayoutAlgorithmTest::VerifyGapIntersections(
+    const Vector<GapIntersectionList>& expected_intersections,
+    const Vector<GapIntersectionList>& intersections) {
+  EXPECT_EQ(intersections.size(), expected_intersections.size());
+  for (size_t i = 0; i < intersections.size(); ++i) {
+    const auto& expected = expected_intersections[i];
+    const auto& actual = intersections[i];
+    EXPECT_EQ(actual.size(), expected.size());
+    for (size_t j = 0; j < actual.size(); ++j) {
+      EXPECT_EQ(actual[j].inline_offset, expected[j].inline_offset);
+      EXPECT_EQ(actual[j].block_offset, expected[j].block_offset);
+    }
+  }
+}
+
 const PhysicalBoxFragment* FragmentChildIterator::NextChild(
     PhysicalOffset* fragment_offset) {
   if (!parent_)

@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/content_notification/model/content_notification_service_factory.h"
 
-#import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -19,7 +19,7 @@ class ContentNotificationServiceFactoryTest : public PlatformTest {
   ProfileIOS* otr_profile() { return profile_->GetOffTheRecordProfile(); }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
 };
 

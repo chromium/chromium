@@ -8,10 +8,11 @@
 #include "media/gpu/buildflags.h"
 #include "media/media_buildflags.h"
 
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
+// These includes are used for non-ChromeOS platforms as well.
 #include "media/gpu/chromeos/generic_dmabuf_video_frame_mapper.h"
 #include "media/gpu/chromeos/gpu_memory_buffer_video_frame_mapper.h"
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif
 
 #if BUILDFLAG(USE_VAAPI)
 #include "media/gpu/vaapi/vaapi_dmabuf_video_frame_mapper.h"

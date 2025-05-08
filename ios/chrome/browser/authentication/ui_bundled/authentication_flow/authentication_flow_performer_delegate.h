@@ -23,9 +23,6 @@ class Browser;
 // `signOutForAccountSwitchWithProfile`.
 - (void)didSignOutForAccountSwitch;
 
-// Indicates that browsing data finished clearing.
-- (void)didClearData;
-
 // Called after `-[AuthenticationFlowPerformer
 // fetchUnsyncedDataWithSyncService:]`, to return the list of data types
 // unsynced in the current profile.
@@ -77,6 +74,9 @@ class Browser;
 
 // Indicates that the personal profile was converted to a managed one.
 - (void)didMakePersonalProfileManaged;
+
+// Indicates that account capabilities have been fetched.
+- (void)didFetchAccountCapabilities;
 
 @end
 

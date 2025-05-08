@@ -9,12 +9,13 @@ dictionary LanguageModelCloneOptions {
 };
 
 dictionary LanguageModelPromptOptions {
-  object responseJSONSchema;
+  object responseConstraint;
   AbortSignal signal;
 };
 
 [
   Exposed(Window AIPromptAPI, Worker AIPromptAPIForWorkers),
+  RuntimeEnabled=AIPromptAPI,
   SecureContext
 ]
 interface LanguageModel : EventTarget {

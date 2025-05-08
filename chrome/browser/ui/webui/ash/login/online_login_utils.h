@@ -96,9 +96,6 @@ using OnSetCookieForLoadGaiaWithPartition =
 using ChallengeResponseKeyOrError =
     base::expected<ChallengeResponseKey, SigninError>;
 
-// Return whether the InSession Password Change feature is enabled.
-bool ExtractSamlPasswordAttributesEnabled();
-
 // Return Signin Session callback
 base::OnceClosure GetStartSigninSession(::content::WebUI* web_ui,
                                         LoadGaiaWithPartition callback);

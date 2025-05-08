@@ -9,6 +9,7 @@ import android.content.res.Configuration;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.provider.Settings;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -30,6 +31,11 @@ public final class KeyboardUtils {
 
     /** Waiting time between attempts to show the keyboard. */
     private static final long KEYBOARD_RETRY_DELAY_MS = 100;
+
+    public static final int CTRL = 1 << 31;
+    public static final int ALT = 1 << 30;
+    public static final int SHIFT = 1 << 29;
+    public static final int NO_MODIFIER = 0;
 
     /**
      * Tries to show the soft keyboard by using the {@link Context#INPUT_METHOD_SERVICE}.
@@ -144,5 +150,18 @@ public final class KeyboardUtils {
         return Settings.Secure.getInt(
                         context.getContentResolver(), "show_ime_with_hard_keyboard", 0)
                 != 0;
+    }
+
+    /**
+     * Reports the metaState of a KeyEvent, which gives information about the modifier keys that are
+     * part of the event (e.g. Ctrl).
+     *
+     * @param event A {@link KeyEvent}.
+     * @return Bitmask of the modifier keys included in the event.
+     */
+    public static int getMetaState(KeyEvent event) {
+        return (event.isCtrlPressed() ? CTRL : 0)
+                | (event.isAltPressed() ? ALT : 0)
+                | (event.isShiftPressed() ? SHIFT : 0);
     }
 }

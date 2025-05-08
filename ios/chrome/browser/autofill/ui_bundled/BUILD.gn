@@ -125,6 +125,10 @@ source_set("util") {
     ":ui_type",
     "//base",
     "//components/autofill/core/browser",
+    "//ios/chrome/browser/autofill/model/message",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
   ]
 }
 

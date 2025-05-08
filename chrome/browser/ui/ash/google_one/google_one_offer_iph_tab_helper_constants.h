@@ -7,12 +7,13 @@
 
 // Fallback texts are used if params are not provided, e.g. IPH demo mode. We
 // won't expect that those fallback texts are used in prod.
-constexpr char kFallbackNotificationDisplaySource[] = "ChromeOS Perks";
-constexpr char kFallbackNotificationTitle[] = "Get 100 GB of cloud storage";
-constexpr char kFallbackNotificationMessage[] =
+inline constexpr char kFallbackNotificationDisplaySource[] = "ChromeOS Perks";
+inline constexpr char kFallbackNotificationTitle[] =
+    "Get 100 GB of cloud storage";
+inline constexpr char kFallbackNotificationMessage[] =
     "Keep your files & photos backed up with 12 months of Google One at no "
     "charge";
-constexpr char kFallbackGetPerkButtonTitle[] = "Claim now";
+inline constexpr char kFallbackGetPerkButtonTitle[] = "Claim now";
 
 inline constexpr char kIPHGoogleOneOfferNotificationId[] =
     "iph-google-one-offer-notification-id";
@@ -31,13 +32,13 @@ inline constexpr char kIPHGoogleOneOfferNotificationGetPerkEventName[] =
     "google_one_offer_iph_notification_get_perk";
 
 // IPH Feature Param names
-constexpr char kNotificationDisplaySourceParamName[] =
+inline constexpr char kNotificationDisplaySourceParamName[] =
     "x_google-one-offer-notification-display-source";
-constexpr char kNotificationTitleParamName[] =
+inline constexpr char kNotificationTitleParamName[] =
     "x_google-one-offer-notification-title";
-constexpr char kNotificationMessageParamName[] =
+inline constexpr char kNotificationMessageParamName[] =
     "x_google-one-offer-notification-message";
-constexpr char kGetPerkButtonTitleParamName[] =
+inline constexpr char kGetPerkButtonTitleParamName[] =
     "x_google-one-offer-get-perk-title";
 
 #endif  // CHROME_BROWSER_UI_ASH_GOOGLE_ONE_GOOGLE_ONE_OFFER_IPH_TAB_HELPER_CONSTANTS_H_

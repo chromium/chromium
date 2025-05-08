@@ -13,8 +13,13 @@
 namespace ui {
 
 // Returns the thickness, in pixels, of the non-client frame's left, right, and
+// bottom borders around a resizble (WS_THICKFRAME) window on the given monitor,
+// with no visible border.
+COMPONENT_EXPORT(UI_BASE) int GetResizeFrameOnlyThickness(HMONITOR monitor);
+
+// Returns the thickness, in pixels, of the non-client frame's left, right, and
 // bottom borders around a resizble (WS_THICKFRAME) window on the given monitor.
-// This frame consists of:
+// In contrast to `GetResizeFrameOnlyThickness`, this frame consists of both:
 //  - A non-visible resize handle.
 //  - A visible border.
 // This thickness *excludes* the top border (title bar), which is typically

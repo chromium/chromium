@@ -122,6 +122,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceAndroid final
 
   // Update the connected state of |transport| to |connected|.
   void UpdateAclConnectState(uint8_t transport, bool connected);
+  bool is_acl_connected() { return connected_transport_; }
 
  private:
   BluetoothDeviceAndroid(
@@ -134,6 +135,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceAndroid final
       std::optional<device::BluetoothUUID> service_uuid) override;
   void DisconnectGatt() override;
 
+  void LoadInitialCachedMetadata();
+
   // Java object org.chromium.device.bluetooth.ChromeBluetoothDevice.
   base::android::ScopedJavaGlobalRef<jobject> j_device_;
 
@@ -144,6 +147,14 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceAndroid final
 
   // A bit-wise flag indicating connected states of Bluetooth transports.
   uint8_t connected_transport_ = 0;
+
+  // Cached values to serve when the Bluetooth adapter is off and the Android
+  // system doesn't serve them.
+  mutable std::optional<std::string> cached_name_;
+  mutable uint32_t cached_class_;
+  mutable BluetoothTransport cached_type_;
+  mutable bool cached_paired_;
+  mutable UUIDSet cached_sdp_uuids_;
 };
 
 }  // namespace device

@@ -14,6 +14,7 @@ const Timer = goog.require('goog.Timer');
 const array = goog.require('goog.array');
 const events = goog.require('goog.events');
 const functions = goog.require('goog.functions');
+const googAsyncNextTick = goog.require('goog.async.nextTick');
 const googAsyncRun = goog.require('goog.async.run');
 const recordFunction = goog.require('goog.testing.recordFunction');
 const testSuite = goog.require('goog.testing.testSuite');
@@ -398,6 +399,49 @@ testSuite({
     assertEquals(0, clock.getCallbacksTriggered());
 
     clock.tick(0);
+    assertEquals(2, clock.getCallbacksTriggered());
+    assertTrue(tick0);
+    assertTrue(tick1);
+
+    clock.uninstall();
+  },
+
+  testAsyncNextTick() {
+    const clock = new MockClock(true);
+    let tick0 = false;
+    let tick1 = false;
+    googAsyncNextTick(() => {
+      tick0 = true;
+    });
+    googAsyncNextTick(() => {
+      tick1 = true;
+    });
+    assertEquals(2, clock.getTimeoutsMade());
+    assertEquals(0, clock.getCallbacksTriggered());
+
+    clock.tick(0);
+    assertEquals(2, clock.getCallbacksTriggered());
+    assertTrue(tick0);
+    assertTrue(tick1);
+
+    clock.uninstall();
+  },
+
+  async testAsyncNextTick_AsyncClock() {
+    const clock = MockClock.createAsyncMockClock();
+    clock.install();
+    let tick0 = false;
+    let tick1 = false;
+    googAsyncNextTick(() => {
+      tick0 = true;
+    });
+    googAsyncNextTick(() => {
+      tick1 = true;
+    });
+    assertEquals(2, clock.getTimeoutsMade());
+    assertEquals(0, clock.getCallbacksTriggered());
+
+    await clock.tickAsync(0);
     assertEquals(2, clock.getCallbacksTriggered());
     assertTrue(tick0);
     assertTrue(tick1);
@@ -807,10 +851,10 @@ testSuite({
     // IE6.  Explicitly reading the property makes it work.
     const setTimeout = window.setTimeout;
     assertThrows('Timeouts > MAX_INT should fail', () => {
-      setTimeout(goog.nullFunction, 2147483648);
+      setTimeout(() => {}, 2147483648);
     });
     assertThrows('Timeouts much greater than MAX_INT should fail', () => {
-      setTimeout(goog.nullFunction, 2147483648 * 10);
+      setTimeout(() => {}, 2147483648 * 10);
     });
     clock.uninstall();
   },
@@ -830,7 +874,7 @@ testSuite({
 
   testMozRequestAnimationFrame() {
     // Setting this function will indirectly tell the mock clock to mock it out.
-    stubs.set(window, 'mozRequestAnimationFrame', goog.nullFunction);
+    stubs.set(window, 'mozRequestAnimationFrame', () => {});
 
     const clock = new MockClock(true);
 

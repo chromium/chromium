@@ -164,9 +164,12 @@ class AuctionDownloaderTest
     std::unique_ptr<AuctionDownloader> downloader;
     switch (constructor_choice()) {
       case ConstructorChoice::kAdoptInProgressLoad: {
+        TestAuctionNetworkEventsHandler test_auction_network_events_handler;
         auto in_progress_load = AuctionDownloader::StartDownload(
             url_loader_factory_, url_, mime_type_,
-            *test_network_events_delegate, post_body, content_type);
+            test_auction_network_events_handler, post_body, content_type);
+        observed_request_url_ = in_progress_load->url;
+        observed_request_id_ = in_progress_load->devtools_request_id;
         downloader = std::make_unique<AuctionDownloader>(
             &url_loader_factory_, std::move(in_progress_load), download_mode(),
             mime_type_, num_igs_for_trusted_bidding_signals_kvv1_,

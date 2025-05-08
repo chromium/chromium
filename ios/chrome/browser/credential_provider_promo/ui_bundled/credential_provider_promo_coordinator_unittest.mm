@@ -238,9 +238,8 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
 
 // Tests that tapping the "Turn on AutoFill…" primary action results in
 // recording the right histogram.
-// TODO(crbug.com/404244113): Test is flaky.
 TEST_F(CredentialProviderPromoCoordinatorTest,
-       FLAKY_CredentialProviderPromoTurnOnAutoFillPromptOutcomeRecorded) {
+       CredentialProviderPromoTurnOnAutoFillPromptOutcomeRecorded) {
   // The "Turn on AutoFill…" action is only available on iOS 18+.
   if (@available(iOS 18.0, *)) {
     // Enable the Passkeys M2 feature.

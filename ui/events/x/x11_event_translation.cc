@@ -4,6 +4,7 @@
 
 #include "ui/events/x/x11_event_translation.h"
 
+#include <numeric>
 #include <vector>
 
 #include "base/check.h"
@@ -25,6 +26,21 @@
 namespace ui {
 
 namespace {
+
+// This function is a shim for approximately emulating the state field of
+// legacy XKB key events, using information from XI2 key events, for
+// consumption by GTK.
+uint32_t XkbStateFromXI2Event(const x11::Input::DeviceEvent& xievent) {
+  uint32_t mods = xievent.mods.effective & 0xff;
+  uint8_t buttons = std::reduce(xievent.button_mask.begin(),
+                                xievent.button_mask.end(), 0, std::bit_or<>());
+  // For some reason, the XInput2 button mask needs to be right-shifted by one
+  // to match the XKB button mask.
+  buttons = (buttons >> 1) & 0x1f;
+  // The group (bits 13-14 of the XKB state) is deliberately omitted because
+  // it's not used by GdkModifierType.
+  return (static_cast<uint32_t>(buttons) << 8) | mods;
+}
 
 int XkbGroupForCoreState(int state) {
   return (state >> 13) & 0x3;
@@ -61,30 +77,44 @@ Event::Properties GetEventPropertiesFromXEvent(EventType type,
   using Values = std::vector<uint8_t>;
   Event::Properties properties;
   if (type == EventType::kKeyPressed || type == EventType::kKeyReleased) {
-    auto* key = x11_event.As<x11::KeyEvent>();
+    if (auto* key = x11_event.As<x11::KeyEvent>()) {
+      // Keyboard group
+      auto state = static_cast<uint32_t>(key->state);
+      properties.emplace(kPropertyKeyboardState,
+                         Values{
+                             static_cast<uint8_t>(state),
+                             static_cast<uint8_t>(state >> 8),
+                             static_cast<uint8_t>(state >> 16),
+                             static_cast<uint8_t>(state >> 24),
+                         });
 
-    // Keyboard group
-    auto state = static_cast<uint32_t>(key->state);
-    properties.emplace(kPropertyKeyboardState,
-                       Values{
-                           static_cast<uint8_t>(state),
-                           static_cast<uint8_t>(state >> 8),
-                           static_cast<uint8_t>(state >> 16),
-                           static_cast<uint8_t>(state >> 24),
-                       });
+      uint8_t group = XkbGroupForCoreState(state);
+      properties.emplace(kPropertyKeyboardGroup, Values{group});
 
-    uint8_t group = XkbGroupForCoreState(state);
-    properties.emplace(kPropertyKeyboardGroup, Values{group});
+      // Hardware keycode
+      uint8_t hw_keycode = static_cast<uint8_t>(key->detail);
+      properties.emplace(kPropertyKeyboardHwKeyCode, Values{hw_keycode});
 
-    // Hardware keycode
-    uint8_t hw_keycode = static_cast<uint8_t>(key->detail);
-    properties.emplace(kPropertyKeyboardHwKeyCode, Values{hw_keycode});
-
-    // IBus-/fctix-GTK specific flags
-    uint8_t ime_flags = (state >> kPropertyKeyboardImeFlagOffset) &
-                        kPropertyKeyboardImeFlagMask;
-    if (ime_flags) {
-      SetKeyboardImeFlagProperty(&properties, ime_flags);
+      // IBus-/fctix-GTK specific flags
+      uint8_t ime_flags = (state >> kPropertyKeyboardImeFlagOffset) &
+                          kPropertyKeyboardImeFlagMask;
+      if (ime_flags) {
+        SetKeyboardImeFlagProperty(&properties, ime_flags);
+      }
+    } else if (auto* xievent = x11_event.As<x11::Input::DeviceEvent>()) {
+      // Handle case where XI2 is enabled for KeyPress and KeyRelease events.
+      auto state = XkbStateFromXI2Event(*xievent);
+      properties.emplace(kPropertyKeyboardState,
+                         Values{
+                             static_cast<uint8_t>(state),
+                             static_cast<uint8_t>(state >> 8),
+                             static_cast<uint8_t>(state >> 16),
+                             static_cast<uint8_t>(state >> 24),
+                         });
+      properties.emplace(kPropertyKeyboardGroup,
+                         Values{xievent->group.effective});
+      properties.emplace(kPropertyKeyboardHwKeyCode,
+                         Values{static_cast<uint8_t>(xievent->detail)});
     }
   } else if (type == EventType::kMouseExited) {
     // NotifyVirtual events are created for intermediate windows that the

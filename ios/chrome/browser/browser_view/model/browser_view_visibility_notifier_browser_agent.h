@@ -55,8 +55,6 @@ class BrowserViewVisibilityNotifierBrowserAgent
 
   base::WeakPtrFactory<BrowserViewVisibilityNotifierBrowserAgent>
       weak_ptr_factory_{this};
-
-  BROWSER_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSER_VIEW_MODEL_BROWSER_VIEW_VISIBILITY_NOTIFIER_BROWSER_AGENT_H_

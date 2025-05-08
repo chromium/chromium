@@ -46,16 +46,6 @@ AggregationServicePayloadContents::Operation ConvertToOperation(
   }
 }
 
-blink::mojom::AggregationServiceMode ConvertToAggregationMode(
-    TestAggregationService::AggregationMode aggregation_mode) {
-  switch (aggregation_mode) {
-    case TestAggregationService::AggregationMode::kTeeBased:
-      return blink::mojom::AggregationServiceMode::kTeeBased;
-    case TestAggregationService::AggregationMode::kExperimentalPoplar:
-      return blink::mojom::AggregationServiceMode::kExperimentalPoplar;
-  }
-}
-
 void HandleAggregatableReportCallback(
     base::OnceCallback<void(base::Value::Dict)> callback,
     AggregatableReportRequest,
@@ -132,7 +122,6 @@ void TestAggregationServiceImpl::AssembleReport(
       {blink::mojom::AggregatableReportHistogramContribution(
           /*bucket=*/request.bucket, /*value=*/request.value,
           /*filtering_id=*/std::nullopt)},
-      ConvertToAggregationMode(request.aggregation_mode),
       /*aggregation_coordinator_origin=*/std::nullopt,
       /*max_contributions_allowed=*/20u,
       // TODO(crbug.com/330744610): Allow setting.
@@ -150,7 +139,7 @@ void TestAggregationServiceImpl::AssembleReport(
 
   std::optional<AggregatableReportRequest> report_request =
       AggregatableReportRequest::CreateForTesting(
-          std::move(request.processing_urls), std::move(payload_contents),
+          std::move(request.processing_url), std::move(payload_contents),
           std::move(shared_info));
   if (!report_request.has_value()) {
     std::move(callback).Run(base::Value::Dict());

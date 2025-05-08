@@ -92,7 +92,8 @@ class DownloadManagerCoordinatorImpl
                 new ToolbarCoordinator(
                         mActivity,
                         this,
-                        mListCoordinator,
+                        /* listActionDelegate= */ mListCoordinator,
+                        /* listContentView= */ mListCoordinator.getView(),
                         mSelectionDelegate,
                         config.isSeparateActivity,
                         tracker);

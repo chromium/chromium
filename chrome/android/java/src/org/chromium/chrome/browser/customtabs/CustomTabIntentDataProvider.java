@@ -75,6 +75,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -87,6 +88,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
+import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderUtils;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -311,6 +313,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private PendingIntent mRemoteViewsPendingIntent;
     private PendingIntent mSecondaryToolbarSwipeUpPendingIntent;
     private PendingIntent.OnFinished mOnFinishedForTesting;
+    private @DisplayMode.EnumType int mResolvedDisplayMode = DisplayMode.UNDEFINED;
 
     /** Whether this CustomTabActivity was explicitly started by another Chrome Activity. */
     private final boolean mIsOpenedByChrome;
@@ -1384,7 +1387,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Nullable
     @Override
-    public TrustedWebActivityDisplayMode getTwaDisplayMode() {
+    public TrustedWebActivityDisplayMode getProvidedTwaDisplayMode() {
         return mTrustedWebActivityDisplayMode;
     }
 
@@ -1639,5 +1642,43 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             // Catch unparcelling errors potentially thrown by AndroidX bundle parsing code
             return null;
         }
+    }
+
+    @Override
+    public int getResolvedDisplayMode() {
+        if (!isTrustedWebActivity()) {
+            return DisplayMode.UNDEFINED;
+        }
+
+        if (mResolvedDisplayMode != DisplayMode.UNDEFINED) {
+            return mResolvedDisplayMode;
+        }
+
+        mResolvedDisplayMode = resolveDisplayMode();
+        return mResolvedDisplayMode;
+    }
+
+    private @DisplayMode.EnumType int resolveDisplayMode() {
+        TrustedWebActivityDisplayMode displayMode = getProvidedTwaDisplayMode();
+        if (displayMode == null) {
+            return DisplayMode.STANDALONE;
+        }
+
+        if (displayMode instanceof TrustedWebActivityDisplayMode.ImmersiveMode) {
+            return DisplayMode.FULLSCREEN;
+        }
+
+        // `browser` display mode web apps are not installable by default, because by the spec they
+        // should be opened in a new tab or browser window, but in Chrome they can be forcefully
+        // installed via app menu. In this case display mode should resolve to the first supported
+        // display mode in the "fullscreen -> standalone -> minimal-ui -> browser" fallback chain.
+        boolean shouldUseMinimalUi =
+                displayMode instanceof TrustedWebActivityDisplayMode.MinimalUiMode
+                        || displayMode instanceof TrustedWebActivityDisplayMode.BrowserMode;
+        if (WebAppHeaderUtils.isMinimalUiFlagEnabled() && shouldUseMinimalUi) {
+            return DisplayMode.MINIMAL_UI;
+        }
+
+        return DisplayMode.STANDALONE;
     }
 }

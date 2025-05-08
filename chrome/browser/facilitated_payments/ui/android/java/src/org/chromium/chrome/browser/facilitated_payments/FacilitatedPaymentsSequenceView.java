@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.facilitated_payments;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -22,6 +23,7 @@ interface FacilitatedPaymentsSequenceView {
      *
      * @param viewContainer The {@link FrameLayout} which will hold this view when it is shown.
      */
+    @Initializer
     void setupView(FrameLayout viewContainer);
 
     /**

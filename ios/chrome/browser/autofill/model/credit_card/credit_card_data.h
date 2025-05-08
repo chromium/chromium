@@ -14,16 +14,16 @@
 
 // The credit card's name and last four digits of the card or the credit card's
 // nickname if it has one.
-@property(readonly, strong) NSString* cardNameAndLastFourDigits;
+@property(readonly, copy) NSString* cardNameAndLastFourDigits;
 
 // The credit card's expiration date or type.
-@property(readonly, strong) NSString* cardDetails;
+@property(readonly, copy) NSString* cardDetails;
 
 // The credit card's backend identifier.
-@property(readonly, strong) NSString* backendIdentifier;
+@property(readonly, copy) NSString* backendIdentifier;
 
 // The accessible card name description.
-@property(readonly, strong) NSString* accessibleCardName;
+@property(readonly, copy) NSString* accessibleCardName;
 
 // The icon associated with this credit card.
 @property(readonly, strong) UIImage* icon;

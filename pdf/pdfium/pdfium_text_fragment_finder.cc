@@ -296,6 +296,10 @@ void PDFiumTextFragmentFinder::FindTextFragmentEnd(
                             std::ref(text_fragment_suffix_), fragment));
 
     if (text_fragment_end_) {
+      // If a text fragment end was found, then the text fragment start list
+      // should be cleared except for the start range that was used in the
+      // search.
+      text_fragment_starts_ = {start_range};
       FinishTextFragmentSearch();
       return;
     }

@@ -43,9 +43,6 @@ const char kDownloadRequestDefaultUrl[] =
 // Content-Type HTTP header field for the request.
 const char kProtobufContentType[] = "application/x-protobuf";
 
-// File suffix for APKs.
-const base::FilePath::CharType kApkSuffix[] = FILE_PATH_LITERAL(".apk");
-
 bool IsDownloadRequestUrlValid(const GURL& url) {
   return url.is_valid() && url.SchemeIs(url::kHttpsScheme) &&
          google_util::IsGoogleAssociatedDomainUrl(url);
@@ -107,23 +104,6 @@ bool ShouldSample() {
   return base::RandDouble() * 100 < sample_percentage;
 }
 
-Outcome ConvertDownloadCheckResultReason(DownloadCheckResultReason reason) {
-  switch (reason) {
-    case DownloadCheckResultReason::REASON_EMPTY_URL_CHAIN:
-      return Outcome::kEmptyUrlChain;
-    case DownloadCheckResultReason::REASON_INVALID_URL:
-      return Outcome::kInvalidUrl;
-    case DownloadCheckResultReason::REASON_UNSUPPORTED_URL_SCHEME:
-      return Outcome::kUnsupportedUrlScheme;
-    case DownloadCheckResultReason::REASON_REMOTE_FILE:
-      return Outcome::kRemoteFile;
-    case DownloadCheckResultReason::REASON_LOCAL_FILE:
-      return Outcome::kLocalFile;
-    default:
-      NOTREACHED();
-  }
-}
-
 void LogGetReferringAppInfoResult(internal::GetReferringAppInfoResult result) {
   base::UmaHistogramEnumeration(
       "SBClientDownload.Android.GetReferringAppInfo.Result", result);
@@ -149,7 +129,20 @@ bool DownloadProtectionDelegateAndroid::ShouldCheckClientDownload(
     DownloadProtectionMetricsData::SetOutcome(item, Outcome::kMisconfigured);
     return false;
   }
-  return is_enabled;
+  if (!is_enabled) {
+    return false;
+  }
+
+  if (!IsSupportedDownload(*item, item->GetFileNameToReportUser())) {
+    return false;
+  }
+
+  bool should_sample = should_sample_override_.value_or(ShouldSample());
+  if (!should_sample) {
+    DownloadProtectionMetricsData::SetOutcome(item, Outcome::kNotSampled);
+  }
+  should_sample_override_ = std::nullopt;
+  return should_sample;
 }
 
 bool DownloadProtectionDelegateAndroid::IsSupportedDownload(
@@ -158,30 +151,19 @@ bool DownloadProtectionDelegateAndroid::IsSupportedDownload(
   // On Android, the target path is likely a content-URI. Therefore, use the
   // display name instead. This assumes the DownloadItem's display name has
   // already been populated by InProgressDownloadManager.
+  // TODO(chlily): The display name may not be populated properly at the point
+  // when this is called.
   base::FilePath file_name = item.GetFileNameToReportUser();
 
   DownloadCheckResultReason reason = REASON_MAX;
   if (!CheckClientDownloadRequest::IsSupportedDownload(item, file_name,
                                                        &reason)) {
     DownloadProtectionMetricsData::SetOutcome(
-        &item, ConvertDownloadCheckResultReason(reason));
+        &item, DownloadProtectionMetricsData::ConvertDownloadCheckResultReason(
+                   reason));
     return false;
   }
-
-  // For Android download protection, only check APK files (as defined by having
-  // a filename ending in a ".apk" extension).
-  if (!file_name.MatchesExtension(kApkSuffix)) {
-    DownloadProtectionMetricsData::SetOutcome(
-        &item, Outcome::kDownloadNotSupportedType);
-    return false;
-  }
-
-  bool should_sample = should_sample_override_.value_or(ShouldSample());
-  if (!should_sample) {
-    DownloadProtectionMetricsData::SetOutcome(&item, Outcome::kNotSampled);
-  }
-  should_sample_override_ = std::nullopt;
-  return should_sample;
+  return true;
 }
 
 void DownloadProtectionDelegateAndroid::PreSerializeRequest(

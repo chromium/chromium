@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.educational_tip;
 
 import androidx.annotation.DrawableRes;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** The interface for a card which is shown in the educational tip module. */
+@NullMarked
 public interface EducationalTipCardProvider {
     /** Gets the title of the card. */
     String getCardTitle();

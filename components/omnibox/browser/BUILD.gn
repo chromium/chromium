@@ -100,6 +100,7 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "tab.icon",
     "trending_up.icon",
     "trending_up_chrome_refresh.icon",
+    "vertical_bar.icon",
   ]
 
   if (is_mac) {
@@ -161,6 +162,7 @@ static_library("browser") {
     "autocomplete_controller_emitter.h",
     "autocomplete_controller_metrics.cc",
     "autocomplete_controller_metrics.h",
+    "autocomplete_enums.h",
     "autocomplete_grouper_groups.cc",
     "autocomplete_grouper_groups.h",
     "autocomplete_grouper_sections.cc",
@@ -307,6 +309,8 @@ static_library("browser") {
     "suggestion_answer.h",
     "suggestion_group_util.cc",
     "suggestion_group_util.h",
+    "tab_group_provider.cc",
+    "tab_group_provider.h",
     "tab_matcher.cc",
     "tab_matcher.h",
     "tailored_word_break_iterator.cc",
@@ -346,6 +350,7 @@ static_library("browser") {
     "//components/lens/proto/server:proto",
     "//components/omnibox/common",
     "//components/omnibox/resources:omnibox_pedal_synonyms",
+    "//components/saved_tab_groups/public",
     "//components/security_state/core",
     "//services/data_decoder/public/cpp",
     "//third_party/metrics_proto",
@@ -409,6 +414,7 @@ static_library("browser") {
     deps += [
       ":jni_headers",
       "//components/browser_ui/util/android",
+      "//components/saved_tab_groups/public:conversion_utils",
       "//url",
     ]
   } else {
@@ -615,6 +621,7 @@ if (is_android) {
       "//components/cached_flags:java",
       "//components/embedder_support/android:util_java",
       "//components/omnibox/common:features_java",
+      "//components/saved_tab_groups/public:java",
       "//components/security_state/core:security_state_enums_java",
       "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
@@ -753,6 +760,7 @@ static_library("test_support") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs:test_support",
     "//components/resources",
+    "//components/saved_tab_groups/test_support",
     "//components/search_engines",
     "//components/search_engines:test_support",
     "//components/sessions",
@@ -869,6 +877,7 @@ source_set("unit_tests") {
     "shortcuts_provider_unittest.cc",
     "suggestion_answer_unittest.cc",
     "suggestion_group_unittest.cc",
+    "tab_group_provider_unittest.cc",
     "tailored_word_break_iterator_unittest.cc",
     "titled_url_match_utils_unittest.cc",
     "unscoped_extension_provider_unittest.cc",
@@ -919,6 +928,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/query_parser:query_parser",
     "//components/safe_browsing/core/common:common",
+    "//components/saved_tab_groups/test_support",
     "//components/search",
     "//components/search_engines",
     "//components/search_engines:test_support",

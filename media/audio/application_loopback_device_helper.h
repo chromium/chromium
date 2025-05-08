@@ -5,6 +5,7 @@
 #ifndef MEDIA_AUDIO_APPLICATION_LOOPBACK_DEVICE_HELPER_H_
 #define MEDIA_AUDIO_APPLICATION_LOOPBACK_DEVICE_HELPER_H_
 
+#include <cstdint>
 #include <string>
 
 #include "media/base/media_export.h"

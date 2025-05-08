@@ -173,6 +173,40 @@ bool SetAsDefaultClientForScheme(const std::string& scheme) {
   }
 }
 
+bool SetAsDefaultHandlerForUTType(const std::string& type) {
+  if (type.empty()) {
+    return false;
+  }
+  UTType* uttype = [UTType typeWithIdentifier:base::SysUTF8ToNSString(type)];
+  if (!uttype) {
+    return false;
+  }
+  if (@available(macOS 12, *)) {
+    NSURL* app_bundle = base::apple::OuterBundleURL();
+    if (!app_bundle) {
+      return false;
+    }
+    [NSWorkspace.sharedWorkspace setDefaultApplicationAtURL:app_bundle
+                                          toOpenContentType:uttype
+                                          completionHandler:^(NSError*){
+                                          }];
+    return true;
+  } else {
+    NSString* identifier = base::apple::OuterBundle().bundleIdentifier;
+    if (!identifier) {
+      return false;
+    }
+    NSString* type_ns = base::SysUTF8ToNSString(type);
+    // Set the default handler for `kLSRolesAll`, as being default
+    // `kLSRolesViewer` alone is not necessarily enough to make double-clicking
+    // in Finder open the file in Chrome for all file types.
+    OSStatus return_code = LSSetDefaultRoleHandlerForContentType(
+        base::apple::NSToCFPtrCast(type_ns), kLSRolesAll,
+        base::apple::NSToCFPtrCast(identifier));
+    return return_code == noErr;
+  }
+}
+
 std::u16string GetApplicationNameForScheme(const GURL& url) {
   NSURL* ns_url = net::NSURLWithGURL(url);
   if (!ns_url) {

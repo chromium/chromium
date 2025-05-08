@@ -24,7 +24,8 @@ class MockContentBrowserClient final
       content::BrowserContext* browser_context,
       content::WebContents* web_contents,
       const GURL& url,
-      const blink::StorageKey& storage_key) override {
+      const blink::StorageKey& storage_key,
+      net::CookieSettingOverrides overrides) override {
     return is_full_cookie_access_allowed_;
   }
 

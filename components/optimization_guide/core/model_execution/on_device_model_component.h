@@ -11,16 +11,22 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
+#include "base/types/pass_key.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/proto/on_device_base_model_metadata.pb.h"
 
 class PrefService;
+
+namespace on_device_internals {
+class PageHandler;
+}  // namespace on_device_internals
 
 namespace optimization_guide {
 
@@ -194,6 +200,7 @@ class OnDeviceModelComponentStateManager
 
   // Should be called whenever the device performance class changes.
   void DevicePerformanceClassChanged(
+      base::OnceClosure complete,
       OnDeviceModelPerformanceClass performance_class);
 
   // Whether the performance class needs to be fetched.
@@ -225,13 +232,19 @@ class OnDeviceModelComponentStateManager
   // Returns the current OnDeviceModelStatus.
   OnDeviceModelStatus GetOnDeviceModelStatus();
 
-  // Returns the most recently computed registration criteria, or nullopt if no
-  // registration has been computed yet.
-  const RegistrationCriteria* GetRegistrationCriteria();
+  // Exposed internal state for chrome://on-device-internals
+  struct DebugState {
+    int64_t disk_space_available_;
+    raw_ptr<const RegistrationCriteria> criteria_;
+    OnDeviceModelStatus status_;
+    bool has_override_;
+    raw_ptr<OnDeviceModelComponentState> state_;
+  };
 
-  // Return the most recently queried free disk space in bytes, which is used to
-  // determine eligibility for model install.
-  int64_t GetDiskBytesAvailableForModel();
+  // Get internal state for debugging page.
+  DebugState GetDebugState(base::PassKey<on_device_internals::PageHandler>) {
+    return GetDebugState();
+  }
 
   // Returns true if this is determined to be a low tier device.
   bool IsLowTierDevice() const;
@@ -268,8 +281,10 @@ class OnDeviceModelComponentStateManager
   RegistrationCriteria ComputeRegistrationCriteria(
       int64_t disk_space_free_bytes);
 
+  DebugState GetDebugState();
+
   // Installs the component installer if it needs installed.
-  void BeginUpdateRegistration();
+  void BeginUpdateRegistration(base::OnceClosure complete);
   // Continuation of `UpdateRegistration()` after async work.
   void CompleteUpdateRegistration(int64_t disk_space_free_bytes);
 

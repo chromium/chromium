@@ -5,8 +5,13 @@
 #include "chrome/browser/interstitials/enterprise_util.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -30,8 +35,9 @@ namespace {
 extensions::SafeBrowsingPrivateEventRouter* GetSafeBrowsingEventRouter(
     content::WebContents* web_contents) {
   // |web_contents| can be null in tests.
-  if (!web_contents)
+  if (!web_contents) {
     return nullptr;
+  }
 
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
   Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -152,11 +158,24 @@ void MaybeTriggerUrlFilteringInterstitialEvent(
     const GURL& page_url,
     const std::string& threat_type,
     safe_browsing::RTLookupResponse rt_lookup_response) {
+  google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
+      referrer_chain;
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   enterprise_connectors::ReportingEventRouter* router =
       GetReportingEventRouter(web_contents);
 
-  router->OnUrlFilteringInterstitial(page_url, threat_type, rt_lookup_response);
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+    SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents);
+    safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
+        GetForBrowserContext(web_contents->GetBrowserContext())
+            ->IdentifyReferrerChainByEventURL(
+                page_url, tab_id,
+                enterprise_connectors::kReferrerUserGestureLimit,
+                &referrer_chain);
+  }
+
+  router->OnUrlFilteringInterstitial(page_url, threat_type, rt_lookup_response,
+                                     referrer_chain);
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -169,7 +188,7 @@ void MaybeTriggerUrlFilteringInterstitialEvent(
         GetReportingEventRouter(web_contents);
 
     router->OnUrlFilteringInterstitial(page_url, threat_type,
-                                       rt_lookup_response);
+                                       rt_lookup_response, referrer_chain);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }

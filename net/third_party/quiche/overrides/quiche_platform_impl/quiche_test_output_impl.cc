@@ -19,10 +19,10 @@ namespace quiche {
 
 void QuicheRecordTestOutputToFile(std::string_view filename,
                                   std::string_view data) {
-  std::string output_dir;
-  if (!base::Environment::Create()->GetVar("QUIC_TEST_OUTPUT_DIR",
-                                           &output_dir) ||
-      output_dir.empty()) {
+  std::string output_dir = base::Environment::Create()
+                               ->GetVar("QUIC_TEST_OUTPUT_DIR")
+                               .value_or(std::string());
+  if (output_dir.empty()) {
     return;
   }
 
@@ -42,12 +42,12 @@ void QuicheSaveTestOutputImpl(std::string_view filename,
 }
 
 bool QuicheLoadTestOutputImpl(std::string_view filename, std::string* data) {
-  std::string output_dir;
-  if (!base::Environment::Create()->GetVar("QUIC_TEST_OUTPUT_DIR",
-                                           &output_dir) ||
-      output_dir.empty()) {
+  std::string output_dir = base::Environment::Create()
+                               ->GetVar("QUIC_TEST_OUTPUT_DIR")
+                               .value_or(std::string());
+  if (output_dir.empty()) {
     QUIC_LOG(WARNING) << "Failed to load " << filename
-                      << " because QUIC_TEST_OUTPUT_DIR is not set";
+                      << " because QUIC_TEST_OUTPUT_DIR is empty";
     return false;
   }
 

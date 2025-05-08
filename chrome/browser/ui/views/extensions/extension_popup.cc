@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -76,7 +77,6 @@ class ExtensionPopup::ScopedDevToolsAgentHostObservation {
 
 // static
 ExtensionPopup* ExtensionPopup::last_popup_for_testing() {
-  CHECK_IS_TEST();
   return g_last_popup_for_testing;
 }
 
@@ -128,11 +128,16 @@ gfx::Size ExtensionPopup::CalculatePreferredSize(
 
 void ExtensionPopup::AddedToWidget() {
   BubbleDialogDelegateView::AddedToWidget();
-  const int radius = GetBubbleFrameView()->GetCornerRadius();
+
+  const gfx::RoundedCornersF& radii = GetBubbleFrameView()->GetRoundedCorners();
+  CHECK_EQ(radii.upper_left(), radii.upper_right());
+  CHECK_EQ(radii.lower_left(), radii.lower_right());
+
   const bool contents_has_rounded_corners =
-      extension_view_->holder()->SetCornerRadii(gfx::RoundedCornersF(radius));
-  SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::VH(contents_has_rounded_corners ? 0 : radius, 0)));
+      extension_view_->holder()->SetCornerRadii(radii);
+  SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      contents_has_rounded_corners ? 0 : radii.upper_left(), 0,
+      contents_has_rounded_corners ? 0 : radii.lower_left(), 0)));
 }
 
 void ExtensionPopup::OnWidgetDestroying(views::Widget* widget) {

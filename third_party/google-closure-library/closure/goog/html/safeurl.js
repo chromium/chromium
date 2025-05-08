@@ -15,8 +15,6 @@ goog.provide('goog.html.SafeUrl');
 goog.require('goog.asserts');
 goog.require('goog.fs.url');
 goog.require('goog.html.TrustedResourceUrl');
-goog.require('goog.i18n.bidi.Dir');
-goog.require('goog.i18n.bidi.DirectionalString');
 goog.require('goog.string.Const');
 goog.require('goog.string.TypedString');
 goog.require('goog.string.internal');
@@ -58,7 +56,6 @@ goog.require('goog.string.internal');
  * @see goog.html.SafeUrl#sanitize
  * @final
  * @struct
- * @implements {goog.i18n.bidi.DirectionalString}
  * @implements {goog.string.TypedString}
  */
 goog.html.SafeUrl = class {
@@ -67,15 +64,33 @@ goog.html.SafeUrl = class {
    * @param {!Object} token package-internal implementation detail.
    */
   constructor(value, token) {
+    if (goog.DEBUG && token !== goog.html.SafeUrl.CONSTRUCTOR_TOKEN_PRIVATE_) {
+      throw Error('SafeUrl is not meant to be built directly');
+    }
+
     /**
      * The contained value of this SafeUrl.  The field has a purposely ugly
      * name to make (non-compiled) code that attempts to directly access this
      * field stand out.
+     * @const
      * @private {string}
      */
-    this.privateDoNotAccessOrElseSafeUrlWrappedValue_ =
-        (token === goog.html.SafeUrl.CONSTRUCTOR_TOKEN_PRIVATE_) ? value : '';
-  };
+    this.privateDoNotAccessOrElseSafeUrlWrappedValue_ = value;
+  }
+
+  /**
+   * Returns a string-representation of this value.
+   *
+   * To obtain the actual string value wrapped in a SafeUrl, use
+   * `goog.html.SafeUrl.unwrap`.
+   *
+   * @return {string}
+   * @see goog.html.SafeUrl#unwrap
+   * @override
+   */
+  toString() {
+    return this.privateDoNotAccessOrElseSafeUrlWrappedValue_.toString();
+  }
 };
 
 
@@ -133,42 +148,6 @@ goog.html.SafeUrl.prototype.getTypedStringValue = function() {
   return this.privateDoNotAccessOrElseSafeUrlWrappedValue_.toString();
 };
 
-
-/**
- * @override
- * @const {boolean}
- */
-goog.html.SafeUrl.prototype.implementsGoogI18nBidiDirectionalString = true;
-
-
-/**
- * Returns this URLs directionality, which is always `LTR`.
- * @override
- * @return {!goog.i18n.bidi.Dir}
- */
-goog.html.SafeUrl.prototype.getDirection = function() {
-  'use strict';
-  return goog.i18n.bidi.Dir.LTR;
-};
-
-
-/**
- * Returns a string-representation of this value.
- *
- * To obtain the actual string value wrapped in a SafeUrl, use
- * `goog.html.SafeUrl.unwrap`.
- *
- * @return {string}
- * @see goog.html.SafeUrl#unwrap
- * @override
- */
-goog.html.SafeUrl.prototype.toString = function() {
-  'use strict';
-  return this.privateDoNotAccessOrElseSafeUrlWrappedValue_.toString();
-};
-
-
-
 /**
  * Performs a runtime check that the provided object is indeed a SafeUrl
  * object, and returns its value.
@@ -198,8 +177,9 @@ goog.html.SafeUrl.unwrap = function(safeUrl) {
       safeUrl.constructor === goog.html.SafeUrl) {
     return safeUrl.privateDoNotAccessOrElseSafeUrlWrappedValue_;
   } else {
-    goog.asserts.fail('expected object of type SafeUrl, got \'' +
-        safeUrl + '\' of type ' + goog.typeOf(safeUrl));
+    goog.asserts.fail(
+        'expected object of type SafeUrl, got \'' + safeUrl + '\' of type ' +
+        goog.typeOf(safeUrl));
     return 'type_error:SafeUrl';
   }
 };
@@ -243,7 +223,7 @@ goog.html.SAFE_MIME_TYPE_PATTERN_ = new RegExp(
     // media formats.
     '^(?:audio/(?:3gpp2|3gpp|aac|L16|midi|mp3|mp4|mpeg|oga|ogg|opus|x-m4a|x-matroska|x-wav|wav|webm)|' +
         'font/\\w+|' +
-        'image/(?:bmp|gif|jpeg|jpg|png|tiff|webp|x-icon)|' +
+        'image/(?:bmp|gif|jpeg|jpg|png|tiff|webp|x-icon|heic|heif)|' +
         'video/(?:mpeg|mp4|ogg|webm|quicktime|x-matroska))' +
         '(?:;\\w+=(?:\\w+|"[\\w;,= ]+"))*$',  // MIME type parameters
     'i');
@@ -348,8 +328,7 @@ goog.html.SafeUrl.tryFromDataUrl = function(dataUrl) {
   // origins. Only Firefox for versions prior to v57 behaves differently:
   // https://blog.mozilla.org/security/2017/10/04/treating-data-urls-unique-origins-firefox-57/
   // Older versions of IE don't understand `data:` urls, so it is not an issue.
-  var valid = match && goog.html.SafeUrl.isSafeMimeType(match[1]);
-  if (valid) {
+  if (match) {
     return goog.html.SafeUrl.createSafeUrlSecurityPrivateDoNotAccessOrElse(
         filteredDataUrl);
   }
@@ -761,6 +740,58 @@ goog.html.SafeUrl.sanitizeAssertUnchanged = function(url, opt_allowDataUrl) {
   if (!goog.asserts.assert(
           goog.html.SAFE_URL_PATTERN_.test(url),
           '%s does not match the safe URL pattern', url)) {
+    url = goog.html.SafeUrl.INNOCUOUS_STRING;
+  }
+  return goog.html.SafeUrl.createSafeUrlSecurityPrivateDoNotAccessOrElse(url);
+};
+
+/**
+ * Extracts the scheme from the given URL. If the URL is relative, https: is
+ * assumed.
+ * @param {string} url The URL to extract the scheme from.
+ * @return {string|undefined} the URL scheme.
+ */
+goog.html.SafeUrl.extractScheme = function(url) {
+  let parsedUrl;
+  try {
+    parsedUrl = new URL(url);
+  } catch (e) {
+    // According to https://url.spec.whatwg.org/#constructors, the URL
+    // constructor with one parameter throws if `url` is not absolute. In this
+    // case, we are sure that no explicit scheme (javascript: ) is set.
+    // This can also be a URL parsing error, but in this case the URL won't be
+    // run anyway.
+    return 'https:';
+  }
+  return parsedUrl.protocol;
+};
+
+/**
+ * Creates a SafeUrl object from `url`. If `url` is a
+ * `goog.html.SafeUrl` then it is simply returned. Otherwise javascript: URLs
+ * are rejected.
+ *
+ * This function asserts (using goog.asserts) that the URL scheme is not
+ * javascript. If it is, in addition to failing the assert, an innocuous URL
+ * will be returned.
+ *
+ * @see http://url.spec.whatwg.org/#concept-relative-url
+ * @param {string|!goog.string.TypedString} url The URL to validate.
+ * @return {!goog.html.SafeUrl} The validated URL, wrapped as a SafeUrl.
+ */
+goog.html.SafeUrl.sanitizeJavascriptUrlAssertUnchanged = function(url) {
+  'use strict';
+  if (url instanceof goog.html.SafeUrl) {
+    return url;
+  } else if (typeof url == 'object' && url.implementsGoogStringTypedString) {
+    url = /** @type {!goog.string.TypedString} */ (url).getTypedStringValue();
+  } else {
+    url = String(url);
+  }
+  // We don't rely on goog.url here to prevent a dependency cycle.
+  const parsedScheme = goog.html.SafeUrl.extractScheme(url);
+  if (!goog.asserts.assert(
+          parsedScheme !== 'javascript:', '%s is a javascript: URL', url)) {
     url = goog.html.SafeUrl.INNOCUOUS_STRING;
   }
   return goog.html.SafeUrl.createSafeUrlSecurityPrivateDoNotAccessOrElse(url);

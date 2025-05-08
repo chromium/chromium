@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_VECTOR_H_
 
 #include <initializer_list>
+#include <type_traits>
 
 #include "third_party/blink/renderer/platform/heap/forward.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -38,9 +39,8 @@ class HeapVector final : public GarbageCollected<HeapVector<T, inlineCapacity>>,
   HeapVector(const HeapVector& other)
       : BaseVector(static_cast<const BaseVector&>(other)) {}
 
-  template <typename Collection,
-            typename =
-                typename std::enable_if<std::is_class<Collection>::value>::type>
+  template <typename Collection>
+    requires(std::is_class_v<Collection>)
   explicit HeapVector(const Collection& other) : BaseVector(other) {}
 
   // Projection-based initialization. This way of initialization can avoid write
@@ -54,18 +54,14 @@ class HeapVector final : public GarbageCollected<HeapVector<T, inlineCapacity>>,
   // 3) GCs triggered through allocations in `Proj` will never find the backing
   //    store as it's only reachable from stack or an in-construction HeapVector
   //    which is always delayed till the end of GC.
-  template <
-      typename Proj,
-      typename = std::enable_if_t<
-          std::is_invocable_v<Proj, typename BaseVector::const_reference>>>
+  template <typename Proj>
+    requires(std::is_invocable_v<Proj, typename BaseVector::const_reference>)
   HeapVector(const HeapVector& other, Proj proj)
       : BaseVector(static_cast<const BaseVector&>(other), std::move(proj)) {}
-  template <typename U,
-            wtf_size_t otherSize,
-            typename Proj,
-            typename = std::enable_if_t<std::is_invocable_v<
-                Proj,
-                typename HeapVector<U, otherSize>::const_reference>>>
+  template <typename U, wtf_size_t otherSize, typename Proj>
+    requires(
+        std::is_invocable_v<Proj,
+                            typename HeapVector<U, otherSize>::const_reference>)
   HeapVector(const HeapVector<U, otherSize>& other, Proj proj)
       : BaseVector(
             static_cast<const Vector<U, otherSize, HeapAllocator>&>(other),

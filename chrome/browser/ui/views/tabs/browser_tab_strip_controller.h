@@ -190,10 +190,6 @@ class BrowserTabStripController : public TabStripController,
 
   void OnDiscardRingTreatmentEnabledChanged();
 
-  // Returns the index of the most recently focused tab in the split that
-  // contains `model_index`.
-  int GetIndexOfLastFocusedTabInSplit(int model_index);
-
   raw_ptr<TabStripModel> model_;
 
   raw_ptr<TabStrip> tabstrip_;

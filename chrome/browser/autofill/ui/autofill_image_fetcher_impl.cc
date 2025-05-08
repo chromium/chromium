@@ -91,17 +91,13 @@ GURL AutofillImageFetcherImpl::ResolveImageURL(const GURL& image_url,
       // Pay with Pix is only queried in Chrome on Android.
       NOTREACHED();
     case ImageType::kValuableImage:
-      return image_url;
+      return GURL(image_url.spec() + "=h24-w24-cc");
   }
 }
 
 gfx::Image AutofillImageFetcherImpl::ResolveCardArtImage(
     const GURL& card_art_url,
     const gfx::Image& card_art_image) {
-  if (card_art_image.IsEmpty()) {
-    return card_art_image;
-  }
-
   if (card_art_url == kCapitalOneLargeCardArtUrl) {
     // Render Capital One asset directly. No need to calculate and add grey
     // border to image.

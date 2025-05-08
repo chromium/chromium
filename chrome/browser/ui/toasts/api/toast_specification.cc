@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/toasts/api/toast_specification.h"
 
 #include <memory>
+#include <string>
 
 #include "base/check.h"
 #include "base/functional/callback.h"
@@ -49,6 +50,15 @@ ToastSpecification::Builder& ToastSpecification::Builder::AddMenu() {
 
 ToastSpecification::Builder& ToastSpecification::Builder::AddGlobalScoped() {
   toast_specification_->AddGlobalScope();
+  return *this;
+}
+
+ToastSpecification::Builder& ToastSpecification::Builder::AddAccelerator(
+    ui::Accelerator accelerator,
+    base::RepeatingClosure callback) {
+  CHECK(!callback.is_null());
+  toast_specification_->AddAccelerator(std::move(accelerator),
+                                       std::move(callback));
   return *this;
 }
 
@@ -101,4 +111,10 @@ void ToastSpecification::AddMenu() {
 
 void ToastSpecification::AddGlobalScope() {
   is_global_scope_ = true;
+}
+
+void ToastSpecification::AddAccelerator(ui::Accelerator accelerator,
+                                        base::RepeatingClosure callback) {
+  accelerator_ = std::move(accelerator);
+  accelerator_callback_ = std::move(callback);
 }

@@ -307,7 +307,7 @@ class CrashFileUploader::Core {
       std::list<std::unique_ptr<network::SimpleURLLoader>>;
   void OnUploadComplete(SimpleURLLoaderList::iterator it,
                         base::FilePath crash_guid,
-                        std::unique_ptr<std::string> response_body);
+                        std::optional<std::string> response_body);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   SimpleURLLoaderList simple_url_loaders_;
@@ -377,13 +377,13 @@ void CrashFileUploader::Core::Upload(const base::FilePath& crash_guid) {
 void CrashFileUploader::Core::OnUploadComplete(
     SimpleURLLoaderList::iterator it,
     base::FilePath crash_guid,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   std::string upload_result;
   base::FilePath crash_dump = crash_guid.AddExtension(kDumpExtension);
   if ((*it)->NetError() == net::OK) {
-    std::string report_id = (response_body ? *response_body : "empty");
+    std::string report_id = std::move(response_body).value_or("empty");
     // Result file format looks like:
     // report_id: <id_from_crash_service>
     // go/crash/<id_from_crash_service>

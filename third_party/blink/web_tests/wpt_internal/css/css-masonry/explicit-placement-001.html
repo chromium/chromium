@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<link rel="help" href="https://drafts.csswg.org/css-grid-3">
+<link href="resources/masonry.css" rel="stylesheet">
+<link rel="match" href="explicit-placement-001-ref.html">
+<link rel="author" title="Ethan Jimenez" href="mailto:ethavar@microsoft.com">
+<style>
+.masonry {
+    width: 200px;
+    gap: 20px;
+    padding: 20px;
+}
+</style>
+<body>
+  <p>Test that masonry items with explicit placement are correctly positioned within the grid axis.</p>
+  <div class="masonry">
+    <div class="first-track">This is some text</div>
+    <div class="second-track">Some larger words in this sentence</div>
+    <div class="third-track">The cat cannot be separated from milk</div>
+  </div>
+</body>
+</html>

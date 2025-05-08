@@ -241,6 +241,9 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   void RepositionInContextRect(CaptionBubbleModel::Id model_id,
                                const gfx::Rect& context_rect);
 
+  void AdjustPosition(CaptionBubbleModel::Id model_id,
+                      const gfx::Rect& context_rect);
+
   void MediaFoundationErrorCheckboxPressed();
   bool HasMediaFoundationError();
 

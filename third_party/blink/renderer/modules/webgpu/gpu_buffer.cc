@@ -128,6 +128,18 @@ GPUBuffer* GPUBuffer::Create(GPUDevice* device,
 
   // Save the requested size of the buffer, for reflection and defaults.
   uint64_t buffer_size = dawn_desc.size;
+
+  // If the buffer is mappedAtCreation, validate that its size is a multiple of
+  // 4, which is a requirement for all mappings.
+  if (dawn_desc.mappedAtCreation && buffer_size % 4 != 0) {
+    exception_state.ThrowRangeError(
+        WTF::String::Format("createBuffer failed, size (%" PRIu64
+                            ") is not a multiple of 4 when "
+                            "mappedAtCreation == true",
+                            buffer_size));
+    return nullptr;
+  }
+
   // If the buffer is mappable, make sure the size stays in a size_t but still
   // guarantees that we have an OOM.
   bool is_mappable = dawn_desc.usage & (wgpu::BufferUsage::MapRead |

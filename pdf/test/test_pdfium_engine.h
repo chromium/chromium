@@ -135,6 +135,20 @@ class TestPDFiumEngine : public PDFiumEngine {
               UpdateShapeActive,
               (int, InkModeledShapeId, bool),
               (override));
+
+  MOCK_METHOD(bool, ExtendSelectionByPoint, (const gfx::PointF&), (override));
+
+  MOCK_METHOD(std::vector<gfx::Rect>, GetSelectionRects, (), (override));
+
+  MOCK_METHOD(bool,
+              IsSelectableTextOrLinkArea,
+              (const gfx::PointF&),
+              (override));
+
+  MOCK_METHOD(void,
+              OnTextOrLinkAreaClick,
+              (const gfx::PointF&, int),
+              (override));
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
   std::vector<uint8_t> GetSaveData() override;

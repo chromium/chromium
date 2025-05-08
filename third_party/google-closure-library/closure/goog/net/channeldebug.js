@@ -215,6 +215,7 @@ goog.net.ChannelDebug.prototype.severe = function(text, error = undefined) {
  * @param {?string} responseText A JSON response to clean.
  * @return {?string} The cleaned response.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.net.ChannelDebug.prototype.redactResponse_ = function(responseText) {
   'use strict';

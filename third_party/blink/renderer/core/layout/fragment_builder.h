@@ -37,6 +37,7 @@ class CORE_EXPORT FragmentBuilder {
  public:
   ~FragmentBuilder() {
     // Clear collections so the backing gets promptly freed, and reused.
+    children_.clear();
     oof_positioned_candidates_.clear();
     oof_positioned_fragmentainer_descendants_.clear();
     oof_positioned_descendants_.clear();
@@ -225,17 +226,16 @@ class CORE_EXPORT FragmentBuilder {
       LogicalStaticPosition::BlockEdge = LogicalStaticPosition::kBlockStart,
       LogicalStaticPosition::LogicalAlignmentDirection align_self_direction =
           LogicalStaticPosition::LogicalAlignmentDirection::kBlock,
-      bool is_hidden_for_paint = false,
       bool allow_top_layer_nodes = false);
 
   // This should only be used for inline-level OOF-positioned nodes.
-  // |inline_container_direction| is the current text direction for determining
-  // the correct static-position.
+  // |inline_container_writing_direction| is the current writing mode direction
+  // for determining the correct static-position.
   void AddOutOfFlowInlineChildCandidate(
       BlockNode,
       const LogicalOffset& child_offset,
-      TextDirection inline_container_direction,
-      bool is_hidden_for_paint = false);
+      WritingDirectionMode inline_container_writing_direction,
+      LayoutUnit line_box_block_size);
 
   void AddOutOfFlowFragmentainerDescendant(
       const LogicalOofNodeForFragmentation& descendant);

@@ -8,23 +8,15 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/new_background_tab_fake_tab_switcher_button"
-    android:layout_width="@dimen/toolbar_height_no_shadow"
-    android:layout_height="@dimen/toolbar_height_no_shadow">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <FrameLayout
         android:id="@+id/new_tab_indicator_inner_container"
-        android:layout_width="@dimen/toolbar_height_no_shadow"
-        android:layout_height="@dimen/toolbar_height_no_shadow">
-
-        <ImageView
-            android:id="@+id/very_sunny_background"
-            android:src="@drawable/very_sunny_56dp"
-            android:importantForAccessibility="no"
-            android:layout_width="@dimen/toolbar_height_no_shadow"
-            android:layout_height="@dimen/toolbar_height_no_shadow"
-            android:layout_gravity="center"
-            android:scaleType="center"
-            android:visibility="invisible"/>
+        android:layout_width="@dimen/toolbar_button_width"
+        android:layout_height="@dimen/toolbar_height_no_shadow"
+        android:clipChildren="false"
+        android:clipToPadding="false">
 
         <ImageView
             android:id="@+id/fake_tab_switcher_button"

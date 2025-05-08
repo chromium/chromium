@@ -552,11 +552,9 @@ impl Compiler {
         let mut builder = self.builder;
         for (gg, loc, grm) in self.pending_grammars {
             let res = match grm {
-                PendingGrammar::Json(json_schema) => {
-                    let opts = JsonCompileOptions::default();
-                    opts.json_to_llg_no_validate(builder, json_schema)
-                        .map_err(|e| loc.augment(anyhow!("failed to compile JSON schema: {}", e)))?
-                }
+                PendingGrammar::Json(json_schema) => JsonCompileOptions::default()
+                    .json_to_llg_with_overrides(builder, json_schema)
+                    .map_err(|e| loc.augment(anyhow!("failed to compile JSON schema: {}", e)))?,
                 PendingGrammar::Lark(items) => compile_lark(builder, ParsedLark { items })?,
             };
             builder = res.builder;

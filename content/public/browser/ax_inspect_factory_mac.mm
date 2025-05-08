@@ -53,8 +53,8 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
 
   switch (type) {
     case ui::AXApiType::kMac:
-      return std::make_unique<ui::AXEventRecorderMac>(manager->GetWeakPtr(),
-                                                      pid, selector);
+      return std::make_unique<ui::AXEventRecorderMac>(
+          manager ? manager->GetWeakPtr() : nullptr, pid, selector);
     default:
       NOTREACHED() << "Unsupported API type " << type;
   }

@@ -24,10 +24,12 @@ import org.chromium.chrome.browser.app.bookmarks.BookmarkActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderPickerActivity;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -43,6 +45,7 @@ public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
             Activity activity, Profile profile, @Nullable BookmarkId folderId) {
         ThreadUtils.assertOnUiThread();
         String url = getFirstUrlToLoad(folderId);
+        boolean isIncognito = profile.isOffTheRecord();
 
         if (ChromeSharedPreferences.getInstance()
                 .contains(ChromePreferenceKeys.BOOKMARKS_LAST_USED_URL)) {
@@ -50,7 +53,7 @@ public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
         }
 
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)) {
-            showBookmarkManagerOnTablet(activity, activity.getComponentName(), url);
+            showBookmarkManagerOnTablet(activity, activity.getComponentName(), url, isIncognito);
         } else {
             showBookmarkManagerOnPhone(activity, url, profile);
         }
@@ -112,11 +115,19 @@ public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
     }
 
     private void showBookmarkManagerOnTablet(
-            Context context, @Nullable ComponentName componentName, String url) {
+            Context context, @Nullable ComponentName componentName, String url,
+            boolean isIncognito) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         intent.putExtra(
                 Browser.EXTRA_APPLICATION_ID, context.getApplicationContext().getPackageName());
+        IntentHandler.setTabLaunchType(intent, TabLaunchType.FROM_CHROME_UI);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        if (ChromeFeatureList.sAndroidNativePagesInNewTab.isEnabled()
+                && ChromeFeatureList.sAndroidNativePagesInNewTabBookmarksEnabled.getValue()) {
+            intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
+            intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, isIncognito);
+        }
 
         if (componentName != null) {
             ActivityUtils.setNonAliasedComponentForMainBrowsingActivity(intent, componentName);

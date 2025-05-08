@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_TWO_SCREENS_SIGNIN_TWO_SCREENS_SIGNIN_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_TWO_SCREENS_SIGNIN_TWO_SCREENS_SIGNIN_COORDINATOR_H_
 
-#import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/animated_coordinator.h"
 
 namespace signin_metrics {
 enum class AccessPoint : int;
@@ -16,7 +16,7 @@ enum class PromoAction : int;
 
 // Coordinator to present the sign-in and sync first run screens.
 @interface TwoScreensSigninCoordinator
-    : SigninCoordinator <FirstRunScreenDelegate, InterruptibleChromeCoordinator>
+    : SigninCoordinator <FirstRunScreenDelegate>
 
 // Initiate the coordinator.
 // `browser` used for authentication. It must not be off the record (incognito).

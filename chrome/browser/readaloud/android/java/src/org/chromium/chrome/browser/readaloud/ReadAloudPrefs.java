@@ -4,15 +4,19 @@
 
 package org.chromium.chrome.browser.readaloud;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
-import org.chromium.components.prefs.PrefService;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
+import org.chromium.components.prefs.PrefService;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 /** Methods for storing and retrieving Read Aloud user settings in prefs. */
+@NullMarked
 @JNINamespace("readaloud")
 public class ReadAloudPrefs {
     private static final String TAG = "ReadAloudSettings";

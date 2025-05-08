@@ -166,13 +166,8 @@ SupervisedUserService::SupervisedUserService(
       user_prefs, std::move(url_filter_delegate));
 }
 
-void SupervisedUserService::SetActive(bool active) {
-  if (active_ == active) {
-    return;
-  }
-  active_ = active;
-
-  settings_service_->SetActive(active_);
+void SupervisedUserService::SetSettingsServiceActive(bool active) {
+  settings_service_->SetActive(active);
 
   // Trigger a sync reconfig to enable/disable the right SU data types.
   // The logic to do this lives in the
@@ -185,15 +180,27 @@ void SupervisedUserService::SetActive(bool active) {
     // immediately releasing it again (via the temporary unique_ptr going away).
     std::ignore = sync_service_->GetSetupInProgressHandle();
   }
+}
 
+void SupervisedUserService::SetActive(bool active) {
+  if (active_ == active) {
+    return;
+  }
+  active_ = active;
+
+  // If-else branches should work in Li-Fo manner.
   if (active_) {
-    // Initialize SafeSites URL checker.
+    // 1. Activate the subservice.
+    SetSettingsServiceActive(active_);
+
+    // 2. Initialize SafeSites URL checker.
     GetURLFilter()->SetURLCheckerClient(
         std::make_unique<KidsChromeManagementURLCheckerClient>(
             identity_manager_, url_loader_factory_,
             platform_delegate_->GetCountryCode(),
             platform_delegate_->GetChannel()));
 
+    // 3. Start observing prefs.
     pref_change_registrar_.Add(
         prefs::kDefaultSupervisedUserFilteringBehavior,
         base::BindRepeating(
@@ -218,21 +225,29 @@ void SupervisedUserService::SetActive(bool active) {
                               base::Unretained(this)));
     }
 
+    // 4. Initialize approvals.
     remote_web_approvals_manager_.AddApprovalRequestCreator(
         std::make_unique<PermissionRequestCreatorImpl>(identity_manager_,
                                                        url_loader_factory_));
 
-    // Initialize the filter.
+    // 5. Initialize the filter.
     OnDefaultFilteringBehaviorChanged();
     OnSafeSitesSettingChanged();
     UpdateManualHosts();
     UpdateManualURLs();
-
     GetURLFilter()->SetFilterInitialized(true);
     current_web_filter_type_ = url_filter_->GetWebFilterType();
   } else {
+    // 5. Destroy filter.
+    url_filter_->Clear();
+    for (SupervisedUserServiceObserver& observer : observer_list_) {
+      observer.OnURLFilterChanged();
+    }
+
+    // 4. Destroy approvals.
     remote_web_approvals_manager_.ClearApprovalRequestsCreators();
 
+    // 3. Stop observing prefs.
     pref_change_registrar_.Remove(
         prefs::kDefaultSupervisedUserFilteringBehavior);
     pref_change_registrar_.Remove(prefs::kSupervisedUserSafeSites);
@@ -242,10 +257,9 @@ void SupervisedUserService::SetActive(bool active) {
       pref_change_registrar_.Remove(pref);
     }
 
-    url_filter_->Clear();
-    for (SupervisedUserServiceObserver& observer : observer_list_) {
-      observer.OnURLFilterChanged();
-    }
+    // 2. SafeSites URL checker is gone with filter from 5.
+    // 1. Shut down settings.
+    SetSettingsServiceActive(active_);
   }
 }
 
@@ -287,8 +301,7 @@ void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
   }
 
   WebFilterType filter_type = url_filter_->GetWebFilterType();
-  if (!AreWebFilterPrefsDefault(*user_prefs_) &&
-      current_web_filter_type_ != filter_type) {
+  if (current_web_filter_type_ != filter_type) {
     url_filter_->ReportWebFilterTypeMetrics();
     current_web_filter_type_ = filter_type;
   }
@@ -296,8 +309,7 @@ void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
 
 void SupervisedUserService::OnSafeSitesSettingChanged() {
   WebFilterType filter_type = url_filter_->GetWebFilterType();
-  if (!AreWebFilterPrefsDefault(*user_prefs_) &&
-      current_web_filter_type_ != filter_type) {
+  if (current_web_filter_type_ != filter_type) {
     url_filter_->ReportWebFilterTypeMetrics();
     current_web_filter_type_ = filter_type;
   }
@@ -311,13 +323,11 @@ void SupervisedUserService::UpdateManualHosts() {
     DCHECK(it.second.is_bool());
     host_map[it.first] = it.second.GetIfBool().value_or(false);
   }
-  url_filter_->SetManualHosts(std::move(host_map));
 
-  for (SupervisedUserServiceObserver& observer : observer_list_) {
-    observer.OnURLFilterChanged();
-  }
-
-  if (!AreWebFilterPrefsDefault(*user_prefs_)) {
+  if (url_filter_->SetManualHosts(std::move(host_map))) {
+    for (SupervisedUserServiceObserver& observer : observer_list_) {
+      observer.OnURLFilterChanged();
+    }
     url_filter_->ReportManagedSiteListMetrics();
   }
 }
@@ -330,13 +340,11 @@ void SupervisedUserService::UpdateManualURLs() {
     DCHECK(it.second.is_bool());
     url_map[GURL(it.first)] = it.second.GetIfBool().value_or(false);
   }
-  url_filter_->SetManualURLs(std::move(url_map));
 
-  for (SupervisedUserServiceObserver& observer : observer_list_) {
-    observer.OnURLFilterChanged();
-  }
-
-  if (!AreWebFilterPrefsDefault(*user_prefs_)) {
+  if (url_filter_->SetManualURLs(std::move(url_map))) {
+    for (SupervisedUserServiceObserver& observer : observer_list_) {
+      observer.OnURLFilterChanged();
+    }
     url_filter_->ReportManagedSiteListMetrics();
   }
 }

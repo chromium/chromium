@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var exceptionHandler = require('uncaught_exception_handler');
-var SetIconCommon = requireNative('setIcon').SetIconCommon;
-var inServiceWorker = requireNative('utils').isInServiceWorker();
+const exceptionHandler = require('uncaught_exception_handler');
+const imageUtil = require('imageUtil');
+const SetIconCommon = requireNative('setIcon').SetIconCommon;
+const inServiceWorker = requireNative('utils').isInServiceWorker();
 
 function loadImagePathForServiceWorker(path, callback, failureCallback) {
   let fetchPromise = fetch(path);
@@ -67,25 +68,6 @@ function loadImagePath(path, callback, failureCallback) {
   }
 }
 
-function smellsLikeImageData(imageData) {
-  // See if this object at least looks like an ImageData element.
-  // Unfortunately, we cannot use instanceof because the ImageData
-  // constructor is not public.
-  //
-  // We do this manually instead of using JSONSchema to avoid having these
-  // properties show up in the doc.
-  return (typeof imageData == 'object') && ('width' in imageData) &&
-         ('height' in imageData) && ('data' in imageData);
-}
-
-function verifyImageData(imageData) {
-  if (!smellsLikeImageData(imageData)) {
-    throw new Error(
-        'The imageData property must contain an ImageData object or' +
-        ' dictionary of ImageData objects.');
-  }
-}
-
 /**
  * Normalizes |details| to a format suitable for sending to the browser,
  * for example converting ImageData to a binary representation.
@@ -113,17 +95,17 @@ function setIcon(details, callback, failureCallback) {
   }
 
   if ('imageData' in details) {
-    if (smellsLikeImageData(details.imageData)) {
+    if (imageUtil.smellsLikeImageData(details.imageData)) {
       var imageData = details.imageData;
       details.imageData = {__proto__: null};
       details.imageData[imageData.width.toString()] = imageData;
     } else if (typeof details.imageData == 'object' &&
                Object.getOwnPropertyNames(details.imageData).length !== 0) {
       for (var sizeKey in details.imageData) {
-        verifyImageData(details.imageData[sizeKey]);
+        imageUtil.verifyImageData(details.imageData[sizeKey]);
       }
     } else {
-      verifyImageData(false);
+      imageUtil.verifyImageData(false);
     }
 
     callback(SetIconCommon(details));

@@ -11,7 +11,6 @@
 
 #include "base/atomic_sequence_num.h"
 #include "build/build_config.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "media/base/format_utils.h"
 #include "media/base/video_frame.h"
 
@@ -38,38 +37,6 @@ base::ScopedFD GetDummyFD() {
 }
 #endif
 
-class FakeGpuMemoryBufferImpl : public gpu::GpuMemoryBufferImpl {
- public:
-  FakeGpuMemoryBufferImpl(const gfx::Size& size, gfx::BufferFormat format)
-      : gpu::GpuMemoryBufferImpl(
-            gfx::GpuMemoryBufferId(),
-            size,
-            format,
-            gpu::GpuMemoryBufferImpl::DestructionCallback()),
-        fake_gmb_(std::make_unique<media::FakeGpuMemoryBuffer>(size, format)) {}
-
-  // gfx::GpuMemoryBuffer implementation
-  bool Map() override { return fake_gmb_->Map(); }
-  void MapAsync(base::OnceCallback<void(bool)> result_cb) override {
-    fake_gmb_->MapAsync(std::move(result_cb));
-  }
-  bool AsyncMappingIsNonBlocking() const override {
-    return fake_gmb_->AsyncMappingIsNonBlocking();
-  }
-  void* memory(size_t plane) override { return fake_gmb_->memory(plane); }
-  void Unmap() override { fake_gmb_->Unmap(); }
-  int stride(size_t plane) const override { return fake_gmb_->stride(plane); }
-  gfx::GpuMemoryBufferType GetType() const override {
-    return fake_gmb_->GetType();
-  }
-  gfx::GpuMemoryBufferHandle CloneHandle() const override {
-    return fake_gmb_->CloneHandle();
-  }
-
- private:
-  std::unique_ptr<media::FakeGpuMemoryBuffer> fake_gmb_;
-};
-
 static base::AtomicSequenceNumber buffer_id_generator;
 
 }  // namespace
@@ -83,18 +50,18 @@ gfx::GpuMemoryBufferHandle CreatePixmapHandleForTesting(
       GfxBufferFormatToVideoPixelFormat(format);
   CHECK(video_pixel_format);
 
-  gfx::GpuMemoryBufferHandle handle;
-  handle.type = gfx::NATIVE_PIXMAP;
-  handle.id = gfx::GpuMemoryBufferId(buffer_id_generator.GetNext());
-
+  gfx::NativePixmapHandle native_pixmap_handle;
   for (size_t i = 0; i < VideoFrame::NumPlanes(*video_pixel_format); i++) {
     const gfx::Size plane_size_in_bytes =
         VideoFrame::PlaneSize(*video_pixel_format, i, size);
-    handle.native_pixmap_handle.planes.emplace_back(
-        plane_size_in_bytes.width(), 0, plane_size_in_bytes.GetArea(),
-        GetDummyFD());
+    native_pixmap_handle.planes.emplace_back(plane_size_in_bytes.width(), 0,
+                                             plane_size_in_bytes.GetArea(),
+                                             GetDummyFD());
   }
-  handle.native_pixmap_handle.modifier = modifier;
+  native_pixmap_handle.modifier = modifier;
+
+  gfx::GpuMemoryBufferHandle handle(std::move(native_pixmap_handle));
+  handle.id = gfx::GpuMemoryBufferId(buffer_id_generator.GetNext());
   return handle;
 }
 #endif

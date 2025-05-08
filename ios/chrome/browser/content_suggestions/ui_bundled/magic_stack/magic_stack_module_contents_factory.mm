@@ -53,7 +53,6 @@
           static_cast<MostVisitedTilesConfig*>(config);
       return [[MostVisitedTilesStackView alloc]
                initWithConfig:mvtConfig
-          contentViewDelegate:contentViewDelegate
                       spacing:ContentSuggestionsTilesHorizontalSpacing(
                                   traitCollection)];
     }

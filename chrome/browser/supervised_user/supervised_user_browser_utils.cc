@@ -91,7 +91,6 @@ bool IsSupportedChromeExtensionURL(const GURL& effective_url) {
 bool SupervisedUserCanSkipExtensionParentApprovals(const Profile* profile) {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return profile->IsChild() &&
-         IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled() &&
          profile->GetPrefs()->GetBoolean(
              prefs::kSkipParentApprovalToInstallExtensions);
 #else
@@ -101,13 +100,7 @@ bool SupervisedUserCanSkipExtensionParentApprovals(const Profile* profile) {
 
 bool AreExtensionsPermissionsEnabled(Profile* profile) {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-#if BUILDFLAG(IS_CHROMEOS)
   return profile->IsChild();
-#else
-  return profile->IsChild() &&
-         base::FeatureList::IsEnabled(
-             kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 #else
   return false;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)

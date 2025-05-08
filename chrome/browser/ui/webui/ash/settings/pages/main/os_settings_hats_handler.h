@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_MAIN_OS_SETTINGS_HATS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_MAIN_OS_SETTINGS_HATS_HANDLER_H_
 
-#include "chrome/browser/ui/browser.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+
+class Profile;
 
 namespace ash::settings {
 

@@ -94,8 +94,8 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/keyboard_lock_controller.h"
-#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
@@ -531,7 +531,7 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
-       //     tools/metrics/histograms/enums.xml.
+       //     tools/metrics/histograms/metadata/ui/enums.xml.
        {0, 156}});
 
   // These UMA values are for the ContextMenuOptionDesktop enum, used for
@@ -1066,7 +1066,6 @@ bool RenderViewContextMenu::IsCommandGatedByFencedFrameUntrustedNetworkStatus(
 }
 
 std::u16string RenderViewContextMenu::FormatURLForClipboard(const GURL& url) {
-  DCHECK(!url.is_empty());
   DCHECK(url.is_valid());
 
   GURL url_to_format = url;
@@ -1089,8 +1088,8 @@ std::u16string RenderViewContextMenu::FormatURLForClipboard(const GURL& url) {
                                   nullptr, nullptr, nullptr);
 }
 
-void RenderViewContextMenu::WriteURLToClipboard(const GURL& url) {
-  if (url.is_empty() || !url.is_valid()) {
+void RenderViewContextMenu::WriteURLToClipboard(const GURL& url, int id) {
+  if (!url.is_valid()) {
     return;
   }
 
@@ -1099,6 +1098,16 @@ void RenderViewContextMenu::WriteURLToClipboard(const GURL& url) {
       CreateDataEndpoint(/*notify_if_restricted=*/true));
   scw.SetDataSourceURL(main_frame_url_, current_url_);
   scw.WriteText(FormatURLForClipboard(url));
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (id == IDC_CONTENT_CONTEXT_COPYLINKLOCATION &&
+      toast_features::IsEnabled(toast_features::kLinkCopiedToast)) {
+    auto* const toast_controller = GetToastController();
+    if (toast_controller) {
+      toast_controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied));
+    }
+  }
+#endif
 }
 
 void RenderViewContextMenu::IssuePreconnectionToUrl(
@@ -3268,15 +3277,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       break;
 
     case IDC_CONTENT_CONTEXT_COPYLINKLOCATION:
-      WriteURLToClipboard(params_.unfiltered_link_url);
-#if !BUILDFLAG(IS_ANDROID)
-      if (toast_features::IsEnabled(toast_features::kLinkCopiedToast)) {
-        auto* const toast_controller = GetToastController();
-        if (toast_controller) {
-          toast_controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied));
-        }
-      }
-#endif
+      WriteURLToClipboard(params_.unfiltered_link_url, id);
       break;
 
     case IDC_CONTENT_CONTEXT_COPYLINKTEXT:
@@ -3285,19 +3286,11 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CONTENT_CONTEXT_COPYIMAGELOCATION:
     case IDC_CONTENT_CONTEXT_COPYAVLOCATION:
-      WriteURLToClipboard(params_.src_url);
+      WriteURLToClipboard(params_.src_url, id);
       break;
 
     case IDC_CONTENT_CONTEXT_COPYIMAGE:
       ExecCopyImageAt();
-#if !BUILDFLAG(IS_ANDROID)
-      if (toast_features::IsEnabled(toast_features::kImageCopiedToast)) {
-        auto* const toast_controller = GetToastController();
-        if (toast_controller) {
-          toast_controller->MaybeShowToast(ToastParams(ToastId::kImageCopied));
-        }
-      }
-#endif
       break;
 
     case IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS:
@@ -4322,9 +4315,20 @@ void RenderViewContextMenu::ExecCopyLinkText() {
 
 void RenderViewContextMenu::ExecCopyImageAt() {
   RenderFrameHost* frame_host = GetRenderFrameHost();
-  if (frame_host) {
-    frame_host->CopyImageAt(params_.x, params_.y);
+  if (!frame_host) {
+    return;
   }
+
+  frame_host->CopyImageAt(params_.x, params_.y);
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (toast_features::IsEnabled(toast_features::kImageCopiedToast)) {
+    auto* const toast_controller = GetToastController();
+    if (toast_controller) {
+      toast_controller->MaybeShowToast(ToastParams(ToastId::kImageCopied));
+    }
+  }
+#endif
 }
 
 void RenderViewContextMenu::ExecSearchLensForImage(int event_flags) {
@@ -4394,10 +4398,10 @@ void RenderViewContextMenu::OpenLensOverlayWithPreselectedRegion(
   // Scale the region bounds, which are in physical pixels, to device pixels.
   auto scaled_region_bounds =
       gfx::ScaleToEnclosedRect(region_bounds, 1.f / device_scale_factor);
-  LensOverlayController* const controller =
-      LensOverlayController::FromTabWebContents(source_web_contents_);
+  LensSearchController* const controller =
+      LensSearchController::FromTabWebContents(source_web_contents_);
   CHECK(controller);
-  controller->ShowUIWithPendingRegion(
+  controller->OpenLensOverlayWithPendingRegion(
       lens::LensOverlayInvocationSource::kContentAreaContextMenuImage,
       tab_bounds, view_bounds, scaled_region_bounds, region_bitmap);
 }
@@ -4427,10 +4431,10 @@ void RenderViewContextMenu::ExecRegionSearch(
       lens::RecordAmbientSearchQuery(
           lens::AmbientSearchEntryPoint::
               CONTEXT_MENU_SEARCH_REGION_WITH_LENS_OVERLAY);
-      LensOverlayController* const controller =
-          LensOverlayController::FromTabWebContents(embedder_web_contents_);
+      LensSearchController* const controller =
+          LensSearchController::FromTabWebContents(embedder_web_contents_);
       CHECK(controller);
-      controller->ShowUI(
+      controller->OpenLensOverlay(
           lens::LensOverlayInvocationSource::kContentAreaContextMenuPage);
       return;
     }
@@ -4513,6 +4517,14 @@ void RenderViewContextMenu::ExecCopyVideoFrame() {
   MediaPlayerAction(blink::mojom::MediaPlayerAction(
       blink::mojom::MediaPlayerActionType::kCopyVideoFrame,
       /*enable=*/true));
+#if !BUILDFLAG(IS_ANDROID)
+  if (toast_features::IsEnabled(toast_features::kVideoFrameCopiedToast)) {
+    auto* const toast_controller = GetToastController();
+    if (toast_controller) {
+      toast_controller->MaybeShowToast(ToastParams(ToastId::kVideoFrameCopied));
+    }
+  }
+#endif
 }
 
 void RenderViewContextMenu::ExecSearchForVideoFrame(int event_flags,

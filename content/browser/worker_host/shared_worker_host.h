@@ -144,6 +144,8 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   // be done based on a UI action.
   void Destruct();
 
+  void DestructIfNoClients();
+
   void AddClient(mojo::PendingRemote<blink::mojom::SharedWorkerClient> client,
                  GlobalRenderFrameHostId client_render_frame_host_id,
                  const blink::MessagePortChannel& port,

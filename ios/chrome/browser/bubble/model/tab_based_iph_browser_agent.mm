@@ -29,7 +29,8 @@
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 
 TabBasedIPHBrowserAgent::TabBasedIPHBrowserAgent(Browser* browser)
-    : web_state_list_(browser->GetWebStateList()),
+    : BrowserUserData(browser),
+      web_state_list_(browser->GetWebStateList()),
       active_web_state_observer_(
           std::make_unique<ActiveWebStateObservationForwarder>(web_state_list_,
                                                                this)),

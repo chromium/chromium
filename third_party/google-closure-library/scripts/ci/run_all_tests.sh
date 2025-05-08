@@ -26,11 +26,3 @@ exit 1
 # rejects POST requests.
 ./scripts/http/simple_http_server.py 2> /dev/null & sleep 5
 
-# Connect to Sauce.
-./scripts/ci/sauce_connect.sh
-
-# Install Selenium.
-"$(npm bin)/webdriver-manager" update
-
-# Invoke protractor to run tests.
-"$(npm bin)/protractor" protractor.conf.js

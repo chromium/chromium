@@ -63,11 +63,6 @@ bool DlpConfidentialContent::operator==(
   return url == other.url;
 }
 
-bool DlpConfidentialContent::operator!=(
-    const DlpConfidentialContent& other) const {
-  return !(*this == other);
-}
-
 bool DlpConfidentialContent::operator<(
     const DlpConfidentialContent& other) const {
   return url < other.url;

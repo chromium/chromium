@@ -33,7 +33,7 @@ class UsbDevicePermission
     // permission properties. It will accept all interfaceClass properties. For
     // example, created param would always accept {"intefaceClass": 3}
     // permission, and it would accept {"vendorId": 2, "interfaceClass": 4} iff
-    // |vendor_id| is 2.
+    // `vendor_id` is 2.
     // Created check param failing means there are no permissions allowing
     // access to the USB device. On the other hand, created check param passing
     // does not necessarily mean there is a permission allowing access to the

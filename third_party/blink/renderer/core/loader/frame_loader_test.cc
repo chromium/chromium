@@ -258,6 +258,8 @@ TEST_F(FrameLoaderTest, PolicyContainerIsStoredOnCommitNavigation) {
   params->policy_container = std::make_unique<WebPolicyContainer>(
       WebPolicyContainerPolicies{
           network::mojom::CrossOriginEmbedderPolicyValue::kNone,
+          network::IntegrityPolicy(),
+          network::IntegrityPolicy(),
           network::mojom::ReferrerPolicy::kAlways,
           std::vector<WebContentSecurityPolicy>(),
       },
@@ -269,12 +271,12 @@ TEST_F(FrameLoaderTest, PolicyContainerIsStoredOnCommitNavigation) {
   EXPECT_EQ(*mojom::blink::PolicyContainerPolicies::New(
                 network::CrossOriginEmbedderPolicy(
                     network::mojom::CrossOriginEmbedderPolicyValue::kNone),
+                network::IntegrityPolicy(), network::IntegrityPolicy(),
                 network::mojom::ReferrerPolicy::kAlways,
                 Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
                 /*anonymous=*/false, network::mojom::WebSandboxFlags::kNone,
                 network::mojom::blink::IPAddressSpace::kUnknown,
                 /*can_navigate_top_without_user_gesture=*/true,
-                /*allow_cross_origin_isolation=*/false,
                 /*cross_origin_isolation_enabled_by_dip=*/false),
             local_frame->DomWindow()->GetPolicyContainer()->GetPolicies());
 }

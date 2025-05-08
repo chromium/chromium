@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 
+#include <utility>
+
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -71,6 +73,8 @@ void PageActionView::OnNewActiveController(PageActionController* controller) {
   observation_.Reset();
   action_item_controller_subscription_ = {};
   if (controller) {
+    click_callback_ =
+        controller->GetClickCallback(action_item_->GetActionId().value());
     controller->AddObserver(action_item_->GetActionId().value(), observation_);
     // TODO(crbug.com/388524315): Have the controller manage its own ActionItem
     // observation. See bug for more explanation.
@@ -171,6 +175,9 @@ void PageActionView::NotifyClick(const ui::Event& event) {
                        static_cast<std::underlying_type_t<PageActionTrigger>>(
                            trigger_source))
           .Build());
+
+  CHECK(click_callback_);
+  click_callback_.Run(trigger_source);
 }
 
 void PageActionView::UpdateIconImage() {
@@ -208,6 +215,21 @@ gfx::Size PageActionView::GetMinimumSize() const {
 bool PageActionView::IsBubbleShowing() const {
   return observation_.IsObserving() &&
          observation_.GetSource()->GetActionItemIsShowingBubble();
+}
+
+bool PageActionView::IsTriggerableEvent(const ui::Event& event) {
+  // Returns whether the bubble should be shown given the event. Only trigger an
+  // action when action UI isn't already showing (managed at the
+  // IconLabelBubbleView level), and if mouse input, when event is a left button
+  // click.
+  if (event.IsMouseEvent()) {
+    // IconLabelBubbleView allows any mouse click to be triggerable event so
+    // need to manually check here.
+    return IconLabelBubbleView::IsTriggerableEvent(event) &&
+           ((GetTriggerableEventFlags() & event.flags()) != 0);
+  }
+
+  return IconLabelBubbleView::IsTriggerableEvent(event);
 }
 
 void PageActionView::OnLabelVisibilityChanged() {

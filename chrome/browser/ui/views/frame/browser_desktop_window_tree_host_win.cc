@@ -241,6 +241,7 @@ BrowserDesktopWindowTreeHostWin::~BrowserDesktopWindowTreeHostWin() = default;
 
 views::NativeMenuWin* BrowserDesktopWindowTreeHostWin::GetSystemMenu() {
   if (!system_menu_.get()) {
+    CHECK(browser_frame_);
     SystemMenuInsertionDelegateWin insertion_delegate;
     system_menu_ = std::make_unique<views::NativeMenuWin>(
         browser_frame_->GetSystemMenuModel(), GetHWND());
@@ -263,6 +264,13 @@ int BrowserDesktopWindowTreeHostWin::GetMinimizeButtonOffset() const {
 
 bool BrowserDesktopWindowTreeHostWin::UsesNativeSystemMenu() const {
   return true;
+}
+
+void BrowserDesktopWindowTreeHostWin::ClientDestroyedWidget() {
+  system_menu_.reset();
+  browser_window_property_manager_.reset();
+  browser_frame_ = nullptr;
+  browser_view_ = nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -298,7 +306,9 @@ void BrowserDesktopWindowTreeHostWin::HandleWindowMinimizedOrRestored(
     bool restored) {
   DesktopWindowTreeHostWin::HandleWindowMinimizedOrRestored(restored);
 
-  browser_view_->UpdateLoadingAnimations(restored);
+  if (browser_view_) {
+    browser_view_->UpdateLoadingAnimations(restored);
+  }
 }
 
 void BrowserDesktopWindowTreeHostWin::HandleRequestClose() {
@@ -328,7 +338,7 @@ bool BrowserDesktopWindowTreeHostWin::GetClientAreaInsets(
     gfx::Insets* insets,
     int frame_thickness) const {
   // Always use default insets for opaque frame.
-  if (!ShouldUseNativeFrame()) {
+  if (!browser_view_ || !ShouldUseNativeFrame()) {
     return false;
   }
 
@@ -373,7 +383,8 @@ bool BrowserDesktopWindowTreeHostWin::GetDwmFrameInsetsInPixels(
   // an opaque frame, leading to graphical glitches behind the opaque frame.
   // Instead, we use that function below to tell us whether the frame is
   // currently native or opaque.
-  if (!GetWidget()->client_view() || !browser_view_->GetIsNormalType() ||
+  if (!browser_view_ || !browser_frame_ || !GetWidget()->client_view() ||
+      !browser_view_->GetIsNormalType() ||
       !DesktopWindowTreeHostWin::ShouldUseNativeFrame()) {
     return false;
   }
@@ -395,6 +406,10 @@ bool BrowserDesktopWindowTreeHostWin::GetDwmFrameInsetsInPixels(
 }
 
 void BrowserDesktopWindowTreeHostWin::HandleCreate() {
+  if (!browser_view_) {
+    return;
+  }
+
   DesktopWindowTreeHostWin::HandleCreate();
   browser_window_property_manager_ =
       BrowserWindowPropertyManager::CreateBrowserWindowPropertyManager(
@@ -484,6 +499,11 @@ void BrowserDesktopWindowTreeHostWin::PostHandleMSG(UINT message,
 }
 
 views::FrameMode BrowserDesktopWindowTreeHostWin::GetFrameMode() const {
+  if (!browser_view_) {
+    // If there is no browser view the frame should be system drawn.
+    return views::FrameMode::SYSTEM_DRAWN;
+  }
+
   const views::FrameMode system_frame_mode =
       ShouldBrowserCustomDrawTitlebar(browser_view_)
           ? views::FrameMode::SYSTEM_DRAWN_NO_CONTROLS
@@ -506,7 +526,8 @@ views::FrameMode BrowserDesktopWindowTreeHostWin::GetFrameMode() const {
 }
 
 bool BrowserDesktopWindowTreeHostWin::ShouldUseNativeFrame() const {
-  if (!views::DesktopWindowTreeHostWin::ShouldUseNativeFrame()) {
+  if (!browser_view_ ||
+      !views::DesktopWindowTreeHostWin::ShouldUseNativeFrame()) {
     return false;
   }
   // This function can get called when the Browser window is closed i.e. in the
@@ -528,6 +549,7 @@ bool BrowserDesktopWindowTreeHostWin::ShouldUseNativeFrame() const {
 
 bool BrowserDesktopWindowTreeHostWin::ShouldWindowContentsBeTransparent()
     const {
+  CHECK(browser_view_);
   return !ShouldBrowserCustomDrawTitlebar(browser_view_) &&
          views::DesktopWindowTreeHostWin::ShouldWindowContentsBeTransparent();
 }
@@ -539,6 +561,7 @@ void BrowserDesktopWindowTreeHostWin::OnProfileAvatarChanged(
     const base::FilePath& profile_path) {
   // If we're currently badging the window icon (>1 available profile),
   // and this window's profile's avatar changed, update the window icon.
+  CHECK(browser_view_);
   if (browser_view_->browser()->profile()->GetPath() == profile_path &&
       g_browser_process->profile_manager()
               ->GetProfileAttributesStorage()
@@ -613,6 +636,7 @@ void BrowserDesktopWindowTreeHostWin::SetWindowIcon(bool badged) {
   // icon is valid until replaced with the new icon.
   base::win::ScopedGDIObject<HICON> previous_icon = std::move(icon_handle_);
   if (badged) {
+    CHECK(browser_view_);
     icon_handle_ = IconUtil::CreateHICONFromSkBitmap(
         GetBadgedIconBitmapForProfile(browser_view_->browser()->profile()));
   } else {

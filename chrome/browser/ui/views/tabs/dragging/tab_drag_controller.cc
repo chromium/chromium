@@ -954,18 +954,11 @@ bool TabDragController::ShouldDragWindowUsingSystemDnD() {
 }
 
 void TabDragController::RequestTabThumbnail() {
-  VLOG(1) << __func__;
-  WebContents* contents;
-  if (drag_data_.group_drag_data_.has_value()) {
-    contents = source_context_->GetTabStripModel()->GetActiveWebContents();
-    // If the group header was dragged while a tab not belonging to the
-    // group was active, we request a thumbnail of the group's first tab.
-    if (!IsDraggingTab(contents)) {
-      contents = drag_data_.tab_drag_data_[first_tab_index()].contents;
-    }
-  } else {
-    contents = drag_data_.source_view_drag_data()->contents.get();
-  }
+  WebContents* contents =
+      source_context_->GetTabStripModel()->GetActiveWebContents();
+  CHECK(contents);
+  CHECK(IsDraggingTab(contents));
+
   content::RenderWidgetHostView* rwhv = contents->GetRenderWidgetHostView();
   if (rwhv) {
     float scale = rwhv->GetDeviceScaleFactor();
@@ -1162,15 +1155,13 @@ void TabDragController::StartDrag() {
   CHECK_EQ(source_context_->GetDragController(), this);
   attached_context_ = source_context_;
 
+  AttachImpl();
+
   // Request a thumbnail to use as drag image if we'll use fallback tab
-  // dragging. Do this before calling AttachImpl() to minimize the delay between
-  // detaching the tabs and showing the drag icon, as capturing the tab
-  // thumbnail is asynchronous.
+  // dragging.
   if (ShouldDragWindowUsingSystemDnD()) {
     RequestTabThumbnail();
   }
-
-  AttachImpl();
 }
 
 void TabDragController::AttachToNewContext(
@@ -1353,10 +1344,6 @@ TabDragController::Detach(ReleaseCapture release_capture) {
       owned_tabs_and_groups.emplace_back(
           attached_model->DetachTabAtForInsertion(index));
     }
-  }
-  if (drag_data_.group_drag_data_.has_value()) {
-    drag_data_.tab_drag_data_[drag_data_.source_view_index_].attached_view =
-        nullptr;
   }
 
   // If we've removed the last Tab from the TabDragContext, hide the
@@ -1594,18 +1581,26 @@ std::vector<TabSlotView*> TabDragController::GetViewsMatchingDraggedContents(
     TabDragContext* context) {
   const TabStripModel* const model = context->GetTabStripModel();
   std::vector<TabSlotView*> views;
-  for (size_t i = first_tab_index(); i < drag_data_.tab_drag_data_.size();
-       ++i) {
-    const int model_index =
-        model->GetIndexOfWebContents(drag_data_.tab_drag_data_[i].contents);
-    if (model_index == TabStripModel::kNoTab) {
-      return std::vector<TabSlotView*>();
+  for (const TabDragData& tab_drag_datum : drag_data_.tab_drag_data_) {
+    if (tab_drag_datum.view_type == TabSlotView::ViewType::kTab) {
+      const int model_index =
+          model->GetIndexOfWebContents(tab_drag_datum.contents);
+      if (model_index == TabStripModel::kNoTab) {
+        return {};
+      }
+      views.push_back(context->GetTabAt(model_index));
+    } else {
+      // Return empty vector if the group is not present in the model.
+      if (!model->group_model()->ContainsTabGroup(
+              tab_drag_datum.tab_group_data->group_id)) {
+        return {};
+      }
+
+      TabGroupHeader* header =
+          context->GetTabGroupHeader(tab_drag_datum.tab_group_data->group_id);
+      CHECK(header);
+      views.push_back(header);
     }
-    views.push_back(context->GetTabAt(model_index));
-  }
-  if (drag_data_.group_drag_data_.has_value()) {
-    views.insert(views.begin(), context->GetTabGroupHeader(
-                                    drag_data_.group_drag_data_.value().group));
   }
   return views;
 }
@@ -1756,10 +1751,14 @@ void TabDragController::ResetSelection(TabStripModel* model) {
           model->GetIndexOfWebContents(drag_data_.tab_drag_data_[i].contents);
       DCHECK_GE(index, 0);
       selection_model.AddIndexToSelection(static_cast<size_t>(index));
+      // Set this tab as active if:
+      // a) we don't have an active tab yet
+      // b) this was the source view for the drag
+      // c) we're in a header drag, and this tab was active before the drag
       if (!has_one_valid_tab || i == drag_data_.source_view_index_ ||
           (drag_data_.group_drag_data_.has_value() &&
            (drag_data_.group_drag_data_.value().active_tab_index_within_group +
-            first_tab_index()) == static_cast<int>(i))) {
+            1) == static_cast<int>(i))) {
         // Reset the active/lead to the first tab. If the source tab is still
         // valid we'll reset these again later on.
         selection_model.set_active(static_cast<size_t>(index));
@@ -1963,10 +1962,10 @@ void TabDragController::CompleteDrag() {
                                ? attached_context_->GetTabStripModel()
                                : source_context_->GetTabStripModel();
     ui::ListSelectionModel selection;
+    // Offset by 1 to account for the group header.
     const int drag_data_index =
-        first_tab_index() +
-        drag_data_.group_drag_data_.value().active_tab_index_within_group;
-    int index = model->GetIndexOfWebContents(
+        1 + drag_data_.group_drag_data_.value().active_tab_index_within_group;
+    const int index = model->GetIndexOfWebContents(
         drag_data_.tab_drag_data_[drag_data_index].contents);
 
     // The tabs in the group may have been closed during the drag.
@@ -2455,17 +2454,16 @@ void TabDragController::NotifyEventIfTabAddedToGroup() {
   }
 
   const TabStripModel* source_model = source_context_->GetTabStripModel();
-  for (size_t i = first_tab_index(); i < drag_data_.tab_drag_data_.size();
-       ++i) {
+  for (const TabDragData& tab_drag_datum : drag_data_.tab_drag_data_) {
     // If the tab already had a group, skip it.
-    if (drag_data_.tab_drag_data_[i].tab_group_data.has_value()) {
+    if (tab_drag_datum.tab_group_data.has_value()) {
       continue;
     }
 
     // Get the tab group from the source model.
     std::optional<tab_groups::TabGroupId> group_id =
-        source_model->GetTabGroupForTab(source_model->GetIndexOfWebContents(
-            drag_data_.tab_drag_data_[i].contents));
+        source_model->GetTabGroupForTab(
+            source_model->GetIndexOfWebContents(tab_drag_datum.contents));
 
     // If there was a tab group for that tab, then send the custom event for
     // adding a tab to a group.
@@ -2475,7 +2473,7 @@ void TabDragController::NotifyEventIfTabAddedToGroup() {
 
     ui::TrackedElement* element =
         views::ElementTrackerViews::GetInstance()->GetElementForView(
-            drag_data_.tab_drag_data_[i].attached_view);
+            tab_drag_datum.attached_view);
     if (!element) {
       continue;
     }

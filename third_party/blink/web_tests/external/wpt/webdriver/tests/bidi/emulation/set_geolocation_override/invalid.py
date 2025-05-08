@@ -2,7 +2,6 @@ import pytest
 
 import webdriver.bidi.error as error
 from webdriver.bidi.modules.emulation import CoordinatesOptions
-from webdriver.bidi.undefined import UNDEFINED
 
 
 pytestmark = pytest.mark.asyncio
@@ -75,7 +74,7 @@ async def test_params_contexts_iframe(bidi_session, new_tab, get_test_page):
         )
 
 
-@pytest.mark.parametrize("value", [UNDEFINED, False, 42, "foo", []])
+@pytest.mark.parametrize("value", [False, 42, "foo", []])
 async def test_params_coordinates_invalid_type(bidi_session, top_context, value):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.emulation.set_geolocation_override(
@@ -114,6 +113,18 @@ async def test_params_coordinates_latitude_invalid_type(bidi_session, top_contex
         )
 
 
+@pytest.mark.parametrize("value", [-90.1, 90.1])
+async def test_params_coordinates_latitude_invalid_value(bidi_session, top_context, value):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.emulation.set_geolocation_override(
+            contexts=[top_context["context"]],
+            coordinates=CoordinatesOptions(
+                latitude=value,
+                longitude=10,
+            ),
+        )
+
+
 async def test_params_coordinates_longitude_missing(bidi_session, top_context):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.emulation.set_geolocation_override(
@@ -136,6 +147,18 @@ async def test_params_coordinates_longitude_invalid_type(bidi_session, top_conte
         )
 
 
+@pytest.mark.parametrize("value", [-180.5, 180.5])
+async def test_params_coordinates_longitude_invalid_value(bidi_session, top_context, value):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.emulation.set_geolocation_override(
+            contexts=[top_context["context"]],
+            coordinates=CoordinatesOptions(
+                latitude=10,
+                longitude=value,
+            ),
+        )
+
+
 @pytest.mark.parametrize("value", [False, "foo", [], {}])
 async def test_params_coordinates_accuracy_invalid_type(bidi_session, top_context, value):
     with pytest.raises(error.InvalidArgumentException):
@@ -145,6 +168,18 @@ async def test_params_coordinates_accuracy_invalid_type(bidi_session, top_contex
                 latitude=10,
                 longitude=10,
                 accuracy=value,
+            ),
+        )
+
+
+async def test_params_coordinates_accuracy_invalid_value(bidi_session, top_context):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.emulation.set_geolocation_override(
+            contexts=[top_context["context"]],
+            coordinates=CoordinatesOptions(
+                latitude=10,
+                longitude=10,
+                accuracy=-1,
             ),
         )
 
@@ -176,6 +211,19 @@ async def test_params_coordinates_altitude_accuracy_invalid_type(bidi_session, t
         )
 
 
+async def test_params_coordinates_altitude_accuracy_invalid_value(bidi_session, top_context):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.emulation.set_geolocation_override(
+            contexts=[top_context["context"]],
+            coordinates=CoordinatesOptions(
+                latitude=10,
+                longitude=10,
+                altitude=10,
+                altitude_accuracy=-1,
+            ),
+        )
+
+
 async def test_params_coordinates_altitude_accuracy_without_altitude(bidi_session, top_context):
     with pytest.raises(error.InvalidArgumentException):
         await bidi_session.emulation.set_geolocation_override(
@@ -201,6 +249,19 @@ async def test_params_coordinates_heading_invalid_type(bidi_session, top_context
         )
 
 
+@pytest.mark.parametrize("value", [-0.5, 360, 360.5])
+async def test_params_coordinates_heading_invalid_value(bidi_session, top_context, value):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.emulation.set_geolocation_override(
+            contexts=[top_context["context"]],
+            coordinates=CoordinatesOptions(
+                latitude=10,
+                longitude=10,
+                heading=value,
+            ),
+        )
+
+
 @pytest.mark.parametrize("value", [False, "foo", [], {}])
 async def test_params_coordinates_speed_invalid_type(bidi_session, top_context, value):
     with pytest.raises(error.InvalidArgumentException):
@@ -210,6 +271,18 @@ async def test_params_coordinates_speed_invalid_type(bidi_session, top_context, 
                 latitude=10,
                 longitude=10,
                 speed=value,
+            ),
+        )
+
+
+async def test_params_coordinates_speed_invalid_value(bidi_session, top_context):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.emulation.set_geolocation_override(
+            contexts=[top_context["context"]],
+            coordinates=CoordinatesOptions(
+                latitude=10,
+                longitude=10,
+                speed=-1.5,
             ),
         )
 
@@ -258,4 +331,61 @@ async def test_params_user_contexts_entry_invalid_value(bidi_session, value):
                 "longitude": 10,
             },
             user_contexts=[value],
+        )
+
+
+async def test_params_coordinates_and_error(bidi_session, top_context):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.emulation.set_geolocation_override(
+            contexts=[top_context["context"]],
+            coordinates={
+                "latitude": 10,
+                "longitude": 10,
+            },
+            error={"type": "positionUnavailable"}
+        )
+
+
+async def test_params_no_coordinates_no_error(bidi_session, top_context):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.emulation.set_geolocation_override(
+            contexts=[top_context["context"]],
+        )
+
+
+@pytest.mark.parametrize("value", [False, 42, "foo", []])
+async def test_params_error_invalid_type(bidi_session, top_context, value):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.emulation.set_geolocation_override(
+            contexts=[top_context["context"]],
+            error=value,
+        )
+
+
+async def test_params_error_empty_object(bidi_session, top_context):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.emulation.set_geolocation_override(
+            contexts=[top_context["context"]],
+            error={},
+        )
+
+
+@pytest.mark.parametrize("value", [None, False, 42, {}, []])
+async def test_params_error_type_invalid_type(bidi_session, top_context, value):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.emulation.set_geolocation_override(
+            contexts=[top_context["context"]],
+            error={
+                "type": value
+            },
+        )
+
+
+async def test_params_error_type_invalid_value(bidi_session, top_context):
+    with pytest.raises(error.InvalidArgumentException):
+        await bidi_session.emulation.set_geolocation_override(
+            contexts=[top_context["context"]],
+            error={
+                "type": "unknownError",
+            },
         )

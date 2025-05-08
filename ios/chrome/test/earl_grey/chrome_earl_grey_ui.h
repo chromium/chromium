@@ -10,6 +10,7 @@
 #import <string>
 
 #import "ios/testing/earl_grey/base_eg_test_helper_impl.h"
+#import "ios/web/public/test/element_selector.h"
 
 @protocol GREYMatcher;
 
@@ -182,6 +183,12 @@
 // `matcher` can be any view in the popover. Throws if the window is not
 // dismissable by tapping.
 - (void)dismissByTappingOnTheWindowOfPopover:(id<GREYMatcher>)matcher;
+
+// Long presses on selector.
+- (void)longPressElementOnWebView:(ElementSelector*)selector;
+
+// Convenient function to trigger the Edit Menu on selector.
+- (void)triggerEditMenu:(ElementSelector*)selector;
 
 @end
 

@@ -29,8 +29,6 @@ namespace image_writer {
 
 namespace {
 
-const int kMD5BufferSize = 1024;
-
 // Returns true if the file at |image_path| is an archived image.
 bool IsArchive(const base::FilePath& image_path) {
   return ZipExtractor::IsZipFile(image_path) ||
@@ -256,9 +254,6 @@ void Operation::WriteImageProgress(int64_t total_bytes, int64_t curr_bytes) {
 
 void Operation::GetMD5SumOfFile(
     const base::FilePath& file_path,
-    int64_t file_size,
-    int progress_offset,
-    int progress_scale,
     base::OnceCallback<void(const std::string&)> callback) {
   DCHECK(IsRunningInCorrectSequence());
   if (IsCancelled()) {
@@ -273,16 +268,14 @@ void Operation::GetMD5SumOfFile(
     return;
   }
 
-  if (file_size <= 0) {
-    file_size = file.GetLength();
-    if (file_size < 0) {
-      Error(error::kImageOpenError);
-      return;
-    }
+  int64_t file_size = file.GetLength();
+  if (file_size < 0) {
+    Error(error::kImageOpenError);
+    return;
   }
 
   PostTask(base::BindOnce(&Operation::MD5Chunk, this, std::move(file), 0,
-                          file_size, progress_offset, progress_scale,
+                          base::checked_cast<size_t>(file_size),
                           std::move(callback)));
 }
 
@@ -292,10 +285,8 @@ bool Operation::IsRunningInCorrectSequence() const {
 
 void Operation::MD5Chunk(
     base::File file,
-    int64_t bytes_processed,
-    int64_t bytes_total,
-    int progress_offset,
-    int progress_scale,
+    size_t bytes_processed,
+    size_t bytes_total,
     base::OnceCallback<void(const std::string&)> callback) {
   DCHECK(IsRunningInCorrectSequence());
   if (IsCancelled())
@@ -303,8 +294,8 @@ void Operation::MD5Chunk(
 
   CHECK_LE(bytes_processed, bytes_total);
 
-  int read_size = std::min(bytes_total - bytes_processed,
-                           static_cast<int64_t>(kMD5BufferSize));
+  std::array<uint8_t, 1024> buffer;
+  size_t read_size = std::min(bytes_total - bytes_processed, buffer.size());
 
   if (read_size == 0) {
     // Nothing to read, we are done.
@@ -312,22 +303,19 @@ void Operation::MD5Chunk(
     base::MD5Final(&digest, &md5_context_);
     std::move(callback).Run(base::MD5DigestToBase16(digest));
   } else {
-    auto buffer = base::HeapArray<char>::Uninit(kMD5BufferSize);
-    int len =
-        file.Read(bytes_processed, base::as_writable_bytes(buffer.as_span()))
-            .value_or(0);
+    int64_t offset = base::checked_cast<int64_t>(bytes_processed);
+    auto target = base::span(buffer).first(read_size);
 
-    if (len == read_size) {
+    if (file.ReadAndCheck(offset, target)) {
       // Process data.
-      base::MD5Update(&md5_context_, std::string_view(buffer.data(), len));
-      int percent_curr =
-          ((bytes_processed + len) * progress_scale) / bytes_total +
-          progress_offset;
+      base::MD5Update(&md5_context_, target);
+      bytes_processed += read_size;
+      int percent_curr = (bytes_processed * kProgressComplete) / bytes_total;
       SetProgress(percent_curr);
 
-      PostTask(base::BindOnce(
-          &Operation::MD5Chunk, this, std::move(file), bytes_processed + len,
-          bytes_total, progress_offset, progress_scale, std::move(callback)));
+      PostTask(base::BindOnce(&Operation::MD5Chunk, this, std::move(file),
+                              bytes_processed, bytes_total,
+                              std::move(callback)));
       // Skip closing the file.
       return;
     } else {

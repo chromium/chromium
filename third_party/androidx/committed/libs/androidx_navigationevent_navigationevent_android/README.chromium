@@ -1,0 +1,16 @@
+Name: Navigation Event
+Short Name: navigationevent-android
+URL: https://developer.android.com/jetpack/androidx/releases/navigationevent#1.0.0-SNAPSHOT
+Version: 1.0.0-SNAPSHOT
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Provides APIs to easily intercept platform navigation events, including swipes and clicks, to provide a consistent API surface for handling these events.
+
+Local Modifications:
+No modifications.

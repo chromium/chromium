@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_i18n.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -92,6 +93,8 @@ const char* AutocompleteProvider::TypeToString(Type type) {
       return "RecentlyClosedTabs";
     case TYPE_CONTEXTUAL_SEARCH:
       return "ContextualSearch";
+    case TYPE_TAB_GROUP:
+      return "TabGroup";
     default:
       DUMP_WILL_BE_NOTREACHED()
           << "Unhandled AutocompleteProvider::Type " << type;
@@ -136,10 +139,9 @@ void AutocompleteProvider::StartPrefetch(const AutocompleteInput& input) {
   DCHECK(!input.omit_asynchronous_matches());
 }
 
-void AutocompleteProvider::Stop(bool clear_cached_results,
-                                bool due_to_user_inactivity) {
+void AutocompleteProvider::Stop(AutocompleteStopReason stop_reason) {
   done_ = true;
-  if (clear_cached_results) {
+  if (stop_reason == AutocompleteStopReason::kClobbered) {
     matches_.clear();
     suggestion_groups_map_.clear();
   }
@@ -204,6 +206,8 @@ AutocompleteProvider::AsOmniboxEventProviderType() const {
       return metrics::OmniboxEventProto::RECENTLY_CLOSED_TABS;
     case TYPE_CONTEXTUAL_SEARCH:
       return metrics::OmniboxEventProto::CONTEXTUAL_SEARCH_PROVIDER;
+    case TYPE_TAB_GROUP:
+      return metrics::OmniboxEventProto::TAB_GROUP_PROVIDER;
     default:
       // TODO(crbug.com/40940012) This was a NOTREACHED that we converted to
       //   help debug crbug.com/1499235 since NOTREACHED's don't log their
@@ -235,7 +239,9 @@ size_t AutocompleteProvider::EstimateMemoryUsage() const {
 }
 
 AutocompleteProvider::~AutocompleteProvider() {
-  Stop(false, false);
+  // Don't bother using `kClobbered` to clear caches and state, since those will
+  // be destroyed with the provider.
+  Stop(AutocompleteStopReason::kInteraction);
 }
 
 // static

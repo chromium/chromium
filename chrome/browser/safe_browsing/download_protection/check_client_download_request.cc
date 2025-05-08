@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -54,7 +55,10 @@ namespace safe_browsing {
 
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+// File suffix for APKs.
+const base::FilePath::CharType kApkSuffix[] = FILE_PATH_LITERAL(".apk");
+#else   // BUILDFLAG(IS_ANDROID)
 bool ShouldUploadToDownloadFeedback(DownloadCheckResult result) {
   switch (result) {
     case DownloadCheckResult::DANGEROUS_HOST:
@@ -82,7 +86,7 @@ bool ShouldUploadToDownloadFeedback(DownloadCheckResult result) {
       return false;
   }
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -147,7 +151,7 @@ void CheckClientDownloadRequest::OnDownloadUpdated(
 // static
 bool CheckClientDownloadRequest::IsSupportedDownload(
     const download::DownloadItem& item,
-    const base::FilePath& target_path,
+    const base::FilePath& file_name,
     DownloadCheckResultReason* reason) {
   if (item.GetUrlChain().empty()) {
     *reason = REASON_EMPTY_URL_CHAIN;
@@ -169,16 +173,20 @@ bool CheckClientDownloadRequest::IsSupportedDownload(
     *reason = final_url.has_host() ? REASON_REMOTE_FILE : REASON_LOCAL_FILE;
     return false;
   }
-  // On Android, ignore REASON_NOT_BINARY_FILE, because it is derived from
-  // FileTypePolicies, which are currently only applicable to desktop platforms.
-  // TODO(chlily): Refactor/fix FileTypePolicies and then remove this exception.
-#if !BUILDFLAG(IS_ANDROID)
+  // On Android, do not use FileTypePolicies, which are currently only
+  // applicable to desktop platforms. Instead, hardcode the APK filetype check
+  // for Android here.
   // This check should be last, so we know the earlier checks passed.
-  if (!FileTypePolicies::GetInstance()->IsCheckedBinaryFile(target_path)) {
+  // TODO(chlily): Refactor/fix FileTypePolicies and then remove this
+  // platform-specific hardcoded behavior.
+#if BUILDFLAG(IS_ANDROID)
+  if (!file_name.MatchesExtension(kApkSuffix)) {
+#else
+  if (!FileTypePolicies::GetInstance()->IsCheckedBinaryFile(file_name)) {
+#endif
     *reason = REASON_NOT_BINARY_FILE;
     return false;
   }
-#endif
   return true;
 }
 
@@ -189,7 +197,24 @@ CheckClientDownloadRequest::~CheckClientDownloadRequest() {
 
 bool CheckClientDownloadRequest::IsSupportedDownload(
     DownloadCheckResultReason* reason) {
-  return IsSupportedDownload(*item_, item_->GetTargetFilePath(), reason);
+  bool is_supported_download =
+      IsSupportedDownload(*item_,
+#if BUILDFLAG(IS_ANDROID)
+                          /*file_name=*/item_->GetFileNameToReportUser(),
+#else
+                          /*file_name=*/item_->GetTargetFilePath(),
+#endif
+                          reason);
+
+#if BUILDFLAG(IS_ANDROID)
+  if (!is_supported_download) {
+    DownloadProtectionMetricsData::SetOutcome(
+        item_, DownloadProtectionMetricsData::ConvertDownloadCheckResultReason(
+                   *reason));
+  }
+#endif
+
+  return is_supported_download;
 }
 
 download::DownloadItem* CheckClientDownloadRequest::item() const {

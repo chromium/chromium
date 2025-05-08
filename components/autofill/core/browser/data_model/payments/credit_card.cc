@@ -791,6 +791,11 @@ int CreditCard::Compare(const CreditCard& credit_card) const {
     return comparison;
   }
 
+  comparison = benefit_source_.compare(credit_card.benefit_source_);
+  if (comparison != 0) {
+    return comparison;
+  }
+
   // Do not distinguish masked server cards from full server cards as this is
   // not needed and not desired - we want to identify masked server card from
   // sync with the (potential) full server card stored locally.
@@ -1323,7 +1328,7 @@ std::ostream& operator<<(std::ostream& os, const CreditCard& credit_card) {
             << " " << credit_card.card_art_url().spec() << " "
             << base::UTF16ToUTF8(credit_card.product_description()) << " "
             << credit_card.product_terms_url().spec() << " "
-            << credit_card.cvc() << " "
+            << credit_card.benefit_source() << " " << credit_card.cvc() << " "
             << base::to_underlying(
                    credit_card.card_info_retrieval_enrollment_state());
 }

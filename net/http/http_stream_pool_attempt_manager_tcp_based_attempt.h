@@ -24,7 +24,7 @@ namespace net {
 
 // Represents a TCP based attempt.
 class HttpStreamPool::AttemptManager::TcpBasedAttempt
-    : public TlsStreamAttempt::SSLConfigProvider {
+    : public TlsStreamAttempt::Delegate {
  public:
   TcpBasedAttempt(AttemptManager* manager,
                   bool using_tls,
@@ -51,14 +51,12 @@ class HttpStreamPool::AttemptManager::TcpBasedAttempt
   bool is_slow() const { return is_slow_; }
   void set_is_slow(bool is_slow) { is_slow_ = is_slow; }
 
-  base::OneShotTimer& slow_timer() { return slow_timer_; }
-
   // Set to true when the attempt is aborted. When true, the attempt will fail
   // but not be considered as an actual failure.
   bool is_aborted() const { return is_aborted_; }
-  void set_is_aborted(bool is_aborted) { is_aborted_ = is_aborted; }
 
-  // TlsStreamAttempt::SSLConfigProvider implementation:
+  // TlsStreamAttempt::Delegate implementation:
+  void OnTcpHandshakeComplete() override;
   int WaitForSSLConfigReady(CompletionOnceCallback callback) override;
   base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError> GetSSLConfig()
       override;
@@ -67,7 +65,9 @@ class HttpStreamPool::AttemptManager::TcpBasedAttempt
     return !ssl_config_waiting_callback_.is_null();
   }
 
-  CompletionOnceCallback TakeSSLConfigWaitingCallback();
+  // Transfers `ssl_config_waiting_callback_` when `this` is waiting for
+  // SSLConfig.
+  std::optional<CompletionOnceCallback> MaybeTakeSSLConfigWaitingCallback();
 
   base::Value::Dict GetInfoAsValue() const;
 
@@ -75,7 +75,6 @@ class HttpStreamPool::AttemptManager::TcpBasedAttempt
   void OnAttemptComplete(int rv);
 
   const raw_ptr<AttemptManager> manager_;
-  const bool using_tls_;
   const perfetto::Track track_;
   const perfetto::Flow flow_;
   std::unique_ptr<StreamAttempt> attempt_;

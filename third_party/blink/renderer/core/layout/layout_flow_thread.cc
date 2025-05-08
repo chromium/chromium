@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/layout/fragmentainer_iterator.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_set.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -130,6 +131,12 @@ bool LayoutFlowThread::MapToVisualRectInAncestorSpaceInternal(
   NOT_DESTROYED();
   // A flow thread should never be an invalidation container.
   DCHECK_NE(ancestor, this);
+
+  if (RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
+    return LayoutBlockFlow::MapToVisualRectInAncestorSpaceInternal(
+        ancestor, transform_state, visual_rect_flags);
+  }
+
   transform_state.Flatten();
   gfx::RectF bounding_box = transform_state.LastPlanarQuad().BoundingBox();
   PhysicalRect rect(LayoutUnit(bounding_box.x()), LayoutUnit(bounding_box.y()),
@@ -152,6 +159,7 @@ void LayoutFlowThread::QuadsInAncestorForDescendant(
     const LayoutBoxModelObject* ancestor,
     MapCoordinatesFlags mode) {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
   PhysicalOffset offset_from_flow_thread;
   for (const LayoutObject* object = &descendant; object != this;) {
     // Based on current intended usage, it should be impossible to end up in a
@@ -188,6 +196,12 @@ void LayoutFlowThread::AddOutlineRects(
     const PhysicalOffset& additional_offset,
     OutlineType include_block_overflows) const {
   NOT_DESTROYED();
+
+  if (RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
+    return LayoutBlockFlow::AddOutlineRects(collector, info, additional_offset,
+                                            include_block_overflows);
+  }
+
   Vector<PhysicalRect> rects_in_flowthread;
   UnionOutlineRectCollector flow_collector;
   LayoutBlockFlow::AddOutlineRects(flow_collector, info, additional_offset,
@@ -245,6 +259,7 @@ void LayoutFlowThread::GenerateColumnSetIntervalTree() {
 PhysicalRect LayoutFlowThread::FragmentsBoundingBox(
     const PhysicalRect& layer_bounding_box) const {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
   DCHECK(!column_sets_invalidated_);
 
   PhysicalRect result;

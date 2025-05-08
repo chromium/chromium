@@ -4,22 +4,6 @@
 
 module blink.mojom;
 
-// Values are persisted to disk.
-// Do not renumber or delete existing values, to avoid data loss.
-// Eventually `kTemporary` will be the only supported quota storage type, but
-// since all enum values may have been persisted to disk, we cannot remove any
-// enum values until all other values have been deprecated.
-enum StorageType {
-  kTemporary = 0,
-  // TODO(https://crbug.com/1175113): Remove this type.
-  kDeprecatedPersistent = 1,
-  // TODO(https://crbug.com/1286964): Deprecate and remove this type.
-  kSyncable = 2,
-  // TODO(https://crbug.com/1095844): Remove this type.
-  kDeprecatedQuotaNotManaged = 3,
-  kUnknown = 4,
-};
-
 // The durability policy to apply to a single StorageBucket. The values are
 // persisted to the quota DB and must not be changed.
 enum BucketDurability {

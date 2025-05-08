@@ -444,6 +444,11 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, MAYBE_CtrlClickLink) {
 #else
             ctrl_key = blink::WebInputEvent::Modifiers::kControlKey;
 #endif
+
+            // Before sending a click, end paint-holding to enable input event
+            // processing.
+            content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(app_contents);
+
             content::SimulateMouseClick(app_contents, ctrl_key,
                                         blink::WebMouseEvent::Button::kLeft);
             url_observer.Wait();

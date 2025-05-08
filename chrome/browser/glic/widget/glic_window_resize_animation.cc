@@ -5,12 +5,21 @@
 #include "chrome/browser/glic/widget/glic_window_resize_animation.h"
 
 #include "base/task/sequenced_task_runner.h"
+#include "build/buildflag.h"
 #include "chrome/browser/glic/widget/glic_view.h"
+#include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_animator.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/background.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/common/chrome_features.h"
+#include "ui/base/win/hwnd_metrics.h"
+#include "ui/views/win/hwnd_util.h"
+#endif
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/accelerated_widget_mac/ca_transaction_observer.h"
@@ -68,7 +77,7 @@ void GlicWindowResizeAnimation::AnimateToState(double state) {
   gfx::Rect bounds_to_animate = gfx::Tween::RectValueBetween(
       gfx::Tween::CalculateValue(gfx::Tween::FAST_OUT_SLOW_IN_3, state),
       initial_bounds_, new_bounds_);
-  views::Widget* glic_widget = window_controller_->GetGlicWidget();
+  GlicWidget* glic_widget = window_controller_->GetGlicWidget();
 
   if (window_controller_->IsAttached()) {
     // If the widget is attached, resize normally.

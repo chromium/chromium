@@ -814,8 +814,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   source_data.destination_set = *DestinationSet::Create(
       {net::SchemefulSite::Deserialize("https://trigger2.example")});
-  data_host_remote->SourceDataAvailable(
-      reporting_origin, std::move(source_data), kViaServiceWorker);
+  data_host_remote->SourceDataAvailable(reporting_origin, source_data,
+                                        kViaServiceWorker);
 
   data_host_remote.reset();
 
@@ -828,8 +828,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   source_data.destination_set = *DestinationSet::Create(
       {net::SchemefulSite::Deserialize("https://trigger3.example")});
-  data_host_remote->SourceDataAvailable(
-      reporting_origin, std::move(source_data), kViaServiceWorker);
+  data_host_remote->SourceDataAvailable(reporting_origin, source_data,
+                                        kViaServiceWorker);
 
   data_host_remote.reset();
 

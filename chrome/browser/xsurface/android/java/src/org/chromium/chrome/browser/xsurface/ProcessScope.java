@@ -29,7 +29,7 @@ public interface ProcessScope {
      * HybridListRenderers and SurfaceRenderers within its UI.
      *
      * @param dependencyProvider Provider for activity-scoped dependencies.
-     **/
+     */
     @Deprecated
     default @Nullable SurfaceScope obtainSurfaceScope(
             SurfaceScopeDependencyProvider dependencyProvider) {
@@ -41,7 +41,7 @@ public interface ProcessScope {
      * HybridListRenderers and SurfaceRenderers within its UI.
      *
      * @param dependencyProvider Provider for activity-scoped dependencies.
-     **/
+     */
     default @Nullable FeedSurfaceScope obtainFeedSurfaceScope(
             FeedSurfaceScopeDependencyProvider dependencyProvider) {
         return null;

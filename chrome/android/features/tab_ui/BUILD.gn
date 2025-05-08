@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
-import("//build/config/locales.gni")
 import("//chrome/android/features/android_library_factory_tmpl.gni")
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
@@ -11,11 +10,6 @@ import("//tools/grit/grit_rule.gni")
 java_strings_grd("java_strings_grd") {
   defines = chrome_grit_defines
   grd_file = "java/strings/android_chrome_tab_ui_strings.grd"
-  outputs =
-      [ "values/android_chrome_tab_ui_strings.xml" ] +
-      process_file_template(
-          android_bundle_locales_as_resources,
-          [ "values-{{source_name_part}}/android_chrome_tab_ui_strings.xml" ])
 }
 
 android_resources("java_resources") {
@@ -27,9 +21,7 @@ android_resources("java_resources") {
     "java/res/anim/iph_touch_point_animation.xml",
     "java/res/anim/iph_touch_point_background_alpha_animation.xml",
     "java/res/anim/iph_touch_point_background_animation.xml",
-    "java/res/color-night/tab_grid_dialog_bg_color.xml",
     "java/res/color-night/tab_hover_card_bg_color.xml",
-    "java/res/color/tab_grid_dialog_bg_color.xml",
     "java/res/color/tab_hover_card_bg_color.xml",
     "java/res/drawable/archived_tab_icon.xml",
     "java/res/drawable/chevron_right.xml",
@@ -38,7 +30,6 @@ android_resources("java_resources") {
     "java/res/drawable/ic_close_tabs_24dp.xml",
     "java/res/drawable/ic_deselect_all_24dp.xml",
     "java/res/drawable/ic_group_add_16dp.xml",
-    "java/res/drawable/ic_open_new_tab_in_group_24dp.xml",
     "java/res/drawable/ic_rating_star_full.xml",
     "java/res/drawable/ic_rating_star_half.xml",
     "java/res/drawable/ic_rating_star_outline.xml",
@@ -60,7 +51,11 @@ android_resources("java_resources") {
     "java/res/drawable/tab_group_color_background.xml",
     "java/res/drawable/tab_group_dialog_color_icon.xml",
     "java/res/drawable/tab_group_favicon_quarter_bg.xml",
+    "java/res/drawable/tab_group_list_bottom_item_background.xml",
     "java/res/drawable/tab_group_list_empty_state_illustration.xml",
+    "java/res/drawable/tab_group_list_normal_item_background.xml",
+    "java/res/drawable/tab_group_list_single_item_background.xml",
+    "java/res/drawable/tab_group_list_top_item_background.xml",
     "java/res/drawable/tab_group_share_notice_bottom_sheet_illustration_bg.xml",
     "java/res/drawable/tab_group_start_icon_bg.xml",
     "java/res/drawable/tab_hover_card_background.xml",
@@ -78,6 +73,7 @@ android_resources("java_resources") {
     "java/res/layout/archived_tabs_dialog.xml",
     "java/res/layout/archived_tabs_message_card_view.xml",
     "java/res/layout/bottom_tab_strip_toolbar.xml",
+    "java/res/layout/color_picker_icon_button_layout.xml",
     "java/res/layout/color_picker_item.xml",
     "java/res/layout/custom_message_card_item.xml",
     "java/res/layout/dynamic_bottom_tab_strip_toolbar.xml",

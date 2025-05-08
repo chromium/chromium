@@ -11,13 +11,23 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
  */
 export class TestBookmarksBrowserProxy extends TestBrowserProxy implements
     BrowserProxy {
+  private canUploadBookmark_ = false;
+
   constructor() {
     super([
       'getIncognitoAvailability',
       'getCanEditBookmarks',
+      'getCanUploadBookmarkToAccountStorage',
       'recordInHistogram',
-      'showBookmarkEditorForCurrentUrl',
+      'onSingleBookmarkUploadClicked',
+      'getBatchUploadPromoInfo',
+      'onBatchUploadPromoClicked',
+      'onBatchUploadPromoDismissed',
     ]);
+  }
+
+  setCanUploadAsAccountBookmark(canUpload: boolean) {
+    this.canUploadBookmark_ = canUpload;
   }
 
   getIncognitoAvailability() {
@@ -30,11 +40,32 @@ export class TestBookmarksBrowserProxy extends TestBrowserProxy implements
     return Promise.resolve(false);
   }
 
+  getCanUploadBookmarkToAccountStorage(bookmarkId: string) {
+    this.methodCalled('getCanUploadBookmarkToAccountStorage', [bookmarkId]);
+    return Promise.resolve(this.canUploadBookmark_);
+  }
+
   recordInHistogram(histogram: string, bucket: number, maxBucket: number) {
     this.methodCalled('recordInHistogram', [histogram, bucket, maxBucket]);
   }
 
-  showBookmarkEditorForCurrentUrl() {
-    this.methodCalled('showBookmarkEditorForCurrentUrl');
+  onSingleBookmarkUploadClicked(bookmarkId: string) {
+    this.methodCalled('onSingleBookmarkUploadClicked', [bookmarkId]);
+  }
+
+  getBatchUploadPromoInfo() {
+    this.methodCalled('getBatchUploadPromoInfo');
+    return Promise.resolve({
+      canShow: false,
+      promoSubtitle: '',
+    });
+  }
+
+  onBatchUploadPromoClicked() {
+    this.methodCalled('onBatchUploadPromoClicked');
+  }
+
+  onBatchUploadPromoDismissed() {
+    this.methodCalled('onBatchUploadPromoDismissed');
   }
 }

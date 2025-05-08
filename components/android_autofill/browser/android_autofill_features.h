@@ -9,9 +9,13 @@
 
 namespace autofill::features {
 
-BASE_DECLARE_FEATURE(kAndroidAutofillBottomSheetWorkaround);
-
 BASE_DECLARE_FEATURE(kAndroidAutofillDeprecateAccessibilityApi);
+
+BASE_DECLARE_FEATURE(kAutofillVirtualViewStructureAndroidInCct);
+
+BASE_DECLARE_FEATURE(kAutofillVirtualViewStructureAndroidPasskeyLongPress);
+
+BASE_DECLARE_FEATURE(kAndroidAutofillLazyFrameworkWrapper);
 
 }  // namespace autofill::features
 

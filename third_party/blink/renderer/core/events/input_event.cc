@@ -108,8 +108,7 @@ bool InputTypeIsCancelable(InputEvent::InputType input_type) {
 
 }  // anonymous namespace
 
-/* static */ InputEvent* InputEvent::Create(v8::Isolate* isolate,
-                                            const AtomicString& type,
+/* static */ InputEvent* InputEvent::Create(const AtomicString& type,
                                             const InputEventInit* initializer,
                                             ExceptionState& exception_state) {
   InputEvent* result;
@@ -121,8 +120,8 @@ bool InputTypeIsCancelable(InputEvent::InputType input_type) {
       return nullptr;
     }
   } else {
-    result = MakeGarbageCollected<InputEvent>(type, initializer,
-                                              IgnoreException(isolate));
+    result =
+        MakeGarbageCollected<InputEvent>(type, initializer, IGNORE_EXCEPTION);
   }
   return result;
 }

@@ -65,7 +65,7 @@ inline constexpr auto kAllowedTypesMap =
         {"chromeos_system_extension", Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION},
     });
 
-// Helper fuction over |kAllowedTypesMap|, returns Manifest::TYPE_UNKNOWN if
+// Helper function over `kAllowedTypesMap`, returns Manifest::TYPE_UNKNOWN if
 // not found.
 Manifest::Type GetManifestType(const std::string& name);
 

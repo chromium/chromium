@@ -9,7 +9,9 @@
 
 #include "base/check.h"
 #include "base/json/json_reader.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "net/base/features.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -112,6 +114,32 @@ TEST_F(ProbabilisticRevealTokenRegistryTest, RegistryTest) {
     ]
   })json"));
   EXPECT_FALSE(registry_.IsRegistered(GURL("https://foo.com")));
+}
+
+TEST_F(ProbabilisticRevealTokenRegistryTest, CustomRegistryTest) {
+  // Set the custom registry feature param.
+  std::map<std::string, std::string> parameters;
+  parameters[net::features::kUseCustomProbabilisticRevealTokenRegistry.name] =
+      "true";
+  parameters[net::features::kCustomProbabilisticRevealTokenRegistry.name] =
+      "test.com,other.com";
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kEnableProbabilisticRevealTokens, std::move(parameters));
+
+  // Set the standard registry.
+  ProbabilisticRevealTokenRegistry registry;
+  registry.UpdateRegistry(CreateRegistryFromJson(R"json({
+    "domains": [
+      "example.com"
+    ]
+  })json"));
+
+  EXPECT_FALSE(registry.IsRegistered(GURL("https://example.com")));
+  EXPECT_TRUE(registry.IsRegistered(GURL("https://test.com")));
+  EXPECT_TRUE(registry.IsRegistered(GURL("https://foo.test.com")));
+  EXPECT_TRUE(registry.IsRegistered(GURL("https://other.com")));
+  EXPECT_FALSE(registry.IsRegistered(GURL("https://foo.com")));
 }
 
 }  // namespace ip_protection

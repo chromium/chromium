@@ -407,3 +407,6 @@
 -MlEmbedderTest.EmbedderRunningStatus
 -MlEmbedderTest.ReturnsEmbeddings
 -MlEmbedderTest.ReturnsExecutionFailure
+
+# TODO(crbug.com/413598265): The test is flaky both on simulator and on device.
+-FeaturedSearchProviderTest.FLAKY_StarterPackExpansionRelevance

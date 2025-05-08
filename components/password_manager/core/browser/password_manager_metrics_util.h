@@ -67,6 +67,8 @@ enum UIDisplayDisposition {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // Metrics: "PasswordManager.UIDismissalReason"
+//
+// LINT.IfChange(UIDismissalReason)
 enum UIDismissalReason {
   // We use this to mean both "Bubble lost focus" and "No interaction with the
   // infobar".
@@ -86,8 +88,10 @@ enum UIDismissalReason {
   CLICKED_MANAGE_PASSWORD = 13,
   CLICKED_GOT_IT = 14,
   CLICKED_ABOUT_PASSWORD_CHANGE = 15,
+  CLICKED_NOT_NOW = 16,
   NUM_UI_RESPONSES,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:PasswordManagerUIDismissalReason)
 
 // Enum representing the different leak detection dialogs shown to the user.
 // Corresponds to LeakDetectionDialogType suffix in histogram_suffixes_list.xml

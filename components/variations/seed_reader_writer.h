@@ -6,6 +6,7 @@
 #define COMPONENTS_VARIATIONS_SEED_READER_WRITER_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
@@ -34,24 +35,30 @@ const char kSeedFilesGroup[] = "SeedFiles_V7";
 // Represents a seed and its storage format where clients using
 // seed-file-based seeds store compressed data and those using
 // local-state-based seeds store compressed, base64 encoded data.
+// It also stores other seed-related info.
 struct StoredSeed {
   enum class StorageFormat { kCompressed, kCompressedAndBase64Encoded };
 
   StorageFormat storage_format;
   std::string_view data;
+  std::string_view signature;
+  int milestone = 0;
 };
 
-// TODO(crbug.com/380465790): Represents the seed and other related info.
-// This info will be stored together in the SeedFile. Once all the seed-related
-// info is stored in the struct, change it to a proto and use it to serialize
-// and deserialize the data.
-struct SeedInfo {
-  std::string data;
+// Groups the data from a seed and other seed-related info that is validated
+// and ready to be stored in a seed file or local state. This struct is passed
+// by value, so it must be copyable and lightweight.
+struct ValidatedSeedInfo {
+  std::string_view compressed_seed_data;
+  std::string_view base64_seed_data;
+  std::string_view signature;
+  int milestone = 0;
 };
 
 struct SeedFieldsPrefs {
   const char* seed;
   const char* signature;
+  const char* milestone;
 };
 
 COMPONENT_EXPORT(VARIATIONS)
@@ -91,14 +98,16 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
 
   ~SeedReaderWriter() override;
 
-  // Schedules a write of `base64_seed_data` to local state. For some clients
-  // (see ShouldUseSeedFile()), also schedules a write of `compressed_seed_data`
-  // to a seed file.
-  void StoreValidatedSeed(std::string_view compressed_seed_data,
-                          std::string_view base64_seed_data);
+  // Schedules a write of `compressed_seed_data` to a seed file for some
+  // clients (see ShouldUseSeedFile()) and schedules a write of
+  // `base64_seed_data` to local state for all other clients. Also stores other
+  // seed-related info.
+  void StoreValidatedSeedInfo(ValidatedSeedInfo seed_info);
 
-  // Clears seed data by overwriting it with an empty string.
-  void ClearSeed();
+  // Clears seed data and other seed-related info by overwriting it with an
+  // empty string.
+  // The following fields are cleared: seed data and signature.
+  void ClearSeedInfo();
 
   // Returns stored seed data.
   StoredSeed GetSeedData() const;
@@ -107,13 +116,28 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   void SetTimerForTesting(base::OneShotTimer* timer_override);
 
  private:
+  // TODO(crbug.com/380465790): Represents the seed and other related info.
+  // This info will be stored together in the SeedFile. Once all the
+  // seed-related info is stored in the struct, change it to a proto and use it
+  // to serialize and deserialize the data.
+  struct SeedInfo {
+    std::string data;
+    std::string signature;
+    int milestone = 0;
+  };
+
   // Returns the serialized data to be written to disk. This is done
   // asynchronously during the write process.
   base::ImportantFileWriter::BackgroundDataProducerCallback
   GetSerializedDataProducerForBackgroundSequence() override;
 
-  // Schedules `seed_data` to be written using `seed_writer_`.
-  void ScheduleSeedFileWrite(std::string_view seed_data);
+  // Schedules `seed_info` to be written using `seed_writer_`. Fields with
+  // zero/empty values will be ignored. If you want to clear the seed file, use
+  // ScheduleSeedFileClear() instead.
+  void ScheduleSeedFileWrite(ValidatedSeedInfo seed_info);
+
+  // Schedules `seed_info` to be cleared using `seed_writer_`.
+  void ScheduleSeedFileClear();
 
   // Schedules the deletion of a seed file.
   void DeleteSeedFile();
@@ -125,15 +149,20 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // in `local state_`, additionally clears it.
   void ReadSeedFile();
 
+  // Schedules a write of `base64_seed_data` to `local_state_`. Fields with
+  // zero/empty values will be ignored. If you want to clear the seed file, use
+  // ScheduleSeedFileClear() instead.
+  void ScheduleLocalStateWrite(ValidatedSeedInfo seed_info);
+
   // Returns true if a seed file should be used.
   bool ShouldUseSeedFile() const;
 
-  // Pref service used to persist seeds.
+  // Pref service used to persist seeds and seed-related info.
   raw_ptr<PrefService> local_state_;
 
   // Prefs used to store the seed and related info in local state.
   // TODO(crbug.com/380465790): Remove once the info is stored in the SeedFile.
-  SeedFieldsPrefs fields_prefs_;
+  const raw_ref<const SeedFieldsPrefs> fields_prefs_;
 
   // Task runner for IO-related operations.
   const scoped_refptr<base::SequencedTaskRunner> file_task_runner_;

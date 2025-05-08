@@ -374,7 +374,7 @@ goog.testing.PerformanceTimer.Task = function(test) {
  * @type {goog.testing.PerformanceTimer.TestFunction}
  * @private
  */
-goog.testing.PerformanceTimer.Task.prototype.setUp_ = goog.nullFunction;
+goog.testing.PerformanceTimer.Task.prototype.setUp_ = function() {};
 
 
 /**
@@ -383,7 +383,7 @@ goog.testing.PerformanceTimer.Task.prototype.setUp_ = goog.nullFunction;
  * @type {goog.testing.PerformanceTimer.TestFunction}
  * @private
  */
-goog.testing.PerformanceTimer.Task.prototype.tearDown_ = goog.nullFunction;
+goog.testing.PerformanceTimer.Task.prototype.tearDown_ = function() {};
 
 
 /**

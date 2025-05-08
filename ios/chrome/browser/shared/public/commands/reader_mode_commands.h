@@ -14,6 +14,9 @@
 // Hides the Reader mode UI.
 - (void)hideReaderMode;
 
+// Shows the Reader mode UI if currently inactive and vice-versa.
+- (void)toggleReaderMode;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_READER_MODE_COMMANDS_H_

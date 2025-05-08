@@ -11,7 +11,7 @@
 
 namespace arc {
 
-constexpr char kArcWindowObserverName[] = "ArcWindowObserver";
+inline constexpr char kArcWindowObserverName[] = "ArcWindowObserver";
 
 // Listens to ARC Window count and blocks Doze Mode when windows are present.
 class ArcWindowObserver : public ash::ThrottleObserver,

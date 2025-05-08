@@ -80,7 +80,7 @@ class TestServiceWorkerContextObserver
   // can be instantiated after the extension has already started.
   void SetRunningId(int64_t version_id) { running_version_id_ = version_id; }
 
-  // Returns the number of completed registrations for |scope|.
+  // Returns the number of completed registrations for `scope`.
   int GetCompletedCount(const GURL& scope) const;
 
  private:
@@ -145,7 +145,7 @@ class UnregisterWorkerObserver : public ProcessManagerObserver {
   void OnStoppedTrackingServiceWorkerInstance(
       const WorkerId& worker_id) override;
 
-  // Waits for ProcessManager::UnregisterServiceWorker for |extension_id_|.
+  // Waits for ProcessManager::UnregisterServiceWorker for `extension_id_`.
   void WaitForUnregister();
 
  private:
@@ -179,6 +179,7 @@ class TestServiceWorkerTaskQueueObserver
       const ExtensionId& extension_id);
   void WaitForOnActivateExtension(const ExtensionId& extension_id);
   bool WaitForRegistrationMismatchMitigation(const ExtensionId& extension_id);
+  void WaitForUntrackServiceWorkerState(const GURL& scope);
 
   std::optional<bool> WillRegisterServiceWorker(
       const ExtensionId& extension_id) const;
@@ -198,6 +199,7 @@ class TestServiceWorkerTaskQueueObserver
                                      bool success) override;
   void RequestedWorkerStart(const ExtensionId& extension_id) override;
   void DidStopServiceWorkerContext(const ExtensionId& extension_id) override;
+  void UntrackServiceWorkerState(const GURL& scope) override;
 
  private:
   std::map<ExtensionId, bool> activated_map_;
@@ -214,7 +216,11 @@ class TestServiceWorkerTaskQueueObserver
 
   std::set<ExtensionId> stopped_set_;
 
+  std::set<GURL> untracked_set_;
+
   base::OnceClosure quit_closure_;
+
+  base::OnceClosure untrack_quit_closure_;
 };
 
 }  // namespace service_worker_test_utils

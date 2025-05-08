@@ -180,17 +180,6 @@ viz::SharedImageFormat GetRGBSharedImageFormat(VideoPixelFormat format) {
 #endif
 }
 
-viz::SharedImageFormat GetSingleChannel8BitFormat(
-    const gpu::Capabilities& caps,
-    const gpu::SharedImageCapabilities& shared_image_caps) {
-  if (caps.texture_rg && !shared_image_caps.disable_r8_shared_images) {
-    return viz::SinglePlaneFormat::kR_8;
-  }
-
-  DCHECK(shared_image_caps.supports_luminance_shared_images);
-  return viz::SinglePlaneFormat::kLUMINANCE_8;
-}
-
 // Returns true if the input VideoFrame format can be stored directly in the
 // provided output shared image format.
 bool HasCompatibleRGBFormat(VideoPixelFormat input_format,
@@ -214,20 +203,24 @@ bool IsFrameFormat32BitRGB(VideoPixelFormat frame_format) {
          frame_format == PIXEL_FORMAT_ABGR || frame_format == PIXEL_FORMAT_ARGB;
 }
 
-bool IsFormat16BitFloat(viz::SharedImageFormat format) {
-  // Assume multiplanar SharedImageFormat with ChannelFormat::k16F is always
-  // used as LUMINANCEF16.
-  CHECK(format.is_multi_plane());
-  return format.channel_format() == viz::SharedImageFormat::ChannelFormat::k16F;
-}
-
 viz::SharedImageFormat::ChannelFormat SupportedMultiPlaneChannelFormat(
-    viz::SharedImageFormat format) {
-  if (format == viz::SinglePlaneFormat::kR_16) {
+    const gpu::Capabilities& caps,
+    const gpu::SharedImageCapabilities& shared_image_caps,
+    int bits_per_channel) {
+  if (bits_per_channel <= 8) {
+    // Must support texture_rg or 8-bits luminance.
+    DCHECK(shared_image_caps.supports_luminance_shared_images ||
+           caps.texture_rg);
+    return viz::SharedImageFormat::ChannelFormat::k8;
+  }
+  // Can support R_16 formats.
+  if (caps.texture_norm16 && shared_image_caps.supports_r16_shared_images) {
     return viz::SharedImageFormat::ChannelFormat::k16;
   }
-  if (format == viz::SinglePlaneFormat::kLUMINANCE_F16 ||
-      format == viz::SinglePlaneFormat::kR_F16) {
+  // Can support R_F16 or LUMINANCE_F16 formats.
+  if (shared_image_caps.is_r16f_supported ||
+      (caps.texture_half_float_linear &&
+       shared_image_caps.supports_luminance_shared_images)) {
     return viz::SharedImageFormat::ChannelFormat::k16F;
   }
   return viz::SharedImageFormat::ChannelFormat::k8;
@@ -753,8 +746,13 @@ void VideoResourceUpdater::CopyHardwareResource(
   auto* ri = RasterInterface();
   // Wait on sync tokens for both source (video frame) and destination (shared
   // image).
-  ri->WaitSyncTokenCHROMIUM(video_frame->acquire_sync_token().GetConstData());
-  ri->WaitSyncTokenCHROMIUM(hardware_resource->sync_token().GetConstData());
+  std::unique_ptr<gpu::RasterScopedAccess> src_ri_access =
+      shared_image->BeginRasterAccess(ri, video_frame->acquire_sync_token(),
+                                      /*readonly=*/true);
+  std::unique_ptr<gpu::RasterScopedAccess> dst_ri_access =
+      hardware_resource->shared_image()->BeginRasterAccess(
+          ri, hardware_resource->sync_token(),
+          /*readonly=*/false);
 
   ri->CopySharedImage(
       shared_image->mailbox(), hardware_resource->shared_image()->mailbox(),
@@ -762,9 +760,10 @@ void VideoResourceUpdater::CopyHardwareResource(
       output_resource_size.width(), output_resource_size.height());
 
   // Wait (if the existing token isn't null) and replace it with a new one.
-  WaitAndReplaceSyncTokenClient client(ri);
+  WaitAndReplaceSyncTokenClient client(ri, std::move(src_ri_access));
   gpu::SyncToken sync_token = video_frame->UpdateReleaseSyncToken(&client);
   hardware_resource->UpdateSyncToken(sync_token);
+  gpu::RasterScopedAccess::EndAccess(std::move(dst_ri_access));
 
   auto transferable_resource = viz::TransferableResource::MakeGpu(
       hardware_resource->shared_image(), GL_TEXTURE_2D,
@@ -851,100 +850,59 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwareFrame(
   return external_resource;
 }
 
-viz::SharedImageFormat VideoResourceUpdater::YuvSharedImageFormat(
-    int bits_per_channel) {
-  DCHECK(context_provider_);
-  const auto& caps = context_provider_->ContextCapabilities();
-  const auto& shared_image_caps =
-      context_provider_->SharedImageInterface()->GetCapabilities();
-  if (caps.disable_one_component_textures) {
-    return PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
-  }
-  if (bits_per_channel <= 8) {
-    DCHECK(shared_image_caps.supports_luminance_shared_images ||
-           caps.texture_rg);
-    return GetSingleChannel8BitFormat(caps, shared_image_caps);
-  }
-  if (caps.texture_norm16 && shared_image_caps.supports_r16_shared_images) {
-    return viz::SinglePlaneFormat::kR_16;
-  }
-  if (shared_image_caps.is_r16f_supported) {
-    return viz::SinglePlaneFormat::kR_F16;
-  }
-  if (caps.texture_half_float_linear &&
-      shared_image_caps.supports_luminance_shared_images) {
-    return viz::SinglePlaneFormat::kLUMINANCE_F16;
-  }
-  return GetSingleChannel8BitFormat(caps, shared_image_caps);
-}
-
 viz::SharedImageFormat VideoResourceUpdater::GetSoftwareOutputFormat(
     VideoPixelFormat input_frame_format,
     int bits_per_channel,
     const gfx::ColorSpace& input_frame_color_space,
     bool& texture_needs_rgb_conversion_out) {
-  viz::SharedImageFormat output_si_format;
-  // TODO(crbug.com/332564976, hitawala): Simplify this format conversion
-  // process.
+  if (software_compositor()) {
+    return viz::SinglePlaneFormat::kBGRA_8888;
+  }
   if (IsFrameFormat32BitRGB(input_frame_format)) {
-    texture_needs_rgb_conversion_out = false;
-    output_si_format = GetRGBSharedImageFormat(input_frame_format);
-  } else if (input_frame_format == PIXEL_FORMAT_Y16) {
+    return GetRGBSharedImageFormat(input_frame_format);
+  }
+
+  if (input_frame_format == PIXEL_FORMAT_Y16) {
     // Unable to display directly as yuv planes so convert it to RGB.
     texture_needs_rgb_conversion_out = true;
-  } else if (!software_compositor()) {
-    // Can be composited directly from yuv planes.
-    output_si_format = YuvSharedImageFormat(bits_per_channel);
+    return PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
+  }
+  const auto& caps = context_provider_->ContextCapabilities();
+  if (caps.disable_one_component_textures) {
+    // If GPU compositing is enabled, we need to convert texture to RGB if one
+    // component textures are disabled.
+    texture_needs_rgb_conversion_out = true;
+    return PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
+  }
 
-    // If GPU compositing is enabled, but the output resource format returned by
-    // the resource provider is viz::SinglePlaneFormat::kRGBA_8888, then a GPU
-    // driver bug workaround requires that YUV frames must be converted to RGB
-    // before texture upload.
-    if (output_si_format == viz::SinglePlaneFormat::kRGBA_8888 ||
-        output_si_format == viz::SinglePlaneFormat::kBGRA_8888) {
+  const auto& shared_image_caps =
+      context_provider_->SharedImageInterface()->GetCapabilities();
+  // Get the multiplanar shared image format for `input_frame_format`.
+  auto yuv_si_format =
+      VideoPixelFormatToMultiPlanarSharedImageFormat(input_frame_format);
+  if (yuv_si_format.plane_config() ==
+      viz::SharedImageFormat::PlaneConfig::kY_UV) {
+    // Only 8-bit formats are supported with UV planes for software decoding.
+    CHECK_EQ(yuv_si_format.channel_format(),
+             viz::SharedImageFormat::ChannelFormat::k8);
+    // Two channel formats are supported only with texture_rg.
+    if (!caps.texture_rg || shared_image_caps.disable_r8_shared_images) {
       texture_needs_rgb_conversion_out = true;
-    }
-
-    // Some YUV resources have different sized planes. If we lack the proper
-    // SharedImageFormat just convert to RGB. We could do something better like
-    // unpacking to I420/I016, but texture_rg and r16 support should be pretty
-    // universal and we expect these frames to be rare.
-    if (input_frame_format == PIXEL_FORMAT_NV12) {
-      if (output_si_format != viz::SinglePlaneFormat::kR_8) {
-        texture_needs_rgb_conversion_out = true;
-      }
-    } else {
-      DCHECK_EQ(VideoFrame::BytesPerElement(input_frame_format, 0),
-                VideoFrame::BytesPerElement(input_frame_format, 1));
-    }
-
-    // If it is multiplanar and does not need RGB conversion, go through
-    // RasterDecoder WritePixelsYUV path.
-    if (!texture_needs_rgb_conversion_out) {
-      // Get the supported channel format for the `output_si_format`'s first
-      // plane.
-      auto channel_format = SupportedMultiPlaneChannelFormat(output_si_format);
-      // Now get the multiplanar shared image format for `input_frame_format`.
-      output_si_format =
-          VideoPixelFormatToMultiPlanarSharedImageFormat(input_frame_format);
-      if (output_si_format.channel_format() != channel_format) {
-        // If the requested channel format is not supported, use the supported
-        // channel format and downsample later if needed.
-        output_si_format = viz::SharedImageFormat::MultiPlane(
-            output_si_format.plane_config(), output_si_format.subsampling(),
-            channel_format);
-      }
+      return PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
     }
   }
 
-  if (software_compositor() || texture_needs_rgb_conversion_out) {
-    output_si_format =
-        software_compositor()
-            ? viz::SinglePlaneFormat::kBGRA_8888
-            : PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
+  // Get the supported channel format for `yuv_si_format`'s first plane.
+  auto channel_format = SupportedMultiPlaneChannelFormat(
+      caps, shared_image_caps, bits_per_channel);
+  if (yuv_si_format.channel_format() != channel_format) {
+    // If the requested channel format is not supported, use the supported
+    // channel format and downsample later if needed.
+    yuv_si_format = viz::SharedImageFormat::MultiPlane(
+        yuv_si_format.plane_config(), yuv_si_format.subsampling(),
+        channel_format);
   }
-
-  return output_si_format;
+  return yuv_si_format;
 }
 
 void VideoResourceUpdater::TransferRGBPixelsToPaintCanvas(
@@ -1015,7 +973,10 @@ bool VideoResourceUpdater::WriteRGBPixelsToTexture(
 
   // Copy pixels into texture.
   auto* ri = RasterInterface();
-  ri->WaitSyncTokenCHROMIUM(hardware_resource->sync_token().GetConstData());
+  std::unique_ptr<gpu::RasterScopedAccess> ri_access =
+      hardware_resource->shared_image()->BeginRasterAccess(
+          ri, hardware_resource->sync_token(),
+          /*readonly=*/false);
 
   auto color_type =
       viz::ToClosestSkColorType(resource_format, /*plane_index=*/0);
@@ -1027,8 +988,8 @@ bool VideoResourceUpdater::WriteRGBPixelsToTexture(
       /*dst_y_offset=*/0, hardware_resource->shared_image()->GetTextureTarget(),
       pixmap);
 
-  gpu::SyncToken ri_sync_token;
-  ri->GenUnverifiedSyncTokenCHROMIUM(ri_sync_token.GetData());
+  gpu::SyncToken ri_sync_token =
+      gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
   hardware_resource->UpdateSyncToken(ri_sync_token);
 
   return true;
@@ -1084,12 +1045,14 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
     const bool needs_bit_upshifting =
         bits_per_channel > 8 && bits_per_channel < resource_bit_depth;
 
+    const bool is_16bit_float = yuv_si_format.channel_format() ==
+                                viz::SharedImageFormat::ChannelFormat::k16F;
+
     // We need to convert the incoming data if we're transferring to half
     // float, if there is need for bit downshift or if the strides need to
     // be reconciled.
-    const bool needs_conversion = IsFormat16BitFloat(yuv_si_format) ||
-                                  needs_bit_downshifting ||
-                                  needs_bit_upshifting;
+    const bool needs_conversion =
+        is_16bit_float || needs_bit_downshifting || needs_bit_upshifting;
     const uint8_t* pixels;
     int pixels_stride_in_bytes;
     if (!needs_conversion) {
@@ -1106,7 +1069,7 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
         }
       }
 
-      if (IsFormat16BitFloat(yuv_si_format)) {
+      if (is_16bit_float) {
         int max_value = 1 << bits_per_channel;
         // Use 1.0/max_value to be consistent with multiplanar shared images
         // which create TextureDrawQuads and don't take in a multiplier, offset.
@@ -1163,13 +1126,17 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
   // TODO(crbug.com/368870063): Implement RGB matrix support in
   // ToSkYUVColorSpace.
   SkYUVColorSpace color_space = kIdentity_SkYUVColorSpace;
-  if (video_frame->ColorSpace().IsValid() &&
-      video_frame->ColorSpace().GetMatrixID() !=
-          gfx::ColorSpace::MatrixID::RGB) {
+  gfx::ColorSpace video_color_space = video_frame->ColorSpace();
+  // There should be no usages of RGB matrix for color space here.
+  CHECK(!video_color_space.IsValid() ||
+            (video_color_space.GetMatrixID() != gfx::ColorSpace::MatrixID::RGB),
+        base::NotFatalUntil::M139);
+  if (video_color_space.IsValid() &&
+      video_color_space.GetMatrixID() != gfx::ColorSpace::MatrixID::RGB) {
     // The ColorSpace is converted to SkYUVColorSpace but not used by
     // WritePixelsYUV.
-    CHECK(video_frame->ColorSpace().ToSkYUVColorSpace(video_frame->BitDepth(),
-                                                      &color_space));
+    CHECK(video_color_space.ToSkYUVColorSpace(video_frame->BitDepth(),
+                                              &color_space));
   }
   auto resource_size = gfx::SizeToSkISize(resource->size());
   SkYUVAInfo::PlaneConfig plane_config = ToSkYUVAPlaneConfig(yuv_si_format);
@@ -1178,12 +1145,14 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
   auto yuv_pixmap = SkYUVAPixmaps::FromExternalPixmaps(info, pixmaps.data());
 
   auto* ri = RasterInterface();
-  ri->WaitSyncTokenCHROMIUM(resource->sync_token().GetConstData());
+  std::unique_ptr<gpu::RasterScopedAccess> ri_access =
+      resource->shared_image()->BeginRasterAccess(ri, resource->sync_token(),
+                                                  /*readonly=*/false);
 
   ri->WritePixelsYUV(resource->shared_image()->mailbox(), yuv_pixmap);
 
-  gpu::SyncToken ri_sync_token;
-  ri->GenUnverifiedSyncTokenCHROMIUM(ri_sync_token.GetData());
+  gpu::SyncToken ri_sync_token =
+      gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
   resource->UpdateSyncToken(ri_sync_token);
 
   return true;

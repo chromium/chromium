@@ -76,6 +76,18 @@ BASE_FEATURE(ContextualSearch::kOmniboxContextualSearchActionsAtTop,
              "OmniboxContextualSearchActionsAtTop",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(ContextualSearch::kOmniboxContextualSearchSingleLensAction,
+             "OmniboxContextualSearchSingleLensAction",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(ContextualSearch::kContextualSearchBoxUsesContextualSearchProvider,
+             "ContextualSearchBoxUsesContextualSearchProvider",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(ContextualSearch::kContextualSearchUseVerticalBar,
+             "ContextualSearchUseVerticalBar",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 ContextualSearch::ContextualSearch() {
   // Meta-feature turns on/off other features, but only if it's overridden by
   // the user. If not then each feature is controlled separately.
@@ -102,6 +114,21 @@ ContextualSearch::ContextualSearch() {
           : 0;
   actions_at_top =
       base::FeatureList::IsEnabled(kOmniboxContextualSearchActionsAtTop);
+  single_lens_action =
+      base::FeatureList::IsEnabled(kOmniboxContextualSearchSingleLensAction);
+  csb_uses_csp = base::FeatureList::IsEnabled(
+      kContextualSearchBoxUsesContextualSearchProvider);
+  use_vertical_bar =
+      base::FeatureList::IsEnabled(kContextualSearchUseVerticalBar);
+}
+
+ContextualSearch::ContextualSearch(const ContextualSearch&) = default;
+ContextualSearch& ContextualSearch::operator=(const ContextualSearch&) =
+    default;
+ContextualSearch::~ContextualSearch() = default;
+
+bool ContextualSearch::IsContextualSearchEnabled() const {
+  return contextual_zps_limit > 0;
 }
 
 DocumentProvider::DocumentProvider() {
@@ -171,7 +198,7 @@ SearchAggregatorProvider::SearchAggregatorProvider() {
           .Get();
   use_discovery_engine_oauth_scope =
       base::FeatureParam<bool>(&kSearchAggregatorProvider,
-                               "use_discovery_engine_oauth_scope", false)
+                               "use_discovery_engine_oauth_scope", true)
           .Get();
   disable_drive = base::FeatureParam<bool>(&kSearchAggregatorProvider,
                                            "disable_drive", true)

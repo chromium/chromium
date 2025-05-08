@@ -46,7 +46,9 @@ ShareServiceImpl::ShareServiceImpl(
           content::WebContents::FromRenderFrameHost(&render_frame_host))
 #endif
 {
-  DCHECK(base::FeatureList::IsEnabled(features::kWebShare));
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_MAC)
+  NOTREACHED();
+#endif
 }
 
 ShareServiceImpl::~ShareServiceImpl() = default;

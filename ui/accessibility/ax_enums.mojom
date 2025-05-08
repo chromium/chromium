@@ -1435,6 +1435,9 @@ enum DetailsFrom {
 
   // The details comes from a commandFor attribute.
   kCommandfor,
+
+  // The details comes from a scroll marker pseudo-element target.
+  kCssScrollMarkerPseudoElement,
 };
 
 // Next value: 4

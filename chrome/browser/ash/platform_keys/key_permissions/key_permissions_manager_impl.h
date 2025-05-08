@@ -62,9 +62,11 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
 
     // If the update operation has been done successfully, a success
     // |update_status| will be returned. An error |update_status| will be
-    // returned otherwise.
+    // returned otherwise. In both cases |keys_updated| will contain how many
+    // keys were successfully updated.
     using UpdateCallback =
-        base::OnceCallback<void(chromeos::platform_keys::Status update_status)>;
+        base::OnceCallback<void(size_t keys_updated,
+                                chromeos::platform_keys::Status update_status)>;
     // Updates the key permissions in chaps according to |mode_|.
     void Update(UpdateCallback callback);
 
@@ -85,6 +87,7 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
     const raw_ptr<KeyPermissionsManagerImpl> key_permissions_manager_;
     base::queue<std::vector<uint8_t>> public_key_spki_der_queue_;
     bool update_started_ = false;
+    size_t keys_updated_ = 0;
     UpdateCallback callback_;
 
     base::WeakPtrFactory<KeyPermissionsInChapsUpdater> weak_ptr_factory_{this};
@@ -160,7 +163,8 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
   void UpdateArcKeyPermissionsInChaps();
 
   void StartOneTimeMigration();
-  void OnOneTimeMigrationDone(chromeos::platform_keys::Status migration_status);
+  void OnOneTimeMigrationDone(size_t keys_updated,
+                              chromeos::platform_keys::Status migration_status);
   bool IsOneTimeMigrationDone() const;
 
   void AllowKeyForCorporateUsage(AllowKeyForUsageCallback callback,

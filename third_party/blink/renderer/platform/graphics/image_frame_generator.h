@@ -108,12 +108,9 @@ class PLATFORM_EXPORT ImageFrameGenerator final
   SkISize GetSupportedDecodeSize(const SkISize& requested_size) const;
 
   bool IsMultiFrame() const { return is_multi_frame_; }
-  bool DecodeFailed() const {
-    base::AutoLock lock(generator_lock_);
-    return decode_failed_;
-  }
+  bool DecodeFailed() const { return decode_failed_.load(); }
 
-  bool HasAlpha(wtf_size_t index);
+  bool HasAlpha(wtf_size_t index) const;
 
   // TODO(crbug.com/943519): Do not call unless the SkROBuffer has all the data.
   bool GetYUVAInfo(
@@ -170,16 +167,18 @@ class PLATFORM_EXPORT ImageFrameGenerator final
   const bool is_multi_frame_;
   const Vector<SkISize> supported_sizes_;
 
-  mutable base::Lock generator_lock_;
-  bool decode_failed_ GUARDED_BY(generator_lock_) = false;
-  bool yuv_decoding_failed_ GUARDED_BY(generator_lock_) = false;
-  wtf_size_t frame_count_ GUARDED_BY(generator_lock_) = 0u;
-  Vector<bool> has_alpha_ GUARDED_BY(generator_lock_);
+  std::atomic<bool> decode_failed_{false};
+  std::atomic<bool> yuv_decoding_failed_{false};
+
+  mutable base::Lock has_alpha_lock_;
+  Vector<bool> has_alpha_ GUARDED_BY(has_alpha_lock_);
 
   struct ClientLock {
     int ref_count = 0;
     base::Lock lock;
   };
+
+  mutable base::Lock generator_lock_;
 
   // Note that it is necessary to use HashMap here to ensure that references
   // to entries in the map, stored in ClientAutoLock, remain valid across

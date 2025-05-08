@@ -23,8 +23,8 @@ class Extension;
 class MenuIconLoader {
  public:
   virtual ~MenuIconLoader() = default;
-  // Starts loading the icon for the context described by |context|,
-  // |extension|, and |extension_key|.
+  // Starts loading the icon for the context described by `context`,
+  // `extension`, and `extension_key`.
   virtual void LoadIcon(content::BrowserContext* context,
                         const Extension* extension,
                         const MenuItem::ExtensionKey& extension_key) = 0;

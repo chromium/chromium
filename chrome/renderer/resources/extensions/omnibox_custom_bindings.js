@@ -7,6 +7,8 @@
 const inServiceWorker = requireNative('utils').isInServiceWorker();
 const SetIconCommon = requireNative('setIcon').SetIconCommon;
 
+var imageUtil = require('imageUtil');
+
 const kMaxActionIconSize = 160;
 
 // Remove invalid characters from |text| so that it is suitable to use
@@ -80,23 +82,8 @@ function parseOmniboxDescription(input) {
   return result;
 }
 
-function smellsLikeImageData(imageData) {
-  // See if this object at least looks like an ImageData element.
-  // Unfortunately, we cannot use instanceof because the ImageData
-  // constructor is not public.
-  //
-  // We do this manually instead of using JSONSchema to avoid having these
-  // properties show up in the doc.
-  return (typeof imageData == 'object') && ('width' in imageData) &&
-      ('height' in imageData) && ('data' in imageData);
-}
 
-// TODO(crbug.com/408069174): Move this to a common file shared with
-// set_icon.js.
-function verifyImageData(imageData) {
-  if (!smellsLikeImageData(imageData)) {
-    throw new Error('The imageData property must contain an ImageData object.');
-  }
+function verifyImageSize(imageData) {
   if (imageData.width > kMaxActionIconSize ||
       imageData.height > kMaxActionIconSize) {
     throw new Error('Icons must be smaller 160 px wide and tall.');
@@ -132,7 +119,8 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
               tooltipText: suggestion.actions[j].tooltipText,
               icon: {}
             };
-            verifyImageData(icon);
+            verifyImageSize(icon);
+            imageUtil.verifyImageData(icon);
             let details = {imageData: {}};
             details.imageData = {__proto__: null};
             details.imageData[icon.width.toString()] = icon;

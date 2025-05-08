@@ -7,11 +7,15 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 
+#include <optional>
+
+#include "base/check_op.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 
 namespace base::subtle {
@@ -33,23 +37,25 @@ using ScopedPathUnlinker =
     ScopedGeneric<const FilePath*, ScopedPathUnlinkerTraits>;
 
 #if !BUILDFLAG(IS_NACL)
-bool CheckFDAccessMode(int fd, int expected_mode) {
+enum class FDAccessModeError {
+  kFcntlFailed,
+  kMismatch,
+};
+
+std::optional<FDAccessModeError> CheckFDAccessMode(int fd, int expected_mode) {
   int fd_status = fcntl(fd, F_GETFL);
   if (fd_status == -1) {
     // TODO(crbug.com/40574272): convert to DLOG when bug fixed.
     PLOG(ERROR) << "fcntl(" << fd << ", F_GETFL) failed";
-    return false;
+    return FDAccessModeError::kFcntlFailed;
   }
 
   int mode = fd_status & O_ACCMODE;
   if (mode != expected_mode) {
-    // TODO(crbug.com/40574272): convert to DLOG when bug fixed.
-    LOG(ERROR) << "Descriptor access mode (" << mode
-               << ") differs from expected (" << expected_mode << ")";
-    return false;
+    return FDAccessModeError::kMismatch;
   }
 
-  return true;
+  return std::nullopt;
 }
 #endif  // !BUILDFLAG(IS_NACL)
 
@@ -68,11 +74,11 @@ ScopedFD PlatformSharedMemoryRegion::ExecutableRegion::CreateFD(size_t size) {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 // static
-PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
-    ScopedFDPair handle,
-    Mode mode,
-    size_t size,
-    const UnguessableToken& guid) {
+expected<PlatformSharedMemoryRegion, PlatformSharedMemoryRegion::TakeError>
+PlatformSharedMemoryRegion::TakeOrFail(ScopedFDPair handle,
+                                       Mode mode,
+                                       size_t size,
+                                       const UnguessableToken& guid) {
   if (!handle.fd.is_valid()) {
     return {};
   }
@@ -85,12 +91,16 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
     return {};
   }
 
-  CHECK(
-      CheckPlatformHandlePermissionsCorrespondToMode(handle.get(), mode, size));
+  expected<void, TakeError> result =
+      CheckPlatformHandlePermissionsCorrespondToMode(handle.get(), mode, size);
+  if (!result.has_value()) {
+    return unexpected(result.error());
+  }
 
   switch (mode) {
     case Mode::kReadOnly:
     case Mode::kUnsafe:
+      // TODO(dcheng): This may not be reachable given the above.
       if (handle.readonly_fd.is_valid()) {
         handle.readonly_fd.reset();
         DLOG(WARNING) << "Readonly handle shouldn't be valid for a "
@@ -98,6 +108,7 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
       }
       break;
     case Mode::kWritable:
+      // TODO(dcheng): This may not be reachable given the above.
       if (!handle.readonly_fd.is_valid()) {
         DLOG(ERROR)
             << "Readonly handle must be valid for writable memory region";
@@ -275,33 +286,49 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
 #endif  // !BUILDFLAG(IS_NACL)
 }
 
-bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
+expected<void, PlatformSharedMemoryRegion::TakeError>
+PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
     PlatformSharedMemoryHandle handle,
     Mode mode,
     size_t size) {
 #if !BUILDFLAG(IS_NACL)
-  if (!CheckFDAccessMode(handle.fd,
-                         mode == Mode::kReadOnly ? O_RDONLY : O_RDWR)) {
-    return false;
+  if (auto result = CheckFDAccessMode(
+          handle.fd, mode == Mode::kReadOnly ? O_RDONLY : O_RDWR);
+      result.has_value()) {
+    switch (*result) {
+      case FDAccessModeError::kFcntlFailed:
+        return unexpected(TakeError::kFcntlFailed);
+      case FDAccessModeError::kMismatch:
+        return unexpected(mode == Mode::kReadOnly
+                              ? TakeError::kExpectedReadOnlyButNot
+                              : TakeError::kExpectedWritableButNot);
+    }
   }
 
   if (mode == Mode::kWritable) {
-    return CheckFDAccessMode(handle.readonly_fd, O_RDONLY);
+    if (auto result = CheckFDAccessMode(handle.readonly_fd, O_RDONLY);
+        result.has_value()) {
+      switch (*result) {
+        case FDAccessModeError::kFcntlFailed:
+          return unexpected(TakeError::kFcntlFailed);
+        case FDAccessModeError::kMismatch:
+          return unexpected(TakeError::kReadOnlyFdNotReadOnly);
+      }
+    }
+    return ok();
   }
 
   // The second descriptor must be invalid in kReadOnly and kUnsafe modes.
   if (handle.readonly_fd != -1) {
-    // TODO(crbug.com/40574272): convert to DLOG when bug fixed.
-    LOG(ERROR) << "The second descriptor must be invalid";
-    return false;
+    return unexpected(TakeError::kUnexpectedReadOnlyFd);
   }
 
-  return true;
+  return ok();
 #else
   // fcntl(_, F_GETFL) is not implemented on NaCl.
   // We also cannot try to mmap() a region as writable and look at the return
   // status because the plugin process crashes if system mmap() fails.
-  return true;
+  return ok();
 #endif  // !BUILDFLAG(IS_NACL)
 }
 

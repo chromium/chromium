@@ -692,6 +692,7 @@ blink_core_sources_css = [
   "resolver/style_resolver_state.h",
   "resolver/style_resolver_stats.cc",
   "resolver/style_resolver_stats.h",
+  "resolver/style_resolver_utils.h",
   "resolver/style_rule_usage_tracker.cc",
   "resolver/style_rule_usage_tracker.h",
   "resolver/transform_builder.cc",

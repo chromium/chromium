@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
@@ -58,9 +59,6 @@ TEST_F(PredictionQualityMetricsTest, SaneMetricsWithCacheMismatch) {
   model_predictions_feature_params["model_active"] = "false";
   scoped_feature_list.InitWithFeaturesAndParameters(
       {
-          {features::kAutofillFixValueSemantics, {}},
-          {features::kAutofillFixInitialValueOfSelect, {}},
-          {features::kAutofillFixCurrentValueInImport, {}},
           // Enable the model, but not as the active heuristic source.
           {features::kAutofillModelPredictions,
            {model_predictions_feature_params}},
@@ -87,17 +85,16 @@ TEST_F(PredictionQualityMetricsTest, SaneMetricsWithCacheMismatch) {
   std::unique_ptr<FormStructure> form_structure =
       std::make_unique<FormStructure>(test::WithoutValues(form));
 
-  for (size_t i = 0; i < form_structure->field_count(); ++i) {
-    AutofillField* field = form_structure->field(i);
-    field->set_heuristic_type(GetActiveHeuristicSource(), heuristic_types[i]);
-    field->set_server_predictions(
-        {test::CreateFieldPrediction(server_types[i])});
+  for (auto [field, heuristic_type, server_type, ml_type] : base::zip(
+           form_structure->fields(), heuristic_types, server_types, ml_types)) {
+    field->set_heuristic_type(GetActiveHeuristicSource(), heuristic_type);
+    field->set_server_predictions({test::CreateFieldPrediction(server_type)});
     // ML predictions can be overridden when regexes predict a type that the ML
     // model does not know - we need to set these so that the ML predction is
     // used.
     field->set_ml_supported_types(kMLSupportedTypesForTesting);
     field->set_heuristic_type(HeuristicSource::kAutofillMachineLearning,
-                              ml_types[i]);
+                              ml_type);
   }
   autofill_manager().AddSeenFormStructure(std::move(form_structure));
 

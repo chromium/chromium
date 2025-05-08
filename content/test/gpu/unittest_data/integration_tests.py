@@ -44,7 +44,7 @@ class _BaseSampleIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def TearDownProcess(cls):
     actual_finder_options = browser_test_context.GetCopy().finder_options
     test_state_json_path = actual_finder_options.test_state_json_path
-    with open(test_state_json_path, 'w') as f:
+    with open(test_state_json_path, 'w', encoding='utf-8') as f:
       json.dump(cls._test_state, f)
     super(_BaseSampleIntegrationTest, cls).TearDownProcess()
 # pylint: enable=abstract-method

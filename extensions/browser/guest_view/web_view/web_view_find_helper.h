@@ -35,10 +35,10 @@ class WebViewFindHelper {
   // Cancels all find requests in progress and calls their callback functions.
   void CancelAllFindSessions();
 
-  // Dispatches the |findupdate| event.
+  // Dispatches the `findupdate` event.
   void DispatchFindUpdateEvent(bool canceled, bool final_update);
 
-  // Ends the find session with id |session_request_id|  and calls the
+  // Ends the find session with id `session_request_id`  and calls the
   // appropriate callbacks.
   void EndFindSession(int session_request_id, bool canceled);
 
@@ -84,7 +84,7 @@ class WebViewFindHelper {
                                                   bool canceled);
   };
 
-  // Stores and processes the results for the |findupdate| event.
+  // Stores and processes the results for the `findupdate` event.
   class FindUpdateEvent {
    public:
     explicit FindUpdateEvent(const std::u16string& search_text);
@@ -119,7 +119,7 @@ class WebViewFindHelper {
     FindInfo(const FindInfo&) = delete;
     FindInfo& operator=(const FindInfo&) = delete;
 
-    // Add another request to |find_next_requests_|.
+    // Add another request to `find_next_requests_`.
     void AddFindNextRequest(const base::WeakPtr<FindInfo>& request) {
       find_next_requests_.push_back(request);
     }
@@ -144,8 +144,8 @@ class WebViewFindHelper {
 
     const std::u16string& search_text() { return search_text_; }
 
-    // Calls the callback function within |find_function_| with the find results
-    // from within |find_results_|.
+    // Calls the callback function within `find_function_` with the find results
+    // from within `find_results_`.
     void SendResponse(bool canceled);
 
    private:
@@ -179,7 +179,7 @@ class WebViewFindHelper {
   // We only need the ids to be unique for a given WebViewGuest.
   int current_find_request_id_;
 
-  // Stores aggregated find results and other info for the |findupdate| event.
+  // Stores aggregated find results and other info for the `findupdate` event.
   std::unique_ptr<FindUpdateEvent> find_update_event_;
 
   // Pointer to the first request of the current find session. find_info_map_

@@ -3,4 +3,5 @@ include_rules = [
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/parcel_tracking",
   "+ios/chrome/browser/content_suggestions/ui_bundled/set_up_list",
+  "+ios/chrome/browser/ntp/ui_bundled"
 ]

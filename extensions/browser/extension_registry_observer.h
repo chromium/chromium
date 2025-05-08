@@ -68,10 +68,10 @@ class ExtensionRegistryObserver {
                                    const Extension* extension,
                                    UnloadedExtensionReason reason) {}
 
-  // Called when |extension| is about to be installed. |is_update| is true if
-  // the installation is the result of it updating, in which case |old_name| is
+  // Called when `extension` is about to be installed. `is_update` is true if
+  // the installation is the result of it updating, in which case `old_name` is
   // the name of the extension's previous version.
-  // The ExtensionRegistry will not be tracking |extension| at the time this
+  // The ExtensionRegistry will not be tracking `extension` at the time this
   // event is fired, but will be immediately afterwards (note: not necessarily
   // enabled; it might be installed in the disabled or even blocklisted sets,
   // for example).
@@ -79,7 +79,7 @@ class ExtensionRegistryObserver {
   // (OnExtensionLoaded).
   //
   // TODO(tmdiep): We should stash the state of the previous extension version
-  // somewhere and have observers retrieve it. |is_update|, and |old_name| can
+  // somewhere and have observers retrieve it. `is_update`, and `old_name` can
   // be removed when this is done.
   virtual void OnExtensionWillBeInstalled(
       content::BrowserContext* browser_context,
@@ -87,7 +87,7 @@ class ExtensionRegistryObserver {
       bool is_update,
       const std::string& old_name) {}
 
-  // Called when the installation of |extension| is complete. At this point the
+  // Called when the installation of `extension` is complete. At this point the
   // extension is tracked in one of the ExtensionRegistry sets, but is not
   // necessarily enabled.
   virtual void OnExtensionInstalled(content::BrowserContext* browser_context,

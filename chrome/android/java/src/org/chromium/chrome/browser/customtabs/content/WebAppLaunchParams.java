@@ -17,7 +17,7 @@ public class WebAppLaunchParams {
      * Whether this launch triggered a navigation that needs to be awaited before sending the launch
      * params to the document.
      */
-    public final boolean startNewNavigation;
+    public final boolean newNavigationStarted;
 
     /** The app being launched, used for scope validation. */
     public final String packageName;
@@ -35,8 +35,11 @@ public class WebAppLaunchParams {
     public final String[] fileUris;
 
     public WebAppLaunchParams(
-            boolean startNewNavigation, String targetUrl, String packageName, List<Uri> fileUris) {
-        this.startNewNavigation = startNewNavigation;
+            boolean newNavigationStarted,
+            String targetUrl,
+            String packageName,
+            List<Uri> fileUris) {
+        this.newNavigationStarted = newNavigationStarted;
         this.targetUrl = targetUrl;
         this.packageName = packageName;
         this.fileUris = getFileUrisArray(fileUris);

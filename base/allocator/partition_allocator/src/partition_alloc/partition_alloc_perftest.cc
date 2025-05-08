@@ -115,10 +115,10 @@ class PartitionAllocator : public Allocator {
 
 class PartitionAllocatorWithThreadCache : public Allocator {
  public:
-  explicit PartitionAllocatorWithThreadCache(bool use_alternate_bucket_dist)
+  explicit PartitionAllocatorWithThreadCache(bool use_denser_bucket_dist)
       : scope_(allocator_.root()) {
     ThreadCacheRegistry::Instance().PurgeAll();
-    if (!use_alternate_bucket_dist) {
+    if (use_denser_bucket_dist) {
       allocator_.root()->SwitchToDenserBucketDistribution();
     } else {
       allocator_.root()->ResetBucketDistributionForTesting();
@@ -363,7 +363,7 @@ float DirectMapped(Allocator* allocator) {
 }
 
 std::unique_ptr<Allocator> CreateAllocator(AllocatorType type,
-                                           bool use_alternate_bucket_dist) {
+                                           bool use_denser_bucket_dist) {
   switch (type) {
     case AllocatorType::kSystem:
       return std::make_unique<SystemAllocator>();
@@ -371,7 +371,7 @@ std::unique_ptr<Allocator> CreateAllocator(AllocatorType type,
       return std::make_unique<PartitionAllocator>();
     case AllocatorType::kPartitionAllocWithThreadCache:
       return std::make_unique<PartitionAllocatorWithThreadCache>(
-          use_alternate_bucket_dist);
+          use_denser_bucket_dist);
 #if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
     case AllocatorType::kPartitionAllocWithAllocationStackTraceRecorder:
       return std::make_unique<
@@ -390,12 +390,12 @@ void LogResults(int thread_count,
 }
 
 void RunTest(int thread_count,
-             bool use_alternate_bucket_dist,
+             bool use_denser_bucket_dist,
              AllocatorType alloc_type,
              float (*test_fn)(Allocator*),
              float (*noisy_neighbor_fn)(Allocator*),
              const char* story_base_name) {
-  auto alloc = CreateAllocator(alloc_type, use_alternate_bucket_dist);
+  auto alloc = CreateAllocator(alloc_type, use_denser_bucket_dist);
 
   std::unique_ptr<TestLoopThread> noisy_neighbor_thread = nullptr;
   if (noisy_neighbor_fn) {

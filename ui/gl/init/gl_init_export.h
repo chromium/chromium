@@ -15,11 +15,7 @@
 #endif  // defined(GL_INIT_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(GL_INIT_IMPLEMENTATION)
 #define GL_INIT_EXPORT __attribute__((visibility("default")))
-#else
-#define GL_INIT_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

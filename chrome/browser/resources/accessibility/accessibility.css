@@ -73,6 +73,10 @@ label {
   padding: 0;
 }
 
+label.disabled {
+  color: gray;
+}
+
 input[type='checkbox'] {
   margin-inline-end: 6px;
 }

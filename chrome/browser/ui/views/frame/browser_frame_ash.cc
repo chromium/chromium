@@ -78,6 +78,7 @@ class BrowserWindowStateDelegate : public ash::WindowStateDelegate {
 BrowserFrameAsh::BrowserFrameAsh(BrowserFrame* browser_frame,
                                  BrowserView* browser_view)
     : views::NativeWidgetAura(browser_frame), browser_view_(browser_view) {
+  widget_observation_.Observe(browser_frame);
   GetNativeWindow()->SetName("BrowserFrameAsh");
   Browser* browser = browser_view->browser();
 
@@ -179,9 +180,9 @@ bool BrowserFrameAsh::HandleKeyboardEvent(
   return false;
 }
 
-views::Widget::InitParams BrowserFrameAsh::GetWidgetParams() {
-  views::Widget::InitParams params(
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+views::Widget::InitParams BrowserFrameAsh::GetWidgetParams(
+    views::Widget::InitParams::Ownership ownership) {
+  views::Widget::InitParams params(ownership);
   params.native_widget = this;
   params.context = ash::Shell::GetPrimaryRootWindow();
 
@@ -237,6 +238,7 @@ int BrowserFrameAsh::GetMinimizeButtonOffset() const {
 }
 
 bool BrowserFrameAsh::ShouldRestorePreviousBrowserWidgetState() const {
+  CHECK(browser_view_);
   // If there is no window info from full restore, maybe use the session
   // restore.
   const int32_t restore_id =
@@ -253,12 +255,18 @@ bool BrowserFrameAsh::ShouldUseInitialVisibleOnAllWorkspaces() const {
   return !created_from_drag_;
 }
 
+void BrowserFrameAsh::OnWidgetDestroyed(views::Widget* widget) {
+  browser_view_ = nullptr;
+  widget_observation_.Reset();
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserFrameAsh, private:
 
 void BrowserFrameAsh::SetWindowAutoManaged() {
   // For browser window in Chrome OS, we should only enable the auto window
   // management logic for tabbed browser.
+  CHECK(browser_view_);
   if (browser_view_->browser()->is_type_normal()) {
     GetNativeWindow()->SetProperty(ash::kWindowPositionManagedTypeKey, true);
   }

@@ -19,7 +19,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
-import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.ui.util.ColorUtils;
 
 /** ColorProvider implementation used for normal profiles. */
@@ -78,7 +78,8 @@ public final class CustomTabColorProviderImpl implements ColorProvider {
             CustomTabColorSchemeParams schemeParams,
             Context context,
             boolean hasCustomToolbarColor) {
-        int defaultColor = ChromeColors.getDefaultThemeColor(context, /* isIncognito= */ false);
+        int defaultColor =
+                SurfaceColorUpdateUtils.getDefaultThemeColor(context, /* isIncognito= */ false);
         int color = hasCustomToolbarColor ? schemeParams.toolbarColor : defaultColor;
         return ColorUtils.getOpaqueColor(color);
     }

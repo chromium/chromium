@@ -8,17 +8,20 @@ import android.graphics.Rect;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 
 /**
  * An interface for outside packages to interact with the top toolbar. Other than for testing
- * purposes this interface should be used rather than {@link TopToolbarCoordinator} or
- * {@link ToolbarLayout} and extending classes.
+ * purposes this interface should be used rather than {@link TopToolbarCoordinator} or {@link
+ * ToolbarLayout} and extending classes.
  */
+@NullMarked
 public interface Toolbar {
     /**
-     * Calculates the {@link Rect} that represents the content area of the location bar.  This
-     * rect will be relative to the toolbar.
+     * Calculates the {@link Rect} that represents the content area of the location bar. This rect
+     * will be relative to the toolbar.
+     *
      * @param outRect The Rect that represents the content area of the location bar.
      */
     void getLocationBarContentRect(Rect outRect);
@@ -86,8 +89,9 @@ public interface Toolbar {
 
     /**
      * Updates the visibility of the toolbar hairline.
+     *
      * @param isVisible whether or not the hairline should be visible.
-     * */
+     */
     void setBrowsingModeHairlineVisibility(boolean isVisible);
 
     /**

@@ -47,7 +47,8 @@ class FakeOverlayBrowserAgent
  private:
   friend class BrowserUserData<FakeOverlayBrowserAgent>;
 
-  FakeOverlayBrowserAgent(Browser* browser) : OverlayBrowserAgentBase(browser) {
+  FakeOverlayBrowserAgent(Browser* browser)
+      : OverlayBrowserAgentBase(browser), BrowserUserData(browser) {
     // Add a fake callback installer for kModality that supports requests
     // configured with SupportedConfig and dispatched responses with
     // DispatchInfo.

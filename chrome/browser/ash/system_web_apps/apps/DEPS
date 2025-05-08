@@ -53,6 +53,7 @@ include_rules = [
   "+chrome/browser/error_reporting",
   "+chrome/browser/extensions/component_loader.h",
   "+chrome/browser/extensions/extension_tab_util.h",
+  "+chrome/browser/feedback/public/feedback_source.h",
   "+chrome/browser/feedback/show_feedback_page.h",
   "+chrome/browser/lifetime",
   "+chrome/browser/manta/manta_service_factory.h",

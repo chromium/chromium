@@ -101,7 +101,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
           auction_network_events_handler,
       TrustedSignalsKVv2Manager* trusted_signals_kvv2_manager,
-      const GURL& decision_logic_url,
+      mojom::InProgressAuctionDownloadPtr decision_logic_load,
       const std::optional<GURL>& trusted_scoring_signals_url,
       const url::Origin& top_window_origin,
       mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
@@ -662,6 +662,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
   raw_ptr<TrustedSignalsKVv2Manager> trusted_signals_kvv2_manager_;
 
   const GURL script_source_url_;
+  mojom::InProgressAuctionDownloadPtr script_source_load_;
   mojom::TrustedSignalsPublicKeyPtr public_key_;
   std::optional<bool> send_creative_scanning_metadata_;
 

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/run_loop.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -90,10 +89,6 @@ void SiteDataCacheFacade::OnHistoryDeletions(
     const history::DeletionInfo& deletion_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (deletion_info.IsAllHistory()) {
-    if (!browser_context_->IsOffTheRecord()) {
-      base::UmaHistogramBoolean(
-          "PerformanceManager.SiteDB.WriteScheduled.ClearAllSiteData", true);
-    }
     ClearAllSiteData();
     return;
   }
@@ -113,12 +108,6 @@ void SiteDataCacheFacade::OnHistoryDeletions(
 
   if (origins_to_remove.empty()) {
     return;
-  }
-
-  if (!browser_context_->IsOffTheRecord()) {
-    base::UmaHistogramBoolean(
-        "PerformanceManager.SiteDB.WriteScheduled.ClearSiteDataForOrigins",
-        true);
   }
 
   auto* cache =

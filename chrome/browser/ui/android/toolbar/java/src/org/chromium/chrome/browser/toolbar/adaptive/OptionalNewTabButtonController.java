@@ -10,11 +10,12 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -35,6 +36,7 @@ import org.chromium.ui.base.DeviceFormFactor;
  * Optional toolbar button which opens a new tab. May be used by {@link
  * AdaptiveToolbarButtonController}.
  */
+@NullMarked
 public class OptionalNewTabButtonController extends BaseButtonDataProvider
         implements ConfigurationChangedObserver {
     /**
@@ -54,8 +56,7 @@ public class OptionalNewTabButtonController extends BaseButtonDataProvider
         }
 
         /** Returns a {@link TabCreatorManager} used for creating the new tab. */
-        @Nullable
-        TabCreatorManager getTabCreatorManager() {
+        @Nullable TabCreatorManager getTabCreatorManager() {
             return mTabCreatorManagerSupplier.get();
         }
 
@@ -68,8 +69,7 @@ public class OptionalNewTabButtonController extends BaseButtonDataProvider
          *
          * <p>TODO(crbug.com/40753461): Make IncognitoStateProvider available in RootUiCooridnator.
          */
-        @Nullable
-        Supplier<Tab> getActiveTabSupplier() {
+        @Nullable Supplier<Tab> getActiveTabSupplier() {
             return mActiveTabSupplier;
         }
     }
@@ -154,7 +154,8 @@ public class OptionalNewTabButtonController extends BaseButtonDataProvider
     }
 
     @Override
-    protected boolean shouldShowButton(Tab tab) {
+    protected boolean shouldShowButton(@Nullable Tab tab) {
+        if (tab == null) return false;
         if (!super.shouldShowButton(tab) || mIsTablet) return false;
 
         if (UrlUtilities.isNtpUrl(tab.getUrl())) return false;

@@ -85,6 +85,8 @@ class AndroidStreamReaderURLLoader : public network::mojom::URLLoader {
     bool allow_cors_to_same_scheme = false;
   };
 
+  // Delegate that ensures that the provided `value` is set as a Set-Cookie
+  // response to the given `request`.
   using SetCookieHeader = base::RepeatingCallback<void(
       const network::ResourceRequest& request,
       std::string_view value,

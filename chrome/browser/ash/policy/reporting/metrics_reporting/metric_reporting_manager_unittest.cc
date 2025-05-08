@@ -661,13 +661,6 @@ INSTANTIATE_TEST_SUITE_P(
           /*has_init_delay=*/false,
           /*expected_count_before_login=*/0,
           /*expected_count_after_login=*/1},
-         {"FatalCrashEvents_Unaffiliated_FeatureUnchanged",
-          /*enabled_features=*/{},
-          /*disabled_features=*/{},
-          /*is_affiliated=*/false, fatal_crash_event_settings,
-          /*has_init_delay=*/false,
-          /*expected_count_before_login=*/1,
-          /*expected_count_after_login=*/1},
          {"FatalCrashEvents_Unaffiliated_FeatureEnabled",
           /*enabled_features=*/{kEnableFatalCrashEventsObserver},
           /*disabled_features=*/{},
@@ -675,13 +668,6 @@ INSTANTIATE_TEST_SUITE_P(
           /*has_init_delay=*/false,
           /*expected_count_before_login=*/2,
           /*expected_count_after_login=*/2},
-         {"FatalCrashEvents_Default_FeatureUnchanged",
-          /*enabled_features=*/{},
-          /*disabled_features=*/{},
-          /*is_affiliated=*/true, fatal_crash_event_settings,
-          /*has_init_delay=*/false,
-          /*expected_count_before_login=*/1,
-          /*expected_count_after_login=*/1},
          {"FatalCrashEvents_Default_FeatureEnabled",
           /*enabled_features=*/{kEnableFatalCrashEventsObserver},
           /*disabled_features=*/{},
@@ -694,15 +680,15 @@ INSTANTIATE_TEST_SUITE_P(
           /*disabled_features=*/{},
           /*is_affiliated=*/false, chrome_fatal_crash_event_settings,
           /*has_init_delay=*/false,
-          /*expected_count_before_login=*/1,
-          /*expected_count_after_login=*/1},
+          /*expected_count_before_login=*/2,
+          /*expected_count_after_login=*/2},
          {"ChromeFatalCrashEvents_Default_FeatureEnabled",
           /*enabled_features=*/{kEnableChromeFatalCrashEventsObserver},
           /*disabled_features=*/{},
           /*is_affiliated=*/true, chrome_fatal_crash_event_settings,
           /*has_init_delay=*/false,
-          /*expected_count_before_login=*/1,
-          /*expected_count_after_login=*/1}}),
+          /*expected_count_before_login=*/2,
+          /*expected_count_after_login=*/2}}),
     [](const testing::TestParamInfo<MetricReportingManagerInfoTest::ParamType>&
            info) { return info.param.test_name; });
 
@@ -788,7 +774,6 @@ TEST_F(MetricReportingManagerTelemetryTest, OneShotCollectorBootPerformance) {
                                  _, ::ash::kReportDeviceBootMode, true,
                                  metrics::kInitialCollectionDelay))
       .WillByDefault([&]() {
-        LOG(ERROR) << " lbaraz: CALLED ";
         return std::make_unique<FakeCollector>(&collector_count);
       });
 

@@ -152,6 +152,14 @@ void SaveUpdateBubbleController::OnNeverForThisSiteClicked() {
   }
 }
 
+void SaveUpdateBubbleController::OnNotNowClicked() {
+  CHECK_EQ(password_manager::ui::PENDING_PASSWORD_STATE, GetState());
+  SetDismissalReason(metrics_util::CLICKED_NOT_NOW);
+  if (delegate_) {
+    delegate_->OnNotNowClicked();
+  }
+}
+
 bool SaveUpdateBubbleController::IsCurrentStateUpdate() const {
   CHECK(GetState() == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
         GetState() == password_manager::ui::PENDING_PASSWORD_STATE);

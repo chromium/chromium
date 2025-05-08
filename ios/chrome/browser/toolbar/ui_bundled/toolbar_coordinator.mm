@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/shared/public/commands/guided_tour_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
@@ -41,7 +42,8 @@
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 
-@interface ToolbarCoordinator () <PrimaryToolbarViewControllerDelegate,
+@interface ToolbarCoordinator () <GuidedTourCommands,
+                                  PrimaryToolbarViewControllerDelegate,
                                   ToolbarCommands,
                                   ToolbarMediatorDelegate> {
   raw_ptr<PrerenderService> _prerenderService;
@@ -120,6 +122,12 @@
   [browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(FakeboxFocuser)];
+
+  if (IsBestOfAppGuidedTourEnabled()) {
+    [self.browser->GetCommandDispatcher()
+        startDispatchingToTarget:self
+                     forProtocol:@protocol(GuidedTourCommands)];
+  }
 
   segmentation_platform::DeviceSwitcherResultDispatcher* deviceSwitcherResult =
       nullptr;
@@ -538,6 +546,20 @@
 /// Resets location bar after a side swipe snapshot.
 - (void)resetLocationBarAfterSideSwipeSnapshot {
   [self.locationBarCoordinator.locationBarViewController.view setHidden:NO];
+}
+
+#pragma mark - GuidedTourCommands
+
+- (void)highlightViewInStep:(GuidedTourStep)step {
+  for (id<GuidedTourCommands> coordinator in self.coordinators) {
+    [coordinator highlightViewInStep:step];
+  }
+}
+
+- (void)stepCompleted:(GuidedTourStep)step {
+  for (id<GuidedTourCommands> coordinator in self.coordinators) {
+    [coordinator stepCompleted:step];
+  }
 }
 
 #pragma mark - ToolbarCommands

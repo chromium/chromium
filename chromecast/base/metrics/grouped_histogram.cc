@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/base/metrics/grouped_histogram.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <string_view>
 
 #include "base/check_op.h"
@@ -64,37 +60,15 @@ struct HistogramArgs {
 //
 // When adding more Histograms to this list, find the source of the
 // Histogram and look for the construction arguments it uses to add it in.
-const HistogramArgs kHistogramsToGroup[] = {
-  {
-    "DNS.TotalTime",
-    1,
-    1000 * 60 * 60,
-    100,
-  },
-  {
-    "Net.DNS_Resolution_And_TCP_Connection_Latency2",
-    1,
-    1000 * 60 * 10,
-    100,
-  },
-  {
-    "Net.SSL_Connection_Latency2",
-    1,
-    1000 * 60,
-    100,
-  },
-  {
-    "Net.TCP_Connection_Latency",
-    1,
-    1000 * 60 * 10,
-    100,
-  },
-  {
-    "Net.HttpJob.TotalTime",
-    1,
-    1000 * 10,
-    50,
-  },
+const std::array kHistogramsToGroup = {
+    HistogramArgs("DNS.TotalTime", 1, 1000 * 60 * 60, 100),
+    HistogramArgs("Net.DNS_Resolution_And_TCP_Connection_Latency2",
+                  1,
+                  1000 * 60 * 10,
+                  100),
+    HistogramArgs("Net.SSL_Connection_Latency2", 1, 1000 * 60, 100),
+    HistogramArgs("Net.TCP_Connection_Latency", 1, 1000 * 60 * 10, 100),
+    HistogramArgs("Net.HttpJob.TotalTime", 1, 1000 * 10, 50),
 };
 
 // This class is used to override a Histogram to generate per-app metrics.
@@ -181,11 +155,10 @@ void PreregisterHistogram(base::DurableStringView durable_name,
 } // namespace
 
 void PreregisterAllGroupedHistograms() {
-  for (size_t i = 0; i < std::size(kHistogramsToGroup); ++i) {
-    PreregisterHistogram(
-        kHistogramsToGroup[i].durable_name, kHistogramsToGroup[i].minimum,
-        kHistogramsToGroup[i].maximum, kHistogramsToGroup[i].bucket_count,
-        base::HistogramBase::kUmaTargetedHistogramFlag);
+  for (const auto& histogram : kHistogramsToGroup) {
+    PreregisterHistogram(histogram.durable_name, histogram.minimum,
+                         histogram.maximum, histogram.bucket_count,
+                         base::HistogramBase::kUmaTargetedHistogramFlag);
   }
 }
 

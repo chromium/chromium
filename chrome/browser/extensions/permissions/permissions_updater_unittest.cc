@@ -970,7 +970,7 @@ TEST_F(PermissionsUpdaterTestWithEnhancedHostControls,
 
   // Note that the PermissionsManger requires the extension to be in the
   // ExtensionRegistry, so add it through the ExtensionRegistrar.
-  registrar()->AddExtension(extension.get());
+  registrar()->AddExtension(extension);
 
   const GURL first_url("http://first.example");
   const GURL second_url("http://second.example");

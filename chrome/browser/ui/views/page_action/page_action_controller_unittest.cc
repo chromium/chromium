@@ -9,10 +9,13 @@
 #include <string>
 
 #include "base/callback_list.h"
+#include "base/metrics/histogram_base.h"
 #include "base/scoped_observation.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/tabs/test/mock_tab_interface.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
+#include "chrome/browser/ui/views/page_action/page_action_enums.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
 #include "chrome/browser/ui/views/page_action/test_support/fake_tab_interface.h"
@@ -384,6 +387,44 @@ TEST_F(PageActionControllerTest, ClearOverrideText) {
 
   // We should revert to the ActionItem text.
   EXPECT_EQ(kText, observer.text());
+}
+
+TEST_F(PageActionControllerTest, NotifyActionClickedLogsHistogram) {
+  base::HistogramTester histogram_tester;
+
+  controller()->Initialize(*tab_interface(), {kFirstActionItemId},
+                           properties_provider_);
+
+  const std::string general_histogram = "PageActionController.Icon.CTR2";
+  const std::string specific_histogram = base::StrCat(
+      {"PageActionController.",
+       properties_provider_.GetProperties(kFirstActionItemId).histogram_name,
+       ".Icon.CTR2"});
+
+  histogram_tester.ExpectTotalCount(general_histogram, 0);
+  histogram_tester.ExpectTotalCount(specific_histogram, 0);
+
+  controller()
+      ->GetClickCallback(kFirstActionItemId)
+      .Run(PageActionTrigger::kMouse);
+
+  histogram_tester.ExpectTotalCount(general_histogram, 1);
+  histogram_tester.ExpectUniqueSample(general_histogram,
+                                      PageActionCTREvent::kClicked, 1);
+  histogram_tester.ExpectTotalCount(specific_histogram, 1);
+  histogram_tester.ExpectUniqueSample(specific_histogram,
+                                      PageActionCTREvent::kClicked, 1);
+
+  controller()
+      ->GetClickCallback(kFirstActionItemId)
+      .Run(PageActionTrigger::kKeyboard);
+
+  histogram_tester.ExpectTotalCount(general_histogram, 2);
+  histogram_tester.ExpectBucketCount(general_histogram,
+                                     PageActionCTREvent::kClicked, 2);
+  histogram_tester.ExpectTotalCount(specific_histogram, 2);
+  histogram_tester.ExpectBucketCount(specific_histogram,
+                                     PageActionCTREvent::kClicked, 2);
 }
 
 class PageActionControllerMockModelTest : public ::testing::Test {

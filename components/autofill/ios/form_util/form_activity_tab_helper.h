@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_IOS_FORM_UTIL_FORM_ACTIVITY_TAB_HELPER_H_
 #define COMPONENTS_AUTOFILL_IOS_FORM_UTIL_FORM_ACTIVITY_TAB_HELPER_H_
 
-#include "base/observer_list.h"
-#include "base/values.h"
-#include "ios/web/public/web_state_observer.h"
+#import "base/observer_list.h"
+#import "base/values.h"
+#import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
 namespace web {

@@ -41,6 +41,7 @@ namespace content {
 class AuctionMetricsRecorder;
 class AuctionSharedStorageHost;
 class AuctionNetworkEventsProxy;
+class GroupByOriginKeyMapper;
 class RenderFrameHostImpl;
 class SiteInstance;
 class SubresourceUrlAuthorizations;
@@ -221,6 +222,10 @@ class CONTENT_EXPORT AuctionWorkletManager {
     // Must only be called after the worklet available callback has been called.
     const auction_worklet::mojom::TrustedSignalsPublicKey*
     GetTrustedSignalsPublicKey() const;
+
+    // Returns a helper for assigning group-by-origin grouping IDs for the given
+    // worklet.
+    GroupByOriginKeyMapper& GetGroupByOriginKeyMapper();
 
     const SubresourceUrlAuthorizations&
     GetSubresourceUrlAuthorizationsForTesting();

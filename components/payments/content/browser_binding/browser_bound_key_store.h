@@ -8,6 +8,8 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "device/fido/public_key_credential_params.h"
 
 namespace payments {
@@ -17,17 +19,16 @@ class BrowserBoundKeyStore;
 
 // Get a platform specific instance of the BrowserBoundKeyStore. This function
 // has per-platform implementations.
-std::unique_ptr<BrowserBoundKeyStore> GetBrowserBoundKeyStoreInstance();
+scoped_refptr<BrowserBoundKeyStore> GetBrowserBoundKeyStoreInstance();
 
 // An interface for creating storing and retrieving browser bound keys.
-class BrowserBoundKeyStore {
+class BrowserBoundKeyStore : public base::RefCounted<BrowserBoundKeyStore> {
  public:
   using CredentialInfoList =
       std::vector<device::PublicKeyCredentialParams::CredentialInfo>;
   BrowserBoundKeyStore() = default;
   BrowserBoundKeyStore(const BrowserBoundKeyStore&) = delete;
   BrowserBoundKeyStore& operator=(const BrowserBoundKeyStore&) = delete;
-  virtual ~BrowserBoundKeyStore() = default;
 
   // Get (or create if not present) a browser bound key for the given
   // credential_id.
@@ -37,6 +38,17 @@ class BrowserBoundKeyStore {
   GetOrCreateBrowserBoundKeyForCredentialId(
       const std::vector<uint8_t>& credential_id,
       const CredentialInfoList& allowed_credentials) = 0;
+
+  // Deletes the browser bound key, given its identifier.
+  // `bbk_id` is the identifier of the BrowserBoundKey. Use `std::move()` when
+  // appropriate to avoid copying the `bbk_id` vector.
+  virtual void DeleteBrowserBoundKey(std::vector<uint8_t> bbk_id) = 0;
+
+ protected:
+  virtual ~BrowserBoundKeyStore() = default;
+
+ private:
+  friend base::RefCounted<BrowserBoundKeyStore>;
 };
 
 }  // namespace payments

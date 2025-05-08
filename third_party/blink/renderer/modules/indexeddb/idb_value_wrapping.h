@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -47,11 +48,10 @@ class SerializedScriptValue;
 //    once.
 //
 // Example usage:
-//     auto wrapper = new IDBValueWrapper();
+//     IDBValueWrapper wrapper;
 //     wrapper.Clone(...);  // Structured clone used to extract keys.
 //     wrapper.DoneCloning();
-//     wrapper.TakeWireBytes();
-//     wrapper.TakeBlobInfo();
+//     std::unique_ptr<IDBValue> value = std::move(wrapper).Build();
 //
 // V8 values are first serialized via SerializedScriptValue (SSV), which is
 // essentially a byte array plus an array of attached Blobs. The SSV output's
@@ -116,34 +116,12 @@ class MODULES_EXPORT IDBValueWrapper {
   // is called, Clone() cannot be called anymore.
   void DoneCloning();
 
-  // Obtains the byte array for the serialized value.
+  // Transfers ownership of the serialized byte array, blob infos, and FSA
+  // tokens to the returned `IDBValue`.
   //
   // This method must be called at most once, and must be called after
   // WrapIfBiggerThan().
-  Vector<char> TakeWireBytes();
-
-  // Obtains WebBlobInfos for the serialized value's Blob array.
-  //
-  // This method must be called at most once, and must be called after
-  // DoneCloning().
-  inline Vector<WebBlobInfo> TakeBlobInfo() {
-#if DCHECK_IS_ON()
-    DCHECK(done_cloning_) << __func__ << " called before DoneCloning()";
-    DCHECK(owns_blob_info_) << __func__ << " called twice";
-    owns_blob_info_ = false;
-#endif  // DCHECK_IS_ON()
-    return std::move(blob_info_);
-  }
-
-  Vector<mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken>>
-  TakeFileSystemAccessTransferTokens() {
-#if DCHECK_IS_ON()
-    DCHECK(done_cloning_) << __func__ << " called before DoneCloning()";
-    DCHECK(owns_file_system_handles_) << __func__ << " called twice";
-    owns_file_system_handles_ = false;
-#endif  // DCHECK_IS_ON()
-    return std::move(serialized_value_->FileSystemAccessTokens());
-  }
+  std::unique_ptr<IDBValue> Build() &&;
 
   size_t DataLengthBeforeWrapInBytes() { return original_data_length_; }
 
@@ -198,9 +176,7 @@ class MODULES_EXPORT IDBValueWrapper {
   // Accounting for lifecycle stages.
   bool had_exception_ = false;
   bool done_cloning_ = false;
-  bool owns_blob_info_ = true;
   bool owns_wire_bytes_ = true;
-  bool owns_file_system_handles_ = true;
 #endif  // DCHECK_IS_ON()
 };
 
@@ -232,7 +208,7 @@ class MODULES_EXPORT IDBValueUnwrapper {
   // Decompresses the value in `buffer` and stores in one of the two provided
   // buffers (exactly one must be provided). Returns true on success.
   static bool Decompress(
-      const Vector<char>& buffer,
+      base::span<const uint8_t> buffer,
       Vector<char>* out_buffer,
       SerializedScriptValue::DataBufferPtr* out_buffer_in_place);
 
@@ -246,10 +222,7 @@ class MODULES_EXPORT IDBValueUnwrapper {
   // Returns the size of the Blob obtained by the last Unwrap() call.
   //
   // Should only be called after a successful result from Unwrap().
-  inline unsigned WrapperBlobSize() const {
-    DCHECK(end_);
-    return blob_size_;
-  }
+  inline unsigned WrapperBlobSize() const { return blob_size_; }
 
   // Returns a handle to the Blob obtained by the last Unwrap() call.
   //
@@ -267,10 +240,7 @@ class MODULES_EXPORT IDBValueUnwrapper {
   bool Reset();
 
   // Deserialization cursor in the `data_` of the IDBValue being unwrapped.
-  const uint8_t* current_;
-
-  // Smallest invalid position_ value.
-  const uint8_t* end_;
+  base::span<const uint8_t> parse_span_;
 
   // The size of the Blob holding the data for the last unwrapped IDBValue.
   unsigned blob_size_;

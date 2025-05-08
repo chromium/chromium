@@ -21,8 +21,9 @@ AudioDucker::AudioDucker(content::Page& page)
 #if BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(media::kAudioDuckingWin)) {
     // `base::Unretained()` is safe here since we own `windows_ducker_`.
-    windows_ducker_ = std::make_unique<AudioDuckerWin>(base::BindRepeating(
-        &AudioDucker::ShouldDuckProcess, base::Unretained(this)));
+    windows_ducker_ =
+        std::make_unique<media::AudioDuckerWin>(base::BindRepeating(
+            &AudioDucker::ShouldDuckProcess, base::Unretained(this)));
   }
 #endif  // BUILDFLAG(IS_WIN)
 }

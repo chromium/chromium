@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -271,7 +272,31 @@ void MaybeRegisterChromeFeaturePromos(
       FeaturePromoSpecification::CreateForCustomAction(
           feature_engagement::kIPHAutofillAiOptInFeature,
           autofill::PopupViewViews::kAutofillAiOptInIphElementId,
-          IDS_AUTOFILL_AI_OPT_IN_IPH_BODY, IDS_AUTOFILL_AI_OPT_IN_IPH_SEE_HOW,
+          IDS_AUTOFILL_AI_OPT_IN_IPH_BODY,
+          [&]() {
+            int index =
+                feature_engagement::kAutofillIphCTAVariationsStringValue.Get();
+            if (index < 0 ||
+                index > base::to_underlying(
+                            autofill::features::
+                                AutofillIphCTAVariationsStringVarations::
+                                    kMaxValue)) {
+              return IDS_AUTOFILL_AI_OPT_IN_IPH_SEE_HOW;
+            }
+            switch (static_cast<autofill::features::
+                                    AutofillIphCTAVariationsStringVarations>(
+                index)) {
+              case autofill::features::AutofillIphCTAVariationsStringVarations::
+                  kSeeHow:
+                return IDS_AUTOFILL_AI_OPT_IN_IPH_SEE_HOW;
+              case autofill::features::AutofillIphCTAVariationsStringVarations::
+                  kTryIt:
+                return IDS_AUTOFILL_AI_OPT_IN_IPH_TRY_IT;
+              case autofill::features::AutofillIphCTAVariationsStringVarations::
+                  kTurnOn:
+                return IDS_AUTOFILL_AI_OPT_IN_IPH_TURN_ON;
+            }
+          }(),
           base::BindRepeating(
               [](ui::ElementContext ctx,
                  user_education::FeaturePromoHandle promo_handle) {
@@ -637,13 +662,25 @@ void MaybeRegisterChromeFeaturePromos(
 #else
           kToolbarAvatarButtonElementId,
 #endif
-          IDS_PASSWORDS_SAVE_PRIMING_PROMO_BODY,
+          IDS_PASSWORDS_SAVE_PRIMING_PROMO_BODY_TEMPLATE,
           IDS_PASSWORDS_SAVE_PRIMING_PROMO_SCREENREADER,
           FeaturePromoSpecification::AcceleratorInfo())
           .SetMetadata(
               137, "dfried@chromium.org",
               "Triggered when the user navigates a page with an eligible login "
               "form, and they have no saved passwords.")));
+
+  // kIPHPasswordsSavePrimingPromo:
+  registry.RegisterFeature(
+      std::move(FeaturePromoSpecification::CreateForToastPromo(
+                    feature_engagement::kIPHPasswordsSaveRecoveryPromoFeature,
+                    kPasswordsOmniboxKeyIconElementId,
+                    IDS_PASSWORDS_SAVE_RECOVERY_PROMO_BODY,
+                    IDS_PASSWORDS_SAVE_RECOVERY_PROMO_SCREENREADER,
+                    FeaturePromoSpecification::AcceleratorInfo())
+                    .SetMetadata(137, "dfried@chromium.org",
+                                 "Triggered when the user logs into a page "
+                                 "they have blocklisted")));
 
   // kIPHPasswordsManagementBubbleAfterSaveFeature:
   registry.RegisterFeature(std::move(

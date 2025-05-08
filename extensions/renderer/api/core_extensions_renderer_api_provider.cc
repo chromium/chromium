@@ -16,6 +16,7 @@
 #include "extensions/renderer/api/messaging/messaging_bindings.h"
 #include "extensions/renderer/api/runtime_hooks_delegate.h"
 #include "extensions/renderer/api/web_request_hooks.h"
+#include "extensions/renderer/api/web_request_natives.h"
 #include "extensions/renderer/api_activity_logger.h"
 #include "extensions/renderer/api_definitions_natives.h"
 #include "extensions/renderer/bindings/api_bindings_system.h"
@@ -119,6 +120,8 @@ void CoreExtensionsRendererAPIProvider::RegisterNativeHandlers(
       "process", std::make_unique<ProcessInfoNativeHandler>(context));
   module_system->RegisterNativeHandler(
       "runtime", std::make_unique<RuntimeCustomBindings>(context));
+  module_system->RegisterNativeHandler(
+      "web_request_natives", std::make_unique<WebRequestNatives>(context));
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   module_system->RegisterNativeHandler(

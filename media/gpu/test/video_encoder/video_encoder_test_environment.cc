@@ -289,7 +289,8 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
   combined_enabled_features.push_back(media::kAcceleratedVideoEncodeLinux);
 #endif
 
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+// TODO(crbug.com/414430336): Consider restricting to IS_CHROMEOS.
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   combined_enabled_features.push_back(media::kChromeOSHWVBREncoding);
 #endif
 

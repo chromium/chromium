@@ -60,9 +60,11 @@
 #include "components/trusted_vault/command_line_switches.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/standalone_trusted_vault_client.h"
+#include "components/trusted_vault/standalone_trusted_vault_server_constants.h"
 #include "components/trusted_vault/test/fake_security_domains_server.h"
 #include "components/trusted_vault/trusted_vault_client.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
+#include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "components/trusted_vault/trusted_vault_service.h"
 #include "components/variations/synthetic_trial_registry.h"
@@ -2117,8 +2119,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
   EXPECT_FALSE(GetSecurityDomainsServer()->ReceivedInvalidRequest());
 
   histogram_tester.ExpectUniqueSample(
-      "TrustedVault.DownloadKeysStatus.ChromeSync",
-      /*sample=*/trusted_vault::TrustedVaultDownloadKeysStatus::kSuccess,
+      "TrustedVault.RecoverKeysOutcome.ChromeSync",
+      /*sample=*/trusted_vault::TrustedVaultRecoverKeysOutcomeForUMA::kSuccess,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.DownloadKeysStatus.PhysicalDevice.ChromeSync",
+      /*sample=*/trusted_vault::TrustedVaultDownloadKeysStatusForUMA::kSuccess,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "TrustedVault.SecurityDomainServiceURLFetchResponse.DownloadKeys",

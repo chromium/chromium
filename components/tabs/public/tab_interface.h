@@ -59,6 +59,8 @@ class TabInterface : public SupportsHandles<TabInterface> {
   // This method should only be called on instances of WebContents that are
   // known to be tabs. Calling this on a non-tab will crash.
   static TabInterface* GetFromContents(content::WebContents* web_contents);
+  static const TabInterface* GetFromContents(
+      const content::WebContents* web_contents);
 
   // Code that references a WebContents should already know whether the
   // WebContents is a tab, and thus should use GetFromContents(). For historical
@@ -189,6 +191,7 @@ class TabInterface : public SupportsHandles<TabInterface> {
   // TabFeatures or BrowserWindowFeatures, you can safely assume that this is
   // always non-nullptr.
   virtual BrowserWindowInterface* GetBrowserWindowInterface() = 0;
+  virtual const BrowserWindowInterface* GetBrowserWindowInterface() const = 0;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Returns the feature controllers scoped to this tab.

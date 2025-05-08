@@ -30,6 +30,7 @@ import psutil  # pylint: disable=import-error
 import test_env
 
 DEFAULT_XVFB_WHD = '1280x800x24'
+DEFAULT_MUTTER_DISPLAY = '1920x1200'
 
 # pylint: disable=useless-object-inheritance
 
@@ -180,6 +181,7 @@ def run_executable(cmd,
     cmd.remove('--use-weston')
 
   use_mutter = False
+  mutter_display = DEFAULT_MUTTER_DISPLAY
   if '--use-mutter' in cmd:
     if use_xvfb or use_xorg or use_weston:
       print('Unable to use mutter with xvfb or Xorg or weston.\n',
@@ -187,6 +189,12 @@ def run_executable(cmd,
       return 1
     use_mutter = True
     cmd.remove('--use-mutter')
+    for arg in cmd:
+      if arg.startswith('--mutter-display='):
+        mutter_display = arg.split('=')[1]
+        cmd.remove(arg)
+        break
+
 
   if sys.platform.startswith('linux') and (use_xvfb or use_xorg):
     return _run_with_x11(cmd, env, stdoutfile, use_openbox, use_xcompmgr,
@@ -195,7 +203,7 @@ def run_executable(cmd,
     return _run_with_weston(cmd, env, stdoutfile, cwd)
 
   if use_mutter:
-    return _run_with_mutter(cmd, env, stdoutfile, cwd)
+    return _run_with_mutter(cmd, env, stdoutfile, cwd, mutter_display)
 
   return test_env.run_executable(cmd, env, stdoutfile, cwd)
 
@@ -613,7 +621,7 @@ def _weston_config_file_path():
   return os.path.join(tempfile.gettempdir(), '.xvfb.py-weston.ini')
 
 
-def _run_with_mutter(cmd, env, stdoutfile, cwd):
+def _run_with_mutter(cmd, env, stdoutfile, cwd, mutter_display):
   with dbus_session(env):
     mutter_proc = None
 
@@ -639,12 +647,10 @@ def _run_with_mutter(cmd, env, stdoutfile, cwd):
 
       # Use headless wayland backend with a virtual monitor of appropriate size.
       mutter_cmd = [
-          mutter_executable, '--headless', '--virtual-monitor=1920x1200', '--'
+          mutter_executable, '--headless',
+          f'--virtual-monitor={mutter_display}', '--'
       ]
-
-      # AppArmor is enabled in Ubuntu 24 where mutter tests run on CI bots. So
-      # disable sandbox.
-      cmd = mutter_cmd + cmd + ['--no-sandbox']
+      cmd = mutter_cmd + cmd
 
       if '--mutter-debug-logging' in cmd:
         cmd.remove('--mutter-debug-logging')
@@ -750,7 +756,8 @@ def main():
            '\t --no-xvfb\t\tTurns off all X11 backings (Xvfb and Xorg).\n'
            '\t --use-xvfb\t\tForces legacy Xvfb backing instead of Xorg.\n'
            '\t --use-weston\t\tEnable Weston Wayland server.\n'
-           '\t --use-mutter\t\tEnable Mutter Wayland server.')
+           '\t --use-mutter\t\tEnable Mutter Wayland server.\n'
+           '\t --mutter-display\tSpecify Mutter Display Resolution as WxH.')
   # TODO(crbug.com/326283384): Argparse-ify this.
   if len(sys.argv) < 2:
     print(usage + '\n', file=sys.stderr)

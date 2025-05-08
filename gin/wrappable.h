@@ -109,9 +109,8 @@ class Wrappable : public WrappableBase {
 
 // This converter handles any subclass of Wrappable.
 template <typename T>
-struct Converter<T*,
-                 typename std::enable_if<
-                     std::is_convertible<T*, WrappableBase*>::value>::type> {
+  requires(std::is_convertible_v<T*, WrappableBase*>)
+struct Converter<T*> {
   static v8::MaybeLocal<v8::Value> ToV8(v8::Isolate* isolate, T* val) {
     if (val == nullptr)
       return v8::Null(isolate);

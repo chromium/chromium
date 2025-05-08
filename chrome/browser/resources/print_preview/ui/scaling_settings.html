@@ -7,18 +7,22 @@ import {ScalingType} from '../data/scaling.js';
     <select class="md-select" aria-labelledby="scaling-label"
         ?disabled="${this.dropdownDisabled_}" .value="${this.selectedValue}"
         @change="${this.onSelectChange}">
-      <option value="${ScalingType.DEFAULT}">
+      <option value="${ScalingType.DEFAULT}"
+          ?selected="${this.isSelected_(ScalingType.DEFAULT)}">
         $i18n{optionDefaultScaling}
       </option>
       <option value="${ScalingType.FIT_TO_PAGE}" ?hidden="${!this.isPdf}"
-          ?disabled="${!this.isPdf}">
+          ?disabled="${!this.isPdf}"
+          ?selected="${this.isSelected_(ScalingType.FIT_TO_PAGE)}">
         $i18n{optionFitToPage}
       </option>
       <option value="${ScalingType.FIT_TO_PAPER}" ?hidden="${!this.isPdf}"
-          ?disabled="${!this.isPdf}">
+          ?disabled="${!this.isPdf}"
+          ?selected="${this.isSelected_(ScalingType.FIT_TO_PAPER)}">
         $i18n{optionFitToPaper}
       </option>
-      <option value="${ScalingType.CUSTOM}">
+      <option value="${ScalingType.CUSTOM}"
+          ?selected="${this.isSelected_(ScalingType.CUSTOM)}">
         $i18n{optionCustomScaling}
       </option>
     </select>

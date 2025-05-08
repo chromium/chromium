@@ -18,7 +18,9 @@
 #include "chromeos/ash/components/emoji/tenor_types.mojom.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
+namespace endpoint_fetcher {
 class EndpointFetcher;
+}
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -62,7 +64,8 @@ class GifTenorApiFetcher {
 
   // Fetch tenor API Search endpoint. Returns the `EndpointFetcher` used for the
   // request, which will cancel the network request once it is deleted.
-  static std::unique_ptr<EndpointFetcher> FetchGifSearchCancellable(
+  static std::unique_ptr<endpoint_fetcher::EndpointFetcher>
+  FetchGifSearchCancellable(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::string_view query,
       const std::optional<std::string>& pos,

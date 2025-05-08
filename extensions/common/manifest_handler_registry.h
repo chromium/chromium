@@ -21,7 +21,7 @@ class ManifestHandlerRegistry {
   static ManifestHandlerRegistry* Get();
 
   // Registers a ManifestHandler, associating it with its keys. If there is
-  // already a handler registered for any key |handler| manages, this method
+  // already a handler registered for any key `handler` manages, this method
   // will DCHECK.
   void RegisterHandler(std::unique_ptr<ManifestHandler> handler);
 
@@ -56,7 +56,7 @@ class ManifestHandlerRegistry {
   static void ResetForTesting();
 
   // Overrides the current global ManifestHandlerRegistry with
-  // |registry|, returning the current one.
+  // `registry`, returning the current one.
   static ManifestHandlerRegistry* SetForTesting(
       ManifestHandlerRegistry* new_registry);
 

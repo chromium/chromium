@@ -35,6 +35,29 @@
 #define XML_HAS_ATTRIBUTE(x) 0
 #endif
 
+#if __STDC_VERSION__ >= 199901L
+  #define XML_INLINE inline
+#elif defined(_MSC_VER)
+  #if _MSC_VER >= 1900
+    #define XML_INLINE inline
+  #else
+    #define XML_INLINE _inline
+  #endif
+#else
+  #define XML_INLINE
+#endif
+
+#if __STDC_VERSION__ >= 199901L || (defined(_MSC_VER) && _MSC_VER >= 1900)
+  #include <stdint.h>
+  #define XML_INTPTR_T intptr_t
+#else
+  #include <stddef.h>
+  #define XML_INTPTR_T ptrdiff_t
+#endif
+
+#define XML_PTR_TO_INT(p) ((XML_INTPTR_T) (p))
+#define XML_INT_TO_PTR(i) ((void *) (XML_INTPTR_T) (i))
+
 #if !defined(_WIN32) && \
     !defined(__CYGWIN__) && \
     (defined(__clang__) || \

@@ -89,6 +89,7 @@ _CONFIG = [
             'base::GetSystemMemoryInfo',
             'base::HashingLRUCache',
             'base::HashInts',
+            'base::HashMetricName',
             'base::HeapArray',
             'base::Hertz',
             'base::HexStringToUInt64',
@@ -650,6 +651,7 @@ _CONFIG = [
             'cc::kManipulationInfoScrollbar',
             'cc::kManipulationInfoTouch',
             'cc::kManipulationInfoWheel',
+            'cc::kMaxOverlapBetweenPages',
             'cc::kMinFractionToStepWhenPaging',
             'cc::kPixelsPerLineStep',
             'cc::MainThreadScrollingReason',
@@ -856,6 +858,7 @@ _CONFIG = [
             'ui::AXTreeUpdate',
             'ui::kAXModeBasic',
             'ui::kAXModeComplete',
+            'ui::kAXModeInspector',
             'ui::kFirstGeneratedRendererNodeID',
             'ui::kInvalidAXNodeID',
             'ui::kLastGeneratedRendererNodeID',
@@ -1354,6 +1357,14 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/public/platform/web_policy_container.h',
+        ],
+        'allowed': [
+            'network::IntegrityPolicy',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/public/platform/web_audio_device.h',
             'third_party/blink/public/web/web_local_frame_client.h',
             'third_party/blink/renderer/modules/audio_output_devices/html_media_element_audio_output_device.cc',
@@ -1557,6 +1568,7 @@ _CONFIG = [
             'gpu::Mailbox',
             'gpu::MailboxHolder',
             'gpu::raster::RasterInterface',
+            'gpu::RasterScopedAccess',
             'gpu::SHARED_IMAGE_USAGE_.+',
             'gpu::SharedImageInterface',
             'gpu::SharedImageTexture',

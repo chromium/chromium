@@ -24,8 +24,10 @@ enum class SidePanelResultStatus {
   // The error page was shown due to the initial full image query failing due to
   // error.
   kErrorPageShownStartQueryError = 3,
+  // The error page was shown because page was protected.
+  kErrorPageShownProtected = 4,
 
-  kMaxValue = kErrorPageShownStartQueryError
+  kMaxValue = kErrorPageShownProtected
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlaySidePanelResultStatus)
 }  // namespace lens

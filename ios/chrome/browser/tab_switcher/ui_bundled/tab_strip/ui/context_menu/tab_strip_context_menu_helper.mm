@@ -128,8 +128,7 @@ UIContextMenuConfiguration* CreateUIContextMenuConfiguration(
     int webStateIndex = GetWebStateIndex(
         _webStateList.get(),
         WebStateSearchCriteria{.identifier = tabSwitcherItem.identifier});
-    CHECK(_webStateList->ContainsIndex(webStateIndex),
-          base::NotFatalUntil::M128);
+    CHECK(_webStateList->ContainsIndex(webStateIndex));
     const TabGroup* currentGroup =
         _webStateList->GetGroupOfWebStateAt(webStateIndex);
     auto addTabToGroupBlock = ^(const TabGroup* group) {

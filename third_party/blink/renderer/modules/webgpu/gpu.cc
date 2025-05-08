@@ -390,7 +390,7 @@ void GPU::RequestAdapterImpl(
 #endif
 
   if (options->featureLevel() == "compatibility" &&
-      !RuntimeEnabledFeatures::WebGPUExperimentalFeaturesEnabled()) {
+      !RuntimeEnabledFeatures::WebGPUCompatibilityModeEnabled()) {
     AddConsoleWarning(
         execution_context,
         "Beware! featureLevel was set to \"compatibility\", but this request "

@@ -358,6 +358,7 @@ source_set("browser") {
     "//services/network/public/mojom:mojom",
     "//services/network/public/mojom:url_loader_base",
     "//services/proxy_resolver:lib",
+    "//storage/browser",
     "//third_party/anonymous_tokens:anonymous_tokens_cc_proto",
     "//third_party/blink/public/common",
     "//third_party/blink/public/common:preloading_headers",

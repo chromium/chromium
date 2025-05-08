@@ -16,6 +16,11 @@ BASE_DECLARE_FEATURE(kAllowClientCertificateReportingForUsers);
 BASE_DECLARE_FEATURE(kProfileSignalsReportingEnabled);
 BASE_DECLARE_FEATURE(kBrowserSignalsReportingEnabled);
 
+// Signals reporting related feature parameters.
+extern const base::FeatureParam<bool> kTriggerOnCookieChange;
+extern const base::FeatureParam<base::TimeDelta>
+    kProfileSignalsReportingInterval;
+
 // Returns true if additional device signals reporting for profile-level Chrome
 // reports has been enabled.
 bool IsProfileSignalsReportingEnabled();

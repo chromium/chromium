@@ -86,22 +86,6 @@ std::ostream& operator<<(std::ostream& stream, AXPlatformNode& node) {
 }
 
 // static
-void AXPlatformNode::NotifyAddAXModeFlags(AXMode mode_flags) {
-  if (!allow_ax_mode_changes_) {
-    return;
-  }
-
-  auto& ax_platform = AXPlatform::GetInstance();
-  const AXMode old_ax_mode = ax_platform.GetMode();
-  const AXMode new_ax_mode = old_ax_mode | mode_flags;
-  if (new_ax_mode == old_ax_mode) {
-    return;  // No change.
-  }
-
-  ax_platform.SetMode(new_ax_mode);
-}
-
-// static
 void AXPlatformNode::SetPopupFocusOverride(
     gfx::NativeViewAccessible popup_focus_override) {
   GetPopupFocusOverrideValue() = popup_focus_override;

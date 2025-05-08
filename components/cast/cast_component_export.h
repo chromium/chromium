@@ -5,10 +5,9 @@
 #ifndef COMPONENTS_CAST_CAST_COMPONENT_EXPORT_H_
 #define COMPONENTS_CAST_CAST_COMPONENT_EXPORT_H_
 
-#if defined(COMPONENT_BUILD) && defined(CAST_COMPONENT_IMPLEMENTATION)
+#if defined(COMPONENT_BUILD)
 #define CAST_COMPONENT_EXPORT __attribute__((visibility("default")))
-#else  // !defined(COMPONENT_BUILD) ||
-       // !defined(CAST_COMPONENT_EXPORT)
+#else  // !defined(COMPONENT_BUILD)
 #define CAST_COMPONENT_EXPORT
 #endif
 

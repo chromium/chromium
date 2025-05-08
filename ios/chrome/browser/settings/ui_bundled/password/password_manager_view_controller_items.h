@@ -34,9 +34,9 @@ typedef NS_ENUM(NSInteger, FaviconType) {
 
 @property(nonatomic, assign) BOOL showLocalOnlyIcon;
 
-@property(nonatomic, strong, readonly) NSString* title;
+@property(nonatomic, copy, readonly) NSString* title;
 
-@property(nonatomic, strong, readonly) NSString* detailText;
+@property(nonatomic, copy, readonly) NSString* detailText;
 
 @end
 
@@ -49,7 +49,7 @@ typedef NS_ENUM(NSInteger, FaviconType) {
 
 @property(nonatomic, assign) password_manager::CredentialUIEntry credential;
 
-@property(nonatomic, strong, readonly) NSString* title;
+@property(nonatomic, copy, readonly) NSString* title;
 
 @end
 

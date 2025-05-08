@@ -20,5 +20,5 @@ enum SpeechRecognitionErrorCode {
   kBadGrammar,
   kLanguageNotSupported,
   kNoMatch,
-  [MinVersion=1] kRecognitionContextNotSupported,
+  [MinVersion=1] kPhrasesNotSupported,
 };

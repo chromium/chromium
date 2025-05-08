@@ -230,6 +230,9 @@ class COMPONENT_EXPORT(GEOMETRY) Rect {
   // Returns the center of this rectangle.
   Point CenterPoint() const;
 
+  // Becomes a rectangle that has the same center point but with a |size|.
+  void ToCenteredSize(const Size& size);
+
   // Becomes a rectangle that has the same center point but with a size capped
   // at given |size|.
   void ClampToCenteredSize(const Size& size);

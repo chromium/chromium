@@ -1,0 +1,10 @@
+{
+  "name": "theme with an image that has no extension",
+  "manifest_version": 3,
+  "version": "1",
+  "theme": {
+    "images": {
+      "theme_frame": "files/file_name_without_extension"
+    }
+  }
+}

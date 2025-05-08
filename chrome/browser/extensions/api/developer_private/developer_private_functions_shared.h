@@ -5,8 +5,13 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_DEVELOPER_PRIVATE_FUNCTIONS_SHARED_H_
 #define CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_DEVELOPER_PRIVATE_FUNCTIONS_SHARED_H_
 
+#include <memory>
+#include <optional>
+
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
 #include "chrome/common/extensions/api/developer_private.h"
+#include "chrome/common/extensions/webstore_install_result.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/extension.h"
 #include "ui/base/clipboard/file_info.h"
@@ -74,11 +79,11 @@ class DeveloperPrivateAPIFunction : public ExtensionFunction {
 
   ~DeveloperPrivateAPIFunction() override;
 
-  // Returns the extension with the given |id| from the registry, including
+  // Returns the extension with the given `id` from the registry, including
   // all possible extensions (enabled, disabled, terminated, etc).
   const Extension* GetExtensionById(const ExtensionId& id);
 
-  // Returns the extension with the given |id| from the registry, only checking
+  // Returns the extension with the given `id` from the registry, only checking
   // enabled extensions.
   const Extension* GetEnabledExtensionById(const ExtensionId& id);
 };
@@ -480,6 +485,21 @@ class DeveloperPrivateOpenDevToolsFunction
  protected:
   ~DeveloperPrivateOpenDevToolsFunction() override;
   ResponseAction Run() override;
+};
+
+class DeveloperPrivateRepairExtensionFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.repairExtension",
+                             DEVELOPERPRIVATE_REPAIREXTENSION)
+
+ protected:
+  ~DeveloperPrivateRepairExtensionFunction() override;
+  ResponseAction Run() override;
+
+  void OnReinstallComplete(bool success,
+                           const std::string& error,
+                           webstore_install::Result result);
 };
 
 }  // namespace extensions::api

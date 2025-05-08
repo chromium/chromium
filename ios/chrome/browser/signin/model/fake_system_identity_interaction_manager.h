@@ -43,7 +43,7 @@ class FakeSystemIdentityManager;
 
 // The user email passed on the last call to
 // `startAuthActivityWithViewController:userEmail:completion:`.
-@property(nonatomic, strong, readonly) NSString* lastStartAuthActivityUserEmail;
+@property(nonatomic, copy, readonly) NSString* lastStartAuthActivityUserEmail;
 
 @end
 

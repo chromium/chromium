@@ -1015,17 +1015,6 @@ void HWNDMessageHandler::SetAspectRatio(float aspect_ratio,
 void HWNDMessageHandler::SizeConstraintsChanged() {
   LONG style = GetWindowLong(hwnd(), GWL_STYLE);
 
-  // Ignore if this is not a standard window.
-  if (style & static_cast<LONG>(WS_POPUP | WS_CHILD)) {
-    // Allow Glic to become resizable dynamically.
-    // TODO(404947780): this should be allowed for all widgets. thestig@
-    // suggested to scope the change to glic and and let other widgets to bypass
-    // the restriction on their own schedule.
-    if (debugging_id() != "GlicWidget") {
-      return;
-    }
-  }
-
   // Key style considerations:
   // - WS_THICKFRAME: Enables resizing. Cannot be used with translucent
   //   windows (see CalculateWindowStylesFromInitParams() for details).

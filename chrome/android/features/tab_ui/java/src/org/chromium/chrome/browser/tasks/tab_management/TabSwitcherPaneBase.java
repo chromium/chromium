@@ -136,7 +136,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
     private final TabSwitcherPaneCoordinatorFactory mFactory;
     private final boolean mIsIncognito;
     private final DoubleConsumer mOnToolbarAlphaChange;
-    private final TabGroupCreationUiFlow mUiFlow;
+    private final TabGroupCreationUiDelegate mUiFlow;
     private final HubLayoutAnimationListener mAnimationListener =
             new HubLayoutAnimationListener() {
                 @Override
@@ -172,7 +172,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
      * @param userEducationHelper Used for showing IPHs.
      * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      * @param compositorViewHolderSupplier Supplier to the {@link CompositorViewHolder} instance.
-     * @param tabGroupCreationUiFlow Orchestrates the tab group creation UI flow.
+     * @param tabGroupCreationUiDelegate Orchestrates the tab group creation UI flow.
      */
     TabSwitcherPaneBase(
             @NonNull Context context,
@@ -182,7 +182,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
             @NonNull UserEducationHelper userEducationHelper,
             @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             @NonNull ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
-            @NonNull TabGroupCreationUiFlow tabGroupCreationUiFlow) {
+            @NonNull TabGroupCreationUiDelegate tabGroupCreationUiDelegate) {
         mFactory = factory;
         mIsIncognito = isIncognito;
 
@@ -194,7 +194,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
         mUserEducationHelper = userEducationHelper;
         mEdgeToEdgeSupplier = edgeToEdgeSupplier;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
-        mUiFlow = tabGroupCreationUiFlow;
+        mUiFlow = tabGroupCreationUiDelegate;
     }
 
     @Override

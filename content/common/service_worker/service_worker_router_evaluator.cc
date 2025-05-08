@@ -820,7 +820,15 @@ base::Value ServiceWorkerRouterEvaluator::ToValue() const {
           break;
         case network::mojom::ServiceWorkerRouterSourceType::
             kRaceNetworkAndCache:
-          // TODO(crbug.com/370844790): implement race network and cache
+          if (s.race_network_and_cache_source->cache_source.cache_name) {
+            base::Value::Dict out_s;
+            out_s.Set(
+                "race_network_and_cache_cache_name",
+                *s.race_network_and_cache_source->cache_source.cache_name);
+            source.Append(std::move(out_s));
+          } else {
+            source.Append("race-network-and-cache");
+          }
           break;
       }
     }

@@ -3930,7 +3930,7 @@
     "en": {
       "AutofillEnableLoyaltyCardsFilling": [
         {
-          "positive_pattern": "loyalty[\\s-]*num|frequent[\\s-]*flyer",
+          "positive_pattern": "loyalty.*(?:num|card)|frequent[\\s-]*flyer",
           "positive_score": 1.1,
           "negative_pattern": null,
           "match_field_attributes": [

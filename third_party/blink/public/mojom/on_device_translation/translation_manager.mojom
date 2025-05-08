@@ -127,7 +127,7 @@ struct TranslatorCreateOptions {
   // This is `TranslatorCreateOptions` dictionary's `targetLanguage` of
   // Translator API.
   TranslatorLanguageCode target_lang;
-  // A remote to the `AICreateMonitor` that we can report download progress
+  // A remote to the `CreateMonitor` that we can report download progress
   // events to.
   pending_remote<ModelDownloadProgressObserver>? observer_remote;
 };

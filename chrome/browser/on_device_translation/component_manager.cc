@@ -147,14 +147,14 @@ std::set<LanguagePackKey> ComponentManager::GetRegisteredLanguagePacks() {
 
 // static
 std::set<LanguagePackKey> ComponentManager::GetInstalledLanguagePacks() {
-  std::set<LanguagePackKey> insalled_pack_keys;
+  std::set<LanguagePackKey> installed_pack_keys;
   for (const auto& it : kLanguagePackComponentConfigMap) {
     if (!GetFilePathFromGlobalPrefs(GetComponentPathPrefName(*it.second))
              .empty()) {
-      insalled_pack_keys.insert(it.first);
+      installed_pack_keys.insert(it.first);
     }
   }
-  return insalled_pack_keys;
+  return installed_pack_keys;
 }
 
 // static

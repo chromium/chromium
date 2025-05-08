@@ -49,11 +49,10 @@ PolicyContainerPolicies MakeTestPolicies() {
       network::mojom::IPAddressSpace::kPublic,
       /*is_web_secure_context=*/true, std::move(csp_list),
       network::CrossOriginOpenerPolicy(), network::CrossOriginEmbedderPolicy(),
-      network::DocumentIsolationPolicy(),
-      network::mojom::WebSandboxFlags::kNone,
+      network::DocumentIsolationPolicy(), network::IntegrityPolicy(),
+      network::IntegrityPolicy(), network::mojom::WebSandboxFlags::kNone,
       /*is_credentialless=*/false,
       /*can_navigate_top_without_user_gesture=*/true,
-      /*allow_cross_origin_isolation=*/false,
       /*cross_origin_isolation_enabled_by_dip=*/false);
 }
 

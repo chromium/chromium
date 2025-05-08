@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<title>CSS Masonry Test: Centered alignment in grid axis</title>
+<link rel="author" title="Celeste Pan" href="mailto:celestepan@microsoft.com">
+<link rel="help" href="https://drafts.csswg.org/css-grid-3/#alignment">
+<link rel="match" href="justify-items-center-001-ref.html">
+<link rel="stylesheet" href="resources/masonry.css">
+<style>
+.masonry {
+    grid-template-columns: repeat(3, 100px);
+    width: 300px;
+    justify-items: center;
+}
+</style>
+<body>
+  <p>Test that using justify-items centers each item to the grid-axis track it is on.</p>
+  <div class="masonry">
+    <div class="fifty-width">
+      This is some text
+    </div>
+    <div class="fifty-width">
+      Some larger words in this sentence
+    </div>
+    <div class="fifty-width">
+      The cat cannot be taken from milk
+    </div>
+    <div style="background-color: lightpink">
+      This is text
+    </div>
+    <div style="background-color: lightpink">
+      This is text
+    </div>
+  </div>
+</body>
+</html>

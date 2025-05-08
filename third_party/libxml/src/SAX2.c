@@ -21,7 +21,6 @@
 #include <libxml/valid.h>
 #include <libxml/entities.h>
 #include <libxml/xmlerror.h>
-#include <libxml/debugXML.h>
 #include <libxml/xmlIO.h>
 #include <libxml/uri.h>
 #include <libxml/valid.h>
@@ -289,6 +288,11 @@ xmlSAX2ExternalSubset(void *ctx, const xmlChar *name,
 	const xmlChar *oldencoding;
         unsigned long consumed;
         size_t buffered;
+#ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
+        int inputMax = 1;
+#else
+        int inputMax = 5;
+#endif
 
 	/*
 	 * Ask the Entity resolver to load the damn thing
@@ -316,14 +320,13 @@ xmlSAX2ExternalSubset(void *ctx, const xmlChar *name,
 	oldencoding = ctxt->encoding;
 	ctxt->encoding = NULL;
 
-	ctxt->inputTab = (xmlParserInputPtr *)
-	                 xmlMalloc(5 * sizeof(xmlParserInputPtr));
+	ctxt->inputTab = xmlMalloc(inputMax * sizeof(xmlParserInputPtr));
 	if (ctxt->inputTab == NULL) {
 	    xmlSAX2ErrMemory(ctxt);
             goto error;
 	}
 	ctxt->inputNr = 0;
-	ctxt->inputMax = 5;
+	ctxt->inputMax = inputMax;
 	ctxt->input = NULL;
 	if (xmlCtxtPushInput(ctxt, input) < 0)
             goto error;
@@ -2481,7 +2484,7 @@ xmlSAX2Text(xmlParserCtxtPtr ctxt, const xmlChar *ch, int len,
 	    (lastChild->type == type) &&
 	    (((ctxt->html) && (type != XML_TEXT_NODE)) ||
              (lastChild->name == xmlStringText));
-	if ((coalesceText) && (ctxt->nodemem != 0)) {
+	if ((coalesceText) && (ctxt->nodemem > 0)) {
             int maxLength = (ctxt->options & XML_PARSE_HUGE) ?
                             XML_MAX_HUGE_LENGTH :
                             XML_MAX_TEXT_LENGTH;
@@ -2566,7 +2569,7 @@ xmlSAX2Text(xmlParserCtxtPtr ctxt, const xmlChar *ch, int len,
         else {
             lastChild->line = USHRT_MAX;
             if (ctxt->options & XML_PARSE_BIG_LINES)
-                lastChild->psvi = (void *) (ptrdiff_t) ctxt->input->line;
+                lastChild->psvi = XML_INT_TO_PTR(ctxt->input->line);
         }
     }
 }

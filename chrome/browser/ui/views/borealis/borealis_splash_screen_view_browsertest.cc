@@ -108,8 +108,9 @@ IN_PROC_BROWSER_TEST_F(BorealisSplashScreenViewBrowserTest,
   EXPECT_EQ(nullptr, BorealisSplashScreenView::GetActiveViewForTesting());
 }
 
+// Flaky; see https://crbug.com/413207692.
 IN_PROC_BROWSER_TEST_F(BorealisSplashScreenViewBrowserTest,
-                       ShowsMOTDEvenIfBorealisLaunchFails) {
+                       DISABLED_ShowsMOTDEvenIfBorealisLaunchFails) {
   ShowUi("default");
   EXPECT_TRUE(VerifyUi());
   EXPECT_NE(nullptr, BorealisSplashScreenView::GetActiveViewForTesting());

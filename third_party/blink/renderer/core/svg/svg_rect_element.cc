@@ -134,13 +134,6 @@ void SVGRectElement::SvgAttributeChanged(
   SVGGeometryElement::SvgAttributeChanged(params);
 }
 
-bool SVGRectElement::SelfHasRelativeLengths() const {
-  return x_->CurrentValue()->IsRelative() || y_->CurrentValue()->IsRelative() ||
-         width_->CurrentValue()->IsRelative() ||
-         height_->CurrentValue()->IsRelative() ||
-         rx_->CurrentValue()->IsRelative() || ry_->CurrentValue()->IsRelative();
-}
-
 LayoutObject* SVGRectElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutSVGRect>(this);
 }

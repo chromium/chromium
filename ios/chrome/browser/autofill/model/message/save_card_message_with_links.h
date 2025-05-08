@@ -22,6 +22,8 @@ class LegalMessageLine;
 
 @property(nonatomic, copy) NSString* messageText;
 
+// TODO(crbug.com/413049626): Replace `linkURLs` and `linkRanges` with a single
+// vector of (GURL, NSRange) pairs.
 @property(nonatomic, strong) NSArray* linkRanges;
 
 @property(nonatomic, assign) std::vector<GURL> linkURLs;

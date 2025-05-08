@@ -30,41 +30,45 @@ using ::testing::Contains;
 using ::testing::Return;
 
 TEST(PageNodeSortProxyTest, Order) {
+  auto absolute_time = [](int seconds) {
+    return base::TimeTicks() + base::Seconds(seconds);
+  };
+
   // Disabled tab is never discarded over focused tabs.
   EXPECT_TRUE(
-      PageNodeSortProxy(nullptr, kProtected, true, true, base::Seconds(1)) <
-      PageNodeSortProxy(nullptr, kDisallowed, false, false, base::Seconds(10)));
+      PageNodeSortProxy(nullptr, kProtected, true, true, absolute_time(10)) <
+      PageNodeSortProxy(nullptr, kDisallowed, false, false, absolute_time(1)));
   // Focused tab is more important than visible & non-focused tab.
   EXPECT_TRUE(
-      PageNodeSortProxy(nullptr, kProtected, true, false, base::Seconds(1)) <
-      PageNodeSortProxy(nullptr, kProtected, true, true, base::Seconds(10)));
+      PageNodeSortProxy(nullptr, kProtected, true, false, absolute_time(10)) <
+      PageNodeSortProxy(nullptr, kProtected, true, true, absolute_time(1)));
   // Visible tab is more important than protected & non-visible tab.
   EXPECT_TRUE(
-      PageNodeSortProxy(nullptr, kProtected, false, false, base::Seconds(1)) <
-      PageNodeSortProxy(nullptr, kProtected, true, false, base::Seconds(10)));
+      PageNodeSortProxy(nullptr, kProtected, false, false, absolute_time(10)) <
+      PageNodeSortProxy(nullptr, kProtected, true, false, absolute_time(1)));
   // Protected tab is more important than non-protected tab.
   EXPECT_TRUE(
-      PageNodeSortProxy(nullptr, kEligible, false, false, base::Seconds(1)) <
-      PageNodeSortProxy(nullptr, kProtected, false, false, base::Seconds(10)));
+      PageNodeSortProxy(nullptr, kEligible, false, false, absolute_time(10)) <
+      PageNodeSortProxy(nullptr, kProtected, false, false, absolute_time(1)));
 
   // Compare disabled tabs.
   EXPECT_TRUE(
-      PageNodeSortProxy(nullptr, kDisallowed, false, false, base::Seconds(10)) <
-      PageNodeSortProxy(nullptr, kDisallowed, false, false, base::Seconds(1)));
-  // Sort visible tabs based on last_visible_.
+      PageNodeSortProxy(nullptr, kDisallowed, false, false, absolute_time(1)) <
+      PageNodeSortProxy(nullptr, kDisallowed, false, false, absolute_time(10)));
+  // Sort visible tabs based on `last_visibility_change_time_`.
   // TODO(crbug.com/391243672): use focus status change instead of
   // last_visible_.
   EXPECT_TRUE(
-      PageNodeSortProxy(nullptr, kProtected, true, false, base::Seconds(10)) <
-      PageNodeSortProxy(nullptr, kProtected, true, false, base::Seconds(1)));
-  // Sort protected tabs based on last_visible_.
+      PageNodeSortProxy(nullptr, kProtected, true, false, absolute_time(1)) <
+      PageNodeSortProxy(nullptr, kProtected, true, false, absolute_time(10)));
+  // Sort protected tabs based on `last_visibility_change_time_`.
   EXPECT_TRUE(
-      PageNodeSortProxy(nullptr, kProtected, false, false, base::Seconds(10)) <
-      PageNodeSortProxy(nullptr, kProtected, false, false, base::Seconds(1)));
-  // Sort non-protected tabs based on last_visible_.
+      PageNodeSortProxy(nullptr, kProtected, false, false, absolute_time(1)) <
+      PageNodeSortProxy(nullptr, kProtected, false, false, absolute_time(10)));
+  // Sort non-protected tabs based on `last_visibility_change_time_`.
   EXPECT_TRUE(
-      PageNodeSortProxy(nullptr, kEligible, false, false, base::Seconds(10)) <
-      PageNodeSortProxy(nullptr, kEligible, false, false, base::Seconds(1)));
+      PageNodeSortProxy(nullptr, kEligible, false, false, absolute_time(1)) <
+      PageNodeSortProxy(nullptr, kEligible, false, false, absolute_time(10)));
 }
 
 class DiscardEligibilityPolicyTest

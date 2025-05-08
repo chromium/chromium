@@ -50,7 +50,8 @@ class CC_PAINT_EXPORT CorePaintFlags {
   ALWAYS_INLINE float getAlphaf() const { return color_.fA; }
   ALWAYS_INLINE bool isFullyTransparent() const { return color_.fA == 0.0f; }
   ALWAYS_INLINE bool isOpaque() const { return color_.fA >= 1.0f; }
-  template <class F, class = std::enable_if_t<std::is_same_v<F, float>>>
+  template <class F>
+    requires(std::is_same_v<F, float>)
   ALWAYS_INLINE void setAlphaf(F a) {
     color_.fA = a;
   }

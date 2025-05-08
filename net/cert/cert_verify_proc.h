@@ -259,6 +259,13 @@ class NET_EXPORT CertVerifyProc
              CertVerifyResult* verify_result,
              const NetLogWithSource& net_log);
 
+  // Performs 2-QWAC verification, if implemented by the subclass. The default
+  // implementation always fails.
+  virtual int Verify2Qwac(X509Certificate* cert,
+                          const std::string& hostname,
+                          CertVerifyResult* verify_result,
+                          const NetLogWithSource& net_log);
+
  protected:
   explicit CertVerifyProc(scoped_refptr<CRLSet> crl_set);
   virtual ~CertVerifyProc();

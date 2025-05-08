@@ -6,7 +6,7 @@ import '/strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import type {Cdd, ColorCapability, ColorOption, CopiesCapability, DpiOption, DuplexType, MediaSizeOption, MediaTypeOption} from './cdd.js';
+import type {Cdd, ColorCapability, ColorOption, CopiesCapability, DpiOption, DuplexType, MediaSizeOption} from './cdd.js';
 /**
  * Enumeration of the origin types for destinations.
  */
@@ -377,16 +377,6 @@ export class Destination {
   getMediaSize(width: number, height: number): MediaSizeOption|undefined {
     return this.capabilities?.printer.media_size?.option.find(o => {
       return o.width_microns === width && o.height_microns === height;
-    });
-  }
-
-  /**
-   * @return Media type value of the destination with the given vendor id.
-   * Returns undefined if there is no such media type value.
-   */
-  getMediaType(vendorId: string): MediaTypeOption|undefined {
-    return this.capabilities?.printer.media_type?.option.find(o => {
-      return o.vendor_id === vendorId;
     });
   }
 

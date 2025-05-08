@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -243,12 +244,23 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   virtual PhysicalSize Size() const;
 
-  void SetLocation(const DeprecatedLayoutPoint& location) {
+  void SetLocation(PhysicalOffset location) {
     NOT_DESTROYED();
-    if (location == frame_location_) {
+    DCHECK(RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
+    if (location == frame_location_.physical_offset) {
       return;
     }
-    frame_location_ = location;
+    frame_location_.physical_offset = location;
+    LocationChanged();
+  }
+
+  void SetLocation(const DeprecatedLayoutPoint& location) {
+    NOT_DESTROYED();
+    DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
+    if (location == frame_location_.layout_point) {
+      return;
+    }
+    frame_location_.layout_point = location;
     LocationChanged();
   }
 
@@ -900,12 +912,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // Passing |location_container| causes flipped-block flipping w.r.t.
   // that container, or LocationContainer() otherwise.
-  PhysicalOffset PhysicalLocation(
-      const LayoutBox* location_container = nullptr) const {
-    NOT_DESTROYED();
-    return PhysicalLocationInternal(location_container ? location_container
-                                                       : LocationContainer());
-  }
+  //
+  // TODO(crbug.com/40855022): Get rid of the parameter.
+  virtual PhysicalOffset PhysicalLocation(
+      const LayoutBox* location_container = nullptr) const;
 
   bool HasSelfVisualOverflow() const {
     NOT_DESTROYED();
@@ -1278,12 +1288,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutUnit ContainingBlockLogicalHeightForPositioned(
       const LayoutBoxModelObject* containing_block) const;
 
-  virtual DeprecatedLayoutPoint LocationInternal() const {
+  virtual DeprecatedLayoutPoint DeprecatedLocationInternal() const {
     NOT_DESTROYED();
-    return frame_location_;
+    return frame_location_.layout_point;
   }
-  // Allow LayoutMultiColumnSpannerPlaceholder to call LocationInternal() of
-  // other instances.
+  // Allow LayoutMultiColumnSpannerPlaceholder to call
+  // DeprecatedLocationInternal() of other instances.
   friend class LayoutMultiColumnSpannerPlaceholder;
 
   PhysicalOffset OffsetFromContainerInternal(
@@ -1367,11 +1377,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize,
       ShouldIncludeScrollbarGutter = kIncludeScrollbarGutter) const;
 
-  PhysicalOffset PhysicalLocationInternal(
+  PhysicalOffset DeprecatedPhysicalLocationInternal(
       const LayoutBox* container_box) const {
     NOT_DESTROYED();
+    DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
     DCHECK_EQ(container_box, LocationContainer());
-    DeprecatedLayoutPoint location = LocationInternal();
+    DeprecatedLayoutPoint location = DeprecatedLocationInternal();
     if (!container_box || !container_box->HasFlippedBlocksWritingMode())
         [[likely]] {
       return PhysicalOffset(location);
@@ -1396,13 +1407,15 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
  protected:
   // The CSS border box rect for this box.
   //
-  // The rectangle is in LocationContainer's physical coordinates in flipped
-  // block-flow direction of LocationContainer (see the COORDINATE SYSTEMS
-  // section in LayoutBoxModelObject). The location is the distance from this
-  // object's border edge to the LocationContainer's border edge. Thus it
-  // includes any logical top/left along with this box's margins. It doesn't
-  // include transforms, relative position offsets etc.
-  DeprecatedLayoutPoint frame_location_;
+  // The location is the distance from the border edge of the first fragment of
+  // this object, to the border edge of the first fragment of
+  // LocationContainer(). It doesn't include transforms, relative position
+  // offsets etc.
+  union Location {
+    Location() : physical_offset(PhysicalOffset()) {}
+    DeprecatedLayoutPoint layout_point;
+    PhysicalOffset physical_offset;
+  } frame_location_;
 
   // TODO(crbug.com/1353190): Remove frame_size_.
   PhysicalSize frame_size_;

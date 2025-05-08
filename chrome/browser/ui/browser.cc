@@ -38,6 +38,7 @@
 #include "chrome/browser/background/background_contents.h"
 #include "chrome/browser/background/background_contents_service.h"
 #include "chrome/browser/background/background_contents_service_factory.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -123,6 +124,7 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/overscroll_pref_manager.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/sad_tab.h"
 #include "chrome/browser/ui/search/search_tab_helper.h"
 #include "chrome/browser/ui/signin/cookie_clear_on_exit_migration_notice.h"
 #include "chrome/browser/ui/singleton_tabs.h"
@@ -132,6 +134,7 @@
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
@@ -146,6 +149,9 @@
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
+#include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
+#include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
@@ -299,6 +305,13 @@
 #include "ui/ozone/public/platform_session_manager.h"
 #endif
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/ai/ai_data_keyed_service.h"          // nogncheck
+#include "chrome/browser/ai/ai_data_keyed_service_factory.h"  // nogncheck
+#include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_keyed_service.h"
+#endif
+
 using base::UserMetricsAction;
 using content::NavigationController;
 using content::NavigationEntry;
@@ -449,6 +462,44 @@ base::FunctionRef<bool(const Browser*)> MaybeLazyIsFullscreen(
   // In the control branch, eagerly evaluate ShouldHideUIForFullscreen.
   return browser->ShouldHideUIForFullscreen() ? &AlwaysReturnTrue
                                               : &AlwaysReturnFalse;
+}
+
+bool IsActorCoordinatorActingOnTab(Profile* profile,
+                                   const content::WebContents* tab) {
+#if BUILDFLAG(ENABLE_GLIC)
+  if (glic::GlicEnabling::IsEnabledByFlags()) {
+    if (const auto* glic_service = glic::GlicKeyedService::Get(profile);
+        glic_service && glic_service->IsActorCoordinatorActingOnTab(tab)) {
+      return true;
+    }
+  }
+  // TODO(https://crbug.com/411462297): Deduplicate ownership of
+  // ActorCoordinators.
+  if (const auto* ai_data_service =
+          AiDataKeyedServiceFactory::GetAiDataKeyedService(profile);
+      ai_data_service && ai_data_service->IsActorCoordinatorActingOnTab(tab)) {
+    return true;
+  }
+#endif
+  return false;
+}
+
+// TODO(crbug.com/382494946): Similar bespoke checks are used throughout the
+// codebase. This should be factored out as a common util and other callsites
+// converted to use this.
+bool IsNTP(content::WebContents* web_contents) {
+  // Use the committed entry (or the visible entry, if the committed entry is
+  // the initial NavigationEntry) so the bookmarks bar disappears at the same
+  // time the page does.
+  content::NavigationEntry* entry =
+      web_contents->GetController().GetLastCommittedEntry();
+  if (entry->IsInitialEntry()) {
+    entry = web_contents->GetController().GetVisibleEntry();
+  }
+  const GURL& url = entry->GetURL();
+  return NewTabUI::IsNewTab(url) || NewTabPageUI::IsNewTabPageOrigin(url) ||
+         NewTabPageThirdPartyUI::IsNewTabPageOrigin(url) ||
+         search::NavEntryIsInstantNTP(web_contents, entry);
 }
 
 }  // namespace
@@ -1178,7 +1229,7 @@ void Browser::OpenGURL(const GURL& gurl, WindowOpenDisposition disposition) {
           /*navigation_handle_callback=*/{});
 }
 
-const SessionID& Browser::GetSessionID() {
+const SessionID& Browser::GetSessionID() const {
   return session_id_;
 }
 
@@ -1209,12 +1260,24 @@ bool Browser::IsMinimized() const {
   return window_->IsMinimized();
 }
 
+bool Browser::IsVisibleOnScreen() const {
+  return window_->IsVisibleOnScreen();
+}
+
+bool Browser::IsVisible() const {
+  return window_->IsVisible();
+}
+
 base::WeakPtr<BrowserWindowInterface> Browser::GetWeakPtr() {
   return AsWeakPtr();
 }
 
 views::View* Browser::LensOverlayView() {
   return window_->GetLensOverlayView();
+}
+
+new_tab_footer::NewTabFooterWebView* Browser::NewTabFooterWebView() {
+  return GetBrowserView().new_tab_footer_web_view();
 }
 
 base::CallbackListSubscription Browser::RegisterActiveTabDidChange(
@@ -1296,8 +1359,12 @@ Browser* Browser::GetBrowserForMigrationOnly() {
   return this;
 }
 
-bool Browser::IsTabModalPopup() const {
-  return is_tab_modal_popup_;
+void Browser::ActivateWindow() {
+  window_->Activate();
+}
+
+bool Browser::IsTabModalPopupDeprecated() const {
+  return is_tab_modal_popup_deprecated_;
 }
 
 bool Browser::CanShowCallToAction() const {
@@ -1336,6 +1403,15 @@ void Browser::SetLockedForOnTask(bool locked) {
 #endif
 
 void Browser::OnWindowClosing() {
+  // There may be situations where async tasks, such as
+  // UnloadController::ProcessPendingTabs, may call into OnWindowClosing() after
+  // deletion has already been scheduled and closed notifications have been
+  // propagated. No-op in such cases to avoid duplicating browser-closed
+  // handling.
+  if (is_delete_scheduled_) {
+    return;
+  }
+
   if (const auto closing_status = HandleBeforeClose();
       closing_status != BrowserClosingStatus::kPermitted) {
     BrowserList::NotifyBrowserCloseCancelled(this, closing_status);
@@ -2303,15 +2379,24 @@ void Browser::ShowRepostFormWarningDialog(WebContents* source) {
 }
 
 bool Browser::IsWebContentsCreationOverridden(
+    content::RenderFrameHost* opener,
     content::SiteInstance* source_site_instance,
     content::mojom::WindowContainerType window_container_type,
     const GURL& opener_url,
     const std::string& frame_name,
     const GURL& target_url) {
-  return window_container_type ==
-             content::mojom::WindowContainerType::BACKGROUND &&
-         ShouldCreateBackgroundContents(source_site_instance, opener_url,
-                                        frame_name);
+  if (IsActorCoordinatorActingOnTab(
+          profile(), content::WebContents::FromRenderFrameHost(opener))) {
+    // If an ActorCoordinator is acting on the opener, prevent it from creating
+    // a new WebContents. We'll instead force the navigation to happen in the
+    // same tab.
+    return true;
+  }
+
+  return (window_container_type ==
+              content::mojom::WindowContainerType::BACKGROUND &&
+          ShouldCreateBackgroundContents(source_site_instance, opener_url,
+                                         frame_name));
 }
 
 WebContents* Browser::CreateCustomWebContents(
@@ -2323,6 +2408,23 @@ WebContents* Browser::CreateCustomWebContents(
     const GURL& target_url,
     const content::StoragePartitionConfig& partition_config,
     content::SessionStorageNamespace* session_storage_namespace) {
+  if (auto* opener_contents = content::WebContents::FromRenderFrameHost(opener);
+      IsActorCoordinatorActingOnTab(profile(), opener_contents)) {
+    // If an ActorCoordinator is acting on the opener, we force the navigation
+    // to happen in the same tab.
+    content::NavigationController::LoadURLParams params(target_url);
+    params.initiator_frame_token = opener->GetFrameToken();
+    params.initiator_process_id = opener->GetProcess()->GetDeprecatedID();
+    params.initiator_origin = opener->GetLastCommittedOrigin();
+    params.source_site_instance = source_site_instance;
+    params.transition_type = ui::PAGE_TRANSITION_LINK;
+    params.is_renderer_initiated = true;
+    opener_contents->GetController().LoadURLWithParams(params);
+    VLOG(1) << "Actor treated window open as same tab navigation. "
+            << target_url;
+    return nullptr;
+  }
+
   BackgroundContents* background_contents = CreateBackgroundContents(
       source_site_instance, opener, opener_url, is_new_browsing_instance,
       frame_name, target_url, partition_config, session_storage_namespace);
@@ -2818,6 +2920,11 @@ void Browser::SetWebContentsBlocked(content::WebContents* web_contents,
     // Removal of tabs from the TabStripModel can cause observer callbacks to
     // invoke this method. The WebContents may no longer exist in the
     // TabStripModel.
+    // If the WebContents has a DevTools window,
+    // the call is meant for the DevTools area.
+    if (DevToolsWindow::AsDevToolsWindow(web_contents)) {
+      window_->SetDevToolsScrimVisibility(blocked);
+    }
     return;
   }
 
@@ -3721,14 +3828,38 @@ bool Browser::ShouldShowBookmarkBar() const {
     return true;
   }
 
-  WebContents* web_contents = tab_strip_model_->GetActiveWebContents();
+  content::WebContents* web_contents = tab_strip_model_->GetActiveWebContents();
   if (!web_contents) {
     return false;
   }
 
-  BookmarkTabHelper* bookmark_tab_helper =
-      BookmarkTabHelper::FromWebContents(web_contents);
-  return bookmark_tab_helper && bookmark_tab_helper->ShouldShowBookmarkBar();
+  if (SadTab::ShouldShow(web_contents->GetCrashedStatus())) {
+    return false;
+  }
+
+  if (!browser_defaults::bookmarks_enabled) {
+    return false;
+  }
+
+  PrefService* prefs = profile_->GetPrefs();
+  if (prefs->IsManagedPreference(bookmarks::prefs::kShowBookmarkBar) &&
+      !prefs->GetBoolean(bookmarks::prefs::kShowBookmarkBar)) {
+    return false;
+  }
+
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(
+          web_contents->GetBrowserContext());
+  const bool has_bookmarks = bookmark_model && bookmark_model->HasBookmarks();
+
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile_);
+  const bool has_saved_tab_groups =
+      tab_group_service && !tab_group_service->GetAllGroups().empty();
+
+  // The bookmark bar is only shown on the NTP if the user
+  // has added something to it.
+  return IsNTP(web_contents) && (has_bookmarks || has_saved_tab_groups);
 }
 
 bool Browser::IsBrowserClosing() const {

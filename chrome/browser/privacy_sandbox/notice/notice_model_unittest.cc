@@ -4,8 +4,14 @@
 
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 
+#include <algorithm>
+#include <string>
+#include <vector>
+
 #include "base/test/mock_callback.h"
+#include "chrome/browser/privacy_sandbox/notice/mocks/mock_notice_storage.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_storage.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-death-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,7 +28,9 @@ using testing::ElementsAre;
 using testing::Eq;
 using testing::IsEmpty;
 using testing::Mock;
+using testing::NiceMock;
 using testing::Return;
+using testing::StrEq;
 using testing::StrictMock;
 
 using enum privacy_sandbox::EligibilityLevel;
@@ -31,6 +39,7 @@ using enum privacy_sandbox::NoticeType;
 using enum privacy_sandbox::SurfaceType;
 
 BASE_FEATURE(kTestFeatureA, "TestFeatureA", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeatureB, "TestFeatureB", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Test notice & Consent ID, with arbitrary NoticeType and SurfaceType.
 constexpr NoticeId kTestNoticeId = {PrivacySandboxNotice::kThreeAdsApisNotice,
@@ -77,6 +86,11 @@ TEST_F(PrivacySandboxNoticeModelTest, GetStorageName) {
   EXPECT_EQ(notice.GetStorageName(), kTestFeatureA.name);
 }
 
+TEST_F(PrivacySandboxNoticeModelTest, GetStorageNameNullFeatureCrashes) {
+  Notice notice(kTestNoticeId);
+  EXPECT_DEATH(notice.GetStorageName(), "");
+}
+
 TEST_F(PrivacySandboxNoticeModelTest, SetAndGetTargetApis) {
   Notice notice(kTestNoticeId);
   EXPECT_THAT(notice.GetTargetApis(), IsEmpty());
@@ -99,16 +113,17 @@ TEST_F(PrivacySandboxNoticeModelTest, SetAndGetPreReqApis) {
   EXPECT_THAT(notice.GetPreReqApis(), ElementsAre(&api1, &api2));
 }
 
-TEST_F(PrivacySandboxNoticeModelTest, WasFulfilledInitialState) {
-  // TODO(crbug.com/392612108): Update this test when WasFulfilled is
-  // implemented.
+TEST_F(PrivacySandboxNoticeModelTest, Notice_InitialWasFulfilledIsFalse) {
   Notice notice(kTestNoticeId);
-  Consent consent(kTestConsentId);
-  EXPECT_FALSE(notice.WasFulfilled());
-  EXPECT_FALSE(consent.WasFulfilled());
+  EXPECT_FALSE(notice.was_fulfilled());
 }
 
-struct NoticeTestParam {
+TEST_F(PrivacySandboxNoticeModelTest, Consent_InitialWasFulfilledIsFalse) {
+  Consent consent(kTestConsentId);
+  EXPECT_FALSE(consent.was_fulfilled());
+}
+
+struct NoticeResultCallbackTestParam {
   std::unique_ptr<Notice> (*create)(NoticeId);
   PrivacySandboxNoticeEvent event;
   enum class Result {
@@ -120,11 +135,11 @@ struct NoticeTestParam {
   Result expected_result;
 };
 
-using enum NoticeTestParam::Result;
+using enum NoticeResultCallbackTestParam::Result;
 
 class PrivacySandboxNoticeModelResultCallbackTest
     : public PrivacySandboxNoticeModelTest,
-      public testing::WithParamInterface<NoticeTestParam> {};
+      public testing::WithParamInterface<NoticeResultCallbackTestParam> {};
 
 TEST_P(PrivacySandboxNoticeModelResultCallbackTest, UpdateTargetApiResults) {
   const auto& param = GetParam();
@@ -166,7 +181,7 @@ TEST_P(PrivacySandboxNoticeModelResultCallbackTest, UpdateTargetApiResults) {
   Mock::VerifyAndClearExpectations(&callback_2);
 }
 
-std::vector<NoticeTestParam> notice_test_params = {
+std::vector<NoticeResultCallbackTestParam> notice_result_test_params = {
     // Notice
     {&Make<Notice>, kAck, kOutcomeTrue},
     {&Make<Notice>, kSettings, kOutcomeTrue},
@@ -185,7 +200,112 @@ std::vector<NoticeTestParam> notice_test_params = {
 
 INSTANTIATE_TEST_SUITE_P(PrivacySandboxNoticeModelResultCallbackTest,
                          PrivacySandboxNoticeModelResultCallbackTest,
-                         testing::ValuesIn(notice_test_params));
+                         testing::ValuesIn(notice_result_test_params));
+
+//-----------------------------------------------------------------------------
+// Notice / Consent Fulfillment Tests
+//-----------------------------------------------------------------------------
+
+class PrivacySandboxNoticeFulfillmentTestBase : public testing::Test {
+ protected:
+  PrivacySandboxNoticeFulfillmentTestBase() = default;
+  NoticeStorageData CreateNoticeStorageDataWithEvents(
+      const std::vector<NoticeEventTimestampPair>& events_with_times) {
+    NoticeStorageData data;
+    for (const auto& event_time_pair : events_with_times) {
+      data.notice_events.emplace_back(
+          std::make_unique<NoticeEventTimestampPair>(event_time_pair));
+    }
+    return data;
+  }
+  NiceMock<MockNoticeStorage> mock_storage_;
+};
+
+enum class TestNoticeTypeParam {
+  kTestNotice,
+  kTestConsent,
+};
+
+using enum TestNoticeTypeParam;
+
+struct FulfillmentTestParam {
+  TestNoticeTypeParam notice_type_to_test;
+  std::optional<std::vector<NoticeEventTimestampPair>> events_in_storage;
+  bool expected_is_fulfilled = false;
+};
+class PrivacySandboxNoticeFulfillmentParamTest
+    : public PrivacySandboxNoticeFulfillmentTestBase,
+      public testing::WithParamInterface<FulfillmentTestParam> {
+ protected:
+  std::unique_ptr<Notice> CreateNoticeUnderTest() {
+    const FulfillmentTestParam& param = GetParam();
+    NoticeId id_to_use = (param.notice_type_to_test == kTestNotice)
+                             ? kTestNoticeId
+                             : kTestConsentId;
+    std::unique_ptr<Notice> notice_obj;
+    if (param.notice_type_to_test == kTestNotice) {
+      notice_obj = std::make_unique<Notice>(id_to_use);
+    } else {
+      notice_obj = std::make_unique<Consent>(id_to_use);
+    }
+    notice_obj->SetFeature(&kTestFeatureA);
+    return notice_obj;
+  }
+};
+TEST_P(PrivacySandboxNoticeFulfillmentParamTest,
+       RefreshStatusAndCheckFulfilled) {
+  const FulfillmentTestParam& param = GetParam();
+  std::unique_ptr<Notice> notice = CreateNoticeUnderTest();
+  if (param.events_in_storage.has_value()) {
+    NoticeStorageData storage_data =
+        CreateNoticeStorageDataWithEvents(param.events_in_storage.value());
+    EXPECT_CALL(mock_storage_, ReadNoticeData(StrEq(kTestFeatureA.name)))
+        .WillOnce(Return(std::move(storage_data)));
+  } else {
+    EXPECT_CALL(mock_storage_, ReadNoticeData(StrEq(kTestFeatureA.name)))
+        .WillOnce(Return(std::nullopt));
+  }
+  notice->RefreshFulfillmentStatus(mock_storage_);
+  EXPECT_EQ(notice->was_fulfilled(), param.expected_is_fulfilled);
+}
+
+constexpr base::Time kTimeT1 = base::Time::FromTimeT(1000);
+constexpr base::Time kTimeT2 = base::Time::FromTimeT(2000);
+constexpr base::Time kTimeT3 = base::Time::FromTimeT(3000);
+std::vector<FulfillmentTestParam> GetFulfillmentTestParams() {
+  return {
+      // Notice
+      FulfillmentTestParam{kTestNotice, std::nullopt, false},
+      FulfillmentTestParam{kTestNotice, {{}}, false},
+      FulfillmentTestParam{kTestNotice, {{{kShown, kTimeT1}}}, false},
+      FulfillmentTestParam{
+          kTestNotice, {{{kShown, kTimeT1}, {kAck, kTimeT2}}}, true},
+      FulfillmentTestParam{
+          kTestNotice, {{{kShown, kTimeT1}, {kSettings, kTimeT2}}}, true},
+      FulfillmentTestParam{
+          kTestNotice, {{{kAck, kTimeT1}, {kShown, kTimeT2}}}, true},
+      // Consent
+      FulfillmentTestParam{kTestConsent, std::nullopt, false},
+      FulfillmentTestParam{kTestConsent, {{}}, false},
+      FulfillmentTestParam{kTestConsent, {{{kShown, kTimeT1}}}, false},
+      FulfillmentTestParam{
+          kTestConsent, {{{kShown, kTimeT1}, {kOptIn, kTimeT2}}}, true},
+      FulfillmentTestParam{
+          kTestConsent, {{{kShown, kTimeT1}, {kOptOut, kTimeT2}}}, true},
+      FulfillmentTestParam{
+          kTestConsent, {{{kOptIn, kTimeT1}, {kOptOut, kTimeT2}}}, true},
+      FulfillmentTestParam{
+          kTestConsent, {{{kOptIn, kTimeT1}, {kShown, kTimeT2}}}, true},
+      FulfillmentTestParam{
+          kTestConsent,
+          {{{kShown, kTimeT1}, {kOptOut, kTimeT2}, {kOptIn, kTimeT3}}},
+          true},
+  };
+}
+
+INSTANTIATE_TEST_SUITE_P(PrivacySandboxNoticeFulfillmentParamTest,
+                         PrivacySandboxNoticeFulfillmentParamTest,
+                         testing::ValuesIn(GetFulfillmentTestParams()));
 
 //-----------------------------------------------------------------------------
 // NoticeApi Tests
@@ -193,6 +313,13 @@ INSTANTIATE_TEST_SUITE_P(PrivacySandboxNoticeModelResultCallbackTest,
 
 class PrivacySandboxNoticeApiTest : public testing::Test {
  protected:
+  NoticeStorageData CreateStorageData(PrivacySandboxNoticeEvent event) {
+    NoticeStorageData data;
+    data.notice_events.emplace_back(std::make_unique<NoticeEventTimestampPair>(
+        NoticeEventTimestampPair{event, base::Time::Now()}));
+    return data;
+  }
+
   NoticeApi api_;
   std::unique_ptr<Notice> notice_ = std::make_unique<Notice>(kTestNoticeId);
   std::unique_ptr<Consent> consent_ = std::make_unique<Consent>(kTestConsentId);
@@ -200,6 +327,7 @@ class PrivacySandboxNoticeApiTest : public testing::Test {
       mock_eligibility_callback_;
   StrictMock<MockCallback<base::OnceCallback<void(bool)>>>
       mock_result_callback_;
+  NiceMock<MockNoticeStorage> mock_storage_;
 };
 
 TEST_F(PrivacySandboxNoticeApiTest, InitialState) {
@@ -210,17 +338,14 @@ TEST_F(PrivacySandboxNoticeApiTest, InitialState) {
 
 TEST_F(PrivacySandboxNoticeApiTest, SetAndGetEligibilityCallback) {
   api_.SetEligibilityCallback(mock_eligibility_callback_.Get());
-  // Callback triggeerd via GetEligibilityLevel.
   EXPECT_CALL(mock_eligibility_callback_, Run())
       .Times(1)
       .WillOnce(Return(kEligibleNotice));
   EXPECT_EQ(api_.GetEligibilityLevel(), kEligibleNotice);
-  Mock::VerifyAndClearExpectations(&mock_result_callback_);
-
-  // Callback triggeered via IsFulfilled.
+  Mock::VerifyAndClearExpectations(&mock_eligibility_callback_);
   EXPECT_CALL(mock_eligibility_callback_, Run()).Times(1);
   api_.IsFulfilled();
-  Mock::VerifyAndClearExpectations(&mock_result_callback_);
+  Mock::VerifyAndClearExpectations(&mock_eligibility_callback_);
 }
 
 TEST_F(PrivacySandboxNoticeApiTest, SetAndCallResultCallback) {
@@ -265,6 +390,11 @@ TEST_F(PrivacySandboxNoticeApiTest, IsFulfilledNotEligible) {
 
 TEST_F(PrivacySandboxNoticeApiTest,
        IsFulfilledEligibleNoticeWithUnfulfilledNotice) {
+  notice_->SetFeature(&kTestFeatureA);
+  EXPECT_CALL(mock_storage_, ReadNoticeData(StrEq(kTestFeatureA.name)))
+      .WillOnce(Return(std::nullopt));
+  notice_->RefreshFulfillmentStatus(mock_storage_);
+
   EXPECT_CALL(mock_eligibility_callback_, Run())
       .WillOnce(Return(kEligibleNotice));
   api_.SetEligibilityCallback(mock_eligibility_callback_.Get());
@@ -273,7 +403,26 @@ TEST_F(PrivacySandboxNoticeApiTest,
 }
 
 TEST_F(PrivacySandboxNoticeApiTest,
+       IsFulfilledEligibleNoticeWithFulfilledNotice) {
+  notice_->SetFeature(&kTestFeatureA);
+  EXPECT_CALL(mock_storage_, ReadNoticeData(StrEq(kTestFeatureA.name)))
+      .WillOnce(Return(CreateStorageData(kAck)));
+  notice_->RefreshFulfillmentStatus(mock_storage_);
+
+  EXPECT_CALL(mock_eligibility_callback_, Run())
+      .WillOnce(Return(kEligibleNotice));
+  api_.SetEligibilityCallback(mock_eligibility_callback_.Get());
+  api_.CanBeFulfilledBy(notice_.get());
+  EXPECT_TRUE(api_.IsFulfilled());
+}
+
+TEST_F(PrivacySandboxNoticeApiTest,
        IsFulfilledEligibleConsentWithUnfulfilledConsent) {
+  consent_->SetFeature(&kTestFeatureB);
+  EXPECT_CALL(mock_storage_, ReadNoticeData(StrEq(kTestFeatureB.name)))
+      .WillOnce(Return(std::nullopt));
+  consent_->RefreshFulfillmentStatus(mock_storage_);
+
   EXPECT_CALL(mock_eligibility_callback_, Run())
       .WillOnce(Return(kEligibleConsent));
   api_.SetEligibilityCallback(mock_eligibility_callback_.Get());
@@ -282,7 +431,26 @@ TEST_F(PrivacySandboxNoticeApiTest,
 }
 
 TEST_F(PrivacySandboxNoticeApiTest,
+       IsFulfilledEligibleConsentWithFulfilledConsent) {
+  consent_->SetFeature(&kTestFeatureB);
+  EXPECT_CALL(mock_storage_, ReadNoticeData(StrEq(kTestFeatureB.name)))
+      .WillOnce(Return(CreateStorageData(kOptIn)));
+  consent_->RefreshFulfillmentStatus(mock_storage_);
+
+  EXPECT_CALL(mock_eligibility_callback_, Run())
+      .WillOnce(Return(kEligibleConsent));
+  api_.SetEligibilityCallback(mock_eligibility_callback_.Get());
+  api_.CanBeFulfilledBy(consent_.get());
+  EXPECT_TRUE(api_.IsFulfilled());
+}
+
+TEST_F(PrivacySandboxNoticeApiTest,
        IsFulfilledEligibleConsentWithOnlyNoticeLinked) {
+  notice_->SetFeature(&kTestFeatureA);
+  EXPECT_CALL(mock_storage_, ReadNoticeData(StrEq(kTestFeatureA.name)))
+      .WillOnce(Return(CreateStorageData(kAck)));
+  notice_->RefreshFulfillmentStatus(mock_storage_);
+
   EXPECT_CALL(mock_eligibility_callback_, Run())
       .WillOnce(Return(kEligibleConsent));
   api_.SetEligibilityCallback(mock_eligibility_callback_.Get());
@@ -292,6 +460,16 @@ TEST_F(PrivacySandboxNoticeApiTest,
 
 TEST_F(PrivacySandboxNoticeApiTest,
        IsFulfilledEligibleNoticeWithMixedNoticesUnfulfilled) {
+  consent_->SetFeature(&kTestFeatureB);
+  EXPECT_CALL(mock_storage_, ReadNoticeData(StrEq(kTestFeatureB.name)))
+      .WillOnce(Return(std::nullopt));
+  consent_->RefreshFulfillmentStatus(mock_storage_);
+
+  notice_->SetFeature(&kTestFeatureA);
+  EXPECT_CALL(mock_storage_, ReadNoticeData(StrEq(kTestFeatureA.name)))
+      .WillOnce(Return(std::nullopt));
+  notice_->RefreshFulfillmentStatus(mock_storage_);
+
   EXPECT_CALL(mock_eligibility_callback_, Run())
       .WillOnce(Return(kEligibleNotice));
   api_.SetEligibilityCallback(mock_eligibility_callback_.Get());
@@ -301,13 +479,40 @@ TEST_F(PrivacySandboxNoticeApiTest,
 }
 
 TEST_F(PrivacySandboxNoticeApiTest,
-       IsFulfilledEligibleConsentWithMixedNoticesUnfulfilled) {
+       IsFulfilledEligibleNoticeWithMixedNoticesFirstFulfilled) {
+  consent_->SetFeature(&kTestFeatureB);
+  EXPECT_CALL(mock_storage_, ReadNoticeData(StrEq(kTestFeatureB.name)))
+      .WillOnce(Return(CreateStorageData(kOptIn)));
+  consent_->RefreshFulfillmentStatus(mock_storage_);
+
+  notice_->SetFeature(&kTestFeatureA);
+
+  EXPECT_CALL(mock_eligibility_callback_, Run())
+      .WillOnce(Return(kEligibleNotice));
+  api_.SetEligibilityCallback(mock_eligibility_callback_.Get());
+  api_.CanBeFulfilledBy(consent_.get());
+  api_.CanBeFulfilledBy(notice_.get());
+  EXPECT_TRUE(api_.IsFulfilled());
+}
+
+TEST_F(PrivacySandboxNoticeApiTest,
+       IsFulfilledEligibleConsentWithMixedNoticesConsentFulfilled) {
+  notice_->SetFeature(&kTestFeatureA);
+  EXPECT_CALL(mock_storage_, ReadNoticeData(StrEq(kTestFeatureA.name)))
+      .WillOnce(Return(CreateStorageData(kAck)));
+  notice_->RefreshFulfillmentStatus(mock_storage_);
+
+  consent_->SetFeature(&kTestFeatureB);
+  EXPECT_CALL(mock_storage_, ReadNoticeData(StrEq(kTestFeatureB.name)))
+      .WillOnce(Return(CreateStorageData(kOptOut)));
+  consent_->RefreshFulfillmentStatus(mock_storage_);
+
   EXPECT_CALL(mock_eligibility_callback_, Run())
       .WillOnce(Return(kEligibleConsent));
   api_.SetEligibilityCallback(mock_eligibility_callback_.Get());
   api_.CanBeFulfilledBy(notice_.get());
   api_.CanBeFulfilledBy(consent_.get());
-  EXPECT_FALSE(api_.IsFulfilled());
+  EXPECT_TRUE(api_.IsFulfilled());
 }
 
 }  // namespace

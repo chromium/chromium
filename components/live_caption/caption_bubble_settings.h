@@ -52,6 +52,8 @@ class CaptionBubbleSettings {
   virtual void SetLiveTranslateTargetLanguageCode(
       std::string_view language_code) = 0;
 
+  virtual bool ShouldAdjustPositionOnExpand() = 0;
+
  protected:
   CaptionBubbleSettings() = default;
 };

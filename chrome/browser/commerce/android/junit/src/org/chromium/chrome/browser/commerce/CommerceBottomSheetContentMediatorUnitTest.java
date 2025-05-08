@@ -143,4 +143,17 @@ public class CommerceBottomSheetContentMediatorUnitTest {
         mMediator.onBottomSheetClosed();
         assertEquals(0, mModelList.size());
     }
+
+    @Test
+    public void testAccessibilityDelegateSetAndUnset() {
+        setupMediator(/* expectedContentCount= */ 2);
+        PropertyModel model0 = createPropertyModel(0);
+        PropertyModel model1 = createPropertyModel(1);
+        mMediator.onContentReady(model1);
+        mMediator.onContentReady(model0);
+        verify(mContentView, times(1)).setAccessibilityDelegate(any());
+
+        mMediator.onBottomSheetClosed();
+        verify(mContentView, times(1)).setAccessibilityDelegate(eq(null));
+    }
 }

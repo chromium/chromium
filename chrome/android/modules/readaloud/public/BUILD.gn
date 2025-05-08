@@ -6,6 +6,7 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/modules/readaloud/Feedback.java",
     "java/src/org/chromium/chrome/modules/readaloud/Playback.java",
     "java/src/org/chromium/chrome/modules/readaloud/PlaybackArgs.java",
     "java/src/org/chromium/chrome/modules/readaloud/PlaybackListener.java",

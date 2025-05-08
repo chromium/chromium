@@ -22,14 +22,14 @@
 #include "content/public/browser/interest_group_manager.h"
 #include "net/base/schemeful_site.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_queue_manager.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 class BrowserWindowInterface;
 
 namespace views {
 class Widget;
+}
+
+namespace privacy_sandbox {
+class PrivacySandboxQueueManager;
 }
 
 // Service which encapsulates logic related to displaying and controlling the
@@ -213,11 +213,6 @@ class PrivacySandboxService : public KeyedService {
     kOpenAdsPrivacySettings,
     kOpenMeasurementSettings,
   };
-
-  // Returns whether |url| is suitable to display the Privacy Sandbox prompt
-  // over. Only about:blank and certain chrome:// URLs are considered
-  // suitable.
-  static bool IsUrlSuitableForPrompt(const GURL& url);
 
   // Disables the display of the Privacy Sandbox prompt for testing. When
   // |disabled| is true, GetRequiredPromptType() will only ever return that

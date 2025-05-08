@@ -122,10 +122,12 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   }
 
   const Node* GetListedElementsScope() const;
+  // Returns the scope that includes the highest reference target host.
+  const Node* GetReferenceTargetScope() const;
 
   // Returns the listed elements (form controls) associated with `this`.
   const ListedElement::List& ListedElements() const {
-    return CollectAndCacheListedElements(/*include_shadow_trees*/ false);
+    return CollectAndCacheListedElements(/*collect_for_autofill*/ false);
   }
 
   // Returns the contained form control elements associated with `this`, also
@@ -135,7 +137,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   // standard, but in practice it can still occur - e.g., by dynamically
   // appending <form> children to (a descendant of) `this`.
   const ListedElement::List& AllContainedFormElementsForAutofill() const {
-    return CollectAndCacheListedElements(/*include_shadow_trees*/ true);
+    return CollectAndCacheListedElements(/*collect_for_autofill*/ true);
   }
 
   const HeapVector<Member<HTMLImageElement>>& ImageElements();
@@ -152,7 +154,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   FormData* ConstructEntryList(HTMLFormControlElement* submit_button,
                                const WTF::TextEncoding& encoding);
 
-  void InvalidateListedElementsIncludingShadowTrees();
+  void InvalidateListedElementsForAutofill();
   void UseCountPropertyAccess(v8::Local<v8::Name>&,
                               const v8::PropertyCallbackInfo<v8::Value>&);
 
@@ -175,25 +177,29 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   void ScheduleFormSubmission(const Event*,
                               HTMLFormControlElement* submit_button);
 
+  void CollectListedElementsForReferenceTarget(
+      const Node& root,
+      ListedElement::List& elements,
+      ListedElement::List* elements_for_autofill = nullptr) const;
   void CollectListedElements(
       const Node* root,
       ListedElement::List& elements,
-      ListedElement::List* elements_including_shadow_trees = nullptr,
+      ListedElement::List* elements_for_autofill = nullptr,
       bool in_shadow_tree = false) const;
   void CollectImageElements(Node& root, HeapVector<Member<HTMLImageElement>>&);
 
   // Utility function used by ListedElements and
   // AllContainedFormElementsForAutofill. Takes care of caching two lists of
   // listed elements, one including shadow- contained elements, and one "normal"
-  // list without those. If `include_shadow_trees` is `true`, then the list will
+  // list without those. If `collect_for_autofill` is `true`, then the list will
   // also contain descendants of `this` that are form control elements and
-  // inside Shadow DOM. Note that if `include_shadow_trees` is true, then,
+  // inside Shadow DOM. Note that if `collect_for_autofill` is true, then,
   // additionally, the result will contain the form control elements of <form>s
   // nested inside `this`. In principle, form nesting is prohibited by the HTML
   // standard, but in practice it can still occur - e.g., by dynamically
   // appending <form> children to (a descendant of) `this`.
   const ListedElement::List& CollectAndCacheListedElements(
-      bool include_shadow_trees) const;
+      bool collect_for_autofill) const;
 
   // Returns true if the submission should proceed.
   bool ValidateInteractively();
@@ -217,9 +223,9 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
 
   // Do not access listed_elements_ directly. Use ListedElements() instead.
   ListedElement::List listed_elements_;
-  // Do not access listed_elements_including_shadow_trees_ directly. Use
+  // Do not access listed_elements_for_autofill_ directly. Use
   // AllContainedFormElementsForAutofill() instead.
-  ListedElement::List listed_elements_including_shadow_trees_;
+  ListedElement::List listed_elements_for_autofill_;
   // Do not access image_elements_ directly. Use ImageElements() instead.
   HeapVector<Member<HTMLImageElement>> image_elements_;
 
@@ -230,7 +236,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   bool is_constructing_entry_list_ = false;
 
   bool listed_elements_are_dirty_ : 1;
-  bool listed_elements_including_shadow_trees_are_dirty_ : 1;
+  bool listed_elements_for_autofill_are_dirty_ : 1;
   bool image_elements_are_dirty_ : 1;
   bool has_elements_associated_by_parser_ : 1;
   bool has_elements_associated_by_form_attribute_ : 1;

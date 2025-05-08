@@ -83,17 +83,21 @@ constexpr CGFloat kFacePileAvatarSize = 16;
   // The bridge between the C++ MessagingBackendService observer and this
   // Objective-C class.
   std::unique_ptr<MessagingBackendServiceBridge> _messagingBackendServiceBridge;
+  // FaviconLoader used to fetch favicons on Google server.
+  raw_ptr<FaviconLoader> _faviconLoader;
 }
 
 - (instancetype)
-      initWithModeHolder:(TabGridModeHolder*)modeHolder
-     tabGroupSyncService:(tab_groups::TabGroupSyncService*)tabGroupSyncService
-         shareKitService:(ShareKitService*)shareKitService
-        messagingService:(collaboration::messaging::MessagingBackendService*)
-                             messagingService {
+     initWithModeHolder:(TabGridModeHolder*)modeHolder
+    tabGroupSyncService:(tab_groups::TabGroupSyncService*)tabGroupSyncService
+        shareKitService:(ShareKitService*)shareKitService
+       messagingService:
+           (collaboration::messaging::MessagingBackendService*)messagingService
+          faviconLoader:(FaviconLoader*)faviconLoader {
   if ((self = [super initWithModeHolder:modeHolder])) {
     _tabGroupSyncService = tabGroupSyncService;
     _shareKitService = shareKitService;
+    _faviconLoader = faviconLoader;
     _syncServiceObserver =
         std::make_unique<TabGroupSyncServiceObserverBridge>(self);
 
@@ -501,6 +505,11 @@ constexpr CGFloat kFacePileAvatarSize = 16;
   config.avatarSize = kFacePileAvatarSize;
 
   return _shareKitService->FacePileView(config);
+}
+
+- (void)fetchTabGroupItemInfo:(TabGroupItem*)tabGroupItem
+                   completion:(GroupTabInfosFetchingCompletionBlock)completion {
+  [tabGroupItem fetchGroupTabInfos:completion faviconLoader:_faviconLoader];
 }
 
 #pragma mark - MessagingBackendServiceObserving

@@ -16,6 +16,7 @@
 #include "content/browser/shared_storage/shared_storage_lock_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
+#include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
@@ -59,11 +60,15 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
       kRemainingBudget,
     };
 
+    virtual GlobalRenderFrameHostId AssociatedFrameHostId() const = 0;
+
+    virtual bool ShouldReceiveAllReports() const = 0;
+
     virtual void OnSharedStorageAccessed(
-        const base::Time& access_time,
+        base::Time access_time,
         AccessScope scope,
         AccessMethod method,
-        FrameTreeNodeId main_frame_id,
+        GlobalRenderFrameHostId main_frame_id,
         const std::string& owner_origin,
         const SharedStorageEventParams& params) = 0;
 
@@ -71,6 +76,15 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
 
     virtual void OnConfigPopulated(
         const std::optional<FencedFrameConfig>& config) = 0;
+
+    virtual void OnWorkletOperationExecutionFinished(
+        base::Time finished_time,
+        base::TimeDelta execution_time,
+        AccessMethod method,
+        int operation_id,
+        int worklet_id,
+        GlobalRenderFrameHostId main_frame_id,
+        const std::string& owner_origin) = 0;
   };
 
   void OnDocumentServiceDestroyed(
@@ -102,9 +116,17 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
   void NotifySharedStorageAccessed(
       AccessScope scope,
       SharedStorageObserverInterface::AccessMethod method,
-      FrameTreeNodeId main_frame_id,
+      GlobalRenderFrameHostId main_frame_id,
       const std::string& owner_origin,
       const SharedStorageEventParams& params);
+
+  void NotifyWorkletOperationExecutionFinished(
+      base::TimeDelta execution_time,
+      SharedStorageObserverInterface::AccessMethod method,
+      int operation_id,
+      int worklet_id,
+      GlobalRenderFrameHostId main_frame_id,
+      const std::string& owner_origin);
 
   std::map<SharedStorageDocumentServiceImpl*, WorkletHosts>&
   GetAttachedWorkletHostsForTesting() {

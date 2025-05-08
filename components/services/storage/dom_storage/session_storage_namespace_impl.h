@@ -120,7 +120,8 @@ class SessionStorageNamespaceImpl final
   void ClearChildNamespacesWaitingForClone();
 
   // Returns if a storage area exists for the given StorageKey in this map.
-  bool HasAreaForStorageKey(const blink::StorageKey& StorageKey) const;
+  bool HasAreaForStorageKeyForTesting(
+      const blink::StorageKey& StorageKey) const;
 
   // Called when this is a new namespace, or when the namespace was loaded from
   // disk. Should be called before |Bind|.

@@ -88,9 +88,8 @@
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
 #include "chrome/browser/ui/sync/one_click_signin_links_delegate_impl.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/shared_tab_group_feedback_controller.h"
-#include "chrome/browser/ui/tabs/split_tab_data.h"
-#include "chrome/browser/ui/tabs/split_tab_visual_data.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -140,6 +139,7 @@
 #include "chrome/browser/ui/views/location_bar/intent_picker_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
+#include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
@@ -196,6 +196,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/collaboration/public/messaging/message.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -212,9 +213,12 @@
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/core/reading_list_pref_names.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
+#include "components/search/ntp_features.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/sync/service/sync_service.h"
+#include "components/tabs/public/split_tab_data.h"
+#include "components/tabs/public/split_tab_visual_data.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
@@ -354,6 +358,7 @@
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
+#include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "ui/views/layout/box_layout_view.h"
 #endif
@@ -1015,9 +1020,20 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   devtools_web_view->SetID(VIEW_ID_DEV_TOOLS_DOCKED);
   devtools_web_view->SetVisible(false);
 
+  std::unique_ptr<new_tab_footer::NewTabFooterWebView> new_tab_footer_web_view;
+  if (features::IsNtpFooterEnabledWithoutSideBySide()) {
+    new_tab_footer_web_view =
+        std::make_unique<new_tab_footer::NewTabFooterWebView>(
+            browser_->profile());
+    new_tab_footer_web_view->SetVisible(false);
+  }
+
   auto contents_container = std::make_unique<views::View>();
   devtools_web_view_ =
       contents_container->AddChildView(std::move(devtools_web_view));
+
+  devtools_scrim_view_ =
+      contents_container->AddChildView(std::make_unique<ScrimView>());
 
   views::View* contents_view;
   if (base::FeatureList::IsEnabled(features::kSideBySide)) {
@@ -1039,6 +1055,12 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
     contents_web_view_->SetID(VIEW_ID_TAB_CONTAINER);
     contents_web_view_->set_is_primary_web_contents_for_window(true);
     contents_view = contents_web_view_;
+  }
+
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter) &&
+      !base::FeatureList::IsEnabled(features::kSideBySide)) {
+    new_tab_footer_web_view_ =
+        contents_container->AddChildView(std::move(new_tab_footer_web_view));
   }
 
   // Create the view that will house the Lens overlay. This view is visible but
@@ -1077,12 +1099,14 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 
 #if BUILDFLAG(ENABLE_GLIC)
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
-      devtools_web_view_, contents_view, lens_overlay_view_,
-      contents_scrim_view_, glic_border_, watermark_view_));
+      devtools_web_view_, devtools_scrim_view_, contents_view,
+      lens_overlay_view_, contents_scrim_view_, glic_border_, watermark_view_,
+      new_tab_footer_web_view_));
 #else
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
-      devtools_web_view_, contents_view, lens_overlay_view_,
-      contents_scrim_view_, nullptr, watermark_view_));
+      devtools_web_view_, devtools_scrim_view_, contents_view,
+      lens_overlay_view_, contents_scrim_view_, nullptr, watermark_view_,
+      new_tab_footer_web_view_));
 #endif
 
   toolbar_ = top_container_->AddChildView(
@@ -1147,7 +1171,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   GetViewAccessibility().SetRole(ax::mojom::Role::kClient);
 
   if (GetFocusManager()) {
-    GetFocusManager()->AddFocusChangeListener(this);
+    focus_manager_observation_.Observe(GetFocusManager());
   }
 }
 
@@ -1213,10 +1237,12 @@ BrowserView::~BrowserView() {
   contents_web_view_ = nullptr;
   lens_overlay_view_ = nullptr;
   devtools_web_view_ = nullptr;
+  devtools_scrim_view_ = nullptr;
   contents_scrim_view_ = nullptr;
   window_scrim_view_ = nullptr;
   watermark_view_ = nullptr;
   glic_border_ = nullptr;
+  new_tab_footer_web_view_ = nullptr;
   contents_container_ = nullptr;
   unified_side_panel_ = nullptr;
   right_aligned_side_panel_separator_ = nullptr;
@@ -1329,8 +1355,7 @@ bool BrowserView::UsesImmersiveFullscreenMode() const {
 
 bool BrowserView::UsesImmersiveFullscreenTabbedMode() const {
   return (GetSupportsTabStrip() &&
-          base::FeatureList::IsEnabled(features::kImmersiveFullscreen) &&
-          base::FeatureList::IsEnabled(features::kImmersiveFullscreenTabs)) &&
+          base::FeatureList::IsEnabled(features::kImmersiveFullscreen)) &&
          !GetIsWebAppType();
 }
 #endif
@@ -1464,7 +1489,7 @@ views::Widget* BrowserView::GetWidgetForAnchoring() {
   return GetWidget();
 }
 
-void BrowserView::ShowSplitView() {
+void BrowserView::ShowSplitView(bool focus_active_view) {
   CHECK(multi_contents_view_);
   const int active_index = browser_->tab_strip_model()->active_index();
 
@@ -1484,6 +1509,10 @@ void BrowserView::ShowSplitView() {
       browser_->tab_strip_model()->GetIndexOfTab(split_tabs[0]);
   const int relative_active_position = active_index - first_split_tab_index;
   multi_contents_view_->SetActiveIndex(relative_active_position);
+
+  if (focus_active_view) {
+    multi_contents_view_->GetActiveContentsView()->RequestFocus();
+  }
 
   // Update visual information for the split.
   multi_contents_view_->UpdateSplitRatio(
@@ -1511,6 +1540,17 @@ void BrowserView::UpdateActiveSplitView() {
       browser_->tab_strip_model()->GetIndexOfTab(first_tab);
   const int relative_active_position = active_index - first_split_tab_index;
   multi_contents_view_->SetActiveIndex(relative_active_position);
+}
+
+void BrowserView::SwapTabsInActiveSplit() {
+  CHECK(multi_contents_view_);
+  const int active_index = browser_->tab_strip_model()->active_index();
+
+  std::optional<split_tabs::SplitTabId> split_tab_id =
+      browser_->tab_strip_model()->GetTabAtIndex(active_index)->GetSplit();
+
+  CHECK(split_tab_id.has_value());
+  browser_->tab_strip_model()->SwapTabsInSplit(split_tab_id.value());
 }
 
 bool BrowserView::IsTabChangeInSplitView(content::WebContents* old_contents,
@@ -1633,12 +1673,11 @@ void BrowserView::FlashFrame(bool flash) {
 }
 
 ui::ZOrderLevel BrowserView::GetZOrderLevel() const {
-  return ui::ZOrderLevel::kNormal;
+  return frame_->GetZOrderLevel();
 }
 
 void BrowserView::SetZOrderLevel(ui::ZOrderLevel level) {
-  // Not implemented for browser windows.
-  NOTIMPLEMENTED();
+  frame_->SetZOrderLevel(level);
 }
 
 gfx::NativeWindow BrowserView::GetNativeWindow() const {
@@ -1684,6 +1723,17 @@ bool BrowserView::IsOnCurrentWorkspace() const {
 #else
   return true;
 #endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
+bool BrowserView::IsVisibleOnScreen() const {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/405283740): currently only works for mac and windows. See
+  // comments around Widget::IsVisibleOnScreen() for more details. Eventually
+  // this should work for all platforms.
+  return frame_->IsVisibleOnScreen();
+#else
+  return IsOnCurrentWorkspace();
+#endif
 }
 
 void BrowserView::SetTopControlsShownRatio(content::WebContents* web_contents,
@@ -2041,7 +2091,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
       const tabs::TabInterface* active_tab =
           tabs::TabInterface::GetFromContents(new_contents);
       if (active_tab->IsSplit()) {
-        ShowSplitView();
+        ShowSplitView(/*focus_active_view=*/false);
       } else {
         if (multi_contents_view_->IsInSplitView()) {
           HideSplitView();
@@ -2516,6 +2566,12 @@ void BrowserView::SetContentScrimVisibility(bool visible) {
   }
 }
 
+void BrowserView::SetDevToolsScrimVisibility(bool visible) {
+  if (base::FeatureList::IsEnabled(features::KScrimForTabModal)) {
+    devtools_scrim_view()->SetVisible(visible);
+  }
+}
+
 void BrowserView::ResetToolbarTabState(content::WebContents* contents) {
   // We may end up here during destruction.
   if (toolbar_) {
@@ -2939,11 +2995,7 @@ void BrowserView::RotatePaneFocus(bool forwards) {
 }
 
 void BrowserView::FocusWebContentsPane() {
-  if (multi_contents_view_) {
-    multi_contents_view_->RequestFocus();
-  } else {
-    contents_web_view_->RequestFocus();
-  }
+  GetContentsView()->RequestFocus();
 }
 
 bool BrowserView::ActivateFirstInactiveBubbleForAccessibility() {
@@ -3433,12 +3485,8 @@ ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
     const std::string& target_language,
     translate::TranslateErrors error_type,
     bool is_user_gesture) {
-  views::View* contents_view;
-  if (multi_contents_view_) {
-    contents_view = multi_contents_view_;
-  } else {
-    contents_view = contents_web_view_;
-  }
+  views::View* contents_view = GetContentsView();
+
   if (contents_view->HasFocus() && !GetLocationBarView()->IsMouseHovered() &&
       web_contents->IsFocusedElementEditable()) {
     return ShowTranslateBubbleResult::EDITABLE_FIELD_IS_ACTIVE;
@@ -3805,18 +3853,44 @@ LocationBarView* BrowserView::GetLocationBarView() const {
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView, TabStripModelObserver implementation:
 
-void BrowserView::TabChangedAt(content::WebContents* contents,
-                               int index,
-                               TabChangeType change_type) {
-  if (change_type != TabChangeType::kLoadingOnly || contents->IsLoading()) {
+void BrowserView::OnSplitTabContentsUpdated(
+    split_tabs::SplitTabId split_id,
+    std::vector<std::pair<tabs::TabInterface*, int>> prev_tabs,
+    std::vector<std::pair<tabs::TabInterface*, int>> new_tabs) {
+  // If the updated split is not active, do nothing.
+  if (const tabs::TabInterface* active_tab = browser_->GetActiveTabInterface();
+      !active_tab || !active_tab->IsSplit() ||
+      active_tab->GetSplit().value() != split_id) {
     return;
   }
 
-  if (contents != GetActiveWebContents()) {
-    return;
-  }
+  split_tabs::SplitTabData* split_data =
+      browser_->tab_strip_model()->GetSplitData(split_id);
+  const int first_split_tab_index =
+      browser_->tab_strip_model()->GetIndexOfTab(split_data->ListTabs()[0]);
 
-  UpdateAccessibleURLForRootView(contents->GetURL());
+  const bool active_view_has_focus =
+      multi_contents_view_->GetActiveContentsView()->HasFocus();
+
+  // Clear web contents for prev_tabs in preparation to reset for new_tabs.
+  for (std::pair<tabs::TabInterface*, int> split_tab_with_index : prev_tabs) {
+    int relative_index = split_tab_with_index.second - first_split_tab_index;
+    multi_contents_view_->SetWebContentsAtIndex(nullptr, relative_index);
+  }
+  // Set web contents in multi_contents_view_ to match new_tabs and update the
+  // active multi_contents_view_ index.
+  for (std::pair<tabs::TabInterface*, int> split_tab_with_index : new_tabs) {
+    int relative_index = split_tab_with_index.second - first_split_tab_index;
+    multi_contents_view_->SetWebContentsAtIndex(
+        split_tab_with_index.first->GetContents(), relative_index);
+    if (split_tab_with_index.first->IsActivated()) {
+      multi_contents_view_->SetActiveIndex(relative_index);
+    }
+  }
+  // Focus the active contents view if it previously had focus prior to swap.
+  if (active_view_has_focus) {
+    multi_contents_view_->GetActiveContentsView()->RequestFocus();
+  }
 }
 
 void BrowserView::OnSplitTabCreated(
@@ -3827,7 +3901,7 @@ void BrowserView::OnSplitTabCreated(
   const tabs::TabInterface* active_tab =
       browser_->tab_strip_model()->GetActiveTab();
   if (active_tab->IsSplit()) {
-    ShowSplitView();
+    ShowSplitView(GetContentsView()->HasFocus());
   }
 }
 
@@ -3857,6 +3931,20 @@ void BrowserView::OnSplitTabVisualsChanged(
       multi_contents_view_->UpdateSplitRatio(new_visual_data.split_ratio());
     }
   }
+}
+
+void BrowserView::TabChangedAt(content::WebContents* contents,
+                               int index,
+                               TabChangeType change_type) {
+  if (change_type != TabChangeType::kLoadingOnly || contents->IsLoading()) {
+    return;
+  }
+
+  if (contents != GetActiveWebContents()) {
+    return;
+  }
+
+  UpdateAccessibleURLForRootView(contents->GetURL());
 }
 
 void BrowserView::OnTabStripModelChanged(
@@ -4232,6 +4320,23 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
                                                   : IDS_TAB_AX_MEMORY_USAGE;
       title = l10n_util::GetStringFUTF16(message_id, title,
                                          ui::FormatBytes(memory_used));
+    }
+  } else if (tab_data.collaboration_messaging &&
+             tab_data.collaboration_messaging->HasMessage()) {
+    std::u16string given_name = tab_data.collaboration_messaging->given_name();
+
+    switch (tab_data.collaboration_messaging->collaboration_event()) {
+      case collaboration::messaging::CollaborationEvent::TAB_ADDED:
+        title = l10n_util::GetStringFUTF16(
+            IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_ADDED_THIS_TAB, given_name);
+        break;
+      case collaboration::messaging::CollaborationEvent::TAB_UPDATED:
+        title = l10n_util::GetStringFUTF16(
+            IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_THIS_TAB,
+            given_name);
+        break;
+      default:
+        NOTREACHED();
     }
   }
 
@@ -4796,6 +4901,9 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
   if (devtools_web_view_->GetVisible()) {
     panes->push_back(devtools_web_view_);
   }
+  if (devtools_scrim_view_->GetVisible()) {
+    panes->push_back(devtools_scrim_view_);
+  }
 }
 
 bool BrowserView::ShouldDescendIntoChildForEventHandling(
@@ -5227,6 +5335,11 @@ void BrowserView::AddedToWidget() {
   }
 
   initialized_ = true;
+}
+
+void BrowserView::RemovedFromWidget() {
+  CHECK(GetFocusManager());
+  focus_manager_observation_.Reset();
 }
 
 void BrowserView::PaintChildren(const views::PaintInfo& paint_info) {
@@ -5910,12 +6023,13 @@ void BrowserView::ShowIncognitoHistoryDisclaimerDialog() {
                  kHistoryDisclaimerBubble);
 }
 
-bool BrowserView::IsTabModalPopup() const {
-  return browser_->IsTabModalPopup();
+bool BrowserView::IsTabModalPopupDeprecated() const {
+  return browser_->IsTabModalPopupDeprecated();
 }
 
-void BrowserView::SetIsTabModalPopup(bool is_tab_modal_popup) {
-  browser_->set_is_tab_modal_popup(is_tab_modal_popup);
+void BrowserView::SetIsTabModalPopupDeprecated(
+    bool is_tab_modal_popup_deprecated) {
+  browser_->set_is_tab_modal_popup_deprecated(is_tab_modal_popup_deprecated);
 }
 
 void BrowserView::UpdateWebAppStatusIconsVisiblity() {

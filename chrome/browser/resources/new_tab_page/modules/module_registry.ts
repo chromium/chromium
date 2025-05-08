@@ -131,7 +131,6 @@ export class ModuleRegistry {
 
     const elements = await descriptor.initialize(timeout, /*onNtpLoad=*/ false);
     if (!elements) {
-      console.error('No elements initialized for module id ', id);
       return null;
     }
 

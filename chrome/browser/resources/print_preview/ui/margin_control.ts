@@ -2,23 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_elements/cr_input/cr_input_style.css.js';
 import '/strings.m.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Coordinate2d} from '../data/coordinate2d.js';
 import {CustomMarginsOrientation} from '../data/margins.js';
 import type {MeasurementSystem} from '../data/measurement_system.js';
 import type {Size} from '../data/size.js';
-import {observerDepsDefined} from '../print_preview_utils.js';
 
-import {InputMixin} from './input_mixin.js';
-import {getTemplate} from './margin_control.html.js';
+import {InputMixinLit} from './input_mixin_lit.js';
+import {getCss} from './margin_control.css.js';
+import {getHtml} from './margin_control.html.js';
 
 /**
  * Radius of the margin control in pixels. Padding of control + 1 for border.
@@ -34,7 +33,7 @@ export interface PrintPreviewMarginControlElement {
 }
 
 const PrintPreviewMarginControlElementBase =
-    I18nMixin(WebUiListenerMixin(InputMixin(PolymerElement)));
+    I18nMixinLit(WebUiListenerMixinLit(InputMixinLit(CrLitElement)));
 
 export class PrintPreviewMarginControlElement extends
     PrintPreviewMarginControlElementBase {
@@ -42,94 +41,94 @@ export class PrintPreviewMarginControlElement extends
     return 'print-preview-margin-control';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       disabled: {
         type: Boolean,
-        reflectToAttribute: true,
-        observer: 'onDisabledChange_',
+        reflect: true,
       },
 
       side: {
         type: String,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       invalid: {
         type: Boolean,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       invisible: {
         type: Boolean,
-        reflectToAttribute: true,
-        observer: 'onClipSizeChange_',
+        reflect: true,
       },
 
-      measurementSystem: Object,
+      measurementSystem: {type: Object},
 
       focused_: {
         type: Boolean,
-        reflectToAttribute: true,
-        value: false,
+        reflect: true,
       },
 
-      positionInPts_: {
-        type: Number,
-        notify: true,
-        value: 0,
-      },
-
-      scaleTransform: {
-        type: Number,
-        notify: true,
-      },
-
-      translateTransform: {
-        type: Object,
-        notify: true,
-      },
-
-      pageSize: {
-        type: Object,
-        notify: true,
-      },
-
-      clipSize: {
-        type: Object,
-        notify: true,
-        observer: 'onClipSizeChange_',
-      },
+      positionInPts_: {type: Number},
+      scaleTransform: {type: Number},
+      translateTransform: {type: Object},
+      pageSize: {type: Object},
+      clipSize: {type: Object},
     };
   }
 
-  declare disabled: boolean;
-  declare side: CustomMarginsOrientation;
-  declare invalid: boolean;
-  declare invisible: boolean;
-  declare measurementSystem: MeasurementSystem|null;
-  declare scaleTransform: number;
-  declare translateTransform: Coordinate2d;
-  declare pageSize: Size;
-  declare clipSize: Size|null;
+  accessor disabled: boolean;
+  accessor side: CustomMarginsOrientation;
+  accessor invalid: boolean;
+  accessor invisible: boolean;
+  accessor measurementSystem: MeasurementSystem|null;
+  accessor scaleTransform: number;
+  accessor translateTransform: Coordinate2d;
+  accessor pageSize: Size;
+  accessor clipSize: Size|null;
 
-  declare private focused_: boolean;
-  declare private positionInPts_: number;
+  private accessor focused_: boolean = false;
+  private accessor positionInPts_: number = 0;
 
-  static get observers() {
-    return [
-      'updatePosition_(positionInPts_, scaleTransform, translateTransform, ' +
-          'pageSize, side)',
-    ];
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('disabled')) {
+      if (this.disabled) {
+        this.focused_ = false;
+      }
+    }
   }
 
-  override ready() {
-    super.ready();
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
 
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedProperties.has('clipSize') ||
+        changedProperties.has('invisible')) {
+      this.onClipSizeChange_();
+    }
+
+    if (changedPrivateProperties.has('positionInPts_') ||
+        changedProperties.has('scaleTransform') ||
+        changedProperties.has('translateTransform') ||
+        changedProperties.has('pageSize') || changedProperties.has('side')) {
+      this.updatePosition_();
+    }
+  }
+
+  override firstUpdated() {
     this.addEventListener('input-change', e => this.onInputChange_(e));
   }
 
@@ -169,7 +168,7 @@ export class PrintPreviewMarginControlElement extends
    * @return 'true' or 'false', indicating whether the input should be
    *     aria-hidden.
    */
-  private getAriaHidden_(): string {
+  protected getAriaHidden_(): string {
     return this.invisible.toString();
   }
 
@@ -208,12 +207,6 @@ export class PrintPreviewMarginControlElement extends
     return !this.disabled && event.button === 0 &&
         (event.composedPath()[0] === this.$.lineContainer ||
          event.composedPath()[0] === this.$.line);
-  }
-
-  private onDisabledChange_() {
-    if (this.disabled) {
-      this.focused_ = false;
-    }
   }
 
   /**
@@ -278,19 +271,20 @@ export class PrintPreviewMarginControlElement extends
     this.fire_('text-change', value);
   }
 
-  private onBlur_() {
+  protected onBlur_() {
     this.focused_ = false;
     this.resetAndUpdate();
     this.fire_('text-blur', this.invalid || !this.$.input.value);
   }
 
-  private onFocus_() {
+  protected onFocus_() {
     this.focused_ = true;
     this.fire_('text-focus');
   }
 
   private updatePosition_() {
-    if (!observerDepsDefined(Array.from(arguments))) {
+    if (!this.translateTransform || !this.scaleTransform ||
+        !this.measurementSystem) {
       return;
     }
 
@@ -342,6 +336,8 @@ export class PrintPreviewMarginControlElement extends
     });
   }
 }
+
+export type MarginControlElement = PrintPreviewMarginControlElement;
 
 declare global {
   interface HTMLElementTagNameMap {

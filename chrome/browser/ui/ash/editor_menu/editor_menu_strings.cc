@@ -4,35 +4,10 @@
 
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_strings.h"
 
-#include "base/containers/contains.h"
-#include "base/containers/fixed_flat_set.h"
-#include "build/branding_buildflags.h"
-#include "chrome/browser/browser_process.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace chromeos::editor_menu {
-
-namespace {
-
-constexpr auto kAllowedLanguagesForShowingL10nStrings =
-    base::MakeFixedFlatSet<std::string_view>({"de", "en", "en-GB", "fr", "ja"});
-
-std::string GetSystemLocale() {
-  return g_browser_process != nullptr
-             ? g_browser_process->GetApplicationLocale()
-             : "";
-}
-
-bool ShouldUseL10nStrings() {
-  return chromeos::features::IsOrcaUseL10nStringsEnabled() ||
-         (chromeos::features::IsOrcaInternationalizeEnabled() &&
-          base::Contains(kAllowedLanguagesForShowingL10nStrings,
-                         GetSystemLocale()));
-}
-
-}  // namespace
 
 std::u16string GetEditorMenuLobsterTitle() {
   return l10n_util::GetStringUTF16(IDS_LOBSTER_EDITOR_MENU_CARD_TAB_LABEL);
@@ -43,76 +18,51 @@ std::u16string GetEditorMenuLobsterChipLabel() {
 }
 
 std::u16string GetEditorMenuPromoCardTitle() {
-  return ShouldUseL10nStrings()
-             ? l10n_util::GetStringUTF16(IDS_EDITOR_MENU_PROMO_CARD_TITLE)
-             : u"Write faster and with more confidence";
+  return l10n_util::GetStringUTF16(IDS_EDITOR_MENU_PROMO_CARD_TITLE);
 }
 
 std::u16string GetEditorMenuPromoCardDescription() {
-  return ShouldUseL10nStrings()
-             ? l10n_util::GetStringUTF16(IDS_EDITOR_MENU_PROMO_CARD_DESC)
-             : u"Use Help me write to create a draft or refine existing work, "
-               u"powered by Google AI";
+  return l10n_util::GetStringUTF16(IDS_EDITOR_MENU_PROMO_CARD_DESC);
 }
 
 std::u16string GetEditorMenuPromoCardDismissButtonText() {
-  return ShouldUseL10nStrings() ? l10n_util::GetStringUTF16(
-                                      IDS_EDITOR_MENU_PROMO_CARD_DISMISS_BUTTON)
-                                : u"No thanks";
+  return l10n_util::GetStringUTF16(IDS_EDITOR_MENU_PROMO_CARD_DISMISS_BUTTON);
 }
 
 std::u16string GetEditorMenuPromoCardTryItButtonText() {
-  return ShouldUseL10nStrings() ? l10n_util::GetStringUTF16(
-                                      IDS_EDITOR_MENU_PROMO_CARD_TRY_IT_BUTTON)
-                                : u"Try it";
+  return l10n_util::GetStringUTF16(IDS_EDITOR_MENU_PROMO_CARD_TRY_IT_BUTTON);
 }
 
 std::u16string GetEditorMenuWriteCardTitle() {
-  return ShouldUseL10nStrings()
-             ? l10n_util::GetStringUTF16(IDS_EDITOR_MENU_WRITE_CARD_TITLE)
-             : u"Help me write";
+  return l10n_util::GetStringUTF16(IDS_EDITOR_MENU_WRITE_CARD_TITLE);
 }
 
 std::u16string GetEditorMenuRewriteCardTitle() {
-  return ShouldUseL10nStrings()
-             ? l10n_util::GetStringUTF16(IDS_EDITOR_MENU_REWRITE_CARD_TITLE)
-             : u"Refine";
+  return l10n_util::GetStringUTF16(IDS_EDITOR_MENU_REWRITE_CARD_TITLE);
 }
 
 std::u16string
 GetEditorMenuFreeformPromptInputFieldPlaceholderForHelpMeWrite() {
-  return ShouldUseL10nStrings()
-             ? l10n_util::GetStringUTF16(
-                   IDS_EDITOR_MENU_FREEFORM_PROMPT_INPUT_FIELD_PLACEHOLDER)
-             : u"Enter a prompt";
+  return l10n_util::GetStringUTF16(
+      IDS_EDITOR_MENU_FREEFORM_PROMPT_INPUT_FIELD_PLACEHOLDER);
 }
 
 std::u16string GetEditorMenuFreeformPromptInputFieldPlaceholderForLobster() {
-  if (!ShouldUseL10nStrings()) {
-    return u"Enter a prompt";
-  }
-
   return l10n_util::GetStringUTF16(
       IDS_LOBSTER_EDITOR_MENU_CARD_FREEFORM_PLACEHOLDER);
 }
 
 std::u16string GetEditorMenuSettingsTooltip() {
-  return ShouldUseL10nStrings()
-             ? l10n_util::GetStringUTF16(IDS_EDITOR_MENU_SETTINGS_TOOLTIP)
-             : u"Help me write settings";
+  return l10n_util::GetStringUTF16(IDS_EDITOR_MENU_SETTINGS_TOOLTIP);
 }
 
 std::u16string GetEditorMenuFreeformTextfieldArrowButtonTooltip() {
-  return ShouldUseL10nStrings()
-             ? l10n_util::GetStringUTF16(
-                   IDS_EDITOR_MENU_FREEFORM_TEXTFIELD_ARROW_BUTTON_TOOLTIP)
-             : u"Submit";
+  return l10n_util::GetStringUTF16(
+      IDS_EDITOR_MENU_FREEFORM_TEXTFIELD_ARROW_BUTTON_TOOLTIP);
 }
 
 std::u16string GetEditorMenuExperimentBadgeLabel() {
-  return ShouldUseL10nStrings()
-             ? l10n_util::GetStringUTF16(IDS_EDITOR_MENU_EXPERIMENT_BADGE)
-             : u"Experiment";
+  return l10n_util::GetStringUTF16(IDS_EDITOR_MENU_EXPERIMENT_BADGE);
 }
 
 }  // namespace chromeos::editor_menu

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,10 +14,11 @@ import android.view.ViewGroup;
 import androidx.activity.ComponentActivity;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -50,6 +53,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.List;
 
 /** Responsible of showing the correct sub-component of the sign-in and history opt-in flow. */
+@NullMarked
 public class BottomSheetSigninAndHistorySyncCoordinator
         implements SigninAndHistorySyncCoordinator,
                 SigninAccountPickerCoordinator.Delegate,
@@ -65,9 +69,9 @@ public class BottomSheetSigninAndHistorySyncCoordinator
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final BottomSheetSigninAndHistorySyncConfig mConfig;
 
-    private SigninAccountPickerCoordinator mAccountPickerCoordinator;
-    private HistorySyncCoordinator mHistorySyncCoordinator;
-    private PropertyModel mDialogModel;
+    private @Nullable SigninAccountPickerCoordinator mAccountPickerCoordinator;
+    private @Nullable HistorySyncCoordinator mHistorySyncCoordinator;
+    private @Nullable PropertyModel mDialogModel;
     private boolean mDidShowSigninStep;
     private boolean mFlowInitialized;
     private @ColorInt int mScrimStatusBarColor = ScrimProperties.INVALID_COLOR;
@@ -105,13 +109,13 @@ public class BottomSheetSigninAndHistorySyncCoordinator
      *     bottom sheet.
      */
     public BottomSheetSigninAndHistorySyncCoordinator(
-            @NonNull WindowAndroid windowAndroid,
-            @NonNull ComponentActivity activity,
-            @NonNull Delegate delegate,
-            @NonNull DeviceLockActivityLauncher deviceLockActivityLauncher,
-            @NonNull OneshotSupplier<Profile> profileSupplier,
-            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            @NonNull BottomSheetSigninAndHistorySyncConfig config,
+            WindowAndroid windowAndroid,
+            ComponentActivity activity,
+            Delegate delegate,
+            DeviceLockActivityLauncher deviceLockActivityLauncher,
+            OneshotSupplier<Profile> profileSupplier,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            BottomSheetSigninAndHistorySyncConfig config,
             @SigninAccessPoint int signinAccessPoint) {
         mWindowAndroid = windowAndroid;
         mActivity = activity;
@@ -172,7 +176,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
      * Google Play Services "add account" flow started at the activity level.
      */
     @Override
-    public void onAccountAdded(@NonNull String accountEmail) {
+    public void onAccountAdded(String accountEmail) {
         // If the activity was killed during the add account flow (reason why the flow is not yet
         // initialized), proceed as if the user started the sign-in flow for the first time.
         if (!mFlowInitialized) {
@@ -191,7 +195,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
 
     /** Implements {@link SigninAndHistorySyncCoordinator}. */
     @Override
-    public @NonNull View getView() {
+    public View getView() {
         assert mContainerView != null;
         return mContainerView;
     }
@@ -225,7 +229,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
                 && mSigninAccessPoint == SigninAccessPoint.BOOKMARK_MANAGER) {
             Profile profile = mProfileSupplier.get();
-            SyncService syncService = SyncServiceFactory.getForProfile(profile);
+            SyncService syncService = assumeNonNull(SyncServiceFactory.getForProfile(profile));
             syncService.setSelectedType(UserSelectableType.BOOKMARKS, true);
             syncService.setSelectedType(UserSelectableType.READING_LIST, true);
         }
@@ -322,6 +326,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
         // opt-in screen is shown.
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfileSupplier.get());
+        assumeNonNull(identityManager);
         if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             maybeShowHistoryOptInDialog();
             return;
@@ -353,6 +358,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator
     private void showSigninBottomSheet() {
         SigninManager signinManager =
                 IdentityServicesProvider.get().getSigninManager(mProfileSupplier.get());
+        assumeNonNull(signinManager);
         @AccountPickerLaunchMode int accountPickerMode = AccountPickerLaunchMode.DEFAULT;
         switch (mConfig.withAccountSigninMode) {
             case WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET:
@@ -464,8 +470,11 @@ public class BottomSheetSigninAndHistorySyncCoordinator
     }
 
     void showDialogContentView() {
+        assumeNonNull(mHistorySyncCoordinator);
         View view = mHistorySyncCoordinator.getView();
+        assumeNonNull(view);
         view.setBackgroundColor(getHistorySyncBackgroundColor());
+        assumeNonNull(mDialogModel);
         mDialogModel.set(ModalDialogProperties.CUSTOM_VIEW, view);
         ModalDialogManager manager = mModalDialogManagerSupplier.get();
         assert manager != null;

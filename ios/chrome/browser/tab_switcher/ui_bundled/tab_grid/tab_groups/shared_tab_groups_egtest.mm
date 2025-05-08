@@ -43,6 +43,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 using chrome_test_util::AddTabToGroupSubMenuButton;
 using chrome_test_util::BlueDotOnShowTabsButton;
 using chrome_test_util::BlueDotOnTabStripCellAtIndex;
+using chrome_test_util::CloseTabGroupButton;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabel;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabelId;
 using chrome_test_util::CreateTabGroupAtIndex;
@@ -72,7 +73,6 @@ using chrome_test_util::TabGroupActivityLabelOnGridCellAtIndex;
 using chrome_test_util::TabGroupActivityLabelOnGroupCellAtIndex;
 using chrome_test_util::TabGroupActivitySummaryCell;
 using chrome_test_util::TabGroupActivitySummaryCellCloseButton;
-using chrome_test_util::TabGroupBackButton;
 using chrome_test_util::TabGroupCreationView;
 using chrome_test_util::TabGroupOverflowMenuButton;
 using chrome_test_util::TabGroupRecentActivityCellAtIndex;
@@ -167,7 +167,6 @@ void AddSharedGroup(BOOL owner) {
 AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
     bool join_only = false) {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kTabGroupsIPad);
   config.features_enabled.push_back(kTabGroupSync);
   config.features_enabled.push_back(kTabGroupIndicator);
   config.features_enabled.push_back(
@@ -266,7 +265,7 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
                      kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:educationScreen];
-  [[EarlGrey selectElementWithMatcher:TabGroupBackButton()]
+  [[EarlGrey selectElementWithMatcher:CloseTabGroupButton()]
       performAction:grey_tap()];
   OpenTabGroupAtIndex(0);
 
@@ -477,13 +476,9 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 
 // Checks that the IPH is presented when the user foreground the app with a
 // shared tab group active.
-// TODO(crbug.com/411064928): This fails on iphone simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testForegroundIPH DISABLED_testForegroundIPH
-#else
-#define MAYBE_testForegroundIPH testForegroundIPH
-#endif
-- (void)MAYBE_testForegroundIPH {
+// TODO(crbug.com/411064928): This fails on simulator.
+// TODO(crbug.com/414607496): This fails on device.
+- (void)DISABLED_testForegroundIPH {
   if (@available(iOS 17, *)) {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
@@ -517,7 +512,7 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 
   // Share the group then foreground the app. The IPH should be visible.
   [ChromeEarlGreyUI openTabGrid];
-  [[EarlGrey selectElementWithMatcher:TabGroupBackButton()]
+  [[EarlGrey selectElementWithMatcher:CloseTabGroupButton()]
       performAction:grey_tap()];
   ShareGroupAtIndex(1);
   [[EarlGrey selectElementWithMatcher:TabGridDoneButton()]
@@ -657,7 +652,13 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 // Checks last tab close alert as owner of the group open a new tab and close
 // the last tab, when "Keep Group" is pressed and delete the group when "Delete
 // Group" is pressed.
-- (void)testLastTabClosedOwnerAlert {
+// TODO(crbug.com/414607496): This fails on device.
+#if !TARGET_OS_SIMULATOR
+#define MAYBE_testLastTabClosedOwnerAlert DISABLED_testLastTabClosedOwnerAlert
+#else
+#define MAYBE_testLastTabClosedOwnerAlert testLastTabClosedOwnerAlert
+#endif
+- (void)MAYBE_testLastTabClosedOwnerAlert {
   if (@available(iOS 17, *)) {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
@@ -724,7 +725,13 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 
 // Ensures the last tab close alert as a member is displayed when the group is
 // shared.
-- (void)testLastTabClosedMemberAlert {
+// TODO(crbug.com/414607496): This fails on device.
+#if !TARGET_OS_SIMULATOR
+#define MAYBE_testLastTabClosedMemberAlert DISABLED_testLastTabClosedMemberAlert
+#else
+#define MAYBE_testLastTabClosedMemberAlert testLastTabClosedMemberAlert
+#endif
+- (void)MAYBE_testLastTabClosedMemberAlert {
   if (@available(iOS 17, *)) {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
@@ -1266,7 +1273,7 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
                       TabGroupActivityLabelOnGridCellAtIndex(1)];
 
   // Leave from the group view.
-  [[EarlGrey selectElementWithMatcher:TabGroupBackButton()]
+  [[EarlGrey selectElementWithMatcher:CloseTabGroupButton()]
       performAction:grey_tap()];
 
   // Verify that the activity label on the group cell disappears.
@@ -1331,7 +1338,7 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   [ChromeEarlGreyUI openTabGrid];
 
   // Leave from the group view.
-  [[EarlGrey selectElementWithMatcher:TabGroupBackButton()]
+  [[EarlGrey selectElementWithMatcher:CloseTabGroupButton()]
       performAction:grey_tap()];
 
   // Open a tab outside the group.

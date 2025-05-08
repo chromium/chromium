@@ -15,10 +15,6 @@
 
 namespace content {
 
-MockSodaInstaller::MockSodaInstaller() = default;
-
-MockSodaInstaller::~MockSodaInstaller() = default;
-
 MockOnDeviceWebSpeechRecognitionService::
     MockOnDeviceWebSpeechRecognitionService(
         content::BrowserContext* browser_context)

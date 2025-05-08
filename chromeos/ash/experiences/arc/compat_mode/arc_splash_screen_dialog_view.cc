@@ -160,7 +160,7 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
     bool is_for_unresizable)
     : anchor_(anchor), close_callback_(std::move(close_callback)) {
   // Setup delegate.
-  set_background_color(cros_tokens::kCrosSysDialogContainer);
+  SetBackgroundColor(cros_tokens::kCrosSysDialogContainer);
   SetArrow(views::BubbleBorder::Arrow::BOTTOM_CENTER);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_parent_window(parent);
@@ -288,7 +288,7 @@ void ArcSplashScreenDialogView::AddedToWidget() {
   const int kCornerRadius = 20;
   auto* const frame = GetBubbleFrameView();
   if (frame) {
-    frame->SetCornerRadius(kCornerRadius);
+    frame->SetRoundedCorners(gfx::RoundedCornersF(kCornerRadius));
   }
 }
 

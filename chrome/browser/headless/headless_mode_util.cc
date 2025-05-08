@@ -18,7 +18,6 @@
 #include "chrome/browser/headless/headless_mode_switches.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/common/content_switches.h"
-#include "ui/base/ui_base_switches.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/gl/gl_switches.h"               // nogncheck

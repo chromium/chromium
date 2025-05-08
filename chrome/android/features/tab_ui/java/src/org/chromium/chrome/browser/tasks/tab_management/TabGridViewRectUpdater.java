@@ -61,7 +61,8 @@ public class TabGridViewRectUpdater implements ViewRectUpdateStrategy {
         if (mCachedWindowCoordinates[0] == previousPositionX
                 && mCachedWindowCoordinates[1] == previousPositionY
                 && mCachedViewWidth == previousWidth
-                && mCachedViewHeight == previousHeight) {
+                && mCachedViewHeight == previousHeight
+                && !forceRefresh) {
             return;
         }
 

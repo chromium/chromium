@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -145,7 +146,7 @@ TEST_F(CrxCacheTest, CacheNotProvided) {
              "hash", "fp", ExpectError(UnpackerError::kCrxCacheNotProvided));
   cache->GetByFp("fp", ExpectError(UnpackerError::kCrxCacheNotProvided));
   cache->GetByHash("hash", ExpectError(UnpackerError::kCrxCacheNotProvided));
-  cache->RemoveAll("appid");
+  cache->RemoveAll("appid", base::DoNothing());
   cache->ListHashesByAppId(ExpectHashes({}).Then(Quit()));
   RunLoop();
 }
@@ -174,10 +175,10 @@ TEST_F(CrxCacheTest, RemoveAll) {
   cache->ListHashesByAppId(
       ExpectHashes({{"appid", "hash"}, {"appid2", "hash2"}}).Then(Quit()));
   RunLoop();
-  cache->RemoveAll("appid");
+  cache->RemoveAll("appid", base::DoNothing());
   cache->ListHashesByAppId(ExpectHashes({{"appid2", "hash2"}}).Then(Quit()));
   RunLoop();
-  cache->RemoveAll("appid2");
+  cache->RemoveAll("appid2", base::DoNothing());
   cache->ListHashesByAppId(ExpectHashes({}).Then(Quit()));
   RunLoop();
 }

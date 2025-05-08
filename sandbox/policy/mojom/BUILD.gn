@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//chromeos/ash/components/assistant/assistant.gni")
+import("//media/gpu/args.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//ppapi/buildflags/buildflags.gni")
 
@@ -19,5 +20,8 @@ mojom("mojom") {
   }
   if (enable_cros_libassistant) {
     enabled_features += [ "enable_cros_libassistant" ]
+  }
+  if (use_linux_video_acceleration) {
+    enabled_features += [ "enable_oop_video_accelerators" ]
   }
 }

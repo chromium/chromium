@@ -13,6 +13,7 @@ const PropertyReplacer = goog.require('goog.testing.PropertyReplacer');
 const TestCase = goog.require('goog.testing.TestCase');
 const asserts = goog.require('goog.asserts');
 const testingTestSuite = goog.require('goog.testing.testSuite');
+const {EnvironmentBase} = goog.require('goog.labs.testing.EnvironmentBase');
 
 let testCase = null;
 let mockControl = null;
@@ -30,7 +31,7 @@ const env = new Environment();
 function setUpTestCase() {
   // Clear the activeTestCase_ field to make an instance of Environment create a
   // new EnvironmentTestCase instance.
-  Environment.activeTestCase_ = null;
+  EnvironmentBase.activeTestCase_ = null;
   new Environment();  // Assigns a new value to Environment.activeTestCase_.
   testCase = Environment.getTestCaseIfActive();
 }
@@ -409,6 +410,39 @@ testingTestSuite(testSuite = {
     assertTestFailure(testCase, 'testThatThrowsEventually', 'LateErrorMessage');
 
     testing = false;
+  },
+
+  async testAsyncMockClock() {
+    testing = true;
+
+    const env = new Environment().withMockClock({async: true});
+
+    testCase.setUp = () => {
+      env.mockClock.install();
+    };
+    testCase.addNewTest('testThatThrowsEventuallyAsync', () => {
+      setTimeout(() => {
+        throw new Error('LateErrorMessage');
+      }, 200);
+    });
+    testCase.tearDown = async () => {
+      await env.mockClock.tickAsync(Infinity);
+    };
+
+    await runTestsReturningPromise(testCase);
+    assertTestFailure(
+        testCase, 'testThatThrowsEventuallyAsync', 'LateErrorMessage');
+
+    testing = false;
+  },
+
+  async testMockClockOverwrites() {
+    const env = new Environment().withMockClock();
+    assertTrue(env.mockClock.isSynchronous());
+    env.withMockClock({async: true});
+    assertFalse(env.mockClock.isSynchronous());
+    env.withMockClock();
+    assertTrue(env.mockClock.isSynchronous());
   },
 
   async testMockControl() {

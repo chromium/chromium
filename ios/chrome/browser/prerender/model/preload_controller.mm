@@ -127,7 +127,7 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
 
   // web::JavaScriptDialogPresenter:
   void RunJavaScriptAlertDialog(web::WebState* web_state,
-                                const GURL& origin_url,
+                                const url::Origin& origin,
                                 NSString* message_text,
                                 base::OnceClosure callback) override {
     std::move(callback).Run();
@@ -136,7 +136,7 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
 
   void RunJavaScriptConfirmDialog(
       web::WebState* web_state,
-      const GURL& origin_url,
+      const url::Origin& origin,
       NSString* message_text,
       base::OnceCallback<void(bool success)> callback) override {
     std::move(callback).Run(/*success=*/false);
@@ -145,7 +145,7 @@ class PreloadJavaScriptDialogPresenter : public web::JavaScriptDialogPresenter {
 
   void RunJavaScriptPromptDialog(
       web::WebState* web_state,
-      const GURL& origin_url,
+      const url::Origin& origin,
       NSString* message_text,
       NSString* default_prompt_text,
       base::OnceCallback<void(NSString* user_input)> callback) override {
@@ -166,8 +166,12 @@ class PreloadManageAccountsDelegate : public ManageAccountsDelegate {
   ~PreloadManageAccountsDelegate() override {}
 
   void OnRestoreGaiaCookies() override { [canceler_ schedulePrerenderCancel]; }
-  void OnManageAccounts() override { [canceler_ schedulePrerenderCancel]; }
-  void OnAddAccount() override { [canceler_ schedulePrerenderCancel]; }
+  void OnManageAccounts(const GURL& url) override {
+    [canceler_ schedulePrerenderCancel];
+  }
+  void OnAddAccount(const GURL& url) override {
+    [canceler_ schedulePrerenderCancel];
+  }
   void OnShowConsistencyPromo(const GURL& url,
                               web::WebState* webState) override {
     [canceler_ schedulePrerenderCancel];

@@ -316,7 +316,7 @@ void DumpAccessibilityTestBase::RunTest(
     const base::FilePath file_path,
     const char* file_dir,
     const base::FilePath::StringType& expectations_qualifier) {
-  RunTestForPlatform(ui::kAXModeComplete, file_path, file_dir,
+  RunTestForPlatform(ui::kAXModeDefaultForTests, file_path, file_dir,
                      expectations_qualifier);
 }
 

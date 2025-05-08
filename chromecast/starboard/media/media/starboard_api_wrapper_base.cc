@@ -24,9 +24,21 @@ namespace media {
 
 namespace {
 
-// Set via StarboardCreateDrmSystem, and passed to the SbPlayer when the player
-// is created.
-SbDrmSystem g_drm_system = nullptr;
+// Ensure that our internal starboard structs use arrays of the same size as the
+// real starboard structs. Later in this code we'll just copy the entire array
+// over (via span's copy_from_nonoverlapping()).
+static_assert(sizeof(SbDrmKeyId::identifier) ==
+              sizeof(StarboardDrmKeyId::identifier));
+static_assert(sizeof(SbDrmSampleInfo::initialization_vector) ==
+              sizeof(StarboardDrmSampleInfo::initialization_vector));
+static_assert(sizeof(SbDrmSampleInfo::identifier) ==
+              sizeof(StarboardDrmSampleInfo::identifier));
+
+constexpr size_t kDrmKeyIdentifierSize = std::size(SbDrmKeyId{}.identifier);
+constexpr size_t kDrmSampleInfoIvSize =
+    std::size(SbDrmSampleInfo{}.initialization_vector);
+constexpr size_t kDrmSampleInfoIdentifierSize =
+    std::size(SbDrmSampleInfo{}.identifier);
 
 // Helper function to convert a session ID to a string. Returns an empty string
 // if session_id is null or the size is invalid (<=0).
@@ -92,8 +104,8 @@ StarboardDrmKeyId ToStarboardDrmKeyId(const SbDrmKeyId& in_key_id) {
                 "StarboardDrmKeyId.identifier and SbDrmKeyId.identifier must "
                 "be arrays of the same size");
 
-  memcpy(out_key_id.identifier, in_key_id.identifier,
-         sizeof(out_key_id.identifier));
+  base::span<uint8_t, kDrmKeyIdentifierSize>(out_key_id.identifier)
+      .copy_from_nonoverlapping(in_key_id.identifier);
   out_key_id.identifier_size = in_key_id.identifier_size;
 
   return out_key_id;
@@ -244,7 +256,7 @@ void* StarboardApiWrapperBase::CreatePlayer(
       chromecast::CastStarboardApiAdapter::GetInstance()->GetWindow(nullptr);
 
   SbPlayerCreationParam sb_creation_param =
-      ToSbPlayerCreationParam(*creation_param, g_drm_system);
+      ToSbPlayerCreationParam(*creation_param);
 
   return SbPlayerCreate(
       window, &sb_creation_param, &DeallocateSample, &OnDecoderStatus,
@@ -287,19 +299,14 @@ void StarboardApiWrapperBase::DestroyPlayer(void* player) {
 void* StarboardApiWrapperBase::CreateDrmSystem(
     const char* key_system,
     const StarboardDrmSystemCallbackHandler* callback_handler) {
-  if (g_drm_system) {
-    LOG(INFO) << "An SbDrmSystem already exists; creating a new one.";
-  }
-
   LOG(INFO) << "Creating SbDrmSystem";
-  g_drm_system = SbDrmCreateSystem(
+  return SbDrmCreateSystem(
       key_system,
       /*context=*/
       static_cast<void*>(
           const_cast<StarboardDrmSystemCallbackHandler*>(callback_handler)),
       &OnUpdateRequest, &OnSessionUpdated, &OnKeyStatusesChanged,
       &OnServerCertificateUpdated, &OnSessionClosed);
-  return g_drm_system;
 }
 
 void StarboardApiWrapperBase::DrmGenerateSessionUpdateRequest(
@@ -347,9 +354,6 @@ bool StarboardApiWrapperBase::DrmIsServerCertificateUpdatable(
 
 void StarboardApiWrapperBase::DrmDestroySystem(void* drm_system) {
   LOG(INFO) << "Destroying SbDrmSystem";
-  if (reinterpret_cast<void*>(g_drm_system) == drm_system) {
-    g_drm_system = nullptr;
-  }
   SbDrmDestroySystem(static_cast<SbDrmSystem>(drm_system));
 }
 
@@ -400,13 +404,13 @@ SbPlayerSampleInfo StarboardApiWrapperBase::ToSbPlayerSampleInfo(
     drm_info.encryption_pattern.skip_byte_block =
         in_drm_info.encryption_pattern.skip_byte_block;
 
-    memcpy(drm_info.initialization_vector, in_drm_info.initialization_vector,
-           in_drm_info.initialization_vector_size);
+    base::span<uint8_t, kDrmSampleInfoIvSize>(drm_info.initialization_vector)
+        .copy_from_nonoverlapping(in_drm_info.initialization_vector);
     drm_info.initialization_vector_size =
         in_drm_info.initialization_vector_size;
 
-    memcpy(drm_info.identifier, in_drm_info.identifier,
-           in_drm_info.identifier_size);
+    base::span<uint8_t, kDrmSampleInfoIdentifierSize>(drm_info.identifier)
+        .copy_from_nonoverlapping(in_drm_info.identifier);
     drm_info.identifier_size = in_drm_info.identifier_size;
 
     subsample_mappings.reserve(in_drm_info.subsample_mapping.size());

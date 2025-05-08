@@ -30,11 +30,11 @@ header files/half tutorial.
 
 ## Just copy the clang build system
 
-I suggest you make a new dir in `llvm/tools/clang/examples/` and copy the
+I suggest you make a new dir in `llvm-project/clang/examples/` and copy the
 Makefile from `PrintFunctionNames` there. This way, you'll just leverage the
 existing clang build system. You can then build your plugin with
 
-    make -C llvm/tools/clang/examples/myplugin
+    make -C llvm-project/clang/examples/myplugin
 
 See [Using plugins](clang.md) on how to use your plugin while building chromium
 with clang.
@@ -67,7 +67,7 @@ receives declarations, sort of like a SAX parser.
 ## Your ASTConsumer
 
 There is doxygen documentation on when each `ASTConsumer::Handle` method is
-called in `llvm/tools/clang/include/clang/AST/ASTConsumer.h`. For this
+called in `llvm-project/clang/include/clang/AST/ASTConsumer.h`. For this
 tutorial, I'll assume you only want to look at type definitions (struct, class,
 enum definitions), so we'll start with:
 
@@ -82,11 +82,12 @@ class TagConsumer : public ASTConsumer {
 The data type passed in is the `Decl`, which is a giant class hierarchy spanning
 the following files:
 
-*   `llvm/tools/clang/include/clang/AST/DeclBase.h`: declares the `Decl` class,
-    along with some utility classes you won't use.
-*   `llvm/tools/clang/include/clang/AST/Decl.h`: declares subclasses of `Decl`,
-    for example, `FunctionDecl` (a function declaration), `TagDecl` (the base class for struct/class/enum/etc), `TypedefDecl`, etc.
-*   `llvm/tools/clang/include/clang/AST/DeclCXX.h`: C++ specific types.
+*   `llvm-project/clang/include/clang/AST/DeclBase.h`: declares the `Decl`
+    class, along with some utility classes you won't use.
+*   `llvm-project/clang/include/clang/AST/Decl.h`: declares subclasses of
+    `Decl`, for example, `FunctionDecl` (a function declaration), `TagDecl` (the
+    base class for struct/class/enum/etc), `TypedefDecl`, etc.
+*   `llvm-project/clang/include/clang/AST/DeclCXX.h`: C++ specific types.
     You'll find most Decl subclasses dealing with templates here,
     along with things like `UsingDirectiveDecl`, `CXXConstructorDecl`, etc.
 
@@ -98,20 +99,24 @@ but some basics about source location and errors.
 Lots of location information is stored in the `Decl` tree. Most `Decl`
 subclasses have multiple methods that return a `SourceLocation`, but lets use
 `TagDecl::getInnerLocStart()` as an example. (`SourceLocation` is defined in
-`llvm/tools/clang/include/clang/Basic/SourceLocation.h`, for reference.)
+`llvm-project/clang/include/clang/Basic/SourceLocation.h`, for reference.)
 
-Errors are emitted to the user through the `CompilerInstance`. You will probably want to pass the `CompilerInstance` object passed to `ASTAction::CreateASTConsumer` to your ASTConsumer subclass for reporting. You interact with the user through the `Diagnostic` object. You could report errors to the user like this:
+Errors are emitted to the user through the `CompilerInstance`. You will probably
+want to pass the `CompilerInstance` object passed to
+`ASTAction::CreateASTConsumer` to your ASTConsumer subclass for reporting. You
+interact with the user through the `Diagnostic` object. You could report errors
+to the user like this:
 
 ```cpp
 void emitWarning(CompilerInstance& instance, SourceLocation loc, const char* error) {
     FullSourceLoc full(loc, instance.getSourceManager());
-    unsigned id = instance.getCustomDiagID(Diagnostic::Warning, error);
+    unsigned id = instance.getDiagnostics().getCustomDiagID(DiagnosticsEngine::Warning, error);
     DiagnosticBuilder B = instance.getDiagnostics().Report(full, id);
 }
 ```
 
 (The above is the simplest error reporting. See
-`llvm/tools/clang/include/clang/Basic/Diagnostic.h` for all the things you can
+`llvm-project/clang/include/clang/Basic/Diagnostic.h` for all the things you can
 do, like `FixItHint`s if you want to get fancy!)
 
 ## Downcast early, Downcast often
@@ -119,7 +124,8 @@ do, like `FixItHint`s if you want to get fancy!)
 The clang library will give you the most general types possible. For example
 `TagDecl` has comparably minimal interface. The library is designed so you will
 be downcasting all the time, and you won't use the standard `dynamic_cast<>()`
-builtin to do it. Instead, you'll use llvm/clang's home built RTTI system:
+builtin to do it. Instead, you'll use llvm-project/clang's home built RTTI
+system:
 
 ```cpp
   virtual void HandleTagDeclDefinition(TagDecl* tag) {

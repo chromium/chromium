@@ -218,7 +218,7 @@ TEST_F(SandboxMacTest, BuiltinAvailable) {
 MULTIPROCESS_TEST_MAIN(NetworkProcessPrefs) {
   CheckCreateSeatbeltServer();
 
-  const std::string kBundleId = base::apple::BaseBundleID();
+  const std::string kBundleId(base::apple::BaseBundleID());
   const std::string kUserName = base::SysNSStringToUTF8(NSUserName());
   const std::vector<std::string> kPaths = {
       "/Library/Managed Preferences/.GlobalPreferences.plist",

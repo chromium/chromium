@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.omnibox;
 
 import androidx.annotation.ColorInt;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** A supplement to {@link LocationBarCoordinator} with methods specific to larger devices. */
+@NullMarked
 public class LocationBarCoordinatorTablet implements LocationBarCoordinator.SubCoordinator {
     private LocationBarTablet mLocationBarTablet;
 
@@ -14,6 +17,7 @@ public class LocationBarCoordinatorTablet implements LocationBarCoordinator.SubC
         mLocationBarTablet = tabletLayout;
     }
 
+    @SuppressWarnings("NullAway")
     @Override
     public void destroy() {
         mLocationBarTablet = null;

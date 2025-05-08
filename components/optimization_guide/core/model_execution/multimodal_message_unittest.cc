@@ -60,6 +60,11 @@ TEST(MultimodalMessageTest, ImageField) {
   EXPECT_FALSE(builder.read().GetValue(field));
   EXPECT_TRUE(builder.read().GetImage(field));
   EXPECT_EQ(builder.read().GetRepeated(field)->Size(), 0);
+  EXPECT_EQ(builder.read().GetImage(field)->width(), 1);
+  builder.edit()
+      .GetMutableMessage(RequestProto::kNested1FieldNumber)
+      .Set(NestedProto::kMediaFieldNumber, CreateBlackSkBitmap(2, 2));
+  EXPECT_EQ(builder.read().GetImage(field)->width(), 2);
 }
 
 TEST(MultimodalMessageTest, ImageFieldInRepeated) {

@@ -20,7 +20,7 @@
 #import "ios/chrome/browser/omnibox/public/omnibox_suggestion_icon_util.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_util.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_consumer.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_consumer.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"

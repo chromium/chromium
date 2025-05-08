@@ -120,7 +120,7 @@ class GpuOverlayConfig:
     if set(self_dict.keys()) != set(other_dict.keys()):
       return False
 
-    return all(self_dict[k] == other_dict[k] for k in self_dict)
+    return all(v == other_dict[k] for k, v in self_dict.items())
 
   def WithDirectComposition(self) -> 'GpuOverlayConfig':
     """Enables direct composition support via software."""
@@ -461,7 +461,9 @@ OVERLAY_CONFIGS = {
                 .WithHardwareNV12Support(driver_conditionals=[
                     DriverConditional('ge', '31.0.15.4601')])\
                 .WithHardwareYUY2Support(driver_conditionals=[
-                    DriverConditional('ge', '31.0.15.4601')])
+                    DriverConditional('ge', '31.0.15.4601')])\
+                .WithHardwareBGRA8Support(driver_conditionals=[
+                    DriverConditional('ge', '32.0.15.7602')])\
                 .WithForceComposedBGRA8(driver_conditionals=[
                     DriverConditional('lt', '31.0.15.4601')])\
                 .WithZeroCopyConfig(ZeroCopyConfig(

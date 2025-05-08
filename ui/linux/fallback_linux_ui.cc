@@ -6,6 +6,7 @@
 
 #include "base/time/time.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
+#include "ui/base/ui_base_switches.h"
 #include "ui/events/keycodes/dom/dom_keyboard_layout_map.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/size.h"
@@ -114,6 +115,10 @@ LinuxUi::WindowFrameAction FallbackLinuxUi::GetWindowFrameAction(
     case WindowFrameActionSource::kRightClick:
       return WindowFrameAction::kMenu;
   }
+}
+
+std::vector<std::string> FallbackLinuxUi::GetCmdLineFlagsForCopy() const {
+  return {std::string(switches::kUiToolkitFlag) + "=fallback"};
 }
 
 bool FallbackLinuxUi::PreferDarkTheme() const {

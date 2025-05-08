@@ -273,4 +273,49 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, DeleteEligibleProfile) {
   EXPECT_TRUE(second_keyed_service->enabling().HasConsented());
   EXPECT_TRUE(background_mode_manager->IsInBackgroundModeForTesting());
 }
+
+IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest,
+                       PermanentlyDeleteProfile) {
+  GlicBackgroundModeManager* const background_mode_manager =
+      g_browser_process->GetFeatures()->glic_background_mode_manager();
+  g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
+                                               true);
+  EXPECT_TRUE(background_mode_manager->IsInBackgroundModeForTesting());
+
+  // Create a second browser with a different profile and accept fre.
+  ProfileManager* const profile_manager = g_browser_process->profile_manager();
+  Profile& second_profile = profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
+  Browser* const second_browser = CreateBrowser(&second_profile);
+  SigninWithPrimaryAccount(&second_profile);
+  SetModelExecutionCapability(&second_profile, true);
+  GlicKeyedService* const second_keyed_service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(second_browser->profile());
+  second_keyed_service->window_controller().fre_controller()->AcceptFre();
+  EXPECT_TRUE(second_keyed_service->enabling().HasConsented());
+
+  // Open Glic with the hotkey.
+  if (!IsHotkeySupported()) {
+    GTEST_SKIP() << "Test does not apply to this platform.";
+  }
+  g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
+                                               true);
+  ui::Accelerator default_hotkey =
+      GlicLauncherConfiguration::GetDefaultHotkey();
+  EXPECT_EQ(default_hotkey,
+            background_mode_manager->RegisteredHotkeyForTesting());
+  background_mode_manager->OnKeyPressed(default_hotkey);
+  EXPECT_TRUE(second_keyed_service->IsWindowShowing());
+
+  // Delete the second profile and the glic launcher.
+  profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
+      second_browser->profile()->GetPath(), base::DoNothing(),
+      ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
+  ui_test_utils::WaitForBrowserToClose(second_browser);
+  EXPECT_TRUE(g_browser_process->local_state()->GetBoolean(
+      prefs::kGlicLauncherEnabled));
+
+  // The window should be closed.
+  EXPECT_FALSE(second_keyed_service->IsWindowShowing());
+}
 }  // namespace glic

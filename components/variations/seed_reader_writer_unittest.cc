@@ -93,11 +93,11 @@ class SeedReaderWriterTestBase {
         entropy_providers_(std::make_unique<const MockEntropyProviders>(
             MockEntropyProviders::Results{.low_entropy =
                                               kAlwaysUseLastGroup})) {
+    VariationsSeedStore::RegisterPrefs(local_state_.registry());
     scoped_feature_list_.InitWithEmptyFeatureAndFieldTrialLists();
     file_writer_thread_.Start();
     CHECK(temp_dir_.CreateUniqueTempDir());
     temp_seed_file_path_ = temp_dir_.GetPath().Append(kSeedFilename);
-    VariationsSeedStore::RegisterPrefs(local_state_.registry());
   }
   ~SeedReaderWriterTestBase() = default;
 
@@ -233,8 +233,11 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, WriteSeed) {
   const std::string compressed_seed = CreateCompressedVariationsSeed();
   const std::string base64_compressed_seed =
       base::Base64Encode(compressed_seed);
-  seed_reader_writer.StoreValidatedSeed(compressed_seed,
-                                        base64_compressed_seed);
+  seed_reader_writer.StoreValidatedSeedInfo(
+      ValidatedSeedInfo{.compressed_seed_data = compressed_seed,
+                        .base64_seed_data = base64_compressed_seed,
+                        .signature = "signature",
+                        .milestone = 2});
 
   // Force write.
   timer_.Fire();
@@ -263,7 +266,7 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ClearSeed) {
   ASSERT_TRUE(base::WriteFile(temp_seed_file_path_, compressed_seed));
 
   // Clear seed and force write.
-  seed_reader_writer.ClearSeed();
+  seed_reader_writer.ClearSeedInfo();
   timer_.Fire();
   file_writer_thread_.FlushForTesting();
 
@@ -386,8 +389,11 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, WriteSeed) {
   const std::string compressed_seed = CreateCompressedVariationsSeed();
   const std::string base64_compressed_seed =
       base::Base64Encode(compressed_seed);
-  seed_reader_writer.StoreValidatedSeed(compressed_seed,
-                                        base64_compressed_seed);
+  seed_reader_writer.StoreValidatedSeedInfo(
+      ValidatedSeedInfo{.compressed_seed_data = compressed_seed,
+                        .base64_seed_data = base64_compressed_seed,
+                        .signature = "signature",
+                        .milestone = 2});
 
   // Ensure there's no pending write.
   EXPECT_FALSE(timer_.IsRunning());
@@ -416,7 +422,7 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, ClearSeed) {
                          base::Base64Encode(compressed_seed));
 
   // Clear seed and force file delete.
-  seed_reader_writer.ClearSeed();
+  seed_reader_writer.ClearSeedInfo();
   file_writer_thread_.FlushForTesting();
 
   // Verify seed cleared correctly in Local State prefs and that seed file is
@@ -474,8 +480,11 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, EmptySeedFilePathIsValid) {
   const std::string compressed_seed = CreateCompressedVariationsSeed();
   const std::string base64_compressed_seed =
       base::Base64Encode(compressed_seed);
-  seed_reader_writer.StoreValidatedSeed(compressed_seed,
-                                        base64_compressed_seed);
+  seed_reader_writer.StoreValidatedSeedInfo(
+      ValidatedSeedInfo{.compressed_seed_data = compressed_seed,
+                        .base64_seed_data = base64_compressed_seed,
+                        .signature = "signature",
+                        .milestone = 2});
 
   // Ensure there's no pending write.
   EXPECT_FALSE(timer_.IsRunning());

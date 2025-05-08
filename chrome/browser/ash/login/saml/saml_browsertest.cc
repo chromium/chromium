@@ -26,7 +26,6 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
-#include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -2108,9 +2107,6 @@ class SAMLCookiesAndFloatingSsoTest : public SAMLPolicyTest {
   }
 
  protected:
-  // TODO(crbug.com/379092376): remove this once Floating SSO is out of beta.
-  base::test::ScopedChromeOSVersionInfo scoped_channel_override_{
-      "CHROMEOS_RELEASE_TRACK=beta-channel", base::Time::Now()};
 
   base::test::ScopedFeatureList feature_list_;
 };

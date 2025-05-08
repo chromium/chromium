@@ -189,8 +189,9 @@ void CompositorFrameSinkImpl::InitializeCompositorFrameSinkType(
 }
 
 void CompositorFrameSinkImpl::BindLayerContext(
-    mojom::PendingLayerContextPtr context) {
-  support_->BindLayerContext(*context);
+    mojom::PendingLayerContextPtr context,
+    bool draw_mode_is_gpu) {
+  support_->BindLayerContext(*context, draw_mode_is_gpu);
 }
 
 #if BUILDFLAG(IS_ANDROID)

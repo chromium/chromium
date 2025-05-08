@@ -53,8 +53,13 @@ void AutofillImageFetcherImpl::FetchPixAccountImagesForURLs(
 
 void AutofillImageFetcherImpl::FetchValuableImagesForURLs(
     base::span<const GURL> image_urls) {
-  // TODO: crbug.com/393123618 - Implement the API on Android.
-  NOTIMPLEMENTED();
+  if (image_urls.empty()) {
+    return;
+  }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_AutofillImageFetcher_prefetchValuableImages(
+      env, GetOrCreateJavaImageFetcher(), image_urls);
 }
 
 const gfx::Image* AutofillImageFetcherImpl::GetCachedImageForUrl(

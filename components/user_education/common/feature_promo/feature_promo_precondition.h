@@ -286,7 +286,6 @@ class FeaturePromoPreconditionList {
     explicit operator bool() const { return result_; }
     bool operator!() const { return !result_; }
     bool operator==(const CheckResult&) const = default;
-    bool operator!=(const CheckResult&) const = default;
 
    private:
     // The result of checking the list; success if no preconditions failed.

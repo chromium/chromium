@@ -5,9 +5,12 @@ package org.chromium.chrome.browser.feed.componentinterfaces;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger.ClosedReason;
 
 /** Interface for referencing FeedSurfaceCoordinator in this library. */
+@NullMarked
 public interface SurfaceCoordinator {
     /** Observes the SurfaceCoordinator. */
     interface Observer {
@@ -44,7 +47,7 @@ public interface SurfaceCoordinator {
         int FOLLOWING = 1;
     };
 
-    void restoreInstanceState(String state);
+    void restoreInstanceState(@Nullable String state);
 
     String getSavedInstanceStateString();
 

@@ -14,9 +14,11 @@ import android.widget.TextView;
 
 import androidx.appcompat.widget.TooltipCompat;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.widget.ButtonCompat;
 
 /** View class for the Creator Profile section */
+@NullMarked
 public class CreatorProfileView extends LinearLayout {
     private static final int FADE_IN_ANIMATION_DURATION_MS = 150;
     private static final int FADE_OUT_ANIMATION_DURATION_MS = 300;

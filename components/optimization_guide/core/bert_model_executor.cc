@@ -50,7 +50,7 @@ BertModelExecutor::Execute(ModelExecutionTask* execution_task,
 
 base::expected<std::unique_ptr<BertModelExecutor::ModelExecutionTask>,
                ExecutionStatus>
-BertModelExecutor::BuildModelExecutionTask(const base::File& model_file) {
+BertModelExecutor::BuildModelExecutionTask(base::File& model_file) {
   tflite::task::text::BertNLClassifierOptions options;
   auto* mutable_file_descriptor_meta = options.mutable_base_options()
                                            ->mutable_model_file()

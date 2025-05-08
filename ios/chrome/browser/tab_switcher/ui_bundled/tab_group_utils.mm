@@ -8,37 +8,52 @@
 
 #import "base/memory/weak_ptr.h"
 #import "components/favicon/ios/web_favicon_driver.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/group_tab_info.h"
+#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/web/public/web_state.h"
 
 namespace {
+
+// Size for the default favicon.
 const CGFloat kFaviconSize = 16;
-}
+// The minimum size of tab favicons.
+constexpr CGFloat kFaviconMinimumSize = 8.0;
+
+}  // namespace
 
 @implementation TabGroupUtils
 
 + (void)fetchTabGroupInfoFromWebState:(web::WebState*)webState
+                        faviconLoader:(FaviconLoader*)faviconLoader
                            completion:(void (^)(GroupTabInfo*))completion {
   CHECK(webState);
   base::WeakPtr<web::WebState> weakWebState = webState->GetWeakPtr();
   SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(
       ^(UIImage* snapshot) {
-        GroupTabInfo* info = [[GroupTabInfo alloc] init];
-        info.snapshot = snapshot;
-        info.favicon = [TabGroupUtils faviconFromWebState:weakWebState];
-        completion(info);
+        GroupTabInfo* groupTabInfo = [[GroupTabInfo alloc] init];
+        groupTabInfo.snapshot = snapshot;
+        [TabGroupUtils fetchFaviconFromWebState:weakWebState
+                                   groupTabInfo:groupTabInfo
+                                  faviconLoader:faviconLoader
+                                     completion:completion];
       });
 }
 
 #pragma mark - Private helpers
 
-// Returns the favicon for the given `webState` or nil otherwise.
-+ (UIImage*)faviconFromWebState:(base::WeakPtr<web::WebState>)webState {
+// Fetches the favicon for the given `webState` and executes the `completion`
+// block.
++ (void)fetchFaviconFromWebState:(base::WeakPtr<web::WebState>)webState
+                    groupTabInfo:(GroupTabInfo*)groupTabInfo
+                   faviconLoader:(FaviconLoader*)faviconLoader
+                      completion:(void (^)(GroupTabInfo*))completion {
   if (!webState) {
-    return nil;
+    completion(groupTabInfo);
+    return;
   }
 
   UIImageConfiguration* configuration = [UIImageSymbolConfiguration
@@ -47,7 +62,10 @@ const CGFloat kFaviconSize = 16;
                            scale:UIImageSymbolScaleMedium];
 
   if (IsUrlNtp(webState->GetVisibleURL())) {
-    return CustomSymbolWithConfiguration(kChromeProductSymbol, configuration);
+    groupTabInfo.favicon =
+        CustomSymbolWithConfiguration(kChromeProductSymbol, configuration);
+    completion(groupTabInfo);
+    return;
   }
 
   // Use the page favicon.
@@ -57,12 +75,34 @@ const CGFloat kFaviconSize = 16;
   if (faviconDriver) {
     gfx::Image favicon = faviconDriver->GetFavicon();
     if (!favicon.IsEmpty()) {
-      return favicon.ToUIImage();
+      groupTabInfo.favicon = favicon.ToUIImage();
+      completion(groupTabInfo);
+      return;
     }
   }
 
-  // Return the default favicon.
-  return DefaultSymbolWithConfiguration(kGlobeAmericasSymbol, configuration);
+  // Use the default favicon.
+  groupTabInfo.favicon =
+      DefaultSymbolWithConfiguration(kGlobeAmericasSymbol, configuration);
+  if (!faviconLoader) {
+    completion(groupTabInfo);
+    return;
+  }
+
+  // Asynchronously fetch the favicon.
+  faviconLoader->FaviconForPageUrl(
+      webState->GetVisibleURL(), kFaviconSize, kFaviconMinimumSize,
+      /*fallback_to_google_server=*/true, ^(FaviconAttributes* attributes) {
+        // Synchronously returned default favicon.
+        if (attributes.usesDefaultImage) {
+          return;
+        }
+        // Asynchronously returned favicon.
+        if (attributes.faviconImage) {
+          groupTabInfo.favicon = attributes.faviconImage;
+        }
+        completion(groupTabInfo);
+      });
 }
 
 @end

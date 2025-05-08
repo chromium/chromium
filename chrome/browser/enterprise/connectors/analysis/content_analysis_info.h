@@ -8,6 +8,11 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 namespace enterprise_connectors {
 
@@ -20,6 +25,10 @@ class ContentAnalysisInfo {
   // The `AnalysisSettings` that should be applied to the content analysis scan.
   virtual const AnalysisSettings& settings() const = 0;
 
+  // The `signin::IdentityManager` that corresponds to the browser context where
+  // content analysis is taking place.
+  virtual signin::IdentityManager* identity_manager() const = 0;
+
   // These methods correspond to fields in `BinaryUploadService::Request`.
   virtual int user_action_requests_count() const = 0;
   virtual std::string tab_title() const = 0;
@@ -28,12 +37,21 @@ class ContentAnalysisInfo {
   virtual std::string url() const = 0;
   virtual const GURL& tab_url() const = 0;
   virtual ContentAnalysisRequest::Reason reason() const = 0;
+  virtual google::protobuf::RepeatedPtrField<
+      ::safe_browsing::ReferrerChainEntry>
+  referrer_chain() const = 0;
 
   // Adds shared fields to `request` before sending it to the binary upload
   // service. Connector-specific fields need to be added to the request
   // separately.
   void InitializeRequest(safe_browsing::BinaryUploadService::Request* request,
                          bool include_enterprise_only_fields = true);
+
+  // Returns email of the active Gaia user based on the values provided by
+  // `tab_url()` and `identity_manager()`. Only returns a value for Workspace
+  // sites.
+  // TODO(crbug.com/415002299): Add tests for this.
+  std::string GetContentAreaAccountEmail() const;
 };
 
 }  // namespace enterprise_connectors

@@ -16,12 +16,12 @@
 
 namespace extensions {
 
-// A ValueStore decorator which makes calls through |Set| ignore quota.
+// A ValueStore decorator which makes calls through `Set` ignore quota.
 // "Weak" because ownership of the delegate isn't taken; this is designed to be
 // temporarily attached to storage areas.
 class WeakUnlimitedSettingsStorage : public value_store::ValueStore {
  public:
-  // Ownership of |delegate| NOT taken.
+  // Ownership of `delegate` NOT taken.
   explicit WeakUnlimitedSettingsStorage(value_store::ValueStore* delegate);
 
   WeakUnlimitedSettingsStorage(const WeakUnlimitedSettingsStorage&) = delete;

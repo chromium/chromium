@@ -111,8 +111,20 @@ def _get_java_test_health(java_ast: CompilationUnit) -> JavaTestHealth:
     disable_if_test_list = []
 
     tags = set()
+    # Don't consider these deps to mean it's a Public Transit test,
+    # it can be a test that only had entry points migrated.
+    SHALLOW_PUBLIC_TRANSIT_DEPS = set([
+        'org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule',
+        'org.chromium.chrome.test.transit.ChromeTransitTestRules',
+        'org.chromium.chrome.test.transit.ReusedCtaTransitTestRule',
+        'org.chromium.chrome.test.transit.FreshCtaTransitTestRule',
+        'org.chromium.chrome.test.transit.page.PageStation',
+        'org.chromium.chrome.test.transit.page.WebPageStation',
+    ])
     for i in java_ast.imports:
-        if '.chrome.test.transit.' in i.path:
+        if ('org.chromium.chrome.test.transit.' in i.path
+                and not i.path in SHALLOW_PUBLIC_TRANSIT_DEPS):
+            print(i.path)
             tags.add(_TAG_PUBLIC_TRANSIT)
             break
 

@@ -16,9 +16,8 @@ class AutocompleteResult;
 @class AutocompleteResultWrapper;
 @protocol OmniboxAutocompleteControllerDelegate;
 @protocol OmniboxAutocompleteControllerDebuggerDelegate;
-class OmniboxController;
+class OmniboxControllerIOS;
 @class OmniboxTextController;
-class OmniboxViewIOS;
 
 /// Controller for the omnibox autocomplete system. Handles interactions with
 /// the autocomplete system and dispatches results.
@@ -43,9 +42,8 @@ class OmniboxViewIOS;
 @property(nonatomic, assign, readonly) BOOL hasSuggestions;
 
 /// Initializes with an OmniboxController.
-- (instancetype)initWithOmniboxController:(OmniboxController*)omniboxController
-                           omniboxViewIOS:(OmniboxViewIOS*)omniboxViewIOS
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithOmniboxController:
+    (OmniboxControllerIOS*)omniboxController NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 /// Removes all C++ references.
@@ -85,8 +83,8 @@ class OmniboxViewIOS;
 
 #pragma mark - OmniboxText events
 
-/// Ends omnibox edit. Closes the omnibox popup.
-- (void)endEditing;
+/// Closes the omnibox popup.
+- (void)closeOmniboxPopup;
 
 /// Updates the popup text alignment.
 - (void)setTextAlignment:(NSTextAlignment)alignment;

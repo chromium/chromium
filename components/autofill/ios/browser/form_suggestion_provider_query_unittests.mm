@@ -4,8 +4,8 @@
 
 #import "components/autofill/ios/browser/form_suggestion_provider_query.h"
 
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 
 using autofill::FormRendererId;
 using autofill::FieldRendererId;

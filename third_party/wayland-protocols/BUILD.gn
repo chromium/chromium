@@ -171,10 +171,6 @@ wayland_protocol("ui_controls_protocol") {
   sources = [ "unstable/ui-controls/ui-controls-unstable-v1.xml" ]
 }
 
-wayland_protocol("test_controller_protocol") {
-  sources = [ "unstable/test-controller/test-controller-unstable-v1.xml" ]
-}
-
 wayland_protocol("viewporter_protocol") {
   sources = [ "src/stable/viewporter/viewporter.xml" ]
 }

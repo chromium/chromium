@@ -414,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiEscalationTest,
     // Register the target extension with extension service.
     scoped_refptr<const Extension> target_extension =
         ExtensionBuilder("TargetExtension").SetID(kId).Build();
-    extension_registrar()->AddExtension(target_extension.get());
+    extension_registrar()->AddExtension(target_extension);
     SetEnabled(false, true, std::string(), source_extension);
     SetEnabled(true, true, std::string(), source_extension);
     EXPECT_TRUE(extension_registry()->enabled_extensions().GetByID(kId));

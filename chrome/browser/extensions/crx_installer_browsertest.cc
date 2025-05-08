@@ -274,7 +274,7 @@ class ExtensionCrxInstallerTest : public ExtensionBrowserTest {
                             .Set("manifest_version", 2));
     builder.SetID(extension_id);
     builder.SetPath(temp_dir.GetPath());
-    extension_registrar()->AddExtension(builder.Build().get());
+    extension_registrar()->AddExtension(builder.Build());
 
     const Extension* extension = GetInstalledExtension(extension_id);
     ASSERT_NE(nullptr, extension);

@@ -5,26 +5,29 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_transform_feedback.h"
 
 #include "gpu/command_buffer/client/gles2_interface.h"
-#include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context_base.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_buffer.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_context_object_support.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_program.h"
 
 namespace blink {
 
-WebGLTransformFeedback::WebGLTransformFeedback(WebGL2RenderingContextBase* ctx,
-                                               TFType type)
-    : WebGLContextObject(ctx),
-      object_(0),
+WebGLTransformFeedback::WebGLTransformFeedback(
+    WebGLContextObjectSupport* ctx,
+    TFType type,
+    GLint max_transform_feedback_separate_attribs)
+    : WebGLObject(ctx),
       type_(type),
       target_(0),
       program_(nullptr),
       active_(false),
       paused_(false) {
-  if (ctx->isContextLost()) {
+  if (ctx->IsLost()) {
     return;
   }
 
-  GLint max_attribs = ctx->GetMaxTransformFeedbackSeparateAttribs();
-  DCHECK_GE(max_attribs, 0);
-  bound_indexed_transform_feedback_buffers_.resize(max_attribs);
+  DCHECK_GE(max_transform_feedback_separate_attribs, 0);
+  bound_indexed_transform_feedback_buffers_.resize(
+      max_transform_feedback_separate_attribs);
 
   switch (type_) {
     case TFType::kDefault:
@@ -32,7 +35,7 @@ WebGLTransformFeedback::WebGLTransformFeedback(WebGL2RenderingContextBase* ctx,
     case TFType::kUser: {
       GLuint tf;
       ctx->ContextGL()->GenTransformFeedbacks(1, &tf);
-      object_ = tf;
+      SetObject(tf);
       break;
     }
   }
@@ -54,8 +57,7 @@ void WebGLTransformFeedback::DeleteObjectImpl(gpu::gles2::GLES2Interface* gl) {
     case TFType::kDefault:
       break;
     case TFType::kUser:
-      gl->DeleteTransformFeedbacks(1, &object_);
-      object_ = 0;
+      gl->DeleteTransformFeedbacks(1, &Object());
       break;
   }
 
@@ -142,7 +144,7 @@ void WebGLTransformFeedback::UnbindBuffer(WebGLBuffer* buffer) {
 void WebGLTransformFeedback::Trace(Visitor* visitor) const {
   visitor->Trace(bound_indexed_transform_feedback_buffers_);
   visitor->Trace(program_);
-  WebGLContextObject::Trace(visitor);
+  WebGLObject::Trace(visitor);
 }
 
 }  // namespace blink

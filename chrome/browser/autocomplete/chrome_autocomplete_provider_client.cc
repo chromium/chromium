@@ -37,6 +37,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -62,6 +63,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/prefs/pref_service.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
@@ -95,6 +97,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -142,6 +145,12 @@ content::WebContents* GetWebContents(
 LensOverlayController* GetLensOverlayController(
     content::WebContents* web_contents) {
   return web_contents ? LensOverlayController::FromTabWebContents(web_contents)
+                      : nullptr;
+}
+
+LensSearchController* GetLensSearchController(
+    content::WebContents* web_contents) {
+  return web_contents ? LensSearchController::FromTabWebContents(web_contents)
                       : nullptr;
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -395,6 +404,11 @@ ChromeAutocompleteProviderClient::GetProviderStateService() const {
   return ProviderStateServiceFactory::GetForProfile(profile_);
 }
 
+tab_groups::TabGroupSyncService*
+ChromeAutocompleteProviderClient::GetTabGroupSyncService() const {
+  return tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile_);
+}
+
 bool ChromeAutocompleteProviderClient::IsOffTheRecord() const {
   return profile_->IsOffTheRecord();
 }
@@ -595,16 +609,16 @@ bool ChromeAutocompleteProviderClient::OpenJourneys(const std::string& query) {
 
 void ChromeAutocompleteProviderClient::OpenLensOverlay(bool show) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (auto* lens_overlay_controller =
-          GetLensOverlayController(GetWebContents(web_contents_getter_))) {
-    // TODO(crbug.com/402497756): For prototyping, reusing the existing
-    // omnibox entry point. However, for production, create a new invocation
-    // source for this new entry point.
+  if (auto* lens_search_controller =
+          GetLensSearchController(GetWebContents(web_contents_getter_))) {
     if (show) {
-      lens_overlay_controller->ShowUI(
+      // TODO(crbug.com/402497756): For prototyping, reusing the existing
+      // omnibox entry point. However, for production, create a new invocation
+      // source for this new entry point.
+      lens_search_controller->OpenLensOverlay(
           lens::LensOverlayInvocationSource::kOmnibox);
     } else {
-      lens_overlay_controller->StartContextualizationWithoutOverlay(
+      lens_search_controller->StartContextualization(
           lens::LensOverlayInvocationSource::kOmnibox);
     }
   }
@@ -616,9 +630,9 @@ void ChromeAutocompleteProviderClient::IssueContextualSearchRequest(
       AutocompleteMatchType::Type match_type,
       bool is_zero_prefix_suggestion) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (auto* lens_overlay_controller =
-          GetLensOverlayController(GetWebContents(web_contents_getter_))) {
-    lens_overlay_controller->IssueContextualSearchRequest(
+  if (auto* lens_search_controller =
+          GetLensSearchController(GetWebContents(web_contents_getter_))) {
+    lens_search_controller->IssueContextualSearchRequest(
         destination_url, match_type, is_zero_prefix_suggestion);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

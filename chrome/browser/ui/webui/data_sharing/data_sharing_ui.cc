@@ -141,6 +141,7 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
       {"deleteGroup", IDS_DATA_SHARING_DELETE_GROUP},
       {"deleteFlowHeader", IDS_DATA_SHARING_OWNER_DELETE_DIALOG_TITLE},
       {"delete", IDS_DATA_SHARING_OWNER_DELETE_DIALOG_CONFIRM},
+      {"previewA11yName", IDS_DATA_SHARING_PREVIEW_A11Y_NAME},
 
       // dynamic messages:
       {"shareGroupShareAs", IDS_DATA_SHARING_SHARE_GROUP_SHARE_AS},

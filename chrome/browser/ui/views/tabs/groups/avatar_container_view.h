@@ -35,6 +35,10 @@ class ManageSharingAvatarContainer : public views::View {
   void AddedToWidget() override;
   void OnThemeChanged() override;
 
+ protected:
+  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
+                                  float new_device_scale_factor) override;
+
  private:
   // Callback when data sharing service fetches the avatar.
   void UpdateMemberGfxImage(size_t index, const gfx::Image&);

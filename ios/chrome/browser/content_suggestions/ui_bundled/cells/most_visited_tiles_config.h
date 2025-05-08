@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 @protocol MostVisitedTilesCommands;
-@protocol MostVisitedTilesStackViewConsumerSource;
 @class ContentSuggestionsMostVisitedItem;
 @protocol ContentSuggestionsImageDataSource;
 
@@ -17,9 +16,6 @@
 // Config object for the Most Visited Tiles module.
 @interface MostVisitedTilesConfig : MagicStackModule
 
-// Whether the most visited tiles is inside the magic stack.
-@property(nonatomic, assign) BOOL inMagicStack;
-
 // List of Most Visited Tiles to show in module.
 @property(nonatomic, strong)
     NSArray<ContentSuggestionsMostVisitedItem*>* mostVisitedItems;
@@ -27,10 +23,6 @@
 // Data source for the most visited tiles favicon.
 @property(nonatomic, weak) id<ContentSuggestionsImageDataSource>
     imageDataSource;
-
-// Most Visited Tiles model.
-@property(nonatomic, weak) id<MostVisitedTilesStackViewConsumerSource>
-    consumerSource;
 
 // Command handler for user actions.
 @property(nonatomic, weak) id<MostVisitedTilesCommands> commandHandler;

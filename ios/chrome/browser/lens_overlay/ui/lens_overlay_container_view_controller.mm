@@ -8,7 +8,121 @@
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+
+namespace {
+
+// The width of the side panel.
+const CGFloat kSidePanelWidth = 400.0;
+
+// The ammount padding from the side panel to the selection UI.
+const CGFloat kSidePannelSelectionPadding = 20.0;
+
+// The duration of the side panel appear and dissapear animations.
+const CGFloat kSidePannelAnimationDuration = 0.4;
+
+// The width of the border outline that surrounds the results page.
+const CGFloat kSidePannelOutlineBorderWidth = 1.0;
+
+// The corner radius of the outline that surrounds the results page.
+const CGFloat kSidePannelOutlineCornerRadius = 10.0;
+
+// The lateral inset ammount of the border outlining the results page.
+const CGFloat kSidePannelOutlineLateralInset = 10.0;
+
+// The bottom inset ammount of the border outlining the results page.
+const CGFloat kSidePannelOutlineBottomInset = 8.0;
+
+// The corner radius of the selection UI when presented in the side panel
+// presentation.
+const CGFloat kSelectionUICornerRadius = 16.0;
+
+}  // namespace
+
+@interface LensOverlaySidePanel : UIViewController
+
+// Creates a new instance wrapping the given content view controller.
+- (instancetype)initWithContent:(UIViewController*)contentViewController;
+
+@end
+
+@implementation LensOverlaySidePanel {
+  // The content view being presented in the side panel.
+  // It is not intended for the ovelay to own the UI it presents.
+  __weak UIViewController* _contentViewController;
+
+  // The outline border of the results page.
+  UIView* _borderView;
+}
+
+- (instancetype)initWithContent:(UIViewController*)contentViewController {
+  self = [super init];
+  if (self) {
+    _contentViewController = contentViewController;
+  }
+
+  return self;
+}
+
+- (void)viewDidLoad {
+  [super viewDidLoad];
+  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  _borderView = [self createBorderView];
+  [self.view addSubview:_borderView];
+  AddSameConstraintsWithInsets(_borderView, self.view,
+                               [self insetsForInnerOutline]);
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+
+  [self addChildViewController:_contentViewController];
+  _contentViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  [_borderView addSubview:_contentViewController.view];
+  [_contentViewController didMoveToParentViewController:self];
+
+  AddSameConstraints(_contentViewController.view, _borderView);
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+  [_contentViewController removeFromParentViewController];
+  [_contentViewController.view removeFromSuperview];
+  [super viewWillDisappear:animated];
+}
+
+#pragma mark - Private
+
+// The ammount of insets for the outline relative to the bounds.
+- (NSDirectionalEdgeInsets)insetsForInnerOutline {
+  return NSDirectionalEdgeInsetsMake(0, kSidePannelOutlineLateralInset,
+                                     kSidePannelOutlineBottomInset,
+                                     kSidePannelOutlineLateralInset);
+}
+
+// Creates a new border outline view.
+- (UIView*)createBorderView {
+  UIView* borderView = [[UIView alloc] init];
+  borderView.translatesAutoresizingMaskIntoConstraints = NO;
+  borderView.layer.borderWidth = kSidePannelOutlineBorderWidth;
+  borderView.layer.borderColor = [UIColor colorNamed:kGrey200Color].CGColor;
+  borderView.layer.cornerRadius = kSidePannelOutlineCornerRadius;
+  borderView.clipsToBounds = YES;
+
+  return borderView;
+}
+
+@end
+
+@interface LensOverlayContainerViewController ()
+
+// Whether the side panel is open.
+@property(nonatomic, getter=isSidePanelOpen) BOOL sidePanelOpen;
+
+// The selection area occlusion insets for the side panel presentation.
+@property(nonatomic, readonly) UIEdgeInsets sidePanelOcclusionInsets;
+
+@end
 
 @implementation LensOverlayContainerViewController {
   // The overlay commands handler.
@@ -19,6 +133,12 @@
   // controller is displayed. Note that selection UI isn't started, so it won't
   // accept many interactions, but we do this to be extra safe.
   UIView* _selectionInteractionBlockingView;
+  // The side panel container for the results page.
+  LensOverlaySidePanel* _sidePanel;
+  // Layout guide separating the selection UI and results in the side panel.
+  UILayoutGuide* _splitViewLayoutGuide;
+  // The constraint controlling the display of the side panel.
+  NSLayoutConstraint* _splitViewConstraint;
 }
 
 - (instancetype)initWithLensOverlayCommandsHandler:
@@ -41,24 +161,52 @@
     return;
   }
 
-  [self addChildViewController:self.selectionViewController];
-  [self.view addSubview:self.selectionViewController.view];
-
-  self.selectionViewController.view.translatesAutoresizingMaskIntoConstraints =
-      NO;
+  _splitViewLayoutGuide = [[UILayoutGuide alloc] init];
+  [self.view addLayoutGuide:_splitViewLayoutGuide];
+  _splitViewConstraint = [self.view.rightAnchor
+      constraintEqualToAnchor:_splitViewLayoutGuide.leftAnchor];
   [NSLayoutConstraint activateConstraints:@[
-    [self.selectionViewController.view.topAnchor
+    _splitViewConstraint,
+    [_splitViewLayoutGuide.rightAnchor
+        constraintEqualToAnchor:_splitViewLayoutGuide.leftAnchor],
+    [_splitViewLayoutGuide.topAnchor
         constraintEqualToAnchor:self.view.topAnchor],
-    [self.selectionViewController.view.bottomAnchor
+    [_splitViewLayoutGuide.bottomAnchor
         constraintEqualToAnchor:self.view.bottomAnchor],
-    [self.selectionViewController.view.leftAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leftAnchor],
-    [self.selectionViewController.view.rightAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.rightAnchor],
   ]];
 
+  [self addChildViewController:self.selectionViewController];
+  [self.view addSubview:self.selectionViewController.view];
   [self.selectionViewController didMoveToParentViewController:self];
+  self.selectionViewController.view.translatesAutoresizingMaskIntoConstraints =
+      NO;
+  AddSameConstraintsToSides(
+      self.selectionViewController.view, self.view,
+      (LayoutSides::kLeading | LayoutSides::kTop | LayoutSides::kBottom));
+  [NSLayoutConstraint activateConstraints:@[
+    [self.selectionViewController.view.rightAnchor
+        constraintEqualToAnchor:_splitViewLayoutGuide.leftAnchor],
+  ]];
+
+  if (@available(iOS 17, *)) {
+    [self registerForTraitChanges:@[ UITraitHorizontalSizeClass.class ]
+                       withAction:@selector(sizeClassDidChange)];
+  }
 }
+
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
+  if (self.traitCollection.horizontalSizeClass !=
+      previousTraitCollection.horizontalSizeClass) {
+    [self sizeClassDidChange];
+  }
+}
+#endif
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
   return UIInterfaceOrientationMaskPortrait;
@@ -66,6 +214,27 @@
 
 - (BOOL)selectionInteractionDisabled {
   return _selectionInteractionBlockingView != nil;
+}
+
+- (BOOL)isSidePanelPresented {
+  return _sidePanel != nil;
+}
+
+- (BOOL)isSidePanelOpen {
+  return _splitViewConstraint.constant != 0;
+}
+
+- (void)setSidePanelOpen:(BOOL)sidePanelOpen {
+  if (sidePanelOpen) {
+    _splitViewConstraint.constant = kSidePanelWidth;
+  } else {
+    _splitViewConstraint.constant = 0;
+  }
+}
+
+- (UIEdgeInsets)sidePanelOcclusionInsets {
+  return UIEdgeInsetsMake(0, 0, 0,
+                          kSidePanelWidth + kSidePannelSelectionPadding);
 }
 
 - (void)setSelectionInteractionDisabled:(BOOL)selectionInteractionDisabled {
@@ -86,6 +255,107 @@
   blocker.translatesAutoresizingMaskIntoConstraints = NO;
   AddSameConstraints(self.view, blocker);
   _selectionInteractionBlockingView = blocker;
+}
+
+- (void)presentViewControllerInSidePanel:(UIViewController*)viewController
+                                animated:(BOOL)animated
+                              completion:(ProceduralBlock)completion {
+  _sidePanel = [[LensOverlaySidePanel alloc] initWithContent:viewController];
+  _sidePanel.view.translatesAutoresizingMaskIntoConstraints = NO;
+  [self addChildViewController:_sidePanel];
+  [self.view addSubview:_sidePanel.view];
+
+  AddSameConstraintsToSides(_sidePanel.view, _splitViewLayoutGuide,
+                            (LayoutSides::kTop | LayoutSides::kBottom));
+  [NSLayoutConstraint activateConstraints:@[
+    [_sidePanel.view.leftAnchor
+        constraintEqualToAnchor:_splitViewLayoutGuide.rightAnchor],
+    [_sidePanel.view.widthAnchor constraintEqualToConstant:kSidePanelWidth],
+  ]];
+
+  self.selectionViewController.view.clipsToBounds = YES;
+  self.selectionViewController.view.layer.cornerRadius =
+      kSelectionUICornerRadius;
+  self.selectionViewController.view.layer.backgroundColor =
+      [UIColor colorNamed:kBackgroundColor].CGColor;
+  self.selectionViewController.view.layer.maskedCorners =
+      kCALayerMaxXMinYCorner | kCALayerMaxXMaxYCorner;
+
+  [self.selectionViewController setOcclusionInsets:self.sidePanelOcclusionInsets
+                                        reposition:YES
+                                          animated:animated];
+  if (!animated) {
+    self.sidePanelOpen = YES;
+    if (completion) {
+      completion();
+    }
+    return;
+  }
+
+  [self.view layoutIfNeeded];
+  [UIView animateWithDuration:kSidePannelAnimationDuration
+      delay:0
+      options:UIViewAnimationCurveEaseInOut
+      animations:^{
+        self.sidePanelOpen = YES;
+        [self.view layoutIfNeeded];
+      }
+      completion:^(BOOL) {
+        if (completion) {
+          completion();
+        }
+      }];
+}
+
+- (void)dismissSidePanelAnimated:(BOOL)animated
+                      completion:(ProceduralBlock)completion {
+  if (!self.isSidePanelPresented) {
+    completion();
+    return;
+  }
+
+  if (!animated) {
+    self.sidePanelOpen = NO;
+    self.selectionViewController.view.layer.cornerRadius = 0;
+    self.selectionViewController.view.layer.backgroundColor =
+        [UIColor clearColor].CGColor;
+    [self sidePanelDidDismissAnimated:animated];
+    if (completion) {
+      completion();
+    }
+    return;
+  }
+
+  [UIView animateWithDuration:kSidePannelAnimationDuration
+      delay:0
+      options:UIViewAnimationCurveEaseInOut
+      animations:^{
+        self.sidePanelOpen = NO;
+        self.selectionViewController.view.layer.cornerRadius = 0;
+        self.selectionViewController.view.layer.backgroundColor =
+            [UIColor clearColor].CGColor;
+        [self.view layoutIfNeeded];
+      }
+      completion:^(BOOL) {
+        [self sidePanelDidDismissAnimated:animated];
+        if (completion) {
+          completion();
+        }
+      }];
+}
+
+// Called after the side panel gets dismissed.
+- (void)sidePanelDidDismissAnimated:(BOOL)animated {
+  [self.selectionViewController setOcclusionInsets:UIEdgeInsetsZero
+                                        reposition:YES
+                                          animated:animated];
+  [_sidePanel removeFromParentViewController];
+  [_sidePanel.view removeFromSuperview];
+  _sidePanel = nil;
+}
+
+- (void)sizeClassDidChange {
+  [self.delegate lensOverlayContainerDidChangeSizeClass:self];
 }
 
 #pragma mark - Accessibility

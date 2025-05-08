@@ -12,6 +12,7 @@ import android.widget.ImageButton;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.blink.mojom.DisplayMode;
@@ -26,8 +27,13 @@ import org.chromium.chrome.browser.toolbar.top.NavigationPopup;
 import org.chromium.chrome.browser.web_app_header.R;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.ui.display.DisplayAndroid;
+import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.util.TokenHolder;
+import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,17 +45,27 @@ import java.util.List;
  */
 @NullMarked
 @RequiresApi(api = Build.VERSION_CODES.VANILLA_ICE_CREAM)
-public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.AppHeaderObserver {
+public class WebAppHeaderLayoutCoordinator
+        implements DesktopWindowStateManager.AppHeaderObserver, WebAppHeaderDelegate {
     private @Nullable WebAppHeaderLayoutMediator mMediator;
     private @Nullable WebAppHeaderLayout mView;
     private @Nullable ReloadButtonCoordinator mReloadButtonCoordinator;
     private @Nullable BackButtonCoordinator mBackButtonCoordinator;
     private final ViewStub mViewStub;
     private final DesktopWindowStateManager mDesktopWindowStateManager;
-    private final ObservableSupplier<Tab> mTabSupplier;
+    private final ObservableSupplier<@Nullable Tab> mTabSupplier;
+    private final ScrimManager mScrimManager;
     private final ThemeColorProvider mThemeColorProvider;
     private final @DisplayMode.EnumType int mDisplayMode;
     private final NavigationPopup.HistoryDelegate mHistoryDelegate;
+    private int mMinUIControlsMinWidthPx;
+    private int mAppHeaderUnoccludedWidthPx;
+    private final Callback<Integer> mOnUnoccludedWidthCallback;
+    private final ObservableSupplierImpl<Boolean> mControlsEnabledSupplier;
+    private final TokenHolder mDisabledControlsHolder;
+
+    // 48dp * 2 (back and reload button) + 4dp (start padding).
+    private static final int MIN_HEADER_WIDTH_DP = 100;
 
     /**
      * Creates an instance of {@link WebAppHeaderLayoutCoordinator}.
@@ -60,14 +76,19 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
     public WebAppHeaderLayoutCoordinator(
             ViewStub viewStub,
             DesktopWindowStateManager desktopWindowStateManager,
-            ObservableSupplier<Tab> tabSupplier,
+            ObservableSupplier<@Nullable Tab> tabSupplier,
             ThemeColorProvider themeColorProvider,
             BrowserServicesIntentDataProvider browserServicesIntentDataProvider,
+            ScrimManager scrimManager,
             NavigationPopup.HistoryDelegate historyDelegate) {
-        final var webAppExtras = browserServicesIntentDataProvider.getWebappExtras();
-        assert webAppExtras != null;
-        mDisplayMode = webAppExtras.displayMode;
+        assert browserServicesIntentDataProvider.isWebApkActivity()
+                || browserServicesIntentDataProvider.isTrustedWebActivity();
+
+        mDisplayMode = browserServicesIntentDataProvider.getResolvedDisplayMode();
         mHistoryDelegate = historyDelegate;
+        mControlsEnabledSupplier = new ObservableSupplierImpl<>(true);
+        mDisabledControlsHolder = new TokenHolder(this::updateControlsEnabledState);
+        mScrimManager = scrimManager;
 
         mViewStub = viewStub;
         mViewStub.setLayoutResource(R.layout.web_app_header_layout);
@@ -77,6 +98,10 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
 
         mTabSupplier = tabSupplier;
         mThemeColorProvider = themeColorProvider;
+
+        mOnUnoccludedWidthCallback = this::onUnoccludedWidthChanged;
+        mMinUIControlsMinWidthPx = 0;
+        mAppHeaderUnoccludedWidthPx = 0;
 
         final var appHeaderState = desktopWindowStateManager.getAppHeaderState();
         if (appHeaderState != null) {
@@ -96,15 +121,23 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
         final var model = new PropertyModel.Builder(WebAppHeaderLayoutProperties.ALL_KEYS).build();
         final int headerMinHeight =
                 mView.getResources().getDimensionPixelSize(R.dimen.web_app_header_min_height);
+
+        mMinUIControlsMinWidthPx =
+                DisplayUtil.dpToPx(
+                        DisplayAndroid.getNonMultiDisplay(mView.getContext()), MIN_HEADER_WIDTH_DP);
         mMediator =
                 new WebAppHeaderLayoutMediator(
                         model,
+                        this,
                         mDesktopWindowStateManager,
+                        mScrimManager,
                         mTabSupplier,
                         this::collectNonDraggableAreas,
+                        mThemeColorProvider,
                         headerMinHeight);
         PropertyModelChangeProcessor.create(model, mView, WebAppHeaderLayoutViewBinder::bind);
 
+        mMediator.getUnoccludedWidthSupplier().addObserver(mOnUnoccludedWidthCallback);
         if (mDisplayMode == DisplayMode.MINIMAL_UI) {
             initMinUiControls();
         }
@@ -121,27 +154,48 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
                         this::refreshTab,
                         mTabSupplier,
                         new ObservableSupplierImpl<>(),
+                        mControlsEnabledSupplier,
                         mThemeColorProvider);
-        mReloadButtonCoordinator.setVisibility(true);
 
-        final ImageButton backButton = mView.findViewById(R.id.back_button);
+        final ChromeImageButton backButton = mView.findViewById(R.id.back_button);
         mBackButtonCoordinator =
                 new BackButtonCoordinator(
                         backButton,
-                        mMediator::goBack,
+                        (ignored) -> {
+                            if (mMediator != null) mMediator.goBack();
+                        },
                         mThemeColorProvider,
                         mTabSupplier,
+                        mControlsEnabledSupplier,
                         mHistoryDelegate);
-        mBackButtonCoordinator.setVisibility(true);
+    }
+
+    private void onUnoccludedWidthChanged(int newUnoccludedWidthPx) {
+        mAppHeaderUnoccludedWidthPx = newUnoccludedWidthPx;
+        updateButtonVisibility();
+    }
+
+    private void updateButtonVisibility() {
+        boolean showButtons = mAppHeaderUnoccludedWidthPx >= mMinUIControlsMinWidthPx;
+        if (mReloadButtonCoordinator != null) {
+            mReloadButtonCoordinator.setVisibility(showButtons);
+        }
+        if (mBackButtonCoordinator != null) {
+            mBackButtonCoordinator.setVisibility(showButtons);
+        }
+    }
+
+    private void updateControlsEnabledState() {
+        mControlsEnabledSupplier.set(!mDisabledControlsHolder.hasTokens());
     }
 
     private List<Rect> collectNonDraggableAreas() {
         final var areas = new ArrayList<Rect>();
-        if (mReloadButtonCoordinator != null) {
+        if (mReloadButtonCoordinator != null && mReloadButtonCoordinator.isVisibile()) {
             areas.add(mReloadButtonCoordinator.getHitRect());
         }
 
-        if (mBackButtonCoordinator != null) {
+        if (mBackButtonCoordinator != null && mBackButtonCoordinator.isVisible()) {
             areas.add(mBackButtonCoordinator.getHitRect());
         }
 
@@ -163,6 +217,18 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
         }
     }
 
+    @Override
+    public int disableControlsAndClearOldToken(int token) {
+        int newToken = mDisabledControlsHolder.acquireToken();
+        releaseDisabledControlsToken(token);
+        return newToken;
+    }
+
+    @Override
+    public void releaseDisabledControlsToken(int token) {
+        mDisabledControlsHolder.releaseToken(token);
+    }
+
     /**
      * Cleans up resources and subscriptions. This class should not be used after this method is
      * called.
@@ -175,6 +241,7 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
         }
 
         if (mMediator != null) {
+            mMediator.getUnoccludedWidthSupplier().removeObserver(mOnUnoccludedWidthCallback);
             mMediator.destroy();
         }
 

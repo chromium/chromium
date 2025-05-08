@@ -110,6 +110,9 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
 
 + (void)signinWithFakeIdentity:(FakeSystemIdentity*)fakeIdentity
              enableHistorySync:(BOOL)enableHistorySync {
+  GREYAssert([SigninEarlGrey isSignedOut],
+             @"Can't sign in when already signed in");
+
   if (![SigninEarlGrey isIdentityAdded:fakeIdentity]) {
     // For convenience, add the identity, if it was not added yet.
     [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -119,8 +122,6 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
     [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
     [ChromeEarlGreyUI waitForAppToIdle];
     CloseHistorySyncSheet(enableHistorySync);
-    [ChromeEarlGrey
-        waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
     return;
   }
   // TODO(crbug.com/335592853): There's no good reason why the with-history vs
@@ -136,27 +137,16 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
     GREYAssert(isSigned,
                @"Signed in failed. Expected: %@, Currently signed: %@",
                fakeIdentity.gaiaID, [SigninEarlGrey primaryAccountGaiaID]);
-
-    [ChromeEarlGrey
-        waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
-
     return;
   }
 
-  if ([SigninEarlGrey isSignedOut]) {
-    [SigninEarlGreyUI tapPrimarySignInButtonInRecentTabs];
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                            kIdentityButtonControlIdentifier)]
-        performAction:grey_tap()];
-    [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
-                                            fakeIdentity.userEmail)]
-        performAction:grey_tap()];
-  } else {
-    [SigninEarlGreyUI
-        openRecentTabsAndTapButton:
-            grey_accessibilityID(
-                kRecentTabsTabSyncOffButtonAccessibilityIdentifier)];
-  }
+  [SigninEarlGreyUI tapPrimarySignInButtonInRecentTabs];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kIdentityButtonControlIdentifier)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
+                                          fakeIdentity.userEmail)]
+      performAction:grey_tap()];
 
   MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(fakeIdentity);
 

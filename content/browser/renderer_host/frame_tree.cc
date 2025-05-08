@@ -212,7 +212,6 @@ FrameTree::FrameTree(
                  navigator_delegate,
                  navigation_controller_delegate),
       type_(type),
-      load_progress_(0.0),
       root_(*this,
             nullptr,
             // The top-level frame must always be in a

@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_P(WebstoreInstallerWithWithholdingUIBrowserTest,
   content::WebContents* active_web_contents = GetActiveWebContents();
   ASSERT_TRUE(active_web_contents);
 
-  // Create an approval that withhelds permissions when the checkbox is not
+  // Create an approval that withholds permissions when the checkbox is not
   // selected.
   std::unique_ptr<InstallApproval> approval =
       InstallApproval::CreateWithNoInstallPrompt(

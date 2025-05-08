@@ -10,6 +10,8 @@ import android.view.View;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
@@ -21,6 +23,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 
 /** Handles the translate button on the toolbar. */
+@NullMarked
 public class TranslateToolbarButtonController extends BaseButtonDataProvider {
     private final Supplier<Tracker> mTrackerSupplier;
 
@@ -75,7 +78,8 @@ public class TranslateToolbarButtonController extends BaseButtonDataProvider {
     }
 
     @Override
-    protected boolean shouldShowButton(Tab tab) {
+    protected boolean shouldShowButton(@Nullable Tab tab) {
+        if (tab == null) return false;
         if (!super.shouldShowButton(tab)) return false;
         if (tab.isNativePage() && tab.getNativePage().isPdf()) return false;
         return UrlUtilities.isHttpOrHttps(tab.getUrl());

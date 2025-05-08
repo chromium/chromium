@@ -67,8 +67,8 @@ struct HelpBubbleParams {
     ExtendedProperties& operator=(ExtendedProperties&&) noexcept;
     ~ExtendedProperties();
 
-    bool operator==(const ExtendedProperties&) const;
-    bool operator!=(const ExtendedProperties&) const;
+    friend bool operator==(const ExtendedProperties&,
+                           const ExtendedProperties&) = default;
 
     base::Value::Dict& values() { return dict_; }
     const base::Value::Dict& values() const { return dict_; }

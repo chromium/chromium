@@ -177,6 +177,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     // Indicates if this frame has a save directive which will add copy requests
     // for render passes in the Viz process.
     bool has_view_transition_save_directive = false;
+    // Indicates if this frame had any copy requests, and is used to ensure
+    // that we clear pending copy requests after drawing a frame and request
+    // a new tree commit.
+    bool has_copy_requests = false;
   };
 
   // A struct of data for a single UIResource, including the backing
@@ -499,7 +503,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void NotifyReadyToActivate() override;
   void NotifyReadyToDraw() override;
   void NotifyAllTileTasksCompleted() override;
-  void NotifyTileStateChanged(const Tile* tile) override;
+  void NotifyTileStateChanged(const Tile* tile, bool update_damage) override;
   std::unique_ptr<RasterTilePriorityQueue> BuildRasterQueue(
       TreePriority tree_priority,
       RasterTilePriorityQueue::Type type) override;
@@ -802,7 +806,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     return paint_worklet_painter_.get();
   }
 
-  void QueueImageDecode(int request_id, const DrawImage& image);
+  void QueueImageDecode(int request_id,
+                        const DrawImage& image,
+                        bool speculative);
   std::vector<std::pair<int, bool>> TakeCompletedImageDecodeRequests();
   // Returns mutator events to be handled by BeginMainFrame.
   std::unique_ptr<MutatorEvents> TakeMutatorEvents();
@@ -862,6 +868,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   DroppedFrameCounter* dropped_frame_counter_for_testing() {
     return &dropped_frame_counter_;
   }
+  FrameSorter* frame_sorter_for_testing() { return &frame_sorter_; }
 
   // Returns true if the client is currently compositing synchronously.
   bool IsInSynchronousComposite() const;
@@ -891,6 +898,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
       const gfx::RectF& rect);
 
   void UpdateChildLocalSurfaceId();
+
+  void ReturnResource(viz::ReturnedResource returned_resource);
 
  protected:
   LayerTreeHostImpl(
@@ -1044,7 +1053,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   std::unique_ptr<InputDelegateForCompositor> input_delegate_;
 
   const LayerTreeSettings settings_;
-  const bool use_layer_context_for_display_;
   const bool use_layer_context_for_animations_;
 
   // This is set to true only if:
@@ -1074,7 +1082,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   raw_ptr<LayerTreeFrameSink> layer_tree_frame_sink_ = nullptr;
 
   // Valid when we have a LayerTreeFrameSink and
-  // `use_layer_context_for_display_` is true. This object pushes updates to a
+  // `trees_in_viz_in_client_process_` is true. This object pushes updates to a
   // remote display tree.
   std::unique_ptr<LayerContext> layer_context_;
 
@@ -1251,7 +1259,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   PresentationTimeCallbackBuffer presentation_time_callbacks_;
 
   // `compositor_frame_reporting_controller_` has a dependency on
-  // `dropped_frame_counter_` so it must be declared last and deleted first;
+  // `dropped_frame_counter_` so it must be declared last and deleted first.
+  FrameSorter frame_sorter_;
   std::unique_ptr<CompositorFrameReportingController>
       compositor_frame_reporting_controller_;
   FrameSequenceTrackerCollection frame_trackers_;

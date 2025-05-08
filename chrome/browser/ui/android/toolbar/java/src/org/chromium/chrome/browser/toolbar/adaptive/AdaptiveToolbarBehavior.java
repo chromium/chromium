@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar.adaptive;
 import android.content.Context;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 
 /** Embedder-specific behavior of Adaptive Toolbar. */
+@NullMarked
 public interface AdaptiveToolbarBehavior {
 
     /** List of the button variants both BrApp/CCT have in common. */

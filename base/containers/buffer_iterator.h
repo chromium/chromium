@@ -71,6 +71,7 @@ class BufferIterator {
       : buffer_(buffer), remaining_(buffer) {}
 
   // TODO(crbug.com/40284755): Move all callers to use spans and remove this.
+  // PRECONDITIONS: `data` must point to `size` contiguous B elements.
   UNSAFE_BUFFER_USAGE BufferIterator(B* data, size_t size)
       : BufferIterator(
             // TODO(crbug.com/40284755): Remove this constructor entirely,

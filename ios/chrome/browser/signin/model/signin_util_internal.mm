@@ -17,9 +17,12 @@
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
 #import "base/time/time.h"
+#import "base/version_info/channel.h"
 #import "components/signin/public/identity_manager/tribool.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/common/channel_info.h"
 
 namespace {
 
@@ -98,6 +101,15 @@ void CreateSentinelFiles(std::array<SentinelFileInfo, 2> infos) {
   }
 }
 
+// Whether a phone backup/restore state should be simulated.
+// This can be triggered either by EG test flag or by Experimental settings.
+bool ShouldSimulatePostDeviceRestore() {
+  // We simulate post device restore if required either by experimental settings
+  // or test flag.
+  return tests_hook::SimulatePostDeviceRestore() ||
+         experimental_flags::SimulatePostDeviceRestore();
+}
+
 }  // namespace
 
 // File name for sentinel to backup in iOS backup device.
@@ -134,6 +146,15 @@ signin::RestoreData LoadDeviceRestoreDataInternal(
     restore_data.is_first_session_after_device_restore =
         signin::Tribool::kUnknown;
     return restore_data;
+  }
+  if (ShouldSimulatePostDeviceRestore()) {
+    // This simulate a device restore. This setting is accessible only in the
+    // experimental flags in Chrome settings. Therefore this should be avaible
+    // only in canary and dev.
+    auto current_channel = GetChannel();
+    CHECK(current_channel != version_info::Channel::STABLE,
+          base::NotFatalUntil::M140);
+    DeleteFile(not_backed_up_sentinel_path);
   }
   bool does_backed_up_sentinel_file_exist =
       base::PathExists(backed_up_sentinel_path);

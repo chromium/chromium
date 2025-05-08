@@ -46,8 +46,11 @@ import android.graphics.Bitmap;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
-import org.chromium.chrome.browser.autofill.AutofillUiUtils;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils.IconSpecs;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsComponent.Delegate;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.AdditionalInfoProperties;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties;
@@ -56,6 +59,7 @@ import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPayme
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.ImageSize;
+import org.chromium.components.autofill.ImageType;
 import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.Ewallet;
@@ -73,6 +77,7 @@ import java.util.Optional;
  * Contains the logic for the facilitated payments component. It sets the state of the model and
  * reacts to events like clicks.
  */
+@NullMarked
 class FacilitatedPaymentsPaymentMethodsMediator {
     static final String PIX_BANK_ACCOUNT_TRANSACTION_LIMIT = "500";
 
@@ -94,6 +99,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
     private Profile mProfile;
     private InputProtector mInputProtector = new InputProtector();
 
+    @Initializer
     void initialize(Context context, PropertyModel model, Delegate delegate, Profile profile) {
         mContext = context;
         mModel = model;
@@ -361,7 +367,10 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                     AutofillImageFetcherFactory.getForProfile(mProfile)
                             .getImageIfAvailable(
                                     ewallet.getDisplayIconUrl(),
-                                    AutofillUiUtils.CardIconSpecs.create(context, ImageSize.LARGE));
+                                    IconSpecs.create(
+                                            context,
+                                            ImageType.CREDIT_CARD_ART_IMAGE,
+                                            ImageSize.LARGE));
         }
         if (ewalletIconOptional.isPresent()) {
             ewalletModelBuilder.with(EWALLET_ICON_BITMAP, ewalletIconOptional.get());
@@ -433,7 +442,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         }
     }
 
-    private static ListItem findOnlyItemOfType(ModelList screenItems, int targetType) {
+    private static @Nullable ListItem findOnlyItemOfType(ModelList screenItems, int targetType) {
         // Look for exactly one match.
         ListItem foundItem = null;
         for (ListItem item : screenItems) {

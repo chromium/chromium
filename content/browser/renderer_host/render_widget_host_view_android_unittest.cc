@@ -121,6 +121,10 @@ class MockMojoRenderInputRouterDelegate
                void(bool force_enable_zoom,
                     const std::vector<viz::FrameSinkId>& frame_sink_ids));
   MOCK_METHOD1(StopFlingingOnViz, void(const viz::FrameSinkId& frame_sink_id));
+  MOCK_METHOD1(RestartInputEventAckTimeoutIfNecessary,
+               void(const viz::FrameSinkId& frame_sink_id));
+  MOCK_METHOD2(NotifyVisibilityChanged,
+               void(const viz::FrameSinkId& frame_sink_id, bool is_hidden));
 
  private:
   mojo::Receiver<input::mojom::RenderInputRouterDelegate> receiver_{this};

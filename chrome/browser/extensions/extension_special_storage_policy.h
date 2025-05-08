@@ -56,7 +56,7 @@ class ExtensionSpecialStoragePolicy : public storage::SpecialStoragePolicy {
                                 content::BrowserContext* context);
   void RevokeRightsForAllExtensions();
 
-  // Decides whether the storage for |extension|'s web extent needs protection.
+  // Decides whether the storage for `extension`'s web extent needs protection.
   bool NeedsProtection(const extensions::Extension* extension);
 
   // Returns the set of extensions protecting this origin. The caller does not

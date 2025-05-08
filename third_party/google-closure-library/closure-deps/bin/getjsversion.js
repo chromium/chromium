@@ -39,7 +39,6 @@ rl.on('close', () => {
     fatal = fatal || error.fatal;
     console.error(error.toString());
   }
-  if (!fatal) {
-    console.log(result.dependencies[0].language);
-  }
+  if (fatal) process.exit(1);
+  console.log(result.dependencies[0].language);
 });

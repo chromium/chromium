@@ -64,6 +64,7 @@ android_library("java") {
     "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/searchactivityutils:java",
+    "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/ui/android/toolbar:java",
     "//chrome/browser/ui/android/toolbar:java_resources",
     "//chrome/browser/ui/messages/android:java",
@@ -90,6 +91,8 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "android/res/drawable/hub_pane_switcher_background.xml",
+    "android/res/drawable/hub_pane_switcher_item_selector.xml",
     "android/res/drawable/hub_search_box_background.xml",
     "android/res/drawable/new_tab_button_background.xml",
     "android/res/layout/hub_layout.xml",
@@ -102,6 +105,7 @@ android_resources("java_resources") {
     "android/res/values/ids.xml",
     "android/res/values/themes.xml",
   ]
+  deps = [ "//third_party/android_deps:material_design_java" ]
 }
 
 android_library("unit_device_javatests") {

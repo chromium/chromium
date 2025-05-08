@@ -122,11 +122,10 @@ cast_shared_library("libcast_graphics_1.0") {
 
   public_deps = [ "//chromecast/public" ]
 
-  deps = [
-    "//base",
-    "//chromecast/base:chromecast_switches",
-    "//chromecast/base:init_shlib",
-  ]
+  deps = [ "//base:base_static" ]
+
+  # Note: this target must not transitively depend on //base, as having two
+  # copies of //base in the same address space leads to hard-to-debug crashes.
 }
 
 if (use_aura && !is_cast_audio_only && !is_fuchsia) {

@@ -12,7 +12,7 @@ define_override_androidx_targets("unused") {
 if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_activity_activity_java") {
-    aar_path = "../androidx/cipd/libs/androidx_activity_activity/activity-1.11.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_activity_activity/activity-1.12.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_activity_activity/androidx_activity_activity.info"
     enable_bytecode_checks = false
     deps = [
@@ -23,6 +23,7 @@ if (!limit_android_deps) {
       ":androidx_lifecycle_lifecycle_runtime_java",
       ":androidx_lifecycle_lifecycle_viewmodel_java",
       ":androidx_lifecycle_lifecycle_viewmodel_savedstate_java",
+      ":androidx_navigationevent_navigationevent_java",
       ":androidx_savedstate_savedstate_java",
       ":androidx_tracing_tracing_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
@@ -32,7 +33,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_activity_activity_compose_java") {
-    aar_path = "../androidx/cipd/libs/androidx_activity_activity_compose/activity-compose-1.11.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_activity_activity_compose/activity-compose-1.12.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_activity_activity_compose/androidx_activity_activity_compose.info"
     enable_bytecode_checks = false
     deps = [
@@ -58,7 +59,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_annotation_annotation_experimental_java") {
-    aar_path = "../androidx/cipd/libs/androidx_annotation_annotation_experimental/annotation-experimental-1.5.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_annotation_annotation_experimental/annotation-experimental-1.5.0.aar"
     info_path = "../androidx/committed/libs/androidx_annotation_annotation_experimental/androidx_annotation_annotation_experimental.info"
     enable_bytecode_checks = false
     deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
@@ -585,7 +586,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_customview_customview_java") {
-    aar_path = "../androidx/cipd/libs/androidx_customview_customview/customview-1.2.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_customview_customview/customview-1.2.0.aar"
     info_path = "../androidx/committed/libs/androidx_customview_customview/androidx_customview_customview.info"
     enable_bytecode_checks = false
     deps = [
@@ -618,7 +619,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_documentfile_documentfile_java") {
-    aar_path = "../androidx/cipd/libs/androidx_documentfile_documentfile/documentfile-1.1.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_documentfile_documentfile/documentfile-1.1.0.aar"
     info_path = "../androidx/committed/libs/androidx_documentfile_documentfile/androidx_documentfile_documentfile.info"
     enable_bytecode_checks = false
     deps = [
@@ -669,7 +670,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_exifinterface_exifinterface_java") {
-    aar_path = "../androidx/cipd/libs/androidx_exifinterface_exifinterface/exifinterface-1.4.0.aar"
+    aar_path = "../androidx/cipd/libs/androidx_exifinterface_exifinterface/exifinterface-1.4.1.aar"
     info_path = "../androidx/committed/libs/androidx_exifinterface_exifinterface/androidx_exifinterface_exifinterface.info"
     enable_bytecode_checks = false
     deps = [
@@ -756,7 +757,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_leanback_leanback_java") {
-    aar_path = "../androidx/cipd/libs/androidx_leanback_leanback/leanback-1.2.0-SNAPSHOT.aar"
+    aar_path =
+        "../androidx/cipd/libs/androidx_leanback_leanback/leanback-1.2.0.aar"
     info_path = "../androidx/committed/libs/androidx_leanback_leanback/androidx_leanback_leanback.info"
     enable_bytecode_checks = false
     deps = [
@@ -775,7 +777,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_leanback_leanback_preference_java") {
-    aar_path = "../androidx/cipd/libs/androidx_leanback_leanback_preference/leanback-preference-1.2.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_leanback_leanback_preference/leanback-preference-1.2.0.aar"
     info_path = "../androidx/committed/libs/androidx_leanback_leanback_preference/androidx_leanback_leanback_preference.info"
     enable_bytecode_checks = false
     deps = [
@@ -826,7 +828,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_prebuilt("androidx_lifecycle_lifecycle_common_java8_java") {
-    jar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_common_java8/lifecycle-common-java8-2.9.0-SNAPSHOT.jar"
+    jar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_common_java8/lifecycle-common-java8-2.10.0-SNAPSHOT.jar"
     output_name = "androidx_lifecycle_lifecycle_common_java8"
     supports_android = true
     requires_android = true
@@ -839,7 +841,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_lifecycle_lifecycle_livedata_java") {
-    aar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_livedata/lifecycle-livedata-2.9.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_livedata/lifecycle-livedata-2.10.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_lifecycle_lifecycle_livedata/androidx_lifecycle_lifecycle_livedata.info"
     enable_bytecode_checks = false
     deps = [
@@ -856,7 +858,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_lifecycle_lifecycle_livedata_core_java") {
-    aar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_livedata_core/lifecycle-livedata-core-2.9.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_livedata_core/lifecycle-livedata-core-2.10.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_lifecycle_lifecycle_livedata_core/androidx_lifecycle_lifecycle_livedata_core.info"
     enable_bytecode_checks = false
     deps = [
@@ -880,7 +882,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_lifecycle_lifecycle_service_java") {
-    aar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_service/lifecycle-service-2.9.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_service/lifecycle-service-2.10.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_lifecycle_lifecycle_service/androidx_lifecycle_lifecycle_service.info"
     enable_bytecode_checks = false
     deps = [
@@ -1097,13 +1099,13 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_pdf_pdf_viewer_java") {
-    aar_path = "cipd/libs/androidx_pdf_pdf_viewer/pdf-viewer-1.0.0-alpha06.aar"
-    info_path =
-        "committed/libs/androidx_pdf_pdf_viewer/androidx_pdf_pdf_viewer.info"
+    aar_path = "../androidx/cipd/libs/androidx_pdf_pdf_viewer/pdf-viewer-1.0.0-SNAPSHOT.aar"
+    info_path = "../androidx/committed/libs/androidx_pdf_pdf_viewer/androidx_pdf_pdf_viewer.info"
     enable_bytecode_checks = false
     deps = [
       ":androidx_annotation_annotation_java",
       ":androidx_core_core_java",
+      ":androidx_customview_customview_java",
       ":androidx_exifinterface_exifinterface_java",
       "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
       "//third_party/android_deps:material_design_java",
@@ -1115,8 +1117,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_pdf_pdf_viewer_fragment_java") {
-    aar_path = "cipd/libs/androidx_pdf_pdf_viewer_fragment/pdf-viewer-fragment-1.0.0-alpha06.aar"
-    info_path = "committed/libs/androidx_pdf_pdf_viewer_fragment/androidx_pdf_pdf_viewer_fragment.info"
+    aar_path = "../androidx/cipd/libs/androidx_pdf_pdf_viewer_fragment/pdf-viewer-fragment-1.0.0-SNAPSHOT.aar"
+    info_path = "../androidx/committed/libs/androidx_pdf_pdf_viewer_fragment/androidx_pdf_pdf_viewer_fragment.info"
     enable_bytecode_checks = false
     deps = [
       ":androidx_core_core_java",
@@ -1147,8 +1149,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_print_print_java") {
-    aar_path =
-        "../androidx/cipd/libs/androidx_print_print/print-1.1.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_print_print/print-1.1.0.aar"
     info_path = "../androidx/committed/libs/androidx_print_print/androidx_print_print.info"
     enable_bytecode_checks = false
     deps = [
@@ -1235,7 +1236,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_savedstate_savedstate_android_java") {
-    aar_path = "../androidx/cipd/libs/androidx_savedstate_savedstate_android/savedstate-android-1.3.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_savedstate_savedstate_android/savedstate-android-1.4.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_savedstate_savedstate_android/androidx_savedstate_savedstate_android.info"
     enable_bytecode_checks = false
     deps = [
@@ -1276,7 +1277,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_test_core_java") {
-    aar_path = "../androidx/cipd/libs/androidx_test_core/core-1.7.0-alpha02.aar"
+    aar_path = "../androidx/cipd/libs/androidx_test_core/core-1.7.0-alpha03.aar"
     info_path =
         "../androidx/committed/libs/androidx_test_core/androidx_test_core.info"
     enable_bytecode_checks = false
@@ -1315,7 +1316,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_test_espresso_espresso_core_java") {
-    aar_path = "../androidx/cipd/libs/androidx_test_espresso_espresso_core/espresso-core-3.7.0-alpha02.aar"
+    aar_path = "../androidx/cipd/libs/androidx_test_espresso_espresso_core/espresso-core-3.7.0-alpha03.aar"
     info_path = "../androidx/committed/libs/androidx_test_espresso_espresso_core/androidx_test_espresso_espresso_core.info"
     enable_bytecode_checks = false
     testonly = true
@@ -1371,7 +1372,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_test_ext_junit_java") {
     aar_path =
-        "../androidx/cipd/libs/androidx_test_ext_junit/junit-1.3.0-alpha02.aar"
+        "../androidx/cipd/libs/androidx_test_ext_junit/junit-1.3.0-alpha03.aar"
     info_path = "../androidx/committed/libs/androidx_test_ext_junit/androidx_test_ext_junit.info"
     enable_bytecode_checks = false
     testonly = true
@@ -1388,7 +1389,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_test_monitor_java") {
     aar_path =
-        "../androidx/cipd/libs/androidx_test_monitor/monitor-1.8.0-alpha02.aar"
+        "../androidx/cipd/libs/androidx_test_monitor/monitor-1.8.0-alpha03.aar"
     info_path = "../androidx/committed/libs/androidx_test_monitor/androidx_test_monitor.info"
     enable_bytecode_checks = false
     testonly = true
@@ -1402,7 +1403,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_test_rules_java") {
     aar_path =
-        "../androidx/cipd/libs/androidx_test_rules/rules-1.7.0-alpha02.aar"
+        "../androidx/cipd/libs/androidx_test_rules/rules-1.7.0-alpha03.aar"
     info_path = "../androidx/committed/libs/androidx_test_rules/androidx_test_rules.info"
     enable_bytecode_checks = false
     testonly = true
@@ -1416,7 +1417,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_test_runner_java") {
     aar_path =
-        "../androidx/cipd/libs/androidx_test_runner/runner-1.7.0-alpha02.aar"
+        "../androidx/cipd/libs/androidx_test_runner/runner-1.7.0-alpha03.aar"
     info_path = "../androidx/committed/libs/androidx_test_runner/androidx_test_runner.info"
     enable_bytecode_checks = false
     testonly = true
@@ -1431,7 +1432,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_test_services_storage_java") {
-    aar_path = "../androidx/cipd/libs/androidx_test_services_storage/storage-1.6.0-alpha03.aar"
+    aar_path = "../androidx/cipd/libs/androidx_test_services_storage/storage-1.6.0-alpha04.aar"
     info_path = "../androidx/committed/libs/androidx_test_services_storage/androidx_test_services_storage.info"
     enable_bytecode_checks = false
     testonly = true
@@ -1477,7 +1478,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_tvprovider_tvprovider_java") {
-    aar_path = "../androidx/cipd/libs/androidx_tvprovider_tvprovider/tvprovider-1.1.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_tvprovider_tvprovider/tvprovider-1.1.0.aar"
     info_path = "../androidx/committed/libs/androidx_tvprovider_tvprovider/androidx_tvprovider_tvprovider.info"
     enable_bytecode_checks = false
     deps = [
@@ -1581,7 +1582,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_window_window_java") {
     aar_path =
-        "../androidx/cipd/libs/androidx_window_window/window-1.7.0-SNAPSHOT.aar"
+        "../androidx/cipd/libs/androidx_window_window/window-1.5.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_window_window/androidx_window_window.info"
     enable_bytecode_checks = false
     deps = [
@@ -1619,7 +1620,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_activity_activity_ktx_java") {
-    aar_path = "../androidx/cipd/libs/androidx_activity_activity_ktx/activity-ktx-1.11.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_activity_activity_ktx/activity-ktx-1.12.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_activity_activity_ktx/androidx_activity_activity_ktx.info"
     enable_bytecode_checks = false
 
@@ -2023,6 +2024,7 @@ if (!limit_android_deps) {
       ":androidx_annotation_annotation_java",
       ":androidx_collection_collection_java",
       ":androidx_compose_runtime_runtime_java",
+      ":androidx_lifecycle_lifecycle_runtime_compose_java",
       ":androidx_savedstate_savedstate_compose_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
@@ -2361,7 +2363,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_customview_customview_poolingcontainer_java") {
-    aar_path = "../androidx/cipd/libs/androidx_customview_customview_poolingcontainer/customview-poolingcontainer-1.1.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_customview_customview_poolingcontainer/customview-poolingcontainer-1.1.0.aar"
     info_path = "../androidx/committed/libs/androidx_customview_customview_poolingcontainer/androidx_customview_customview_poolingcontainer.info"
     enable_bytecode_checks = false
 
@@ -2571,7 +2573,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_leanback_leanback_grid_java") {
-    aar_path = "../androidx/cipd/libs/androidx_leanback_leanback_grid/leanback-grid-1.0.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_leanback_leanback_grid/leanback-grid-1.0.0.aar"
     info_path = "../androidx/committed/libs/androidx_leanback_leanback_grid/androidx_leanback_leanback_grid.info"
     enable_bytecode_checks = false
 
@@ -2620,7 +2622,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_prebuilt("androidx_lifecycle_lifecycle_common_jvm_java") {
-    jar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_common_jvm/lifecycle-common-jvm-2.9.0-SNAPSHOT.jar"
+    jar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_common_jvm/lifecycle-common-jvm-2.10.0-SNAPSHOT.jar"
     output_name = "androidx_lifecycle_lifecycle_common_jvm"
     supports_android = true
     requires_android = true
@@ -2643,7 +2645,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_lifecycle_lifecycle_livedata_core_ktx_java") {
-    aar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_livedata_core_ktx/lifecycle-livedata-core-ktx-2.9.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_livedata_core_ktx/lifecycle-livedata-core-ktx-2.10.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_lifecycle_lifecycle_livedata_core_ktx/androidx_lifecycle_lifecycle_livedata_core_ktx.info"
     enable_bytecode_checks = false
 
@@ -2662,7 +2664,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_lifecycle_lifecycle_livedata_ktx_java") {
-    aar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_livedata_ktx/lifecycle-livedata-ktx-2.9.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_livedata_ktx/lifecycle-livedata-ktx-2.10.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_lifecycle_lifecycle_livedata_ktx/androidx_lifecycle_lifecycle_livedata_ktx.info"
     enable_bytecode_checks = false
 
@@ -2682,7 +2684,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_lifecycle_lifecycle_process_java") {
-    aar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_process/lifecycle-process-2.9.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_process/lifecycle-process-2.10.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_lifecycle_lifecycle_process/androidx_lifecycle_lifecycle_process.info"
     enable_bytecode_checks = false
 
@@ -2703,7 +2705,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_lifecycle_lifecycle_runtime_android_java") {
-    aar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_runtime_android/lifecycle-runtime-android-2.9.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_runtime_android/lifecycle-runtime-android-2.10.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_lifecycle_lifecycle_runtime_android/androidx_lifecycle_lifecycle_runtime_android.info"
     enable_bytecode_checks = false
 
@@ -2739,7 +2741,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_lifecycle_lifecycle_runtime_compose_android_java") {
-    aar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_runtime_compose_android/lifecycle-runtime-compose-android-2.9.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_runtime_compose_android/lifecycle-runtime-compose-android-2.10.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_lifecycle_lifecycle_runtime_compose_android/androidx_lifecycle_lifecycle_runtime_compose_android.info"
     enable_bytecode_checks = false
 
@@ -2760,7 +2762,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_lifecycle_lifecycle_runtime_ktx_android_java") {
-    aar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_runtime_ktx_android/lifecycle-runtime-ktx-android-2.9.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_runtime_ktx_android/lifecycle-runtime-ktx-android-2.10.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_lifecycle_lifecycle_runtime_ktx_android/androidx_lifecycle_lifecycle_runtime_ktx_android.info"
     enable_bytecode_checks = false
 
@@ -2781,7 +2783,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_lifecycle_lifecycle_viewmodel_android_java") {
-    aar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_viewmodel_android/lifecycle-viewmodel-android-2.9.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_viewmodel_android/lifecycle-viewmodel-android-2.10.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_lifecycle_lifecycle_viewmodel_android/androidx_lifecycle_lifecycle_viewmodel_android.info"
     enable_bytecode_checks = false
 
@@ -2803,7 +2805,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_lifecycle_lifecycle_viewmodel_compose_android_java") {
-    aar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_viewmodel_compose_android/lifecycle-viewmodel-compose-android-2.9.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_viewmodel_compose_android/lifecycle-viewmodel-compose-android-2.10.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_lifecycle_lifecycle_viewmodel_compose_android/androidx_lifecycle_lifecycle_viewmodel_compose_android.info"
     enable_bytecode_checks = false
 
@@ -2828,7 +2830,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_lifecycle_lifecycle_viewmodel_ktx_java") {
-    aar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_viewmodel_ktx/lifecycle-viewmodel-ktx-2.9.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_viewmodel_ktx/lifecycle-viewmodel-ktx-2.10.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_lifecycle_lifecycle_viewmodel_ktx/androidx_lifecycle_lifecycle_viewmodel_ktx.info"
     enable_bytecode_checks = false
 
@@ -2848,7 +2850,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_lifecycle_lifecycle_viewmodel_savedstate_android_java") {
-    aar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_viewmodel_savedstate_android/lifecycle-viewmodel-savedstate-android-2.9.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_viewmodel_savedstate_android/lifecycle-viewmodel-savedstate-android-2.10.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_lifecycle_lifecycle_viewmodel_savedstate_android/androidx_lifecycle_lifecycle_viewmodel_savedstate_android.info"
     enable_bytecode_checks = false
 
@@ -2927,7 +2929,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_navigation_navigation_common_android_java") {
-    aar_path = "../androidx/cipd/libs/androidx_navigation_navigation_common_android/navigation-common-android-2.9.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_navigation_navigation_common_android/navigation-common-android-2.10.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_navigation_navigation_common_android/androidx_navigation_navigation_common_android.info"
     enable_bytecode_checks = false
 
@@ -2955,7 +2957,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_navigation_navigation_compose_android_java") {
-    aar_path = "../androidx/cipd/libs/androidx_navigation_navigation_compose_android/navigation-compose-android-2.9.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_navigation_navigation_compose_android/navigation-compose-android-2.10.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_navigation_navigation_compose_android/androidx_navigation_navigation_compose_android.info"
     enable_bytecode_checks = false
 
@@ -2994,7 +2996,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_navigation_navigation_runtime_android_java") {
-    aar_path = "../androidx/cipd/libs/androidx_navigation_navigation_runtime_android/navigation-runtime-android-2.9.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_navigation_navigation_runtime_android/navigation-runtime-android-2.10.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_navigation_navigation_runtime_android/androidx_navigation_navigation_runtime_android.info"
     enable_bytecode_checks = false
 
@@ -3017,6 +3019,37 @@ if (!limit_android_deps) {
       ":androidx_navigation_navigation_common_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_serialization_core_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_java_group("androidx_navigationevent_navigationevent_java") {
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [ ":androidx_navigationevent_navigationevent_android_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt(
+      "androidx_navigationevent_navigationevent_android_java") {
+    aar_path = "../androidx/cipd/libs/androidx_navigationevent_navigationevent_android/navigationevent-android-1.0.0-SNAPSHOT.aar"
+    info_path = "../androidx/committed/libs/androidx_navigationevent_navigationevent_android/androidx_navigationevent_navigationevent_android.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [
+      ":androidx_annotation_annotation_java",
+      ":androidx_core_core_viewtree_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
@@ -3104,13 +3137,14 @@ if (!limit_android_deps) {
     deps = [
       ":androidx_collection_collection_java",
       ":androidx_core_core_java",
+      "//third_party/android_deps:org_jspecify_jspecify_java",
     ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_pdf_pdf_document_service_java") {
-    aar_path = "cipd/libs/androidx_pdf_pdf_document_service/pdf-document-service-1.0.0-alpha06.aar"
-    info_path = "committed/libs/androidx_pdf_pdf_document_service/androidx_pdf_pdf_document_service.info"
+    aar_path = "../androidx/cipd/libs/androidx_pdf_pdf_document_service/pdf-document-service-1.0.0-SNAPSHOT.aar"
+    info_path = "../androidx/committed/libs/androidx_pdf_pdf_document_service/androidx_pdf_pdf_document_service.info"
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
@@ -3214,7 +3248,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_savedstate_savedstate_compose_android_java") {
-    aar_path = "../androidx/cipd/libs/androidx_savedstate_savedstate_compose_android/savedstate-compose-android-1.3.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_savedstate_savedstate_compose_android/savedstate-compose-android-1.4.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_savedstate_savedstate_compose_android/androidx_savedstate_savedstate_compose_android.info"
     enable_bytecode_checks = false
 
@@ -3234,7 +3268,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_savedstate_savedstate_ktx_java") {
-    aar_path = "../androidx/cipd/libs/androidx_savedstate_savedstate_ktx/savedstate-ktx-1.3.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_savedstate_savedstate_ktx/savedstate-ktx-1.4.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_savedstate_savedstate_ktx/androidx_savedstate_savedstate_ktx.info"
     enable_bytecode_checks = false
 
@@ -3355,7 +3389,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_test_espresso_espresso_idling_resource_java") {
-    aar_path = "../androidx/cipd/libs/androidx_test_espresso_espresso_idling_resource/espresso-idling-resource-3.7.0-alpha02.aar"
+    aar_path = "../androidx/cipd/libs/androidx_test_espresso_espresso_idling_resource/espresso-idling-resource-3.7.0-alpha03.aar"
     info_path = "../androidx/committed/libs/androidx_test_espresso_espresso_idling_resource/androidx_test_espresso_espresso_idling_resource.info"
     enable_bytecode_checks = false
 
@@ -3370,7 +3404,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_tracing_tracing_android_java") {
-    aar_path = "../androidx/cipd/libs/androidx_tracing_tracing_android/tracing-android-1.3.0-SNAPSHOT.aar"
+    aar_path =
+        "../androidx/cipd/libs/androidx_tracing_tracing_android/tracing.aar"
     info_path = "../androidx/committed/libs/androidx_tracing_tracing_android/androidx_tracing_tracing_android.info"
     enable_bytecode_checks = false
 
@@ -3388,7 +3423,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_tracing_tracing_ktx_java") {
-    aar_path = "../androidx/cipd/libs/androidx_tracing_tracing_ktx/tracing-ktx-1.3.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_tracing_tracing_ktx/tracing-ktx-1.3.0.aar"
     info_path = "../androidx/committed/libs/androidx_tracing_tracing_ktx/androidx_tracing_tracing_ktx.info"
     enable_bytecode_checks = false
 
@@ -3489,7 +3524,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_window_window_core_android_java") {
-    aar_path = "../androidx/cipd/libs/androidx_window_window_core_android/window-core-android-1.7.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_window_window_core_android/window-core-android-1.5.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_window_window_core_android/androidx_window_window_core_android.info"
     enable_bytecode_checks = false
 

@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/web_applications/isolated_web_apps/commands/copy_bundle_to_cache_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -71,8 +72,7 @@ class IsolatedWebAppUpdateApplyTask {
 
   void OnBundleCopiedToCache(
       const IsolatedWebAppApplyUpdateCommandSuccess& apply_success_result,
-      base::expected<IwaCacheClient::CopyBundleToCacheSuccess,
-                     IwaCacheClient::CopyBundleToCacheError> result);
+      CopyBundleToCacheResult result);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   IsolatedWebAppUrlInfo url_info_;

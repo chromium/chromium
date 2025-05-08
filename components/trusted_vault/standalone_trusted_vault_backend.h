@@ -68,6 +68,7 @@ class StandaloneTrustedVaultBackend
     // |storage_|.
     virtual std::vector<std::unique_ptr<LocalRecoveryFactor>>
     CreateLocalRecoveryFactors(
+        SecurityDomainId security_domain_id,
         StandaloneTrustedVaultStorage* storage,
         const std::optional<CoreAccountInfo>& primary_account) = 0;
   };
@@ -83,9 +84,12 @@ class StandaloneTrustedVaultBackend
   };
 
   // |connection| can be null, in this case functionality that involves
-  // interaction with vault service (such as device registration, keys
+  // interaction with vault service (such as recovery factor registration, keys
   // downloading, etc.) will be disabled.
   StandaloneTrustedVaultBackend(
+#if BUILDFLAG(IS_MAC)
+      const std::string& icloud_keychain_access_group_prefix,
+#endif
       SecurityDomainId security_domain_id,
       std::unique_ptr<StandaloneTrustedVaultStorage> storage,
       std::unique_ptr<Delegate> delegate,
@@ -189,7 +193,7 @@ class StandaloneTrustedVaultBackend
 
   // Attempts to register local recovery factors in case they're not yet
   // registered and currently available local data is sufficient to do it. Also
-  // records device registration related metrics.
+  // records registration related metrics.
   void MaybeRegisterLocalRecoveryFactors();
 
   // Attempts to honor the pending operation stored in
@@ -199,19 +203,17 @@ class StandaloneTrustedVaultBackend
   // Called when registration of a local recovery factor for |gaia_id| is
   // completed (either successfully or not). |storage_| must contain
   // LocalTrustedVaultPerUser for given |gaia_id|.
-  void OnDeviceRegistered(LocalRecoveryFactorType local_recovery_factor_type,
-                          TrustedVaultRegistrationStatus status,
-                          int key_version,
-                          bool had_local_keys);
+  void OnRecoveryFactorRegistered(
+      LocalRecoveryFactorType local_recovery_factor_type,
+      TrustedVaultRegistrationStatus status,
+      int key_version,
+      bool had_local_keys);
 
   void AttemptRecoveryFactor(size_t local_recovery_factor);
-  void AttemptNextRecoveryFactor(
-      size_t current_local_recovery_factor,
-      std::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma);
-  void OnKeysDownloaded(size_t current_local_recovery_factor,
-                        TrustedVaultDownloadKeysStatus status,
-                        const std::vector<std::vector<uint8_t>>& new_vault_keys,
-                        int last_vault_key_version);
+  void OnKeysRecovered(size_t current_local_recovery_factor,
+                       LocalRecoveryFactor::RecoveryStatus status,
+                       const std::vector<std::vector<uint8_t>>& new_vault_keys,
+                       int last_vault_key_version);
 
   void OnTrustedRecoveryMethodAdded(base::OnceClosure cb);
 
@@ -219,12 +221,12 @@ class StandaloneTrustedVaultBackend
   void FulfillFetchKeys(
       const GaiaId& gaia_id,
       FetchKeysCallback callback,
-      std::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma);
+      std::optional<TrustedVaultRecoverKeysOutcomeForUMA> status_for_uma);
 
   // Same as above, but takes parameters from |ongoing_fetch_keys|, used when
   // keys are fetched asynchronously, after keys downloading attempt.
   void FulfillOngoingFetchKeys(
-      std::optional<TrustedVaultDownloadKeysStatusForUMA> status_for_uma);
+      std::optional<TrustedVaultRecoverKeysOutcomeForUMA> status_for_uma);
 
   // Removes all data for non-primary accounts if they were previously marked
   // for deletion due to accounts in cookie jar changes.
@@ -237,8 +239,8 @@ class StandaloneTrustedVaultBackend
   const std::unique_ptr<Delegate> delegate_;
 
   // Used for communication with trusted vault server. Can be null, in this case
-  // functionality that involves interaction with vault service (such as device
-  // registration, keys downloading, etc.) will be disabled.
+  // functionality that involves interaction with vault service (such as
+  // recovery factor registration, keys downloading, etc.) will be disabled.
   // Note: |connection_| depends on |storage_|, so it needs to be destroyed
   // first. Thus, the field order matters.
   // TODO(crbug.com/40143544): |connection_| can be null if URL passed as
@@ -312,7 +314,7 @@ class StandaloneTrustedVaultBackend
 
   std::vector<uint8_t> last_added_recovery_method_public_key_for_testing_;
 
-  bool device_registration_state_recorded_to_uma_ = false;
+  bool recovery_factor_registration_state_recorded_to_uma_ = false;
 
   // If GetIsRecoverabilityDegraded() gets invoked before
   // SetPrimaryAccount(), the execution gets deferred until

@@ -36,7 +36,7 @@
 #include "net/disk_cache/blockfile/stats.h"
 #include "net/disk_cache/blockfile/storage_block-inl.h"
 #include "net/disk_cache/blockfile/storage_block.h"
-#include "net/url_request/view_cache_helper.h"
+#include "net/tools/dump_cache/dump_cache_helper.h"
 
 namespace {
 
@@ -323,7 +323,7 @@ bool CacheDumper::HexDump(disk_cache::CacheAddr addr, std::string* out) {
     return false;
 
   base::StringAppendF(out, "0x%x:\n", addr);
-  net::ViewCacheHelper::HexDump(buffer.get(), size, out);
+  DumpCacheHelper::HexDump(buffer.get(), size, out);
   return true;
 }
 
@@ -604,8 +604,8 @@ int DumpAllocation(const base::FilePath& file) {
     return -1;
 
   std::string out;
-  net::ViewCacheHelper::HexDump(reinterpret_cast<char*>(&header.allocation_map),
-                                sizeof(header.allocation_map), &out);
+  DumpCacheHelper::HexDump(reinterpret_cast<char*>(&header.allocation_map),
+                           sizeof(header.allocation_map), &out);
   printf("%s\n", out.c_str());
   return 0;
 }

@@ -26,7 +26,13 @@ pub trait TokenizerEnv: Send {
                 .position(|&x| x == ff)
                 .unwrap_or(s.len() - idx);
             if normal_len != 0 {
-                result.extend_from_slice(&self.tokenize_bytes(&s[idx..idx + normal_len]));
+                let new_tokens = self.tokenize_bytes(&s[idx..idx + normal_len]);
+                for (idx, t) in new_tokens.iter().enumerate() {
+                    if trie.is_special_token(*t) {
+                        num_fixed_tokens = result.len() + idx + 1;
+                    }
+                }
+                result.extend_from_slice(&new_tokens);
                 idx += normal_len;
             }
             idx += 1; // skip ff

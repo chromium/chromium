@@ -260,27 +260,32 @@ std::u16string
 FilledCardInformationBubbleControllerImpl::GetMaskedCardNameForDescriptionView()
     const {
   if (IsBnplFlow()) {
-    return BnplIssuerIdToDisplayName(options_.filled_card.issuer_id());
+    return BnplIssuerIdToDisplayName(
+        ConvertToBnplIssuerIdEnum(options_.filled_card.issuer_id()));
   }
 
   return options_.masked_card_name;
 }
 
-gfx::Image
+std::pair<ui::ImageModel, std::optional<ui::ImageModel>>
 FilledCardInformationBubbleControllerImpl::GetCardImageForDescriptionView()
     const {
-  if (IsBnplFlow()) {
-    if (options_.filled_card.issuer_id() == kBnplAffirmIssuerId) {
-      return ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-          IDR_AUTOFILL_AFFIRM_LINKED);
-    }
-
-    if (options_.filled_card.issuer_id() == kBnplZipIssuerId) {
-      return ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-          IDR_AUTOFILL_ZIP_LINKED);
-    }
+  if (!IsBnplFlow()) {
+    return {ui::ImageModel::FromImage(options_.card_image), std::nullopt};
   }
-  return options_.card_image;
+  switch (ConvertToBnplIssuerIdEnum(options_.filled_card.issuer_id())) {
+    case BnplIssuer::IssuerId::kBnplAffirm:
+      return {ui::ImageModel::FromResourceId(IDR_AUTOFILL_AFFIRM_LINKED),
+              ui::ImageModel::FromResourceId(IDR_AUTOFILL_AFFIRM_LINKED_DARK)};
+    case BnplIssuer::IssuerId::kBnplZip:
+      return {ui::ImageModel::FromResourceId(IDR_AUTOFILL_ZIP_LINKED),
+              ui::ImageModel::FromResourceId(IDR_AUTOFILL_ZIP_LINKED_DARK)};
+    // TODO(crbug.com/408268581): Handle Afterpay issuer enum value when adding
+    // Afterpay to the BNPL flow.
+    case BnplIssuer::IssuerId::kBnplAfterpay:
+      return {ui::ImageModel::FromImage(options_.card_image), std::nullopt};
+  }
+  NOTREACHED();
 }
 
 bool FilledCardInformationBubbleControllerImpl::
@@ -398,7 +403,7 @@ void FilledCardInformationBubbleControllerImpl::SetEventObserverForTesting(
 GURL FilledCardInformationBubbleControllerImpl::GetLearnMoreUrl() const {
   return IsBnplFlow()
              ? autofill::payments::GetBnplTermsUrl(
-                   options_.filled_card.issuer_id())
+                   ConvertToBnplIssuerIdEnum(options_.filled_card.issuer_id()))
              : autofill::payments::GetVirtualCardEnrollmentSupportUrl();
 }
 

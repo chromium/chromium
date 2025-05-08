@@ -28,7 +28,8 @@ class WebContents;
 class BrowserContext;
 }  // namespace content
 
-// Browser service to collect AI data.
+// Browser service to collect AI data, including data resulting from triggering
+// actor tasks.
 class AiDataKeyedService : public KeyedService {
  public:
   // Data related to AiData collection.
@@ -81,6 +82,11 @@ class AiDataKeyedService : public KeyedService {
       optimization_guide::proto::BrowserAction action,
       base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
           callback);
+
+  // Returns true if the associated ActorCoordinator is active on the given
+  // `tab`. This can be used by callers to customize certain behaviour that
+  // might interfere with the ActorCoordinator.
+  bool IsActorCoordinatorActingOnTab(const content::WebContents* tab) const;
 
   static const base::Feature& GetAllowlistedAiDataExtensionsFeatureForTesting();
   static const base::Feature&

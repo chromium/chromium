@@ -181,6 +181,9 @@ const base::FilePath::CharType kContentUri[] =
 const base::FilePath::CharType kTempContentUri[] =
     FILE_PATH_LITERAL("content://media/temp/foo.bar");
 
+// Default APK filename for Android tests.
+const base::FilePath::CharType kApkFilename[] = FILE_PATH_LITERAL("a.apk");
+
 const char kAndroidDownloadProtectionOutcomeHistogram[] =
     "SBClientDownload.Android.DownloadProtectionOutcome";
 #endif
@@ -644,29 +647,42 @@ class DownloadProtectionServiceTestBase
                                      request_deep_scan);
   }
 
+  // Common setup code for MockDownloadItem.
+  // `tmp_path_literal` and `final_path_literal` are ignored on Android.
   void PrepareBasicDownloadItem(
       NiceMockDownloadItem* item,
       const std::vector<std::string> url_chain_items,
       const std::string& referrer_url,
       const base::FilePath::StringType& tmp_path_literal,
-      const base::FilePath::StringType& final_path_literal) {
+      const base::FilePath::StringType& final_path_literal,
+      std::optional<base::FilePath> display_name = std::nullopt) {
+#if BUILDFLAG(IS_ANDROID)
+    // For realism on Android, the final path and temp path are typically
+    // content-URIs, and only the display name should be used.
+    base::FilePath tmp_path = base::FilePath(kTempContentUri);
+    base::FilePath final_path = base::FilePath(kContentUri);
+
+    // Supply a default display name for Android tests that is eligible for
+    // download protection.
+    display_name = display_name.value_or(base::FilePath(kApkFilename));
+#else
     base::FilePath tmp_path = temp_dir_.GetPath().Append(tmp_path_literal);
     base::FilePath final_path = temp_dir_.GetPath().Append(final_path_literal);
+#endif
     PrepareBasicDownloadItemWithFullPaths(item, url_chain_items, referrer_url,
-                                          tmp_path, final_path);
+                                          tmp_path, final_path, display_name);
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  // This function is for realism on Android, where the final path and temp path
-  // are typically content-URIs, and only the display name should be used.
   void PrepareBasicDownloadItemWithContentUri(
       NiceMockDownloadItem* item,
       const std::vector<std::string> url_chain_items,
       const std::string& referrer_url,
       const base::FilePath& display_name) {
-    PrepareBasicDownloadItemWithFullPaths(
-        item, url_chain_items, referrer_url, base::FilePath(kTempContentUri),
-        base::FilePath(kContentUri), display_name);
+    PrepareBasicDownloadItem(item, url_chain_items, referrer_url,
+                             /*ignored*/ base::FilePath::StringType(),
+                             /*ignored*/ base::FilePath::StringType(),
+                             display_name);
   }
 #endif
 
@@ -5689,7 +5705,7 @@ class AndroidDownloadProtectionTest
       PrepareBasicDownloadItemWithContentUri(
           &item, /*url_chain_items=*/{"http://www.evil.com/bla.apk"},
           /*referrer_url=*/"",
-          /*display_name=*/base::FilePath(FILE_PATH_LITERAL("a.apk")));
+          /*display_name=*/base::FilePath(kApkFilename));
 
       std::move(verify_item).Run(&item);
 
@@ -5774,7 +5790,7 @@ TEST_P(AndroidDownloadProtectionTest, CheckDownloadUrl) {
       &item, /*url_chain_items=*/
       {"https://www.example.test/", "http://www.evil.com/bla.apk"},
       /*referrer_url=*/"https://www.google.com",
-      /*display_name=*/base::FilePath(FILE_PATH_LITERAL("a.apk")));
+      /*display_name=*/base::FilePath(kApkFilename));
 
   content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
 
@@ -5813,6 +5829,55 @@ TEST_P(AndroidDownloadProtectionTestWithOverrideUrl, CheckClientDownload) {
   TestCheckClientDownload(expected_url);
 }
 
+TEST_P(AndroidDownloadProtectionTest,
+       NoCheckClientDownloadForNonSupportedType) {
+  // Response to any requests will be DANGEROUS.
+  PrepareResponse(ClientDownloadResponse::DANGEROUS, net::HTTP_OK, net::OK);
+  // Override the random sampling.
+  OverrideNextShouldSample(true);
+
+  ResetHistogramTester();
+  {
+    NiceMockDownloadItem item;
+    content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
+    PrepareBasicDownloadItemWithContentUri(
+        &item, /*url_chain_items=*/{"http://www.evil.com/bla.apk"},
+        /*referrer_url=*/"",
+        /*display_name=*/
+        base::FilePath(FILE_PATH_LITERAL("not_supported_filetype.dex")));
+
+    ExpectNoCheckClientDownload(&item);
+  }
+  // The histogram is logged when the item goes out of scope.
+  ExpectHistogramUniqueSample(ShouldAndroidDownloadProtectionBeActive()
+                                  ? Outcome::kDownloadNotSupportedType
+                                  : Outcome::kDownloadProtectionDisabled);
+}
+
+TEST_P(AndroidDownloadProtectionTest, NoCheckClientDownloadNotSampled) {
+  // Response to any requests will be DANGEROUS.
+  PrepareResponse(ClientDownloadResponse::DANGEROUS, net::HTTP_OK, net::OK);
+  // Override the random sampling to guarantee we won't sample.
+  OverrideNextShouldSample(false);
+
+  ResetHistogramTester();
+  {
+    NiceMockDownloadItem item;
+    content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
+    PrepareBasicDownloadItemWithContentUri(
+        &item, /*url_chain_items=*/{"http://www.evil.com/bla.apk"},
+        /*referrer_url=*/"",
+        /*display_name=*/
+        base::FilePath(kApkFilename));
+
+    ExpectNoCheckClientDownload(&item);
+  }
+  // The histogram is logged when the item goes out of scope.
+  ExpectHistogramUniqueSample(ShouldAndroidDownloadProtectionBeActive()
+                                  ? Outcome::kNotSampled
+                                  : Outcome::kDownloadProtectionDisabled);
+}
+
 // Tests the various false outcomes of IsSupportedDownload().
 TEST_P(AndroidDownloadProtectionTest, IsSupportedDownloadFalse) {
   ResetHistogramTester();
@@ -5823,7 +5888,7 @@ TEST_P(AndroidDownloadProtectionTest, IsSupportedDownloadFalse) {
     PrepareBasicDownloadItemWithContentUri(
         &item_empty_url_chain, /*url_chain_items=*/{},
         /*referrer_url=*/"",
-        /*display_name=*/base::FilePath(FILE_PATH_LITERAL("a.apk")));
+        /*display_name=*/base::FilePath(kApkFilename));
     std::vector<GURL> empty_url_chain;
     EXPECT_CALL(item_empty_url_chain, GetUrlChain())
         .WillRepeatedly(ReturnRef(empty_url_chain));
@@ -5841,7 +5906,7 @@ TEST_P(AndroidDownloadProtectionTest, IsSupportedDownloadFalse) {
     PrepareBasicDownloadItemWithContentUri(
         &item_invalid_url, /*url_chain_items=*/{"bogus_url"},
         /*referrer_url=*/"",
-        /*display_name=*/base::FilePath(FILE_PATH_LITERAL("a.apk")));
+        /*display_name=*/base::FilePath(kApkFilename));
 
     EXPECT_FALSE(
         download_service_->IsSupportedDownload(item_invalid_url, final_path_));
@@ -5857,7 +5922,7 @@ TEST_P(AndroidDownloadProtectionTest, IsSupportedDownloadFalse) {
         &item_unsupported_url_scheme,
         /*url_chain_items=*/{"unsupported://blah"},
         /*referrer_url=*/"",
-        /*display_name=*/base::FilePath(FILE_PATH_LITERAL("a.apk")));
+        /*display_name=*/base::FilePath(kApkFilename));
 
     EXPECT_FALSE(download_service_->IsSupportedDownload(
         item_unsupported_url_scheme, final_path_));
@@ -5873,7 +5938,7 @@ TEST_P(AndroidDownloadProtectionTest, IsSupportedDownloadFalse) {
         &item_remote_file_url,
         /*url_chain_items=*/{"file://drive.test/download"},
         /*referrer_url=*/"",
-        /*display_name=*/base::FilePath(FILE_PATH_LITERAL("a.apk")));
+        /*display_name=*/base::FilePath(kApkFilename));
 
     EXPECT_FALSE(download_service_->IsSupportedDownload(item_remote_file_url,
                                                         final_path_));
@@ -5888,7 +5953,7 @@ TEST_P(AndroidDownloadProtectionTest, IsSupportedDownloadFalse) {
     PrepareBasicDownloadItemWithContentUri(
         &item_local_file_url, /*url_chain_items=*/{"file:///download"},
         /*referrer_url=*/"",
-        /*display_name=*/base::FilePath(FILE_PATH_LITERAL("a.apk")));
+        /*display_name=*/base::FilePath(kApkFilename));
 
     EXPECT_FALSE(download_service_->IsSupportedDownload(item_local_file_url,
                                                         final_path_));
@@ -5910,24 +5975,6 @@ TEST_P(AndroidDownloadProtectionTest, IsSupportedDownloadFalse) {
         item_display_name_not_apk, final_path_));
   }
   ExpectHistogramUniqueSample(Outcome::kDownloadNotSupportedType);
-
-  ResetHistogramTester();
-  {
-    // An otherwise eligible item that is just not sampled.
-    NiceMockDownloadItem item_eligible;
-    OverrideNextShouldSample(false);
-    content::DownloadItemUtils::AttachInfoForTesting(&item_eligible, profile(),
-                                                     nullptr);
-    PrepareBasicDownloadItemWithContentUri(
-        &item_eligible,
-        /*url_chain_items=*/{"https://evil.com/bla.apk"},
-        /*referrer_url=*/"",
-        /*display_name=*/base::FilePath(FILE_PATH_LITERAL("a.apk")));
-
-    EXPECT_FALSE(
-        download_service_->IsSupportedDownload(item_eligible, final_path_));
-  }
-  ExpectHistogramUniqueSample(Outcome::kNotSampled);
 }
 
 // Tests that CheckClientDownload is called even if the download is not a

@@ -329,47 +329,6 @@ TEST_P(DataSharingServiceImplTest, ShouldNotifyOnSyncBridgeUpdateTypeChanged) {
       SyncBridgeUpdateType::kDisableSync);
 }
 
-TEST_P(DataSharingServiceImplTest, ParseAndInterceptDataSharingURL) {
-  GURL url = GURL(data_sharing::features::kDataSharingURL.Get() +
-                  "?g=" + kGroupId + "&t=" + kTokenBlob);
-
-  DataSharingService::ParseUrlResult result =
-      data_sharing_service_->ParseDataSharingUrl(url);
-
-  // Verify valid path.
-  ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(kGroupId, result.value().group_id.value());
-  EXPECT_EQ(kTokenBlob, result.value().access_token);
-  EXPECT_TRUE(data_sharing_service_->ShouldInterceptNavigationForShareURL(url));
-
-  // Verify host/path error.
-  std::string invalid = "https://www.test.com/";
-  url = GURL(invalid + "?g=" + kGroupId + "&t=" + kTokenBlob);
-  result = data_sharing_service_->ParseDataSharingUrl(url);
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(),
-            DataSharingService::ParseUrlStatus::kHostOrPathMismatchFailure);
-  EXPECT_FALSE(
-      data_sharing_service_->ShouldInterceptNavigationForShareURL(url));
-
-  // Verify query missing error.
-  url = GURL(data_sharing::features::kDataSharingURL.Get() +
-             "?access_token=" + kGroupId);
-  result = data_sharing_service_->ParseDataSharingUrl(url);
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(),
-            DataSharingService::ParseUrlStatus::kQueryMissingFailure);
-  EXPECT_TRUE(data_sharing_service_->ShouldInterceptNavigationForShareURL(url));
-
-  // Verify access token missing is ok.
-  url = GURL(data_sharing::features::kDataSharingURL.Get() + "?g=" + kGroupId);
-  result = data_sharing_service_->ParseDataSharingUrl(url);
-  ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(kGroupId, result.value().group_id.value());
-  EXPECT_EQ("", result.value().access_token);
-  EXPECT_TRUE(data_sharing_service_->ShouldInterceptNavigationForShareURL(url));
-}
-
 TEST_P(DataSharingServiceImplTest, GetDataSharingUrl) {
   GroupData group_data = GroupData();
   group_data.group_token =

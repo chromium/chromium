@@ -56,7 +56,8 @@ class SessionAuthzReauthorizerTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::MockCallback<base::OnceClosure> on_reauthorization_failed_callback_;
+  base::MockCallback<SessionAuthzReauthorizer::OnReauthorizationFailedCallback>
+      on_reauthorization_failed_callback_;
   std::unique_ptr<SessionAuthzReauthorizer> reauthorizer_;
   MockSessionAuthzServiceClient service_client_;
 };
@@ -100,7 +101,8 @@ TEST_F(SessionAuthzReauthorizerTest,
   EXPECT_CALL(service_client_,
               ReauthorizeHost(kInitialReauthToken, kSessionId, _))
       .WillOnce(RespondError(net::HTTP_FORBIDDEN));
-  EXPECT_CALL(on_reauthorization_failed_callback_, Run())
+  EXPECT_CALL(on_reauthorization_failed_callback_,
+              Run(HttpStatus::Code::PERMISSION_DENIED, _))
       .WillOnce(ResetReauthorizer());
   task_environment_.FastForwardBy(kInitialTokenLifetime / 2);
 }
@@ -130,14 +132,15 @@ TEST_F(SessionAuthzReauthorizerTest, RetriesExceedTokenLifetime_ClosesSession) {
   EXPECT_CALL(service_client_,
               ReauthorizeHost(kInitialReauthToken, kSessionId, _))
       .WillRepeatedly(RespondError(net::ERR_INTERNET_DISCONNECTED));
-  EXPECT_CALL(on_reauthorization_failed_callback_, Run()).Times(0);
+  EXPECT_CALL(on_reauthorization_failed_callback_, Run(_, _)).Times(0);
   task_environment_.FastForwardBy(kInitialTokenLifetime / 2);
   const net::BackoffEntry* backoff_entry =
       reauthorizer_->GetBackoffEntryForTest();
   task_environment_.FastForwardBy(backoff_entry->GetTimeUntilRelease());
   task_environment_.FastForwardBy(backoff_entry->GetTimeUntilRelease());
 
-  EXPECT_CALL(on_reauthorization_failed_callback_, Run())
+  EXPECT_CALL(on_reauthorization_failed_callback_,
+              Run(HttpStatus::Code::NETWORK_ERROR, _))
       .WillOnce(ResetReauthorizer());
   task_environment_.FastForwardBy(kInitialTokenLifetime / 2);
 }

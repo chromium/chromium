@@ -12,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "base/task/current_thread.h"
@@ -168,6 +169,11 @@ class OnTaskSessionManagerTest : public ::testing::Test {
             std::move(fake_notifications_delegate)));
     session_manager_->SetActiveTabTrackerForTesting(
         std::move(active_tab_tracker));
+  }
+
+  base::flat_set<GURL>* provider_url_set() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(session_manager_->sequence_checker_);
+    return &session_manager_->provider_url_set_;
   }
 
   base::flat_map<GURL, std::set<SessionID>>* provider_url_tab_ids_map() {
@@ -766,6 +772,8 @@ TEST_F(OnTaskSessionManagerTest, RestoreTabsOnAppReload) {
   // there is no nav restriction being tracked.
   const SessionID kOldTabId1 = SessionID::NewUnique();
   const SessionID kOldTabId2 = SessionID::NewUnique();
+  (*provider_url_set()).insert(GURL(kTestUrl1));
+  (*provider_url_set()).insert(GURL(kTestUrl2));
   (*provider_url_tab_ids_map())[GURL(kTestUrl1)].insert(kOldTabId1);
   (*provider_url_restriction_level_map())[GURL(kTestUrl1)] =
       ::boca::LockedNavigationOptions::BLOCK_NAVIGATION;

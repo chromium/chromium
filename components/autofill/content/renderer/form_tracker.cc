@@ -281,12 +281,12 @@ void FormTracker::TrackAutofilledElement(
 void FormTracker::FormControlDidChangeImpl(FieldRendererId element_id,
                                            SaveFormReason change_source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
+  CHECK_NE(change_source, SaveFormReason::kWillSendSubmitEvent);
   WebFormControlElement element =
       form_util::GetFormControlByRendererId(element_id);
-  // The frame or document or element could be null because this function is
-  // called asynchronously.
-  if (!unsafe_render_frame() || !element || !element.GetDocument() ||
-      !element.GetDocument().GetFrame()) {
+  // This function may be called asynchronously, so a navigation may have
+  // happened. Since this event isn't submission-related.
+  if (!form_util::IsOwnedByFrame(element, unsafe_render_frame())) {
     return;
   }
   blink::WebFormElement form_element = element.GetOwningFormForAutofill();
@@ -371,8 +371,7 @@ void FormTracker::WillSubmitForm(const WebFormElement& form) {
   // form submission event. If we didn't, we would send |form| to an
   // AutofillAgent and then to a ContentAutofillDriver etc. which haven't seen
   // this form before. See crbug.com/1240247#c13 for details.
-  if (!unsafe_render_frame() ||
-      !form_util::IsOwnedByFrame(form, unsafe_render_frame())) {
+  if (!form_util::IsOwnedByFrame(form, unsafe_render_frame())) {
     return;
   }
   FireFormSubmission(mojom::SubmissionSource::FORM_SUBMISSION, form);
@@ -475,25 +474,39 @@ void FormTracker::TrackElement(mojom::SubmissionSource source) {
 void FormTracker::UpdateLastInteractedElement(
     std::variant<FormRendererId, FieldRendererId> element_id) {
   ResetLastInteractedElements();
-  if (std::holds_alternative<FormRendererId>(element_id)) {
-    FormRendererId form_id = std::get<FormRendererId>(element_id);
-    CHECK(form_id);
-    last_interacted_.form = FormRef(form_util::GetFormByRendererId(form_id));
-  } else {
-    FieldRendererId field_id = std::get<FieldRendererId>(element_id);
-    CHECK(field_id);
-    last_interacted_.formless_element =
-        FieldRef(form_util::GetFormControlByRendererId(field_id));
-  }
-  last_interacted_.saved_state =
-      unsafe_render_frame()
-          ? form_util::ExtractFormData(
-                unsafe_render_frame()->GetWebFrame()->GetDocument(),
-                last_interacted_.form.GetForm(), agent_->field_data_manager(),
-                agent_->GetCallTimerState(
-                    CallTimerState::CallSite::kUpdateLastInteractedElement),
-                agent_->button_titles_cache())
-          : std::nullopt;
+
+  // `document` is the WebDocument of `element_id`'s element. It is not
+  // necessarily the same as the current frame's document.
+  //
+  // `form` is null if `element_id` is a FieldRendererId.
+  auto [document, form_element] = std::visit(
+      base::Overloaded{
+          [this](FormRendererId form_id) {
+            CHECK(form_id);
+            WebFormElement form = form_util::GetFormByRendererId(form_id);
+            last_interacted_.form =
+                FormRef(form_util::GetFormByRendererId(form_id));
+            return std::pair(form.GetDocument(), form);
+          },
+          [this](FieldRendererId field_id) {
+            CHECK(field_id);
+            WebFormControlElement form_control =
+                form_util::GetFormControlByRendererId(field_id);
+            last_interacted_.formless_element = FieldRef(form_control);
+            return std::pair(form_control.GetDocument(), WebFormElement());
+          },
+      },
+      element_id);
+  CHECK(document);
+
+  // We use the element's `document`, not the current frame's document, because
+  // `element_id` may refer to an element that is not in the current frame's
+  // document.
+  last_interacted_.saved_state = form_util::ExtractFormData(
+      document, form_element, agent_->field_data_manager(),
+      agent_->GetCallTimerState(
+          CallTimerState::CallSite::kUpdateLastInteractedElement),
+      agent_->button_titles_cache());
 }
 
 void FormTracker::ResetLastInteractedElements() {

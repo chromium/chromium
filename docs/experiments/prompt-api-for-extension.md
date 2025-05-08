@@ -1,27 +1,18 @@
 # Prompt API for extension
 
-- Contact: builtin-ai@chromium.org
-
 This document describes the status of the current implementation of the
-[**Prompt API**](https://github.com/explainers-by-googlers/prompt-api)
-for Chrome extension, and how to verify.
-
-Note that this API is not available by default. Chrome plans to do an
-extension origin trial starting from M131 to evaluate its effectiveness
-and to allow extension authors to give feedback.
-
+[**Prompt API**](https://github.com/webmachinelearning/prompt-api) for Chrome
+extensions, and how to verify.
 
 ## What’s supported
 
-The API is implemented according to the
-[explainer](https://github.com/explainers-by-googlers/prompt-api), but the
-API namespace will be under `chrome.aiOriginTrial.languageModel` for the
-extension origin trial.
+The implementation generally intends to follow the
+[explainer](https://github.com/explainers-by-googlers/prompt-api).
 
 ## Activation
 
 The API can be enabled by participating in the
-[extension origin trial](https://developer.chrome.com/docs/web-platform/origin-trials#extensions)
+[extension origin trial](https://developer.chrome.com/blog/prompt-api-origin-trial)
 named `AIPromptAPIForExtension`. After obtaining the trial token, the
 extension authors need to configure it in the `manifest.json` together with
 the `aiLanguageModelOriginTrial` permission.
@@ -31,20 +22,21 @@ the `aiLanguageModelOriginTrial` permission.
   "permissions": ["aiLanguageModelOriginTrial"],
   "trial_tokens": [<GENERATED_TOKEN>],
 }
-
 ```
 
 ## Verifying the API is working
 
-The extension authors can verify if the API is available by checking the
-`chrome.aiOriginTrial.languageModel` from the service worker script.
-If the `AILanguageModel` object is defined, the authors can follow the
-[explainer](https://github.com/explainers-by-googlers/prompt-api) to test
-the APIs usage.
+The extension authors can verify if the API is available by checking for the
+presence of `LanguageModel` or `chrome.aiOriginTrial.languageModel` entrypoints
+from extension window and worker scripts. If the object is defined, the authors
+can follow the [explainer](https://github.com/explainers-by-googlers/prompt-api)
+and [developer docs](https://developer.chrome.com/docs/extensions/ai/prompt-api)
+to check availability and test the APIs usage.
 
 ## Related Links
 
-- [Prompt API Explainer on GitHub](https://github.com/explainers-by-googlers/prompt-api)
-- [Reporting bugs](https://g-issues.chromium.org/issues/new?component=1583624&priority=P2&type=feature_request&template=0&noWizard=true)
-- [API Feedback](https://github.com/explainers-by-googlers/prompt-api/issues)
-<!-- TODO: link the DevRel doc with more details once it's published -->
+- [Explainer on GitHub](https://github.com/webmachinelearning/prompt-api)
+- [API feedback](https://github.com/webmachinelearning/prompt-api/issues)
+- [Reporting bugs](https://issues.chromium.org/issues/new?component=1583624)
+- [Extension origin trial](https://developer.chrome.com/blog/prompt-api-origin-trial)
+- [Developer docs](https://developer.chrome.com/docs/extensions/ai/prompt-api)

@@ -247,10 +247,10 @@ struct VisitedLinkRow {
   // partition key).
   int visit_count = 0;
 
- private:
-  friend bool operator==(const VisitedLinkRow& lhs, const VisitedLinkRow& rhs);
-  friend bool operator!=(const VisitedLinkRow& lhs, const VisitedLinkRow& rhs);
-  friend bool operator<(const VisitedLinkRow& lhs, const VisitedLinkRow& rhs);
+  friend bool operator==(const VisitedLinkRow&,
+                         const VisitedLinkRow&) = default;
+  friend auto operator<=>(const VisitedLinkRow&,
+                          const VisitedLinkRow&) = default;
 };
 using VisitedLinkRows = std::vector<VisitedLinkRow>;
 
@@ -883,8 +883,8 @@ struct VisitContextAnnotations {
   VisitContextAnnotations(const VisitContextAnnotations& other);
   ~VisitContextAnnotations();
 
-  bool operator==(const VisitContextAnnotations& other) const;
-  bool operator!=(const VisitContextAnnotations& other) const;
+  friend bool operator==(const VisitContextAnnotations&,
+                         const VisitContextAnnotations&) = default;
 
   // Values are persisted; do not reorder or reuse, and only add new values at
   // the end.
@@ -914,8 +914,8 @@ struct VisitContextAnnotations {
     // The HTTP response code of the navigation.
     int response_code = 0;
 
-    bool operator==(const OnVisitFields& other) const;
-    bool operator!=(const OnVisitFields& other) const;
+    friend bool operator==(const OnVisitFields&,
+                           const OnVisitFields&) = default;
   };
 
   OnVisitFields on_visit;

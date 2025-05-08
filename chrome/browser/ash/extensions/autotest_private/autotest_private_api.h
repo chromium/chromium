@@ -1222,6 +1222,7 @@ class AutotestPrivateInstallPWAForCurrentURLFunction
   std::unique_ptr<PWABannerObserver> banner_observer_;
   std::unique_ptr<PWAInstallManagerObserver> install_mananger_observer_;
   base::OneShotTimer timeout_timer_;
+  base::AutoReset<bool> auto_accept_pwa_install_confirmation_;
 };
 
 class AutotestPrivateActivateAcceleratorFunction : public ExtensionFunction {

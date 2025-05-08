@@ -86,6 +86,7 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
       base::OnceClosure decline_virtual_card_callback) override;
   void VirtualCardEnrollCompleted(PaymentsRpcResult result) override;
   void ShowCardUnmaskOtpInputDialog(
+      CreditCard::RecordType card_type,
       const CardUnmaskChallengeOption& challenge_option,
       base::WeakPtr<OtpUnmaskDelegate> delegate) override;
   void OnUnmaskOtpVerificationResult(OtpUnmaskResult unmask_result) override;
@@ -187,6 +188,10 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
   std::unique_ptr<payments::MandatoryReauthManager> payments_reauth_manager_;
 
   base::WeakPtr<SaveCardBottomSheetModel> save_card_bottom_sheet_model_;
+
+  // Indicates whether the save card bottom sheet should be presented instead of
+  // the infobar.
+  bool show_save_card_bottom_sheet_;
 };
 
 }  // namespace payments

@@ -11,6 +11,11 @@ namespace signin {
 class IdentityManager;
 }
 class AuthenticationService;
+namespace feature_engagement {
+class Tracker;
+}
+
+enum class SignInPromoType;
 
 @class NonModalSignInPromoMediator;
 
@@ -19,7 +24,7 @@ class AuthenticationService;
 // Handles mediator timer expiration event.
 - (void)nonModalSignInPromoMediatorTimerExpired:
     (NonModalSignInPromoMediator*)mediator;
-// Handles timeout or dismissal events
+// Handles timeout or dismissal events.
 - (void)nonModalSignInPromoMediatorShouldDismiss:
     (NonModalSignInPromoMediator*)mediator;
 @end
@@ -27,10 +32,13 @@ class AuthenticationService;
 // Mediator that handles the business logic for the non-modal sign-in promo.
 @interface NonModalSignInPromoMediator : NSObject
 
-// Init Mediator with auth service and identity manager.
+// Init Mediator with auth service, identity manager, feature engagement tracker
+// and promo type.
 - (instancetype)
     initWithAuthenticationService:(AuthenticationService*)authService
                   identityManager:(signin::IdentityManager*)identityManager
+         featureEngagementTracker:(feature_engagement::Tracker*)tracker
+                        promoType:(SignInPromoType)promoType
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

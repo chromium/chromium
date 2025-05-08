@@ -103,7 +103,7 @@ void IDBFactoryClient::OpenSuccess(
     IDBOpenDBRequest* request = request_.Get();
     Detach();
     request->OnOpenDBSuccess(std::move(pending_database), task_runner_,
-                             IDBDatabaseMetadata(metadata));
+                             metadata);
     // `this` may be deleted because event dispatch can run a nested loop.
 }
 

@@ -52,8 +52,8 @@ constexpr int kMaxNumRetries = 12;          // Over 2 hrs.
 constexpr int kDefaultIndexingLimit = 500;  // 500 images per user session.
 constexpr base::TimeDelta kInitialIndexingDelay = base::Seconds(1);
 constexpr int kMaxOcrImageSize = 1000;  // The max allowed width&height in DIP.
-constexpr int kMaxIcaDisconnection =
-    3;  // The max allowed disconnection from ICA.
+constexpr int kMaxDisconnection =
+    3;  // The max allowed disconnection for both ICA and OCR.
 constexpr base::TimeDelta kIcaReconnectDelay = base::Seconds(10);
 
 // These values persist to logs. Entries should not be renumbered and numeric
@@ -65,7 +65,10 @@ enum class Status {
   kFailedToDecodeImage = 3,
   kImageProcessingTimeOut = 4,  // Deprecated
   kFailedToProcessIca = 5,
-  kMaxValue = kFailedToProcessIca,
+  kFailedToProcessOcr = 6,
+  kIcaDisconnectionLimit = 7,
+  kOcrDisconnectionLimit = 8,
+  kMaxValue = kOcrDisconnectionLimit,
 };
 
 void LogStatusUma(Status status) {
@@ -194,6 +197,17 @@ bool IsPathExcluded(const base::FilePath& path,
                      });
 }
 
+// The same as the static function of `ScreenAIServiceRouter` as we are not
+// allowed to include it directly. It's not expected to change this function and
+// to sync it to `ScreenAIServiceRouter`. Instead, we would like this function
+// to sync when there is an update in `ScreenAIServiceRouter` so that we can
+// re-try OCR with the right delay.
+// LINT.IfChange(SuggestedWaitTimeBeforeReAttempt)
+base::TimeDelta SuggestedWaitTimeBeforeReAttempt(uint32_t reattempt_number) {
+  return base::Minutes(reattempt_number * reattempt_number);
+}
+// LINT.ThenChange(//chrome/browser/screen_ai/screen_ai_service_router.cc:SuggestedWaitTimeBeforeReAttempt)
+
 }  // namespace
 
 ImageAnnotationWorker::ImageAnnotationWorker(
@@ -238,6 +252,12 @@ void ImageAnnotationWorker::Initialize(AnnotationStorage* annotation_storage) {
 
   on_file_change_callback_ = base::BindRepeating(
       &ImageAnnotationWorker::OnFileChange, weak_ptr_factory_.GetWeakPtr());
+
+  if (use_ocr_) {
+    optical_character_recognizer_->SetDisconnectedCallback(
+        base::BindRepeating(&ImageAnnotationWorker::OnOcrDisconnected,
+                            ocr_weak_ptr_factory_.GetWeakPtr()));
+  }
 
   if (use_ica_) {
     DVLOG(1) << "Initializing ICA DLC.";
@@ -382,10 +402,9 @@ void ImageAnnotationWorker::ProcessItems() {
       "Apps.AppList.AnnotationStorage.ImageAnnotationWorker."
       "QueueProcessingTime",
       base::TimeTicks::Now() - queue_processing_start_time_);
-  if (use_ica_) {
-    image_content_annotator_->DisconnectAnnotator();
-  }
-  // Queue processing is finished. Resets the flag.
+  // As the queue processing is finished, disconnects the annotators and resets
+  // the flag.
+  DisconnectAnnotators();
   queue_processing_started_ = false;
 }
 
@@ -462,14 +481,22 @@ bool ImageAnnotationWorker::ProcessNextImage(const base::FilePath& image_path) {
   // Early return if:
   // 1. Reaching the indexing limit.
   // 2. Reaching the maximum ica disconnection event.
+  // 3. Reaching the maximum ocr disconnection event.
   // Continue the process as we still need to deal with deleted images.
   if (search_features::IsLauncherImageSearchIndexingLimitEnabled()) {
     if (num_indexing_images_ >= indexing_limit_) {
+      // When reaching indexing limit, no more image processing is expected.
+      // Thus, disconnects annotators.
+      DisconnectAnnotators();
       return false;
     }
     num_indexing_images_ += 1;
   }
-  if (num_ica_disconnection_ >= kMaxIcaDisconnection) {
+  if (num_ica_disconnection_ >= kMaxDisconnection ||
+      num_ocr_disconnection_ >= kMaxDisconnection) {
+    // When reaching disconnection limit, no more image processing is expected.
+    // Thus, disconnects annotators.
+    DisconnectAnnotators();
     return false;
   }
 
@@ -714,21 +741,86 @@ void ImageAnnotationWorker::OnIcaDisconnected() {
 
     // If disconnection reaches the limit, we should no longer make ica
     // processing request.
-    CHECK(num_ica_disconnection_ < kMaxIcaDisconnection);
+    CHECK(num_ica_disconnection_ < kMaxDisconnection);
     num_ica_disconnection_++;
+    if (num_ica_disconnection_ == kMaxDisconnection) {
+      LogStatusUma(Status::kIcaDisconnectionLimit);
+    }
     ica_in_use_ = false;
     // Restarts the process with a short delay to allow ica to recover.
     // This queue deals with image changes, both addition and deletion. Even
     // when reaching the limit and addition is not expected, we still need to
     // continue the process to remove deleted images from the db.
+    // If `kMaxDisconnection` reached, we don't need to wait before continue the
+    // process.
     main_task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ImageAnnotationWorker::ProcessItems,
                        weak_ptr_factory_.GetWeakPtr()),
-        kIcaReconnectDelay);
+        num_ica_disconnection_ == kMaxDisconnection ? base::TimeDelta()
+                                                    : kIcaReconnectDelay);
   }
-  // If disconnection happens while ica is not processing, nothing needs to be
-  // done.
+  // If disconnection happens while ica is not processing, no-op.
+}
+
+void ImageAnnotationWorker::OnOcrDisconnected() {
+  // Ensures this function is executed in the `main_task_runner_` only.
+  if (!main_task_runner_->RunsTasksInCurrentSequence()) {
+    main_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&ImageAnnotationWorker::OnOcrDisconnected,
+                                  weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // If this is fired during ocr processing, we have called
+  // `optical_character_recognizer_->PerformOCR()` but have not received the
+  // callback yet. The callback won't be triggered in this case and ocr has
+  // disconnected, thus we skip the current image.
+  if (ocr_in_use_) {
+    LOG(ERROR) << "OCR disconnected during processing. ";
+    LogStatusUma(Status::kFailedToProcessOcr);
+
+    // If disconnection reaches the limit, we should no longer make ocr
+    // processing request.
+    CHECK(num_ocr_disconnection_ < kMaxDisconnection);
+    num_ocr_disconnection_++;
+    if (num_ocr_disconnection_ == kMaxDisconnection) {
+      LogStatusUma(Status::kOcrDisconnectionLimit);
+    }
+    ocr_in_use_ = false;
+    // Restarts the process with the suggested delay to allow ocr to recover.
+    // This queue deals with image changes, both addition and deletion. Even
+    // when reaching the limit and addition is not expected, we still need to
+    // continue the process to remove deleted images from the db.
+    // If `kMaxDisconnection` reached, we don't need to wait before continue the
+    // process.
+    main_task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ImageAnnotationWorker::ProcessItems,
+                       weak_ptr_factory_.GetWeakPtr()),
+        num_ocr_disconnection_ == kMaxDisconnection
+            ? base::TimeDelta()
+            : SuggestedWaitTimeBeforeReAttempt(num_ocr_disconnection_));
+    // As the waiting period for OCR is long, shut down ICA to save resources.
+    // The connection will be resumed on the next ICA request through
+    // `EnsureAnnotatorIsConnected()`.
+    if (use_ica_) {
+      image_content_annotator_->DisconnectAnnotator();
+    }
+  }
+  // If disconnection happens while ocr is not processing, no-op. The
+  // `OnOcrDisconnected` event will be triggered again if we attempt to make
+  // request to the screen ai service before it's resumed.
+}
+
+void ImageAnnotationWorker::DisconnectAnnotators() {
+  if (use_ica_) {
+    image_content_annotator_->DisconnectAnnotator();
+  }
+  if (use_ocr_) {
+    optical_character_recognizer_->DisconnectAnnotator();
+  }
 }
 
 void ImageAnnotationWorker::RunFakeImageAnnotator(ImageInfo image_info) {

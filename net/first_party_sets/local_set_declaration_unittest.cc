@@ -32,8 +32,8 @@ TEST(LocalSetDeclarationTest, Valid_Basic) {
   SchemefulSite associated(GURL("https://associated.test"));
 
   base::flat_map<SchemefulSite, FirstPartySetEntry> entries({
-      {primary, FirstPartySetEntry(primary, SiteType::kPrimary, std::nullopt)},
-      {associated, FirstPartySetEntry(primary, SiteType::kAssociated, 0)},
+      {primary, FirstPartySetEntry(primary, SiteType::kPrimary)},
+      {associated, FirstPartySetEntry(primary, SiteType::kAssociated)},
   });
 
   LocalSetDeclaration local_set_declaration =
@@ -45,10 +45,9 @@ TEST(LocalSetDeclarationTest, Valid_Basic) {
           /*replacement_sets=*/
           {
               {
-                  {primary, FirstPartySetEntry(primary, SiteType::kPrimary,
-                                               std::nullopt)},
+                  {primary, FirstPartySetEntry(primary, SiteType::kPrimary)},
                   {associated,
-                   FirstPartySetEntry(primary, SiteType::kAssociated, 0)},
+                   FirstPartySetEntry(primary, SiteType::kAssociated)},
               },
           },
           /*addition_sets=*/{}, /*aliases=*/{}));
@@ -62,8 +61,8 @@ TEST(LocalSetDeclarationTest, Valid_BasicWithAliases) {
   SchemefulSite associated_cctld(GURL("https://associated.cctld"));
 
   base::flat_map<SchemefulSite, FirstPartySetEntry> entries({
-      {primary, FirstPartySetEntry(primary, SiteType::kPrimary, std::nullopt)},
-      {associated, FirstPartySetEntry(primary, SiteType::kAssociated, 0)},
+      {primary, FirstPartySetEntry(primary, SiteType::kPrimary)},
+      {associated, FirstPartySetEntry(primary, SiteType::kAssociated)},
   });
 
   base::flat_map<SchemefulSite, SchemefulSite> aliases(
@@ -80,15 +79,13 @@ TEST(LocalSetDeclarationTest, Valid_BasicWithAliases) {
           /*replacement_sets=*/
           {
               {
-                  {primary, FirstPartySetEntry(primary, SiteType::kPrimary,
-                                               std::nullopt)},
+                  {primary, FirstPartySetEntry(primary, SiteType::kPrimary)},
                   {primary_cctld,
-                   FirstPartySetEntry(primary, SiteType::kPrimary,
-                                      std::nullopt)},
+                   FirstPartySetEntry(primary, SiteType::kPrimary)},
                   {associated,
-                   FirstPartySetEntry(primary, SiteType::kAssociated, 0)},
+                   FirstPartySetEntry(primary, SiteType::kAssociated)},
                   {associated_cctld,
-                   FirstPartySetEntry(primary, SiteType::kAssociated, 0)},
+                   FirstPartySetEntry(primary, SiteType::kAssociated)},
               },
           },
           /*addition_sets=*/{}, /*aliases=*/
@@ -112,19 +109,17 @@ TEST(LocalSetDeclarationTest, Invalid) {
   // All aliases must refer to a canonical site that has an entry in the set.
   EXPECT_FALSE(LocalSetDeclaration::Create(
       {
-          {primary,
-           FirstPartySetEntry(primary, SiteType::kPrimary, std::nullopt)},
-          {associated, FirstPartySetEntry(primary, SiteType::kAssociated, 0)},
+          {primary, FirstPartySetEntry(primary, SiteType::kPrimary)},
+          {associated, FirstPartySetEntry(primary, SiteType::kAssociated)},
       },
       {{associated2_cctld, associated2}}));
 
   // An alias must not have an explicit entry, even one that matches the
   // canonical's entry.
-  FirstPartySetEntry associated_entry(primary, SiteType::kAssociated, 0);
+  FirstPartySetEntry associated_entry(primary, SiteType::kAssociated);
   EXPECT_FALSE(LocalSetDeclaration::Create(
       {
-          {primary,
-           FirstPartySetEntry(primary, SiteType::kPrimary, std::nullopt)},
+          {primary, FirstPartySetEntry(primary, SiteType::kPrimary)},
           {associated, associated_entry},
           {associated_cctld, associated_entry},
       },
@@ -133,20 +128,17 @@ TEST(LocalSetDeclarationTest, Invalid) {
   // No singleton sets.
   EXPECT_FALSE(LocalSetDeclaration::Create(
       {
-          {primary,
-           FirstPartySetEntry(primary, SiteType::kPrimary, std::nullopt)},
+          {primary, FirstPartySetEntry(primary, SiteType::kPrimary)},
       },
       {}));
 
   // Multiple sets aren't supported.
   EXPECT_FALSE(LocalSetDeclaration::Create(
       {
-          {primary,
-           FirstPartySetEntry(primary, SiteType::kPrimary, std::nullopt)},
-          {primary2,
-           FirstPartySetEntry(primary2, SiteType::kPrimary, std::nullopt)},
-          {associated, FirstPartySetEntry(primary, SiteType::kAssociated, 0)},
-          {associated2, FirstPartySetEntry(primary2, SiteType::kAssociated, 0)},
+          {primary, FirstPartySetEntry(primary, SiteType::kPrimary)},
+          {primary2, FirstPartySetEntry(primary2, SiteType::kPrimary)},
+          {associated, FirstPartySetEntry(primary, SiteType::kAssociated)},
+          {associated2, FirstPartySetEntry(primary2, SiteType::kAssociated)},
       },
       {}));
 }

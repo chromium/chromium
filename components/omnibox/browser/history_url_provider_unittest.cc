@@ -28,6 +28,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/history/core/test/history_service_test_util.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
@@ -1167,9 +1168,9 @@ TEST_F(HistoryURLProviderTest, SuggestExactInput) {
       // clang-format on
   };
   for (size_t i = 0; i < std::size(test_cases); ++i) {
-    SCOPED_TRACE(testing::Message() << "Index " << i << " input: "
-                                    << test_cases[i].input << ", trim_http: "
-                                    << test_cases[i].trim_http);
+    SCOPED_TRACE(testing::Message()
+                 << "Index " << i << " input: " << test_cases[i].input
+                 << ", trim_http: " << test_cases[i].trim_http);
 
     AutocompleteInput input(ASCIIToUTF16(test_cases[i].input),
                             metrics::OmniboxEventProto::BLANK,
@@ -1184,8 +1185,9 @@ TEST_F(HistoryURLProviderTest, SuggestExactInput) {
       EXPECT_EQ(test_cases[i].offsets[match_index],
                 match.contents_class[match_index].offset);
       EXPECT_EQ(ACMatchClassification::URL |
-                (match_index == test_cases[i].match_classification_index ?
-                 ACMatchClassification::MATCH : 0),
+                    (match_index == test_cases[i].match_classification_index
+                         ? ACMatchClassification::MATCH
+                         : 0),
                 match.contents_class[match_index].style);
     }
     EXPECT_EQ(npos, test_cases[i].offsets[match.contents_class.size()]);
@@ -1408,7 +1410,7 @@ TEST_F(HistoryURLProviderTest, KeywordModeExtractUserInput) {
           metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB);
     }
 
-    provider_->Stop(true, false);
+    provider_->Stop(AutocompleteStopReason::kClobbered);
     provider_->Start(input, false);
     if (!provider_->done()) {
       base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};

@@ -962,8 +962,11 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 // For fields, this would be used to annotate both pointer and size fields that
 // have not yet been converted to a span.
 //
-// All functions or fields annotated with this macro should come with a `#
-// Safety` comment that explains what the caller must guarantee to prevent OOB.
+// All functions or fields annotated with this macro should come with a
+// `// PRECONDITIONS: ` comment that explains what the caller must guarantee
+// to ensure safe operation. Callers can then write `// SAFETY: ` comments
+// explaining why the specific preconditions have been met.
+//
 // Ideally, unsafe functions should also be paired with a safer version, e.g.
 // one that replaces pointer parameters with `span`s; otherwise, document safer
 // replacement coding patterns callers can migrate to.

@@ -190,8 +190,14 @@ void MenuRunnerImpl::RunMenuAt(
         std::move(show_menu_host_duration_histogram));
   }
 
+  MenuController::MenuType menu_type = MenuController::MenuType::kNormal;
+  if ((run_types & MenuRunner::MENU_ITEM_CONTEXT_MENU) != 0) {
+    menu_type = MenuController::MenuType::kMenuItemContextMenu;
+  } else if ((run_types & MenuRunner::CONTEXT_MENU) != 0) {
+    menu_type = MenuController::MenuType::kContextMenu;
+  }
   controller->Run(parent, button_controller, menu_.get(), bounds, anchor,
-                  source_type, (run_types & MenuRunner::CONTEXT_MENU) != 0,
+                  source_type, menu_type,
                   (run_types & MenuRunner::NESTED_DRAG) != 0,
                   native_view_for_gestures);
 }

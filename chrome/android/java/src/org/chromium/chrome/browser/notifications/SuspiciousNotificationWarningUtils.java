@@ -29,6 +29,9 @@ public class SuspiciousNotificationWarningUtils {
         SuspiciousNotificationWarningInteractions.UNSUBSCRIBE,
         SuspiciousNotificationWarningInteractions.ALWAYS_ALLOW,
         SuspiciousNotificationWarningInteractions.DISMISS,
+        SuspiciousNotificationWarningInteractions.REPORT_AS_SAFE,
+        SuspiciousNotificationWarningInteractions.REPORT_WARNED_NOTIFICATION_AS_SPAM,
+        SuspiciousNotificationWarningInteractions.REPORT_UNWARNED_NOTIFICATION_AS_SPAM,
         SuspiciousNotificationWarningInteractions.MAX_VALUE
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -38,7 +41,10 @@ public class SuspiciousNotificationWarningUtils {
         int UNSUBSCRIBE = 2;
         int ALWAYS_ALLOW = 3;
         int DISMISS = 4;
-        int MAX_VALUE = DISMISS;
+        int REPORT_AS_SAFE = 5;
+        int REPORT_WARNED_NOTIFICATION_AS_SPAM = 6;
+        int REPORT_UNWARNED_NOTIFICATION_AS_SPAM = 7;
+        int MAX_VALUE = REPORT_UNWARNED_NOTIFICATION_AS_SPAM;
     }
 
     static void recordSuspiciousNotificationWarningInteractions(

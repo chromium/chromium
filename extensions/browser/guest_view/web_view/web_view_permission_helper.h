@@ -121,9 +121,9 @@ class WebViewPermissionHelper {
     SET_PERMISSION_DENIED
   };
 
-  // Responds to the permission request |request_id| with |action| and
-  // |user_input|. Returns whether there was a pending request for the provided
-  // |request_id|.
+  // Responds to the permission request `request_id` with `action` and
+  // `user_input`. Returns whether there was a pending request for the provided
+  // `request_id`.
   SetPermissionResult SetPermission(int request_id,
                                     PermissionResponseAction action,
                                     const std::string& user_input);

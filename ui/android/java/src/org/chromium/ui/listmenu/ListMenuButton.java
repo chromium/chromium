@@ -31,7 +31,7 @@ public class ListMenuButton extends ChromeImageButton {
      * @param context The {@link Context} used to build the visuals from.
      * @param attrs The specific {@link AttributeSet} used to build the button.
      */
-    public ListMenuButton(Context context, AttributeSet attrs) {
+    public ListMenuButton(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         mListMenuHost = new ListMenuHost(this, attrs);
     }

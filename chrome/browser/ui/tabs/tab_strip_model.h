@@ -23,7 +23,6 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/tabs/tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_group_controller.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_scrubbing_metrics.h"
@@ -31,6 +30,7 @@
 #include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/models/list_selection_model.h"
@@ -58,6 +58,7 @@ enum class SplitTabLayout;
 }
 
 namespace tabs {
+class SplitTabCollection;
 class TabStripCollection;
 class TabGroupTabCollection;
 }
@@ -493,8 +494,9 @@ class TabStripModel : public TabGroupController {
   // This can fail if the tabstrip is not editable.
   void DeselectTabAt(int index);
 
-  // Makes sure the tabs from the anchor to |index| are selected. This only
-  // adds to the selection.
+  // Makes sure the tabs from the anchor to |index| are selected. This adds to
+  // the selection if there is an anchor and resets the selection to |index| if
+  // there is not an anchor.
   void AddSelectionFromAnchorTo(int index);
 
   // Returns true if the tab at |index| is selected.
@@ -662,7 +664,8 @@ class TabStripModel : public TabGroupController {
     CommandAddToNewComparisonTable,
     CommandAddToExistingComparisonTable,
     CommandAddToSplit,
-    CommandRemoveSplit,
+    CommandSwapWithActiveSplit,
+    CommandArrangeSplit,
     CommandRemoveFromGroup,
     CommandMoveToExistingWindow,
     CommandMoveTabsToNewWindow,
@@ -788,6 +791,7 @@ class TabStripModel : public TabGroupController {
   struct MoveNotification {
     int initial_index;
     std::optional<tab_groups::TabGroupId> intial_group;
+    bool initial_pinned;
     raw_ptr<const tabs::TabInterface> tab;
     TabStripSelectionChange selection_change;
   };
@@ -1059,14 +1063,15 @@ class TabStripModel : public TabGroupController {
   void UpdateSelectionModelForMoves(const std::vector<int>& tab_indices,
                                     int destination_index);
 
-  // Sets the selected index by taking into account split tabs.
+  // Clears any previous selection and sets the selected index. This takes into
+  // account split tabs so both will be selected if `index` is a split tab.
   void SetSelectedIndex(ui::ListSelectionModel* selection, int index);
 
   // Returns the range of indices between the anchor and a provided index, that
   // takes into account split tabs. If the anchor or the tab at index is part of
   // a split, the range will include that split. The start and end indices are
   // inclusive.
-  std::pair<int, int> GetRangeFromAnchorTo(int index);
+  std::pair<int, int> GetSelectionRangeFromAnchorToIndex(int index);
 
   // Generates the MoveNotifications for `MoveTabsToIndexImpl` and updates the
   // selection model and openers.
@@ -1081,8 +1086,23 @@ class TabStripModel : public TabGroupController {
       int destination_index) const;
 
   // Changes the pinned state of all tabs at `indices`, moving them in the
-  // process if necessary.
+  // process if necessary. If indices contains all tabs in a split, the whole
+  // split is pinned/unpinned. Otherwise, the tabs will be individually
+  // processed, resulting in the split being unsplit.
   void SetTabsPinned(const std::vector<int> indices, bool pinned);
+
+  // Implementation for setting the pinned state of the tab at `index`.
+  int SetTabPinnedImpl(int indices, bool pinned);
+
+  // Changes the pinned state of a split collection, moving it in the process if
+  // necessary.
+  void SetSplitPinnedImpl(tabs::SplitTabCollection* split, bool pinned);
+
+  // Wrapper for bulk move operations to make them send out the appropriate
+  // change notifications.
+  void MoveTabsWithNotifications(std::vector<int> tab_indices,
+                                 int destination_index,
+                                 base::OnceClosure execute_tabs_move_operation);
 
   // Sets the sound content setting for each site at the |indices|.
   void SetSitesMuted(const std::vector<int>& indices, bool mute) const;
@@ -1125,7 +1145,7 @@ class TabStripModel : public TabGroupController {
 
   // Returns [start, end) where the leftmost tab in the split has index start
   // and the rightmost tab in the split has index end - 1.
-  gfx::Range GetIndexRangeOfSplit(split_tabs::SplitTabId split_id);
+  gfx::Range GetIndexRangeOfSplit(split_tabs::SplitTabId split_id) const;
 
   // If inserting at `index` breaks a split, returns its id, otherwise nullopt.
   std::optional<split_tabs::SplitTabId> InsertionBreaksSplitContiguity(

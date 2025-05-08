@@ -15,13 +15,13 @@ import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
@@ -33,10 +33,11 @@ import org.chromium.ui.widget.TextViewWithLeading;
 /**
  * This class is the AccountPickerBottomsheet view for the web sign-in flow.
  *
- * The bottom sheet shows a single account with a |Continue as ...| button by default, clicking
+ * <p>The bottom sheet shows a single account with a |Continue as ...| button by default, clicking
  * on the account will expand the bottom sheet to an account list together with other sign-in
  * options like "Add account".
  */
+@NullMarked
 class AccountPickerBottomSheetView implements BottomSheetContent {
     /** Listener for the back-press button. */
     interface BackPressListener {
@@ -292,7 +293,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     }
 
     @Override
-    public @NonNull String getSheetContentDescription(Context context) {
+    public String getSheetContentDescription(Context context) {
         return context.getString(R.string.signin_account_picker_bottom_sheet_subtitle);
     }
 

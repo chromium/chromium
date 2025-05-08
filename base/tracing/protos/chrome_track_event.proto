@@ -1679,7 +1679,7 @@ message ScrollMetrics {
 //
 // All data comes from MotionEvent getters so read these for more context:
 // https://developer.android.com/reference/android/view/MotionEvent
-// Next id: 10
+// Next id: 11
 message EventForwarder {
   // The events getHistorySize().
   optional int32 history_size = 1;
@@ -1716,6 +1716,9 @@ message EventForwarder {
     AMOTION_EVENT_ACTION_BUTTON_RELEASE = 12;
   }
   optional AMotionEventAction action = 9;
+
+  // Whether the event came from the system.
+  optional bool verified_event = 10;
 }
 
 // TouchDispositionGestureFilter is a class on android that detects and forwards

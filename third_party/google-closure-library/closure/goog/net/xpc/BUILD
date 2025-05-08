@@ -8,9 +8,9 @@ closure_js_library(
     name = "crosspagechannel",
     srcs = [
         "crosspagechannel.js",
-        "directtransport.js",
         "nativemessagingtransport.js",
     ],
+    lenient = True,
     deps = [
         ":crosspagechannelrole",
         ":transport",
@@ -25,6 +25,7 @@ closure_js_library(
         "//closure/goog/events:browserevent",
         "//closure/goog/events:eventhandler",
         "//closure/goog/events:eventtype",
+        "//closure/goog/functions",
         "//closure/goog/html:legacyconversions",
         "//closure/goog/json",
         "//closure/goog/log",
@@ -42,11 +43,7 @@ closure_js_library(
 closure_js_library(
     name = "crosspagechannelrole",
     srcs = ["crosspagechannelrole.js"],
-)
-
-alias(
-    name = "directtransport",
-    actual = ":crosspagechannel",
+    lenient = True,
 )
 
 alias(
@@ -57,11 +54,13 @@ alias(
 closure_js_library(
     name = "relay",
     srcs = ["relay.js"],
+    lenient = True,
 )
 
 closure_js_library(
     name = "transport",
     srcs = ["transport.js"],
+    lenient = True,
     deps = [
         ":xpc",
         "//closure/goog/disposable",
@@ -72,5 +71,6 @@ closure_js_library(
 closure_js_library(
     name = "xpc",
     srcs = ["xpc.js"],
+    lenient = True,
     deps = ["//closure/goog/log"],
 )

@@ -78,6 +78,7 @@ export class MicrosoftAuthModuleElement extends MicrosoftAuthModuleElementBase {
 
   protected onDisableButtonClick_() {
     const disableEvent = new CustomEvent('disable-module', {
+      bubbles: true,
       composed: true,
       detail: {
         message: loadTimeData.getStringF(

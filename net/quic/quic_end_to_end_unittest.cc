@@ -34,7 +34,8 @@
 #include "net/quic/crypto_test_utils_chromium.h"
 #include "net/quic/quic_context.h"
 #include "net/socket/client_socket_factory.h"
-#include "net/ssl/ssl_config_service_defaults.h"
+#include "net/ssl/ssl_config_service.h"
+#include "net/ssl/test_ssl_config_service.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
@@ -91,7 +92,8 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
  protected:
   QuicEndToEndTest()
       : host_resolver_(CreateResolverImpl()),
-        ssl_config_service_(std::make_unique<SSLConfigServiceDefaults>()),
+        ssl_config_service_(
+            std::make_unique<TestSSLConfigService>(SSLContextConfig())),
         proxy_resolution_service_(
             ConfiguredProxyResolutionService::CreateDirect()),
         auth_handler_factory_(HttpAuthHandlerFactory::CreateDefault()) {
@@ -218,7 +220,7 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
   MappedHostResolver host_resolver_;
   MockCertVerifier cert_verifier_;
   TransportSecurityState transport_security_state_;
-  std::unique_ptr<SSLConfigServiceDefaults> ssl_config_service_;
+  std::unique_ptr<TestSSLConfigService> ssl_config_service_;
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
   std::unique_ptr<HttpAuthHandlerFactory> auth_handler_factory_;
   StaticHttpUserAgentSettings http_user_agent_settings_ = {"*", "test-ua"};
@@ -309,10 +311,6 @@ TEST_F(QuicEndToEndTest, UberTest) {
 }
 
 TEST_F(QuicEndToEndTest, EnableMLKEM) {
-  // Enable ML-KEM on the client.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kPostQuantumKyber}, {});
-
   // Configure the server to only support ML-KEM.
   server_->crypto_config()->set_preferred_groups({SSL_GROUP_X25519_MLKEM768});
 
@@ -329,8 +327,9 @@ TEST_F(QuicEndToEndTest, EnableMLKEM) {
 
 TEST_F(QuicEndToEndTest, MLKEMDisabled) {
   // Disable ML-KEM on the client.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({}, {features::kPostQuantumKyber});
+  SSLContextConfig config;
+  config.post_quantum_key_agreement_enabled = false;
+  ssl_config_service_->UpdateSSLConfigAndNotify(config);
 
   // Configure the server to only support ML-KEM.
   server_->crypto_config()->set_preferred_groups({SSL_GROUP_X25519_MLKEM768});

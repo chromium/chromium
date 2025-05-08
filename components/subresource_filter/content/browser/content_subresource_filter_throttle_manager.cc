@@ -40,6 +40,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -529,34 +530,32 @@ void ContentSubresourceFilterThrottleManager::OnChildFrameNavigationEvaluated(
 }
 
 void ContentSubresourceFilterThrottleManager::MaybeAppendNavigationThrottles(
-    content::NavigationHandle* navigation_handle,
-    std::vector<std::unique_ptr<content::NavigationThrottle>>* throttles) {
-  CHECK(!navigation_handle->IsSameDocument(), base::NotFatalUntil::M129);
-  CHECK(!ShouldInheritActivation(navigation_handle->GetURL()),
+    content::NavigationThrottleRegistry& registry) {
+  content::NavigationHandle& navigation_handle = registry.GetNavigationHandle();
+  CHECK(!navigation_handle.IsSameDocument(), base::NotFatalUntil::M129);
+  CHECK(!ShouldInheritActivation(navigation_handle.GetURL()),
         base::NotFatalUntil::M129);
 
-  if (IsInSubresourceFilterRoot(navigation_handle) && database_manager_) {
-    throttles->push_back(std::make_unique<SafeBrowsingPageActivationThrottle>(
-        navigation_handle, profile_interaction_manager_.get(),
+  if (IsInSubresourceFilterRoot(&navigation_handle) && database_manager_) {
+    registry.AddThrottle(std::make_unique<SafeBrowsingPageActivationThrottle>(
+        &navigation_handle, profile_interaction_manager_.get(),
         database_manager_));
   }
 
   if (!dealer_handle_) {
     return;
   }
-  if (auto filtering_throttle =
-          MaybeCreateChildNavigationThrottle(navigation_handle)) {
-    throttles->push_back(std::move(filtering_throttle));
-  }
+  registry.MaybeAddThrottle(
+      MaybeCreateChildNavigationThrottle(&navigation_handle));
 
   CHECK(!base::Contains(ongoing_activation_throttles_,
-                        navigation_handle->GetNavigationId()),
+                        navigation_handle.GetNavigationId()),
         base::NotFatalUntil::M129);
   if (auto activation_throttle =
-          MaybeCreateActivationStateComputingThrottle(navigation_handle)) {
-    ongoing_activation_throttles_[navigation_handle->GetNavigationId()] =
+          MaybeCreateActivationStateComputingThrottle(&navigation_handle)) {
+    ongoing_activation_throttles_[navigation_handle.GetNavigationId()] =
         activation_throttle.get();
-    throttles->push_back(std::move(activation_throttle));
+    registry.AddThrottle(std::move(activation_throttle));
   }
 }
 

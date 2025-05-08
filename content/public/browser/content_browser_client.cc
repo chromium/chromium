@@ -62,6 +62,7 @@
 #include "media/mojo/mojom/media_service.mojom.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/base/isolation_info.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/ssl/client_cert_identity.h"
 #include "net/ssl/client_cert_store.h"
@@ -451,6 +452,7 @@ AllowServiceWorkerResult ContentBrowserClient::AllowServiceWorker(
     const GURL& scope,
     const net::SiteForCookies& site_for_cookies,
     const std::optional<url::Origin>& top_frame_origin,
+    const blink::StorageKey& storage_key,
     const GURL& script_url,
     BrowserContext* context) {
   return AllowServiceWorkerResult::Yes();
@@ -542,6 +544,7 @@ void ContentBrowserClient::AllowWorkerFileSystem(
     const GURL& url,
     BrowserContext* browser_context,
     const std::vector<GlobalRenderFrameHostId>& render_frames,
+    const blink::StorageKey& storage_key,
     base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(true);
 }
@@ -549,21 +552,24 @@ void ContentBrowserClient::AllowWorkerFileSystem(
 bool ContentBrowserClient::AllowWorkerIndexedDB(
     const GURL& url,
     BrowserContext* browser_context,
-    const std::vector<GlobalRenderFrameHostId>& render_frames) {
+    const std::vector<GlobalRenderFrameHostId>& render_frames,
+    const blink::StorageKey& storage_key) {
   return true;
 }
 
 bool ContentBrowserClient::AllowWorkerCacheStorage(
     const GURL& url,
     BrowserContext* browser_context,
-    const std::vector<GlobalRenderFrameHostId>& render_frames) {
+    const std::vector<GlobalRenderFrameHostId>& render_frames,
+    const blink::StorageKey& storage_key) {
   return true;
 }
 
 bool ContentBrowserClient::AllowWorkerWebLocks(
     const GURL& url,
     BrowserContext* browser_context,
-    const std::vector<GlobalRenderFrameHostId>& render_frames) {
+    const std::vector<GlobalRenderFrameHostId>& render_frames,
+    const blink::StorageKey& storage_key) {
   return true;
 }
 
@@ -699,7 +705,8 @@ bool ContentBrowserClient::IsFullCookieAccessAllowed(
     content::BrowserContext* browser_context,
     content::WebContents* web_contents,
     const GURL& url,
-    const blink::StorageKey& storage_key) {
+    const blink::StorageKey& storage_key,
+    net::CookieSettingOverrides overrides) {
   return true;
 }
 
@@ -990,11 +997,8 @@ void ContentBrowserClient::OpenURL(
   std::move(callback).Run(nullptr);
 }
 
-std::vector<std::unique_ptr<NavigationThrottle>>
-content::ContentBrowserClient::CreateThrottlesForNavigation(
-    NavigationHandle* navigation_handle) {
-  return std::vector<std::unique_ptr<NavigationThrottle>>();
-}
+void ContentBrowserClient::CreateThrottlesForNavigation(
+    NavigationThrottleRegistry& registry) {}
 
 std::vector<std::unique_ptr<CommitDeferringCondition>>
 ContentBrowserClient::CreateCommitDeferringConditionsForNavigation(
@@ -1758,8 +1762,9 @@ bool ContentBrowserClient::CanBackForwardCachedPageReceiveCookieChanges(
     content::BrowserContext& browser_context,
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    const std::optional<url::Origin>& top_frame_origin,
-    const net::CookieSettingOverrides overrides) {
+    const url::Origin& top_frame_origin,
+    const net::CookieSettingOverrides overrides,
+    base::optional_ref<const net::CookiePartitionKey> cookie_partition_key) {
   return true;
 }
 
@@ -1789,6 +1794,11 @@ bool ContentBrowserClient::IsBlobUrlPartitioningEnabled(
 }
 
 bool ContentBrowserClient::ShouldReduceAcceptLanguage(
+    content::BrowserContext* browser_context) {
+  return true;
+}
+
+bool ContentBrowserClient::IsClearWindowNameForNewBrowsingContextGroupAllowed(
     content::BrowserContext* browser_context) {
   return true;
 }
@@ -1834,15 +1844,15 @@ void ContentBrowserClient::NotifyMultiCaptureStateChanged(
     const std::string& label,
     MultiCaptureChanged state) {}
 
-bool ContentBrowserClient::ShouldEnableDips(BrowserContext* browser_context) {
+bool ContentBrowserClient::ShouldEnableBtm(BrowserContext* browser_context) {
   return true;
 }
 
-uint64_t ContentBrowserClient::GetDipsRemoveMask() {
-  return kDefaultDipsRemoveMask;
+uint64_t ContentBrowserClient::GetBtmRemoveMask() {
+  return kDefaultBtmRemoveMask;
 }
 
-bool ContentBrowserClient::ShouldDipsDeleteInteractionRecords(
+bool ContentBrowserClient::ShouldBtmDeleteInteractionRecords(
     uint64_t remove_mask) {
   return remove_mask & BrowsingDataRemover::DATA_TYPE_COOKIES;
 }
@@ -1963,6 +1973,10 @@ bool ContentBrowserClient::ShouldPrioritizeForBackForwardCache(
     BrowserContext* browser_context,
     const GURL& url) {
   return false;
+}
+
+bool ContentBrowserClient::IsRendererProcessPriorityEnabled() {
+  return true;
 }
 
 std::unique_ptr<KeepAliveRequestTracker>

@@ -83,7 +83,7 @@ class FocusChangeObserver : public views::FocusChangeListener,
   FocusChangeObserver(views::FocusManager* focus_manager,
                       content::WebContents* web_contents)
       : content::WebContentsObserver(web_contents) {
-    obs_.Observe(focus_manager);
+    focus_manager_observation_.Observe(focus_manager);
   }
 
   void WaitForFocusChange() { run_loop_.Run(); }
@@ -109,27 +109,12 @@ class FocusChangeObserver : public views::FocusChangeListener,
   }
 
  private:
-  base::ScopedObservation<views::FocusManager, FocusChangeObserver> obs_{this};
+  base::ScopedObservation<views::FocusManager, views::FocusChangeListener>
+      focus_manager_observation_{this};
   base::RunLoop run_loop_;
 };
 
 }  // namespace
-
-namespace base {
-
-template <>
-struct ScopedObservationTraits<views::FocusManager, FocusChangeObserver> {
-  static void AddObserver(views::FocusManager* source,
-                          FocusChangeObserver* observer) {
-    source->AddFocusChangeListener(observer);
-  }
-  static void RemoveObserver(views::FocusManager* source,
-                             FocusChangeObserver* observer) {
-    source->RemoveFocusChangeListener(observer);
-  }
-};
-
-}  // namespace base
 
 namespace {
 

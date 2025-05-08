@@ -62,7 +62,7 @@ goog.editor.ContentEditableField.prototype.usesIframe = function() {
 // Overridden to improve dead code elimination only.
 /** @override */
 goog.editor.ContentEditableField.prototype.turnOnDesignModeGecko =
-    goog.nullFunction;
+    function() {};
 
 
 /** @override */
@@ -99,4 +99,4 @@ goog.editor.ContentEditableField.prototype.makeEditableInternal = function(
  * ContentEditableField does not make any changes to the DOM when it is made
  * editable other than setting contentEditable to true.
  */
-goog.editor.ContentEditableField.prototype.restoreDom = goog.nullFunction;
+goog.editor.ContentEditableField.prototype.restoreDom = function() {};

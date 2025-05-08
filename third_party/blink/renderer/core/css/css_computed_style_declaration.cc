@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -523,8 +524,8 @@ void CSSComputedStyleDeclaration::setProperty(const ExecutionContext*,
                                               ExceptionState& exception_state) {
   exception_state.ThrowDOMException(
       DOMExceptionCode::kNoModificationAllowedError,
-      "These styles are computed, and therefore the '" + name +
-          "' property is read-only.");
+      WTF::StrCat({"These styles are computed, and therefore the '", name,
+                   "' property is read-only."}));
 }
 
 String CSSComputedStyleDeclaration::removeProperty(
@@ -532,8 +533,8 @@ String CSSComputedStyleDeclaration::removeProperty(
     ExceptionState& exception_state) {
   exception_state.ThrowDOMException(
       DOMExceptionCode::kNoModificationAllowedError,
-      "These styles are computed, and therefore the '" + name +
-          "' property is read-only.");
+      WTF::StrCat({"These styles are computed, and therefore the '", name,
+                   "' property is read-only."}));
   return String();
 }
 

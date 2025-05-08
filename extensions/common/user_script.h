@@ -285,8 +285,8 @@ class UserScript {
   bool MatchesURL(const GURL& url) const;
 
   // Returns true if the script should be applied to the given
-  // |effective_document_url|. It is the caller's responsibility to calculate
-  // |effective_document_url| based on match_origin_as_fallback().
+  // `effective_document_url`. It is the caller's responsibility to calculate
+  // `effective_document_url` based on match_origin_as_fallback().
   bool MatchesDocument(const GURL& effective_document_url,
                        bool is_subframe) const;
 
@@ -356,8 +356,8 @@ class UserScript {
   // List of css scripts defined in content_scripts
   ContentList css_scripts_;
 
-  // The ID of the host this script is a part of. The |ID| of the
-  // |host_id| can be empty if the script is a "standlone" user script.
+  // The ID of the host this script is a part of. The `ID` of the
+  // `host_id` can be empty if the script is a "standalone" user script.
   mojom::HostID host_id_;
 
   // The type of the consumer instance that the script will be injected.

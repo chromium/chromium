@@ -18,6 +18,9 @@ class BrowserDownloadServiceFactory : public ProfileKeyedServiceFactoryIOS {
   static BrowserDownloadService* GetForProfile(ProfileIOS* profile);
   static BrowserDownloadServiceFactory* GetInstance();
 
+  // Returns a default testing factory.
+  static TestingFactory GetDefaultFactory();
+
  private:
   friend class base::NoDestructor<BrowserDownloadServiceFactory>;
 

@@ -19,11 +19,7 @@
 
 #else  // !defined(WIN32)
 
-#if defined(CHROME_VIEWS_IMPLEMENTATION)
 #define CHROME_VIEWS_EXPORT __attribute__((visibility("default")))
-#else
-#define CHROME_VIEWS_EXPORT
-#endif
 
 #endif  // defined(WIN32)
 

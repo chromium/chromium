@@ -54,6 +54,8 @@ constexpr char kGuid[] = "guid";
 constexpr char kEntityType[] = "entity_type";
 constexpr char kNickname[] = "nickname";
 constexpr char kDateModified[] = "date_modified";
+constexpr char kUseCount[] = "use_count";
+constexpr char kUseDate[] = "use_date";
 }  // namespace entities
 
 // If "--autofill-wipe-entities" is present, drops the tables and creates
@@ -170,7 +172,9 @@ bool EntityTable::CreateTablesIfNecessary() {
         {{entities::kGuid, "TEXT NOT NULL PRIMARY KEY"},
          {entities::kEntityType, "TEXT NOT NULL"},
          {entities::kNickname, "TEXT NOT NULL"},
-         {entities::kDateModified, "INTEGER NOT NULL"}});
+         {entities::kDateModified, "INTEGER NOT NULL"},
+         {entities::kUseCount, "INTEGER DEFAULT 0"},
+         {entities::kUseDate, "INTEGER DEFAULT 0"}});
   };
   return create_attributes_table() && create_entities_table();
 }
@@ -215,7 +219,14 @@ bool EntityTable::MigrateToVersion(int version,
                               {"entity_type", "TEXT NOT NULL"},
                               {"nickname", "TEXT NOT NULL"},
                               {"date_modified", "INTEGER NOT NULL"}});
+
       *update_compatible_version = true;
+      break;
+    }
+    case 140: {
+      // In this version use count and use date information was added.
+      AddColumn(db(), "autofill_ai_entities", "use_count", "INTEGER DEFAULT 0");
+      AddColumn(db(), "autofill_ai_entities", "use_date", "INTEGER DEFAULT 0");
       break;
     }
   }
@@ -265,14 +276,16 @@ bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
 
   // Add the entity.
   sql::Statement s;
-  InsertBuilder(db(), s, entities::kTableName,
-                {entities::kGuid, entities::kEntityType, entities::kNickname,
-                 entities::kDateModified});
+  InsertBuilder(
+      db(), s, entities::kTableName,
+      {entities::kGuid, entities::kEntityType, entities::kNickname,
+       entities::kDateModified, entities::kUseCount, entities::kUseDate});
   s.BindString(0, entity.guid().AsLowercaseString());
   s.BindString(1, entity.type().name_as_string());
   s.BindString(2, entity.nickname());
   s.BindInt64(3, entity.date_modified().ToTimeT());
-  // TODO(crbug.com/402616006): Store use count and use date in the db.
+  s.BindInt64(4, entity.use_count());
+  s.BindTime(5, entity.use_date());
 
   if (!s.Run()) {
     return false;
@@ -382,18 +395,17 @@ std::vector<EntityInstance> EntityTable::GetEntityInstances() const {
   // previous query.
   std::vector<EntityInstance> entities;
   sql::Statement s;
-  SelectBuilder(db(), s, entities::kTableName,
-                {entities::kGuid, entities::kEntityType, entities::kNickname,
-                 entities::kDateModified});
+  SelectBuilder(
+      db(), s, entities::kTableName,
+      {entities::kGuid, entities::kEntityType, entities::kNickname,
+       entities::kDateModified, entities::kUseCount, entities::kUseDate});
   while (s.Step()) {
     base::Uuid guid = base::Uuid::ParseLowercase(s.ColumnStringView(0));
     std::string type_name = s.ColumnString(1);
     std::string nickname = s.ColumnString(2);
     base::Time date_modified = base::Time::FromTimeT(s.ColumnInt64(3));
-    // TODO(crbug.com/402616006): Read from db.
-    int use_count = 0;
-    // TODO(crbug.com/402616006): Read from db.
-    base::Time use_date = base::Time::FromTimeT(0);
+    size_t use_count = s.ColumnInt64(4);
+    base::Time use_date = s.ColumnTime(5);
 
     if (auto attributes = attribute_records.extract(guid)) {
       if (std::optional<EntityInstance> e = ValidateInstance(

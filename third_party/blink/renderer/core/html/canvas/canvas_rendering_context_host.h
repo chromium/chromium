@@ -139,9 +139,6 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
       const gfx::Size&) const;
 
   CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl() final;
-  void CreateCanvasResourceProvider2D();
-  void CreateCanvasResourceProviderWebGL();
-  void CreateCanvasResourceProviderWebGPU();
 
   bool ContextHasOpenLayers(const CanvasRenderingContext*) const;
 
@@ -156,6 +153,12 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
   // `did_fail_to_create_resource_provider_` prevents repeated attempts in
   // allocating resources after the first attempt failed.
   bool did_fail_to_create_resource_provider_ = false;
+
+ private:
+  void CreateCanvasResourceProvider2D();
+  void CreateCanvasResourceProviderWebGL();
+  void CreateCanvasResourceProviderWebGPU();
+
   bool did_record_canvas_size_to_uma_ = false;
   HostType host_type_ = HostType::kNone;
 };

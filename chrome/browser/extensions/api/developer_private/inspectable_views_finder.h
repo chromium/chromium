@@ -45,11 +45,11 @@ class InspectableViewsFinder {
                             bool is_iframe,
                             api::developer_private::ViewType type);
 
-  // Return a list of inspectable views for the given |extension|.
+  // Return a list of inspectable views for the given `extension`.
   ViewList GetViewsForExtension(const Extension& extension, bool is_enabled);
 
  private:
-  // Returns all inspectable views for a given |profile|.
+  // Returns all inspectable views for a given `profile`.
   void GetViewsForExtensionForProfile(const Extension& extension,
                                       Profile* profile,
                                       bool is_enabled,

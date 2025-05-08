@@ -15,21 +15,24 @@ namespace partition_alloc::internal {
 // System page size is not a constant on Apple OSes, but is either 4 or 16kiB
 // (1 << 12 or 1 << 14), as checked in PartitionRoot::Init(). And
 // PartitionPageSize() is 4 times the OS page size.
-static constexpr size_t kMaxSlotsPerSlotSpan = 4 * (1 << 14) / kSmallestBucket;
+static constexpr size_t kMaxSlotsPerSlotSpan =
+    4 * (1 << 14) / BucketIndexLookup::kMinBucketSize;
 #elif defined(PARTITION_ALLOCATOR_CONSTANTS_POSIX_NONCONST_PAGE_SIZE) && \
     PA_BUILDFLAG(IS_LINUX) &&                                            \
     (PA_BUILDFLAG(PA_ARCH_CPU_ARM64) || PA_BUILDFLAG(PA_ARCH_CPU_PPC64))
 // System page size can be 4, 16, or 64 kiB on Linux on AArch64.
 // System page size can be 4 or 64 kiB on Linux on ppc64.
 // In both cases, use the 64 kiB maximum.
-static constexpr size_t kMaxSlotsPerSlotSpan = 4 * (1 << 16) / kSmallestBucket;
+static constexpr size_t kMaxSlotsPerSlotSpan =
+    4 * (1 << 16) / BucketIndexLookup::kMinBucketSize;
 #elif defined(PARTITION_ALLOCATOR_CONSTANTS_POSIX_NONCONST_PAGE_SIZE)
-static constexpr size_t kMaxSlotsPerSlotSpan = 4 * (1 << 14) / kSmallestBucket;
+static constexpr size_t kMaxSlotsPerSlotSpan =
+    4 * (1 << 14) / BucketIndexLookup::kMinBucketSize;
 #else
 // A slot span can "span" multiple PartitionPages, but then its slot size is
 // larger, so it doesn't have as many slots.
 static constexpr size_t kMaxSlotsPerSlotSpan =
-    PartitionPageSize() / kSmallestBucket;
+    PartitionPageSize() / BucketIndexLookup::kMinBucketSize;
 #endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS) && PA_BUILDFLAG(IS_APPLE)
 
 }  // namespace partition_alloc::internal

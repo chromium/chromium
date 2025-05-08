@@ -22,7 +22,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -57,9 +57,10 @@ import java.util.List;
 @Batch(Batch.PER_CLASS)
 // TODO(https://crbug.com/392634251): Fix line height when elegant text height is used with Roboto
 // or enable Google Sans (Text) in //chrome/ tests on Android T+.
-@Features.DisableFeatures({
+@DisableFeatures({
     ChromeFeatureList.DATA_SHARING,
-    ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT
+    ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT,
+    ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID
 })
 public class TabSwitcherListEditorPTTest {
     @Rule
@@ -166,8 +167,7 @@ public class TabSwitcherListEditorPTTest {
     public void testCreateTabGroupOf10() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         WebPageStation pageStation =
-                Journeys.prepareTabsWithThumbnails(
-                        firstPage, 10, 0, "about:blank", WebPageStation::newBuilder);
+                Journeys.prepareTabs(firstPage, 10, 0, "about:blank", WebPageStation::newBuilder);
         RegularTabSwitcherStation tabSwitcher = pageStation.openRegularTabSwitcher();
         Journeys.mergeAllTabsToNewGroup(tabSwitcher);
 
@@ -182,8 +182,7 @@ public class TabSwitcherListEditorPTTest {
     public void testCreate10TabsAndCreateTabGroupOf4() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         WebPageStation pageStation =
-                Journeys.prepareTabsWithThumbnails(
-                        firstPage, 10, 0, "about:blank", WebPageStation::newBuilder);
+                Journeys.prepareTabs(firstPage, 10, 0, "about:blank", WebPageStation::newBuilder);
         RegularTabSwitcherStation tabSwitcher = pageStation.openRegularTabSwitcher();
         TabList tabList =
                 tabSwitcher.tabModelSelectorElement.get().getCurrentModel().getComprehensiveModel();
@@ -206,8 +205,7 @@ public class TabSwitcherListEditorPTTest {
     public void testCreate2TabGroups() {
         WebPageStation pageStation = mCtaTestRule.startOnBlankPage();
         pageStation =
-                Journeys.prepareTabsWithThumbnails(
-                        pageStation, 10, 0, "about:blank", WebPageStation::newBuilder);
+                Journeys.prepareTabs(pageStation, 10, 0, "about:blank", WebPageStation::newBuilder);
 
         TabModel currentModel = pageStation.getActivity().getCurrentTabModel();
         List<Tab> tabGroup1 = List.of(currentModel.getTabAt(0), currentModel.getTabAt(3));

@@ -72,6 +72,7 @@ class RequestSender : public base::RefCountedThreadSafe<RequestSender> {
                                 int net_error,
                                 const std::string& header_etag,
                                 const std::string& xheader_cup_server_proof,
+                                const std::string& header_cookie,
                                 int64_t xheader_retry_after_sec);
 
   // Implements the error handling and url fallback mechanism.
@@ -83,6 +84,7 @@ class RequestSender : public base::RefCountedThreadSafe<RequestSender> {
                             const std::string& response_body,
                             const std::string& response_etag,
                             const std::string& response_cup_server_proof,
+                            const std::string& response_cookie,
                             int retry_after_sec);
 
   // Helper function to handle a non-continuable error in Send.

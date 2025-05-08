@@ -541,6 +541,7 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Open Payments Settings"/>
   <int value="15" label="[Deprecated] Open History Search Settings"/>
   <int value="16" label="Open Glic"/>
+  <int value="17" label="Open Glic settings"/>
 </enum>
 
 <!-- LINT.ThenChange(//ui/webui/resources/js/browser_command/browser_command.mojom:Command) -->
@@ -593,7 +594,10 @@ chromium-metrics-reviews@google.com.
   <int value="25" label="From Collaboration Background In Group"/>
   <int value="26" label="From Bookmark Bar Background"/>
   <int value="27" label="From Reparenting Background"/>
-  <int value="28" label="Size"/>
+  <int value="28" label="From History Navigation Background"/>
+  <int value="29" label="From History Navigation Foreground"/>
+  <int value="30" label="From Longpress Foreground In Group"/>
+  <int value="31" label="Size"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/tab_model/tab_model.h:TabLaunchType) -->

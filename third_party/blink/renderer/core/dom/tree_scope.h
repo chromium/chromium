@@ -205,6 +205,10 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
 
   virtual CustomElementRegistry* customElementRegistry() const = 0;
 
+  // Given a `node` targeteted by an event, returns the element that this event
+  // should be dispatched to.
+  Element* ElementForHitTest(Node*, HitTestPointType) const;
+
  protected:
   TreeScope(ContainerNode&, Document&);
   explicit TreeScope(Document&);
@@ -224,7 +228,6 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
                                         V8ObservableArrayCSSStyleSheet&,
                                         uint32_t);
 
-  Element* HitTestPointInternal(Node*, HitTestPointType) const;
   Element* FindAnchorWithName(const String& name);
 
   void StyleSheetWasAdded(CSSStyleSheet* sheet);

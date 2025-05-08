@@ -12,9 +12,12 @@
 
 namespace crosapi {
 
-// Implements the StructuredMetricsService mojo interface to record events.
-// Wrapper to validate and record structured metrics received from lacros. Lives
-// on the UI thread.
+// Implements the StructuredMetricsService mojo interface to record events from
+// AshStructuredMetricsDelegate. Wrapper to validate and record structured
+// metrics. Lives on the UI thread. Although both AshStructuredMetricsDelegate
+// and StructuredMetricsServiceAsh live in the same Ash process, instantiating a
+// mojo pipe adds little overhead and provides lots of benefits out of the box
+// (ie message buffer).
 class StructuredMetricsServiceAsh final
     : public mojom::StructuredMetricsService {
  public:

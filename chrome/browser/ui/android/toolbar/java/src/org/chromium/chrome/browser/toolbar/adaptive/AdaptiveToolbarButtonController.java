@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.adaptive;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS;
 import static org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment.ARG_UI_STATE_AUTO_BUTTON_CAPTION;
@@ -17,7 +18,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -29,6 +29,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -54,6 +56,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /** Meta {@link ButtonDataProvider} which chooses the optional button variant that will be shown. */
+@NullMarked
 public class AdaptiveToolbarButtonController
         implements ButtonDataProvider,
                 ButtonDataObserver,
@@ -62,7 +65,7 @@ public class AdaptiveToolbarButtonController
 
     private final Context mContext;
     private ObserverList<ButtonDataObserver> mObservers = new ObserverList<>();
-    @Nullable private ButtonDataProvider mSingleProvider;
+    private @Nullable ButtonDataProvider mSingleProvider;
 
     // Maps from {@link AdaptiveToolbarButtonVariant} to {@link ButtonDataProvider}.
     private Map<Integer, ButtonDataProvider> mButtonDataProviderMap = new HashMap<>();
@@ -74,7 +77,7 @@ public class AdaptiveToolbarButtonController
     private final ButtonDataImpl mButtonData = new ButtonDataImpl();
 
     /** The last received {@link ButtonSpec}. */
-    @Nullable private ButtonSpec mOriginalButtonSpec;
+    private @Nullable ButtonSpec mOriginalButtonSpec;
 
     /** {@code true} if the SessionVariant histogram value was already recorded. */
     private boolean mIsSessionVariantRecorded;
@@ -85,15 +88,15 @@ public class AdaptiveToolbarButtonController
     private final Callback<AdaptiveToolbarStatePredictor.UiState> mUiStateCallback;
     private final AdaptiveToolbarBehavior mToolbarBehavior;
 
-    @Nullable private AdaptiveToolbarStatePredictor mAdaptiveToolbarStatePredictor;
-    @Nullable private View.OnLongClickListener mMenuHandler;
+    private @Nullable AdaptiveToolbarStatePredictor mAdaptiveToolbarStatePredictor;
+    private View.@Nullable OnLongClickListener mMenuHandler;
     private final Callback<Integer> mMenuClickListener;
     private final AdaptiveButtonActionMenuCoordinator mMenuCoordinator;
     private int mScreenWidthDp;
 
     private @AdaptiveToolbarButtonVariant int mSessionButtonVariant =
             AdaptiveToolbarButtonVariant.UNKNOWN;
-    private CurrentTabObserver mPageLoadMetricsRecorder;
+    private @Nullable CurrentTabObserver mPageLoadMetricsRecorder;
 
     /**
      * Constructs the {@link AdaptiveToolbarButtonController}.
@@ -117,6 +120,7 @@ public class AdaptiveToolbarButtonController
                 id -> {
                     if (id == R.id.customize_adaptive_button_menu_id) {
                         RecordUserAction.record("MobileAdaptiveMenuCustomize");
+                        assumeNonNull(mAdaptiveToolbarStatePredictor);
                         mAdaptiveToolbarStatePredictor.recomputeUiState(this::startSettings);
                         return;
                     }
@@ -216,7 +220,7 @@ public class AdaptiveToolbarButtonController
     }
 
     @Override
-    public ButtonData get(@Nullable Tab tab) {
+    public @Nullable ButtonData get(@Nullable Tab tab) {
         final ButtonData receivedButtonData =
                 mSingleProvider == null ? null : mSingleProvider.get(tab);
         if (receivedButtonData == null) {
@@ -276,8 +280,7 @@ public class AdaptiveToolbarButtonController
         };
     }
 
-    @Nullable
-    private View.OnLongClickListener createMenuHandler() {
+    private View.@Nullable OnLongClickListener createMenuHandler() {
         if (!FeatureList.isInitialized()) return null;
         return mMenuCoordinator.createOnLongClickListener(mMenuClickListener);
     }
@@ -321,8 +324,7 @@ public class AdaptiveToolbarButtonController
     }
 
     /** Returns the {@link ButtonDataProvider} used in a single-variant mode. */
-    @Nullable
-    public ButtonDataProvider getSingleProviderForTesting() {
+    public @Nullable ButtonDataProvider getSingleProviderForTesting() {
         return mSingleProvider;
     }
 
@@ -357,7 +359,7 @@ public class AdaptiveToolbarButtonController
      *
      * @param tabSupplier Supplier of current tab.
      */
-    public void initializePageLoadMetricsRecorder(ObservableSupplier<Tab> tabSupplier) {
+    public void initializePageLoadMetricsRecorder(ObservableSupplier<@Nullable Tab> tabSupplier) {
         if (mPageLoadMetricsRecorder != null) return;
         mPageLoadMetricsRecorder =
                 new CurrentTabObserver(

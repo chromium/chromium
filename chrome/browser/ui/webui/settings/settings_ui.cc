@@ -54,7 +54,6 @@
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
-#include "chrome/browser/ui/webui/search_engine_choice/icon_utils.h"
 #include "chrome/browser/ui/webui/settings/about_handler.h"
 #include "chrome/browser/ui/webui/settings/accessibility_main_handler.h"
 #include "chrome/browser/ui/webui/settings/appearance_handler.h"
@@ -83,6 +82,7 @@
 #include "chrome/browser/ui/webui/settings/settings_startup_pages_handler.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/settings/site_settings_handler.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -517,9 +517,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(privacy_sandbox::kAlwaysBlock3pcsIncognito));
 
   // ACT UX
-  bool ipp_ux = base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionUx);
-  bool fpp_ux = base::FeatureList::IsEnabled(
-      privacy_sandbox::kFingerprintingProtectionUx);
+  bool is_canary = chrome::GetChannel() == version_info::Channel::CANARY;
+  bool ipp_ux = is_canary &&
+                base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionUx);
+  bool fpp_ux = is_canary && base::FeatureList::IsEnabled(
+                                 privacy_sandbox::kFingerprintingProtectionUx);
   html_source->AddBoolean("isIpProtectionUxEnabled", ipp_ux);
   html_source->AddBoolean("isFingerprintingProtectionUxEnabled", fpp_ux);
   html_source->AddBoolean("enableIncognitoTrackingProtections",
@@ -575,10 +577,13 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   bool show_glic = false;
 
 #if BUILDFLAG(ENABLE_GLIC)
-  show_glic = glic::GlicEnabling::ShouldShowSettingsPage(profile);
+  auto glic_enablement = glic::GlicEnabling::EnablementForProfile(profile);
+  show_glic = glic_enablement.ShouldShowSettingsPage();
   html_source->AddBoolean("showGlicSettings", show_glic);
+  html_source->AddBoolean("glicDisallowedByAdmin",
+                          glic_enablement.DisallowedByAdmin());
 
-  if (glic::GlicEnabling::IsProfileEligible(profile)) {
+  if (glic_enablement.IsProfileEligible()) {
     AddSettingsPageUIHandler(std::make_unique<GlicHandler>());
 
     auto* glic_service = glic::GlicKeyedService::Get(profile);
@@ -852,11 +857,13 @@ void SettingsUI::UpdateShowGlicState() {
   // FRE. Propagate this state to the WebUI value used to display the settings
   // page.
   Profile* profile = Profile::FromWebUI(web_ui());
-  bool glic_enabled = glic::GlicEnabling::ShouldShowSettingsPage(profile);
+  auto enablement = glic::GlicEnabling::EnablementForProfile(profile);
+  const bool show_glic = enablement.ShouldShowSettingsPage();
 
   base::Value::Dict update;
-  update.Set("showGlicSettings", glic_enabled);
-  if (glic_enabled) {
+  update.Set("showGlicSettings", show_glic);
+  update.Set("glicDisallowedByAdmin", enablement.DisallowedByAdmin());
+  if (show_glic) {
     update.Set("showAdvancedFeaturesMainControl", true);
   }
 

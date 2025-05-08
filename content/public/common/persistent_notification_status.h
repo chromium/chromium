@@ -31,7 +31,11 @@ enum class PersistentNotificationStatus {
   // the origin.
   kPermissionMissing = 5,
 
-  kMaxValue = kPermissionMissing
+  // Browser shutdown prevented or interrupted the `notificationclose` event.
+  // The browser may prioritize shutdown to update the browser.
+  kCanceledByAppTerminating = 6,
+
+  kMaxValue = kCanceledByAppTerminating
 };
 
 }  // content

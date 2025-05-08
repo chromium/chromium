@@ -25,11 +25,24 @@ import os
 import subprocess
 from typing import Any
 
+import dataclasses  # Built-in, but Pylint 2.7 gives an ordering false positive.
+
 from gpu_tests.util import host_information
 
 SummaryType = dict[str, dict[str, float]]
 ResultType = dict[str, Any]
 MetricType = dict[str, list[str] | list[float]]
+
+
+@dataclasses.dataclass
+class _LogFileColumn:
+  """Represents the parsed data from a column in an IPG log file."""
+  # The index of this column within the file.
+  index: int
+  # The name of the column.
+  label: str
+  # The sum of all rows within the column.
+  total: float = 0.0
 
 
 def LocateIPG() -> str:
@@ -89,42 +102,41 @@ def AnalyzeIPGLogFile(logfile: str | None = None,
   if not logfile:
     logfile = GenerateIPGLogFilename()
   if not os.path.isfile(logfile):
-    raise Exception("Can't locate logfile at " + logfile)
+    raise Exception(f"Can't locate logfile at {logfile}")
   first_line = True
   samples = 0
-  cols = 0
-  indices = []
-  labels = []
-  sums = []
+  total_columns = 0
+  columns = []
   col_time = None
-  for line in open(logfile):
+  with open(logfile, encoding='utf-8') as infile:
+    contents = infile.read()
+  for line in contents.splitlines(keepends=True):
     tokens = [token.strip('" ') for token in line.split(',')]
     if first_line:
       first_line = False
-      cols = len(tokens)
-      for ii in range(0, cols):
+      total_columns = len(tokens)
+      for ii in range(total_columns):
         token = tokens[ii]
         if token.startswith('Elapsed Time'):
           col_time = ii
         elif token.endswith('(Watt)'):
-          indices.append(ii)
-          labels.append(token[:-len('(Watt)')])
-          sums.append(0.0)
+          columns.append(_LogFileColumn(index=ii, label=token[:-len('(Watt)')]))
       assert col_time
-      assert cols > 0
-      assert len(indices) > 0
+      assert total_columns > 0
+      assert len(columns) > 0
       continue
-    if len(tokens) != cols:
+    if len(tokens) != total_columns:
       continue
     if skip_in_sec > 0 and float(tokens[col_time]) < skip_in_sec:
       continue
     samples += 1
-    for ii, index in enumerate(indices):
-      sums[ii] += float(tokens[index])
+    for c in columns:
+      c.total += float(tokens[c.index])
+
   results = {'samples': samples}
   if samples > 0:
-    for ii in range(0, len(indices)):
-      results[labels[ii]] = sums[ii] / samples
+    for c in columns:
+      results[c.label] = c.total / samples
   return results
 
 
@@ -154,10 +166,10 @@ def ProcessResultsFromMultipleIPGRuns(
         core = core[len(prefix):]
       per_core_results[core] = results
 
-      for key in results:
+      for key, value in results.items():
         if key in ('samples', 'log'):
           continue
-        metrics.setdefault(key, []).append(results[key])
+        metrics.setdefault(key, []).append(value)
     return per_core_results, metrics
 
   def _CalculateSummaryStatistics(metrics: MetricType) -> SummaryType:
@@ -195,8 +207,7 @@ def ProcessResultsFromMultipleIPGRuns(
   output['summary'] = summary
 
   if output_json:
-    json_file = open(output_json, 'w')
-    json_file.write(json.dumps(output, indent=4))
-    json_file.close()
+    with open(output_json, 'w', encoding='utf-8') as json_file:
+      json_file.write(json.dumps(output, indent=4))
 
   return summary

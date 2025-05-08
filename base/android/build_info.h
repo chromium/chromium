@@ -137,13 +137,7 @@ class BASE_EXPORT BuildInfo {
 
   const char* hardware() const { return hardware_; }
 
-  bool is_at_least_t() const { return is_at_least_t_; }
-
   bool is_automotive() const { return is_automotive_; }
-
-  bool is_at_least_u() const { return is_at_least_u_; }
-
-  bool targets_at_least_u() const { return targets_at_least_u_; }
 
   const char* codename() const { return codename_; }
 
@@ -192,10 +186,7 @@ class BASE_EXPORT BuildInfo {
   const bool is_tv_;
   const char* const version_incremental_;
   const char* const hardware_;
-  const bool is_at_least_t_;
   const bool is_automotive_;
-  const bool is_at_least_u_;
-  const bool targets_at_least_u_;
   const char* const codename_;
   const int32_t vulkan_deqp_level_;
   const bool is_foldable_;

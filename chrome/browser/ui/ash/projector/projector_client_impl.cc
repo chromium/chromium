@@ -23,6 +23,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -240,19 +241,19 @@ void ProjectorClientImpl::OpenProjectorApp() const {
 
 void ProjectorClientImpl::MinimizeProjectorApp() const {
   auto* profile = ProfileManager::GetActiveUserProfile();
-  auto* browser =
-      ash::FindSystemWebAppBrowser(profile, ash::SystemWebAppType::PROJECTOR);
+  auto* browser = ash::FindSystemWebAppBrowser(
+      profile, ash::SystemWebAppType::PROJECTOR, ash::BrowserType::kApp);
   if (browser) {
-    browser->window()->Minimize();
+    browser->Minimize();
   }
 }
 
 void ProjectorClientImpl::CloseProjectorApp() const {
   auto* profile = ProfileManager::GetActiveUserProfile();
-  auto* browser =
-      ash::FindSystemWebAppBrowser(profile, ash::SystemWebAppType::PROJECTOR);
+  auto* browser = ash::FindSystemWebAppBrowser(
+      profile, ash::SystemWebAppType::PROJECTOR, ash::BrowserType::kApp);
   if (browser) {
-    browser->window()->Close();
+    browser->Close();
   }
 }
 

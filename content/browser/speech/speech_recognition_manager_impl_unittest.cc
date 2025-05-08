@@ -6,6 +6,7 @@
 #include "base/functional/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/soda/mock_soda_installer.h"
 #include "components/soda/soda_util.h"
 #include "content/browser/speech/fake_speech_recognition_manager_delegate.h"
 #include "content/public/browser/speech_recognition_audio_forwarder_config.h"
@@ -56,7 +57,7 @@ class SpeechRecognitionManagerImplTest
   BrowserTaskEnvironment environment_;
 
  protected:
-  MockSodaInstaller mock_soda_installer_;
+  speech::MockSodaInstaller mock_soda_installer_;
   bool on_device_speech_recognition_supported_ =
       speech::IsOnDeviceSpeechRecognitionSupported();
   std::unique_ptr<SpeechRecognitionManagerImpl> manager_ =
@@ -188,7 +189,7 @@ TEST_F(SpeechRecognitionManagerImplTest, LanguageNotSupportedError) {
   }));
 }
 
-TEST_F(SpeechRecognitionManagerImplTest, RecognitionContextNotSupportedError) {
+TEST_F(SpeechRecognitionManagerImplTest, PhrasesNotSupportedError) {
   SpeechRecognitionSessionConfig config;
   config.on_device = false;
   config.language = "en-US";
@@ -198,8 +199,8 @@ TEST_F(SpeechRecognitionManagerImplTest, RecognitionContextNotSupportedError) {
                           receiver_.BindNewPipeAndPassRemote(), std::nullopt);
 
   EXPECT_TRUE(base::test::RunUntil([&]() {
-    return error_ == media::mojom::SpeechRecognitionErrorCode::
-                         kRecognitionContextNotSupported &&
+    return error_ ==
+               media::mojom::SpeechRecognitionErrorCode::kPhrasesNotSupported &&
            ended_;
   }));
 }
@@ -213,10 +214,10 @@ TEST_F(SpeechRecognitionManagerImplTest, ConfigEventListenerThrowsError) {
 
   EXPECT_CALL(
       listener_,
-      OnRecognitionError(_, media::mojom::SpeechRecognitionError(
-                                media::mojom::SpeechRecognitionErrorCode::
-                                    kRecognitionContextNotSupported,
-                                media::mojom::SpeechAudioErrorDetails::kNone)));
+      OnRecognitionError(
+          _, media::mojom::SpeechRecognitionError(
+                 media::mojom::SpeechRecognitionErrorCode::kPhrasesNotSupported,
+                 media::mojom::SpeechAudioErrorDetails::kNone)));
   EXPECT_CALL(listener_, OnRecognitionEnd(_));
   manager_->CreateSession(config, mojo::NullReceiver(), mojo::NullRemote(),
                           std::nullopt);

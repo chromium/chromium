@@ -435,9 +435,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
   }
 
   AtomicString rule_tag;
-  if (JSONValue* tag_value = input->Get("tag");
-      tag_value &&
-      RuntimeEnabledFeatures::SpeculationRulesTagEnabled(context)) {
+  if (JSONValue* tag_value = input->Get("tag")) {
     String tag_str;
     if (!tag_value->AsString(&tag_str)) {
       SetParseErrorMessage(out_error, "Tag value must be a string.");
@@ -647,19 +645,16 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
   }
 
   WTF::String ruleset_tag;
-  if (RuntimeEnabledFeatures::SpeculationRulesTagEnabled(context)) {
-    JSONValue* tag_value = parsed->Get("tag");
-    if (tag_value) {
-      String tag_str;
-      if (!tag_value->AsString(&tag_str)) {
-        result->SetError(SpeculationRuleSetErrorType::kInvalidRulesSkipped,
-                         "Tag value must be a string.");
-      } else if (!IsValidTag(tag_str)) {
-        result->SetError(SpeculationRuleSetErrorType::kInvalidRulesSkipped,
-                         "Tag value is invalid: must be ASCII printable.");
-      } else {
-        ruleset_tag = WTF::String(tag_str);
-      }
+  if (JSONValue* tag_value = parsed->Get("tag")) {
+    String tag_str;
+    if (!tag_value->AsString(&tag_str)) {
+      result->SetError(SpeculationRuleSetErrorType::kInvalidRulesSkipped,
+                       "Tag value must be a string.");
+    } else if (!IsValidTag(tag_str)) {
+      result->SetError(SpeculationRuleSetErrorType::kInvalidRulesSkipped,
+                       "Tag value is invalid: must be ASCII printable.");
+    } else {
+      ruleset_tag = WTF::String(tag_str);
     }
   }
 

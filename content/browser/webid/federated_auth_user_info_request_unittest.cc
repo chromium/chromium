@@ -57,6 +57,8 @@ constexpr char kAccountEmailFormat[] = "%s@foo.com";
 constexpr char kAccountName[] = "The Liliputian";
 constexpr char kAccountGivenName[] = "Julius";
 constexpr char kAccountPicture[] = "https://image.com/yolo";
+constexpr char kAccountPhone[] = "(650) 243-3243";
+constexpr char kAccountUsername[] = "@julius";
 
 struct AccountConfig {
   std::string id;
@@ -174,7 +176,8 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
       accounts.emplace_back(base::MakeRefCounted<IdentityRequestAccount>(
           account_config.id, GenerateEmailForUserId(account_config.id),
           kAccountName, GenerateEmailForUserId(account_config.id), kAccountName,
-          kAccountGivenName, GURL(kAccountPicture),
+          kAccountGivenName, GURL(kAccountPicture), kAccountPhone,
+          kAccountUsername,
           /*login_hints=*/std::vector<std::string>(),
           /*domain_hints=*/std::vector<std::string>(),
           /*labels=*/std::vector<std::string>(), account_config.login_state));

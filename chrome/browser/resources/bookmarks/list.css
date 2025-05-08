@@ -20,13 +20,18 @@
   padding-top: 24px;
 }
 
-#list {
+.card {
   background-color: var(--cr-card-background-color);
   border-radius: var(--cr-card-border-radius);
   box-shadow: var(--cr-card-shadow);
   margin: 0 auto;
   max-width: var(--card-max-width);
   padding: 8px 0;
+}
+
+#promoCard {
+  margin-bottom: 18px;
+  padding: 0px;
 }
 
 .centered-message {

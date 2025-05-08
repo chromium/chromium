@@ -631,8 +631,16 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
 
 // Memory Saver Dialog bubble's cancel button's state should be preserved
 // for that tab even when navigating to another tab.
+// TODO(crbug.com/415992663): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CancelButtonStatePreservedWhenSwitchingTabs \
+  DISABLED_CancelButtonStatePreservedWhenSwitchingTabs
+#else
+#define MAYBE_CancelButtonStatePreservedWhenSwitchingTabs \
+  CancelButtonStatePreservedWhenSwitchingTabs
+#endif
 IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
-                       CancelButtonStatePreservedWhenSwitchingTabs) {
+                       MAYBE_CancelButtonStatePreservedWhenSwitchingTabs) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL("a.test", "/title1.html")),

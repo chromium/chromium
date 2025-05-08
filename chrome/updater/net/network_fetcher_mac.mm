@@ -176,6 +176,13 @@ using DownloadToFileCompleteCallback =
   if ([headers objectForKey:headerXCupServerProof]) {
     cupServerProof = [headers objectForKey:headerXCupServerProof];
   }
+  NSString* headerCookie =
+      base::SysUTF8ToNSString(update_client::NetworkFetcher::kHeaderCookie);
+  NSString* cookie = @"";
+  if ([headers objectForKey:headerCookie]) {
+    cookie = [headers objectForKey:headerCookie];
+  }
+
   int64_t retryAfterResult = -1;
   NSString* xRetryAfter = [headers
       objectForKey:base::SysUTF8ToNSString(
@@ -191,7 +198,8 @@ using DownloadToFileCompleteCallback =
           std::string(reinterpret_cast<const char*>([_downloadedData bytes]),
                       [_downloadedData length]),
           error.code, base::SysNSStringToUTF8(etag),
-          base::SysNSStringToUTF8(cupServerProof), retryAfterResult));
+          base::SysNSStringToUTF8(cupServerProof),
+          base::SysNSStringToUTF8(cookie), retryAfterResult));
 }
 
 @end
@@ -638,7 +646,7 @@ void OutOfProcessNetworkFetcher::PostRequest(
   if (const int dial_result = DialFetchService(); dial_result != kErrorOk) {
     LOG(ERROR) << "Failed to dial the fetch service: " << dial_result;
     std::move(post_request_complete_callback)
-        .Run(nullptr, dial_result, {}, {}, -1);
+        .Run(nullptr, dial_result, {}, {}, {}, -1);
     return;
   }
 

@@ -109,11 +109,11 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetFactoryWithDelegate(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
+    builder.AddTestingFactory(ios::BookmarkModelFactory::GetInstance(),
+                              ios::BookmarkModelFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
         tab_groups::TabGroupSyncServiceFactory::GetDefaultFactory());
-    builder.AddTestingFactory(ios::BookmarkModelFactory::GetInstance(),
-                              ios::BookmarkModelFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();
 
     bookmarks::test::WaitForBookmarkModelToLoad(
@@ -132,11 +132,6 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
 
     incognito_browser_ = std::make_unique<TestBrowser>(
         profile_->GetOffTheRecordProfile(), scene_state_);
-
-    // Set up ApplicationCommands mock.
-    dispatcher = incognito_browser_->GetCommandDispatcher();
-    [dispatcher startDispatchingToTarget:mock_application_handler
-                             forProtocol:@protocol(ApplicationCommands)];
 
     AddAgentsToBrowser(incognito_browser_.get());
 

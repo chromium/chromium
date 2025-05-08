@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <utility>
 
+#include "actor_coordinator.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/feature_list.h"
@@ -14,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
+#include "base/types/id_type.h"
 #include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/actor/tools/tool_controller.h"
 #include "chrome/browser/actor/tools/tool_invocation.h"
@@ -36,9 +38,6 @@ namespace actor {
 
 namespace {
 
-// TODO(crbug.com/409564704): Remove once this bug is resolved.
-constexpr base::TimeDelta kActionObservationDelay = base::Seconds(3);
-
 void PostTaskForStartCallback(ActorCoordinator::StartTaskCallback callback,
                               base::WeakPtr<tabs::TabInterface> tab) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -53,16 +52,17 @@ void PostTaskForActCallback(ActorCoordinator::ActionResultCallback callback,
 
 }  // namespace
 
-base::TimeDelta ActorCoordinator::action_observation_delay_ =
-    kActionObservationDelay;
+std::optional<base::TimeDelta>
+    ActorCoordinator::action_observation_delay_for_testing_ = std::nullopt;
 
 void ActorCoordinator::SetActionObservationDelayForTesting(
     const base::TimeDelta& delay) {
-  action_observation_delay_ = delay;
+  action_observation_delay_for_testing_ = delay;
 }
 
 base::TimeDelta ActorCoordinator::GetActionObservationDelay() {
-  return action_observation_delay_;
+  return action_observation_delay_for_testing_.value_or(
+      features::kGlicActorActorObservationDelay.Get());
 }
 
 // Waits for the navigation to complete to create a new tab.
@@ -114,6 +114,19 @@ class ActorCoordinator::NewTabWebContentsObserver
   base::OnceCallback<void(content::WebContents*)> callback_;
 };
 
+// static
+ActorCoordinator::TaskId::Generator ActorCoordinator::Task::id_generator_;
+
+ActorCoordinator::Action::Action(const BrowserAction& action,
+                                 ActionResultCallback callback)
+    : proto(action), callback(std::move(callback)) {}
+
+ActorCoordinator::Action::~Action() = default;
+
+ActorCoordinator::Task::Task(tabs::TabInterface& task_tab)
+    : id(id_generator_.GenerateNextId()), tab(task_tab.GetWeakPtr()) {}
+ActorCoordinator::Task::~Task() = default;
+
 ActorCoordinator::ActorCoordinator(Profile* profile) : profile_(profile) {
   CHECK(profile_);
 }
@@ -140,10 +153,31 @@ void ActorCoordinator::StartTask(const BrowserAction& action,
                                 GetWeakPtr(), action, std::move(callback)));
 }
 
+void ActorCoordinator::StopTask() {
+  if (!task_state_) {
+    return;
+  }
+
+  if (task_state_->current_action) {
+    CompleteAction(false);
+  }
+
+  task_state_.reset();
+}
+
+bool ActorCoordinator::HasTask() const {
+  return !!task_state_;
+}
+
+bool ActorCoordinator::HasTaskForTab(const content::WebContents* tab) const {
+  return HasTask() && task_state_->HasTab() &&
+         task_state_->tab->GetContents() == tab;
+}
+
 void ActorCoordinator::StartTaskForTesting(tabs::TabInterface* tab) {
   CHECK(tab);
-  CHECK(!task_tab_);
-  task_tab_ = tab->GetWeakPtr();
+  CHECK(!task_state_);
+  task_state_ = std::make_unique<Task>(*tab);
 }
 
 void ActorCoordinator::Act(const BrowserAction& action,
@@ -152,20 +186,34 @@ void ActorCoordinator::Act(const BrowserAction& action,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // StartTask must have been called to initialize the tab for action.
-  if (!task_tab_) {
-    VLOG(1) << "Unable to perform action: no active tab";
+  if (!task_state_) {
+    VLOG(1) << "Unable to perform action: task hasn't been started";
     PostTaskForActCallback(std::move(callback), /*success=*/false);
     return;
   }
 
-  content::WebContents& web_contents = *task_tab_->GetContents();
+  if (!task_state_->HasTab()) {
+    VLOG(1) << "Unable to perform action: tab has been destroyed";
+    PostTaskForActCallback(std::move(callback), /*success=*/false);
+    return;
+  }
 
-  MayActOnTab(*task_tab_,
-              base::BindOnce(
-                  &ActorCoordinator::OnMayActOnTabResponse, GetWeakPtr(),
-                  task_tab_->GetWeakPtr(), action,
-                  web_contents.GetPrimaryMainFrame()->GetLastCommittedOrigin(),
-                  std::move(callback)));
+  if (task_state_->HasAction()) {
+    VLOG(1) << "Unable to perform action: task already has action in progress";
+    PostTaskForActCallback(std::move(callback), /*success=*/false);
+    return;
+  }
+
+  task_state_->current_action.emplace(action, std::move(callback));
+
+  content::WebContents& web_contents = *task_state_->tab->GetContents();
+
+  MayActOnTab(
+      *task_state_->tab,
+      base::BindOnce(
+          &ActorCoordinator::OnMayActOnTabResponse, GetWeakPtr(),
+          task_state_->id,
+          web_contents.GetPrimaryMainFrame()->GetLastCommittedOrigin()));
 }
 
 void ActorCoordinator::TryStartNewTask(const BrowserAction& action,
@@ -179,7 +227,7 @@ void ActorCoordinator::TryStartNewTask(const BrowserAction& action,
 
   // Only a single task, in a single tab, allowed at a time. This includes when
   // initialization of a new task in progress (i.e. creating a new tab).
-  if (initializing_new_task_ || task_tab_) {
+  if (initializing_new_task_ || task_state_) {
     VLOG(1) << "Cannot start new task: task already in progress";
     PostTaskForStartCallback(std::move(callback), /*tab=*/nullptr);
     return;
@@ -247,47 +295,71 @@ void ActorCoordinator::OnNewTabCreated(StartTaskCallback callback,
 
   VLOG(1) << "Started new task";
   tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
-  task_tab_ = tab->GetWeakPtr();
+  task_state_ = std::make_unique<Task>(*tab);
   std::move(callback).Run(tab->GetWeakPtr());
 }
 
 void ActorCoordinator::OnMayActOnTabResponse(
-    base::WeakPtr<tabs::TabInterface> tab,
-    const BrowserAction& action,
+    TaskId task_id,
     const url::Origin& evaluated_origin,
-    ActionResultCallback callback,
     bool may_act) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!tab) {
-    PostTaskForActCallback(std::move(callback), /*success=*/false);
+  if (!task_state_ || task_state_->id != task_id) {
+    // The task for this check has been stopped already so just discard the
+    // result.
     return;
   }
 
-  content::WebContents& web_contents = *tab->GetContents();
+  CHECK(task_state_->HasAction());
 
-  if (!evaluated_origin.IsSameOriginWith(
-          web_contents.GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
+  if (!task_state_->HasTab()) {
+    VLOG(1)
+        << "Unable to perform action: Tab closed while checking site policy";
+    CompleteAction(/*success=*/false);
+    return;
+  }
+
+  if (!evaluated_origin.IsSameOriginWith(task_state_->tab->GetContents()
+                                             ->GetPrimaryMainFrame()
+                                             ->GetLastCommittedOrigin())) {
     // A cross-origin navigation occurred before we got permission. The result
     // is no longer applicable. For now just fail.
     // TODO(mcnee): Handle this gracefully.
-    NOTIMPLEMENTED();
-    PostTaskForActCallback(std::move(callback), /*success=*/false);
+    NOTIMPLEMENTED() << "Acting after cross-origin navigation occurred";
+    CompleteAction(/*success=*/false);
     return;
   }
 
   if (!may_act) {
-    PostTaskForActCallback(std::move(callback), /*success=*/false);
+    CompleteAction(/*success=*/false);
     return;
   }
 
+  BrowserAction& proto = task_state_->current_action->proto;
+
   // Currently, only one action at a time is supported.
-  if (action.action_information_size() != 1) {
-    PostTaskForActCallback(std::move(callback), /*success=*/false);
+  if (proto.action_information_size() != 1) {
+    NOTIMPLEMENTED() << "Multi-action BrowserAction";
+    CompleteAction(/*success=*/false);
     return;
   }
-  ToolInvocation invocation(action.action_information().at(0), *tab);
-  tool_controller_.Invoke(invocation, std::move(callback));
+
+  ToolInvocation invocation(proto.action_information().at(0),
+                            *task_state_->tab);
+  task_state_->tool_controller.Invoke(
+      invocation,
+      base::BindOnce(&ActorCoordinator::CompleteAction, GetWeakPtr()));
+}
+
+void ActorCoordinator::CompleteAction(bool success) {
+  if (!task_state_ || !task_state_->HasAction()) {
+    return;
+  }
+
+  PostTaskForActCallback(std::move(task_state_->current_action->callback),
+                         success);
+  task_state_->current_action.reset();
 }
 
 base::WeakPtr<ActorCoordinator> ActorCoordinator::GetWeakPtr() {

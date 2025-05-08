@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/device_orientation/ui_bundled/scoped_force_portrait_orientation.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_coordinator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_provider.h"
+#import "ios/chrome/browser/first_run/ui_bundled/guided_tour/guided_tour_promo_coordinator.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
@@ -21,9 +22,11 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 
 @interface FirstRunProfileAgent () <FirstRunCoordinatorDelegate,
+                                    GuidedTourPromoCoordinatorDelegate,
                                     SceneStateObserver>
 
 @end
@@ -38,6 +41,9 @@
 
   // Coordinator of the First Run UI.
   FirstRunCoordinator* _firstRunCoordinator;
+
+  // Coordinator for the Guided Tour Promo.
+  GuidedTourPromoCoordinator* _guidedTourPromoCoordinator;
 
   // Used to force the device orientation in portrait mode on iPhone.
   std::unique_ptr<ScopedForcePortraitOrientation> _scopedForceOrientation;
@@ -80,8 +86,10 @@
 
   if (fromInitStage == ProfileInitStage::kFirstRun) {
     _scopedForceOrientation.reset();
-    [profileState removeAgent:self];
-    return;
+    if (!IsBestOfAppGuidedTourEnabled()) {
+      [profileState removeAgent:self];
+      return;
+    }
   }
 }
 
@@ -152,12 +160,43 @@
   [_firstRunCoordinator start];
 }
 
+- (void)showGuidedTourPrompt {
+  if (_guidedTourPromoCoordinator) {
+    return;
+  }
+  id<BrowserProvider> presentingInterface =
+      _presentingSceneState.browserProviderInterface.currentBrowserProvider;
+  Browser* browser = presentingInterface.browser;
+  _guidedTourPromoCoordinator = [[GuidedTourPromoCoordinator alloc]
+      initWithBaseViewController:presentingInterface.viewController
+                         browser:browser];
+  _guidedTourPromoCoordinator.delegate = self;
+  [_guidedTourPromoCoordinator start];
+}
+
+#pragma mark - GuidedTourPromoCoordinatorDelegate
+
+- (void)dismissGuidedTourPromo {
+  [_guidedTourPromoCoordinator stopWithCompletion:nil];
+}
+
+- (void)startGuidedTour {
+  // TODO(crbug.com/413461470): Implement.
+}
+
 #pragma mark - FirstRunCoordinatorDelegate
 
 - (void)didFinishFirstRun {
   DCHECK_EQ(self.profileState.initStage, ProfileInitStage::kFirstRun);
   _firstRunUIBlocker.reset();
-  [_firstRunCoordinator stop];
+  ProceduralBlock completion;
+  if (IsBestOfAppGuidedTourEnabled()) {
+    __weak FirstRunProfileAgent* weakSelf = self;
+    completion = ^{
+      [weakSelf showGuidedTourPrompt];
+    };
+  }
+  [_firstRunCoordinator stopWithCompletion:completion];
   _firstRunCoordinator = nil;
   [self.profileState queueTransitionToNextInitStage];
 }

@@ -24,31 +24,34 @@ class CookiePartitionKeyTest : public ::testing::Test {};
 
 TEST(CookiePartitionKeyTest, TestFromStorage) {
   struct {
-    const std::string top_level_site;
+    std::string top_level_site;
     bool third_party;
-    const std::optional<CookiePartitionKey> expected_output;
+    base::expected<std::optional<CookiePartitionKey>, std::string>
+        expected_output;
   } cases[] = {
       {/*empty site*/
-       "", true, CookiePartitionKey::FromURLForTesting(GURL(""))},
+       "", true, base::ok(std::nullopt)},
       /*invalid site*/
-      {"Invalid", true, std::nullopt},
+      {"Invalid", true,
+       base::unexpected(
+           "Cannot deserialize opaque origin to CookiePartitionKey")},
       /*malformed site*/
-      {"https://toplevelsite.com/", true, std::nullopt},
+      {"https://toplevelsite.com/", true,
+       base::unexpected("Cannot deserialize malformed top_level_site to "
+                        "CookiePartitionKey")},
       /*valid site: cross site*/
       {"https://toplevelsite.com", true,
-       CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com"))},
+       base::ok(CookiePartitionKey::FromURLForTesting(
+           GURL("https://toplevelsite.com")))},
       /*valid site: same site*/
       {"https://toplevelsite.com", false,
-       CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com"),
-                                             kSameSite)}};
+       base::ok(CookiePartitionKey::FromURLForTesting(
+           GURL("https://toplevelsite.com"), kSameSite))},
+  };
   for (const auto& tc : cases) {
     base::expected<std::optional<CookiePartitionKey>, std::string> got =
         CookiePartitionKey::FromStorage(tc.top_level_site, tc.third_party);
-    EXPECT_EQ(got.has_value(), tc.expected_output.has_value());
-    if (!tc.top_level_site.empty() && tc.expected_output.has_value()) {
-      ASSERT_TRUE(got.has_value()) << "Expected result to have value.";
-      EXPECT_EQ(got.value()->IsThirdParty(), tc.third_party);
-    }
+    EXPECT_EQ(tc.expected_output, got) << got.ToString();
   }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -328,21 +331,16 @@ TEST(CookiePartitionKeyTest, FromStorageKeyComponents) {
 
 TEST(CookiePartitionKeyTest, FromScript) {
   auto key = CookiePartitionKey::FromScript();
-  EXPECT_TRUE(key);
-  EXPECT_TRUE(key->from_script());
-  EXPECT_TRUE(key->site().opaque());
-  EXPECT_TRUE(key->IsThirdParty());
+  EXPECT_TRUE(key.from_script());
+  EXPECT_TRUE(key.site().opaque());
+  EXPECT_TRUE(key.IsThirdParty());
 
   auto key2 = CookiePartitionKey::FromScript();
-  EXPECT_TRUE(key2);
-  EXPECT_TRUE(key2->from_script());
-  EXPECT_TRUE(key2->site().opaque());
-  EXPECT_TRUE(key2->IsThirdParty());
+  EXPECT_TRUE(key2.from_script());
+  EXPECT_TRUE(key2.site().opaque());
+  EXPECT_TRUE(key2.IsThirdParty());
 
-  // The keys should not be equal because they get created with different opaque
-  // sites. Test both the '==' and '!=' operators here.
-  EXPECT_FALSE(key == key2);
-  EXPECT_TRUE(key != key2);
+  EXPECT_EQ(key, key2);
 }
 
 TEST(CookiePartitionKeyTest, IsSerializeable) {

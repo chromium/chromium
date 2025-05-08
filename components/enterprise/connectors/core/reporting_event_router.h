@@ -17,6 +17,9 @@ namespace enterprise_connectors {
 // An event router that collects safe browsing events and then sends
 // events to reporting server.
 class ReportingEventRouter : public KeyedService {
+  using ReferrerChain =
+      google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>;
+
  public:
   explicit ReportingEventRouter(RealtimeReportingClientBase* reporting_client);
 
@@ -29,10 +32,10 @@ class ReportingEventRouter : public KeyedService {
 
   bool IsEventEnabled(const std::string& event);
 
-  void OnLoginEvent(const GURL& url,
-                    bool is_federated,
-                    const url::SchemeHostPort& federated_origin,
-                    const std::u16string& username);
+  virtual void OnLoginEvent(const GURL& url,
+                            bool is_federated,
+                            const url::SchemeHostPort& federated_origin,
+                            const std::u16string& username);
 
   void OnPasswordBreach(
       const std::string& trigger,
@@ -52,10 +55,13 @@ class ReportingEventRouter : public KeyedService {
   // `user_name`
   void OnPasswordChanged(const std::string& user_name);
 
-  void OnUrlFilteringInterstitial(
+  // Notifies listeners about events related to Url Filtering Interstitials.
+  // Virtual for tests.
+  virtual void OnUrlFilteringInterstitial(
       const GURL& url,
       const std::string& threat_type,
-      const safe_browsing::RTLookupResponse& response);
+      const safe_browsing::RTLookupResponse& response,
+      const ReferrerChain& referrer_chain);
 
   // Notifies listeners that the user clicked-through a security interstitial.
   void OnSecurityInterstitialProceeded(const GURL& url,

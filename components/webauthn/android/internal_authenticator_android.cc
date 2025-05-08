@@ -38,11 +38,18 @@ namespace webauthn {
 
 InternalAuthenticatorAndroid::InternalAuthenticatorAndroid(
     content::RenderFrameHost* render_frame_host)
-    : render_frame_host_id_(render_frame_host->GetGlobalId()) {
+    : render_frame_host_id_(render_frame_host
+                                ? render_frame_host->GetGlobalId()
+                                : content::GlobalRenderFrameHostId()) {
   JNIEnv* env = AttachCurrentThread();
-  java_internal_authenticator_ref_ = Java_InternalAuthenticator_create(
-      env, reinterpret_cast<intptr_t>(this),
-      render_frame_host->GetJavaRenderFrameHost());
+  if (render_frame_host) {
+    java_internal_authenticator_ref_ = Java_InternalAuthenticator_create(
+        env, reinterpret_cast<intptr_t>(this),
+        render_frame_host->GetJavaRenderFrameHost());
+  } else {
+    java_internal_authenticator_ref_ = Java_InternalAuthenticator_create(
+        env, reinterpret_cast<intptr_t>(this));
+  }
 }
 
 InternalAuthenticatorAndroid::~InternalAuthenticatorAndroid() {
@@ -224,12 +231,7 @@ void InternalAuthenticatorAndroid::InvokeGetMatchingCredentialIdsResponse(
 }
 
 JavaRef<jobject>& InternalAuthenticatorAndroid::GetJavaObject() {
-  if (java_internal_authenticator_ref_.is_null()) {
-    JNIEnv* env = AttachCurrentThread();
-    java_internal_authenticator_ref_ = Java_InternalAuthenticator_create(
-        env, reinterpret_cast<intptr_t>(this),
-        GetRenderFrameHost()->GetJavaRenderFrameHost());
-  }
+  CHECK(java_internal_authenticator_ref_);
   return java_internal_authenticator_ref_;
 }
 

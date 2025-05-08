@@ -20,11 +20,11 @@ class HostID;
 // Iterable base class to iterate over a ScriptContextSet.
 class ScriptContextSetIterable {
  public:
-  // Synchronously runs |callback| with each ScriptContext that belongs to
-  // |host_id| in |render_frame|.
+  // Synchronously runs `callback` with each ScriptContext that belongs to
+  // `host_id` in `render_frame`.
   //
   // An empty |host_id.id| will match all extensions, and a null
-  // |render_frame| will match all render views, but try to use the inline
+  // `render_frame` will match all render views, but try to use the inline
   // variants of these methods instead.
   virtual void ForEach(
       const mojom::HostID& host_id,

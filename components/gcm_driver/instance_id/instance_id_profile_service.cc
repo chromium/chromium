@@ -33,4 +33,10 @@ InstanceIDProfileService::InstanceIDProfileService(
     std::unique_ptr<InstanceIDDriver> instance_id_driver)
     : driver_(std::move(instance_id_driver)) {}
 
+void InstanceIDProfileService::Shutdown() {
+  // Reset the `driver_` to ensure that any `raw_ptr`s stored by the driver are
+  // destroyed before the services they point to are freed.
+  driver_.reset();
+}
+
 }  // namespace instance_id

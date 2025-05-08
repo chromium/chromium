@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/check_is_test.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
@@ -39,6 +40,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmark_prefs.h"
 #include "chrome/browser/ui/webui/commerce/shopping_list_context_menu_controller.h"
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks.mojom.h"
@@ -99,6 +101,10 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
       AddItem(IDC_BOOKMARK_BAR_OPEN_ALL);
       AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW);
       AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO);
+      if (bookmarks.size() == 1 && bookmarks.front()->is_url() &&
+          base::FeatureList::IsEnabled(features::kSideBySide)) {
+        AddItem(IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW);
+      }
       AddSeparator(ui::NORMAL_SEPARATOR);
       shopping_list_controller_->AddPriceTrackingItemForBookmark(
           this, bookmarks.front());
@@ -110,6 +116,10 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL);
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW);
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO);
+    if (bookmarks.size() == 1 && bookmarks.front()->is_url() &&
+        base::FeatureList::IsEnabled(features::kSideBySide)) {
+      AddItem(IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW);
+    }
     AddSeparator(ui::NORMAL_SEPARATOR);
 
     AddItem(bookmarks.size() == 1 && bookmarks.front()->is_folder()
@@ -458,6 +468,13 @@ void BookmarksPageHandler::ExecuteOpenInNewTabGroupCommand(
     side_panel::mojom::ActionSource source) {
   ExecuteContextMenuCommand(node_ids, source,
                             IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP);
+}
+
+void BookmarksPageHandler::ExecuteOpenInSplitViewCommand(
+    const std::vector<int64_t>& node_ids,
+    side_panel::mojom::ActionSource source) {
+  CHECK(base::FeatureList::IsEnabled(features::kSideBySide));
+  ExecuteContextMenuCommand(node_ids, source, IDC_BOOKMARK_BAR_OPEN_SPLIT_VIEW);
 }
 
 void BookmarksPageHandler::ExecuteEditCommand(

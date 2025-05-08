@@ -91,19 +91,19 @@ TEST_F(PageNodeImplTest, RemoveFrame) {
   EXPECT_EQ(0u, GraphImplOperations::GetFrameNodes(page_node.get()).size());
 }
 
-TEST_F(PageNodeImplTest, GetTimeSinceLastVisibilityChange) {
+TEST_F(PageNodeImplTest, GetLastVisibilityChangeTime) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
 
+  base::TimeTicks t0 = base::TimeTicks::Now();
   mock_graph.page->SetIsVisible(true);
   EXPECT_TRUE(mock_graph.page->IsVisible());
   AdvanceClock(base::Seconds(42));
-  EXPECT_EQ(base::Seconds(42),
-            mock_graph.page->GetTimeSinceLastVisibilityChange());
+  EXPECT_EQ(t0, mock_graph.page->GetLastVisibilityChangeTime());
 
+  base::TimeTicks t1 = base::TimeTicks::Now();
   mock_graph.page->SetIsVisible(false);
   AdvanceClock(base::Seconds(23));
-  EXPECT_EQ(base::Seconds(23),
-            mock_graph.page->GetTimeSinceLastVisibilityChange());
+  EXPECT_EQ(t1, mock_graph.page->GetLastVisibilityChangeTime());
   EXPECT_FALSE(mock_graph.page->IsVisible());
 }
 

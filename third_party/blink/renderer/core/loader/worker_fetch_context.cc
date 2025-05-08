@@ -242,7 +242,7 @@ void WorkerFetchContext::ModifyRequestForMixedContentUpgrade(
   MixedContentChecker::UpgradeInsecureRequest(
       request, &GetResourceFetcherProperties().GetFetchClientSettingsObject(),
       global_scope_, mojom::blink::RequestContextFrameType::kNone,
-      global_scope_->ContentSettingsClient());
+      global_scope_->ContentSettingsClient(), nullptr);
 }
 
 void WorkerFetchContext::PopulateResourceRequestBeforeCacheAccess(

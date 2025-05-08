@@ -138,6 +138,8 @@ class CC_EXPORT LayerTreeFrameSink : public viz::ContextLostObserver,
   virtual void DidNotProduceFrame(const viz::BeginFrameAck& ack,
                                   FrameSkippedReason reason) = 0;
 
+  virtual void ExportFrameTiming() {}
+
   // Creates a new LayerContext through which the client can control layers in
   // a GPU-side display tree.
   virtual std::unique_ptr<LayerContext> CreateLayerContext(

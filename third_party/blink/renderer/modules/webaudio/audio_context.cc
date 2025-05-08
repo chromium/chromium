@@ -835,19 +835,21 @@ bool AudioContext::IsAllowedToStart(bool should_suppress_warning) const {
       DCHECK(window->GetFrame()->IsCrossOriginToOutermostMainFrame());
       if (!should_suppress_warning) {
         window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::ConsoleMessageSource::kOther,
-          mojom::ConsoleMessageLevel::kWarning,
-          "The AudioContext was not allowed to start. It must be resumed (or "
-          "created) from a user gesture event handler. https://goo.gl/7K7WLu"));
+            mojom::blink::ConsoleMessageSource::kOther,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "The AudioContext was not allowed to start. It must be resumed (or "
+            "created) from a user gesture event handler. "
+            "https://developer.chrome.com/blog/autoplay/#web_audio"));
       }
       break;
     case AutoplayPolicy::Type::kDocumentUserActivationRequired:
       if (!should_suppress_warning) {
         window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::ConsoleMessageSource::kOther,
-          mojom::ConsoleMessageLevel::kWarning,
-          "The AudioContext was not allowed to start. It must be resumed (or "
-          "created) after a user gesture on the page. https://goo.gl/7K7WLu"));
+            mojom::blink::ConsoleMessageSource::kOther,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "The AudioContext was not allowed to start. It must be resumed (or "
+            "created) after a user gesture on the page. "
+            "https://developer.chrome.com/blog/autoplay/#web_audio"));
       }
       break;
   }

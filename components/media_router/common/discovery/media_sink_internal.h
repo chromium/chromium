@@ -92,7 +92,6 @@ class MediaSinkInternal {
   MediaSinkInternal& operator=(const MediaSinkInternal& other);
   MediaSinkInternal& operator=(MediaSinkInternal&& other) noexcept;
   bool operator==(const MediaSinkInternal& other) const;
-  bool operator!=(const MediaSinkInternal& other) const;
   // Sorted by sink id.
   bool operator<(const MediaSinkInternal& other) const;
 

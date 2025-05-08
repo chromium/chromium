@@ -1,7 +1,7 @@
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
- * Copyright (C) 2002-2017 Németh László
+ * Copyright (C) 2002-2022 Németh László
  *
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
@@ -72,8 +72,8 @@
 #endif
 
 struct hentry {
-  unsigned char blen;    // word length in bytes
-  unsigned char clen;    // word length in characters (different for UTF-8 enc.)
+  unsigned short blen;   // word length in bytes
+  unsigned short clen;   // word length in characters (different for UTF-8 enc.)
   short alen;            // length of affix flag vector
   unsigned short* astr;  // affix flag vector
   struct hentry* next;   // next word with same hash code

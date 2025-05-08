@@ -10,21 +10,30 @@ import "mojo/public/mojom/base/time.mojom";
 // These enums/structs are sent from viz clients such as the browser and
 // renderer to the viz compositor in the GPU process.
 
+// Typemapped to `viz::ContentFrameIntervalType` in
+// components/viz/common/quads/frame_interval_inputs.h.
 enum ContentFrameIntervalType {
   kVideo,
   kAnimatingImage,
   kScrollBarFadeOutAnimation,
+  kCompositorScroll,
 };
 
+// Typemapped to `viz::ContentFrameIntervalInfo` in
+// components/viz/common/quads/frame_interval_inputs.h.
 struct ContentFrameIntervalInfo {
   ContentFrameIntervalType type;
   mojo_base.mojom.TimeDelta frame_interval;
   uint32 duplicate_count = 0;
 };
 
+// Typemapped to `viz::FrameIntervalInputs` in
+// components/viz/common/quads/frame_interval_inputs.h.
 struct FrameIntervalInputs {
   mojo_base.mojom.TimeTicks frame_time;
+  bool has_user_input;
   bool has_input;
+  float major_scroll_speed_in_pixels_per_second;
 
   // For optimization, clients may (but are NOT required to) merge
   // ContentFrameIntervalInfo of same type and interval by incrementing

@@ -134,8 +134,9 @@ ModuleType DummyModulator::ModuleTypeFromRequest(
   String module_type_string = module_request.GetModuleTypeString();
   if (module_type_string.IsNull()) {
     // Per https://github.com/whatwg/html/pull/5883, if no type assertion is
-    // provided then the import should be treated as a JavaScript module.
-    return ModuleType::kJavaScript;
+    // provided then the import should be treated as a JavaScript-or-Wasm
+    // module.
+    return ModuleType::kJavaScriptOrWasm;
   } else if (module_type_string == "json") {
     // Per https://github.com/whatwg/html/pull/5658, a "json" type assertion
     // indicates that the import should be treated as a JSON module script.

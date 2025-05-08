@@ -77,6 +77,8 @@ def to_output(value: Value) -> str | None:
 
 
 _MAGIC_ARG_MAPPING = {
+    '$$MAGIC_SUBSTITUTION_AndroidDesktopTelemetryRemote':
+    'ANDROID_DESKTOP_TELEMETRY_REMOTE',
     '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote': 'CROS_TELEMETRY_REMOTE',
     '$$MAGIC_SUBSTITUTION_ChromeOSGtestFilterFile': 'CROS_GTEST_FILTER_FILE',
     '$$MAGIC_SUBSTITUTION_GPUExpectedVendorId': 'GPU_EXPECTED_VENDOR_ID',

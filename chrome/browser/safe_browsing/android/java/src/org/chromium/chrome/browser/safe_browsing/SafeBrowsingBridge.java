@@ -88,13 +88,6 @@ public final class SafeBrowsingBridge {
     }
 
     /**
-     * @return Whether the user is under Advanced Protection.
-     */
-    public boolean isUnderAdvancedProtection() {
-        return SafeBrowsingBridgeJni.get().isUnderAdvancedProtection(mProfile);
-    }
-
-    /**
      * @return Whether hash real-time lookup is enabled.
      */
     public static boolean isHashRealTimeLookupEligibleInSession() {
@@ -145,8 +138,6 @@ public final class SafeBrowsingBridge {
         void enableSafeBrowsingSettingSetLocallyPref(Profile profile);
 
         boolean isSafeBrowsingManaged(Profile profile);
-
-        boolean isUnderAdvancedProtection(Profile profile);
 
         boolean isHashRealTimeLookupEligibleInSession();
 

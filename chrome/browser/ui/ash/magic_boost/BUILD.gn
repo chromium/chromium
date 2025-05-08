@@ -19,6 +19,8 @@ source_set("magic_boost") {
   deps = [
     ":magic_boost_constants",
     "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
     "//chrome/browser/ash/magic_boost",
     "//chrome/browser/resources:component_extension_resources",
     "//chrome/browser/ui/ash/editor_menu:utils",
@@ -28,6 +30,7 @@ source_set("magic_boost") {
     "//chromeos/crosapi/mojom",
     "//chromeos/strings:strings_grit",
     "//chromeos/ui/vector_icons",
+    "//components/application_locale_storage",
     "//ui/color",
     "//ui/display",
     "//ui/gfx",

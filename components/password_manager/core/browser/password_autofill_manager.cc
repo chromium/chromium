@@ -229,6 +229,29 @@ void PasswordAutofillManager::DidAcceptSuggestion(
       password_client_->TriggerSignIn(
           signin_metrics::AccessPoint::kAutofillDropdown);
       break;
+    case autofill::SuggestionType::kIdentityCredential: {
+      if (const autofill::IdentityCredentialDelegate*
+              identity_credential_delegate =
+                  autofill_client_->GetIdentityCredentialDelegate()) {
+        identity_credential_delegate->NotifySuggestionAccepted(
+            suggestion, /*show_modal=*/false,
+            base::BindOnce(
+                [](base::WeakPtr<PasswordAutofillManager> manager,
+                   bool accepted) {
+                  if (!manager) {
+                    return;
+                  }
+                  // When notifying the delegate, no extra permission prompts
+                  // are requested. The pop-up in its loading state is hidden
+                  // regardless of the accepted result.
+                  manager->HidePopup();
+                },
+                weak_ptr_factory_.GetWeakPtr()));
+      }
+      UpdatePopup(PrepareLoadingStateSuggestions(
+          std::move(last_popup_open_args_).suggestions, suggestion));
+      break;
+    }
     default:
       metrics_util::LogPasswordDropdownItemSelected(
           PasswordDropdownSelectedOption::kPassword,
@@ -265,9 +288,12 @@ void PasswordAutofillManager::DidAcceptSuggestion(
       }
   }
 
-  if (!password_client_
-           ->GetWebAuthnCredentialsDelegateForDriver(password_manager_driver_)
-           ->HasPendingPasskeySelection()) {
+  bool enter_loading_state =
+      password_client_
+          ->GetWebAuthnCredentialsDelegateForDriver(password_manager_driver_)
+          ->HasPendingPasskeySelection() ||
+      suggestion.type == autofill::SuggestionType::kIdentityCredential;
+  if (!enter_loading_state) {
     autofill_client_->HideAutofillSuggestions(
         autofill::SuggestionHidingReason::kAcceptSuggestion);
   }

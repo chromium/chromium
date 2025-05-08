@@ -356,7 +356,7 @@ struct EventResponseDelta {
 using EventResponseDeltas = std::list<EventResponseDelta>;
 
 // Comparison operator that returns true if the extension that caused
-// |a| was installed after the extension that caused |b|.
+// `a` was installed after the extension that caused `b`.
 bool InDecreasingExtensionInstallationTimeOrder(const EventResponseDelta& a,
                                                 const EventResponseDelta& b);
 
@@ -371,7 +371,7 @@ bool CharListToString(const base::Value::List& list, std::string* out);
 // commanded by extension handlers. All functions take the id of the extension
 // that commanded a modification, the installation time of this extension (used
 // for defining a precedence in conflicting modifications) and whether the
-// extension requested to |cancel| the request. Other parameters depend on a
+// extension requested to `cancel` the request. Other parameters depend on a
 // the signal handler.
 
 EventResponseDelta CalculateOnBeforeRequestDelta(
@@ -402,10 +402,10 @@ EventResponseDelta CalculateOnAuthRequiredDelta(
     bool cancel,
     std::optional<net::AuthCredentials> auth_credentials);
 
-// These functions merge the responses (the |deltas|) of request handlers.
-// The |deltas| need to be sorted in decreasing order of precedence of
-// extensions. In case extensions had |deltas| that could not be honored, their
-// IDs are reported in |conflicting_extensions|.
+// These functions merge the responses (the `deltas`) of request handlers.
+// The `deltas` need to be sorted in decreasing order of precedence of
+// extensions. In case extensions had `deltas` that could not be honored, their
+// IDs are reported in `conflicting_extensions`.
 
 // Stores in |*canceled_by_extension| whether any extension wanted to cancel the
 // request, std::nullopt if none did, the extension id otherwise.
@@ -430,19 +430,19 @@ void MergeOnBeforeRequestResponses(
     GURL* new_url,
     std::optional<extensions::ExtensionId>* extension_id,
     IgnoredActions* ignored_actions);
-// Modifies the "Cookie" header in |request_headers| according to
+// Modifies the "Cookie" header in `request_headers` according to
 // |deltas.request_cookie_modifications|. Conflicts are currently ignored
 // silently.
 void MergeCookiesInOnBeforeSendHeadersResponses(
     const GURL& gurl,
     const EventResponseDeltas& deltas,
     net::HttpRequestHeaders* request_headers);
-// Modifies the headers in |request_headers| according to |deltas|. Conflicts
+// Modifies the headers in `request_headers` according to `deltas`. Conflicts
 // are tried to be resolved.
-// Stores in |request_headers_modified| whether the request headers were
+// Stores in `request_headers_modified` whether the request headers were
 // modified.
 // Any actions within |request.dnr_actions| which result in headers being
-// modified are added to |matched_dnr_actions|.
+// modified are added to `matched_dnr_actions`.
 void MergeOnBeforeSendHeadersResponses(
     const extensions::WebRequestInfo& request,
     const EventResponseDeltas& deltas,
@@ -453,25 +453,25 @@ void MergeOnBeforeSendHeadersResponses(
     bool* request_headers_modified,
     std::vector<const extensions::declarative_net_request::RequestAction*>*
         matched_dnr_actions);
-// Modifies the "Set-Cookie" headers in |override_response_headers| according to
-// |deltas.response_cookie_modifications|. If |override_response_headers| is
-// NULL, a copy of |original_response_headers| is created. Conflicts are
+// Modifies the "Set-Cookie" headers in `override_response_headers` according to
+// |deltas.response_cookie_modifications|. If `override_response_headers` is
+// NULL, a copy of `original_response_headers` is created. Conflicts are
 // currently ignored silently.
 void MergeCookiesInOnHeadersReceivedResponses(
     const GURL& url,
     const EventResponseDeltas& deltas,
     const net::HttpResponseHeaders* original_response_headers,
     scoped_refptr<net::HttpResponseHeaders>* override_response_headers);
-// Stores a copy of |original_response_header| into |override_response_headers|
-// that is modified according to |deltas|. If |deltas| does not instruct to
-// modify the response headers, |override_response_headers| remains empty.
-// Extension-initiated redirects are written to |override_response_headers|
+// Stores a copy of `original_response_header` into `override_response_headers`
+// that is modified according to `deltas`. If `deltas` does not instruct to
+// modify the response headers, `override_response_headers` remains empty.
+// Extension-initiated redirects are written to `override_response_headers`
 // (to request redirection) and |*preserve_fragment_on_redirect_url| (to make
 // sure that the URL provided by the extension isn't modified by having its
 // fragment overwritten by that of the original URL). Stores in
-// |response_headers_modified| whether the response headers were modified.
+// `response_headers_modified` whether the response headers were modified.
 // Any actions within |request.dnr_actions| which result in headers being
-// modified are added to |matched_dnr_actions|.
+// modified are added to `matched_dnr_actions`.
 void MergeOnHeadersReceivedResponses(
     const extensions::WebRequestInfo& request,
     const EventResponseDeltas& deltas,
@@ -485,8 +485,8 @@ void MergeOnHeadersReceivedResponses(
         matched_dnr_actions);
 // Merge the responses of blocked onAuthRequired handlers. The first
 // registered listener that supplies authentication credentials in a response,
-// if any, will have its authentication credentials used. |request| must be
-// non-NULL, and contain |deltas| that are sorted in decreasing order of
+// if any, will have its authentication credentials used. `request` must be
+// non-NULL, and contain `deltas` that are sorted in decreasing order of
 // precedence.
 // Returns whether authentication credentials are set.
 bool MergeOnAuthRequiredResponses(const EventResponseDeltas& deltas,
@@ -497,7 +497,7 @@ bool MergeOnAuthRequiredResponses(const EventResponseDeltas& deltas,
 // the next time it navigates.
 void ClearCacheOnNavigation();
 
-// Converts the |name|, |value| pair of a http header to a HttpHeaders
+// Converts the `name`, `value` pair of a http header to a HttpHeaders
 // dictionary.
 base::Value::Dict CreateHeaderDictionary(const std::string& name,
                                          const std::string& value);

@@ -47,7 +47,7 @@ class SelectBnplIssuerDialogControllerImpl
   TextWithLink GetLinkText() const override;
   std::u16string GetTitle() const override;
   std::u16string GetSelectionOptionText(
-      std::string_view issuer_id) const override;
+      autofill::BnplIssuer::IssuerId issuer_id) const override;
 
  private:
   // The dialog view, managed by the views infrastructure on desktop.

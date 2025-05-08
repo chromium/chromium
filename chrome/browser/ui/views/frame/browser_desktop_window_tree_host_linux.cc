@@ -108,7 +108,6 @@ void BrowserDesktopWindowTreeHostLinux::AddAdditionalInitProperties(
     ui::PlatformWindowInitProperties* properties) {
   views::DesktopWindowTreeHostLinux::AddAdditionalInitProperties(params,
                                                                  properties);
-
   auto* profile = browser_view_->browser()->profile();
   const auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(profile);
   properties->prefer_dark_theme =
@@ -126,6 +125,14 @@ int BrowserDesktopWindowTreeHostLinux::GetMinimizeButtonOffset() const {
 
 bool BrowserDesktopWindowTreeHostLinux::UsesNativeSystemMenu() const {
   return false;
+}
+
+void BrowserDesktopWindowTreeHostLinux::ClientDestroyedWidget() {
+#if BUILDFLAG(USE_DBUS)
+  dbus_appmenu_.reset();
+#endif
+  browser_frame_ = nullptr;
+  browser_view_ = nullptr;
 }
 
 void BrowserDesktopWindowTreeHostLinux::FrameTypeChanged() {
@@ -164,6 +171,8 @@ void BrowserDesktopWindowTreeHostLinux::UnlockMouse(aura::Window* window) {
 
 void BrowserDesktopWindowTreeHostLinux::TabDraggingKindChanged(
     TabDragKind tab_drag_kind) {
+  CHECK(browser_frame_);
+  CHECK(browser_view_);
   // If there's no tabs left, the browser window is about to close, so don't
   // call SetOverrideRedirect() to prevent the window from flashing.
   if (!browser_view_->tabstrip()->GetModelCount()) {
@@ -200,6 +209,10 @@ bool BrowserDesktopWindowTreeHostLinux::SupportsClientFrameShadow() const {
 }
 
 void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
+  if (!browser_frame_) {
+    return;
+  }
+
   auto* window = platform_window();
   auto window_state = window->GetPlatformWindowState();
   float scale = device_scale_factor();
@@ -320,6 +333,7 @@ void BrowserDesktopWindowTreeHostLinux::CloseNow() {
 void BrowserDesktopWindowTreeHostLinux::Show(
     ui::mojom::WindowShowState show_state,
     const gfx::Rect& restore_bounds) {
+  CHECK(browser_view_);
   DesktopWindowTreeHostLinux::Show(show_state, restore_bounds);
 
   const std::string& startup_id =
@@ -332,14 +346,16 @@ void BrowserDesktopWindowTreeHostLinux::Show(
 
 bool BrowserDesktopWindowTreeHostLinux::IsOverrideRedirect(
     const ui::X11Extension& x11_extension) const {
-  return (browser_frame_->tab_drag_kind() == TabDragKind::kAllTabs) &&
+  return (browser_frame_ &&
+          browser_frame_->tab_drag_kind() == TabDragKind::kAllTabs) &&
          x11_extension.IsWmTiling() && x11_extension.CanResetOverrideRedirect();
 }
 
 gfx::Insets BrowserDesktopWindowTreeHostLinux::CalculateInsetsInDIP(
     ui::PlatformWindowState window_state) const {
   // If we are not showing frame, the insets should be zero.
-  if (!IsShowingFrame(browser_frame_->native_browser_frame()->UseCustomFrame(),
+  if (!browser_frame_ ||
+      !IsShowingFrame(browser_frame_->native_browser_frame()->UseCustomFrame(),
                       window_state)) {
     return gfx::Insets();
   }
@@ -351,6 +367,10 @@ gfx::Insets BrowserDesktopWindowTreeHostLinux::CalculateInsetsInDIP(
 void BrowserDesktopWindowTreeHostLinux::OnWindowStateChanged(
     ui::PlatformWindowState old_state,
     ui::PlatformWindowState new_state) {
+  if (!browser_view_) {
+    return;
+  }
+
   DesktopWindowTreeHostLinux::OnWindowStateChanged(old_state, new_state);
 
   bool fullscreen_changed = new_state == ui::PlatformWindowState::kFullScreen ||
@@ -373,6 +393,10 @@ void BrowserDesktopWindowTreeHostLinux::OnWindowStateChanged(
 
 void BrowserDesktopWindowTreeHostLinux::OnWindowTiledStateChanged(
     ui::WindowTiledEdges new_tiled_edges) {
+  if (!browser_frame_) {
+    return;
+  }
+
   bool maximized = new_tiled_edges.top && new_tiled_edges.left &&
                    new_tiled_edges.bottom && new_tiled_edges.right;
   bool tiled = new_tiled_edges.top || new_tiled_edges.left ||

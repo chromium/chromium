@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/engine/active_devices_invalidation_info.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/commit.h"
@@ -107,9 +106,7 @@ UpdateHandler::NudgedUpdateResult SyncerErrorToNudgedUpdateResult(
 // invalidations has been just received, it may be updated only in the next
 // sync cycle due to delay between threads.
 ActiveDevicesInvalidationInfo GetInvalidationInfo(const SyncCycle* cycle) {
-  if (cycle->status_controller().get_updated_types().Has(DEVICE_INFO) &&
-      base::FeatureList::IsEnabled(
-          kSkipInvalidationOptimizationsWhenDeviceInfoUpdated)) {
+  if (cycle->status_controller().get_updated_types().Has(DEVICE_INFO)) {
     return ActiveDevicesInvalidationInfo::CreateUninitialized();
   }
   return cycle->context()->active_devices_invalidation_info();

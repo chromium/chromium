@@ -4,6 +4,11 @@
 
 #include "components/fingerprinting_protection_filter/renderer/renderer_url_loader_throttle.h"
 
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -123,10 +128,12 @@ void RendererURLLoaderThrottle::CheckCurrentResourceRequest() {
   }
 
   auto check_url_task = [](base::WeakPtr<RendererAgent> agent, GURL url,
+                           std::optional<std::string> devtools_request_id,
                            url_pattern_index::proto::ElementType element_type,
                            RendererAgent::FilterCallback filter_callback) {
     if (agent) {
-      agent->CheckURL(url, element_type, std::move(filter_callback));
+      agent->CheckURL(url, devtools_request_id, element_type,
+                      std::move(filter_callback));
     } else {
       std::move(filter_callback).Run(subresource_filter::LoadPolicy::ALLOW);
     }
@@ -134,7 +141,7 @@ void RendererURLLoaderThrottle::CheckCurrentResourceRequest() {
   main_thread_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          check_url_task, renderer_agent_, current_url_,
+          check_url_task, renderer_agent_, current_url_, devtools_request_id_,
           subresource_filter::ToElementType(request_destination_),
           base::BindPostTask(
               task_runner_,
@@ -171,6 +178,7 @@ void RendererURLLoaderThrottle::WillStartRequest(
     network::ResourceRequest* request,
     bool* defer) {
   request_destination_ = request->destination;
+  devtools_request_id_ = request->devtools_request_id;
   ProcessRequestStep(request->url, defer);
 }
 

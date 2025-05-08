@@ -342,10 +342,6 @@ bool Configuration::operator==(const Configuration& rhs) const {
   return tie(*this) == tie(rhs);
 }
 
-bool Configuration::operator!=(const Configuration& rhs) const {
-  return !(*this == rhs);
-}
-
 std::unique_ptr<base::trace_event::TracedValue>
 Configuration::ActivationConditions::ToTracedValue() const {
   auto value = std::make_unique<base::trace_event::TracedValue>();

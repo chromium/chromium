@@ -26,6 +26,7 @@ class Version;
 
 namespace update_client {
 
+class CrxCache;
 class CrxDownloaderFactory;
 class NetworkFetcherFactory;
 class PatcherFactory;
@@ -142,9 +143,8 @@ class Configurator : public base::RefCountedThreadSafe<Configurator> {
   // embedder includes an updater. Returns a null callback otherwise.
   virtual UpdaterStateProvider GetUpdaterStateProvider() const = 0;
 
-  // Returns the filepath where installed crx's should be cached for
-  // puffin patches.
-  virtual std::optional<base::FilePath> GetCrxCachePath() const = 0;
+  // Returns the CrxCache.
+  virtual scoped_refptr<CrxCache> GetCrxCache() const = 0;
 
   virtual bool IsConnectionMetered() const = 0;
 

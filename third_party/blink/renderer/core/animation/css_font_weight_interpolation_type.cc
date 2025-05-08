@@ -75,6 +75,10 @@ InterpolationValue CSSFontWeightInterpolationType::MaybeConvertValue(
   }
   // TODO(40946458): Should do a proper interpolation here instead of converting
   // relative units first.
+  // TODO(crbug.com/415626999): Create a TreeCountingChecker for sibling-index()
+  // and sibling-count() if necessary.
+  // TODO(crbug.com/415572412): Create a LengthUnitsChecker for relative units
+  // if necessary.
   return CreateFontWeightValue(StyleBuilderConverterBase::ConvertFontWeight(
       state.CssToLengthConversionData(), value, inherited_font_weight));
 }

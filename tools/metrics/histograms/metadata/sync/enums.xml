@@ -76,9 +76,19 @@ chromium-metrics-reviews@google.com.
 <enum name="BatchUploadEntryPoint">
   <int value="0" label="Password manager settings"/>
   <int value="1" label="Password promo card"/>
+  <int value="2" label="Bookmark manager promo card"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/profiles/batch_upload/batch_upload_service.h:EntryPoint) -->
+
+<!-- LINT.IfChange(BookmarkAccountStorageMoveDialogType) -->
+
+<enum name="BookmarkAccountStorageMoveDialogType">
+  <int value="0" label="Download or upload version"/>
+  <int value="1" label="Upload only version"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/ui/views/bookmarks/bookmark_account_storage_move_dialog.h:BookmarkAccountStorageMoveDialogType) -->
 
 <!-- LINT.IfChange(BookmarkGUIDSource) -->
 
@@ -97,6 +107,33 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/engine/bookmark_update_preprocessing.cc:BookmarkGUIDSource) -->
+
+<!-- LINT.IfChange(BookmarkSetComparisonOutcome) -->
+
+<enum name="BookmarkSetComparisonOutcome">
+  <int value="0" label="Both datasets empty"/>
+  <int value="1" label="Local data empty (account data non-empty)"/>
+  <int value="2" label="Account data empty (local data non-empty)"/>
+  <int value="3" label="Both datasets equal and non-empty"/>
+  <int value="4"
+      label="Local data non-empty and a strict subset of account data"/>
+  <int value="5"
+      label="Intersection of local and account data [99%, 100%) of the total"/>
+  <int value="6"
+      label="Intersection of local and account data [95%, 99%) of the total"/>
+  <int value="7"
+      label="Intersection of local and account data [90%, 95%) of the total"/>
+  <int value="8"
+      label="Intersection of local and account data [50%, 90%) of the total"/>
+  <int value="9"
+      label="Intersection of local and account data [10%, 50%) of the total"/>
+  <int value="10"
+      label="Intersection of local and account data (0%, 10%) of the total"/>
+  <int value="11"
+      label="Local and account datasets are non-empty but do not intersect"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/sync_bookmarks/bookmark_model_merger_comparison_metrics.h:BookmarkSetComparisonOutcome) -->
 
 <!-- LINT.IfChange(BookmarksGUIDDuplicates) -->
 
@@ -244,7 +281,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="PreviouslySyncingGaiaIdInfoForMetrics">
   <int value="0" label="Unspecified"/>
-  <int value="1" label="Not enough information"/>
+  <int value="1" label="(deprecated) Not enough information"/>
   <int value="2" label="Sync feature never previously turned on"/>
   <int value="3" label="Current Gaia ID matches previous with Sync on"/>
   <int value="4" label="Current Gaia ID differs previous with Sync on"/>
@@ -372,6 +409,8 @@ chromium-metrics-reviews@google.com.
   <int value="81" label="AutofillBnplEnabled"/>
   <int value="82" label="AutofillHasSeenBnpl"/>
   <int value="83" label="AutomaticPasskeyUpgrades"/>
+  <int value="84" label="(test) SyncablePriorityPrefForTesting"/>
+  <int value="85" label="(test) SyncableAlwaysSyncingPriorityPrefForTesting"/>
 <!-- LINT.ThenChange(/components/sync_preferences/common_syncable_prefs_database.cc:CommonSyncablePref)-->
 
 <!-- LINT.IfChange(ChromeSyncablePref) -->
@@ -1147,8 +1186,8 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Metadata consistent"/>
   <int value="1" label="Cache guid mismatch"/>
   <int value="2" label="Data type id mismatch"/>
-  <int value="3" label="Empty persisted authenticated account id"/>
-  <int value="4" label="Authenticated account id mismatch"/>
+  <int value="3" label="Empty persisted authenticated gaia id"/>
+  <int value="4" label="Authenticated gaia id mismatch"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/model/client_tag_based_data_type_processor.cc:SyncMetadataConsistency) -->
@@ -1335,9 +1374,10 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="New Tab Page Infobar"/>
   <int value="4" label="Password Manager Error Message"/>
   <int value="5" label="Account menu"/>
+  <int value="6" label="Password Manager Settings"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/sync/service/sync_service_utils.h:TrustedVaultUserActionTriggerForUMA) -->
+<!-- LINT.ThenChange(/components/sync/service/sync_service_utils.h:TrustedVaultUserActionTrigger) -->
 
 <!-- LINT.IfChange(UserActionableError) -->
 

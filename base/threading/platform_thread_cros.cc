@@ -181,7 +181,6 @@ void SetThreadLatencySensitivity(ProcessId process_id,
   switch (thread_type) {
     case ThreadType::kBackground:
     case ThreadType::kUtility:
-    case ThreadType::kResourceEfficient:
     case ThreadType::kDefault:
       break;
     case ThreadType::kDisplayCritical:

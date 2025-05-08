@@ -20,12 +20,14 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_offset_string_conversions.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/buildflags.h"
 #include "components/omnibox/browser/suggestion_answer.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "components/search_engines/template_url.h"
 #include "components/url_formatter/url_formatter.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -149,13 +151,8 @@ struct AutocompleteMatch {
     ACMatchClassification(size_t offset, int style)
         : offset(offset), style(style) {}
 
-    bool operator==(const ACMatchClassification& other) const {
-      return offset == other.offset && style == other.style;
-    }
-
-    bool operator!=(const ACMatchClassification& other) const {
-      return offset != other.offset || style != other.style;
-    }
+    friend bool operator==(const ACMatchClassification&,
+                           const ACMatchClassification&) = default;
 
     // Offset within the string that this classification starts
     size_t offset;
@@ -1019,6 +1016,9 @@ struct AutocompleteMatch {
 
   // The user feedback on the match.
   FeedbackType feedback_type = FeedbackType::kNone;
+
+  // Stores the matching tab group uuid for this suggestion.
+  std::optional<base::Uuid> matching_tab_group_uuid = std::nullopt;
 
   // So users of AutocompleteMatch can use the same ellipsis that it uses.
   static const char16_t kEllipsis[];

@@ -10,10 +10,12 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -30,6 +32,7 @@ namespace chrome_pdf {
 
 namespace {
 
+constexpr uint32_t kMaxOcrImageDimension = 2048;
 const char kPageHasTextHistogram[] = "PDF.PageHasText";
 const char kSearchifyAddedTextHistogram[] = "PDF.SearchifyAddedText";
 
@@ -148,8 +151,22 @@ class PDFiumOnDemandSearchifierTest : public PDFiumTestBase {
   void StartSearchify(bool empty_results) {
     // `engine_` is owned by this class, safe to use as unretained.
     engine_->StartSearchify(
+        base::BindOnce(
+            &PDFiumOnDemandSearchifierTest::MockGetOcrMaxImageDimension,
+            weak_factory_.GetWeakPtr()),
         base::BindRepeating(&PDFiumOnDemandSearchifierTest::MockPerformOcr,
-                            base::Unretained(this), empty_results));
+                            weak_factory_.GetWeakPtr(), empty_results));
+  }
+
+  void MockGetOcrMaxImageDimension(
+      base::OnceCallback<void(uint32_t)> callback) {
+    // Reply with delay, as done through mojo connection to the OCR service.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &PDFiumOnDemandSearchifierTest::ReplyGetOcrMaxImageDimension,
+            weak_factory_.GetWeakPtr(), std::move(callback)),
+        base::Milliseconds(100));
   }
 
   void MockPerformOcr(bool empty_results,
@@ -166,9 +183,24 @@ class PDFiumOnDemandSearchifierTest : public PDFiumTestBase {
     performed_ocrs_++;
   }
 
+  void WaitUntilMaxImageDimensionReplied() {
+    EXPECT_TRUE(max_image_dimension_replied_.Wait());
+  }
+
+  void WaitUntilPerformedOcrCount(int expected_performed_ocrs) {
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return performed_ocrs() == expected_performed_ocrs; }));
+  }
+
   // Returns all characters in the page.
   std::string GetPageText(PDFiumPage& page) {
     return base::UTF16ToUTF8(PDFiumRange::AllTextOnPage(&page).GetText());
+  }
+
+  void ReplyGetOcrMaxImageDimension(
+      base::OnceCallback<void(uint32_t)> callback) {
+    std::move(callback).Run(kMaxOcrImageDimension);
+    std::move(max_image_dimension_replied_.GetCallback()).Run();
   }
 
   int performed_ocrs() const { return performed_ocrs_; }
@@ -185,6 +217,9 @@ class PDFiumOnDemandSearchifierTest : public PDFiumTestBase {
   std::unique_ptr<PDFiumEngine> engine_;
   SearchifierTestClient client_;
   int performed_ocrs_ = 0;
+  base::test::TestFuture<void> max_image_dimension_replied_;
+
+  base::WeakPtrFactory<PDFiumOnDemandSearchifierTest> weak_factory_{this};
 };
 
 TEST_P(PDFiumOnDemandSearchifierTest, NoImage) {
@@ -356,7 +391,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, MultipleImagesWithUnload) {
 
   ASSERT_EQ(performed_ocrs(), 0);
   StartSearchify(/*empty_results=*/false);
-  ASSERT_EQ(performed_ocrs(), 1);
+  WaitUntilPerformedOcrCount(1);
 
   // Check the partially Searchified state after performing 1 of 2 OCRs. There
   // is no text, considering the OCR result has not arrived yet.
@@ -467,7 +502,8 @@ TEST_P(PDFiumOnDemandSearchifierTest, OnePageWithImagesInPrintPreview) {
   ASSERT_FALSE(engine()->GetSearchifierForTesting());
 }
 
-TEST_P(PDFiumOnDemandSearchifierTest, OcrCancellation) {
+TEST_P(PDFiumOnDemandSearchifierTest,
+       OcrDisconnectionBeforeGettingMaxImageDimension) {
   constexpr int kPageCount = 4;
   CreateEngine(FILE_PATH_LITERAL("multi_page_no_text.pdf"));
 
@@ -477,6 +513,29 @@ TEST_P(PDFiumOnDemandSearchifierTest, OcrCancellation) {
   }
 
   StartSearchify(/*empty_results=*/false);
+  engine()->GetOcrDisconnectHandler().Run();
+
+  base::test::TestFuture<void> future;
+  WaitUntilFailure(engine()->GetSearchifierForTesting(), future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  // Sice OCR service got disconnected before arrival of max image dimension, no
+  // OCR should be performed.
+  ASSERT_EQ(performed_ocrs(), 0);
+}
+
+TEST_P(PDFiumOnDemandSearchifierTest,
+       OcrDisconnectionAfterGettingMaxImageDimension) {
+  constexpr int kPageCount = 4;
+  CreateEngine(FILE_PATH_LITERAL("multi_page_no_text.pdf"));
+
+  // Trigger page load for all.
+  for (int page = 0; page < kPageCount; page++) {
+    ASSERT_TRUE(GetPDFiumPageForTest(*engine(), page).GetPage());
+  }
+
+  StartSearchify(/*empty_results=*/false);
+  WaitUntilMaxImageDimensionReplied();
   engine()->GetOcrDisconnectHandler().Run();
 
   base::test::TestFuture<void> future;

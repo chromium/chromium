@@ -74,6 +74,7 @@ class FallbackNetFetcher : public update_client::NetworkFetcher {
       int net_error,
       const std::string& header_etag,
       const std::string& header_x_cup_server_proof,
+      const std::string& header_cookie,
       int64_t xheader_retry_after_sec);
 
   void DownloadToFileDone(

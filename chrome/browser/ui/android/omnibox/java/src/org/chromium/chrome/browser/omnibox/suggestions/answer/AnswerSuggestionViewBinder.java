@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.omnibox.suggestions.answer;
 import android.view.View;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** A mechanism binding AnswerSuggestion properties to its view. */
+@NullMarked
 public class AnswerSuggestionViewBinder {
     /**
      * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)

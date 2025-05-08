@@ -68,7 +68,7 @@ class TestAppMenuPropertiesDelegate implements AppMenuPropertiesDelegate {
                         PropertyModel subModel = AppMenuUtil.menuItemToPropertyModel(subitem);
                         subList.add(new MVCListAdapter.ListItem(0, subModel));
                     }
-                    propertyModel.set(AppMenuItemProperties.SUBMENU, subList);
+                    propertyModel.set(AppMenuItemProperties.ADDITIONAL_ICONS, subList);
                 }
                 int menutype = AppMenuItemType.STANDARD;
                 if (item.getItemId() == R.id.icon_row_menu_id) {

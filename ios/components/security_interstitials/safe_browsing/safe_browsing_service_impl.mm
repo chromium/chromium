@@ -284,6 +284,10 @@ bool SafeBrowsingServiceImpl::ShouldCreateAsyncChecker(
     return false;
   }
 
+  if (client->ShouldForceSyncRealTimeUrlChecks()) {
+    return false;
+  }
+
   safe_browsing::RealTimeUrlLookupServiceBase* url_lookup_service =
       client->GetRealTimeUrlLookupService();
   bool can_perform_full_url_lookup =

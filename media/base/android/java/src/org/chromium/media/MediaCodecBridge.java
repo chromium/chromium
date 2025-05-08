@@ -25,8 +25,9 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
-import java.util.LinkedList;
+import java.util.ArrayDeque;
 import java.util.Queue;
 
 /** A MediaCodec wrapper for adapting the API and catching exceptions. */
@@ -368,39 +369,75 @@ class MediaCodecBridge {
     // of the MediaCodec. The MediaCodecBridge methods it calls are synchronized
     // to avoid race conditions.
     static class MediaCodecCallback extends MediaCodec.Callback {
-        private MediaCodecBridge mMediaCodecBridge;
+        private final WeakReference<MediaCodecBridge> mMediaCodecBridgeRef;
 
         MediaCodecCallback(MediaCodecBridge bridge) {
-            mMediaCodecBridge = bridge;
+            mMediaCodecBridgeRef = new WeakReference<>(bridge);
         }
 
         @Override
         public void onCryptoError(MediaCodec codec, MediaCodec.CryptoException e) {
+            MediaCodecBridge bridge = mMediaCodecBridgeRef.get();
+            if (bridge == null) {
+                Log.d(TAG, "MediaCodecBridge was garbage collected, ignoring onCryptoError");
+                return;
+            }
+
             Log.e(TAG, "MediaCodec.onCryptoError: %s", e.getMessage());
-            mMediaCodecBridge.onError(convertCryptoException(e));
+            bridge.onError(convertCryptoException(e));
         }
 
         @Override
         public void onError(MediaCodec codec, MediaCodec.CodecException e) {
             // TODO(dalecurtis): We may want to drop transient errors here.
+            MediaCodecBridge bridge = mMediaCodecBridgeRef.get();
+            if (bridge == null) {
+                Log.d(TAG, "MediaCodecBridge was garbage collected, ignoring onError");
+                return;
+            }
+
             Log.e(TAG, "MediaCodec.onError: %s", e.getDiagnosticInfo());
-            mMediaCodecBridge.onError(convertCodecException(e));
+            bridge.onError(convertCodecException(e));
         }
 
         @Override
         public void onInputBufferAvailable(MediaCodec codec, int index) {
-            mMediaCodecBridge.onInputBufferAvailable(index);
+            MediaCodecBridge bridge = mMediaCodecBridgeRef.get();
+            if (bridge == null) {
+                Log.d(
+                        TAG,
+                        "MediaCodecBridge was garbage collected, ignoring onInputBufferAvailable");
+                return;
+            }
+
+            bridge.onInputBufferAvailable(index);
         }
 
         @Override
         public void onOutputBufferAvailable(
                 MediaCodec codec, int index, MediaCodec.BufferInfo info) {
-            mMediaCodecBridge.onOutputBufferAvailable(index, info);
+            MediaCodecBridge bridge = mMediaCodecBridgeRef.get();
+            if (bridge == null) {
+                Log.d(
+                        TAG,
+                        "MediaCodecBridge was garbage collected, ignoring onOutputBufferAvailable");
+                return;
+            }
+
+            bridge.onOutputBufferAvailable(index, info);
         }
 
         @Override
         public void onOutputFormatChanged(MediaCodec codec, MediaFormat format) {
-            mMediaCodecBridge.onOutputFormatChanged(format);
+            MediaCodecBridge bridge = mMediaCodecBridgeRef.get();
+            if (bridge == null) {
+                Log.d(
+                        TAG,
+                        "MediaCodecBridge was garbage collected, ignoring onOutputFormatChanged");
+                return;
+            }
+
+            bridge.onOutputFormatChanged(format);
         }
     }
     ;
@@ -426,9 +463,9 @@ class MediaCodecBridge {
 
     private void enableAsyncApi() {
         mPendingError = false;
-        mPendingFormat = new LinkedList<MediaFormatWrapper>();
-        mPendingInputBuffers = new LinkedList<DequeueInputResult>();
-        mPendingOutputBuffers = new LinkedList<DequeueOutputResult>();
+        mPendingFormat = new ArrayDeque<MediaFormatWrapper>();
+        mPendingInputBuffers = new ArrayDeque<DequeueInputResult>();
+        mPendingOutputBuffers = new ArrayDeque<DequeueOutputResult>();
         mMediaCodec.setCallback(new MediaCodecCallback(this), sCallbackHandler);
     }
 

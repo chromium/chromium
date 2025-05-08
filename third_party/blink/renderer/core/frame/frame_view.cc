@@ -282,10 +282,8 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
     GetFrame().Client()->OnMainFrameIntersectionChanged(projected_rect);
   }
 
-  // We don't throttle display:none iframes unless they are cross-origin and
-  // ThrottleCrossOriginIframes is enabled, because in practice they are
-  // sometimes used to drive UI logic. Zero-area iframes are only throttled if
-  // they are also display:none.
+  // We don't throttle display:none iframes unless they are cross-origin,
+  // because in practice they are sometimes used to drive UI logic.
   bool zero_viewport_intersection = viewport_intersection.IsEmpty();
   bool is_display_none = !owner_layout_object;
   bool has_zero_area = FrameRect().IsEmpty();

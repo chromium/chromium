@@ -21,7 +21,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
-import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
@@ -62,12 +61,13 @@ class TabListEditorMediator
     private final @NonNull ValueChangedCallback<TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
     private final PropertyModel mModel;
-    private final SelectionDelegate<Integer> mSelectionDelegate;
+    private final SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegate;
     private final boolean mActionOnRelatedTabs;
     private final TabModelObserver mTabModelObserver;
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
     private final List<Tab> mVisibleTabs = new ArrayList<>();
+    private final List<String> mVisibleTabGroups = new ArrayList<>();
     private final TabListEditorLayout mTabListEditorLayout;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final @CreationMode int mCreationMode;
@@ -97,7 +97,7 @@ class TabListEditorMediator
             Context context,
             @NonNull ObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             PropertyModel model,
-            SelectionDelegate<Integer> selectionDelegate,
+            SelectionDelegate<TabListEditorItemSelectionId> selectionDelegate,
             boolean actionOnRelatedTabs,
             SnackbarManager snackbarManager,
             BottomSheetController bottomSheetController,
@@ -217,9 +217,9 @@ class TabListEditorMediator
         if (mActionOnRelatedTabs) {
             mModel.set(
                     TabListEditorProperties.RELATED_TAB_COUNT_PROVIDER,
-                    (tabIdList) -> {
+                    (itemIdList) -> {
                         return TabListEditorAction.getTabCountIncludingRelatedTabs(
-                                mCurrentTabGroupModelFilterSupplier.get(), tabIdList);
+                                mCurrentTabGroupModelFilterSupplier.get(), itemIdList);
                     });
         }
         updateColors(mCurrentTabGroupModelFilterSupplier.get().getTabModel().isIncognito());
@@ -227,7 +227,10 @@ class TabListEditorMediator
 
     /** {@link TabListEditorCoordinator.TabListEditorController} implementation. */
     @Override
-    public void show(List<Tab> tabs, @Nullable RecyclerViewPosition recyclerViewPosition) {
+    public void show(
+            List<Tab> tabs,
+            List<String> tabGroupSyncIds,
+            @Nullable RecyclerViewPosition recyclerViewPosition) {
         assert mNavigationProvider != null : "NavigationProvider must be set before calling #show";
         // Reparent the snackbarManager to use the selection editor layout to avoid layering issues.
         mSnackbarOverrideToken =
@@ -240,8 +243,11 @@ class TabListEditorMediator
         mTabListCoordinator.prepareTabGridView();
         mVisibleTabs.clear();
         mVisibleTabs.addAll(tabs);
+        mVisibleTabGroups.clear();
+        mVisibleTabGroups.addAll(tabGroupSyncIds);
 
-        mResetHandler.resetWithListOfTabs(tabs, recyclerViewPosition, /* quickMode= */ false);
+        mResetHandler.resetWithListOfTabs(
+                tabs, tabGroupSyncIds, recyclerViewPosition, /* quickMode= */ false);
 
         mModel.set(TabListEditorProperties.IS_VISIBLE, true);
         mModel.set(
@@ -331,8 +337,12 @@ class TabListEditorMediator
         }
         mTabListCoordinator.cleanupTabGridView();
         mVisibleTabs.clear();
+        mVisibleTabGroups.clear();
         mResetHandler.resetWithListOfTabs(
-                null, /* recyclerViewPosition= */ null, /* quickMode= */ false);
+                /* tabs= */ null,
+                /* tabGroupSyncIds= */ null,
+                /* recyclerViewPosition= */ null,
+                /* quickMode= */ false);
         mModel.set(TabListEditorProperties.IS_VISIBLE, false);
         mResetHandler.postHiding();
         if (mLifecycleObserver != null) mLifecycleObserver.didHide();
@@ -373,26 +383,29 @@ class TabListEditorMediator
 
     @Override
     public void selectAll() {
-        Set<@TabId Integer> selectedTabIds = mSelectionDelegate.getSelectedItems();
+        Set<TabListEditorItemSelectionId> selectedItemIds = mSelectionDelegate.getSelectedItems();
         for (Tab tab : mVisibleTabs) {
-            selectedTabIds.add(tab.getId());
+            selectedItemIds.add(TabListEditorItemSelectionId.createTabId(tab.getId()));
         }
-        selectTabs(selectedTabIds);
+        selectTabs(selectedItemIds);
     }
 
     @Override
     public void deselectAll() {
-        Set<Integer> selectedTabIds = mSelectionDelegate.getSelectedItems();
-        selectedTabIds.clear();
-        mSelectionDelegate.setSelectedItems(selectedTabIds);
+        Set<TabListEditorItemSelectionId> selectedItemIds = mSelectionDelegate.getSelectedItems();
+        selectedItemIds.clear();
+        mSelectionDelegate.setSelectedItems(selectedItemIds);
         mResetHandler.resetWithListOfTabs(
-                mVisibleTabs, /* recyclerViewPosition= */ null, /* quickMode= */ true);
+                mVisibleTabs,
+                mVisibleTabGroups.isEmpty() ? null : mVisibleTabGroups,
+                /* recyclerViewPosition= */ null,
+                /* quickMode= */ true);
     }
 
     @Override
     public boolean areAllTabsSelected() {
-        Set<Integer> selectedTabIds = mSelectionDelegate.getSelectedItems();
-        return selectedTabIds.size() == mVisibleTabs.size();
+        Set<TabListEditorItemSelectionId> selectedItemIds = mSelectionDelegate.getSelectedItems();
+        return selectedItemIds.size() == mVisibleTabs.size();
     }
 
     @Override
@@ -412,12 +425,15 @@ class TabListEditorMediator
     }
 
     @Override
-    public void selectTabs(Set<@TabId Integer> tabIds) {
+    public void selectTabs(Set<TabListEditorItemSelectionId> itemIds) {
         // Protects selection delegate from immutable sets.
-        Set<@TabId Integer> tabIdsModifiable = new HashSet<>(tabIds);
-        mSelectionDelegate.setSelectedItems(tabIdsModifiable);
+        Set<TabListEditorItemSelectionId> itemIdsModifiable = new HashSet<>(itemIds);
+        mSelectionDelegate.setSelectedItems(itemIdsModifiable);
         mResetHandler.resetWithListOfTabs(
-                mVisibleTabs, /* recyclerViewPosition= */ null, /* quickMode= */ true);
+                mVisibleTabs,
+                mVisibleTabGroups.isEmpty() ? null : mVisibleTabGroups,
+                /* recyclerViewPosition= */ null,
+                /* quickMode= */ true);
     }
 
     /** Destroy any members that needs clean up. */

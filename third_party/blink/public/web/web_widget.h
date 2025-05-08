@@ -78,9 +78,7 @@ class WebWidget {
   virtual void SetCompositorVisible(bool visible) = 0;
 
   // Asks the compositor to request warming up and request a new frame sink
-  // speculatively. This is an experimental function and only used if
-  // `kWarmUpCompositor` is enabled. Please see crbug.com/41496019
-  // for more details.
+  // speculatively even if invisible.
   virtual void WarmUpCompositor() = 0;
 
   // Returns the current size of the WebWidget.

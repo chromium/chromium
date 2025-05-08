@@ -148,6 +148,11 @@ const std::u16string& TestWebContents::GetTitle() {
   return WebContentsImpl::GetTitle();
 }
 
+int TestWebContents::GetCurrentlyPlayingVideoCount() const {
+  return playing_video_count_.value_or(
+      WebContentsImpl::GetCurrentlyPlayingVideoCount());
+}
+
 void TestWebContents::SetTabSwitchStartTime(base::TimeTicks start_time,
                                             bool destination_is_loaded) {
   tab_switch_start_time_ = start_time;
@@ -616,6 +621,10 @@ void TestWebContents::SetMediaCaptureRawDeviceIdsOpened(
     blink::mojom::MediaStreamType type,
     std::vector<std::string> ids) {
   media_capture_raw_device_ids_opened_[type] = std::move(ids);
+}
+
+void TestWebContents::SetCurrentlyPlayingVideoCount(int count) {
+  playing_video_count_ = count;
 }
 
 void TestWebContents::OnIgnoredUIEvent() {

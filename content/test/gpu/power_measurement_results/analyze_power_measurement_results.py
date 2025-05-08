@@ -61,7 +61,7 @@ def LoadResultsJsonFiles():
   jsons = []
   for json_filename in _RESULTS_JSON_FILES:
     json_path = os.path.join(_RESULTS_PATH, json_filename)
-    with open(json_path, 'r') as json_file:
+    with open(json_path, 'r', encoding='utf-8') as json_file:
       logging.debug('Loading %s', json_path)
       jsons.append(json.load(json_file))
   return jsons

@@ -2979,35 +2979,34 @@ class BannedTypeCheckTest(unittest.TestCase):
         ]
 
         errors = PRESUBMIT.CheckNoBannedFunctions(input_api, MockOutputApi())
-        self.assertEqual(2, len(errors))
+        self.assertEqual(12, len(errors))
         self.assertTrue(
             'some/java/problematic/diskread.java' in errors[0].message)
         self.assertTrue(
-            'some/java/problematic/diskwrite.java' in errors[0].message)
-        self.assertFalse('some/java/ok/diskwrite.java' in errors[0].message)
-        self.assertFalse('some/java/ok/diskwrite.java' in errors[1].message)
+            'some/java/problematic/diskwrite.java' in errors[1].message)
+        self.assertTrue(all('some/java/ok/diskwrite.java' not in e.message for e in errors))
         self.assertTrue(
-            'some/java/problematic/waitidleforsync.java' in errors[0].message)
+            'some/java/problematic/waitidleforsync.java' in errors[2].message)
         self.assertTrue(
-            'some/java/problematic/registerreceiver.java' in errors[1].message)
+            'some/java/problematic/registerreceiver.java' in errors[3].message)
         self.assertTrue(
-            'some/java/problematic/property.java' in errors[0].message)
+            'some/java/problematic/property.java' in errors[4].message)
         self.assertTrue(
-            'some/java/problematic/requestlayout.java' in errors[0].message)
+            'some/java/problematic/requestlayout.java' in errors[5].message)
         self.assertTrue(
-            'some/java/problematic/lastprofile.java' in errors[0].message)
+            'some/java/problematic/lastprofile.java' in errors[6].message)
         self.assertTrue(
-            'some/java/problematic/getdrawable1.java' in errors[0].message)
+            'some/java/problematic/getdrawable1.java' in errors[7].message)
         self.assertTrue(
-            'some/java/problematic/getdrawable2.java' in errors[0].message)
+            'some/java/problematic/getdrawable2.java' in errors[8].message)
         self.assertTrue('some/java/problematic/announceForAccessibility.java'
-                        in errors[0].message)
+                        in errors[9].message)
         self.assertTrue(
             'some/java/problematic/accessibilityTypeAnnouncement.java' in
-            errors[0].message)
+            errors[10].message)
         self.assertTrue(
             'content/java/problematic/desktopandroid.java' in
-            errors[0].message)
+            errors[11].message)
 
 
     def testBannedCppFunctions(self):
@@ -3030,34 +3029,55 @@ class BannedTypeCheckTest(unittest.TestCase):
             MockFile('some/cpp/problematic/file4.cc', [
                 'Browser* browser = chrome::FindBrowserWithTab(web_contents)'
             ]),
-            MockFile('allowed_ranges_usage.cc', ['std::ranges::begin(vec)']),
-            MockFile('banned_ranges_usage.cc',
-                     ['std::ranges::subrange(first, last)']),
+            MockFile(
+                'allowed_ranges_usage.cc',
+                [
+                    'std::ranges::begin(vec);',
+                    # std::ranges::view is a concept and allowed, but the views
+                    # library itself is not (see below)
+                    'static_assert(std::ranges::view<SomeType>);'
+                ]),
+            MockFile(
+                'banned_ranges_usage.cc',
+                [
+                    'std::ranges::subrange(first, last);',
+                    # Edge case: make sure std::ranges::views is disallowed,
+                    # even though std::ranges::view is allowed.
+                    'std::ranges::views::take(first, count);'
+                ]),
             MockFile('views_usage.cc', ['std::views::all(vec)']),
-            MockFile('content/desktop_android.cc',
-                     ['#if BUILDFLAG(IS_DESKTOP_ANDROID)']),
+            MockFile('content/desktop_android.cc', [
+                '// some first line',
+                '#if BUILDFLAG(IS_DESKTOP_ANDROID)',
+                '// some third line',
+            ]),
         ]
 
         results = PRESUBMIT.CheckNoBannedFunctions(input_api, MockOutputApi())
 
-        # warnings are results[0], errors are results[1]
-        self.assertEqual(2, len(results))
-        self.assertTrue('some/cpp/problematic/file.cc' in results[1].message)
+        # Each entry in results corresponds to a BanRule with a violation, in
+        # the order they were encountered.
+        self.assertEqual(9, len(results))
+        self.assertTrue('some/cpp/problematic/file.cc' in results[0].message)
         self.assertTrue(
-            'third_party/blink/problematic/file.cc' in results[0].message)
-        self.assertTrue('some/cpp/ok/file.cc' not in results[1].message)
-        self.assertTrue('some/cpp/problematic/file2.cc' in results[0].message)
-        self.assertTrue('some/cpp/problematic/file3.cc' in results[0].message)
-        self.assertTrue('some/cpp/problematic/file4.cc' in results[0].message)
-        self.assertFalse('some/cpp/nocheck/file.cc' in results[0].message)
-        self.assertFalse('some/cpp/nocheck/file.cc' in results[1].message)
-        self.assertFalse('some/cpp/comment/file.cc' in results[0].message)
-        self.assertFalse('some/cpp/comment/file.cc' in results[1].message)
-        self.assertFalse('allowed_ranges_usage.cc' in results[0].message)
-        self.assertFalse('allowed_ranges_usage.cc' in results[1].message)
-        self.assertTrue('banned_ranges_usage.cc' in results[1].message)
-        self.assertTrue('views_usage.cc' in results[1].message)
-        self.assertTrue('content/desktop_android.cc' in results[0].message)
+            'third_party/blink/problematic/file.cc' in results[1].message)
+        self.assertTrue(all('some/cpp/ok/file.cc' not in r.message for r in results))
+        self.assertTrue('some/cpp/problematic/file2.cc' in results[2].message)
+        self.assertTrue('some/cpp/problematic/file3.cc' in results[3].message)
+        self.assertTrue('some/cpp/problematic/file4.cc' in results[4].message)
+        self.assertTrue(all('some/cpp/nocheck/file.cc' not in r.message for r in results))
+        self.assertTrue(all('some/cpp/comment/file.cc' not in r.message for r in results))
+        self.assertTrue(all('allowed_ranges_usage.cc' not in r.message for r in results))
+        self.assertTrue('banned_ranges_usage.cc' in results[5].message)
+        self.assertTrue('banned_ranges_usage.cc' in results[6].message)
+        self.assertTrue('views_usage.cc' in results[7].message)
+        self.assertTrue('content/desktop_android.cc' in results[8].message)
+
+        # Check ResultLocation data. Line nums start at 1.
+        self.assertEqual(results[8].locations[0].file_path,
+                         'content/desktop_android.cc')
+        self.assertEqual(results[8].locations[0].start_line, 2)
+        self.assertEqual(results[8].locations[0].end_line, 2)
 
     def testBannedCppRandomFunctions(self):
         banned_rngs = [
@@ -3092,15 +3112,14 @@ class BannedTypeCheckTest(unittest.TestCase):
             ]
             results = PRESUBMIT.CheckNoBannedFunctions(input_api,
                                                        MockOutputApi())
-            self.assertEqual(1, len(results), banned_rng)
+            self.assertEqual(2, len(results), banned_rng)
             self.assertTrue(
                 'some/cpp/problematic/file.cc' in results[0].message,
                 banned_rng)
             self.assertTrue(
-                'third_party/blink/problematic/file.cc' in results[0].message,
+                'third_party/blink/problematic/file.cc' in results[1].message,
                 banned_rng)
-            self.assertFalse('third_party/ok/file.cc' in results[0].message,
-                             banned_rng)
+            self.assertTrue(all('third_party/ok/file.cc' not in r.message for r in results))
 
     def testBannedIosObjcFunctions(self):
         input_api = MockInputApi()
@@ -3120,12 +3139,12 @@ class BannedTypeCheckTest(unittest.TestCase):
         ]
 
         errors = PRESUBMIT.CheckNoBannedFunctions(input_api, MockOutputApi())
-        self.assertEqual(1, len(errors))
+        self.assertEqual(3, len(errors))
         self.assertTrue('some/ios/file.mm' in errors[0].message)
-        self.assertTrue('another/ios_file.mm' in errors[0].message)
-        self.assertTrue('some/mac/file.mm' not in errors[0].message)
-        self.assertTrue('some/ios/file_egtest.mm' in errors[0].message)
-        self.assertTrue('some/ios/file_unittest.mm' not in errors[0].message)
+        self.assertTrue('another/ios_file.mm' in errors[1].message)
+        self.assertTrue(all('some/mac/file.mm' not in e.message for e in errors))
+        self.assertTrue('some/ios/file_egtest.mm' in errors[2].message)
+        self.assertTrue(all('some/ios/file_unittest.mm' not in e.message for e in errors))
 
     def testBannedMojoFunctions(self):
         input_api = MockInputApi()
@@ -3137,7 +3156,8 @@ class BannedTypeCheckTest(unittest.TestCase):
 
         results = PRESUBMIT.CheckNoBannedFunctions(input_api, MockOutputApi())
 
-        # warnings are results[0], errors are results[1]
+        # Each entry in results corresponds to a BanRule with a violation, in
+        # the order they were encountered.
         self.assertEqual(1, len(results))
         self.assertTrue('some/cpp/problematic/file2.cc' in results[0].message)
         self.assertTrue(
@@ -3161,7 +3181,8 @@ class BannedTypeCheckTest(unittest.TestCase):
 
         results = PRESUBMIT.CheckNoBannedFunctions(input_api, MockOutputApi())
 
-        # warnings are results[0], errors are results[1]
+        # Each entry in results corresponds to a BanRule with a violation, in
+        # the order they were encountered.
         self.assertEqual(1, len(results))
         self.assertTrue('bad.mojom' in results[0].message)
         self.assertTrue('good.mojom' not in results[0].message)
@@ -3184,23 +3205,23 @@ class BannedTypeCheckTest(unittest.TestCase):
                      ['string extension_id']),
         ]
 
-        # warnings are results[0], errors are results[1]
+        # Each entry in results corresponds to a BanRule with a violation, in
+        # the order they were encountered.
         results = PRESUBMIT.CheckNoBannedFunctions(input_api, MockOutputApi())
 
-        # Only warnings and no errors.
-        self.assertEqual(1, len(results))
+        self.assertEqual(3, len(results))
 
         # Pattern test assertions.
         self.assertTrue('bad.mojom' in results[0].message)
-        self.assertTrue('bad_struct.mojom' in results[0].message)
-        self.assertTrue('good.mojom' not in results[0].message)
-        self.assertTrue('good_struct.mojom' not in results[0].message)
+        self.assertTrue('bad_struct.mojom' in results[1].message)
+        self.assertTrue(all('good.mojom' not in r.message for r in results))
+        self.assertTrue(all('good_struct.mojom' not in r.message for r in results))
 
         # Path exclusion assertions.
         self.assertTrue('some/included/extensions/path/bad_extension_id.mojom'
-                        in results[0].message)
-        self.assertTrue('some/excluded/path/bad_extension_id.mojom' not in
-                        results[0].message)
+                        in results[2].message)
+        self.assertTrue(all('some/excluded/path/bad_extension_id.mojom' not in r.message for r in results))
+
 
 class NoProductionCodeUsingTestOnlyFunctionsTest(unittest.TestCase):
 
@@ -5251,6 +5272,15 @@ class CheckAndroidNullAwayAnnotatedClasses(unittest.TestCase):
         self.assertEqual(1, len(results[0].items))
         self.assertIn('OneMissing.java', results[0].items[0])
 
+    def testOnlyChecksAddedFiles(self):
+        """Tests that missing @NullMarked or @NullUnmarked is only flagged in newly added files."""
+        mock_input = MockInputApi()
+        mock_input.files = [
+            MockFile('path/OneMissing.java', ['public class OneMissing'], action='M'),
+        ]
+        results = PRESUBMIT._CheckAndroidNullAwayAnnotatedClasses(mock_input, MockOutputApi())
+        self.assertEqual(0, len(results))
+
     def testExcludesTests(self):
         """Tests that missing @NullMarked or @NullUnmarked are not flagged in tests."""
         mock_input = MockInputApi()
@@ -5732,20 +5762,19 @@ class CheckDeprecatedSyncConsentFunctionsTest(unittest.TestCase):
 
         results = PRESUBMIT.CheckNoBannedFunctions(input_api, MockOutputApi())
 
-        self.assertEqual(1, len(results))
-        self.assertFalse(
-            'chrome/browser/android/file.cc' in results[0].message),
+        self.assertEqual(7, len(results))
+        self.assertTrue(all('chrome/browser/android/file.cc' not in r.message for r in results))
         self.assertTrue('chrome/android/file.cc' in results[0].message),
-        self.assertTrue('ios/file.mm' in results[0].message),
-        self.assertTrue('components/foo/ios/file.cc' in results[0].message),
+        self.assertTrue('ios/file.mm' in results[1].message),
+        self.assertTrue('components/foo/ios/file.cc' in results[2].message),
         self.assertTrue(
-            'components/foo/delegate_android.cc' in results[0].message),
+            'components/foo/delegate_android.cc' in results[3].message),
         self.assertTrue(
-            'components/foo/delegate_ios.cc' in results[0].message),
+            'components/foo/delegate_ios.cc' in results[4].message),
         self.assertTrue(
-            'components/foo/android_delegate.cc' in results[0].message),
+            'components/foo/android_delegate.cc' in results[5].message),
         self.assertTrue(
-            'components/foo/ios_delegate.cc' in results[0].message),
+            'components/foo/ios_delegate.cc' in results[6].message),
 
     def testCppNonMobilePlatformPath(self):
         input_api = MockInputApi()
@@ -5771,12 +5800,12 @@ class CheckDeprecatedSyncConsentFunctionsTest(unittest.TestCase):
 
         results = PRESUBMIT.CheckNoBannedFunctions(input_api, MockOutputApi())
 
-        self.assertEqual(1, len(results))
-        self.assertFalse('components/foo/file1.java' in results[0].message),
+        self.assertEqual(4, len(results))
+        self.assertTrue(all('components/foo/file1.java' not in r.message for r in results))
         self.assertTrue('components/foo/file2.java' in results[0].message),
-        self.assertTrue('chrome/foo/file3.java' in results[0].message),
-        self.assertTrue('chrome/foo/file4.java' in results[0].message),
-        self.assertTrue('chrome/foo/file5.java' in results[0].message),
+        self.assertTrue('chrome/foo/file3.java' in results[1].message),
+        self.assertTrue('chrome/foo/file4.java' in results[2].message),
+        self.assertTrue('chrome/foo/file5.java' in results[3].message),
 
 
 class CheckAnonymousNamespaceTest(unittest.TestCase):

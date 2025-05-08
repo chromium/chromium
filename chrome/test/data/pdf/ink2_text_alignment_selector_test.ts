@@ -21,7 +21,7 @@ chrome.test.runTests([
         alignmentSelector.shadowRoot.querySelectorAll('selectable-icon-button');
     chrome.test.assertEq(4, buttons.length);
     chrome.test.assertEq(
-        TextAlignment.LEFT, manager.getCurrentText().alignment);
+        TextAlignment.LEFT, manager.getCurrentTextAttributes().alignment);
     chrome.test.assertTrue(buttons[0]!.checked);
 
     // Test the radio button goes from not selected to selected when it is
@@ -32,7 +32,7 @@ chrome.test.runTests([
       chrome.test.assertFalse(button.checked);
       chrome.test.assertEq(icon, button.icon);
 
-      const whenChanged = eventToPromise('text-changed', manager);
+      const whenChanged = eventToPromise('attributes-changed', manager);
       button.click();
       const changedEvent = await whenChanged;
       chrome.test.assertEq(alignment, changedEvent.detail.alignment);

@@ -65,6 +65,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/policy/test_support",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/lifetime:termination_notification",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",

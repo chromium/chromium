@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.gesturenav.GestureNavigationUtils;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -336,13 +337,9 @@ public class StaticLayout extends Layout {
     }
 
     private void requestFocus(Tab tab) {
-        // TODO(crbug.com/40249125): Investigating guarded removal of this behavior (requesting
-        // focus on a tab) since it may no longer be relevant.
         // We will restrict avoidance of tab focus request only on tablet devices, since this is
-        // known to cause regressions on phones - see crbug.com/1471887 for details.
-        if (ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AVOID_SELECTED_TAB_FOCUS_ON_LAYOUT_DONE_SHOWING)
-                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
+        // known to cause regressions on phones - see https://crbug.com/40069240 for details.
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
             return;
         }
 
@@ -420,8 +417,7 @@ public class StaticLayout extends Layout {
                 tab.isNativePage() || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
         final boolean isBFScreenshotDrawing =
                 isNativePage && tab.isDisplayingBackForwardAnimation();
-        assert !isBFScreenshotDrawing
-                        || ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)
+        assert !isBFScreenshotDrawing || GestureNavigationUtils.areBackForwardTransitionsEnabled()
                 : "Must not draw bf screenshot if back forward transition is disabled";
         return !SadTab.isShowing(tab) && (!isNativePage || isBFScreenshotDrawing);
     }

@@ -1295,6 +1295,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, LargeValueReadBlobMissing) {
   content::FetchHistogramsFromChildProcesses();
   const int kExpectedBucketCount = 1;
   const int kFailureTypeBackendReadError = 3;  // From file_reader_loader.h.
+  const int kFileErrorOK = 0;                  // From file_error.h.
   const int kFileErrorCodeNotFoundErr = 1;     // From file_error.h.
   histogram_tester.ExpectUniqueSample(
       "Storage.Blob.FileReaderLoader.ReadError2", -net::ERR_FILE_NOT_FOUND,
@@ -1302,9 +1303,10 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, LargeValueReadBlobMissing) {
   histogram_tester.ExpectUniqueSample(
       "Storage.Blob.FileReaderLoader.FailureType2",
       kFailureTypeBackendReadError, kExpectedBucketCount);
-  histogram_tester.ExpectUniqueSample("IndexedDB.LargeValueReadError",
-                                      kFileErrorCodeNotFoundErr,
-                                      kExpectedBucketCount);
+  histogram_tester.GetAllSamples("IndexedDB.LargeValueReadResult"),
+      testing::ElementsAre(
+          base::Bucket(kFileErrorOK, kExpectedBucketCount),
+          base::Bucket(kFileErrorCodeNotFoundErr, kExpectedBucketCount));
   histogram_tester.ExpectTotalCount("IndexedDB.WrappedBlobLoadTime", 1);
 }
 

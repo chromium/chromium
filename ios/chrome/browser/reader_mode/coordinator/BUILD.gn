@@ -1,0 +1,41 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "reader_mode_coordinator.h",
+    "reader_mode_coordinator.mm",
+    "reader_mode_mediator.h",
+    "reader_mode_mediator.mm",
+  ]
+  deps = [
+    ":options",
+    "//ios/chrome/browser/reader_mode/model",
+    "//ios/chrome/browser/reader_mode/ui",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/tabs/model",
+    "//ios/web/public",
+  ]
+}
+
+source_set("options") {
+  visibility = [ ":coordinator" ]
+  sources = [
+    "reader_mode_options_coordinator.h",
+    "reader_mode_options_coordinator.mm",
+    "reader_mode_options_mediator.h",
+    "reader_mode_options_mediator.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/reader_mode/ui:options",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
+  ]
+}

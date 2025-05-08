@@ -738,8 +738,7 @@ void CompositorImpl::OnAdaptiveRefreshRateInfoChanged() {
         root_window_->adaptive_refresh_rate_info();
     display_private_->SetAdaptiveRefreshRateInfo(
         arr_info.supports_adaptive_refresh_rate,
-        arr_info.suggested_frame_rate_normal,
-        arr_info.suggested_frame_rate_high, arr_info.supported_frame_rates,
+        arr_info.suggested_frame_rate_high,
         display::Screen::GetScreen()
             ->GetDisplayNearestWindow(root_window_)
             .device_scale_factor());

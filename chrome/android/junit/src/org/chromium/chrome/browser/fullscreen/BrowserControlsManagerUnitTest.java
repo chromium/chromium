@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsOffsetHelper;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -91,6 +92,7 @@ public class BrowserControlsManagerUnitTest {
     @Mock private ContentView mContentView;
     @Mock private TabModel mTabModel;
     @Mock private TabBrowserControlsOffsetHelper mTabBrowserControlsOffsetHelper;
+    @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
 
     private @Captor ArgumentCaptor<Callback<Tab>> mCallbackTabCaptor;
     private @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
@@ -129,7 +131,9 @@ public class BrowserControlsManagerUnitTest {
 
         BrowserControlsManager browserControlsManager =
                 new BrowserControlsManager(
-                        mActivity, BrowserControlsStateProvider.ControlsPosition.TOP);
+                        mActivity,
+                        BrowserControlsStateProvider.ControlsPosition.TOP,
+                        mMultiWindowModeStateDispatcher);
         mBrowserControlsManager = spy(browserControlsManager);
         mBrowserControlsManager.initialize(
                 mControlContainer,
@@ -145,7 +149,9 @@ public class BrowserControlsManagerUnitTest {
         mBrowserControlsManager.destroy();
         mBrowserControlsManager =
                 new BrowserControlsManager(
-                        mActivity, BrowserControlsStateProvider.ControlsPosition.TOP);
+                        mActivity,
+                        BrowserControlsStateProvider.ControlsPosition.TOP,
+                        mMultiWindowModeStateDispatcher);
         mBrowserControlsManager.initialize(
                 mControlContainer,
                 mActivityTabProvider,
@@ -429,7 +435,9 @@ public class BrowserControlsManagerUnitTest {
     public void testGetAndroidControlsVisibility() {
         BrowserControlsManager browserControlsManager =
                 new BrowserControlsManager(
-                        mActivity, BrowserControlsStateProvider.ControlsPosition.TOP);
+                        mActivity,
+                        BrowserControlsStateProvider.ControlsPosition.TOP,
+                        mMultiWindowModeStateDispatcher);
         assertEquals(View.INVISIBLE, browserControlsManager.getAndroidControlsVisibility());
 
         browserControlsManager.initialize(
@@ -608,7 +616,9 @@ public class BrowserControlsManagerUnitTest {
     public void testStartWithBottom() {
         BrowserControlsManager browserControlsManager =
                 new BrowserControlsManager(
-                        mActivity, BrowserControlsStateProvider.ControlsPosition.BOTTOM);
+                        mActivity,
+                        BrowserControlsStateProvider.ControlsPosition.BOTTOM,
+                        mMultiWindowModeStateDispatcher);
         browserControlsManager.initialize(
                 mControlContainer,
                 mActivityTabProvider,

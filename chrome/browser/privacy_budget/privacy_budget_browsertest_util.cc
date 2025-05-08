@@ -107,7 +107,7 @@ bool PrivacyBudgetBrowserTestBaseWithUkmRecording::EnableUkmRecording() {
 
   // UpdateUploadPermissions causes the MetricsServicesManager to look at the
   // consent signals and re-evaluate whether reporting should be enabled.
-  g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(true);
+  g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions();
 
   // The following sequence synchronously completes UkmService initialization
   // (if it wasn't initialized yet) and flushes any accumulated metrics.
@@ -125,7 +125,7 @@ bool PrivacyBudgetBrowserTestBaseWithUkmRecording::DisableUkmRecording() {
       << "DisableUkmRecording() should only be called after "
          "EnableUkmRecording()";
   is_metrics_reporting_enabled_ = false;
-  g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(true);
+  g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions();
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
   return !ukm::UkmTestHelper(ukm_service()).IsRecordingEnabled();
 }

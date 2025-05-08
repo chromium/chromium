@@ -78,6 +78,12 @@ PathBuilder SVGLineElement::AsMutablePath() const {
   return builder;
 }
 
+bool SVGLineElement::PathDependsOnViewport() const {
+  return x1_->CurrentValue()->IsRelative() ||
+         y1_->CurrentValue()->IsRelative() ||
+         x2_->CurrentValue()->IsRelative() || y2_->CurrentValue()->IsRelative();
+}
+
 void SVGLineElement::SvgAttributeChanged(
     const SvgAttributeChangedParams& params) {
   const QualifiedName& attr_name = params.name;
@@ -88,12 +94,6 @@ void SVGLineElement::SvgAttributeChanged(
   }
 
   SVGGeometryElement::SvgAttributeChanged(params);
-}
-
-bool SVGLineElement::SelfHasRelativeLengths() const {
-  return x1_->CurrentValue()->IsRelative() ||
-         y1_->CurrentValue()->IsRelative() ||
-         x2_->CurrentValue()->IsRelative() || y2_->CurrentValue()->IsRelative();
 }
 
 SVGAnimatedPropertyBase* SVGLineElement::PropertyFromAttribute(

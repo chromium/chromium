@@ -29,11 +29,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_RUN_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_RUN_H_
 
@@ -94,6 +89,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
   }
 
   unsigned NumGlyphs() const { return glyph_data_.size(); }
+  bool HasLigatures() const { return NumGlyphs() < num_characters_; }
   hb_direction_t HbDirection() const {
     return static_cast<hb_direction_t>(hb_direction_);
   }
@@ -179,15 +175,17 @@ struct PLATFORM_EXPORT ShapeResultRun final
     const int index_adjust = other.start_index_ - start_index_;
     if (IsRtl()) [[unlikely]] {
       run->glyph_data_.CopyFrom(other.glyph_data_, glyph_data_);
-      auto* const end = run->glyph_data_.begin() + other.glyph_data_.size();
-      for (auto* it = run->glyph_data_.begin(); it < end; ++it) {
+      auto* const end =
+          UNSAFE_TODO(run->glyph_data_.begin() + other.glyph_data_.size());
+      for (auto* it = run->glyph_data_.begin(); it < end; UNSAFE_TODO(++it)) {
         it->character_index += index_adjust;
       }
     } else {
       run->glyph_data_.CopyFrom(glyph_data_, other.glyph_data_);
       auto* const end = run->glyph_data_.end();
-      for (auto* it = run->glyph_data_.begin() + glyph_data_.size(); it < end;
-           ++it) {
+      for (auto* it =
+               UNSAFE_TODO(run->glyph_data_.begin() + glyph_data_.size());
+           it < end; UNSAFE_TODO(++it)) {
         it->character_index += index_adjust;
       }
     }
@@ -301,7 +299,8 @@ struct PLATFORM_EXPORT ShapeResultRun final
       DCHECK(!other2.IsEmpty());
       static_assert(std::is_trivially_copyable_v<HarfBuzzRunGlyphData>);
       std::ranges::copy(other1.data_, data_.data());
-      std::ranges::copy(other2.data_, data_.data() + other1.size());
+      std::ranges::copy(other2.data_,
+                        UNSAFE_TODO(data_.data() + other1.size()));
       offsets_.CopyFrom(other1.offsets_, other1.size(), other2.offsets_,
                         other2.size());
     }
@@ -330,9 +329,9 @@ struct PLATFORM_EXPORT ShapeResultRun final
     using iterator = HarfBuzzRunGlyphData*;
     using const_iterator = const HarfBuzzRunGlyphData*;
     iterator begin() { return data_.data(); }
-    iterator end() { return data_.data() + size(); }
+    iterator end() { return UNSAFE_TODO(data_.data() + size()); }
     const_iterator begin() const { return data_.data(); }
-    const_iterator end() const { return data_.data() + size(); }
+    const_iterator end() const { return UNSAFE_TODO(data_.data() + size()); }
 
     using reverse_iterator = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;

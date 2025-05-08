@@ -42,6 +42,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/mock_navigation_throttle_registry.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
@@ -375,33 +376,35 @@ class ThrottleManagerTest
     }
 
     // Inject the proper throttles.
-    std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
+    content::MockNavigationThrottleRegistry registry(
+        navigation_handle,
+        content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
     PageActivationNotificationTiming state =
         ::testing::UnitTest::GetInstance()->current_test_info()->value_param()
             ? GetParam().notification_timing
             : WILL_PROCESS_RESPONSE;
-    throttles.push_back(
+    registry.AddThrottle(
         std::make_unique<MockPageActivationThrottle>(navigation_handle, state));
 
     auto* navigation_throttle_manager =
         ThrottleManager::FromNavigationHandle(*navigation_handle);
     if (navigation_throttle_manager) {
-      navigation_throttle_manager->MaybeAppendNavigationThrottles(
-          navigation_handle, &throttles);
+      navigation_throttle_manager->MaybeAppendNavigationThrottles(registry);
     }
 
     created_fp_throttle_for_last_navigation_ = false;
-    for (size_t i = 0; i < throttles.size(); i++) {
-      if (strcmp(throttles[i]->GetNameForLogging(),
+    for (size_t i = 0; i < registry.throttles().size(); i++) {
+      if (strcmp(registry.throttles()[i]->GetNameForLogging(),
                  kPageActivationThrottleNameForLogging) == 0) {
         created_fp_throttle_for_last_navigation_ = true;
         // Delete the prod activation throttle so it doesn't interfere with
         // tests.
-        throttles.erase(throttles.begin() + i);
+        registry.throttles().erase(registry.throttles().begin() + i);
         i--;
         continue;
       }
-      navigation_handle->RegisterThrottleForTesting(std::move(throttles[i]));
+      navigation_handle->RegisterThrottleForTesting(
+          std::move(registry.throttles()[i]));
     }
   }
 

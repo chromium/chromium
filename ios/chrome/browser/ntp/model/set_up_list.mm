@@ -57,20 +57,9 @@ bool GetIsItemComplete(SetUpListItemType type,
       }
       id<SystemIdentity> identity =
           auth_service->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-      if (IsIOSTipsNotificationsEnabled()) {
-        return push_notification_settings::
-            IsMobileNotificationsEnabledForAnyClient(GaiaId(identity.gaiaID),
-                                                     prefs);
-      } else {
-        return push_notification_settings::
-                   GetMobileNotificationPermissionStatusForClient(
-                       PushNotificationClientId::kContent,
-                       GaiaId(identity.gaiaID)) ||
-               push_notification_settings::
-                   GetMobileNotificationPermissionStatusForClient(
-                       PushNotificationClientId::kSports,
-                       GaiaId(identity.gaiaID));
-      }
+      return push_notification_settings::
+          IsMobileNotificationsEnabledForAnyClient(GaiaId(identity.gaiaID),
+                                                   prefs);
     }
     case SetUpListItemType::kDocking:
       return false;
@@ -154,11 +143,7 @@ std::vector<SetUpListItemType> GetSetUpListItemTypeOrder(
     case set_up_list::FirstRunVariationType::kDisabled: {
       items.push_back(SetUpListItemType::kDefaultBrowser);
       items.push_back(SetUpListItemType::kAutofill);
-
-      // Add notification item if any of the feature is enabled.
-      if (IsIOSTipsNotificationsEnabled() || is_content_notification_enabled) {
-        items.push_back(SetUpListItemType::kNotifications);
-      }
+      items.push_back(SetUpListItemType::kNotifications);
 
       if (IsSigninEnabled(auth_service) &&
           !sync_service->HasDisableReason(
@@ -213,8 +198,6 @@ std::vector<SetUpListItemType> GetSetUpListItemTypeOrder(
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
   PrefChangeRegistrar _prefChangeRegistrar;
-  // YES if the Notification item should be included in `allItems`.
-  BOOL _shouldIncludeNotificationItem;
 }
 
 + (instancetype)buildFromPrefs:(PrefService*)prefs
@@ -274,8 +257,6 @@ std::vector<SetUpListItemType> GetSetUpListItemTypeOrder(
         set_up_list_prefs::kDockingItemState, &_prefChangeRegistrar);
     _prefObserverBridge->ObserveChangesForPreference(
         set_up_list_prefs::kAddressBarItemState, &_prefChangeRegistrar);
-    _shouldIncludeNotificationItem =
-        IsIOSTipsNotificationsEnabled() || isContentNotificationEnabled;
   }
   return self;
 }
@@ -301,9 +282,7 @@ std::vector<SetUpListItemType> GetSetUpListItemTypeOrder(
               set_up_list::kSetUpListWithoutSignInItem)) {
         [itemTypes addObject:@(int(SetUpListItemType::kSignInSync))];
       }
-      if (_shouldIncludeNotificationItem) {
-        [itemTypes addObject:@(int(SetUpListItemType::kNotifications))];
-      }
+      [itemTypes addObject:@(int(SetUpListItemType::kNotifications))];
       break;
     case set_up_list::FirstRunVariationType::kDockingAndAddressBar:
       [itemTypes addObject:@(int(SetUpListItemType::kDocking))];

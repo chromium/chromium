@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_ITERABLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_ITERABLE_H_
 
+#include <concepts>
+
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_for_each_iterator_callback.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -20,7 +22,7 @@ namespace {
 
 // Helper class to construct a type T without an argument. Note that IDL
 // enumeration types are not default-constructible on purpose.
-template <typename T, typename unused = void>
+template <typename T>
 class IDLTypeDefaultConstructible {
   STACK_ALLOCATED();
 
@@ -29,9 +31,8 @@ class IDLTypeDefaultConstructible {
 };
 
 template <typename T>
-class IDLTypeDefaultConstructible<
-    T,
-    std::enable_if_t<std::is_base_of_v<EnumerationBase, T>>> {
+  requires(std::derived_from<T, EnumerationBase>)
+class IDLTypeDefaultConstructible<T> {
   STACK_ALLOCATED();
 
  public:

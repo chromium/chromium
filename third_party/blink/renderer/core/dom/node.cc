@@ -501,7 +501,7 @@ Node* Node::PseudoAwarePreviousSibling() const {
           To<PseudoElement>(this)->view_transition_name());
     case kPseudoIdViewTransitionGroup: {
       const Vector<AtomicString>& names =
-          GetDocument().GetStyleEngine().ViewTransitionTags();
+          To<ViewTransitionPseudoElementBase>(this)->GetViewTransitionNames();
       wtf_size_t found_index =
           names.Find(To<PseudoElement>(this)->view_transition_name());
       CHECK_NE(found_index, kNotFound);
@@ -619,7 +619,7 @@ Node* Node::PseudoAwareNextSibling() const {
           To<PseudoElement>(this)->view_transition_name());
     case kPseudoIdViewTransitionGroup: {
       const Vector<AtomicString>& names =
-          GetDocument().GetStyleEngine().ViewTransitionTags();
+          To<ViewTransitionPseudoElementBase>(this)->GetViewTransitionNames();
       wtf_size_t found_index =
           names.Find(To<PseudoElement>(this)->view_transition_name());
       CHECK_NE(found_index, kNotFound);
@@ -645,7 +645,7 @@ Node* Node::PseudoAwareFirstChild() const {
     // pseudo traversal.
     if (GetPseudoId() == kPseudoIdViewTransition) {
       const Vector<AtomicString>& names =
-          GetDocument().GetStyleEngine().ViewTransitionTags();
+          To<ViewTransitionPseudoElementBase>(this)->GetViewTransitionNames();
       if (names.empty()) {
         return nullptr;
       }
@@ -730,7 +730,7 @@ Node* Node::PseudoAwareLastChild() const {
     // pseudo traversal.
     if (GetPseudoId() == kPseudoIdViewTransition) {
       const Vector<AtomicString>& names =
-          GetDocument().GetStyleEngine().ViewTransitionTags();
+          To<ViewTransitionPseudoElementBase>(this)->GetViewTransitionNames();
       if (names.empty()) {
         return nullptr;
       }

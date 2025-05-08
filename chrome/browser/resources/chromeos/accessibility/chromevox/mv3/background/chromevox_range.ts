@@ -98,12 +98,14 @@ export class ChromeVoxRange {
    * @param {TtsSpeechProperties=} opt_speechProps Speech properties.
    * @param {boolean=} opt_skipSettingSelection If true, does not set
    *     the selection, otherwise it does by default.
+   * @param {boolean=} opt_skipOutput If true, does not send outputs,
+   *     otherwise it does by default.
    */
   static navigateTo(
       range: CursorRange, focus?: boolean, speechProps?: TtsSpeechProperties,
-      skipSettingSelection?: boolean): void {
+      skipSettingSelection?: boolean, skipOutput?: boolean): void {
     ChromeVoxRange.instance.navigateTo_(
-        range, focus, speechProps, skipSettingSelection);
+        range, focus, speechProps, skipSettingSelection, skipOutput);
   }
 
   /** Restores the last valid ChromeVox range. */
@@ -177,17 +179,17 @@ export class ChromeVoxRange {
    */
   private navigateTo_(
       range: CursorRange, focus?: boolean, speechProps?: TtsSpeechProperties,
-      skipSettingSelection?: boolean): void {
+      skipSettingSelection?: boolean, skipOutput?: boolean): void {
     focus = focus ?? true;
     speechProps = speechProps ?? new TtsSpeechProperties();
     skipSettingSelection = skipSettingSelection ?? false;
+    skipOutput = skipOutput ?? false
     const prevRange = ChromeVoxRange.getCurrentRangeWithoutRecovery();
 
     // Specialization for math output.
-    let skipOutput = false;
     if (MathHandler.init(range)) {
       // TODO(b/314203187): Not null asserted, check that this is correct.
-      skipOutput = MathHandler.instance!.speak();
+      skipOutput ||= MathHandler.instance!.speak();
       focus = false;
     }
 

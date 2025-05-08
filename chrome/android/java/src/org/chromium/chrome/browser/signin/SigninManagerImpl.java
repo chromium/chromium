@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -732,8 +733,13 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                         // Similarly, on browser sign-out, account passwords should survive (outside
                         // of the browser) to be used by other apps, until system-level sign-out.
                         // In other words, the browser has no business deleting any passwords here.
-                        if (!PasswordManagerUtilBridge.usesSplitStoresAndUPMForLocal(
-                                UserPrefs.get(mProfile))) {
+                        // Once the login db is deprecated all users will be using split stores,
+                        // either both storing passwords outside the browser or neither storing
+                        // any passwords.
+                        if (!ChromeFeatureList.isEnabled(
+                                        ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)
+                                && !PasswordManagerUtilBridge.usesSplitStoresAndUPMForLocal(
+                                        UserPrefs.get(mProfile))) {
                             clearedTypes.add(BrowsingDataType.PASSWORDS);
                         }
 

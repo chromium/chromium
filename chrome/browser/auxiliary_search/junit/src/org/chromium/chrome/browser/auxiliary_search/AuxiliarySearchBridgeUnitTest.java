@@ -6,10 +6,8 @@ package org.chromium.chrome.browser.auxiliary_search;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -24,7 +22,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -38,7 +35,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
@@ -146,51 +142,6 @@ public final class AuxiliarySearchBridgeUnitTest {
         verify(callback).onResult(eq(null));
         verify(mMockAuxiliarySearchBridgeJni, never())
                 .getNonSensitiveHistoryData(eq(NATIVE_BRIDGE), eq(callback));
-    }
-
-    @Test
-    @SmallTest
-    public void testSetObserver() {
-        AuxiliarySearchProvider.Observer observer = mock(AuxiliarySearchProvider.Observer.class);
-
-        mBridge.setObserver(observer);
-        assertEquals(observer, mBridge.getObserverForTesting());
-        verify(mMockAuxiliarySearchBridgeJni).setObserverAndTrigger(eq(NATIVE_BRIDGE), eq(mBridge));
-
-        Mockito.reset(mMockAuxiliarySearchBridgeJni);
-        mBridge.setObserver(null);
-        verify(mMockAuxiliarySearchBridgeJni, never())
-                .setObserverAndTrigger(anyLong(), any(AuxiliarySearchBridge.class));
-        assertNull(mBridge.getObserverForTesting());
-    }
-
-    @Test
-    @SmallTest
-    public void testGetMostVisitedSites() {
-        mBridge.getMostVisitedSites();
-        verify(mMockAuxiliarySearchBridgeJni).getMostVisitedSites(eq(NATIVE_BRIDGE));
-    }
-
-    @Test
-    @SmallTest
-    public void testOnMostVisitedSitesURLsAvailable() {
-        AuxiliarySearchProvider.Observer observer = mock(AuxiliarySearchProvider.Observer.class);
-        mBridge.setObserver(observer);
-
-        List<AuxiliarySearchDataEntry> entryList = createEntryList();
-        mBridge.onMostVisitedSitesURLsAvailable(entryList);
-        verify(observer).onSiteSuggestionsAvailable(eq(entryList));
-    }
-
-    @Test
-    @SmallTest
-    public void testOnIconMadeAvailable() {
-        AuxiliarySearchProvider.Observer observer = mock(AuxiliarySearchProvider.Observer.class);
-        mBridge.setObserver(observer);
-
-        GURL url = JUnitTestGURLs.URL_1;
-        mBridge.onIconMadeAvailable(url);
-        verify(observer).onIconMadeAvailable(eq(url));
     }
 
     List<AuxiliarySearchDataEntry> createEntryList() {

@@ -10,8 +10,7 @@
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
@@ -48,16 +47,7 @@ GetCollaborationMessage(tabs::TabInterface* tab) {
     return nullptr;
   }
 
-  if (!tab) {
-    return nullptr;
-  }
-
-  auto* tab_features = tab->GetTabFeatures();
-  if (!tab_features) {
-    return nullptr;
-  }
-
-  auto* data = tab_features->collaboration_messaging_tab_data();
+  auto* data = tab->GetTabFeatures()->collaboration_messaging_tab_data();
   if (!data) {
     return nullptr;
   }
@@ -106,12 +96,12 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
   }
 
   // Tabbed web apps should use the app icon on the home tab.
-  Browser* app_browser = chrome::FindBrowserWithTab(contents);
+  BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
 
-  if (app_browser && app_browser->app_controller() &&
-      app_browser->app_controller()->ShouldShowAppIconOnTab(index)) {
+  if (browser && browser->GetAppBrowserController() &&
+      browser->GetAppBrowserController()->ShouldShowAppIconOnTab(index)) {
     web_app::WebAppBrowserController* app_controller =
-        app_browser->app_controller()->AsWebAppBrowserController();
+        browser->GetAppBrowserController()->AsWebAppBrowserController();
     if (app_controller) {
       gfx::ImageSkia home_tab_icon = app_controller->GetHomeTabIcon();
       if (!home_tab_icon.isNull()) {
@@ -133,8 +123,7 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
   }
   data.is_tab_discarded = contents->WasDiscarded();
 
-  data.collaboration_messaging =
-      GetCollaborationMessage(model->GetTabAtIndex(index));
+  data.collaboration_messaging = GetCollaborationMessage(tab);
   data.network_state = TabNetworkStateForWebContents(contents);
   data.visible_url = contents->GetVisibleURL();
   // Allow empty title for chrome-untrusted:// URLs.
@@ -146,7 +135,7 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
   data.should_display_url = should_display_url;
   data.crashed_status = contents->GetCrashedStatus();
   data.incognito = contents->GetBrowserContext()->IsOffTheRecord();
-  data.pinned = model->IsTabPinned(index);
+  data.pinned = tab->IsPinned();
   data.show_icon =
       data.pinned || model->delegate()->ShouldDisplayFavicon(contents);
   data.blocked = model->IsTabBlocked(index);

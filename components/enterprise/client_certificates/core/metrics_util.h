@@ -11,6 +11,7 @@
 #include "components/enterprise/client_certificates/core/private_key_types.h"
 #include "components/enterprise/client_certificates/core/store_error.h"
 #include "components/enterprise/client_certificates/core/upload_client_error.h"
+#include "components/leveldb_proto/public/proto_database.h"
 
 namespace client_certificates {
 
@@ -39,15 +40,23 @@ struct ProvisioningContext {
   ProvisioningScenario scenario{ProvisioningScenario::kUnknown};
 };
 
-void LogProvisioningError(ProvisioningError provisioning_error,
+void LogProvisioningError(const std::string& logging_context,
+                          ProvisioningError provisioning_error,
                           std::optional<StoreError> store_error);
 
-void LogCertificateCreationResponse(HttpCodeOrClientError upload_code,
+void LogCertificateCreationResponse(const std::string& logging_context,
+                                    HttpCodeOrClientError upload_code,
                                     bool has_certificate);
 
-void LogProvisioningContext(ProvisioningContext context, bool success);
+void LogProvisioningContext(const std::string& logging_context,
+                            ProvisioningContext context,
+                            bool success);
 
-void LogPrivateKeyCreationSource(PrivateKeySource source);
+void LogPrivateKeyCreationSource(const std::string& logging_context,
+                                 PrivateKeySource source);
+
+void LogLevelDBInitStatus(leveldb_proto::Enums::InitStatus status,
+                          bool with_retry);
 
 }  // namespace client_certificates
 

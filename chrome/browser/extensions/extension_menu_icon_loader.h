@@ -20,7 +20,7 @@ class Image;
 namespace extensions {
 class Extension;
 
-// This is a wrapper class around |ExtensionIconManager| to be used for the
+// This is a wrapper class around `ExtensionIconManager` to be used for the
 // Context Menus API.
 class ExtensionMenuIconLoader : public MenuIconLoader {
  public:

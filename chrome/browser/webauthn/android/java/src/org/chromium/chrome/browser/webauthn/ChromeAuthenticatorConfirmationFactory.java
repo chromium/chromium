@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.webauthn;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webauthn.CreateConfirmationUiDelegate;
 import org.chromium.content_public.browser.WebContents;
 
@@ -13,6 +13,7 @@ import org.chromium.content_public.browser.WebContents;
  * A factory class to create a {@link CreateConfirmationUiDelegate} using {@link
  * AuthenticatorIncognitoConfirmationBottomsheet}
  */
+@NullMarked
 public class ChromeAuthenticatorConfirmationFactory
         implements CreateConfirmationUiDelegate.Factory {
     @Override

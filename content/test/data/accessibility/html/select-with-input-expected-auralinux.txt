@@ -1,0 +1,32 @@
+[document web]
+++[section]
+++++[combo box]
+++++++[entry] selectable-text controller-for=[menu]
+++++++[menu] controlled-by=[entry]
+++++++++[section]
+++++++++++[section]
+++++++++++[menu item] name='one' selectable selected
+++++++++++[menu item] name='two' selectable
+++++[combo box]
+++++++[entry] selectable-text controller-for=[menu]
+++++++[menu] controlled-by=[entry]
+++++++++[section]
+++++++++++[menu item] name='one' selectable selected
+++++++++++[section]
+++++++++++[menu item] name='two' selectable
+++++[combo box]
+++++++[dialog]
+++++++++[section]
+++++++++++[section]
+++++++++++++[radio button] checkable checkable:true
+++++++++++[menu item] name='one' selectable selected
+++++++++++[menu item] name='two' selectable
+++++[combo box]
+++++++[entry] selectable-text controller-for=[dialog]
+++++++[dialog] controlled-by=[entry,entry]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[entry] selectable-text controller-for=[dialog]
+++++++++++[menu item] name='one' selectable selected
+++++++++++[menu item] name='two' selectable

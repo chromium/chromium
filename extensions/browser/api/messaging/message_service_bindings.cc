@@ -228,11 +228,6 @@ bool IsValidSourceContext(RenderProcessHost& process,
 bool IsValidSourceUrl(content::RenderProcessHost& process,
                       const GURL& source_url,
                       const PortContext& source_context) {
-  if (!base::FeatureList::IsEnabled(
-          extensions_features::kExtensionSourceUrlEnforcement)) {
-    return true;
-  }
-
   // Some scenarios may end up with an empty `source_url` (e.g. this may have
   // been triggered by the ExtensionApiTabTest.TabConnect test).
   //

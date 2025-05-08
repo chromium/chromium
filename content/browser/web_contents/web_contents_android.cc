@@ -921,6 +921,10 @@ void WebContentsAndroid::SetContextMenuInsets(JNIEnv* env,
   web_contents()->SetContextMenuInsets(rect);
 }
 
+void WebContentsAndroid::ShowInterestInElement(JNIEnv* env, int nodeID) {
+  web_contents()->ShowInterestInElement(nodeID);
+}
+
 void WebContentsAndroid::NotifyRendererPreferenceUpdate(JNIEnv* env) {
   web_contents_->OnWebPreferencesChanged();
 }
@@ -958,6 +962,14 @@ void WebContentsAndroid::SetSupportsForwardTransitionAnimation(
     JNIEnv* env,
     jboolean supports) {
   web_contents_->SetSupportsForwardTransitionAnimation(supports);
+}
+
+jint WebContentsAndroid::GetOriginalWindowOpenDisposition(JNIEnv* env) {
+  return static_cast<jint>(web_contents_->GetOriginalWindowOpenDisposition());
+}
+
+jboolean WebContentsAndroid::HasOpener(JNIEnv* env) {
+  return static_cast<jboolean>(web_contents_->HasOpener());
 }
 
 void WebContentsAndroid::UpdateOffsetTagDefinitions(

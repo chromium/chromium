@@ -121,12 +121,19 @@ bool HandleAbortSignal(AbortSignal* signal,
 }
 
 bool ValidateScriptState(ScriptState* script_state,
-                         ExceptionState& exception_state) {
+                         ExceptionState& exception_state,
+                         bool permit_workers) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
     return false;
   }
+
   ExecutionContext* context = ExecutionContext::From(script_state);
+
+  if (context->IsServiceWorkerGlobalScope()) {
+    return permit_workers;
+  }
+
   LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(context);
 
   // Realm’s global object must be a Window object.
@@ -291,6 +298,10 @@ WTF::String ConvertModelAvailabilityCheckResultToDebugString(
     case mojom::blink::ModelAvailabilityCheckResult::
         kUnavailableTranslationNotEligible:
       return "The on-device translation is not available.";
+    case mojom::blink::ModelAvailabilityCheckResult::
+        kUnavailableEnterprisePolicyDisabled:
+      return "The on-device model is not available because the enterprise "
+             "policy disables the feature.";
     case mojom::blink::ModelAvailabilityCheckResult::kAvailable:
     case mojom::blink::ModelAvailabilityCheckResult::kDownloadable:
     case mojom::blink::ModelAvailabilityCheckResult::kDownloading:

@@ -28,7 +28,8 @@ FakePeripheral::FakePeripheral(FakeCentral* fake_central,
       system_connected_(false),
       gatt_connected_(false),
       last_service_id_(0),
-      pending_gatt_discovery_(false) {}
+      pending_gatt_discovery_(false),
+      fake_central_(*fake_central) {}
 
 FakePeripheral::~FakePeripheral() = default;
 
@@ -352,8 +353,7 @@ void FakePeripheral::CreateGattConnectionImpl(
 }
 
 void FakePeripheral::DispatchConnectionEvent() {
-  auto* fake_central = static_cast<FakeCentral*>(GetAdapter());
-  fake_central->DispatchGATTOperationEvent(
+  fake_central_->DispatchGATTOperationEvent(
       bluetooth::mojom::GATTOperationType::kConnect, address_);
 
   if (!next_connection_response_) {
@@ -365,8 +365,7 @@ void FakePeripheral::DispatchConnectionEvent() {
 }
 
 void FakePeripheral::DispatchDiscoveryEvent() {
-  auto* fake_central = static_cast<FakeCentral*>(GetAdapter());
-  fake_central->DispatchGATTOperationEvent(
+  fake_central_->DispatchGATTOperationEvent(
       bluetooth::mojom::GATTOperationType::kDiscovery, address_);
 
   if (!next_discovery_response_) {

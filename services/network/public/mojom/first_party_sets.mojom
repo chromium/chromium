@@ -7,12 +7,6 @@ module network.mojom;
 import "mojo/public/mojom/base/version.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
 
-// This struct should match net::FirstPartySetEntry::SiteIndex in
-// //net/first_party_sets/first_party_set_entry.h
-struct SiteIndex {
-  uint32 value;
-};
-
 // This enum should match //net/first_party_sets/first_party_set_entry.h.
 enum SiteType {
   kPrimary,
@@ -24,7 +18,6 @@ enum SiteType {
 struct FirstPartySetEntry {
   SchemefulSite primary;
   SiteType site_type;
-  SiteIndex? site_index;
 };
 
 // This struct must match the class fields defined in

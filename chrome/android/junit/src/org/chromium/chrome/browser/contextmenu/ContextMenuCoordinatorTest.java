@@ -185,6 +185,7 @@ public class ContextMenuCoordinatorTest {
                         0,
                         false,
                         /* openedFromInterestTarget= */ false,
+                        /* interestTargetNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
         List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
         // Link items
@@ -239,6 +240,7 @@ public class ContextMenuCoordinatorTest {
                         0,
                         false,
                         /* openedFromInterestTarget= */ false,
+                        /* interestTargetNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
         List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
         // Link items
@@ -298,6 +300,7 @@ public class ContextMenuCoordinatorTest {
                         0,
                         false,
                         /* openedFromInterestTarget= */ false,
+                        /* interestTargetNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
         List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
         // Link items
@@ -339,6 +342,7 @@ public class ContextMenuCoordinatorTest {
                         0,
                         false,
                         /* openedFromInterestTarget= */ false,
+                        /* interestTargetNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
         List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
         // Video items
@@ -618,6 +622,7 @@ public class ContextMenuCoordinatorTest {
                         0,
                         false,
                         /* openedFromInterestTarget= */ false,
+                        /* interestTargetNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
 
         final WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);

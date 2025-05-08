@@ -4,10 +4,12 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_view_controller.h"
 
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "ui/base/l10n/l10n_util.h"
 
 class SaveCardBottomSheetViewControllerTest : public PlatformTest {
  public:
@@ -41,4 +43,18 @@ TEST_F(SaveCardBottomSheetViewControllerTest, ShowLoading) {
   EXPECT_FALSE(view_controller_.isConfirmed);
   EXPECT_NSEQ(view_controller_.primaryActionButton.accessibilityLabel,
               @"A11y label");
+}
+
+TEST_F(SaveCardBottomSheetViewControllerTest, ShowConfirmation) {
+  // Presence of primary action string lets view controller create a primary
+  // action button.
+  view_controller_.primaryActionString = @"Save";
+
+  EXPECT_TRUE(view_controller_.view);
+  [view_controller_ showConfirmationState];
+  EXPECT_FALSE(view_controller_.isLoading);
+  EXPECT_TRUE(view_controller_.isConfirmed);
+  EXPECT_NSEQ(view_controller_.primaryActionButton.accessibilityLabel,
+              l10n_util::GetNSString(
+                  IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_ACCESSIBLE_NAME));
 }

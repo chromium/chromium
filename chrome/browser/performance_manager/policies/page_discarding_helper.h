@@ -9,7 +9,6 @@
 #include <string_view>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/mechanisms/page_discarder.h"
@@ -18,7 +17,6 @@
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "components/memory_pressure/reclaim_target.h"
 #include "components/memory_pressure/unnecessary_discard_monitor.h"
-#include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
@@ -57,8 +55,9 @@ class PageDiscardingHelper
 
   // Selects and discards a tab. This will try to discard a tab until there's
   // been a successful discard or until there's no more discard candidate.
-  // `minimum_time_in_background` is passed to `CanDiscard()`, see the comment
-  // there about its usage.
+  // `minimum_time_in_background` is passed to `CanDiscard()`, see comment there
+  // about usage. Returns a time taken shortly after the first successful
+  // discard, or nullopt if no successful discard occurred.
   std::optional<base::TimeTicks> DiscardAPage(
       DiscardEligibilityPolicy::DiscardReason discard_reason,
       base::TimeDelta minimum_time_in_background =
@@ -69,8 +68,9 @@ class PageDiscardingHelper
   // or until there's no more discard candidate. If |reclaim_target_kb| is
   // nullopt, only discard one tab. If |discard_protected_tabs| is true,
   // protected tabs (CanDiscard() returns kProtected) can also be discarded.
-  // `minimum_time_in_background` is passed to `CanDiscard()`, see the comment
-  // there about its usage.
+  // `minimum_time_in_background` is passed to `CanDiscard()`, see comment there
+  // about usage. Returns a time taken shortly after the first successful
+  // discard, or nullopt if no successful discard occurred.
   std::optional<base::TimeTicks> DiscardMultiplePages(
       std::optional<memory_pressure::ReclaimTarget> reclaim_target,
       bool discard_protected_tabs,
@@ -78,19 +78,13 @@ class PageDiscardingHelper
       base::TimeDelta minimum_time_in_background =
           kNonVisiblePagesUrgentProtectionTime);
 
-  // Immediately discards as many pages as possible in `page_nodes`. Does not
-  // check for a minimum time in the background.
-  std::optional<base::TimeTicks> ImmediatelyDiscardMultiplePages(
-      const std::vector<const PageNode*>& page_nodes,
-      DiscardEligibilityPolicy::DiscardReason discard_reason);
-
   // Immediately discards as many pages as possible in `page_nodes`.
-  // `minimum_time_in_background` is passed to `CanDiscard()`, see the comment
-  // there about its usage.
-  std::optional<base::TimeTicks> ImmediatelyDiscardMultiplePages(
+  // `minimum_time_in_background` is passed to `CanDiscard()`, see comment there
+  // about usage. Returns true if at least one page was successfully discarded.
+  bool ImmediatelyDiscardMultiplePages(
       const std::vector<const PageNode*>& page_nodes,
       DiscardEligibilityPolicy::DiscardReason discard_reason,
-      base::TimeDelta minimum_time_in_background);
+      base::TimeDelta minimum_time_in_background = base::TimeDelta());
 
   void SetMockDiscarderForTesting(
       std::unique_ptr<mechanism::PageDiscarder> discarder);

@@ -99,9 +99,9 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
   def GetChromeVersion(self, instance_name):
     """Get Chrome Version by querying Windows registry"""
     cmd = (
-        r'reg query' +
+        r'reg query'
         r' "HKLM\SOFTWARE\Google\Update\Clients\{8A69D345-D564-463C-AFF1-A69D9E530F96}"'
-        + r' /reg:32 /v pv')
+        r' /reg:32 /v pv')
     chrome_version = self.RunCommand(instance_name, cmd)
 
     return chrome_version.decode().split()[-1]
@@ -264,7 +264,10 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
     dir = os.path.dirname(os.path.abspath(__file__))
     self.UploadFile(instance_name, os.path.join(dir, 'test_util.py'), temp_dir)
 
-  def RunWebDriverTest(self, instance_name, test_file, args=[]):
+  def RunWebDriverTest(self,
+                       instance_name,
+                       test_file,
+                       args: list[str] | None = None):
     """Runs a python webdriver test on an instance.
 
     Args:
@@ -278,7 +281,7 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
     file_name = self.UploadFile(instance_name, test_file, r'c:\temp')
 
     # run the test
-    args = subprocess.list2cmdline(args)
+    args = subprocess.list2cmdline(args or [])
     self._pythonExecutablePath[instance_name] = (
         r'C:\ProgramData\chocolatey\lib\python\tools\python.exe')
     cmd = r'%s -u %s %s' % (self._pythonExecutablePath[instance_name],
@@ -307,8 +310,7 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
 
   def EnableDemoAgent(self, instance_name):
     # enterprise/e2e/connector/common/demo_agent
-    base_path = dir = os.path.dirname(
-        os.path.dirname(os.path.abspath(__file__)))
+    base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     agent_path = os.path.join(base_path, 'connector', 'common', 'demo_agent')
 
     # create dest path
@@ -327,10 +329,15 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
     # upload demo agent
     self.UploadFile(self.win_config['client'],
                     os.path.join(agent_path, 'agent.zip'), dest_path)
-    cmd = r'Expand-Archive -Path c:\temp\demo_agent\agent.zip -DestinationPath c:\temp\demo_agent'
+    cmd = (r'Expand-Archive -Path c:\temp\demo_agent\agent.zip '
+           r'-DestinationPath c:\temp\demo_agent')
     self.clients[instance_name].RunPowershell(cmd)
 
-  def RunUITest(self, instance_name, test_file, timeout=300, args=[]):
+  def RunUITest(self,
+                instance_name,
+                test_file,
+                timeout=300,
+                args: list[str] | None = None):
     """Runs a UI test on an instance.
 
     Args:
@@ -353,7 +360,7 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
     # Without this flag, if the test is killed because of timeout, we will not
     # get any output from stdout because the output is buffered. When this
     # happens it makes debugging really hard.
-    args = subprocess.list2cmdline(args)
+    args = subprocess.list2cmdline(args or [])
     self._pythonExecutablePath[instance_name] = (
         r'C:\ProgramData\chocolatey\lib\python\tools\python.exe')
     ui_test_cmd = r'%s -u %s %s' % (self._pythonExecutablePath[instance_name],
@@ -408,7 +415,7 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
   def RunScriptInBackground(self,
                             instance_name: str,
                             local_script_path: str,
-                            args: Sequence[str] | None = None):
+                            args: list[str] | None = None):
     remote_script_path = self.UploadFile(instance_name, local_script_path,
                                          r'c:\temp')
     python_exec = self._pythonExecutablePath[instance_name]

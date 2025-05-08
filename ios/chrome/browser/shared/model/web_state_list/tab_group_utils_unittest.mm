@@ -12,6 +12,7 @@
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/saved_tab_groups/ui/tab_group_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -138,7 +139,7 @@ class GroupUtilsTest : public PlatformTest {
 
 TEST_F(GroupUtilsTest, TestDefaultColor) {
   std::vector<tab_groups::TabGroupColorId> colors =
-      TabGroup::AllPossibleTabGroupColors();
+      tab_groups::AllPossibleTabGroupColors();
 
   for (unsigned int i = 0; i < colors.size() * 3 + 1; i++) {
     AddWebState();

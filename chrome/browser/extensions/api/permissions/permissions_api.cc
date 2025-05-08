@@ -269,7 +269,6 @@ ExtensionFunction::ResponseAction PermissionsRemoveFunction::Run() {
 base::AutoReset<PermissionsRequestFunction::DialogAction>
 PermissionsRequestFunction::SetDialogActionForTests(
     DialogAction dialog_action) {
-  CHECK_IS_TEST();
   return base::AutoReset<PermissionsRequestFunction::DialogAction>(
       &g_dialog_action, dialog_action);
 }
@@ -278,7 +277,6 @@ PermissionsRequestFunction::SetDialogActionForTests(
 base::AutoReset<PermissionsRequestFunction::ShowDialogCallback*>
 PermissionsRequestFunction::SetShowDialogCallbackForTests(
     ShowDialogCallback* callback) {
-  CHECK_IS_TEST();
   return base::AutoReset<ShowDialogCallback*>(&g_show_dialog_callback,
                                               callback);
 }
@@ -286,7 +284,6 @@ PermissionsRequestFunction::SetShowDialogCallbackForTests(
 // static
 void PermissionsRequestFunction::ResolvePendingDialogForTests(
     bool accept_dialog) {
-  CHECK_IS_TEST();
   CHECK(g_pending_request_function);
   PermissionsRequestFunction* pending_function = g_pending_request_function;
   // Clear out the pending function now. After Release() below, it's unsafe to
@@ -303,7 +300,6 @@ void PermissionsRequestFunction::ResolvePendingDialogForTests(
 // static
 void PermissionsRequestFunction::SetIgnoreUserGestureForTests(
     bool ignore) {
-  CHECK_IS_TEST();
   ignore_user_gesture_for_tests = ignore;
 }
 

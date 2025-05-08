@@ -9,8 +9,8 @@ import android.util.AttributeSet;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 
@@ -18,6 +18,7 @@ import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
  * The list item view within a {@link NtpCardsListContainerView} in the "New tab page cards" bottom
  * sheet.
  */
+@NullMarked
 public class NtpCardsListItemView extends LinearLayout {
     private MaterialSwitchWithText mMaterialSwitchWithText;
 
@@ -54,7 +55,8 @@ public class NtpCardsListItemView extends LinearLayout {
      *
      * @see CompoundButton#setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener).
      */
-    public void setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener listener) {
+    public void setOnCheckedChangeListener(
+            CompoundButton.@Nullable OnCheckedChangeListener listener) {
         mMaterialSwitchWithText.setOnCheckedChangeListener(listener);
     }
 

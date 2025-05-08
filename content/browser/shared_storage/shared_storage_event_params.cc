@@ -297,6 +297,7 @@ SharedStorageEventParams::SharedStorageEventParams(
     std::optional<std::string> script_source_url,
     std::optional<std::string> data_origin,
     std::optional<std::string> operation_name,
+    std::optional<int> operation_id,
     std::optional<bool> keep_alive,
     std::optional<PrivateAggregationConfigWrapper> private_aggregation_config,
     std::optional<std::string> serialized_data,
@@ -315,6 +316,7 @@ SharedStorageEventParams::SharedStorageEventParams(
     : script_source_url(std::move(script_source_url)),
       data_origin(std::move(data_origin)),
       operation_name(std::move(operation_name)),
+      operation_id(operation_id),
       keep_alive(keep_alive),
       private_aggregation_config(std::move(private_aggregation_config)),
       serialized_data(std::move(serialized_data)),
@@ -350,12 +352,14 @@ SharedStorageEventParams SharedStorageEventParams::CreateForCreateWorklet(
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateForRun(
     const std::string& operation_name,
+    int operation_id,
     bool keep_alive,
     const blink::mojom::PrivateAggregationConfigPtr& private_aggregation_config,
     const blink::CloneableMessage& serialized_data,
     int worklet_id) {
   return SharedStorageEventParams::CreateForWorkletOperation(
-      operation_name, keep_alive, private_aggregation_config, serialized_data,
+      operation_name, operation_id, keep_alive, private_aggregation_config,
+      serialized_data,
       /*urls_with_metadata=*/std::nullopt, /*resolve_to_config=*/std::nullopt,
       /*saved_query=*/std::nullopt, /*urn_uuid=*/std::nullopt, worklet_id);
 }
@@ -363,12 +367,14 @@ SharedStorageEventParams SharedStorageEventParams::CreateForRun(
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateForRunForTesting(
     const std::string& operation_name,
+    int operation_id,
     bool keep_alive,
     PrivateAggregationConfigWrapper config_wrapper,
     const blink::CloneableMessage& serialized_data,
     int worklet_id) {
   return SharedStorageEventParams::CreateForWorkletOperationForTesting(
-      operation_name, keep_alive, std::move(config_wrapper), serialized_data,
+      operation_name, operation_id, keep_alive, std::move(config_wrapper),
+      serialized_data,
       /*urls_with_metadata=*/std::nullopt, /*resolve_to_config=*/std::nullopt,
       /*saved_query=*/std::nullopt, /*urn_uuid=*/std::nullopt, worklet_id);
 }
@@ -376,6 +382,7 @@ SharedStorageEventParams SharedStorageEventParams::CreateForRunForTesting(
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateForSelectURL(
     const std::string& operation_name,
+    int operation_id,
     bool keep_alive,
     const blink::mojom::PrivateAggregationConfigPtr& private_aggregation_config,
     const blink::CloneableMessage& serialized_data,
@@ -385,14 +392,15 @@ SharedStorageEventParams SharedStorageEventParams::CreateForSelectURL(
     const GURL& urn_uuid,
     int worklet_id) {
   return SharedStorageEventParams::CreateForWorkletOperation(
-      operation_name, keep_alive, private_aggregation_config, serialized_data,
-      std::move(urls_with_metadata), resolve_to_config, std::move(saved_query),
-      urn_uuid.spec(), worklet_id);
+      operation_name, operation_id, keep_alive, private_aggregation_config,
+      serialized_data, std::move(urls_with_metadata), resolve_to_config,
+      std::move(saved_query), urn_uuid.spec(), worklet_id);
 }
 
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateForSelectURLForTesting(
     const std::string& operation_name,
+    int operation_id,
     bool keep_alive,
     PrivateAggregationConfigWrapper config_wrapper,
     const blink::CloneableMessage& serialized_data,
@@ -402,9 +410,9 @@ SharedStorageEventParams SharedStorageEventParams::CreateForSelectURLForTesting(
     const GURL& urn_uuid,
     int worklet_id) {
   return SharedStorageEventParams::CreateForWorkletOperationForTesting(
-      operation_name, keep_alive, std::move(config_wrapper), serialized_data,
-      std::move(urls_with_metadata), resolve_to_config, std::move(saved_query),
-      urn_uuid.spec(), worklet_id);
+      operation_name, operation_id, keep_alive, std::move(config_wrapper),
+      serialized_data, std::move(urls_with_metadata), resolve_to_config,
+      std::move(saved_query), urn_uuid.spec(), worklet_id);
 }
 
 // static
@@ -482,6 +490,7 @@ SharedStorageEventParams SharedStorageEventParams::CreateForBatchUpdate(
       /*script_source_url=*/std::nullopt,
       /*data_origin=*/std::nullopt,
       /*operation_name=*/std::nullopt,
+      /*operation_id=*/std::nullopt,
       /*keep_alive=*/std::nullopt,
       /*private_aggregation_config=*/std::nullopt,
       /*serialized_data=*/std::nullopt,
@@ -503,6 +512,7 @@ SharedStorageEventParams SharedStorageEventParams::CreateForWorkletCreation(
   return SharedStorageEventParams(
       script_source_url.spec(), std::move(data_origin),
       /*operation_name=*/std::nullopt,
+      /*operation_id=*/std::nullopt,
       /*keep_alive=*/std::nullopt,
       /*private_aggregation_config=*/std::nullopt,
       /*serialized_data=*/std::nullopt,
@@ -521,6 +531,7 @@ SharedStorageEventParams SharedStorageEventParams::CreateForWorkletCreation(
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateForWorkletOperation(
     const std::string& operation_name,
+    int operation_id,
     bool keep_alive,
     const blink::mojom::PrivateAggregationConfigPtr& private_aggregation_config,
     const blink::CloneableMessage& serialized_data,
@@ -532,7 +543,7 @@ SharedStorageEventParams SharedStorageEventParams::CreateForWorkletOperation(
     int worklet_id) {
   return SharedStorageEventParams(
       /*script_source_url=*/std::nullopt,
-      /*data_origin=*/std::nullopt, operation_name, keep_alive,
+      /*data_origin=*/std::nullopt, operation_name, operation_id, keep_alive,
       PrivateAggregationConfigWrapper(private_aggregation_config),
       MaybeTruncateSerializedData(serialized_data),
       std::move(urls_with_metadata), resolve_to_config, std::move(saved_query),
@@ -549,6 +560,7 @@ SharedStorageEventParams SharedStorageEventParams::CreateForWorkletOperation(
 SharedStorageEventParams
 SharedStorageEventParams::CreateForWorkletOperationForTesting(
     const std::string& operation_name,
+    int operation_id,
     bool keep_alive,
     PrivateAggregationConfigWrapper config_wrapper,
     const blink::CloneableMessage& serialized_data,
@@ -560,7 +572,7 @@ SharedStorageEventParams::CreateForWorkletOperationForTesting(
     int worklet_id) {
   return SharedStorageEventParams(
       /*script_source_url=*/std::nullopt,
-      /*data_origin=*/std::nullopt, operation_name, keep_alive,
+      /*data_origin=*/std::nullopt, operation_name, operation_id, keep_alive,
       /*private_aggregation_config=*/
       std::make_optional(std::move(config_wrapper)),
       MaybeTruncateSerializedData(serialized_data),
@@ -586,6 +598,7 @@ SharedStorageEventParams SharedStorageEventParams::CreateForModifierMethod(
       /*script_source_url=*/std::nullopt,
       /*data_origin=*/std::nullopt,
       /*operation_name=*/std::nullopt,
+      /*operation_id=*/std::nullopt,
       /*keep_alive=*/std::nullopt,
       /*private_aggregation_config=*/std::nullopt,
       /*serialized_data*/ std::nullopt,
@@ -605,6 +618,7 @@ SharedStorageEventParams SharedStorageEventParams::CreateForGetterMethod(
       /*script_source_url=*/std::nullopt,
       /*data_origin=*/std::nullopt,
       /*operation_name=*/std::nullopt,
+      /*operation_id=*/std::nullopt,
       /*keep_alive=*/std::nullopt,
       /*private_aggregation_config=*/std::nullopt,
       /*serialized_data*/ std::nullopt,
@@ -625,6 +639,7 @@ bool operator==(const SharedStorageEventParams& lhs,
   return lhs.script_source_url == rhs.script_source_url &&
          lhs.data_origin == rhs.data_origin &&
          lhs.operation_name == rhs.operation_name &&
+         lhs.operation_id == rhs.operation_id &&
          lhs.keep_alive == rhs.keep_alive &&
          lhs.private_aggregation_config == rhs.private_aggregation_config &&
          !!lhs.serialized_data == !!rhs.serialized_data &&
@@ -644,6 +659,7 @@ std::ostream& operator<<(std::ostream& os,
      << SerializeOptionalString(params.script_source_url)
      << "; Data Origin: " << SerializeOptionalString(params.data_origin)
      << "; Operation Name: " << SerializeOptionalString(params.operation_name)
+     << "; Operation ID: " << SerializeOptionalInt(params.operation_id)
      << "; Keep Alive: " << SerializeOptionalBool(params.keep_alive)
      << "; Private Aggregation Config: "
      << SerializeOptionalPrivateAggregationConfigWrapper(

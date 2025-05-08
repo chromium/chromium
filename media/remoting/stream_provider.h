@@ -279,10 +279,8 @@ template <>
 struct default_delete<media::remoting::StreamProvider> {
   constexpr default_delete() = default;
 
-  template <typename U,
-            typename = typename std::enable_if<std::is_convertible<
-                U*,
-                media::remoting::StreamProvider*>::value>::type>
+  template <typename U>
+    requires(std::is_convertible_v<U*, media::remoting::StreamProvider*>)
   explicit default_delete(const default_delete<U>& d) {}
 
   void operator()(media::remoting::StreamProvider* ptr) const;

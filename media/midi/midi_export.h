@@ -15,11 +15,7 @@
 #endif  // defined(MIDI_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(MIDI_IMPLEMENTATION)
 #define MIDI_EXPORT __attribute__((visibility("default")))
-#else
-#define MIDI_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

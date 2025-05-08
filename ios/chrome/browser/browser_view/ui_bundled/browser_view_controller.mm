@@ -2731,4 +2731,22 @@ enum HeaderBehaviour {
        aboveSubview:self.toolbarCoordinator.primaryToolbarViewController.view];
 }
 
+#pragma mark - LensOverlayPresentationEnvironment
+
+- (void)lensOverlayWillAppear {
+  [_sideSwipeCoordinator setEnabled:NO];
+}
+
+- (void)lensOverlayWillDisappear {
+  [_sideSwipeCoordinator setEnabled:YES];
+}
+
+- (NSDirectionalEdgeInsets)presentationInsetsForLensOverlay {
+  if (IsRegularXRegularSizeClass(self)) {
+    return NSDirectionalEdgeInsetsMake([self expandedTopToolbarHeight], 0, 0,
+                                       0);
+  }
+  return NSDirectionalEdgeInsetsZero;
+}
+
 @end

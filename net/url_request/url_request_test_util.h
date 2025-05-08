@@ -298,10 +298,6 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
     storage_access_status_ = status;
   }
 
-  void set_is_storage_access_header_enabled(bool enabled) {
-    is_storage_access_header_enabled_ = enabled;
-  }
-
  protected:
   // NetworkDelegate:
   int OnBeforeURLRequest(URLRequest* request,
@@ -343,7 +339,6 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
   std::optional<cookie_util::StorageAccessStatus> OnGetStorageAccessStatus(
       const URLRequest& request,
       base::optional_ref<const RedirectInfo> redirect_info) const override;
-  bool OnIsStorageAccessHeaderEnabled() const override;
 
   void InitRequestStatesIfNew(int request_id);
 
@@ -396,8 +391,6 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
 
   std::optional<cookie_util::StorageAccessStatus> storage_access_status_ =
       std::nullopt;
-
-  bool is_storage_access_header_enabled_ = false;
 };
 
 // ----------------------------------------------------------------------------

@@ -303,9 +303,6 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
     case ThreadType::kUtility:
       pthread_set_qos_class_self_np(QOS_CLASS_UTILITY, 0);
       break;
-    case ThreadType::kResourceEfficient:
-      pthread_set_qos_class_self_np(QOS_CLASS_UTILITY, 0);
-      break;
     case ThreadType::kDefault:
       pthread_set_qos_class_self_np(QOS_CLASS_USER_INITIATED, 0);
       break;

@@ -22,7 +22,11 @@ if (is_win) {
            current_cpu == "ppc64") {
   platform_config_root = "config/linux-noasm/generic"
 } else if (is_apple) {
-  platform_config_root = "config/apple/$current_cpu"
+  if (current_cpu == "arm64e") {
+    platform_config_root = "config/apple/arm64"
+  } else {
+    platform_config_root = "config/apple/$current_cpu"
+  }
 } else {
   platform_config_root = "config/linux/$current_cpu"
 }
@@ -103,7 +107,8 @@ if (is_win) {
   }
 }
 
-if (is_clang && (current_cpu == "arm" || current_cpu == "arm64")) {
+if (is_clang && (current_cpu == "arm" || current_cpu == "arm64" ||
+                 current_cpu == "arm64e")) {
   if (is_win) {
     dav1d_copts += [ "/clang:-fno-align-functions" ]
   } else {
@@ -169,7 +174,7 @@ static_library("dav1d_8bit") {
     sources += x86_template_sources
   } else if (current_cpu == "arm") {
     sources += arm_template_sources
-  } else if (current_cpu == "arm64") {
+  } else if (current_cpu == "arm64" || current_cpu == "arm64e") {
     sources += arm_template_sources
   }
 
@@ -199,7 +204,7 @@ static_library("dav1d_10bit") {
     sources += x86_template_sources
   } else if (current_cpu == "arm") {
     sources += arm_template_sources
-  } else if (current_cpu == "arm64") {
+  } else if (current_cpu == "arm64" || current_cpu == "arm64e") {
     sources += arm_template_sources
   }
 
@@ -226,7 +231,8 @@ if (current_cpu == "x86" || current_cpu == "x64") {
     deps = [ ":dav1d_headers" ]
     allow_circular_includes_from = [ ":dav1d_headers" ]
   }
-} else if (current_cpu == "arm" || current_cpu == "arm64") {
+} else if (current_cpu == "arm" || current_cpu == "arm64" ||
+           current_cpu == "arm64e") {
   static_library("dav1d_arm") {
     sources = [
       "libdav1d/src/arm/cpu.c",
@@ -236,7 +242,7 @@ if (current_cpu == "x86" || current_cpu == "x64") {
     # These are not template based so should only be built once.
     if (current_cpu == "arm") {
       sources += arm32_asm_sources
-    } else if (current_cpu == "arm64") {
+    } else if (current_cpu == "arm64" || current_cpu == "arm64e") {
       sources += arm64_asm_sources
     }
 
@@ -284,7 +290,8 @@ static_library("dav1d") {
     if (enable_nasm) {
       deps += [ ":dav1d_asm" ]
     }
-  } else if (current_cpu == "arm" || current_cpu == "arm64") {
+  } else if (current_cpu == "arm" || current_cpu == "arm64" ||
+             current_cpu == "arm64e") {
     deps += [ ":dav1d_arm" ]
   }
 }

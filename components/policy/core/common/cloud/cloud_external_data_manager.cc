@@ -19,11 +19,6 @@ CloudExternalDataManager::MetadataEntry::MetadataEntry(const std::string& url,
       hash(hash) {
 }
 
-bool CloudExternalDataManager::MetadataEntry::operator!=(
-    const MetadataEntry& other) const {
-  return url != other.url || hash != other.hash;
-}
-
 CloudExternalDataManager::MetadataKey::MetadataKey() = default;
 
 CloudExternalDataManager::MetadataKey::MetadataKey(const std::string& policy)

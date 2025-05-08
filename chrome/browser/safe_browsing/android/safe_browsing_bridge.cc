@@ -94,16 +94,6 @@ static jboolean JNI_SafeBrowsingBridge_IsSafeBrowsingManaged(
   return safe_browsing::IsSafeBrowsingPolicyManaged(*GetPrefService(j_profile));
 }
 
-static jboolean JNI_SafeBrowsingBridge_IsUnderAdvancedProtection(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile) {
-  Profile* profile = Profile::FromJavaObject(j_profile);
-  return profile &&
-         safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
-             profile)
-             ->IsUnderAdvancedProtection();
-}
-
 static jboolean JNI_SafeBrowsingBridge_IsHashRealTimeLookupEligibleInSession(
     JNIEnv* env) {
   return safe_browsing::hash_realtime_utils::

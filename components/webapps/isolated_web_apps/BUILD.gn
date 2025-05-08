@@ -1,0 +1,19 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("isolated_web_apps") {
+  sources = [
+    "features.cc",
+    "features.h",
+    "iwa_key_distribution_histograms.h",
+    "iwa_key_distribution_info_provider.cc",
+    "iwa_key_distribution_info_provider.h",
+    "update_channel.cc",
+    "update_channel.h",
+  ]
+
+  public_deps = [ "//components/webapps/isolated_web_apps/proto" ]
+
+  deps = [ "//base" ]
+}

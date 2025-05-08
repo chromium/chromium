@@ -22,9 +22,15 @@ config("zstd_hide_symbols") {
   ]
 }
 
-config("zstd_unused_functions") {
+config("zstd_suppress_warnings_compress") {
   if (is_win && is_clang) {
     cflags = [ "-Wno-unused-function" ]
+  }
+}
+
+config("zstd_suppress_warnings_decompress") {
+  if (is_win && is_clang) {
+    cflags = [ "-Wno-void-ptr-dereference" ]
   }
 }
 
@@ -92,6 +98,7 @@ source_set("decompress") {
   ]
   configs += [ ":zstd_hide_symbols" ]
   configs += [ ":zstd_internal_config" ]
+  configs += [ ":zstd_suppress_warnings_decompress" ]
   public_deps = [
     ":common",
     ":headers",
@@ -136,7 +143,7 @@ source_set("compress") {
   ]
   configs += [ ":zstd_hide_symbols" ]
   configs += [ ":zstd_internal_config" ]
-  configs += [ ":zstd_unused_functions" ]
+  configs += [ ":zstd_suppress_warnings_compress" ]
   public_deps = [
     ":common",
     ":headers",

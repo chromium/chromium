@@ -350,8 +350,8 @@ class InputMethodAuraLinuxTest : public testing::Test {
 
   void SetUp() override {
     delegate_ = std::make_unique<InputMethodDelegateForTesting>();
-    input_method_auralinux_ =
-        std::make_unique<InputMethodAuraLinux>(delegate_.get());
+    input_method_auralinux_ = std::make_unique<InputMethodAuraLinux>(
+        delegate_.get(), gfx::kNullAcceleratedWidget);
     input_method_auralinux_->OnFocus();
     context_ = static_cast<LinuxInputMethodContextForTesting*>(
         input_method_auralinux_->GetContextForTesting());

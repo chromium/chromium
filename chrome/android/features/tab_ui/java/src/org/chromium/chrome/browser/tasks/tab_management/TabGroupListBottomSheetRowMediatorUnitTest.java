@@ -23,9 +23,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabUngrouper;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabMovedCallback;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
-import org.chromium.components.collaboration.CollaborationService;
-import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
@@ -50,11 +50,11 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
 
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabGroupSyncService mTabGroupSyncService;
-    @Mock private DataSharingService mDataSharingService;
-    @Mock private CollaborationService mCollaborationService;
+    @Mock private TabMovedCallback mTabMovedCallback;
     @Mock private FaviconResolver mFaviconResolver;
     @Mock private Runnable mOnClickRunnable;
     @Mock private TabModel mTabModel;
+    @Mock private TabUngrouper mTabUngrouper;
     @Mock private Tab mTab;
 
     private final Token mToken = Token.createRandom();
@@ -79,6 +79,7 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         mSavedTabGroup.savedTabs = savedTabs;
         savedTabGroupTab.localId = TEST_LOCAL_ID;
 
+        when(mTabGroupModelFilter.getTabUngrouper()).thenReturn(mTabUngrouper);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getTabById(TEST_LOCAL_ID)).thenReturn(mTab);
 
@@ -89,6 +90,7 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
                         mFaviconResolver,
                         mTabGroupSyncService,
                         mOnClickRunnable,
+                        mTabMovedCallback,
                         mTabs);
     }
 
@@ -103,7 +105,7 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         assertEquals(TEST_TITLE, titleData.title);
         assertEquals(1, titleData.numTabs);
         assertEquals(
-                R.string.tab_group_bottom_sheet_row_accessibility_text,
+                R.plurals.tab_group_bottom_sheet_row_accessibility_text,
                 titleData.rowAccessibilityTextResId);
         assertNotNull(model.get(TabGroupRowProperties.TIMESTAMP_EVENT));
     }
@@ -116,6 +118,7 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         clickRunnable.run();
 
         verify(mTabGroupModelFilter).mergeListOfTabsToGroup(mTabs, mTab, true);
+        verify(mTabMovedCallback).onTabMoved();
         verify(mOnClickRunnable).run();
     }
 
@@ -128,6 +131,7 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         clickRunnable.run();
 
         verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(mTabs, mTab, true);
+        verify(mTabMovedCallback, never()).onTabMoved();
         verify(mOnClickRunnable).run();
     }
 
@@ -139,6 +143,7 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         clickRunnable.run();
 
         verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(mTabs, mTab, true);
+        verify(mTabMovedCallback, never()).onTabMoved();
         verify(mOnClickRunnable).run();
     }
 
@@ -150,6 +155,7 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         clickRunnable.run();
 
         verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(mTabs, mTab, true);
+        verify(mTabMovedCallback, never()).onTabMoved();
         verify(mOnClickRunnable).run();
     }
 }

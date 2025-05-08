@@ -9,10 +9,13 @@
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/test/base/testing_profile.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class ExtensionPrefValueMap;
 class PrefService;
@@ -117,8 +120,8 @@ class TestExtensionPrefs {
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
  private:
-  // |clock_| is injected to an ExtensionPrefs that associated to |profile_|.
-  // Put |clock_| above |profile_| to outlive it.
+  // `clock_` is injected to an ExtensionPrefs that associated to `profile_`.
+  // Put `clock_` above `profile_` to outlive it.
   std::unique_ptr<IncrementalClock> clock_;
   TestingProfile profile_;
   bool extensions_disabled_;

@@ -52,6 +52,9 @@ class AutofillFormFeaturesJavaScriptFeature : public web::JavaScriptFeature {
   void SetAutofillAllowDefaultPreventedFormSubmission(web::WebFrame* frame,
                                                       bool enabled);
 
+  // Enables/disables deduping form submission for Autofill.
+  void SetAutofillDedupeFormSubmission(web::WebFrame* frame, bool enabled);
+
  private:
   friend class base::NoDestructor<AutofillFormFeaturesJavaScriptFeature>;
 

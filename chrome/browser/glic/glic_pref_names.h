@@ -6,6 +6,9 @@
 #define CHROME_BROWSER_GLIC_GLIC_PREF_NAMES_H_
 
 class PrefRegistrySimple;
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
 
 namespace glic::prefs {
 
@@ -18,6 +21,10 @@ inline constexpr char kGlicLauncherEnabled[] = "glic.launcher_enabled";
 // String pref that keeps track of the non-localized version of the registered
 // hotkey for Glic.
 inline constexpr char kGlicLauncherHotkey[] = "glic.launcher_hotkey";
+
+// String pref that keeps track of the non-localized version of the registered
+// hotkey for toggling focus between Glic and the browser window.
+inline constexpr char kGlicFocusToggleHotkey[] = "glic.focus_toggle_hotkey";
 
 // ************* PROFILE PREFS ***************
 // Prefs below are tied to a user profile
@@ -48,15 +55,6 @@ enum class FreStatus {
   kMaxValue = kIncomplete
 };
 
-enum class RolloutEligibility {
-  kMinValue = 0,
-
-  kNotEligible = kMinValue,
-  kEligibleTieredRollout = 1,
-
-  kMaxValue = kEligibleTieredRollout,
-};
-
 // Boolean pref that determines if the glic button in tabstrip is pinned.
 inline constexpr char kGlicPinnedToTabstrip[] = "glic.pinned_to_tabstrip";
 
@@ -67,9 +65,12 @@ inline constexpr char kGlicMicrophoneEnabled[] = "glic.microphone_enabled";
 // Boolean pref that enables or disables tab context for Glic.
 inline constexpr char kGlicTabContextEnabled[] = "glic.tab_context_enabled";
 
-// Integer pref that determines the rollout eligibility for the user profile.
-// Values are from the RolloutEligibility enum.
-inline constexpr char kGlicRolloutEligibility[] = "glic.rollout_eligibility";
+// Boolean pref that determines the rollout eligibility for the user profile.
+inline constexpr char kGlicRolloutEligibility[] =
+    "sync.glic_rollout_eligibility";
+
+// Dict pref that records user status.
+inline constexpr char kGlicUserStatus[] = "glic.user_status";
 
 // Integer pref that determines the Fre status for user profile. Values are from
 // the FreStatus enum.
@@ -79,7 +80,15 @@ inline constexpr char kGlicCompletedFre[] = "glic.completed_fre";
 inline constexpr char kGlicWindowLastDismissedTime[] =
     "glic.window.last_dimissed_time";
 
-void RegisterProfilePrefs(PrefRegistrySimple* registry);
+// Integer prefs for the top right corner of the previous window position.
+inline constexpr char kGlicPreviousPositionX[] = "glic.previous_bounds.x";
+inline constexpr char kGlicPreviousPositionY[] = "glic.previous_bounds.y";
+
+// Bool pref for the closed captioning setting.
+inline constexpr char kGlicClosedCaptioningEnabled[] =
+    "glic.closed_captioning_enabled";
+
+void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 }  // namespace glic::prefs

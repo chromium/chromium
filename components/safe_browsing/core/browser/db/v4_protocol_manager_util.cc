@@ -191,14 +191,6 @@ StoreAndHashPrefix::StoreAndHashPrefix(ListIdentifier list_id,
 
 StoreAndHashPrefix::~StoreAndHashPrefix() = default;
 
-bool StoreAndHashPrefix::operator==(const StoreAndHashPrefix& other) const {
-  return list_id == other.list_id && hash_prefix == other.hash_prefix;
-}
-
-bool StoreAndHashPrefix::operator!=(const StoreAndHashPrefix& other) const {
-  return !operator==(other);
-}
-
 size_t StoreAndHashPrefix::hash() const {
   std::size_t first = list_id.hash();
   std::size_t second = std::hash<std::string>()(hash_prefix);
@@ -221,16 +213,6 @@ bool SBThreatTypeSetIsValidForCheckBrowseUrl(const SBThreatTypeSet& set) {
     }
   }
   return true;
-}
-
-bool ListIdentifier::operator==(const ListIdentifier& other) const {
-  return platform_type_ == other.platform_type_ &&
-         threat_entry_type_ == other.threat_entry_type_ &&
-         threat_type_ == other.threat_type_;
-}
-
-bool ListIdentifier::operator!=(const ListIdentifier& other) const {
-  return !operator==(other);
 }
 
 size_t ListIdentifier::hash() const {

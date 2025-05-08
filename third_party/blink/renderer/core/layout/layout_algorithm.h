@@ -104,6 +104,10 @@ class CORE_EXPORT LayoutAlgorithm {
     }
   }
 
+  const GapGeometry* GetGapGeometry() const {
+    return container_builder_.GetGapGeometry();
+  }
+
  protected:
   // Protected (non-virtual) destructor, to make sure that the destructor is
   // invoked directly on subclasses.

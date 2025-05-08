@@ -31,15 +31,6 @@ namespace cc {
 // layer down to Viz, and this layer uses that information to draw tile quads.
 class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
  public:
-  class CC_EXPORT Client {
-   public:
-    virtual ~Client() = default;
-
-    // To notify client to Import or Discard a TransferableResource.
-    virtual void ImportResource(viz::TransferableResource resource) = 0;
-    virtual void DiscardResource(viz::ResourceId resource) = 0;
-  };
-
   struct NoContents {};
 
   struct CC_EXPORT TileResource {
@@ -57,11 +48,9 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
 
   class CC_EXPORT Tile {
    public:
-    Tile();
-    explicit Tile(const TileContents& contents);
-    Tile(Tile&&);
-    Tile& operator=(Tile&&);
+    explicit Tile(TileDisplayLayerImpl& layer, const TileContents& contents);
     ~Tile();
+    Tile(Tile&&);
 
     const TileContents& contents() const { return contents_; }
 
@@ -83,6 +72,7 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
     bool IsReadyToDraw() const { return true; }
 
    private:
+    const raw_ref<TileDisplayLayerImpl> layer_;
     TileContents contents_;
   };
 
@@ -117,7 +107,7 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
     void SetTilingRect(const gfx::Rect& rect);
     void SetTileContents(const TileIndex& key,
                          const TileContents& contents,
-                         bool is_incremental_update);
+                         bool update_damage);
 
     CoverageIterator Cover(const gfx::Rect& coverage_rect,
                            float coverage_scale) const;
@@ -136,10 +126,11 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
     using TilingCoverageIterator<Tiling>::TilingCoverageIterator;
   };
 
-  TileDisplayLayerImpl(Client& client, LayerTreeImpl& tree, int id);
+  TileDisplayLayerImpl(LayerTreeImpl& tree, int id);
   ~TileDisplayLayerImpl() override;
 
   Tiling& GetOrCreateTilingFromScaleKey(float scale_key);
+  void RemoveTiling(float scale_key);
 
   void SetSolidColor(std::optional<SkColor4f> color) { solid_color_ = color; }
   void SetIsBackdropFilterMask(bool is_backdrop_filter_mask) {
@@ -166,14 +157,13 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
   void DiscardResource(viz::ResourceId resource);
 
  private:
-  raw_ref<Client> client_;
-  std::vector<std::unique_ptr<Tiling>> tilings_;
   std::optional<SkColor4f> solid_color_;
   bool is_backdrop_filter_mask_ = false;
 
   // Denotes an area that is damaged and needs redraw. This is in the layer's
   // space.
   gfx::Rect damage_rect_;
+  std::vector<std::unique_ptr<Tiling>> tilings_;
 };
 
 }  // namespace cc

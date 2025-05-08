@@ -6,6 +6,11 @@ import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("model") {
   sources = [
+    "reader_mode_content_delegate.h",
+    "reader_mode_content_tab_helper.h",
+    "reader_mode_content_tab_helper.mm",
+    "reader_mode_distiller_page.h",
+    "reader_mode_distiller_page.mm",
     "reader_mode_java_script_feature.h",
     "reader_mode_java_script_feature.mm",
     "reader_mode_tab_helper.h",
@@ -20,11 +25,13 @@ source_set("model") {
     "//components/dom_distiller/ios",
     "//components/prefs",
     "//components/ukm/ios:ukm_url_recorder",
+    "//ios/chrome/browser/dom_distiller/model",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/third_party/material_components_ios",
+    "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//services/metrics/public/cpp:ukm_builders",
@@ -64,6 +71,8 @@ source_set("constants") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "reader_mode_content_tab_helper_unittest.mm",
+    "reader_mode_distiller_page_unittest.mm",
     "reader_mode_java_script_feature_unittest.mm",
     "reader_mode_tab_helper_unittest.mm",
   ]
@@ -78,12 +87,14 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/ukm:test_support",
     "//components/ukm/ios:ukm_url_recorder",
+    "//ios/chrome/browser/dom_distiller/model",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/web/model:feature_flags",
     "//ios/chrome/browser/web/model:web_internal",
     "//ios/chrome/test/fakes",
+    "//ios/web/js_messaging:java_script_feature_manager_header",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//testing/gtest",

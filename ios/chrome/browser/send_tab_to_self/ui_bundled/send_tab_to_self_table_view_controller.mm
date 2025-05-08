@@ -66,7 +66,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Avatar of the account sharing a tab.
 @property(nonatomic, strong) UIImage* accountAvatar;
 // Email of the account sharing a tab.
-@property(nonatomic, strong) NSString* accountEmail;
+@property(nonatomic, copy) NSString* accountEmail;
 
 // Item that holds the cancel Button for this modal dialog.
 @property(nonatomic, strong) TableViewTextButtonItem* sendToDevice;
@@ -85,7 +85,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (self) {
     _targetDeviceList = std::move(targetDeviceList);
     _delegate = delegate;
-    _accountEmail = accountEmail;
+    _accountEmail = [accountEmail copy];
     _accountAvatar = accountAvatar;
   }
   return self;

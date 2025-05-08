@@ -23,6 +23,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace endpoint_fetcher {
+
 using MockEndpointFetcherCallback = base::MockCallback<EndpointFetcherCallback>;
 
 namespace {
@@ -355,3 +357,5 @@ TEST_F(EndpointFetcherTest, TestSetSiteForCookies) {
           .Build());
   EXPECT_TRUE(GetSetSiteForCookies(fetcher));
 }
+
+}  // namespace endpoint_fetcher

@@ -5,10 +5,8 @@
 #ifndef SERVICES_WEBNN_DML_GRAPH_IMPL_DML_H_
 #define SERVICES_WEBNN_DML_GRAPH_IMPL_DML_H_
 
-#include <map>
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -17,11 +15,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "base/types/fixed_array.h"
+#include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/microsoft_dxheaders/include/directml.h"
 
 // Windows SDK headers should be included after DirectX headers.
@@ -39,7 +39,7 @@ class GraphBuilderDml;
 template <typename Key>
 struct AlignedByteLength {
   size_t total_byte_length = 0;
-  std::map<Key, D3D12_RANGE> key_to_d3d12_range_map;
+  absl::flat_hash_map<Key, D3D12_RANGE> key_to_d3d12_range_map;
 };
 
 // GraphImplDml inherits WebNNGraphImpl to represent a DML graph implementation.
@@ -67,21 +67,21 @@ class GraphImplDml final : public WebNNGraphImpl {
     // order.
     // The index is the DML_INPUT_GRAPH_EDGE_DESC::GraphInputIndex when
     // creating the DML_GRAPH_DESC.
-    std::unordered_map<std::string, uint32_t> graph_input_name_to_index_map;
+    absl::flat_hash_map<std::string, uint32_t> graph_input_name_to_index_map;
     // The map is used to bind output buffers for the graph execution in
     // order.
     // The index is the DML_OUTPUT_GRAPH_EDGE_DESC::GraphOutputIndex when
     // creating the DML_GRAPH_DESC.
-    std::unordered_map<std::string, uint32_t> graph_output_name_to_index_map;
+    absl::flat_hash_map<std::string, uint32_t> graph_output_name_to_index_map;
   };
   static base::expected<void, mojom::ErrorPtr> CreateAndBuildInternal(
       const ContextProperties& context_properties,
       scoped_refptr<Adapter> adapter,
       mojom::GraphInfoPtr& graph_info,
-      base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
+      base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&
           constant_operands,
       GraphBuilderDml& graph_builder,
-      std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
+      absl::flat_hash_map<OperandId, uint32_t>& constant_id_to_input_index_map,
       GraphBufferBindingInfo& graph_buffer_binding_info);
 
   // This method builds and compiles a DML graph from mojom::GraphInfo via
@@ -96,7 +96,7 @@ class GraphImplDml final : public WebNNGraphImpl {
       base::WeakPtr<ContextImplDml> context,
       mojom::GraphInfoPtr graph_info,
       ComputeResourceInfo compute_resource_info,
-      base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+      base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
           constant_operands,
       WebNNContextImpl::CreateGraphImplCallback callback,
       bool disable_dml_meta_commands_for_gpu);
@@ -223,10 +223,10 @@ class GraphImplDml final : public WebNNGraphImpl {
       scoped_refptr<Adapter> adapter,
       base::WeakPtr<ContextImplDml> context,
       WebNNContextImpl::CreateGraphImplCallback callback,
-      std::unordered_map<uint64_t, uint32_t> constant_id_to_input_index_map,
+      absl::flat_hash_map<OperandId, uint32_t> constant_id_to_input_index_map,
       GraphBufferBindingInfo graph_buffer_binding_info,
       ComputeResourceInfo compute_resource_info,
-      base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+      base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
           constant_operands,
       base::expected<Microsoft::WRL::ComPtr<IDMLCompiledOperator>, HRESULT>
           compilation_result);

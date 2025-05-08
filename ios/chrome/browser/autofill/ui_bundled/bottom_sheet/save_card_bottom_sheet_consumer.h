@@ -8,6 +8,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
+
 // Consumer interface for updating the save card bottomsheet UI.
 // TODO(crbug.com/406311602): Declare methods to set action button texts and to
 // show loading and confirmation.
@@ -32,8 +34,12 @@
 // Sets text for the button to dismiss the bottomsheet.
 - (void)setCancelActionText:(NSString*)cancelActionText;
 
-// Sets card information to be displayed in the under title view of the
+// Sets legal message to be displayed in the under title view of the
 // bottomsheet.
+- (void)setLegalMessages:(NSArray<SaveCardMessageWithLinks*>*)legalMessages;
+
+// Sets card information to be displayed in the under
+// title view of the bottomsheet.
 - (void)setCardNameAndLastFourDigits:(NSString*)label
                   withCardExpiryDate:(NSString*)subLabel
                          andCardIcon:(UIImage*)issuerIcon
@@ -42,6 +48,9 @@
 // Updates bottomsheet to show card upload is in progress and sets accessibility
 // label for the accept button to indicate loading.
 - (void)showLoadingStateWithAccessibilityLabel:(NSString*)accessibilityLabel;
+
+// Updates bottomsheet to show card upload is successful.
+- (void)showConfirmationState;
 
 @end
 

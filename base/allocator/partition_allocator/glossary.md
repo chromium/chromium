@@ -81,7 +81,7 @@ reasonable limit.
 ### Single-Slot Span
 
 Allocations above 4 partition pages (but
-&le;`kMaxBucketed`). This is because each slot span is guaranteed to
+&le;`BucketIndexLookup::kMaxBucketSize`). This is because each slot span is guaranteed to
 hold exactly one slot.
 
 *** promo
@@ -100,7 +100,8 @@ A collection of regions in a partition that contains
 similar-sized objects. For example, one bucket may hold objects of
 size (224,&nbsp;256], another (256,&nbsp;320], etc. Bucket size
 brackets are geometrically spaced,
-[going up to `kMaxBucketed`][max-bucket-comment].
+[going up to `BucketIndexLookup::kMaxBucketSize`][max-bucket-comment].
+See [Bucket Distribution in PartitionAlloc](./buckets.md) for details.
 
 *** promo
 Plainly put, all slots (ergo the resulting spans) of a given size
@@ -113,12 +114,12 @@ class are logically chained into one bucket.
 ### Normal Bucket
 
 Any bucket whose size ceiling does not exceed
-`kMaxBucketed`. This is the common case in PartitionAlloc, and
+`BucketIndexLookup::kMaxBucketSize`. This is the common case in PartitionAlloc, and
 the "normal" modifier is often dropped in casual reference.
 
 ### Direct Map (Bucket)
 
-Any allocation whose size exceeds `kMaxBucketed`.
+Any allocation whose size exceeds `BucketIndexLookup::kMaxBucketSize`.
 
 ## Other Terms
 
@@ -239,7 +240,7 @@ As of 2022, PartitionAlloc-Everywhere is supported on
 *   macOS
 *   Fuchsia
 
-[max-bucket-comment]: https://source.chromium.org/search?q=-file:third_party%2F(angle%7Cdawn)%20file:partition_alloc_constants.h%20symbol:kMaxBucketed$&ss=chromium
+[max-bucket-comment]: https://source.chromium.org/search?q=-file:third_party%2F(angle%7Cdawn)%20file:partition_alloc_constants.h%20symbol:BucketIndexLookup::kMaxBucketSize$&ss=chromium
 [pa-thread-cache]: https://source.chromium.org/search?q=-file:third_party%2F(angle%7Cdawn)%20file:partition_alloc/thread_cache.h&ss=chromium
 [v8-sandbox]: https://docs.google.com/document/d/1FM4fQmIhEqPG8uGp5o9A-mnPB5BOeScZYpkHjo0KKA8/preview#
 [v8-cfi]: https://docs.google.com/document/d/1O2jwK4dxI3nRcOJuPYkonhTkNQfbmwdvxQMyXgeaRHo/preview#

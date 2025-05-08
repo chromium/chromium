@@ -204,7 +204,6 @@ class BrowsingDataModel {
     ~Iterator();
     Iterator(const Iterator& iterator);
     bool operator==(const Iterator& other) const;
-    bool operator!=(const Iterator& other) const;
 
     // Input iterator functionality. These declarations allow STL functions to
     // make use of the iterator interface.

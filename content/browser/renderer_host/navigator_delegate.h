@@ -33,6 +33,7 @@ class CommitDeferringCondition;
 class FrameTree;
 class NavigationHandle;
 class NavigationRequest;
+class NavigationThrottleRegistry;
 class RenderFrameHostImpl;
 struct LoadCommittedDetails;
 struct OpenURLParams;
@@ -119,8 +120,8 @@ class NavigatorDelegate {
   // Returns the NavigationThrottles to add to this navigation. Normally these
   // are defined by the content/ embedder, except in the case of interstitials
   // where no NavigationThrottles are added to the navigation.
-  virtual std::vector<std::unique_ptr<NavigationThrottle>>
-  CreateThrottlesForNavigation(NavigationHandle* navigation_handle) = 0;
+  virtual void CreateThrottlesForNavigation(
+      NavigationThrottleRegistry& registry) = 0;
 
   // Returns commit deferring conditions to add to this navigation.
   virtual std::vector<std::unique_ptr<CommitDeferringCondition>>

@@ -351,9 +351,8 @@ TEST_F(ReadingListModelTest, GetAccountWhereEntryIsSavedToWhenSyncEnabled) {
       /*initial_syncable_entries=*/{base::MakeRefCounted<ReadingListEntry>(
           example, "example_title", clock_.Now())}));
 
-  // TODO(crbug.com/383089506): removed ToString() once GaiaId is returned.
-  EXPECT_EQ(model_->GetAccountWhereEntryIsSavedTo(example).ToString(),
-            kTestGaiaId.ToString());
+  EXPECT_EQ(model_->GetAccountWhereEntryIsSavedTo(example),
+            kTestGaiaId);
   EXPECT_TRUE(
       model_
           ->GetAccountWhereEntryIsSavedTo(GURL("http://non_existing_url.com/"))

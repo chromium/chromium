@@ -9,11 +9,15 @@
 
 #include <optional>
 #include <set>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+#include "crypto/hash.h"
 #include "net/base/net_export.h"
 #include "third_party/boringssl/src/pki/input.h"
+#include "third_party/boringssl/src/pki/parsed_certificate.h"
 
 namespace net {
 
@@ -45,6 +49,23 @@ inline constexpr uint8_t kQevcpwOid[] = {0x04, 0x00, 0x8b, 0xec,
 // which is 0.4.0.194112.1.5
 inline constexpr uint8_t kQncpwOid[] = {0x04, 0x00, 0x8b, 0xec,
                                         0x40, 0x01, 0x05};
+
+// ETSI EN 319 411-2 - V2.6.1 - 5.3.g:
+// QNCP-w-gen: itu-t(0) identified-organization(4) etsi(0)
+//     qualified-certificate-policies(194112) policy-identifiers(1)
+//     qncp-web-gen (6)
+// which is 0.4.0.194112.1.6
+inline constexpr uint8_t kQncpwgenOid[] = {0x04, 0x00, 0x8b, 0xec,
+                                           0x40, 0x01, 0x06};
+
+// ETSI TS 119 411-5 V2.1.1 - Annex A:
+// id-tlsBinding OBJECT IDENTIFIER ::= { itu-t(0) identified-organization(4)
+//     etsi(0) id-qwacImplementation(194115) tls-binding (1) }
+// id-kp-tls-binding OBJECT IDENTIFIER ::= { id-tlsBinding
+//     id-kp-tls-binding(0) }
+// which is 0.4.0.194115.1.0
+inline constexpr uint8_t kIdKpTlsBinding[] = {0x04, 0x00, 0x8b, 0xec,
+                                              0x43, 0x01, 0x00};
 
 // RFC 7299 section 2:
 // id-pkix OBJECT IDENTIFIER ::= { iso(1) identified-organization(3)
@@ -120,6 +141,85 @@ enum class QwacPoliciesStatus {
 // combination of policies to be a 1-QWAC.
 NET_EXPORT_PRIVATE QwacPoliciesStatus
 Has1QwacPolicies(const std::set<bssl::der::Input>& policy_set);
+
+// Returns kHasQwacPolicies if the set of policy OIDs contains a suitable
+// combination of policies to be a 2-QWAC.
+NET_EXPORT_PRIVATE QwacPoliciesStatus
+Has2QwacPolicies(const std::set<bssl::der::Input>& policy_set);
+
+enum class QwacEkuStatus {
+  kNotQwac,
+  kInconsistent,
+  kHasQwacEku,
+};
+
+// Returns kHasQwacEku if the set of policy EKUs is suitable to be a 2-QWAC.
+NET_EXPORT_PRIVATE QwacEkuStatus
+Has2QwacEku(const bssl::ParsedCertificate* cert);
+
+// Contains fields from a JAdES (ETSI TS 119 182-1) signature header needed for
+// verifying 2-QWAC TLS certificate bindings. While JAdES is a profile of JWS
+// (RFC 7515), this is not general-purpose JWS or JWT code. It is also not
+// general-purpose JAdES code, as only fields needed for 2-QWAC TLS certificate
+// bindings are present here.
+struct NET_EXPORT_PRIVATE Jades2QwacHeader {
+  Jades2QwacHeader();
+  Jades2QwacHeader(const Jades2QwacHeader& other);
+  Jades2QwacHeader(Jades2QwacHeader&& other);
+  ~Jades2QwacHeader();
+
+  // The signature algorithm used to sign the JWS, as provided by the "alg" JWS
+  // Header Parameter (RFC 7515, section 4.1.1). Valid values for this field can
+  // be found in the JSON Web Signature and Encryption Algorithms IANA registry
+  // (https://www.iana.org/assignments/jose/jose.xhtml#web-signature-encryption-algorithms).
+  // The consumer of this struct must check that the algorithm provided in this
+  // field matches the signature algorithm of the leaf cert in |cert_chain|.
+  std::string sig_alg;
+
+  // The certificate chain with a leaf cert that is a 2-QWAC. This certificate
+  // chain is used to sign the JWS, which binds the 2-QWAC to a set of TLS
+  // serverAuth certificates.
+  //
+  // TODO(crbug.com/392929826): Replace this with net::X509Certificate.
+  std::vector<std::vector<uint8_t>> cert_chain;
+
+  // The hash algorithm used to hash the bound certificates.
+  crypto::hash::HashKind hash_alg;
+
+  // The hashes of the bound certificates (base64url-encoded), hashed using
+  // |hash_alg|. Note: this is Digest(base64url(cert)), because that's what the
+  // JAdES and 2-QWAC specs require (not that it makes any sense to do that).
+  std::vector<std::vector<uint8_t>> bound_cert_hashes;
+};
+
+// A TwoQwacCertBinding represents a JAdES Signature (ETSI TS 119 182-1,
+// clause 3.1) used for 2-QWACs (ETSI TS 119 411-5, clause 6.2.2). It comes from
+// a TLS Certificate Binding (ETSI TS 119 411-5 annex B). Note that a JAdES
+// Signature (which is also a JWS, a.k.a. JSON Web Signature) consists of a
+// header and a cryptographic signature, not just a signature.
+struct NET_EXPORT_PRIVATE TwoQwacCertBinding {
+  TwoQwacCertBinding(Jades2QwacHeader header,
+                     std::string header_string,
+                     std::vector<uint8_t> signature);
+  TwoQwacCertBinding(const TwoQwacCertBinding& other);
+  TwoQwacCertBinding(TwoQwacCertBinding&& other);
+  ~TwoQwacCertBinding();
+
+  // Parses a TLS Certificate Binding structure that contains a 2-QWAC
+  // certificate chain.
+  // TODO(crbug.com/392929826): Add a fuzz test for this function.
+  static std::optional<TwoQwacCertBinding> Parse(std::string_view jws);
+
+  // The parsed JWS Header from the certificate binding structure.
+  Jades2QwacHeader header;
+
+  // The unparsed JWS Header, needed for verifying the signature.
+  std::string header_string;
+
+  // The JWS Signature (RFC 7515 section 2)/JAdES Signature Value (ETSI TS 119
+  // 182-1 clause 3.1) from the certificate binding structure.
+  std::vector<uint8_t> signature;
+};
 
 }  // namespace net
 

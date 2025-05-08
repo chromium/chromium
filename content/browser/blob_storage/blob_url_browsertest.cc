@@ -6,6 +6,7 @@
 
 #include "base/strings/pattern.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/values_test_util.h"
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
@@ -49,9 +50,12 @@ class MockContentBrowserClient : public ContentBrowserTestContentBrowserClient {
       content::BrowserContext* browser_context,
       content::WebContents* web_contents,
       const GURL& url,
-      const blink::StorageKey& storage_key) override {
-    return false;
+      const blink::StorageKey& storage_key,
+      net::CookieSettingOverrides overrides) override {
+    return allow_cookie_access_;
   }
+
+  bool allow_cookie_access_ = false;
 };
 }  // namespace
 
@@ -59,7 +63,6 @@ class MockContentBrowserClient : public ContentBrowserTestContentBrowserClient {
 class BlobUrlBrowserTest : public ContentBrowserTest {
  public:
   BlobUrlBrowserTest() = default;
-
   BlobUrlBrowserTest(const BlobUrlBrowserTest&) = delete;
   BlobUrlBrowserTest& operator=(const BlobUrlBrowserTest&) = delete;
 
@@ -75,6 +78,7 @@ class BlobUrlBrowserTest : public ContentBrowserTest {
   void TearDownOnMainThread() override { client_.reset(); }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<MockContentBrowserClient> client_;
 };
 
@@ -216,6 +220,7 @@ IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest, ReplaceStateToAddAuthorityToBlob) {
 
 IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest,
                        TestUseCounterForCrossPartitionSameOriginBlobURLFetch) {
+  GetMockClient().allow_cookie_access_ = true;
   GURL main_url = embedded_test_server()->GetURL(
       "c.com", "/cross_site_iframe_factory.html?c(b(c))");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -279,35 +284,29 @@ class BlobUrlDevToolsIssueTest : public ContentBrowserTest {
   void WaitForIssueAndCheckUrl(const std::string& url,
                                TestDevToolsProtocolClient* client,
                                const std::string& expected_info_enum) {
-    auto is_blob_url_issue = [](const base::Value::Dict& params) {
-      const std::string* issue_code =
-          params.FindStringByDottedPath("issue.code");
-      return issue_code && *issue_code == "PartitioningBlobURLIssue";
-    };
-
     // Wait for notification of a Partitioning Blob URL Issue.
     base::Value::Dict params = client->WaitForMatchingNotification(
-        "Audits.issueAdded", base::BindRepeating(is_blob_url_issue));
+        "Audits.issueAdded",
+        base::BindRepeating([](const base::Value::Dict& params) {
+          const std::string* issue_code =
+              params.FindStringByDottedPath("issue.code");
+          return issue_code && *issue_code == "PartitioningBlobURLIssue";
+        }));
 
-    EXPECT_EQ(*params.FindStringByDottedPath("issue.code"),
-              "PartitioningBlobURLIssue");
-
-    base::Value::Dict* partitioning_blob_url_issue_details =
-        params.FindDictByDottedPath(
-            "issue.details.partitioningBlobURLIssueDetails");
-    ASSERT_TRUE(partitioning_blob_url_issue_details);
-
-    // Verify the reported blob_url match the expected url.
-    std::string* blob_url_ptr =
-        partitioning_blob_url_issue_details->FindString("url");
-    EXPECT_EQ(*blob_url_ptr, url);
-
-    // Verify the reported partitioningBlobURLInfo matches the expected enum.
-    std::string* info_enum_ptr =
-        partitioning_blob_url_issue_details->FindString(
-            "partitioningBlobURLInfo");
-    ASSERT_TRUE(info_enum_ptr);
-    EXPECT_EQ(*info_enum_ptr, expected_info_enum);
+    EXPECT_THAT(params, base::test::IsSupersetOfValue(
+                            base::test::ParseJson(content::JsReplace(
+                                R"({
+                  "issue": {
+                    "code": "PartitioningBlobURLIssue",
+                    "details": {
+                      "partitioningBlobURLIssueDetails": {
+                        "url": $1,
+                        "partitioningBlobURLInfo": $2,
+                      }
+                    }
+                  }
+                })",
+                                url, expected_info_enum))));
 
     // Clear existing notifications so subsequent calls don't fail by checking
     // `url` against old notifications.

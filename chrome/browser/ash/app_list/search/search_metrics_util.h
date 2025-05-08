@@ -11,8 +11,9 @@
 
 namespace app_list {
 
-constexpr char kHistogramPrefix[] = "Apps.AppList.Search.";
-constexpr char kSessionHistogramPrefix[] = "Apps.AppList.Search.Session2.";
+inline constexpr char kHistogramPrefix[] = "Apps.AppList.Search.";
+inline constexpr char kSessionHistogramPrefix[] =
+    "Apps.AppList.Search.Session2.";
 
 // Represents possible error states of the metrics observer itself. These
 // values persist to logs. Entries should not be renumbered and numeric

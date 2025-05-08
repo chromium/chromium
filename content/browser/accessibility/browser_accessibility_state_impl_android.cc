@@ -430,8 +430,8 @@ void BrowserAccessibilityStateImplAndroid::OnContrastLevelChanged(
   native_theme->NotifyOnNativeThemeUpdated();
 }
 
-void BrowserAccessibilityStateImplAndroid::SetScreenReaderAppActive(
-    bool is_active) {
+void BrowserAccessibilityStateImplAndroid::RefreshAssistiveTech() {
+  bool is_active = GetAccessibilityMode().has_mode(ui::AXMode::kScreenReader);
   static auto* ax_talkback_crash_key = base::debug::AllocateCrashKeyString(
       "ax_talkback", base::debug::CrashKeySize::Size32);
 

@@ -104,11 +104,11 @@ class ChromeContentVerifierDelegate : public ContentVerifierDelegate {
   };
 
  private:
-  // Returns true iff |extension| is considered extension from Chrome Web Store
+  // Returns true iff `extension` is considered extension from Chrome Web Store
   // (and therefore signed hashes may be used for its content verification).
   bool IsFromWebstore(const Extension& extension) const;
 
-  // Returns information needed for content verification of |extension|.
+  // Returns information needed for content verification of `extension`.
   VerifyInfo GetVerifyInfo(const Extension& extension) const;
 
   raw_ptr<content::BrowserContext, AcrossTasksDanglingUntriaged> context_;

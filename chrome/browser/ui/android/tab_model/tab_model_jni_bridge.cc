@@ -127,7 +127,7 @@ void TabModelJniBridge::HandlePopupNavigation(TabAndroid* parent,
 
 WebContents* TabModelJniBridge::GetWebContentsAt(int index) const {
   TabAndroid* tab = GetTabAt(index);
-  return tab == NULL ? NULL : tab->web_contents();
+  return tab == nullptr ? nullptr : tab->web_contents();
 }
 
 TabAndroid* TabModelJniBridge::GetTabAt(int index) const {
@@ -135,7 +135,7 @@ TabAndroid* TabModelJniBridge::GetTabAt(int index) const {
   ScopedJavaLocalRef<jobject> jtab =
       Java_TabModelJniBridge_getTabAt(env, java_object_.get(env), index);
 
-  return jtab.is_null() ? NULL : TabAndroid::GetNativeTab(env, jtab);
+  return jtab.is_null() ? nullptr : TabAndroid::GetNativeTab(env, jtab);
 }
 
 ScopedJavaLocalRef<jobject> TabModelJniBridge::GetJavaObject() const {
@@ -169,12 +169,12 @@ WebContents* TabModelJniBridge::CreateNewTabForDevTools(const GURL& url,
           url::GURLAndroid::FromNativeGURL(env, url), new_window);
   if (obj.is_null()) {
     VLOG(0) << "Failed to create java tab";
-    return NULL;
+    return nullptr;
   }
   TabAndroid* tab = TabAndroid::GetNativeTab(env, obj);
   if (!tab) {
     VLOG(0) << "Failed to create java tab";
-    return NULL;
+    return nullptr;
   }
   return tab->web_contents();
 }
@@ -235,6 +235,68 @@ void TabModelJniBridge::CloseTabsNavigatedInTimeWindow(
   int64_t end_time_ms = end_time.InMillisecondsSinceUnixEpoch();
   return Java_TabModelJniBridge_closeTabsNavigatedInTimeWindow(
       env, java_object_.get(env), begin_time_ms, end_time_ms);
+}
+
+void TabModelJniBridge::OpenTab(const GURL& url, int index) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+}
+
+void TabModelJniBridge::DiscardTab(int index) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+}
+
+void TabModelJniBridge::DuplicateTab(int index) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+}
+
+tabs::TabInterface* TabModelJniBridge::GetTab(int index) {
+  return GetTabAt(index);
+}
+
+void TabModelJniBridge::HighlightTabs(std::set<int> indicies) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+}
+
+void TabModelJniBridge::MoveTab(int from_index, int to_index) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+}
+
+void TabModelJniBridge::CloseTab(int index) {
+  CloseTabAt(index);
+}
+
+std::vector<tabs::TabInterface*> TabModelJniBridge::GetAllTabs() {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+  return {};
+}
+
+void TabModelJniBridge::PinTab(int index) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+}
+
+void TabModelJniBridge::UnpinTab(int index) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+}
+
+std::optional<tab_groups::TabGroupId> TabModelJniBridge::CreateGroup(
+    std::set<int> indicies) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
+  return std::nullopt;
+}
+
+void TabModelJniBridge::MoveGroupTo(tab_groups::TabGroupId group_id,
+                                    int index) {
+  // TODO(crbug.com/415351293): Implement.
+  NOTIMPLEMENTED();
 }
 
 // static

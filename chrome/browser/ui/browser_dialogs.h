@@ -97,7 +97,7 @@ views::Widget* ShowBrowserModal(Browser* browser,
 // TODO(pbos): Make utility functions for querying whether an anchor_element is
 // present in `browser` or `browser_window` and then refer to those here so that
 // a call site can provide fallback options for `anchor_element`.
-void ShowBubble(Browser* browser,
+void ShowBubble(ui::ElementContext element_context,
                 ui::ElementIdentifier anchor_element,
                 std::unique_ptr<ui::DialogModel> dialog_model);
 

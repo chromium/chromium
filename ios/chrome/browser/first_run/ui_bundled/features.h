@@ -121,6 +121,10 @@ UpdatedFRESequenceVariationType GetUpdatedFRESequenceVariation(
 // `kDisabled` if the feature is disabled.
 WelcomeBackScreenVariationType GetWelcomeBackScreenVariationType();
 
+// Whether `kWelcomeBackInFirstRun` is enabled. This experiment is disabled when
+// `kBestFeaturesScreenInFirstRun` is enabled.
+bool IsWelcomeBackInFirstRunEnabled();
+
 // Whether the Default Browser Experiment in the FRE is enabled. This feature is
 // disabled when kUpdatedFirstRunSequence is enabled.
 bool IsAnimatedDefaultBrowserPromoInFREEnabled();

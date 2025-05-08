@@ -240,8 +240,8 @@ public class PaymentRequestServiceBuilder implements Delegate {
         mMethodData = new PaymentMethodData[1];
         mMethodData[0] = new PaymentMethodData();
         mMethodData[0].supportedMethod = MethodStrings.SECURE_PAYMENT_CONFIRMATION;
-
         mMethodData[0].securePaymentConfirmation = mSecurePaymentConfirmationRequest;
+        Mockito.when(mSpec.isSecurePaymentConfirmationRequested()).thenReturn(true);
         return this;
     }
 

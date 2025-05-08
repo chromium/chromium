@@ -46,7 +46,7 @@ TEST_F(StyleUseCounterTest, CSSFunctions) {
 }
 
 TEST_F(StyleUseCounterTest, CssIf) {
-  WebDXFeature feature = WebDXFeature::kDRAFT_CssIf;
+  WebDXFeature feature = WebDXFeature::kIf;
   EXPECT_FALSE(IsCountedOnParsing(feature, "div { top: var(--x); }"));
   EXPECT_FALSE(IsCountedOnParsing(feature, "div { top: 10px; }"));
   EXPECT_FALSE(IsCountedOnParsing(feature, "div { top: if(!!!); }"));

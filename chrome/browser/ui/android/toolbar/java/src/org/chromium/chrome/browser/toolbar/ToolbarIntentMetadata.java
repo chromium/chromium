@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Simple collection of information about the original intent. */
+@NullMarked
 public class ToolbarIntentMetadata {
     private final boolean mIsMainIntentFromLauncher;
     private final boolean mIsIntentWithEffect;

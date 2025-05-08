@@ -9,11 +9,13 @@ import android.view.View.OnClickListener;
 
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper.ScreenMode;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 class HistorySyncProperties {
     static final PropertyModel.WritableObjectPropertyKey<DisplayableProfileData> PROFILE_DATA =
             new PropertyModel.WritableObjectPropertyKey<>("profile_data");

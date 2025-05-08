@@ -14,6 +14,7 @@ build_webui("build") {
     "connectors_tabs.ts",
     "device_trust_connector.ts",
     "managed_client_certificate.ts",
+    "signals_reporting.ts",
   ]
 
   ts_files = [

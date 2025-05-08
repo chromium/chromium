@@ -39,6 +39,12 @@ declare_args() {
 
   # Whether to enable temporal pgo or not (experimental).
   temporal_pgo_profile = false
+
+  # Flags to override the pgo profile with a freshly created one (newer than
+  # the sha1 in the repo).
+  pgo_override_filename = ""
+  pgo_gs_bucket = ""
+  pgo_gs_bucket_path = ""
 }
 
 # TODO(crbug.com/409738601): Remove assert once clang no

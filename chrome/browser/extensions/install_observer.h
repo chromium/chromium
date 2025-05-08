@@ -82,7 +82,7 @@ class InstallObserver {
                                   const Extension* extension,
                                   bool success) {}
 
-  // Called when the app list is reordered. If |extension_id| is set, it
+  // Called when the app list is reordered. If `extension_id` is set, it
   // indicates the extension ID that was re-ordered.
   virtual void OnAppsReordered(content::BrowserContext* context,
                                const std::optional<ExtensionId>& extension_id) {

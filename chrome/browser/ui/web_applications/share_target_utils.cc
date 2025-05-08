@@ -31,10 +31,6 @@
 
 namespace web_app {
 
-bool SharedField::operator==(const SharedField& other) const {
-  return name == other.name && value == other.value;
-}
-
 std::vector<SharedField> ExtractSharedFields(
     const apps::ShareTarget& share_target,
     const apps::Intent& intent) {

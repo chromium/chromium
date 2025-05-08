@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.ui.signin.history_sync;
 
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -23,6 +26,7 @@ import java.time.Duration;
 import java.util.Set;
 
 /** A helper object that provides history sync opt-in related utilities. */
+@NullMarked
 public class HistorySyncHelper {
     private static final int MAX_SUCCESSIVE_DECLINES = 2;
     private static final long MIN_DAYS_SINCE_LAST_DECLINE = 14;
@@ -45,7 +49,7 @@ public class HistorySyncHelper {
 
     @VisibleForTesting
     HistorySyncHelper(Profile profile) {
-        mSyncService = SyncServiceFactory.getForProfile(profile);
+        mSyncService = assumeNonNull(SyncServiceFactory.getForProfile(profile));
         mPrefService = UserPrefs.get(profile);
     }
 

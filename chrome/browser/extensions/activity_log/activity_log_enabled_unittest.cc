@@ -8,7 +8,6 @@
 #include "base/test/scoped_command_line.h"
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/activity_log/activity_log_task_runner.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -119,12 +118,11 @@ TEST_F(ActivityLogEnabledTest, WatchdogSwitch) {
   std::unique_ptr<TestingProfile> profile1(CreateTestingProfile());
   std::unique_ptr<TestingProfile> profile2(CreateTestingProfile());
   // Extension service is destroyed by the profile.
-  ExtensionService* extension_service1 =
-    static_cast<TestExtensionSystem*>(
-        ExtensionSystem::Get(profile1.get()))->CreateExtensionService(
-            &command_line, base::FilePath(), false);
-  static_cast<TestExtensionSystem*>(
-      ExtensionSystem::Get(profile1.get()))->SetReady();
+  auto* extension_system1 =
+      static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile1.get()));
+  extension_system1->CreateExtensionService(&command_line, base::FilePath(),
+                                            false);
+  extension_system1->SetReady();
 
   auto* extension_registrar1 = ExtensionRegistrar::Get(profile1.get());
 
@@ -147,7 +145,7 @@ TEST_F(ActivityLogEnabledTest, WatchdogSwitch) {
                            .Set("manifest_version", 2))
           .SetID(kExtensionID)
           .Build();
-  extension_registrar1->AddExtension(extension.get());
+  extension_registrar1->AddExtension(extension);
 
   EXPECT_EQ(1,
       profile1->GetPrefs()->GetInteger(prefs::kWatchdogExtensionActive));
@@ -158,8 +156,8 @@ TEST_F(ActivityLogEnabledTest, WatchdogSwitch) {
   EXPECT_TRUE(activity_log1->IsDatabaseEnabled());
   EXPECT_FALSE(activity_log2->IsDatabaseEnabled());
 
-  extension_service1->DisableExtension(kExtensionID,
-                                       disable_reason::DISABLE_USER_ACTION);
+  extension_registrar1->DisableExtension(kExtensionID,
+                                         {disable_reason::DISABLE_USER_ACTION});
 
   EXPECT_EQ(0,
       profile1->GetPrefs()->GetInteger(prefs::kWatchdogExtensionActive));
@@ -170,7 +168,7 @@ TEST_F(ActivityLogEnabledTest, WatchdogSwitch) {
   EXPECT_FALSE(activity_log1->IsDatabaseEnabled());
   EXPECT_FALSE(activity_log2->IsDatabaseEnabled());
 
-  extension_service1->EnableExtension(kExtensionID);
+  extension_registrar1->EnableExtension(kExtensionID);
 
   EXPECT_EQ(1,
       profile1->GetPrefs()->GetInteger(prefs::kWatchdogExtensionActive));
@@ -206,15 +204,15 @@ TEST_F(ActivityLogEnabledTest, WatchdogSwitch) {
                            .Set("manifest_version", 2))
           .SetID("fpofdchlamddhnajleknffcbmnjfahpg")
           .Build();
-  extension_registrar1->AddExtension(extension.get());
-  extension_registrar1->AddExtension(extension2.get());
+  extension_registrar1->AddExtension(extension);
+  extension_registrar1->AddExtension(extension2);
   EXPECT_EQ(2,
       profile1->GetPrefs()->GetInteger(prefs::kWatchdogExtensionActive));
   EXPECT_TRUE(activity_log1->IsDatabaseEnabled());
-  extension_service1->DisableExtension(kExtensionID,
-                                       disable_reason::DISABLE_USER_ACTION);
-  extension_service1->DisableExtension("fpofdchlamddhnajleknffcbmnjfahpg",
-                                       disable_reason::DISABLE_USER_ACTION);
+  extension_registrar1->DisableExtension(kExtensionID,
+                                         {disable_reason::DISABLE_USER_ACTION});
+  extension_registrar1->DisableExtension("fpofdchlamddhnajleknffcbmnjfahpg",
+                                         {disable_reason::DISABLE_USER_ACTION});
   EXPECT_EQ(0,
       profile1->GetPrefs()->GetInteger(prefs::kWatchdogExtensionActive));
   EXPECT_FALSE(activity_log1->IsDatabaseEnabled());
@@ -252,7 +250,7 @@ TEST_F(ActivityLogEnabledTest, AppAndCommandLine) {
                            .Set("manifest_version", 2))
           .SetID(kExtensionID)
           .Build();
-  extension_registrar->AddExtension(extension.get());
+  extension_registrar->AddExtension(extension);
 
   EXPECT_TRUE(activity_log->IsDatabaseEnabled());
   EXPECT_EQ(1,
@@ -306,7 +304,7 @@ TEST_F(ActivityLogEnabledTest, IncorrectPrefsRecovery) {
                            .Set("manifest_version", 2))
           .SetID(kExtensionID)
           .Build();
-  ExtensionRegistrar::Get(profile.get())->AddExtension(extension.get());
+  ExtensionRegistrar::Get(profile.get())->AddExtension(extension);
 
   EXPECT_EQ(
       1, profile->GetPrefs()->GetInteger(prefs::kWatchdogExtensionActive));

@@ -76,7 +76,7 @@ def _update(args):
   Raises:
     RuntimeError: If failed to download profiles from gcs.
   """
-  profile_name = _read_profile_name(args.target)
+  profile_name = args.override_filename or _read_profile_name(args.target)
   profile_path = os.path.join(_PGO_PROFILE_DIR, profile_name)
   if os.path.isfile(profile_path):
     os.utime(profile_path, None)
@@ -101,7 +101,8 @@ def _get_profile_path(args):
   Raises:
     RuntimeError: If the current profile is missing.
   """
-  profile_path = os.path.join(_PGO_PROFILE_DIR, _read_profile_name(args.target))
+  profile_name = args.override_filename or _read_profile_name(args.target)
+  profile_path = os.path.join(_PGO_PROFILE_DIR, profile_name)
   if not os.path.isfile(profile_path):
     raise RuntimeError(
         'requested profile "%s" doesn\'t exist, please make sure '
@@ -141,8 +142,11 @@ def main():
           'linux',
           'android-arm32',
           'android-arm64',
+          'android-desktop-x64',
       ],
       help='Identifier of a specific target platform + architecture.')
+  parser.add_argument('--override-filename',
+                      help='The filename to prefer instead of the sha1 file.')
   subparsers = parser.add_subparsers()
 
   parser_update = subparsers.add_parser('update')

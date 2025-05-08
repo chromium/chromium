@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.readaloud;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -11,6 +12,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 
 /** Observer of tab changes for tabs selected within and owned by a {@link TabModel}. */
+@NullMarked
 public class TabModelTabObserver extends EmptyTabObserver {
     private final TabModel mTabModel;
     private final TabModelObserver mTabModelObserver;
@@ -60,7 +62,7 @@ public class TabModelTabObserver extends EmptyTabObserver {
         mTabModel.removeObserver(mTabModelObserver);
         int tabCount = mTabModel.getCount();
         for (int i = 0; i < tabCount; i++) {
-            mTabModel.getTabAt(i).removeObserver(this);
+            mTabModel.getTabAtChecked(i).removeObserver(this);
         }
     }
 

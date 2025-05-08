@@ -23,7 +23,7 @@ struct Permissions;
 
 namespace permissions_api_helpers {
 
-// Converts the permission |set| to a permissions object.
+// Converts the permission `set` to a permissions object.
 std::unique_ptr<api::permissions::Permissions> PackPermissionSet(
     const PermissionSet& set);
 
@@ -62,21 +62,21 @@ struct UnpackPermissionSetResult {
   // - If the extension *has* file access:
   //   * <all_urls> will be unpacked normally, and will include
   //     URLPattern::SCHEME_FILE as a valid scheme.
-  //   * file:///* will be unpacked normally (|restricted_file_scheme_patterns|
+  //   * file:///* will be unpacked normally (`restricted_file_scheme_patterns`
   //     will be empty).
   URLPatternSet restricted_file_scheme_patterns;
 };
 
-// Parses the |permissions_input| object, and partitions permissions into the
-// result. |required_permissions| and |optional_permissions| are the required
+// Parses the `permissions_input` object, and partitions permissions into the
+// result. `required_permissions` and `optional_permissions` are the required
 // and optional permissions specified in the extension's manifest, used for
-// separating permissions. |has_file_access| is used to determine whether the
+// separating permissions. `has_file_access` is used to determine whether the
 // file:-scheme is valid for host permissions. If file access is allowed,
 // <all_urls> will match the file:-scheme (otherwise, it will not). Patterns
 // that specifically specify "file:" will be parsed regardless (and placed into
 // restricted_file_scheme_patterns if file access is disallowed). If an error is
 // detected (e.g., an unknown API permission, invalid URL pattern, or API that
-// doesn't support being optional), |error| is populated and null is returned.
+// doesn't support being optional), `error` is populated and null is returned.
 std::unique_ptr<UnpackPermissionSetResult> UnpackPermissionSet(
     const api::permissions::Permissions& permissions_input,
     const PermissionSet& required_permissions,

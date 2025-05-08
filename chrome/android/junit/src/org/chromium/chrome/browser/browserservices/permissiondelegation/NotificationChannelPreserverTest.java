@@ -9,6 +9,8 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,10 +22,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.notifications.NotificationChannelStatus;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
@@ -50,10 +55,24 @@ public class NotificationChannelPreserverTest {
         SiteChannelsManager.setInstanceForTesting(mSiteChannelsManager);
         WebappRegistry.getInstance().setPermissionStoreForTesting(mStore);
 
-        when(mSiteChannelsManager.getChannelIdForOrigin(eq(ORIGIN_WITH_CHANNEL.toString())))
-                .thenReturn(CHANNEL_ID);
-        when(mSiteChannelsManager.getChannelIdForOrigin(eq(ORIGIN_WITHOUT_CHANNEL.toString())))
-                .thenReturn(ChromeChannelDefinitions.ChannelId.SITES);
+        doAnswer(
+                        (invocation) -> {
+                            Callback<String> callback = invocation.getArgument(1);
+                            callback.onResult(CHANNEL_ID);
+                            return null;
+                        })
+                .when(mSiteChannelsManager)
+                .getChannelIdForOriginAsync(
+                        eq(ORIGIN_WITH_CHANNEL.toString()), any(Callback.class));
+        doAnswer(
+                        (invocation) -> {
+                            Callback<String> callback = invocation.getArgument(1);
+                            callback.onResult(ChromeChannelDefinitions.ChannelId.SITES);
+                            return null;
+                        })
+                .when(mSiteChannelsManager)
+                .getChannelIdForOriginAsync(
+                        eq(ORIGIN_WITHOUT_CHANNEL.toString()), any(Callback.class));
     }
 
     @Test
@@ -113,11 +132,25 @@ public class NotificationChannelPreserverTest {
     }
 
     private void setChannelStatus(boolean enabled) {
-        when(mSiteChannelsManager.getChannelStatus(eq(CHANNEL_ID)))
-                .thenReturn(
-                        enabled
-                                ? NotificationChannelStatus.ENABLED
-                                : NotificationChannelStatus.BLOCKED);
+        doAnswer(
+                        new Answer<Void>() {
+                            @Override
+                            public Void answer(InvocationOnMock invocation) throws Throwable {
+                                String channelIdArg = invocation.getArgument(0);
+                                Callback<Integer> callbackArg = invocation.getArgument(1);
+
+                                if (channelIdArg.equals(CHANNEL_ID)) {
+                                    if (enabled) {
+                                        callbackArg.onResult(NotificationChannelStatus.ENABLED);
+                                    } else {
+                                        callbackArg.onResult(NotificationChannelStatus.BLOCKED);
+                                    }
+                                }
+                                return null; // Method is void
+                            }
+                        })
+                .when(mSiteChannelsManager)
+                .getChannelStatusAsync(eq(CHANNEL_ID), any(Callback.class));
     }
 
     private void setPreInstallNotificationPermission(

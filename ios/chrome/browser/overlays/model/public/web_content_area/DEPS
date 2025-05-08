@@ -1,3 +1,7 @@
+include_rules = [
+  "+components/javascript_dialogs/core",
+]
+
 specific_include_rules = {
   # TODO(crbug.com/40820398): Remove these dependencies.
   "^java_script_dialog_overlay.mm": [

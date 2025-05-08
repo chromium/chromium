@@ -21,6 +21,7 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -173,10 +174,10 @@ void GraduationManagerImpl::UpdateAppPinnedState() {
 
   UnpinAppWithIDFromShelf(ash::kGraduationAppId);
   nudge_controller_->ResetNudgePref();
-  auto* browser =
-      FindSystemWebAppBrowser(profile_, SystemWebAppType::GRADUATION);
+  auto* browser = FindSystemWebAppBrowser(
+      profile_, SystemWebAppType::GRADUATION, BrowserType::kApp);
   if (browser) {
-    browser->window()->Close();
+    browser->Close();
   }
 }
 

@@ -1156,6 +1156,12 @@ public class WebContentsImpl
     }
 
     @Override
+    public void showInterestInElement(int nodeID) {
+        if (mNativeWebContentsAndroid == 0) return;
+        WebContentsImplJni.get().showInterestInElement(mNativeWebContentsAndroid, nodeID);
+    }
+
+    @Override
     public void notifyRendererPreferenceUpdate() {
         if (mNativeWebContentsAndroid == 0) return;
         WebContentsImplJni.get().notifyRendererPreferenceUpdate(mNativeWebContentsAndroid);
@@ -1244,6 +1250,16 @@ public class WebContentsImpl
     public void setSupportsForwardTransitionAnimation(boolean supports) {
         WebContentsImplJni.get()
                 .setSupportsForwardTransitionAnimation(mNativeWebContentsAndroid, supports);
+    }
+
+    @Override
+    public boolean hasOpener() {
+        return WebContentsImplJni.get().hasOpener(mNativeWebContentsAndroid);
+    }
+
+    @Override
+    public int getOriginalWindowOpenDisposition() {
+        return WebContentsImplJni.get().getOriginalWindowOpenDisposition(mNativeWebContentsAndroid);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -1441,6 +1457,8 @@ public class WebContentsImpl
         void setContextMenuInsets(
                 long nativeWebContentsAndroid, int top, int left, int bottom, int right);
 
+        void showInterestInElement(long nativeWebContentsAndroid, int nodeID);
+
         void notifyRendererPreferenceUpdate(long nativeWebContentsAndroid);
 
         void notifyBrowserControlsHeightChanged(long nativeWebContentsAndroid);
@@ -1464,5 +1482,9 @@ public class WebContentsImpl
                 long nativeWebContentsAndroid, Callback<Bitmap> callback);
 
         void setSupportsForwardTransitionAnimation(long nativeWebContentsAndroid, boolean enabled);
+
+        boolean hasOpener(long nativeWebContentsAndroid);
+
+        int getOriginalWindowOpenDisposition(long nativeWebContentsAndroid);
     }
 }

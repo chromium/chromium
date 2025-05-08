@@ -62,6 +62,7 @@ goog.events.PasteHandler = function(element) {
    * more details on {@link #handleEvent_}.
    * @type {string}
    * @private
+   * @suppress {strictMissingProperties} Added to tighten compiler checks
    */
   this.oldValue_ = this.element_.value;
 
@@ -236,6 +237,7 @@ goog.events.PasteHandler.prototype.getEventHandler = function() {
  * @return {boolean} Whether the polling should stop or not, based on whether
  *     we found a text change or not.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.events.PasteHandler.prototype.checkUpdatedText_ = function() {
   'use strict';
@@ -346,6 +348,7 @@ goog.events.PasteHandler.prototype.handleEvent_ = function(e) {
     }
   }
   this.lastTime_ = Date.now();
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.oldValue_ = this.element_.value;
   goog.log.info(this.logger_, e.type + ' -> ' + this.state_);
   this.previousEvent_ = e.type;
@@ -364,6 +367,7 @@ goog.events.PasteHandler.prototype.handleEvent_ = function(e) {
  *
  * @param {goog.events.BrowserEvent} e The underlying browser event.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.events.PasteHandler.prototype.handleUnderInit_ = function(e) {
   'use strict';
@@ -412,6 +416,7 @@ goog.events.PasteHandler.prototype.handleUnderInit_ = function(e) {
  *
  * @param {goog.events.BrowserEvent} e The underlying browser event.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.events.PasteHandler.prototype.handleUnderFocused_ = function(e) {
   'use strict';
@@ -472,6 +477,7 @@ goog.events.PasteHandler.prototype.handleUnderFocused_ = function(e) {
  *
  * @param {goog.events.BrowserEvent} e The underlying browser event.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.events.PasteHandler.prototype.handleUnderTyping_ = function(e) {
   'use strict';

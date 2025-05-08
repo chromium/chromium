@@ -48,6 +48,7 @@ void SharedTabGroupFeedbackController::Init() {
 
 void SharedTabGroupFeedbackController::TearDown() {
   browser_view_->browser()->GetTabStripModel()->RemoveObserver(this);
+  browser_view_ = nullptr;
 }
 
 void SharedTabGroupFeedbackController::UpdateFeedbackButtonVisibility(

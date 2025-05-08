@@ -11,11 +11,13 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
-#include "chrome/browser/ui/views/page_action/page_action_metrics_recorder.h"
+#include "chrome/browser/ui/views/page_action/page_action_metrics_recorder_interface.h"
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
+#include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/actions/action_id.h"
 
@@ -139,12 +141,22 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
     return base::PassKey<PageActionController>();
   }
 
+  // Provides a metric recording callback to the caller. The callback won't run
+  // if the page action controller is destroyed.
+  base::RepeatingCallback<void(PageActionTrigger)> GetClickCallback(
+      actions::ActionId action_id);
+
  private:
   using PageActionModelsMap =
       std::map<actions::ActionId, std::unique_ptr<PageActionModelInterface>>;
+  using PageActionMetricsRecordersMap =
+      std::map<actions::ActionId,
+               std::unique_ptr<PageActionPerActionMetricsRecorderInterface>>;
 
   // Creates a page action model for the given id, and initializes it's values.
-  void Register(actions::ActionId action_id, bool is_tab_active);
+  void Register(actions::ActionId action_id,
+                bool is_tab_active,
+                bool is_ephemeral);
 
   PageActionModelInterface& FindPageActionModel(
       actions::ActionId action_id) const;
@@ -157,11 +169,31 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
   void PinnedActionsModelChanged();
 
   std::unique_ptr<PageActionModelInterface> CreateModel(
-      actions::ActionId action_id);
-  std::unique_ptr<PageActionMetricsRecorderInterface> CreateMetricsRecorder(
+      actions::ActionId action_id,
+      bool is_ephemeral);
+
+  // Helper used to create per-action metric recorder.
+  std::unique_ptr<PageActionPerActionMetricsRecorderInterface>
+  CreatePerActionMetricsRecorder(
       tabs::TabInterface& tab_interface,
       const PageActionProperties& properties,
-      PageActionModelInterface& model);
+      PageActionModelInterface& model,
+      VisibleEphemeralPageActionsCountCallback
+          visible_ephemeral_page_actions_count_callback);
+
+  // Helper used to create a page-level metric recorder.
+  std::unique_ptr<PageActionPageMetricsRecorderInterface>
+  CreatePageMetricsRecorder(tabs::TabInterface& tab_interface,
+                            VisibleEphemeralPageActionsCountCallback
+                                visible_ephemeral_page_actions_count_callback);
+
+  // Issues internally a metric recording for the provided `action_id`.
+  void RecordClickMetric(actions::ActionId action_id,
+                         PageActionTrigger trigger_source);
+
+  // Returns the number of page actions currently visual in the actual tab that
+  // are ephemeral.
+  int GetVisibleEphemeralPageActionsCount() const;
 
   const raw_ptr<PageActionModelFactory> page_action_model_factory_ = nullptr;
   const raw_ptr<PageActionMetricsRecorderFactory>
@@ -171,8 +203,12 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
 
   // Metrics recorders associated with ephemeral page actions.
   // Each recorder handles logging UMA metrics for one specific action id.
-  std::vector<std::unique_ptr<PageActionMetricsRecorderInterface>>
-      metrics_recorders_;
+  PageActionMetricsRecordersMap metrics_recorders_;
+
+  // Page-level metric recorder. It's will recorder global metrics that is not
+  // scoped to a single page action.
+  std::unique_ptr<PageActionPageMetricsRecorderInterface>
+      page_metrics_recorder_;
 
   base::ScopedObservation<PinnedToolbarActionsModel,
                           PinnedToolbarActionsModel::Observer>
@@ -180,6 +216,8 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
 
   base::CallbackListSubscription tab_activated_callback_subscription_;
   base::CallbackListSubscription tab_deactivated_callback_subscription_;
+
+  base::WeakPtrFactory<PageActionController> weak_factory_{this};
 };
 
 }  // namespace page_actions

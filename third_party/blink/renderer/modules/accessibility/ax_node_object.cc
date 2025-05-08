@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
+#include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
@@ -532,6 +533,13 @@ bool ElementHasAnyAriaRelation(Element& element) {
 }
 
 bool IsAddedOnlyViaSpecialTraversal(const Node* node) {
+  // Terminology:
+  // * Scroll button pseudo element: these are the left/right buttons
+  // automatically added for CSS carousels,
+  // * Scroll marker group pseudo element: this is a group of navigation
+  // buttons (often dots) for controlling the CSS carousel.
+  // * Scroll marker pseudo element: this is an individual navigation button.
+  //
   // ::scroll-markers have their layout object nested under
   // ::scroll-marker-group, which isn't related to its node traversal. So we
   // shouldn't use node or layout traversals for this. Instead this is handled
@@ -541,7 +549,58 @@ bool IsAddedOnlyViaSpecialTraversal(const Node* node) {
   if (node->IsScrollMarkerPseudoElement()) {
     return true;
   }
+  // ScrollButtons and ScrollMarkerGroup are added as siblings of their
+  // originating element. See `AddNodeChild`.
+  if (node->IsScrollMarkerGroupPseudoElement() ||
+      node->IsScrollButtonPseudoElement()) {
+    return true;
+  }
+
+  if (RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled()) {
+    // The first descendant <input> in a <select> gets taken out of the listbox
+    // because it is not an <option>. It controls the listbox.
+    if (auto* input = DynamicTo<HTMLInputElement>(node)) {
+      if (input->IsFirstTextInputInAncestorSelect()) {
+        return true;
+      }
+    }
+  }
+
   return false;
+}
+
+VectorOf<Node> UnpackScrollerWithSiblingControls(Element* element) {
+  CHECK(element->HasScrollButtonOrMarkerGroupPseudos());
+  // This is the order of how the pseudo elements should appear according to
+  // https://drafts.csswg.org/css-overflow-5/
+  PseudoId ordered_pseudos[] = {
+      kPseudoIdScrollMarkerGroupBefore, kPseudoIdScrollButtonBlockStart,
+      kPseudoIdScrollButtonInlineStart, kPseudoIdScrollButtonInlineEnd,
+      kPseudoIdScrollButtonBlockEnd,    kPseudoIdNone,
+      kPseudoIdScrollMarkerGroupAfter,
+  };
+  VectorOf<Node> result;
+  for (PseudoId pseudo_id : ordered_pseudos) {
+    if (pseudo_id == kPseudoIdNone) {
+      result.push_back(element);
+    } else if (auto* pseudo = element->GetPseudoElement(pseudo_id)) {
+      result.push_back(pseudo);
+    }
+  }
+  // We should have at least added the element itself.
+  CHECK(!result.empty());
+  return result;
+}
+
+void CollectLayoutTextContentRecursive(StringBuilder& builder,
+                                       const LayoutObject* object) {
+  if (auto* text_object = DynamicTo<LayoutText>(object)) {
+    builder.Append(text_object->TransformedText());
+  }
+  for (auto* child = object->SlowFirstChild(); child;
+       child = child->NextSibling()) {
+    CollectLayoutTextContentRecursive(builder, child);
+  }
 }
 
 }  // namespace
@@ -1381,6 +1440,16 @@ std::optional<String> AXNodeObject::GetCSSAltText(const Element* element) {
   }
 
   return std::nullopt;
+}
+
+std::optional<String> AXNodeObject::GetCSSContentText(const Element* element) {
+  if (!element || !element->IsPseudoElement() || !element->GetLayoutObject()) {
+    return std::nullopt;
+  }
+
+  StringBuilder builder;
+  CollectLayoutTextContentRecursive(builder, element->GetLayoutObject());
+  return builder.ToString();
 }
 
 // The following lists are for deciding whether the tags aside,
@@ -4390,6 +4459,23 @@ KURL AXNodeObject::Url() const {
 }
 
 AXObject* AXNodeObject::ChooserPopup() const {
+  if (RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled() ||
+      RuntimeEnabledFeatures::SelectAccessibilityNestedInputEnabled()) {
+    // The first input inside of a select filters the listbox, and therefore
+    // controls it.
+    if (auto* input = DynamicTo<HTMLInputElement>(GetNode())) {
+      if (input->IsTextField()) {
+        if (auto* select = input->FirstAncestorSelectElement()) {
+          if (auto* popover = select->PopoverForAppearanceBase()) {
+            if (auto* axobject = AXObjectCache().Get(popover)) {
+              return axobject;
+            }
+          }
+        }
+      }
+    }
+  }
+
   // When color & date chooser popups are visible, they can be found in the tree
   // as a group child of the <input> control itself.
   switch (native_role_) {
@@ -4453,7 +4539,7 @@ String AXNodeObject::GetValueForControl(AXObjectSet& visited) const {
     // customizable select, then use the text inside that button:
     // https://github.com/openui/open-ui/issues/1117
     if (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
-        select_element->IsAppearanceBaseButton()) {
+        select_element->IsAppearanceBase()) {
       if (auto* button = select_element->SlottedButton()) {
         if (AXObject* button_object = AXObjectCache().Get(button)) {
           return button_object->TextFromDescendants(visited, nullptr, false);
@@ -4823,6 +4909,28 @@ String AXNodeObject::GetName(ax::mojom::blink::NameFrom& name_from,
           return element->GetLocale().QueryString(IDS_AX_CAROUSEL_SCROLL_UP);
       }
     }
+  }
+
+  // Handle ::scroll-marker names. Pick the first one that matches:
+  //  - Use CSS alt text if one is available.
+  //  - Use CSS content (from LayoutText descendants) if specified and
+  //    non-empty.
+  //  - Use scroll target's accessibility name is it has one.
+  if (element && element->IsScrollMarkerPseudoElement()) {
+    std::optional<String> alt_text = GetCSSAltText(element);
+    if (alt_text && !alt_text->empty()) {
+      return *alt_text;
+    }
+
+    std::optional<String> content = GetCSSContentText(element);
+    if (content && !content->empty()) {
+      return *content;
+    }
+
+    const AXObject* scroll_target =
+        AXObjectCache().Get(element->parentElement());
+    ax::mojom::blink::NameFrom name_source;
+    return scroll_target ? scroll_target->GetName(name_source, nullptr) : "";
   }
 
   return name;
@@ -5846,6 +5954,19 @@ void AXNodeObject::AddNodeChildren() {
   }
 }
 
+void AXNodeObject::AddSelectChildren() {
+  auto* select = DynamicTo<HTMLSelectElement>(GetNode());
+  if (RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled() &&
+      select) {
+    if (auto* input = select->FirstDescendantTextInput()) {
+      // Reparent the first descendant <input> element of this <select> to be
+      // adjacent to the listbox in the a11y tree.
+      AddNodeChild(input);
+    }
+  }
+  AddNodeChildren();
+}
+
 void AXNodeObject::AddOwnedChildren() {
   AXObjectVector owned_children;
   AXObjectCache().ValidatedAriaOwnedChildren(this, owned_children);
@@ -5895,7 +6016,9 @@ void AXNodeObject::AddChildrenImpl() {
     AddValidationMessageChild();
   CHECK_ATTACHED();
 
-  if (HasValidHTMLTableStructureAndLayout()) {
+  if (IsA<HTMLSelectElement>(GetNode())) {
+    AddSelectChildren();
+  } else if (HasValidHTMLTableStructureAndLayout()) {
     AddTableChildren();
   } else if (GetNode() && GetNode()->IsScrollMarkerGroupPseudoElement()) {
     AddScrollMarkerGroupChildren();
@@ -5939,10 +6062,10 @@ void AXNodeObject::AddScrollMarkerGroupChildren() {
   // The desired AX tree is the following:
   // Scroller
   //   Item
-  //   ::scroll-marker-group
-  //     ::scroll-marker
+  // ::scroll-marker-group
+  //   ::scroll-marker
   //
-  // So far, we added items as they appeared in the DOM or Layout tree, with the
+  // So far, we added items as they appeared in the Layout tree, with the
   // exception that we pruned ::scroll-markers any time we saw them (see
   // IsAddedOnlyViaSpecialTraversal). Now, we've reached ::scroll-marker-group.
   // From here, we use the layout object walk skipping any anonymous layout
@@ -6000,6 +6123,20 @@ void AXNodeObject::AddChildren() {
 void AXNodeObject::AddNodeChild(Node* node) {
   if (!node)
     return;
+
+  if (Element* element = DynamicTo<Element>(node);
+      element && element->HasScrollButtonOrMarkerGroupPseudos()) {
+    VectorOf<Node> children = UnpackScrollerWithSiblingControls(element);
+    for (auto child : children) {
+      AddNodeChildImpl(child.Get());
+    }
+  } else {
+    AddNodeChildImpl(node);
+  }
+}
+
+void AXNodeObject::AddNodeChildImpl(Node* node) {
+  CHECK(node);
 
   AXObject* ax_child = AXObjectCache().Get(node);
   CHECK(!ax_child || !ax_child->IsDetached());

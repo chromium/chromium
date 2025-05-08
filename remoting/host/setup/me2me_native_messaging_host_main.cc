@@ -23,7 +23,6 @@
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
 #include "remoting/base/auto_thread_task_runner.h"
-#include "remoting/base/crash/crash_reporting.h"
 #include "remoting/base/gaia_oauth_client.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/url_request_context_getter.h"
@@ -42,11 +41,16 @@
 #include "base/apple/scoped_nsautorelease_pool.h"
 #endif  // BUILDFLAG(IS_APPLE)
 
+#if BUILDFLAG(IS_LINUX)
+#include "remoting/base/crash/crash_reporting_crashpad.h"
+#endif  // BUILDFLAG(IS_LINUX)
+
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "base/process/process_info.h"
 #include "base/win/registry.h"
+#include "remoting/base/crash/crash_reporting_breakpad.h"
 #include "remoting/host/pairing_registry_delegate_win.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -95,7 +99,11 @@ int Me2MeNativeMessagingHostMain(int argc, char** argv) {
   // needs to be initialized first, so that the preference for crash-reporting
   // can be looked up in the config file.
   if (IsUsageStatsAllowed()) {
-    InitializeCrashReporting();
+#if BUILDFLAG(IS_LINUX)
+    InitializeCrashpadReporting();
+#elif BUILDFLAG(IS_WIN)
+    InitializeBreakpadReporting();
+#endif  // BUILDFLAG(IS_LINUX)
   }
 #endif  // defined(REMOTING_ENABLE_CRASH_REPORTING)
 

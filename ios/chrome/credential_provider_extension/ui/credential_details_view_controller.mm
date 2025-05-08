@@ -47,7 +47,7 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
 @property(nonatomic, weak) id<Credential> credential;
 
 // Current clear password or nil (while locked).
-@property(nonatomic, strong) NSString* clearPassword;
+@property(nonatomic, copy) NSString* clearPassword;
 
 @end
 

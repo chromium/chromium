@@ -209,10 +209,14 @@ class VideoCaptureImplTest : public ::testing::Test {
     const auto frame_dropped_callback = WTF::BindRepeating(
         &VideoCaptureImplTest::OnFrameDropped, base::Unretained(this));
 
-    video_capture_impl_->StartCapture(
-        client_id, params, state_update_callback, frame_ready_callback,
-        /*sub_capture_target_version_cb=*/base::DoNothing(),
-        frame_dropped_callback);
+    VideoCaptureCallbacks video_capture_callbacks;
+    video_capture_callbacks.state_update_cb = state_update_callback;
+    video_capture_callbacks.deliver_frame_cb = frame_ready_callback;
+    video_capture_callbacks.frame_dropped_cb = frame_dropped_callback;
+    video_capture_callbacks.sub_capture_target_version_cb = base::DoNothing();
+
+    video_capture_impl_->StartCapture(client_id, params,
+                                      std::move(video_capture_callbacks));
   }
 
   void StopCapture(int client_id) {

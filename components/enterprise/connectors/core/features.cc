@@ -18,4 +18,12 @@ BASE_FEATURE(kEnterpriseRealtimeEventReportingOnIOS,
              "EnterpriseRealtimeEventReportingOnIOS",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnterpriseActiveUserDetection,
+             "EnterpriseActiveUserDetection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnterpriseIframeDlpRulesSupport,
+             "EnterpriseIframeDlpRulesSupport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace enterprise_connectors

@@ -66,7 +66,8 @@ bool DownloadProtectionDelegateDesktop::ShouldCheckDownloadUrl(
 
 bool DownloadProtectionDelegateDesktop::ShouldCheckClientDownload(
     download::DownloadItem* item) const {
-  return IsSafeBrowsingEnabledForDownloadProfile(item);
+  return IsSafeBrowsingEnabledForDownloadProfile(item) &&
+         IsSupportedDownload(*item, item->GetTargetFilePath());
 }
 
 bool DownloadProtectionDelegateDesktop::IsSupportedDownload(

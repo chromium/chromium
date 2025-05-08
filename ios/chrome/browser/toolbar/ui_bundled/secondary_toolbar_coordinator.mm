@@ -10,9 +10,11 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/guided_tour_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/adaptive_toolbar_coordinator+subclassing.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_configuration.h"
@@ -60,6 +62,19 @@
   [_secondaryToolbarMediator disconnect];
   _secondaryToolbarMediator = nullptr;
   [super stop];
+}
+
+#pragma mark - GuidedTourCommands
+
+- (void)highlightViewInStep:(GuidedTourStep)step {
+  if (IsSplitToolbarMode(self.viewController) && step == GuidedTourStepNTP) {
+    [self.viewController IPHHighlightTabGridButton:YES];
+  }
+}
+- (void)stepCompleted:(GuidedTourStep)step {
+  if (IsSplitToolbarMode(self.viewController) && step == GuidedTourStepNTP) {
+    [self.viewController IPHHighlightTabGridButton:NO];
+  }
 }
 
 #pragma mark - ToolbarCommands

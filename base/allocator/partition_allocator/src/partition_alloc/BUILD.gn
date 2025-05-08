@@ -15,15 +15,6 @@ if (!defined(partition_alloc_remove_configs)) {
   partition_alloc_remove_configs = []
 }
 
-# Enables compilation of the freelist dispatcher, which we'll use to
-# carry out runtime evaluation of PartitionAlloc's two freelist
-# implementations: the existing encoded-next freelist and the new
-# pool offset freelist. When false, the latter is not built.
-use_freelist_dispatcher = has_64_bit_pointers
-
-assert(has_64_bit_pointers || !use_freelist_dispatcher,
-       "freelist dispatcher can't be used without 64-bit pointers")
-
 record_alloc_info = false
 
 # GWP-ASan is tied to BRP's enablement.
@@ -188,8 +179,6 @@ pa_buildflag_header("buildflags") {
     "STACK_SCAN_SUPPORTED=$stack_scan_supported",
     "USE_ALLOCATOR_SHIM=$use_allocator_shim",
     "USE_ASAN_BACKUP_REF_PTR=$use_asan_backup_ref_ptr",
-    "USE_FREELIST_DISPATCHER=$use_freelist_dispatcher",
-    "USE_FREESLOT_BITMAP=$use_freeslot_bitmap",
     "USE_FULL_MTE=$use_full_mte",
     "USE_LARGE_EMPTY_SLOT_SPAN_RING=$use_large_empty_slot_span_ring",
     "USE_PARTITION_ALLOC=$use_partition_alloc",
@@ -411,13 +400,12 @@ if (is_clang_or_gcc) {
       "address_space_stats.h",
       "allocation_guard.cc",
       "allocation_guard.h",
+      "bucket_lookup.h",
       "compressed_pointer.cc",
       "compressed_pointer.h",
       "dangling_raw_ptr_checks.cc",
       "dangling_raw_ptr_checks.h",
       "flags.h",
-      "freeslot_bitmap.h",
-      "freeslot_bitmap_constants.h",
       "gwp_asan_support.cc",
       "gwp_asan_support.h",
       "in_slot_metadata.cc",
@@ -427,6 +415,8 @@ if (is_clang_or_gcc) {
       "internal_allocator_forward.h",
       "lightweight_quarantine.cc",
       "lightweight_quarantine.h",
+      "lightweight_quarantine_support.cc",
+      "lightweight_quarantine_support.h",
       "memory_reclaimer.cc",
       "memory_reclaimer.h",
       "oom.cc",
@@ -451,7 +441,6 @@ if (is_clang_or_gcc) {
       "partition_alloc_hooks.h",
       "partition_bucket.cc",
       "partition_bucket.h",
-      "partition_bucket_lookup.h",
       "partition_cookie.cc",
       "partition_cookie.h",
       "partition_dcheck_helper.cc",
@@ -526,18 +515,21 @@ if (is_clang_or_gcc) {
     } else if (current_cpu == "riscv64") {
       assert(stack_scan_supported)
       sources += [ "stack/asm/riscv64/push_registers_asm.cc" ]
+    } else if (current_cpu == "loong64") {
+      assert(stack_scan_supported)
+      sources += [ "stack/asm/loong64/push_registers_asm.cc" ]
     } else {
       # To support a trampoline for another arch, please refer to v8/src/heap/base.
       assert(!stack_scan_supported)
     }
 
-    # TODO(crbug.com/40274683): once we evaluate pool offset freelists,
-    # we should erase the dispatcher and compile (& use) exactly one
-    # freelist implementation.
-    if (use_freelist_dispatcher) {
+    # Pool-offset encoding has better security characteristics, but requires
+    # contiguous pool hence limited to 64-bit systems.
+    if (has_64_bit_pointers) {
       sources += [ "pool_offset_freelist.h" ]
+    } else {
+      sources += [ "encoded_next_freelist.h" ]
     }
-    sources += [ "encoded_next_freelist.h" ]
 
     public_deps = [
       ":build_config",
@@ -617,6 +609,8 @@ if (is_clang_or_gcc) {
       "partition_alloc_base/check.h",
       "partition_alloc_base/compiler_specific.h",
       "partition_alloc_base/component_export.h",
+      "partition_alloc_base/containers/flat_map.h",
+      "partition_alloc_base/containers/flat_tree.h",
       "partition_alloc_base/cpu.cc",
       "partition_alloc_base/cpu.h",
       "partition_alloc_base/cxx20_is_constant_evaluated.h",
@@ -655,6 +649,9 @@ if (is_clang_or_gcc) {
       "partition_alloc_base/process/process_handle.h",
       "partition_alloc_base/rand_util.cc",
       "partition_alloc_base/rand_util.h",
+      "partition_alloc_base/ranges/algorithm.h",
+      "partition_alloc_base/ranges/functional.h",
+      "partition_alloc_base/ranges/ranges.h",
       "partition_alloc_base/scoped_clear_last_error.h",
       "partition_alloc_base/strings/cstring_builder.cc",
       "partition_alloc_base/strings/cstring_builder.h",
@@ -665,6 +662,7 @@ if (is_clang_or_gcc) {
       "partition_alloc_base/strings/stringprintf.cc",
       "partition_alloc_base/strings/stringprintf.h",
       "partition_alloc_base/system/sys_info.h",
+      "partition_alloc_base/template_util.h",
       "partition_alloc_base/thread_annotations.h",
       "partition_alloc_base/threading/platform_thread.cc",
       "partition_alloc_base/threading/platform_thread.h",
@@ -985,17 +983,21 @@ if (build_with_chromium) {
         "address_pool_manager_unittest.cc",
         "address_space_randomization_unittest.cc",
         "compressed_pointer_unittest.cc",
-        "freeslot_bitmap_unittest.cc",
         "hardening_unittest.cc",
         "lightweight_quarantine_unittest.cc",
         "memory_reclaimer_unittest.cc",
         "page_allocator_unittest.cc",
         "partition_alloc_base/bits_pa_unittest.cc",
         "partition_alloc_base/component_export_pa_unittest.cc",
+        "partition_alloc_base/containers/flat_map_pa_unittest.cc",
+        "partition_alloc_base/containers/flat_tree_pa_unittest.cc",
         "partition_alloc_base/cpu_pa_unittest.cc",
         "partition_alloc_base/logging_pa_unittest.cc",
         "partition_alloc_base/no_destructor_pa_unittest.cc",
         "partition_alloc_base/rand_util_pa_unittest.cc",
+        "partition_alloc_base/ranges/algorithm_pa_unittest.cc",
+        "partition_alloc_base/ranges/functional_pa_unittest.cc",
+        "partition_alloc_base/ranges/ranges_pa_unittest.cc",
         "partition_alloc_base/scoped_clear_last_error_pa_unittest.cc",
         "partition_alloc_base/strings/cstring_builder_pa_unittest.cc",
         "partition_alloc_base/strings/safe_sprintf_pa_unittest.cc",
@@ -1082,6 +1084,7 @@ source_set("test_support") {
   sources = [
     "extended_api.cc",
     "extended_api.h",
+    "partition_alloc_base/test/move_only_int.h",
     "partition_alloc_base/threading/platform_thread_for_testing.h",
     "partition_alloc_for_testing.h",
     "pointers/raw_ptr_counting_impl_for_test.cc",

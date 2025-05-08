@@ -19,7 +19,7 @@ namespace viz {
 
 TextureDrawQuad::TextureDrawQuad()
     : nearest_neighbor(false),
-      premultiplied_alpha(false),
+      premultiplied_alpha(true),
       secure_output_only(false),
       is_video_frame(false),
       is_stream_video(false),

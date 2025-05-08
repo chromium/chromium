@@ -1864,6 +1864,16 @@ bool CSSSelector::IsOrContainsHostPseudoClass() const {
   return false;
 }
 
+bool CSSSelector::IsDeeplyHostPseudoClass() const {
+  if ((GetPseudoType() == kPseudoIs || GetPseudoType() == kPseudoWhere ||
+       GetPseudoType() == kPseudoParent) &&
+      SelectorListOrParent() &&
+      CSSSelectorList::IsSingleComplexSelector(*SelectorListOrParent())) {
+    return SelectorListOrParent()->IsDeeplyHostPseudoClass();
+  }
+  return IsHostPseudoClass();
+}
+
 template <typename Functor>
 static bool ForAnyInComplexSelector(const Functor& functor,
                                     const CSSSelector& selector) {

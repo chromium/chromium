@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_SEC_HEADER_HELPERS_H_
 
 #include "base/component_export.h"
+#include "base/types/optional_ref.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -38,11 +39,11 @@ class URLLoaderFactoryParams;
 // Spec: https://w3c.github.io/webappsec-fetch-metadata/
 COMPONENT_EXPORT(NETWORK_SERVICE)
 void SetFetchMetadataHeaders(
-    net::URLRequest* request,
+    net::URLRequest& request,
     network::mojom::RequestMode mode,
     bool has_user_activation,
     network::mojom::RequestDestination dest,
-    const GURL* pending_redirect_url,
+    base::optional_ref<const GURL> pending_redirect_url,
     const mojom::URLLoaderFactoryParams& factory_params,
     const cors::OriginAccessList& origin_access_list,
     mojom::CredentialsMode credentials_mode);
@@ -50,7 +51,7 @@ void SetFetchMetadataHeaders(
 // Removes any sec-ch- or sec-fetch- prefixed request headers on the |request|
 // if the |pending_redirect_url| is not trustworthy and the current url is.
 COMPONENT_EXPORT(NETWORK_SERVICE)
-void MaybeRemoveSecHeaders(net::URLRequest* request,
+void MaybeRemoveSecHeaders(net::URLRequest& request,
                            const GURL& pending_redirect_url);
 
 }  // namespace network

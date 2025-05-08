@@ -12,6 +12,8 @@ import androidx.annotation.ColorInt;
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
@@ -32,11 +34,12 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** The business logic for controlling the top toolbar's cc texture. */
+@NullMarked
 public class TopToolbarOverlayMediator {
     // Forced testing params.
-    private static Boolean sIsTabletForTesting;
-    private static Integer sToolbarBackgroundColorForTesting;
-    private static Integer sUrlBarColorForTesting;
+    private static @Nullable Boolean sIsTabletForTesting;
+    private static @Nullable Integer sToolbarBackgroundColorForTesting;
+    private static @Nullable Integer sUrlBarColorForTesting;
 
     /** An Android Context. */
     private final Context mContext;
@@ -82,11 +85,11 @@ public class TopToolbarOverlayMediator {
     /** Whether a layout that this overlay can be displayed on is showing. */
     private boolean mIsOnValidLayout;
 
-    private ObservableSupplier<Tab> mTabSupplier;
+    private ObservableSupplier<@Nullable Tab> mTabSupplier;
     private float mViewportHeight;
 
-    private OffsetTag mTopControlsOffsetTag;
-    private OffsetTag mBottomControlsOffsetTag;
+    private @Nullable OffsetTag mTopControlsOffsetTag;
+    private @Nullable OffsetTag mBottomControlsOffsetTag;
     private @ControlsPosition int mControlsPosition;
 
     TopToolbarOverlayMediator(
@@ -94,7 +97,7 @@ public class TopToolbarOverlayMediator {
             Context context,
             LayoutStateProvider layoutStateProvider,
             Callback<ClipDrawableProgressBar.DrawingInfo> progressInfoCallback,
-            ObservableSupplier<Tab> tabSupplier,
+            ObservableSupplier<@Nullable Tab> tabSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
             TopUiThemeColorProvider topUiThemeColorProvider,
             ObservableSupplier<Integer> bottomToolbarControlsOffsetSupplier,
@@ -129,7 +132,7 @@ public class TopToolbarOverlayMediator {
 
         // Keep an observer attached to the visible tab (and only the visible tab) to update
         // properties including theme color.
-        Callback<Tab> activityTabCallback =
+        Callback<@Nullable Tab> activityTabCallback =
                 (tab) -> {
                     if (tab == null) return;
                     updateVisibility();
@@ -431,7 +434,7 @@ public class TopToolbarOverlayMediator {
         int contentOffset = mBrowserControlsStateProvider.getContentOffset();
         // Don't use mControlsPosition here because it will not have been updated if this function
         // gets called in the middle of a change of position.
-        if (mBrowserControlsStateProvider.getControlsPosition() == ControlsPosition.BOTTOM) {
+        if (mControlsPosition == ControlsPosition.BOTTOM) {
             contentOffset = (int) (mBottomToolbarControlsOffsetSupplier.get() + mViewportHeight);
         }
 

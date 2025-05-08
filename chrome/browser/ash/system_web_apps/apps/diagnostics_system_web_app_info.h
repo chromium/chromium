@@ -23,7 +23,7 @@ class DiagnosticsSystemAppDelegate : public ash::SystemWebAppDelegate {
   bool ShouldShowInLauncher() const override;
   gfx::Size GetMinimumWindowSize() const override;
   bool ShouldCaptureNavigations() const override;
-  Browser* LaunchAndNavigateSystemWebApp(
+  ash::BrowserDelegate* LaunchAndNavigateSystemWebApp(
       Profile* profile,
       web_app::WebAppProvider* provider,
       const GURL& url,

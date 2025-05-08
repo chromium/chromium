@@ -10,6 +10,8 @@ use crate::{
     regex_to_lark,
 };
 
+pub use crate::earley::ValidationResult;
+
 /// This represents a collection of grammars, with a designated
 /// "start" grammar at first position.
 /// Grammars can refer to each other via GenGrammar nodes.

@@ -36,6 +36,7 @@
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/web/web_node.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #include "v8/include/v8-forward.h"
 
 namespace gfx {
@@ -47,6 +48,7 @@ namespace blink {
 
 class Element;
 class Image;
+class LayoutBox;
 class WebLabelElement;
 
 // Provides access to some properties of a DOM element node.
@@ -158,6 +160,23 @@ class BLINK_EXPORT WebElement : public WebNode {
   // Returns {scrollWidth, scrollHeight}.
   gfx::Size GetScrollSize() const;
 
+  // Returns {scrollLeft, scrollTop}.
+  gfx::Vector2dF GetScrollOffset() const;
+
+  // Sets {scrollLeft, scrollTop}.
+  void SetScrollOffset(const gfx::Vector2dF& offset);
+
+  // Returns whether the element has scrollable overflow and can be scrolled by
+  // the user (i.e. true for `overflow: scroll|auto` with overflow but false for
+  // `overflow: hidden`).
+  bool IsUserScrollableX() const;
+  bool IsUserScrollableY() const;
+
+  // Returns the effective zoom factor for this element. This includes the zoom
+  // factor coming from device scale factor and browser zoom but also the
+  // cumulative effects of the CSS zoom property in ancestor elements.
+  float GetEffectiveZoom() const;
+
   // ComputedStyle property values. The following exposure is of CSS property
   // values are part of the ComputedStyle set which is usually exposed through
   // the Window object in WebIDL as window.getComputedStyle(element). Exposing
@@ -174,6 +193,7 @@ class BLINK_EXPORT WebElement : public WebNode {
 #endif
 
  private:
+  LayoutBox* GetScrollingBox() const;
   Image* GetImage();
 };
 

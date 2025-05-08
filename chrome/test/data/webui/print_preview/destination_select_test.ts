@@ -4,8 +4,8 @@
 
 import type {PrintPreviewDestinationSelectElement} from 'chrome://print/print_preview.js';
 import {Destination, DestinationOrigin, getSelectDropdownBackground, IconsetMap} from 'chrome://print/print_preview.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {selectOption} from './print_preview_test_utils.js';
 
@@ -70,5 +70,29 @@ suite('DestinationSelectTest', function() {
       destinationSelect.destination = recentDestinationList[1]!;
       compareIcon(selectEl, enterpriseIcon);
     });
+  });
+
+  test('ShowsSelectedDestination', async function() {
+    const select = destinationSelect.shadowRoot!.querySelector('select');
+    assertTrue(!!select);
+
+    const destination = recentDestinationList[0]!;
+    destinationSelect.loaded = true;
+    destinationSelect.destination = destination;
+    destinationSelect.updateDestination();
+    await flushTasks();
+
+    assertEquals(destination.key, select.value);
+    assertEquals(destination.key, destinationSelect.selectedValue);
+
+    const newDestination =
+        new Destination('ID2', DestinationOrigin.LOCAL, 'Two');
+    destinationSelect.recentDestinationList = [newDestination];
+    destinationSelect.destination = newDestination;
+    destinationSelect.updateDestination();
+    await flushTasks();
+
+    assertEquals(newDestination.key, select.value);
+    assertEquals(newDestination.key, destinationSelect.selectedValue);
   });
 });

@@ -1,14 +1,14 @@
 Name: hunspell
 URL: http://hunspell.sourceforge.net/
-Version: v1.7.0
-CPEPrefix: cpe:/a:hunspell_project:hunspell:1.7.0
+Version: 6d7d19f
+CPEPrefix: cpe:/a:hunspell_project:hunspell:1.7.2
 License: MPL-1.1
 License File: COPYING.MPL
 Security Critical: yes
 Shipped: yes
 
 Description:
-This is a partial copy of Hunspell v1.7.0 with the following changes:
+This is a partial copy of Hunspell 6d7d19f with the following changes:
 * Move README.md onto the README symlink.
 * Change src/hunspell/filemgr.hxx and src/hunspell/filemgr.cxx to use
   LineIterator.
@@ -26,21 +26,31 @@ The patch is in google.patch.
 * Fix string OOB write in reverse_condition in src/hunspell/affixmgr.cxx
   Upstream issue: https://github.com/hunspell/hunspell/issues/714
 * Improve performance of HashMgr::InitHashEntry when BDICT file is used.
+* Remove NULL default values for const std::string& args because they don't compile.
 
 Chromium-specific changes are in google.patch. To update the patch, follow these
-steps, or simply run update_google_patch.sh from the commandline.
-1) Checkout hunspell:
+steps.
+1) Create an environment variable for Chromium Hunspell directory
+   $ export CHROMIUM_HUNSPELL=~/chromium/src/third_party/hunspell
+2) Checkout hunspell:
    $ git clone https://github.com/hunspell/hunspell.git
    $ cd hunspell
-   $ git checkout v1.7.0
-2) Apply the existing patch:
-   $ patch -p1 -i ~/src/third_party/hunspell/google.patch
-3) Make your new changes inside the git hunspell directory.
-4) Generate the updated patch:
-   $ git diff > ~/src/third_party/hunspell/google.patch
-5) Copy the patched source to Chromium:
-   $ cp -r src/ README.md COPYING* license* \
-       ~/src/third_party/hunspell/
+   $ git checkout 6d7d19f
+3) Apply the existing patch:
+   $ patch -p1 -i $CHROMIUM_HUNSPELL/google.patch
+4) Make your new changes inside the git hunspell directory.
+5) Generate the updated patch:
+   $ git diff > $CHROMIUM_HUNSPELL/google.patch
+6) Copy the patched source to Chromium:
+   $ cp -r src/ README.md COPYING* license* $CHROMIUM_HUNSPELL
+   $ rm -r $CHROMIUM_HUNSPELL/src/Makefile.am \
+       $CHROMIUM_HUNSPELL/src/hunspell/utf_info.hxx \
+       $CHROMIUM_HUNSPELL/src/hunspell/Makefile.am \
+       $CHROMIUM_HUNSPELL/src/parsers/.gitignore \
+       $CHROMIUM_HUNSPELL/src/parsers/Makefile.am \
+       $CHROMIUM_HUNSPELL/src/tools/
+7) In the Chromium src folder:
+   $ git add third_party/hunspell
 
 All dictionaries used by Chromium has been checked in to the
 'third_party/hunspell_dictionaries' directory. They have several additions over

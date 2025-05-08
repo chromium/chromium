@@ -21,6 +21,8 @@
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
+namespace endpoint_fetcher {
+
 namespace {
 const char kContentTypeKey[] = "Content-Type";
 const char kDeveloperKey[] = "X-Developer-Key";
@@ -176,33 +178,6 @@ EndpointFetcher::EndpointFetcher(
     oauth_scopes_.insert(scope);
   }
 }
-
-EndpointFetcher::EndpointFetcher(
-    const GURL& url,
-    const std::string& http_method,
-    const std::string& content_type,
-    const base::TimeDelta& timeout,
-    const std::string& post_data,
-    const std::vector<std::string>& headers,
-    const std::vector<std::string>& cors_exempt_headers,
-    const net::NetworkTrafficAnnotationTag& annotation_tag,
-    const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
-    bool is_oauth_fetch)
-    : url_loader_factory_(url_loader_factory),
-      identity_manager_(nullptr),
-      consent_level_(std::nullopt),
-      sanitize_response_(true),
-      request_params_(
-          EndpointFetcher::RequestParams::Builder(GetHttpMethod(http_method),
-                                                  annotation_tag)
-              .SetAuthType(is_oauth_fetch ? OAUTH : CHROME_API_KEY)
-              .SetContentType(content_type)
-              .SetCorsExemptHeaders(headers)
-              .SetHeaders(headers)
-              .SetTimeout(timeout)
-              .SetPostData(post_data)
-              .SetUrl(url)
-              .Build()) {}
 
 EndpointFetcher::EndpointFetcher(
     const net::NetworkTrafficAnnotationTag& annotation_tag)
@@ -445,3 +420,5 @@ UploadProgressCallback EndpointFetcher::GetUploadProgressCallback() const {
 std::string EndpointFetcher::GetUrlForTesting() {
   return request_params_.url().spec();
 }
+
+}  // namespace endpoint_fetcher

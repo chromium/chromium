@@ -11,6 +11,24 @@
 
 namespace content {
 
+namespace {
+
+bool ShouldSendObserverReportForMainFrameId(
+    const SharedStorageRuntimeManager::SharedStorageObserverInterface& observer,
+    GlobalRenderFrameHostId main_frame_id) {
+  // We should send a report if and only if (1) the observer is subscribed to
+  // receiving all reports, or (2) the observer has a valid associated render
+  // frame host ID (i.e. the observer is attached to a render frame host), and
+  // that global render frame host ID matches the main frame ID passed as a
+  // parameter of the report (and hence the observer is attached to the relevant
+  // main render frame host).
+  return observer.ShouldReceiveAllReports() ||
+         (observer.AssociatedFrameHostId() &&
+          observer.AssociatedFrameHostId() == main_frame_id);
+}
+
+}  // namespace
+
 using AccessScope = blink::SharedStorageAccessScope;
 
 SharedStorageRuntimeManager::SharedStorageRuntimeManager(
@@ -114,7 +132,7 @@ void SharedStorageRuntimeManager::RemoveSharedStorageObserver(
 void SharedStorageRuntimeManager::NotifySharedStorageAccessed(
     AccessScope scope,
     SharedStorageObserverInterface::AccessMethod method,
-    FrameTreeNodeId main_frame_id,
+    GlobalRenderFrameHostId main_frame_id,
     const std::string& owner_origin,
     const SharedStorageEventParams& params) {
   // Don't bother getting the time if there are no observers.
@@ -123,8 +141,37 @@ void SharedStorageRuntimeManager::NotifySharedStorageAccessed(
   }
   base::Time now = base::Time::Now();
   for (SharedStorageObserverInterface& observer : observers_) {
+    if (!ShouldSendObserverReportForMainFrameId(observer, main_frame_id)) {
+      continue;
+    }
     observer.OnSharedStorageAccessed(now, scope, method, main_frame_id,
                                      owner_origin, params);
+  }
+}
+
+void SharedStorageRuntimeManager::NotifyWorkletOperationExecutionFinished(
+    base::TimeDelta execution_time,
+    SharedStorageObserverInterface::AccessMethod method,
+    int operation_id,
+    int worklet_id,
+    GlobalRenderFrameHostId main_frame_id,
+    const std::string& owner_origin) {
+  // Don't bother getting the time if there are no observers.
+  if (observers_.empty()) {
+    return;
+  }
+  base::Time now = base::Time::Now();
+  for (SharedStorageObserverInterface& observer : observers_) {
+    if (!ShouldSendObserverReportForMainFrameId(observer, main_frame_id)) {
+      continue;
+    }
+    // TODO(crbug.com/401011862): Consider sending start time as well as
+    // "finish" time/report time as part of the DevTools notification. Note,
+    // however, that there may be a discrepancy between `execution_time` and
+    // `finished_time - start-time`.
+    observer.OnWorkletOperationExecutionFinished(now, execution_time, method,
+                                                 operation_id, worklet_id,
+                                                 main_frame_id, owner_origin);
   }
 }
 

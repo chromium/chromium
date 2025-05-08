@@ -14,7 +14,9 @@
 #include "ash/shell.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/setting.mojom.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -79,7 +81,9 @@ std::unique_ptr<LobsterManager> CreateLobsterManager() {
 
 }  // namespace
 
-EditorMenuControllerImpl::EditorMenuControllerImpl() = default;
+EditorMenuControllerImpl::EditorMenuControllerImpl(
+    const ApplicationLocaleStorage* application_locale_storage)
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)) {}
 
 EditorMenuControllerImpl::~EditorMenuControllerImpl() = default;
 
@@ -328,8 +332,8 @@ void EditorMenuControllerImpl::OnGetAnchorBoundsAndEditorContext(
       if (chromeos::features::IsMagicBoostRevampEnabled()) {
         NOTREACHED();
       }
-      editor_menu_widget_ =
-          EditorMenuPromoCardView::CreateWidget(anchor_bounds, this);
+      editor_menu_widget_ = EditorMenuPromoCardView::CreateWidget(
+          &application_locale_storage_.get(), anchor_bounds, this);
       editor_menu_widget_->ShowInactive();
       break;
     case TextAndImageMode::kEditorWriteOnly:
@@ -339,8 +343,8 @@ void EditorMenuControllerImpl::OnGetAnchorBoundsAndEditorContext(
     case TextAndImageMode::kEditorWriteAndLobster:
     case TextAndImageMode::kEditorRewriteAndLobster:
       editor_menu_widget_ = EditorMenuView::CreateWidget(
-          text_and_image_mode, editor_menu_card_context.preset_queries(),
-          anchor_bounds, this);
+          &application_locale_storage_.get(), text_and_image_mode,
+          editor_menu_card_context.preset_queries(), anchor_bounds, this);
       editor_menu_widget_->ShowInactive();
       break;
   }

@@ -126,16 +126,20 @@ class ServiceWorkerClient::ServiceWorkerRunningStatusObserver final
 ServiceWorkerClient::ServiceWorkerClient(
     base::WeakPtr<ServiceWorkerContextCore> context,
     bool is_parent_frame_secure,
-    FrameTreeNodeId ongoing_navigation_frame_tree_node_id)
+    FrameTreeNodeId ongoing_navigation_frame_tree_node_id,
+    bool is_initiated_by_prefetch)
     : context_(std::move(context)),
       owner_(context_->service_worker_client_owner()),
       create_time_(base::TimeTicks::Now()),
       client_uuid_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       is_parent_frame_secure_(is_parent_frame_secure),
+      is_initiated_by_prefetch_(is_initiated_by_prefetch),
       client_info_(ServiceWorkerClientInfo()),
       process_id_for_worker_client_(ChildProcessHost::kInvalidUniqueID),
       ongoing_navigation_frame_tree_node_id_(
           ongoing_navigation_frame_tree_node_id) {
+  CHECK(!is_initiated_by_prefetch ||
+        ongoing_navigation_frame_tree_node_id == FrameTreeNodeId());
   DCHECK(context_);
 }
 
@@ -148,6 +152,7 @@ ServiceWorkerClient::ServiceWorkerClient(
       create_time_(base::TimeTicks::Now()),
       client_uuid_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       is_parent_frame_secure_(true),
+      is_initiated_by_prefetch_(false),
       client_info_(client_info),
       process_id_for_worker_client_(process_id) {
   DCHECK(context_);
@@ -825,6 +830,14 @@ std::string ServiceWorkerClient::GetFrameTreeNodeTypeStringBeforeCommit()
 
 const std::string& ServiceWorkerClient::client_uuid() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return client_uuid_;
+}
+
+std::string ServiceWorkerClient::client_uuid_for_resulting_client_id() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_initiated_by_prefetch_) {
+    return "";
+  }
   return client_uuid_;
 }
 

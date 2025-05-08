@@ -15,11 +15,7 @@
 #endif  // defined(STUB_WINDOW_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(STUB_WINDOW_IMPLEMENTATION)
 #define STUB_WINDOW_EXPORT __attribute__((visibility("default")))
-#else
-#define STUB_WINDOW_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

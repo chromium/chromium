@@ -116,4 +116,10 @@ void DevToolsWindow::RegisterModalDialogManager(Browser* browser) {
       main_web_contents_);
   web_modal::WebContentsModalDialogManager::FromWebContents(main_web_contents_)
       ->SetDelegate(browser);
+
+  // Observer `browser` destruction/removal to reset `SetDelegate(nullptr)`
+  // before the dialog manager's `raw_ptr` becomes dangling.
+  if (!browser_list_observation_.IsObserving()) {
+    browser_list_observation_.Observe(BrowserList::GetInstance());
+  }
 }

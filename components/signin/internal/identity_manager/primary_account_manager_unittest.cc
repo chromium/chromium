@@ -482,45 +482,6 @@ TEST_F(PrimaryAccountManagerTest,
                       .sync_opt_in = AccessPoint::kSettings});
 }
 
-TEST_F(PrimaryAccountManagerTest, BackfillsLastSignedInUsernameIfEmpty) {
-  // Set up a user that enabled sync before kGoogleServicesLastSignedInUsername
-  // was introduced. kGoogleServicesLastSignedInUsername is empty.
-  const char kUsername[] = "foo@gmail.com";
-  user_prefs_.SetString(prefs::kGoogleServicesLastSyncingUsername, kUsername);
-  ASSERT_EQ(user_prefs_.GetString(prefs::kGoogleServicesLastSignedInUsername),
-            std::string());
-
-  CreatePrimaryAccountManager();
-
-  // The migration should have set the LastSignedInUsername pref and left
-  // LastSyncingUsername alone.
-  EXPECT_EQ(user_prefs_.GetString(prefs::kGoogleServicesLastSyncingUsername),
-            kUsername);
-  EXPECT_EQ(user_prefs_.GetString(prefs::kGoogleServicesLastSignedInUsername),
-            kUsername);
-}
-
-TEST_F(PrimaryAccountManagerTest,
-       DoesNotBackfillLastSignedInUsernameIfNonEmpty) {
-  // Set up the LastSignedInUsername and LastSyncingUsername prefs with
-  // different non-empty values. This is possible if the user enabled sync, then
-  // disabled, then signed-in with a different account.
-  const char kLastSyncingUsername[] = "syncing@gmail.com";
-  const char kLastSignedInUsername[] = "signed-in@gmail.com";
-  user_prefs_.SetString(prefs::kGoogleServicesLastSyncingUsername,
-                        kLastSyncingUsername);
-  user_prefs_.SetString(prefs::kGoogleServicesLastSignedInUsername,
-                        kLastSignedInUsername);
-
-  CreatePrimaryAccountManager();
-
-  // Both prefs should be unchanged.
-  EXPECT_EQ(user_prefs_.GetString(prefs::kGoogleServicesLastSyncingUsername),
-            kLastSyncingUsername);
-  EXPECT_EQ(user_prefs_.GetString(prefs::kGoogleServicesLastSignedInUsername),
-            kLastSignedInUsername);
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(PrimaryAccountManagerTest, GaiaIdMigration) {
   ASSERT_EQ(AccountTrackerService::MIGRATION_DONE,
@@ -1501,6 +1462,9 @@ TEST_F(PrimaryAccountManagerTest,
 
   EXPECT_FALSE(
       SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.Bookmarks.SyncTurnedOnWithAccountStorageEnabled",
+      /*sample=*/true, /*expected_bucket_count=*/1);
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

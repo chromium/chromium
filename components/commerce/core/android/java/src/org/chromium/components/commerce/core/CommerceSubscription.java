@@ -55,7 +55,7 @@ public class CommerceSubscription {
     }
 
     @Override
-    public boolean equals(Object other) {
+    public boolean equals(@Nullable Object other) {
         if (!(other instanceof CommerceSubscription)) return false;
 
         CommerceSubscription sub = (CommerceSubscription) other;

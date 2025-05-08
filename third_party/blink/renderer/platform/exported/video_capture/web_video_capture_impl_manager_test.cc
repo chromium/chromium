@@ -230,15 +230,17 @@ class VideoCaptureImplManagerTest : public ::testing::Test,
 
   base::OnceClosure StartCapture(const media::VideoCaptureSessionId& id,
                                  const media::VideoCaptureParams& params) {
-    return manager_->StartCapture(
-        id, params,
-        ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-            &VideoCaptureImplManagerTest::OnStateUpdate,
-            CrossThreadUnretained(this), id)),
-        ConvertToBaseRepeatingCallback(
-            CrossThreadBindRepeating(&VideoCaptureImplManagerTest::OnFrameReady,
-                                     CrossThreadUnretained(this))),
-        base::DoNothing(), base::DoNothing());
+    VideoCaptureCallbacks video_capture_callbacks;
+    video_capture_callbacks.state_update_cb = ConvertToBaseRepeatingCallback(
+        CrossThreadBindRepeating(&VideoCaptureImplManagerTest::OnStateUpdate,
+                                 CrossThreadUnretained(this), id));
+    video_capture_callbacks.deliver_frame_cb =
+        base::BindRepeating(&VideoCaptureImplManagerTest::OnFrameReady,
+                            CrossThreadUnretained(this));
+    video_capture_callbacks.frame_dropped_cb = base::DoNothing();
+    video_capture_callbacks.sub_capture_target_version_cb = base::DoNothing();
+    return manager_->StartCapture(id, params,
+                                  std::move(video_capture_callbacks));
   }
 
   base::test::TaskEnvironment task_environment_;

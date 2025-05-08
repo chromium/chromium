@@ -93,6 +93,10 @@ class LensOverlayEntryPointController : public FullscreenObserver,
   // Return true if the Lens Overlay is active on the current tab.
   bool IsOverlayActive();
 
+  // Observer to check for focus changes.
+  base::ScopedObservation<views::FocusManager, views::FocusChangeListener>
+      focus_manager_observation_{this};
+
   // Observer to check for browser window entering fullscreen.
   base::ScopedObservation<FullscreenController, FullscreenObserver>
       fullscreen_observation_{this};

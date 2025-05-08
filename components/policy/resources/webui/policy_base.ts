@@ -218,12 +218,14 @@ export class Page {
     policyGroups.forEach(group => this.createOrUpdatePolicyTable(group));
 
     // <if expr="not is_chromeos">
-    this.updateReportButton(
-        !!policyValues['chrome']?.policies['CloudReportingEnabled']?.value ||
-            !!policyValues['chrome']
-                  ?.policies['CloudProfileReportingEnabled']
-                  ?.value,
-    );
+    const enableReportButton =
+        [
+          'CloudReportingEnabled',
+          'CloudProfileReportingEnabled',
+          'UserSecuritySignalsReporting',
+        ].map(p => !!policyValues['chrome']?.policies[p]?.value)
+            .reduce((accumulator, current) => accumulator ||= current, false);
+    this.updateReportButton(enableReportButton);
     // </if>
     this.reloadPoliciesDone();
   }

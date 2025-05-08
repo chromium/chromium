@@ -11,6 +11,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/download/model/ar_quick_look_tab_helper.h"
+#import "ios/chrome/browser/download/model/browser_download_service_factory.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/download/model/download_mimetype_util.h"
 #import "ios/chrome/browser/download/model/pass_kit_tab_helper.h"
@@ -95,7 +96,12 @@ class StubTabHelper<DownloadManagerTabHelper>
 // Test fixture for testing BrowserDownloadService class.
 class BrowserDownloadServiceTest : public PlatformTest {
  protected:
-  BrowserDownloadServiceTest() : profile_(TestProfileIOS::Builder().Build()) {
+  BrowserDownloadServiceTest() {
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        BrowserDownloadServiceFactory::GetInstance(),
+        BrowserDownloadServiceFactory::GetDefaultFactory());
+    profile_ = std::move(builder).Build();
     StubTabHelper<PassKitTabHelper>::CreateForWebState(&web_state_);
     StubTabHelper<ARQuickLookTabHelper>::CreateForWebState(&web_state_);
     StubTabHelper<VcardTabHelper>::CreateForWebState(&web_state_);

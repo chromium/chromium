@@ -5,7 +5,6 @@
 package org.chromium.base;
 
 import android.os.Build;
-import android.os.Build.VERSION_CODES;
 import android.text.TextUtils;
 
 import org.jni_zero.CalledByNative;
@@ -45,9 +44,7 @@ public final class AndroidInfo {
                                 : "",
                         /* supportedAbis= */ TextUtils.join(", ", Build.SUPPORTED_ABIS),
                         /* sdkInt= */ Build.VERSION.SDK_INT,
-                        /* isDebugAndroid= */ isDebugAndroid(),
-                        /* isAtleastU= */ Build.VERSION.SDK_INT >= VERSION_CODES.UPSIDE_DOWN_CAKE,
-                        /* isAtleastT= */ Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU);
+                        /* isDebugAndroid= */ isDebugAndroid());
     }
 
     /* Truncated version of Build.FINGERPRINT (for crash reporting). */
@@ -86,8 +83,6 @@ public final class AndroidInfo {
                 String socManufacturer,
                 String supportedAbis,
                 int sdkInt,
-                boolean isDebugAndroid,
-                boolean isAtleastU,
-                boolean isAtleastT);
+                boolean isDebugAndroid);
     }
 }

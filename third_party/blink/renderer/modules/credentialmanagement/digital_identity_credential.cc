@@ -22,8 +22,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_object_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_create_request.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_creation_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_request.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_get_request.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_request_provider.h"
@@ -63,37 +64,6 @@ void AbortRequest(ScriptState* script_state) {
   }
 
   CredentialManagerProxy::From(script_state)->DigitalIdentityRequest()->Abort();
-}
-
-String ValidateAndStringifyObject(
-    ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
-    const ScriptValue& input) {
-  v8::Local<v8::String> value;
-  if (input.IsEmpty() || !input.V8Value()->IsObject() ||
-      !v8::JSON::Stringify(resolver->GetScriptState()->GetContext(),
-                           input.V8Value().As<v8::Object>())
-           .ToLocal(&value)) {
-    resolver->RejectWithTypeError(
-        "IdentityRequestProvider request objects should either by strings or "
-        "JSON-Serializable objects.");
-    return String();
-  }
-
-  String output = ToBlinkString<String>(
-      resolver->GetScriptState()->GetIsolate(), value, kDoNotExternalize);
-
-  // Implementation defined constant controlling the allowed JSON length.
-  static constexpr size_t kMaxJSONStringLength = 1024 * 1024;
-
-  if (output.length() > kMaxJSONStringLength) {
-    resolver->RejectWithTypeError(
-        String::Format("JSON serialization of IdentityRequestProvider request "
-                       "objects should be no longer than %zu characters",
-                       kMaxJSONStringLength));
-    return String();
-  }
-
-  return output;
 }
 
 // Converts a base::Value to a ScriptObject.
@@ -214,10 +184,11 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
       [resolver, &converter](
           V8UnionObjectOrString* request_object_or_string,
           const String& protocol, mojom::blink::GetRequestFormat format,
-          Vector<blink::mojom::blink::DigitalCredentialRequestPtr>& requests) {
-        blink::mojom::blink::DigitalCredentialRequestPtr
+          Vector<blink::mojom::blink::DigitalCredentialGetRequestPtr>&
+              requests) {
+        blink::mojom::blink::DigitalCredentialGetRequestPtr
             digital_credential_request =
-                blink::mojom::blink::DigitalCredentialRequest::New();
+                blink::mojom::blink::DigitalCredentialGetRequest::New();
         digital_credential_request->protocol = protocol;
         if (request_object_or_string->IsString() &&
             format == mojom::blink::GetRequestFormat::kLegacy) {
@@ -247,7 +218,7 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
       mojom::blink::GetRequestFormat::kModern;
   // When the new format is available (i.e. contains requests()), consider it,
   // otherwise use the old format (i.e. contains providers).
-  Vector<blink::mojom::blink::DigitalCredentialRequestPtr> requests;
+  Vector<blink::mojom::blink::DigitalCredentialGetRequestPtr> requests;
   if (options.digital()->hasRequests()) {
     format = mojom::blink::GetRequestFormat::kModern;
     for (const auto& request : options.digital()->requests()) {
@@ -303,17 +274,32 @@ void CreateDigitalIdentityCredentialInExternalSource(
     return;
   }
 
-  DigitalCredentialCreationOptions* request = options.digital();
-  blink::mojom::blink::DigitalCredentialRequestPtr digital_credential_request =
-      blink::mojom::blink::DigitalCredentialRequest::New();
-  digital_credential_request->protocol = request->protocol();
-  String stringified_request_data =
-      ValidateAndStringifyObject(resolver, request->data());
-  if (stringified_request_data.IsNull()) {
+  std::unique_ptr<WebV8ValueConverter> converter =
+      Platform::Current()->CreateWebV8ValueConverter();
+
+  Vector<blink::mojom::blink::DigitalCredentialCreateRequestPtr> requests;
+  for (const auto& request : options.digital()->requests()) {
+    blink::mojom::blink::DigitalCredentialCreateRequestPtr
+        digital_credential_request =
+            blink::mojom::blink::DigitalCredentialCreateRequest::New();
+    digital_credential_request->protocol = request->protocol();
+    std::unique_ptr<base::Value> digital_credential_request_data =
+        converter->FromV8Value(request->data().V8Object(),
+                               resolver->GetScriptState()->GetContext());
+    if (!digital_credential_request_data) {
+      continue;
+    }
+    digital_credential_request->data =
+        std::move(*digital_credential_request_data);
+
+    requests.push_back(std::move(digital_credential_request));
+  }
+
+  if (requests.empty()) {
+    resolver->RejectWithTypeError(
+        "Digital identity API needs at least one well-formed request.");
     return;
   }
-  digital_credential_request->data =
-      RequestData::NewStr(stringified_request_data);
 
   UseCounter::Count(resolver->GetExecutionContext(),
                     WebFeature::kIdentityDigitalCredentials);
@@ -328,7 +314,7 @@ void CreateDigitalIdentityCredentialInExternalSource(
 
   CredentialManagerProxy::From(script_state)
       ->DigitalIdentityRequest()
-      ->Create(std::move(digital_credential_request),
+      ->Create(std::move(requests),
                WTF::BindOnce(&OnCompleteRequest, WrapPersistent(resolver),
                              std::move(scoped_abort_state)));
 }

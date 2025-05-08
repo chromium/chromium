@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/omnibox_suggestions_watcher.h"
@@ -32,7 +33,7 @@ class UnscopedExtensionProvider : public AutocompleteProvider {
 
   // AutocompleteProvider:
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
-  void Stop(bool clear_cached_results, bool due_to_user_inactivity) override;
+  void Stop(AutocompleteStopReason stop_reason) override;
   void DeleteMatch(const AutocompleteMatch& match) override;
 
   // Used by UnscopedExtensionProviderDelegateImpl.
@@ -40,7 +41,6 @@ class UnscopedExtensionProvider : public AutocompleteProvider {
   void AddToSuggestionGroupsMap(omnibox::GroupId group_id,
                                 omnibox::GroupConfig group_config);
   void set_done(bool done) { done_ = done; }
-  bool done() const { return done_; }
   ACMatches* matches() { return &matches_; }
 
  private:

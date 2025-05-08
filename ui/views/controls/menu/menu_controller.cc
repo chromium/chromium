@@ -142,6 +142,16 @@ bool ShouldIgnoreScreenBoundsForMenus() {
 #endif
 }
 
+bool PlatformSetsParentForNonTopLevelWindows() {
+#if BUILDFLAG(IS_OZONE)
+  return ui::OzonePlatform::GetInstance()
+      ->GetPlatformProperties()
+      .set_parent_for_non_top_level_windows;
+#else
+  return false;
+#endif
+}
+
 // The amount of time the mouse should be down before a mouse release is
 // considered intentional. This is to prevent spurious mouse releases from
 // activating controls, especially when some UI element is revealed under the
@@ -587,7 +597,7 @@ void MenuController::Run(Widget* parent,
                          const gfx::Rect& anchor_bounds,
                          MenuAnchorPosition position,
                          ui::mojom::MenuSourceType source_type,
-                         bool context_menu,
+                         MenuType menu_type,
                          bool is_nested_drag,
                          gfx::NativeView native_view_for_gestures) {
   exit_type_ = ExitType::kNone;
@@ -672,7 +682,7 @@ void MenuController::Run(Widget* parent,
   // Reset current state.
   pending_state_ = State();
   state_ = State();
-  UpdateInitialLocation(anchor_bounds, position, context_menu);
+  UpdateInitialLocation(anchor_bounds, position, menu_type);
 
   if (views::PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard && to_select) {
     // If menu is opened via keyboard, set focus on first selectable menu item,
@@ -795,7 +805,8 @@ bool MenuController::IsReadonlyCombobox() const {
 }
 
 bool MenuController::IsContextMenu() const {
-  return state_.context_menu;
+  return state_.menu_type == MenuType::kContextMenu ||
+         state_.menu_type == MenuType::kMenuItemContextMenu;
 }
 
 void MenuController::SelectItemAndOpenSubmenu(MenuItemView* item) {
@@ -935,11 +946,10 @@ void MenuController::OnMouseReleased(SubmenuView* source,
     return;
   }
 
-  // Mouse releases during DnD are handled differently by platforms. Most will
-  // consume the mouse release to end the DnD, which would subsequently trigger
-  // OnDragComplete. However, Wayland will send a spurious mouse release event
-  // before ending the DnD, which should be ignored by this menu.
-  if (drag_in_progress_) {
+  // The menu should ignore mouse release events and refrain from closing if a
+  // drag operation is in progress or has been recently canceled without
+  // immediate notification.
+  if (drag_in_progress_ || for_drop_) {
     return;
   }
 
@@ -1972,8 +1982,8 @@ bool MenuController::SendAcceleratorToHotTrackedView(int event_flags) {
 
 void MenuController::UpdateInitialLocation(const gfx::Rect& anchor_bounds,
                                            MenuAnchorPosition position,
-                                           bool context_menu) {
-  pending_state_.context_menu = context_menu;
+                                           MenuType menu_type) {
+  pending_state_.menu_type = menu_type;
   pending_state_.initial_bounds = anchor_bounds;
   pending_state_.anchor = AdjustAnchorPositionForRtl(position);
 
@@ -2120,8 +2130,7 @@ bool MenuController::ShowSiblingMenu(SubmenuView* source,
 
   // It is currently not possible to show a submenu recursively in a bubble.
   DCHECK(!MenuItemView::IsBubble(anchor));
-  UpdateInitialLocation(button->GetBoundsInScreen(), anchor,
-                        state_.context_menu);
+  UpdateInitialLocation(button->GetBoundsInScreen(), anchor, state_.menu_type);
   alt_menu->PrepareForRun(
       has_mnemonics, source->GetMenuItem()->GetRootMenuItem()->show_mnemonics_);
   alt_menu->controller_ = AsWeakPtr();
@@ -2391,12 +2400,22 @@ void MenuController::OpenMenuImpl(MenuItemView* item, bool show) {
       // (crbug.com/1414232) The item to be open is a submenu. Make sure
       // params.context is set.
       DCHECK(params.context);
-    } else if (state_.context_menu) {
+    } else if (IsContextMenu()) {
       if (!menu_stack_.empty()) {
         auto* last_menu_item = menu_stack_.back().first.item.get();
-        if (last_menu_item->SubmenuIsShowing()) {
+        if (state_.menu_type == MenuType::kContextMenu &&
+            last_menu_item->SubmenuIsShowing()) {
           params.context = last_menu_item->GetSubmenu()->GetWidget();
         } else {
+          if (state_.menu_type == MenuType::kMenuItemContextMenu &&
+              PlatformSetsParentForNonTopLevelWindows() &&
+              last_menu_item->SubmenuIsShowing()) {
+            // Before showing the new menu, ensure submenu of the last menu item
+            // is hidden on platforms like Linux Wayland where destroyed popup
+            // needs to be topmost. Without this, clicking on an item in the new
+            // menu leads to a crash.
+            last_menu_item->GetSubmenu()->Hide();
+          }
           params.context = last_menu_item->GetWidget();
         }
       } else {
@@ -2749,7 +2768,7 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
     if (!monitor_bounds.IsEmpty()) {
       int max_width = monitor_bounds.width() + border_insets.width();
       int max_height = monitor_bounds.height() + border_insets.height();
-      if (!state_.context_menu) {
+      if (!IsContextMenu()) {
         // In case of bubbles, the maximum width is limited by the space
         // between the display corner and the target area + the tip size.
         const bool is_bubble_menu =
@@ -3674,7 +3693,7 @@ void MenuController::SetAnchorParametersForItem(MenuItemView* item,
         ui::OwnedWindowConstraintAdjustment::kAdjustmentResizeX |
         ui::OwnedWindowConstraintAdjustment::kAdjustmentRezizeY;
   } else {
-    if (state_.context_menu) {
+    if (IsContextMenu()) {
       anchor->anchor_position = ui::OwnedWindowAnchorPosition::kBottomLeft;
       anchor->anchor_gravity = ui::OwnedWindowAnchorGravity::kBottomRight;
       anchor->constraint_adjustment =

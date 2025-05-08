@@ -41,6 +41,14 @@ BASE_FEATURE(kUncachedGattDiscoveryForGattConnection,
 // Serial.
 BASE_FEATURE(kBluetoothRfcommAndroid,
              "BluetoothRfcommAndroid",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+// Controls whether to override LocationRequest parameters in
+// LocationProviderGmsCore
+BASE_FEATURE(kGmsCoreLocationRequestParamOverride,
+             "GmsCoreLocationRequestParamOverride",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 

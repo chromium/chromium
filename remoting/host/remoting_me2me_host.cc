@@ -56,7 +56,6 @@
 #include "remoting/base/cloud_session_authz_service_client_factory.h"
 #include "remoting/base/corp_session_authz_service_client_factory.h"
 #include "remoting/base/cpu_utils.h"
-#include "remoting/base/crash/crash_reporting.h"
 #include "remoting/base/errors.h"
 #include "remoting/base/host_settings.h"
 #include "remoting/base/instance_identity_token_getter.h"
@@ -166,7 +165,8 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX)
-#include "remoting/host/host_utmp_logger.h"
+#include "remoting/base/crash/crash_reporting_crashpad.h"
+#include "remoting/host/host_wtmpdb_logger.h"
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if defined(REMOTING_MULTI_PROCESS)
@@ -513,7 +513,7 @@ class HostProcess : public ConfigWatcher::Delegate,
 
   std::unique_ptr<HostEventLogger> host_event_logger_;
 #if BUILDFLAG(IS_LINUX)
-  std::unique_ptr<HostUTMPLogger> host_utmp_logger_;
+  std::unique_ptr<HostWtmpdbLogger> host_wtmpdb_logger_;
 #endif
   std::unique_ptr<HostPowerSaveBlocker> power_save_blocker_;
 
@@ -1930,9 +1930,9 @@ void HostProcess::StartHost() {
 
 #if BUILDFLAG(IS_LINUX)
   const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  if (cmd_line->HasSwitch(kEnableUtempter)) {
-    host_utmp_logger_ =
-        std::make_unique<HostUTMPLogger>(host_->status_monitor());
+  if (cmd_line->HasSwitch(kEnableWtmpdb)) {
+    host_wtmpdb_logger_ =
+        std::make_unique<HostWtmpdbLogger>(host_->status_monitor());
   }
 #endif
 
@@ -2154,10 +2154,12 @@ int HostProcessMain() {
     return kInitializationFailed;
   }
 
-#if defined(REMOTING_ENABLE_CRASH_REPORTING)
+#if BUILDFLAG(IS_LINUX)
   // Log and cleanup the crash database. We do this after a short delay so that
   // the crash database has a chance to be updated properly if we just got
   // relaunched after a crash.
+  // TODO(garykac): When Crashpad is enabled for the network process on Windows
+  // we will need to enable this code on Windows as well.
   if (IsUsageStatsAllowed()) {
     scoped_refptr<base::SequencedTaskRunner> task_runner_crashdb =
         base::ThreadPool::CreateSequencedTaskRunner(

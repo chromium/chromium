@@ -13,14 +13,15 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -34,7 +35,8 @@ public class VirtualViewStructureInstrumentationTest {
             "autofill.using_virtual_view_structure";
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private PrefService getPrefService() {
         return UserPrefs.get(mActivityTestRule.getProfile(false));
@@ -44,12 +46,9 @@ public class VirtualViewStructureInstrumentationTest {
     @SmallTest
     @MinAndroidSdkLevel(value = 28)
     @EnableFeatures({AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID})
-    @DisabledTest(message = "https://crbug.com/1510968")
+    @DisabledTest(message = "https://crbug.com/414988519")
     public void testLogs3PModeDisabledMetrics() {
-        mActivityTestRule.startMainActivityOnBlankPage();
-        CriteriaHelper.pollUiThread(
-                mActivityTestRule.getActivity().getTabModelSelectorSupplier().get()
-                        ::isTabStateInitialized);
+        WebPageStation page = mActivityTestRule.startOnBlankPage();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -61,10 +60,7 @@ public class VirtualViewStructureInstrumentationTest {
                         "Autofill.ThirdPartyModeDisabled.Provider", 1);
 
         // A new tab opens because the metric is logged upon tab creation.
-        mActivityTestRule.loadUrlInNewTab(null);
-        CriteriaHelper.pollUiThread(
-                mActivityTestRule.getActivity().getTabModelSelectorSupplier().get()
-                        ::isTabStateInitialized);
+        page.openNewTabFast();
 
         histogramWatcher.assertExpected();
     }
@@ -74,10 +70,7 @@ public class VirtualViewStructureInstrumentationTest {
     @MinAndroidSdkLevel(value = 28)
     @EnableFeatures({AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID})
     public void testDoesntLog3PModeDisabledMetricsWhen3PModeEnabled() {
-        mActivityTestRule.startMainActivityOnBlankPage();
-        CriteriaHelper.pollUiThread(
-                mActivityTestRule.getActivity().getTabModelSelectorSupplier().get()
-                        ::isTabStateInitialized);
+        WebPageStation page = mActivityTestRule.startOnBlankPage();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -90,10 +83,7 @@ public class VirtualViewStructureInstrumentationTest {
                         .build();
 
         // A new tab opens because the metric is logged upon tab creation.
-        mActivityTestRule.loadUrlInNewTab(null);
-        CriteriaHelper.pollUiThread(
-                mActivityTestRule.getActivity().getTabModelSelectorSupplier().get()
-                        ::isTabStateInitialized);
+        page.openNewTabFast();
 
         histogramWatcher.assertExpected();
     }

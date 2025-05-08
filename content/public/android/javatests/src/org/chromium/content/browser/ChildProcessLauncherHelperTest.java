@@ -28,17 +28,19 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BaseSwitches;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.process_launcher.ChildConnectionAllocator;
 import org.chromium.base.process_launcher.ChildProcessConnection;
-import org.chromium.base.process_launcher.FileDescriptorInfo;
+import org.chromium.base.process_launcher.IFileDescriptorInfo;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.ChildProcessImportance;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_shell_apk.ChildProcessLauncherTestHelperService;
 import org.chromium.content_shell_apk.ChildProcessLauncherTestUtils;
@@ -431,6 +433,11 @@ public class ChildProcessLauncherHelperTest {
         if (!ChildProcessConnection.supportNotPerceptibleBinding()) {
             return;
         }
+        FeatureOverrides.overrideParam(
+                ContentFeatureList.sSpareRendererAddNotPerceptibleBinding.getFeatureName(),
+                ContentFeatureList.sSpareRendererAddNotPerceptibleBinding.getName(),
+                true);
+
         ChildProcessLauncherHelperImpl.setSkipDelayForReducePriorityOnBackgroundForTesting();
 
         final ContentShellActivity activity =
@@ -491,7 +498,7 @@ public class ChildProcessLauncherHelperTest {
                             public ChildProcessLauncherHelperImpl call() {
                                 return ChildProcessLauncherHelperImpl.createAndStartForTesting(
                                         sProcessWaitArguments,
-                                        new FileDescriptorInfo[0],
+                                        new IFileDescriptorInfo[0],
                                         sandboxed,
                                         reducePriorityOnBackground,
                                         canUseWarmUpConnection,

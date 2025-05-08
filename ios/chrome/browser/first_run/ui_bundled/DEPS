@@ -38,7 +38,4 @@ specific_include_rules = {
   "default_browser_screen_coordinator\.mm": [
     "+ios/chrome/browser/default_promo/ui_bundled/default_browser_instructions_view_controller.h"
   ],
-  "first_run_coordinator\.mm":[
-    "+ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h",
-  ]
 }

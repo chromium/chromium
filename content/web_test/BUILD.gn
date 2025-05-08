@@ -221,6 +221,8 @@ static_library("web_test_browser") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public:blink",
+    "//third_party/blink/public/test/mojom:core_test_automation",
+    "//third_party/blink/public/test/mojom:modules_test_automation",
     "//ui/base",
     "//ui/base/ime/init",
     "//ui/display",

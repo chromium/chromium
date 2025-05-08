@@ -13,6 +13,7 @@
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/scheduler/scheduler.h"
 #include "cc/trees/presentation_time_callback_buffer.h"
+#include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 
 namespace viz {
@@ -102,6 +103,8 @@ class LayerTreeHostImplClient {
 
   virtual void SetHasActiveThreadedScroll(bool is_scrolling) = 0;
   virtual void SetWaitingForScrollEvent(bool waiting_for_scroll_event) = 0;
+
+  virtual void ReturnResource(viz::ReturnedResource returned_resource) {}
 
   virtual size_t CommitDurationSampleCountForTesting() const = 0;
 

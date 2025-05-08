@@ -1021,6 +1021,9 @@ class CORE_EXPORT Document : public ContainerNode,
     kPaintingPreviewSkipAcceleratedContent,
   };
   PaintPreviewState GetPaintPreviewState() const { return paint_preview_; }
+  bool AreScrollbarsAllowedInPaintPreview() const {
+    return allow_scrollbars_in_paint_preview_;
+  }
   bool IsPrintingOrPaintingPreview() const {
     return Printing() ||
            GetPaintPreviewState() != Document::kNotPaintingPreview;
@@ -2052,7 +2055,9 @@ class CORE_EXPORT Document : public ContainerNode,
     STACK_ALLOCATED();
 
    public:
-    PaintPreviewScope(Document& document, PaintPreviewState state);
+    PaintPreviewScope(Document& document,
+                      PaintPreviewState state,
+                      bool allow_scrollbars);
     ~PaintPreviewScope();
 
     PaintPreviewScope(PaintPreviewScope&) = delete;
@@ -2563,6 +2568,7 @@ class CORE_EXPORT Document : public ContainerNode,
 
   PrintingState printing_ = kNotPrinting;
   PaintPreviewState paint_preview_ = kNotPaintingPreview;
+  bool allow_scrollbars_in_paint_preview_ = false;
 
   CompatibilityMode compatibility_mode_ = kNoQuirksMode;
   // This is cheaper than making setCompatibilityMode virtual.

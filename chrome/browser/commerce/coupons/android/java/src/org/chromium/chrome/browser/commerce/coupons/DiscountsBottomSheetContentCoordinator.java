@@ -16,13 +16,14 @@ import android.graphics.Rect;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 import androidx.recyclerview.widget.RecyclerView.State;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
@@ -31,6 +32,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** Coordinator of the discounts bottom sheet content. */
+@NullMarked
 public class DiscountsBottomSheetContentCoordinator implements CommerceBottomSheetContentProvider {
 
     private Context mContext;
@@ -39,8 +41,7 @@ public class DiscountsBottomSheetContentCoordinator implements CommerceBottomShe
     private RecyclerView mContentRecyclerView;
     private DiscountsBottomSheetContentMediator mMediator;
 
-    public DiscountsBottomSheetContentCoordinator(
-            @NonNull Context context, @NonNull Supplier<Tab> tabSupplier) {
+    public DiscountsBottomSheetContentCoordinator(Context context, Supplier<Tab> tabSupplier) {
         mContext = context;
         mModelList = new ModelList();
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(mModelList);
@@ -58,10 +59,7 @@ public class DiscountsBottomSheetContentCoordinator implements CommerceBottomShe
                 new ItemDecoration() {
                     @Override
                     public void getItemOffsets(
-                            @NonNull Rect outRect,
-                            @NonNull View view,
-                            @NonNull RecyclerView parent,
-                            @NonNull State state) {
+                            Rect outRect, View view, RecyclerView parent, State state) {
                         // Avoid adding top padding to the first item in the list.
                         if (parent.getChildAdapterPosition(view) != 0) {
                             outRect.top =
@@ -76,7 +74,7 @@ public class DiscountsBottomSheetContentCoordinator implements CommerceBottomShe
     }
 
     @Override
-    public void requestContent(Callback<PropertyModel> contentReadyCallback) {
+    public void requestContent(Callback<@Nullable PropertyModel> contentReadyCallback) {
         Callback<Boolean> showContentCallback =
                 (hasDiscountsContent) -> {
                     contentReadyCallback.onResult(

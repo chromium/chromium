@@ -15,6 +15,8 @@ namespace viz {
 namespace {
 
 using FrameIntervalClass = FrameIntervalMatcher::FrameIntervalClass;
+using ResultIntervalType = FrameIntervalMatcher::ResultIntervalType;
+using ResultInterval = FrameIntervalMatcher::ResultInterval;
 using Result = FrameIntervalMatcher::Result;
 using FixedIntervalSettings = FrameIntervalMatcher::FixedIntervalSettings;
 using ContinuousRangeSettings = FrameIntervalMatcher::ContinuousRangeSettings;
@@ -32,11 +34,13 @@ void ExpectResult(const std::optional<Result> result_opt,
 }
 
 void ExpectResult(const std::optional<Result> result_opt,
-                  base::TimeDelta interval) {
+                  base::TimeDelta interval,
+                  ResultIntervalType interval_type) {
   ASSERT_TRUE(result_opt.has_value());
   const Result& result = result_opt.value();
-  ASSERT_TRUE(std::holds_alternative<base::TimeDelta>(result));
-  EXPECT_EQ(interval, std::get<base::TimeDelta>(result));
+  ASSERT_TRUE(std::holds_alternative<ResultInterval>(result));
+  EXPECT_EQ(interval, std::get<ResultInterval>(result).interval);
+  EXPECT_EQ(interval_type, std::get<ResultInterval>(result).type);
 }
 
 void ExpectNullResult(const std::optional<Result> result_opt) {
@@ -73,7 +77,7 @@ ContinuousRangeSettings BuildContinuousRangeSettings(
 }
 
 Inputs BuildDefaultInputs(Settings& settings, uint32_t num_sinks) {
-  Inputs inputs(settings);
+  Inputs inputs(settings, /*frame_id=*/0u);
 
   inputs.aggregated_frame_time = kNow;
   for (uint32_t sink_id = 1; sink_id <= num_sinks; ++sink_id) {
@@ -105,7 +109,8 @@ TEST(FrameIntervalMatchersTest, InputBoostFixedInterval) {
   InputBoostMatcher matcher;
 
   inputs.inputs_map[FrameSinkId(0, 1)].has_input = true;
-  ExpectResult(matcher.Match(inputs), base::Milliseconds(8));
+  ExpectResult(matcher.Match(inputs), base::Milliseconds(8),
+               ResultIntervalType::kAtLeast);
 
   inputs.inputs_map[FrameSinkId(0, 1)].has_input = false;
   ExpectNullResult(matcher.Match(inputs));
@@ -135,7 +140,8 @@ TEST(FrameIntervalMatchersTest, OnlyVideo) {
       {ContentFrameIntervalType::kVideo, base::Milliseconds(32)});
   frame_interval_inputs.has_only_content_frame_interval_updates = true;
 
-  ExpectResult(matcher.Match(inputs), base::Milliseconds(32));
+  ExpectResult(matcher.Match(inputs), base::Milliseconds(32),
+               ResultIntervalType::kExact);
 
   frame_interval_inputs.has_only_content_frame_interval_updates = false;
   ExpectNullResult(matcher.Match(inputs));
@@ -153,7 +159,8 @@ TEST(FrameIntervalMatchersTest, OnlyVideoFixedInterval) {
       {ContentFrameIntervalType::kVideo, base::Milliseconds(24)});
   frame_interval_inputs.has_only_content_frame_interval_updates = true;
 
-  ExpectResult(matcher.Match(inputs), base::Milliseconds(8));
+  ExpectResult(matcher.Match(inputs), base::Milliseconds(8),
+               ResultIntervalType::kExact);
 }
 
 TEST(FrameIntervalMatchersTest, OnlyVideoFixedIntervalNoSimpleCadence) {
@@ -170,7 +177,8 @@ TEST(FrameIntervalMatchersTest, OnlyVideoFixedIntervalNoSimpleCadence) {
 
   // Should return default if there is no simple cadence with any fixed
   // supported intervals.
-  ExpectResult(matcher.Match(inputs), base::Milliseconds(16));
+  ExpectResult(matcher.Match(inputs), base::Milliseconds(16),
+               ResultIntervalType::kExact);
 }
 
 TEST(FrameIntervalMatchersTest, OnlyVideoDifferentIntervals) {
@@ -192,7 +200,8 @@ TEST(FrameIntervalMatchersTest, OnlyVideoDifferentIntervals) {
 
   interval_inputs2.content_interval_info[0].frame_interval =
       base::Milliseconds(32);
-  ExpectResult(matcher.Match(inputs), base::Milliseconds(32));
+  ExpectResult(matcher.Match(inputs), base::Milliseconds(32),
+               ResultIntervalType::kExact);
 }
 
 TEST(FrameIntervalMatchersTest, OnlyVideoContinuousRange) {
@@ -211,7 +220,8 @@ TEST(FrameIntervalMatchersTest, OnlyVideoContinuousRange) {
         {ContentFrameIntervalType::kVideo, base::Hertz(60)});
     frame_interval_inputs.has_only_content_frame_interval_updates = true;
 
-    ExpectResult(matcher.Match(inputs), base::Hertz(60));
+    ExpectResult(matcher.Match(inputs), base::Hertz(60),
+                 ResultIntervalType::kExact);
   }
 
   // Verify that the lowest perfect cadence (= 2) is chosen when the target
@@ -224,7 +234,8 @@ TEST(FrameIntervalMatchersTest, OnlyVideoContinuousRange) {
         {ContentFrameIntervalType::kVideo, base::Hertz(35)});
     frame_interval_inputs.has_only_content_frame_interval_updates = true;
 
-    ExpectResult(matcher.Match(inputs), base::Hertz(70));
+    ExpectResult(matcher.Match(inputs), base::Hertz(70),
+                 ResultIntervalType::kExact);
   }
 
   // Verify the same (where the expected cadence = 3).
@@ -236,7 +247,8 @@ TEST(FrameIntervalMatchersTest, OnlyVideoContinuousRange) {
         {ContentFrameIntervalType::kVideo, base::Hertz(15)});
     frame_interval_inputs.has_only_content_frame_interval_updates = true;
 
-    ExpectResult(matcher.Match(inputs), base::Hertz(45));
+    ExpectResult(matcher.Match(inputs), base::Hertz(45),
+                 ResultIntervalType::kExact);
   }
 
   // Verify that the lowest perfect cadence (= 2) is chosen when the target
@@ -249,7 +261,8 @@ TEST(FrameIntervalMatchersTest, OnlyVideoContinuousRange) {
         {ContentFrameIntervalType::kVideo, base::Hertz(160)});
     frame_interval_inputs.has_only_content_frame_interval_updates = true;
 
-    ExpectResult(matcher.Match(inputs), base::Hertz(80));
+    ExpectResult(matcher.Match(inputs), base::Hertz(80),
+                 ResultIntervalType::kExact);
   }
 
   // Verify the same (where the expected cadence = 4).
@@ -261,7 +274,8 @@ TEST(FrameIntervalMatchersTest, OnlyVideoContinuousRange) {
         {ContentFrameIntervalType::kVideo, base::Hertz(400)});
     frame_interval_inputs.has_only_content_frame_interval_updates = true;
 
-    ExpectResult(matcher.Match(inputs), base::Hertz(100));
+    ExpectResult(matcher.Match(inputs), base::Hertz(100),
+                 ResultIntervalType::kExact);
   }
 
   settings.interval_settings =
@@ -277,7 +291,8 @@ TEST(FrameIntervalMatchersTest, OnlyVideoContinuousRange) {
         {ContentFrameIntervalType::kVideo, base::Hertz(40)});
     frame_interval_inputs.has_only_content_frame_interval_updates = true;
 
-    ExpectResult(matcher.Match(inputs), base::Hertz(48));
+    ExpectResult(matcher.Match(inputs), base::Hertz(48),
+                 ResultIntervalType::kExact);
   }
 
   // Verify that the maximum supported interval is chosen if there is no perfect
@@ -290,7 +305,8 @@ TEST(FrameIntervalMatchersTest, OnlyVideoContinuousRange) {
         {ContentFrameIntervalType::kVideo, base::Hertz(80)});
     frame_interval_inputs.has_only_content_frame_interval_updates = true;
 
-    ExpectResult(matcher.Match(inputs), base::Hertz(60));
+    ExpectResult(matcher.Match(inputs), base::Hertz(60),
+                 ResultIntervalType::kExact);
   }
 }
 
@@ -305,7 +321,8 @@ TEST(FrameIntervalMatchersTest, VideoConference) {
   FrameIntervalInputs& interval_inputs2 = inputs.inputs_map[FrameSinkId(0, 2)];
   interval_inputs2.content_interval_info.push_back(
       {ContentFrameIntervalType::kVideo, base::Milliseconds(24)});
-  ExpectResult(matcher.Match(inputs), base::Milliseconds(24));
+  ExpectResult(matcher.Match(inputs), base::Milliseconds(24),
+               ResultIntervalType::kExact);
 
   interval_inputs2.content_interval_info.clear();
   ExpectNullResult(matcher.Match(inputs));
@@ -323,7 +340,8 @@ TEST(FrameIntervalMatchersTest, VideoConferenceFixedInterval) {
   FrameIntervalInputs& interval_inputs2 = inputs.inputs_map[FrameSinkId(0, 2)];
   interval_inputs2.content_interval_info.push_back(
       {ContentFrameIntervalType::kVideo, base::Milliseconds(24)});
-  ExpectResult(matcher.Match(inputs), base::Milliseconds(16));
+  ExpectResult(matcher.Match(inputs), base::Milliseconds(16),
+               ResultIntervalType::kExact);
 }
 
 TEST(FrameIntervalMatchersTest, VideoConferenceDenseFixedInterval) {
@@ -357,7 +375,8 @@ TEST(FrameIntervalMatchersTest, VideoConferenceDenseFixedInterval) {
         inputs.inputs_map[FrameSinkId(0, 2)];
     interval_inputs2.content_interval_info.push_back(
         {ContentFrameIntervalType::kVideo, input1_interval});
-    ExpectResult(matcher.Match(inputs), base::Hertz(59.94));
+    ExpectResult(matcher.Match(inputs), base::Hertz(59.94),
+                 ResultIntervalType::kExact);
   }
 
   // Verify the same when the input interval is closer to the other side.
@@ -371,7 +390,8 @@ TEST(FrameIntervalMatchersTest, VideoConferenceDenseFixedInterval) {
         inputs.inputs_map[FrameSinkId(0, 2)];
     interval_inputs2.content_interval_info.push_back(
         {ContentFrameIntervalType::kVideo, input2_interval});
-    ExpectResult(matcher.Match(inputs), base::Hertz(60));
+    ExpectResult(matcher.Match(inputs), base::Hertz(60),
+                 ResultIntervalType::kExact);
   }
 }
 
@@ -383,7 +403,8 @@ TEST(FrameIntervalMatchersTest, VideoConferenceDuplicateCount) {
   FrameIntervalInputs& interval_inputs1 = inputs.inputs_map[FrameSinkId(0, 1)];
   interval_inputs1.content_interval_info.push_back(
       {ContentFrameIntervalType::kVideo, base::Milliseconds(32), 2u});
-  ExpectResult(matcher.Match(inputs), base::Milliseconds(32));
+  ExpectResult(matcher.Match(inputs), base::Milliseconds(32),
+               ResultIntervalType::kExact);
 }
 
 TEST(FrameIntervalMatchersTest, VideoConferenceIgnoreOldSinks) {
@@ -397,7 +418,8 @@ TEST(FrameIntervalMatchersTest, VideoConferenceIgnoreOldSinks) {
   FrameIntervalInputs& interval_inputs2 = inputs.inputs_map[FrameSinkId(0, 2)];
   interval_inputs2.content_interval_info.push_back(
       {ContentFrameIntervalType::kVideo, base::Milliseconds(24)});
-  ExpectResult(matcher.Match(inputs), base::Milliseconds(24));
+  ExpectResult(matcher.Match(inputs), base::Milliseconds(24),
+               ResultIntervalType::kExact);
 
   interval_inputs2.frame_time = kNow - base::Seconds(1);
   ExpectNullResult(matcher.Match(inputs));
@@ -420,7 +442,8 @@ TEST(FrameIntervalMatchersTest, VideoConferenceContinuousRange) {
         inputs.inputs_map[FrameSinkId(0, 2)];
     interval_inputs2.content_interval_info.push_back(
         {ContentFrameIntervalType::kVideo, base::Hertz(50)});
-    ExpectResult(matcher.Match(inputs), base::Hertz(60));
+    ExpectResult(matcher.Match(inputs), base::Hertz(60),
+                 ResultIntervalType::kExact);
   }
 
   // Verify the minimum possible interval is chosen when the minimum content
@@ -435,7 +458,8 @@ TEST(FrameIntervalMatchersTest, VideoConferenceContinuousRange) {
         inputs.inputs_map[FrameSinkId(0, 2)];
     interval_inputs2.content_interval_info.push_back(
         {ContentFrameIntervalType::kVideo, base::Hertz(50)});
-    ExpectResult(matcher.Match(inputs), base::Hertz(120));
+    ExpectResult(matcher.Match(inputs), base::Hertz(120),
+                 ResultIntervalType::kExact);
   }
 
   // Verify the maximum possible interval is chosen when the minimum content
@@ -450,7 +474,8 @@ TEST(FrameIntervalMatchersTest, VideoConferenceContinuousRange) {
         inputs.inputs_map[FrameSinkId(0, 2)];
     interval_inputs2.content_interval_info.push_back(
         {ContentFrameIntervalType::kVideo, base::Hertz(35)});
-    ExpectResult(matcher.Match(inputs), base::Hertz(40));
+    ExpectResult(matcher.Match(inputs), base::Hertz(40),
+                 ResultIntervalType::kExact);
   }
 }
 
@@ -466,6 +491,94 @@ TEST(FrameIntervalMatcherInputsTest, WriteIntoTrace) {
             "{FrameSinkId(0, 1):"
             "{time_diff_us:0,has_input:false,only_content:false},"
             "content_info_0:{type:video,interval_us:32000,duplicate_count:0}}");
+}
+
+TEST(FrameIntervalMatchersTest, UserInputBoostMatcher) {
+  Settings settings;
+  Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/2u);
+  UserInputBoostMatcher matcher;
+
+  inputs.inputs_map[FrameSinkId(0, 1)].has_user_input = true;
+  ExpectResult(matcher.Match(inputs), FrameIntervalClass::kBoost);
+
+  inputs.inputs_map[FrameSinkId(0, 1)].has_user_input = false;
+  ExpectNullResult(matcher.Match(inputs));
+}
+
+TEST(FrameIntervalMatchersTest, SlowScrollThrottleSlowSpeedThrottle) {
+  Settings settings;
+  Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/1u);
+  SlowScrollThrottleMatcher matcher(/*device_scale_factor=*/1.0f);
+
+  FrameIntervalInputs& interval_input = inputs.inputs_map[FrameSinkId(0, 1)];
+  interval_input.content_interval_info.push_back(
+      {ContentFrameIntervalType::kCompositorScroll, base::TimeDelta()});
+  interval_input.has_only_content_frame_interval_updates = true;
+
+  interval_input.major_scroll_speed_in_pixels_per_second = 1000.0f;
+  ExpectResult(matcher.Match(inputs), FrameIntervalClass::kBoost);
+
+  interval_input.major_scroll_speed_in_pixels_per_second = 250.0f;
+  ExpectResult(matcher.Match(inputs), base::Hertz(80),
+               ResultIntervalType::kAtLeast);
+
+  interval_input.major_scroll_speed_in_pixels_per_second = 10.0f;
+  ExpectResult(matcher.Match(inputs), base::Hertz(60),
+               ResultIntervalType::kAtLeast);
+
+  interval_input.major_scroll_speed_in_pixels_per_second = 0.0f;
+  ExpectNullResult(matcher.Match(inputs));
+}
+
+TEST(FrameIntervalMatchersTest, SlowScrollThrottleInputSlowScroll) {
+  Settings settings;
+  Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/1u);
+  SlowScrollThrottleMatcher matcher(/*device_scale_factor=*/1.0f);
+
+  FrameIntervalInputs& interval_input = inputs.inputs_map[FrameSinkId(0, 1)];
+  interval_input.content_interval_info.push_back(
+      {ContentFrameIntervalType::kCompositorScroll, base::TimeDelta()});
+  interval_input.has_only_content_frame_interval_updates = true;
+
+  interval_input.major_scroll_speed_in_pixels_per_second = 10.0f;
+  ExpectResult(matcher.Match(inputs), base::Hertz(60),
+               ResultIntervalType::kAtLeast);
+}
+
+TEST(FrameIntervalMatchersTest, SlowScrollThrottleIgnoreOneOffUpdate) {
+  Settings settings;
+  Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/1u);
+  SlowScrollThrottleMatcher matcher(/*device_scale_factor=*/1.0f);
+
+  FrameIntervalInputs& interval_input = inputs.inputs_map[FrameSinkId(0, 1)];
+  interval_input.content_interval_info.push_back(
+      {ContentFrameIntervalType::kCompositorScroll, base::TimeDelta()});
+  interval_input.has_only_content_frame_interval_updates = true;
+  interval_input.major_scroll_speed_in_pixels_per_second = 10.0f;
+
+  inputs.frame_id = 10u;
+  ExpectResult(matcher.Match(inputs), base::Hertz(60),
+               ResultIntervalType::kAtLeast);
+
+  inputs.frame_id = 11u;
+  interval_input.has_only_content_frame_interval_updates = false;
+  // Ignore one off non-scroll update.
+  ExpectResult(matcher.Match(inputs), base::Hertz(60),
+               ResultIntervalType::kAtLeast);
+
+  // Continuous non-scroll update should not match.
+  inputs.frame_id = 12u;
+  interval_input.has_only_content_frame_interval_updates = false;
+  ExpectNullResult(matcher.Match(inputs));
+  inputs.frame_id = 13u;
+  interval_input.has_only_content_frame_interval_updates = false;
+  ExpectNullResult(matcher.Match(inputs));
+
+  // Match if there are no non-scroll updates.
+  inputs.frame_id = 14u;
+  interval_input.has_only_content_frame_interval_updates = true;
+  ExpectResult(matcher.Match(inputs), base::Hertz(60),
+               ResultIntervalType::kAtLeast);
 }
 
 }  // namespace

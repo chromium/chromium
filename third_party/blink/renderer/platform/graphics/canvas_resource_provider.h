@@ -331,10 +331,13 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // `completion_sync_token` which will satisfy after the image copy completes.
   // In practice, this API can be used to replace a resource with the contents
   // of an AcceleratedStaticBitmapImage or with a WebGPUMailboxTexture.
-  bool OverwriteImage(const scoped_refptr<gpu::ClientSharedImage>& shared_image,
-                      const gfx::Rect& copy_rect,
-                      const gpu::SyncToken& ready_sync_token,
-                      gpu::SyncToken& completion_sync_token);
+  virtual bool OverwriteImage(
+      const scoped_refptr<gpu::ClientSharedImage>& shared_image,
+      const gfx::Rect& copy_rect,
+      const gpu::SyncToken& ready_sync_token,
+      gpu::SyncToken& completion_sync_token) {
+    return false;
+  }
 
   virtual bool HasUnusedResourcesForTesting() const { return false; }
   virtual bool unused_resources_reclaim_timer_is_running_for_testing() const {

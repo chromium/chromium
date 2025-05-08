@@ -14,7 +14,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
 #include "components/optimization_guide/proto/features/zero_state_suggestions.pb.h"
 #include "content/public/test/browser_test.h"
@@ -24,6 +26,7 @@ namespace contextual_cueing {
 
 using ::testing::_;
 using ::testing::An;
+using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::Return;
@@ -100,8 +103,15 @@ class ZeroStateSuggestionsPageDataBrowserTest
     }
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{contextual_cueing::kContextualCueing, {}},
-         {contextual_cueing::kGlicZeroStateSuggestions, zss_params}},
+         {contextual_cueing::kGlicZeroStateSuggestions, zss_params},
+         {optimization_guide::features::kRemoteOptimizationGuideFetching, {}}},
         /*disabled_features=*/{});
+  }
+
+  void DisableOptimizationPermissionCheck() {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        optimization_guide::switches::
+            kDisableCheckingUserPermissionsForTesting);
   }
 
   void SetUpBrowserContextKeyedServices(
@@ -128,46 +138,96 @@ class ZeroStateSuggestionsPageDataBrowserTest
     return *mock_optimization_guide_keyed_service_;
   }
 
-  void SetUpHints(bool allow_contextual,
-                  const std::vector<std::string>& suggestions) {
-    EXPECT_CALL(mock_optimization_guide_keyed_service(),
-                CanApplyOptimization(
-                    _, _, An<optimization_guide::OptimizationMetadata*>()))
-        .WillRepeatedly(
-            Return(optimization_guide::OptimizationGuideDecision::kFalse));
-    EXPECT_CALL(mock_optimization_guide_keyed_service(),
-                CanApplyOptimization(
-                    _, optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
-                    An<optimization_guide::OptimizationMetadata*>()))
-        .WillOnce(WithArgs<2>(
-            [=](optimization_guide::OptimizationMetadata* og_metadata)
-                -> optimization_guide::OptimizationGuideDecision {
+  void SetUpOnDemandHints(bool allow_contextual,
+                          const std::vector<std::string>& suggestions) {
+    EXPECT_CALL(
+        mock_optimization_guide_keyed_service(),
+        CanApplyOptimizationOnDemand(
+            _,
+            ElementsAre(optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS),
+            optimization_guide::proto::RequestContext::
+                CONTEXT_GLIC_ZERO_STATE_SUGGESTIONS,
+            _, _))
+        .WillOnce(WithArgs<3>(
+            [=](optimization_guide::
+                    OnDemandOptimizationGuideDecisionRepeatingCallback
+                        callback) {
               optimization_guide::proto::GlicZeroStateSuggestionsMetadata
                   metadata;
               metadata.set_contextual_suggestions_eligible(allow_contextual);
               *metadata.mutable_contextual_suggestions() = {suggestions.begin(),
                                                             suggestions.end()};
 
-              og_metadata->SetAnyMetadataForTesting(metadata);
-              return optimization_guide::OptimizationGuideDecision::kTrue;
+              optimization_guide::OptimizationMetadata og_metadata;
+              og_metadata.SetAnyMetadataForTesting(metadata);
+
+              optimization_guide::OptimizationGuideDecisionWithMetadata
+                  decision_with_metadata;
+              decision_with_metadata.decision =
+                  optimization_guide::OptimizationGuideDecision::kTrue;
+              decision_with_metadata.metadata = og_metadata;
+              callback.Run(
+                  GURL(),
+                  {{optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
+                    decision_with_metadata}});
+            }));
+  }
+
+  void SetUpHints(bool allow_contextual,
+                  const std::vector<std::string>& suggestions) {
+    EXPECT_CALL(
+        mock_optimization_guide_keyed_service(),
+        CanApplyOptimization(
+            _, _, An<optimization_guide::OptimizationGuideDecisionCallback>()))
+        .WillRepeatedly(WithArgs<2>(
+            [=](optimization_guide::OptimizationGuideDecisionCallback
+                    callback) {
+              std::move(callback).Run(
+                  optimization_guide::OptimizationGuideDecision::kFalse, {});
+            }));
+    EXPECT_CALL(
+        mock_optimization_guide_keyed_service(),
+        CanApplyOptimization(
+            _, optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
+            An<optimization_guide::OptimizationGuideDecisionCallback>()))
+        .WillOnce(WithArgs<2>(
+            [=](optimization_guide::OptimizationGuideDecisionCallback
+                    callback) {
+              optimization_guide::proto::GlicZeroStateSuggestionsMetadata
+                  metadata;
+              metadata.set_contextual_suggestions_eligible(allow_contextual);
+              *metadata.mutable_contextual_suggestions() = {suggestions.begin(),
+                                                            suggestions.end()};
+
+              optimization_guide::OptimizationMetadata og_metadata;
+              og_metadata.SetAnyMetadataForTesting(metadata);
+              std::move(callback).Run(
+                  optimization_guide::OptimizationGuideDecision::kTrue,
+                  og_metadata);
             }));
   }
 
   void SetUpHintsNoResult() {
-    EXPECT_CALL(mock_optimization_guide_keyed_service(),
-                CanApplyOptimization(
-                    _, _, An<optimization_guide::OptimizationMetadata*>()))
-        .WillRepeatedly(
-            Return(optimization_guide::OptimizationGuideDecision::kFalse));
-    EXPECT_CALL(mock_optimization_guide_keyed_service(),
-                CanApplyOptimization(
-                    _, optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
-                    An<optimization_guide::OptimizationMetadata*>()))
+    EXPECT_CALL(
+        mock_optimization_guide_keyed_service(),
+        CanApplyOptimization(
+            _, _, An<optimization_guide::OptimizationGuideDecisionCallback>()))
+        .WillRepeatedly(WithArgs<2>(
+            [=](optimization_guide::OptimizationGuideDecisionCallback
+                    callback) {
+              std::move(callback).Run(
+                  optimization_guide::OptimizationGuideDecision::kFalse, {});
+            }));
+    EXPECT_CALL(
+        mock_optimization_guide_keyed_service(),
+        CanApplyOptimization(
+            _, optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
+            An<optimization_guide::OptimizationGuideDecisionCallback>()))
         .WillOnce(WithArgs<2>(
-            [](optimization_guide::OptimizationMetadata* og_metadata)
-                -> optimization_guide::OptimizationGuideDecision {
-              EXPECT_NE(nullptr, og_metadata);
-              return optimization_guide::OptimizationGuideDecision::kFalse;
+            [=](optimization_guide::OptimizationGuideDecisionCallback
+                    callback) {
+              std::move(callback).Run(
+                  optimization_guide::OptimizationGuideDecision::kFalse, {});
             }));
   }
 
@@ -217,6 +277,19 @@ class ZeroStateSuggestionsPageDataBrowserTest
             }));
   }
 
+  void SetUpEmptyModelExecutionResult() {
+    ON_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _, _))
+        .WillByDefault(WithArgs<3>(
+            [&](optimization_guide::
+                    OptimizationGuideModelExecutionResultCallback callback) {
+              optimization_guide::proto::Any any_result;
+              std::move(callback).Run(
+                  optimization_guide::OptimizationGuideModelExecutionResult(
+                      any_result, nullptr),
+                  nullptr);
+            }));
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<testing::NiceMock<MockOGKS>> mock_optimization_guide_keyed_service_;
@@ -233,8 +306,12 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest, BasicFlow) {
   base::HistogramTester histogram_tester;
 
+  DisableOptimizationPermissionCheck();
   SetUpSuccessfulModelExecution();
   SetUpHints(/*allow_contextual=*/true, /*suggestions=*/{});
+  EXPECT_CALL(mock_optimization_guide_keyed_service(),
+              CanApplyOptimizationOnDemand)
+      .Times(0);
 
   ASSERT_TRUE(embedded_test_server()->Start());
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
@@ -254,12 +331,16 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest, BasicFlow) {
   EXPECT_EQ("suggestion 3", future.Get().value()[2]);
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualCueing.GlicSuggestions.MesFetchLatency", 1);
 }
 
 IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
                        HoldsOntoSuccessiveRequests) {
   base::HistogramTester histogram_tester;
 
+  DisableOptimizationPermissionCheck();
+  SetUpHints(/*allow_contextual=*/true, /*suggestions=*/{});
   EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _, _))
       .WillOnce(Invoke(&mock_optimization_guide_keyed_service(),
                        &MockOGKS::CaptureExecutionCallback));
@@ -308,12 +389,17 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
   EXPECT_EQ("suggestion 1", future2.Get().value()[0]);
   EXPECT_EQ("suggestion 2", future2.Get().value()[1]);
   EXPECT_EQ("suggestion 3", future2.Get().value()[2]);
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualCueing.GlicSuggestions.MesFetchLatency", 1);
 }
 
 IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
                        CreateDataDoesNotFetchWithoutExplicitCall) {
   base::HistogramTester histogram_tester;
 
+  DisableOptimizationPermissionCheck();
+  SetUpHintsNoResult();
   EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel).Times(0);
 
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -330,14 +416,18 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
 
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualCueing.GlicSuggestions.MesFetchLatency", 0);
 }
 
 IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
                        UseHintsSuggestions) {
+  DisableOptimizationPermissionCheck();
   SetUpHints(/*allow_contextual=*/true,
              /*suggestions=*/{"hints 1", "hints 2", "hints 3"});
-  // MES not to be called if hints has the suggestions.
-  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel).Times(0);
+  EXPECT_CALL(mock_optimization_guide_keyed_service(),
+              CanApplyOptimizationOnDemand)
+      .Times(0);
 
   ASSERT_TRUE(embedded_test_server()->Start());
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
@@ -359,8 +449,11 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
                        ContextualSuggestionsNotAllowed) {
+  DisableOptimizationPermissionCheck();
   SetUpHints(/*allow_contextual=*/false, /*suggestions=*/{});
-  // MES not to be called if not eligible for contextual suggestions.
+  EXPECT_CALL(mock_optimization_guide_keyed_service(),
+              CanApplyOptimizationOnDemand)
+      .Times(0);
   EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel).Times(0);
 
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -380,6 +473,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
                        NoResultFromHints) {
+  DisableOptimizationPermissionCheck();
   // Assumes page is eligible for contextual suggestions without hints result.
   EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel).Times(0);
   SetUpHintsNoResult();
@@ -403,6 +497,233 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
   EXPECT_EQ("suggestion 3", future.Get().value()[2]);
 }
 
-// TODO(409551389): redo caching tests once caching is fixed.
+IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest, CacheBehavior) {
+  DisableOptimizationPermissionCheck();
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/optimization_guide/zss_page.html")));
+
+  // Set up initial flow.
+  {
+    base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+    base::HistogramTester histogram_tester;
+
+    SetUpHints(/*allow_contextual=*/true, /*suggestions=*/{});
+    SetUpSuccessfulModelExecution();
+
+    auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
+        web_contents->GetPrimaryPage());
+    page_data->FetchSuggestions(/*is_fre=*/false, future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+    EXPECT_EQ(3u, future.Get().value().size());
+    EXPECT_EQ("suggestion 1", future.Get().value()[0]);
+    EXPECT_EQ("suggestion 2", future.Get().value()[1]);
+    EXPECT_EQ("suggestion 3", future.Get().value()[2]);
+    histogram_tester.ExpectTotalCount(
+        "ContextualCueing.GlicSuggestions.MesFetchLatency", 1);
+  }
+
+  testing::Mock::VerifyAndClearExpectations(
+      &mock_optimization_guide_keyed_service());
+
+  // Make sure model execution not called.
+  {
+    EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel).Times(0);
+    base::HistogramTester histogram_tester;
+
+    base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+
+    auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
+        web_contents->GetPrimaryPage());
+    page_data->FetchSuggestions(/*is_fre=*/false, future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+    EXPECT_EQ(3u, future.Get().value().size());
+    EXPECT_EQ("suggestion 1", future.Get().value()[0]);
+    EXPECT_EQ("suggestion 2", future.Get().value()[1]);
+    EXPECT_EQ("suggestion 3", future.Get().value()[2]);
+    histogram_tester.ExpectTotalCount(
+        "ContextualCueing.GlicSuggestions.MesFetchLatency", 0);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
+                       CacheBehaviorNonTransientError) {
+  DisableOptimizationPermissionCheck();
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/optimization_guide/zss_page.html")));
+
+  // Set up initial flow.
+  {
+    base::HistogramTester histogram_tester;
+    SetUpHints(/*allow_contextual=*/true, /*suggestions=*/{});
+    base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+
+    EXPECT_CALL(mock_optimization_guide_keyed_service(),
+                ExecuteModel(_, _, _, _))
+        .WillOnce(WithArgs<1, 3>(
+            [&](const google::protobuf::MessageLite& request_metadata,
+                optimization_guide::
+                    OptimizationGuideModelExecutionResultCallback callback) {
+              optimization_guide::proto::ErrorResponse error_response;
+              error_response.set_error_state(
+                  optimization_guide::proto::ErrorState::
+                      ERROR_STATE_INTERNAL_SERVER_ERROR_NO_RETRY);
+              optimization_guide::OptimizationGuideModelExecutionResult result;
+              result.response = base::unexpected(
+                  optimization_guide::OptimizationGuideModelExecutionError::
+                      FromModelExecutionServerError(error_response));
+              std::move(callback).Run(std::move(result), nullptr);
+            }));
+
+    auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
+        web_contents->GetPrimaryPage());
+    page_data->FetchSuggestions(/*is_fre=*/false, future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+    EXPECT_FALSE(future.Get().has_value());
+    histogram_tester.ExpectTotalCount(
+        "ContextualCueing.GlicSuggestions.MesFetchLatency", 1);
+  }
+
+  testing::Mock::VerifyAndClearExpectations(
+      &mock_optimization_guide_keyed_service());
+
+  // Make sure model execution not called.
+  {
+    base::HistogramTester histogram_tester;
+    EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel).Times(0);
+
+    base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+
+    auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
+        web_contents->GetPrimaryPage());
+    page_data->FetchSuggestions(/*is_fre=*/false, future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+    EXPECT_FALSE(future.Get().has_value());
+    histogram_tester.ExpectTotalCount(
+        "ContextualCueing.GlicSuggestions.MesFetchLatency", 0);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
+                       CacheBehaviorTransientError) {
+  DisableOptimizationPermissionCheck();
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/optimization_guide/zss_page.html")));
+
+  // Set up initial flow.
+  {
+    base::HistogramTester histogram_tester;
+    base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+
+    SetUpHints(/*allow_contextual=*/true, /*suggestions=*/{});
+    EXPECT_CALL(mock_optimization_guide_keyed_service(),
+                ExecuteModel(_, _, _, _))
+        .WillOnce(WithArgs<1, 3>(
+            [&](const google::protobuf::MessageLite& request_metadata,
+                optimization_guide::
+                    OptimizationGuideModelExecutionResultCallback callback) {
+              optimization_guide::proto::ErrorResponse error_response;
+              error_response.set_error_state(
+                  optimization_guide::proto::ErrorState::
+                      ERROR_STATE_INTERNAL_SERVER_ERROR_RETRY);
+              optimization_guide::OptimizationGuideModelExecutionResult result;
+              result.response = base::unexpected(
+                  optimization_guide::OptimizationGuideModelExecutionError::
+                      FromModelExecutionServerError(error_response));
+              std::move(callback).Run(std::move(result), nullptr);
+            }));
+
+    auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
+        web_contents->GetPrimaryPage());
+    page_data->FetchSuggestions(/*is_fre=*/false, future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+    EXPECT_FALSE(future.Get().has_value());
+    histogram_tester.ExpectTotalCount(
+        "ContextualCueing.GlicSuggestions.MesFetchLatency", 1);
+  }
+
+  testing::Mock::VerifyAndClearExpectations(
+      &mock_optimization_guide_keyed_service());
+
+  // Make sure model execution called after a transient error.
+  {
+    base::HistogramTester histogram_tester;
+    SetUpSuccessfulModelExecution();
+
+    base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+
+    auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
+        web_contents->GetPrimaryPage());
+    page_data->FetchSuggestions(/*is_fre=*/false, future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+    EXPECT_EQ(3u, future.Get().value().size());
+    EXPECT_EQ("suggestion 1", future.Get().value()[0]);
+    EXPECT_EQ("suggestion 2", future.Get().value()[1]);
+    EXPECT_EQ("suggestion 3", future.Get().value()[2]);
+    // The count should increase because MES should be queried again.
+    histogram_tester.ExpectTotalCount(
+        "ContextualCueing.GlicSuggestions.MesFetchLatency", 1);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest, NonMSBBFlow) {
+  base::HistogramTester histogram_tester;
+
+  SetUpEmptyModelExecutionResult();
+  SetUpOnDemandHints(/*allow_contextual=*/true, /*suggestions=*/{
+                         "on demand 1", "on demand 2", "on demand 3"});
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/optimization_guide/zss_page.html")));
+
+  base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+
+  auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
+      web_contents->GetPrimaryPage());
+  page_data->FetchSuggestions(/*is_fre=*/false, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(3u, future.Get().value().size());
+  EXPECT_EQ("on demand 1", future.Get().value()[0]);
+  EXPECT_EQ("on demand 2", future.Get().value()[1]);
+  EXPECT_EQ("on demand 3", future.Get().value()[2]);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", true, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
+                       NonMSBBFlowContextualNotAllowed) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel).Times(0);
+  SetUpOnDemandHints(/*allow_contextual=*/false, /*suggestions=*/{});
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/optimization_guide/zss_page.html")));
+
+  base::test::TestFuture<std::optional<std::vector<std::string>>> future;
+
+  auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
+      web_contents->GetPrimaryPage());
+  page_data->FetchSuggestions(/*is_fre=*/false, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(std::nullopt, future.Get());
+}
 
 }  // namespace contextual_cueing

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -202,7 +203,7 @@ ScriptPromise<IDLSequence<FontFace>> FontFaceSet::load(
         script_state,
         MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kSyntaxError,
-            "Could not resolve '" + font_string + "' as a font."));
+            WTF::StrCat({"Could not resolve '", font_string, "' as a font."})));
   }
 
   FontFaceCache* font_face_cache = GetFontSelector()->GetFontFaceCache();
@@ -238,7 +239,7 @@ bool FontFaceSet::check(const String& font_string,
   if (!font) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        "Could not resolve '" + font_string + "' as a font.");
+        WTF::StrCat({"Could not resolve '", font_string, "' as a font."}));
     return false;
   }
 

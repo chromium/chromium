@@ -29,6 +29,7 @@
 #include "ui/base/interaction/interactive_test_definitions.h"
 #include "ui/base/interaction/interactive_test_internal.h"
 #include "ui/base/metadata/metadata_types.h"
+#include "ui/base/test/ui_controls.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_mouse.h"
 #include "ui/views/interaction/interactive_views_test_internal.h"
@@ -345,9 +346,13 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
   //
   // This verb is only available in interactive test suites; see
   // `RequireInteractiveTest()`.
+  //
+  // The optional `modifier_keys` parameter can be set to any combination of
+  // `ui_controls::AcceleratorState`.
   [[nodiscard]] StepBuilder ClickMouse(
       ui_controls::MouseButton button = ui_controls::LEFT,
-      bool release = true);
+      bool release = true,
+      int modifier_keys = ui_controls::kNoAccelerator);
 
   // Depresses the left mouse button at the current cursor position and drags to
   // the target `position`. The `reference` element will be used based on how
@@ -367,8 +372,12 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
   //
   // This verb is only available in interactive test suites; see
   // `RequireInteractiveTest()`.
+  //
+  // The optional `modifier_keys` parameter can be set to any combination of
+  // `ui_controls::AcceleratorState`.
   [[nodiscard]] StepBuilder ReleaseMouse(
-      ui_controls::MouseButton button = ui_controls::LEFT);
+      ui_controls::MouseButton button = ui_controls::LEFT,
+      int modifier_keys = ui_controls::kNoAccelerator);
 
   // As IfElement(), but `condition` takes a single argument that is a const
   // View pointer. If `element` is not a view of type V, then the test will

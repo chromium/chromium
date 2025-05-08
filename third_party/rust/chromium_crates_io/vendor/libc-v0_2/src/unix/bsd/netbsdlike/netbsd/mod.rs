@@ -2409,6 +2409,12 @@ pub const RTA_TAG: c_int = 0x100;
 pub const RTAX_TAG: c_int = 8;
 pub const RTAX_MAX: c_int = 9;
 
+// sys/timerfd.h
+pub const TFD_CLOEXEC: i32 = crate::O_CLOEXEC;
+pub const TFD_NONBLOCK: i32 = crate::O_NONBLOCK;
+pub const TFD_TIMER_ABSTIME: i32 = crate::O_WRONLY;
+pub const TFD_TIMER_CANCEL_ON_SET: i32 = crate::O_RDWR;
+
 const_fn! {
     {const} fn _ALIGN(p: usize) -> usize {
         (p + _ALIGNBYTES) & !_ALIGNBYTES
@@ -2853,6 +2859,16 @@ extern "C" {
     #[link_name = "__getmntinfo13"]
     pub fn getmntinfo(mntbufp: *mut *mut crate::statvfs, flags: c_int) -> c_int;
     pub fn getvfsstat(buf: *mut statvfs, bufsize: size_t, flags: c_int) -> c_int;
+
+    // Added in `NetBSD` 10.0
+    pub fn timerfd_create(clockid: crate::clockid_t, flags: c_int) -> c_int;
+    pub fn timerfd_gettime(fd: c_int, curr_value: *mut itimerspec) -> c_int;
+    pub fn timerfd_settime(
+        fd: c_int,
+        flags: c_int,
+        new_value: *const itimerspec,
+        old_value: *mut itimerspec,
+    ) -> c_int;
 }
 
 #[link(name = "rt")]

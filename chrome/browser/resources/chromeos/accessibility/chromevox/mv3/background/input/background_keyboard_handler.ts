@@ -9,8 +9,10 @@ import {KeyCode} from '/common/key_code.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {EventSourceType} from '../../common/event_source_type.js';
+import type {InternalKeyEvent} from '../../common/internal_key_event.js'
 import {ChromeVoxKbHandler} from '../../common/keyboard_handler.js';
 import {Msgs} from '../../common/msgs.js';
+import {OffscreenCommandType} from '../../common/offscreen_command_type.js'
 import {QueueMode} from '../../common/tts_types.js';
 import {ChromeVox} from '../chromevox.js';
 import {ChromeVoxRange} from '../chromevox_range.js';
@@ -19,6 +21,9 @@ import {ForcedActionPath} from '../forced_action_path.js';
 import {MathHandler} from '../math_handler.js';
 import {Output} from '../output/output.js';
 import {ChromeVoxPrefs} from '../prefs.js';
+
+type MessageSender = chrome.runtime.MessageSender;
+type StopPropagationCallback = (value: any) => void;
 
 /**
  * Internal pass through mode state (see usage below).
@@ -36,10 +41,6 @@ enum KeyboardPassThroughState {
   PENDING_SHORTCUT_KEYUPS = 'pending_shortcut_keyups',
 }
 
-export class InternalKeyEvent extends KeyboardEvent {
-  stickyMode?: boolean;
-}
-
 export class BackgroundKeyboardHandler {
   static instance?: BackgroundKeyboardHandler;
   private static passThroughModeEnabled_: boolean = false;
@@ -52,9 +53,23 @@ export class BackgroundKeyboardHandler {
     this.passThroughState_ = KeyboardPassThroughState.NO_PASS_THROUGH;
     this.passedThroughKeyDowns_ = new Set();
 
-    document.addEventListener(
-        'keydown', (event) => this.onKeyDown(event), false);
-    document.addEventListener('keyup', (event) => this.onKeyUp(event), false);
+    // Handle messages from the offscreen document.
+    chrome.runtime.onMessage.addListener(
+        (message: any|undefined, _sender: MessageSender,
+         sendResponse: (value: any) => void) => {
+          let internalEvent: InternalKeyEvent;
+          switch (message['command']) {
+            case OffscreenCommandType.ON_KEY_DOWN:
+              internalEvent = message.internalEvent as InternalKeyEvent;
+              this.onKeyDown_(internalEvent, sendResponse);
+              break;
+            case OffscreenCommandType.ON_KEY_UP:
+              internalEvent = message.internalEvent as InternalKeyEvent;
+              this.onKeyUp_(internalEvent, sendResponse);
+              break;
+          }
+          return false;
+        });
 
     chrome.accessibilityPrivate.setKeyboardListener(
         true, ChromeVoxPrefs.isStickyPrefOn);
@@ -72,12 +87,9 @@ export class BackgroundKeyboardHandler {
     BackgroundKeyboardHandler.passThroughModeEnabled_ = true;
   }
 
-  /**
-   * Handles key down events.
-   * The return value has no effect since we ignore it in
-   *     SpokenFeedbackEventRewriterDelegate::HandleKeyboardEvent.
-   */
-  onKeyDown(evt: InternalKeyEvent): boolean {
+  private onKeyDown_(
+      evt: InternalKeyEvent,
+      stopPropogationCallback: StopPropagationCallback): void {
     EventSource.set(EventSourceType.STANDARD_KEYBOARD);
     evt.stickyMode = ChromeVoxPrefs.isStickyModeOn();
 
@@ -91,7 +103,7 @@ export class BackgroundKeyboardHandler {
 
     if (BackgroundKeyboardHandler.passThroughModeEnabled_) {
       this.passedThroughKeyDowns_.add(evt.keyCode);
-      return false;
+      return;
     }
 
     Output.forceModeForNextSpeechUtterance(QueueMode.FLUSH);
@@ -105,16 +117,14 @@ export class BackgroundKeyboardHandler {
         this.passThroughState_ =
             KeyboardPassThroughState.PENDING_PASS_THROUGH_SHORTCUT_KEYUPS;
       }
-      evt.preventDefault();
-      evt.stopPropagation();
+
+      stopPropogationCallback(true);
       this.eatenKeyDowns_.add(evt.keyCode);
     }
-
-    return false;
   }
 
   /** Returns true if the key should continue propagation. */
-  private callOnKeyDownHandlers_(evt: KeyboardEvent): boolean {
+  private callOnKeyDownHandlers_(evt: InternalKeyEvent): boolean {
     // Defer first to the math handler, if it exists, then ordinary keyboard
     // commands.
     if (!MathHandler.onKeyDown(evt)) {
@@ -143,14 +153,11 @@ export class BackgroundKeyboardHandler {
     return Boolean(evt.metaKey) || evt.keyCode === KeyCode['SEARCH'];
   }
 
-  /**
-   * The return value has no effect since we ignore it in
-   *     SpokenFeedbackEventRewriterDelegate::HandleKeyboardEvent.
-   */
-  onKeyUp(evt: InternalKeyEvent): boolean {
+  private onKeyUp_(
+      evt: InternalKeyEvent,
+      stopPropogationCallback: StopPropagationCallback): void {
     if (this.eatenKeyDowns_.has(evt.keyCode)) {
-      evt.preventDefault();
-      evt.stopPropagation();
+      stopPropogationCallback(true);
       this.eatenKeyDowns_.delete(evt.keyCode);
     }
 
@@ -177,8 +184,6 @@ export class BackgroundKeyboardHandler {
         this.passThroughState_ = KeyboardPassThroughState.NO_PASS_THROUGH;
       }
     }
-
-    return false;
   }
 }
 

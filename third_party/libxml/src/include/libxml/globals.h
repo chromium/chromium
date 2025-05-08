@@ -22,20 +22,4 @@
 #include <libxml/xmlsave.h>
 #include <libxml/threads.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-typedef struct _xmlGlobalState xmlGlobalState;
-typedef xmlGlobalState *xmlGlobalStatePtr;
-
-XML_DEPRECATED XMLPUBFUN void
-xmlInitializeGlobalState(xmlGlobalStatePtr gs);
-XML_DEPRECATED XMLPUBFUN
-xmlGlobalStatePtr xmlGetGlobalState(void);
-
-#ifdef __cplusplus
-}
-#endif
-
 #endif /* __XML_GLOBALS_H */

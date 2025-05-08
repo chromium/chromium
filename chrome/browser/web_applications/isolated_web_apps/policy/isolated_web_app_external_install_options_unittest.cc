@@ -12,6 +12,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_generator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
+#include "components/webapps/isolated_web_apps/update_channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_app {

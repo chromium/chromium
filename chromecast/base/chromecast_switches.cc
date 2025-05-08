@@ -24,6 +24,10 @@ const char kCrashServerUrl[] = "crash-server-url";
 // Switch to enable daemon-mode in crash_uploader.
 const char kCrashUploaderDaemon[] = "daemon";
 
+// Switch to specify product name used when crash_uploader uploads crash report.
+// Default to "Eureka" if not specified.
+const char kCrashReportProductName[] = "product-name";
+
 // Switch to disable Crash reporting
 const char kDisableCrashReporter[] = "disable-crash-reporter";
 

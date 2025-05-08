@@ -848,7 +848,10 @@
         Open
       </message>
       <message name="IDS_TAB_GROUP_ROW_ACCESSIBILITY_TEXT" desc="Content description for accessibility to describe action of tapping on a tab group row.">
-        Open <ph name="TITLE_OF_GROUP">%s<ex>shopping</ex></ph>
+        {TAB_COUNT, plural,
+          =1 {Open <ph name="TITLE_OF_GROUP">%1$s<ex>shopping</ex></ph> with <ph name="TAB_COUNT2">%2$d<ex>12</ex></ph> tab}
+          other {Open <ph name="TITLE_OF_GROUP">%1$s<ex>shopping</ex></ph> with <ph name="TAB_COUNT2">%2$d<ex>12</ex></ph> tabs}
+        }
       </message>
       <message name="IDS_TAB_GROUP_MENU_ACCESSIBILITY_TEXT" desc="Content description for accessibility to describe the action of tapping on the more menu button.">
         <ph name="TITLE_OF_GROUP">%s<ex>shopping</ex></ph> tab group options
@@ -981,6 +984,9 @@
           =1 {Move to new window}
           other {Move to other window}}
       </message>
+      <message name="IDS_MOVE_TAB_TO_GROUP" desc="Content description for an action which moves a tab to another group.">
+        Move to group
+      </message>
 
       <!-- Tab Group List Bottom Sheet -->
       <message name="IDS_TAB_GROUP_LIST_BOTTOM_SHEET_TITLE" desc="Title text for a bottom sheet which is used to add a tab to a tab group.">
@@ -1005,7 +1011,10 @@
         Tab group list closed
       </message>
       <message name="IDS_TAB_GROUP_BOTTOM_SHEET_ROW_ACCESSIBILITY_TEXT" desc="Content description for accessibility to describe action of tapping on a tab group row on the bottom sheet.">
-        Add to <ph name="TITLE_OF_GROUP">%s<ex>shopping</ex></ph>
+        {TAB_COUNT, plural,
+          =1 {Add to group named <ph name="TITLE_OF_GROUP">%1$s<ex>shopping</ex></ph> with <ph name="TAB_COUNT1">%2$d<ex>12</ex></ph> tab}
+          other {Add to group named <ph name="TITLE_OF_GROUP">%1$s<ex>shopping</ex></ph> with <ph name="TAB_COUNT1">%2$d<ex>12</ex></ph> tabs}
+        }
       </message>
     </messages>
   </release>

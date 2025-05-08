@@ -92,6 +92,8 @@ class TokenHandleStoreImpl : public TokenHandleStore {
 
   DoesUserHaveGaiaPasswordCallback does_user_have_gaia_password_;
 
+  std::optional<std::string> invalid_token_for_testing_;
+
   base::WeakPtrFactory<TokenHandleStoreImpl> weak_factory_{this};
 };
 

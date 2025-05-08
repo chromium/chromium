@@ -236,6 +236,10 @@ class CONTENT_EXPORT InterestGroupAuction
     // event.
     std::optional<uint64_t> trace_id;
 
+    // ID used to isolate conflicting IGs in GroupByOrigin execution mode.
+    // 0 for things that don't use that mode.
+    size_t group_by_origin_id = 0;
+
     // ReceiverId for use as a GenerateBidClient. Only populated while
     // generateBid() is running.
     std::optional<mojo::ReceiverId> generate_bid_client_receiver_id;
@@ -1205,6 +1209,10 @@ class CONTENT_EXPORT InterestGroupAuction
   // Returns the multi-bid limit configured for `buyer` by `config_`,
   // ensuring that it's at least 1.
   uint16_t GetBuyerMultiBidLimit(const url::Origin& buyer);
+
+  // Gets the buyer `per-buyer-tkv-signals` in `config` for interest group
+  // buyer.
+  std::optional<std::string> GetBuyerTKVSignals(const url::Origin& buyer) const;
 
   // -----------------------------------
   // Methods not associated with a phase

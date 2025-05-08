@@ -16,8 +16,6 @@ enum ModelBasedCapabilityKey {
   kPromptApi = 6,
   kHistorySearch = 7,
   kSummarize = 8,
-  kFormsAnnotations = 9,
-  kFormsPredictions = 10,
   kHistoryQueryIntent = 12,
   kBlingPrototyping = 13,
   kPasswordChangeSubmission = 14,

@@ -22,8 +22,8 @@ typedef NS_ENUM(NSInteger, GREYDirection);
 // in the webview. If `triggers_context_menu` is false, the converse is true.
 // This action doesn't fail if the context menu isn't displayed; calling code
 // should check for that separately with a matcher.
-+ (id<GREYAction>)longPressElement:(ElementSelector*)selector
-                triggerContextMenu:(BOOL)triggerContextMenu;
++ (id<GREYAction>)longPressElementOnWebView:(ElementSelector*)selector
+                         triggerContextMenu:(BOOL)triggerContextMenu;
 
 // Action to scroll a web element described by the given `selector` to visible
 // on the current web state.

@@ -42,7 +42,6 @@
 
 #include "base/base_export.h"
 #include "base/json/json_common.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 
@@ -92,10 +91,7 @@ class BASE_EXPORT JSONReader {
     int line = 0;
     int column = 0;
 
-    std::string ToString() const {
-      return "line " + base::NumberToString(line) + ", column " +
-             base::NumberToString(column) + ": " + message;
-    }
+    std::string ToString() const;
   };
 
   using Result = base::expected<Value, Error>;
@@ -133,9 +129,6 @@ class BASE_EXPORT JSONReader {
   static Result ReadAndReturnValueWithError(
       std::string_view json,
       int options = JSON_PARSE_CHROMIUM_EXTENSIONS);
-
-  // Determine whether the Rust parser is in use.
-  static bool UsingRust();
 };
 
 }  // namespace base

@@ -15,6 +15,7 @@
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/supervised_user_sync_data_fake.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/pref_names.h"
@@ -42,10 +43,8 @@ class SupervisedUserMetricsServiceTest : public testing::Test {
     RegisterProfilePrefs(pref_service_.registry());
     SupervisedUserMetricsService::RegisterProfilePrefs(
         pref_service_.registry());
-
+    supervised_user_sync_data_fake_.Init(pref_service_);
     settings_service_.Init(pref_service_.user_prefs_store());
-
-    EnableParentalControls(pref_service_);
     supervised_user_service_ = std::make_unique<SupervisedUserService>(
         identity_test_env_.identity_manager(),
         test_url_loader_factory_.GetSafeWeakWrapper(), pref_service_,
@@ -92,6 +91,7 @@ class SupervisedUserMetricsServiceTest : public testing::Test {
 
   SupervisedUserSettingsService settings_service_;
   syncer::MockSyncService sync_service_;
+  SupervisedUserSyncDataFake supervised_user_sync_data_fake_;
 
   std::unique_ptr<SupervisedUserMetricsService>
       supervised_user_metrics_service_;
@@ -99,6 +99,7 @@ class SupervisedUserMetricsServiceTest : public testing::Test {
 
 // Tests that the recorded day is updated after more than one day passes.
 TEST_F(SupervisedUserMetricsServiceTest, NewDayAfterMultipleDays) {
+  EnableParentalControls(pref_service_);
   CreateMetricsService();
 
   task_environment_.FastForwardBy(base::Days(1) + base::Hours(1));
@@ -109,6 +110,7 @@ TEST_F(SupervisedUserMetricsServiceTest, NewDayAfterMultipleDays) {
 
 // Tests that the recorded day is updated after metrics service is created.
 TEST_F(SupervisedUserMetricsServiceTest, NewDayAfterServiceCreation) {
+  EnableParentalControls(pref_service_);
   CreateMetricsService();
 
   task_environment_.FastForwardBy(base::Hours(1));
@@ -151,6 +153,7 @@ TEST_F(SupervisedUserMetricsServiceTest,
 TEST_F(SupervisedUserMetricsServiceTest, RecordDefaultMetrics) {
   // If the parent has not changed their configuration the supervised user
   // should be subject to default mature sites blocking.
+  EnableParentalControls(pref_service_);
   CreateMetricsService();
   histogram_tester_.ExpectUniqueSample(
       SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest(),

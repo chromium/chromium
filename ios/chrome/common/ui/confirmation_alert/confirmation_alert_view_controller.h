@@ -150,7 +150,7 @@
 @property(nonatomic, assign) UIBarButtonSystemItem dismissBarButtonSystemItem;
 
 // Sets a custom UIBarButtonItem for the dismiss bar button.
-@property(nonatomic, assign) UIImage* customDismissBarButtonImage;
+@property(nonatomic, strong) UIImage* customDismissBarButtonImage;
 
 // The action handler for interactions in this View Controller.
 @property(nonatomic, weak) id<ConfirmationAlertActionHandler> actionHandler;

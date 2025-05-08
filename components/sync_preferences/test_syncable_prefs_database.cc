@@ -24,4 +24,14 @@ TestSyncablePrefsDatabase::GetSyncablePrefMetadata(
   return std::nullopt;
 }
 
+bool TestSyncablePrefsDatabase::IsPreferenceAlwaysSyncing(
+    std::string_view pref_name) const {
+  return always_syncing_prefs_.contains(pref_name);
+}
+
+void TestSyncablePrefsDatabase::SetAlwaysSyncingPrefs(
+    const std::set<std::string_view>& always_syncing_prefs) {
+  always_syncing_prefs_ = always_syncing_prefs;
+}
+
 }  // namespace sync_preferences

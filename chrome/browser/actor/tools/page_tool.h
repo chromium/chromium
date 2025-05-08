@@ -24,8 +24,10 @@ class PageTool : public Tool {
   PageTool(content::RenderFrameHost& frame, const ToolInvocation& invocation);
   ~PageTool() override;
 
+  // actor::Tool
   void Validate(ValidateCallback callback) override;
   void Invoke(InvokeCallback callback) override;
+  std::string DebugString() const override;
 
  private:
   ToolInvocation invocation_;

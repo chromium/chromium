@@ -2,4 +2,18 @@ Test that Storage.sendPendingAttributionReports succeeds.
 {
     numSent : 1
 }
+{
+    body : {
+        attribution_destination : http://127.0.0.1
+        randomized_trigger_rate : 0.0000025
+        report_id : <string>
+        scheduled_report_time : <string>
+        source_event_id : 0
+        source_type : event
+        trigger_data : 0
+    }
+    httpStatusCode : 404
+    result : sent
+    url : http://127.0.0.1:8000/.well-known/attribution-reporting/report-event-attribution
+}
 

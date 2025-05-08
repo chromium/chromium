@@ -42,7 +42,7 @@ using DirectivesMap =
 namespace {
 
 bool IsDirectiveNameCharacter(char c) {
-  return base::IsAsciiAlpha(c) || c == '-';
+  return base::IsAsciiAlphaNumeric(c) || c == '-';
 }
 
 bool IsDirectiveValueCharacter(char c) {
@@ -112,6 +112,10 @@ CSPDirectiveName ToCSPDirectiveName(std::string_view name) {
   if (base::EqualsCaseInsensitiveASCII(name, "script-src")) {
     return CSPDirectiveName::ScriptSrc;
   }
+  if (base::FeatureList::IsEnabled(network::features::kCSPScriptSrcV2) &&
+      base::EqualsCaseInsensitiveASCII(name, "script-src-v2")) {
+    return CSPDirectiveName::ScriptSrcV2;
+  }
   if (base::EqualsCaseInsensitiveASCII(name, "script-src-attr")) {
     return CSPDirectiveName::ScriptSrcAttr;
   }
@@ -171,6 +175,7 @@ bool SupportedInReportOnly(CSPDirectiveName directive) {
     case CSPDirectiveName::ReportURI:
     case CSPDirectiveName::RequireTrustedTypesFor:
     case CSPDirectiveName::ScriptSrc:
+    case CSPDirectiveName::ScriptSrcV2:
     case CSPDirectiveName::ScriptSrcAttr:
     case CSPDirectiveName::ScriptSrcElem:
     case CSPDirectiveName::StyleSrc:
@@ -207,6 +212,7 @@ bool SupportedInMeta(CSPDirectiveName directive) {
     case CSPDirectiveName::ReportTo:
     case CSPDirectiveName::RequireTrustedTypesFor:
     case CSPDirectiveName::ScriptSrc:
+    case CSPDirectiveName::ScriptSrcV2:
     case CSPDirectiveName::ScriptSrcAttr:
     case CSPDirectiveName::ScriptSrcElem:
     case CSPDirectiveName::StyleSrc:
@@ -255,6 +261,7 @@ const char* ErrorMessage(CSPDirectiveName directive) {
     case CSPDirectiveName::RequireTrustedTypesFor:
     case CSPDirectiveName::Sandbox:
     case CSPDirectiveName::ScriptSrc:
+    case CSPDirectiveName::ScriptSrcV2:
     case CSPDirectiveName::ScriptSrcAttr:
     case CSPDirectiveName::ScriptSrcElem:
     case CSPDirectiveName::StyleSrc:
@@ -548,26 +555,24 @@ struct SupportedPrefixesStruct {
   mojom::IntegrityAlgorithm type;
 };
 
-// Parse a hash-source, return false on error.
-bool ParseHash(std::string_view expression, mojom::CSPHashSource* hash) {
+// Parse a hash-source without quotes around it. Return false on error.
+bool ParseUnquotedHash(std::string_view expression,
+                       mojom::CSPHashSource* hash) {
   static const SupportedPrefixesStruct SupportedPrefixes[] = {
-      {"'sha256-", 8, mojom::IntegrityAlgorithm::kSha256},
-      {"'sha384-", 8, mojom::IntegrityAlgorithm::kSha384},
-      {"'sha512-", 8, mojom::IntegrityAlgorithm::kSha512},
-      {"'sha-256-", 9, mojom::IntegrityAlgorithm::kSha256},
-      {"'sha-384-", 9, mojom::IntegrityAlgorithm::kSha384},
-      {"'sha-512-", 9, mojom::IntegrityAlgorithm::kSha512},
-      {"'ed25519-", 9, mojom::IntegrityAlgorithm::kEd25519}};
+      {"sha256-", 7, mojom::IntegrityAlgorithm::kSha256},
+      {"sha384-", 7, mojom::IntegrityAlgorithm::kSha384},
+      {"sha512-", 7, mojom::IntegrityAlgorithm::kSha512},
+      {"sha-256-", 8, mojom::IntegrityAlgorithm::kSha256},
+      {"sha-384-", 8, mojom::IntegrityAlgorithm::kSha384},
+      {"sha-512-", 8, mojom::IntegrityAlgorithm::kSha512},
+      {"ed25519-", 8, mojom::IntegrityAlgorithm::kEd25519}};
 
   for (auto item : SupportedPrefixes) {
     if (base::StartsWith(expression, item.prefix,
                          base::CompareCase::INSENSITIVE_ASCII)) {
       std::string_view subexpression = expression.substr(
-          item.prefix_length, expression.length() - item.prefix_length - 1);
+          item.prefix_length, expression.length() - item.prefix_length);
       if (!IsBase64(subexpression))
-        return false;
-
-      if (expression[expression.length() - 1] != '\'')
         return false;
 
       hash->algorithm = item.type;
@@ -590,6 +595,16 @@ bool ParseHash(std::string_view expression, mojom::CSPHashSource* hash) {
   return false;
 }
 
+bool ParseHash(std::string_view expression, mojom::CSPHashSource* hash) {
+  if (expression.size() < 2) {
+    return false;
+  }
+  if (expression[0] != '\'' || expression[expression.length() - 1] != '\'') {
+    return false;
+  }
+  return ParseUnquotedHash(expression.substr(1, expression.length() - 2), hash);
+}
+
 mojom::IntegrityAlgorithm StrongestHashAlgorithm(
     std::optional<mojom::IntegrityAlgorithm> previous,
     mojom::IntegrityAlgorithm current) {
@@ -597,6 +612,19 @@ mojom::IntegrityAlgorithm StrongestHashAlgorithm(
     return std::max(previous.value(), current);
   }
   return current;
+}
+
+bool ParseURLHash(std::string_view expression, mojom::CSPHashSource* hash) {
+  constexpr char prefix[] = "'url-";
+  constexpr size_t prefix_length = 5u;
+  if (!base::StartsWith(expression, prefix,
+                        base::CompareCase::INSENSITIVE_ASCII) ||
+      expression[expression.length() - 1] != '\'') {
+    return false;
+  }
+  return ParseUnquotedHash(
+      expression.substr(prefix_length, expression.length() - prefix_length - 1),
+      hash);
 }
 
 // Parse source-list grammar.
@@ -647,7 +675,14 @@ mojom::CSPSourceListPtr ParseSourceList(
     auto csp_source = mojom::CSPSource::New();
     if (ParseSource(directive_name, expression, csp_source.get(),
                     parsing_errors)) {
-      directive->sources.push_back(std::move(csp_source));
+      if (directive_name != CSPDirectiveName::ScriptSrcV2) {
+        directive->sources.push_back(std::move(csp_source));
+      } else {
+        parsing_errors.emplace_back(base::StringPrintf(
+            "The Content-Security-Policy directive 'script-src-v2' doesn't "
+            "permit source expression %s. It will be ignored.",
+            std::string(expression).c_str()));
+      }
       continue;
     }
 
@@ -739,6 +774,20 @@ mojom::CSPSourceListPtr ParseSourceList(
     auto hash = mojom::CSPHashSource::New();
     if (ParseHash(expression, hash.get())) {
       directive->hashes.push_back(std::move(hash));
+      continue;
+    }
+
+    auto url_hash = mojom::CSPHashSource::New();
+    if (ParseURLHash(expression, url_hash.get())) {
+      if (directive_name == CSPDirectiveName::ScriptSrcV2) {
+        directive->url_hashes.push_back(std::move(url_hash));
+      } else {
+        parsing_errors.emplace_back(base::StringPrintf(
+            "The Content-Security-Policy directive '%s' contains %s as a "
+            "source expression that is permitted only for 'script-src-v2' "
+            "directive. It will be ignored.",
+            ToString(directive_name).c_str(), std::string(expression).c_str()));
+      }
       continue;
     }
 
@@ -1047,6 +1096,7 @@ void AddContentSecurityPolicyFromHeader(
       case CSPDirectiveName::MediaSrc:
       case CSPDirectiveName::ObjectSrc:
       case CSPDirectiveName::ScriptSrc:
+      case CSPDirectiveName::ScriptSrcV2:
       case CSPDirectiveName::ScriptSrcAttr:
       case CSPDirectiveName::ScriptSrcElem:
       case CSPDirectiveName::StyleSrc:
@@ -1184,6 +1234,7 @@ CSPDirectiveName CSPFallbackDirective(CSPDirectiveName directive,
     case CSPDirectiveName::MediaSrc:
     case CSPDirectiveName::ObjectSrc:
     case CSPDirectiveName::ScriptSrc:
+    case CSPDirectiveName::ScriptSrcV2:
     case CSPDirectiveName::StyleSrc:
       return CSPDirectiveName::DefaultSrc;
 
@@ -1601,6 +1652,8 @@ std::string ToString(CSPDirectiveName name) {
       return "sandbox";
     case CSPDirectiveName::ScriptSrc:
       return "script-src";
+    case CSPDirectiveName::ScriptSrcV2:
+      return "script-src-v2";
     case CSPDirectiveName::ScriptSrcAttr:
       return "script-src-attr";
     case CSPDirectiveName::ScriptSrcElem:

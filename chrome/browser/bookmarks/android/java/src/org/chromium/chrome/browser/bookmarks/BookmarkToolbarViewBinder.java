@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Responsible for binding properties to BookmarkToolbar views. */
+@NullMarked
 class BookmarkToolbarViewBinder {
     /** Binds the given property to the given model for the given view. */
     public static void bind(PropertyModel model, BookmarkToolbar bookmarkToolbar, PropertyKey key) {

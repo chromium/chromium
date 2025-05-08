@@ -21,12 +21,12 @@ namespace media_router {
 namespace prefs {
 // Pref name that allows the AccessCode/QR code scanning dialog button to be
 // shown.
-constexpr char kAccessCodeCastEnabled[] =
+inline constexpr char kAccessCodeCastEnabled[] =
     "media_router.access_code_cast.enabled";
 
 // Pref name for the pref that determines how long a scanned receiver remains in
 // the receiver list. Duration is measured in seconds.
-constexpr char kAccessCodeCastDeviceDuration[] =
+inline constexpr char kAccessCodeCastDeviceDuration[] =
     "media_router.access_code_cast.device_duration";
 
 // Pref that keeps track of cast devices added on a user's profile. It is
@@ -35,13 +35,13 @@ constexpr char kAccessCodeCastDeviceDuration[] =
 // as a base::Value::Dict.
 // Whenever a cast device is discovered via access code, a new entry will be
 // added to this dictionary (or updated if the MediaSink::Id already exists).
-constexpr char kAccessCodeCastDevices[] =
+inline constexpr char kAccessCodeCastDevices[] =
     "media_router.access_code_cast.devices";
 
 // Pref that keeps track of when a cast device is added. It is be registered
 // as a dictionary pref with each key being a MediaSink::Id and value being a
 // base::Time.
-constexpr char kAccessCodeCastDeviceAdditionTime[] =
+inline constexpr char kAccessCodeCastDeviceAdditionTime[] =
     "media_router.access_code_cast.addition_time";
 }  // namespace prefs
 

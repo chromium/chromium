@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_RENDERER_SYNCHRONOUS_FORM_CACHE_H_
 #define COMPONENTS_AUTOFILL_CONTENT_RENDERER_SYNCHRONOUS_FORM_CACHE_H_
 
+#include <map>
 #include <memory>
 
-#include "base/containers/flat_set.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/core/common/form_data.h"
@@ -17,6 +17,7 @@ namespace blink {
 class WebDocument;
 class WebFormElement;
 }  // namespace blink
+
 namespace autofill {
 
 struct CallTimerState;
@@ -57,14 +58,12 @@ class SynchronousFormCache {
       form_util::ButtonTitlesCache* button_titles_cache,
       DenseSet<form_util::ExtractOption> extract_options = {}) const;
 
-  void insert(const FormData& form) { insert(form.renderer_id(), form); }
-
  private:
   // Stores for a given FormRendererId the last result of trying to extract the
   // FormElement with the given ID. Note that this could be std::nullopt since
   // extraction might fail, and this would still be useful because knowing that
   // would allow avoiding a future failing attempt at extraction.
-  void insert(FormRendererId form_id, base::optional_ref<const FormData> form);
+  void Insert(FormRendererId form_id, base::optional_ref<const FormData> form);
 
   // TODO(crbug.com/40947729): Convert to
   // base::flat_map<FormRendererId, std::unique_ptr<FormData>> for better memory

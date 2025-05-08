@@ -22,4 +22,5 @@
   [RuntimeEnabled=WebGPUDeveloperFeatures] readonly attribute unsigned long? d3dShaderModel;
   [RuntimeEnabled=WebGPUDeveloperFeatures] readonly attribute unsigned long? vkDriverVersion;
   [RuntimeEnabled=WebGPUDeveloperFeatures] readonly attribute DOMString powerPreference;
+  [RuntimeEnabled=WebGPUExperimentalFeatures] readonly attribute FrozenArray<GPUSubgroupMatrixConfig> subgroupMatrixConfigs;
 };

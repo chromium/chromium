@@ -28,6 +28,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
@@ -437,8 +438,7 @@ void EnterpriseSearchAggregatorProvider::Start(const AutocompleteInput& input,
                                                bool minimal_changes) {
   // Don't clear matches. Keep showing old matches until a new response comes.
   // This avoids flickering.
-  Stop(/*clear_cached_results=*/false,
-       /*due_to_user_inactivity=*/false);
+  Stop(AutocompleteStopReason::kInteraction);
 
   if (!IsProviderAllowed(input)) {
     // Clear old matches if provider is not allowed.
@@ -477,20 +477,28 @@ void EnterpriseSearchAggregatorProvider::Start(const AutocompleteInput& input,
 
   // Unretained is safe because `this` owns `debouncer_`.
   debouncer_->RequestRun(base::BindOnce(
-      &EnterpriseSearchAggregatorProvider::Run, base::Unretained(this)));
+      &EnterpriseSearchAggregatorProvider::Run, base::Unretained(this), input));
 }
 
-void EnterpriseSearchAggregatorProvider::Stop(bool clear_cached_results,
-                                              bool due_to_user_inactivity) {
-  // Ignore the stop timer since this provider is expected to take longer than
-  // 1500ms (the stop timer gets triggered due to user inactivity).
-  if (!due_to_user_inactivity) {
-    AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
-    debouncer_->CancelRequest();
-    if (loader_) {
-      LogResponseTime(true);
-      loader_.reset();
-    }
+void EnterpriseSearchAggregatorProvider::Stop(
+    AutocompleteStopReason stop_reason) {
+  // Ignore the stop timer since this provider is expected to sometimes take
+  // longer than 1500ms.
+  if (stop_reason == AutocompleteStopReason::kInactivity) {
+    return;
+  }
+  AutocompleteProvider::Stop(stop_reason);
+  debouncer_->CancelRequest();
+
+  if (auto* remote_suggestions_service = client_->GetRemoteSuggestionsService(
+          /*create_if_necessary=*/false)) {
+    remote_suggestions_service
+        ->StopCreatingEnterpriseSearchAggregatorSuggestionsRequest();
+  }
+
+  if (loader_) {
+    LogResponseTime(true);
+    loader_.reset();
   }
 }
 
@@ -512,12 +520,6 @@ bool EnterpriseSearchAggregatorProvider::IsProviderAllowed(
     return false;
   }
 
-  // Google must be set as default search provider.
-  if (!search::DefaultSearchProviderIsGoogle(
-          client_->GetTemplateURLService())) {
-    return false;
-  }
-
   // Don't run provider in non-keyword mode if query length is less than
   // the minimum length.
   if (!input.InKeywordMode() &&
@@ -536,12 +538,13 @@ bool EnterpriseSearchAggregatorProvider::IsProviderAllowed(
   return true;
 }
 
-void EnterpriseSearchAggregatorProvider::Run() {
+void EnterpriseSearchAggregatorProvider::Run(const AutocompleteInput& input) {
   // Don't clear `matches_` until a new successful response is ready to replace
   // them.
   client_->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
       ->CreateEnterpriseSearchAggregatorSuggestionsRequest(
           adjusted_input_.text(), GURL(template_url_->suggestions_url()),
+          input.current_page_classification(),
           base::BindOnce(&EnterpriseSearchAggregatorProvider::RequestStarted,
                          weak_ptr_factory_.GetWeakPtr()),
           base::BindOnce(
@@ -783,16 +786,7 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchDestinationUrl(
     const base::Value::Dict& result,
     SuggestionType suggestion_type) const {
   if (suggestion_type == SuggestionType::CONTENT) {
-    std::string destination_uri =
-        ptr_to_string(result.FindString("destinationUri"));
-    // TODO(crbug.com/403545926): Remove support for
-    //   "document.derivedStructData.link" once the change to populate
-    //   "destinationUri" is available in prod.
-    if (destination_uri.empty()) {
-      destination_uri = ptr_to_string(
-          result.FindStringByDottedPath("document.derivedStructData.link"));
-    }
-    return destination_uri;
+    return ptr_to_string(result.FindString("destinationUri"));
   }
 
   std::string query = ptr_to_string(result.FindString("suggestion"));

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.facilitated_payments;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FopSelectorProperties.SCREEN_ITEMS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.ADDITIONAL_INFO;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
@@ -21,6 +22,7 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FopSelectorProperties;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType;
 import org.chromium.chrome.browser.touch_to_fill.common.ItemDividerBase;
@@ -32,6 +34,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
  * This class can be used to show a list of items in a bottom sheet, for e.g. a user's payment
  * instruments.
  */
+@NullMarked
 public class FacilitatedPaymentsFopSelectorScreen implements FacilitatedPaymentsSequenceView {
     private static class HorizontalDividerItemDecoration extends ItemDividerBase {
         HorizontalDividerItemDecoration(Context context) {
@@ -45,7 +48,7 @@ public class FacilitatedPaymentsFopSelectorScreen implements FacilitatedPayments
 
         @Override
         protected boolean containsFillButton(RecyclerView parent) {
-            int itemCount = parent.getAdapter().getItemCount();
+            int itemCount = assumeNonNull(parent.getAdapter()).getItemCount();
             // The button will be above the footer if it's present.
             return itemCount > 1
                     && parent.getAdapter().getItemViewType(itemCount - 2)

@@ -23,8 +23,8 @@
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/keyboard_assist/omnibox_assistive_keyboard_views_utils.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_ios.h"
+#import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_assistive_keyboard_views_utils.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_view_controller.h"
@@ -1721,12 +1721,18 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
                     grey_sufficientlyVisible(), nil);
 }
 
-+ (id<GREYMatcher>)tabGroupBackButton {
-  return grey_allOf(
-      [ChromeMatchersAppInterface
-          buttonWithAccessibilityLabel:l10n_util::GetNSString(
-                                           IDS_IOS_ICON_ARROW_BACK)],
-      grey_kindOfClassName(@"UIAccessibilityBackButtonElement"), nil);
++ (id<GREYMatcher>)closeTabGroupButton {
+  if (IsContainedTabGroupEnabled()) {
+    return grey_allOf(
+        grey_accessibilityLabel(l10n_util::GetNSString(IDS_CLOSE)),
+        grey_sufficientlyVisible(), nil);
+  } else {
+    return grey_allOf(
+        [ChromeMatchersAppInterface
+            buttonWithAccessibilityLabel:l10n_util::GetNSString(
+                                             IDS_IOS_ICON_ARROW_BACK)],
+        grey_kindOfClassName(@"UIAccessibilityBackButtonElement"), nil);
+  }
 }
 
 + (id<GREYMatcher>)tabGroupActivitySummaryCell {

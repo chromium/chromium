@@ -113,7 +113,8 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) OnDeviceModelExecutor final {
   std::unique_ptr<ScopedAdaptation> LoadAdaptation(
       on_device_model::mojom::LoadAdaptationParamsPtr params);
 
-  ChromeMLConstraint CreateConstraint(const std::string& json_schema);
+  ChromeMLConstraint CreateConstraint(
+      const on_device_model::mojom::ResponseConstraint& response_constraint);
 
  private:
   on_device_model::mojom::LoadModelResult Init(

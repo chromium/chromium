@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/password_sharing_first_run_coordinator.h"
 
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/task_environment.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/password_sharing_first_run_action_handler.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/password_sharing_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -15,6 +14,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/test/fakes/fake_ui_view_controller.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -42,7 +42,7 @@ class PasswordSharingFirstRunCoordinatorTest : public PlatformTest {
                            browser:browser_.get()];
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestBrowser> browser_;
   PasswordSharingFirstRunCoordinator* coordinator_;
 
