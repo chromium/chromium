@@ -44,4 +44,8 @@ std::string ProfileContextDelegate::GetPolicyPref() {
   return prefs::kProvisionManagedClientCertificateForUserPrefs;
 }
 
+std::string ProfileContextDelegate::GetLoggingContext() {
+  return "Profile";
+}
+
 }  // namespace client_certificates

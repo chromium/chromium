@@ -47,4 +47,8 @@ std::string BrowserContextDelegate::GetPolicyPref() {
   return prefs::kProvisionManagedClientCertificateForBrowserPrefs;
 }
 
+std::string BrowserContextDelegate::GetLoggingContext() {
+  return "Browser";
+}
+
 }  // namespace client_certificates
