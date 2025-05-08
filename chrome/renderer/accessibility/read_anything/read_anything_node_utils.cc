@@ -14,12 +14,12 @@
 
 namespace a11y {
 
-bool IsSuperscript(ui::AXNode* ax_node) {
+bool IsSuperscript(const ui::AXNode* ax_node) {
   return ax_node->data().GetTextPosition() ==
          ax::mojom::TextPosition::kSuperscript;
 }
 
-bool IsTextForReadAnything(ui::AXNode* node, bool is_pdf, bool is_docs) {
+bool IsTextForReadAnything(const ui::AXNode* node, bool is_pdf, bool is_docs) {
   if (!node) {
     return false;
   }
@@ -70,7 +70,7 @@ bool IsIgnored(const ui::AXNode* const ax_node, bool is_pdf) {
   return (ui::IsControl(role) && !ui::IsTextField(role)) || ui::IsSelect(role);
 }
 
-std::string GetHtmlTag(ui::AXNode* ax_node, bool is_pdf, bool is_docs) {
+std::string GetHtmlTag(const ui::AXNode* ax_node, bool is_pdf, bool is_docs) {
   std::string html_tag =
       ax_node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
 
@@ -107,7 +107,8 @@ std::string GetHtmlTag(ui::AXNode* ax_node, bool is_pdf, bool is_docs) {
   return html_tag;
 }
 
-std::string GetHtmlTagForPDF(ui::AXNode* ax_node, const std::string& html_tag) {
+std::string GetHtmlTagForPDF(const ui::AXNode* ax_node,
+                             const std::string& html_tag) {
   ax::mojom::Role role = ax_node->GetRole();
 
   // Some nodes in PDFs don't have an HTML tag so use role instead.
@@ -138,7 +139,7 @@ std::string GetHtmlTagForPDF(ui::AXNode* ax_node, const std::string& html_tag) {
   }
 }
 
-std::string GetHeadingHtmlTagForPDF(ui::AXNode* ax_node,
+std::string GetHeadingHtmlTagForPDF(const ui::AXNode* ax_node,
                                     const std::string& html_tag) {
   // Sometimes whole paragraphs can be formatted as a heading. If the text is
   // longer than 2 lines, assume it was meant to be a paragragh.
@@ -172,19 +173,21 @@ std::string GetHeadingHtmlTagForPDF(ui::AXNode* ax_node,
   return html_tag;
 }
 
-std::string GetAltText(ui::AXNode* ax_node) {
+std::string GetAltText(const ui::AXNode* ax_node) {
   std::string alt_text =
       ax_node->GetStringAttribute(ax::mojom::StringAttribute::kName);
   return alt_text;
 }
 
-std::string GetImageDataUrl(ui::AXNode* ax_node) {
+std::string GetImageDataUrl(const ui::AXNode* ax_node) {
   std::string url =
       ax_node->GetStringAttribute(ax::mojom::StringAttribute::kImageDataUrl);
   return url;
 }
 
-std::u16string GetTextContent(ui::AXNode* ax_node, bool is_docs, bool is_pdf) {
+std::u16string GetTextContent(const ui::AXNode* ax_node,
+                              bool is_docs,
+                              bool is_pdf) {
   // For Google Docs, because the content is rendered in canvas, we distill
   // text from the "Annotated Canvas"
   // (https://sites.google.com/corp/google.com/docs-canvas-migration/home)
@@ -240,7 +243,7 @@ std::u16string GetTextContent(ui::AXNode* ax_node, bool is_docs, bool is_pdf) {
   return ax_node->GetTextContentUTF16();
 }
 
-std::u16string GetNameAttributeText(ui::AXNode* ax_node) {
+std::u16string GetNameAttributeText(const ui::AXNode* ax_node) {
   DCHECK(ax_node);
   std::u16string node_text;
   if (ax_node->HasStringAttribute(ax::mojom::StringAttribute::kName)) {
