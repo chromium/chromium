@@ -1043,6 +1043,11 @@ bool ChromeDownloadManagerDelegate::InterceptDownloadIfApplicable(
            .is_attachment() &&
       offline_pages::OfflinePageUtils::CanDownloadAsOfflinePage(url,
                                                                 mime_type)) {
+#if BUILDFLAG(IS_ANDROID)
+    if (profile_->IsOffTheRecord()) {
+      return false;
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
     offline_pages::OfflinePageUtils::ScheduleDownload(
         web_contents, offline_pages::kDownloadNamespace, url,
         offline_pages::OfflinePageUtils::DownloadUIActionFlags::ALL,
