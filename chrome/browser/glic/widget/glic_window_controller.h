@@ -207,12 +207,9 @@ class GlicWindowController : public Host::Delegate {
 
   // Possible states for the glic window. Public for testing.
   //   * Closed (aka hidden, invisible)
-  //   * OpenAnimation (showing an animation built into chrome, independent of
-  //     the content of the glic window)
   //   * Waiting for glic to load (the open animation has finished, but the
   //     glic window contents is not yet ready)
   //   * Open (aka showing, visible)
-  //   * CloseAnimation
   //   * Detaching
   //   * ClosingToReopenDetached
   enum class State {
@@ -221,7 +218,6 @@ class GlicWindowController : public Host::Delegate {
     kOpen,
     kDetaching,
     kClosingToReopenDetached,
-    kCloseAnimation,
   };
   virtual State state() const = 0;
 

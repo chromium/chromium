@@ -16,24 +16,10 @@
 
 namespace glic {
 
-namespace {
-
-constexpr static int kResizeAnimationDurationMs = 300;
-
-}  // namespace
-
 GlicWindowAnimator::GlicWindowAnimator(GlicWindowController* window_controller)
     : window_controller_(window_controller) {}
 
 GlicWindowAnimator::~GlicWindowAnimator() = default;
-
-void GlicWindowAnimator::RunCloseAnimation(GlicButton* glic_button,
-                                           base::OnceClosure callback) {
-  // The widget is going away so it's fine to replace any existing animation.
-  AnimateBounds(glic_button->GetBoundsWithInset(),
-                base::Milliseconds(kResizeAnimationDurationMs),
-                std::move(callback));
-}
 
 void GlicWindowAnimator::AnimateBounds(const gfx::Rect& target_bounds,
                                        base::TimeDelta duration,

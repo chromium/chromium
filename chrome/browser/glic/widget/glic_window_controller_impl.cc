@@ -1009,7 +1009,7 @@ void GlicWindowControllerImpl::Close() {
 
 void GlicWindowControllerImpl::CloseInternal(
     std::optional<mojom::InvocationSource> reopen_detached_source) {
-  if (state_ == State::kCloseAnimation || state_ == State::kClosed) {
+  if (state_ == State::kClosed) {
     return;
   }
 
@@ -1024,16 +1024,7 @@ void GlicWindowControllerImpl::CloseInternal(
     glic_window_animator_->SetGlicWebViewVisibility(false);
   }
 
-  if (attached_browser_) {
-    SetWindowState(State::kCloseAnimation);
-    GlicButton* glic_button = GetGlicButton(*attached_browser_);
-    glic_window_animator_->RunCloseAnimation(
-        glic_button, base::BindOnce(&GlicWindowControllerImpl::CloseFinish,
-                                    weak_ptr_factory_.GetWeakPtr(),
-                                    reopen_detached, reopen_detached_source));
-  } else {
     CloseFinish(reopen_detached, reopen_detached_source);
-  }
 }
 
 void GlicWindowControllerImpl::CloseFinish(
@@ -1322,7 +1313,7 @@ bool GlicWindowControllerImpl::IsActive() {
 }
 
 bool GlicWindowControllerImpl::IsShowing() const {
-  return !(state_ == State::kClosed || state_ == State::kCloseAnimation);
+  return !(state_ == State::kClosed);
 }
 
 bool GlicWindowControllerImpl::IsPanelOrFreShowing() const {
