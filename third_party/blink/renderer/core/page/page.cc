@@ -1093,10 +1093,10 @@ void Page::SettingsChanged(ChangeType change_type) {
         if (!document || !document->IsActive()) {
           continue;
         }
-        document->GetStyleEngine().EnsureEnvironmentVariables().SetVariable(
-            UADefinedVariable::kPreferredTextScale,
-            String::Number(
-                document->GetSettings()->GetAccessibilityFontScaleFactor()));
+        document->GetStyleEngine()
+            .EnsureEnvironmentVariables()
+            .SetPreferredTextScale(
+                document->GetSettings()->GetAccessibilityFontScaleFactor());
       }
       break;
     case ChangeType::kTextAutosizing:

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" class="reftest-wait">
+<meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0"
+  name="viewport">
+<meta name="assert"
+  content="env(preferred-text-scale) exposes the user's preferred text scale from the OS, clamped to a hardcoded set of values">
+<link rel="help" href="https://drafts.csswg.org/css-env-1/#text-zoom">
+<link rel="match" href="../reference/ref-filled-green-100px-square.xht">
+<script src="/common/reftest-wait.js"></script>
+<style>
+  div {
+    background-color: green;
+    width: calc(50px * env(preferred-text-scale));
+    height: calc(50px * env(preferred-text-scale));
+  }
+</style>
+
+<p>Test passes if there is a filled green square and <strong>no red</strong>.
+</p>
+<div></div>
+<script>
+  if (window.internals) {
+    internals.settings.setAccessibilityFontScaleFactor(1.91);
+  } else {
+    document.body.appendChild(document.createTextNode("No window.internals? This test will fail."));
+  }
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    takeScreenshot();
+  }));
+</script>

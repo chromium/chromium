@@ -39,6 +39,8 @@ class CORE_EXPORT DocumentStyleEnvironmentVariables
                                    WTF::Vector<unsigned> indices,
                                    bool record_metrics);
 
+  void SetPreferredTextScale(double);
+
   // Resolve the variable |name| and return the data. This will also cause
   // future changes to this variable to invalidate the associated document's
   // style. UseCounter metrics will be recorded when this function is used.

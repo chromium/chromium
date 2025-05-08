@@ -56,10 +56,8 @@ DocumentStyleEnvironmentVariables::DocumentStyleEnvironmentVariables(
     Document& document)
     : StyleEnvironmentVariables(parent), document_(&document) {
   if (RuntimeEnabledFeatures::CSSPreferredTextScaleEnabled()) {
-    SetVariable(
-        UADefinedVariable::kPreferredTextScale,
-        String::Number(
-            document_->GetSettings()->GetAccessibilityFontScaleFactor()));
+    SetPreferredTextScale(
+        document_->GetSettings()->GetAccessibilityFontScaleFactor());
   }
 }
 
@@ -96,6 +94,43 @@ void DocumentStyleEnvironmentVariables::RecordVariableUsage(
   } else {
     // Do nothing if this is an unknown variable.
   }
+}
+namespace {
+
+double SnapToClosestFontScaleBucket(double raw_font_scale) {
+  static const std::array<double, 7> font_scale_buckets = {0.85, 1,   1.15, 1.3,
+                                                           1.5,  1.8, 2};
+
+  // Handle cases where the input value is outside the range of literals.
+  if (raw_font_scale <= font_scale_buckets.front()) {
+    return font_scale_buckets.front();
+  }
+  if (raw_font_scale >= font_scale_buckets.back()) {
+    return font_scale_buckets.back();
+  }
+
+  // std::lower_bound finds the first element >= raw_font_scale.
+  const auto it = std::lower_bound(font_scale_buckets.begin(),
+                                   font_scale_buckets.end(), raw_font_scale);
+
+  const double higher_candidate = *it;
+  // The element before 'it' is the other candidate.
+  // Safe because we handled edge cases above.
+  const double lower_candidate = *(it - 1);
+
+  const double diff_to_lower = std::abs(raw_font_scale - lower_candidate);
+  const double diff_to_higher = std::abs(raw_font_scale - higher_candidate);
+
+  return (diff_to_lower <= diff_to_higher) ? lower_candidate : higher_candidate;
+}
+
+}  // namespace
+
+void DocumentStyleEnvironmentVariables::SetPreferredTextScale(
+    double raw_font_scale_from_os) {
+  SetVariable(
+      UADefinedVariable::kPreferredTextScale,
+      String::Number(SnapToClosestFontScaleBucket(raw_font_scale_from_os)));
 }
 
 }  // namespace blink
