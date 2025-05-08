@@ -426,7 +426,7 @@ Each bot's description is a dictionary containing the following:
        isolate, invoke a wrapper script from src/testing/scripts as their
        top-level entry point, and are used to adapt to multiple kinds of test
        harnesses. These must implement the
-       [Test Executable API](//docs/testing/test_executable_api.md) and
+       [Test Executable API](/docs/testing/test_executable_api.md) and
        can also be run either locally or under Swarming.
     * `junit_tests`: (Android-specific) JUnit tests. These are not run
        under Swarming.
