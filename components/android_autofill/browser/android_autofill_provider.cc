@@ -388,6 +388,26 @@ void AndroidAutofillProvider::OnShowBottomSheetResult(
           : PrefillRequestState::kRequestSentStructureNotProvided);
 }
 
+bool AndroidAutofillProvider::HasPasskeyRequest() {
+  if (!manager_ || !form_ ||
+      !GetCredManDelegate(GetRenderFrameHost(manager_.get()))) {
+    return false;
+  }
+  const FormFieldData* field =
+      form_->form().FindFieldByGlobalId(current_field_.id);
+  return field && AllowCredManOnField(*field);
+}
+
+void AndroidAutofillProvider::OnTriggerPasskeyRequest() {
+  if (manager_) {
+    if (content::RenderFrameHost* rfh = GetRenderFrameHost(manager_.get())) {
+      if (WebAuthnCredManDelegate* delegate = GetCredManDelegate(rfh)) {
+        delegate->TriggerCredManUi(RequestPasswords(false));
+      }
+    }
+  }
+}
+
 void AndroidAutofillProvider::OnTextFieldValueChanged(
     AndroidAutofillManager* manager,
     const FormData& form,

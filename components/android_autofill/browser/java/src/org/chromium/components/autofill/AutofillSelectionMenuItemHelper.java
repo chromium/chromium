@@ -39,17 +39,28 @@ public class AutofillSelectionMenuItemHelper {
 
     public List<SelectionMenuItem> getAdditionalItems() {
         List<SelectionMenuItem> autofillItems = new ArrayList<>();
-        if (mAutofillMenuItemTitle == 0 || !mAutofillProvider.shouldQueryAutofillSuggestion()) {
-            return autofillItems;
+        if (mAutofillProvider.shouldOfferPasskeyEntry()) {
+            autofillItems.add(
+                    new SelectionMenuItem.Builder("Use Passkey")
+                            .setId(Menu.NONE)
+                            .setOrderInCategory(Menu.FIRST)
+                            .setShowAsActionFlags(
+                                    MenuItem.SHOW_AS_ACTION_ALWAYS
+                                            | MenuItem.SHOW_AS_ACTION_WITH_TEXT)
+                            .setClickListener(v -> mAutofillProvider.triggerPasskeyRequest())
+                            .build());
         }
-        autofillItems.add(
-                new SelectionMenuItem.Builder(mAutofillMenuItemTitle)
-                        .setId(android.R.id.autofill)
-                        .setOrderInCategory(Menu.CATEGORY_SECONDARY)
-                        .setShowAsActionFlags(
-                                MenuItem.SHOW_AS_ACTION_NEVER | MenuItem.SHOW_AS_ACTION_WITH_TEXT)
-                        .setClickListener(v -> mAutofillProvider.queryAutofillSuggestion())
-                        .build());
+        if (mAutofillMenuItemTitle != 0 && mAutofillProvider.shouldQueryAutofillSuggestion()) {
+            autofillItems.add(
+                    new SelectionMenuItem.Builder(mAutofillMenuItemTitle)
+                            .setId(android.R.id.autofill)
+                            .setOrderInCategory(Menu.CATEGORY_SECONDARY)
+                            .setShowAsActionFlags(
+                                    MenuItem.SHOW_AS_ACTION_NEVER
+                                            | MenuItem.SHOW_AS_ACTION_WITH_TEXT)
+                            .setClickListener(v -> mAutofillProvider.queryAutofillSuggestion())
+                            .build());
+        }
         return autofillItems;
     }
 }

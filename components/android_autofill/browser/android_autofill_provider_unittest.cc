@@ -1002,6 +1002,22 @@ TEST_F(AndroidAutofillProviderWithCredManTest, SkipsCredManCallBeforeReady) {
   FocusFormField(webauthn_email_field());
 }
 
+TEST_F(AndroidAutofillProviderWithCredManTest, OfferLongPressOption) {
+  FocusFormField(webauthn_email_field());
+  EXPECT_TRUE(provider_bridge_delegate().HasPasskeyRequest());
+}
+
+TEST_F(AndroidAutofillProviderWithCredManTest,
+       OfferNoLongPressOptionWithoutAnnotation) {
+  FocusFormField(non_webauthn_password_field());
+  EXPECT_FALSE(provider_bridge_delegate().HasPasskeyRequest());
+}
+
+TEST_F(AndroidAutofillProviderWithCredManTest,
+       OfferNoLongPressOptionWithoutField) {
+  EXPECT_FALSE(provider_bridge_delegate().HasPasskeyRequest());
+}
+
 TEST_F(AndroidAutofillProviderWithCredManTest, NotifyFocusOnCredManError) {
   EXPECT_CALL(cred_man_delegate(), TriggerCredManUi);
   base::RepeatingCallback<void(bool)> completed_callback;

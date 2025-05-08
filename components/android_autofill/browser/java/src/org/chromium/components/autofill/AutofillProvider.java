@@ -224,6 +224,20 @@ public class AutofillProvider {
                 && !getAutofillManagerWrapper().isAutofillInputUiShowing();
     }
 
+    public boolean shouldOfferPasskeyEntry() {
+        if (!AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_PASSKEY_LONG_PRESS
+                .isEnabled()) {
+            return false;
+        }
+        return AutofillProviderJni.get().hasPasskeyRequest(mNativeAutofillProvider);
+    }
+
+    public void triggerPasskeyRequest() {
+        if (mNativeAutofillProvider != 0) {
+            AutofillProviderJni.get().onTriggerPasskeyRequest(mNativeAutofillProvider);
+        }
+    }
+
     public void queryAutofillSuggestion() {
         if (shouldQueryAutofillSuggestion()) {
             FocusField focusField = mRequest.getFocusField();
@@ -841,6 +855,8 @@ public class AutofillProvider {
 
         void detachFromJavaAutofillProvider(long nativeAndroidAutofillProviderBridgeImpl);
 
+        boolean hasPasskeyRequest(long nativeAndroidAutofillProviderBridgeImpl);
+
         void onAutofillAvailable(long nativeAndroidAutofillProviderBridgeImpl);
 
         void onAcceptDataListSuggestion(
@@ -859,5 +875,7 @@ public class AutofillProvider {
                 long nativeAndroidAutofillProviderBridgeImpl,
                 boolean isShown,
                 boolean providedAutofillStructure);
+
+        void onTriggerPasskeyRequest(long nativeAndroidAutofillProviderBridgeImpl);
     }
 }

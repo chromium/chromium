@@ -23,7 +23,8 @@ namespace {
 const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidAutofillDeprecateAccessibilityApi,
     &kAutofillVirtualViewStructureAndroidInCct,
-    &kAndroidAutofillLazyFrameworkWrapper};
+    &kAndroidAutofillLazyFrameworkWrapper,
+    &kAutofillVirtualViewStructureAndroidPasskeyLongPress};
 
 }  // namespace
 
