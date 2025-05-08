@@ -1007,6 +1007,170 @@ const subgraphTests = [
       }
     }
   },
+  {
+    'name': 'quantized averagePool2d',
+    'graph': {
+      'inputs': {
+        'input': {
+          'data': [
+            49.1112174987793, 11.907459259033203,
+            21.115795135498047, 70.7490005493164,
+          ],
+          'descriptor': {shape: [1, 2, 2, 1], dataType: 'float32'},
+          'constant': false
+        },
+        'inputScale': {
+          'data': [0.3921568859368563],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'inputZeroPoint': {
+          'data': [16],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+        'outputScale': {
+          'data': [0.3921568859368563],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'outputZeroPoint': {
+          'data': [16],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+      },
+      'operators': [
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'input'},
+            {'scale': 'inputScale', 'zeroPoint': 'inputZeroPoint'}
+          ],
+          'outputs': 'quantizedInput'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedInput'},
+            {'scale': 'inputScale', 'zeroPoint': 'inputZeroPoint'}
+          ],
+          'outputs': 'dequantizedInput'
+        },
+        {
+          'name': 'averagePool2d',
+          'arguments': [{'input': 'dequantizedInput'}, {'options': {'layout': 'nhwc'}}],
+          'outputs': 'averagePool2dOutput'
+        },
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'averagePool2dOutput'},
+            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
+          ],
+          'outputs': 'quantizedAveragePool2dOutput'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedAveragePool2dOutput'},
+            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
+          ],
+          'outputs': 'output'
+        }
+      ],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            30.196081161499023,
+          ],
+          'descriptor': {shape: [1, 1, 1, 1], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'quantized maxPool2d',
+    'graph': {
+      'inputs': {
+        'input': {
+          'data': [
+            49.1112174987793, 11.907459259033203,
+            21.115795135498047, 70.7490005493164,
+          ],
+          'descriptor': {shape: [1, 2, 2, 1], dataType: 'float32'},
+          'constant': false
+        },
+        'inputScale': {
+          'data': [0.3921568859368563],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'inputZeroPoint': {
+          'data': [16],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+        'outputScale': {
+          'data': [0.3921568859368563],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'outputZeroPoint': {
+          'data': [16],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+      },
+      'operators': [
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'input'},
+            {'scale': 'inputScale', 'zeroPoint': 'inputZeroPoint'}
+          ],
+          'outputs': 'quantizedInput'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedInput'},
+            {'scale': 'inputScale', 'zeroPoint': 'inputZeroPoint'}
+          ],
+          'outputs': 'dequantizedInput'
+        },
+        {
+          'name': 'maxPool2d',
+          'arguments': [{'input': 'dequantizedInput'}, {'options': {'layout': 'nhwc'}}],
+          'outputs': 'maxPool2dOutput'
+        },
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'maxPool2dOutput'},
+            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
+          ],
+          'outputs': 'quantizedMaxPool2dOutput'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedMaxPool2dOutput'},
+            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
+          ],
+          'outputs': 'output'
+        }
+      ],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            43.529415130615234,
+          ],
+          'descriptor': {shape: [1, 1, 1, 1], dataType: 'float32'}
+        }
+      }
+    }
+  },
 ];
 
 if (navigator.ml) {

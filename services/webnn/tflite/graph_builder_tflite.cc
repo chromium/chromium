@@ -1679,6 +1679,58 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Elu& elu) {
 }
 
 std::optional<GraphBuilderTflite::TensorInfo>
+GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Pool2d& pool2d) {
+  // L2Pool doesn't support quantized implementation.
+  CHECK_NE(pool2d.kind, mojom::Pool2d::Kind::kL2Pool2d);
+
+  if (!IsDequantizeOutput(pool2d.input_operand_id)) {
+    return std::nullopt;
+  }
+
+  const mojom::DequantizeLinear& input_dequantize =
+      GetDequantizeOp(pool2d.input_operand_id);
+  if (!IsInts8AndScalarScale(input_dequantize)) {
+    return std::nullopt;
+  }
+
+  // TODO(crbug.com/413083273): Consider the restriction in GPU delegate.
+  // For the kernel of pooling, the `|input scale - output scale|` must be less
+  // than 1.0e-6, and zero point of output tensor must be the same as input.
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/pooling.cc;drc=edd09bcc365dcc696d0f23ca7c3dc18f5e1dcdab;l=101
+  std::optional<size_t> next_op = IsNextOpQuantize(
+      pool2d.output_operand_id,
+      {GetOperand(input_dequantize.input_operand_id).descriptor.data_type()});
+  if (!next_op) {
+    return std::nullopt;
+  }
+  const mojom::QuantizeLinear& output_quantize = GetQuantizeOp(*next_op);
+  if (!IsInts8AndScalarScale(output_quantize)) {
+    return std::nullopt;
+  }
+  base::span<const float> input_scale_values =
+      GetConstantValue<float>(input_dequantize.scale_operand_id);
+  base::span<const float> output_scale_values =
+      GetConstantValue<float>(output_quantize.scale_operand_id);
+  base::CheckedNumeric<float> checked_sub_scale =
+      base::MakeCheckedNum<float>(input_scale_values[0]) -
+      output_scale_values[0];
+  if (!checked_sub_scale.IsValid() ||
+      checked_sub_scale.Abs().ValueOrDie() > 1.0e-6) {
+    return std::nullopt;
+  }
+
+  base::FixedArray<int64_t> input_zero_point_values =
+      GetConstantInt64Value(input_dequantize.zero_point_operand_id);
+  base::FixedArray<int64_t> output_zero_point_values =
+      GetConstantInt64Value(output_quantize.zero_point_operand_id);
+  if (input_zero_point_values[0] != output_zero_point_values[0]) {
+    return std::nullopt;
+  }
+
+  return TrySerializeQuantizedOutput(*next_op);
+}
+
+std::optional<GraphBuilderTflite::TensorInfo>
 GraphBuilderTflite::CanFuseQuantizeAndGetOutput(
     const mojom::Transpose& transpose) {
   if (!IsDequantizeOutput(transpose.input_operand_id)) {
@@ -1802,13 +1854,9 @@ GraphBuilderTflite::CanFuseQuantizeForActivationOperation(const OpType& op) {
   }
 
   const mojom::QuantizeLinear& output_quantize = GetQuantizeOp(*next_op);
-  if (GetOperand(output_quantize.scale_operand_id)
-          .descriptor.NumberOfElements() != 1) {
+  if (!IsInts8AndScalarScale(output_quantize)) {
     return std::nullopt;
   }
-  CHECK_EQ(GetOperand(output_quantize.zero_point_operand_id)
-               .descriptor.NumberOfElements(),
-           1u);
 
   return next_op;
 }
@@ -1972,23 +2020,24 @@ std::optional<OperationId> GraphBuilderTflite::IsNextOpQuantize(
   return quantize_op_idx;
 }
 
-bool GraphBuilderTflite::IsInts8AndScalarScale(
-    const mojom::DequantizeLinear& dequantize_linear) {
-  if (!DataTypeConstraint::kInts8.Has(
-          GetOperand(dequantize_linear.input_operand_id)
-              .descriptor.data_type())) {
-    return false;
+template <typename OpType>
+  requires(std::is_same_v<OpType, mojom::DequantizeLinear> ||
+           std::is_same_v<OpType, mojom::QuantizeLinear>)
+bool GraphBuilderTflite::IsInts8AndScalarScale(const OpType& op) {
+  if constexpr (std::is_same_v<OpType, mojom::DequantizeLinear>) {
+    if (!DataTypeConstraint::kInts8.Has(
+            GetOperand(op.input_operand_id).descriptor.data_type())) {
+      return false;
+    }
   }
 
-  if (GetOperand(dequantize_linear.scale_operand_id)
-          .descriptor.NumberOfElements() != 1) {
+  if (GetOperand(op.scale_operand_id).descriptor.NumberOfElements() != 1) {
     return false;
   }
 
   // The shape of scale and zero point is the same that has been verified in
   // the function ValidateScaleZeroPointOperandShapeIsCompatibleWithInput.
-  CHECK_EQ(GetOperand(dequantize_linear.zero_point_operand_id)
-               .descriptor.NumberOfElements(),
+  CHECK_EQ(GetOperand(op.zero_point_operand_id).descriptor.NumberOfElements(),
            1u);
   return true;
 }
@@ -5510,7 +5559,27 @@ auto GraphBuilderTflite::SerializePool2d(const mojom::Pool2d& pool2d)
     return base::unexpected("Pool2d in tflite doesn't support dilations.");
   }
 
+  ::tflite::BuiltinOperator operator_code;
+  std::optional<TensorInfo> quantized_output;
   const mojom::Operand& input_operand = GetOperand(pool2d.input_operand_id);
+  switch (pool2d.kind) {
+    case mojom::Pool2d::Kind::kAveragePool2d:
+      CHECK(context_properties_.data_type_limits.average_pool2d_input.Supports(
+          input_operand.descriptor));
+      operator_code = ::tflite::BuiltinOperator_AVERAGE_POOL_2D;
+      quantized_output = CanFuseQuantizeAndGetOutput(pool2d);
+      break;
+    case mojom::Pool2d::Kind::kMaxPool2d:
+      CHECK(context_properties_.data_type_limits.max_pool2d_input.Supports(
+          input_operand.descriptor));
+      operator_code = ::tflite::BuiltinOperator_MAX_POOL_2D;
+      quantized_output = CanFuseQuantizeAndGetOutput(pool2d);
+      break;
+    case mojom::Pool2d::Kind::kL2Pool2d:
+      // TODO(crbug.com/361717758): Support L2Pool2d.
+      return base::unexpected("L2Pool2d is not supported in tflite.");
+  }
+
   const auto& input_shape = input_operand.descriptor.shape();
   CHECK_EQ(input_shape.size(), 4u);
   const webnn::Size2d<uint32_t> input_size2d = {.height = input_shape[1],
@@ -5523,30 +5592,19 @@ auto GraphBuilderTflite::SerializePool2d(const mojom::Pool2d& pool2d)
       GetTfLitePaddingMode(*pool2d.padding, input_size2d, filter_size2d,
                            *pool2d.strides, *pool2d.dilations,
                            /*is_transposed_conv2d=*/false));
-  ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
-                   SerializeInputTensorInfo(pool2d.input_operand_id));
+  ASSIGN_OR_RETURN(
+      const TensorInfo& input_tensor_info,
+      SerializeInputTensorInfo(
+          pool2d.input_operand_id,
+          /*quantize_params=*/0,
+          /*operation_supports_float16=*/false,
+          /*fuse_dequantize_quantize=*/quantized_output.has_value()));
   // Insert a Pad operator before TfLite Pool2d if needed for explicit padding.
   std::optional<TensorIndex> explicit_pad_index;
   if (padding_mode.paddings) {
     ASSIGN_OR_RETURN(
         explicit_pad_index,
         InsertPadOperation(input_tensor_info, padding_mode.paddings.value()));
-  }
-
-  ::tflite::BuiltinOperator operator_code;
-  switch (pool2d.kind) {
-    case mojom::Pool2d::Kind::kAveragePool2d:
-      CHECK(context_properties_.data_type_limits.average_pool2d_input.Supports(
-          input_operand.descriptor));
-      operator_code = ::tflite::BuiltinOperator_AVERAGE_POOL_2D;
-      break;
-    case mojom::Pool2d::Kind::kMaxPool2d:
-      CHECK(context_properties_.data_type_limits.max_pool2d_input.Supports(
-          input_operand.descriptor));
-      operator_code = ::tflite::BuiltinOperator_MAX_POOL_2D;
-      break;
-    case mojom::Pool2d::Kind::kL2Pool2d:
-      return base::unexpected("L2Pool2d is not supported in tflite.");
   }
 
   const auto pool_2d_options = ::tflite::CreatePool2DOptions(
@@ -5557,14 +5615,20 @@ auto GraphBuilderTflite::SerializePool2d(const mojom::Pool2d& pool2d)
   // Create `tflite::Operator` with the tensor index of inputs and outputs
   // operand. The type of operation is determined by the index of the operator
   // code.
-  ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
-                   SerializeOutputTensorInfo(pool2d.output_operand_id));
+  int32_t output_tensor_index;
+  if (quantized_output) {
+    output_tensor_index = quantized_output->index;
+  } else {
+    ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
+                     SerializeOutputTensorInfo(pool2d.output_operand_id));
+    output_tensor_index = output_tensor_info.index;
+  }
   const OperatorCodeIndex operator_code_index =
       GetOperatorCodeIndex(operator_code);
   const std::array<TensorIndex, 1> op_inputs = {explicit_pad_index
                                                     ? explicit_pad_index.value()
                                                     : input_tensor_info.index};
-  const std::array<TensorIndex, 1> op_outputs = {output_tensor_info.index};
+  const std::array<TensorIndex, 1> op_outputs = {output_tensor_index};
   return ::tflite::CreateOperator(
       builder_, operator_code_index,
       builder_.CreateVector<TensorIndex>(op_inputs),
