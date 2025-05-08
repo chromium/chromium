@@ -39,18 +39,6 @@ bool FontFeatureRange::IsInitial(base::span<const FontFeatureRange> features) {
   return features.size() == 1 && features[0] == kChws;
 }
 
-const hb_feature_t* FontFeatures::ToHarfBuzzData() const {
-  return reinterpret_cast<const hb_feature_t*>(features_.data());
-}
-
-std::optional<uint32_t> FontFeatures::FindValueForTesting(uint32_t tag) const {
-  for (const FontFeatureRange& feature : features_) {
-    if (feature.tag == tag)
-      return feature.value;
-  }
-  return std::nullopt;
-}
-
 template <wtf_size_t InlineCapacity>
 void FontFeatureRange::FromFontDescription(
     const FontDescription& description,
@@ -261,15 +249,14 @@ void FontFeatureRange::FromFontDescription(
   }
 }
 
-void FontFeatures::Initialize(const FontDescription& description) {
-  FontFeatureRange::FromFontDescription(description, features_);
-}
-
 //
 // Explicitly instantiate template functions.
 //
 template PLATFORM_EXPORT void FontFeatureRange::FromFontDescription(
     const FontDescription&,
     Vector<FontFeatureRange, FontFeatureRange::kInitialSize>&);
+template PLATFORM_EXPORT void FontFeatureRange::FromFontDescription(
+    const FontDescription&,
+    FontFeatures&);
 
 }  // namespace blink

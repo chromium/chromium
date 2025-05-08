@@ -382,9 +382,9 @@ inline bool ShapeRange(hb_buffer_t* buffer,
       !resolved_features.empty()) {
     // Insert `resolved_features` before `font_features`.
     variant_features.emplace();
-    variant_features->Reserve(resolved_features.size() + font_features.size());
+    variant_features->reserve(resolved_features.size() + font_features.size());
     for (const FontFeatureValue& feature : resolved_features) {
-      variant_features->Append({feature});
+      variant_features->push_back(FontFeatureRange{feature});
     }
     variant_features->AppendVector(font_features);
   }
@@ -401,7 +401,8 @@ inline bool ShapeRange(hb_buffer_t* buffer,
                               ? HarfBuzzFace::kPrepareForVerticalLayout
                               : HarfBuzzFace::kNoVerticalLayout,
                           specified_size);
-  hb_shape(hb_font, buffer, argument_features.ToHarfBuzzData(),
+  hb_shape(hb_font, buffer,
+           FontFeatureRange::ToHarfBuzzData(argument_features.data()),
            argument_features.size());
   if (!face->ShouldSubpixelPosition()) {
     RoundHarfBuzzBufferPositions(buffer);
@@ -897,7 +898,7 @@ void CapsFeatureSettingsScopedOverlay::OverlayCapsFeatures(
 
 void CapsFeatureSettingsScopedOverlay::PrependCounting(
     const FontFeatureRange& feature) {
-  features_->Insert(feature);
+  features_->push_front(feature);
   count_features_++;
 }
 
