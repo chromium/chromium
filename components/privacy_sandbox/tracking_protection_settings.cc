@@ -19,6 +19,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
+#include "net/base/features.h"
 #include "url/gurl.h"
 
 namespace privacy_sandbox {
@@ -148,18 +149,21 @@ bool TrackingProtectionSettings::HasTrackingProtectionException(
              info) == CONTENT_SETTING_ALLOW;
 }
 
-bool TrackingProtectionSettings::IsIpProtectionManaged() {
-#if BUILDFLAG(IS_CHROMEOS)
-  // On ChromeOS the `IsManaged()` checks work differently than on other
-  // platforms, but to accomplish disabling by default for enterprise users we
-  // use the `default_for_enterprise_users=false` option in the enterprise
-  // policy definition. Thus, check whether the preference has been set via
-  // that (or by the admins overriding this).
-  return pref_service_->IsManagedPreference(prefs::kIpProtectionEnabled);
-#else
-  return management_service_->IsManaged() ||
-         policy::PlatformManagementService::GetInstance()->IsManaged();
+bool TrackingProtectionSettings::IsIpProtectionDisabledForEnterprise() {
+  if (pref_service_->IsManagedPreference(prefs::kIpProtectionEnabled)) {
+    return !pref_service_->GetBoolean(prefs::kIpProtectionEnabled);
+  }
+#if !BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, managed device detection isn't supported via the
+  // ManagementService, so just treat all devices as unmanaged.
+  if (net::features::kIpPrivacyDisableForEnterpriseByDefault.Get()) {
+    // Disable IP Protection for managed browsers and managed devices when the
+    // admins haven't explicitly opted in to it via enterprise policy.
+    return management_service_->IsManaged() ||
+           policy::PlatformManagementService::GetInstance()->IsManaged();
+  }
 #endif
+  return false;
 }
 
 // TODO(https://b/333527273): Delete with Mode B cleanup

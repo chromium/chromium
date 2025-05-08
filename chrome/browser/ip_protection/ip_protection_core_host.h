@@ -115,7 +115,7 @@ class IpProtectionCoreHost
 
   // Returns whether IP Protection should be disabled for managed users and/or
   // devices, for testing.
-  bool ShouldDisableIpProtectionForManagedForTesting();
+  bool ShouldDisableIpProtectionForEnterpriseForTesting();
 
  private:
   friend class IpProtectionCoreHostTest;
@@ -164,7 +164,7 @@ class IpProtectionCoreHost
 
   // Returns whether IP Protection should be disabled for managed users and/or
   // devices.
-  bool ShouldDisableIpProtectionForManaged();
+  bool ShouldDisableIpProtectionForEnterprise();
 
   // Instruct the `IpProtectionConfigCache()`(s) in the Network Service to
   // ignore any previously sent `try_again_after` times.

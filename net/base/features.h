@@ -548,6 +548,17 @@ NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyOnlyInIncognito;
 // the ability to bypass IP Protection via the User Bypass UX.
 NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyEnableUserBypass;
 
+// If true, IP Protection will be disabled by default for enterprise users.
+// Otherwise, IP Protection will be enabled by default for enterprise users (but
+// can still be opted out of via enterprise policy). This is intended to be used
+// as a kill-switch in case significant enterprise breakage is encountered
+// during the IP Protection rollout. Note that this has no effect unless the
+// `kEnableIpProtectionProxy` feature is enabled.
+// TODO(https://crbug.com/41496985): Remove this feature a few milestones after
+// launch assuming no major enterprise breakage is encountered.
+NET_EXPORT extern const base::FeatureParam<bool>
+    kIpPrivacyDisableForEnterpriseByDefault;
+
 // Maximum report body size (KB) to include in serialized reports. Bodies
 // exceeding this are omitted when kExcludeLargeBodyReports is enabled.  Use
 // Reporting.ReportBodySize UMA histogram to monitor report body sizes and

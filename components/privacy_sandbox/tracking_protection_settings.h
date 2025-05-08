@@ -71,8 +71,12 @@ class TrackingProtectionSettings : public KeyedService {
       const GURL& first_party_url,
       content_settings::SettingInfo* info = nullptr) const;
 
-  // Returns whether IP protection is managed.
-  bool IsIpProtectionManaged();
+  // Returns whether IP protection is disabled, either because an enterprise
+  // policy has been set that disables the feature or, when the
+  // `kIpPrivacyDisableForEnterpriseByDefault` feature is enabled, because no
+  // policy value has been set via enterprise policy and this is a managed
+  // device or client (for all platforms except ChromeOS).
+  bool IsIpProtectionDisabledForEnterprise();
 
  private:
   void OnEnterpriseControlForPrefsChanged();
