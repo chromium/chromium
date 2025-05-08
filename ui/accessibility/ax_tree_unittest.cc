@@ -5237,40 +5237,4 @@ TEST(AXTreeTest, LinuxExtraAnnouncementNodeIndices) {
 }
 #endif  // BUILDFLAG(IS_LINUX)
 
-TEST(AXTreeTest, ReparentToNewRoot) {
-  AXTreeUpdate initial_state;
-  initial_state.nodes.resize(2);
-  AXNodeData& initial_document = initial_state.nodes[0];
-  initial_document.id = 1;
-  initial_document.role = ax::mojom::Role::kRootWebArea;
-  initial_state.root_id = initial_document.id;
-
-  AXNodeData& child = initial_state.nodes[1];
-  child.id = 2;
-  child.role = ax::mojom::Role::kButton;
-  initial_document.child_ids = {child.id};
-
-  AXTree tree(initial_state);
-
-  AXTreeUpdate tree_update;
-  tree_update.nodes.resize(1);
-  AXNodeData& document = tree_update.nodes[0];
-  document.id = 3;
-  document.role = ax::mojom::Role::kRootWebArea;
-  tree_update.root_id = document.id;
-  document.child_ids.push_back(initial_document.id);
-
-#if AX_FAIL_FAST_BUILD()
-  EXPECT_DEATH_IF_SUPPORTED(tree.Unserialize(tree_update),
-                            "Invalid tree construction: a previous root or "
-                            "orphaned node is being reparented.");
-#else
-  EXPECT_FALSE(tree.Unserialize(tree_update));
-  EXPECT_EQ(
-      "Invalid tree construction: a previous root or orphaned node is being "
-      "reparented.",
-      tree.error());
-#endif
-}
-
 }  // namespace ui

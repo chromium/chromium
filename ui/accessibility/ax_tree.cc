@@ -2545,18 +2545,30 @@ bool AXTree::CreateNewChildVector(
                                          child->id(), child->parent()->id(),
                                          node->id()));
         } else {
+          // --- Begin temporary change ---
+          // TODO(crbug.com/1156601, crbug.com/1402673) Revert this once we have
+          // the crash data we need (crrev.com/c/2892259) Diagnose strange
+          // errors:
+          // Node did not have a previous parent, but reparenting error
+          // triggered:
+          // * New parent = id=3 rootWebArea FOCUSABLE
+          // * Child = id=1 rootWebArea (0, 0)-(0, 0) busy=true
           std::ostringstream error;
-          error << "Invalid tree construction: a previous root or orphaned "
-                   "node is being reparented."
+          error << "Node did not have a previous parent, but "
+                   "reparenting error triggered:"
                 << "\n* root_will_be_created = "
                 << update_state->root_will_be_created
                 << "\n* pending_root_id = "
                 << (update_state->pending_root_id
                         ? *update_state->pending_root_id
                         : kInvalidAXNodeID)
-                << "\n* new parent = " << *node
-                << "\n* old root or orphaned child = " << *child;
+                << "\n* new parent = " << *node << "\n* Old parent = "
+                << (child->parent()
+                        ? child->parent()->data().ToString(/*verbose*/ false)
+                        : "-")
+                << "\n* child = " << *child;
           RecordError(*update_state, error.str(), /* fatal */ true);
+          // --- End temporary change ---
         }
         success = false;
         continue;
