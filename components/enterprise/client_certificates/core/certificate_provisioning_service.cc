@@ -230,18 +230,30 @@ void CertificateProvisioningServiceImpl::OnPermanentIdentityLoaded(
     LOG_POLICY(ERROR, DEVICE_TRUST)
         << "Permanent identity loading failed: "
         << StoreErrorToString(expected_permanent_identity.error());
-    OnProvisioningError(ProvisioningError::kIdentityLoadingFailed,
-                        expected_permanent_identity.error());
-    return;
+
+    // Loading the private key can fail if, somehow, the private key was lost.
+    // This can happen in some backup and restore scenarios. If that happens,
+    // simply treat the failure as if no permanent identity existed in the
+    // first place.
+    if (expected_permanent_identity.error() != StoreError::kLoadKeyFailed) {
+      OnProvisioningError(ProvisioningError::kIdentityLoadingFailed,
+                          expected_permanent_identity.error());
+      return;
+    }
+
+    LOG_POLICY(INFO, DEVICE_TRUST)
+        << "Failed to load the serialized private key, provisioning a new "
+           "identity as fallback...";
   }
 
   // Setting as certificate creation by default, more specific scenarios will
   // overwrite this value later.
   provisioning_context_->scenario = ProvisioningScenario::kCertificateCreation;
 
-  std::optional<ClientIdentity>& permanent_identity_optional =
-      expected_permanent_identity.value();
-  if (permanent_identity_optional.has_value()) {
+  if (expected_permanent_identity.has_value() &&
+      expected_permanent_identity->has_value()) {
+    std::optional<ClientIdentity>& permanent_identity_optional =
+        expected_permanent_identity.value();
     if (permanent_identity_optional->is_valid()) {
       // Already have a full identity, so cache it.
       cached_identity_ = permanent_identity_optional.value();
