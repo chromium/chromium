@@ -116,9 +116,8 @@ void GlicFreController::ShowFreDialog(Browser* browser) {
       prefs::kGlicCompletedFre,
       static_cast<int>(prefs::FreStatus::kIncomplete));
 
-  if (auth_controller_.CheckAuthBeforeShowSync(
-          base::BindOnce(&GlicFreController::ShowFreDialogAfterAuthCheck,
-                         GetWeakPtr(), browser->AsWeakPtr()))) {
+  if (auth_controller_.CheckAuthBeforeShowSync(base::BindOnce(
+          &GlicFreController::OpenFreDialogInNewTab, GetWeakPtr(), browser))) {
     ShowFreDialogAfterAuthCheck(browser->AsWeakPtr());
   } else {
     // Sign-in required and handled by AuthController. In this case, do not
