@@ -23,6 +23,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/view_tracker.h"
 #include "ui/wm/core/window_animations.h"
 
 namespace ash {
@@ -115,8 +116,15 @@ void ShelfTooltipManager::ShowTooltip(views::View* view) {
 void ShelfTooltipManager::ShowTooltipWithDelay(views::View* view) {
   if (ShouldShowTooltipForView(view)) {
     timer_.Start(FROM_HERE, base::Milliseconds(timer_delay_),
-                 base::BindOnce(&ShelfTooltipManager::ShowTooltip,
-                                weak_factory_.GetWeakPtr(), view));
+                 base::BindOnce(
+                     [](const base::WeakPtr<ShelfTooltipManager>& self,
+                        views::ViewTracker* view_tracker) {
+                       if (self && view_tracker->view()) {
+                         self->ShowTooltip(view_tracker->view());
+                       }
+                     },
+                     weak_factory_.GetWeakPtr(),
+                     base::Owned(std::make_unique<views::ViewTracker>(view))));
   }
 }
 

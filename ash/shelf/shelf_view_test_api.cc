@@ -69,6 +69,10 @@ ShelfID ShelfViewTestAPI::AddItem(ShelfItemType type) {
   return item.id;
 }
 
+void ShelfViewTestAPI::RemoveItemAt(int index) {
+  shelf_view_->model_->RemoveItemAt(index);
+}
+
 views::View* ShelfViewTestAPI::GetViewAt(int index) {
   return shelf_view_->view_model_->view_at(index);
 }

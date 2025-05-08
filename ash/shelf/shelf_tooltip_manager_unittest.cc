@@ -25,6 +25,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -52,6 +53,14 @@ class ShelfTooltipManagerTest : public AshTestBase {
   bool IsTimerRunning() { return tooltip_manager_->timer_.IsRunning(); }
   views::Widget* GetTooltip() { return tooltip_manager_->bubble_->GetWidget(); }
 
+  void FireTimerNow() { tooltip_manager_->timer_.FireNow(); }
+
+  void RemoveItemAt(int index) {
+    test_api_->SetAnimationDuration(base::Milliseconds(0));
+    test_api_->RemoveItemAt(index);
+    test_api_->SetAnimationDuration(base::Milliseconds(1));
+  }
+
   void ShowTooltipForFirstAppIcon() {
     EXPECT_GE(shelf_view_->number_of_visible_apps(), 1u);
     tooltip_manager_->ShowTooltip(
@@ -77,6 +86,25 @@ TEST_F(ShelfTooltipManagerTest, ShowTooltipWithDelay) {
   EXPECT_FALSE(tooltip_manager_->IsVisible());
   EXPECT_TRUE(IsTimerRunning());
   // TODO: Test that the delayed tooltip is shown, without flaky failures.
+}
+
+TEST_F(ShelfTooltipManagerTest, ShowTooltipWithDelayAndAsyncViewDestruction) {
+  views::ViewTracker view_tracker(
+      shelf_view_->first_visible_button_for_testing());
+
+  // Show tooltip for view with delay.
+  tooltip_manager_->ShowTooltipWithDelay(view_tracker.view());
+  EXPECT_FALSE(tooltip_manager_->IsVisible());
+  EXPECT_TRUE(IsTimerRunning());
+
+  // Destroy view before delay completes.
+  RemoveItemAt(0);
+  EXPECT_FALSE(view_tracker.view());
+
+  // Verify that `tooltip_manager_` no-ops gracefully.
+  FireTimerNow();
+  EXPECT_FALSE(IsTimerRunning());
+  EXPECT_FALSE(tooltip_manager_->IsVisible());
 }
 
 TEST_F(ShelfTooltipManagerTest, DoNotShowForInvalidView) {
