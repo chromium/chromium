@@ -392,6 +392,14 @@ int SharedImageFormat::BitsPerPixel() const {
   NOTREACHED();
 }
 
+SharedImageFormat SharedImageFormat::N32Format() {
+#if BUILDFLAG(IS_ANDROID)
+  return SinglePlaneFormat::kRGBA_8888;
+#else
+  return SinglePlaneFormat::kBGRA_8888;
+#endif
+}
+
 bool SharedImageFormat::operator==(const SharedImageFormat& o) const {
   if (plane_type_ != o.plane_type()) {
     return false;

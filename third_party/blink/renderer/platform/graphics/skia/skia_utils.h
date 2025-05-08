@@ -85,9 +85,7 @@ inline gfx::ColorSpace SkColorSpaceToGfxColorSpace(
 // completely converted to SharedImageFormat (i.e., crbug.com/371227617 is
 // resolved).
 inline viz::SharedImageFormat GetN32FormatForCanvas() {
-  return kN32_SkColorType == kRGBA_8888_SkColorType
-             ? viz::SinglePlaneFormat::kRGBA_8888
-             : viz::SinglePlaneFormat::kBGRA_8888;
+  return viz::SharedImageFormat::N32Format();
 }
 
 bool NearlyIntegral(float value);
