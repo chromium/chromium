@@ -50,11 +50,7 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
     private final Options mOptions;
 
     ViewElement(ViewSpec<ViewT> viewSpec, Options options) {
-        super(
-                "VE/"
-                        + (options.mElementId != null
-                                ? options.mElementId
-                                : viewSpec.getMatcherDescription()));
+        super("VE/" + viewSpec.getMatcherDescription());
         mViewSpec = viewSpec;
         mOptions = options;
     }
@@ -181,7 +177,6 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
         protected boolean mScoped = true;
         protected boolean mExpectEnabled = true;
         protected boolean mExpectDisabled;
-        protected @Nullable String mElementId;
         protected int mDisplayedPercentageRequired = ViewElement.MIN_DISPLAYED_PERCENT;
         protected int mInitialSettleTimeMs;
 
@@ -195,12 +190,6 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
             /** Don't except the View to necessarily disappear when exiting the ConditionalState. */
             public Builder unscoped() {
                 mScoped = false;
-                return this;
-            }
-
-            /** Use a custom Element id instead of the Matcher<View> description. */
-            public Builder elementId(String id) {
-                mElementId = id;
                 return this;
             }
 
@@ -247,11 +236,6 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
     /** Convenience {@link Options} setting unscoped(). */
     public static Options unscopedOption() {
         return newOptions().unscoped().build();
-    }
-
-    /** Convenience {@link Options} setting elementId(). */
-    public static Options elementIdOption(String id) {
-        return newOptions().elementId(id).build();
     }
 
     /** Convenience {@link Options} setting expectDisabled(). */

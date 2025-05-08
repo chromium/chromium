@@ -83,14 +83,12 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
         elements.declareView(
                 viewSpec(allOf(withId(R.id.visual_data_dialog_title), withText("New tab group"))));
 
-        String inputElementId = "Tab group title input showing " + mTitle;
         titleInputElement =
                 elements.declareView(
                         viewSpec(
                                 withId(R.id.title_input_text),
                                 isAssignableFrom(EditText.class),
-                                withText(mTitle)),
-                        ViewElement.elementIdOption(inputElementId));
+                                withText(mTitle)));
 
         // TODO(crbug.com/346377124): Partially cut off in android_30_google_apis_x86.textpb
         elements.declareView(
