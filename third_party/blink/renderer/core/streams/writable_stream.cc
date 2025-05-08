@@ -434,6 +434,8 @@ ScriptPromise<IDLUndefined> WritableStream::Close(ScriptState* script_state,
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
 
+  resolver->SuppressDetachCheck();
+
   //  6. Set stream.[[closeRequest]] to promise.
   stream->SetCloseRequest(resolver);
 
