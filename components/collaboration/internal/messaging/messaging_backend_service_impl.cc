@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <unordered_set>
 #include <vector>
 
@@ -16,6 +17,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/break_iterator.h"
 #include "base/i18n/message_formatter.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/collaboration/internal/messaging/data_sharing_change_notifier_impl.h"
@@ -47,6 +49,41 @@ collaboration_pb::Message CreateMessage(
   message.set_dirty(static_cast<int>(dirty_type));
   message.set_event_timestamp(event_time.ToTimeT());
   return message;
+}
+
+std::u16string TruncateTabTitle(const std::u16string& original_title) {
+  constexpr int kMaxTabTitleCharacters = 28;
+  constexpr char16_t kEllipsis = u'\u2026';
+  std::u16string trimmed;
+  base::TrimWhitespace(original_title, base::TrimPositions::TRIM_ALL, &trimmed);
+
+  // If the size of the text is already smaller than the max size without
+  // grapheme counting, then we can just return the text untrimmed.
+  if (trimmed.size() <= kMaxTabTitleCharacters) {
+    return trimmed;
+  }
+
+  // Count the number of graphemes, stopping when we hit the max size.
+  // Copy the string_view contents over to the result string.
+  std::u16string result;
+  base::i18n::BreakIterator iter(trimmed,
+                                 base::i18n::BreakIterator::BREAK_CHARACTER);
+  iter.Init();
+  int seen = 0;
+  while (seen < kMaxTabTitleCharacters && iter.Advance()) {
+    ++seen;
+
+    // GetString returns the span that Advance() moved forwards on.
+    auto span = iter.GetString();
+    result.append(span.data(), span.size());
+  }
+
+  // If seen count hit the max characters and there are still more, add the
+  // ellipsis.
+  if (iter.Advance()) {
+    result.push_back(kEllipsis);
+  }
+  return result;
 }
 
 collaboration_pb::Message CreateTabGroupMessage(
@@ -295,7 +332,8 @@ std::u16string GetTitleForTabRemovedMessage(const InstantMessage& message) {
 
   return l10n_util::GetStringFUTF16(
       IDS_DATA_SHARING_TOAST_TAB_REMOVED, base::UTF8ToUTF16(user->given_name),
-      base::UTF8ToUTF16(tab_metadata->last_known_title.value()));
+      TruncateTabTitle(
+          base::UTF8ToUTF16(tab_metadata->last_known_title.value())));
 }
 
 std::u16string GetTitleForTabUpdatedMessage(const InstantMessage& message) {
@@ -310,7 +348,8 @@ std::u16string GetTitleForTabUpdatedMessage(const InstantMessage& message) {
 
   return l10n_util::GetStringFUTF16(
       IDS_DATA_SHARING_TOAST_TAB_UPDATED, base::UTF8ToUTF16(user->given_name),
-      base::UTF8ToUTF16(tab_metadata->last_known_title.value()));
+      TruncateTabTitle(
+          base::UTF8ToUTF16(tab_metadata->last_known_title.value())));
 }
 
 std::u16string GetTitleForMemberAddedMessage(const InstantMessage& message) {
@@ -326,7 +365,8 @@ std::u16string GetTitleForMemberAddedMessage(const InstantMessage& message) {
 
   return l10n_util::GetStringFUTF16(
       IDS_DATA_SHARING_TOAST_NEW_MEMBER, base::UTF8ToUTF16(user->given_name),
-      base::UTF8ToUTF16(tab_group_metadata->last_known_title.value()));
+      TruncateTabTitle(
+          base::UTF8ToUTF16(tab_group_metadata->last_known_title.value())));
 }
 
 std::u16string GetTitleForTabGroupRemovedMessage(
@@ -342,7 +382,8 @@ std::u16string GetTitleForTabGroupRemovedMessage(
 
   return l10n_util::GetStringFUTF16(
       IDS_DATA_SHARING_TOAST_BLOCK_LEAVE,
-      base::UTF8ToUTF16(tab_group_metadata->last_known_title.value()));
+      TruncateTabTitle(
+          base::UTF8ToUTF16(tab_group_metadata->last_known_title.value())));
 }
 
 DirtyType GetDirtyTypeFromPersistentNotificationTypeForQuery(
@@ -1178,6 +1219,12 @@ void MessagingBackendServiceImpl::OnGroupMemberRemoved(
                     DirtyType::kNone, event_time);
   message.set_affected_user_gaia_id(member_gaia_id.ToString());
   store_->AddMessage(message);
+}
+
+// static
+std::u16string MessagingBackendServiceImpl::GetTruncatedTabTitleForTesting(
+    const std::u16string& original_title) {
+  return TruncateTabTitle(original_title);
 }
 
 void MessagingBackendServiceImpl::ClearPersistentMessage(

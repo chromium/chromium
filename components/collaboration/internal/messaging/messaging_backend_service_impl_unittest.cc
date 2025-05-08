@@ -6,6 +6,7 @@
 
 #include <ctime>
 #include <memory>
+#include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/test/gmock_callback_support.h"
@@ -2757,6 +2758,83 @@ TEST_F(MessagingBackendServiceImplTest, OnTabLastSeenTimeChanged_NonRemote) {
   auto dirty_message = GetDirtyMessageForTab(test_group, expected_tab_guid,
                                              DirtyType::kDotAndChip);
   EXPECT_TRUE(dirty_message.has_value());
+}
+
+TEST_F(MessagingBackendServiceImplTest, TruncateTabTitle) {
+  constexpr int kMaxNonTruncatedSize = 28;
+
+  char16_t chr = u'X';
+  const std::u16string kLargeTitleNoTrim(50, chr);
+  const std::u16string kSmallTitleNoTrim(10, chr);
+  const std::u16string kExactSizeTitleNoTrim(kMaxNonTruncatedSize, chr);
+  char16_t kEllipsis = u'\u2026';
+
+  const std::u16string kNoTitleNoTrim(50, u' ');
+  const std::u16string kNoTitleAllTrim = u"";
+
+  const std::u16string kLargeTitleWithTrim = u"   " + kLargeTitleNoTrim;
+  const std::u16string kSmallTitleWithTrim =
+      std::u16string(25, ' ') + kSmallTitleNoTrim + std::u16string(25, u' ');
+
+  const std::u16string kMultiGraphemeCharacter = u"A\u0301";  // “Á”
+  std::u16string exact_sized_title_with_multi_grapheme_characters = u"";
+  for (int i = 0; i < kMaxNonTruncatedSize; i++) {
+    exact_sized_title_with_multi_grapheme_characters.append(
+        kMultiGraphemeCharacter);
+  }
+  std::u16string small_title_with_multi_grapheme_characters = u"";
+  for (int i = 0; i < 20; i++) {
+    small_title_with_multi_grapheme_characters.append(kMultiGraphemeCharacter);
+  }
+
+  // Truncating empty strings works correctly.
+  EXPECT_EQ(kNoTitleAllTrim,
+            MessagingBackendServiceImpl::GetTruncatedTabTitleForTesting(
+                kNoTitleNoTrim));
+  EXPECT_EQ(kNoTitleAllTrim,
+            MessagingBackendServiceImpl::GetTruncatedTabTitleForTesting(
+                kNoTitleAllTrim));
+
+  std::u16string kLargeTitleAfterTruncation =
+      std::u16string(28, chr) + kEllipsis;
+  // Large titles truncate correctly
+  EXPECT_EQ(kLargeTitleAfterTruncation,
+            MessagingBackendServiceImpl::GetTruncatedTabTitleForTesting(
+                kLargeTitleNoTrim));
+  EXPECT_EQ(kLargeTitleAfterTruncation,
+            MessagingBackendServiceImpl::GetTruncatedTabTitleForTesting(
+                kLargeTitleWithTrim));
+
+  // Small titles trim correctly.
+  EXPECT_EQ(kSmallTitleNoTrim,
+            MessagingBackendServiceImpl::GetTruncatedTabTitleForTesting(
+                kSmallTitleNoTrim));
+  EXPECT_EQ(kSmallTitleNoTrim,
+            MessagingBackendServiceImpl::GetTruncatedTabTitleForTesting(
+                kSmallTitleWithTrim));
+
+  // Exact sizing works correctly.
+  EXPECT_EQ(kExactSizeTitleNoTrim,
+            MessagingBackendServiceImpl::GetTruncatedTabTitleForTesting(
+                kExactSizeTitleNoTrim));
+  EXPECT_EQ(kExactSizeTitleNoTrim,
+            MessagingBackendServiceImpl::GetTruncatedTabTitleForTesting(
+                kExactSizeTitleNoTrim + u" "));
+  EXPECT_EQ(kExactSizeTitleNoTrim + kEllipsis,
+            MessagingBackendServiceImpl::GetTruncatedTabTitleForTesting(
+                kExactSizeTitleNoTrim + chr));
+
+  // Multi grapheme characters work correctly.
+  EXPECT_EQ(small_title_with_multi_grapheme_characters,
+            MessagingBackendServiceImpl::GetTruncatedTabTitleForTesting(
+                small_title_with_multi_grapheme_characters));
+  EXPECT_EQ(exact_sized_title_with_multi_grapheme_characters,
+            MessagingBackendServiceImpl::GetTruncatedTabTitleForTesting(
+                exact_sized_title_with_multi_grapheme_characters));
+  EXPECT_EQ(exact_sized_title_with_multi_grapheme_characters + kEllipsis,
+            MessagingBackendServiceImpl::GetTruncatedTabTitleForTesting(
+                exact_sized_title_with_multi_grapheme_characters +
+                kMultiGraphemeCharacter));
 }
 
 }  // namespace collaboration::messaging
