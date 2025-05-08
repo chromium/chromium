@@ -82,10 +82,30 @@ struct Position {
   uint32 index;
 };
 
+// A snapshot of the current tabs in the tab strip.
+struct TabsSnapshot {
+  array<Tab> tabs;
+  // Updates to tabs would be sent through this update stream. Clients may
+  // subscribe to this stream to receive update events.
+  pending_receiver<TabsObserver> stream;
+};
+
 // The TabStripService is an object that lives alongside the
 // TabstripModel. It acts as the bridge between the model and any UI Dialog
 // or client.
 interface TabStripService {
+  // Gets the current state of the tab tree. This also returns a stream of
+  // future update events. Clients can implement the |TabsObserver| interface
+  // and receive all future updates from the snapshot. Note that all messages
+  // since the snapshot will be present in the stream, even if the client
+  // does not immediately register to the update stream.
+  [Sync]
+  GetTabs() => result<TabsSnapshot, mojo_base.mojom.Error>;
+
+  // Get a single tab.
+  [Sync]
+  GetTab(TabId id) => result<Tab, mojo_base.mojom.Error>;
+
   // Creates a new tab.
   // Position specifies the location of the Tab after creation. If position is
   // empty, the new tab will be appended to the end of the Tabstrip.
@@ -94,11 +114,6 @@ interface TabStripService {
   [Sync]
   CreateTabAt(Position? pos, url.mojom.Url? url)
       => result<bool, mojo_base.mojom.Error>;
-
-  // Get tab data based on the Tab id. Currently the TabId refers to the Tab
-  // handle value.
-  [Sync]
-  GetTab(TabId id) => result<Tab, mojo_base.mojom.Error>;
 };
 
 // TODO (crbug.com/412955607)
