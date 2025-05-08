@@ -20,19 +20,10 @@ struct Selection {
     return base::StringPrintf("Selection(%s, %s)", start.ToString().c_str(),
                               end.ToString().c_str());
   }
+
+  friend bool operator==(const Selection<BoundType>&,
+                         const Selection<BoundType>&) = default;
 };
-
-template <typename BoundType>
-inline bool operator==(const Selection<BoundType>& lhs,
-                       const Selection<BoundType>& rhs) {
-  return lhs.start == rhs.start && lhs.end == rhs.end;
-}
-
-template <typename BoundType>
-inline bool operator!=(const Selection<BoundType>& lhs,
-                       const Selection<BoundType>& rhs) {
-  return !(lhs == rhs);
-}
 
 }  // namespace viz
 

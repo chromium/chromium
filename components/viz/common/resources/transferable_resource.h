@@ -164,7 +164,6 @@ struct VIZ_COMMON_EXPORT TransferableResource {
            synchronization_type == o.synchronization_type &&
            resource_source == o.resource_source;
   }
-  bool operator!=(const TransferableResource& o) const { return !(*this == o); }
 
   // TODO(danakj): Some of these fields are only GL, some are only Software,
   // some are both but used for different purposes (like the mailbox name).
