@@ -37,7 +37,7 @@
       },
       "FocusExisting_Tab_ScopeA2A_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "FocusExisting_BothBrowser_CaptureOn_Tab_ScopeA2A_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -99,7 +99,7 @@
       },
       "FocusExisting_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "FocusExisting_BothBrowser_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -161,7 +161,7 @@
       },
       "NavigateExisting_Tab_ScopeA2A_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "NavigateExisting_BothBrowser_CaptureOn_Tab_ScopeA2A_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -223,7 +223,7 @@
       },
       "NavigateExisting_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "NavigateExisting_BothBrowser_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -285,7 +285,7 @@
       },
       "Tab_ScopeA2A_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "BothBrowser_CaptureOn_Tab_ScopeA2A_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -385,7 +385,7 @@
       },
       "Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "BothBrowser_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",

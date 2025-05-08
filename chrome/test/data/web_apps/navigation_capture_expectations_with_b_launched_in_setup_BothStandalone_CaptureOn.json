@@ -50,7 +50,7 @@
       },
       "AppANavigateExistingAppBFocusExisting_AppWnd_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "AppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -145,7 +145,7 @@
       },
       "AppANavigateExistingAppBFocusExisting_AppWnd_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "AppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -240,7 +240,7 @@
       },
       "AppANavigateExistingAppBFocusExisting_AppWnd_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "AppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -326,7 +326,7 @@
       },
       "AppANavigateExistingAppBFocusExisting_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "AppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -404,7 +404,7 @@
       },
       "AppANavigateExistingAppBFocusExisting_Tab_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "AppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -482,7 +482,7 @@
       },
       "AppANavigateExistingAppBFocusExisting_Tab_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "AppANavigateExistingAppBFocusExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -569,7 +569,7 @@
       },
       "FocusExisting_AppWnd_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetSelf": {
          "_params": "FocusExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -656,7 +656,7 @@
       },
       "FocusExisting_Tab_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetSelf": {
          "_params": "FocusExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -747,7 +747,7 @@
       },
       "NavigateExisting_AppWnd_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetSelf": {
          "_params": "NavigateExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -851,7 +851,7 @@
       },
       "NavigateExisting_AppWnd_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "NavigateExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -950,7 +950,7 @@
       },
       "NavigateExisting_AppWnd_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "NavigateExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -1049,7 +1049,7 @@
       },
       "NavigateExisting_AppWnd_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "NavigateExisting_BothStandalone_CaptureOn_AppWnd_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -1139,7 +1139,7 @@
       },
       "NavigateExisting_Tab_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetSelf": {
          "_params": "NavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_RightClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -1225,7 +1225,7 @@
       },
       "NavigateExisting_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "NavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -1307,7 +1307,7 @@
       },
       "NavigateExisting_Tab_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "NavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaB_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -1389,7 +1389,7 @@
       },
       "NavigateExisting_Tab_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetSelf": {
          "_params": "NavigateExisting_BothStandalone_CaptureOn_Tab_ScopeA2B_ServerSideViaX_ViaLink_LeftClick_WithoutOpener_TargetSelf",
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
