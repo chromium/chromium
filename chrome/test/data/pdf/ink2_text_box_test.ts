@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {hexToColor, Ink2Manager, PluginController, PluginControllerEventType, TEXT_COLORS, TextAlignment, TextBoxState, TextStyle} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {hexToColor, Ink2Manager, PluginController, PluginControllerEventType, TEXT_COLORS, TextAlignment, TextBoxState, TextStyle, TextTypeface} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {TextAnnotation} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -11,8 +11,6 @@ import {assertDeepEquals, getRequiredElement, setupTestViewportAndMockPluginForI
 // Set up a dummy viewport so that we can get a predictable initial state.
 const {viewport, mockPlugin} = setupTestViewportAndMockPluginForInk();
 const manager = Ink2Manager.getInstance();
-// Initialize a typeface, since this starts out empty.
-manager.setTextTypeface('Roboto');
 const textbox = document.createElement('ink-text-box');
 document.body.appendChild(textbox);
 
@@ -24,7 +22,7 @@ function initializeBox(
         text: existing ? 'Hello World' : '',
         textAttributes: {
           size: 12,
-          typeface: 'Roboto',
+          typeface: TextTypeface.SANS_SERIF,
           styles: {
             [TextStyle.BOLD]: false,
             [TextStyle.ITALIC]: false,
@@ -112,7 +110,7 @@ chrome.test.runTests([
     // Initial state
     chrome.test.assertEq('12px', textboxStyles.getPropertyValue('font-size'));
     chrome.test.assertEq(
-        'Roboto', textboxStyles.getPropertyValue('font-family'));
+        'sans-serif', textboxStyles.getPropertyValue('font-family'));
     chrome.test.assertEq('400', textboxStyles.getPropertyValue('font-weight'));
     chrome.test.assertEq(
         'normal', textboxStyles.getPropertyValue('font-style'));
@@ -126,7 +124,7 @@ chrome.test.runTests([
     // Confirm updating styles in the manager updates the style of the textbox.
     // Each type of update should independently trigger a change.
     // Typeface
-    manager.setTextTypeface('Serif');
+    manager.setTextTypeface(TextTypeface.SERIF);
     await microtasksFinished();
     chrome.test.assertEq(
         'serif', textboxStyles.getPropertyValue('font-family'));
@@ -159,7 +157,7 @@ chrome.test.runTests([
     chrome.test.assertEq('right', textboxStyles.getPropertyValue('text-align'));
 
     // Reset everything for later tests.
-    manager.setTextTypeface('Roboto');
+    manager.setTextTypeface(TextTypeface.SANS_SERIF);
     manager.setTextSize(12);
     manager.setTextStyles({
       [TextStyle.BOLD]: false,
@@ -403,7 +401,7 @@ chrome.test.runTests([
       pageNumber: 0,
       textAttributes: {
         size: 12,
-        typeface: 'Roboto',
+        typeface: TextTypeface.SANS_SERIF,
         styles: {
           [TextStyle.BOLD]: false,
           [TextStyle.ITALIC]: false,
@@ -448,13 +446,13 @@ chrome.test.runTests([
 
     // Any modifications to font are an edit.
     chrome.test.assertTrue(isVisible(textbox));
-    manager.setTextTypeface('Monospace');
+    manager.setTextTypeface(TextTypeface.MONOSPACE);
     await microtasksFinished();
-    testAnnotation.textAttributes.typeface = 'Monospace';
+    testAnnotation.textAttributes.typeface = TextTypeface.MONOSPACE;
     startNewAnnotationAndVerifyMessage();
     await microtasksFinished();
     // Reset expectation.
-    testAnnotation.textAttributes.typeface = 'Roboto';
+    testAnnotation.textAttributes.typeface = TextTypeface.SANS_SERIF;
 
     // If all the text is deleted, there is also no commit message.
     chrome.test.assertTrue(isVisible(textbox));

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {AnnotationBrush, TextAnnotation, TextAttributes, TextBoxInit} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {AnnotationBrushType, DEFAULT_TEXTBOX_HEIGHT, DEFAULT_TEXTBOX_WIDTH, Ink2Manager, PluginController, PluginControllerEventType, TextAlignment} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationBrushType, DEFAULT_TEXTBOX_HEIGHT, DEFAULT_TEXTBOX_WIDTH, Ink2Manager, PluginController, PluginControllerEventType, TextAlignment, TextTypeface} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -15,7 +15,7 @@ const manager = Ink2Manager.getInstance();
 function getTestAnnotation(): TextAnnotation {
   return {
     textAttributes: {
-      typeface: 'Roboto',
+      typeface: TextTypeface.SANS_SERIF,
       size: 12,
       color: {r: 0, g: 100, b: 0},
       alignment: TextAlignment.LEFT,
@@ -120,33 +120,6 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  async function testGetTextAnnotationFontNames() {
-    // Checks that requesting the fonts for the first time retrieves the
-    // fonts from the plugin and fires a attributes-changed event with the font
-    // set to the first font returned.
-    const whenChanged = eventToPromise('attributes-changed', manager);
-    const fontNames = await manager.getTextAnnotationFontNames();
-
-    // For now, these are hardcoded in controller.ts.
-    const expectedFontNames = ['Roboto', 'Serif', 'Sans', 'Monospace'];
-    chrome.test.assertEq(fontNames.length, expectedFontNames.length);
-    for (let i = 0; i < expectedFontNames.length; i++) {
-      chrome.test.assertEq(fontNames[i], expectedFontNames[i]);
-    }
-
-    // Check that the manager requested the fonts.
-    const getTextAnnotFontNamesMessage =
-        mockPlugin.findMessage('getTextAnnotFontNames');
-    chrome.test.assertTrue(getTextAnnotFontNamesMessage !== undefined);
-    chrome.test.assertEq(
-        'getTextAnnotFontNames', getTextAnnotFontNamesMessage.type);
-
-    // Check that an event was fired.
-    const changedEvent = await whenChanged;
-    chrome.test.assertEq('Roboto', changedEvent.detail.typeface);
-    chrome.test.succeed();
-  },
-
   function testSetFontProperties() {
     const fontUpdates: TextAttributes[] = [];
     manager.addEventListener('attributes-changed', e => {
@@ -164,9 +137,9 @@ chrome.test.runTests([
 
     // Update font. Note the other `expectedAttributes` values come from the
     // defaults set in ink2_manager.ts.
-    manager.setTextTypeface('Serif');
+    manager.setTextTypeface(TextTypeface.SERIF);
     const expectedAttributes = {
-      typeface: 'Serif',
+      typeface: TextTypeface.SERIF,
       size: 12,
       color: {r: 0, g: 0, b: 0},
       alignment: TextAlignment.LEFT,

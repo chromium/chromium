@@ -351,8 +351,6 @@ bool PdfInkModule::OnMessage(const base::Value::Dict& message) {
            &PdfInkModule::HandleFinishTextAnnotationMessage},
           {"getAnnotationBrush",
            &PdfInkModule::HandleGetAnnotationBrushMessage},
-          {"getTextAnnotFontNames",
-           &PdfInkModule::HandleGetTextAnnotFontNamesMessage},
           {"setAnnotationBrush",
            &PdfInkModule::HandleSetAnnotationBrushMessage},
           {"setAnnotationMode", &PdfInkModule::HandleSetAnnotationModeMessage},
@@ -1306,12 +1304,6 @@ void PdfInkModule::HandleSetAnnotationModeMessage(
     }
   }
   MaybeSetCursor();
-}
-
-void PdfInkModule::HandleGetTextAnnotFontNamesMessage(
-    const base::Value::Dict& message) {
-  // TODO(crbug.com/409439509): Fill in this method. For now, just create it
-  // so the backend doesn't CHECK when it's sent from the frontend.
 }
 
 void PdfInkModule::HandleStartTextAnnotationMessage(

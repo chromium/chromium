@@ -58,12 +58,18 @@ export enum TextStyle {
   ITALIC = 'italic',
 }
 
+export enum TextTypeface {
+  SANS_SERIF = 'sans-serif',
+  SERIF = 'serif',
+  MONOSPACE = 'monospace',
+}
+
 export type TextStyles = {
   [key in TextStyle]: boolean
 };
 
 export interface TextAttributes {
-  typeface: string;
+  typeface: TextTypeface;
   size: number;
   color: Color;
   alignment: TextAlignment;

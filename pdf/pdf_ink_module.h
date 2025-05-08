@@ -388,7 +388,6 @@ class PdfInkModule {
   void HandleAnnotationUndoMessage(const base::Value::Dict& message);
   void HandleFinishTextAnnotationMessage(const base::Value::Dict& message);
   void HandleGetAnnotationBrushMessage(const base::Value::Dict& message);
-  void HandleGetTextAnnotFontNamesMessage(const base::Value::Dict& message);
   void HandleSetAnnotationBrushMessage(const base::Value::Dict& message);
   void HandleSetAnnotationModeMessage(const base::Value::Dict& message);
   void HandleStartTextAnnotationMessage(const base::Value::Dict& message);

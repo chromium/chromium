@@ -20,7 +20,7 @@ export function getHtml(this: ViewerTextBottomToolbarElement) {
         ${this.fontNames.map(typeface => html`
           <option value="${typeface}"
               ?selected="${this.isSelectedTypeface(typeface)}">
-            ${typeface}
+            ${this.getLabelForTypeface(typeface)}
           </option>`)}
       </select>
       <select class="md-select size-select" @change="${this.onSizeSelected}">

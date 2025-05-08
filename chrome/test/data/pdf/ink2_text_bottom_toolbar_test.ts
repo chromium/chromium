@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AnnotationMode, hexToColor, Ink2Manager, TEXT_COLORS, TextAlignment, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationMode, hexToColor, Ink2Manager, TEXT_COLORS, TextAlignment, TextTypeface, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {Color} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -51,7 +51,7 @@ chrome.test.runTests([
     // Font and size selects
     const selects = toolbar.shadowRoot.querySelectorAll('select');
     chrome.test.assertEq(2, selects.length);
-    chrome.test.assertEq('Roboto', selects[0]!.value);
+    chrome.test.assertEq(TextTypeface.SANS_SERIF, selects[0]!.value);
     chrome.test.assertEq('12', selects[1]!.value);
 
     // Style selector
@@ -86,7 +86,7 @@ chrome.test.runTests([
 
     const whenChanged =
         eventToPromise('attributes-changed', Ink2Manager.getInstance());
-    const newValue = 'Serif';
+    const newValue = TextTypeface.SERIF;
     fontSelect.focus();
     fontSelect.value = newValue;
     fontSelect.dispatchEvent(new CustomEvent('change'));

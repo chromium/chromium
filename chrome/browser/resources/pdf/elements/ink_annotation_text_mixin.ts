@@ -5,6 +5,7 @@
 import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Color, TextAttributes} from '../constants.js';
+import {TextTypeface} from '../constants.js';
 import {Ink2Manager} from '../ink2_manager.js';
 import {hexToColor} from '../pdf_viewer_utils.js';
 
@@ -63,23 +64,30 @@ export const InkAnnotationTextMixin =
         }
 
         accessor currentColor: Color = hexToColor(TEXT_COLORS[0]!.color);
-        accessor currentSize: number = TEXT_SIZES[0]!;
-        accessor currentTypeface: string = '';
+        accessor currentSize: number = TEXT_SIZES[3]!;
+        accessor currentTypeface: TextTypeface = TextTypeface.SANS_SERIF;
         accessor colors: ColorOption[] = TEXT_COLORS;
-        accessor fontNames: string[] = [];
+        accessor fontNames: TextTypeface[] = [
+          TextTypeface.SANS_SERIF,
+          TextTypeface.SERIF,
+          TextTypeface.MONOSPACE,
+        ];
         accessor sizes: number[] = TEXT_SIZES;
 
-        override firstUpdated() {
-          Ink2Manager.getInstance().getTextAnnotationFontNames().then(
-              fontNames => {
-                // Set the fontNames and then update the text.
-                this.fontNames = fontNames;
-                this.onTextAttributesChanged(
-                    Ink2Manager.getInstance().getCurrentTextAttributes());
-              });
+        getLabelForTypeface(typeface: TextTypeface): string {
+          // TODO(crbug.com/402547554): These strings should be retrieved from
+          // loadTimeData so they are internationalized once they are final.
+          switch (typeface) {
+            case TextTypeface.SANS_SERIF:
+              return 'Sans-serif';
+            case TextTypeface.SERIF:
+              return 'Serif';
+            case TextTypeface.MONOSPACE:
+              return 'Fixed-width';
+          }
         }
 
-        isSelectedTypeface(typeface: string): boolean {
+        isSelectedTypeface(typeface: TextTypeface): boolean {
           return typeface === this.currentTypeface;
         }
 
@@ -89,7 +97,7 @@ export const InkAnnotationTextMixin =
 
         onTypefaceSelected(e: Event) {
           const newValue = (e.target as HTMLSelectElement).value;
-          Ink2Manager.getInstance().setTextTypeface(newValue);
+          Ink2Manager.getInstance().setTextTypeface(newValue as TextTypeface);
         }
 
         onSizeSelected(e: Event) {
@@ -121,8 +129,9 @@ export interface InkAnnotationTextMixinInterface {
   currentColor: Color;
   currentSize: number;
   currentTypeface: string;
-  fontNames: string[];
+  fontNames: TextTypeface[];
   sizes: number[];
+  getLabelForTypeface(typeface: TextTypeface): string;
   isSelectedTypeface(typeface: string): boolean;
   isSelectedSize(size: number): boolean;
   onTypefaceSelected(e: Event): void;

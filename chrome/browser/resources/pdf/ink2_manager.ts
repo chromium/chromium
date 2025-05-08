@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
 import type {AnnotationBrush, Color, Point, TextAnnotation, TextAttributes, TextBoxRect, TextStyles} from './constants.js';
-import {AnnotationBrushType, TextAlignment, TextStyle} from './constants.js';
+import {AnnotationBrushType, TextAlignment, TextStyle, TextTypeface} from './constants.js';
 import {PluginController, PluginControllerEventType} from './controller.js';
 import type {Viewport} from './viewport.js';
 
@@ -40,7 +40,7 @@ export class Ink2Manager extends EventTarget {
   private annotations_: Map<number, Map<number, TextAnnotation>> = new Map();
   // The attributes selected by the user for new annotations.
   private attributes_: TextAttributes = {
-    typeface: '',
+    typeface: TextTypeface.SANS_SERIF,
     size: 12,
     color: {r: 0, g: 0, b: 0},
     alignment: TextAlignment.LEFT,
@@ -54,7 +54,6 @@ export class Ink2Manager extends EventTarget {
   // user is editing. Null if the user is not editing an annotation or is
   // creating a new annotation using |attributes_|.
   private existingAnnotationAttributes_: TextAttributes|null = null;
-  private fontNamesResolver_: PromiseResolver<string[]>|null = null;
   private pageNumber_: number = -1;
   private pluginController_: PluginController = PluginController.getInstance();
   private viewport_: Viewport|null = null;
@@ -220,20 +219,7 @@ export class Ink2Manager extends EventTarget {
     this.setAnnotationBrushInPlugin_();
   }
 
-  getTextAnnotationFontNames(): Promise<string[]> {
-    if (this.fontNamesResolver_ === null) {
-      this.fontNamesResolver_ = new PromiseResolver();
-      this.pluginController_.getTextAnnotFontNames().then(fontsMessage => {
-        assert(this.fontNamesResolver_);
-        this.fontNamesResolver_.resolve(fontsMessage.data);
-        assert(fontsMessage.data.length > 0);
-        this.setTextTypeface(fontsMessage.data[0]!);
-      });
-    }
-    return this.fontNamesResolver_.promise;
-  }
-
-  setTextTypeface(typeface: string) {
+  setTextTypeface(typeface: TextTypeface) {
     const current = this.getCurrentTextAttributes();
     if (current.typeface === typeface) {
       return;
