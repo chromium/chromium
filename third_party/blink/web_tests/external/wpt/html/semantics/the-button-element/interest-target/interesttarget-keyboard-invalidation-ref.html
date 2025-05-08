@@ -7,11 +7,11 @@
 <button id=hasinterest>Button</button>
 <button class=otherselector>Button</button>
 <button class=otherselector>Button</button>
-<div id=target>Target</div>
+<div popover id=target>Target</div>
 
 <style>
   #hasinterest {
-    background-color: red;
+    background-color: purple;
     outline: solid 3px -webkit-focus-ring-color;
   }
   .otherselector {
@@ -19,9 +19,13 @@
   }
   #target {
     background-color: yellow;
+    inset:auto;
+    top:50px;
+    left:0;
   }
 </style>
 
 <script>
+  target.showPopover();
   hasinterest.focus();
 </script>

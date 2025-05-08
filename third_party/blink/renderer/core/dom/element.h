@@ -1139,12 +1139,32 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // wasn't triggered by this invoker, this will return nullptr.)
   HTMLElement* GetOpenPopoverTarget() const;
 
+  // Represents the current state of an interest invoker.
+  enum class InterestState {
+    // No interest.
+    kNoInterest,
+    // This is a transient interest state, used for an interest invoker pointing
+    // to a popover that has been activated via keyboard focus. It potentially
+    // has partial interest, but that can only be determined once the popover
+    // actually opens, so that focusability can be tested. Once the popover is
+    // open, the invoker's interest_state will be updated to one of the other
+    // states. It can actually get to any of the states:
+    //  - partial interest if there are focusable elements
+    //  - full interest otherwise
+    //  - no interest if the showPopover is cancelled for any reason
+    kPotentialPartialInterest,
+    // Invoker has partial interest (for sure).
+    kPartialInterest,
+    // Invoker has full interest.
+    kFullInterest,
+  };
+
   // Implementation of the `interesttarget` feature. These are called on the
   // element with the `interesttarget` attribute, and not on the target itself.
   // These are called when interest is actually gained or lost on the element,
   // e.g. after any hover-delays. They return true if the event was *not*
   // cancelled, and the action was performed.
-  bool InterestGained(Element& interest_target);
+  bool InterestGained(Element& interest_target, InterestState new_state);
   bool InterestLost(Element& interest_target);
   // Returns the target of the `interesttarget` attribute, if any, and only if
   // the element supports this attribute. For example, `interesttarget` is not
@@ -1153,11 +1173,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // Returns the active interest invoker for which this element is the target,
   // or nullptr otherwise.
   Element* GetInterestInvoker() const;
-  enum class InterestState {
-    kNoInterest,
-    kPartialInterest,
-    kFullInterest,
-  };
   // Returns the current state of "interest" in an element that is an interest
   // invoker.
   InterestState GetInterestState();
@@ -1170,6 +1185,14 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // be set on the element. If the element is not an interest invoker, nothing
   // happens.
   void ShowInterestNow();
+
+  // Returns true if any of its (non-inclusive) flat tree descendants is
+  // keyboard focusable. Note that this is quite slow, since it traverses the
+  // entire subtree, and calls `IsKeyboardFocusableSlow()` on each element.
+  // See the comment next to IsFocusable() above for a description of
+  // update_behavior.
+  bool ContainsKeyboardFocusableElementsSlow(
+      UpdateBehavior update_behavior) const;
 
   // The implementations of |innerText()| and |GetInnerTextWithoutUpdate()| are
   // found in "element_inner_text.cc".
@@ -1616,6 +1639,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   InvokerData& EnsureInvokerData();
   InvokerData* GetInvokerData() const;
+  void ChangeInterestState(Element* target, InterestState new_state);
 
   void RemoveInterestInvokerTargetData();
   InterestInvokerTargetData& EnsureInterestInvokerTargetData();
@@ -2190,7 +2214,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // These schedule interest gained/lost events, for `interesttarget` invokers.
   void ScheduleInterestGainedTask(InterestState);
   void ScheduleInterestLostTask();
-  void ChangeInterestState(Element* target, InterestState new_state);
   static bool GainOrLoseInterest(Element* invoker,
                                  Element* target,
                                  InterestState new_state);

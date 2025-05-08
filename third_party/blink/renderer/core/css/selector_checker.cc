@@ -1877,7 +1877,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
           element.GetDocument().GetExecutionContext()));
       return element.GetInterestState() ==
-             Element::InterestState::kPartialInterest;
+                 Element::InterestState::kPartialInterest ||
+             element.GetInterestState() ==
+                 Element::InterestState::kPotentialPartialInterest;
     case CSSSelector::kPseudoTargetOfInterest: {
       DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
           element.GetDocument().GetExecutionContext()));
@@ -1892,8 +1894,10 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       Element* invoker = element.GetInterestInvoker();
       DCHECK(!invoker || invoker->GetInterestState() !=
                              Element::InterestState::kNoInterest);
-      return invoker && invoker->GetInterestState() ==
-                            Element::InterestState::kPartialInterest;
+      return invoker && (invoker->GetInterestState() ==
+                             Element::InterestState::kPartialInterest ||
+                         invoker->GetInterestState() ==
+                             Element::InterestState::kPotentialPartialInterest);
     }
     case CSSSelector::kPseudoHasSlotted:
       DCHECK(RuntimeEnabledFeatures::CSSPseudoHasSlottedEnabled());

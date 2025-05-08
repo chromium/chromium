@@ -1547,7 +1547,8 @@ HTMLElement* Element::GetOpenPopoverTarget() const {
   return popover;
 }
 
-bool Element::InterestGained(Element& interest_target) {
+bool Element::InterestGained(Element& interest_target,
+                             InterestState new_state) {
   CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
       GetDocument().GetExecutionContext()));
   CHECK(IsInTreeScope());
@@ -1558,6 +1559,17 @@ bool Element::InterestGained(Element& interest_target) {
   if (interest_event->defaultPrevented()) {
     return false;
   }
+
+  // This is now the target's interest invoker
+  CHECK(!interest_target.GetInterestInvoker());
+  interest_target.EnsureElementRareData()
+      .EnsureInterestInvokerTargetData()
+      .setInterestInvoker(this);
+  ChangeInterestState(&interest_target, new_state);
+  DCHECK(!GetDocument().CurrentInterestTargetElements().Contains(this));
+  GetDocument().CurrentInterestTargetElements().insert(this);
+
+  // If the target is a popover, invoke it.
   if (auto* popover = DynamicTo<HTMLElement>(interest_target);
       popover && popover->PopoverType() != PopoverValueType::kNone) {
     if (popover->IsPopoverReady(PopoverTriggerAction::kShow,
@@ -1581,6 +1593,17 @@ bool Element::InterestLost(Element& interest_target) {
   if (lose_interest_event->defaultPrevented()) {
     return false;
   }
+
+  // If the target still thinks this invoker is its invoker, remove it.
+  if (auto* targets_invoker = interest_target.GetInterestInvoker();
+      targets_invoker && targets_invoker == this) {
+    interest_target.EnsureElementRareData().RemoveInterestInvokerTargetData();
+    ChangeInterestState(&interest_target, InterestState::kNoInterest);
+    DCHECK(GetDocument().CurrentInterestTargetElements().Contains(this));
+    GetDocument().CurrentInterestTargetElements().erase(this);
+  }
+
+  // If the target is a popover, hide it.
   if (auto* popover = DynamicTo<HTMLElement>(interest_target);
       popover && popover->PopoverType() != PopoverValueType::kNone) {
     if (popover->IsPopoverReady(PopoverTriggerAction::kHide,
@@ -1614,7 +1637,7 @@ String Element::GetPartialInterestTargetActivationHotkey() {
 }
 
 void Element::DefaultEventHandler(Event& event) {
-  if (GetInterestState() != Element::InterestState::kNoInterest) [[unlikely]] {
+  if (GetInterestState() != InterestState::kNoInterest) [[unlikely]] {
     CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
         GetDocument().GetExecutionContext()));
     if (auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
@@ -1622,7 +1645,8 @@ void Element::DefaultEventHandler(Event& event) {
       const int modifiers =
           keyboard_event->GetModifiers() & blink::WebInputEvent::kKeyModifiers;
       auto* target = InterestTargetElement();
-      if (GetInterestState() == Element::InterestState::kPartialInterest &&
+      DCHECK_NE(GetInterestState(), InterestState::kPotentialPartialInterest);
+      if (GetInterestState() == InterestState::kPartialInterest &&
           keyboard_event->key() == keywords::kArrowUp &&
           modifiers == WebInputEvent::kAltKey) {
         // Hitting the hotkey (Alt/Option-UpArrow) on an invoker that has
@@ -7285,6 +7309,21 @@ bool Element::CanBeKeyboardFocusableScroller(
   return IsScrollableNode(this);
 }
 
+bool Element::ContainsKeyboardFocusableElementsSlow(
+    UpdateBehavior update_behavior) const {
+  for (const Node* node = FlatTreeTraversal::FirstChild(*this); node;
+       node = FlatTreeTraversal::Next(*node, this)) {
+    auto* element = DynamicTo<Element>(node);
+    if (!element) {
+      continue;
+    }
+    if (element->IsKeyboardFocusableSlow(update_behavior)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // This can be slow, because it can require a tree walk. It might be
 // a good idea to cache this bit on the element to avoid having to
 // recompute it. That would require marking that bit dirty whenever
@@ -7301,15 +7340,9 @@ bool Element::IsKeyboardFocusableScroller(
     return true;
   }
 
-  for (Node* node = FlatTreeTraversal::FirstChild(*this); node;
-       node = FlatTreeTraversal::Next(*node, this)) {
-    if (Element* element = DynamicTo<Element>(node)) {
-      if (element->IsKeyboardFocusableSlow(update_behavior)) {
-        return false;
-      }
-    }
-  }
-  return true;
+  // If the scroller already contains something focusable, then we return false,
+  // since it's not a "special" keyboard focusable scroller.
+  return !ContainsKeyboardFocusableElementsSlow(update_behavior);
 }
 
 // TODO(crbug.com/326681249): Should `tabindex` take precedence?
@@ -10768,6 +10801,9 @@ bool Element::GainOrLoseInterest(Element* invoker,
   // gained or lost. Fire the event and run any default actions.
   switch (new_state) {
     case InterestState::kPartialInterest:
+      NOTREACHED() << "Partial interest should never be gained directly";
+
+    case InterestState::kPotentialPartialInterest:
     case InterestState::kFullInterest:
       if (Element* existing_invoker = target->GetInterestInvoker()) {
         // We're gaining interest, but the target already has an active interest
@@ -10800,36 +10836,11 @@ bool Element::GainOrLoseInterest(Element* invoker,
           }
         }
       }
-      if (!invoker->InterestGained(*target)) {
-        return false;  // event was cancelled.
-      }
-      // This is now the target's interest invoker
-      CHECK(!target->GetInterestInvoker());
-      target->EnsureElementRareData()
-          .EnsureInterestInvokerTargetData()
-          .setInterestInvoker(invoker);
-      invoker->ChangeInterestState(target, new_state);
-      DCHECK(!invoker->GetDocument().CurrentInterestTargetElements().Contains(
-          invoker));
-      invoker->GetDocument().CurrentInterestTargetElements().insert(invoker);
-      break;
+      return invoker->InterestGained(*target, new_state);
 
     case InterestState::kNoInterest:
-      if (!invoker->InterestLost(*target)) {
-        return false;  // event was cancelled.
-      }
-      // If the target still thinks this invoker is its invoker, remove it.
-      if (auto* targets_invoker = target->GetInterestInvoker();
-          targets_invoker && targets_invoker == invoker) {
-        target->EnsureElementRareData().RemoveInterestInvokerTargetData();
-        invoker->ChangeInterestState(target, InterestState::kNoInterest);
-        DCHECK(invoker->GetDocument().CurrentInterestTargetElements().Contains(
-            invoker));
-        invoker->GetDocument().CurrentInterestTargetElements().erase(invoker);
-      }
-      break;
+      return invoker->InterestLost(*target);
   }
-  return true;
 }
 
 void Element::ScheduleInterestGainedTask(InterestState new_state) {
@@ -10901,7 +10912,7 @@ Element* Element::GetInterestInvoker() const {
     return nullptr;
   }
   DCHECK_EQ(invoker->InterestTargetElement(), this);
-  DCHECK_NE(invoker->GetInterestState(), Element::InterestState::kNoInterest);
+  DCHECK_NE(invoker->GetInterestState(), InterestState::kNoInterest);
   DCHECK_EQ(invoker->InterestTargetElement(), this);
   return invoker;
 }
@@ -10971,6 +10982,8 @@ void Element::HandleInterestTargetHoverOrFocus(InterestTargetSource source) {
       // invoker for this element.
       auto* upstream_data = upstream_invoker->GetInvokerData();
       upstream_data->CancelInterestLostTask();
+      DCHECK_NE(upstream_data->GetInterestState(),
+                InterestState::kPotentialPartialInterest);
       if (upstream_data->GetInterestState() ==
           InterestState::kPartialInterest) {
         // Hovering (or focusing, if the developer allowed that) triggers full
@@ -10979,13 +10992,17 @@ void Element::HandleInterestTargetHoverOrFocus(InterestTargetSource source) {
                                               InterestState::kFullInterest);
       }
     }
-    if (InterestTargetElement()) [[unlikely]] {
+    if (auto* target = InterestTargetElement()) [[unlikely]] {
       // This is an interest invoker that was just hovered or focused. Schedule
       // an InterestGained task, with a new state of "full interest" (for
-      // hover), or "partial interest" (for focus).
-      ScheduleInterestGainedTask(source == InterestTargetSource::kHover
-                                     ? InterestState::kFullInterest
-                                     : InterestState::kPartialInterest);
+      // hover), or "potential partial interest" (for focus).
+      auto* target_popover = DynamicTo<HTMLElement>(target);
+      bool might_need_partial_interest =
+          source == InterestTargetSource::kFocusElementChain &&
+          target_popover && target_popover->HasPopoverAttribute();
+      ScheduleInterestGainedTask(might_need_partial_interest
+                                     ? InterestState::kPotentialPartialInterest
+                                     : InterestState::kFullInterest);
     }
   } else {
     DCHECK(source == InterestTargetSource::kDeHover ||
