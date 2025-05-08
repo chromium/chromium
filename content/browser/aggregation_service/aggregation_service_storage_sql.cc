@@ -241,9 +241,6 @@ void AggregationServiceStorageSql::SetPublicKeys(const GURL& url,
   CHECK(network::IsUrlPotentiallyTrustworthy(url));
   CHECK_LE(keyset.keys.size(), PublicKeyset::kMaxNumberKeys);
 
-  // TODO(crbug.com/40190806): Add an allowlist for helper server urls and
-  // validate the url.
-
   // Force the creation of the database if it doesn't exist, as we need to
   // persist the public keys.
   if (!EnsureDatabaseOpen(DbCreationPolicy::kCreateIfAbsent)) {
