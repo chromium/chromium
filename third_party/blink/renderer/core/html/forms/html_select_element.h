@@ -54,7 +54,7 @@ class SelectType;
 class V8UnionHTMLElementOrLong;
 class V8UnionHTMLOptGroupElementOrHTMLOptionElement;
 class HTMLSelectedContentElement;
-class SelectDescendantsObserver;
+class SelectMutationObserver;
 
 enum class SelectPopupHideBehavior {
   kNormal,
@@ -450,7 +450,7 @@ class CORE_EXPORT HTMLSelectElement final
   Member<SelectType> select_type_;
   int index_to_select_on_cancel_;
 
-  Member<SelectDescendantsObserver> descendants_observer_;
+  Member<SelectMutationObserver> descendants_observer_;
   unsigned content_model_violations_count_ = 0U;
 
   friend class ListBoxSelectType;
