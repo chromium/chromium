@@ -208,10 +208,20 @@ bool ReadAnythingAppModel::PostProcessSelection() {
     return need_to_draw;
   }
 
-  // The main panel selection contains content outside of the distilled content.
-  // Find the selected nodes to display instead of the distilled content.
-  if (const ui::AXNode *node = GetAXNode(start_.id), *end = GetAXNode(end_.id);
-      !node->IsInvisibleOrIgnored() && !end->IsInvisibleOrIgnored()) {
+  const ui::AXNode* node = GetAXNode(start_.id);
+  const ui::AXNode* end = GetAXNode(end_.id);
+  DUMP_WILL_BE_CHECK(node && end);
+  if (!node || !end) {
+    // Fail gracefully if the returned nodes are ever missing.
+    // This should never happen given that the AXSelection object is retrieved
+    // from the active tree.
+    return false;
+  }
+
+  // The main panel selection contains content outside of the distilled
+  // content. Find the selected nodes to display instead of the distilled
+  // content.
+  if (!node->IsInvisibleOrIgnored() && !end->IsInvisibleOrIgnored()) {
     // Add all ancestor ids of start node, including the start node itself.
     for (base::queue<ui::AXNode*> ancestors =
              node->GetAncestorsCrossingTreeBoundaryAsQueue();
