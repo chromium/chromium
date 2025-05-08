@@ -39,8 +39,6 @@ static_library("browser") {
     "content_settings_utils.h",
     "host_content_settings_map.cc",
     "host_content_settings_map.h",
-    "private_network_settings.cc",
-    "private_network_settings.h",
     "single_value_wildcard_rule_iterator.cc",
     "single_value_wildcard_rule_iterator.h",
     "user_modifiable_provider.cc",

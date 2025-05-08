@@ -148,7 +148,6 @@ TEST_F(ControlledFramePermissionsTest, Verify) {
       case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
       case ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA:
       case ContentSettingsType::FILE_SYSTEM_READ_GUARD:
-      case ContentSettingsType::INSECURE_PRIVATE_NETWORK:
       case ContentSettingsType::PERMISSION_AUTOREVOCATION_DATA:
       case ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY:
       case ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA:

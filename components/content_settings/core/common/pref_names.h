@@ -150,8 +150,6 @@ inline constexpr char kManagedSerialAskForUrls[] =
     "profile.managed_serial_ask_for_urls";
 inline constexpr char kManagedSerialBlockedForUrls[] =
     "profile.managed_serial_blocked_for_urls";
-inline constexpr char kManagedInsecurePrivateNetworkAllowedForUrls[] =
-    "profile.managed_insecure_private_network_allowed_for_urls";
 inline constexpr char kManagedJavaScriptJitAllowedForSites[] =
     "profile.managed_javascript_jit_allowed_for_sites";
 inline constexpr char kManagedJavaScriptJitBlockedForSites[] =

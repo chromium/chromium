@@ -584,15 +584,6 @@ void ContentSettingsRegistry::Init() {
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
-  Register(ContentSettingsType::INSECURE_PRIVATE_NETWORK,
-           "insecure-private-network", CONTENT_SETTING_BLOCK,
-           WebsiteSettingsInfo::UNSYNCABLE, /*allowlisted_primary_schemes=*/{},
-           /*valid_settings=*/{CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK},
-           WebsiteSettingsInfo::REQUESTING_ORIGIN_ONLY_SCOPE,
-           WebsiteSettingsRegistry::ALL_PLATFORMS,
-           ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
-
   Register(ContentSettingsType::LOCAL_FONTS, "local-fonts", CONTENT_SETTING_ASK,
            WebsiteSettingsInfo::SYNCABLE, /*allowlisted_primary_schemes=*/{},
            /*valid_settings=*/
