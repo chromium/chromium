@@ -24,9 +24,6 @@ class ScrimView : public views::View {
 
   ~ScrimView() override = default;
 
-  // views::View:
-  void AddedToWidget() override;
-
   void SetRoundedCorners(const gfx::RoundedCornersF& radii);
 };
 
