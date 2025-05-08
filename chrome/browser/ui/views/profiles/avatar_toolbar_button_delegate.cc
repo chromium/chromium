@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
@@ -533,6 +534,10 @@ class HistorySyncOptinCoordinator : public base::SupportsUserData::Data,
   }
 
   void PromoUsed() {
+    CHECK(before_promo_used_elapsed_timer_.has_value());
+    base::UmaHistogramMediumTimes(
+        "Signin.SyncOptIn.IdentityPill.DurationBeforeClick",
+        before_promo_used_elapsed_timer_->Elapsed());
     sync_promo_identity_pill_manager_.RecordPromoUsed();
     Collapse();
   }
@@ -629,6 +634,7 @@ class HistorySyncOptinCoordinator : public base::SupportsUserData::Data,
       collapse_timer_.Stop();
     }
     triggered_ = false;
+    before_promo_used_elapsed_timer_.reset();
     state_changed_callbacks.Notify();
   }
 
@@ -638,8 +644,11 @@ class HistorySyncOptinCoordinator : public base::SupportsUserData::Data,
       // `HistorySyncOptin` in the next browser window(s).
       return;
     }
+    before_promo_used_elapsed_timer_.emplace();
     has_been_shown_since_startup_ = true;
     sync_promo_identity_pill_manager_.RecordPromoShown();
+    base::UmaHistogramEnumeration("Signin.SyncOptIn.IdentityPill.Shown",
+                                  access_point_);
     collapse_timer_.Start(FROM_HERE,
                           g_history_sync_optin_duration_for_testing.value_or(
                               kHistorySyncOptinDuration),
@@ -682,6 +691,9 @@ class HistorySyncOptinCoordinator : public base::SupportsUserData::Data,
   bool triggered_ = false;
   bool has_been_shown_since_startup_ = false;
   base::OneShotTimer collapse_timer_;
+
+  // Timer to measure the time between the promo being shown and used (clicked).
+  std::optional<base::ElapsedTimer> before_promo_used_elapsed_timer_;
 
   const raw_ref<Profile> profile_;
 

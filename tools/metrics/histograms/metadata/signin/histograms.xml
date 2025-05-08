@@ -3059,6 +3059,29 @@ kept as long as profile signout is possible -->
   </summary>
 </histogram>
 
+<histogram name="Signin.SyncOptIn.IdentityPill.DurationBeforeClick" units="ms"
+    expires_after="2026-01-12">
+  <owner>ernn@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the time between the history sync opt-in identity pill promo is
+    opened and the user interacts with it (clicks on it). If the user doesn't
+    click the identity pill, the histogram should not be recorded.
+  </summary>
+</histogram>
+
+<histogram name="Signin.SyncOptIn.IdentityPill.Shown" enum="SigninAccessPoint"
+    expires_after="2026-01-12">
+  <owner>ernn@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Counts the number of times the history sync opt-in identity pill was shown.
+
+    Note: This is only recorded for `kHistorySyncOptinExpansionPill*` access
+    points.
+  </summary>
+</histogram>
+
 <histogram name="Signin.SyncOptIn.Offered" enum="SigninAccessPoint"
     expires_after="2026-01-12">
   <owner>ernn@google.com</owner>
