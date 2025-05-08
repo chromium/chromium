@@ -1399,6 +1399,12 @@ nobr {
   outline: solid 3px -webkit-focus-ring-color;
 }
 
+[popover]:target-of-partial-interest::after {
+  content: -internal-partial-interest-content;
+  display: block;
+  font-size: 0.8em;
+}
+
 button[interesttarget] {
   user-select: none;
 }

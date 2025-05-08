@@ -377,6 +377,10 @@ below:
       <message name="IDS_PRETTY_PRINT_JSON" desc="Label for the checkbox that enables 'pretty-printing' of JSON documents.To pretty-print JSON, carriage returns and spaces are inserted to cleanly format the JSON and make it readable.">
         Pretty-print
       </message>
+      <message name="IDS_PARTIAL_INTEREST_TARGET_ACTIVATION_HINT" desc="Hint text added to the page for popovers activated by elements with the 'interesttarget' attribute, which have been activated in partial interest mode. This is an instruction for which key(s) to press in order to activate the popover in full interest mode.">
+        Press <ph name="HOT_KEY">$1<ex>Alt + ⬆️</ex></ph> to activate
+      </message>
+
 
 <!-- The following IDS_FORM_VALIDATION_* messages were taken from Mozilla's dom.properties file.
 

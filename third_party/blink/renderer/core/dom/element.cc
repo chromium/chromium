@@ -1596,6 +1596,23 @@ bool Element::InterestLost(Element& interest_target) {
   return true;
 }
 
+// static
+// This should return a string that describes the hot-key implemented below in
+// Element::DefaultEventHandler.
+String Element::GetPartialInterestTargetActivationHotkey() {
+#if BUILDFLAG(IS_MAC)
+  // On a Mac, the "Alt" key is denoted with the symbol ⌥, for "Option". The
+  // most typical display uses the ↑ for the up arrow. So this text resolves
+  // to "⌥↑".
+  return u"\u2325\u2191";
+#else
+  // Other operating systems use "Alt" for the alt key, even in most other
+  // languages. And ⬆️ is more often used for the up arrow. So this text
+  // resolves to "Alt + ⬆️".
+  return u"Alt + \u2b06\ufe0f";
+#endif
+}
+
 void Element::DefaultEventHandler(Event& event) {
   if (GetInterestState() != Element::InterestState::kNoInterest) [[unlikely]] {
     CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
@@ -1608,9 +1625,11 @@ void Element::DefaultEventHandler(Event& event) {
       if (GetInterestState() == Element::InterestState::kPartialInterest &&
           keyboard_event->key() == keywords::kArrowUp &&
           modifiers == WebInputEvent::kAltKey) {
-        // Hitting the hotkey (Alt-UpArrow) on an invoker that has partial
-        // interest causes interest to be "upgraded" to full interest. It also
-        // focuses the first focusable element within the target.
+        // Hitting the hotkey (Alt/Option-UpArrow) on an invoker that has
+        // partial interest causes interest to be "upgraded" to full interest.
+        // It also focuses the first focusable element within the target.
+        // NOTE: this hotkey must be kept in sync with the string description
+        // returned by `GetPartialInterestTargetActivationHotkey()`.
         ChangeInterestState(target, InterestState::kFullInterest);
         if (Element* first_focusable = target->GetFocusDelegate()) {
           first_focusable->Focus();
