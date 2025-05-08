@@ -6,7 +6,10 @@ import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxBridge.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxBridge.java",
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionSettingsBridge.java",
+  ]
 }
 
 android_library("java") {
@@ -41,6 +44,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicsHeaderPreference.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicsManageFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicsUtils.java",
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionSettingsBridge.java",
   ]
   deps = [
     ":java_resources",
@@ -107,6 +111,7 @@ android_library("javatests") {
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSettingsFragmentTest.java",
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/TopicsFragmentTest.java",
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/TopicsManageFragmentTest.java",
+    "javatests/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionSettingsBridgeTest.java",
   ]
   deps = [
     ":java",
