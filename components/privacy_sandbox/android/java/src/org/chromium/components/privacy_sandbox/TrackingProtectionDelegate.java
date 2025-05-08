@@ -48,6 +48,16 @@ public interface TrackingProtectionDelegate {
     boolean isIpProtectionDisabledForEnterprise();
 
     /**
+     * @return whether IP protection is managed.
+     */
+    boolean isIpProtectionManaged();
+
+    /**
+     * @return whether fingerprinting protection is managed.
+     */
+    boolean isFingerprintingProtectionManaged();
+
+    /**
      * @return whether the fingerprinting protection UX is enabled.
      */
     boolean isFingerprintingProtectionUxEnabled();

@@ -67,6 +67,10 @@ public class IpProtectionSettingsFragmentTest {
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        SiteSettingsDelegate mockDelegate = mock(SiteSettingsDelegate.class);
+        when(mDelegate.getSiteSettingsDelegate(any())).thenReturn(mockDelegate);
+        when(mockDelegate.getManagedPreferenceDelegate())
+                .thenReturn(ManagedPreferenceTestDelegates.UNMANAGED_DELEGATE);
     }
 
     private void launchTrackingProtectionSettings() {
@@ -161,6 +165,25 @@ public class IpProtectionSettingsFragmentTest {
         when(mDelegate.getSiteSettingsDelegate(any())).thenReturn(mockDelegate);
         when(mockDelegate.getManagedPreferenceDelegate())
                 .thenReturn(ManagedPreferenceTestDelegates.UNMANAGED_DELEGATE);
+
+        launchTrackingProtectionSettings();
+
+        String ippSublabel = mFragment.getContext().getString(PREF_TOGGLE_SUBLABEL);
+        String enterpriseSublabel =
+                mFragment.getContext().getString(R.string.managed_by_your_organization);
+        onView(
+                allOf(
+                        withText(PREF_TOGGLE_LABEL),
+                        hasSibling(withText(containsString(ippSublabel))),
+                        isDisplayed()));
+        onView(withText(containsString(enterpriseSublabel))).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void ipProtectionToggleIsManagedWhenIpProtectionIsManaged() {
+        when(mDelegate.isIpProtectionEnabled()).thenReturn(true);
+        when(mDelegate.isIpProtectionManaged()).thenReturn(true);
 
         launchTrackingProtectionSettings();
 

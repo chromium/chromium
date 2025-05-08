@@ -55,6 +55,16 @@ public class ChromeTrackingProtectionDelegate implements TrackingProtectionDeleg
     }
 
     @Override
+    public boolean isIpProtectionManaged() {
+        return UserPrefs.get(mProfile).isManagedPreference(Pref.IP_PROTECTION_ENABLED);
+    }
+
+    @Override
+    public boolean isFingerprintingProtectionManaged() {
+        return UserPrefs.get(mProfile).isManagedPreference(Pref.FINGERPRINTING_PROTECTION_ENABLED);
+    }
+
+    @Override
     public void setIpProtection(boolean enabled) {
         UserPrefs.get(mProfile).setBoolean(Pref.IP_PROTECTION_ENABLED, enabled);
     }

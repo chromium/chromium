@@ -6,6 +6,8 @@ package org.chromium.components.privacy_sandbox;
 
 import android.os.Bundle;
 
+import androidx.preference.Preference;
+
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -14,6 +16,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.site_settings.ForwardingManagedPreferenceDelegate;
 
 /**
  * PreferenceFragment for managing fingerprinting protection settings.
@@ -44,6 +47,16 @@ public class FingerprintingProtectionSettingsFragment extends PrivacySandboxBase
 
         ChromeSwitchPreference fpProtectionSwitch = findPreference(PREF_FP_PROTECTION_SWITCH);
         fpProtectionSwitch.setChecked(mDelegate.isFingerprintingProtectionEnabled());
+        fpProtectionSwitch.setManagedPreferenceDelegate(
+                new ForwardingManagedPreferenceDelegate(
+                        mDelegate
+                                .getSiteSettingsDelegate(getContext())
+                                .getManagedPreferenceDelegate()) {
+                    @Override
+                    public boolean isPreferenceControlledByPolicy(Preference preference) {
+                        return mDelegate.isFingerprintingProtectionManaged();
+                    }
+                });
         fpProtectionSwitch.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
                     mDelegate.setFingerprintingProtection((boolean) newValue);

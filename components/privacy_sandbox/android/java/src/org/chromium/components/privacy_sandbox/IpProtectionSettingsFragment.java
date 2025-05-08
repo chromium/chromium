@@ -55,6 +55,16 @@ public class IpProtectionSettingsFragment extends PrivacySandboxBaseFragment {
                     });
         } else {
             ipProtectionSwitch.setChecked(mDelegate.isIpProtectionEnabled());
+            ipProtectionSwitch.setManagedPreferenceDelegate(
+                    new ForwardingManagedPreferenceDelegate(
+                            mDelegate
+                                    .getSiteSettingsDelegate(getContext())
+                                    .getManagedPreferenceDelegate()) {
+                        @Override
+                        public boolean isPreferenceControlledByPolicy(Preference preference) {
+                            return mDelegate.isIpProtectionManaged();
+                        }
+                    });
         }
         ipProtectionSwitch.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
