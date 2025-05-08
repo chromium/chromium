@@ -1388,8 +1388,9 @@ void PropertyTreeManager::UpdateConditionalRenderSurfaceReasons(
       // Otherwise all layers count as controlled layers of the parent.
       effect_layer_counts[effect->parent_id] += effect_layer_counts[id];
       has_child_surface[effect->parent_id] |= has_child_surface[id];
-      has_text[effect->parent_id] |= has_text[id];
     }
+
+    has_text[effect->parent_id] |= has_text[id];
 
 #if DCHECK_IS_ON()
     // Mark we have visited this effect.
