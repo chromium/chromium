@@ -2645,6 +2645,7 @@ Called by update_autofill_enums.py.-->
   <int value="9" label="DependentLocality"/>
   <int value="11" label="Company"/>
   <int value="12" label="AdminLevel2"/>
+  <int value="13" label="AlternativeName"/>
 </enum>
 
 <enum name="AutofillSharedStorageServerCardDataSetResult">
