@@ -11,6 +11,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -782,34 +783,41 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
 
     private void updateIphPropertyModel() {
         if (mIphMessagePropertyModel == null) return;
+        mIphMessagePropertyModel.set(
+                MessageCardViewProperties.DESCRIPTION_TEXT,
+                getIphDescription(mActivity, mTabArchiveSettings));
+    }
 
-        int archiveTimeDeltaDays = mTabArchiveSettings.getArchiveTimeDeltaDays();
-        int autoDeleteTimeDeletaDays = mTabArchiveSettings.getAutoDeleteTimeDeltaDays();
+    @VisibleForTesting
+    public static CharSequence getIphDescription(
+            Context context, TabArchiveSettings tabArchiveSettings) {
+        int archiveTimeDeltaDays = tabArchiveSettings.getArchiveTimeDeltaDays();
+        int autoDeleteTimeDeletaDays = tabArchiveSettings.getAutoDeleteTimeDeltaDays();
         String settingsTitle =
-                mActivity.getString(R.string.archived_tab_iph_card_subtitle_settings_title);
+                context.getString(R.string.archived_tab_iph_card_subtitle_settings_title);
         // The auto-delete section is blank when the feature param is disabled.
         String autoDeleteTitle =
-                mTabArchiveSettings.isAutoDeleteEnabled()
-                        ? mActivity.getString(
+                tabArchiveSettings.isAutoDeleteEnabled()
+                        ? context.getString(
                                 R.string.archived_tab_iph_card_subtitle_autodelete_section,
                                 autoDeleteTimeDeletaDays)
                         : "";
         String description =
-                mActivity.getString(
+                context.getString(
                         R.string.archived_tab_iph_card_subtitle,
                         archiveTimeDeltaDays,
                         autoDeleteTitle,
                         settingsTitle);
+
         SpannableString ss = new SpannableString(description);
         ForegroundColorSpan fcs =
-                new ForegroundColorSpan(SemanticColorUtils.getDefaultTextColorAccent1(mActivity));
+                new ForegroundColorSpan(SemanticColorUtils.getDefaultTextColorAccent1(context));
         ss.setSpan(
                 fcs,
                 description.indexOf(settingsTitle),
                 description.indexOf(settingsTitle) + settingsTitle.length(),
                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        mIphMessagePropertyModel.set(MessageCardViewProperties.DESCRIPTION_TEXT, ss);
+        return ss;
     }
 
     private List<String> getTabGroupSyncIds() {

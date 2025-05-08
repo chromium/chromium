@@ -63,4 +63,9 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
 
         return travelToSync(page, newTabButtonElement.getClickTrigger());
     }
+
+    public ArchiveMessageCardFacility expectArchiveMessageCard() {
+        return enterFacilitySync(
+                new ArchiveMessageCardFacility(/* tabSwitcherStation= */ this), null);
+    }
 }
