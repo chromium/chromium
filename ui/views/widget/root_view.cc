@@ -22,7 +22,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
-#include "ui/base/ui_base_switches_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -251,7 +251,7 @@ class PreEventDispatchHandler : public ui::EventHandler {
 class PostEventDispatchHandler : public ui::EventHandler {
  public:
   PostEventDispatchHandler()
-      : touch_dnd_enabled_(::switches::IsTouchDragDropEnabled()) {}
+      : touch_dnd_enabled_(::features::IsTouchDragAndDropEnabled()) {}
   PostEventDispatchHandler(const PostEventDispatchHandler&) = delete;
   PostEventDispatchHandler& operator=(const PostEventDispatchHandler&) = delete;
   ~PostEventDispatchHandler() override = default;

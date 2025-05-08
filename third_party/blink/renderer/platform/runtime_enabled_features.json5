@@ -4755,6 +4755,14 @@
       base_feature: "none",
       public: true,
     },
+    // This feature enables drag and drop using touch input devices. Replaces
+    // the old "--enable-touch-drag-drop" and "--disable-touch-drag-drop"
+    // switches.
+    {
+      name: "TouchDragAndDrop",
+      base_feature: "none",
+      public: true,
+    },
     // This feature makes touch dragging to occur at the short-press gesture,
     // which occurs right before the long-press gesture.  This feature assumes
     // that TouchDragAndContextMenu is enabled.

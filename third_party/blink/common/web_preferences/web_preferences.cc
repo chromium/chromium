@@ -12,17 +12,6 @@
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 #include "ui/base/ui_base_switches_util.h"
 
-namespace {
-
-bool IsTouchDragDropEnabled() {
-  // Cache the enabled state so it isn't queried on every WebPreferences
-  // creation. Note that this means unit tests can't override the state.
-  static const bool enabled = switches::IsTouchDragDropEnabled();
-  return enabled;
-}
-
-}  // namespace
-
 namespace blink {
 
 namespace web_pref {
@@ -32,8 +21,7 @@ using blink::mojom::EffectiveConnectionType;
 // "Zyyy" is the ISO 15924 script code for undetermined script aka Common.
 const char kCommonScript[] = "Zyyy";
 
-WebPreferences::WebPreferences()
-    : touch_drag_drop_enabled(IsTouchDragDropEnabled()) {
+WebPreferences::WebPreferences() {
   standard_font_family_map[web_pref::kCommonScript] = u"Times New Roman";
 #if BUILDFLAG(IS_MAC)
   fixed_font_family_map[web_pref::kCommonScript] = u"Menlo";

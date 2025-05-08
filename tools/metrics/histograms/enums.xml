@@ -13902,6 +13902,7 @@ from previous Chrome versions.
   <int value="-43650386" label="WindowsFollowCursor:enabled"/>
   <int value="-43566818" label="WebRtcApmDownmixCaptureAudioMethod:disabled"/>
   <int value="-43428597" label="ClickToCallDetectionV2:enabled"/>
+  <int value="-42707046" label="TouchDragAndDrop:enabled"/>
   <int value="-42175674" label="ShareUsageRankingFixedMore:disabled"/>
   <int value="-41548966" label="AutocorrectUseReplaceSurroundingText:disabled"/>
   <int value="-41460305" label="InfobarScrollOptimization:disabled"/>
@@ -19471,6 +19472,7 @@ from previous Chrome versions.
   <int value="2058283872" label="CCTModuleCache:disabled"/>
   <int value="2058425230" label="LauncherNudgeSessionReset:enabled"/>
   <int value="2058439723" label="CalculateNativeWinOcclusion:disabled"/>
+  <int value="2058894797" label="TouchDragAndDrop:disabled"/>
   <int value="2058921256" label="LeftClickOpensTabGroupBubble:enabled"/>
   <int value="2059322877" label="new-avatar-menu"/>
   <int value="2060099975" label="AndroidBottomToolbar:enabled"/>

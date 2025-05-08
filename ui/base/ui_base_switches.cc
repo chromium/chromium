@@ -41,9 +41,6 @@ const char kQtVersionFlag[] = "qt-version";
 const char kDisableGtkIme[] = "disable-gtk-ime";
 #endif
 
-// Disables touch event based drag and drop.
-const char kDisableTouchDragDrop[] = "disable-touch-drag-drop";
-
 // Disable re-use of non-exact resources to fulfill ResourcePool requests.
 // Intended only for use in layout or pixel tests to reduce noise.
 const char kDisallowNonExactResourceReuse[] =
@@ -52,9 +49,6 @@ const char kDisallowNonExactResourceReuse[] =
 // Treats DRM virtual connector as external to enable display mode change in VM.
 const char kDRMVirtualConnectorIsExternal[] =
     "drm-virtual-connector-is-external";
-
-// Enables touch event based drag and drop.
-const char kEnableTouchDragDrop[] = "enable-touch-drag-drop";
 
 // Forces the caption style for WebVTT captions.
 const char kForceCaptionStyle[] = "force-caption-style";

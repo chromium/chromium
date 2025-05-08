@@ -10,7 +10,7 @@
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "ui/android/ui_android_features.h"
 #include "ui/android/window_android.h"
-#include "ui/base/ui_base_switches_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/android/drag_event_android.h"
 #include "ui/events/android/gesture_event_android.h"
 #include "ui/events/android/gesture_event_type.h"
@@ -45,7 +45,7 @@ ScopedJavaLocalRef<jobject> EventForwarder::GetJavaObject() {
     JNIEnv* env = jni_zero::AttachCurrentThread();
     java_obj_.Reset(
         Java_EventForwarder_create(env, reinterpret_cast<intptr_t>(this),
-                                   switches::IsTouchDragDropEnabled()));
+                                   features::IsTouchDragAndDropEnabled()));
   }
   return ScopedJavaLocalRef<jobject>(java_obj_);
 }

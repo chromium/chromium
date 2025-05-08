@@ -68,6 +68,9 @@ BASE_DECLARE_FEATURE(kTouchTextEditingRedesign);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 bool IsTouchTextEditingRedesignEnabled();
 
+COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kTouchDragAndDrop);
+COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsTouchDragAndDropEnabled();
+
 // Used to enable forced colors mode for web content.
 COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kForcedColors);
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsForcedColorsEnabled();

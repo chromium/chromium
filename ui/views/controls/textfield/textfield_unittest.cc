@@ -3763,16 +3763,16 @@ TEST_F(TextfieldTest, SelectionClipboard_Password) {
 
 // Long_Press gesture in Textfield can initiate a drag and drop now.
 TEST_F(TextfieldTest, TestLongPressInitiatesDragDrop) {
+  // Enable touch-drag-drop to make long press effective.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(::features::kTouchDragAndDrop);
+
   InitTextfield();
   textfield_->SetText(u"Hello string world");
 
   // Ensure the textfield will provide selected text for drag data.
   textfield_->SetSelectedRange(gfx::Range(6, 12));
   const gfx::Point kStringPoint(GetCursorPositionX(9), GetCursorYForTesting());
-
-  // Enable touch-drag-drop to make long press effective.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableTouchDragDrop);
 
   // Create a long press event in the selected region should start a drag.
   ui::GestureEvent long_press = CreateTestGestureEvent(

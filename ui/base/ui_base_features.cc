@@ -286,6 +286,22 @@ bool IsTouchTextEditingRedesignEnabled() {
   return base::FeatureList::IsEnabled(kTouchTextEditingRedesign);
 }
 
+// This feature enables drag and drop using touch input devices.
+BASE_FEATURE(kTouchDragAndDrop,
+             "TouchDragAndDrop",
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
+bool IsTouchDragAndDropEnabled() {
+  static const bool touch_drag_and_drop_enabled =
+      base::FeatureList::IsEnabled(kTouchDragAndDrop);
+  return touch_drag_and_drop_enabled;
+}
+
 // Enables forced colors mode for web content.
 BASE_FEATURE(kForcedColors, "ForcedColors", base::FEATURE_ENABLED_BY_DEFAULT);
 

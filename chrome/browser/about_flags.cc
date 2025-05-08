@@ -5254,8 +5254,7 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // USE_AURA
     {"enable-touch-drag-drop", flag_descriptions::kTouchDragDropName,
      flag_descriptions::kTouchDragDropDescription, kOsWin | kOsCrOS,
-     ENABLE_DISABLE_VALUE_TYPE(switches::kEnableTouchDragDrop,
-                               switches::kDisableTouchDragDrop)},
+     FEATURE_VALUE_TYPE(features::kTouchDragAndDrop)},
     {"touch-selection-strategy", flag_descriptions::kTouchSelectionStrategyName,
      flag_descriptions::kTouchSelectionStrategyDescription,
      kOsAndroid,  // TODO(mfomitchev): Add CrOS/Win/Linux support soon.
