@@ -109,6 +109,13 @@ all_chrome_locales =
       "zu",
     ] + pseudolocales
 
+all_chrome_genders = [
+  "OTHER",
+  "MASCULINE",
+  "FEMININE",
+  "NEUTER",
+]
+
 if (is_ios) {
   # Chrome on iOS uses "es-MX" and "pt" for "es-419" and "pt-BR".
   all_chrome_locales -= [

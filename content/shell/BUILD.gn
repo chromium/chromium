@@ -38,6 +38,12 @@ if (is_android) {
   import("//content/shell/app/ios/extensions.gni")
 }
 
+if (translate_genders) {
+  _gender_suffix = "_OTHER"
+} else {
+  _gender_suffix = ""
+}
+
 # TODO(crbug.com/1336055, spang): Investigate using shell_views with cast builds as
 # true.
 shell_use_toolkit_views = toolkit_views && !is_castos
@@ -533,14 +539,14 @@ repack("pak") {
     "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
     "$root_gen_dir/third_party/blink/public/resources/inspector_overlay_resources.pak",
-    "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
+    "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US${_gender_suffix}.pak",
     "$root_gen_dir/third_party/blink/public/strings/permission_element_generated_strings.pak",
-    "$root_gen_dir/third_party/blink/public/strings/permission_element_strings_en-US.pak",
+    "$root_gen_dir/third_party/blink/public/strings/permission_element_strings_en-US${_gender_suffix}.pak",
     "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
-    "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
-    "$root_gen_dir/ui/strings/auto_image_annotation_strings_en-US.pak",
-    "$root_gen_dir/ui/strings/ax_strings_en-US.pak",
-    "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
+    "$root_gen_dir/ui/strings/app_locale_settings_en-US${_gender_suffix}.pak",
+    "$root_gen_dir/ui/strings/auto_image_annotation_strings_en-US${_gender_suffix}.pak",
+    "$root_gen_dir/ui/strings/ax_strings_en-US${_gender_suffix}.pak",
+    "$root_gen_dir/ui/strings/ui_strings_en-US${_gender_suffix}.pak",
     "$root_gen_dir/ui/webui/resources/webui_resources.pak",
   ]
 

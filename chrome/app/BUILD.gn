@@ -82,14 +82,12 @@ if (is_win) {
   }
 }
 
-grit("generated_resources") {
+grit_strings("generated_resources") {
   source = "generated_resources.grd"
   defines = chrome_grit_defines + [ "is_cfm=${is_cfm}" ]
   output_dir = "$root_gen_dir/chrome"
-  outputs =
-      [ "grit/generated_resources.h" ] +
-      process_file_template(all_chrome_locales,
-                            [ "generated_resources_{{source_name_part}}.pak" ])
+  outputs = [ "grit/generated_resources.h" ]
+
   if (is_android) {
     create_android_resources = true
   }
@@ -110,14 +108,11 @@ if (is_android) {
   }
 }
 
-grit("branded_strings") {
+grit_strings("branded_strings") {
   source = "${branding_path_product}_strings.grd"
   defines = chrome_grit_defines
   output_dir = "$root_gen_dir/chrome"
-  outputs =
-      [ "grit/branded_strings.h" ] +
-      process_file_template(all_chrome_locales,
-                            [ "branded_strings_{{source_name_part}}.pak" ])
+  outputs = [ "grit/branded_strings.h" ]
 
   if (is_android) {
     create_android_resources = true

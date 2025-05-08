@@ -11,17 +11,14 @@ import("//tools/grit/grit_rule.gni")
 assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
 assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
-grit("locale_settings") {
+grit_strings("locale_settings") {
   source = "locale_settings.grd"
   defines = chrome_grit_defines
   output_dir = "$root_gen_dir/chrome"
-  outputs =
-      [ "grit/locale_settings.h" ] +
-      process_file_template(all_chrome_locales,
-                            [ "locale_settings_{{source_name_part}}.pak" ])
+  outputs = [ "grit/locale_settings.h" ]
 }
 
-grit("platform_locale_settings") {
+grit_strings("platform_locale_settings") {
   if (is_win) {
     source = "locale_settings_win.grd"
   } else if (is_mac) {
@@ -38,9 +35,7 @@ grit("platform_locale_settings") {
   }
 
   defines = chrome_grit_defines
-  outputs = [ "grit/platform_locale_settings.h" ] +
-            process_file_template(
-                locales_with_pseudolocales,
-                [ "platform_locale_settings_{{source_name_part}}.pak" ])
+  outputs = [ "grit/platform_locale_settings.h" ]
+  locales = locales_with_pseudolocales
   output_dir = "$root_gen_dir/chrome"
 }

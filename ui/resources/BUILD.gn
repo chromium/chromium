@@ -5,6 +5,12 @@
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
 
+if (translate_genders) {
+  _gender_suffix = "_OTHER"
+} else {
+  _gender_suffix = ""
+}
+
 group("resources") {
   public_deps = [
     ":ui_resources_grd",
@@ -88,7 +94,7 @@ if (is_apple) {
 } else {
   copy("ui_test_pak") {
     sources = [ "$root_out_dir/ui_test.pak" ]
-    outputs = [ "$root_out_dir/ui/en-US.pak" ]
+    outputs = [ "$root_out_dir/ui/en-US${_gender_suffix}.pak" ]
     public_deps = [ ":repack_ui_test_pak_100_percent" ]
   }
 }
@@ -114,9 +120,9 @@ repack("repack_ui_test_pak_100_percent") {
   sources = [
     "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
     "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
-    "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
-    "$root_gen_dir/ui/strings/ax_strings_en-US.pak",
-    "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
+    "$root_gen_dir/ui/strings/app_locale_settings_en-US${_gender_suffix}.pak",
+    "$root_gen_dir/ui/strings/ax_strings_en-US${_gender_suffix}.pak",
+    "$root_gen_dir/ui/strings/ui_strings_en-US${_gender_suffix}.pak",
     "$root_gen_dir/ui/webui/resources/webui_resources.pak",
   ]
 
@@ -140,7 +146,7 @@ repack("repack_ui_test_pak_100_percent") {
   if (is_chromeos) {
     sources += [
       "$root_gen_dir/ui/chromeos/resources/ui_chromeos_resources_100_percent.pak",
-      "$root_gen_dir/ui/chromeos/strings/ui_chromeos_strings_en-US.pak",
+      "$root_gen_dir/ui/chromeos/strings/ui_chromeos_strings_en-US${_gender_suffix}.pak",
     ]
     deps += [
       "//ui/chromeos/resources",
@@ -181,9 +187,9 @@ repack("repack_ui_test_mac_locale_pack") {
   visibility = [ ":ui_test_pak" ]
 
   sources = [
-    "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
-    "$root_gen_dir/ui/strings/ax_strings_en-US.pak",
-    "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
+    "$root_gen_dir/ui/strings/app_locale_settings_en-US${_gender_suffix}.pak",
+    "$root_gen_dir/ui/strings/ax_strings_en-US${_gender_suffix}.pak",
+    "$root_gen_dir/ui/strings/ui_strings_en-US${_gender_suffix}.pak",
   ]
 
   output = "$root_out_dir/ui/en.lproj/locale.pak"

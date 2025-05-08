@@ -7,12 +7,10 @@ import("//tools/grit/grit_rule.gni")
 
 assert(is_chromeos)
 
-grit("strings") {
+grit_strings("strings") {
   source = "../ui_chromeos_strings.grd"
-  outputs =
-      [ "grit/ui_chromeos_strings.h" ] +
-      process_file_template(all_chrome_locales,
-                            [ "ui_chromeos_strings_{{source_name_part}}.pak" ])
+  outputs = [ "grit/ui_chromeos_strings.h" ]
+  output_prefix = "ui_chromeos_strings_"
 }
 
 static_library("strings_provider") {

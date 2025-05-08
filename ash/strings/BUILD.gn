@@ -9,12 +9,11 @@ import("//tools/grit/repack.gni")
 
 assert(is_chromeos)
 
-grit("strings") {
+grit_strings("strings") {
   source = "../ash_strings.grd"
   defines = [ "is_chrome_branded=$is_chrome_branded" ]
-  outputs = [ "grit/ash_strings.h" ] +
-            process_file_template(all_chrome_locales,
-                                  [ "ash_strings_{{source_name_part}}.pak" ])
+  outputs = [ "grit/ash_strings.h" ]
+  output_prefix = "ash_strings_"
 }
 
 # Creates locale-specific pak files with strings needed for ash_unittests, etc.

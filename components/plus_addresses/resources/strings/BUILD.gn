@@ -10,20 +10,20 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-grit("strings") {
+grit_strings("strings") {
   if (is_chrome_branded) {
     source = "../internal/strings/plus_addresses_internal_strings.grd"
   } else {
     source = "plus_addresses_strings.grd"
   }
 
-  outputs = [ "../../grit/plus_addresses_strings.h" ] +
-            process_file_template(
-                all_chrome_locales,
-                [ "plus_addresses_strings_{{source_name_part}}.pak" ])
+  outputs = [ "../../grit/plus_addresses_strings.h" ]
+
   if (is_android) {
     create_android_resources = true
   }
+
+  output_prefix = "plus_addresses_strings_"
 }
 
 if (is_android) {

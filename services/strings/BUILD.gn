@@ -7,17 +7,20 @@ import("//services/screen_ai/buildflags/features.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
 
-grit("strings") {
+grit_strings("strings") {
   source = "../services_strings.grd"
   defines = [ "enable_screen_ai_service=$enable_screen_ai_service" ]
-  outputs =
-      [ "grit/services_strings.h" ] +
-      process_file_template(all_chrome_locales,
-                            [ "services_strings_{{source_name_part}}.pak" ])
+  outputs = [ "grit/services_strings.h" ]
+  output_prefix = "services_strings_"
 }
 
 repack("services_test_strings") {
-  sources = [ "$root_gen_dir/services/strings/services_strings_en-US.pak" ]
+  if (translate_genders) {
+    sources =
+        [ "$root_gen_dir/services/strings/services_strings_en-US_OTHER.pak" ]
+  } else {
+    sources = [ "$root_gen_dir/services/strings/services_strings_en-US.pak" ]
+  }
   output = "$root_out_dir/services_test_strings.pak"
   deps = [ ":strings" ]
 }

@@ -13,20 +13,15 @@ group("strings") {
   ]
 }
 
-grit("ios_strings") {
+grit_strings("ios_strings") {
   source = "ios_strings.grd"
   output_dir = "$root_gen_dir/ios/chrome"
   outputs = [ "grit/ios_strings.h" ]
-  foreach(locale, locales_with_pseudolocales) {
-    outputs += [ "ios_strings_$locale.pak" ]
-  }
+  locales = locales_with_pseudolocales
 }
 
-grit("ios_branded_strings") {
+grit_strings("ios_branded_strings") {
   source = "ios_${branding_path_product}_strings.grd"
   output_dir = "$root_gen_dir/ios/chrome"
   outputs = [ "grit/ios_branded_strings.h" ]
-  foreach(locale, all_chrome_locales) {
-    outputs += [ "ios_branded_strings_$locale.pak" ]
-  }
 }

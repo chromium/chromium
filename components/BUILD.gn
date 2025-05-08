@@ -34,6 +34,12 @@ if (is_ios) {
   import("//ios/build/config.gni")
 }
 
+if (translate_genders) {
+  _gender_suffix = "_OTHER"
+} else {
+  _gender_suffix = ""
+}
+
 if (is_ios) {
   bundle_data("components_tests_pak_bundle_data") {
     testonly = true
@@ -916,11 +922,11 @@ repack("components_tests_pak") {
     "$root_gen_dir/components/autofill/core/browser/geo/autofill_address_rewriter_resources.pak",
     "$root_gen_dir/components/components_resources.pak",
     "$root_gen_dir/components/metrics/metrics_server_urls.pak",
-    "$root_gen_dir/components/omnibox/resources/omnibox_pedal_synonyms_en-US.pak",
-    "$root_gen_dir/components/plus_addresses/resources/strings/plus_addresses_strings_en-US.pak",
-    "$root_gen_dir/components/strings/components_branded_strings_en-US.pak",
-    "$root_gen_dir/components/strings/components_locale_settings_en-US.pak",
-    "$root_gen_dir/components/strings/components_strings_en-US.pak",
+    "$root_gen_dir/components/omnibox/resources/omnibox_pedal_synonyms_en-US${_gender_suffix}.pak",
+    "$root_gen_dir/components/plus_addresses/resources/strings/plus_addresses_strings_en-US${_gender_suffix}.pak",
+    "$root_gen_dir/components/strings/components_branded_strings_en-US${_gender_suffix}.pak",
+    "$root_gen_dir/components/strings/components_locale_settings_en-US${_gender_suffix}.pak",
+    "$root_gen_dir/components/strings/components_strings_en-US${_gender_suffix}.pak",
   ]
 
   output = "$root_out_dir/components_tests_resources.pak"
