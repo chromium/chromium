@@ -193,10 +193,6 @@ class HttpStreamPool::Group {
 
   void CleanupTimedoutIdleStreamSocketsForTesting();
 
-  AttemptManager* GetAttemptManagerForTesting() const {
-    return attempt_manager_.get();
-  }
-
   void SetOnAttemptManagerCompleteCallbackForTesting(
       base::OnceClosure callback);
 
