@@ -176,8 +176,7 @@ HTMLOptionElement* OptionList::FirstKeyboardFocusableOption() {
     return nullptr;
   }
   for (OptionListIterator it = begin(); it; ++it) {
-    if (it->IsKeyboardFocusableSlow(
-            Element::UpdateBehavior::kAssertNoLayoutUpdates)) {
+    if (it->IsKeyboardFocusableSlow(Element::UpdateBehavior::kStyleAndLayout)) {
       return &*it;
     }
   }

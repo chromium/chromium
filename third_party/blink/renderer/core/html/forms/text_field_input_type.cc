@@ -219,7 +219,8 @@ void TextFieldInputType::HandleKeydownEvent(KeyboardEvent& event) {
   if (!GetElement().IsFocused())
     return;
 
-  if (RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled()) {
+  if (RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled() ||
+      RuntimeEnabledFeatures::SelectAccessibilityNestedInputEnabled()) {
     if (auto* select = GetElement().FirstAncestorSelectElement()) {
       if (AtomicString(event.key()) == keywords::kArrowDown) {
         if (auto* option =
