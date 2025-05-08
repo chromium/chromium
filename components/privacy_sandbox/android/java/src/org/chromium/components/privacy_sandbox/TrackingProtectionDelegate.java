@@ -43,6 +43,11 @@ public interface TrackingProtectionDelegate {
     void setIpProtection(boolean enabled);
 
     /**
+     * @return whether IP protection is disabled for users on enterprise devices.
+     */
+    boolean isIpProtectionDisabledForEnterprise();
+
+    /**
      * @return whether the fingerprinting protection UX is enabled.
      */
     boolean isFingerprintingProtectionUxEnabled();

@@ -7,6 +7,7 @@ package org.chromium.components.privacy_sandbox;
 import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.preference.Preference;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -16,6 +17,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.site_settings.ForwardingManagedPreferenceDelegate;
 
 /** Fragment to manage settings for ip protection. */
 @NullMarked
@@ -38,7 +40,22 @@ public class IpProtectionSettingsFragment extends PrivacySandboxBaseFragment {
                 getString(R.string.incognito_tracking_protections_ip_protection_toggle_label));
 
         ChromeSwitchPreference ipProtectionSwitch = findPreference(PREF_IP_PROTECTION_SWITCH);
-        ipProtectionSwitch.setChecked(mDelegate.isIpProtectionEnabled());
+        if (mDelegate.isIpProtectionDisabledForEnterprise()) {
+            ipProtectionSwitch.setEnabled(false);
+            ipProtectionSwitch.setChecked(false);
+            ipProtectionSwitch.setManagedPreferenceDelegate(
+                    new ForwardingManagedPreferenceDelegate(
+                            mDelegate
+                                    .getSiteSettingsDelegate(getContext())
+                                    .getManagedPreferenceDelegate()) {
+                        @Override
+                        public boolean isPreferenceControlledByPolicy(Preference preference) {
+                            return true;
+                        }
+                    });
+        } else {
+            ipProtectionSwitch.setChecked(mDelegate.isIpProtectionEnabled());
+        }
         ipProtectionSwitch.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
                     mDelegate.setIpProtection((boolean) newValue);

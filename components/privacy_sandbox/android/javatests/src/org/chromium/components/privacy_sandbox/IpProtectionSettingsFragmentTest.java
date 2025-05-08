@@ -11,9 +11,12 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.allOf;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -35,6 +38,8 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
+import org.chromium.components.browser_ui.settings.ManagedPreferenceTestDelegates;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
 
 /** Tests for {@link IpProtectionSettingsFragment}. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -145,5 +150,28 @@ public class IpProtectionSettingsFragmentTest {
                 .perform(click());
         verify(mDelegate).setIpProtection(false);
         ipProtectionHistogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void ipProtectionToggleIsManagedWhenIpProtectionIsDisabledForEnterprise() {
+        when(mDelegate.isIpProtectionEnabled()).thenReturn(true);
+        when(mDelegate.isIpProtectionDisabledForEnterprise()).thenReturn(true);
+        SiteSettingsDelegate mockDelegate = mock(SiteSettingsDelegate.class);
+        when(mDelegate.getSiteSettingsDelegate(any())).thenReturn(mockDelegate);
+        when(mockDelegate.getManagedPreferenceDelegate())
+                .thenReturn(ManagedPreferenceTestDelegates.UNMANAGED_DELEGATE);
+
+        launchTrackingProtectionSettings();
+
+        String ippSublabel = mFragment.getContext().getString(PREF_TOGGLE_SUBLABEL);
+        String enterpriseSublabel =
+                mFragment.getContext().getString(R.string.managed_by_your_organization);
+        onView(
+                allOf(
+                        withText(PREF_TOGGLE_LABEL),
+                        hasSibling(withText(containsString(ippSublabel))),
+                        isDisplayed()));
+        onView(withText(containsString(enterpriseSublabel))).check(matches(isDisplayed()));
     }
 }

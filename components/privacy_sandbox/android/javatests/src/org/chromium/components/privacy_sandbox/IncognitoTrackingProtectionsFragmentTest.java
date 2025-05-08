@@ -169,4 +169,20 @@ public class IncognitoTrackingProtectionsFragmentTest {
                                 hasSibling(withText(IP_PROTECTION_TOGGLE_SUBLABEL_ON))))
                 .check(matches(isDisplayed()));
     }
+
+    @Test
+    @SmallTest
+    public void showIpProtectionOffSublabelWhenIpProtectionDisabledForEnterprise() {
+        when(mDelegate.isIpProtectionUxEnabled()).thenReturn(true);
+        when(mDelegate.isIpProtectionDisabledForEnterprise()).thenReturn(true);
+
+        launchIncognitoTrackingProtectionsSettings();
+
+        checkTitleDescriptionAndBlock3pcsToggleAreShown();
+        onView(
+                        allOf(
+                                withText(IP_PROTECTION_TOGGLE_LABEL),
+                                hasSibling(withText(IP_PROTECTION_TOGGLE_SUBLABEL_OFF))))
+                .check(matches(isDisplayed()));
+    }
 }

@@ -88,7 +88,10 @@ public class IncognitoTrackingProtectionsFragment extends PrivacySandboxBaseFrag
         Preference ipProtectionPref = findPreference(PREF_IP_PROTECTION);
         if (ipProtectionPref != null) {
             ipProtectionPref.setSummary(
-                    mDelegate.isIpProtectionEnabled() ? IPP_ON_SUBLABEL : IPP_OFF_SUBLABEL);
+                    mDelegate.isIpProtectionEnabled()
+                                    && !mDelegate.isIpProtectionDisabledForEnterprise()
+                            ? IPP_ON_SUBLABEL
+                            : IPP_OFF_SUBLABEL);
         }
 
         Preference fpProtectionPref = findPreference(PREF_FP_PROTECTION);
