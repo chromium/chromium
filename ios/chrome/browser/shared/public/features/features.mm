@@ -1269,3 +1269,11 @@ bool IsBestOfAppGuidedTourEnabled() {
   return base::GetFieldTrialParamValueByFeature(kBestOfAppFRE, "variant") ==
          "4";
 }
+
+BASE_FEATURE(kFeedbackIncludeGWSVariations,
+             "FeedbackIncludeGWSVariations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsFeedbackIncludeGWSVariationsEnabled() {
+  return base::FeatureList::IsEnabled(kFeedbackIncludeGWSVariations);
+}

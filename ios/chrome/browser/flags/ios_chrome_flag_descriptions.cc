@@ -511,6 +511,11 @@ const char kAnimatedDefaultBrowserPromoInFREName[] =
 const char kAnimatedDefaultBrowserPromoInFREDescription[] =
     "When enabled, the Default Browser Promo in the FRE will be animated.";
 
+const char kFeedbackIncludeGWSVariationsName[] =
+    "Include GWS variations in feedback";
+const char kFeedbackIncludeGWSVariationsDescription[] =
+    "Includes GWS variations in Chrome feedback reports.";
+
 const char kFullscreenImprovementName[] = "Improve fullscreen";
 const char kFullscreenImprovementDescription[] =
     "When enabled, fullscreen should have a better stability.";

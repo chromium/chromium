@@ -294,6 +294,9 @@ extern const char kForceStartupSigninPromoDescription[];
 extern const char kAnimatedDefaultBrowserPromoInFREName[];
 extern const char kAnimatedDefaultBrowserPromoInFREDescription[];
 
+extern const char kFeedbackIncludeGWSVariationsName[];
+extern const char kFeedbackIncludeGWSVariationsDescription[];
+
 extern const char kFullscreenImprovementName[];
 extern const char kFullscreenImprovementDescription[];
 

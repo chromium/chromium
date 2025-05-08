@@ -1058,4 +1058,10 @@ bool IsBestOfAppFREEnabled();
 // Whether the Guided Tour variant of `kBestOfAppFRE` is enabled.
 bool IsBestOfAppGuidedTourEnabled();
 
+// Feature flag to include GWS variations in feedback.
+BASE_DECLARE_FEATURE(kFeedbackIncludeGWSVariations);
+
+// Whether the feature to include GWS variations in feedback is enabled.
+bool IsFeedbackIncludeGWSVariationsEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_
