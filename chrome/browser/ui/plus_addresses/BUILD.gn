@@ -9,11 +9,10 @@ assert(toolkit_views || is_android)
 # TODO(crbug.com/413572035): Pull in android and views impl and test code.
 
 source_set("plus_addresses") {
-  sources = [
+  public = [
     "plus_address_creation_controller.h",
     "plus_address_creation_view.h",
   ]
-
   public_deps = [
     "//components/plus_addresses:types",
     "//content/public/browser",
@@ -22,12 +21,11 @@ source_set("plus_addresses") {
   ]
 
   if (toolkit_views) {
-    sources += [
+    public += [
       "plus_address_creation_controller_desktop.h",
       "plus_address_error_dialog.h",
       "plus_address_menu_model.h",
     ]
-
     public_deps += [
       "//base",
       "//components/autofill/core/browser",
@@ -37,44 +35,13 @@ source_set("plus_addresses") {
       "//ui/menus",
     ]
 
-    deps = [
-      "//components/constrained_window",
-      "//components/plus_addresses/resources/strings",
-      "//components/plus_addresses/resources/strings:strings_grit",
-    ]
-  }
-}
-
-source_set("impl") {
-  sources = []
-  public_deps = [
-    "//chrome/browser:browser_public_dependencies",
-    "//components/plus_addresses:types",
-    "//content/public/browser",
-    "//ui/base",
-    "//url",
-  ]
-
-  if (toolkit_views) {
-    sources += [
+    sources = [
       "plus_address_error_dialog.cc",
       "plus_address_menu_model.cc",
     ]
-
-    public_deps += [
-      "//base",
-      "//components/autofill/core/browser",
-      "//components/autofill/core/common",
-      "//components/plus_addresses/metrics",
-      "//components/plus_addresses/settings",
-      "//ui/menus",
-    ]
-
     deps = [
-      ":plus_addresses",
       "//components/constrained_window",
       "//components/plus_addresses/resources/strings",
-      "//components/plus_addresses/resources/strings:strings_grit",
     ]
   }
 }
@@ -91,7 +58,6 @@ source_set("interactive_ui_tests") {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     deps = [
       ":plus_addresses",
-      "//base",
       "//base/test:test_support",
       "//chrome/browser/plus_addresses",
       "//chrome/test:test_support",
@@ -129,12 +95,9 @@ source_set("unit_tests") {
       "//components/plus_addresses:features",
       "//components/plus_addresses:prefs",
       "//components/plus_addresses:test_support",
-      "//components/plus_addresses:types",
-      "//components/plus_addresses/metrics",
       "//components/plus_addresses/settings:test_support",
       "//components/signin/public/identity_manager:test_support",
       "//components/sync_preferences:test_support",
-      "//content/public/browser",
       "//content/test:test_support",
       "//testing/gmock",
       "//testing/gtest",

@@ -420,7 +420,6 @@ static_library("ui") {
     "//chrome/browser/ui/page_info",
     "//chrome/browser/ui/page_info:impl",
     "//chrome/browser/ui/plus_addresses",
-    "//chrome/browser/ui/plus_addresses:impl",
     "//chrome/browser/ui/prefs",
     "//chrome/browser/ui/prefs:impl",
     "//chrome/browser/ui/safety_hub",
