@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.hub;
 
-import static org.junit.Assert.assertEquals;
-
 import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestination;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.START_SURFACE_RETURN_TIME;
 
@@ -82,23 +80,21 @@ public class HubLayoutPublicTransitTest {
     @Test
     @LargeTest
     public void testChangeTabSwitcherPanes() {
-        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
-        IncognitoNewTabPageStation incognitoNewTabPage = firstPage.openNewIncognitoTabFast();
-
         IncognitoTabSwitcherStation incognitoTabSwitcher =
-                incognitoNewTabPage.openIncognitoTabSwitcher();
-        assertEquals(
-                incognitoTabSwitcher,
-                incognitoTabSwitcher.selectPane(
-                        PaneId.INCOGNITO_TAB_SWITCHER, IncognitoTabSwitcherStation.class));
+                mCtaTestRule
+                        .startOnBlankPage()
+                        .openNewIncognitoTabFast()
+                        .openIncognitoTabSwitcher();
 
-        RegularTabSwitcherStation tabSwitcher =
+        RegularTabSwitcherStation regularTabSwitcher =
                 incognitoTabSwitcher.selectPane(
                         PaneId.TAB_SWITCHER, RegularTabSwitcherStation.class);
+        incognitoTabSwitcher =
+                regularTabSwitcher.selectPane(
+                        PaneId.INCOGNITO_TAB_SWITCHER, IncognitoTabSwitcherStation.class);
 
         // Go back to a PageStation for BlankCTATabInitialStateRule to reset state.
-        WebPageStation blankTab = tabSwitcher.selectTabAtIndex(0, WebPageStation.newBuilder());
-        assertFinalDestination(blankTab);
+        incognitoTabSwitcher.selectTabAtIndex(0, IncognitoNewTabPageStation.newBuilder());
     }
 
     @Test

@@ -19,7 +19,6 @@ import static org.hamcrest.CoreMatchers.containsString;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
-import static org.chromium.chrome.test.transit.hub.HubBaseStation.HUB_PANE_SWITCHER;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import androidx.test.filters.MediumTest;
@@ -150,7 +149,7 @@ public class BookmarkPaneTest {
     private void enterBookmarkPane() {
         onView(
                         allOf(
-                                isDescendantOfA(HUB_PANE_SWITCHER.getViewMatcher()),
+                                isDescendantOfA(withId(R.id.pane_switcher)),
                                 withContentDescription(containsString("Bookmarks"))))
                 .perform(click());
     }

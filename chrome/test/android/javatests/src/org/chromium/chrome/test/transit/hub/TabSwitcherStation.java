@@ -12,6 +12,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -43,8 +44,6 @@ import java.util.List;
 
 /** The base station for Hub tab switcher stations. */
 public abstract class TabSwitcherStation extends HubBaseStation {
-    public static final ViewSpec<RecyclerView> TAB_LIST_RECYCLER_VIEW =
-            HUB_PANE_HOST.descendant(RecyclerView.class, withId(R.id.tab_list_recycler_view));
     public static final ViewSpec<View> TAB_GROUP_COLOR_ICON_VIEW =
             viewSpec(
                     allOf(
@@ -96,7 +95,10 @@ public abstract class TabSwitcherStation extends HubBaseStation {
                         }
                     });
         }
-        recyclerViewElement = declareView(TAB_LIST_RECYCLER_VIEW);
+        recyclerViewElement =
+                declareView(
+                        paneHostElement.descendant(
+                                RecyclerView.class, withId(R.id.tab_list_recycler_view)));
     }
 
     public boolean isIncognito() {
@@ -135,7 +137,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
                 destination,
                 () -> {
                     ViewActionOnDescendant.performOnRecyclerViewNthItemDescendant(
-                            TAB_LIST_RECYCLER_VIEW.getViewMatcher(), index, TAB_THUMBNAIL, click());
+                            is(recyclerViewElement.get()), index, TAB_THUMBNAIL, click());
                 });
     }
 
@@ -182,10 +184,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
                 Transition.conditionOption(tabCountDecremented),
                 () -> {
                     ViewActionOnDescendant.performOnRecyclerViewNthItemDescendant(
-                            TAB_LIST_RECYCLER_VIEW.getViewMatcher(),
-                            index,
-                            TAB_CLOSE_BUTTON,
-                            click());
+                            is(recyclerViewElement.get()), index, TAB_CLOSE_BUTTON, click());
                 });
     }
 

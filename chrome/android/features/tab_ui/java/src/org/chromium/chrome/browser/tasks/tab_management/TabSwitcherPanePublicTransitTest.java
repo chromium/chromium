@@ -9,13 +9,10 @@ import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 
-import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Rule;
@@ -33,7 +30,6 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
-import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
@@ -70,15 +66,10 @@ public class TabSwitcherPanePublicTransitTest {
         RegularTabSwitcherStation regularTabSwitcher =
                 incognitoTabSwitcher.closeTabAtIndex(0, RegularTabSwitcherStation.class);
 
-        onView(TabSwitcherStation.TAB_LIST_RECYCLER_VIEW.getViewMatcher())
-                .check(
-                        (v, noMatchException) -> {
-                            if (noMatchException != null) throw noMatchException;
-                            assertThat(v, instanceOf(RecyclerView.class));
-                            LinearLayoutManager layoutManager =
-                                    (LinearLayoutManager) ((RecyclerView) v).getLayoutManager();
-                            assertEquals(9, layoutManager.findLastVisibleItemPosition());
-                        });
+        LinearLayoutManager layoutManager =
+                (LinearLayoutManager)
+                        regularTabSwitcher.recyclerViewElement.get().getLayoutManager();
+        assertEquals(9, layoutManager.findLastVisibleItemPosition());
 
         // Go back to a tab to cleanup tab state
         regularTabSwitcher.selectTabAtIndex(0, WebPageStation.newBuilder());

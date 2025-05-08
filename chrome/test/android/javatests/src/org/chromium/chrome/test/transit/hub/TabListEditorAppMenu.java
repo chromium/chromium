@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.test.transit.hub;
 
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
 import android.util.Pair;
 
 import org.chromium.base.test.transit.Condition;
@@ -45,30 +47,30 @@ public class TabListEditorAppMenu extends CtaAppMenuFacility<TabSwitcherStation>
 
         mCloseMenuItem =
                 items.declareItem(
-                        itemViewMatcher("Close " + tabOrTabs),
+                        itemViewSpec(withText("Close " + tabOrTabs)),
                         itemDataMatcher(R.id.tab_list_editor_close_menu_item),
                         this::doCloseTabs);
 
         if (mListEditor.isAnyGroupSelected()) {
             mGroupWithoutDialogMenuItem =
                     items.declareItem(
-                            itemViewMatcher("Group " + tabOrTabs),
+                            itemViewSpec(withText("Group " + tabOrTabs)),
                             itemDataMatcher(R.id.tab_list_editor_group_menu_item),
                             this::doGroupTabsWithoutDialog);
         } else {
             mGroupWithDialogMenuItem =
                     items.declareItem(
-                            itemViewMatcher("Group " + tabOrTabs),
+                            itemViewSpec(withText("Group " + tabOrTabs)),
                             itemDataMatcher(R.id.tab_list_editor_group_menu_item),
                             this::doGroupTabs);
         }
 
         items.declareStubItem(
-                itemViewMatcher("Bookmark " + tabOrTabs),
+                itemViewSpec(withText("Bookmark " + tabOrTabs)),
                 itemDataMatcher(R.id.tab_list_editor_bookmark_menu_item));
 
         items.declareStubItem(
-                itemViewMatcher("Share " + tabOrTabs),
+                itemViewSpec(withText("Share " + tabOrTabs)),
                 itemDataMatcher(R.id.tab_list_editor_share_menu_item));
     }
 

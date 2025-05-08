@@ -4,12 +4,8 @@
 
 package org.chromium.chrome.test.transit;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.CoreMatchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -18,7 +14,6 @@ import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 import android.view.View;
 import android.widget.ListView;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
 import androidx.test.espresso.action.GeneralClickAction;
 import androidx.test.espresso.action.Press;
@@ -28,12 +23,12 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.ViewElement;
+import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
@@ -60,9 +55,13 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
 
     public ViewElement<ListView> menuListElement;
 
+    public AppMenuFacility() {
+        menuListElement = declareView(viewSpec(ListView.class, withId(R.id.app_menu_list)));
+    }
+
     /** Create a new app menu item stub which throws UnsupportedOperationException if selected. */
     protected Item<Void> declareStubMenuItem(ItemsBuilder items, @IdRes int id) {
-        return items.declareStubItem(itemViewMatcher(id), itemDataMatcher(id));
+        return items.declareStubItem(itemViewSpec(withId(id)), itemDataMatcher(id));
     }
 
     /** Create a new app menu item which runs |selectHandler| when selected. */
@@ -70,7 +69,7 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
             ItemsBuilder items,
             @IdRes int id,
             Function<ItemOnScreenFacility<SelectReturnT>, SelectReturnT> selectHandler) {
-        return items.declareItem(itemViewMatcher(id), itemDataMatcher(id), selectHandler);
+        return items.declareItem(itemViewSpec(withId(id)), itemDataMatcher(id), selectHandler);
     }
 
     /** Create a new app menu item which transitions to a |DestinationStationT| when selected. */
@@ -80,7 +79,7 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
                     @IdRes int id,
                     Callable<DestinationStationT> destinationStationFactory) {
         return items.declareItemToStation(
-                itemViewMatcher(id), itemDataMatcher(id), destinationStationFactory);
+                itemViewSpec(withId(id)), itemDataMatcher(id), destinationStationFactory);
     }
 
     /** Create a new app menu item which enters a |EnteredFacilityT| when selected. */
@@ -89,17 +88,17 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
             @IdRes int id,
             Callable<EnteredFacilityT> destinationFacilityFactory) {
         return items.declareItemToFacility(
-                itemViewMatcher(id), itemDataMatcher(id), destinationFacilityFactory);
+                itemViewSpec(withId(id)), itemDataMatcher(id), destinationFacilityFactory);
     }
 
     /** Create a new disabled app menu item. */
     protected Item<Void> declareDisabledMenuItem(ItemsBuilder items, @IdRes int id) {
-        return items.declareDisabledItem(itemViewMatcher(id), itemDataMatcher(id));
+        return items.declareDisabledItem(itemViewSpec(withId(id)), itemDataMatcher(id));
     }
 
     /** Create a new app menu item expected to be absent. */
     protected Item<Void> declareAbsentMenuItem(ItemsBuilder items, @IdRes int id) {
-        return items.declareAbsentItem(itemViewMatcher(id), itemDataMatcher(id));
+        return items.declareAbsentItem(itemViewSpec(withId(id)), itemDataMatcher(id));
     }
 
     /**
@@ -120,10 +119,9 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
             ItemsBuilder items,
             @IdRes int id,
             Function<ItemOnScreenFacility<SelectReturnT>, SelectReturnT> selectHandler) {
-        return items.declarePossibleItem(itemViewMatcher(id), itemDataMatcher(id), selectHandler);
+        return items.declarePossibleItem(
+                itemViewSpec(withId(id)), itemDataMatcher(id), selectHandler);
     }
-
-    public static final Matcher<View> MENU_LIST_MATCHER = withId(R.id.app_menu_list);
 
     public static final @IdRes int NEW_TAB_ID = R.id.new_tab_menu_id;
     public static final @IdRes int NEW_INCOGNITO_TAB_ID = R.id.new_incognito_tab_menu_id;
@@ -141,21 +139,6 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
     public static final @IdRes int DESKTOP_SITE_ID = R.id.request_desktop_site_id;
     public static final @IdRes int SETTINGS_ID = R.id.preferences_id;
     public static final @IdRes int HELP_AND_FEEDBACK_ID = R.id.help_id;
-
-    @CallSuper
-    @Override
-    public void declareElements(Elements.Builder elements) {
-        menuListElement = elements.declareView(viewSpec(ListView.class, MENU_LIST_MATCHER));
-
-        super.declareElements(elements);
-    }
-
-    @Override
-    public int getMinimumOnScreenItemCount() {
-        // Expect at least the first two menu items, it's enough to establish the transition is
-        // done.
-        return 2;
-    }
 
     /** Default behavior for "Open new tab". */
     protected RegularNewTabPageStation createNewTabPageStation() {
@@ -188,12 +171,8 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
         return new SettingsStation<>(MainSettings.class);
     }
 
-    protected static Matcher<View> itemViewMatcher(@IdRes int id) {
-        return allOf(withId(id), isDescendantOfA(MENU_LIST_MATCHER));
-    }
-
-    protected static Matcher<View> itemViewMatcher(String text) {
-        return allOf(withText(text), isDescendantOfA(MENU_LIST_MATCHER));
+    protected ViewSpec<View> itemViewSpec(Matcher<View> matcher) {
+        return menuListElement.descendant(matcher);
     }
 
     protected static Matcher<ListItem> itemDataMatcher(@IdRes int id) {
@@ -230,7 +209,7 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
                         },
                         Press.FINGER);
         mHostStation.exitFacilitySync(
-                this, () -> onView(MENU_LIST_MATCHER).perform(clickBetweenViewAndLeftEdge));
+                this, menuListElement.getPerformTrigger(clickBetweenViewAndLeftEdge));
     }
 
     /** Close the menu programmatically. */

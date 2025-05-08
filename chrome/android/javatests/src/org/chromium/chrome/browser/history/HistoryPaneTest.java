@@ -8,7 +8,6 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -18,7 +17,6 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
-import static org.chromium.chrome.test.transit.hub.HubBaseStation.HUB_PANE_SWITCHER;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import androidx.test.filters.MediumTest;
@@ -43,6 +41,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
+import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 
 /** Public transit tests for the Hub's history pane. */
@@ -68,8 +68,8 @@ public class HistoryPaneTest {
     @Test
     @MediumTest
     public void testEmptyView() {
-        mStartingPage.openRegularTabSwitcher();
-        enterHistoryPane();
+        RegularTabSwitcherStation tabSwitcher = mStartingPage.openRegularTabSwitcher();
+        enterHistoryPane(tabSwitcher);
 
         onViewWaiting(withText("You’ll find your history here")).check(matches(isDisplayed()));
         onViewWaiting(
@@ -86,11 +86,12 @@ public class HistoryPaneTest {
                 mCtaTestRule.getTestServer().getURL("/chrome/test/data/android/navigate/one.html");
         String urlTwo =
                 mCtaTestRule.getTestServer().getURL("/chrome/test/data/android/navigate/two.html");
-        mStartingPage
-                .loadWebPageProgrammatically(urlOne)
-                .loadWebPageProgrammatically(urlTwo)
-                .openRegularTabSwitcher();
-        enterHistoryPane();
+        RegularTabSwitcherStation tabSwitcher =
+                mStartingPage
+                        .loadWebPageProgrammatically(urlOne)
+                        .loadWebPageProgrammatically(urlTwo)
+                        .openRegularTabSwitcher();
+        enterHistoryPane(tabSwitcher);
 
         onViewWaiting(withText("One")).check(matches(isDisplayed()));
         onViewWaiting(withText("Two")).check(matches(isDisplayed()));
@@ -103,11 +104,12 @@ public class HistoryPaneTest {
                 mCtaTestRule.getTestServer().getURL("/chrome/test/data/android/navigate/one.html");
         String urlTwo =
                 mCtaTestRule.getTestServer().getURL("/chrome/test/data/android/navigate/two.html");
-        mStartingPage
-                .loadWebPageProgrammatically(urlOne)
-                .loadWebPageProgrammatically(urlTwo)
-                .openRegularTabSwitcher();
-        enterHistoryPane();
+        RegularTabSwitcherStation tabSwitcher =
+                mStartingPage
+                        .loadWebPageProgrammatically(urlOne)
+                        .loadWebPageProgrammatically(urlTwo)
+                        .openRegularTabSwitcher();
+        enterHistoryPane(tabSwitcher);
 
         onViewWaiting(withText("One")).check(matches(isDisplayed()));
         onViewWaiting(withText("Two")).check(matches(isDisplayed()));
@@ -127,11 +129,12 @@ public class HistoryPaneTest {
                 mCtaTestRule.getTestServer().getURL("/chrome/test/data/android/navigate/one.html");
         String urlTwo =
                 mCtaTestRule.getTestServer().getURL("/chrome/test/data/android/navigate/two.html");
-        mStartingPage
-                .loadWebPageProgrammatically(urlOne)
-                .loadWebPageProgrammatically(urlTwo)
-                .openRegularTabSwitcher();
-        enterHistoryPane();
+        RegularTabSwitcherStation tabSwitcher =
+                mStartingPage
+                        .loadWebPageProgrammatically(urlOne)
+                        .loadWebPageProgrammatically(urlTwo)
+                        .openRegularTabSwitcher();
+        enterHistoryPane(tabSwitcher);
 
         onViewWaiting(withText("One")).perform(click());
         // When the history view is clicked, it should replace the current tab's URL.
@@ -146,11 +149,12 @@ public class HistoryPaneTest {
                                         .getSpec()));
     }
 
-    private void enterHistoryPane() {
+    private void enterHistoryPane(TabSwitcherStation tabSwitcher) {
         onView(
-                        allOf(
-                                isDescendantOfA(HUB_PANE_SWITCHER.getViewMatcher()),
-                                withContentDescription(containsString("History"))))
+                        tabSwitcher
+                                .paneSwitcherElement
+                                .descendant(withContentDescription(containsString("History")))
+                                .getViewMatcher())
                 .perform(click());
     }
 

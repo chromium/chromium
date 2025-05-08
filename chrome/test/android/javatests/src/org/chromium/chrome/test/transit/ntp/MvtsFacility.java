@@ -7,19 +7,17 @@ package org.chromium.chrome.test.transit.ntp;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParentIndex;
 
-import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.instanceOf;
 
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.view.View;
 
-import org.hamcrest.Matcher;
-
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.MoreViewConditions.ViewHasChildrenCountCondition;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.ViewElement;
+import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.SuggestionsTileView;
@@ -72,12 +70,12 @@ public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
             while (mNonTileIndices.contains(parentIndex)) {
                 ++parentIndex;
             }
-            Matcher<View> tileMatcher =
-                    allOf(instanceOf(SuggestionsTileView.class), withParentIndex(parentIndex));
+            ViewSpec<View> tileSpec =
+                    viewSpec(instanceOf(SuggestionsTileView.class), withParentIndex(parentIndex));
             SiteSuggestion siteSuggestion = mSiteSuggestions.get(i);
             Item<WebPageStation> item =
                     items.declareItemToStation(
-                            tileMatcher,
+                            tileSpec,
                             /* offScreenDataMatcher= */ null,
                             () ->
                                     WebPageStation.newBuilder()
