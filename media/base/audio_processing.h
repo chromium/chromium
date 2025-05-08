@@ -46,13 +46,6 @@ struct MEDIA_EXPORT AudioProcessingSettings {
 
   bool NeedAudioModification() const { return NeedWebrtcAudioProcessing(); }
 
-  // Deprecated.
-  // TODO(crbug.com/40889535): Use `AudioProcessor::NeedsPlayoutReference()`
-  // instead.
-  bool NeedPlayoutReference() const {
-    return echo_cancellation || automatic_gain_control;
-  }
-
   // Stringifies the settings for human-readable logging.
   std::string ToString() const;
 };

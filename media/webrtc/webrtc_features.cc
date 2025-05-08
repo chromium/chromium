@@ -59,13 +59,6 @@ BASE_FEATURE(kWebRtcApmDownmixCaptureAudioMethod,
              "WebRtcApmDownmixCaptureAudioMethod",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, the Audio Processing Module is used to determine whether the
-// playout reference is needed. Otherwise the decision is based on
-// `media::AudioProcessingSettings`.
-BASE_FEATURE(kWebRtcApmTellsIfPlayoutReferenceIsNeeded,
-             "WebRtcApmTellsIfPlayoutReferenceIsNeeded",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, allow H.265 codec to be used for sending WebRTC streams.
 // Platform hardware H.265 encoder needs to be supported and enabled in order to
 // negotiate usage of H.265 in SDP in the direction of sending.

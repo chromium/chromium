@@ -736,27 +736,9 @@ TEST(AudioProcessorCallbackTest,
                                         1.0);
 }
 
-class ApmTellsIfPlayoutReferenceIsNeededParametrizedTest
-    : public ::testing::TestWithParam<bool> {
- public:
-  ApmTellsIfPlayoutReferenceIsNeededParametrizedTest() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          features::kWebRtcApmTellsIfPlayoutReferenceIsNeeded);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          features::kWebRtcApmTellsIfPlayoutReferenceIsNeeded);
-    }
-  }
-
- private:
-  ::base::test::ScopedFeatureList feature_list_;
-};
-
 // Checks that, when all the audio processing settings are disabled, APM does
 // not need the playout reference.
-TEST_P(ApmTellsIfPlayoutReferenceIsNeededParametrizedTest,
-       DoesNotNeedPlayoutReference) {
+TEST(ApmTellsIfPlayoutReferenceIsNeededTest, DoesNotNeedPlayoutReference) {
   AudioProcessingSettings settings;
   DisableDefaultSettings(settings);
 
@@ -778,8 +760,7 @@ TEST_P(ApmTellsIfPlayoutReferenceIsNeededParametrizedTest,
 #endif
 // TODO: This test is disabled for ios-blink platform as per the discussion on
 // bug https://crbug.com/1417474
-TEST_P(ApmTellsIfPlayoutReferenceIsNeededParametrizedTest,
-       MAYBE_NeedsPlayoutReference) {
+TEST(ApmTellsIfPlayoutReferenceIsNeededTest, MAYBE_NeedsPlayoutReference) {
   AudioProcessingSettings settings;
   DisableDefaultSettings(settings);
   settings.echo_cancellation = true;
@@ -793,9 +774,5 @@ TEST_P(ApmTellsIfPlayoutReferenceIsNeededParametrizedTest,
 
   EXPECT_TRUE(audio_processor->needs_playout_reference());
 }
-
-INSTANTIATE_TEST_SUITE_P(AudioProcessor,
-                         ApmTellsIfPlayoutReferenceIsNeededParametrizedTest,
-                         ::testing::Bool());
 
 }  // namespace media

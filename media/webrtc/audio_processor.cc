@@ -79,12 +79,7 @@ int GetCaptureBufferSize(bool need_webrtc_processing,
 #endif
 }
 
-bool ApmNeedsPlayoutReference(const webrtc::AudioProcessing* apm,
-                              const AudioProcessingSettings& settings) {
-  if (!base::FeatureList::IsEnabled(
-          features::kWebRtcApmTellsIfPlayoutReferenceIsNeeded)) {
-    return settings.NeedPlayoutReference();
-  }
+bool ApmNeedsPlayoutReference(const webrtc::AudioProcessing* apm) {
   if (!apm) {
     // APM is not available; hence, observing the playout reference is not
     // needed.
@@ -257,7 +252,7 @@ std::unique_ptr<AudioProcessor> AudioProcessor::Create(
   return std::make_unique<AudioProcessor>(
       std::move(deliver_processed_audio_callback), std::move(log_callback),
       input_format, output_format, std::move(webrtc_audio_processing),
-      ApmNeedsPlayoutReference(webrtc_audio_processing.get(), settings));
+      ApmNeedsPlayoutReference(webrtc_audio_processing.get()));
 }
 
 AudioProcessor::AudioProcessor(

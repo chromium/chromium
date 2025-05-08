@@ -44,9 +44,6 @@ extern const base::FeatureParam<
     kWebRtcApmDownmixMethodParam;
 
 COMPONENT_EXPORT(MEDIA_WEBRTC)
-BASE_DECLARE_FEATURE(kWebRtcApmTellsIfPlayoutReferenceIsNeeded);
-
-COMPONENT_EXPORT(MEDIA_WEBRTC)
 BASE_DECLARE_FEATURE(kWebRtcAllowH265Send);
 
 COMPONENT_EXPORT(MEDIA_WEBRTC)
