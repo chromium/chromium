@@ -35,6 +35,8 @@ void LayoutTextControlInnerEditor::AddChild(LayoutObject* new_child,
   // This function wraps a pair of a Text and an HTMLBRElement with an anonymous
   // block. So a child of LayoutTextControlInnerEditor must be an anonymous
   // LayoutBlockFlow.
+  // Exception: It can have non-anonymous blocks during "TestRendering".
+  //            See blink::ReplacementFragment.
   //
   // LayoutTextControlInnerEditor
   //   * LayoutBlockFlow (anonymous)
@@ -47,7 +49,7 @@ void LayoutTextControlInnerEditor::AddChild(LayoutObject* new_child,
   //     - LayoutBR
 
   if (!before_child) {
-    auto* last_anonymous = To<LayoutBlockFlow>(LastChild());
+    auto* last_anonymous = DynamicTo<LayoutBlockFlow>(LastChild());
     if (last_anonymous && !last_anonymous->LastChild()->IsBR()) {
       last_anonymous->AddChild(new_child);
       return;
@@ -59,12 +61,15 @@ void LayoutTextControlInnerEditor::AddChild(LayoutObject* new_child,
   }
 
   DCHECK(FirstChild());
+  auto* before_parent = To<LayoutBlockFlow>(before_child->Parent());
   if (!new_child->IsBR()) {
-    before_child->Parent()->AddChild(new_child, before_child);
+    before_parent->AddChild(new_child, before_child);
     return;
   }
   auto* anonymous = LayoutBlockFlow::CreateAnonymous(&GetDocument(), Style());
-  LayoutBlockFlow::AddChild(anonymous, before_child->Parent());
+  LayoutBlockFlow::AddChild(anonymous, before_parent);
+  before_parent->MoveChildrenTo(anonymous, before_parent->FirstChild(),
+                                before_child, /* full_remove_insert */ true);
   anonymous->AddChild(new_child);
 }
 

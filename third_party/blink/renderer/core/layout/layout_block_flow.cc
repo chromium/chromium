@@ -286,7 +286,8 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
       // parent.
       if (auto* next_anonymous = To<LayoutBlockFlow>(NextSibling())) {
         CHECK(next_anonymous->IsAnonymous());
-        MoveAllChildrenTo(next_anonymous, next_anonymous->FirstChild());
+        MoveAllChildrenTo(next_anonymous, next_anonymous->FirstChild(),
+                          /* full_remove_insert */ true);
       }
     }
     if (!FirstChild() && Parent()) {
@@ -309,7 +310,9 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
 
   if (FirstChild() && !BeingDestroyed() &&
       !old_child->IsFloatingOrOutOfFlowPositioned() &&
-      !old_child->IsAnonymousBlockFlow()) {
+      !old_child->IsAnonymousBlockFlow() &&
+      !(RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled() &&
+        IsTextControlInnerEditor())) {
     // If the child we're removing means that we can now treat all children as
     // inline without the need for anonymous blocks, then do that.
     MakeChildrenInlineIfPossible();

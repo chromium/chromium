@@ -4659,6 +4659,7 @@
     {
       // crbug.com/341564372
       name: "TextareaMultipleIfcs",
+      status: "experimental",
       depends_on: ["FastSelectionSync", "TextareaLineEndingsAsBr"],
     },
     {
