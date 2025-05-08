@@ -4,8 +4,12 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
+import static android.content.Intent.FLAG_ACTIVITY_MULTIPLE_TASK;
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -59,15 +63,14 @@ public class WebAppLaunchHandlerTest {
     public static final String OTHER_URL = JUnitTestGURLs.EXAMPLE_URL.getSpec();
     public static final String CONTENT_URI = "content://com.a.b.c/a";
     public static final String TEST_PACKAGE_NAME = "com.test";
-    private FileHandlingData mFileHandlingData =
-            new FileHandlingData(Arrays.asList(Uri.parse(CONTENT_URI)));
-    private String[] mExpectedFileList = new String[] {CONTENT_URI};
+    private FileHandlingData mFileHandlingData;
+    private String[] mExpectedFileList = new String[0];
 
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
     @Mock WebContents mWebContentsMock;
     @Mock CustomTabActivityNavigationController mNavigationControllerMock;
     @Mock Verifier mVerifierMock;
-    @Mock CurrentPageVerifier mCurrentPageVerfierMock;
+    @Mock CurrentPageVerifier mCurrentPageVerifierMock;
     @Mock Activity mActivityMock;
     @Mock WebAppLaunchHandler.Natives mWebAppLaunchHandlerJniMock;
 
@@ -76,7 +79,7 @@ public class WebAppLaunchHandlerTest {
         WebAppLaunchHandlerJni.setInstanceForTesting(mWebAppLaunchHandlerJniMock);
 
         when(mVerifierMock.verify(any())).thenReturn(Promise.fulfilled(true));
-        when(mCurrentPageVerfierMock.getState())
+        when(mCurrentPageVerifierMock.getState())
                 .thenReturn(
                         new CurrentPageVerifier.VerificationState(
                                 "", "", CurrentPageVerifier.VerificationStatus.SUCCESS));
@@ -104,7 +107,7 @@ public class WebAppLaunchHandlerTest {
     private WebAppLaunchHandler createWebAppLaunchHandler() {
         return WebAppLaunchHandler.create(
                 mVerifierMock,
-                mCurrentPageVerfierMock,
+                mCurrentPageVerifierMock,
                 mNavigationControllerMock,
                 mWebContentsMock,
                 mActivityMock);
@@ -115,9 +118,7 @@ public class WebAppLaunchHandlerTest {
         CustomTabIntentDataProvider dataProvider = mock(CustomTabIntentDataProvider.class);
         when(dataProvider.getLaunchHandlerClientMode()).thenReturn(clientMode);
         when(dataProvider.getUrlToLoad()).thenReturn(url);
-
         when(dataProvider.getClientPackageName()).thenReturn(TEST_PACKAGE_NAME);
-
         when(dataProvider.getFileHandlingData()).thenReturn(mFileHandlingData);
         return dataProvider;
     }
@@ -255,7 +256,7 @@ public class WebAppLaunchHandlerTest {
 
     @Test
     public void currentPageVerifierFailed() {
-        when(mCurrentPageVerfierMock.getState())
+        when(mCurrentPageVerifierMock.getState())
                 .thenReturn(
                         new CurrentPageVerifier.VerificationState(
                                 "", "", CurrentPageVerifier.VerificationStatus.FAILURE));
@@ -272,9 +273,9 @@ public class WebAppLaunchHandlerTest {
     }
 
     @Test
-    public void noFilePath() {
-        mFileHandlingData = null;
-        mExpectedFileList = new String[0];
+    public void filePath() {
+        mFileHandlingData = new FileHandlingData(Arrays.asList(Uri.parse(CONTENT_URI)));
+        mExpectedFileList = new String[] {CONTENT_URI};
         doTestHandleIntent(
                 LaunchHandlerClientMode.AUTO,
                 INITIAL_URL,
@@ -343,10 +344,10 @@ public class WebAppLaunchHandlerTest {
                                         return Objects.equals(
                                                         params.getAction(), Intent.ACTION_VIEW)
                                                 && OTHER_URL.equals(params.getData().toString())
-                                                && (params.getFlags()
-                                                        & Intent.FLAG_ACTIVITY_MULTIPLE_TASK) != 0
-                                                && (params.getFlags()
-                                                        & Intent.FLAG_ACTIVITY_NEW_TASK) != 0;
+                                                && (params.getFlags() & FLAG_ACTIVITY_MULTIPLE_TASK)
+                                                        != 0
+                                                && (params.getFlags() & FLAG_ACTIVITY_NEW_TASK)
+                                                        != 0;
                                     }));
         }
 
@@ -377,5 +378,18 @@ public class WebAppLaunchHandlerTest {
         doTestNavigateNewInitialIntent(LaunchHandlerClientMode.NAVIGATE_EXISTING);
         doTestNavigateNewNewIntent(
                 LaunchHandlerClientMode.NAVIGATE_EXISTING, /* expectedStartActivityTimes= */ 0);
+    }
+
+    @Test
+    public void navigateNewStartNewTask_fileData() {
+        doTestNavigateNewInitialIntent(LaunchHandlerClientMode.NAVIGATE_NEW);
+
+        mFileHandlingData = new FileHandlingData(Arrays.asList(Uri.parse(CONTENT_URI)));
+        mExpectedFileList = new String[] {CONTENT_URI};
+        doTestNavigateNewNewIntent(
+                LaunchHandlerClientMode.NAVIGATE_NEW, /* expectedStartActivityTimes= */ 1);
+        verify(mActivityMock, times(1))
+                .grantUriPermission(
+                        eq(TEST_PACKAGE_NAME), eq(mFileHandlingData.uris.get(0)), anyInt());
     }
 }

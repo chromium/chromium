@@ -8,6 +8,7 @@ import static androidx.browser.trusted.LaunchHandlerClientMode.AUTO;
 import static androidx.browser.trusted.LaunchHandlerClientMode.FOCUS_EXISTING;
 import static androidx.browser.trusted.LaunchHandlerClientMode.NAVIGATE_EXISTING;
 import static androidx.browser.trusted.LaunchHandlerClientMode.NAVIGATE_NEW;
+import static androidx.browser.trusted.TrustedWebActivityIntentBuilder.EXTRA_FILE_HANDLING_DATA;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -169,7 +170,9 @@ public class WebAppLaunchHandler {
 
         if (clientMode == NAVIGATE_NEW) {
             launchNewIntent(
-                    intentDataProvider.getUrlToLoad(), intentDataProvider.getClientPackageName());
+                    intentDataProvider.getUrlToLoad(),
+                    intentDataProvider.getClientPackageName(),
+                    intentDataProvider.getFileHandlingData());
         } else {
             boolean startNavigation =
                     clientMode == NAVIGATE_EXISTING
@@ -218,18 +221,34 @@ public class WebAppLaunchHandler {
      * @param targetUrl The URL the web app was launched with
      * @param packageName Chrome will take a package name from the TWA session to ensure the intent
      *     is sent to the application it is received from
+     * @param fileData The list of file URIs, if the web app was launched by opening one or multiple
+     *     files
      */
-    private void launchNewIntent(String targetUrl, String packageName) {
+    private void launchNewIntent(String targetUrl, String packageName, FileHandlingData fileData) {
         if (packageName == null) {
             return;
         }
 
         Intent newIntent = new Intent();
         newIntent.setAction(Intent.ACTION_VIEW);
+        newIntent.setData(Uri.parse(targetUrl));
         newIntent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        newIntent.setData(Uri.parse(targetUrl));
         newIntent.setPackage(packageName);
+
+        /* This method can be called for file handling intent as well. In this case we need to send
+        a file data extras as well. Also we need to grant file permissions */
+        if (fileData != null && !fileData.uris.isEmpty()) {
+            for (Uri uri : fileData.uris) {
+                mActivity.grantUriPermission(
+                        packageName,
+                        uri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            }
+            newIntent.putExtra(EXTRA_FILE_HANDLING_DATA, fileData.toBundle());
+        }
+
         try {
             mActivity.startActivity(newIntent);
         } catch (ActivityNotFoundException exception) {
