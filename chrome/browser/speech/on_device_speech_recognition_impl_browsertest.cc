@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,6 +31,7 @@
 namespace {
 constexpr char kValidLanguageCode[] = "en-US";
 constexpr char kInvalidLanguageCode[] = "xx-XX";
+
 }  // namespace
 
 namespace speech {
@@ -49,26 +51,24 @@ class OnDeviceSpeechRecognitionImplBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override;
 
   void OnDeviceWebSpeechAvailableCallback(
+      media::mojom::AvailabilityStatus actual_status);
+  void OnDeviceWebSpeechAvailableCallbackAndAssertStatus(
       media::mojom::AvailabilityStatus expected_status,
       media::mojom::AvailabilityStatus actual_status);
+  void InstallOnDeviceSpeechRecognition();
   void InstallOnDeviceSpeechRecognitionCallback(bool expected_success,
                                                 bool actual_success);
-  void WaitForCallback();
+  void WaitUntilAvailable();
   void NavigateToUrl(const std::string& url_string);
   void ClearSiteContentSettings();
+  OnDeviceSpeechRecognitionImpl* on_device_speech_recognition();
 
  protected:
-  std::unique_ptr<base::RunLoop> run_loop_;
-  mojo::Remote<media::mojom::OnDeviceSpeechRecognition>
-      on_device_speech_recognition_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  media::mojom::AvailabilityStatus availability_status_;
 };
 
 void OnDeviceSpeechRecognitionImplBrowserTest::SetUpOnMainThread() {
-  OnDeviceSpeechRecognitionImpl::GetOrCreateForCurrentDocument(
-      chrome_test_utils::GetActiveWebContents(this)->GetPrimaryMainFrame())
-      ->Bind(on_device_speech_recognition_.BindNewPipeAndPassReceiver());
-
   host_resolver()->AddRule("*", "127.0.0.1");
   embedded_https_test_server().ServeFilesFromSourceDirectory(
       GetChromeTestDataDir());
@@ -79,25 +79,49 @@ void OnDeviceSpeechRecognitionImplBrowserTest::SetUpOnMainThread() {
 
 void OnDeviceSpeechRecognitionImplBrowserTest::
     OnDeviceWebSpeechAvailableCallback(
+        media::mojom::AvailabilityStatus actual_status) {
+  OnDeviceWebSpeechAvailableCallbackAndAssertStatus(actual_status,
+                                                    actual_status);
+}
+
+void OnDeviceSpeechRecognitionImplBrowserTest::
+    OnDeviceWebSpeechAvailableCallbackAndAssertStatus(
         media::mojom::AvailabilityStatus expected_status,
         media::mojom::AvailabilityStatus actual_status) {
   ASSERT_EQ(expected_status, actual_status);
-  run_loop_->Quit();
+  availability_status_ = actual_status;
+}
+
+void OnDeviceSpeechRecognitionImplBrowserTest::
+    InstallOnDeviceSpeechRecognition() {
+  // Install on-device speech recognition and simulate the installation of the
+  // SODA library and language pack.
+  on_device_speech_recognition()->InstallOnDeviceSpeechRecognition(
+      kValidLanguageCode,
+      base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
+                         InstallOnDeviceSpeechRecognitionCallback,
+                     base::Unretained(this), true));
+
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
+      speech::LanguageCode::kEnUs);
 }
 
 void OnDeviceSpeechRecognitionImplBrowserTest::
     InstallOnDeviceSpeechRecognitionCallback(bool expected_success,
                                              bool actual_success) {
   ASSERT_EQ(expected_success, actual_success);
-  run_loop_->Quit();
 }
 
-void OnDeviceSpeechRecognitionImplBrowserTest::WaitForCallback() {
-  ASSERT_FALSE(run_loop_);
-  run_loop_ = std::make_unique<base::RunLoop>(
-      base::RunLoop::Type::kNestableTasksAllowed);
-  run_loop_->Run();
-  run_loop_ = nullptr;
+void OnDeviceSpeechRecognitionImplBrowserTest::WaitUntilAvailable() {
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    on_device_speech_recognition()->OnDeviceWebSpeechAvailable(
+        kValidLanguageCode,
+        base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
+                           OnDeviceWebSpeechAvailableCallback,
+                       base::Unretained(this)));
+    return availability_status_ == media::mojom::AvailabilityStatus::kAvailable;
+  }));
 }
 
 void OnDeviceSpeechRecognitionImplBrowserTest::NavigateToUrl(
@@ -105,10 +129,6 @@ void OnDeviceSpeechRecognitionImplBrowserTest::NavigateToUrl(
   const GURL kUrl(
       embedded_https_test_server().GetURL(url_string, "/empty.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
-  on_device_speech_recognition_.reset();
-  OnDeviceSpeechRecognitionImpl::GetOrCreateForCurrentDocument(
-      chrome_test_utils::GetActiveWebContents(this)->GetPrimaryMainFrame())
-      ->Bind(on_device_speech_recognition_.BindNewPipeAndPassReceiver());
 }
 
 void OnDeviceSpeechRecognitionImplBrowserTest::ClearSiteContentSettings() {
@@ -122,23 +142,26 @@ void OnDeviceSpeechRecognitionImplBrowserTest::ClearSiteContentSettings() {
   observer.BlockUntilCompletion();
 }
 
+OnDeviceSpeechRecognitionImpl*
+OnDeviceSpeechRecognitionImplBrowserTest::on_device_speech_recognition() {
+  return OnDeviceSpeechRecognitionImpl::GetOrCreateForCurrentDocument(
+      chrome_test_utils::GetActiveWebContents(this)->GetPrimaryMainFrame());
+}
+
 IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplBrowserTest,
                        OnDeviceWebSpeechAvailable) {
-  on_device_speech_recognition_->OnDeviceWebSpeechAvailable(
+  on_device_speech_recognition()->OnDeviceWebSpeechAvailable(
       kInvalidLanguageCode,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
-                         OnDeviceWebSpeechAvailableCallback,
+                         OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
                      base::Unretained(this),
                      media::mojom::AvailabilityStatus::kUnavailable));
-  WaitForCallback();
-
-  on_device_speech_recognition_->OnDeviceWebSpeechAvailable(
+  on_device_speech_recognition()->OnDeviceWebSpeechAvailable(
       kValidLanguageCode,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
-                         OnDeviceWebSpeechAvailableCallback,
+                         OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
                      base::Unretained(this),
                      media::mojom::AvailabilityStatus::kDownloadable));
-  WaitForCallback();
 }
 
 IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplBrowserTest,
@@ -147,93 +170,51 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplBrowserTest,
 
   // Verify that on-device speech recognition is downloadable before it is
   // installed.
-  on_device_speech_recognition_->OnDeviceWebSpeechAvailable(
+  on_device_speech_recognition()->OnDeviceWebSpeechAvailable(
       kValidLanguageCode,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
-                         OnDeviceWebSpeechAvailableCallback,
+                         OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
                      base::Unretained(this),
                      media::mojom::AvailabilityStatus::kDownloadable));
-  WaitForCallback();
-
-  // Install on-device speech recognition and simulate the installation of the
-  // SODA library and language pack.
-  on_device_speech_recognition_->InstallOnDeviceSpeechRecognition(
-      kValidLanguageCode,
-      base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
-                         InstallOnDeviceSpeechRecognitionCallback,
-                     base::Unretained(this), true));
-
-  // Run the loop until idle, otherwise SODA might get install before the
-  // `InstallOnDeviceSpeechRecognition` message is flushed through the pipe.
-  // This won't happen outside of tests because
-  // `InstallOnDeviceSpeechRecognition` triggers the installation of SODA.
-  base::RunLoop().RunUntilIdle();
-
-  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
-  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
-      speech::LanguageCode::kEnUs);
-  WaitForCallback();
+  InstallOnDeviceSpeechRecognition();
 
   // Verify that on-device speech recognition is available after it is
   // installed.
-  on_device_speech_recognition_->OnDeviceWebSpeechAvailable(
-      kValidLanguageCode,
-      base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
-                         OnDeviceWebSpeechAvailableCallback,
-                     base::Unretained(this),
-                     media::mojom::AvailabilityStatus::kAvailable));
-  WaitForCallback();
+  WaitUntilAvailable();
 
   // On-device speech recognition availability is masked by origin, so the
   // previously installed language pack should not be available to a different
   // origin even if it's already installed.
   NavigateToUrl("bar.com");
-  on_device_speech_recognition_->OnDeviceWebSpeechAvailable(
+  on_device_speech_recognition()->OnDeviceWebSpeechAvailable(
       kValidLanguageCode,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
-                         OnDeviceWebSpeechAvailableCallback,
+                         OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
                      base::Unretained(this),
                      media::mojom::AvailabilityStatus::kDownloadable));
-  WaitForCallback();
 
   // Verify that on-device speech recognition can be installed on the second
   // origin.
-  on_device_speech_recognition_->InstallOnDeviceSpeechRecognition(
-      kValidLanguageCode,
-      base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
-                         InstallOnDeviceSpeechRecognitionCallback,
-                     base::Unretained(this), true));
-  base::RunLoop().RunUntilIdle();
-  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
-  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
-      speech::LanguageCode::kEnUs);
-  WaitForCallback();
-  on_device_speech_recognition_->OnDeviceWebSpeechAvailable(
-      kValidLanguageCode,
-      base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
-                         OnDeviceWebSpeechAvailableCallback,
-                     base::Unretained(this),
-                     media::mojom::AvailabilityStatus::kAvailable));
-  WaitForCallback();
+  InstallOnDeviceSpeechRecognition();
+
+  WaitUntilAvailable();
 
   // Verify that clearing site content settings resets the on-device speech
   // recognition mask for both origins.
   ClearSiteContentSettings();
-  on_device_speech_recognition_->OnDeviceWebSpeechAvailable(
+  on_device_speech_recognition()->OnDeviceWebSpeechAvailable(
       kValidLanguageCode,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
-                         OnDeviceWebSpeechAvailableCallback,
+                         OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
                      base::Unretained(this),
                      media::mojom::AvailabilityStatus::kDownloadable));
-  WaitForCallback();
   NavigateToUrl("foo.com");
-  on_device_speech_recognition_->OnDeviceWebSpeechAvailable(
+  on_device_speech_recognition()->OnDeviceWebSpeechAvailable(
       kValidLanguageCode,
       base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::
-                         OnDeviceWebSpeechAvailableCallback,
+                         OnDeviceWebSpeechAvailableCallbackAndAssertStatus,
                      base::Unretained(this),
                      media::mojom::AvailabilityStatus::kDownloadable));
-  WaitForCallback();
 }
 
 }  // namespace speech

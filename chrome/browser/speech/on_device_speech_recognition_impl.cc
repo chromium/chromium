@@ -4,7 +4,10 @@
 
 #include "chrome/browser/speech/on_device_speech_recognition_impl.h"
 
+#include "base/rand_util.h"
 #include "base/strings/string_util.h"
+#include "base/task/task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -42,6 +45,17 @@ bool IsLanguageInstallable(const std::string& language_code,
       language_code);
 }
 
+bool IsLanguageInstalled(const std::string& language_code) {
+  for (const auto& language : g_browser_process->local_state()->GetList(
+           prefs::kSodaRegisteredLanguagePacks)) {
+    if (language.GetString() == language_code) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 }  // namespace
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -76,15 +90,7 @@ void OnDeviceSpeechRecognitionImpl::OnDeviceWebSpeechAvailable(
     return;
   }
 
-  media::mojom::AvailabilityStatus availability_status =
-      IsOnDeviceSpeechRecognitionAvailable(language);
-  if (availability_status == media::mojom::AvailabilityStatus::kAvailable &&
-      !HasOnDeviceLanguageDownloaded(language)) {
-    std::move(callback).Run(media::mojom::AvailabilityStatus::kDownloadable);
-    return;
-  }
-
-  std::move(callback).Run(availability_status);
+  std::move(callback).Run(GetMaskedAvailabilityStatus(language));
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -120,18 +126,13 @@ void OnDeviceSpeechRecognitionImpl::InstallOnDeviceSpeechRecognition(
     return;
   }
 
-  language_installation_callbacks_[language].push_back(std::move(callback));
-  // `InstallSoda` will only install the SODA binary if it is not already
-  // installed.
-  speech::SodaInstaller::GetInstance()->InstallSoda(
-      g_browser_process->local_state());
-
-  // `InstallLanguage` will only install languages that are not already
-  // installed.
-  speech::SodaInstaller::GetInstance()->InstallLanguage(
-      language_config.value().language_name, g_browser_process->local_state());
-
-  SetOnDeviceLanguageDownloaded(language);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&OnDeviceSpeechRecognitionImpl::InstallLanguageInternal,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     language_config.value().language_name,
+                     std::move(callback)),
+      GetDownloadDelay(language_config.value().language_name));
 }
 
 void OnDeviceSpeechRecognitionImpl::OnSodaInstalled(
@@ -196,6 +197,25 @@ bool OnDeviceSpeechRecognitionImpl::
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+void OnDeviceSpeechRecognitionImpl::InstallLanguageInternal(
+    const std::string& language,
+    OnDeviceSpeechRecognitionImpl::InstallOnDeviceSpeechRecognitionCallback
+        callback) {
+  language_installation_callbacks_[language].push_back(std::move(callback));
+
+  // `InstallSoda` will only install the SODA binary if it is not already
+  // installed.
+  speech::SodaInstaller::GetInstance()->InstallSoda(
+      g_browser_process->local_state());
+
+  // `InstallLanguage` will only install languages that are not already
+  // installed.
+  speech::SodaInstaller::GetInstance()->InstallLanguage(
+      language, g_browser_process->local_state());
+
+  SetOnDeviceLanguageDownloaded(language);
+}
+
 void OnDeviceSpeechRecognitionImpl::RunAndRemoveInstallationCallbacks(
     const std::string& language,
     bool installation_success) {
@@ -235,6 +255,19 @@ void OnDeviceSpeechRecognitionImpl::
           std::move(on_device_languages_downloaded));
 }
 
+media::mojom::AvailabilityStatus
+OnDeviceSpeechRecognitionImpl::GetMaskedAvailabilityStatus(
+    const std::string& language) {
+  media::mojom::AvailabilityStatus availability_status =
+      IsOnDeviceSpeechRecognitionAvailable(language);
+  if (availability_status == media::mojom::AvailabilityStatus::kAvailable &&
+      !HasOnDeviceLanguageDownloaded(language)) {
+    return media::mojom::AvailabilityStatus::kDownloadable;
+  }
+
+  return availability_status;
+}
+
 bool OnDeviceSpeechRecognitionImpl::HasOnDeviceLanguageDownloaded(
     const std::string& language) {
   base::Value on_device_languages_downloaded_value =
@@ -268,6 +301,20 @@ void OnDeviceSpeechRecognitionImpl::SetOnDeviceLanguageDownloaded(
 
   SetOnDeviceLanguagesDownloadedContentSetting(
       std::move(on_device_languages_downloaded_value));
+}
+
+base::TimeDelta OnDeviceSpeechRecognitionImpl::GetDownloadDelay(
+    const std::string& language) {
+  // Check if SODA is already installed for the given language. If it is and the
+  // origin isn't supposed to know that, then add a delay to simulate a real
+  // download before proceeding.
+  if (GetMaskedAvailabilityStatus(language) ==
+          media::mojom::AvailabilityStatus::kDownloadable &&
+      IsLanguageInstalled(language)) {
+    return base::RandTimeDelta(base::Seconds(2), base::Seconds(3));
+  }
+
+  return base::TimeDelta();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
