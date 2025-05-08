@@ -11,6 +11,7 @@ import android.text.style.ClickableSpan;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.TextView;
 
 import androidx.preference.PreferenceViewHolder;
@@ -82,8 +83,14 @@ public class ClearBrowsingDataCheckBoxPreference extends ChromeBaseCheckBoxPrefe
                 });
     }
 
-    public void announceForAccessibility(CharSequence announcement) {
-        if (mView != null) mView.announceForAccessibility(announcement);
+    public void maybeAnnounceSummaryChange(CharSequence announcement) {
+        if (mView == null) return;
+        final TextView summaryView = mView.findViewById(android.R.id.summary);
+        summaryView.setContentDescription(announcement);
+        if (mView.isAccessibilityFocused()) {
+            summaryView.sendAccessibilityEvent(
+                    AccessibilityEvent.CONTENT_CHANGE_TYPE_CONTENT_DESCRIPTION);
+        }
     }
 
     @Override
