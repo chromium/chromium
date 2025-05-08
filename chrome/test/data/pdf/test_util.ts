@@ -4,11 +4,12 @@
 
 // Utilities that are used in multiple tests.
 
+// clang-format off
 import type {Bookmark, DocumentDimensions, LayoutOptions, PdfViewerElement, ViewerToolbarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {resetForTesting as resetMetricsForTesting, UserAction, Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // <if expr="enable_pdf_ink2">
 import type {AnnotationBrush, BeforeUnloadProxy, InkBrushSelectorElement, InkColorSelectorElement, InkSizeSelectorElement, SelectableIconButtonElement, ViewerBottomToolbarDropdownElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {AnnotationBrushType, BeforeUnloadProxyImpl, Ink2Manager, PluginController, PluginControllerEventType, SaveRequestType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationBrushType, BeforeUnloadProxyImpl, DEFAULT_TEXTBOX_WIDTH, DEFAULT_TEXTBOX_HEIGHT, hexToColor, Ink2Manager, TEXT_COLORS, TextAlignment, TextStyle, PluginController, PluginControllerEventType, SaveRequestType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // </if>
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -16,6 +17,7 @@ import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 // </if>
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+// clang-format on
 
 export class MockElement {
   dir: string = '';
@@ -713,10 +715,38 @@ export function assertDeepEquals(
   chrome.test.assertTrue(chrome.test.checkDeepEq(value1, value2));
 }
 
-// Simulates initializing a textbox with a click.
+// Simulates initializing a textbox. To make this usable from tests that do
+// not use a mock viewport, directly dispatch the event from the
+// Ink2Manager. Otherwise, the real viewport and page layout can vary, and
+// a textbox may not actually be created if a click event is simulated in a part
+// of the viewport that doesn't contain a page.
 export function createTextBox() {
-  PluginController.getInstance().getEventTarget().dispatchEvent(new CustomEvent(
-      PluginControllerEventType.PLUGIN_MESSAGE,
-      {detail: {type: 'sendClickEvent', x: 50, y: 50}}));
+  Ink2Manager.getInstance().dispatchEvent(
+      new CustomEvent('initialize-text-box', {
+        detail: {
+          annotation: {
+            text: '',
+            textAttributes: {
+              size: 12,
+              typeface: 'sans-serif',
+              styles: {
+                [TextStyle.BOLD]: false,
+                [TextStyle.ITALIC]: false,
+              },
+              alignment: TextAlignment.LEFT,
+              color: hexToColor(TEXT_COLORS[0]!.color),
+            },
+            textBoxRect: {
+              height: DEFAULT_TEXTBOX_HEIGHT,
+              locationX: 50,
+              locationY: 50,
+              width: DEFAULT_TEXTBOX_WIDTH,
+            },
+            id: 0,
+            pageNumber: 0,
+          },
+          pageCoordinates: {x: 10, y: 3},
+        },
+      }));
 }
 // </if>

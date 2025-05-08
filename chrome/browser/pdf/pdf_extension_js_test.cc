@@ -624,14 +624,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2SizeSelector) {
   RunTestsInJsModule("ink2_size_selector_test.js", "test.pdf");
 }
 
-// TODO(crbug.com/416359681): Ink2ViewerToolbar is flaky on Mac12 and Mac13
-// tests.
-#if !BUILDFLAG(IS_MAC)
-#define MAYBE_Ink2ViewerToolbar Ink2ViewerToolbar
-#else
-#define MAYBE_Ink2ViewerToolbar DISABLED_Ink2ViewerToolbar
-#endif
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, MAYBE_Ink2ViewerToolbar) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2ViewerToolbar) {
   RunTestsInJsModule("ink2_viewer_toolbar_test.js", "test.pdf");
 }
 

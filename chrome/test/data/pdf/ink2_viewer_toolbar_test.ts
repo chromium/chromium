@@ -8,7 +8,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
-import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertCheckboxMenuButton, createTextBox, enterFullscreenWithUserGesture, finishInkStroke, getRequiredElement, openToolbarMenu, setupMockMetricsPrivate, setupTestMockPluginForInk} from './test_util.js';
 
@@ -422,13 +422,16 @@ chrome.test.runTests([
     // Create a textbox. The undo button should now be disabled.
     const textBox = viewer.shadowRoot.querySelector('ink-text-box');
     assert(textBox);
+    chrome.test.assertFalse(isVisible(textBox));
     await createTextBoxAndWaitForStateChange(textBox);
+    chrome.test.assertTrue(isVisible(textBox));
     chrome.test.assertTrue(undoButton.disabled);
     chrome.test.assertTrue(redoButton.disabled);
 
     // Simulate closing the textbox with no changes. Now the undo button is
     // enabled again.
     await commitAnnotationAndWaitForStateChange(textBox);
+    chrome.test.assertFalse(isVisible(textBox));
     chrome.test.assertFalse(undoButton.disabled);
     chrome.test.assertTrue(redoButton.disabled);
 
@@ -445,6 +448,7 @@ chrome.test.runTests([
     // Add a textbox. The redo button is disabled.
     mockPlugin.clearMessages();
     await createTextBoxAndWaitForStateChange(textBox);
+    chrome.test.assertTrue(isVisible(textBox));
     chrome.test.assertTrue(undoButton.disabled);
     chrome.test.assertTrue(redoButton.disabled);
 
@@ -459,6 +463,7 @@ chrome.test.runTests([
     await whenStateChanged;
     await microtasksFinished();
     await commitAnnotationAndWaitForStateChange(textBox);
+    chrome.test.assertFalse(isVisible(textBox));
     chrome.test.assertFalse(undoButton.disabled);
     chrome.test.assertTrue(redoButton.disabled);
 
