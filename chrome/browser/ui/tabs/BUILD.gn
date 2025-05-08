@@ -236,6 +236,7 @@ if (!is_android) {
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/commerce:commerce",
+      "//chrome/browser/ui/send_tab_to_self",
       "//chrome/browser/web_applications",
       "//components/commerce/core:utils",
       "//components/content_settings/core/browser",

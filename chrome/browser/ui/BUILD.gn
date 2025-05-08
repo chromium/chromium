@@ -3681,9 +3681,6 @@ static_library("ui") {
       "plus_addresses/views/plus_address_creation_controller_desktop.cc",
       "plus_addresses/views/plus_address_creation_dialog_delegate.cc",
       "plus_addresses/views/plus_address_creation_dialog_delegate.h",
-      "send_tab_to_self/send_tab_to_self_bubble.h",
-      "send_tab_to_self/send_tab_to_self_toolbar_icon_controller.cc",
-      "send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h",
       "sharing_hub/screenshot/screenshot_captured_bubble_controller.cc",
       "sharing_hub/screenshot/screenshot_captured_bubble_controller.h",
       "sharing_hub/sharing_hub_bubble_controller.h",
@@ -5018,6 +5015,8 @@ static_library("ui") {
       "//chrome/browser/ui/promos:utils",
       "//chrome/browser/ui/qrcode_generator",
       "//chrome/browser/ui/qrcode_generator:impl",
+      "//chrome/browser/ui/send_tab_to_self",
+      "//chrome/browser/ui/send_tab_to_self:impl",
       "//chrome/browser/ui/views",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/download",
@@ -5077,6 +5076,7 @@ static_library("ui") {
     # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from += [
       "//chrome/browser/ui/qrcode_generator:impl",
+      "//chrome/browser/ui/send_tab_to_self:impl",
       "//chrome/browser/ui/dialogs:impl",
       "//chrome/browser/ui/views",
       "//chrome/browser/ui/views/bubble",

@@ -2299,6 +2299,7 @@ if (!is_android) {
       "//chrome/browser/ui/page_info",
       "//chrome/browser/ui/permission_bubble:browser_tests",
       "//chrome/browser/ui/prefs:browser_tests",
+      "//chrome/browser/ui/send_tab_to_self:browser_tests",
 
       # TODO(413315837): Remove this dependency when
       # c/b/ui/views/privacy_sandbox/privacy_sandbox_dialog_view_browsertest.cc gets modularized.
@@ -3401,7 +3402,6 @@ if (!is_android) {
       "../browser/ui/search/new_tab_page_navigation_throttle_browsertest.cc",
       "../browser/ui/search/third_party_ntp_browsertest.cc",
       "../browser/ui/search_engines/search_engine_tab_helper_browsertest.cc",
-      "../browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller_browsertest.cc",
       "../browser/ui/startup/startup_browser_creator_browsertest.cc",
       "../browser/ui/sync/one_click_signin_links_delegate_impl_browsertest.cc",
       "../browser/ui/tab_modal_confirm_dialog_browsertest.cc",
@@ -8083,6 +8083,9 @@ test("unit_tests") {
       "//components/data_sharing:test_support",
       "//components/passage_embeddings",
       "//components/passage_embeddings:test_support",
+
+      # TODO(416215722): Remove this dep when send_tab_to_self_client_service_unittest.cc gets modularized.
+      "//chrome/browser/send_tab_to_self",
     ]
 
     if (is_chrome_branded) {

@@ -1405,7 +1405,6 @@ static_library("browser") {
     "segmentation_platform/segmentation_platform_service_factory.h",
     "segmentation_platform/ukm_database_client.cc",
     "segmentation_platform/ukm_database_client.h",
-    "send_tab_to_self/receiving_ui_handler.h",
     "send_tab_to_self/send_tab_to_self_client_service.cc",
     "send_tab_to_self/send_tab_to_self_client_service.h",
     "send_tab_to_self/send_tab_to_self_client_service_factory.cc",
@@ -1991,6 +1990,7 @@ static_library("browser") {
     "//chrome/browser/search_engine_choice",
     "//chrome/browser/search_engine_choice:impl",
     "//chrome/browser/search_engines",
+    "//chrome/browser/send_tab_to_self",
     "//chrome/browser/share",
     "//chrome/browser/sharing:buildflags",
     "//chrome/browser/signin",
@@ -4350,6 +4350,7 @@ static_library("browser") {
       "//chrome/browser/ui/media_router:impl",
       "//chrome/browser/ui/page_action:icon_type",
       "//chrome/browser/ui/privacy_sandbox",
+      "//chrome/browser/ui/send_tab_to_self",
 
       # TODO(413315837): Remove this dependency when chrome/browser/privacy_sandbox
       # gets modularized.

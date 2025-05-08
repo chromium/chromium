@@ -279,6 +279,7 @@ source_set("impl") {
       "//chrome/browser/search_engine_choice",
       "//chrome/browser/search_engines",
       "//chrome/browser/ui/commerce",
+      "//chrome/browser/ui/send_tab_to_self",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/side_panel",
