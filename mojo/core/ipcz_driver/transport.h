@@ -34,6 +34,9 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
   enum EndpointType : uint32_t {
     kBroker,
     kNonBroker,
+    // For ValidateEnum().
+    kMinValue = kBroker,
+    kMaxValue = kNonBroker,
   };
 
   // Is the remote process trusted, only tracked on Windows. Not directly

@@ -15,8 +15,10 @@
 
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted.h"
+#include "base/notreached.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "mojo/core/ipcz_driver/validate_enum.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
@@ -29,6 +31,10 @@ enum class BufferMode : uint32_t {
   kReadOnly,
   kWritable,
   kUnsafe,
+
+  // For ValidateEnum().
+  kMinValue = kReadOnly,
+  kMaxValue = kUnsafe,
 };
 
 // The wire representation of a serialized shared buffer.
@@ -251,6 +257,9 @@ scoped_refptr<SharedBuffer> SharedBuffer::Deserialize(
   if (header_size < sizeof(BufferHeader) || header_size % 8 != 0) {
     return nullptr;
   }
+  if (!ValidateEnum(header.mode)) {
+    return nullptr;
+  }
 
   base::subtle::PlatformSharedMemoryRegion::Mode mode;
   switch (header.mode) {
@@ -264,7 +273,7 @@ scoped_refptr<SharedBuffer> SharedBuffer::Deserialize(
       mode = base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe;
       break;
     default:
-      return nullptr;
+      NOTREACHED();
   }
 
   std::optional<base::UnguessableToken> guid =

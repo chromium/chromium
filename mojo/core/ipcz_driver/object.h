@@ -65,6 +65,10 @@ class MOJO_SYSTEM_IMPL_EXPORT ObjectBase
 
     // See Envelope for details.
     kEnvelope,
+
+    // For ValidateEnum().
+    kMinValue = kTransport,
+    kMaxValue = kEnvelope,
   };
 
   explicit ObjectBase(Type type);

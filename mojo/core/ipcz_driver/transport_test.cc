@@ -272,7 +272,7 @@ TEST_F(MojoIpczTransportTest, BasicTransmit) {
   });
 }
 
-DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MalformedTransportClient,
+DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MalformedObjectsClient,
                                   MojoIpczTransportTest,
                                   h) {
   // Offsets of enums that should be validated on receipt. Serialized objects
@@ -283,9 +283,16 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MalformedTransportClient,
   constexpr size_t object_type_offset = 4;
   // offsetof(TransportHeader, destination_type) + sizeof(ObjectHeader)
 #if BUILDFLAG(IS_WIN)
+  // offsetof(TransportHeader, destination_type) + sizeof(ObjectHeader)
   constexpr size_t transport_destination_type_offset = 0x18;
+  // offsetof(BufferHeader, mode) + sizeof(ObjectHeader)
+  constexpr size_t shared_bufffer_mode_offset = 0x20;
+  // offsetof(WrappedPlatformHandleHeader, type) + sizeof(ObjectHeader)
+  constexpr size_t wrapped_platform_type_offset = 0x1c;
 #else
   constexpr size_t transport_destination_type_offset = 0x08;
+  constexpr size_t shared_bufffer_mode_offset = 0x10;
+  constexpr size_t wrapped_platform_type_offset = 0x0c;
 #endif
 
   scoped_refptr<Transport> transport = ReceiveTransport(h);
@@ -321,13 +328,38 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MalformedTransportClient,
     EXPECT_EQ("got null", listener.WaitForNextMessage().as_string());
   }
 
+  {
+    auto shared_buffer = SharedBuffer::MakeForRegion(
+        base::UnsafeSharedMemoryRegion::Create(128));
+    TestMessage msg = SerializeObjectFor(*transport, std::move(shared_buffer));
+    // Peek into the message to break the encoded mode.
+    msg.bytes[shared_bufffer_mode_offset] = 22;
+    msg.Transmit(*transport);
+    EXPECT_EQ("got null", listener.WaitForNextMessage().as_string());
+  }
+
+  {
+    base::ScopedTempDir temp_dir;
+    CHECK(temp_dir.CreateUniqueTempDir());
+    base::File read_only_file = base::File(
+        temp_dir.GetPath().AppendASCII("testfile-for-malformed-object"),
+        base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    auto wrapper = base::MakeRefCounted<WrappedPlatformHandle>(PlatformHandle(
+        base::ScopedPlatformFile(read_only_file.TakePlatformFile())));
+    TestMessage msg = SerializeObjectFor(*transport, std::move(wrapper));
+    // Peek into the message to break the encoded wrapper type.
+    msg.bytes[wrapped_platform_type_offset] = 22;
+    msg.Transmit(*transport);
+    EXPECT_EQ("got null", listener.WaitForNextMessage().as_string());
+  }
+
   TestMessage("done").Transmit(*transport);
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
-TEST_F(MojoIpczTransportTest, MalformedTransport) {
+TEST_F(MojoIpczTransportTest, MalformedObjects) {
   RunTestClientWithController(
-      "MalformedTransportClient", [&](ClientController& c) {
+      "MalformedObjectsClient", [&](ClientController& c) {
         scoped_refptr<Transport> transport =
             CreateAndSendTransport(c.pipe(), c.process());
 
@@ -340,12 +372,39 @@ TEST_F(MojoIpczTransportTest, MalformedTransport) {
           scoped_refptr<ObjectBase> object;
           const IpczResult result = transport->DeserializeObject(
               base::span(message.bytes), base::span(message.handles), object);
-          EXPECT_EQ(result, IPCZ_RESULT_UNIMPLEMENTED);
+          EXPECT_EQ(result, IPCZ_RESULT_INVALID_ARGUMENT);
+#if !BUILDFLAG(IS_WIN)
+          // Adopt and free memory tracking this handle, as DeserializeObject
+          // does not get far enough in to do so itself - this is ok to fake up
+          // in this test as it validates that invalid messages are rejected.
+          TransmissiblePlatformHandle::TakeFromHandle(message.handles[0]);
+#endif  // !BUILDFLAG(IS_WIN)
           TestMessage("got null").Transmit(*transport);
         }
 
         {
           // Transport type is invalid so the object should be rejected.
+          TestMessage message = listener.WaitForNextMessage();
+          scoped_refptr<ObjectBase> object;
+          const IpczResult result = transport->DeserializeObject(
+              base::span(message.bytes), base::span(message.handles), object);
+          EXPECT_EQ(result, IPCZ_RESULT_INVALID_ARGUMENT);
+          TestMessage("got null").Transmit(*transport);
+        }
+
+        {
+          // Shared memory mode is invalid so the object should be rejected.
+          TestMessage message = listener.WaitForNextMessage();
+          scoped_refptr<ObjectBase> object;
+          const IpczResult result = transport->DeserializeObject(
+              base::span(message.bytes), base::span(message.handles), object);
+          EXPECT_EQ(result, IPCZ_RESULT_INVALID_ARGUMENT);
+          TestMessage("got null").Transmit(*transport);
+        }
+
+        {
+          // Wrapped platform handle type is invalid so the object should be
+          // rejected.
           TestMessage message = listener.WaitForNextMessage();
           scoped_refptr<ObjectBase> object;
           const IpczResult result = transport->DeserializeObject(

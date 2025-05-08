@@ -24,6 +24,7 @@
 #include "base/synchronization/lock.h"
 #include "mojo/core/ipcz_api.h"
 #include "mojo/core/ipcz_driver/ring_buffer.h"
+#include "mojo/core/ipcz_driver/validate_enum.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
 namespace mojo::core::ipcz_driver {
@@ -531,6 +532,10 @@ scoped_refptr<DataPipe> DataPipe::Deserialize(
   const auto& header = *reinterpret_cast<const DataPipeHeader*>(data.data());
   const size_t header_size = header.size;
   if (header_size < sizeof(header) || header_size % 8 != 0) {
+    return nullptr;
+  }
+
+  if (!ValidateEnum(header.endpoint_type)) {
     return nullptr;
   }
 

@@ -41,6 +41,9 @@ class DataPipe : public Object<DataPipe> {
   enum class EndpointType : uint32_t {
     kProducer,
     kConsumer,
+    // For ValidateEnum().
+    kMinValue = kProducer,
+    kMaxValue = kConsumer,
   };
 
   struct Config {

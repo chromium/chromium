@@ -11,6 +11,7 @@
 #include "base/files/scoped_file.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "mojo/core/ipcz_driver/validate_enum.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
@@ -49,6 +50,14 @@ enum class WrapperType : uint32_t {
   // a corresponding fileport send right. On the receiving end this deserializes
   // back to a file descriptor.
   kIndirectFileDescriptor,
+#endif
+
+  // For ValidateEnum().
+  kMinValue = kTransmissible,
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE)
+  kMaxValue = kIndirectFileDescriptor,
+#else
+  kMaxValue = kTransmissible,
 #endif
 };
 
@@ -175,6 +184,9 @@ scoped_refptr<WrappedPlatformHandle> WrappedPlatformHandle::Deserialize(
   if (header_size < sizeof(header) || header_size % 8 != 0) {
     return nullptr;
   }
+  if (!ValidateEnum(header.type)) {
+    return nullptr;
+  }
 
   PlatformHandle handle = std::move(handles[0]);
   switch (header.type) {
@@ -188,7 +200,8 @@ scoped_refptr<WrappedPlatformHandle> WrappedPlatformHandle::Deserialize(
 #endif
 
     default:
-      return nullptr;
+      // Validated at head of function.
+      NOTREACHED();
   }
 
   if (!handle.is_valid()) {

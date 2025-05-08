@@ -81,6 +81,7 @@ source_set("impl_for_embedder") {
     "ipcz_driver/shared_buffer_mapping.cc",
     "ipcz_driver/transmissible_platform_handle.cc",
     "ipcz_driver/transport.cc",
+    "ipcz_driver/validate_enum.h",
     "ipcz_driver/wrapped_platform_handle.cc",
     "platform_handle_in_transit.cc",
     "platform_handle_in_transit.h",
