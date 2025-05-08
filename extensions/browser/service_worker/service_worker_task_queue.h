@@ -380,6 +380,13 @@ class ServiceWorkerTaskQueue
     // is preparing to terminate.
     virtual void DidStopServiceWorkerContext(const ExtensionId& extension_id) {}
 
+    // Called when UntrackServiceWorkerState() is invoked for a worker
+    // associated with `scope` (because it's stopping or has stopped).
+    // This notification occurs even if the worker is a sub-scope worker and
+    // does not result in altering the ServiceWorkerTaskQueue's tracking state
+    // for the primary extension service worker.
+    virtual void UntrackServiceWorkerState(const GURL& scope) {}
+
     // Called when a service worker registered for the extension with the
     // `extension_id` has been unregistered in the //content layer.
     virtual void WorkerUnregistered(const ExtensionId& extension_id) {}

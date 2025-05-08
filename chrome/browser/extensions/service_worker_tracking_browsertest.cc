@@ -114,7 +114,9 @@ class ServiceWorkerTrackingBrowserTest : public ExtensionBrowserTest {
     extension_ = nullptr;
   }
 
-  void LoadServiceWorkerExtension() {
+  virtual std::string GetExtensionPageContent() const { return "<p>page</p>"; }
+
+  virtual void LoadServiceWorkerExtension() {
     // Load a basic extension with a service worker and wait for the worker to
     // start running.
     static constexpr char kManifest[] =
@@ -143,7 +145,7 @@ class ServiceWorkerTrackingBrowserTest : public ExtensionBrowserTest {
     test_dir->WriteManifest(kManifest);
     test_dir->WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundScript);
     test_dir->WriteFile(FILE_PATH_LITERAL("extension_page_tab.html"),
-                        "<p>page</p>");
+                        GetExtensionPageContent());
     ExtensionTestMessageListener extension_oninstall_listener_fired(
         "installed listener fired");
     const Extension* extension = LoadExtension(
@@ -175,6 +177,14 @@ class ServiceWorkerTrackingBrowserTest : public ExtensionBrowserTest {
   }
 
   const Extension* extension() { return extension_; }
+
+  TestExtensionDir* test_extension_dir() {
+    if (test_extension_dirs_.size() != 1) {
+      ADD_FAILURE() << "Expected exactly one test extension directory";
+      return nullptr;
+    }
+    return test_extension_dirs_.front().get();
+  }
 
   raw_ptr<const Extension> extension_;
   // Ensure `TestExtensionDir`s live past the test helper methods finishing.
@@ -781,6 +791,96 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRendererTrackingBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   EXPECT_FALSE(web_contents->IsCrashed());
+}
+
+// Tests tracking behavior of the main extension service worker when an
+// additional service worker is registered by the extension for a sub-scope
+// via `navigator.serviceWorker.register()` from an extension page.
+class ServiceWorkerSubScopeWorkerTrackingBrowserTest
+    : public ServiceWorkerIdTrackingBrowserTest {
+ protected:
+  std::string GetExtensionPageContent() const override {
+    return R"(<script src="/page.js"></script>)";
+  }
+
+  void LoadServiceWorkerExtension() override {
+    ServiceWorkerIdTrackingBrowserTest::LoadServiceWorkerExtension();
+
+    // Code for a service worker that will be registered for a sub-scope
+    // of the extension root scope. This service worker is not allowed
+    // access to extension APIs, as it's not listed in the manifest.
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      base::CreateDirectory(test_extension_dir()->UnpackedPath().Append(
+          FILE_PATH_LITERAL("subscope")));
+      test_extension_dir()->WriteFile(FILE_PATH_LITERAL("subscope/sw.js"), R"(
+          console.log("subscope service worker");
+      )");
+    }
+
+    // Code for the script that will be executed as part of the extension page.
+    // This registers the previously defined service worker.
+    test_extension_dir()->WriteFile(FILE_PATH_LITERAL("page.js"), R"(
+        navigator.serviceWorker.register("subscope/sw.js").then(function() {
+          // Wait until the service worker is active.
+          return navigator.serviceWorker.ready;
+        }).then(function(r) {
+          console.log("registration successful");
+        }).catch(function(err) {
+          console.log("registration error: " + err.message);
+        });
+    )");
+  }
+};
+
+// Tests that stopping a service worker that was registered for
+// a sub-scope via `navigation.serviceWorker.register()`, rather
+// than being declared in the extension's manifest does not influence the
+// tracking of the main extension service worker. Regression test for
+// crbug.com/395536907.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerSubScopeWorkerTrackingBrowserTest,
+                       StoppingSubScopeWorkerDoesNotAffectExtensionWorker) {
+  ASSERT_NO_FATAL_FAILURE(LoadServiceWorkerExtensionAndOpenExtensionTab());
+
+  // Wait for a console message that confirms the service worker for
+  // the sub-scope has been registered. Note that we can't use
+  // ExtensionTestMessageListener here since extension APIs are not
+  // available.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContentsConsoleObserver console_observer(web_contents);
+  console_observer.SetPattern("registration successful");
+  ASSERT_TRUE(console_observer.Wait());
+
+  // Confirm that we are tracking the main extension service worker.
+  std::optional<WorkerId> extension_service_worker_id =
+      GetWorkerIdForExtension();
+  ASSERT_TRUE(extension_service_worker_id);
+
+  // Check that there's 2 service workers running in total.
+  content::ServiceWorkerContext* sw_context =
+      GetServiceWorkerContext(profile());
+  ASSERT_TRUE(sw_context);
+  EXPECT_EQ(sw_context->GetRunningServiceWorkerInfos().size(), 2ul);
+  // One of them should be the main extension service worker.
+  EXPECT_TRUE(sw_context->GetRunningServiceWorkerInfos().contains(
+      extension_service_worker_id->version_id));
+
+  // Stop the sub-scope service worker.
+  TestServiceWorkerTaskQueueObserver untracked_observer;
+  GURL sub_scope(extension()->url().spec() + "subscope/");
+  content::StopServiceWorkerForScope(sw_context, sub_scope, base::DoNothing());
+  // Wait until the code responsible for untracking workers is called.
+  untracked_observer.WaitForUntrackServiceWorkerState(sub_scope);
+
+  // Verify that the main extension service worker is still tracked as running
+  // by the task queue.
+  ServiceWorkerTaskQueue::WorkerState* worker_state = GetWorkerState();
+  EXPECT_EQ(worker_state->browser_state(),
+            ServiceWorkerTaskQueue::BrowserState::kReady);
+  EXPECT_EQ(worker_state->renderer_state(),
+            ServiceWorkerTaskQueue::RendererState::kActive);
+  EXPECT_TRUE(worker_state->worker_id());
 }
 
 }  // namespace

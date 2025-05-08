@@ -550,10 +550,6 @@ void ServiceWorkerTaskQueue::UntrackServiceWorkerState(
 
   const ExtensionId& extension_id = worker_info.scope.host();
 
-  // Stop tracking the worker for extension API purposes.
-  ProcessManager::Get(browser_context_)
-      ->StopTrackingServiceWorkerRunningInstance(extension_id, version_id);
-
   // Remove worker running state information for event dispatching from the task
   // queue.
   std::optional<base::UnguessableToken> activation_token =
@@ -567,13 +563,35 @@ void ServiceWorkerTaskQueue::UntrackServiceWorkerState(
   WorkerState* worker_state = GetWorkerState(context_id);
   // If the extension is still activated, worker state should still exist.
   CHECK(worker_state);
-  // Untrack all the worker state because once a worker begin stopping or stops,
-  // a new instance must start before the worker can be considered ready to
-  // receive tasks/events again and the renderer stop notifications are not 100%
-  // reliable.
-  worker_state->SetBrowserState(BrowserState::kInitial);
-  worker_state->SetRendererState(RendererState::kNotActive);
-  worker_state->ResetWorkerId();
+
+  // Check that the version ID of the worker that is stopping refers to an
+  // extension service worker that is tracked by this class. Service workers
+  // registered for subscopes via `navigation.serviceWorker.register()` rather
+  // than being declared in the manifest's background section are not allowed
+  // to use extensions API, and should be ignored here. See crbug.com/395536907.
+  // NOTE: We may have already reset worker ID and renderer state, but not
+  // browser state, if `DidStopServiceWorkerContext()` was called first.
+  // In that case, we reset browser state here.
+  bool has_already_reset_renderer_state =
+      !worker_state->worker_id() &&
+      worker_state->renderer_state() == RendererState::kNotActive;
+  if (has_already_reset_renderer_state ||
+      worker_state->worker_id()->version_id == version_id) {
+    // Stop tracking the worker for extension API purposes.
+    ProcessManager::Get(browser_context_)
+        ->StopTrackingServiceWorkerRunningInstance(extension_id, version_id);
+    // Untrack all the worker state because once a worker begin stopping or
+    // stops, a new instance must start before the worker can be considered
+    // ready to receive tasks/events again and the renderer stop notifications
+    // are not 100% reliable.
+    worker_state->SetBrowserState(BrowserState::kInitial);
+    worker_state->SetRendererState(RendererState::kNotActive);
+    worker_state->ResetWorkerId();
+  }
+
+  if (g_test_observer) {
+    g_test_observer->UntrackServiceWorkerState(worker_info.scope);
+  }
 }
 
 void ServiceWorkerTaskQueue::RegisterServiceWorker(
