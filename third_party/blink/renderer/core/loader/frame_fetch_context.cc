@@ -1315,7 +1315,7 @@ FrameFetchContext::GetContentSecurityNotifier() const {
 }
 
 ExecutionContext* FrameFetchContext::GetExecutionContext() const {
-  return document_->GetExecutionContext();
+  return document_ ? document_->GetExecutionContext() : nullptr;
 }
 
 std::optional<ResourceRequestBlockedReason> FrameFetchContext::CanRequest(
