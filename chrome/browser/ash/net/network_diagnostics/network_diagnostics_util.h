@@ -21,16 +21,16 @@ namespace network_diagnostics {
 namespace util {
 
 // DNS queries taking longer than 400 ms are potentially problematic.
-constexpr int kDnsPotentialProblemLatencyMs = 400;
+inline constexpr int kDnsPotentialProblemLatencyMs = 400;
 
 // DNS queries taking longer than 500 ms are problematic.
-constexpr int kDnsProblemLatencyMs = 500;
+inline constexpr int kDnsProblemLatencyMs = 500;
 
 // Generate 204 path.
 extern const char kGenerate204Path[];
 
 // STUN packet header size.
-constexpr int kStunHeaderSize = 20;
+inline constexpr int kStunHeaderSize = 20;
 
 // Returns the Gstatic host suffix. Network diagnostic routines attach a random
 // prefix to |kGstaticHostSuffix| to get a complete hostname.

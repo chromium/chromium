@@ -31,7 +31,7 @@ class OmniboxResult;
 
 // The magic number 1500 is the highest score of an omnibox result.
 // See comments in autocomplete_provider.h.
-constexpr double kMaxOmniboxScore = 1500.0;
+inline constexpr double kMaxOmniboxScore = 1500.0;
 
 // Traffic annotation details for fetching Omnibox image icons.
 constexpr net::NetworkTrafficAnnotationTag kOmniboxTrafficAnnotation =
@@ -62,7 +62,7 @@ constexpr net::NetworkTrafficAnnotationTag kOmniboxTrafficAnnotation =
 
 // Some omnibox answers overtrigger on short queries. This controls the minimum
 // query length before they are displayed.
-constexpr size_t kMinQueryLengthForCommonAnswers = 4u;
+inline constexpr size_t kMinQueryLengthForCommonAnswers = 4u;
 
 // Returns the tag vector for the given text type.
 ash::SearchResultTags TagsForText(const std::u16string& text,

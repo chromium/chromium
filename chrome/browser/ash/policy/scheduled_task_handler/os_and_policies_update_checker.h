@@ -24,7 +24,7 @@ namespace update_checker_internal {
 
 // The maximum iterations allowed to check for and download an update if the
 // operation fails. Used with |os_and_policies_update_checker_|.
-constexpr int kMaxOsAndPoliciesUpdateCheckerRetryIterations = 2;
+inline constexpr int kMaxOsAndPoliciesUpdateCheckerRetryIterations = 2;
 
 // Interval at which |os_and_policies_update_checker_| retries checking for and
 // downloading updates.

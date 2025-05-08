@@ -50,7 +50,7 @@ class SearchProvider;
 class SearchEngine;
 
 // Long queries will be truncated down to this length.
-constexpr int kMaxAllowedQueryLength = 500;
+inline constexpr int kMaxAllowedQueryLength = 500;
 
 // A controller that collects queries from the AppListClient, dispatches them to
 // search providers, then ranks and publishes the results to the AppListModel.

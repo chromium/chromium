@@ -20,7 +20,7 @@ inline constexpr char kRedirectURI[] =
 inline constexpr char kClientName[] = "ChromeOS";
 
 // Max number of parallel OAuth2 sessions with one Authorization Server.
-constexpr size_t kMaxNumberOfSessions = 8;
+inline constexpr size_t kMaxNumberOfSessions = 8;
 
 }  // namespace oauth2
 }  // namespace printing

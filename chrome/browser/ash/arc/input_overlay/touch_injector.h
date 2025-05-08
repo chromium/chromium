@@ -50,7 +50,7 @@ constexpr base::TimeDelta kSendTouchMoveDelay = base::Milliseconds(50);
 gfx::RectF CalculateWindowContentBounds(aura::Window* window);
 
 // Maximum default action ID. User-added actions have ID > kMaxDefaultActionID.
-constexpr int kMaxDefaultActionID = 9999;
+inline constexpr int kMaxDefaultActionID = 9999;
 
 // TouchInjector includes all the touch actions related to the specific window
 // and performs as a bridge between the ArcInputOverlayManager and the touch

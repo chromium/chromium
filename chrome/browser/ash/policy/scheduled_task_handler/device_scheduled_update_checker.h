@@ -111,7 +111,7 @@ constexpr base::TimeDelta kOsAndPoliciesUpdateCheckHardTimeout =
 
 // The maximum iterations allowed to start an update check timer if the
 // operation fails.
-constexpr int kMaxStartUpdateCheckTimerRetryIterations = 5;
+inline constexpr int kMaxStartUpdateCheckTimerRetryIterations = 5;
 
 // Time to call |StartUpdateCheckTimer| again in case it failed.
 constexpr base::TimeDelta kStartUpdateCheckTimerRetryTime = base::Minutes(1);

@@ -13,7 +13,7 @@
 // TODO(crbug/1223213): Move these to a sandbox environment.
 namespace ash::input_method {
 
-constexpr uint32_t kUndefined = std::numeric_limits<uint32_t>::max();
+inline constexpr uint32_t kUndefined = std::numeric_limits<uint32_t>::max();
 
 struct Sentence {
   Sentence();

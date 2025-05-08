@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_CAMERA_APP_CHROME_CAMERA_APP_UI_CONSTANTS_H_
 
 // All window size number here are referred to inner size excluding top bar.
-constexpr int kChromeCameraAppDefaultWidth = 764;
-constexpr int kChromeCameraAppDefaultHeight = 412;
-constexpr int kChromeCameraAppMinimumWidth = 486;
-constexpr int kChromeCameraAppMinimumHeight = 412;
+inline constexpr int kChromeCameraAppDefaultWidth = 764;
+inline constexpr int kChromeCameraAppDefaultHeight = 412;
+inline constexpr int kChromeCameraAppMinimumWidth = 486;
+inline constexpr int kChromeCameraAppMinimumHeight = 412;
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_CAMERA_APP_CHROME_CAMERA_APP_UI_CONSTANTS_H_

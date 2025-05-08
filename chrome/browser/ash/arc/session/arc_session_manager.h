@@ -52,7 +52,7 @@ constexpr const char kGeneratedCombinedPropertyFilePathVm[] =
 // auto-resumes have been already attempted but the migration has not finished,
 // ARC is blocked and the user needs to manually trigger the resume by clicking
 // a notification.
-constexpr int kArcVmDataMigrationMaxAutoResumeCount = 3;
+inline constexpr int kArcVmDataMigrationMaxAutoResumeCount = 3;
 
 class ArcDataRemover;
 class ArcFastAppReinstallStarter;

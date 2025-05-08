@@ -28,7 +28,7 @@ inline constexpr char kHistogramQueryLengthOnStorageSuccess[] =
 inline constexpr char kHistogramReportStatus[] =
     "Apps.AppList.Search.Federated.ReportStatus";
 
-const int kMaxLoggedQueryLengthOnStorageSuccess = 20;
+inline constexpr int kMaxLoggedQueryLengthOnStorageSuccess = 20;
 
 // Records launcher search backend federated analytics.
 // Requires that OnDefaultSearchIsGoogleSet() is called after class creation and

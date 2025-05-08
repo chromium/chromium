@@ -28,7 +28,7 @@ class RepositionController;
 class TouchPoint;
 
 // Represents the default label index. Default -1 means all the index.
-constexpr int kDefaultLabelIndex = -1;
+inline constexpr int kDefaultLabelIndex = -1;
 
 // ActionView is the view for each action.
 class ActionView : public views::View {

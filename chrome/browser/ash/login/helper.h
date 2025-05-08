@@ -55,7 +55,7 @@ namespace login {
 
 // Maximum size of user image, in which it should be saved to be properly
 // displayed under all possible DPI values.
-const int kMaxUserImageSize = 512;
+inline constexpr int kMaxUserImageSize = 512;
 
 // Returns true if lock/login should scroll user pods into view itself when
 // virtual keyboard is shown and disable vk overscroll.

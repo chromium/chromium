@@ -16,11 +16,14 @@ namespace arc {
 
 // These thresholds are chosen based on UMA stats. (go/arcvm-virtio-blk-sparse)
 // Show a pre-stop warning notification if free disk space is lower than this.
-constexpr int64_t kDiskSpaceThresholdForPreStopNotification = 1LL << 30;  // 1GB
+inline constexpr int64_t kDiskSpaceThresholdForPreStopNotification =
+    1LL << 30;  // 1GB
 
 // Stop ARC and show a post-stop warning notification if free disk space is
 // lower than this.
-constexpr int64_t kDiskSpaceThresholdForStoppingArc = 256LL << 20;  // 256MB
+//
+// 256MB
+inline constexpr int64_t kDiskSpaceThresholdForStoppingArc = 256LL << 20;
 
 // TODO(b/233030867): Choose these values based on some logic
 //                    instead of deciding them on a hunch.
