@@ -243,7 +243,7 @@ ConstructPrinterCapabilities() {
       {kCustomPaperWidth, kCustomPaperHeight},
       /*printable_area_um=*/{kCustomPaperWidth, kCustomPaperHeight},
       /*max_height_um=*/kCustomPaperMaxHeight,
-      /*has_borderless_variant=*/false,
+      /*has_borderless_variant=*/true,
       /*supported_margins_um=*/kDefaultPaperMargins);
   capabilities->default_paper = iso_a4_paper;
   capabilities->papers = {std::move(iso_a4_paper), std::move(na_letter_paper),
@@ -255,6 +255,12 @@ ConstructPrinterCapabilities() {
       /*name=*/printing::kIppMediaSource, /*localized_name=*/"",
       printing::AdvancedCapability::Type::kString, /*default_value=*/"auto",
       /*values=*/std::move(media_source_vals));
+  capabilities->print_scaling_types = {
+      printing::mojom::PrintScalingType::kFit,
+      printing::mojom::PrintScalingType::kAuto,
+  };
+  capabilities->print_scaling_type_default =
+      printing::mojom::PrintScalingType::kAuto;
   return capabilities;
 }
 
