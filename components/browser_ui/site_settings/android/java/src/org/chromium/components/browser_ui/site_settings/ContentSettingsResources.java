@@ -133,11 +133,6 @@ public class ContentSettingsResources {
             return mDisabledPrimaryText == 0 ? getDisabledSummary() : mDisabledPrimaryText;
         }
 
-        private int getEnabledDescriptionText() {
-            // TODO(crbug.com/414413495): Remove function.
-            return 0;
-        }
-
         private int getDisabledDescriptionText() {
             return mDisabledDescriptionText;
         }
@@ -1013,7 +1008,7 @@ public class ContentSettingsResources {
         int[] descriptionIDs = {
             getResourceItem(contentType).getEnabledPrimaryText(),
             getResourceItem(contentType).getDisabledPrimaryText(),
-            getResourceItem(contentType).getEnabledDescriptionText(),
+            0,
             getResourceItem(contentType).getDisabledDescriptionText()
         };
         return descriptionIDs;
