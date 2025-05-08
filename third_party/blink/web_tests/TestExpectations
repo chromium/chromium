@@ -9358,11 +9358,3 @@ crbug.com/415747471 [ Mac ] svg/text/bidi-textlength.html [ Failure Pass ]
 
 # Gardener 2025-05-07
 crbug.com/416123241 [ Linux ] fast/forms/select/customizable-select/disallowed-select-descendants-console-message.html [ Failure Pass ]
-
-# Temporarily skipped to land https://crrev.com/c/6502712, after which expectations will be updated
-crbug.com/414525205 http/tests/devtools/console/console-functions.js [ Failure Pass ]
-crbug.com/414525205 http/tests/devtools/sources/debugger-ui/watch-expressions-preserve-expansion.js [ Failure Pass ]
-crbug.com/414525205 http/tests/devtools/sources/debugger/properties-special.js [ Failure Pass ]
-crbug.com/414525205 external/wpt/webidl/ecmascript-binding/builtin-function-properties.any.html [ Failure Pass ]
-crbug.com/414525205 external/wpt/webidl/ecmascript-binding/builtin-function-properties.any.worker.html [ Failure Pass ]
-crbug.com/414525205 external/wpt/webidl/ecmascript-binding/legacy-factory-function-builtin-properties.window.html [ Failure Pass ]
