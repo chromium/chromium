@@ -168,3 +168,104 @@ TEST_F(ReadAnythingNodeUtilsTest, IsSuperscript) {
   node.SetData(std::move(data));
   EXPECT_TRUE(a11y::IsSuperscript(&node));
 }
+
+TEST_F(ReadAnythingNodeUtilsTest, GetHtmlTag_ReturnsDivForTextField) {
+  const std::u16string sentence1 =
+      u"Why do you write like it\'s going out of style?";
+  const std::u16string sentence2 =
+      u"Why do you write like you\'re running out of time?";
+
+  ui::AXNodeData data_with_html_tag = test::TextNode(2, sentence1);
+  data_with_html_tag.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                        "p");
+  data_with_html_tag.role = ax::mojom::Role::kTextField;
+
+  ui::AXNodeData data_with_no_html_tag = test::TextNode(2, sentence2);
+  data_with_no_html_tag.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                           "");
+  data_with_no_html_tag.role = ax::mojom::Role::kTextField;
+
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, 2, 0);
+  node.SetData(std::move(data_with_html_tag));
+  EXPECT_EQ(a11y::GetHtmlTag(&node, false, false), "div");
+
+  node.SetData(std::move(data_with_no_html_tag));
+  EXPECT_EQ(a11y::GetHtmlTag(&node, false, false), "div");
+}
+
+TEST_F(ReadAnythingNodeUtilsTest, GetHtmlTag_ReturnsHeadingTag) {
+  const std::u16string sentence1 = u"Heading 1";
+  const std::u16string sentence2 = u"Heading 2";
+
+  ui::AXNodeData heading_data = test::TextNode(2, sentence1);
+  heading_data.AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel, 1);
+  heading_data.role = ax::mojom::Role::kHeading;
+
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, 2, 0);
+  node.SetData(std::move(heading_data));
+  EXPECT_EQ(a11y::GetHtmlTag(&node, false, false), "h1");
+
+  heading_data.AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel, 2);
+  node.SetData(std::move(heading_data));
+  EXPECT_EQ(a11y::GetHtmlTag(&node, false, false), "h2");
+}
+
+TEST_F(ReadAnythingNodeUtilsTest, GetHtmlTag_MarkElementReturnsBold) {
+  const std::u16string sentence = u"Mark element";
+
+  ui::AXNodeData data = test::TextNode(2, sentence);
+  data.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "mark");
+
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, 2, 0);
+  node.SetData(std::move(data));
+  EXPECT_EQ(a11y::GetHtmlTag(&node, false, false), "b");
+}
+
+TEST_F(ReadAnythingNodeUtilsTest, GetHtmlTag_ReturnsHtmlTagForDocs) {
+  const std::u16string sentence = u"Google docs document";
+
+  ui::AXNodeData data = test::TextNode(2, sentence);
+  data.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "svg");
+
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, 2, 0);
+  node.SetData(std::move(data));
+
+  // SVG elements should be changed to div tags for Docs.
+  EXPECT_EQ(a11y::GetHtmlTag(&node, /* is_pdf= */ false, /* is_docs= */ true),
+            "div");
+
+  // Paragraphs with the g tag should be changed to the p tag for Docs.
+  data.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "g");
+  data.role = ax::mojom::Role::kParagraph;
+  node.SetData(std::move(data));
+  EXPECT_EQ(a11y::GetHtmlTag(&node, /* is_pdf= */ false, /* is_docs= */ true),
+            "p");
+}
+
+TEST_F(ReadAnythingNodeUtilsTest, GetHtmlTag_ReturnsExpectedTag) {
+  const std::u16string sentence = u"Tomorrow is another day";
+
+  ui::AXNodeData data = test::TextNode(2, sentence);
+  data.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "p");
+
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, 2, 0);
+  node.SetData(std::move(data));
+  EXPECT_EQ(a11y::GetHtmlTag(&node, false, false), "p");
+
+  data.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "b");
+  node.SetData(std::move(data));
+  EXPECT_EQ(a11y::GetHtmlTag(&node, false, false), "b");
+
+  data.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "head");
+  node.SetData(std::move(data));
+  EXPECT_EQ(a11y::GetHtmlTag(&node, false, false), "head");
+
+  data.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "img");
+  node.SetData(std::move(data));
+  EXPECT_EQ(a11y::GetHtmlTag(&node, false, false), "img");
+}
