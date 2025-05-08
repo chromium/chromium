@@ -363,6 +363,10 @@ std::string ChromeWebClient::GetUserAgent(web::UserAgentType type) const {
   return web::BuildMobileUserAgent(GetMobileProduct());
 }
 
+std::string ChromeWebClient::GetMainThreadName() const {
+  return "CrWebMain";
+}
+
 std::u16string ChromeWebClient::GetLocalizedString(int message_id) const {
   return l10n_util::GetStringUTF16(message_id);
 }

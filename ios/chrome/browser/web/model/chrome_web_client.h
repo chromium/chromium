@@ -33,6 +33,7 @@ class ChromeWebClient : public web::WebClient {
   std::string GetApplicationLocale() const override;
   bool IsAppSpecificURL(const GURL& url) const override;
   std::string GetUserAgent(web::UserAgentType type) const override;
+  std::string GetMainThreadName() const override;
   std::u16string GetLocalizedString(int message_id) const override;
   std::string_view GetDataResource(
       int resource_id,

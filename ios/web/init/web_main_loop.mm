@@ -212,7 +212,10 @@ void WebMainLoop::ShutdownThreadsAndCleanUp() {
 }
 
 void WebMainLoop::InitializeMainThread() {
-  base::PlatformThread::SetName("CrWebMain");
+  const std::string name = web::GetWebClient()->GetMainThreadName();
+  if (!name.empty()) {
+    base::PlatformThread::SetName(name);
+  }
 
   // Register the main thread by instantiating it, but don't call any methods.
   DCHECK(base::SingleThreadTaskRunner::HasCurrentDefault());

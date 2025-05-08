@@ -47,6 +47,10 @@ std::string WebClient::GetUserAgent(UserAgentType type) const {
   return std::string();
 }
 
+std::string WebClient::GetMainThreadName() const {
+  return std::string();
+}
+
 std::u16string WebClient::GetLocalizedString(int message_id) const {
   return std::u16string();
 }

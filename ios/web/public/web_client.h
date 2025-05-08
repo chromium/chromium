@@ -94,6 +94,11 @@ class WebClient {
   // Returns the user agent string for the specified type.
   virtual std::string GetUserAgent(UserAgentType type) const;
 
+  // Returns the name of the main thread. If the returned string is empty,
+  // the main thread name will not be set. The default implementation returns
+  // an empty string and does not rename the main thread.
+  virtual std::string GetMainThreadName() const;
+
   // Returns a string resource given its id.
   virtual std::u16string GetLocalizedString(int message_id) const;
 
