@@ -34,8 +34,6 @@ source_set("change_profile") {
     "change_profile_signout_continuation.mm",
     "change_profile_voice_search_continuation.h",
     "change_profile_voice_search_continuation.mm",
-    "sync_history_continuation.h",
-    "sync_history_continuation.mm",
   ]
 
   deps = [
