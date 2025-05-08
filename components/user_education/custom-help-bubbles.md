@@ -117,9 +117,9 @@ On the browser/C++ side:
 4. Use `DECLARE_TOP_CHROME_WEBUI_CONFIG(ClassName)` to automatically create a
    config for your WebUI.
 5. Call `.AddWebUIConfig(ClassNameConfig)` in
-   [this file](//chrome/browser/ui/webui/chrome_web_ui_configs.cc).
+   [this file](/chrome/browser/ui/webui/chrome_web_ui_configs.cc).
 6. Call or add to the appropriate `RegisterWebUIControllerInterfaceBinder()` in
-   [this file](//chrome/browser/chrome_browser_interface_binders_webui.cc).
+   [this file](/chrome/browser/chrome_browser_interface_binders_webui.cc).
    - This should include `CustomHelpBubbleHandlerFactory` and any additional
      mojo bindings you need.
 
