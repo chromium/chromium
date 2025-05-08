@@ -12184,6 +12184,7 @@ from previous Chrome versions.
   <int value="-705464246" label="ChromeCartDomBasedHeuristics:enabled"/>
   <int value="-705212373" label="IncognitoNtpRevamp:disabled"/>
   <int value="-704459022" label="ContinuousSearch:enabled"/>
+  <int value="-704335590" label="TreesInViz:disabled"/>
   <int value="-704232562" label="UseMonitorColorSpace:enabled"/>
   <int value="-704105887"
       label="(Obsolete) EnforceAshExtensionKeeplist:enabled"/>
@@ -13423,6 +13424,7 @@ from previous Chrome versions.
   <int value="-229995076" label="AltClickAndSixPackCustomization:disabled"/>
   <int value="-228933177" label="ToastFramework:disabled"/>
   <int value="-228847300" label="OmniboxLimitKeywordModeSuggestions:disabled"/>
+  <int value="-227487160" label="TreesInViz:enabled"/>
   <int value="-227261557" label="CrosSodaConchLanguages:enabled"/>
   <int value="-226826278" label="ForceEnableFastCheckoutCapabilities:disabled"/>
   <int value="-226715863" label="SHA1ServerSignature:enabled"/>

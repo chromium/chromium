@@ -9367,6 +9367,15 @@
     "expiry_milestone": 142
   },
   {
+    "name": "trees-in-viz",
+    "owners": [
+      "zmo@chromium.org",
+      "vmiura@chromium.org",
+      "chrome-gpu-team@google.com"
+    ],
+    "expiry_milestone": 144
+  },
+  {
     "name": "ui-debug-tools",
     "owners": [ "//ui/views/OWNERS" ],
     "expiry_milestone": -1

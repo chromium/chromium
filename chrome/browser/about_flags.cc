@@ -8960,6 +8960,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          blink::features::kPrerender2EarlyDocumentLifecycleUpdate)},
 
+    {"trees-in-viz", flag_descriptions::kTreesInVizName,
+     flag_descriptions::kTreesInVizDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kTreesInViz)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"prerender2-new-tab-page-android",
      flag_descriptions::kPrerender2ForNewTabPageAndroidName,

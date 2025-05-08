@@ -3306,6 +3306,12 @@ const char kPrerender2EarlyDocumentLifecycleUpdateDescription[] =
     "Allows prerendering pages to execute more lifecycle updates, such as "
     "prepaint, before activation";
 
+const char kTreesInVizName[] = "Trees in viz";
+const char kTreesInVizDescription[] =
+    "Enables the renderer to send a CC LayerTree to the viz/gpu process "
+    "instead of a CompositorFrame. This allows viz to generate and submit "
+    "the CompositorFrame directly.";
+
 const char kPrerender2ForNewTabPageAndroidName[] =
     "Enable prerendering on New Tab Page Android";
 const char kPrerender2ForNewTabPageAndroidDescription[] =
