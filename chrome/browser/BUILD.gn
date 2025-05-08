@@ -1019,6 +1019,8 @@ static_library("browser") {
     "password_manager/password_change/change_password_form_finder.h",
     "password_manager/password_change/change_password_form_waiter.cc",
     "password_manager/password_change/change_password_form_waiter.h",
+    "password_manager/password_change/model_quality_logs_uploader.cc",
+    "password_manager/password_change/model_quality_logs_uploader.h",
     "password_manager/password_change_delegate.h",
     "password_manager/password_change_delegate_impl.cc",
     "password_manager/password_change_delegate_impl.h",

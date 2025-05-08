@@ -15,6 +15,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
+#include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -141,7 +142,8 @@ class ChangeFormSubmissionVerifierTest
  public:
   ChangeFormSubmissionVerifierTest()
       : ChromeRenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        logs_uploader_(profile()) {}
   ~ChangeFormSubmissionVerifierTest() override = default;
 
   void SetUp() override {
@@ -157,7 +159,6 @@ class ChangeFormSubmissionVerifierTest
         base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
                             content::BrowserContext,
                             password_manager::MockPasswordStoreInterface>));
-
     // `ChromePasswordManagerClient` observes `AutofillManager`s, so
     // `ChromeAutofillClient` needs to be set up, too.
     autofill::ChromeAutofillClient::CreateForWebContents(web_contents());
@@ -190,7 +191,8 @@ class ChangeFormSubmissionVerifierTest
       base::OnceCallback<void(bool)> result_callback) {
     auto verifier = std::make_unique<ChangeFormSubmissionVerifier>(
         base::PassKey<class ChangeFormSubmissionVerifierTest>(), web_contents(),
-        std::move(capture_annotated_page_content), std::move(result_callback));
+        std::move(capture_annotated_page_content), std::move(result_callback),
+        &logs_uploader_);
     verifier->FillChangePasswordForm(manager, kOldPassword, kNewPassword);
     return verifier;
   }
@@ -211,6 +213,7 @@ class ChangeFormSubmissionVerifierTest
   autofill::test::AutofillUnitTestEnvironment autofill_environment_{
       {.disable_server_communication = true}};
   password_manager::FakeFormFetcher form_fetcher_;
+  ModelQualityLogsUploader logs_uploader_;
   MockStubPasswordManagerDriver driver_;
 };
 

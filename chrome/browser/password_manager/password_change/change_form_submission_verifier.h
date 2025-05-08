@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/autofill/core/common/form_data.h"
@@ -19,6 +20,7 @@
 namespace content {
 class WebContents;
 }
+class ModelQualityLogsUploader;
 class OptimizationGuideKeyedService;
 namespace password_manager {
 class PasswordFormManager;
@@ -63,13 +65,15 @@ class ChangeFormSubmissionVerifier {
       "PasswordManager.PasswordChangeVerificationTriggeredAutomatically";
 
   ChangeFormSubmissionVerifier(content::WebContents* web_contents,
-                               FormSubmissionResultCallback callback);
+                               FormSubmissionResultCallback callback,
+                               ModelQualityLogsUploader* logs_uploader);
   ChangeFormSubmissionVerifier(
       base::PassKey<class ChangeFormSubmissionVerifierTest>,
       content::WebContents* web_contents,
       base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
           capture_annotated_page_content,
-      FormSubmissionResultCallback callback);
+      FormSubmissionResultCallback callback,
+      ModelQualityLogsUploader* logs_uploader);
   ~ChangeFormSubmissionVerifier();
 
   // Starts chain of actions:
@@ -127,6 +131,7 @@ class ChangeFormSubmissionVerifier {
   base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
       capture_annotated_page_content_;
   FormSubmissionResultCallback callback_;
+  raw_ptr<ModelQualityLogsUploader> logs_uploader_;
   std::unique_ptr<password_manager::PasswordFormManager> form_manager_;
   // TODO(crbug.com/409946698): Delete this when removing support for AX tree
   // prompts.

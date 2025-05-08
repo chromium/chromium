@@ -11,10 +11,10 @@
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
-#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
@@ -51,28 +51,6 @@ void LogSubmissionOutcome(SubmissionOutcome outcome, ukm::SourceId ukm_id) {
   ukm::builders::PasswordManager_PasswordChangeSubmissionOutcome(ukm_id)
       .SetPasswordChangeSubmissionOutcome(static_cast<int>(outcome))
       .Record(ukm::UkmRecorder::Get());
-}
-
-void AddFinalModelStatusLog(
-    OptimizationGuideKeyedService* optimization_executor,
-    FinalModelStatus final_status) {
-  base::WeakPtr<optimization_guide::ModelQualityLogsUploaderService>
-      logs_uploader_ptr;
-
-  auto* logs_uploader =
-      optimization_executor->GetModelQualityLogsUploaderService();
-  if (logs_uploader) {
-    logs_uploader_ptr = logs_uploader->GetWeakPtr();
-  }
-
-  QualityLogEntry log_entry =
-      std::make_unique<optimization_guide::ModelQualityLogEntry>(
-          logs_uploader_ptr);
-  log_entry->log_ai_data_request()
-      ->mutable_password_change_submission()
-      ->mutable_quality()
-      ->set_final_model_status(final_status);
-  optimization_guide::ModelQualityLogEntry::Upload(std::move(log_entry));
 }
 
 void RecordOutcomeMetrics(
@@ -131,21 +109,26 @@ void RecordOutcomeMetrics(
 
 ChangeFormSubmissionVerifier::ChangeFormSubmissionVerifier(
     content::WebContents* web_contents,
-    FormSubmissionResultCallback callback)
+    FormSubmissionResultCallback callback,
+    ModelQualityLogsUploader* logs_uploader)
     : web_contents_(web_contents->GetWeakPtr()),
       capture_annotated_page_content_(
           base::BindOnce(&optimization_guide::GetAIPageContent,
                          web_contents,
                          optimization_guide::DefaultAIPageContentOptions())),
-      callback_(std::move(callback)) {}
+      callback_(std::move(callback)),
+      logs_uploader_(logs_uploader) {}
 
 ChangeFormSubmissionVerifier::ChangeFormSubmissionVerifier(
     base::PassKey<class ChangeFormSubmissionVerifierTest>,
     content::WebContents* web_contents,
     base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
         capture_annotated_page_content,
-    FormSubmissionResultCallback callback)
-    : ChangeFormSubmissionVerifier(web_contents, std::move(callback)) {
+    FormSubmissionResultCallback callback,
+    ModelQualityLogsUploader* logs_uploader)
+    : ChangeFormSubmissionVerifier(web_contents,
+                                   std::move(callback),
+                                   std::move(logs_uploader)) {
   capture_annotated_page_content_ = std::move(capture_annotated_page_content);
 }
 
@@ -352,13 +335,9 @@ void ChangeFormSubmissionVerifier::OnExecutionResponseCallback(
   ChromePasswordManagerClient* client =
       ChromePasswordManagerClient::FromWebContents(web_contents_.get());
 
-  OptimizationGuideKeyedService* optimization_executor =
-      GetOptimizationService();
   if (!execution_result.response.has_value()) {
     LogSubmissionOutcome(SubmissionOutcome::kNoResponse,
                          client->GetUkmSourceId());
-    AddFinalModelStatusLog(optimization_executor,
-                           FinalModelStatus::FINAL_MODEL_STATUS_UNSPECIFIED);
     std::move(callback_).Run(false);
     return;
   }
@@ -369,10 +348,13 @@ void ChangeFormSubmissionVerifier::OnExecutionResponseCallback(
   if (!response) {
     LogSubmissionOutcome(SubmissionOutcome::kCouldNotParse,
                          client->GetUkmSourceId());
-    AddFinalModelStatusLog(optimization_executor,
-                           FinalModelStatus::FINAL_MODEL_STATUS_UNSPECIFIED);
     std::move(callback_).Run(false);
     return;
+  }
+
+  if (logging_data) {
+    // There is data to log, meaning this is a complete response.
+    logs_uploader_->MergeData(response.value(), std::move(logging_data));
   }
 
   RecordOutcomeMetrics(response.value().outcome_data(),
@@ -385,12 +367,8 @@ void ChangeFormSubmissionVerifier::OnExecutionResponseCallback(
       outcome !=
           PasswordChangeOutcome::
               PasswordChangeSubmissionData_PasswordChangeOutcome_UNKNOWN_OUTCOME) {
-    AddFinalModelStatusLog(optimization_executor,
-                           FinalModelStatus::FINAL_MODEL_STATUS_FAILURE);
     std::move(callback_).Run(false);
     return;
   }
-  AddFinalModelStatusLog(optimization_executor,
-                         FinalModelStatus::FINAL_MODEL_STATUS_SUCCESS);
   std::move(callback_).Run(true);
 }

@@ -28,6 +28,8 @@ class PasswordFormManager;
 
 class ChangeFormSubmissionVerifier;
 class ChangePasswordFormFinder;
+class ChangePasswordFormWaiter;
+class ModelQualityLogsUploader;
 
 // This class controls password change process including acceptance of privacy
 // notice, opening of a new tab, navigation to the change password url, password
@@ -115,6 +117,11 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
 
   // Helper class which looks for a change password form.
   std::unique_ptr<ChangePasswordFormFinder> form_finder_;
+  // Helper class which uploads model quality logs.
+  std::unique_ptr<ModelQualityLogsUploader> logs_uploader_;
+
+  // Class which awaits for change password form to appear.
+  std::unique_ptr<ChangePasswordFormWaiter> form_waiter_;
 
   // Helper class which submits a form and verifies submission.
   std::unique_ptr<ChangeFormSubmissionVerifier> submission_verifier_;

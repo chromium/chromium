@@ -12,6 +12,8 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_change/change_form_submission_verifier.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_finder.h"
+#include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
+#include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -154,7 +156,9 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
     : change_password_url_(std::move(change_password_url)),
       username_(std::move(username)),
       original_password_(std::move(password)),
-      originator_(originator->GetWeakPtr()) {
+      originator_(originator->GetWeakPtr()),
+      logs_uploader_(std::make_unique<ModelQualityLogsUploader>(
+          Profile::FromBrowserContext(originator->GetBrowserContext()))) {
   if (auto logger = GetLoggerIfAvailable(originator_)) {
     logger->LogMessage(
         BrowserSavePasswordProgressLogger::STRING_PASSWORD_CHANGE_STARTED);
@@ -227,7 +231,8 @@ void PasswordChangeDelegateImpl::OnPasswordChangeFormFound(
       executor_.get(),
       base::BindOnce(
           &PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr()),
+      logs_uploader_.get());
   submission_verifier_->FillChangePasswordForm(form_manager, original_password_,
                                                generated_password_);
   UpdateState(PasswordChangeDelegate::State::kChangingPassword);
@@ -393,7 +398,7 @@ void PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified(bool result) {
     submission_verifier_->SavePassword(username_);
     UpdateState(State::kPasswordSuccessfullyChanged);
   }
-
+  logs_uploader_->UploadFinalLog();
   submission_verifier_.reset();
 }
 bool PasswordChangeDelegateImpl::IsPrivacyNoticeAcknowledged() const {
