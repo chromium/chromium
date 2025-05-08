@@ -11243,6 +11243,21 @@
             ]
         }
     ],
+    "IOSAutofillRefillForForms": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillRefillForFormsIos"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSAutofillThrottleDocumentFormScan": [
         {
             "platforms": [
