@@ -4,10 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -19,11 +17,8 @@ import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestinati
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID;
 
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.GradientDrawable;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.test.filters.MediumTest;
@@ -58,7 +53,6 @@ import org.chromium.chrome.test.transit.hub.NewTabGroupDialogFacility;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.TabSwitcherGroupCardFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
-import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.UndoSnackbarFacility;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
@@ -68,7 +62,6 @@ import org.chromium.chrome.test.transit.tabmodel.TabThumbnailsCapturedCarryOn;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_groups.TabGroupColorId;
-import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.base.PageTransition;
 
 import java.io.IOException;
@@ -435,11 +428,10 @@ public class TabSwitcherLayoutPTTest {
         editor = editor.addTabToSelection(0, firstTabId);
         editor = editor.addTabToSelection(1, secondTabId);
         NewTabGroupDialogFacility dialog = editor.openAppMenuWithEditor().groupTabs();
-        dialog.pressBack();
+        TabSwitcherGroupCardFacility card = dialog.pressBack();
 
         // Verify the color icon exists and that the dialog is dismissed via another action
-        onView(TabSwitcherStation.TAB_GROUP_COLOR_ICON_VIEW.getViewMatcher())
-                .check(matches(isDisplayed()));
+        card.expectColor(TabGroupColorId.GREY);
         watcher.assertExpected();
 
         // Open NTP PageStation for InitialStateRule to reset
@@ -477,8 +469,9 @@ public class TabSwitcherLayoutPTTest {
         dialog.pressDone();
 
         // Assert that the expected fields are correct
-        tabSwitcher.expectGroupCard(List.of(firstTabId, secondTabId), "Test");
-        verifyGroupCardColor(TabGroupColorId.BLUE);
+        tabSwitcher
+                .expectGroupCard(List.of(firstTabId, secondTabId), "Test")
+                .expectColor(TabGroupColorId.BLUE);
         histograms.assertExpected();
 
         // Open NTP PageStation for InitialStateRule to reset
@@ -505,10 +498,11 @@ public class TabSwitcherLayoutPTTest {
         dialog.pressDone();
 
         // Assert that the expected fields are correct
-        tabSwitcher.expectGroupCard(
-                List.of(firstTabId, secondTabId),
-                TabSwitcherGroupCardFacility.DEFAULT_N_TABS_TITLE);
-        verifyGroupCardColor(TabGroupColorId.GREY);
+        tabSwitcher
+                .expectGroupCard(
+                        List.of(firstTabId, secondTabId),
+                        TabSwitcherGroupCardFacility.DEFAULT_N_TABS_TITLE)
+                .expectColor(TabGroupColorId.GREY);
 
         // Open NTP PageStation for InitialStateRule to reset
         RegularNewTabPageStation ntp = tabSwitcher.openNewTab();
@@ -536,10 +530,11 @@ public class TabSwitcherLayoutPTTest {
         dialog.pressBack();
 
         // Assert that the expected fields are correct
-        tabSwitcher.expectGroupCard(
-                List.of(firstTabId, secondTabId),
-                TabSwitcherGroupCardFacility.DEFAULT_N_TABS_TITLE);
-        verifyGroupCardColor(TabGroupColorId.BLUE);
+        tabSwitcher
+                .expectGroupCard(
+                        List.of(firstTabId, secondTabId),
+                        TabSwitcherGroupCardFacility.DEFAULT_N_TABS_TITLE)
+                .expectColor(TabGroupColorId.BLUE);
 
         // Open NTP PageStation for InitialStateRule to reset
         RegularNewTabPageStation ntp = tabSwitcher.openNewTab();
@@ -570,10 +565,11 @@ public class TabSwitcherLayoutPTTest {
         dialog.pressBack();
 
         // Assert that the expected fields are correct
-        tabSwitcher.expectGroupCard(
-                List.of(firstTabId, secondTabId),
-                TabSwitcherGroupCardFacility.DEFAULT_N_TABS_TITLE);
-        verifyGroupCardColor(TabGroupColorId.GREY);
+        tabSwitcher
+                .expectGroupCard(
+                        List.of(firstTabId, secondTabId),
+                        TabSwitcherGroupCardFacility.DEFAULT_N_TABS_TITLE)
+                .expectColor(TabGroupColorId.GREY);
 
         // Open NTP PageStation for InitialStateRule to reset
         RegularNewTabPageStation ntp = tabSwitcher.openNewTab();
@@ -601,8 +597,9 @@ public class TabSwitcherLayoutPTTest {
         dialog.pressBack();
 
         // Assert that the expected fields are correct
-        tabSwitcher.expectGroupCard(List.of(firstTabId, secondTabId), "Test");
-        verifyGroupCardColor(TabGroupColorId.BLUE);
+        tabSwitcher
+                .expectGroupCard(List.of(firstTabId, secondTabId), "Test")
+                .expectColor(TabGroupColorId.BLUE);
 
         // Open NTP PageStation for InitialStateRule to reset
         RegularNewTabPageStation ntp = tabSwitcher.openNewTab();
@@ -682,32 +679,9 @@ public class TabSwitcherLayoutPTTest {
         return tabSwitcher.leaveHubToPreviousTabViaBack(destinationBuiderFactory.get());
     }
 
-    private void verifyGroupCardColor(@TabGroupColorId int color) {
-        onView(TabSwitcherStation.TAB_GROUP_COLOR_ICON_VIEW.getViewMatcher())
-                .check(
-                        (v, noMatchException) -> {
-                            if (noMatchException != null) throw noMatchException;
-
-                            FrameLayout containerView = (FrameLayout) v;
-                            FrameLayout colorView = (FrameLayout) containerView.getChildAt(0);
-                            GradientDrawable drawable =
-                                    (GradientDrawable) colorView.getBackground();
-
-                            assertEquals(
-                                    ColorStateList.valueOf(
-                                            TabGroupColorPickerUtils
-                                                    .getTabGroupColorPickerItemColor(
-                                                            mCtaTestRule.getActivity(),
-                                                            color,
-                                                            false)),
-                                    drawable.getColor());
-                        });
-    }
-
     @Test
     @MediumTest
     public void testUrlUpdatedNotCrashing_ForTabNotInCurrentModel() throws Exception {
-        ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         WebPageStation regularPage = mCtaTestRule.startOnBlankPage();
         Tab regularTab = regularPage.loadedTabElement.get();
         IncognitoNewTabPageStation incognitoPage = regularPage.openNewIncognitoTabFast();

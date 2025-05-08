@@ -12,6 +12,7 @@ include_rules = [
   # This test code needs to depend on sync related classes and test tools.
   "+components/sync/android/java/src/org/chromium/components/sync",
   "+components/sync/test",
+  "+components/tab_groups/android/java",
   "+components/translate/content/android/java",
   "+components/webapk/android",
 ]

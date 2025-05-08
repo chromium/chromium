@@ -4,14 +4,29 @@
 
 package org.chromium.chrome.test.transit.hub;
 
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
+
+import static org.chromium.base.test.transit.Condition.whetherEquals;
+import static org.chromium.base.test.transit.SimpleConditions.uiThreadCondition;
+import static org.chromium.base.test.transit.ViewSpec.viewSpec;
+
+import android.content.res.ColorStateList;
+import android.graphics.drawable.GradientDrawable;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
 
 import org.chromium.base.test.transit.Elements;
+import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ViewElement;
+import org.chromium.base.test.transit.ViewSpec;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupExistsCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
+import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -78,5 +93,40 @@ public class TabSwitcherGroupCardFacility extends TabSwitcherCardFacility {
         return mHostStation.enterFacilitySync(
                 new TabSwitcherGroupCardAppMenuFacility(isIncognito, mTitle),
                 menuButtonElement.getClickTrigger());
+    }
+
+    public TabGroupCardColorFacility expectColor(@TabGroupColorId int color) {
+        return mHostStation.enterFacilitySync(
+                new TabGroupCardColorFacility(color), /* trigger= */ null);
+    }
+
+    public class TabGroupCardColorFacility extends Facility<TabSwitcherStation> {
+        public final ViewElement<FrameLayout> colorViewElement;
+
+        public TabGroupCardColorFacility(@TabGroupColorId int color) {
+            ColorStateList expectedColor =
+                    ColorStateList.valueOf(
+                            TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
+                                    TabSwitcherGroupCardFacility.this.mHostStation.getActivity(),
+                                    color,
+                                    false));
+
+            ViewSpec<View> colorContainerSpec =
+                    cardViewElement.descendant(withId(R.id.tab_group_color_view_container));
+            colorViewElement =
+                    declareView(
+                            viewSpec(
+                                    FrameLayout.class,
+                                    withParent(colorContainerSpec.getViewMatcher())));
+            declareEnterCondition(
+                    uiThreadCondition(
+                            "Tab group color should be " + expectedColor,
+                            colorViewElement,
+                            colorView -> {
+                                return whetherEquals(
+                                        expectedColor,
+                                        ((GradientDrawable) colorView.getBackground()).getColor());
+                            }));
+        }
     }
 }
