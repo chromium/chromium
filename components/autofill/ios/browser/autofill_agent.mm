@@ -1003,6 +1003,16 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
                    fieldToFormLookupMap:fieldToFormLookupMap];
   }
 
+  if (base::FeatureList::IsEnabled(kAutofillRefillForFormsIos) &&
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAcrossIframesIos)) {
+    auto* driver =
+        autofill::AutofillDriverIOS::FromWebStateAndWebFrame(_webState, frame);
+    if (driver && driver->is_processed()) {
+      driver->ScanForms();
+    }
+  }
+
   [self recordFormFillingSuccessMetrics:!fillingResults.empty()];
 }
 

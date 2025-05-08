@@ -61,6 +61,10 @@ BASE_DECLARE_FEATURE(kAutofillPaymentsSheetV2Ios);
 // the FormSuggestionController.
 BASE_DECLARE_FEATURE(kAutofillPaymentsSheetV3Ios);
 
+// Enables the refill functionality to allow autofilling of dynamically
+// expanding forms.
+BASE_DECLARE_FEATURE(kAutofillRefillForFormsIos);
+
 // Makes the autofill and password infobars sticky on iOS. The sticky infobar
 // sticks there until navigating from an explicit user gesture (e.g. reload or
 // load a new page from the omnibox). This includes the infobar UI and the

@@ -5,6 +5,7 @@
 #       If it requires updating, you should get a presubmit error with
 #       instructions on how to regenerate. Otherwise, do not edit.
 data/http_server_files/OWNERS
+data/http_server_files/autofill_refill_test.html
 data/http_server_files/autofill_smoke_test.html
 data/http_server_files/browsing_prevent_default_test_page.html
 data/http_server_files/bundle.pkpasses
@@ -19,8 +20,8 @@ data/http_server_files/credit_card_autofocused.html
 data/http_server_files/destination.html
 data/http_server_files/download_test_page.html
 data/http_server_files/email_signup_form.html
-data/http_server_files/fullscreen.html
 data/http_server_files/full_address_form.html
+data/http_server_files/fullscreen.html
 data/http_server_files/generic.pkpass
 data/http_server_files/green.pdf
 data/http_server_files/history.html
@@ -47,8 +48,8 @@ data/http_server_files/readonly_form.html
 data/http_server_files/redchair.usdz
 data/http_server_files/redirect_refresh.html
 data/http_server_files/sample.ics
-data/http_server_files/sample.order
 data/http_server_files/sample.mobileconfig
+data/http_server_files/sample.order
 data/http_server_files/semi_bundle.pkpasses
 data/http_server_files/simple_login_form.html
 data/http_server_files/simple_login_form_empty.html

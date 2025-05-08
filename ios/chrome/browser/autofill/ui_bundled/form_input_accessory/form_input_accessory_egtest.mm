@@ -120,6 +120,23 @@ id<GREYMatcher> KeyboardAccessoryAddressSuggestion() {
   }
 }
 
+// Matcher for the name suggestion chip.
+id<GREYMatcher> KeyboardAccessoryNameSuggestion() {
+  autofill::AutofillProfile profile = autofill::test::GetFullProfile();
+  NSString* name =
+      base::SysUTF16ToNSString(profile.GetRawInfo(autofill::NAME_FULL));
+  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled] &&
+      [ChromeEarlGrey isIPadIdiom]) {
+    // On iPad, the suggestion text is an attributed string containing the state
+    // on the 2nd line.
+    NSString* state = base::SysUTF16ToNSString(
+        profile.GetRawInfo(autofill::ADDRESS_HOME_STATE));
+    return grey_text([NSString stringWithFormat:@"%@\n%@", name, state]);
+  } else {
+    return grey_text(name);
+  }
+}
+
 // Verifies that the number of accepted address suggestions recorded for the
 // given `suggestion_index` is as expected.
 void CheckAddressAutofillSuggestionAcceptedIndexMetricsCount(
@@ -262,6 +279,12 @@ void SlowlyTypeText(NSString* text) {
     config.iph_feature_enabled =
         feature_engagement::kIPHAutofillHomeWorkProfileSuggestionFeature.name;
   }
+
+  if ([self isRunningTest:@selector(testReFillAddressFieldsOnForm)]) {
+    config.features_enabled.push_back(kAutofillRefillForFormsIos);
+    config.features_enabled.push_back(
+        autofill::features::kAutofillAcrossIframesIos);
+  }
   return config;
 }
 
@@ -321,6 +344,13 @@ void SlowlyTypeText(NSString* text) {
 - (void)loadAddressPage {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/autofill_smoke_test.html")];
   [ChromeEarlGrey waitForWebStateContainingText:"Profile Autofill"];
+}
+
+// Loads simple address page with refill on localhost.
+- (void)loadRefillAddressPage {
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL("/autofill_refill_test.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Refill Profile Autofill"];
 }
 
 // Verifies that html field with the `id_attr` attribute has been filled with
@@ -774,6 +804,26 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
   // correctly recorded.
   CheckAddressAutofillSuggestionAcceptedIndexMetricsCount(
       /*suggestion_index=*/0);
+}
+
+// Tests that tapping on a name field of a dinamically expanding address form
+// and accepting the keyboard accessory suggestion automatically autofills the
+// whole address.
+- (void)testReFillAddressFieldsOnForm {
+  [self loadRefillAddressPage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormName)];
+
+  id<GREYMatcher> name_chip = KeyboardAccessoryNameSuggestion();
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:name_chip];
+
+  // Autofill the name field to uncover the rest of the address form.
+  [[EarlGrey selectElementWithMatcher:name_chip] performAction:grey_tap()];
+
+  // Verify that the whole address was filled properly.
+  [self verifyAddressInfosHaveBeenFilled:autofill::test::GetFullProfile()];
 }
 
 // Tests the IPH feature for a Home and Work account profile.

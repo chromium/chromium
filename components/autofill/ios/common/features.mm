@@ -62,6 +62,10 @@ BASE_FEATURE(kAutofillPaymentsSheetV3Ios,
              "AutofillPaymentsSheetV3Ios",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAutofillRefillForFormsIos,
+             "AutofillRefillForFormsIos",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAutofillStickyInfobarIos,
              "AutofillStickyInfobarIos",
              base::FEATURE_ENABLED_BY_DEFAULT);
