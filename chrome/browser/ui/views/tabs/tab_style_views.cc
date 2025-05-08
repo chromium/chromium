@@ -367,8 +367,12 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
   const float stroke_adjustment = stroke_thickness * scale;
   if (path_type == TabStyle::PathType::kFill ||
       path_type == TabStyle::PathType::kBorder) {
-    tab_left += 0.5f * stroke_adjustment;
-    tab_right -= 0.5f * stroke_adjustment;
+    if (!IsRightSplitTab(tab())) {
+      tab_left += 0.5f * stroke_adjustment;
+    }
+    if (!IsLeftSplitTab(tab())) {
+      tab_right -= 0.5f * stroke_adjustment;
+    }
     tab_top += 0.5f * stroke_adjustment;
     content_corner_radius -= 0.5f * stroke_adjustment;
     tab_bottom -= 0.5f * stroke_adjustment;
@@ -385,17 +389,15 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
                                    scale;
   }
 
-  if (tab()->split().has_value()) {
-    if (IsLeftSplitTab(tab())) {
-      top_right_corner_radius = 0;
-      // Assign half of the tab overlap to each of the split tabs.
-      tab_right = tab_right + extension - tab_style()->GetTabOverlap() / 2;
-      extension_corner_radius = 0;
-    } else if (IsRightSplitTab(tab())) {
-      top_left_corner_radius = 0;
-      tab_left = tab_left - extension + tab_style()->GetTabOverlap() / 2;
-      left_extension_corner_radius = 0;
-    }
+  if (IsLeftSplitTab(tab())) {
+    top_right_corner_radius = 0;
+    // Assign half of the tab overlap to each of the split tabs.
+    tab_right = tab_right + extension - tab_style()->GetTabOverlap() / 2;
+    extension_corner_radius = 0;
+  } else if (IsRightSplitTab(tab())) {
+    top_left_corner_radius = 0;
+    tab_left = tab_left - extension + tab_style()->GetTabOverlap() / 2;
+    left_extension_corner_radius = 0;
   }
 
   // Avoid mallocs at every new path verb by preallocating an
