@@ -282,7 +282,7 @@ struct ScrollToNodeSelector {
 
 // Note: This must be kept in sync with the corresponding enum (same name) in
 // glic_api.ts
-// Next version: 6
+// Next version: 7
 [Stable, Extensible]
 enum ScrollToErrorReason {
   // Default error reason. Used when the browser doesn't support ScrollTo, the
@@ -311,6 +311,9 @@ enum ScrollToErrorReason {
 
   // The search range starting from DOMNodeId did not result in a valid range.
   [MinVersion=5] kSearchRangeInvalid,
+
+  // Page context access is disabled.
+  [MinVersion=6] kTabContextPermissionDisabled,
 };
 
 // A single suggestion.

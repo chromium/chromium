@@ -1054,6 +1054,11 @@ export enum ScrollToErrorReason {
    *  The search range starting from DOMNodeId did not result in a valid range.
    */
   SEARCH_RANGE_INVALID = 6,
+
+  /**
+   * Tab context permission was disabled.
+   */
+  TAB_CONTEXT_PERMISSION_DISABLED = 7,
 }
 
 /**

@@ -100,6 +100,11 @@ class GlicAnnotationManager {
     void DropAnnotation();
     void ResetConnections();
 
+    // Fails the task with `reason` if it's still running, otherwise drops the
+    // active annotation. Should only be called if the task is running or a
+    // highlight is active, and will fail a CHECK otherwise.
+    void FailTaskOrDropAnnotation(mojom::ScrollToErrorReason reason);
+
     // blink::mojom::AnnotationAgentHost overrides.
     void DidFinishAttachment(
         const gfx::Rect& document_relative_rect,
@@ -114,6 +119,9 @@ class GlicAnnotationManager {
 
     // GlicFocusedTabManager::FocusedTabChangedCallback
     void OnFocusedTabChanged(FocusedTabData focused_tab_data);
+
+    // `pref_change_registrar_` callback.
+    void OnTabContextPermissionChanged(const std::string& pref_name);
 
     // Uniquely owns `this`.
     base::raw_ref<GlicAnnotationManager> annotation_manager_;
@@ -133,6 +141,9 @@ class GlicAnnotationManager {
     // Subscription to listen to focused tab changes/primary page navigations
     // while the task is running. Cleared after the task completes/fails.
     base::CallbackListSubscription tab_change_subscription_;
+
+    // Used to subscribe to tab context permission changes.
+    PrefChangeRegistrar pref_change_registrar_;
 
     // Current state of the task, see documentation for `State`.
     State state_ = State::kRunning;

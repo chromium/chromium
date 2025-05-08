@@ -661,12 +661,30 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testScrollToFindsText() {
     assertTrue(!!this.host.scrollTo);
+    assertTrue(!!this.host.setTabContextPermissionState);
+    await this.host.setTabContextPermissionState(true);
     await this.host.scrollTo(
         {selector: {exactText: {text: 'Test Page'}}, highlight: true});
   }
 
+  async testScrollToFindsTextNoTabContextPermission() {
+    assertTrue(!!this.host.scrollTo);
+    try {
+      await this.host.scrollTo(
+          {selector: {exactText: {text: 'Abracadabra'}}, highlight: true});
+    } catch (e) {
+      assertEquals(
+          ScrollToErrorReason.TAB_CONTEXT_PERMISSION_DISABLED,
+          (e as ScrollToError).reason);
+      return;
+    }
+    assertTrue(false, 'scrollTo should have thrown an error');
+  }
+
   async testScrollToNoMatchFound() {
     assertTrue(!!this.host.scrollTo);
+    assertTrue(!!this.host.setTabContextPermissionState);
+    await this.host.setTabContextPermissionState(true);
     try {
       await this.host.scrollTo(
           {selector: {exactText: {text: 'Abracadabra'}}, highlight: true});
