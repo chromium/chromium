@@ -63,12 +63,10 @@ class StreamProvider final : public Demuxer {
   int64_t GetMemoryUsage() const override;
   std::optional<container_names::MediaContainerName> GetContainerForMetrics()
       const override;
-  void OnEnabledAudioTracksChanged(const std::vector<MediaTrack::Id>& track_ids,
-                                   base::TimeDelta curr_time,
-                                   TrackChangeCB change_completed_cb) override;
-  void OnSelectedVideoTrackChanged(const std::vector<MediaTrack::Id>& track_ids,
-                                   base::TimeDelta curr_time,
-                                   TrackChangeCB change_completed_cb) override;
+  void OnTracksChanged(DemuxerStream::Type track_type,
+                       const std::vector<MediaTrack::Id>& track_ids,
+                       base::TimeDelta curr_time,
+                       TrackChangeCB change_completed_cb) override;
   void SetPlaybackRate(double rate) override {}
 
  protected:

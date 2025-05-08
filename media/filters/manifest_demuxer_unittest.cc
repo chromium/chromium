@@ -377,8 +377,8 @@ TEST_F(ManifestDemuxerTest, TrackChanges) {
 
   // Disable video track:
   bool was_called = false;
-  manifest_demuxer_->OnSelectedVideoTrackChanged(
-      {}, base::Seconds(0),
+  manifest_demuxer_->OnTracksChanged(
+      DemuxerStream::VIDEO, {}, base::Seconds(0),
       base::BindOnce(
           [](bool* was_called, const std::vector<DemuxerStream*>& streams) {
             ASSERT_TRUE(streams.empty());
@@ -390,8 +390,8 @@ TEST_F(ManifestDemuxerTest, TrackChanges) {
 
   // Enable video track:
   was_called = false;
-  manifest_demuxer_->OnSelectedVideoTrackChanged(
-      {MediaTrack::Id("video")}, base::Seconds(0),
+  manifest_demuxer_->OnTracksChanged(
+      DemuxerStream::VIDEO, {MediaTrack::Id("video")}, base::Seconds(0),
       base::BindOnce(
           [](bool* was_called, const std::vector<DemuxerStream*>& streams) {
             ASSERT_EQ(streams.size(), 1u);
@@ -403,8 +403,8 @@ TEST_F(ManifestDemuxerTest, TrackChanges) {
 
   // Disable audio track:
   was_called = false;
-  manifest_demuxer_->OnEnabledAudioTracksChanged(
-      {}, base::Seconds(0),
+  manifest_demuxer_->OnTracksChanged(
+      DemuxerStream::AUDIO, {}, base::Seconds(0),
       base::BindOnce(
           [](bool* was_called, const std::vector<DemuxerStream*>& streams) {
             ASSERT_TRUE(streams.empty());
@@ -416,8 +416,8 @@ TEST_F(ManifestDemuxerTest, TrackChanges) {
 
   // Enable audio track:
   was_called = false;
-  manifest_demuxer_->OnEnabledAudioTracksChanged(
-      {MediaTrack::Id("audio")}, base::Seconds(0),
+  manifest_demuxer_->OnTracksChanged(
+      DemuxerStream::AUDIO, {MediaTrack::Id("audio")}, base::Seconds(0),
       base::BindOnce(
           [](bool* was_called, const std::vector<DemuxerStream*>& streams) {
             ASSERT_EQ(streams.size(), 1u);

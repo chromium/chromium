@@ -496,23 +496,14 @@ FrameInjectingDemuxer::GetContainerForMetrics() const {
 }
 
 // Not supported.
-void FrameInjectingDemuxer::OnEnabledAudioTracksChanged(
+void FrameInjectingDemuxer::OnTracksChanged(
+    media::DemuxerStream::Type track_type,
     const std::vector<media::MediaTrack::Id>& track_ids,
     base::TimeDelta curr_time,
     TrackChangeCB change_completed_cb) {
-  DLOG(WARNING) << "Track changes are not supported.";
-  std::vector<media::DemuxerStream*> streams;
-  std::move(change_completed_cb).Run(streams);
-}
-
-// Not supported.
-void FrameInjectingDemuxer::OnSelectedVideoTrackChanged(
-    const std::vector<media::MediaTrack::Id>& track_ids,
-    base::TimeDelta curr_time,
-    TrackChangeCB change_completed_cb) {
-  DLOG(WARNING) << "Track changes are not supported.";
-  std::vector<media::DemuxerStream*> streams;
-  std::move(change_completed_cb).Run(streams);
+  // TODO(crbug.com/416543891): Demuxers should have a way to report that they
+  // do not support exposing track switching to JS.
+  NOTREACHED();
 }
 
 }  // namespace cast_streaming

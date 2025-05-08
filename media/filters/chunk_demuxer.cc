@@ -875,11 +875,10 @@ base::TimeDelta ChunkDemuxer::GetHighestPresentationTimestamp(
   return itr->second->GetHighestPresentationTimestamp();
 }
 
-void ChunkDemuxer::FindAndEnableProperTracks(
-    const std::vector<MediaTrack::Id>& track_ids,
-    base::TimeDelta curr_time,
-    DemuxerStream::Type track_type,
-    TrackChangeCB change_completed_cb) {
+void ChunkDemuxer::OnTracksChanged(DemuxerStream::Type track_type,
+                                   const std::vector<MediaTrack::Id>& track_ids,
+                                   base::TimeDelta curr_time,
+                                   TrackChangeCB change_completed_cb) {
   base::AutoLock auto_lock(lock_);
 
   std::set<ChunkDemuxerStream*> enabled_streams;
@@ -912,22 +911,6 @@ void ChunkDemuxer::FindAndEnableProperTracks(
   std::vector<DemuxerStream*> streams(enabled_streams.begin(),
                                       enabled_streams.end());
   std::move(change_completed_cb).Run(streams);
-}
-
-void ChunkDemuxer::OnEnabledAudioTracksChanged(
-    const std::vector<MediaTrack::Id>& track_ids,
-    base::TimeDelta curr_time,
-    TrackChangeCB change_completed_cb) {
-  FindAndEnableProperTracks(track_ids, curr_time, DemuxerStream::AUDIO,
-                            std::move(change_completed_cb));
-}
-
-void ChunkDemuxer::OnSelectedVideoTrackChanged(
-    const std::vector<MediaTrack::Id>& track_ids,
-    base::TimeDelta curr_time,
-    TrackChangeCB change_completed_cb) {
-  FindAndEnableProperTracks(track_ids, curr_time, DemuxerStream::VIDEO,
-                            std::move(change_completed_cb));
 }
 
 void ChunkDemuxer::DisableCanChangeType() {

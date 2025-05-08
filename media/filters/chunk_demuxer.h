@@ -306,13 +306,10 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   // buffered, returns base::TimeDelta().
   base::TimeDelta GetHighestPresentationTimestamp(const std::string& id) const;
 
-  void OnEnabledAudioTracksChanged(const std::vector<MediaTrack::Id>& track_ids,
-                                   base::TimeDelta curr_time,
-                                   TrackChangeCB change_completed_cb) override;
-
-  void OnSelectedVideoTrackChanged(const std::vector<MediaTrack::Id>& track_ids,
-                                   base::TimeDelta curr_time,
-                                   TrackChangeCB change_completed_cb) override;
+  void OnTracksChanged(DemuxerStream::Type track_type,
+                       const std::vector<MediaTrack::Id>& track_ids,
+                       base::TimeDelta curr_time,
+                       TrackChangeCB change_completed_cb) override;
 
   void SetPlaybackRate(double rate) override {}
 
@@ -477,14 +474,6 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
       const std::string& id,
       std::unique_ptr<media::StreamParser> stream_parser,
       std::optional<std::string_view> expected_codecs);
-
-  // Helper for video and audio track changing. For the `track_type`, enables
-  // tracks associated with `track_ids` and disables the rest. Fires
-  // `change_completed_cb` when the operation is completed.
-  void FindAndEnableProperTracks(const std::vector<MediaTrack::Id>& track_ids,
-                                 base::TimeDelta curr_time,
-                                 DemuxerStream::Type track_type,
-                                 TrackChangeCB change_completed_cb);
 
   void ChangeState_Locked(State new_state);
 

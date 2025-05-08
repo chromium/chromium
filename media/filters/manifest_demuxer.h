@@ -201,12 +201,10 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
   std::optional<container_names::MediaContainerName> GetContainerForMetrics()
       const override;
 
-  void OnEnabledAudioTracksChanged(const std::vector<MediaTrack::Id>& track_ids,
-                                   base::TimeDelta curr_time,
-                                   TrackChangeCB change_completed_cb) override;
-  void OnSelectedVideoTrackChanged(const std::vector<MediaTrack::Id>& track_ids,
-                                   base::TimeDelta curr_time,
-                                   TrackChangeCB change_completed_cb) override;
+  void OnTracksChanged(DemuxerStream::Type track_type,
+                       const std::vector<MediaTrack::Id>& track_ids,
+                       base::TimeDelta curr_time,
+                       TrackChangeCB change_completed_cb) override;
 
   // `ManifestDemuxerEngineHost` implementation
   bool AddRole(std::string_view role, RelaxedParserSupportedType mime) override;

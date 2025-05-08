@@ -294,44 +294,27 @@ void ManifestDemuxer::OnChunkDemuxerTracksChangeComplete(
   std::move(change_completed_cb).Run(mapped_streams);
 }
 
-void ManifestDemuxer::OnEnabledAudioTracksChanged(
+void ManifestDemuxer::OnTracksChanged(
+    DemuxerStream::Type track_type,
     const std::vector<MediaTrack::Id>& track_ids,
     base::TimeDelta curr_time,
     TrackChangeCB change_completed_cb) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-
   std::optional<MediaTrack::Id> selected_track = std::nullopt;
   std::vector<MediaTrack::Id> chunk_demuxer_tracks = track_ids;
   if (!track_ids.empty()) {
     selected_track = track_ids[0];
-    chunk_demuxer_tracks = {*internal_audio_track_id_};
+    if (track_type == DemuxerStream::AUDIO) {
+      chunk_demuxer_tracks = {*internal_audio_track_id_};
+    } else if (track_type == DemuxerStream::VIDEO) {
+      chunk_demuxer_tracks = {*internal_video_track_id_};
+    }
   }
 
-  chunk_demuxer_->OnEnabledAudioTracksChanged(
-      std::move(chunk_demuxer_tracks), curr_time,
+  chunk_demuxer_->OnTracksChanged(
+      track_type, std::move(chunk_demuxer_tracks), curr_time,
       base::BindOnce(&ManifestDemuxer::OnChunkDemuxerTracksChangeComplete,
-                     weak_factory_.GetWeakPtr(), DemuxerStream::AUDIO,
-                     std::move(selected_track),
-                     std::move(change_completed_cb)));
-}
-
-void ManifestDemuxer::OnSelectedVideoTrackChanged(
-    const std::vector<MediaTrack::Id>& track_ids,
-    base::TimeDelta curr_time,
-    TrackChangeCB change_completed_cb) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-
-  std::optional<MediaTrack::Id> selected_track = std::nullopt;
-  std::vector<MediaTrack::Id> chunk_demuxer_tracks = track_ids;
-  if (!track_ids.empty()) {
-    selected_track = track_ids[0];
-    chunk_demuxer_tracks = {*internal_video_track_id_};
-  }
-
-  chunk_demuxer_->OnSelectedVideoTrackChanged(
-      std::move(chunk_demuxer_tracks), curr_time,
-      base::BindOnce(&ManifestDemuxer::OnChunkDemuxerTracksChangeComplete,
-                     weak_factory_.GetWeakPtr(), DemuxerStream::VIDEO,
+                     weak_factory_.GetWeakPtr(), track_type,
                      std::move(selected_track),
                      std::move(change_completed_cb)));
 }

@@ -1782,10 +1782,22 @@ void FFmpegDemuxer::OnSeekFrameDone(int result) {
   RunPendingSeekCB(PIPELINE_OK);
 }
 
-void FFmpegDemuxer::FindAndEnableProperTracks(
+void FFmpegDemuxer::OnTrackChangeSeekComplete(
+    base::OnceClosure cb,
+    std::vector<FFmpegDemuxerStream*> needs_flush,
+    int seek_status) {
+  for (const auto& stream : needs_flush) {
+    CHECK(stream->IsEnabled());
+    stream->FlushBuffers(true);
+  }
+  // TODO(crbug.com/41393620): Report seek failures for track changes too.
+  std::move(cb).Run();
+}
+
+void FFmpegDemuxer::OnTracksChanged(
+    DemuxerStream::Type track_type,
     const std::vector<MediaTrack::Id>& track_ids,
     base::TimeDelta curr_time,
-    DemuxerStream::Type track_type,
     TrackChangeCB change_completed_cb) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
@@ -1839,34 +1851,6 @@ void FFmpegDemuxer::FindAndEnableProperTracks(
   } else {
     std::move(seek_cb).Run(0);
   }
-}
-
-void FFmpegDemuxer::OnTrackChangeSeekComplete(
-    base::OnceClosure cb,
-    std::vector<FFmpegDemuxerStream*> needs_flush,
-    int seek_status) {
-  for (const auto& stream : needs_flush) {
-    CHECK(stream->IsEnabled());
-    stream->FlushBuffers(true);
-  }
-  // TODO(crbug.com/40898124): Report seek failures for track changes too.
-  std::move(cb).Run();
-}
-
-void FFmpegDemuxer::OnEnabledAudioTracksChanged(
-    const std::vector<MediaTrack::Id>& track_ids,
-    base::TimeDelta curr_time,
-    TrackChangeCB change_completed_cb) {
-  FindAndEnableProperTracks(track_ids, curr_time, DemuxerStream::AUDIO,
-                            std::move(change_completed_cb));
-}
-
-void FFmpegDemuxer::OnSelectedVideoTrackChanged(
-    const std::vector<MediaTrack::Id>& track_ids,
-    base::TimeDelta curr_time,
-    TrackChangeCB change_completed_cb) {
-  FindAndEnableProperTracks(track_ids, curr_time, DemuxerStream::VIDEO,
-                            std::move(change_completed_cb));
 }
 
 void FFmpegDemuxer::ReadFrameIfNeeded() {

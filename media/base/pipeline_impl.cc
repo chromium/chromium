@@ -797,8 +797,8 @@ void PipelineImpl::RendererWrapper::OnEnabledAudioTracksChanged(
     std::move(change_completed_cb).Run();
     return;
   }
-  demuxer_->OnEnabledAudioTracksChanged(
-      enabled_track_ids, GetCurrentTimestamp(),
+  demuxer_->OnTracksChanged(
+      DemuxerStream::AUDIO, enabled_track_ids, GetCurrentTimestamp(),
       base::BindOnce(&RendererWrapper::OnDemuxerCompletedTrackChange,
                      weak_factory_.GetWeakPtr(), DemuxerStream::AUDIO,
                      std::move(change_completed_cb)));
@@ -837,8 +837,8 @@ void PipelineImpl::RendererWrapper::OnSelectedVideoTrackChanged(
   if (selected_track_id)
     tracks.push_back(*selected_track_id);
 
-  demuxer_->OnSelectedVideoTrackChanged(
-      tracks, GetCurrentTimestamp(),
+  demuxer_->OnTracksChanged(
+      DemuxerStream::VIDEO, tracks, GetCurrentTimestamp(),
       base::BindOnce(&RendererWrapper::OnDemuxerCompletedTrackChange,
                      weak_factory_.GetWeakPtr(), DemuxerStream::VIDEO,
                      std::move(change_completed_cb)));

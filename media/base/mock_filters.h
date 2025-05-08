@@ -193,14 +193,9 @@ class MockDemuxer : public Demuxer {
               (),
               (const, override));
   MOCK_METHOD(void,
-              OnEnabledAudioTracksChanged,
-              (const std::vector<MediaTrack::Id>&,
-               base::TimeDelta,
-               TrackChangeCB),
-              (override));
-  MOCK_METHOD(void,
-              OnSelectedVideoTrackChanged,
-              (const std::vector<MediaTrack::Id>&,
+              OnTracksChanged,
+              (DemuxerStream::Type,
+               const std::vector<MediaTrack::Id>&,
                base::TimeDelta,
                TrackChangeCB),
               (override));
