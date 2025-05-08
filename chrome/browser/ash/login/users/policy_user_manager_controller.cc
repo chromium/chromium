@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_broker.h"
@@ -24,6 +23,7 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_policy_util.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -197,8 +197,7 @@ void PolicyUserManagerController::RetrieveTrustedDevicePolicies() {
   for (const auto& account : device_local_accounts) {
     user_manager::UserManager::DeviceLocalAccountInfo info(
         account.user_id,
-        *chrome_user_manager_util::DeviceLocalAccountTypeToUserType(
-            account.type));
+        user_manager::DeviceLocalAccountTypeToUserType(account.type));
     if (info.type == user_manager::UserType::kPublicAccount) {
       info.display_name = GetDisplayName(info.user_id);
     }

@@ -29,29 +29,6 @@ constexpr char kUserEmail[] = "user@example.com";
 constexpr GaiaId::Literal kUserGaiaId("user123");
 constexpr char kMGSAccountId[] = "mgs123";
 
-// Test delegate for MGS scenarios, returning public session type in functions
-// called during UserManager::Initialize(). NOTE:
-// GetDeviceLocalAccountUserType() unconditionally returns
-// UserType::kPublicAccount.
-// TODO(278643115): Remove this override when no longer necessary.
-class MgsAsPublicSessionFakeDelegate
-    : public user_manager::FakeUserManagerDelegate {
- public:
-  MgsAsPublicSessionFakeDelegate() = default;
-  ~MgsAsPublicSessionFakeDelegate() override = default;
-
-  // user_manager::UserManagerImpl::Delegate:
-  std::optional<user_manager::UserType> GetDeviceLocalAccountUserType(
-      std::string_view email) override {
-    const auto mgs_user_id = policy::GenerateDeviceLocalAccountUserId(
-        kMGSAccountId, DeviceLocalAccountType::kPublicSession);
-    if (email == mgs_user_id) {
-      return user_manager::UserType::kPublicAccount;
-    }
-    return std::nullopt;
-  }
-};
-
 }  // namespace
 
 class SystemFeaturesDisableListPolicyUtilsTest : public testing::Test {
@@ -87,8 +64,8 @@ class SystemFeaturesDisableListPolicyUtilsTest : public testing::Test {
                                                         mgs_user_id);
 
     user_manager_ = std::make_unique<user_manager::UserManagerImpl>(
-        std::make_unique<MgsAsPublicSessionFakeDelegate>(), &local_state_,
-        cros_settings_.get());
+        std::make_unique<user_manager::FakeUserManagerDelegate>(),
+        &local_state_, cros_settings_.get());
     user_manager_->Initialize();
 
     user_manager_->SetUserPolicyStatus(user_account_id,

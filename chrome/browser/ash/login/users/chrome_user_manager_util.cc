@@ -57,26 +57,6 @@ bool AreAllUsersAllowed(const user_manager::UserList& users,
   return true;
 }
 
-std::optional<user_manager::UserType> DeviceLocalAccountTypeToUserType(
-    policy::DeviceLocalAccountType device_local_account_type) {
-  switch (device_local_account_type) {
-    case policy::DeviceLocalAccountType::kPublicSession:
-      return user_manager::UserType::kPublicAccount;
-    case policy::DeviceLocalAccountType::kSamlPublicSession:
-      // TODO(b/345700258): Unused in the production. Remove the case.
-      NOTREACHED();
-    case policy::DeviceLocalAccountType::kKioskApp:
-      return user_manager::UserType::kKioskApp;
-    case policy::DeviceLocalAccountType::kWebKioskApp:
-      return user_manager::UserType::kWebKioskApp;
-    case policy::DeviceLocalAccountType::kKioskIsolatedWebApp:
-      return user_manager::UserType::kKioskIWA;
-    // TODO(crbug.com/388602323): Create new user type for ARCVM Kiosk.
-    case policy::DeviceLocalAccountType::kArcvmKioskApp:
-      NOTREACHED();
-  }
-}
-
 bool IsManagedGuestSessionOrEphemeralLogin() {
   const user_manager::UserManager* user_manager =
       user_manager::UserManager::Get();

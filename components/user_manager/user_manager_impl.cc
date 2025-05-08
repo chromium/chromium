@@ -34,6 +34,7 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/user_login_permission_tracker.h"
@@ -43,6 +44,7 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
 #include "components/user_manager/user_directory_integrity_manager.h"
+#include "components/user_manager/user_manager_policy_util.h"
 #include "components/user_manager/user_manager_pref_names.h"
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
@@ -1378,14 +1380,14 @@ void UserManagerImpl::LoadDeviceLocalAccounts(
       continue;
     }
 
-    auto type =
-        delegate_->GetDeviceLocalAccountUserType(account_id.GetUserEmail());
-    if (!type.has_value()) {
-      NOTREACHED();
-    }
+    auto device_local_account_type =
+        policy::GetDeviceLocalAccountType(account_id.GetUserEmail());
+    CHECK(device_local_account_type.has_value());
 
     // Using `new` to access a non-public constructor.
-    user_storage_.push_back(base::WrapUnique(new User(account_id, *type)));
+    user_storage_.push_back(base::WrapUnique(new User(
+        account_id,
+        DeviceLocalAccountTypeToUserType(*device_local_account_type))));
     persisted_users_.push_back(user_storage_.back().get());
   }
 }

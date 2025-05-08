@@ -21,8 +21,6 @@ class UserManagerDelegateImpl : public user_manager::UserManagerImpl::Delegate {
   // UserManagerImpl::Delegate:
   const std::string& GetApplicationLocale() override;
   void OverrideDirHome(const user_manager::User& primary_user) override;
-  std::optional<user_manager::UserType> GetDeviceLocalAccountUserType(
-      std::string_view email) override;
   void CheckProfileOnLogin(const user_manager::User& user) override;
   void RemoveProfileByAccountId(const AccountId& account_id) override;
   void RemoveCryptohomeAsync(const AccountId& account_id) override;

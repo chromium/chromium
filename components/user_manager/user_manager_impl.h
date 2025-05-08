@@ -103,10 +103,6 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
     // Overrides the home directory path for the `primary_user`.
     virtual void OverrideDirHome(const User& primary_user) = 0;
 
-    // Returns UserType for the DeviceLocalAccount of the given `email`.
-    virtual std::optional<UserType> GetDeviceLocalAccountUserType(
-        std::string_view email) = 0;
-
     // Verifies the Profile's state for the given `user` on login.
     virtual void CheckProfileOnLogin(const User& user) = 0;
 
