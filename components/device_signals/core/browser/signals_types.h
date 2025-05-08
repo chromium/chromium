@@ -252,8 +252,13 @@ struct ProfileSignalsResponse : BaseSignalResponse {
   safe_browsing::SafeBrowsingState safe_browsing_protection_level;
   bool site_isolation_enabled;
 
-  // Enterprise cloud content analysis exclusive
+  // Enterprise cloud content analysis exclusives
   enterprise_connectors::EnterpriseRealTimeUrlCheckMode realtime_url_check_mode;
+  std::vector<std::string> file_downloaded_providers{};
+  std::vector<std::string> file_attached_providers{};
+  std::vector<std::string> bulk_data_entry_providers{};
+  std::vector<std::string> print_providers{};
+  std::vector<std::string> security_event_providers{};
 };
 
 struct FileSystemInfoResponse : BaseSignalResponse {

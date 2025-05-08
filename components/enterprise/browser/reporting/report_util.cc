@@ -241,6 +241,23 @@ std::string GetSecuritySignalsInReport(
             profile_signals_report.safe_browsing_protection_level()));
     signals_dict.Set("site_isolation_enabled",
                      profile_signals_report.site_isolation_enabled());
+
+    // Providers section
+    signals_dict.Set("file_downloaded_providers",
+                     RepeatedFieldptrToList(
+                         profile_signals_report.file_downloaded_providers()));
+    signals_dict.Set("file_attached_providers",
+                     RepeatedFieldptrToList(
+                         profile_signals_report.file_attached_providers()));
+    signals_dict.Set("bulk_data_entry_providers",
+                     RepeatedFieldptrToList(
+                         profile_signals_report.bulk_data_entry_providers()));
+    signals_dict.Set(
+        "print_providers",
+        RepeatedFieldptrToList(profile_signals_report.print_providers()));
+    signals_dict.Set("security_event_providers",
+                     RepeatedFieldptrToList(
+                         profile_signals_report.security_event_providers()));
   }
 
   base::JSONWriter::WriteWithOptions(

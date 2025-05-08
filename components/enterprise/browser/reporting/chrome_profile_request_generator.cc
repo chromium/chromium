@@ -241,6 +241,23 @@ void ChromeProfileRequestGenerator::OnAggregatedSignalsReceived(
             profile_signals.safe_browsing_protection_level));
     profile_signals_report->set_site_isolation_enabled(
         profile_signals.site_isolation_enabled);
+
+    profile_signals_report->mutable_file_downloaded_providers()->Add(
+        profile_signals.file_downloaded_providers.begin(),
+        profile_signals.file_downloaded_providers.end());
+    profile_signals_report->mutable_file_attached_providers()->Add(
+        profile_signals.file_attached_providers.begin(),
+        profile_signals.file_attached_providers.end());
+    profile_signals_report->mutable_bulk_data_entry_providers()->Add(
+        profile_signals.bulk_data_entry_providers.begin(),
+        profile_signals.bulk_data_entry_providers.end());
+    profile_signals_report->mutable_print_providers()->Add(
+        profile_signals.print_providers.begin(),
+        profile_signals.print_providers.end());
+    profile_signals_report->mutable_security_event_providers()->Add(
+        profile_signals.security_event_providers.begin(),
+        profile_signals.security_event_providers.end());
+
     profile_report->set_allocated_profile_signals_report(
         profile_signals_report.release());
   }

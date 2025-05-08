@@ -2358,6 +2358,13 @@ message ProfileSignalsReport {
   // A boolean indicating whether the Site Isolation (a.k.a Site Per Process)
   // setting is enabled.
   optional bool site_isolation_enabled = 7;
+
+  // Providers for various analysis connectors.
+  repeated string file_downloaded_providers = 8;
+  repeated string file_attached_providers = 9;
+  repeated string bulk_data_entry_providers = 10;
+  repeated string print_providers = 11;
+  repeated string security_event_providers = 12;
 }
 
 // Anti virus product information.
