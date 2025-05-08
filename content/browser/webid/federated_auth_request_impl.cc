@@ -765,6 +765,11 @@ void FederatedAuthRequestImpl::RequestToken(
                             /*error=*/nullptr,
                             /*is_auto_selected=*/false);
     fedcm_metrics_.reset();
+    // If there's an existing auth request token callback, we will need to
+    // record metrics for it once it is resolved.
+    if (auth_request_token_callback_) {
+      MaybeCreateFedCmMetrics();
+    }
     return;
   }
 
@@ -778,6 +783,11 @@ void FederatedAuthRequestImpl::RequestToken(
                             /*error=*/nullptr,
                             /*is_auto_selected=*/false);
     fedcm_metrics_.reset();
+    // If there's an existing auth request token callback, we will need to
+    // record metrics for it once it is resolved.
+    if (auth_request_token_callback_) {
+      MaybeCreateFedCmMetrics();
+    }
     return;
   }
 
@@ -1412,6 +1422,11 @@ void FederatedAuthRequestImpl::CompleteDisconnectRequest(
   std::move(callback).Run(status);
   disconnect_request_.reset();
   fedcm_metrics_.reset();
+  // If there's an existing auth request token callback, we will need to record
+  // metrics for it once it is resolved.
+  if (auth_request_token_callback_) {
+    MaybeCreateFedCmMetrics();
+  }
 }
 
 void FederatedAuthRequestImpl::OnClientMetadataResponseReceived(
