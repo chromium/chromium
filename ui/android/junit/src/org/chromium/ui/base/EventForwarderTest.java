@@ -4,6 +4,8 @@
 
 package org.chromium.ui.base;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyFloat;
@@ -417,6 +419,16 @@ public class EventForwarderTest {
     }
 
     @Test
+    public void testCapturedPointerTrackpadScrollEvent() {
+        MotionEvent event = getTrackpadEvent(MotionEvent.ACTION_MOVE, 0, 2);
+        MotionEvent updatedEvent = EventForwarder.updateTrackpadCapturedScrollEvent(event, 10, -10);
+
+        assertEquals(MotionEvent.ACTION_SCROLL, updatedEvent.getAction());
+        assertTrue(updatedEvent.getAxisValue(MotionEvent.AXIS_HSCROLL) > 0);
+        assertTrue(updatedEvent.getAxisValue(MotionEvent.AXIS_VSCROLL) < 0);
+    }
+
+    @Test
     public void testCapturedPointerMouseMoveEvent() {
         EventForwarder eventForwarder = new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true);
 
@@ -531,13 +543,17 @@ public class EventForwarderTest {
     }
 
     private static MotionEvent getTrackpadEvent(int action, int buttonState) {
+        return getTrackpadEvent(action, buttonState, 1);
+    }
+
+    private static MotionEvent getTrackpadEvent(int action, int buttonState, int pointersCnt) {
         return MotionEvent.obtain(
                 0,
                 0,
                 action,
-                1,
-                getToolTypeFingerProperties(1),
-                getPointerCoords(1),
+                pointersCnt,
+                getToolTypeFingerProperties(pointersCnt),
+                getPointerCoords(pointersCnt),
                 0,
                 buttonState,
                 0,

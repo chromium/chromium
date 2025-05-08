@@ -26,6 +26,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.MathUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -782,9 +783,8 @@ public class EventForwarder {
         float offsetX = 0.0f;
         float offsetY = 0.0f;
 
-        // TODO(crbug.com/405067297): support multi-finger events on the trackpad (scroll)
         if (event.isFromSource(InputDevice.SOURCE_TOUCHPAD)) {
-            event = updateTrackpadButtonState(event);
+            event = updateTrackpadCapturedButtonState(event);
 
             // Ignore calculating the offset if we don't have the previous event trackpad position
             if (mIsLastTrackpadPositionValid) {
@@ -798,6 +798,14 @@ public class EventForwarder {
 
             mLastTrackpadPositionX = event.getX();
             mLastTrackpadPositionY = event.getY();
+
+            event = updateTrackpadCapturedScrollEvent(event, offsetX, offsetY);
+
+            // Cancel any calculated offset, since scroll events shouldn't affect trackpad position
+            if (event.getAction() == MotionEvent.ACTION_SCROLL) {
+                offsetX = 0;
+                offsetY = 0;
+            }
 
             // Invalidate the trackpad position for these cases:
             // ACTION_UP: No pointer on the trackpad, the position data is stale
@@ -828,7 +836,7 @@ public class EventForwarder {
         return ret;
     }
 
-    private static MotionEvent updateTrackpadButtonState(MotionEvent event) {
+    private static MotionEvent updateTrackpadCapturedButtonState(MotionEvent event) {
         if (event.getAction() != MotionEvent.ACTION_BUTTON_PRESS
                 && event.getAction() != MotionEvent.ACTION_BUTTON_RELEASE) {
             return event;
@@ -856,6 +864,59 @@ public class EventForwarder {
                 getPointerCoordsForEvent(event),
                 event.getMetaState(),
                 updatedButtonState,
+                event.getXPrecision(),
+                event.getYPrecision(),
+                event.getDeviceId(),
+                event.getEdgeFlags(),
+                event.getSource(),
+                event.getFlags());
+    }
+
+    // TODO(https://crbug.com/415730929): Scroll movement has no momentum
+    // TODO(https://crbug.com/415730915): Move helper methods to a util class
+    // When the pointer is captured, multi-touch gestures are not supported, this supports 2 finger
+    // move to count as a scroll gesture
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static MotionEvent updateTrackpadCapturedScrollEvent(
+            MotionEvent event, float offsetX, float offsetY) {
+        if (event.getAction() != MotionEvent.ACTION_MOVE
+                || event.getPointerCount() != 2
+                || (offsetX == 0 && offsetY == 0)) {
+            return event;
+        }
+
+        // TODO(https://crbug.com/415730915): Cache the input device resolution
+        InputDevice inputDevice = InputDevice.getDevice(event.getDeviceId());
+        // Resolution is how many pixels per millimeters on the trackpad
+        float xAxisResolution = 1;
+        float yAxisResolution = 1;
+        if (inputDevice != null) {
+            xAxisResolution = inputDevice.getMotionRange(MotionEvent.AXIS_X).getResolution();
+            yAxisResolution = inputDevice.getMotionRange(MotionEvent.AXIS_Y).getResolution();
+        }
+
+        // TODO(https://crbug.com/415730929): inverse scrolling is not respected, doesn't seem that
+        // the setting value is exposed from the OS.
+        float xDirection = MathUtils.clamp(offsetX / xAxisResolution, -1, 1);
+        float yDirection = MathUtils.clamp(offsetY / yAxisResolution, -1, 1);
+
+        MotionEvent.PointerCoords updatedPointerCoords = new MotionEvent.PointerCoords();
+        event.getPointerCoords(0, updatedPointerCoords);
+        updatedPointerCoords.setAxisValue(MotionEvent.AXIS_HSCROLL, xDirection);
+        updatedPointerCoords.setAxisValue(MotionEvent.AXIS_VSCROLL, yDirection);
+
+        MotionEvent.PointerCoords[] updatedPointerCoordsList = getPointerCoordsForEvent(event);
+        updatedPointerCoordsList[0] = updatedPointerCoords;
+
+        return MotionEvent.obtain(
+                event.getDownTime(),
+                event.getEventTime(),
+                MotionEvent.ACTION_SCROLL,
+                event.getPointerCount(),
+                getPointerPropertiesForEvent(event),
+                updatedPointerCoordsList,
+                event.getMetaState(),
+                event.getButtonState(),
                 event.getXPrecision(),
                 event.getYPrecision(),
                 event.getDeviceId(),
