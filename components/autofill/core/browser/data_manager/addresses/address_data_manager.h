@@ -165,7 +165,7 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence {
   void MigrateProfileToAccount(const AutofillProfile& profile);
 
   // Asynchronously loads all `AutofillProfile`s (from all record types) into
-  // the class's state. See `synced_local_profiles_` and `account_profiles_`.
+  // `profiles_`.
   virtual void LoadProfiles();
 
   // Updates the `profile`'s use count and use date in the database.
