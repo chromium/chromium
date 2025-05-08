@@ -485,11 +485,12 @@ suite('SeaPenInputQueryElementTest', function() {
 
     const inputElement =
         seaPenInputQueryElement.shadowRoot?.querySelector<CrTextareaElement>(
-            '#queryInput');
-    assertTrue(!!inputElement?.value, 'input should show text');
+            '#queryInput')!;
+    assertTrue(!!inputElement.value, 'input should show text');
     const action = await personalizationStore.waitForAction(
                        SeaPenActionName.BEGIN_SEARCH_SEA_PEN_THUMBNAILS) as
         BeginSearchSeaPenThumbnailsAction;
+    assertFalse(seaPenInputQueryElement.i18nExists(inputElement.value));
     assertEquals(
         inputElement?.value, action.query.textQuery,
         'search query should match input value');

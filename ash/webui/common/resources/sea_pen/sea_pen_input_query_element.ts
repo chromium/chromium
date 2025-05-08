@@ -230,7 +230,7 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
 
   private onClickInspire_() {
     const index = Math.floor(Math.random() * SEA_PEN_SAMPLES.length);
-    this.textValue_ = SEA_PEN_SAMPLES[index].prompt;
+    this.textValue_ = this.i18n(SEA_PEN_SAMPLES[index].prompt);
     this.showCreateButton_();
     this.searchInputQuery_();
   }
