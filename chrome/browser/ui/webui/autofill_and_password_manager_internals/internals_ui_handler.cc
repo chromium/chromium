@@ -34,6 +34,11 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
+#else
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
 #endif
 
 using autofill::LogRouter;
@@ -130,6 +135,10 @@ void InternalsUIHandler::RegisterMessages() {
       "resetUpmEviction",
       base::BindRepeating(&InternalsUIHandler::OnResetUpmEviction,
                           base::Unretained(this)));
+#else
+  web_ui()->RegisterMessageCallback(
+      "setDomNodeId", base::BindRepeating(&InternalsUIHandler::SetDomNodeId,
+                                          base::Unretained(this)));
 #endif
 }
 
@@ -252,6 +261,24 @@ void InternalsUIHandler::OnResetUpmEviction(const base::Value::List& args) {
   }
   FireWebUIListener("enable-reset-upm-eviction-button",
                     base::Value(!is_user_unenrolled));
+}
+#else
+void InternalsUIHandler::SetDomNodeId(const base::Value::List& args) {
+  for (auto* browser : GetAllBrowserWindowInterfaces()) {
+    if (!browser->GetTabStripModel()) {
+      continue;
+    }
+
+    for (int i = 0; i < browser->GetTabStripModel()->count(); i++) {
+      auto* web_contents = browser->GetTabStripModel()->GetWebContentsAt(i);
+      autofill::AutofillDriver* driver =
+          ContentAutofillDriver::GetForRenderFrameHost(
+              web_contents->GetPrimaryMainFrame());
+      if (driver) {
+        driver->ExposeDomNodeIDs();
+      }
+    }
+  }
 }
 #endif
 

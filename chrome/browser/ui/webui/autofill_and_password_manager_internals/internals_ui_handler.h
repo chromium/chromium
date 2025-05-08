@@ -92,7 +92,11 @@ class InternalsUIHandler : public content::WebUIMessageHandler,
   void OnGetAutofillAiCache(const base::Value::List& args);
   void OnLoaded(const base::Value::List& args);
   void OnResetCache(const base::Value::List& args);
+#if BUILDFLAG(IS_ANDROID)
   void OnResetUpmEviction(const base::Value::List& args);
+#else
+  void SetDomNodeId(const base::Value::List& args);
+#endif
 
   void OnResetCacheDone(const std::string& message);
 

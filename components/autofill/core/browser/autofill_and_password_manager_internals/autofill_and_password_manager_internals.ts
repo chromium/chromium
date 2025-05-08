@@ -262,6 +262,7 @@ function setUpAutofillInternals(autofillAiEnabled: boolean) {
   setUpSettingCheckboxe();
   setUpMarker();
   setUpSubmittedFormsJSONDataDownload();
+  setUpButtonForDomNodeIdCapture();
   setUpDownload('autofill');
   if (autofillAiEnabled) {
     addAutofillTabs();
@@ -523,6 +524,16 @@ function setUpSubmittedFormsJSONDataDownload() {
   // https://bugs.webkit.org/show_bug.cgi?id=167341
   // https://bugs.chromium.org/p/chromium/issues/detail?id=1252380
   downloadSubmittedFormJSONDataButton.style.display = 'none';
+  // </if>
+}
+
+function setUpButtonForDomNodeIdCapture() {
+  // <if expr="not is_android and not is_ios" >
+  const button = document.getElementById('set-dom-node-id')!;
+  button.style.display = 'inline';
+  button.addEventListener('click', () => {
+    chrome.send('setDomNodeId');
+  });
   // </if>
 }
 
