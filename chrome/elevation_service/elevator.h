@@ -32,8 +32,9 @@ constexpr IID kTestElevatorClsid = {
      0x57}};  // Elevator Test CLSID. {416C51AC-4DEF-43CA-96E8-E735210AB257}
 
 namespace switches {
-constexpr char kElevatorClsIdForTestingSwitch[] = "elevator-clsid-for-testing";
-constexpr char kFakeReencryptForTestingSwitch[] =
+inline constexpr char kElevatorClsIdForTestingSwitch[] =
+    "elevator-clsid-for-testing";
+inline constexpr char kFakeReencryptForTestingSwitch[] =
     "elevator-fake-reencrypt-for-testing";
 }  // namespace switches
 

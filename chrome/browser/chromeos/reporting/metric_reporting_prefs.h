@@ -18,27 +18,28 @@ namespace reporting {
 
 // A list pref that specifies allowlisted URLs for website activity event
 // reporting.
-constexpr char kReportWebsiteActivityAllowlist[] =
+inline constexpr char kReportWebsiteActivityAllowlist[] =
     "reporting.report_website_activity_allowlist";
 
 // A list pref that specifies allowlisted URLs for website telemetry reporting.
-constexpr char kReportWebsiteTelemetryAllowlist[] =
+inline constexpr char kReportWebsiteTelemetryAllowlist[] =
     "reporting.report_website_telemetry_allowlist";
 
 // A list pref that controls website telemetry data types being reported.
-constexpr char kReportWebsiteTelemetry[] = "reporting.report_website_telemetry";
+inline constexpr char kReportWebsiteTelemetry[] =
+    "reporting.report_website_telemetry";
 
 // An integer pref that controls the collection frequency of website telemetry
 // data.
-constexpr char kReportWebsiteTelemetryCollectionRateMs[] =
+inline constexpr char kReportWebsiteTelemetryCollectionRateMs[] =
     "reporting.report_website_telemetry_collection_rate_ms";
 
 // A dictionary pref that tracks foreground website usage for URLs with the
 // current user profile.
-constexpr char kWebsiteUsage[] = "reporting.website_usage";
+inline constexpr char kWebsiteUsage[] = "reporting.website_usage";
 
 // Website telemetry types tracked by the `ReportWebsiteTelemetry` policy.
-constexpr char kWebsiteTelemetryUsageType[] = "usage";
+inline constexpr char kWebsiteTelemetryUsageType[] = "usage";
 
 void RegisterProfilePrefs(::user_prefs::PrefRegistrySyncable* registry);
 

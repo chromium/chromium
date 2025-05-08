@@ -11,7 +11,7 @@
 
 namespace about_flags {
 
-constexpr char kSiteIsolationTrialOptOutInternalName[] =
+inline constexpr char kSiteIsolationTrialOptOutInternalName[] =
     "site-isolation-trial-opt-out";
 
 inline std::string SiteIsolationTrialOptOutChoiceEnabled() {

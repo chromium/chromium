@@ -12,7 +12,7 @@ namespace policy {
 namespace dlp {
 
 // Link to the Help Center article about Data Leak Prevention.
-constexpr char kDlpLearnMoreUrl[] =
+inline constexpr char kDlpLearnMoreUrl[] =
     "https://support.google.com/chrome/a/?p=chromeos_datacontrols";
 
 }  // namespace dlp

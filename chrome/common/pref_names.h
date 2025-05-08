@@ -1260,7 +1260,7 @@ inline constexpr char kHasResetFirst7DaysSettingsUsedCount[] =
 // the user grants consent again, we will not record their metric in the
 // histogram
 // "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.{Time}".
-const char kHasEverRevokedMetricsConsent[] =
+inline constexpr char kHasEverRevokedMetricsConsent[] =
     "settings.has_ever_revoked_metrics_consent";
 
 // A boolean to store that an admin user accessed the host device remotely when

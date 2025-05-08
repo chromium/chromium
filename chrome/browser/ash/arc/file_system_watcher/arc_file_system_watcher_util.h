@@ -11,7 +11,7 @@ namespace arc {
 
 // The removable media path in ChromeOS. This is the actual directory to be
 // watched.
-constexpr base::FilePath::CharType kCrosRemovableMediaDir[] =
+inline constexpr base::FilePath::CharType kCrosRemovableMediaDir[] =
     FILE_PATH_LITERAL("/media/removable");
 
 // The prefix for device label used in Android paths for removable media.

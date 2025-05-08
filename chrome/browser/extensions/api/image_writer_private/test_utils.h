@@ -35,7 +35,7 @@ namespace image_writer {
 class ImageWriterFakeImageBurnerClient;
 #endif
 
-const char kDummyExtensionId[] = "DummyExtension";
+inline constexpr char kDummyExtensionId[] = "DummyExtension";
 
 // Default file size to use in tests.  Currently 32kB.
 const size_t kTestFileSize = 32 * 1024;
@@ -44,7 +44,7 @@ const uint8_t kImagePattern = 0x55;  // 01010101
 // Pattern to use in the device file.
 const uint8_t kDevicePattern = 0xAA;  // 10101010
 // Disk file system type
-const char kTestFileSystemType[] = "vfat";
+inline constexpr char kTestFileSystemType[] = "vfat";
 
 // A mock around the operation manager for tracking callbacks.  Note that there
 // are non-virtual methods on this class that should not be called in tests.

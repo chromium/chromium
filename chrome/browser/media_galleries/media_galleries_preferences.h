@@ -35,8 +35,9 @@ class PrefRegistrySyncable;
 typedef uint64_t MediaGalleryPrefId;
 const MediaGalleryPrefId kInvalidMediaGalleryPrefId = 0;
 
-const char kMediaGalleriesPrefsVersionKey[] = "preferencesVersion";
-const char kMediaGalleriesDefaultGalleryTypeKey[] = "defaultGalleryType";
+inline constexpr char kMediaGalleriesPrefsVersionKey[] = "preferencesVersion";
+inline constexpr char kMediaGalleriesDefaultGalleryTypeKey[] =
+    "defaultGalleryType";
 
 struct MediaGalleryPermission {
   MediaGalleryPrefId pref_id;

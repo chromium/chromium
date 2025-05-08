@@ -25,13 +25,14 @@
 #endif
 
 namespace {
-const char kPersistedStateDBFolder[] = "persisted_state_db";
-const char kChromeCartDBFolder[] = "chrome_cart_db";
-const char kMerchantTrustSignalDBFolder[] = "merchant_signal_db";
-const char kCommerceSubscriptionDBFolder[] = "commerce_subscription_db";
-const char kCouponDBFolder[] = "coupon_db";
-const char kDiscountsDBFolder[] = "discounts_db";
-const char kParcelTrackingDBFolder[] = "parcel_tracking_db";
+inline constexpr char kPersistedStateDBFolder[] = "persisted_state_db";
+inline constexpr char kChromeCartDBFolder[] = "chrome_cart_db";
+inline constexpr char kMerchantTrustSignalDBFolder[] = "merchant_signal_db";
+inline constexpr char kCommerceSubscriptionDBFolder[] =
+    "commerce_subscription_db";
+inline constexpr char kCouponDBFolder[] = "coupon_db";
+inline constexpr char kDiscountsDBFolder[] = "discounts_db";
+inline constexpr char kParcelTrackingDBFolder[] = "parcel_tracking_db";
 }  // namespace
 
 SessionProtoDBFactory<persisted_state_db::PersistedStateContentProto>*

@@ -35,7 +35,7 @@ class Profile;
 namespace apps_util {
 
 #if BUILDFLAG(IS_CHROMEOS)
-constexpr char kVirtualTaskPrefix[] = "VirtualTask/";
+inline constexpr char kVirtualTaskPrefix[] = "VirtualTask/";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Checks whether |policy_id| specifies a Chrome App.
