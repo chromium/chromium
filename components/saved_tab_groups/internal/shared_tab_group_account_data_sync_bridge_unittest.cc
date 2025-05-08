@@ -172,7 +172,7 @@ class SharedTabGroupAccountDataSyncBridgeTest : public testing::Test {
     return group;
   }
 
-  size_t GetNumEntriesInStore() {
+  size_t GetNumEntriesInStore(bool is_tab_details) {
     std::unique_ptr<syncer::DataTypeStore::RecordList> entries;
     base::RunLoop run_loop;
     store_->ReadAllData(base::BindLambdaForTesting(
@@ -183,7 +183,31 @@ class SharedTabGroupAccountDataSyncBridgeTest : public testing::Test {
           run_loop.Quit();
         }));
     run_loop.Run();
-    return entries->size();
+
+    size_t size = 0;
+    for (const auto& record : *entries) {
+      sync_pb::SharedTabGroupAccountDataSpecifics specifics;
+      if (!specifics.ParseFromString(record.value)) {
+        CHECK(false);
+      }
+
+      if (is_tab_details && specifics.has_shared_tab_details()) {
+        ++size;
+      }
+      if (!is_tab_details && specifics.has_shared_tab_group_details()) {
+        ++size;
+      }
+    }
+
+    return size;
+  }
+
+  size_t GetNumTabDetailsInStore() {
+    return GetNumEntriesInStore(/*is_tab_details=*/true);
+  }
+
+  size_t GetNumTabGroupDetailsInStore() {
+    return GetNumEntriesInStore(/*is_tab_details=*/false);
   }
 
   // Cleans up the bridge and the model, used to simulate browser restart.
@@ -356,7 +380,7 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
   change_list.push_back(CreateUpdateEntityChange(CreateTabGroupAccountSpecifics(
       kCollaborationId, created_tab2, last_seen_time2)));
 
-  EXPECT_EQ(GetNumEntriesInStore(), 0u);
+  EXPECT_EQ(GetNumTabDetailsInStore(), 0u);
 
   bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
                                        std::move(change_list));
@@ -370,7 +394,7 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
   EXPECT_EQ(tab1->last_seen_time_windows_epoch_micros(), last_seen_time1);
   EXPECT_TRUE(tab2->last_seen_time_windows_epoch_micros().has_value());
   EXPECT_EQ(tab2->last_seen_time_windows_epoch_micros(), last_seen_time2);
-  EXPECT_EQ(GetNumEntriesInStore(), 2u);
+  EXPECT_EQ(GetNumTabDetailsInStore(), 2u);
 }
 
 TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
@@ -394,7 +418,7 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
   change_list1.push_back(CreateAddEntityChange(CreateTabGroupAccountSpecifics(
       kCollaborationId, created_tab, last_seen_time1)));
 
-  EXPECT_EQ(GetNumEntriesInStore(), 0u);
+  EXPECT_EQ(GetNumTabDetailsInStore(), 0u);
 
   bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
                                        std::move(change_list1));
@@ -406,7 +430,7 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
 
     EXPECT_TRUE(tab->last_seen_time_windows_epoch_micros().has_value());
     EXPECT_EQ(tab->last_seen_time_windows_epoch_micros(), last_seen_time1);
-    EXPECT_EQ(GetNumEntriesInStore(), 1u);
+    EXPECT_EQ(GetNumTabDetailsInStore(), 1u);
   }
 
   base::Time last_seen_time2 = base::Time::Now() + base::Seconds(42);
@@ -425,7 +449,7 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
 
     EXPECT_TRUE(tab->last_seen_time_windows_epoch_micros().has_value());
     EXPECT_EQ(tab->last_seen_time_windows_epoch_micros(), last_seen_time2);
-    EXPECT_EQ(GetNumEntriesInStore(), 1u);
+    EXPECT_EQ(GetNumTabDetailsInStore(), 1u);
   }
 }
 
@@ -449,7 +473,7 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest, ShouldDeleteDataFromSync) {
   change_list1.push_back(CreateAddEntityChange(CreateTabGroupAccountSpecifics(
       kCollaborationId, created_tab, last_seen_time1)));
 
-  EXPECT_EQ(GetNumEntriesInStore(), 0u);
+  EXPECT_EQ(GetNumTabDetailsInStore(), 0u);
 
   bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
                                        std::move(change_list1));
@@ -462,7 +486,7 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest, ShouldDeleteDataFromSync) {
     EXPECT_TRUE(bridge().HasSpecificsForTab(*tab));
     EXPECT_TRUE(tab->last_seen_time_windows_epoch_micros().has_value());
     EXPECT_EQ(tab->last_seen_time_windows_epoch_micros(), last_seen_time1);
-    EXPECT_EQ(GetNumEntriesInStore(), 1u);
+    EXPECT_EQ(GetNumTabDetailsInStore(), 1u);
   }
 
   syncer::EntityChangeList change_list2;
@@ -478,7 +502,7 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest, ShouldDeleteDataFromSync) {
     const SavedTabGroupTab* tab = group->GetTab(created_tab_id);
 
     EXPECT_FALSE(bridge().HasSpecificsForTab(*tab));
-    EXPECT_EQ(GetNumEntriesInStore(), 0u);
+    EXPECT_EQ(GetNumTabDetailsInStore(), 0u);
   }
 }
 
@@ -501,14 +525,14 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
   change_list.push_back(CreateAddEntityChange(CreateTabGroupAccountSpecifics(
       kCollaborationId, created_tab, last_seen_time)));
 
-  EXPECT_EQ(GetNumEntriesInStore(), 0u);
+  EXPECT_EQ(GetNumTabDetailsInStore(), 0u);
 
   bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
                                        std::move(change_list));
-  EXPECT_EQ(GetNumEntriesInStore(), 1u);
+  EXPECT_EQ(GetNumTabDetailsInStore(), 1u);
 
   bridge().ApplyDisableSyncChanges(bridge().CreateMetadataChangeList());
-  EXPECT_EQ(GetNumEntriesInStore(), 0u);
+  EXPECT_EQ(GetNumTabDetailsInStore(), 0u);
 }
 
 TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
@@ -616,7 +640,7 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
   change_list1.push_back(CreateAddEntityChange(CreateTabGroupAccountSpecifics(
       kCollaborationId, created_tab2, last_seen_time2)));
 
-  EXPECT_EQ(GetNumEntriesInStore(), 0u);
+  EXPECT_EQ(GetNumTabDetailsInStore(), 0u);
 
   bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
                                        std::move(change_list1));
@@ -633,7 +657,7 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
   EXPECT_EQ(tab1->last_seen_time_windows_epoch_micros(), last_seen_time1);
   EXPECT_TRUE(tab2->last_seen_time_windows_epoch_micros().has_value());
   EXPECT_EQ(tab2->last_seen_time_windows_epoch_micros(), last_seen_time2);
-  EXPECT_EQ(GetNumEntriesInStore(), 2u);
+  EXPECT_EQ(GetNumTabDetailsInStore(), 2u);
 
   // Update the last seen timestamp for tab1 locally. The updated timestamp
   // should be sent to sync.
@@ -651,7 +675,7 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
                                 TriggerSource::REMOTE);
 
   ASSERT_EQ(tab1->last_seen_time_windows_epoch_micros(), last_seen_time3);
-  EXPECT_EQ(GetNumEntriesInStore(), 2u);
+  EXPECT_EQ(GetNumTabDetailsInStore(), 2u);
   auto specifics1 = bridge().GetSpecificsForStorageKey(storage_key1);
   EXPECT_TRUE(specifics1.has_value());
   EXPECT_EQ(
@@ -659,7 +683,7 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
       specifics1->shared_tab_details().last_seen_timestamp_windows_epoch());
 
   ASSERT_EQ(tab2->last_seen_time_windows_epoch_micros(), last_seen_time4);
-  EXPECT_EQ(GetNumEntriesInStore(), 2u);
+  EXPECT_EQ(GetNumTabDetailsInStore(), 2u);
   auto specifics2 = bridge().GetSpecificsForStorageKey(storage_key2);
   EXPECT_TRUE(specifics2.has_value());
   EXPECT_EQ(
@@ -672,7 +696,7 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
   EXPECT_CALL(mock_processor(), Delete(Eq(storage_key2), _, _)).Times(1);
   model().RemoveTabFromGroupLocally(group_id, tab_id1);
   model().RemoveTabFromGroupFromSync(group_id, tab_id2);
-  EXPECT_EQ(GetNumEntriesInStore(), 0u);
+  EXPECT_EQ(GetNumTabDetailsInStore(), 0u);
   EXPECT_FALSE(bridge().GetSpecificsForStorageKey(storage_key1));
   EXPECT_FALSE(bridge().GetSpecificsForStorageKey(storage_key2));
 }
@@ -691,7 +715,7 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
 
   ASSERT_EQ(model().Count(), 1);
   ASSERT_TRUE(model().Contains(group_id));
-  EXPECT_EQ(GetNumEntriesInStore(), 0u);
+  EXPECT_EQ(GetNumTabDetailsInStore(), 0u);
 
   const std::string storage_key1 =
       CreateClientTagForSharedTab(kCollaborationId, tab_id1);
@@ -706,14 +730,14 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
                                 TriggerSource::LOCAL);
   model().UpdateTabLastSeenTime(group_id, tab_id2, base::Time::Now(),
                                 TriggerSource::LOCAL);
-  EXPECT_EQ(GetNumEntriesInStore(), 2u);
+  EXPECT_EQ(GetNumTabDetailsInStore(), 2u);
 
   // Delete the tab group locally. The corresponding sync entries for both tabs
   // should be deleted.
   EXPECT_CALL(mock_processor(), Delete(Eq(storage_key1), _, _)).Times(1);
   EXPECT_CALL(mock_processor(), Delete(Eq(storage_key2), _, _)).Times(1);
   model().RemovedLocally(group_id);
-  EXPECT_EQ(GetNumEntriesInStore(), 0u);
+  EXPECT_EQ(GetNumTabDetailsInStore(), 0u);
   EXPECT_FALSE(bridge().GetSpecificsForStorageKey(storage_key1));
   EXPECT_FALSE(bridge().GetSpecificsForStorageKey(storage_key2));
 }
@@ -732,7 +756,7 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
 
   ASSERT_EQ(model().Count(), 1);
   ASSERT_TRUE(model().Contains(group_id));
-  EXPECT_EQ(GetNumEntriesInStore(), 0u);
+  EXPECT_EQ(GetNumTabDetailsInStore(), 0u);
 
   const std::string storage_key1 =
       CreateClientTagForSharedTab(kCollaborationId, tab_id1);
@@ -747,14 +771,14 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
                                 TriggerSource::LOCAL);
   model().UpdateTabLastSeenTime(group_id, tab_id2, base::Time::Now(),
                                 TriggerSource::LOCAL);
-  EXPECT_EQ(GetNumEntriesInStore(), 2u);
+  EXPECT_EQ(GetNumTabDetailsInStore(), 2u);
 
   // Delete the tab group from sync. The corresponding sync entries for both
   // tabs should be deleted.
   EXPECT_CALL(mock_processor(), Delete(Eq(storage_key1), _, _)).Times(1);
   EXPECT_CALL(mock_processor(), Delete(Eq(storage_key2), _, _)).Times(1);
   model().RemovedFromSync(group_id);
-  EXPECT_EQ(GetNumEntriesInStore(), 0u);
+  EXPECT_EQ(GetNumTabDetailsInStore(), 0u);
   EXPECT_FALSE(bridge().GetSpecificsForStorageKey(storage_key1));
   EXPECT_FALSE(bridge().GetSpecificsForStorageKey(storage_key2));
 }
