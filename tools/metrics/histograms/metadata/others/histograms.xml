@@ -7467,7 +7467,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageImageService.Android.SalientImageUrlFetchResult{ClientId}"
-    enum="SalientImageUrlFetchResult" expires_after="2025-08-10">
+    enum="SalientImageUrlFetchResult" expires_after="2025-10-10">
   <owner>hanxi@google.com</owner>
   <owner>huangs@google.com</owner>
   <owner>wylieb@google.com</owner>
@@ -7479,7 +7479,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageImageService.Backend.OptimizationGuide.Result{ClientId}"
-    enum="PageImageServiceResult" expires_after="2025-09-14">
+    enum="PageImageServiceResult" expires_after="2025-10-10">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>1456757</component>
@@ -7494,7 +7494,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageImageService.Backend.Suggest.Result{ClientId}"
-    enum="PageImageServiceResult" expires_after="2025-03-09">
+    enum="PageImageServiceResult" expires_after="2025-10-10">
   <owner>wylieb@google.com</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>1457319</component>
@@ -7522,7 +7522,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageImageService.ConsentStatusOnTimeout"
-    enum="PageImageServiceConsentStatus" expires_after="2025-03-09">
+    enum="PageImageServiceConsentStatus" expires_after="2025-10-10">
   <owner>wylieb@google.com</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>1457319</component>
@@ -7534,7 +7534,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageImageService.ConsentStatusRequestCount" enum="Boolean"
-    expires_after="2025-03-09">
+    expires_after="2025-10-10">
   <owner>wylieb@google.com</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>1457319</component>
@@ -7545,7 +7545,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageImageService.ConsentStatus{ClientId}"
-    enum="PageImageServiceConsentStatus" expires_after="2025-05-11">
+    enum="PageImageServiceConsentStatus" expires_after="2025-10-10">
   <owner>wylieb@google.com</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>1457319</component>
