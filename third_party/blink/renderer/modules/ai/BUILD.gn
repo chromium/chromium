@@ -31,6 +31,8 @@ blink_modules_sources("ai") {
     "language_model_factory.h",
     "language_model_params.cc",
     "language_model_params.h",
+    "language_model_prompt_builder.cc",
+    "language_model_prompt_builder.h",
     "model_execution_responder.cc",
     "model_execution_responder.h",
     "on_device_translation/create_translator_client.cc",
