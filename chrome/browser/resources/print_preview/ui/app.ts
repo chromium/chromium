@@ -537,6 +537,10 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
     this.$.state.transitTo(State.CLOSING);
   }
 
+  private onDestinationChanged_(e: CustomEvent<{value: Destination}>) {
+    this.destination_ = e.detail.value;
+  }
+
   private onDestinationCapabilitiesChanged_() {
     this.$.model.updateSettingsFromDestination();
   }

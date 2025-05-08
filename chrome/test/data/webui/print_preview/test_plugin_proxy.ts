@@ -25,7 +25,7 @@ export class TestPluginProxy extends TestBrowserProxy implements PluginProxy {
     this.loadCompleteCallback_ = loadCompleteCallback;
   }
 
-  setPreloadCallback(preloadCallback: (() => void)|null) {
+  setPreloadCallback(preloadCallback: () => void) {
     this.preloadCallback_ = preloadCallback;
   }
 

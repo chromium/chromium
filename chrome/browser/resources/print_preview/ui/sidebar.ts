@@ -229,10 +229,12 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
 
   protected onDestinationChanged_(e: CustomEvent<{value: Destination}>) {
     this.destination = e.detail.value;
+    this.destinationCapabilities_ = null;
   }
 
-  protected onDestinationCapabilitiesChanged_() {
+  protected onDestinationCapabilitiesChanged_(e: CustomEvent<Destination>) {
     assert(this.destination);
+    assert(e.detail.id === this.destination.id);
     // When `this.destination.capabilities` changes it is always a new object.
     this.destinationCapabilities_ = this.destination.capabilities;
   }

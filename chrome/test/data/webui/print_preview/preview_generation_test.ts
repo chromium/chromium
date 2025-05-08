@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {NativeInitialSettings, PreviewTicket, PrintPreviewAppElement, PrintPreviewDestinationSettingsElement, Range, Settings} from 'chrome://print/print_preview.js';
-import {ColorMode, CustomMarginsOrientation, Destination, DestinationOrigin, DestinationState, Margins, MarginsType, NativeLayerImpl, PluginProxyImpl, ScalingType} from 'chrome://print/print_preview.js';
+import {ColorMode, CustomMarginsOrientation, Destination, DestinationOrigin, Margins, MarginsType, NativeLayerImpl, PluginProxyImpl, ScalingType} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {NativeLayerStub} from './native_layer_stub.js';
@@ -564,6 +564,7 @@ suite('PreviewGenerationTest', function() {
               page.shadowRoot!.querySelector('print-preview-sidebar')!
                   .shadowRoot.querySelector(
                       'print-preview-destination-settings')!;
+          assertTrue(!!destinationSettings.destination);
           assertEquals('FooDevice', destinationSettings.destination.id);
           assertEquals('FooDevice', originalTicket.deviceName);
           const barDestination =
@@ -581,13 +582,12 @@ suite('PreviewGenerationTest', function() {
           };
           barDestination.capabilities = capabilities;
           nativeLayer.resetResolver('getPreview');
-          destinationSettings.destinationState = DestinationState.SET;
           destinationSettings.getDestinationStoreForTest().selectDestination(
               barDestination);
-          destinationSettings.destinationState = DestinationState.UPDATED;
           return nativeLayer.whenCalled('getPreview');
         })
         .then(function(args) {
+          assertTrue(!!destinationSettings.destination);
           assertEquals('BarDevice', destinationSettings.destination.id);
           const ticket: PreviewTicket = JSON.parse(args.printTicket);
           assertEquals('BarDevice', ticket.deviceName);
