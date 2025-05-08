@@ -553,13 +553,13 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
   UIColor* backgroundColor =
       IsSignInButtonNoAvatarEnabled()
-          ? [[UIColor colorNamed:kBlueColor] colorWithAlphaComponent:0.08]
+          ? [[UIColor colorNamed:kSolidWhiteColor] colorWithAlphaComponent:0.75]
           : [[UIColor colorNamed:@"fake_omnibox_solid_background_color"]
                 colorWithAlphaComponent:0.8];
   customizationMenuButton.backgroundColor = backgroundColor;
 
   UIColor* tintColor = [UIColor
-      colorNamed:(IsSignInButtonNoAvatarEnabled() ? kBlueColor
+      colorNamed:(IsSignInButtonNoAvatarEnabled() ? kBlue600Color
                                                   : kTextSecondaryColor)];
   customizationMenuButton.tintColor = tintColor;
 
@@ -597,11 +597,12 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
     UIButtonConfiguration* config =
         [UIButtonConfiguration plainButtonConfiguration];
     config.background.backgroundColor =
-        [[UIColor colorNamed:kBlueColor] colorWithAlphaComponent:0.08];
+        [[UIColor colorNamed:kSolidWhiteColor] colorWithAlphaComponent:0.75];
     NSDictionary* attributes = @{
       NSFontAttributeName : PreferredFontForTextStyle(
-          UIFontTextStyleBody, UIFontWeightSemibold, kIdentityDiscMaxFontSize),
-      NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
+          UIFontTextStyleSubheadline, UIFontWeightSemibold,
+          kIdentityDiscMaxFontSize),
+      NSForegroundColorAttributeName : [UIColor colorNamed:kBlue600Color],
     };
     config.attributedTitle = [[NSAttributedString alloc]
         initWithString:l10n_util::GetNSString(IDS_IOS_SIGNIN_BUTTON_TEXT)
@@ -884,8 +885,11 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
   self.isSignedIn = NO;
 
-  self.identityDiscAccessibilityLabel = l10n_util::GetNSString(
-      IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL);
+  self.identityDiscAccessibilityLabel =
+      IsSignInButtonNoAvatarEnabled()
+          ? l10n_util::GetNSString(IDS_IOS_SIGN_IN_BUTTON_ACCESSIBILITY_LABEL)
+          : l10n_util::GetNSString(
+                IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL);
 
   // `self.identityDiscButton` should not be updated if the view has not been
   // created yet.

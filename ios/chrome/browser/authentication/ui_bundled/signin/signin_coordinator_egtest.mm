@@ -765,9 +765,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Tests that a signed-out user can open the "Sign in" screen from the NTP.
 - (void)testOpenSignInFromNTP {
   // Select the identity disc particle.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(GetNSString(
-                     IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL))]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kNTPFeedHeaderIdentityDisc)]
       performAction:grey_tap()];
   [SigninEarlGreyUI assertFakeAddAccountMenuDisplayed];
 }
@@ -778,9 +777,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   // Select the identity disc particle.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(GetNSString(
-                     IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL))]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kNTPFeedHeaderIdentityDisc)]
       performAction:grey_tap()];
 
   // Ensure the sign-in sheet is displayed.
@@ -797,9 +795,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   // Select the NTP avatar disc.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(GetNSString(
-                     IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL))]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kNTPFeedHeaderIdentityDisc)]
       performAction:grey_tap()];
 
   // Confirm sign in.
@@ -853,9 +850,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   // Select the NTP avatar disc.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(GetNSString(
-                     IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL))]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kNTPFeedHeaderIdentityDisc)]
       performAction:grey_tap()];
 
   // Confirm sign in.
@@ -896,9 +892,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // activity from the NTP.
 - (void)testOpenAuthActivityFromNTPIfNoDeviceAccount {
   // Select the identity disc particle.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(GetNSString(
-                     IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL))]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kNTPFeedHeaderIdentityDisc)]
       performAction:grey_tap()];
 
   // Ensure the auth activity is displayed.
@@ -927,9 +922,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       performAction:grey_tap()];
 
   // Select the identity disc particle.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(GetNSString(
-                     IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL))]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kNTPFeedHeaderIdentityDisc)]
       performAction:grey_tap()];
 
   // Ensure the sign-in sheet is displayed.

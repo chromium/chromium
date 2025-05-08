@@ -6199,6 +6199,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SIGN_IN_AGAIN" desc="Title displayed when there is an authentication failure in sign-in and the user needs to attempt to sign in again. [Length: 20em] [iOS only]">
         Sign in again
       </message>
+      <message name="IDS_IOS_SIGN_IN_BUTTON_ACCESSIBILITY_LABEL" desc="The content description for a toolbar button displaying the signed-in button. Tapping on this button opens the sign-in sheet [iOS only].">
+        Sign in options.
+      </message>
       <message name="IDS_IOS_SIGN_IN_DISMISS" desc="Title displayed when there is an unknown failure in sign-in and the user needs to attempt to sign in again. [Length: 20em] [iOS only]">
        Dismiss
       </message>
