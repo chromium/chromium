@@ -35,6 +35,10 @@ bool IsCGFloatEqual(CGFloat a, CGFloat b) {
   return std::fabs(a - b) <= std::numeric_limits<CGFloat>::epsilon();
 }
 
+bool IsActiveApplication() {
+  return NSRunningApplication.currentApplication.active;
+}
+
 UTType* UTTypeForServicesType(NSString* type) {
   if (!type) {
     return nil;
