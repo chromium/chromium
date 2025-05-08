@@ -50,7 +50,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Session.BrowserFullscreen.DurationUpTo24H" units="ms"
     expires_after="2025-09-14">
-  <owner>bur@chromium.org</owner>
+  <owner>avi@chromium.org</owner>
   <owner>chrome-mac-dev@google.com</owner>
   <summary>
     The total time a Chrome browser window spends in fullscreen. Content

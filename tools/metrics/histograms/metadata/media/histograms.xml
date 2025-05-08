@@ -6193,7 +6193,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.Video.Capture.Mac.ScreenCaptureSystemPermission"
     enum="BooleanAllowed" expires_after="2025-07-27">
-  <owner>bur@chromium.org</owner>
+  <owner>avi@chromium.org</owner>
   <owner>mark@chromium.org</owner>
   <summary>
     The Mac system permission state for screen capture. Logged once at browser
