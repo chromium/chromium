@@ -60,6 +60,7 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
     /* package */ final Button mContinueButton;
     /* package */ final Button mCancelButton;
     /* package */ final TextViewWithClickableSpans mOptOutText;
+    /* package */ final TextViewWithClickableSpans mFootnote;
 
     /* package */ SecurePaymentConfirmationAuthnView(Context context) {
         mContentView =
@@ -86,9 +87,13 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
                 (TextViewWithClickableSpans)
                         mContentView.findViewById(
                                 R.id.secure_payment_confirmation_nocredmatch_opt_out);
+        mFootnote =
+                (TextViewWithClickableSpans)
+                        mContentView.findViewById(R.id.secure_payment_confirmation_footnote);
 
         mHeaderImage.setImageResource(R.drawable.save_card);
         mOptOutText.setMovementMethod(LinkMovementMethod.getInstance());
+        mFootnote.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     /* package */ View getContentView() {

@@ -552,6 +552,9 @@
     <message name="IDS_NO_MATCHING_CREDENTIAL_DESCRIPTION" desc="Description on a dialog that appears when there are no matching payment credentials to authenticate. Informs users that additional steps are needed to verify the payment." formatter_data="android_java">
         <ph name="URL">%1$s<ex>merchant.com</ex></ph> may need to take additional steps to verify your payment
     </message>
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_FOOTNOTE" desc="Footnote on a secure payment confirmation dialog that explains what will happen next and provides a link to verify by another way." formatter_data="android_java">
+        Unlock your screen in the next step, typically using your fingerprint. Or you can <ph name="BEGIN_LINK">BEGIN_LINK</ph>verify another way<ph name="END_LINK">END_LINK</ph>.
+    </message>
   </if>
   <if expr="not is_android">
     <message name="IDS_NO_MATCHING_CREDENTIAL_DESCRIPTION" desc="Description on a dialog that appears when there are no matching payment credentials to authenticate. Informs users that additional steps are needed to verify the payment.">

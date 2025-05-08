@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -42,6 +43,7 @@ import org.chromium.components.payments.PaymentRequestUpdateEventListener;
 import org.chromium.components.payments.PaymentResponseHelper;
 import org.chromium.components.payments.PaymentResponseHelperInterface;
 import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationAuthnController;
+import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationAuthnController.SpcResponseStatus;
 import org.chromium.components.payments.secure_payment_confirmation.SecurePaymentConfirmationNoMatchingCredController;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -68,6 +70,8 @@ import java.util.Map;
  */
 public class ChromePaymentRequestService
         implements BrowserPaymentRequest, PaymentUiService.Delegate {
+    private static final String TAG = "ChromePaymentReqServ";
+
     // Null-check is necessary because retainers of ChromePaymentRequestService could still
     // reference ChromePaymentRequestService after mPaymentRequestService is set null, e.g.,
     // crbug.com/1122148.
@@ -356,20 +360,28 @@ public class ChromePaymentRequestService
             assert mSpcAuthnUiController == null;
             mSpcAuthnUiController = SecurePaymentConfirmationAuthnController.create(mWebContents);
 
-            Callback<Boolean> responseCallback =
-                    (response) -> {
-                        mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
-
-                        // User wishes to proceed with payment but not through SPC.
-                        if (response) {
-                            disconnectFromClientWithDebugMessage(
-                                    ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
-                                    PaymentErrorReason.NOT_ALLOWED_ERROR);
-                        } else {
-                            disconnectFromClientWithDebugMessage(
-                                    ErrorStrings.USER_CANCELLED, PaymentErrorReason.USER_CANCEL);
+            Callback<Integer> responseCallback =
+                    (responseStatus) -> {
+                        switch (responseStatus) {
+                            case SpcResponseStatus.ANOTHER_WAY:
+                                mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
+                                disconnectFromClientWithDebugMessage(
+                                        ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
+                                        PaymentErrorReason.NOT_ALLOWED_ERROR);
+                                break;
+                            case SpcResponseStatus.CANCEL:
+                                mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
+                                disconnectFromClientWithDebugMessage(
+                                        ErrorStrings.USER_CANCELLED,
+                                        PaymentErrorReason.USER_CANCEL);
+                                break;
+                            default:
+                                Log.e(TAG, "Unexpected SPC response status: %d", responseStatus);
+                                mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
+                                disconnectFromClientWithDebugMessage(
+                                        ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
+                                        PaymentErrorReason.NOT_ALLOWED_ERROR);
                         }
-
                         mSpcAuthnUiController = null;
                     };
 
@@ -422,18 +434,34 @@ public class ChromePaymentRequestService
             PaymentMethodData spcMethodData =
                     mSpec.getMethodData().get(MethodStrings.SECURE_PAYMENT_CONFIRMATION);
             assert spcMethodData != null;
-            Callback<Boolean> responseCallback =
-                    (response) -> {
-                        if (response) {
-                            onSecurePaymentConfirmationUiAccepted(getSelectedPaymentApp());
-                        } else {
-                            mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
-                            disconnectFromClientWithDebugMessage(
-                                    ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
-                                    PaymentErrorReason.NOT_ALLOWED_ERROR);
+            Callback<Integer> responseCallback =
+                    (responseStatus) -> {
+                        switch (responseStatus) {
+                            case SpcResponseStatus.ACCEPT:
+                                onSecurePaymentConfirmationUiAccepted(getSelectedPaymentApp());
+                                break;
+                            case SpcResponseStatus.ANOTHER_WAY:
+                                mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
+                                disconnectFromClientWithDebugMessage(
+                                        ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
+                                        PaymentErrorReason.NOT_ALLOWED_ERROR);
+                                break;
+                            case SpcResponseStatus.CANCEL:
+                                mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
+                                disconnectFromClientWithDebugMessage(
+                                        ErrorStrings.USER_CANCELLED,
+                                        PaymentErrorReason.USER_CANCEL);
+                                break;
+                            default:
+                                Log.e(TAG, "Unexpected SPC response status: %d", responseStatus);
+                                mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
+                                disconnectFromClientWithDebugMessage(
+                                        ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED,
+                                        PaymentErrorReason.NOT_ALLOWED_ERROR);
                         }
                         mSpcAuthnUiController = null;
                     };
+
             Runnable optOutCallback =
                     () -> {
                         mJourneyLogger.setAborted(AbortReason.USER_OPTED_OUT);
