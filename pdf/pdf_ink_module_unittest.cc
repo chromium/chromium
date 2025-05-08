@@ -3088,11 +3088,24 @@ class PdfInkModuleTextHighlightTest : public PdfInkModuleStrokeTest {
   static constexpr SkColor kOrangeColor = SkColorSetRGB(0xFF, 0x63, 0x0C);
 
  protected:
-  // Helper method for running a simple text selection highlight test with a
-  // single selection rect on page zero.
-  void RunSingleSelectionTest(const gfx::Rect& selection_rect,
-                              base::span<const PdfInkInputData> expected_inputs,
-                              float expected_size) {
+  // Helper method for running a simple text highlighting test using text
+  // selected by mouse with a single selection rect on page zero.
+  void RunSingleSelectionWithMouseTest(
+      const gfx::Rect& selection_rect,
+      base::span<const PdfInkInputData> expected_inputs,
+      float expected_size) {
+    SetUpSingleSelectionTest(selection_rect);
+
+    // Apply a text highlight stroke at the given points.
+    ApplyStrokeWithMouseAtPoints(kStartPointInsidePage0, {kEndPointInsidePage0},
+                                 kEndPointInsidePage0);
+
+    VerifySingleSelectionTest(expected_inputs, expected_size);
+  }
+
+  // Set up single selection test expectations before text selection strokes
+  // have been applied.
+  void SetUpSingleSelectionTest(const gfx::Rect& selection_rect) {
     EnableAnnotationMode();
     InitializeSimpleSinglePageBasicLayout();
 
@@ -3113,11 +3126,12 @@ class PdfInkModuleTextHighlightTest : public PdfInkModuleStrokeTest {
     EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
                                                 /*click_count=*/1));
     EXPECT_CALL(client(), ExtendSelectionByPoint(kEndPointInsidePage0));
+  }
 
-    // Apply a text highlight stroke at the given points.
-    ApplyStrokeWithMouseAtPoints(kStartPointInsidePage0, {kEndPointInsidePage0},
-                                 kEndPointInsidePage0);
-
+  // Verify single selection test results after applying text selection strokes.
+  void VerifySingleSelectionTest(
+      base::span<const PdfInkInputData> expected_inputs,
+      float expected_size) {
     EXPECT_EQ(1, client().stroke_finished_count());
     EXPECT_THAT(updated_ink_thumbnail_page_indices(), ElementsAre(0));
 
@@ -3207,7 +3221,7 @@ TEST_P(PdfInkModuleTextHighlightTest, PenDoesNotSelectText) {
 }
 
 TEST_P(PdfInkModuleTextHighlightTest, SingleHorizontalSelection) {
-  RunSingleSelectionTest(
+  RunSingleSelectionWithMouseTest(
       /*selection_rect=*/kHorizontalSelection,
       /*expected_inputs=*/
       {PdfInkInputData(gfx::PointF(15.0, 20.0)),
@@ -3216,7 +3230,7 @@ TEST_P(PdfInkModuleTextHighlightTest, SingleHorizontalSelection) {
 }
 
 TEST_P(PdfInkModuleTextHighlightTest, SingleVerticalSelection) {
-  RunSingleSelectionTest(
+  RunSingleSelectionWithMouseTest(
       /*selection_rect=*/kVerticalSelection,
       /*expected_inputs=*/
       {PdfInkInputData(gfx::PointF(13.0, 18.0)),
@@ -3225,7 +3239,7 @@ TEST_P(PdfInkModuleTextHighlightTest, SingleVerticalSelection) {
 }
 
 TEST_P(PdfInkModuleTextHighlightTest, SingleSquareSelection) {
-  RunSingleSelectionTest(
+  RunSingleSelectionWithMouseTest(
       /*selection_rect=*/gfx::Rect(10, 15, 12, 12),
       /*expected_inputs=*/
       {PdfInkInputData(gfx::PointF(16.0, 21.0))},
@@ -3235,7 +3249,7 @@ TEST_P(PdfInkModuleTextHighlightTest, SingleSquareSelection) {
 TEST_P(PdfInkModuleTextHighlightTest,
        SingleHorizontalSelectionRotatedClockwise90) {
   client().set_orientation(PageOrientation::kClockwise90);
-  RunSingleSelectionTest(
+  RunSingleSelectionWithMouseTest(
       /*selection_rect=*/kHorizontalSelection,
       /*expected_inputs=*/
       {PdfInkInputData(gfx::PointF(20.0, 14.0)),
@@ -3246,7 +3260,7 @@ TEST_P(PdfInkModuleTextHighlightTest,
 TEST_P(PdfInkModuleTextHighlightTest,
        SingleVerticalSelectionRotatedClockwise90) {
   client().set_orientation(PageOrientation::kClockwise90);
-  RunSingleSelectionTest(
+  RunSingleSelectionWithMouseTest(
       /*selection_rect=*/kVerticalSelection,
       /*expected_inputs=*/
       {PdfInkInputData(gfx::PointF(18.0, 36.0)),
@@ -3257,7 +3271,7 @@ TEST_P(PdfInkModuleTextHighlightTest,
 TEST_P(PdfInkModuleTextHighlightTest,
        SingleHorizontalSelectionRotatedClockwise180) {
   client().set_orientation(PageOrientation::kClockwise180);
-  RunSingleSelectionTest(
+  RunSingleSelectionWithMouseTest(
       /*selection_rect=*/kHorizontalSelection,
       /*expected_inputs=*/
       {PdfInkInputData(gfx::PointF(14.0, 39.0)),
@@ -3268,7 +3282,7 @@ TEST_P(PdfInkModuleTextHighlightTest,
 TEST_P(PdfInkModuleTextHighlightTest,
        SingleVerticalSelectionRotatedClockwise180) {
   client().set_orientation(PageOrientation::kClockwise180);
-  RunSingleSelectionTest(
+  RunSingleSelectionWithMouseTest(
       /*selection_rect=*/kVerticalSelection,
       /*expected_inputs=*/
       {PdfInkInputData(gfx::PointF(36.0, 37.0)),
@@ -3279,7 +3293,7 @@ TEST_P(PdfInkModuleTextHighlightTest,
 TEST_P(PdfInkModuleTextHighlightTest,
        SingleHorizontalSelectionRotatedClockwise270) {
   client().set_orientation(PageOrientation::kClockwise270);
-  RunSingleSelectionTest(
+  RunSingleSelectionWithMouseTest(
       /*selection_rect=*/kHorizontalSelection,
       /*expected_inputs=*/
       {PdfInkInputData(gfx::PointF(39.0, 15.0)),
@@ -3290,7 +3304,7 @@ TEST_P(PdfInkModuleTextHighlightTest,
 TEST_P(PdfInkModuleTextHighlightTest,
        SingleVerticalSelectionRotatedClockwise270) {
   client().set_orientation(PageOrientation::kClockwise270);
-  RunSingleSelectionTest(
+  RunSingleSelectionWithMouseTest(
       /*selection_rect=*/kVerticalSelection,
       /*expected_inputs=*/
       {PdfInkInputData(gfx::PointF(37.0, 13.0)),
@@ -3303,7 +3317,7 @@ TEST_P(PdfInkModuleTextHighlightTest, SingleSelectionZoomedIn) {
   InitializeSimpleSinglePageBasicLayout();
   client().set_zoom(2.0f);
 
-  RunSingleSelectionTest(
+  RunSingleSelectionWithMouseTest(
       /*selection_rect=*/kHorizontalSelection,
       /*expected_inputs=*/
       {PdfInkInputData(gfx::PointF(7.5, 10.0)),
@@ -3316,7 +3330,7 @@ TEST_P(PdfInkModuleTextHighlightTest, SingleSelectionZoomedOut) {
   InitializeSimpleSinglePageBasicLayout();
   client().set_zoom(0.5f);
 
-  RunSingleSelectionTest(
+  RunSingleSelectionWithMouseTest(
       /*selection_rect=*/kHorizontalSelection,
       /*expected_inputs=*/
       {PdfInkInputData(gfx::PointF(30.0, 40.0)),
