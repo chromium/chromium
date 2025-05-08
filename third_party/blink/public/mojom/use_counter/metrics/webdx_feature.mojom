@@ -389,7 +389,7 @@ enum WebDXFeature {
   kTextUnderlineOffset = 331,
   kWindowManagement = 332,
   kRequestclose = 333,
-  kDRAFT_Uint8ArrayToFromBase64AndHex = 334,
+  kUint8arrayBase64Hex = 334,
   kLineBreak = 335,
 
   // Add new features immediately above this line. Don't change assigned
