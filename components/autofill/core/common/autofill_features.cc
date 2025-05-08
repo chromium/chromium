@@ -321,7 +321,7 @@ BASE_FEATURE(kAutofillRecordCorrectionOfSelectElements,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, chrome will support home and work addresses from account.
-// TODO: crbug.com/397940269 - Clean up when launched.
+// TODO: crbug.com/354706653 - Clean up when launched.
 BASE_FEATURE(kAutofillEnableSupportForHomeAndWork,
              "AutofillEnableSupportForHomeAndWork",
              base::FEATURE_DISABLED_BY_DEFAULT);
