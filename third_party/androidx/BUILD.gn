@@ -3137,6 +3137,7 @@ if (!limit_android_deps) {
     deps = [
       ":androidx_collection_collection_java",
       ":androidx_core_core_java",
+      "//third_party/android_deps:org_jspecify_jspecify_java",
     ]
   }
 
