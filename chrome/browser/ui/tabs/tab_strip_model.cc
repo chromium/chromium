@@ -460,6 +460,10 @@ std::unique_ptr<DetachedTabGroup> TabStripModel::DetachTabGroupImpl(
   // Calculate the next selected index before fixing openers.
   std::optional<int> next_selected_index = DetermineNewSelectedIndex(group_id);
 
+  std::map<split_tabs::SplitTabId,
+           std::vector<std::pair<tabs::TabInterface*, int>>>
+      splits_in_group;
+
   for (int index = static_cast<int>(tabs_in_group.end()) - 1;
        index >= static_cast<int>(tabs_in_group.start()); --index) {
     tabs::TabModel* tab = GetTabModelAtIndex(index);
@@ -468,6 +472,13 @@ std::unique_ptr<DetachedTabGroup> TabStripModel::DetachTabGroupImpl(
     if (tab == active_tab_model) {
       active_tab_removed = true;
       active_tab_model->WillEnterBackground(base::PassKey<TabStripModel>());
+    }
+
+    if (tab->IsSplit()) {
+      split_tabs::SplitTabId split_id = tab->GetSplit().value();
+      if (!splits_in_group.contains(split_id)) {
+        splits_in_group[split_id] = GetTabsAndIndicesInSplit(split_id);
+      }
     }
 
     // Track whether any of these tabs are selected.
@@ -494,6 +505,13 @@ std::unique_ptr<DetachedTabGroup> TabStripModel::DetachTabGroupImpl(
         tabs::TabInterface::DetachReason::kInsertIntoOtherWindow, std::nullopt);
   }
 
+  // Remove the group collection before selection model update.
+  // This is because the selection model update includes looking into
+  // `contents_data_` for split tabs.
+  std::unique_ptr<tabs::TabGroupTabCollection> group_collection =
+      contents_data_->RemoveGroup(
+          contents_data_->GetTabGroupCollection(group_id));
+
   // Selection model update should be done as a bulk operation.
   if (closing_all_tabs) {
     selection_model_.Clear();
@@ -515,14 +533,18 @@ std::unique_ptr<DetachedTabGroup> TabStripModel::DetachTabGroupImpl(
     }
   }
 
-  // Remove the group collection.
-  std::unique_ptr<tabs::TabGroupTabCollection> group_collection =
-      contents_data_->RemoveGroup(
-          contents_data_->GetTabGroupCollection(group_id));
-
   // Send group detach notification.
   OnTabGroupDetached(group_collection.get());
   group_model_->RemoveTabGroup(group_id, base::PassKey<TabStripModel>());
+
+  // Send possible split detach notification.
+  for (auto const& [split_id, tabs_with_indices] : splits_in_group) {
+    for (TabStripModelObserver& observer : observers_) {
+      observer.OnSplitTabRemoved(tabs_with_indices, split_id,
+                                 TabStripModelObserver::SplitTabRemoveReason::
+                                     kDetachedToAnotherTabstrip);
+    }
+  }
 
   // Notify tab is removed from model
   for (tabs::TabInterface* tab : *group_collection) {
@@ -580,7 +602,8 @@ gfx::Range TabStripModel::InsertDetachedTabGroupImpl(
                                    index);
 
   for (int i = index;
-       i < index + static_cast<int>(group_collection->ChildCount()); i++) {
+       i < index + static_cast<int>(group_collection->TabCountRecursive());
+       i++) {
     selection_model_.IncrementFrom(index);
   }
 
@@ -593,9 +616,14 @@ gfx::Range TabStripModel::InsertDetachedTabGroupImpl(
 
   ValidateTabStripModel();
 
+  std::set<split_tabs::SplitTabId> splits_in_group;
   for (tabs::TabInterface* tab : *group_collection) {
     static_cast<tabs::TabModel*>(tab)->DidInsert(
         base::PassKey<TabStripModel>());
+
+    if (tab->IsSplit()) {
+      splits_in_group.insert(tab->GetSplit().value());
+    }
   }
 
   // Send add notifications for tabs.
@@ -619,6 +647,16 @@ gfx::Range TabStripModel::InsertDetachedTabGroupImpl(
 
   // Send group attach notification.
   OnTabGroupAttached(group_collection);
+
+  // Send split attach notification
+  for (const split_tabs::SplitTabId& split_id : splits_in_group) {
+    for (TabStripModelObserver& observer : observers_) {
+      observer.OnSplitTabCreated(GetTabsAndIndicesInSplit(split_id), split_id,
+                                 TabStripModelObserver::SplitTabAddReason::
+                                     kInsertedFromAnotherTabstrip,
+                                 *GetSplitData(split_id)->visual_data());
+    }
+  }
 
   return tabs_in_group;
 }

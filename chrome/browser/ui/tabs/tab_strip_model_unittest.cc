@@ -454,6 +454,7 @@ class TabStripModelTest : public testing::Test {
 
   void SetUp() override {
     tabstrip_ = std::make_unique<TabStripModel>(delegate(), profile());
+    scoped_feature_list_.InitAndEnableFeature(features::kSideBySide);
     tabstrip()->AddObserver(observer());
     ASSERT_TRUE(tabstrip()->empty());
   }
@@ -987,6 +988,43 @@ TEST_F(TabStripModelTest, TestDetachGroupNewSelection) {
 
   detached_group = tabstrip()->DetachTabGroupForInsertion(group_id);
   EXPECT_EQ(tabstrip()->active_index(), 3);
+}
+
+TEST_F(TabStripModelTest, TestDetachAndInsertGroupWithSplit) {
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 5, 0, {2}));
+
+  tab_groups::TabGroupId group_id =
+      tabstrip()->AddToNewGroup(std::vector<int>{1, 2, 3});
+
+  tabstrip()->ActivateTabAt(
+      2, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  split_tabs::SplitTabId split_id =
+      tabstrip()->AddToNewSplit({3}, split_tabs::SplitTabLayout::kVertical);
+
+  std::unique_ptr<DetachedTabGroup> detached_group =
+      tabstrip()->DetachTabGroupForInsertion(group_id);
+
+  EXPECT_EQ(detached_group->collection_->TabCountRecursive(), 3u);
+  EXPECT_FALSE(tabstrip()->group_model()->ContainsTabGroup(group_id));
+  EXPECT_EQ(tabstrip()->count(), 2);
+
+  // Reinsert the detached group.
+  tabstrip()->InsertDetachedTabGroupAt(std::move(detached_group), 0);
+
+  EXPECT_TRUE(tabstrip()->group_model()->ContainsTabGroup(group_id));
+  EXPECT_EQ(
+      tabstrip()->group_model()->GetTabGroup(group_id)->ListTabs().length(),
+      3u);
+  EXPECT_EQ(tabstrip()->group_model()->GetTabGroup(group_id)->ListTabs(),
+            gfx::Range(0, 3));
+  std::vector<tabs::TabInterface*> expected_split_tabs = {
+      tabstrip()->GetTabAtIndex(1), tabstrip()->GetTabAtIndex(2)};
+  EXPECT_EQ(tabstrip()->GetSplitData(split_id)->ListTabs(),
+            expected_split_tabs);
+  EXPECT_EQ(tabstrip()->count(), 5);
+  EXPECT_EQ("1 2s 3s 0 4", GetTabStripStateString(tabstrip()));
 }
 
 TEST_F(TabStripModelTest, InsertDetachedGroupSelectionObserver) {
@@ -3470,7 +3508,6 @@ TEST_F(TabStripModelTest, MoveSelectedTabsToWithPartGroupSelected) {
 }
 
 TEST_F(TabStripModelTest, MoveSelectedTabsToWithSplit) {
-  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(tabstrip(), 10, 5, {2, 3, 6, 7}));
 
@@ -3487,7 +3524,6 @@ TEST_F(TabStripModelTest, MoveSelectedTabsToWithSplit) {
 }
 
 TEST_F(TabStripModelTest, MoveSelectedTabsToWithGroupAndSplit) {
-  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(tabstrip(), 13, 5, {2, 3}));
 
@@ -5581,7 +5617,6 @@ TEST_F(TabStripModelTest, RemoveSplitUnselectsNonActiveTab) {
 }
 
 TEST_F(TabStripModelTest, SplitSelectionTestFromModel) {
-  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   EXPECT_TRUE(tabstrip.empty());

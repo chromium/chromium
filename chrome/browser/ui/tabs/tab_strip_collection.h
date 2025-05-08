@@ -131,6 +131,12 @@ class TabStripCollection : public TabCollection {
   ChildrenPtrs GetTabsAndCollectionsForMove(
       const std::vector<int>& tab_indices);
 
+  // Helper to centralize updates to `group_mapping_` and `split_mapping_`. If
+  // `root_collection` is a group, the appropriate splits need to group need to
+  // be updated in the `split_mapping_`.
+  void AddCollectionMapping(TabCollection* root_collection);
+  void RemoveCollectionMapping(TabCollection* root_collection);
+
   // All of the pinned tabs for this tabstrip is present in this collection.
   // This should be below `impl_` to avoid being a dangling pointer during
   // destruction.

@@ -3918,12 +3918,15 @@ void BrowserView::OnSplitTabRemoved(
     std::vector<std::pair<tabs::TabInterface*, int>> tabs,
     split_tabs::SplitTabId split_id,
     SplitTabRemoveReason reason) {
-  const bool is_split_active = std::any_of(
-      tabs.begin(), tabs.end(), [](std::pair<tabs::TabInterface*, int>& tab) {
-        return tab.first->IsActivated();
-      });
+  CHECK(multi_contents_view_);
+  content::WebContents* active_web_contents =
+      multi_contents_view_->GetActiveContentsView()->web_contents();
 
-  if (is_split_active) {
+  if (std::any_of(tabs.begin(), tabs.end(),
+                  [active_web_contents](
+                      const std::pair<tabs::TabInterface*, int>& pair) {
+                    return pair.first->GetContents() == active_web_contents;
+                  })) {
     HideSplitView();
   }
 }

@@ -276,8 +276,7 @@ ChildrenPtrs TabStripCollection::GetTabsAndCollectionsForMove(
 TabGroupTabCollection* TabStripCollection::AddTabGroup(
     std::unique_ptr<TabGroupTabCollection> group,
     int index) {
-  group_mapping_.insert({group->GetTabGroupId(), group.get()});
-
+  AddCollectionMapping(group.get());
   const int dst_index =
       (index == static_cast<int>(TabCountRecursive()))
           ? unpinned_collection_->ChildCount()
@@ -291,8 +290,7 @@ TabGroupTabCollection* TabStripCollection::AddTabGroup(
 std::unique_ptr<TabGroupTabCollection> TabStripCollection::RemoveGroup(
     TabGroupTabCollection* group) {
   CHECK(group_mapping_.contains(group->GetTabGroupId()));
-  group_mapping_.erase(group->GetTabGroupId());
-
+  RemoveCollectionMapping(group);
   return base::WrapUnique(static_cast<TabGroupTabCollection*>(
       unpinned_collection_->MaybeRemoveCollection(group).release()));
 }
@@ -400,7 +398,7 @@ void TabStripCollection::CreateSplit(
   }
 
   // Insert split back into the parent.
-  split_mapping_.insert({split_id, split.get()});
+  AddCollectionMapping(split.get());
   parent_collection->AddCollection(std::move(split), dst_index);
 }
 
@@ -421,7 +419,7 @@ void TabStripCollection::Unsplit(split_tabs::SplitTabId split_id) {
     parent_collection->AddTab(split->MaybeRemoveTab(tab), dst_index);
   }
 
-  split_mapping_.erase(split->GetSplitTabId());
+  RemoveCollectionMapping(split);
   parent_collection->MaybeRemoveCollection(split).reset();
 }
 
@@ -486,6 +484,51 @@ void TabStripCollection::MaybeRemoveGroupCollection(
     TabGroupTabCollection* group_collection) {
   if (group_collection && group_collection->TabCountRecursive() == 0) {
     detached_group_collections_.push_back(RemoveGroup(group_collection));
+  }
+}
+
+void TabStripCollection::AddCollectionMapping(TabCollection* root_collection) {
+  if (root_collection->type() == TabCollection::Type::GROUP) {
+    TabGroupTabCollection* group_collection =
+        static_cast<TabGroupTabCollection*>(root_collection);
+    group_mapping_.insert(
+        {group_collection->GetTabGroupId(), group_collection});
+
+    for (const tabs::TabInterface* tab : *group_collection) {
+      if (tab->IsSplit()) {
+        const split_tabs::SplitTabId split_id = tab->GetSplit().value();
+        if (!split_mapping_.contains(split_id)) {
+          split_mapping_.insert(
+              {split_id, static_cast<SplitTabCollection*>(
+                             tab->GetParentCollection(GetPassKey()))});
+        }
+      }
+    }
+  } else if (root_collection->type() == TabCollection::Type::SPLIT) {
+    SplitTabCollection* split_collection =
+        static_cast<SplitTabCollection*>(root_collection);
+    split_mapping_.insert(
+        {split_collection->GetSplitTabId(), split_collection});
+  }
+}
+
+void TabStripCollection::RemoveCollectionMapping(
+    TabCollection* root_collection) {
+  if (root_collection->type() == TabCollection::Type::GROUP) {
+    TabGroupTabCollection* group_collection =
+        static_cast<TabGroupTabCollection*>(root_collection);
+    group_mapping_.erase(group_collection->GetTabGroupId());
+
+    for (const tabs::TabInterface* tab : *group_collection) {
+      if (tab->IsSplit()) {
+        split_mapping_.erase(tab->GetSplit().value());
+      }
+    }
+
+  } else if (root_collection->type() == TabCollection::Type::SPLIT) {
+    SplitTabCollection* split_collection =
+        static_cast<SplitTabCollection*>(root_collection);
+    split_mapping_.erase(split_collection->GetSplitTabId());
   }
 }
 
