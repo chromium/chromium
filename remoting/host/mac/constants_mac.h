@@ -67,6 +67,10 @@ extern const char* kNativeMessagingManifestPaths[5];
 extern const char kBrandedUninstallerPath[];
 extern const char kUnbrandedUninstallerPath[];
 
+// The launchctl service target (domain_target/service_name) that can be used to
+// unload the broker service.
+extern const char kBrokerServiceTarget[];
+
 }  // namespace remoting
 
 #endif  // REMOTING_HOST_MAC_CONSTANTS_MAC_H_
