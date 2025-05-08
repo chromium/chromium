@@ -3033,6 +3033,7 @@ class BannedTypeCheckTest(unittest.TestCase):
                 'allowed_ranges_usage.cc',
                 [
                     'std::ranges::begin(vec);',
+                    'std::ranges::subrange(first, last);',
                     # std::ranges::view is a concept and allowed, but the views
                     # library itself is not (see below)
                     'static_assert(std::ranges::view<SomeType>);'
@@ -3040,7 +3041,7 @@ class BannedTypeCheckTest(unittest.TestCase):
             MockFile(
                 'banned_ranges_usage.cc',
                 [
-                    'std::ranges::subrange(first, last);',
+                    'std::ranges::borrowed_subrange_t(subrange);',
                     # Edge case: make sure std::ranges::views is disallowed,
                     # even though std::ranges::view is allowed.
                     'std::ranges::views::take(first, count);'
