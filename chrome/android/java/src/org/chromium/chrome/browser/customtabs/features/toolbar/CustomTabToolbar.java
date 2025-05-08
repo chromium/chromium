@@ -331,7 +331,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         if (omniboxParams != null) {
             setOmniboxParams(omniboxParams);
         }
-        calculateToolbarWidthBeforeMeasure(activity);
+        calculateToolbarWidthBeforeMeasure(activity, intentDataProvider);
         inflateAndPositionToolbarElements(mToolbarWidth);
     }
 
@@ -344,10 +344,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         inflateAndPositionToolbarElements(mToolbarWidth);
     }
 
-    private void calculateToolbarWidthBeforeMeasure(Activity activity) {
-        // TODO(crbug.com/402213312): Come up with a better way to calculate the toolbar width that
-        // handles pCCT.
-        mToolbarWidth = CustomTabDimensionUtils.getDisplayWidth(activity);
+    private void calculateToolbarWidthBeforeMeasure(
+            Activity activity, BrowserServicesIntentDataProvider intentDataProvider) {
+        mToolbarWidth = CustomTabDimensionUtils.getInitialWidth(activity, intentDataProvider);
     }
 
     /**

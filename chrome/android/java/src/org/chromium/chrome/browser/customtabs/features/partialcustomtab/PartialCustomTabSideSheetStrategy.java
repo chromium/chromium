@@ -34,11 +34,11 @@ import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsIntent;
 
-import org.chromium.base.MathUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
+import org.chromium.chrome.browser.customtabs.features.CustomTabDimensionUtils;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -51,10 +51,7 @@ import org.chromium.ui.base.LocalizationUtils;
  * class should be owned by the CustomTabActivity.
  */
 public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrategy {
-    private static final int WINDOW_WIDTH_EXPANDED_CUTOFF_DP = 840;
     private static final int SIDE_SHEET_UI_DELAY = 20;
-    private static final float MINIMAL_WIDTH_RATIO_EXPANDED = 0.33f;
-    private static final float MINIMAL_WIDTH_RATIO_MEDIUM = 0.5f;
     private static final NoAnimator NO_ANIMATOR = new NoAnimator();
 
     private final @Px int mUnclampedInitialWidth;
@@ -454,11 +451,8 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     private int calculateWidth(int unclampedWidth) {
         int displayWidth = mVersionCompat.getDisplayWidth();
         int displayWidthDp = mVersionCompat.getDisplayWidthDp();
-        float minWidthRatio =
-                displayWidthDp < WINDOW_WIDTH_EXPANDED_CUTOFF_DP
-                        ? MINIMAL_WIDTH_RATIO_MEDIUM
-                        : MINIMAL_WIDTH_RATIO_EXPANDED;
-        return MathUtils.clamp(unclampedWidth, displayWidth, (int) (displayWidth * minWidthRatio));
+        return CustomTabDimensionUtils.getInitialWidth(
+                unclampedWidth, displayWidth, displayWidthDp);
     }
 
     private float calculateElevation() {
