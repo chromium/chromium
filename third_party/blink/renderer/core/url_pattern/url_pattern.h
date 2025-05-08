@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_component.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern_component.h"
+#include "third_party/blink/renderer/core/url_pattern/url_pattern_options.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/liburlpattern/parse.h"
@@ -24,9 +25,8 @@ class URLPatternResult;
 
 class CORE_EXPORT URLPattern : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
-  struct Options final {
-    bool ignore_case;
-  };
+
+  using Options = url_pattern::Options;
   using Component = url_pattern::Component;
 
  public:
@@ -72,7 +72,7 @@ class CORE_EXPORT URLPattern : public ScriptWrappable {
              Component* pathname,
              Component* search,
              Component* hash,
-             Options options,
+             const Options& options,
              base::PassKey<URLPattern> key);
 
   bool test(ScriptState* script_state,

@@ -547,8 +547,7 @@ URLPattern* URLPattern::Create(v8::Isolate* isolate,
   if (exception_state.HadException())
     return nullptr;
 
-  Options urlpattern_options;
-  urlpattern_options.ignore_case = options->ignoreCase();
+  auto urlpattern_options = Options::FromV8URLPatternOptions(options);
 
   return MakeGarbageCollected<URLPattern>(
       protocol_component, username_component, password_component,
@@ -564,7 +563,7 @@ URLPattern::URLPattern(Component* protocol,
                        Component* pathname,
                        Component* search,
                        Component* hash,
-                       Options options,
+                       const Options& options,
                        base::PassKey<URLPattern> key)
     : protocol_(protocol),
       username_(username),
