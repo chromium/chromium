@@ -63,7 +63,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
 
     TabGridContextMenuCoordinator(
             Activity activity,
-            TabBookmarker tabBookmarker,
+            Supplier<TabBookmarker> tabBookmarkerSupplier,
             Profile profile,
             TabGroupModelFilter tabGroupModelFilter,
             TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator,
@@ -75,7 +75,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
         super(
                 R.layout.tab_switcher_action_menu_layout,
                 getMenuItemClickedCallback(
-                        tabBookmarker,
+                        tabBookmarkerSupplier,
                         tabGroupModelFilter,
                         tabGroupListBottomSheetCoordinator,
                         tabGroupCreationDialogManager,
@@ -92,7 +92,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
 
     /**
      * @param activity The activity where this context menu will be shown.
-     * @param tabBookmarker Used to bookmark tabs.
+     * @param tabBookmarkerSupplier Supplies the {@link TabBookmarker} used to bookmark tabs.
      * @param tabGroupModelFilter Supplies the {@link TabModel}.
      * @param tabGroupListBottomSheetCoordinator The {@link TabGroupListBottomSheetCoordinator} that
      *     will be used to show a bottom sheet when the user selects the "Add to group" option.
@@ -103,7 +103,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
      */
     public static TabGridContextMenuCoordinator createContextMenuCoordinator(
             Activity activity,
-            TabBookmarker tabBookmarker,
+            Supplier<TabBookmarker> tabBookmarkerSupplier,
             TabGroupModelFilter tabGroupModelFilter,
             TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator,
             TabGroupCreationDialogManager tabGroupCreationDialogManager,
@@ -117,7 +117,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
 
         return new TabGridContextMenuCoordinator(
                 activity,
-                tabBookmarker,
+                tabBookmarkerSupplier,
                 profile,
                 tabGroupModelFilter,
                 tabGroupListBottomSheetCoordinator,
@@ -150,7 +150,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
 
     @VisibleForTesting
     static OnItemClickedCallback<Integer> getMenuItemClickedCallback(
-            TabBookmarker tabBookmarker,
+            Supplier<TabBookmarker> tabBookmarkerSupplier,
             TabGroupModelFilter tabGroupModelFilter,
             TabGroupListBottomSheetCoordinator coordinator,
             TabGroupCreationDialogManager dialogManager,
@@ -159,6 +159,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
         return (menuId, tabId, collaborationId) -> {
             if (tabId == Tab.INVALID_TAB_ID) return;
             TabModel tabModel = tabGroupModelFilter.getTabModel();
+            TabBookmarker tabBookmarker = tabBookmarkerSupplier.get();
             @Nullable Tab tab = getTabById(() -> tabModel, tabId);
             if (tab == null) return;
 
