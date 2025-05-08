@@ -274,6 +274,8 @@ class SearchPrefetchService : public KeyedService,
 
   void RecordInterceptionMetrics(const std::u16string& search_terms,
                                  SearchPrefetchServingReason serving_status);
+  void RecordPotentialDuplicateSearchTermsAheadOfNavigationalPrefetch(
+      const std::u16string& search_terms);
 
   // Prefetches that are started are stored using search terms as a key. Only
   // one prefetch should be started for a given search term until the old

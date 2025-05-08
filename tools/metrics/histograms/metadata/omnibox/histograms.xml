@@ -2034,6 +2034,22 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram
+    name="Omnibox.SearchPrefetch.DuplicateSearchTermsAgeAheadOfNavigationalPrefetch"
+    units="ms" expires_after="2025-09-14">
+  <owner>lingqi@chromium.org</owner>
+  <owner>nhiroki@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Measures the duration between when the search terms are visited and when the
+    same search terms are prefetched by navigational prefetch predictor.
+
+    Recorded at
+    SearchPrefetchService::RecordPotentialDuplicateSearchTermsAheadofNavigationalPrefetch
+    when the same search terms are prefetch by navigational prefetch predictor.
+  </summary>
+</histogram>
+
+<histogram
     name="Omnibox.SearchPrefetch.SearchWhatYouTypedWasAlsoSuggested.{HistoryOrSuggest}"
     enum="Boolean" expires_after="2023-05-02">
   <owner>ryansturm@chromium.org</owner>

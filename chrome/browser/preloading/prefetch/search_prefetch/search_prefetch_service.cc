@@ -780,6 +780,8 @@ bool SearchPrefetchService::OnNavigationLikely(
   }
   CHECK(!search_terms.empty());
 
+  RecordPotentialDuplicateSearchTermsAheadOfNavigationalPrefetch(search_terms);
+
   // Search history suggestions (those that are not also server suggestions)
   // don't have search term args. If search history suggestions are enabled,
   // generate search term args to get a prefetch URL.
@@ -1291,4 +1293,20 @@ void SearchPrefetchService::RecordInterceptionMetrics(
         base::Hours(10), 100);
   }
   search_terms_cache_.Put(search_terms, base::Time::Now());
+}
+
+void SearchPrefetchService::
+    RecordPotentialDuplicateSearchTermsAheadOfNavigationalPrefetch(
+        const std::u16string& search_terms) {
+  // Do not affect the order.
+  const auto& iter = search_terms_cache_.Peek(search_terms);
+  if (iter != search_terms_cache_.end()) {
+    // For now we just want to track the very recent duplicate terms which might
+    // be a bug.
+    base::UmaHistogramCustomTimes(
+        "Omnibox.SearchPrefetch."
+        "DuplicateSearchTermsAgeAheadOfNavigationalPrefetch",
+        base::Time::Now() - iter->second, base::Milliseconds(1),
+        base::Minutes(2), 50);
+  }
 }

@@ -3477,6 +3477,54 @@ class SearchPrefetchServiceNavigationPrefetchBrowserTest
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
 };
 
+// Tests DuplicateSearchTermsAgeAheadOfNavigationalPrefetch is recorded as
+// expected.
+IN_PROC_BROWSER_TEST_F(
+    SearchPrefetchServiceNavigationPrefetchBrowserTest,
+    RecordDuplicateSearchTermsAgeAheadOfNavigationalPrefetch) {
+  SetDSEWithURL(
+      GetSearchServerQueryURL(
+          "{searchTerms}&{google:assistedQueryStats}{google:prefetchSource}"),
+      true);
+  base::HistogramTester histogram_tester;
+
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  std::string search_terms = "terms of service";
+  std::string user_input = "terms";
+
+  auto [prefetch_url, search_url] =
+      GetSearchPrefetchAndNonPrefetch(search_terms);
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), search_url));
+
+  AutocompleteMatch autocomplete_match =
+      CreateSearchSuggestionMatch(search_terms, search_terms, false);
+  SearchPrefetchServiceFactory::GetForProfile(browser()->profile())
+      ->OnNavigationLikely(1, autocomplete_match,
+                           NavigationPredictor::kMouseDown, GetWebContents());
+
+  WaitUntilStatusChangesTo(
+      GetCanonicalSearchURL(autocomplete_match.destination_url),
+      SearchPrefetchStatus::kComplete);
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          GetCanonicalSearchURL(autocomplete_match.destination_url));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kComplete, prefetch_status.value());
+
+  GURL canonical_search_url = GetCanonicalSearchURL(prefetch_url);
+  // Navigate.
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), search_url));
+
+  auto inner_html = GetDocumentInnerHTML();
+  EXPECT_FALSE(base::Contains(inner_html, "regular"));
+  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SearchPrefetch."
+      "DuplicateSearchTermsAgeAheadOfNavigationalPrefetch",
+      1);
+}
+
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
                        NavigationPrefetchIsServedMouseDown) {
   SetDSEWithURL(
