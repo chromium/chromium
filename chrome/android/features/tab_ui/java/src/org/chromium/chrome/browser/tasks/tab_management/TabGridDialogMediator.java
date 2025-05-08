@@ -1088,6 +1088,7 @@ public class TabGridDialogMediator
             TabUiUtils.closeTabGroup(
                     mCurrentTabGroupModelFilterSupplier.get(),
                     tabId,
+                    /* allowUndo= */ true,
                     hideTabGroups,
                     /* didCloseCallback= */ null);
         } else if (menuId == R.id.delete_shared_group) {

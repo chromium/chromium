@@ -189,6 +189,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 TabUiUtils.closeTabGroup(
                         tabGroupModelFilter,
                         tabId,
+                        /* allowUndo= */ true,
                         /* hideTabGroups= */ true,
                         /* didCloseCallback= */ null);
                 recordUserAction("CloseGroup");
@@ -196,6 +197,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 TabUiUtils.closeTabGroup(
                         tabGroupModelFilter,
                         tabId,
+                        /* allowUndo= */ true,
                         /* hideTabGroups= */ false,
                         /* didCloseCallback= */ null);
                 recordUserAction("DeleteGroup");

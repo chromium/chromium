@@ -1191,6 +1191,7 @@ class TabListMediator implements TabListNotificationHandler {
                             TabUiUtils.closeTabGroup(
                                     mCurrentTabGroupModelFilterSupplier.get(),
                                     tabId,
+                                    /* allowUndo= */ true,
                                     /* hideTabGroups= */ true,
                                     getOnMaybeTabClosedCallback(tabId));
                             return;
@@ -2824,7 +2825,11 @@ class TabListMediator implements TabListNotificationHandler {
             setUseShrinkCloseAnimation(tabId, /* useShrinkCloseAnimation= */ true);
             onGroupClosedFrom(tabId);
             TabUiUtils.closeTabGroup(
-                    filter, tabId, hideTabGroups, getOnMaybeTabClosedCallback(tabId));
+                    filter,
+                    tabId,
+                    /* allowUndo= */ true,
+                    hideTabGroups,
+                    getOnMaybeTabClosedCallback(tabId));
         } else if (menuId == R.id.edit_group_name) {
             RecordUserAction.record("TabGroupItemMenu.Rename");
             renameTabGroup(tabId);

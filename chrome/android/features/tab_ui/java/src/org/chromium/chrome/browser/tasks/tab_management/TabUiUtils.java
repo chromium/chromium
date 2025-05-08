@@ -62,12 +62,14 @@ public class TabUiUtils {
      *
      * @param filter The {@link TabGroupModelFilter} to act on.
      * @param tabId The ID of one of the tabs in the tab group.
+     * @param allowUndo Whether to allow undo of the tab group closure.
      * @param hideTabGroups Whether to hide or delete the tab group.
      * @param didCloseCallback Run after the close confirmation to indicate if a close happened.
      */
     public static void closeTabGroup(
             TabGroupModelFilter filter,
             int tabId,
+            boolean allowUndo,
             boolean hideTabGroups,
             @Nullable Callback<Boolean> didCloseCallback) {
         TabModel tabModel = filter.getTabModel();
@@ -79,7 +81,7 @@ public class TabUiUtils {
         TabClosureParams closureParams =
                 TabClosureParams.forCloseTabGroup(filter, tab.getTabGroupId())
                         .hideTabGroups(hideTabGroups)
-                        .allowUndo(true)
+                        .allowUndo(allowUndo)
                         .build();
 
         @Nullable TabModelActionListener listener = buildMaybeDidCloseTabListener(didCloseCallback);

@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -134,15 +137,50 @@ public class TabUiUtilsUnitTest {
     @Test
     public void testCloseTabGroup_NoTab() {
         TabUiUtils.closeTabGroup(
-                mFilter, Tab.INVALID_TAB_ID, /* hideTabGroups= */ false, mDidCloseTabsCallback);
+                mFilter,
+                Tab.INVALID_TAB_ID,
+                /* allowUndo= */ true,
+                /* hideTabGroups= */ false,
+                mDidCloseTabsCallback);
         verify(mDidCloseTabsCallback).onResult(false);
+    }
+
+    @Test
+    public void testCloseTabGroup_AllowUndo() {
+        testCloseTabGroupForAllowUndoParam(/* shouldAllowUndo= */ true);
+    }
+
+    @Test
+    public void testCloseTabGroup_DisallowUndo() {
+        testCloseTabGroupForAllowUndoParam(/* shouldAllowUndo= */ false);
+    }
+
+    private void testCloseTabGroupForAllowUndoParam(boolean shouldAllowUndo) {
+        // Act
+        TabUiUtils.closeTabGroup(
+                mFilter,
+                TAB_ID,
+                shouldAllowUndo,
+                /* hideTabGroups= */ false,
+                /* didCloseCallback= */ null);
+
+        // Assert
+        ArgumentCaptor<TabClosureParams> tabClosureParamsCaptor =
+                ArgumentCaptor.forClass(TabClosureParams.class);
+        verify(mTabRemover)
+                .closeTabs(
+                        tabClosureParamsCaptor.capture(),
+                        /* allowDialog= */ anyBoolean(),
+                        /* listener= */ nullable(TabModelActionListener.class));
+        assertEquals(shouldAllowUndo, tabClosureParamsCaptor.getValue().allowUndo);
     }
 
     @Test
     public void testCloseTabGroup_NoHide() {
         boolean hideTabGroups = false;
 
-        TabUiUtils.closeTabGroup(mFilter, TAB_ID, hideTabGroups, mDidCloseTabsCallback);
+        TabUiUtils.closeTabGroup(
+                mFilter, TAB_ID, /* allowUndo= */ true, hideTabGroups, mDidCloseTabsCallback);
 
         verify(mTabRemover)
                 .closeTabs(
@@ -186,7 +224,8 @@ public class TabUiUtilsUnitTest {
     public void testCloseTabGroup_Hide() {
         boolean hideTabGroups = true;
 
-        TabUiUtils.closeTabGroup(mFilter, TAB_ID, hideTabGroups, mDidCloseTabsCallback);
+        TabUiUtils.closeTabGroup(
+                mFilter, TAB_ID, /* allowUndo= */ true, hideTabGroups, mDidCloseTabsCallback);
 
         verify(mTabRemover)
                 .closeTabs(
