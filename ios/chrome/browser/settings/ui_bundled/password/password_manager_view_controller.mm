@@ -679,34 +679,12 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 #pragma mark - Items
 - (TableViewLinkHeaderFooterItem*)manageAccountLinkItem {
   if (_manageAccountLinkItem) {
-    // When `_savingPasswordsToAccount` is being changed we perform
-    // `reloadData`. However, during the reloading of data
-    // `_manageAccountLinkItem` might be already initialized, and this branch of
-    // code will return without updating `_manageAccountLinkItem.text`.
-    // TODO(crbug.com/407605858): Fix the described issue.
     return _manageAccountLinkItem;
   }
 
   _manageAccountLinkItem =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeLinkHeader];
-
-  if (_savingPasswordsToAccount) {
-    _manageAccountLinkItem.text = l10n_util::GetNSString(
-        IOSPasskeysM2Enabled()
-            ? IDS_IOS_SAVE_PASSWORDS_PASSKEYS_MANAGE_ACCOUNT_HEADER
-            : IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT_HEADER);
-
-    _manageAccountLinkItem.urls = @[ [[CrURL alloc]
-        initWithGURL:
-            google_util::AppendGoogleLocaleParam(
-                GURL(password_manager::kPasswordManagerHelpCenteriOSURL),
-                GetApplicationContext()->GetApplicationLocale())] ];
-  } else {
-    _manageAccountLinkItem.text =
-        l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_HEADER_NOT_SYNCING);
-    _manageAccountLinkItem.urls = @[];
-  }
-
+  [self populateManageAccountLinkItemContent];
   return _manageAccountLinkItem;
 }
 
@@ -916,7 +894,14 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     return;
   }
   _savingPasswordsToAccount = savingPasswordsToAccount;
-  [self reloadData];
+  // No need to reload before the view is loaded, as loading the view triggers a
+  // data reload.
+  if (self.viewLoaded) {
+    [self populateManageAccountLinkItemContent];
+    // TODO(crbug.com/416468488): Check if it is possible to only update the
+    // items affected by this mutation instead of reloading data.
+    [self reloadData];
+  }
 }
 
 - (void)setAffiliatedGroups:
@@ -1213,6 +1198,29 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 }
 
 #pragma mark - Private methods
+
+// Populates the text and urls content of the ManageAccountLinkItem.
+- (void)populateManageAccountLinkItemContent {
+  if (!_manageAccountLinkItem) {
+    return;
+  }
+  if (_savingPasswordsToAccount) {
+    _manageAccountLinkItem.text = l10n_util::GetNSString(
+        IOSPasskeysM2Enabled()
+            ? IDS_IOS_SAVE_PASSWORDS_PASSKEYS_MANAGE_ACCOUNT_HEADER
+            : IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT_HEADER);
+
+    _manageAccountLinkItem.urls = @[ [[CrURL alloc]
+        initWithGURL:
+            google_util::AppendGoogleLocaleParam(
+                GURL(password_manager::kPasswordManagerHelpCenteriOSURL),
+                GetApplicationContext()->GetApplicationLocale())] ];
+  } else {
+    _manageAccountLinkItem.text =
+        l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_HEADER_NOT_SYNCING);
+    _manageAccountLinkItem.urls = @[];
+  }
+}
 
 // Shows loading spinner background view.
 - (void)showLoadingSpinnerBackground {

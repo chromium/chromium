@@ -15,6 +15,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/feature_engagement/public/feature_constants.h"
+#import "components/google/core/common/google_util.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/leak_detection/mock_bulk_leak_check_service.h"
 #import "components/password_manager/core/browser/password_form.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_bulk_leak_check_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
@@ -39,8 +41,10 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_mediator.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_settings_commands.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_table_view_constants.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
@@ -1390,6 +1394,40 @@ TEST_F(PasswordManagerViewControllerTest,
 
   EXPECT_OCMOCK_VERIFY(
       password_manager_view_controller_presentation_delegate_mock_);
+
+  [GetPasswordManagerViewController() settingsWillBeDismissed];
+}
+
+// Tests that the content of the ManageAccountHeader is being updated when
+// `setSavingPasswordsToAccount` changes.
+TEST_F(PasswordManagerViewControllerTest, ManageAccountHeaderIsBeingUpdated) {
+  AddSavedForm1();
+
+  [GetPasswordManagerViewController() setSavingPasswordsToAccount:NO];
+
+  TableViewModel* model = GetPasswordManagerViewController().tableViewModel;
+  TableViewLinkHeaderFooterItem* header =
+      base::apple::ObjCCastStrict<TableViewLinkHeaderFooterItem>([model
+          headerForSectionWithIdentifier:SectionIdentifierManageAccountHeader]);
+
+  EXPECT_NSEQ(
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_HEADER_NOT_SYNCING),
+      header.text);
+  EXPECT_NSEQ(@[], header.urls);
+
+  [GetPasswordManagerViewController() setSavingPasswordsToAccount:YES];
+
+  EXPECT_NSEQ(l10n_util::GetNSString(
+                  IOSPasskeysM2Enabled()
+                      ? IDS_IOS_SAVE_PASSWORDS_PASSKEYS_MANAGE_ACCOUNT_HEADER
+                      : IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT_HEADER),
+              header.text);
+  EXPECT_EQ(1U, [header.urls count]);
+  CrURL* expectedHeaderUrl = [[CrURL alloc]
+      initWithGURL:google_util::AppendGoogleLocaleParam(
+                       GURL(password_manager::kPasswordManagerHelpCenteriOSURL),
+                       GetApplicationContext()->GetApplicationLocale())];
+  EXPECT_NSEQ(header.urls[0].nsurl, expectedHeaderUrl.nsurl);
 
   [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
