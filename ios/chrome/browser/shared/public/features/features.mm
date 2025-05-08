@@ -1060,10 +1060,6 @@ BASE_FEATURE(kIOSPushNotificationMultiProfile,
              "IOSPushNotificationMultiProfile",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-bool IsIOSMultiProfilePushNotificationHandlingEnabled() {
-  return base::FeatureList::IsEnabled(kIOSPushNotificationMultiProfile);
-}
-
 const char kFullscreenTransitionSlower[] = "SlowFullscreenTransitionSpeed";
 const char kFullscreenTransitionDefaultSpeed[] =
     "MediumFullscreenTransitionSpeed";

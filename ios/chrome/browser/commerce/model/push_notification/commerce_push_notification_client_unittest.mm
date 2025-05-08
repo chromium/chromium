@@ -36,12 +36,12 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -207,7 +207,7 @@ class CommercePushNotificationClientTest : public PlatformTest {
                      forProtocol:@protocol(ApplicationCommands)];
 
     commerce_push_notification_client_ =
-        IsIOSMultiProfilePushNotificationHandlingEnabled()
+        IsMultiProfilePushNotificationHandlingEnabled()
             ? std::make_unique<CommercePushNotificationClient>(profile_.get())
             : std::make_unique<CommercePushNotificationClient>();
   }

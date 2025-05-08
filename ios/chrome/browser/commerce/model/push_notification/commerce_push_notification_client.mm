@@ -23,8 +23,8 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "url/gurl.h"
 
 namespace {
@@ -66,7 +66,7 @@ ProfileIOS* GetAnyProfile() {
 CommercePushNotificationClient::CommercePushNotificationClient(
     ProfileIOS* profile)
     : PushNotificationClient(PushNotificationClientId::kCommerce, profile) {
-  CHECK(IsIOSMultiProfilePushNotificationHandlingEnabled());
+  CHECK(IsMultiProfilePushNotificationHandlingEnabled());
 }
 
 CommercePushNotificationClient::CommercePushNotificationClient()
@@ -153,7 +153,7 @@ CommercePushNotificationClient::RegisterActionableNotifications() {
 }
 
 ProfileIOS* CommercePushNotificationClient::GetTargetProfile() {
-  if (IsIOSMultiProfilePushNotificationHandlingEnabled()) {
+  if (IsMultiProfilePushNotificationHandlingEnabled()) {
     return GetProfile();
   }
 

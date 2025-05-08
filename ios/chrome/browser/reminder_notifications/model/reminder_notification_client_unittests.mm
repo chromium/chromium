@@ -26,7 +26,7 @@
 class ReminderNotificationClientTest : public PlatformTest {
  protected:
   ReminderNotificationClientTest() {
-    feature_list_.InitAndEnableFeature(kIOSPushNotificationMultiProfile);
+    feature_list_.InitAndEnableFeature(kSeparateProfilesForManagedAccounts);
 
     profile_ = TestProfileIOS::Builder().Build();
 

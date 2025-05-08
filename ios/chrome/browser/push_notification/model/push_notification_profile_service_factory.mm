@@ -11,8 +11,8 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_profile_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 // static
@@ -48,7 +48,7 @@ PushNotificationProfileServiceFactory::BuildServiceInstanceFor(
       base::SequencedTaskRunner::GetCurrentDefault();
 
   std::unique_ptr<PushNotificationClientManager> client_manager =
-      IsIOSMultiProfilePushNotificationHandlingEnabled()
+      IsMultiProfilePushNotificationHandlingEnabled()
           ? std::make_unique<PushNotificationClientManager>(task_runner,
                                                             profile)
           : nullptr;

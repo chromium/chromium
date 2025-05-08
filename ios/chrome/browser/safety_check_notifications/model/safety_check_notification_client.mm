@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -137,7 +138,7 @@ SafetyCheckNotificationClient::SafetyCheckNotificationClient(
                              PushNotificationClientScope::kPerProfile),
       task_runner_(task_runner) {
   CHECK(task_runner);
-  CHECK(!IsIOSMultiProfilePushNotificationHandlingEnabled());
+  CHECK(!IsMultiProfilePushNotificationHandlingEnabled());
 }
 
 SafetyCheckNotificationClient::SafetyCheckNotificationClient(
@@ -147,7 +148,7 @@ SafetyCheckNotificationClient::SafetyCheckNotificationClient(
       task_runner_(task_runner) {
   CHECK(profile);
   CHECK(task_runner);
-  CHECK(IsIOSMultiProfilePushNotificationHandlingEnabled());
+  CHECK(IsMultiProfilePushNotificationHandlingEnabled());
 }
 
 SafetyCheckNotificationClient::~SafetyCheckNotificationClient() = default;
@@ -442,7 +443,7 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
         prefs::kIosSafetyCheckNotificationsLastSent,
         static_cast<int>(SafetyCheckNotificationType::kPasswords));
 
-    if (IsIOSMultiProfilePushNotificationHandlingEnabled()) {
+    if (IsMultiProfilePushNotificationHandlingEnabled()) {
       ProfileIOS* current_profile = GetProfile();
       CHECK(current_profile);
 
@@ -480,7 +481,7 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
         prefs::kIosSafetyCheckNotificationsLastSent,
         static_cast<int>(SafetyCheckNotificationType::kSafeBrowsing));
 
-    if (IsIOSMultiProfilePushNotificationHandlingEnabled()) {
+    if (IsMultiProfilePushNotificationHandlingEnabled()) {
       ProfileIOS* current_profile = GetProfile();
       CHECK(current_profile);
 

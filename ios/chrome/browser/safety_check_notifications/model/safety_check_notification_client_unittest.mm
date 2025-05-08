@@ -70,7 +70,8 @@ UpgradeRecommendedDetails OutdatedAppDetails() {
 class SafetyCheckNotificationClientTest : public PlatformTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(kIOSPushNotificationMultiProfile);
+    scoped_feature_list_.InitAndEnableFeature(
+        kSeparateProfilesForManagedAccounts);
 
     SetupMockNotificationCenter();
 

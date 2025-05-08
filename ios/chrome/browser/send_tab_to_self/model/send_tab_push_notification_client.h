@@ -19,7 +19,8 @@ class SendTabPushNotificationClient : public PushNotificationClient {
  public:
   // Constructor for when multi-Profile push notification handling is enabled.
   // Associates this client instance with a specific user `profile`. This should
-  // only be called when `kIOSPushNotificationMultiProfile` is true.
+  // only be called when `IsMultiProfilePushNotificationHandlingEnabled()`
+  // returns YES.
   explicit SendTabPushNotificationClient(ProfileIOS* profile);
   // Legacy constructor for when multi-Profile push notification handling is
   // disabled. The client will operate without being tied to a specific Profile.

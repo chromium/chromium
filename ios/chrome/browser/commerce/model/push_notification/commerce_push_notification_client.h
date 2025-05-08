@@ -27,7 +27,8 @@ class CommercePushNotificationClient : public PushNotificationClient {
  public:
   // Constructor for when multi-Profile push notification handling is enabled.
   // Associates this client instance with a specific user `profile`. This should
-  // only be called when `kIOSPushNotificationMultiProfile` is true.
+  // only be called when `IsMultiProfilePushNotificationHandlingEnabled()`
+  // returns YES.
   explicit CommercePushNotificationClient(ProfileIOS* profile);
   CommercePushNotificationClient();
   ~CommercePushNotificationClient() override;
@@ -48,8 +49,8 @@ class CommercePushNotificationClient : public PushNotificationClient {
  private:
   friend class ::CommercePushNotificationClientTest;
 
-  // Returns the appropriate `ProfileIOS*` based on the
-  // `kIOSPushNotificationMultiProfile` feature.
+  // Returns the appropriate `ProfileIOS*` based on
+  // `IsMultiProfilePushNotificationHandlingEnabled()`.
   //
   // If enabled, returns the Profile associated with this client instance. If
   // disabled, returns an arbitrary loaded Profile (legacy behavior).

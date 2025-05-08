@@ -38,7 +38,7 @@ class PushNotificationClient {
   // This constructor should be used for clients whose `scope` is implicitly
   // `PushNotificationClientScope::kPerProfile`. It is intended for use when
   // multi-Profile push notification handling is enabled (i.e.,
-  // `kIOSPushNotificationMultiProfile` is enabled).
+  // `IsMultiProfilePushNotificationHandlingEnabled()` returns YES).
   PushNotificationClient(PushNotificationClientId client_id,
                          ProfileIOS* profile);
   // Constructor for `PushNotificationClient`s that are app-scoped (i.e., not
@@ -113,7 +113,7 @@ class PushNotificationClient {
   // interactions. `profile_name` must not be empty. Calls `completion` upon
   // finish.
   //
-  // `kIOSPushNotificationMultiProfile` must be enabled.
+  // `IsMultiProfilePushNotificationHandlingEnabled()` must return YES.
   void ScheduleProfileNotification(
       ScheduledNotificationRequest request,
       base::OnceCallback<void(NSError*)> completion,
@@ -191,7 +191,7 @@ class PushNotificationClient {
   // Creates a `UNNotificationRequest` specific to the given `profile_name`.
   // Uses the provided `request.content` and triggers after
   // `request.time_interval`. Requires multi-profile handling to be enabled
-  // (`kIOSPushNotificationMultiProfile` must be enabled).
+  // (`IsMultiProfilePushNotificationHandlingEnabled()` must return YES).
   UNNotificationRequest* CreateRequestForProfile(
       ScheduledNotificationRequest request,
       std::string_view profile_name);

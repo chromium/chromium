@@ -20,4 +20,7 @@ bool IsIdentityDiscAccountMenuEnabled();
 // Whether the feature to have widgets per account is enabled.
 bool IsWidgetsForMultiprofileEnabled();
 
+// YES if Profile-specific push notification handling is enabled.
+bool IsMultiProfilePushNotificationHandlingEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_FEATURES_H_

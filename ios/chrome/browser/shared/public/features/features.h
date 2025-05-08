@@ -910,16 +910,8 @@ bool IOSPasskeysM2Enabled();
 // with the current Profile, rather than using a single global manager. This
 // flag is disabled by default while the refactor is ongoing.
 //
-// TODO(crbug.com/407594420): Enable this by default once the
-// multi-Profile push notification refactor is code complete. It will then
-// serve as a killswitch to revert to the legacy (non-Profile-aware) behavior if
-// issues arise.
+// DO NOT CHECK DIRECTLY, use IsMultiProfilePushNotificationHandlingEnabled()!
 BASE_DECLARE_FEATURE(kIOSPushNotificationMultiProfile);
-
-// Returns true if Profile-specific push notification handling logic is
-// enabled via the kIOSPushNotificationMultiProfile feature
-// flag.
-bool IsIOSMultiProfilePushNotificationHandlingEnabled();
 
 extern const char kFullscreenTransitionSlower[];
 extern const char kFullscreenTransitionDefaultSpeed[];

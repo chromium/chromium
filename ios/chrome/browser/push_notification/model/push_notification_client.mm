@@ -16,10 +16,10 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -60,7 +60,7 @@ enum class IOSProfileLocalNotificationErrorCode {
 // Creates a standardized `NSError` for Profile-based notification scheduling
 // failures due to an invalid or missing Profile.
 NSError* CreateInvalidProfileError() {
-  CHECK(IsIOSMultiProfilePushNotificationHandlingEnabled());
+  CHECK(IsMultiProfilePushNotificationHandlingEnabled());
 
   NSDictionary* user_info = @{
     NSLocalizedDescriptionKey : @"Invalid Profile provided when scheduling "
@@ -77,7 +77,7 @@ NSError* CreateInvalidProfileError() {
 // Creates a standardized `NSError` for failures to create a
 // `UNNotificationRequest` for a Profile-based notification.
 NSError* CreateRequestCreationError() {
-  CHECK(IsIOSMultiProfilePushNotificationHandlingEnabled());
+  CHECK(IsMultiProfilePushNotificationHandlingEnabled());
 
   NSDictionary* userInfo = @{
     NSLocalizedDescriptionKey : @"Failed to create the UNNotificationRequest "
@@ -95,7 +95,7 @@ NSError* CreateRequestCreationError() {
 // notification content's `userInfo` dictionary.
 void AddProfileNameToNotificationContent(UNMutableNotificationContent* content,
                                          std::string_view profile_name) {
-  CHECK(IsIOSMultiProfilePushNotificationHandlingEnabled());
+  CHECK(IsMultiProfilePushNotificationHandlingEnabled());
   CHECK(content);
   CHECK(!profile_name.empty());
 
@@ -148,9 +148,10 @@ PushNotificationClient::PushNotificationClient(
     : client_id_(client_id),
       client_scope_(PushNotificationClientScope::kPerProfile),
       profile_(profile->AsWeakPtr()) {
-  CHECK(IsIOSMultiProfilePushNotificationHandlingEnabled());
-  CHECK(profile_.get()) << "Profile must be provided for kPerProfile client "
-                           "when kIOSPushNotificationMultiProfile is enabled";
+  CHECK(IsMultiProfilePushNotificationHandlingEnabled());
+  CHECK(profile_.get())
+      << "Profile must be provided for kPerProfile client "
+         "when IsMultiProfilePushNotificationHandlingEnabled() returns YES";
   // Ensure this Profile is not an off-the-record Profile.
   // Off-the-record (incognito) Profiles have an empty Profile name.
   CHECK(!profile->GetProfileName().empty())
@@ -219,7 +220,7 @@ void PushNotificationClient::OnSceneActiveForegroundBrowserReady() {
 }
 
 Browser* PushNotificationClient::GetActiveForegroundBrowser() {
-  if (!IsIOSMultiProfilePushNotificationHandlingEnabled() ||
+  if (!IsMultiProfilePushNotificationHandlingEnabled() ||
       client_scope_ != PushNotificationClientScope::kPerProfile) {
     for (ProfileIOS* profile :
          GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
@@ -283,7 +284,7 @@ void PushNotificationClient::ScheduleProfileNotification(
     ScheduledNotificationRequest request,
     base::OnceCallback<void(NSError*)> completion,
     std::string_view profile_name) {
-  CHECK(IsIOSMultiProfilePushNotificationHandlingEnabled());
+  CHECK(IsMultiProfilePushNotificationHandlingEnabled());
 
   if (profile_name.empty()) {
     std::move(completion).Run(CreateInvalidProfileError());
@@ -384,7 +385,7 @@ UNNotificationRequest* PushNotificationClient::CreateRequest(
 UNNotificationRequest* PushNotificationClient::CreateRequestForProfile(
     ScheduledNotificationRequest request,
     std::string_view profile_name) {
-  CHECK(IsIOSMultiProfilePushNotificationHandlingEnabled());
+  CHECK(IsMultiProfilePushNotificationHandlingEnabled());
 
   if (profile_name.empty()) {
     LogProfileRequestCreationFailure(

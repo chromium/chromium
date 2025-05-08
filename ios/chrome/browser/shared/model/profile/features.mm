@@ -83,3 +83,8 @@ bool IsWidgetsForMultiprofileEnabled() {
   return base::FeatureList::IsEnabled(kWidgetsForMultiprofile) &&
          AreSeparateProfilesForManagedAccountsEnabled();
 }
+
+bool IsMultiProfilePushNotificationHandlingEnabled() {
+  return AreSeparateProfilesForManagedAccountsEnabled() &&
+         base::FeatureList::IsEnabled(kIOSPushNotificationMultiProfile);
+}
