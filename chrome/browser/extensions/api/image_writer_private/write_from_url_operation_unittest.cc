@@ -17,6 +17,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "crypto/obsolete/md5.h"
 
 namespace extensions {
 namespace image_writer {
@@ -202,12 +203,10 @@ TEST_F(ImageWriterWriteFromUrlOperationTest, DownloadFile) {
 }
 
 TEST_F(ImageWriterWriteFromUrlOperationTest, VerifyFile) {
-  base::HeapArray<char> char_buffer =
-      base::HeapArray<char>::Uninit(kTestFileSize);
-  base::ReadFile(test_utils_.GetImagePath(), char_buffer);
-  base::MD5Digest expected_digest;
-  base::MD5Sum(base::as_bytes(char_buffer.as_span()), &expected_digest);
-  std::string expected_hash = base::MD5DigestToBase16(expected_digest);
+  auto buffer = base::HeapArray<uint8_t>::Uninit(kTestFileSize);
+  base::ReadFile(test_utils_.GetImagePath(), buffer);
+  std::string expected_hash = base::ToLowerASCII(
+      base::HexEncode(crypto::obsolete::Md5::HashForTesting(buffer.as_span())));
 
   scoped_refptr<WriteFromUrlOperationForTest> operation =
       CreateOperation(GURL(""), expected_hash);

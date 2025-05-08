@@ -22,7 +22,34 @@ Md5::Md5() {
   CHECK(EVP_DigestInit(ctx_.get(), EVP_md5()));
 }
 
+Md5::Md5(const Md5& other) {
+  *this = other;
+}
+
+Md5::Md5(Md5&& other) {
+  *this = other;
+}
+
+Md5& Md5::operator=(const Md5& other) {
+  CHECK(EVP_MD_CTX_copy_ex(ctx_.get(), other.ctx_.get()));
+  return *this;
+}
+
+Md5& Md5::operator=(Md5&& other) {
+  ctx_ = std::move(other.ctx_);
+  return *this;
+}
+
 Md5::~Md5() = default;
+
+Md5 Md5::MakeMd5HasherForTesting() {
+  return {};
+}
+
+std::array<uint8_t, Md5::kSize> Md5::HashForTesting(
+    base::span<const uint8_t> data) {
+  return Hash(data);
+}
 
 void Md5::Update(base::span<const uint8_t> data) {
   CHECK(EVP_DigestUpdate(ctx_.get(), data.data(), data.size()));

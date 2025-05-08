@@ -12,7 +12,6 @@
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
-#include "base/hash/md5.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -20,6 +19,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/extensions/api/image_writer_private.h"
+#include "crypto/obsolete/md5.h"
 #include "extensions/common/extension_id.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -204,6 +204,7 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
 
   // Incrementally calculates the MD5 sum of a file.
   void MD5Chunk(base::File file,
+                crypto::obsolete::Md5 md5,
                 size_t bytes_processed,
                 size_t bytes_total,
                 const base::OnceCallback<void(const std::string&)> callback);
@@ -220,10 +221,6 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
   // `SetProgress` to update.  Progress should be in the interval [0,100]
   image_writer_api::Stage stage_;
   int progress_;
-
-  // MD5 contexts don't play well with smart pointers.  Just going to allocate
-  // memory here.  This requires that we only do one MD5 sum at a time.
-  base::MD5Context md5_context_;
 
   // Cleanup operations that must be run.  All these functions are run on
   // `task_runner_`.

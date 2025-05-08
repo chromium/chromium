@@ -27,6 +27,10 @@
 namespace extensions {
 namespace image_writer {
 
+crypto::obsolete::Md5 MakeMd5HasherForImageWriter() {
+  return crypto::obsolete::Md5();
+}
+
 namespace {
 
 // Returns true if the file at |image_path| is an archived image.
@@ -260,8 +264,6 @@ void Operation::GetMD5SumOfFile(
     return;
   }
 
-  base::MD5Init(&md5_context_);
-
   base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!file.IsValid()) {
     Error(error::kImageOpenError);
@@ -274,7 +276,8 @@ void Operation::GetMD5SumOfFile(
     return;
   }
 
-  PostTask(base::BindOnce(&Operation::MD5Chunk, this, std::move(file), 0,
+  PostTask(base::BindOnce(&Operation::MD5Chunk, this, std::move(file),
+                          MakeMd5HasherForImageWriter(), 0,
                           base::checked_cast<size_t>(file_size),
                           std::move(callback)));
 }
@@ -285,6 +288,7 @@ bool Operation::IsRunningInCorrectSequence() const {
 
 void Operation::MD5Chunk(
     base::File file,
+    crypto::obsolete::Md5 md5,
     size_t bytes_processed,
     size_t bytes_total,
     base::OnceCallback<void(const std::string&)> callback) {
@@ -299,22 +303,20 @@ void Operation::MD5Chunk(
 
   if (read_size == 0) {
     // Nothing to read, we are done.
-    base::MD5Digest digest;
-    base::MD5Final(&digest, &md5_context_);
-    std::move(callback).Run(base::MD5DigestToBase16(digest));
+    std::move(callback).Run(base::ToLowerASCII(base::HexEncode(md5.Finish())));
   } else {
     int64_t offset = base::checked_cast<int64_t>(bytes_processed);
     auto target = base::span(buffer).first(read_size);
 
     if (file.ReadAndCheck(offset, target)) {
       // Process data.
-      base::MD5Update(&md5_context_, target);
+      md5.Update(target);
       bytes_processed += read_size;
       int percent_curr = (bytes_processed * kProgressComplete) / bytes_total;
       SetProgress(percent_curr);
 
       PostTask(base::BindOnce(&Operation::MD5Chunk, this, std::move(file),
-                              bytes_processed, bytes_total,
+                              std::move(md5), bytes_processed, bytes_total,
                               std::move(callback)));
       // Skip closing the file.
       return;
