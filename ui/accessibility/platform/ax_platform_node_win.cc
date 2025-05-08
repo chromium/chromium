@@ -1873,7 +1873,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_accName(VARIANT var_id, BSTR* name_bstr) {
   AXPlatformNodeWin* target;
   COM_OBJECT_VALIDATE_VAR_ID_1_ARG_AND_GET_TARGET(var_id, name_bstr, target);
 
-  AXPlatform::GetInstance().OnMinimalPropertiesUsed();
+  AXPlatform::GetInstance().OnMinimalPropertiesUsed(/*is_name_used=*/true);
 
   if (!IsNameExposed())
     return S_FALSE;

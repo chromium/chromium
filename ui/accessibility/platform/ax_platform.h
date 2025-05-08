@@ -163,7 +163,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
   // the delegate. If the screen reader honeypot is used (currently windows
   // only), OnPropertiesUsedInWebContent() will also be called, enabling web
   // content accessibility via AXMode::kWebContents.
-  void OnMinimalPropertiesUsed();
+  void OnMinimalPropertiesUsed(bool is_name_used = false);
   // An a11y property was used in the browser UI. Enable AXMode::kNativeAPIs.
   void OnPropertiesUsedInBrowserUI();
   // A basic property was used in web content. Enable AXMode::kWebContents.
@@ -234,7 +234,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
 #if BUILDFLAG(IS_WIN)
   bool screen_reader_honeypot_queried_ GUARDED_BY_CONTEXT(thread_checker_) =
       false;
-  bool minimal_properties_used_ GUARDED_BY_CONTEXT(thread_checker_) = false;
+  bool is_name_used_ GUARDED_BY_CONTEXT(thread_checker_) = false;
 #endif
 
   THREAD_CHECKER(thread_checker_);

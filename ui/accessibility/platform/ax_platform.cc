@@ -145,28 +145,30 @@ void AXPlatform::OnUiaProviderRequested(bool uia_provider_enabled) {
 #if BUILDFLAG(IS_WIN)
 void AXPlatform::OnScreenReaderHoneyPotQueried() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  // We used to trust this as a signal that a screen reader is running,
-  // but it's been abused. Now only enable accessibility if we detect that a
-  // minimal property (name, role, location) is also used..
+  // We used to trust this as a signal that a screen reader is running, but it's
+  // been abused. Now only enable accessibility if we detect that the name is
+  // also used. Do not do the same for location and role, as the Windows Text
+  // Services Framework (MSTSF) has been known to check the role of each new
+  // window; see https://crbug.com/416429182.
   if (screen_reader_honeypot_queried_) {
     return;
   }
   screen_reader_honeypot_queried_ = true;
-  if (minimal_properties_used_) {
+  if (is_name_used_) {
     OnPropertiesUsedInWebContent();
   }
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-void AXPlatform::OnMinimalPropertiesUsed() {
+void AXPlatform::OnMinimalPropertiesUsed(bool is_name_used) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   delegate_->OnMinimalPropertiesUsed();
 #if BUILDFLAG(IS_WIN)
   // See OnScreenReaderHoneyPotQueried, above.
-  if (minimal_properties_used_) {
+  if (!is_name_used || is_name_used_) {
     return;
   }
-  minimal_properties_used_ = true;
+  is_name_used_ = true;
   if (screen_reader_honeypot_queried_) {
     OnPropertiesUsedInWebContent();
     return;
