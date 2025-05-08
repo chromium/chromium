@@ -53,7 +53,7 @@ enum PaintLayerType {
 //
 // This class actually doesn't have the box model but it exposes some common
 // functions or concepts that sub-classes can extend upon. For example, there
-// are accessors for margins, borders, paddings and borderBoundingBox().
+// are accessors for margins, borders, and paddings.
 //
 // The reason for this partial implementation is that the 2 classes inheriting
 // from it (LayoutBox and LayoutInline) have different requirements but need to
@@ -61,7 +61,7 @@ enum PaintLayerType {
 //
 // An important member of this class is PaintLayer, which is stored in a rare-
 // data pattern (see: Layer()). PaintLayers are instantiated for several reasons
-// based on the return value of layerTypeRequired().
+// based on the return value of LayerTypeRequired().
 // Interestingly, most SVG objects inherit from LayoutSVGModelObject and thus
 // can't have a PaintLayer. This is an unfortunate artifact of our
 // design as it limits code sharing and prevents hardware accelerating SVG
@@ -438,7 +438,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   // structure via remove/insert/appendChildNode.
   // Since they are typically called only to move objects around within
   // anonymous blocks (which only have layers in the case of column spans), the
-  // default for fullRemoveInsert is false rather than true.
+  // default for `full_remove_insert` is false rather than true.
   void MoveChildTo(LayoutBoxModelObject* to_box_model_object,
                    LayoutObject* child,
                    LayoutObject* before_child,
@@ -461,9 +461,10 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     MoveChildrenTo(to_box_model_object, SlowFirstChild(), nullptr, before_child,
                    full_remove_insert);
   }
-  // Move all of the kids from |startChild| up to but excluding |endChild|. 0
-  // can be passed as the |endChild| to denote that all the kids from
-  // |startChild| onwards should be moved.
+  // Move all of the kids from `start_child` up to but excluding `end_child`. 0
+  // can be passed as the `end_child` to denote that all the kids from
+  // `start_child` onwards should be moved. Nothing happens if start_child ==
+  // end_child.
   void MoveChildrenTo(LayoutBoxModelObject* to_box_model_object,
                       LayoutObject* start_child,
                       LayoutObject* end_child,
