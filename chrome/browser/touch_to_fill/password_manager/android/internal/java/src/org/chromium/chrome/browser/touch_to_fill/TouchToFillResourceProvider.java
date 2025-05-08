@@ -13,7 +13,7 @@ import androidx.annotation.DrawableRes;
  *
  * <p>TODO(wnwen): Remove this once downstream no longer depends on it.
  */
-interface TouchToFillResourceProvider {
+public interface TouchToFillResourceProvider {
     /**
      * Returns the drawable id to be displayed as a bottom sheet header image.
      *
