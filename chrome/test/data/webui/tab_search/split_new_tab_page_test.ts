@@ -77,7 +77,7 @@ suite('SplitNewTabPageTest', () => {
     ];
   }
 
-  function splitNewTabPageSetup() {
+  function splitNewTabPageSetup(windowData?: any) {
     loadTimeData.overrideValues({
       splitViewEnabled: true,
     });
@@ -86,7 +86,7 @@ suite('SplitNewTabPageTest', () => {
 
     testApiProxy = new TestTabSearchApiProxy();
     testApiProxy.setProfileData(
-        createProfileData({windows: createWindowData()}));
+        createProfileData({windows: (windowData || createWindowData())}));
     testApiProxy.setIsSplit(true);
     TabSearchApiProxyImpl.setInstance(testApiProxy);
 
@@ -137,6 +137,28 @@ suite('SplitNewTabPageTest', () => {
         splitNewTabPage.shadowRoot.querySelectorAll('tab-search-item');
     assertEquals(3, updatedTabSearchItems.length);
     assertEquals('New Title', updatedTabSearchItems[0]!.data.tab.title);
+  });
+
+  test('Updates on tab visibility updated', async () => {
+    const windowData = createWindowData();
+    const tab = windowData[0]!.tabs[1] as Tab;
+    tab.visible = false;
+    await splitNewTabPageSetup(windowData);
+    const initialTabSearchItems =
+        splitNewTabPage.shadowRoot.querySelectorAll('tab-search-item');
+    assertEquals(4, initialTabSearchItems.length);
+
+    tab.visible = true;
+    const tabUpdateInfo = {
+      inActiveWindow: true,
+      tab: tab,
+    };
+    testApiProxy.getCallbackRouterRemote().tabUpdated(tabUpdateInfo);
+    await microtasksFinished();
+
+    const updatedTabSearchItems =
+        splitNewTabPage.shadowRoot.querySelectorAll('tab-search-item');
+    assertEquals(3, updatedTabSearchItems.length);
   });
 
   test('Updates on tabs changed', async () => {

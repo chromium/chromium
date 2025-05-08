@@ -117,6 +117,8 @@ export class SplitNewTabPageAppElement extends CrLitElement {
     } else {
       this.allInvisibleTabs_.push(tabData);
     }
+    this.allInvisibleTabs_ =
+        this.allInvisibleTabs_.filter(tab => !(tab.tab as Tab).visible);
     this.sortTabs_();
   }
 
