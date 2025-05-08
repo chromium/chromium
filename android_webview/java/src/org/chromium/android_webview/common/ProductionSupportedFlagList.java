@@ -942,9 +942,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "AllowSensorsToEnterBfcache",
                 "Allow pages with sensors to enter back/forward cache."),
-        Flag.baseFeature(
-                BlinkFeatures.FONTATIONS_FONT_BACKEND,
-                "Enables the Fontations font backend for web fonts."),
         Flag.baseFeature("OverrideAPIKey"),
         Flag.baseFeature(
                 "RustyPng", "When enabled, uses Rust `png` crate to decode and encode PNG images."),

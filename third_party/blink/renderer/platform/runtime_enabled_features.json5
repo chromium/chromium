@@ -2284,10 +2284,6 @@
       status: {"Android": "", "default": "stable"},
     },
     {
-      name: "FontationsFontBackend",
-      status: "stable",
-    },
-    {
       name: "FontFamilyPostscriptMatchingCTMigration",
     },
     {
