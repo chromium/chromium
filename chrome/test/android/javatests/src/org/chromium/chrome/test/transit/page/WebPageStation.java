@@ -9,12 +9,9 @@ import android.util.Pair;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
-import org.chromium.base.test.transit.ConditionStatusWithResult;
-import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Transition;
-import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.tab.Tab;
@@ -22,7 +19,6 @@ import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.omnibox.FakeOmniboxSuggestions;
 import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 
 import java.util.List;
@@ -152,67 +148,6 @@ public class WebPageStation extends PageStation {
         enterFacilitiesSync(
                 List.of(omniboxFacility, softKeyboard), urlBarElement.getClickTrigger());
         return Pair.create(omniboxFacility, softKeyboard);
-    }
-
-    private static class WebContentsPresentCondition extends ConditionWithResult<WebContents> {
-        private final Supplier<Tab> mLoadedTabSupplier;
-
-        public WebContentsPresentCondition(Supplier<Tab> loadedTabSupplier) {
-            super(/* isRunOnUiThread= */ false);
-            mLoadedTabSupplier = dependOnSupplier(loadedTabSupplier, "LoadedTab");
-        }
-
-        @Override
-        protected ConditionStatusWithResult<WebContents> resolveWithSuppliers() {
-            return whether(hasValue()).withResult(get());
-        }
-
-        @Override
-        public String buildDescription() {
-            return "WebContents present";
-        }
-
-        @Override
-        public WebContents get() {
-            // Do not return a WebContents that has been destroyed, so always get it from the
-            // Tab instead of letting ConditionWithResult return its |mResult|.
-            if (!mLoadedTabSupplier.hasValue()) {
-                return null;
-            }
-            Tab loadedTab = mLoadedTabSupplier.get();
-            if (loadedTab == null) {
-                return null;
-            }
-            return loadedTab.getWebContents();
-        }
-
-        @Override
-        public boolean hasValue() {
-            return get() != null;
-        }
-    }
-
-    private static class FrameInfoUpdatedCondition extends UiThreadCondition {
-        Supplier<WebContents> mWebContentsSupplier;
-
-        public FrameInfoUpdatedCondition(Supplier<WebContents> webContentsSupplier) {
-            mWebContentsSupplier = dependOnSupplier(webContentsSupplier, "WebContents");
-        }
-
-        @Override
-        protected ConditionStatus checkWithSuppliers() {
-            Coordinates coordinates = Coordinates.createFor(mWebContentsSupplier.get());
-            return whether(
-                    coordinates.frameInfoUpdated(),
-                    "frameInfoUpdated %b, pageScaleFactor: %.2f",
-                    coordinates.frameInfoUpdated(),
-                    coordinates.getPageScaleFactor());
-        }
-
-        @Override
-        public String buildDescription() {
-            return "WebContents frame info updated";
-        }
     }
 
     // Condition checks whether web page reaches the bottom by checking viewport position and scroll

@@ -484,6 +484,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser") {
     "src/org/chromium/chrome/browser/NavigateTest.java",
     "src/org/chromium/chrome/browser/OmahaServiceStartDelayerIntegrationTest.java",
     "src/org/chromium/chrome/browser/PopularUrlsTest.java",
+    "src/org/chromium/chrome/browser/PopupMultiwindowPTTest.java",
     "src/org/chromium/chrome/browser/PopupPTTest.java",
     "src/org/chromium/chrome/browser/SafeBrowsingTest.java",
     "src/org/chromium/chrome/browser/SelectFileDialogTest.java",

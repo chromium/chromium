@@ -6,18 +6,25 @@ package org.chromium.chrome.test.transit.testhtmls;
 
 import org.chromium.base.test.transit.Elements;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.page.CctPageStation;
 import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.transit.page.PopupBlockedMessageFacility;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.test.transit.HtmlElement;
 import org.chromium.content_public.browser.test.transit.HtmlElementSpec;
 
-/** PageStation for popup_on_click.html, which contains a link to open itself in a pop-up. */
+/**
+ * PageStation for popup_on_click.html, which contains links to open pop-ups with different
+ * parameters.
+ */
 public class PopupOnClickPageStation extends WebPageStation {
     public static final String PATH = "/chrome/test/data/android/popup_on_click.html";
 
     public static final HtmlElementSpec LINK_TO_POPUP = new HtmlElementSpec("link");
+    public static final HtmlElementSpec LINK_TO_POPUP_WITH_BOUNDS =
+            new HtmlElementSpec("link_with_bounds");
     private HtmlElement mLinkToPopup;
+    private HtmlElement mLinkToPopupWithBounds;
 
     protected <T extends PopupOnClickPageStation> PopupOnClickPageStation(Builder<T> builder) {
         super(builder);
@@ -37,6 +44,9 @@ public class PopupOnClickPageStation extends WebPageStation {
         super.declareElements(elements);
 
         mLinkToPopup = elements.declareElement(new HtmlElement(LINK_TO_POPUP, webContentsElement));
+        mLinkToPopupWithBounds =
+                elements.declareElement(
+                        new HtmlElement(LINK_TO_POPUP_WITH_BOUNDS, webContentsElement));
     }
 
     /** Opens the same page as a pop-up (in Android, this means in a new tab). */
@@ -48,6 +58,17 @@ public class PopupOnClickPageStation extends WebPageStation {
                         .withIsSelectingTabs(1)
                         .build();
         return travelToSync(newPage, mLinkToPopup.getClickTrigger());
+    }
+
+    /** Opens a sample page as a pop-up with bounds and expects a new window to open. */
+    public CctPageStation clickLinkToOpenPopupWithBoundsExpectNewWindow() {
+        CctPageStation newPage =
+                CctPageStation.newBuilder()
+                        .withEntryPoint()
+                        .withExpectedUrlSubstring("simple.html")
+                        .withExpectedTitle("Simple")
+                        .build();
+        return spawnSync(newPage, mLinkToPopupWithBounds.getClickTrigger());
     }
 
     /**
