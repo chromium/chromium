@@ -24,7 +24,6 @@ namespace network {
 class SimpleURLLoader;
 }
 
-
 // Autocomplete provider for searches based on the current URL.
 //
 // The controller will call Start() when the user focuses the omnibox. After

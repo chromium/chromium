@@ -48,7 +48,7 @@ class ContextualSearchProvider : public BaseSearchProvider {
 
   // Waits for the Lens suggest inputs to be ready and then sends the request to
   // the remote suggest server. If the inputs are already ready, the request is
-  //sent immediately.
+  // sent immediately.
   void StartSuggestRequest(AutocompleteInput input);
 
   // Attaches the lens suggest inputs to `input` and makes the suggest request.

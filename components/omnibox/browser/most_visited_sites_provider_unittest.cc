@@ -99,10 +99,7 @@ class FakeTopSites : public history::TopSites {
 
 constexpr const auto* WEB_URL = u"https://example.com/";
 
-enum class ExpectedUiType {
-  kAggregateMatch,
-  kIndividualTiles
-};
+enum class ExpectedUiType { kAggregateMatch, kIndividualTiles };
 
 const std::vector<TestData> DefaultTestData() {
   return {{false, {GURL("http://www.a.art/"), u"A art"}},

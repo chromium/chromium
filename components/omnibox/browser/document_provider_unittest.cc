@@ -124,7 +124,7 @@ class DocumentProviderTest : public testing::Test,
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
-    base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   // Not enabled by default on mobile, so have to enable it explicitly.
   base::test::ScopedFeatureList feature_list_{omnibox::kDocumentProvider};
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
@@ -1182,7 +1182,8 @@ TEST_F(DocumentProviderTest, Backoff) {
 
   {
     omnibox_feature_configs::ScopedConfigForTesting<
-        omnibox_feature_configs::DocumentProvider> scoped_config;
+        omnibox_feature_configs::DocumentProvider>
+        scoped_config;
     scoped_config.Get().enabled = true;
     scoped_config.Get().scope_backoff_to_profile = false;
 
@@ -1199,7 +1200,8 @@ TEST_F(DocumentProviderTest, Backoff) {
 
   {
     omnibox_feature_configs::ScopedConfigForTesting<
-        omnibox_feature_configs::DocumentProvider> scoped_config;
+        omnibox_feature_configs::DocumentProvider>
+        scoped_config;
     scoped_config.Get().enabled = true;
     scoped_config.Get().scope_backoff_to_profile = true;
     scoped_config.Get().backoff_duration = base::Minutes(30);

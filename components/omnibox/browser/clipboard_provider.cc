@@ -243,8 +243,7 @@ void ClipboardProvider::AddCreatedMatchWithTracking(
                                            matches_.empty(), match.type,
                                            clipboard_contents_age);
 
-  if (is_android &&
-      omnibox::IsNTPPage(input.current_page_classification())) {
+  if (is_android && omnibox::IsNTPPage(input.current_page_classification())) {
     // Assign the Clipboard to the PZPS group on NTP pages to improve the use
     // of the suggest space.
     match.suggestion_group_id = omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST;

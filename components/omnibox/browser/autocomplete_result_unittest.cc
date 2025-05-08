@@ -9,8 +9,6 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "components/omnibox/browser/autocomplete_result.h"
-
 #include <stddef.h>
 
 #include <algorithm>
@@ -36,6 +34,7 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/fake_autocomplete_provider.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/fake_tab_matcher.h"
