@@ -11535,7 +11535,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           Close this view
         </message>
         <message name="IDS_SPLIT_TAB_SEPARATE_VIEWS" translateable="false" desc="The label for a menu item that unsplits the split tab when clicked.">
-          Seperate views
+          Separate views
         </message>
       </if>
       <if expr="use_titlecase">
@@ -11555,7 +11555,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           Close This View
         </message>
         <message name="IDS_SPLIT_TAB_SEPARATE_VIEWS" translateable="false" desc="In title case: the label for a menu item that unsplits the split tab when clicked.">
-          Seperate Views
+          Separate Views
         </message>
       </if>
 
