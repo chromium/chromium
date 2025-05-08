@@ -46,18 +46,12 @@ def _read_build_config_value(path, key):
     return action_helpers.parse_gn_list(value)
 
 
-def main():
-    logging.basicConfig(format='%(message)s', level=logging.INFO)
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--loud',
-                        action='store_true',
-                        help='Print compiler while annotating output')
-    args = parser.parse_args()
-
+def prep_errorprone_run(enable_annotator, parser):
+    if enable_annotator:
+        if not os.path.exists(_ANNOTATOR_JAR):
+            parser.error('Annotator .jar not found. Follow steps to build it.')
     if not os.path.exists('args.gn'):
         parser.error('Must be run from within output directory.')
-    if not os.path.exists(_ANNOTATOR_JAR):
-        parser.error('Annotator .jar not found. Follow steps to build it.')
     if not os.path.exists(_CHROME_JAVA_TURBINE_JAR):
         parser.error('Run "autoninja chrome/android:chrome_java" first.')
 
@@ -67,10 +61,6 @@ def main():
     java_files = [p for p in java_files if '@NullMarked' in _read_file(p)]
     sources_path = 'null-away-chrome-java-sources.txt'
     _write_file(sources_path, '\n'.join(java_files))
-    logging.info(
-        'Running annotator over %d @NullMarked files within chrome_java',
-        len(java_files))
-    logging.info('This will probably take 3-5 minutes 🐢🐢🐢')
 
     classpath = [
         'obj/third_party/android_sdk/android_sdk_java.ijar.jar',
@@ -83,7 +73,8 @@ def main():
     processor_path = _read_build_config_value(
         'gen/tools/android/errorprone_plugin/errorprone_plugin.build_config.json',
         'classpath')
-    processor_path.append(_ANNOTATOR_JAR)
+    if enable_annotator:
+        processor_path.append(_ANNOTATOR_JAR)
 
     contract_annotations = [
         'org.chromium.build.annotations.Contract',
@@ -103,7 +94,6 @@ def main():
         '-Xplugin:ErrorProne',
         '-XepDisableAllChecks',
         '-Xep:NullAway:ERROR',
-        '-Xep:AnnotatorScanner:ERROR',
         '-XepOpt:NullAway:OnlyNullMarked',
         '-XepOpt:NullAway:CustomContractAnnotations=' +
         ','.join(contract_annotations),
@@ -113,10 +103,15 @@ def main():
         '-XepOpt:Nullaway:AcknowledgeAndroidRecent=true',
         '-XepOpt:NullAway:JSpecifyMode=true',
         '-XepOpt:NullAway:KnownInitializers=' + ','.join(init_methods),
-        '-XepOpt:AnnotatorScanner:ConfigPath=../nullaway_scanner.xml',
-        '-XepOpt:NullAway:SerializeFixMetadata=true',
-        '-XepOpt:NullAway:FixSerializationConfigPath=../nullaway_config.xml',
     ]
+    if enable_annotator:
+        errorprone_args += [
+            '-XepOpt:NullAway:SerializeFixMetadata=true',
+            '-XepOpt:NullAway:FixSerializationConfigPath=../nullaway_config.xml',
+            '-Xep:AnnotatorScanner:ERROR',
+            '-XepOpt:AnnotatorScanner:ConfigPath=../nullaway_scanner.xml',
+        ]
+
     javac_cmd = [
         '../../third_party/jdk/current/bin/javac', '-g', '-parameters',
         '--release', '17', '-encoding', 'UTF-8', '-sourcepath', ':',
@@ -138,6 +133,22 @@ def main():
         'nullaway-annotator-output', '-classpath', ':'.join(classpath),
         f'@{sources_path}'
     ]
+
+    return java_files, javac_cmd
+
+
+def main():
+    logging.basicConfig(format='%(message)s', level=logging.INFO)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--loud',
+                        action='store_true',
+                        help='Print compiler while annotating output')
+    args = parser.parse_args()
+
+    java_files, javac_cmd = prep_errorprone_run(True, parser)
+    logging.info('Running annotator over %d @NullMarked files in chrome_java',
+                 len(java_files))
+    logging.info('This will probably take 3-5 minutes 🐢🐢🐢')
 
     outdir = os.path.abspath('annotator-out')
     if os.path.exists(outdir):
@@ -168,7 +179,7 @@ echo -e "\n\n============= START OF COMPILE =============" >> {compile_logs}
         cmd += ['--redirect-build-output-stderr']
 
     result = subprocess.run(cmd).returncode
-    logging.warning('🪵 Error Prone output (find warnings here):\n%s',
+    logging.warning('🪵 Error Prone output (find warnings here):\n%s\n',
                     os.path.abspath(compile_logs))
 
     if result:
