@@ -27,6 +27,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
+#include "chrome/browser/lens/core/mojom/lens_side_panel.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/profiles/profile.h"
@@ -43,6 +44,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_event_handler.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_languages_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_proto_converter.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_overlay_theme_utils.h"
@@ -73,9 +75,9 @@
 #include "components/lens/lens_overlay_metrics.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_permission_utils.h"
-#include "components/lens/lens_overlay_side_panel_result.h"
 #include "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -298,6 +300,20 @@ LensOverlayController* GetLensOverlayControllerFromTabInterface(
   return tab_interface
              ? tab_interface->GetTabFeatures()->lens_overlay_controller()
              : nullptr;
+}
+
+bool IsPageContextEligible(
+    const GURL& main_frame_url,
+    std::vector<optimization_guide::FrameMetadata> frame_metadata,
+    optimization_guide::PageContextEligibility* page_context_eligibility) {
+  if (!page_context_eligibility ||
+      !lens::features::IsLensSearchProtectedPageEnabled() ||
+      !lens::features::IsLensOverlayContextualSearchboxEnabled() ||
+      !lens::features::UseApcAsContext()) {
+    return true;
+  }
+  return page_context_eligibility->api().IsPageContextEligible(
+      main_frame_url.host(), main_frame_url.path(), std::move(frame_metadata));
 }
 
 }  // namespace
@@ -1223,9 +1239,11 @@ void LensOverlayController::IssueLensRequest(
     initialization_data_->selected_region_bitmap_.reset();
   }
 
-  lens_overlay_query_controller_->SendRegionSearch(
-      region.Clone(), selection_type,
-      initialization_data_->additional_search_query_params_, region_bytes);
+  if (is_page_context_eligible_) {
+    lens_overlay_query_controller_->SendRegionSearch(
+        region.Clone(), selection_type,
+        initialization_data_->additional_search_query_params_, region_bytes);
+  }
   MaybeOpenSidePanel();
   RecordTimeToFirstInteraction(
       lens::LensOverlayFirstInteractionType::kRegionSelect);
@@ -1238,17 +1256,21 @@ void LensOverlayController::IssueMultimodalRequest(
     const std::string& text_query,
     lens::LensOverlaySelectionType selection_type,
     std::optional<SkBitmap> region_bitmap) {
-  lens_overlay_query_controller_->SendMultimodalRequest(
-      std::move(region), text_query, selection_type,
-      initialization_data_->additional_search_query_params_, region_bitmap);
+  if (is_page_context_eligible_) {
+    lens_overlay_query_controller_->SendMultimodalRequest(
+        std::move(region), text_query, selection_type,
+        initialization_data_->additional_search_query_params_, region_bitmap);
+  }
 }
 
 void LensOverlayController::IssueContextualTextRequest(
     const std::string& text_query,
     lens::LensOverlaySelectionType selection_type) {
-  lens_overlay_query_controller_->SendContextualTextQuery(
-      text_query, selection_type,
-      initialization_data_->additional_search_query_params_);
+  if (is_page_context_eligible_) {
+    lens_overlay_query_controller_->SendContextualTextQuery(
+        text_query, selection_type,
+        initialization_data_->additional_search_query_params_);
+  }
 }
 
 void LensOverlayController::AddOverlayStateToSearchQuery(
@@ -1467,8 +1489,21 @@ void LensOverlayController::DidCaptureScreenshot(
     // Start the query as soon as the image is ready since it is the only
     // critical asynchronous flow. This optimization parallelizes the query flow
     // with other async startup processes.
+    const auto& tab_url = tab_->GetContents()->GetLastCommittedURL();
+
+    auto bitmap_to_send = bitmap;
+    auto page_url = GetPageURL();
+    auto page_title = GetPageTitle();
+    if (!IsPageContextEligible(
+            tab_url, {}, lens_search_controller_->page_context_eligibility())) {
+      is_page_context_eligible_ = false;
+      bitmap_to_send = SkBitmap();
+      page_url = GURL();
+      page_title = "";
+    }
+
     lens_overlay_query_controller_->StartQueryFlow(
-        bitmap, GetPageURL(), GetPageTitle(),
+        bitmap_to_send, page_url, page_title,
         ConvertSignificantRegionBoxes(all_bounds),
         std::vector<lens::PageContent>(), lens::MimeType::kUnknown,
         pdf_current_page, GetUiScaleFactor(), invocation_time_);
@@ -1557,6 +1592,9 @@ void LensOverlayController::GetPageContextualization(
                             std::nullopt);
     return;
   }
+
+  is_page_context_eligible_ = true;
+  results_side_panel_coordinator_->SetShowProtectedErrorPage(false);
 
 #if BUILDFLAG(ENABLE_PDF)
   // Try and fetch the PDF bytes if enabled.
@@ -1763,6 +1801,7 @@ void LensOverlayController::MaybeGetAnnotatedPageContent(
   blink::mojom::AIPageContentOptionsPtr ai_page_content_options =
       optimization_guide::DefaultAIPageContentOptions();
   ai_page_content_options->on_critical_path = true;
+  ai_page_content_options->max_meta_elements = 20;
   optimization_guide::GetAIPageContent(
       tab_->GetContents(), std::move(ai_page_content_options),
       base::BindOnce(&LensOverlayController::OnAnnotatedPageContentReceived,
@@ -1776,11 +1815,28 @@ void LensOverlayController::OnAnnotatedPageContentReceived(
     std::optional<optimization_guide::AIPageContentResult> result) {
   // Add the apc proto the page_contents if it exists.
   if (result) {
-    std::string serialized_apc;
-    result->proto.SerializeToString(&serialized_apc);
-    page_contents.emplace_back(
-        std::vector<uint8_t>(serialized_apc.begin(), serialized_apc.end()),
-        lens::MimeType::kAnnotatedPageContent);
+    // Convert the page metadata to a C struct defined in the optimization_guide
+    // component so it can be passed to the shared library.
+    std::vector<optimization_guide::FrameMetadata> frame_metadata_structs =
+        lens::ConvertFrameMetadataFromProto(result.value());
+
+    // If the page is protected, do not send the latest page content to the
+    // server.
+    const auto& tab_url = tab_->GetContents()->GetLastCommittedURL();
+    if (!IsPageContextEligible(
+            tab_url, std::move(frame_metadata_structs),
+            lens_search_controller_->page_context_eligibility())) {
+      is_page_context_eligible_ = false;
+      results_side_panel_coordinator_->SetShowProtectedErrorPage(true);
+      // Clear all previous page contents.
+      page_contents.clear();
+    } else {
+      std::string serialized_apc;
+      result->proto.SerializeToString(&serialized_apc);
+      page_contents.emplace_back(
+          std::vector<uint8_t>(serialized_apc.begin(), serialized_apc.end()),
+          lens::MimeType::kAnnotatedPageContent);
+    }
   }
   // Done fetching page contents.
   std::move(callback).Run(page_contents, lens::MimeType::kAnnotatedPageContent,
@@ -1848,6 +1904,12 @@ void LensOverlayController::UpdatePageContextualization(
     lens::MimeType primary_content_type,
     std::optional<uint32_t> page_count) {
   if (!lens::features::IsLensOverlayContextualSearchboxEnabled()) {
+    return;
+  }
+
+  // If the protected page is showing, then return early as none of the content
+  // will be sent.
+  if (results_side_panel_coordinator_->IsShowingProtectedErrorPage()) {
     return;
   }
 
@@ -1958,6 +2020,7 @@ void LensOverlayController::UpdatePageContextualizationPart3(
         lens_overlay_query_controller_->MaybeRestartQueryFlow();
         return;
       }
+
       // If the screenshot has changed but the bytes have not, send only the
       // screenshot.
       lens_overlay_query_controller_->SendUpdatedPageContent(
@@ -2222,6 +2285,8 @@ void LensOverlayController::CloseUIPart2(
 
   lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
   should_show_overlay_ = true;
+  is_page_context_eligible_ = true;
+  should_send_screenshot_on_init_ = false;
 
   state_ = State::kOff;
 
@@ -2285,12 +2350,18 @@ void LensOverlayController::InitializeOverlay(
   // If the StartQueryFlow optimization is enabled, the page contents will not
   // be sent with the initial image request, so we need to send it here.
   if (lens::features::IsLensOverlayContextualSearchboxEnabled() &&
-      lens::features::IsLensOverlayEarlyStartQueryFlowOptimizationEnabled()) {
+      lens::features::IsLensOverlayEarlyStartQueryFlowOptimizationEnabled() &&
+      is_page_context_eligible_) {
+    // The screenshot is not sent here unless forced by
+    // `should_send_screenshot_on_init_` as it should have been sent in the
+    // original StartQueryFlow call.
     lens_overlay_query_controller_->SendUpdatedPageContent(
         initialization_data_->page_contents_,
         initialization_data_->primary_content_type_, GetPageURL(),
         GetPageTitle(), initialization_data_->last_retrieved_most_visible_page_,
-        SkBitmap());
+        should_send_screenshot_on_init_
+            ? initialization_data_->initial_screenshot_
+            : SkBitmap());
   }
 
   // Show the preselection overlay now that the overlay is initialized and ready
@@ -2321,9 +2392,13 @@ void LensOverlayController::InitializeOverlay(
   // response, unless the early start query flow optimization is enabled.
   if (!initialization_data_->has_full_image_response() &&
       !lens::features::IsLensOverlayEarlyStartQueryFlowOptimizationEnabled()) {
-    // Use std::move because significant_region_boxes_ is only used in this
-    // call, which should only occur once in the lifetime of
-    // LensOverlayQueryController and thus of LensOverlayController.
+    if (!is_page_context_eligible_) {
+      initialization_data_->initial_screenshot_ = SkBitmap();
+      initialization_data_->page_url_ = GURL();
+      initialization_data_->page_title_ = "";
+      should_send_screenshot_on_init_ = true;
+    }
+
     lens_overlay_query_controller_->StartQueryFlow(
         initialization_data_->initial_screenshot_,
         initialization_data_->page_url_, initialization_data_->page_title_,
@@ -3246,8 +3321,10 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
     lens_selection_type_ = lens::MULTIMODAL_SUGGEST_TYPEAHEAD;
   }
 
-  if (initialization_data_->selected_region_.is_null() &&
-      IsContextualSearchbox()) {
+  if (!is_page_context_eligible_) {
+    // Do not send any requests if the page is not context eligible.
+  } else if (initialization_data_->selected_region_.is_null() &&
+             IsContextualSearchbox()) {
     lens_overlay_query_controller_->SendContextualTextQuery(
         search_box_text, lens_selection_type_,
         initialization_data_->additional_search_query_params_);
@@ -3304,7 +3381,10 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
   SetSearchboxInputText(search_box_text);
 
   MaybeOpenSidePanel();
-  results_side_panel_coordinator_->SetSidePanelIsLoadingResults(true);
+  // Only set the side panel to loading if the page is context eligible because
+  // otherwise there will be no results to load.
+  results_side_panel_coordinator_->SetSidePanelIsLoadingResults(
+      is_page_context_eligible_);
   MaybeLaunchSurvey();
 
   // After the searchbox request is sent, mark the follow up zps as not shown so
@@ -3325,12 +3405,13 @@ void LensOverlayController::HandleStartQueryResponse(
   if (is_side_panel_open) {
     results_side_panel_coordinator_->MaybeSetSidePanelShowErrorPage(
         is_error,
-        is_error ? lens::SidePanelResultStatus::kErrorPageShownStartQueryError
-                 : lens::SidePanelResultStatus::kResultShown);
+        is_error
+            ? lens::mojom::SidePanelResultStatus::kErrorPageShownStartQueryError
+            : lens::mojom::SidePanelResultStatus::kResultShown);
   } else if (!is_side_panel_open && is_error) {
     results_side_panel_coordinator_->MaybeSetSidePanelShowErrorPage(
         /*should_show_error_page=*/true,
-        lens::SidePanelResultStatus::kErrorPageShownStartQueryError);
+        lens::mojom::SidePanelResultStatus::kErrorPageShownStartQueryError);
   }
 
   if (!objects.empty()) {

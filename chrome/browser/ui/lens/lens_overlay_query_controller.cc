@@ -1116,6 +1116,11 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
     return;
   }
 
+  // If the screenshot draws nothing, return.
+  if (original_screenshot_.drawsNothing()) {
+    return;
+  }
+
   // There can be multiple full image requests that are called. For example,
   // when translate mode is enabled after opening the overlay or when turning
   // translate mode back off after enabling. Reset if there is one pending.

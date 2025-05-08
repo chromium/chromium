@@ -23,6 +23,7 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SearchboxGhostLoaderElement} from '/lens/shared/searchbox_ghost_loader.js';
 
+import {SidePanelResultStatus} from '../lens_side_panel.mojom-webui.js';
 import type {LensSidePanelPageHandlerInterface} from '../lens_side_panel.mojom-webui.js';
 import {PageContentType} from '../page_content_type.mojom-webui.js';
 import {handleEscapeSearchbox} from '../searchbox_utils.js';
@@ -372,8 +373,10 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
     }
   }
 
-  private setShowErrorPage(shouldShowErrorPage: boolean) {
-    this.$.errorPage.setIsProtectedError(false);
+  private setShowErrorPage(
+      shouldShowErrorPage: boolean, status: SidePanelResultStatus) {
+    this.$.errorPage.setIsProtectedError(
+        status === SidePanelResultStatus.kErrorPageShownProtected);
     this.isErrorPageVisible =
         shouldShowErrorPage && loadTimeData.getBoolean('enableErrorPage');
   }
