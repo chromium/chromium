@@ -916,9 +916,9 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
-    name = "mac14-tests-dbg",
+    name = "mac15-tests-dbg",
     branch_selector = branches.selector.MAC_BRANCHES,
-    description_html = "Runs Mac 14 tests with debug config.",
+    description_html = "Runs Mac 15 tests with debug config.",
     triggered_by = ["ci/Mac Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -943,7 +943,7 @@ ci.thin_tester(
             "chromium_dbg_isolated_scripts",
         ],
         mixins = [
-            "mac_14_x64",
+            "mac_15_x64",
         ],
         per_test_modifications = {
             "blink_web_tests": targets.mixin(
@@ -959,15 +959,14 @@ ci.thin_tester(
                     shards = 8,
                 ),
             ),
-            "browser_tests": targets.remove(
-                reason = "TODO(crbug.com/338402345): Enable if there is enough capacity after Mac 14 upgrades.",
+            "browser_tests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter",
+                ],
+                swarming = targets.swarming(
+                    shards = 20,
+                ),
             ),
-            # "browser_tests": targets.mixin(
-            #     # crbug.com/1196416
-            #     args = [
-            #         "--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter",
-            #     ],
-            # ),
             "content_browsertests": targets.mixin(
                 # https://crbug.com/1279504
                 swarming = targets.swarming(
@@ -1005,7 +1004,7 @@ ci.thin_tester(
     gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "debug",
-        short_name = "14",
+        short_name = "15",
     ),
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "bling-engprod@google.com",

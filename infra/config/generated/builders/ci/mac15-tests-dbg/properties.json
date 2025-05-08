@@ -31,7 +31,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "mac14-tests-dbg",
+              "builder": "mac15-tests-dbg",
               "project": "chromium"
             },
             "builder_spec": {
@@ -63,7 +63,7 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "mac14-tests-dbg",
+          "builder": "mac15-tests-dbg",
           "project": "chromium"
         }
       ],
@@ -78,7 +78,7 @@
         }
       ],
       "retry_failed_shards": true,
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/mac14-tests-dbg/targets"
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/mac15-tests-dbg/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {
