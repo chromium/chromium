@@ -18,6 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
@@ -351,6 +352,7 @@ StreamingSearchPrefetchURLLoader::GetServingResponseHandler(
     scoped_refptr<StreamingSearchPrefetchURLLoader> loader) {
   DCHECK(!loader->streaming_prefetch_request_);
   DCHECK(!loader->forwarding_client_);
+  loader->should_be_serving_to_activation_navigation_ = true;
   loader->RecordInterceptionTime();
   return base::BindOnce(
       &StreamingSearchPrefetchURLLoader::SetUpForwardingClient,
@@ -371,6 +373,7 @@ void StreamingSearchPrefetchURLLoader::SetUpForwardingClient(
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client) {
   CHECK(!streaming_prefetch_request_);
+  CHECK(should_be_serving_to_activation_navigation_);
   // Bind to the content/ navigation code.
   CHECK(!receiver_.is_bound());
 
@@ -836,6 +839,11 @@ void StreamingSearchPrefetchURLLoader::PostTaskToReleaseOwnership() {
             ? "Omnibox.SearchPreload.ForwardingResult.WasServedToPrerender"
             : "Omnibox.SearchPreload.ForwardingResult.NotServedToPrerender",
         forwarding_result_);
+  }
+  if (should_be_serving_to_activation_navigation_ &&
+      forwarding_result_ == ForwardingResult::kNotServed) {
+    base::trace_event::EmitNamedTrigger(
+        "search-prefetch-destroyed-unexpectedly");
   }
 
   // To avoid UAF bugs, post a separate task to delete this object.

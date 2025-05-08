@@ -437,7 +437,12 @@ class StreamingSearchPrefetchURLLoader
   // Whether this loader is created specifically for a navigation prefetch.
   bool navigation_prefetch_;
 
-  // Whether this url loader was activated via the navigation stack.
+  // Whether the SearchPrefetchService selected to use this loader to serve a
+  // real navigation.
+  bool should_be_serving_to_activation_navigation_ = false;
+
+  // Whether this url loader was activated via the navigation stack. Set after
+  // the call to `SetUpForwardingClient`.
   bool is_activated_ = false;
 
   base::OnceClosure on_destruction_callback_for_testing_;
