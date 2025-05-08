@@ -25,8 +25,7 @@ scoped_refptr<SurfaceLayer> SurfaceLayer::Create(
 }
 
 SurfaceLayer::SurfaceLayer()
-    : may_contain_video_(false),
-      deadline_in_frames_(0u),
+    : deadline_in_frames_(0u),
       stretch_content_to_fill_bounds_(false),
       surface_hit_testable_(false),
       has_pointer_events_none_(false),
@@ -37,7 +36,6 @@ SurfaceLayer::SurfaceLayer(
     UpdateSubmissionStateCB update_submission_state_callback)
     : update_submission_state_callback_(
           std::move(update_submission_state_callback)),
-      may_contain_video_(false),
       deadline_in_frames_(0u),
       stretch_content_to_fill_bounds_(false),
       surface_hit_testable_(false),
@@ -138,11 +136,6 @@ void SurfaceLayer::SetIsReflection(bool is_reflection) {
 
 void SurfaceLayer::SetOverrideChildPaintFlags(bool override_child_paint_flags) {
   override_child_paint_flags_.Write(*this) = true;
-}
-
-void SurfaceLayer::SetMayContainVideo(bool may_contain_video) {
-  may_contain_video_.Write(*this) = may_contain_video;
-  SetNeedsCommit();
 }
 
 std::unique_ptr<LayerImpl> SurfaceLayer::CreateLayerImpl(

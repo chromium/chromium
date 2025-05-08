@@ -61,7 +61,7 @@ class CC_EXPORT SurfaceLayer : public Layer {
 
   void SetOverrideChildPaintFlags(bool override_child_paint_flags);
 
-  void SetMayContainVideo(bool may_contain_video);
+  using Layer::SetMayContainVideo;
 
   // Layer overrides.
   std::unique_ptr<LayerImpl> CreateLayerImpl(
@@ -98,7 +98,6 @@ class CC_EXPORT SurfaceLayer : public Layer {
   ProtectedSequenceWritable<UpdateSubmissionStateCB>
       update_submission_state_callback_;
 
-  ProtectedSequenceReadable<bool> may_contain_video_;
   ProtectedSequenceReadable<viz::SurfaceRange> surface_range_;
   ProtectedSequenceWritable<std::optional<uint32_t>> deadline_in_frames_;
 

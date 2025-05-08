@@ -663,19 +663,6 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   void SetHasClipNode(bool val) { SetBitFlag(val, kHasClipNodeFlagMask); }
   bool has_clip_node() const { return GetBitFlag(kHasClipNodeFlagMask); }
 
-  // Sets that the content shown in this layer may be a video. This may be used
-  // by the system compositor to distinguish between animations updating the
-  // screen and video, which the user would be watching. This allows
-  // optimizations like turning off the display when video is not playing,
-  // without interfering with video playback.
-  void SetMayContainVideo(bool value) {
-    SetBitFlag(value, kMayContainVideoFlagMask, /*invalidate=*/false,
-               /*needs_push=*/true);
-  }
-  bool may_contain_video() const {
-    return GetBitFlag(kMayContainVideoFlagMask);
-  }
-
   // Stable identifier for clients. See comment in cc/paint/element_id.h.
   void SetElementId(ElementId id);
   ElementId element_id() const { return inputs_.Read(*this).element_id; }
@@ -920,6 +907,19 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // BeginMainFrame, and should not be changed while the frame is being
   // generated or committed.
   bool IsPropertyChangeAllowed() const;
+
+  // Sets that the content shown in this layer may be a video. This may be used
+  // by the system compositor to distinguish between animations updating the
+  // screen and video, which the user would be watching. This allows
+  // optimizations like turning off the display when video is not playing,
+  // without interfering with video playback.
+  void SetMayContainVideo(bool value) {
+    SetBitFlag(value, kMayContainVideoFlagMask, /*invalidate=*/false,
+               /*needs_push=*/true);
+  }
+  bool may_contain_video() const {
+    return GetBitFlag(kMayContainVideoFlagMask);
+  }
 
   void IncreasePaintCount() {
     if (debug_info_.Read(*this))
