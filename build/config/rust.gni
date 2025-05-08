@@ -226,6 +226,12 @@ if (is_linux || is_chromeos) {
   } else if (current_cpu == "riscv64") {
     rust_abi_target = "riscv64gc-unknown-linux-gnu"
     cargo_target_abi = ""
+  } else if (current_cpu == "ppc64") {
+    rust_abi_target = "powerpc64le-unknown-linux-gnu"
+    cargo_target_abi = ""
+  } else if (current_cpu == "s390x") {
+    rust_abi_target = "s390x-unknown-linux-gnu"
+    cargo_target_abi = ""
   } else {
     # Best guess for other future platforms.
     rust_abi_target = current_cpu + "-unknown-linux-gnu"
