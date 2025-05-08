@@ -94,6 +94,10 @@ bool ReportScheduler::IsReportingEnabled() const {
   return delegate_->GetPrefService()->GetBoolean(reporting_pref_name_);
 }
 
+bool ReportScheduler::AreSecurityReportsEnabled() const {
+  return delegate_->AreSecurityReportsEnabled();
+}
+
 bool ReportScheduler::IsNextReportScheduledForTesting() const {
   return request_timer_.IsRunning();
 }
@@ -312,7 +316,13 @@ void ReportScheduler::OnReportGenerated(ReportRequestQueue requests) {
     report_uploader_ =
         std::make_unique<ReportUploader>(cloud_policy_client_, kMaximumRetry);
   }
+
   RecordUploadTrigger();
+  if (active_report_generation_config_.security_signals_mode !=
+      SecuritySignalsMode::kNoSignals) {
+    delegate_->GetPrefService()->SetTime(kLastSignalsUploadAttemptTimestamp,
+                                         base::Time::Now());
+  }
 
   report_uploader_->SetRequestAndUpload(
       active_report_generation_config_, std::move(requests),
@@ -331,8 +341,21 @@ void ReportScheduler::OnReportUploaded(ReportUploader::ReportStatus status) {
       if (IsBrowserVersionUploaded(active_trigger_))
         delegate_->OnBrowserVersionUploaded();
 
-      delegate_->GetPrefService()->SetTime(kLastUploadSucceededTimestamp,
-                                           base::Time::Now());
+      // Signals-only report does not contain most content of a status report
+      // and should not update this timestamp.
+      if (active_trigger_ != ReportScheduler::kTriggerSecurity) {
+        delegate_->GetPrefService()->SetTime(kLastUploadSucceededTimestamp,
+                                             base::Time::Now());
+      }
+
+      if (active_report_generation_config_.security_signals_mode !=
+          SecuritySignalsMode::kNoSignals) {
+        delegate_->GetPrefService()->SetTime(
+            kLastSignalsUploadSucceededTimestamp, base::Time::Now());
+        delegate_->GetPrefService()->SetString(
+            kLastSignalsUploadSucceededConfig,
+            active_report_generation_config_.ToString());
+      }
       [[fallthrough]];
     case ReportUploader::kTransientError:
       // Stop retrying and schedule the next report to avoid stale report.
