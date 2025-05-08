@@ -145,9 +145,9 @@ fn download_crates(args: &VendorCommandArgs, paths: &paths::ChromiumPaths) -> Re
         }
     }
     for d in &dirs_to_remove {
-        println!("Deleting {}", d);
+        println!("Deleting {d}");
         std::fs::remove_dir_all(paths.third_party_cargo_root.join("vendor").join(d))
-            .with_context(|| format!("removing {}", d))?
+            .with_context(|| format!("removing {d}"))?
     }
     Ok(())
 }
@@ -305,7 +305,7 @@ fn download_crate(
         use std::io::Read;
         response
             .read_to_end(&mut bytes)
-            .with_context(|| format!("reading http response for crate {}", name))?;
+            .with_context(|| format!("reading http response for crate {name}"))?;
     }
     let unzipped = flate2::read::GzDecoder::new(bytes.as_slice());
     let mut archive = tar::Archive::new(unzipped);
@@ -330,11 +330,11 @@ fn download_crate(
     // Expecting that the archive will contain a directory with a predictable
     // path based on crate name and version.  Move this directory to the final
     // destination (to `crate_dir`).
-    let archived_dir = tempdir.path().join(format!("{}-{}", name, version));
+    let archived_dir = tempdir.path().join(format!("{name}-{version}"));
     std::fs::rename(archived_dir, &crate_dir)?;
 
     std::fs::write(crate_dir.join(".cargo-checksum.json"), "{\"files\":{}}\n")
-        .with_context(|| format!("writing .cargo-checksum.json for crate {}", name))?;
+        .with_context(|| format!("writing .cargo-checksum.json for crate {name}"))?;
 
     Ok(())
 }

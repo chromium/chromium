@@ -106,7 +106,7 @@ fn check_path<'a>(root: &Path, p_str: &'a str) -> io::Result<&'a Path> {
 pub fn normalize_unix_path_separator(path: &Path) -> String {
     // `Path`s on windows use `\` separators and we need to use `/` in GN strings.
     path.iter()
-        .map(|comp| comp.to_str().unwrap_or_else(|| panic!("non-UTF-8 in path {:?}", path)))
+        .map(|comp| comp.to_str().unwrap_or_else(|| panic!("non-UTF-8 in path {path:?}")))
         .join("/")
 }
 
@@ -119,7 +119,7 @@ pub fn normalize_unix_path_separator(path: &Path) -> String {
 /// https://crbug.com/396397336#comment7 and adjacent comments.
 pub fn get_vendor_dir_for_package(name: &str, version: &semver::Version) -> String {
     let epoch = crate::crates::Epoch::from_version(version);
-    format!("{}-{}", name, epoch)
+    format!("{name}-{epoch}")
 }
 
 static RUST_THIRD_PARTY_DIR: &str = "third_party/rust";

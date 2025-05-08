@@ -49,11 +49,11 @@ pub fn find_inherited_privilege_group(
         if let Some(group) = found_group {
             if graph.depends_on(each_id, id).unwrap() {
                 // `each_id` is an ancestor of `id`, or is the same crate.
-                log::debug!("{} ance {} ({:?})", id, each_id, group);
+                log::debug!("{id} ancestor {each_id} ({group:?})");
                 ancestor_groups.push(group);
             } else if graph.depends_on(id, each_id).unwrap() {
                 // `each_id` is an descendent of `id`.
-                log::debug!("{} depe {} ({:?})", id, each_id, group);
+                log::debug!("{id} dependency {each_id} ({group:?})");
                 dependency_groups.push(group);
             }
         };
@@ -69,7 +69,7 @@ pub fn find_inherited_privilege_group(
     let ancestor_privilege = ancestor_groups.into_iter().fold(Group::Test, std::cmp::max);
     let depedency_privilege = dependency_groups.into_iter().fold(Group::Safe, std::cmp::min);
     let privilege = std::cmp::min(ancestor_privilege, depedency_privilege);
-    log::debug!("privilege = {:?}", privilege);
+    log::debug!("privilege = {privilege:?}");
     privilege
 }
 
@@ -106,7 +106,7 @@ fn find_inherited_bool_flag(
             }
         }) {
             if graph.depends_on(each_id, id).unwrap() {
-                log::debug!("{} ance {} ({:?})", id, each_id, flag);
+                log::debug!("{id} ancestor {each_id} ({flag:?})");
                 inherited_flag = Some(inherited_flag.unwrap_or_default() || flag);
             }
         };
@@ -146,7 +146,7 @@ pub fn find_inherited_security_critical_flag(
         get_security_critical,
         get_top_level_security_critical,
     );
-    log::debug!("{} security_critical {:?}", id, inherited_flag);
+    log::debug!("{id} security_critical {inherited_flag:?}");
     inherited_flag
 }
 
@@ -176,6 +176,6 @@ pub fn find_inherited_shipped_flag(
 
     let inherited_flag =
         find_inherited_bool_flag(id, root, graph, config, get_shipped, get_top_level_shipped);
-    log::debug!("{} shipped {:?}", id, inherited_flag);
+    log::debug!("{id} shipped {inherited_flag:?}");
     inherited_flag
 }

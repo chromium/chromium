@@ -316,7 +316,7 @@ fn find_license_files_for_kinds(
         // Safe to unwrap because if a LicenseKind isn't in
         // LICENSE_KIND_TO_LICENSE_FILES, it's a bug in gnrt's implementation.
         let possible_files = LICENSE_KIND_TO_LICENSE_FILES.get(kind).unwrap_or_else(|| {
-            panic!("Bug in gnrt: License kind {:?} not in LICENSE_KIND_TO_LICENSE_FILES", kind)
+            panic!("Bug in gnrt: License kind {kind:?} not in LICENSE_KIND_TO_LICENSE_FILES")
         });
 
         // Try each possible file in priority order.

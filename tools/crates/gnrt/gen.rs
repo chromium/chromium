@@ -40,7 +40,7 @@ fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Resul
     // dependencies.
     let rust_src_root = args.for_std.as_ref().unwrap();
 
-    println!("Generating stdlib GN rules from {}", rust_src_root);
+    println!("Generating stdlib GN rules from {rust_src_root}");
 
     let cargo_config = std::fs::read_to_string(paths.std_fake_root_config_template)
         .unwrap()

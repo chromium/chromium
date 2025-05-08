@@ -136,8 +136,8 @@ pub fn run_cargo_command(
         command.env(k, v);
     }
 
-    log::debug!("invoking cargo {}", subcommand);
-    let mut handle = command.spawn().with_context(|| format!("running cargo {}", subcommand))?;
+    log::debug!("invoking cargo {subcommand}");
+    let mut handle = command.spawn().with_context(|| format!("running cargo {subcommand}"))?;
     let code = handle.wait().context("waiting for cargo process")?;
     if !code.success() {
         Err(format_err!("cargo {} exited with status {}", subcommand, code))
@@ -185,7 +185,7 @@ fn template_path_to_registration_name(template_path: &Path) -> String {
         template_path.hash(&mut h);
         h.finish()
     };
-    format!("{}#{:#x}", filename, hash)
+    format!("{filename}#{hash:#x}")
 }
 
 pub fn init_handlebars_with_template_paths<'a>(
