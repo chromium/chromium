@@ -10,7 +10,6 @@
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/permissions/features.h"
 #include "components/permissions/prediction_service/permissions_aiv3_encoder.h"
-#include "components/permissions/prediction_service/prediction_signature_model_executor.h"
 #include "components/version_info/version_info.h"
 
 namespace permissions {
@@ -45,8 +44,6 @@ PermissionsAiv3Handler::PermissionsAiv3Handler(
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::USER_VISIBLE}),
           std::make_unique<PermissionsAiv3Encoder>(request_type)) {}
-
-PermissionsAiv3Handler::~PermissionsAiv3Handler() = default;
 
 void PermissionsAiv3Handler::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,

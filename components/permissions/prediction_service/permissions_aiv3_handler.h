@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_PERMISSIONS_PREDICTION_SERVICE_PERMISSIONS_AIV3_HANDLER_H_
 #define COMPONENTS_PERMISSIONS_PREDICTION_SERVICE_PERMISSIONS_AIV3_HANDLER_H_
 
-#include <array>
-#include <vector>
-
 #include "base/task/sequenced_task_runner.h"
 #include "components/optimization_guide/core/model_handler.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -32,7 +29,6 @@ class PermissionsAiv3Handler : public optimization_guide::ModelHandler<
       scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner,
       std::unique_ptr<PermissionsAiv3Encoder> model_executor);
 
-  ~PermissionsAiv3Handler() override;
   PermissionsAiv3Handler(const PermissionsAiv3Handler&) = delete;
   PermissionsAiv3Handler& operator=(const PermissionsAiv3Handler&) = delete;
 
@@ -41,7 +37,7 @@ class PermissionsAiv3Handler : public optimization_guide::ModelHandler<
       base::optional_ref<const optimization_guide::ModelInfo> model_info)
       override;
 
-  void ExecuteModel(
+  virtual void ExecuteModel(
       ExecutionCallback callback,
       std::unique_ptr<PermissionsAiv3Encoder::ModelInput> snapshot);
 };

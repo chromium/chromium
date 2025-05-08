@@ -122,7 +122,7 @@ class Aiv3HandlerTestBase : public testing::Test {
     geolocation_model_handler_.reset();
     notification_model_handler_.reset();
     model_provider_.reset();
-    RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   void PushModelFileToModelExecutor(OptimizationTarget opt_target,
@@ -138,8 +138,6 @@ class Aiv3HandlerTestBase : public testing::Test {
 
     task_environment_.RunUntilIdle();
   }
-
-  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   PermissionsAiv3Handler* model_handler(OptimizationTarget target) {
     return target == kOptTargetGeolocation ? geolocation_model_handler_.get()

@@ -22,6 +22,8 @@
 #include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/prediction_service/prediction_request_features.h"
 #include "components/permissions/request_type.h"
+#include "components/unified_consent/pref_names.h"
+#include "content/public/browser/render_widget_host_view.h"
 
 class PredictionServiceRequest;
 class Profile;
@@ -41,6 +43,7 @@ class PredictionBasedPermissionUiSelector
     kServerSideCpssV3Model,
     kOnDeviceCpssV1Model,
     kOnDeviceAiv1AndServerSideModel,
+    kOnDeviceAiv3AndServerSideModel,
   };
   using PredictionGrantLikelihood =
       permissions::PermissionUmaUtil::PredictionGrantLikelihood;
@@ -71,6 +74,11 @@ class PredictionBasedPermissionUiSelector
 
   std::optional<bool> WasSelectorDecisionHeldback() override;
 
+  std::optional<permissions::PermissionRequestRelevance>
+  get_permission_request_relevance_for_testing();
+
+  void set_snapshot_for_testing(SkBitmap snapshot);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(
       PredictionBasedPermissionUiExpectedPredictionSourceTest,
@@ -82,10 +90,19 @@ class PredictionBasedPermissionUiSelector
   FRIEND_TEST_ALL_PREFIXES(PredictionBasedPermissionUiSelectorTest,
                            HoldbackDecisionTest);
 
-  void AiOnDeviceModelExecutionCallback(
+  // Callback for the Aiv1ModelHandler, with the first to parameters being
+  // curryed to be used for the server side model call.
+  void OnDeviceAiv1ModelExecutionCallback(
       permissions::PredictionRequestFeatures features,
       permissions::RequestType request_type,
       std::optional<optimization_guide::proto::PermissionsAiResponse> response);
+
+  // Callback for the Aiv3ModelHandler, with the first to parameters being
+  // curryed to be used for the server side model call.
+  void OnDeviceAiv3ModelExecutionCallback(
+      permissions::PredictionRequestFeatures features,
+      permissions::RequestType request_type,
+      const std::optional<permissions::PermissionRequestRelevance>& relevance);
 
   permissions::PredictionRequestFeatures BuildPredictionRequestFeatures(
       permissions::PermissionRequest* request);
@@ -103,10 +120,23 @@ class PredictionBasedPermissionUiSelector
     likelihood_override_for_testing_ = mock_likelihood;
   }
 
+  // Part of the AIv1 model execution chain; provided as a curryed callback to
+  // be submitted to the logic that fetches the current page content text for
+  // the AIv1 model. The first two parameters are set by the callee, to be used
+  // by the server side model later.
   void OnGetInnerTextForOnDeviceModel(
       permissions::PredictionRequestFeatures features,
       permissions::RequestType request_type,
       std::unique_ptr<content_extraction::InnerTextResult> result);
+
+  // Part of the AIv3 model execution chain; provided as a curryed callback to
+  // be submitted to the logic that fetches a snapshot that serves as the input
+  // for the AIv3 model. The first two parameters are set by the callee, to be
+  // used by the server side model later.
+  void OnSnapshotTakenForOnDeviceModel(
+      permissions::PredictionRequestFeatures features,
+      permissions::RequestType request_type,
+      const SkBitmap& screenshot);
 
   bool ShouldHoldBack(bool is_on_device, permissions::RequestType request_type);
 
@@ -114,11 +144,28 @@ class PredictionBasedPermissionUiSelector
       const permissions::PredictionRequestFeatures& features,
       permissions::RequestType request_type,
       bool record_source);
+
   void InquireCpssV1OnDeviceModelIfAvailable(
       const permissions::PredictionRequestFeatures& features,
       permissions::RequestType request_type);
-  void InquireAiOnDeviceAndServerModelIfAvailable(
+
+  // As the first part of the AIv3 model execution chain, this function triggers
+  // AIv3 input collection and model execution, with its output being input of
+  // the follow-up CPSSv3 server side model execution. If the AIv3 model is not
+  // available or is executed with an error, only the server side model will get
+  // called.
+  void InquireOnDeviceAiv1AndServerModelIfAvailable(
       content::RenderFrameHost* rfh,
+      permissions::PredictionRequestFeatures features,
+      permissions::RequestType request_type);
+
+  // As the first part of the AIv3 model execution chain, this function triggers
+  // AIv3 input collection and model execution, with its output being input of
+  // the follow-up CPSSv3 server side model execution. If the AIv3 model is not
+  // available or is executed with an error, only the server side model will get
+  // called.
+  void InquireOnDeviceAiv3AndServerModelIfAvailable(
+      content::RenderWidgetHostView* host_view,
       permissions::PredictionRequestFeatures features,
       permissions::RequestType request_type);
 
@@ -133,6 +180,8 @@ class PredictionBasedPermissionUiSelector
   std::optional<PredictionGrantLikelihood> likelihood_override_for_testing_;
 
   DecisionMadeCallback callback_;
+
+  std::optional<SkBitmap> snapshot_for_testing_;
 
   // Used to asynchronously call the callback during on device model execution.
   base::WeakPtrFactory<PredictionBasedPermissionUiSelector> weak_ptr_factory_{

@@ -4,16 +4,24 @@
 
 #include "chrome/browser/permissions/prediction_service_factory.h"
 
+#include "base/check_is_test.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/permissions/prediction_service/prediction_service.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 
+namespace {
+using ::permissions::PredictionService;
+}
+
 // static
 permissions::PredictionService* PredictionServiceFactory::GetForProfile(
     Profile* profile) {
-  return static_cast<permissions::PredictionService*>(
+  if (GetInstance()->prediction_service_for_testing_.has_value()) {
+    return GetInstance()->prediction_service_for_testing_.value();
+  }
+  return static_cast<PredictionService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
@@ -21,6 +29,12 @@ permissions::PredictionService* PredictionServiceFactory::GetForProfile(
 PredictionServiceFactory* PredictionServiceFactory::GetInstance() {
   static base::NoDestructor<PredictionServiceFactory> instance;
   return instance.get();
+}
+
+void PredictionServiceFactory::set_prediction_service_for_testing(
+    permissions::PredictionService* service) {
+  CHECK_IS_TEST();
+  prediction_service_for_testing_ = service;
 }
 
 PredictionServiceFactory::PredictionServiceFactory()
