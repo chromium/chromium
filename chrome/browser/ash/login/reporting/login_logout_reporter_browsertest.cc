@@ -28,8 +28,7 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/login_logout_event.pb.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -174,11 +173,20 @@ class LoginLogoutReporterBrowserTest
  protected:
   LoginLogoutReporterBrowserTest() {
     login_manager_.set_session_restore_enabled();
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        kReportDeviceLoginLogout, true);
   }
 
   ~LoginLogoutReporterBrowserTest() override = default;
+
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    policy::DevicePolicyCrosBrowserTest::SetUpLocalStatePrefService(
+        local_state);
+
+    policy_helper_.device_policy()
+        ->payload()
+        .mutable_device_reporting()
+        ->set_report_login_logout(true);
+    policy_helper_.RefreshDevicePolicy();
+  }
 
   void SetUpOnMainThread() override {
     login_manager_.SetShouldLaunchBrowser(true);
@@ -210,8 +218,7 @@ class LoginLogoutReporterBrowserTest
                                      FakeGaiaMixin::kFakeUserGaiaId)};
 
   LoginManagerMixin login_manager_{&mixin_host_, {test_user_}};
-
-  ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  policy::DevicePolicyCrosTestHelper policy_helper_;
 };
 
 IN_PROC_BROWSER_TEST_F(LoginLogoutReporterBrowserTest,

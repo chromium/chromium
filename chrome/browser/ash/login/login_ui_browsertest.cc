@@ -43,6 +43,7 @@
 #include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/device_settings_cache_test_support.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
@@ -54,6 +55,8 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
+
+namespace em = enterprise_management;
 
 namespace ash {
 
@@ -130,17 +133,26 @@ class LoginUIConsumerTest : public LoginUITestBase {
   LoginUIConsumerTest() = default;
   ~LoginUIConsumerTest() override = default;
 
-  void SetUpOnMainThread() override {
-    scoped_testing_cros_settings_.device_settings()->Set(
-        kDeviceOwner, base::Value(owner_.account_id.GetUserEmail()));
-    LoginUITestBase::SetUpOnMainThread();
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    LoginUITestBase::SetUpLocalStatePrefService(local_state);
+
+    ash::device_settings_cache::Update(
+        local_state, [&](em::PolicyData& policy) {
+          policy.set_username(owner_.account_id.GetUserEmail());
+        });
+
+    policy_helper_.device_policy()->policy_data().set_username(
+        owner_.account_id.GetUserEmail());
+    policy_helper_.device_policy()->policy_data().set_management_mode(
+        em::PolicyData::LOCAL_OWNER);
+    policy_helper_.RefreshDevicePolicy();
   }
 
  protected:
   LoginManagerMixin::TestUserInfo owner_{login_manager_mixin_.users()[3]};
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED};
-  ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  policy::DevicePolicyCrosTestHelper policy_helper_;
 };
 
 // Verifies basic login UI properties.

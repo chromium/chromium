@@ -62,8 +62,6 @@
 #include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
@@ -2328,9 +2326,6 @@ class SAMLDeviceAttestationTest : public SamlTestBase {
   void SetDeviceContextAwareAccessSignalsAllowlistPolicy(
       const std::vector<std::string>& allowed_urls);
 
-  ScopedTestingCrosSettings settings_helper_;
-  raw_ptr<StubCrosSettingsProvider> settings_provider_ = nullptr;
-
   policy::DevicePolicyCrosTestHelper policy_helper_;
 
   attestation::MockMachineCertificateUploader mock_cert_uploader_;
@@ -2340,8 +2335,6 @@ class SAMLDeviceAttestationTest : public SamlTestBase {
 
 void SAMLDeviceAttestationTest::SetUpInProcessBrowserTestFixture() {
   SamlTestBase::SetUpInProcessBrowserTestFixture();
-
-  settings_provider_ = settings_helper_.device_settings();
 
   ON_CALL(mock_attestation_flow_, GetCertificate)
       .WillByDefault(WithArgs<7>(Invoke(FakeGetCertificateCallbackTrue)));
@@ -2360,12 +2353,15 @@ void SAMLDeviceAttestationTest::SetUpInProcessBrowserTestFixture() {
 
 void SAMLDeviceAttestationTest::SetAllowedUrlsPolicy(
     const std::vector<std::string>& allowed_urls) {
-  base::Value::List allowed_urls_values;
+  auto* allowed_url_container =
+      policy_helper_.device_policy()
+          ->payload()
+          .mutable_device_web_based_attestation_allowed_urls()
+          ->mutable_value();
   for (const auto& url : allowed_urls) {
-    allowed_urls_values.Append(url);
+    allowed_url_container->add_entries(url);
   }
-  settings_provider_->Set(kDeviceWebBasedAttestationAllowedUrls,
-                          base::Value(std::move(allowed_urls_values)));
+  policy_helper_.RefreshDevicePolicy();
 }
 
 void SAMLDeviceAttestationTest::

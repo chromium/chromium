@@ -476,6 +476,7 @@ source_set("browser_tests") {
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/settings:test_support",
     "//chromeos/ash/components/system",
     "//chromeos/ash/components/timezone",
     "//chromeos/ash/components/tpm",
