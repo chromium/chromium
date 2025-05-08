@@ -5,10 +5,11 @@
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
 
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_visibility_observer.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/non_overflowing_scroll_range.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 
@@ -83,6 +84,23 @@ AnchorPositionScrollData::ComputeAdjustmentContainersData(
     return container;
   };
 
+  auto may_need_scroll_adjustment = [](const LayoutBox* box) -> bool {
+    if (RuntimeEnabledFeatures::
+            AnchorPositionAdjustmentWithoutOverflowEnabled()) {
+      if (box->IsLayoutView()) {
+        // We may need to adjust scroll for overscroll effects, even if there
+        // is no scrollable overflow.
+        if (box->GetDocument()
+                .GetPage()
+                ->GetVisualViewport()
+                .GetOverscrollType() == OverscrollType::kTransform) {
+          return true;
+        }
+      }
+    }
+    return box->HasScrollableOverflow();
+  };
+
   const auto* anchor_element = DynamicTo<Element>(anchor.GetNode());
   CHECK(anchor_element);
   result.anchor_element = anchor_element;
@@ -103,8 +121,7 @@ AnchorPositionScrollData::ComputeAdjustmentContainersData(
       const PaintLayerScrollableArea* scrollable_area =
           To<LayoutBox>(container)->GetScrollableArea();
       if (container != anchor && container != bounding_container &&
-          // No need to adjust if the scroll container can't scroll anything.
-          To<LayoutBox>(container)->HasScrollableOverflow()) {
+          may_need_scroll_adjustment(To<LayoutBox>(container))) {
         result.adjustment_container_ids.push_back(
             scrollable_area->GetScrollElementId());
         result.accumulated_adjustment += PhysicalOffset::FromVector2dFFloor(

@@ -110,7 +110,7 @@ TEST_P(CompositingReasonFinderTest, UndoOverscroll) {
 }
 
 // Tests that an anchored-positioned fixpos element should overscroll if the
-// anchor cab be overscrolled, so that it keeps "attached" to the anchor.
+// anchor can be overscrolled, so that it keeps "attached" to the anchor.
 TEST_P(CompositingReasonFinderTest, FixedPosAnchorPosOverscroll) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -137,11 +137,29 @@ TEST_P(CompositingReasonFinderTest, FixedPosAnchorPosOverscroll) {
           *GetLayoutObjectByElementId("target")));
 
   visual_viewport.SetOverscrollTypeForTesting(OverscrollType::kTransform);
+  auto expected_reasons_with_overflow =
+      CompositingReason::kFixedPosition | CompositingReason::kAnchorPosition;
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_REASONS(
-      CompositingReason::kFixedPosition | CompositingReason::kAnchorPosition,
-      CompositingReasonFinder::DirectReasonsForPaintProperties(
-          *GetLayoutObjectByElementId("target")));
+  EXPECT_REASONS(expected_reasons_with_overflow,
+                 CompositingReasonFinder::DirectReasonsForPaintProperties(
+                     *GetLayoutObjectByElementId("target")));
+
+  // Adjust the body so that it does not scroll, but is still affected by
+  // elastic overscroll effects.
+  GetDocument().body()->setAttribute(html_names::kStyleAttr,
+                                     AtomicString("height: 50vh"));
+  UpdateAllLifecyclePhasesForTest();
+  // When AnchorPositionAdjustmentWithoutOverflow is enabled, the behavior
+  // should be the same as the non-overflow case because overflow effects are
+  // the same regardless of actual scrollable overflow.
+  auto expected_reasons_without_overflow =
+      RuntimeEnabledFeatures::AnchorPositionAdjustmentWithoutOverflowEnabled()
+          ? expected_reasons_with_overflow
+          : CompositingReason::kFixedPosition |
+                CompositingReason::kUndoOverscroll;
+  EXPECT_REASONS(expected_reasons_without_overflow,
+                 CompositingReasonFinder::DirectReasonsForPaintProperties(
+                     *GetLayoutObjectByElementId("target")));
 }
 
 // Tests that an anchored-positioned fixpos element should not overscroll if
@@ -185,6 +203,7 @@ TEST_P(CompositingReasonFinderTest, FixedPosAnchorPosUndoOverscroll) {
                  CompositingReasonFinder::DirectReasonsForPaintProperties(
                      *GetLayoutObjectByElementId("target")));
 }
+
 TEST_P(CompositingReasonFinderTest, OnlyAnchoredStickyPositionPromoted) {
   SetBodyInnerHTML(R"HTML(
     <style>

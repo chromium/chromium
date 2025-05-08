@@ -439,6 +439,13 @@
       base_feature: "none",
     },
     {
+      // Kill switch for https://crbug.com/415834974 which changes anchor
+      // positioning adjustments to occur even in cases where there is no
+      // scrollable overflow.
+      name: "AnchorPositionAdjustmentWithoutOverflow",
+      status: "stable",
+    },
+    {
       name: "AndroidDownloadableFontsMatching",
       base_feature: "none",
       public: true,
