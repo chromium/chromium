@@ -91,7 +91,6 @@
           "--ignore-benchmark-exit-code",
           "--output-format=histograms",
           "--experimental-tbmv3-metrics",
-          "--extra-path=/b/s/w/ir/bin/",
           "-d",
           "--os-check=ignore"
         ],
@@ -104,13 +103,6 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "fuchsia/third_party/openssh-portable/${platform}",
-              "location": ".",
-              "revision": "build_id:8787350426829126785"
-            }
-          ],
           "dimensions": {
             "cpu": null,
             "device_type": "Nelson",
@@ -147,7 +139,6 @@
           "--ignore-benchmark-exit-code",
           "--output-format=histograms",
           "--experimental-tbmv3-metrics",
-          "--extra-path=/b/s/w/ir/bin/",
           "-d",
           "--os-check=ignore"
         ],
@@ -160,13 +151,6 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "fuchsia/third_party/openssh-portable/${platform}",
-              "location": ".",
-              "revision": "build_id:8787350426829126785"
-            }
-          ],
           "dimensions": {
             "cpu": null,
             "device_type": "Sherlock",

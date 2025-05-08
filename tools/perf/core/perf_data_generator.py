@@ -220,22 +220,14 @@ FYI_BUILDERS = {
         'tests': [{
             'isolate':
             'performance_web_engine_test_suite',
-            'extra_args': [
-                '--output-format=histograms', '--experimental-tbmv3-metrics',
-                '--extra-path=/b/s/w/ir/bin/'
-            ] + bot_platforms.FUCHSIA_EXEC_ARGS['nelson'],
+            'extra_args':
+            ['--output-format=histograms', '--experimental-tbmv3-metrics'] +
+            bot_platforms.FUCHSIA_EXEC_ARGS['nelson'],
             'type':
             TEST_TYPES.TELEMETRY,
         }],
         'platform':
         'fuchsia-wes',
-        # TODO(crbug.com/40272046): Replace with long-term solution for ssh in Fuchsia img,
-        # or codify as long-term solution.
-        'cipd': {
-            "cipd_package": "fuchsia/third_party/openssh-portable/${platform}",
-            "location": ".",
-            "revision": "build_id:8787350426829126785"
-        },
         'dimension': {
             'cpu': None,
             'device_type': 'Nelson',
@@ -247,22 +239,14 @@ FYI_BUILDERS = {
         'tests': [{
             'isolate':
             'performance_web_engine_test_suite',
-            'extra_args': [
-                '--output-format=histograms', '--experimental-tbmv3-metrics',
-                '--extra-path=/b/s/w/ir/bin/'
-            ] + bot_platforms.FUCHSIA_EXEC_ARGS['sherlock'],
+            'extra_args':
+            ['--output-format=histograms', '--experimental-tbmv3-metrics'] +
+            bot_platforms.FUCHSIA_EXEC_ARGS['sherlock'],
             'type':
             TEST_TYPES.TELEMETRY,
         }],
         'platform':
         'fuchsia-wes',
-        # TODO(crbug.com/40272046): Replace with long-term solution for ssh in Fuchsia img,
-        # or codify as long-term solution.
-        'cipd': {
-            "cipd_package": "fuchsia/third_party/openssh-portable/${platform}",
-            "location": ".",
-            "revision": "build_id:8787350426829126785"
-        },
         'dimension': {
             'cpu': None,
             'device_type': 'Sherlock',
@@ -317,7 +301,8 @@ FYI_BUILDERS = {
         'dimension': {
             'pool': 'chrome.tests.perf',
             'os': 'Windows-11',
-            'cpu': 'arm64-64-Snapdragon(R)_X_Plus_-_X1P64100_-_Qualcomm(R)_Oryon(TM)_CPU',
+            'cpu':
+            'arm64-64-Snapdragon(R)_X_Plus_-_X1P64100_-_Qualcomm(R)_Oryon(TM)_CPU',
             'synthetic_product_name': 'Inspiron 14 Plus 7441 (Dell Inc.)'
         },
     },
@@ -337,7 +322,8 @@ FYI_BUILDERS = {
         'dimension': {
             'pool': 'chrome.tests.perf',
             'os': 'Windows-11',
-            'cpu': 'arm64-64-Snapdragon(R)_X_Elite_-_X1E80100_-_Qualcomm(R)_Oryon(TM)_CPU',
+            'cpu':
+            'arm64-64-Snapdragon(R)_X_Elite_-_X1E80100_-_Qualcomm(R)_Oryon(TM)_CPU',
             'synthetic_product_name': 'Latitude 7455 (Dell Inc.)'
         },
     },
