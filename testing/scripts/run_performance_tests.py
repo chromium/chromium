@@ -739,6 +739,7 @@ class CrossbenchTest(object):
 
   def __init__(self, options, isolated_out_dir):
     self.options = options
+    self._parse_arguments()
     self.isolated_out_dir = isolated_out_dir
     self.network = self._get_network_arg(options.passthrough_args)
     if self.options.luci_chromium:
@@ -751,7 +752,15 @@ class CrossbenchTest(object):
       browser_arg = _get_browser_arg(options.passthrough_args)
       self.is_android = _is_android(browser_arg)
       self._find_browser(browser_arg)
-      self.driver_path_arg = self._find_chromedriver()
+
+  def _parse_arguments(self):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--official-browser',
+                        type=str,
+                        required=False,
+                        help='Use official build of the browser')
+    self.cb_options, self.options.passthrough_args = parser.parse_known_args(
+        self.options.passthrough_args)
 
   def _get_network_arg(self, args):
     if _arg := _get_arg(args, '--network='):
@@ -818,6 +827,14 @@ class CrossbenchTest(object):
         arg for arg in self.options.passthrough_args
         if not arg.startswith('--browser=')
     ]
+    if self.cb_options.official_browser:
+      if self.is_android:
+        raise RuntimeError(
+            'Running official build not yet supported on Android')
+      self.browser = self.CHROME_BROWSER % self.cb_options.official_browser
+      self.driver_path_arg = []
+      return
+    self.driver_path_arg = self._find_chromedriver()
     if '/' in browser_arg or '\\' in browser_arg:
       # The --browser arg looks like a path. Use it as-is.
       self.browser = self.CHROME_BROWSER % browser_arg

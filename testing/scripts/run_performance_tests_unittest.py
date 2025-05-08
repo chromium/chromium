@@ -412,6 +412,23 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     expected_browser = crossbench_test.CHROME_BROWSER % expected_hjson
     self.assertEqual(crossbench_test.network, expected_browser)
 
+  def testCrossbenchOfficialBrowser(self):
+    fake_args = _create_crossbench_args()
+    fake_args.append('--official-browser=chrome-stable-1.2.3.4')
+    options = run_performance_tests.parse_arguments(fake_args)
+
+    cb_test = run_performance_tests.CrossbenchTest(options, 'dir')
+    command_list = cb_test._generate_command_list(
+        cb_test.options.benchmarks, cb_test.options.passthrough_args, 'dir')
+
+    self.assertIn('--browser=chrome-stable-1.2.3.4', command_list)
+    # The --official-browser arg should have been removed from command_list.
+    self.assertFalse(
+        [x for x in command_list if x.startswith('--official-browser')])
+    # Crossbench should find the official build of WebDriver, instead of using
+    # a path from us.
+    self.assertFalse([x for x in command_list if x.startswith('--driver-path')])
+
 
 def _create_crossbench_args(browser='./chrome'):
   return [
