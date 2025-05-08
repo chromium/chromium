@@ -949,17 +949,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Permissions.PredictionService.PredictionThresholdSource"
-    enum="PermissionPredictionThresholdSource" expires_after="2025-01-05">
-  <owner>ravjit@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Recorded whenever on-device Permissions prediciton service model is
-    executed. Records if the threshold value for the non-grant score is obtained
-    from the model's metadata or if the default fallback was used.
-  </summary>
-</histogram>
-
 <histogram name="Permissions.PredictionService.Response.{PermissionType}"
     enum="BooleanIgnored" expires_after="2025-09-14">
   <owner>ravjit@chromium.org</owner>
