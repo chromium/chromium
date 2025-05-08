@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef SERVICES_NETWORK_P2P_SOCKET_TEST_UTILS_H_
 #define SERVICES_NETWORK_P2P_SOCKET_TEST_UTILS_H_
 
@@ -15,9 +10,11 @@
 #include <list>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -68,7 +65,7 @@ class FakeSocket : public net::StreamSocket {
   ~FakeSocket() override;
 
   void set_async_write(bool async_write) { async_write_ = async_write; }
-  void AppendInputData(const char* data, int data_size);
+  void AppendInputData(std::string_view data);
   int input_pos() const { return input_pos_; }
   bool read_pending() const { return read_pending_; }
   void SetPeerAddress(const net::IPEndPoint& peer_address);
@@ -189,8 +186,7 @@ MATCHER_P2(MatchSendPacketMetrics, rtc_packet_id, test_start_time, "") {
 
 // Creates a GMock matcher that matches `base::span` to `std::vector`.
 MATCHER_P(SpanEq, expected, "") {
-  std::vector<uint8_t> result(arg.data(), arg.data() + arg.size());
-  return result == expected;
+  return arg == base::as_byte_span(expected);
 }
 
 }  // namespace network

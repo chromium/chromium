@@ -197,7 +197,8 @@ TEST_F(P2PSocketTcpTest, ReceiveStun) {
   size_t step = 0;
   while (pos < received_data.size()) {
     size_t step_size = std::min(step_sizes[step], received_data.size() - pos);
-    socket_->AppendInputData(&received_data[pos], step_size);
+    socket_->AppendInputData(
+        std::string_view(received_data).substr(pos, step_size));
     pos += step_size;
     if (++step >= std::size(step_sizes))
       step = 0;
@@ -240,7 +241,7 @@ TEST_F(P2PSocketTcpTest, SendAfterStunRequest) {
 
   EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
   EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(request_packet), _));
-  socket_->AppendInputData(&received_data[0], received_data.size());
+  socket_->AppendInputData(received_data);
 
   webrtc::AsyncSocketPacketOptions options;
   // Now we should be able to send any data to |dest_|.
@@ -324,7 +325,7 @@ TEST_F(P2PSocketTcpTest, SendDataWithPacketOptions) {
   EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(1);
   EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
   EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(request_packet), _));
-  socket_->AppendInputData(&received_data[0], received_data.size());
+  socket_->AppendInputData(received_data);
 
   webrtc::AsyncSocketPacketOptions options;
   options.packet_time_params.rtp_sendtime_extension_id = 3;
@@ -353,13 +354,13 @@ TEST_F(P2PSocketTcpTest, IgnoreEmptyFrame) {
   std::string received_data;
   received_data.append(IntToSize(response_packet.size()));
   received_data.append(response_packet.begin(), response_packet.end());
-  socket_->AppendInputData(&received_data[0], received_data.size());
+  socket_->AppendInputData(received_data);
 
   std::vector<uint8_t> empty_packet;
   received_data.resize(0);
   received_data.append(IntToSize(empty_packet.size()));
   received_data.append(empty_packet.begin(), empty_packet.end());
-  socket_->AppendInputData(&received_data[0], received_data.size());
+  socket_->AppendInputData(received_data);
   EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(0);
   EXPECT_CALL(*this, SinglePacketReceptionHelper(_, _, _)).Times(0);
 }
@@ -425,7 +426,8 @@ TEST_F(P2PSocketStunTcpTest, ReceiveStun) {
   size_t step = 0;
   while (pos < received_data.size()) {
     size_t step_size = std::min(step_sizes[step], received_data.size() - pos);
-    socket_->AppendInputData(&received_data[pos], step_size);
+    socket_->AppendInputData(
+        std::string_view(received_data).substr(pos, step_size));
     pos += step_size;
     if (++step >= std::size(step_sizes))
       step = 0;

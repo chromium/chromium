@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/p2p/socket_udp.h"
 
 #include <stdint.h>
@@ -20,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -119,14 +115,15 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
     CHECK(recv_callback_.is_null());
     if (incoming_packets_.size() > 0) {
       scoped_refptr<net::IOBuffer> buffer(buf);
-      int size = std::min(
-          static_cast<int>(std::get<1>(incoming_packets_.front()).size()),
-          buf_len);
-      memcpy(buffer->data(), &*(std::get<1>(incoming_packets_.front())).begin(),
-             size);
-      *address = std::get<0>(incoming_packets_.front());
-      std::optional<uint64_t> received_time =
-          std::get<2>(incoming_packets_.front());
+      const UDPPacket& front_packet = incoming_packets_.front();
+      const std::vector<uint8_t>& front_packet_data = std::get<1>(front_packet);
+
+      size_t size = std::min(front_packet_data.size(),
+                             base::checked_cast<size_t>(buf_len));
+      buffer->span().copy_prefix_from(
+          base::span(front_packet_data).first(size));
+      *address = std::get<0>(front_packet);
+      std::optional<uint64_t> received_time = std::get<2>(front_packet);
       if (received_time) {
         fake_clock_ptr_->SetTimeNanos(*received_time);
       }
@@ -146,8 +143,11 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
              const net::IPEndPoint& address,
              net::CompletionOnceCallback callback) override {
     scoped_refptr<net::IOBuffer> buffer(buf);
-    std::vector<uint8_t> data_vector(buffer->data(), buffer->data() + buf_len);
-    sent_packets_->push_back(UDPPacket(address, data_vector, std::nullopt));
+    base::span<const uint8_t> to_write =
+        buffer->first(base::checked_cast<size_t>(buf_len));
+    std::vector<uint8_t> data_vector(to_write.begin(), to_write.end());
+    sent_packets_->push_back(
+        UDPPacket(address, std::move(data_vector), std::nullopt));
     return buf_len;
   }
 
@@ -182,14 +182,14 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
   void FireRecvCallback() {
     if (!recv_callback_.is_null()) {
       DCHECK(!incoming_packets_.empty());
-      int size = std::min(
-          recv_size_,
-          static_cast<int>(std::get<1>(incoming_packets_.front()).size()));
-      memcpy(recv_buffer_->data(),
-             &*std::get<1>(incoming_packets_.front()).begin(), size);
-      *recv_address_ = std::get<0>(incoming_packets_.front());
-      std::optional<uint64_t> received_time =
-          std::get<2>(incoming_packets_.front());
+      const UDPPacket& front_packet = incoming_packets_.front();
+      const auto& front_packet_data = std::get<1>(front_packet);
+      size_t size = std::min(base::checked_cast<size_t>(recv_size_),
+                             front_packet_data.size());
+      recv_buffer_->span().copy_prefix_from(
+          base::span(front_packet_data).first(size));
+      *recv_address_ = std::get<0>(front_packet);
+      std::optional<uint64_t> received_time = std::get<2>(front_packet);
       if (received_time) {
         fake_clock_ptr_->SetTimeNanos(*received_time);
       }
