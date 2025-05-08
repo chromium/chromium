@@ -188,9 +188,9 @@ struct CC_EXPORT EffectNode {
   // True if a backdrop effect may be present on this effect (and therefore
   // any side-effects on ancestors should be taken into account).
   bool may_have_backdrop_effect : 1 = false;
-  // Whether this effect is related to a non-identity 2D scale transform (and no
-  // other transform).
-  bool has_2d_scale_transform : 1 = false;
+  // Whether this effect is triggered by a non-identity 2D scale transform
+  // (and no other transform).
+  bool needs_effect_for_2d_scale_transform : 1 = false;
   // RenderSurfaceReason::kNone if this effect node should not create a render
   // surface, or the reason that this effect node should create one.
   RenderSurfaceReason render_surface_reason = RenderSurfaceReason::kNone;

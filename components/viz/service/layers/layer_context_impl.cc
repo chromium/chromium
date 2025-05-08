@@ -235,7 +235,8 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   node.subtree_has_copy_request = wire.subtree_has_copy_request;
   node.is_fast_rounded_corner = wire.is_fast_rounded_corner;
   node.may_have_backdrop_effect = wire.may_have_backdrop_effect;
-  node.has_2d_scale_transform = wire.has_2d_scale_transform;
+  node.needs_effect_for_2d_scale_transform =
+      wire.needs_effect_for_2d_scale_transform;
 
   return base::ok();
 }

@@ -988,8 +988,9 @@ int PropertyTreeManager::SynthesizeCcEffectsForClipsIfNeeded(
     // Exit all synthetic effect node if the next child has backdrop effect
     // (exotic blending mode or backdrop filter) because it has to access the
     // backdrop of enclosing effect.
-    while (IsCurrentCcEffectSynthetic())
+    while (IsCurrentCcEffectSynthetic()) {
       CloseCcEffect();
+    }
 
     // An effect node can't omit render surface if it has child with backdrop
     // effect, in order to define the scope of the backdrop.
@@ -1306,7 +1307,8 @@ void PropertyTreeManager::PopulateCcEffectNode(
   effect_node.opacity = effect.Opacity();
   const auto& transform = effect.LocalTransformSpace().Unalias();
   effect_node.transform_id = EnsureCompositorTransformNode(transform);
-  effect_node.has_2d_scale_transform = effect.Has2DScaleTransform();
+  effect_node.needs_effect_for_2d_scale_transform =
+      effect.NeedsEffectFor2DScaleTransform();
   if (effect.MayHaveBackdropEffect()) {
     effect_node.may_have_backdrop_effect = true;
     // We never have backdrop effect and filter on the same effect node.
@@ -1339,7 +1341,6 @@ void PropertyTreeManager::UpdateConditionalRenderSurfaceReasons(
   Vector<int> effect_layer_counts(tree_size);
   Vector<bool> has_text(tree_size);
   Vector<bool> has_child_surface(tree_size);
-  Vector<bool> has_backdrop_effect_descendant(tree_size);
   // Initialize the vector to count directly controlled layers.
   for (const auto& layer : layers) {
     if (layer->draws_content()) {
@@ -1357,8 +1358,7 @@ void PropertyTreeManager::UpdateConditionalRenderSurfaceReasons(
 
     if (RuntimeEnabledFeatures::RenderSurfaceFor2DScaleTransformEnabled() &&
         effect->render_surface_reason == cc::RenderSurfaceReason::kNone &&
-        !has_backdrop_effect_descendant[id] &&
-        !effect->may_have_backdrop_effect && effect->has_2d_scale_transform &&
+        effect->needs_effect_for_2d_scale_transform &&
         effect_layer_counts[id] >= 2 && !has_text[id]) {
       effect->render_surface_reason =
           cc::RenderSurfaceReason::k2DScaleTransformWithCompositedDescendants;
@@ -1389,11 +1389,6 @@ void PropertyTreeManager::UpdateConditionalRenderSurfaceReasons(
       effect_layer_counts[effect->parent_id] += effect_layer_counts[id];
       has_child_surface[effect->parent_id] |= has_child_surface[id];
       has_text[effect->parent_id] |= has_text[id];
-    }
-
-    if (effect->may_have_backdrop_effect ||
-        has_backdrop_effect_descendant[id]) {
-      has_backdrop_effect_descendant[effect->parent_id] = true;
     }
 
 #if DCHECK_IS_ON()

@@ -399,9 +399,9 @@ struct EffectNode {
   // True if a backdrop effect may be present on this effect (and therefore
   // any side-effects on ancestors should be taken into account).
   bool may_have_backdrop_effect;
-  // Whether this effect is related to a non-identity 2D scale transform (and no
-  // other transform).
-  bool has_2d_scale_transform;
+  // Whether this effect is triggered by a non-identity 2D scale transform
+  // (and no other transform).
+  bool needs_effect_for_2d_scale_transform;
 
   // The CopyOutputRequests that have been made for this node.
   array<CopyOutputRequest> copy_output_requests;

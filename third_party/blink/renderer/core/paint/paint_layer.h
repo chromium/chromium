@@ -421,6 +421,11 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     DCHECK(!needs_descendant_dependent_flags_update_);
     return has_self_painting_layer_descendant_;
   }
+  bool HasBackdropFilterDescendant() const {
+    DCHECK(!needs_descendant_dependent_flags_update_);
+    return has_backdrop_filter_descendant_;
+    ;
+  }
 
   // See
   // PaintLayerStackingNode::layer_to_overlay_overflow_controls_painting_after_.
@@ -750,6 +755,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   unsigned is_under_svg_hidden_container_ : 1;
 
   unsigned has_self_painting_layer_descendant_ : 1;
+
+  unsigned has_backdrop_filter_descendant_ : 1;
 
   unsigned needs_reorder_overlay_overflow_controls_ : 1;
   unsigned static_inline_edge_ : 2;

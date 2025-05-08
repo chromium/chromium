@@ -1560,7 +1560,21 @@ bool FragmentPaintPropertyTreeBuilder::NeedsEffectFor2DScaleTransform() const {
     return false;
   }
 
-  return has_scale2d_transform_ && !has_non_scale2d_transform_;
+  if (!has_scale2d_transform_ || has_non_scale2d_transform_) {
+    return false;
+  }
+
+  if (To<LayoutBoxModelObject>(object_)
+          .Layer()
+          ->HasBackdropFilterDescendant()) {
+    return false;
+  }
+
+  if (object_.StyleRef().HasNonInitialBackdropFilter()) {
+    return false;
+  }
+
+  return true;
 }
 
 static bool NeedsEffectIgnoringClipPathAnd2DScale(
@@ -1737,7 +1751,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
         }
       }
 
-      state.has_2d_scale_transform = NeedsEffectFor2DScaleTransform();
+      state.needs_effect_for_2d_scale_transform =
+          NeedsEffectFor2DScaleTransform();
 
       state.direct_compositing_reasons =
           full_context_.direct_compositing_reasons &
@@ -4075,7 +4090,7 @@ bool PaintPropertyTreeBuilder::CanDoDeferredTransformNodeUpdate(
     // the fast path. (However, we intentionally allow the fast path to
     // happen when changing *to* a scale transform, to avoid performance
     // problems detecting this situation.
-    if (effect->Has2DScaleTransform()) {
+    if (effect->NeedsEffectFor2DScaleTransform()) {
       return false;
     }
   }

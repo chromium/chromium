@@ -192,7 +192,8 @@ void ComputePropertyTreeNodeUpdate(
       old_node->lcd_text_disallowed_by_backdrop_filter ==
           new_node.lcd_text_disallowed_by_backdrop_filter &&
       old_node->may_have_backdrop_effect == new_node.may_have_backdrop_effect &&
-      old_node->has_2d_scale_transform == new_node.has_2d_scale_transform &&
+      old_node->needs_effect_for_2d_scale_transform ==
+          new_node.needs_effect_for_2d_scale_transform &&
       copy_requests.empty()) {
     return;
   }
@@ -234,7 +235,8 @@ void ComputePropertyTreeNodeUpdate(
   wire->subtree_has_copy_request = new_node.subtree_has_copy_request;
   wire->is_fast_rounded_corner = new_node.is_fast_rounded_corner;
   wire->may_have_backdrop_effect = new_node.may_have_backdrop_effect;
-  wire->has_2d_scale_transform = new_node.has_2d_scale_transform;
+  wire->needs_effect_for_2d_scale_transform =
+      new_node.needs_effect_for_2d_scale_transform;
 
   container.push_back(std::move(wire));
 }

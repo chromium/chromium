@@ -218,6 +218,54 @@ TEST_P(PaintLayerTest, HasSelfPaintingDescendant) {
   EXPECT_FALSE(child->HasSelfPaintingLayerDescendant());
 }
 
+TEST_P(PaintLayerTest, HasBackdropFilterDescendantChild) {
+  SetBodyInnerHTML(R"HTML(
+    <div id='parent' style='position: relative'>
+      <div id='child' style='backdrop-filter: blur(1px)'>
+        <div></div>
+      </div>
+    </div>
+  )HTML");
+  PaintLayer* parent = GetPaintLayerByElementId("parent");
+  PaintLayer* child = GetPaintLayerByElementId("child");
+
+  EXPECT_TRUE(parent->HasBackdropFilterDescendant());
+  EXPECT_FALSE(child->HasBackdropFilterDescendant());
+}
+
+TEST_P(PaintLayerTest, HasBackdropFilterGrandchild) {
+  SetBodyInnerHTML(R"HTML(
+    <div id='parent' style='position: relative'>
+      <div id='child' style='position: relative'>
+        <div id='grandchild'
+          style='backdrop-filter: blur(1px)'></div>
+      </div>
+    </div>
+  )HTML");
+  PaintLayer* parent = GetPaintLayerByElementId("parent");
+  PaintLayer* child = GetPaintLayerByElementId("child");
+  PaintLayer* grandchild = GetPaintLayerByElementId("grandchild");
+
+  EXPECT_TRUE(parent->HasBackdropFilterDescendant());
+  EXPECT_TRUE(child->HasBackdropFilterDescendant());
+  EXPECT_FALSE(grandchild->HasBackdropFilterDescendant());
+}
+
+TEST_P(PaintLayerTest, HasBackdropFilterNone) {
+  SetBodyInnerHTML(R"HTML(
+    <div id='parent' style='position: relative'>
+      <div id='child' style='position: relative'>
+        <div></div>
+      </div>
+    </div>
+  )HTML");
+  PaintLayer* parent = GetPaintLayerByElementId("parent");
+  PaintLayer* child = GetPaintLayerByElementId("child");
+
+  EXPECT_FALSE(parent->HasBackdropFilterDescendant());
+  EXPECT_FALSE(child->HasBackdropFilterDescendant());
+}
+
 TEST_P(PaintLayerTest, HasSelfPaintingDescendantNotSelfPainting) {
   SetBodyInnerHTML(R"HTML(
     <div id='parent' style='position: relative'>
