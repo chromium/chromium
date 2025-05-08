@@ -1910,9 +1910,6 @@ extern const char kSubframeProcessReuseThresholdsDescription[];
 extern const char kPrerender2EarlyDocumentLifecycleUpdateName[];
 extern const char kPrerender2EarlyDocumentLifecycleUpdateDescription[];
 
-extern const char kWarmUpCompositorName[];
-extern const char kWarmUpCompositorDescription[];
-
 extern const char kPrerender2ForNewTabPageAndroidName[];
 extern const char kPrerender2ForNewTabPageAndroidDescription[];
 

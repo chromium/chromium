@@ -99,7 +99,6 @@ void Scheduler::SetVisible(bool visible) {
 }
 
 void Scheduler::SetShouldWarmUp() {
-  CHECK(base::FeatureList::IsEnabled(features::kWarmUpCompositor));
   state_machine_.SetShouldWarmUp();
   ProcessScheduledActions();
 }

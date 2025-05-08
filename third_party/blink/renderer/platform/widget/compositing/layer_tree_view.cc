@@ -339,10 +339,9 @@ void LayerTreeView::RequestNewLayerTreeFrameSink() {
   // When the compositor is not visible it would not request a
   // LayerTreeFrameSink so this is a race where it requested one on the
   // compositor thread while becoming non-visible on the main thread. In that
-  // case, we can wait for it to become visible again before replying. If
-  // `kWarmUpCompositor` is enabled and warm-up is triggered, a
-  // LayerTreeFrameSink is requested even if non-visible state. We can ignore
-  // this branch in that case. If not enabled, `ShouldWarmUp()` is always false.
+  // case, we can wait for it to become visible again before replying.
+  // If the warm-up is triggered, a LayerTreeFrameSink is requested even if
+  // non-visible state. We can ignore this branch in that case.
   if (!layer_tree_host_->ShouldWarmUp() && !layer_tree_host_->IsVisible()) {
     frame_sink_state_ = FrameSinkState::kRequestBufferedInvisible;
     return;
@@ -371,10 +370,8 @@ void LayerTreeView::DidFailToInitializeLayerTreeFrameSink() {
   // LayerTreeFrameSink is being processed, then if it fails we would arrive
   // here. Since the compositor does not request a LayerTreeFrameSink while not
   // visible, we can delay trying again until becoming visible again.
-  // If `kWarmUpCompositor` is enabled and warm-up is
-  // triggered, a LayerTreeFrameSink is requested even if non-visible state. We
-  // can ignore this branch in that case. If not enabled, `ShouldWarmUp()` is
-  // always false.
+  // If the warm-up is triggered, a LayerTreeFrameSink is requested even if
+  // non-visible state. We can ignore this branch in that case.
   if (!layer_tree_host_->ShouldWarmUp() && !layer_tree_host_->IsVisible()) {
     frame_sink_state_ = FrameSinkState::kRequestBufferedInvisible;
     return;

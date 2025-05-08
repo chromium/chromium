@@ -852,16 +852,12 @@ bool LayerTreeHost::IsVisible() const {
 
 void LayerTreeHost::SetShouldWarmUp() {
   DCHECK(IsMainThread());
-  CHECK(base::FeatureList::IsEnabled(features::kWarmUpCompositor));
   should_warm_up_ = true;
   proxy_->SetShouldWarmUp();
 }
 
 bool LayerTreeHost::ShouldWarmUp() const {
   DCHECK(IsMainThread());
-  if (!base::FeatureList::IsEnabled(features::kWarmUpCompositor)) {
-    return false;
-  }
   return should_warm_up_;
 }
 

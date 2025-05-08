@@ -106,12 +106,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDontAlwaysPushPictureLayerImpls);
 // image map.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kPreserveDiscardableImageMapQuality);
 
-// When enabled, the renderer asks the compositor to request warming up and
-// create FrameSink speculatively even if invisible. Currently, this is intended
-// to be used when prerender initial navigation is happening in background.
-// Please see crbug.com/41496019 for more details.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kWarmUpCompositor);
-
 // Kill switch for a bunch of optimizations for cc-slimming project.
 // Please see crbug.com/335450599 for more details.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kCCSlimming);

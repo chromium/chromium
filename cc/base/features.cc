@@ -133,10 +133,6 @@ BASE_FEATURE(kPreserveDiscardableImageMapQuality,
              "PreserveDiscardableImageMapQuality",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWarmUpCompositor,
-             "WarmUpCompositor",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kCCSlimming, "CCSlimming", base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsCCSlimmingEnabled() {

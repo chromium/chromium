@@ -4178,20 +4178,9 @@ TEST_F(SchedulerTest, ProactiveThrottling) {
       scheduler_->state_machine().MainFrameThrottledInterval().is_zero());
 }
 
-class WarmUpCompositorSchedulerTest : public SchedulerTest {
- public:
-  WarmUpCompositorSchedulerTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kWarmUpCompositor);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Tests that `SetShouldWarmUp()` will start initial `LayerTreeFrameSink`
 // creation even if invisible.
-TEST_F(WarmUpCompositorSchedulerTest,
-       SetShouldWarmUpWillStartLayerTreeFrameSinkCreation) {
+TEST_F(SchedulerTest, SetShouldWarmUpWillStartLayerTreeFrameSinkCreation) {
   SetUpSchedulerWithNoLayerTreeFrameSink(EXTERNAL_BFS);
   scheduler_->SetVisible(false);
 

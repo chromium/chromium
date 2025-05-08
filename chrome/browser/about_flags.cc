@@ -8964,10 +8964,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          blink::features::kPrerender2EarlyDocumentLifecycleUpdate)},
 
-    {"warm-up-compositor", flag_descriptions::kWarmUpCompositorName,
-     flag_descriptions::kWarmUpCompositorDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kWarmUpCompositor)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"prerender2-new-tab-page-android",
      flag_descriptions::kPrerender2ForNewTabPageAndroidName,

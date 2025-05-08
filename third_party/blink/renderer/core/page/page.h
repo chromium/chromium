@@ -715,12 +715,8 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   bool is_prerendering_ = false;
   String prerender_metric_suffix_;
 
-  // If true, warms up compositor on a certain loading event if the page is
-  // under prerendering. Only valid when the cc feature `kWarmUpCompositor`
-  // (controls the independent cc internal feature) and blink feature
-  // `kPrerender2WarmUpCompositor` (manages the trigger point of that cc
-  // feature for prerender case) are enabled. Please see crbug.com/41496019 for
-  // more details.
+  // If true, warms up compositor on `WebLocalFrameImpl::DidCommitLoad` if the
+  // page is under prerendering.
   bool should_warm_up_compositor_on_prerender_ = false;
   // If true, prepares the paint tree if the page is under prerendering.
   bool should_prepare_paint_tree_on_prerender_ = false;

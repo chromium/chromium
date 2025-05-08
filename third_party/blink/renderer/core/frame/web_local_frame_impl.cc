@@ -2598,12 +2598,6 @@ WebViewImpl* WebLocalFrameImpl::ViewImpl() const {
 }
 
 bool WebLocalFrameImpl::ShouldWarmUpCompositor() {
-  static const bool is_warm_up_compositor_enabled =
-      base::FeatureList::IsEnabled(::features::kWarmUpCompositor);
-  if (!is_warm_up_compositor_enabled) {
-    return false;
-  }
-
   if (!GetFrame()->IsOutermostMainFrame()) {
     return false;
   }

@@ -3311,10 +3311,6 @@ const char kPrerender2EarlyDocumentLifecycleUpdateDescription[] =
     "Allows prerendering pages to execute more lifecycle updates, such as "
     "prepaint, before activation";
 
-const char kWarmUpCompositorName[] = "Warm up compositor";
-const char kWarmUpCompositorDescription[] =
-    "Allows compositor to start warming up on certain signals";
-
 const char kPrerender2ForNewTabPageAndroidName[] =
     "Enable prerendering on New Tab Page Android";
 const char kPrerender2ForNewTabPageAndroidDescription[] =
