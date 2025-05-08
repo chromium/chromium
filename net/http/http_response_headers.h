@@ -199,7 +199,7 @@ class NET_EXPORT HttpResponseHeaders
 
   // Adds a cookie header. |cookie_string| should be the header value without
   // the header name (Set-Cookie).
-  void AddCookie(const std::string& cookie_string);
+  void AddCookie(std::string_view cookie_string);
 
   // Replaces the current status line with the provided one (|new_status| should
   // not have any EOL).

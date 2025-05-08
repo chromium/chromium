@@ -580,7 +580,7 @@ void HttpResponseHeaders::SetHeader(std::string_view name,
   AddHeader(name, value);
 }
 
-void HttpResponseHeaders::AddCookie(const std::string& cookie_string) {
+void HttpResponseHeaders::AddCookie(std::string_view cookie_string) {
   AddHeader("Set-Cookie", cookie_string);
 }
 

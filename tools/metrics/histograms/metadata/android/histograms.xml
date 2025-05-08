@@ -7517,6 +7517,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Android.WebView.ShouldInterceptRequest.DidIncludeMultiCookieHeader"
+    enum="BooleanIncluded" expires_after="2026-05-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Logs whether the application used the option to provide multiple Set-Cookie
+    headers through WebResourceResponseCompat.
+
+    The histogram aims to track adoption of the new API to provide response
+    cookies through shouldInterceptRequest.
+
+    Logged when the application responds to shouldInterceptRequest calls for
+    either the WebView or service workers with a non-null response.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.ShouldInterceptRequest.DidOverride"
     enum="WebViewShouldInterceptRequestOverridden" expires_after="2026-03-01">
   <owner>peconn@chromium.org</owner>

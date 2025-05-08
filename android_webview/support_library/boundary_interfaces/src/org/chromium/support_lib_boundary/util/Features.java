@@ -358,5 +358,6 @@ public class Features {
     // WebSettingsCompat.getIncludeCookiesOnIntercept
     // ServiceWorkerWebSettingsCompat.setIncludeCookiesOnIntercept
     // ServiceWorkerWebSettingsCompat.getIncludeCookiesOnIntercept
+    // WebResourceResponseCompat.setCookieHeaderValues
     public static final String COOKIE_INTERCEPT = "COOKIE_INTERCEPT";
 }

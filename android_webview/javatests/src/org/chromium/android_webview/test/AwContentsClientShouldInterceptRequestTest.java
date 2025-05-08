@@ -50,9 +50,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -63,10 +65,16 @@ import java.util.function.Supplier;
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @Batch(Batch.PER_CLASS)
 public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedTest {
+
     @Rule public AwActivityTestRule mActivityTestRule;
 
     private static final int TEAPOT_STATUS_CODE = 418;
     private static final String TEAPOT_RESPONSE_PHRASE = "I'm a teapot";
+
+    // These constants should match the values in
+    // /components/embedder_support/android/util/web_resource_response.cc
+    private static final String MULTI_COOKIE_VALUE_SEPARATOR = "\0";
+    private static final String MULTI_COOKIE_HEADER_NAME = "\0Set-Cookie-Multivalue\0";
 
     private String addPageToTestServer(TestWebServer webServer, String httpPath, String html) {
         List<Pair<String, String>> headers = new ArrayList<Pair<String, String>>();
@@ -1409,36 +1417,63 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
     @Feature({"AndroidWebView", "Network"})
     public void testInterceptedCookieHeaders_readWriteEnabled() throws Throwable {
         mActivityTestRule.getAwSettingsOnUiThread(mAwContents).setIncludeCookiesOnIntercept(true);
-        HistogramWatcher histogramExpectation =
+        try (HistogramWatcher histogramExpectation =
                 HistogramWatcher.newBuilder()
-                        .expectAnyRecord(
+                        .expectAnyRecordTimes(
                                 "Android.WebView.ShouldInterceptRequest."
-                                        + "SetCookieHeader.TimeToRun")
+                                        + "SetCookieHeader.TimeToRun",
+                                3)
                         .expectAnyRecord(
                                 "Android.WebView.ShouldInterceptRequest."
                                         + "GetCookieHeader.PostMojo.TimeToRun")
-                        .build();
-        var cookieManager = mAwContents.getBrowserContextForPublicApi().getCookieManager();
-        final String destinationUrl = mWebServer.setResponse("/hello.txt", "", new ArrayList<>());
+                        .expectBooleanRecord(
+                                "Android.WebView.ShouldInterceptRequest."
+                                        + "DidIncludeMultiCookieHeader",
+                                true)
+                        .build()) {
+            var cookieManager = mAwContents.getBrowserContextForPublicApi().getCookieManager();
+            cookieManager.removeAllCookies();
+            final String destinationUrl =
+                    mWebServer.setResponse("/hello.txt", "", new ArrayList<>());
 
-        cookieManager.setCookie(destinationUrl, "blah=yo");
+            cookieManager.setCookie(destinationUrl, "blah=yo");
 
-        // Forcing a cookie to be set in the response
-        Map<String, String> responseHeaders = Map.of("set-cookie", "foo=bar");
-        mShouldInterceptRequestHelper.enqueueHtmlResponseForUrl(
-                destinationUrl, "hello", responseHeaders);
+            List<String> multiCookies = List.of("bar=baz", "baz=foo");
+            String multiCoookieString = String.join(MULTI_COOKIE_VALUE_SEPARATOR, multiCookies);
 
-        mActivityTestRule.loadUrlSync(
-                mAwContents, mContentsClient.getOnPageFinishedHelper(), destinationUrl);
+            // Forcing cookies to be set in the response.
+            // Ensures that the standard Set-Cookie header can be combined with multi-headers
+            // without collision.
+            Map<String, String> responseHeaders =
+                    Map.of("set-cookie", "foo=bar", MULTI_COOKIE_HEADER_NAME, multiCoookieString);
 
-        // These are the cookies that were sent before we set a new one.
-        var resourceRequest = mShouldInterceptRequestHelper.getRequestsForUrl(destinationUrl);
-        Assert.assertTrue(resourceRequest.getRequestHeaders().containsKey("Cookie"));
-        Assert.assertEquals("blah=yo", resourceRequest.getRequestHeaders().get("Cookie"));
+            mShouldInterceptRequestHelper.enqueueHtmlResponseForUrl(
+                    destinationUrl, "hello", responseHeaders);
 
-        // And then we should see our new value in the cookie manager.
-        Assert.assertEquals("blah=yo; foo=bar", cookieManager.getCookie(destinationUrl));
-        histogramExpectation.assertExpected();
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), destinationUrl);
+
+            // These are the cookies that were sent before we set a new one.
+            var resourceRequest = mShouldInterceptRequestHelper.getRequestsForUrl(destinationUrl);
+            Assert.assertTrue(resourceRequest.getRequestHeaders().containsKey("Cookie"));
+            Assert.assertEquals("blah=yo", resourceRequest.getRequestHeaders().get("Cookie"));
+
+            // And then we should see our new value in the cookie manager.
+            Set<String> cookies = getCookies(cookieManager, destinationUrl);
+            Assert.assertEquals(Set.of("blah=yo", "foo=bar", "bar=baz", "baz=foo"), cookies);
+            histogramExpectation.assertExpected();
+        }
+    }
+
+    private static Set<String> getCookies(AwCookieManager cookieManager, String destinationUrl) {
+        String cookie = cookieManager.getCookie(destinationUrl);
+        Assert.assertNotNull(cookie);
+        String[] split = cookie.split(";");
+        Set<String> cookies = new HashSet<>();
+        for (String s : split) {
+            cookies.add(s.trim());
+        }
+        return cookies;
     }
 
     @Test
@@ -1454,6 +1489,10 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
                         .expectNoRecords(
                                 "Android.WebView.ShouldInterceptRequest."
                                         + "GetCookieHeader.PostMojo.TimeToRun")
+                        .expectBooleanRecord(
+                                "Android.WebView.ShouldInterceptRequest."
+                                        + "DidIncludeMultiCookieHeader",
+                                false)
                         .build();
         var cookieManager = mAwContents.getBrowserContextForPublicApi().getCookieManager();
         final String destinationUrl = mWebServer.setResponse("/hello.txt", "", new ArrayList<>());
