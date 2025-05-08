@@ -332,10 +332,6 @@ void OverlayProcessorWin::ProcessOverlaysFromOutputSurfacePlane(
     CandidateList* candidates,
     gfx::Rect* root_damage_rect) {
   auto* root_render_pass = render_passes->back().get();
-  if (render_passes->back()->is_color_conversion_pass) {
-    DCHECK_GT(render_passes->size(), 1u);
-    root_render_pass = (*render_passes)[render_passes->size() - 2].get();
-  }
 
   DCLayerOverlayProcessor::RenderPassOverlayDataMap
       render_pass_overlay_data_map;
@@ -504,12 +500,6 @@ OverlayProcessorWin::TryDelegatedCompositing(
 
   if (root_render_pass->quad_list.size() > kTooManyQuads) {
     return base::unexpected(DelegationStatus::kCompositedTooManyQuads);
-  }
-
-  if (root_render_pass->is_color_conversion_pass) {
-    // We don't expect to handle a color conversion pass (e.g. for frames with
-    // HDR content) with delegated compositing. See: crbug.com/41497086
-    return base::unexpected(DelegationStatus::kCompositedOther);
   }
 
   DelegatedCompositingResult result;

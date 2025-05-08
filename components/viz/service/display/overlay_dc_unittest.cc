@@ -3280,22 +3280,6 @@ TEST_F(OverlayProcessorWinDelegatedCompositingTest, SkipNonVisibleOverlays) {
   EXPECT_THAT(result.candidates(), testing::IsEmpty());
 }
 
-// Check that delegated compositing fails when there is a color conversion pass.
-TEST_F(OverlayProcessorWinDelegatedCompositingTest, HdrNotSupported) {
-  AggregatedRenderPassList pass_list;
-
-  pass_list.push_back(CreateRenderPass(AggregatedRenderPassId{2}));
-
-  auto pass = CreateRenderPass();
-  pass->is_color_conversion_pass = true;
-  pass_list.push_back(std::move(pass));
-
-  damage_rect_ = pass_list.back()->damage_rect;
-
-  auto result = TryProcessForDelegatedOverlays(pass_list);
-  result.ExpectDelegationFailure();
-}
-
 // Check that delegated compositing fails when the root is being captured.
 TEST_F(OverlayProcessorWinDelegatedCompositingTest, CaptureNotSupported) {
   AggregatedRenderPassList pass_list;

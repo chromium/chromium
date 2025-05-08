@@ -1233,7 +1233,6 @@ void SurfaceAggregator::AddRootReadbackPass() {
   AddRenderPassHelper(readback_render_pass_id_, output_rect,
                       root_render_pass->damage_rect, root_content_color_usage_,
                       has_transparent_background,
-                      /*pass_is_color_conversion_pass=*/false,
                       /*quad_state_to_target_transform=*/gfx::Transform(),
                       /*quad_state_contents_opaque=*/false,
                       SkBlendMode::kSrcOver, root_render_pass->id);
@@ -1266,8 +1265,7 @@ void SurfaceAggregator::AddDisplayTransformPass() {
       cc::MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
           root_surface_transform_, root_render_pass->damage_rect),
       root_render_pass->content_color_usage,
-      root_render_pass->has_transparent_background,
-      /*pass_is_color_conversion_pass=*/false, root_surface_transform_,
+      root_render_pass->has_transparent_background, root_surface_transform_,
       are_contents_opaque, SkBlendMode::kSrcOver, root_render_pass->id);
 }
 
@@ -1277,7 +1275,6 @@ void SurfaceAggregator::AddRenderPassHelper(
     const gfx::Rect& render_pass_damage_rect,
     gfx::ContentColorUsage pass_color_usage,
     bool pass_has_transparent_background,
-    bool pass_is_color_conversion_pass,
     const gfx::Transform& quad_state_to_target_transform,
     bool quad_state_contents_opaque,
     SkBlendMode quad_state_blend_mode,
@@ -1294,7 +1291,6 @@ void SurfaceAggregator::AddRenderPassHelper(
                       /*cache_render_pass=*/false,
                       /*has_damage_from_contributing_content=*/false,
                       /*generate_mipmap=*/false);
-  render_pass->is_color_conversion_pass = pass_is_color_conversion_pass;
 
   auto* shared_quad_state = render_pass->CreateAndAppendSharedQuadState();
   shared_quad_state->SetAll(

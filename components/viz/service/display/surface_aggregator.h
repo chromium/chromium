@@ -268,7 +268,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
                            const gfx::Rect& render_pass_damage_rect,
                            gfx::ContentColorUsage pass_color_usage,
                            bool pass_has_transparent_background,
-                           bool pass_is_color_conversion_pass,
                            const gfx::Transform& quad_state_to_target_transform,
                            bool quad_state_contents_opaque,
                            SkBlendMode quad_state_blend_mode,

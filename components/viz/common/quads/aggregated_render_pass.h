@@ -101,9 +101,6 @@ class VIZ_COMMON_EXPORT AggregatedRenderPass : public RenderPassInternal {
   // The type of color content present in this RenderPass.
   gfx::ContentColorUsage content_color_usage = gfx::ContentColorUsage::kSRGB;
 
-  // Indicates current RenderPass is a color conversion pass.
-  bool is_color_conversion_pass = false;
-
   // |true| if this render pass, prior to aggregation, was the root pass of a
   // surface's resolved frame.
   // TODO(crbug.com/324460866): Used for partially delegated compositing.
