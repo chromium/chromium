@@ -11,6 +11,8 @@ import androidx.core.content.ContextCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.theme.ThemeModuleUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 
 /** Utilities related to new tab animations. */
@@ -18,6 +20,12 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 public class NewTabAnimationUtils {
     private static final float INITIAL_SCALE = 0.2f;
     private static final float FINAL_SCALE = 1.1f;
+
+    /** Returns whether to use new tab animations. */
+    public static boolean isNewTabAnimationEnabled() {
+        return ThemeModuleUtils.isForceEnableDependencies()
+                || ChromeFeatureList.sShowNewTabAnimations.isEnabled();
+    }
 
     /**
      * Returns the tab color for the new tab foreground animation.
