@@ -138,7 +138,7 @@ public final class MostVisitedTilesProcessorUnitTest {
                                             ? OmniboxSuggestionType.TILE_REPEATABLE_QUERY
                                             : OmniboxSuggestionType.TILE_MOST_VISITED_SITE)
                             .setIsSearch(tile.isSearch)
-                            .setDisplayText(tile.title)
+                            .setDescription(tile.title)
                             .setUrl(tile.url)
                             .build();
             mProcessor.populateModel(mInput, match, mPropertyModel, placement);

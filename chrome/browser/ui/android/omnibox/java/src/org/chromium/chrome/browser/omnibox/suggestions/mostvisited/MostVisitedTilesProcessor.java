@@ -127,11 +127,10 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
         super.populateModel(input, match, model, matchIndex);
 
         List<ListItem> tileList = model.get(BaseCarouselSuggestionViewProperties.TILES);
-
         String title =
-                TextUtils.isEmpty(match.getDisplayText())
+                TextUtils.isEmpty(match.getDescription())
                         ? match.getUrl().getHost()
-                        : match.getDisplayText();
+                        : match.getDescription();
         int tileIndex = tileList.size();
 
         var tileModel =
