@@ -295,7 +295,10 @@ class TabGridViewBinder {
         if (listener == null) {
             view.setOnClickListener(null);
         } else {
-            view.setOnClickListener(v -> runTabActionListener(listener, v, propertyModel));
+            view.setOnClickListener(
+                    v ->
+                            runTabActionListener(
+                                    listener, v, propertyModel, /* triggeringMotionEvent= */ null));
         }
     }
 
@@ -323,8 +326,12 @@ class TabGridViewBinder {
         view.setOnTouchListener(
                 new OnPeripheralClickListener(
                         view,
-                        /* onClickRunnable= */ () ->
-                                runTabActionListener(tabActionListener, view, propertyModel)));
+                        triggeringMotionEvent ->
+                                runTabActionListener(
+                                        tabActionListener,
+                                        view,
+                                        propertyModel,
+                                        triggeringMotionEvent)));
     }
 
     static void setNullableLongClickListener(
@@ -336,7 +343,8 @@ class TabGridViewBinder {
         } else {
             view.setOnLongClickListener(
                     v -> {
-                        runTabActionListener(listener, v, propertyModel);
+                        runTabActionListener(
+                                listener, v, propertyModel, /* triggeringMotionEvent= */ null);
                         return true;
                     });
         }
@@ -345,17 +353,16 @@ class TabGridViewBinder {
     private static void runTabActionListener(
             @NonNull TabActionListener tabActionListener,
             @NonNull View view,
-            @NonNull PropertyModel propertyModel) {
+            @NonNull PropertyModel propertyModel,
+            @Nullable MotionEvent triggeringMotionEvent) {
         if (propertyModel.containsKey(TabProperties.TAB_GROUP_SYNC_ID)) {
             tabActionListener.run(
                     view,
                     propertyModel.get(TabProperties.TAB_GROUP_SYNC_ID),
-                    /* triggeringMotionEvent= */ null);
+                    triggeringMotionEvent);
         } else {
             tabActionListener.run(
-                    view,
-                    propertyModel.get(TabProperties.TAB_ID),
-                    /* triggeringMotionEvent= */ null);
+                    view, propertyModel.get(TabProperties.TAB_ID), triggeringMotionEvent);
         }
     }
 
@@ -587,7 +594,7 @@ class TabGridViewBinder {
      * An {@link OnTouchListener} to detect a click from peripherals.
      *
      * <p>If a {@link MotionEvent} comes from a peripheral, this listener will consume it. Then, if
-     * the event completes a click action, the {@code onClickRunnable} will be run.
+     * the event completes a click action, the {@link OnPeripheralClickRunnable} will be run.
      *
      * <p>If a {@link MotionEvent} doesn't come from a peripheral, this listener is a no-op. It
      * won't consume or interpret the event.
@@ -597,7 +604,8 @@ class TabGridViewBinder {
 
         @NonNull private final GestureDetector mGestureDetector;
 
-        OnPeripheralClickListener(@NonNull View view, @NonNull Runnable onClickRunnable) {
+        OnPeripheralClickListener(
+                @NonNull View view, @NonNull OnPeripheralClickRunnable onPeripheralClickRunnable) {
             mGestureDetector =
                     new GestureDetector(
                             view.getContext(),
@@ -605,7 +613,7 @@ class TabGridViewBinder {
 
                                 @Override
                                 public boolean onSingleTapUp(@NonNull MotionEvent e) {
-                                    onClickRunnable.run();
+                                    onPeripheralClickRunnable.run(e);
                                     return true;
                                 }
                             });
@@ -620,6 +628,16 @@ class TabGridViewBinder {
 
             mGestureDetector.onTouchEvent(event);
             return true;
+        }
+
+        interface OnPeripheralClickRunnable {
+
+            /**
+             * Called when a peripheral click is detected.
+             *
+             * @param triggeringMotionEvent {@link MotionEvent} that triggered the click.
+             */
+            void run(@NonNull MotionEvent triggeringMotionEvent);
         }
     }
 }

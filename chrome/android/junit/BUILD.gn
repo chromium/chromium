@@ -67,6 +67,7 @@ if (is_android) {
       "//chrome/android:usage_stats_proto_java",
       "//chrome/android/features/keyboard_accessory:internal_java",
       "//chrome/android/features/tab_ui:java_resources",
+      "//chrome/android/features/tab_ui:test_support_javalib",
       "//chrome/android/features/tab_ui/public:java",
       "//chrome/android/features/tab_ui/public:ui_java_resources",
       "//chrome/android/webapk/libs/client:client_java",

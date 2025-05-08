@@ -32,7 +32,12 @@ import static org.chromium.components.browser_ui.widget.RecyclerViewTestUtils.wa
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.SystemClock;
 import android.provider.Settings;
+import android.view.InputDevice;
+import android.view.MotionEvent;
+import android.view.MotionEvent.PointerCoords;
+import android.view.MotionEvent.PointerProperties;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -284,12 +289,23 @@ public class TabUiTestHelper {
     }
 
     /**
-     * Close the Nth tab in grid tab switcher.
+     * Closes the Nth tab in grid tab switcher.
      *
-     * @param context The activity context.
-     * @param index The index of the target tab to close.
+     * @see #closeNthTabInTabSwitcher(Context, int, boolean)
      */
     static void closeNthTabInTabSwitcher(Context context, int index) {
+        closeNthTabInTabSwitcher(context, index, /* performMouseClick= */ false);
+    }
+
+    /**
+     * Closes the Nth tab in grid tab switcher.
+     *
+     * @param context the Activity context.
+     * @param index the index of the tab to close.
+     * @param performMouseClick whether to click the close button by simulating {@link MotionEvent}s
+     *     from a mouse.
+     */
+    static void closeNthTabInTabSwitcher(Context context, int index, boolean performMouseClick) {
         onView(
                         allOf(
                                 isDescendantOfA(withId(getTabSwitcherAncestorId(context))),
@@ -312,9 +328,63 @@ public class TabUiTestHelper {
                                 RecyclerView.ViewHolder viewHolder =
                                         recyclerView.findViewHolderForAdapterPosition(index);
                                 assert viewHolder != null;
-                                viewHolder.itemView.findViewById(R.id.action_button).performClick();
+
+                                View actionButton =
+                                        viewHolder.itemView.findViewById(R.id.action_button);
+                                if (!performMouseClick) {
+                                    actionButton.performClick();
+                                    return;
+                                }
+
+                                long motionDownTime = SystemClock.uptimeMillis();
+                                actionButton.dispatchTouchEvent(
+                                        createMouseMotionEvent(
+                                                motionDownTime,
+                                                /* eventTime= */ motionDownTime,
+                                                MotionEvent.ACTION_DOWN,
+                                                /* x= */ 0.0f,
+                                                /* y= */ 0.0f));
+                                actionButton.dispatchTouchEvent(
+                                        createMouseMotionEvent(
+                                                motionDownTime,
+                                                /* eventTime= */ motionDownTime + 200,
+                                                MotionEvent.ACTION_UP,
+                                                /* x= */ 0.0f,
+                                                /* y= */ 0.0f));
                             }
                         });
+    }
+
+    /**
+     * Creates a {@link MotionEvent} that matches one from a mouse.
+     *
+     * <p>All parameters are for {@link MotionEvent#obtain}.
+     */
+    static MotionEvent createMouseMotionEvent(
+            long downTime, long eventTime, int action, float x, float y) {
+        PointerProperties pointerProperties = new MotionEvent.PointerProperties();
+        pointerProperties.id = 0;
+        pointerProperties.toolType = MotionEvent.TOOL_TYPE_MOUSE;
+
+        PointerCoords pointerCoords = new PointerCoords();
+        pointerCoords.x = x;
+        pointerCoords.y = y;
+
+        return MotionEvent.obtain(
+                downTime,
+                eventTime,
+                action,
+                /* pointerCount= */ 1,
+                new PointerProperties[] {pointerProperties},
+                new PointerCoords[] {pointerCoords},
+                /* metaState= */ 0,
+                /* buttonState= */ 0,
+                /* xPrecision= */ 1.0f,
+                /* yPrecision= */ 1.0f,
+                /* deviceId= */ 0,
+                /* edgeFlags= */ 0,
+                InputDevice.SOURCE_MOUSE,
+                /* flags= */ 0);
     }
 
     /**

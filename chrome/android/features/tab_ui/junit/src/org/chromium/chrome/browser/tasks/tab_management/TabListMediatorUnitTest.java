@@ -53,8 +53,10 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Pair;
 import android.util.Size;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
@@ -1059,6 +1061,31 @@ public class TabListMediatorUnitTest {
         listener.onConfirmationDialogResult(
                 DialogType.SYNC, ActionConfirmationResult.CONFIRMATION_NEGATIVE);
         assertFalse(mModelList.get(1).model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION));
+    }
+
+    @Test
+    public void sendsCloseSignalCorrectly_TriggeringMotionEventFromMouse_DisallowUndo() {
+        mMediator.setActionOnAllRelatedTabsForTesting(false);
+        mModelList
+                .get(1)
+                .model
+                .get(TabProperties.TAB_ACTION_BUTTON_DATA)
+                .tabActionListener
+                .run(
+                        mItemView2,
+                        mModelList.get(1).model.get(TabProperties.TAB_ID),
+                        TabUiTestHelper.createMouseMotionEvent(
+                                /* downTime= */ SystemClock.uptimeMillis(),
+                                /* eventTime= */ SystemClock.uptimeMillis() + 200,
+                                MotionEvent.ACTION_UP,
+                                /* x= */ 0,
+                                /* y= */ 0));
+
+        verify(mTabRemover)
+                .closeTabs(
+                        eq(TabClosureParams.closeTab(mTab2).allowUndo(false).build()),
+                        /* allowDialog= */ eq(true),
+                        /* listener= */ any());
     }
 
     @Test

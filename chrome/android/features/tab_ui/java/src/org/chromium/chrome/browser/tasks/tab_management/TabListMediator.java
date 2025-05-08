@@ -115,6 +115,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.ui.util.MotionEventUtils;
 import org.chromium.ui.util.XrUtils;
 import org.chromium.url.GURL;
 
@@ -1184,6 +1185,9 @@ class TabListMediator implements TabListNotificationHandler {
                         setUseShrinkCloseAnimation(tabId, /* useShrinkCloseAnimation= */ true);
                         if (mActionsOnAllRelatedTabs && filter.isTabInTabGroup(closingTab)) {
                             onGroupClosedFrom(tabId);
+
+                            // TODO(crbug.com/375468032): use "triggeringMotionEvent" to determine
+                            //  if the "undo" snackbar should be shown when closing a tab group.
                             TabUiUtils.closeTabGroup(
                                     mCurrentTabGroupModelFilterSupplier.get(),
                                     tabId,
@@ -1195,10 +1199,13 @@ class TabListMediator implements TabListNotificationHandler {
                         onTabClosedFrom(tabId, mComponentName);
                         Tab currentTab = TabModelUtils.getCurrentTab(tabModel);
                         Tab nextTab = currentTab == closingTab ? getNextTab(tabId) : null;
+                        boolean allowUndo =
+                                triggeringMotionEvent == null
+                                        || !MotionEventUtils.isMouseEvent(triggeringMotionEvent);
                         TabClosureParams closureParams =
                                 TabClosureParams.closeTab(closingTab)
                                         .recommendedNextTab(nextTab)
-                                        .allowUndo(true)
+                                        .allowUndo(allowUndo)
                                         .build();
 
                         @Nullable
