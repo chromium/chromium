@@ -1609,7 +1609,7 @@ void ShimlessRmaService::OnExtractExternalDiagnosticsApp(
 void ShimlessRmaService::InstallLastFound3pDiagnosticsApp(
     InstallLastFound3pDiagnosticsAppCallback callback) {
   if (extracted_3p_diag_swbn_path_.empty() ||
-      extracted_3p_diag_swbn_path_.empty()) {
+      extracted_3p_diag_crx_path_.empty()) {
     LOG(ERROR) << "Should call GetInstallable3pDiagnosticsAppPath first";
     std::move(callback).Run(nullptr);
     return;
