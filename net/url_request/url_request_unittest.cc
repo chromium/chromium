@@ -49,7 +49,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "net/base/chunked_upload_data_stream.h"
 #include "net/base/cronet_buildflags.h"
 #include "net/base/directory_listing.h"
@@ -628,19 +628,15 @@ class OCSPErrorTestDelegate : public TestDelegate {
 #if !BUILDFLAG(IS_IOS)
 // Compute the root cert's SPKI hash on the fly, to avoid hardcoding it within
 // tests.
-bool GetTestRootCertSPKIHash(SHA256HashValue* root_hash) {
+std::array<uint8_t, crypto::hash::kSha256Size> GetTestRootCertSPKIHash() {
   scoped_refptr<X509Certificate> root_cert =
       ImportCertFromFile(GetTestCertsDirectory(), "root_ca_cert.pem");
-  if (!root_cert)
-    return false;
+  CHECK(root_cert);
   std::string_view root_spki;
-  if (!asn1::ExtractSPKIFromDERCert(
-          x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer()),
-          &root_spki)) {
-    return false;
-  }
-  crypto::SHA256HashString(root_spki, root_hash, sizeof(SHA256HashValue));
-  return true;
+  CHECK(asn1::ExtractSPKIFromDERCert(
+      x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer()),
+      &root_spki));
+  return crypto::hash::Sha256(root_spki);
 }
 #endif
 
@@ -11511,8 +11507,7 @@ TEST_F(HTTPSCRLSetTest, CRLSetRevoked) {
   ASSERT_TRUE(test_server.Start());
 
   CertVerifier::Config cert_verifier_config = GetCertVerifierConfig();
-  SHA256HashValue root_cert_spki_hash;
-  ASSERT_TRUE(GetTestRootCertSPKIHash(&root_cert_spki_hash));
+  auto root_cert_spki_hash = GetTestRootCertSPKIHash();
   auto crl_set =
       CRLSet::ForTesting(false, &root_cert_spki_hash,
                          test_server.GetCertificate()->serial_number(), "", {});
@@ -11731,8 +11726,7 @@ TEST_F(HTTPSLocalCRLSetTest, InterceptionBlockedAllowOverrideOnHSTS) {
 
   // Configure for kHSTSSubdomainWithKnownInterception
   CertVerifyResult sts_sub_result = fake_result;
-  SHA256HashValue root_hash;
-  ASSERT_TRUE(GetTestRootCertSPKIHash(&root_hash));
+  auto root_hash = GetTestRootCertSPKIHash();
   sts_sub_result.public_key_hashes.push_back(HashValue(root_hash));
   sts_sub_result.cert_status |=
       CERT_STATUS_REVOKED | CERT_STATUS_KNOWN_INTERCEPTION_BLOCKED;
