@@ -12,7 +12,8 @@ import("//build/config/gclient_args.gni")
 # like to support on Android by default. Embedders can still override any of
 # the particular runtimes if they do not wish to enable them.
 _is_xr_supported_android = is_android && !is_cast_android &&
-                           (current_cpu == "arm" || current_cpu == "arm64")
+                           (current_cpu == "arm" || current_cpu == "arm64" ||
+                            current_cpu == "x86" || current_cpu == "x64")
 
 declare_args() {
   enable_cardboard = _is_xr_supported_android
@@ -23,7 +24,9 @@ declare_args() {
 
   # To build with OpenXR support, the OpenXR Loader needs to be pulled to
   # third_party/openxr.
-  enable_openxr = checkout_openxr && (is_win || _is_xr_supported_android)
+  enable_openxr = checkout_openxr &&
+                  (is_win || ((_is_xr_supported_android &&
+                               current_cpu == "arm") || current_cpu == "arm64"))
 }
 
 declare_args() {

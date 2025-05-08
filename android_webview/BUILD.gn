@@ -1117,6 +1117,7 @@ grit("generate_components_strings") {
 
   defines = [
     "enable_arcore=$enable_arcore",
+    "enable_cardboard=$enable_cardboard",
     "enable_pdf=$enable_pdf",
     "enable_print_preview=$enable_print_preview",
     "enable_screen_ai_service=$enable_screen_ai_service",

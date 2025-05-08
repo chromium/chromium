@@ -640,17 +640,17 @@ template("chrome_common_apk_or_module_tmpl") {
         _libarcore_dir = get_label_info(_arcore_target, "target_out_dir") +
                          "/com_google_ar_core_java/jni"
 
-        if (android_64bit_target_cpu) {
-          if (_is_64_bit_browser) {
-            loadable_modules +=
-                [ "$_libarcore_dir/arm64-v8a/libarcore_sdk_c.so" ]
-          } else {
-            secondary_abi_loadable_modules +=
-                [ "$_libarcore_dir/armeabi-v7a/libarcore_sdk_c.so" ]
-          }
+        if (android_64bit_target_cpu && !_is_64_bit_browser) {
+          # We're targeting a 64-bit architecture but the browser is 32-bit,
+          # so we need to set the secondary_abi_loadable_modules appropriately:
+          secondary_abi_loadable_modules += [
+            "$_libarcore_dir/$android_app_secondary_abi/libarcore_sdk_c.so",
+          ]
         } else {
+          # We're targeting a 64-bit or 32-bit architecture and the browser
+          # matches the ABI, so we need to set the loadable_modules:
           loadable_modules +=
-              [ "$_libarcore_dir/armeabi-v7a/libarcore_sdk_c.so" ]
+              [ "$_libarcore_dir/$android_app_abi/libarcore_sdk_c.so" ]
         }
       }
     }
