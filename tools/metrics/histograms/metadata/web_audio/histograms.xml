@@ -291,7 +291,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebAudio.AudioDestination.{ModeTag}.RenderTimeRatio{LatencyTag}"
-    units="ms" expires_after="2025-10-05">
+    units="%" expires_after="2025-10-05">
   <owner>mjwilson@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
@@ -305,7 +305,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebAudio.AudioDestination.{ModeTag}.RequestRenderGapTimeRatio{LatencyTag}"
-    units="ms" expires_after="2025-10-05">
+    units="%" expires_after="2025-10-05">
   <owner>mjwilson@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
@@ -320,7 +320,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebAudio.AudioDestination.{ModeTag}.RequestRenderTimeRatio{LatencyTag}"
-    units="ms" expires_after="2025-10-05">
+    units="%" expires_after="2025-10-05">
   <owner>mjwilson@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
