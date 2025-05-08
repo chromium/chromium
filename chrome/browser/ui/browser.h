@@ -753,6 +753,13 @@ class Browser : public TabStripModelObserver,
                               tabs::TabInterface* tab,
                               int index) override;
   void TabStripEmpty() override;
+  void OnSplitTabCreated(std::vector<std::pair<tabs::TabInterface*, int>> tabs,
+                         split_tabs::SplitTabId split_id,
+                         SplitTabAddReason reason,
+                         split_tabs::SplitTabVisualData visual_data) override;
+  void OnSplitTabRemoved(std::vector<std::pair<tabs::TabInterface*, int>> tabs,
+                         split_tabs::SplitTabId split_id,
+                         SplitTabRemoveReason reason) override;
 
   // Overridden from content::WebContentsDelegate:
   void ActivateContents(content::WebContents* contents) override;
@@ -980,6 +987,9 @@ class Browser : public TabStripModelObserver,
 
     // Change is the result of a force show reason
     BOOKMARK_BAR_STATE_CHANGE_FORCE_SHOW,
+
+    // Change is the result of a split tab being created or removed.
+    BOOKMARK_BAR_STATE_CHANGE_SPLIT_TAB_CHANGE,
   };
 
   // Tracks whether a tabstrip call to action UI is showing.

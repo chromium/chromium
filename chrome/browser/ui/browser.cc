@@ -200,6 +200,9 @@
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "components/tabs/public/split_tab_data.h"
+#include "components/tabs/public/split_tab_id.h"
+#include "components/tabs/public/split_tab_visual_data.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/user_manager/user_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -487,7 +490,11 @@ bool IsActorCoordinatorActingOnTab(Profile* profile,
 // TODO(crbug.com/382494946): Similar bespoke checks are used throughout the
 // codebase. This should be factored out as a common util and other callsites
 // converted to use this.
-bool IsNTP(content::WebContents* web_contents) {
+bool IsShowingNTP(content::WebContents* web_contents) {
+  if (SadTab::ShouldShow(web_contents->GetCrashedStatus())) {
+    return false;
+  }
+
   // Use the committed entry (or the visible entry, if the committed entry is
   // the initial NavigationEntry) so the bookmarks bar disappears at the same
   // time the page does.
@@ -1822,6 +1829,20 @@ void Browser::TabStripEmpty() {
   // Instant may have visible WebContents that need to be detached before the
   // window system closes.
   instant_controller_.reset();
+}
+
+void Browser::OnSplitTabCreated(
+    std::vector<std::pair<tabs::TabInterface*, int>> tabs,
+    split_tabs::SplitTabId split_id,
+    SplitTabAddReason reason,
+    split_tabs::SplitTabVisualData visual_data) {
+  UpdateBookmarkBarState(BOOKMARK_BAR_STATE_CHANGE_SPLIT_TAB_CHANGE);
+}
+void Browser::OnSplitTabRemoved(
+    std::vector<std::pair<tabs::TabInterface*, int>> tabs,
+    split_tabs::SplitTabId split_id,
+    SplitTabRemoveReason reason) {
+  UpdateBookmarkBarState(BOOKMARK_BAR_STATE_CHANGE_SPLIT_TAB_CHANGE);
 }
 
 void Browser::SetTopControlsShownRatio(content::WebContents* web_contents,
@@ -3828,15 +3849,6 @@ bool Browser::ShouldShowBookmarkBar() const {
     return true;
   }
 
-  content::WebContents* web_contents = tab_strip_model_->GetActiveWebContents();
-  if (!web_contents) {
-    return false;
-  }
-
-  if (SadTab::ShouldShow(web_contents->GetCrashedStatus())) {
-    return false;
-  }
-
   if (!browser_defaults::bookmarks_enabled) {
     return false;
   }
@@ -3847,9 +3859,14 @@ bool Browser::ShouldShowBookmarkBar() const {
     return false;
   }
 
+  const tabs::TabInterface* active_tab = tab_strip_model_->GetActiveTab();
+  if (!active_tab || !active_tab->GetContents()) {
+    return false;
+  }
+
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(
-          web_contents->GetBrowserContext());
+          active_tab->GetContents()->GetBrowserContext());
   const bool has_bookmarks = bookmark_model && bookmark_model->HasBookmarks();
 
   tab_groups::TabGroupSyncService* tab_group_service =
@@ -3857,9 +3874,23 @@ bool Browser::ShouldShowBookmarkBar() const {
   const bool has_saved_tab_groups =
       tab_group_service && !tab_group_service->GetAllGroups().empty();
 
-  // The bookmark bar is only shown on the NTP if the user
-  // has added something to it.
-  return IsNTP(web_contents) && (has_bookmarks || has_saved_tab_groups);
+  // The bookmark bar is only shown if the user has added something to it.
+  if (!has_bookmarks && !has_saved_tab_groups) {
+    return false;
+  }
+
+  // The bookmark bar is only shown on the NTP. If the active tab is part of a
+  // split, check if any tabs in the split are the NTP.
+  std::optional<split_tabs::SplitTabId> split_id = active_tab->GetSplit();
+  if (split_id.has_value()) {
+    std::vector<tabs::TabInterface*> split_tabs =
+        tab_strip_model_->GetSplitData(split_id.value())->ListTabs();
+    return std::any_of(
+        split_tabs.begin(), split_tabs.end(),
+        [](const auto& tab) { return IsShowingNTP(tab->GetContents()); });
+  }
+
+  return IsShowingNTP(active_tab->GetContents());
 }
 
 bool Browser::IsBrowserClosing() const {
