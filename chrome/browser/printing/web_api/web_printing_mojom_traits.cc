@@ -28,6 +28,10 @@ using MultipleDocumentHandling =
 // orientation-requested:
 using OrientationRequested = blink::mojom::WebPrintingOrientationRequested;
 
+// print-quality:
+using WebPrintQuality = blink::mojom::WebPrintQuality;
+using printing::mojom::Quality;
+
 // print-color-mode:
 using PrintColorMode = blink::mojom::WebPrintColorMode;
 using printing::mojom::ColorModel;
@@ -112,6 +116,39 @@ bool EnumTraits<WebPrintingSides, DuplexMode>::FromMojom(WebPrintingSides input,
       return true;
     case WebPrintingSides::kTwoSidedShortEdge:
       *output = DuplexMode::kShortEdge;
+      return true;
+  }
+  NOTREACHED();
+}
+
+// static
+blink::mojom::WebPrintQuality EnumTraits<WebPrintQuality, Quality>::ToMojom(
+    Quality input) {
+  switch (input) {
+    case Quality::kDraft:
+      return WebPrintQuality::kDraft;
+    case Quality::kNormal:
+      return WebPrintQuality::kNormal;
+    case Quality::kHigh:
+      return WebPrintQuality::kHigh;
+    case Quality::kUnknownQuality:
+      return WebPrintQuality::kNormal;
+  }
+  NOTREACHED();
+}
+
+// static
+bool EnumTraits<WebPrintQuality, Quality>::FromMojom(WebPrintQuality input,
+                                                     Quality* output) {
+  switch (input) {
+    case WebPrintQuality::kDraft:
+      *output = Quality::kDraft;
+      return true;
+    case WebPrintQuality::kNormal:
+      *output = Quality::kNormal;
+      return true;
+    case WebPrintQuality::kHigh:
+      *output = Quality::kHigh;
       return true;
   }
   NOTREACHED();
@@ -270,6 +307,15 @@ bool StructTraits<blink::mojom::WebPrintJobTemplateAttributesDataView,
   }
   if (auto print_color_mode = data.print_color_mode()) {
     settings->set_color(PrintColorModeToColorModel(*print_color_mode));
+  }
+  {
+    std::optional<Quality> quality;
+    if (!data.ReadPrintQuality(&quality)) {
+      return false;
+    }
+    if (quality) {
+      settings->set_quality(*quality);
+    }
   }
 
   *out = std::move(settings);

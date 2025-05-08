@@ -140,6 +140,8 @@ auto ValidatePrintSettings() {
                                       Pointee(Eq("tray-1")))))),
       // printColorMode:
       Property(&PrintSettings::color, Eq(mojom::ColorModel::kColorModeColor)),
+      // printQuality:
+      Property(&PrintSettings::quality, Eq(mojom::Quality::kUnknownQuality)),
       Property(&PrintSettings::title, Eq(u"Title")),
       // multipleDocumentHandling:
       Property(&PrintSettings::collate, Eq(true)),
@@ -335,6 +337,8 @@ IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, FetchAttributes) {
     }],
     "printColorModeDefault": "monochrome",
     "printColorModeSupported": [ "monochrome", "color" ],
+    "printQualityDefault": "normal",
+    "printQualitySupported": [ "draft", "normal", "high" ],
     "printerName": "name",
     "printerState": "idle",
     "printerStateMessage": "Ready to Print!",

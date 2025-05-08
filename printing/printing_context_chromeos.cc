@@ -305,6 +305,12 @@ ScopedIppPtr SettingsToIPPOptions(const PrintSettings& settings,
                  PrintScalingTypeToIPPString(settings.print_scaling()).c_str());
   }
 
+  // print quality
+  if (settings.quality() != mojom::Quality::kUnknownQuality) {
+    ippAddInteger(options, IPP_TAG_JOB, IPP_TAG_ENUM, kIppPrintQuality,
+                  static_cast<int>(settings.quality()));
+  }
+
   std::map<std::string, std::vector<int>> multival;
   std::string media_source;
   for (const auto& setting : settings.advanced_settings()) {
