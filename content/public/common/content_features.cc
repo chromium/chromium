@@ -797,7 +797,7 @@ BASE_FEATURE(kPushSubscriptionChangeEventOnInvalidation,
 // upon manual resubscription to previously unsubscribed notifications.
 BASE_FEATURE(kPushSubscriptionChangeEventOnResubscribe,
              "PushSubscriptionChangeEventOnResubscribe",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, queues navigations instead of cancelling the previous
 // navigation if the previous navigation is already waiting for commit.

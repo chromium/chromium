@@ -598,8 +598,6 @@ class PushMessagingBrowserTest : public PushMessagingBrowserTestBase {
  public:
   PushMessagingBrowserTest() {
     disabled_features_.push_back(features::kPushMessagingDisallowSenderIDs);
-    enabled_features_.push_back(
-        features::kPushSubscriptionChangeEventOnResubscribe);
   }
 
   void SetUp() override {
@@ -3079,12 +3077,8 @@ IN_PROC_BROWSER_TEST_F(PushSubscriptionChangeEventOnInvalidationTest,
   EXPECT_NE("null", RunScript("resultQueue.pop()"));
 }
 
-class PushSubscriptionChangeEventOnResubscribeTest
-    : public PushMessagingBrowserTestBase {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kPushSubscriptionChangeEventOnResubscribe};
-};
+using PushSubscriptionChangeEventOnResubscribeTest =
+    PushMessagingBrowserTestBase;
 
 IN_PROC_BROWSER_TEST_F(PushSubscriptionChangeEventOnResubscribeTest,
                        FiredAfterPermissionBlockedAndRegranted) {
