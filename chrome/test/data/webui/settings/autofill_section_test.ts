@@ -407,15 +407,36 @@ suite('AutofillSectionAddressTests', function() {
     homeAddress.metadata!.recordType =
         chrome.autofillPrivate.AddressRecordType.ACCOUNT_HOME;
     const autofillSection = await createAutofillSection([homeAddress], {});
+    flush();
 
     const homeAddressButton =
         autofillSection.shadowRoot!.querySelector<CrLinkRowElement>(
-            '#homeWorkAddress');
+            '#homeAddress');
     assertTrue(!!homeAddressButton);
     // Validate that, when present, the button results in opening a URL.
     homeAddressButton.click();
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(url, loadTimeData.getString('googleAccountHomeAddressUrl'));
+    autofillSection.remove();
+  });
+
+  test('verifyAccountWorkAddress', async function() {
+    const openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
+    const workAddress = createAddressEntry();
+    workAddress.metadata!.recordType =
+        chrome.autofillPrivate.AddressRecordType.ACCOUNT_WORK;
+    const autofillSection = await createAutofillSection([workAddress], {});
+    flush();
+
+    const workAddressButton =
+        autofillSection.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#workAddress');
+    assertTrue(!!workAddressButton);
+    // Validate that, when present, the button results in opening a URL.
+    workAddressButton.click();
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(url, loadTimeData.getString('googleAccountWorkAddressUrl'));
     autofillSection.remove();
   });
 

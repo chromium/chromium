@@ -66,7 +66,8 @@
       <div id="addressList" class="vertical-list" role="none">
         <template is="dom-repeat" items="[[addresses]]">
           <div class="list-item" role="listitem">
-            <template is="dom-if" if="[[!isAccountHomeWorkAddress_(item)]]">
+            <!-- If it's NOT a home nor a work address. -->
+            <template is="dom-if" if="[[!isAccountHomeOrWorkAddress_(item)]]">
               <div class="start">
                 <span id="addressSummary">
                   <span class="ellipses">
@@ -77,24 +78,41 @@
                   </span>
                 </span>
                 <cr-icon icon="cr20:cloud-off"
-                  hidden$="[[!isCloudOffVisible_(item, accountInfo_)]]"
-                  aria-label="$i18n{localAddressIconA11yLabel}"
-                  role="img">
+                    hidden$="[[!isCloudOffVisible_(item, accountInfo_)]]"
+                    aria-label="$i18n{localAddressIconA11yLabel}"
+                    role="img">
                 </cr-icon>
               </div>
               <cr-icon-button class="icon-more-vert address-menu"
-                on-click="onAddressMenuClick_"
-                title="[[moreActionsTitle_(item.metadata.summaryLabel,
-                 item.metadata.summarySublabel)]]">
+                  on-click="onAddressMenuClick_"
+                  title="[[moreActionsTitle_(item.metadata.summaryLabel,
+                      item.metadata.summarySublabel)]]">
               </cr-icon-button>
             </template>
-            <cr-link-row class="cr-row" id="homeWorkAddress" class="hr"
-              label="[[item.metadata.summaryLabel]][[item.metadata.summarySublabel]]"
-              hidden="[[!isAccountHomeWorkAddress_(item)]]"
-              on-click="onAccountHomeWorkAddressClick_"
-              role-description="$i18n{subpageArrowRoleDescription}"
-              external>
-            </cr-link-row>
+
+            <!-- If it is a home address. -->
+            <template is="dom-if" if="[[isAccountHomeAddress_(item)]]">
+              <cr-link-row class="cr-row hr"
+                  id="homeAddress"
+                  start-icon="settings20:home"
+                  label="[[item.metadata.summaryLabel]][[item.metadata.summarySublabel]]"
+                  on-click="onAccountHomeAddressClick_"
+                  role-description="$i18n{subpageArrowRoleDescription}"
+                  external>
+              </cr-link-row>
+            </template>
+
+            <!-- If it is a work address. -->
+            <template is="dom-if" if="[[isAccountWorkAddress_(item)]]">
+              <cr-link-row class="cr-row hr"
+                  id="workAddress"
+                  start-icon="settings20:work"
+                  label="[[item.metadata.summaryLabel]][[item.metadata.summarySublabel]]"
+                  on-click="onAccountWorkAddressClick_"
+                  role-description="$i18n{subpageArrowRoleDescription}"
+                  external>
+              </cr-link-row>
+            </template>
           </div>
         </template>
       </div>
