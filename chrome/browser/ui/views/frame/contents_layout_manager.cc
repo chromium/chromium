@@ -66,6 +66,18 @@ views::ProposedLayout ContentsLayoutManager::CalculateProposedLayout(
       devtools_scrim_view_.get(), devtools_scrim_view_->GetVisible(),
       host_view()->GetMirroredRect(new_devtools_bounds),
       views::SizeBounds(container_size));
+
+  // New Tab Footer view is displayed at the bottom of the contents view.
+  if (new_tab_footer_view_ && new_tab_footer_view_->GetVisible()) {
+    new_contents_bounds.set_height(new_contents_bounds.height() -
+                                   kNewTabFooterHeight);
+
+    layouts.child_layouts.emplace_back(
+        new_tab_footer_view_.get(), new_tab_footer_view_->GetVisible(),
+        gfx::Rect(0, new_contents_bounds.height(), width, kNewTabFooterHeight),
+        views::SizeBounds(container_size));
+  }
+
   const auto& contents_rect = host_view()->GetMirroredRect(new_contents_bounds);
   views::SizeBounds optional_size_bound = views::SizeBounds(container_size);
   layouts.child_layouts.emplace_back(contents_view_.get(),
@@ -98,14 +110,6 @@ views::ProposedLayout ContentsLayoutManager::CalculateProposedLayout(
     layouts.child_layouts.emplace_back(
         watermark_view_.get(), watermark_view_->GetVisible(),
         gfx::Rect(0, 0, width, height), views::SizeBounds(container_size));
-  }
-
-  // New Tab Footer view is displayed at the bottom of the contents view.
-  if (new_tab_footer_view_) {
-    layouts.child_layouts.emplace_back(
-        new_tab_footer_view_.get(), new_tab_footer_view_->GetVisible(),
-        gfx::Rect(0, height - kNewTabFooterHeight, width, kNewTabFooterHeight),
-        views::SizeBounds(container_size));
   }
 
   layouts.host_size = gfx::Size(width, height);
