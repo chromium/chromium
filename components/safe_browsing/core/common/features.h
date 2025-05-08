@@ -311,7 +311,11 @@ BASE_DECLARE_FEATURE(kSafeBrowsingSyncCheckerCheckAllowlist);
 // Automatically revoke abusive notifications in Safety Hub.
 BASE_DECLARE_FEATURE(kSafetyHubAbusiveNotificationRevocation);
 
-// Automatically revoke disruptive notifications in Safety Hub.
+// TODO(crbug.com/406475122): Move disruptive notifications revocation features
+// and params to chrome_features.
+//
+// Automatically revoke disruptive notifications
+// in Safety Hub.
 BASE_DECLARE_FEATURE(kSafetyHubDisruptiveNotificationRevocation);
 
 // Whether the disruptive notification revocation will be performed as a shadow
@@ -381,6 +385,13 @@ extern const base::FeatureParam<int>
 // the buttons should be swapped where "Unsubscribe" is the secondary button.
 extern const base::FeatureParam<bool>
     kShowWarningsForSuspiciousNotificationsShouldSwapButtons;
+
+// The maximum number of days to wait for metrics to be reported for proposed
+// disruptive notification revocation. After the period runs out, the permission
+// will be revoked. The number is a number of days since a revocation was
+// proposed.
+extern const base::FeatureParam<int>
+    kSafetyHubDisruptiveNotificationRevocationWaitingForMetricsDays;
 
 // Controls the daily quota for the suspicious site trigger.
 BASE_DECLARE_FEATURE(kSuspiciousSiteTriggerQuotaFeature);

@@ -856,6 +856,21 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram
+    name="Settings.SafetyHub.DisruptiveNotificationRevocations.HasReportedMetricsBeforeRevocation"
+    units="count" expires_after="2026-02-26">
+  <owner>olesiamarukhnno@google.com</owner>
+  <owner>antoniosartori@chromium.org</owner>
+  <summary>
+    Tracks how often a disruptive notification is revoked without reporting a
+    proposed disruptive notification UKM beforehand. The UKM can only be
+    reported on a notification interaction or a page visit. The revocation is
+    delayed to report the proposed metric when a notification is shown. After
+    the cooldown runs out, the revocation will happen even without reporting
+    metrics.
+  </summary>
+</histogram>
+
+<histogram
     name="Settings.SafetyHub.DisruptiveNotificationRevocations.Proposed.NotificationCount"
     units="count" expires_after="2026-02-26">
   <owner>olesiamarukhnno@google.com</owner>
@@ -876,6 +891,18 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
     the safety hub check runs (once a day). The metric is recorded per each
     notification content setting. It indicates whether the notification should
     be revoked, or the reason why it shouldn't be revoked.
+  </summary>
+</histogram>
+
+<histogram
+    name="Settings.SafetyHub.DisruptiveNotificationRevocations.Revoke.DaysSinceProposedRevocation"
+    units="count" expires_after="2026-02-26">
+  <owner>olesiamarukhnno@google.com</owner>
+  <owner>antoniosartori@chromium.org</owner>
+  <summary>
+    Tracks how many days has passed since a disruptive notification revocation
+    was proposed to when it was actually revoked. The delay is caused by waiting
+    for metrics to be reported when a notification for a site is shown.
   </summary>
 </histogram>
 

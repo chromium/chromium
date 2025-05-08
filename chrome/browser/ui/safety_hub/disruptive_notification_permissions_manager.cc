@@ -234,7 +234,8 @@ bool DisruptiveNotificationPermissionsManager::
   }
 
   if (!safe_browsing::kSafetyHubDisruptiveNotificationRevocationShadowRun
-           .Get()) {
+           .Get() &&
+      CanRevokeNotifications(url, dict)) {
     RevokeNotifications(url, std::move(dict));
     return true;
   }
@@ -260,11 +261,35 @@ void DisruptiveNotificationPermissionsManager::RecordFalsePositive(
                                 RevocationResult::kFalsePositive);
 }
 
+bool DisruptiveNotificationPermissionsManager::CanRevokeNotifications(
+    const GURL& url,
+    const base::Value::Dict& dict) {
+  const base::Value* stored_timestamp = dict.Find(safety_hub::kTimestampStr);
+  const base::TimeDelta delta_since_proposed_revocation =
+      clock_->Now() -
+      base::ValueToTime(stored_timestamp).value_or(clock_->Now());
+  const int days_since_proposed_revocation =
+      delta_since_proposed_revocation.InDays();
+
+  const bool has_reported_metrics =
+      dict.FindBool(safety_hub::kHasReportedMetricsStr).value_or(false);
+  return has_reported_metrics ||
+         days_since_proposed_revocation >=
+             safe_browsing::
+                 kSafetyHubDisruptiveNotificationRevocationWaitingForMetricsDays
+                     .Get();
+}
+
 void DisruptiveNotificationPermissionsManager::RevokeNotifications(
     const GURL& url,
     base::Value::Dict dict) {
-  // TODO(crbug.com/406472515): Maybe check if metrics were already
-  // reported.
+  const base::Value* stored_timestamp = dict.Find(safety_hub::kTimestampStr);
+  const base::TimeDelta delta_since_proposed_revocation =
+      clock_->Now() -
+      base::ValueToTime(stored_timestamp).value_or(clock_->Now());
+  const bool has_reported_metrics =
+      dict.FindBool(safety_hub::kHasReportedMetricsStr).value_or(false);
+
   dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kRevokeStr);
   UpdateContentSettingValue(hcsm_.get(), url, std::move(dict),
                             GetDefaultConstraint(clock_));
@@ -272,6 +297,14 @@ void DisruptiveNotificationPermissionsManager::RevokeNotifications(
                                ContentSetting::CONTENT_SETTING_DEFAULT);
   base::UmaHistogramEnumeration(kRevocationResultHistogram,
                                 RevocationResult::kRevoke);
+  base::UmaHistogramCounts100(
+      "Settings.SafetyHub.DisruptiveNotificationRevocations."
+      "Revoke.DaysSinceProposedRevocation",
+      delta_since_proposed_revocation.InDays());
+  base::UmaHistogramBoolean(
+      "Settings.SafetyHub.DisruptiveNotificationRevocations."
+      "HasReportedMetricsBeforeRevocation",
+      has_reported_metrics);
 }
 
 void DisruptiveNotificationPermissionsManager::DisplayNotification() {
@@ -491,10 +524,11 @@ void DisruptiveNotificationPermissionsManager::CheckForFalsePositive(
   }
 
   const base::Value* stored_timestamp = dict.Find(safety_hub::kTimestampStr);
-  base::TimeDelta delta_since_revocation =
+  base::TimeDelta delta_since_proposed_revocation =
       base::Time::Now() -
       base::ValueToTime(stored_timestamp).value_or(base::Time::Now());
-  const int days_since_revocation = delta_since_revocation.InDays();
+  const int days_since_proposed_revocation =
+      delta_since_proposed_revocation.InDays();
 
   const int min_days =
       safe_browsing::
@@ -504,7 +538,8 @@ void DisruptiveNotificationPermissionsManager::CheckForFalsePositive(
       safe_browsing::
           kSafetyHubDisruptiveNotificationRevocationMaxFalsePositivePeriod
               .Get();
-  if (days_since_revocation < min_days || days_since_revocation > max_days) {
+  if (days_since_proposed_revocation < min_days ||
+      days_since_proposed_revocation > max_days) {
     return;
   }
 
@@ -521,7 +556,7 @@ void DisruptiveNotificationPermissionsManager::CheckForFalsePositive(
 
   ukm::builders::SafetyHub_DisruptiveNotificationRevocations_FalsePositive(
       source_id)
-      .SetDaysSinceRevocation(days_since_revocation)
+      .SetDaysSinceRevocation(days_since_proposed_revocation)
       .SetReason(static_cast<int>(reason))
       .SetNewSiteEngagement(new_site_engagement_score)
       .SetOldSiteEngagement(old_site_engagement_score)
@@ -578,12 +613,12 @@ void DisruptiveNotificationPermissionsManager::MaybeReportUserRegrant(
   }
 
   const base::Value* stored_timestamp = dict.Find(safety_hub::kTimestampStr);
-  base::TimeDelta delta_since_revocation =
+  base::TimeDelta delta_since_proposed_revocation =
       base::Time::Now() -
       base::ValueToTime(stored_timestamp).value_or(base::Time::Now());
   ukm::builders::SafetyHub_DisruptiveNotificationRevocations_UserRegrant(
       source_id)
-      .SetDaysSinceRevocation(delta_since_revocation.InDays())
+      .SetDaysSinceRevocation(delta_since_proposed_revocation.InDays())
       .SetNewSiteEngagement(
           site_engagement::SiteEngagementService::Get(profile)->GetScore(url))
       .SetOldSiteEngagement(

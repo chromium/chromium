@@ -188,6 +188,10 @@ class DisruptiveNotificationPermissionsManager
                            const content_settings::SettingInfo& info,
                            double new_score);
 
+  // If the notifications should be revoked based on whether the metrics were
+  // already reported or the cooldown period has run out.
+  bool CanRevokeNotifications(const GURL& url, const base::Value::Dict& dict);
+
   // Revokes notification permission, updates the content setting value to
   // revoke and reports metrics.
   void RevokeNotifications(const GURL& url, base::Value::Dict dict);

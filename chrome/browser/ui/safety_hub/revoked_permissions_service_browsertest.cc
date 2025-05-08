@@ -623,11 +623,13 @@ class DisruptiveNotificationPermissionsRevocationBrowserTest
   DisruptiveNotificationPermissionsRevocationBrowserTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
         safe_browsing::kSafetyHubDisruptiveNotificationRevocation,
-        {
-            {safe_browsing::kSafetyHubDisruptiveNotificationRevocationShadowRun
-                 .name,
-             "false"},
-        });
+        {{safe_browsing::kSafetyHubDisruptiveNotificationRevocationShadowRun
+              .name,
+          "false"},
+         {safe_browsing::
+              kSafetyHubDisruptiveNotificationRevocationWaitingForMetricsDays
+                  .name,
+          "7"}});
   }
 
   void SetUpOnMainThread() override {
@@ -655,6 +657,11 @@ IN_PROC_BROWSER_TEST_F(DisruptiveNotificationPermissionsRevocationBrowserTest,
       RevokedPermissionsServiceFactory::GetForProfile(browser()->profile());
   GURL url = embedded_test_server()->GetURL("/title1.html");
 
+  base::SimpleTestClock clock;
+  hcsm->SetClockForTesting(&clock);
+  service->SetClockForTesting(&clock);
+  clock.SetNow(base::Time::Now());
+
   // Force for the initial safety check to be complete before setting up a
   // disruptive notification. Otherwise, sometimes the check is finished before
   // and sometimes after the setup which causes flakes.
@@ -679,6 +686,9 @@ IN_PROC_BROWSER_TEST_F(DisruptiveNotificationPermissionsRevocationBrowserTest,
             stored_value.GetDict()
                 .Find(safety_hub::kRevokedStatusDictKeyStr)
                 ->GetString());
+
+  // Wait for the disruptive metrics cooldown to expire.
+  clock.Advance(base::Days(8));
 
   safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service);
   stored_value = hcsm->GetWebsiteSetting(
@@ -756,6 +766,9 @@ IN_PROC_BROWSER_TEST_F(
             stored_value.GetDict()
                 .Find(safety_hub::kRevokedStatusDictKeyStr)
                 ->GetString());
+
+  // Wait for the disruptive metrics cooldown to expire.
+  clock.Advance(base::Days(8));
 
   safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service);
   // Both disruptive notifications and unused permissions were revoked for the

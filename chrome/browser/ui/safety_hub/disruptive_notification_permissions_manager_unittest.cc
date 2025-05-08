@@ -6,6 +6,7 @@
 
 #include "base/json/values_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/simple_test_clock.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
@@ -72,6 +73,12 @@ class DisruptiveNotificationPermissionsManagerTest : public ::testing::Test {
         std::make_unique<SafetyHubNotificationWrapperForTesting>(
             display_notification_function_called_with_,
             update_notification_function_called_with_));
+    manager_->SetClockForTesting(clock());
+    clock()->SetNow(base::Time::Now());
+  }
+
+  void TearDown() override {
+    manager_->SetClockForTesting(base::DefaultClock::GetInstance());
   }
 
   HostContentSettingsMap* hcsm() {
@@ -134,6 +141,8 @@ class DisruptiveNotificationPermissionsManagerTest : public ::testing::Test {
 
   TestingProfile* profile() { return &profile_; }
 
+  base::SimpleTestClock* clock() { return &clock_; }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
 
@@ -145,6 +154,7 @@ class DisruptiveNotificationPermissionsManagerTest : public ::testing::Test {
   std::vector<int> display_notification_function_called_with_;
   std::vector<int> update_notification_function_called_with_;
   std::unique_ptr<DisruptiveNotificationPermissionsManager> manager_;
+  base::SimpleTestClock clock_;
 };
 
 class DisruptiveNotificationPermissionsManagerRevocationTest
@@ -167,13 +177,85 @@ class DisruptiveNotificationPermissionsManagerRevocationTest
          {safe_browsing::
               kSafetyHubDisruptiveNotificationRevocationMinSiteEngagementScoreDelta
                   .name,
-          "3.0"}});
+          "3.0"},
+         {safe_browsing::
+              kSafetyHubDisruptiveNotificationRevocationWaitingForMetricsDays
+                  .name,
+          "7"}});
   }
 };
 
 TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
        RevokeDisruptivePermission) {
   base::HistogramTester t;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  GURL url("https://www.example.com");
+  SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
+  SetDailyAverageNotificationCount(url, 3);
+  site_engagement_service()->ResetBaseScoreForURL(url, 0);
+
+  manager()->RevokeDisruptiveNotifications();
+  EXPECT_EQ(
+      CONTENT_SETTING_ALLOW,
+      hcsm()->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
+
+  content_settings::SettingInfo info;
+  base::Value stored_value = hcsm()->GetWebsiteSetting(
+      url, url,
+      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS, &info);
+  EXPECT_FALSE(stored_value.is_none());
+  ASSERT_TRUE(stored_value.is_dict());
+  base::Value::Dict dict = std::move(stored_value).TakeDict();
+  EXPECT_FALSE(
+      dict.FindBool(safety_hub::kHasReportedMetricsStr).value_or(false));
+  EXPECT_EQ(0.0, dict.FindDouble(safety_hub::kSiteEngagementStr).value_or(0));
+  EXPECT_EQ(3,
+            dict.FindInt(safety_hub::kDailyNotificationCountStr).value_or(0));
+
+  t.ExpectBucketCount(kRevocationResultHistogram,
+                      RevocationResult::kProposedRevoke, 1);
+  t.ExpectBucketCount(kRevokedWebsitesCountHistogram, 1, 1);
+  t.ExpectBucketCount(kNotificationCountHistogram, 3, 1);
+
+  clock()->Advance(base::Days(3));
+
+  // Log metrics (happens when a notification is shown).
+  ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
+  ukm_recorder.UpdateSourceURL(source_id, GURL(url));
+  DisruptiveNotificationPermissionsManager::LogMetrics(profile(), url,
+                                                       source_id);
+
+  // On the next run, site goes from proposed to actual revocation.
+  manager()->RevokeDisruptiveNotifications();
+  EXPECT_EQ(
+      CONTENT_SETTING_ASK,
+      hcsm()->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
+  EXPECT_EQ(GetRevokedPermissionsCount(), 1);
+  t.ExpectBucketCount(kRevocationResultHistogram,
+                      RevocationResult::kProposedRevoke, 1);
+  t.ExpectBucketCount(kRevocationResultHistogram, RevocationResult::kRevoke, 1);
+  t.ExpectBucketCount(
+      "Settings.SafetyHub.DisruptiveNotificationRevocations."
+      "Revoke.DaysSinceProposedRevocation",
+      3, 1);
+  t.ExpectBucketCount(
+      "Settings.SafetyHub.DisruptiveNotificationRevocations."
+      "HasReportedMetricsBeforeRevocation",
+      true, 1);
+
+  // After that, no new metrics are reported since there is no notification
+  // content setting exception.
+  manager()->RevokeDisruptiveNotifications();
+  EXPECT_EQ(GetRevokedPermissionsCount(), 1);
+  t.ExpectBucketCount(kRevocationResultHistogram,
+                      RevocationResult::kProposedRevoke, 1);
+  t.ExpectBucketCount(kRevocationResultHistogram, RevocationResult::kRevoke, 1);
+}
+
+TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
+       RevokeDisruptivePermissionHaventReportedMetrics) {
+  base::HistogramTester t;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL url("https://www.example.com");
   SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
   SetDailyAverageNotificationCount(url, 3);
@@ -192,17 +274,58 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   base::Value::Dict dict = std::move(stored_value).TakeDict();
   EXPECT_FALSE(
       dict.FindBool(safety_hub::kHasReportedMetricsStr).value_or(false));
-  EXPECT_EQ(0.0, dict.FindDouble(safety_hub::kSiteEngagementStr).value_or(0));
-  EXPECT_EQ(3,
-            dict.FindInt(safety_hub::kDailyNotificationCountStr).value_or(0));
-
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kProposedRevoke, 1);
-  t.ExpectBucketCount(kRevokedWebsitesCountHistogram, 1, 1);
-  t.ExpectBucketCount(kNotificationCountHistogram, 3, 1);
-  EXPECT_THAT(GetDisplayNotificationFunctionCalledWith(), IsEmpty());
 
-  // On the next run, site goes from proposed to actual revocation.
+  // Metrics weren't yet reported so the notification won't be revoked.
+  manager()->RevokeDisruptiveNotifications();
+  EXPECT_EQ(
+      CONTENT_SETTING_ALLOW,
+      hcsm()->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
+  EXPECT_EQ(GetRevokedPermissionsCount(), 1);
+  t.ExpectBucketCount(kRevocationResultHistogram,
+                      RevocationResult::kProposedRevoke, 1);
+  t.ExpectBucketCount(kRevocationResultHistogram,
+                      RevocationResult::kAlreadyInProposedRevokeList, 1);
+  t.ExpectBucketCount(
+      "Settings.SafetyHub.DisruptiveNotificationRevocations."
+      "HasReportedMetricsBeforeRevocation",
+      false, 0);
+  t.ExpectBucketCount(
+      "Settings.SafetyHub.DisruptiveNotificationRevocations."
+      "HasReportedMetricsBeforeRevocation",
+      true, 0);
+}
+
+TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
+       RevokeDisruptivePermissionAfterCooldown) {
+  base::HistogramTester t;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  GURL url("https://www.example.com");
+  SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
+  SetDailyAverageNotificationCount(url, 3);
+  site_engagement_service()->ResetBaseScoreForURL(url, 0);
+
+  manager()->RevokeDisruptiveNotifications();
+  EXPECT_EQ(
+      CONTENT_SETTING_ALLOW,
+      hcsm()->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
+
+  base::Value stored_value = hcsm()->GetWebsiteSetting(
+      url, url,
+      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS);
+  EXPECT_FALSE(stored_value.is_none());
+  ASSERT_TRUE(stored_value.is_dict());
+  base::Value::Dict dict = std::move(stored_value).TakeDict();
+  EXPECT_FALSE(
+      dict.FindBool(safety_hub::kHasReportedMetricsStr).value_or(false));
+  t.ExpectBucketCount(kRevocationResultHistogram,
+                      RevocationResult::kProposedRevoke, 1);
+
+  clock()->Advance(base::Days(10));
+
+  // On the next run, site goes from proposed to actual revocation even without
+  // metrics being reported because the waiting for metrics has expired.
   manager()->RevokeDisruptiveNotifications();
   EXPECT_EQ(
       CONTENT_SETTING_ASK,
@@ -212,15 +335,14 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
                       RevocationResult::kProposedRevoke, 1);
   t.ExpectBucketCount(kRevocationResultHistogram, RevocationResult::kRevoke, 1);
   EXPECT_THAT(GetDisplayNotificationFunctionCalledWith(), ElementsAre(1));
-
-  // After that, no new metrics are reported since there is no notification
-  // content setting exception.
-  manager()->RevokeDisruptiveNotifications();
-  EXPECT_EQ(GetRevokedPermissionsCount(), 1);
-  t.ExpectBucketCount(kRevocationResultHistogram,
-                      RevocationResult::kProposedRevoke, 1);
-  t.ExpectBucketCount(kRevocationResultHistogram, RevocationResult::kRevoke, 1);
-  EXPECT_THAT(GetDisplayNotificationFunctionCalledWith(), ElementsAre(1));
+  t.ExpectBucketCount(
+      "Settings.SafetyHub.DisruptiveNotificationRevocations."
+      "Revoke.DaysSinceProposedRevocation",
+      10, 1);
+  t.ExpectBucketCount(
+      "Settings.SafetyHub.DisruptiveNotificationRevocations."
+      "HasReportedMetricsBeforeRevocation",
+      false, 1);
 }
 
 TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,

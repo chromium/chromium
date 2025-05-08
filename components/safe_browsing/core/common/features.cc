@@ -373,6 +373,11 @@ constexpr base::FeatureParam<int>
         &kSafetyHubDisruptiveNotificationRevocation,
         /*name=*/"user_regrant_waiting_period", /*default_value=*/7};
 
+constexpr base::FeatureParam<int>
+    kSafetyHubDisruptiveNotificationRevocationWaitingForMetricsDays{
+        &kSafetyHubDisruptiveNotificationRevocation,
+        /*name=*/"waiting_for_metrics_days", /*default_value=*/7};
+
 BASE_FEATURE(kSavePasswordHashFromProfilePicker,
              "SavePasswordHashFromProfilePicker",
              base::FEATURE_ENABLED_BY_DEFAULT);
