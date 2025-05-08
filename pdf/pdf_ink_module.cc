@@ -453,9 +453,7 @@ bool PdfInkModule::OnMouseDown(const blink::WebMouseEvent& event) {
       CHECK(mouse_up_result);
     }
 
-    if (features::kPdfInk2TextHighlighting.Get() &&
-        state.brush_type == PdfInkBrush::Type::kHighlighter &&
-        client_->IsSelectableTextOrLinkArea(position)) {
+    if (IsHighlightingTextAtPosition(state, position)) {
       return StartTextHighlight(position, event.ClickCount(),
                                 event.TimeStamp());
     }
@@ -776,9 +774,7 @@ bool PdfInkModule::FinishStroke(const gfx::PointF& position,
   state.input_last_event.reset();
 
   bool set_drawing_brush = MaybeSetDrawingBrush();
-  if (features::kPdfInk2TextHighlighting.Get() &&
-      state.brush_type == PdfInkBrush::Type::kHighlighter &&
-      client_->IsSelectableTextOrLinkArea(position)) {
+  if (IsHighlightingTextAtPosition(state, position)) {
     client_->UpdateInkCursor(ui::mojom::CursorType::kIBeam);
   } else if (set_drawing_brush) {
     MaybeSetCursor();
@@ -1317,6 +1313,14 @@ void PdfInkModule::HandleFinishTextAnnotationMessage(
     const base::Value::Dict& message) {
   // TODO(crbug.com/409439509): Fill in this method. For now, just create it
   // so the backend doesn't CHECK when it's sent from the frontend.
+}
+
+bool PdfInkModule::IsHighlightingTextAtPosition(
+    const DrawingStrokeState& state,
+    const gfx::PointF& position) const {
+  return features::kPdfInk2TextHighlighting.Get() &&
+         state.brush_type == PdfInkBrush::Type::kHighlighter &&
+         client_->IsSelectableTextOrLinkArea(position);
 }
 
 PdfInkBrush& PdfInkModule::GetDrawingBrush() {
