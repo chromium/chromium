@@ -84,25 +84,4 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
   }
 }
 
-scoped_refptr<media::VideoFrame> CreateTestFrameWithGMB(
-    const gfx::Size& coded_size,
-    const gfx::Rect& visible_rect,
-    const gfx::Size& natural_size,
-    media::VideoFrame::StorageType storage_type,
-    media::VideoPixelFormat pixel_format,
-    base::TimeDelta timestamp,
-    std::unique_ptr<gfx::GpuMemoryBuffer> gmb) {
-  CHECK_EQ(storage_type,
-           media::VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER);
-  CHECK(gmb);
-  std::optional<gfx::BufferFormat> buffer_format =
-      media::VideoPixelFormatToGfxBufferFormat(pixel_format);
-  CHECK(buffer_format) << "Pixel format "
-                       << media::VideoPixelFormatToString(pixel_format)
-                       << " has no corresponding gfx::BufferFormat";
-
-  return media::VideoFrame::WrapExternalGpuMemoryBuffer(
-      visible_rect, natural_size, std::move(gmb), timestamp);
-}
-
 }  // namespace blink

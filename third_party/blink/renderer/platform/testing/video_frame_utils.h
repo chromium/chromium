@@ -29,15 +29,6 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
     base::TimeDelta timestamp,
     gpu::TestSharedImageInterface* test_sii);
 
-scoped_refptr<media::VideoFrame> CreateTestFrameWithGMB(
-    const gfx::Size& coded_size,
-    const gfx::Rect& visible_rect,
-    const gfx::Size& natural_size,
-    media::VideoFrame::StorageType storage_type,
-    media::VideoPixelFormat pixel_format,
-    base::TimeDelta timestamp,
-    std::unique_ptr<gfx::GpuMemoryBuffer> gmb);
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_VIDEO_FRAME_UTILS_H_
