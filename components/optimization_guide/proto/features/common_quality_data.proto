@@ -311,6 +311,8 @@ message ContentAttributes {
   int32 label_for_dom_node_id = 25;
 
   // The role of this ContentNode derived from the aria-role attribute.
+  // NOTE: This is enabled only for the experimental version of
+  // ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0.
   AXRole aria_role = 26;
 
   reserved 5, 6, 7, 17, 18, 1, 22;
