@@ -215,7 +215,8 @@ class CORE_EXPORT Node : public EventTarget {
   virtual void setNodeValue(const String&,
                             ExceptionState& = ASSERT_NO_EXCEPTION);
   ContainerNode* parentNode() const {
-    return IsShadowRoot() ? nullptr : ParentOrShadowHostNode();
+    return reinterpret_cast<ContainerNode*>(
+        parent_or_shadow_host_node_.TryGetAs<ParentNodeTag>());
   }
 
   Element* parentElement() const;
@@ -456,7 +457,13 @@ class CORE_EXPORT Node : public EventTarget {
 
   bool IsDocumentNode() const;
   bool IsTreeScope() const;
-  bool IsShadowRoot() const { return IsDocumentFragment() && IsTreeScope(); }
+  bool IsShadowRoot() const {
+    const bool result = parent_or_shadow_host_node_.Is<ShadowHostTag>();
+#if DCHECK_IS_ON()
+    DCHECK(!result || (IsDocumentFragment() && IsTreeScope()));
+#endif
+    return result;
+  }
 
   bool IsActiveSlot() const;
   bool IsSlotable() const { return IsTextNode() || IsElementNode(); }
@@ -484,7 +491,8 @@ class CORE_EXPORT Node : public EventTarget {
   // Node's parent, shadow tree host.
   ContainerNode* ParentOrShadowHostNode() const;
   Element* ParentOrShadowHostElement() const;
-  void SetParentOrShadowHostNode(ContainerNode*);
+  void SetParentNode(ContainerNode*);
+  void SetShadowHostNode(ContainerNode*);
 
   // Knows about all kinds of hosts.
   ContainerNode* ParentOrShadowHostOrTemplateHostNode() const;
@@ -590,13 +598,15 @@ class CORE_EXPORT Node : public EventTarget {
   // a micro-benchmark regression (https://crbug.com/926343).
   void SetStyleChangeOnInsertion() {
     DCHECK(isConnected());
-    if (ShouldSkipMarkingStyleDirty())
+    if (ShouldSkipMarkingStyleDirty()) {
       return;
+    }
     if (InvalidationTracingFlag::IsEnabled()) [[unlikely]] {
       MaybeAddNodeInsertedTraceEvent();
     }
-    if (!NeedsStyleRecalc())
+    if (!NeedsStyleRecalc()) {
       SetStyleChange(kLocalStyleChange);
+    }
     MarkAncestorsWithChildNeedsStyleRecalc();
   }
 
@@ -607,8 +617,9 @@ class CORE_EXPORT Node : public EventTarget {
     DCHECK(IsElementNode());
     DCHECK(isConnected());
     DCHECK(parentElement() && !GetStyleRecalcParent());
-    if (!NeedsStyleRecalc())
+    if (!NeedsStyleRecalc()) {
       SetStyleChange(kLocalStyleChange);
+    }
   }
 
   bool NeedsReattachLayoutTree() const {
@@ -1246,6 +1257,14 @@ class CORE_EXPORT Node : public EventTarget {
   void InvalidateIfHasEffectiveAppearance() const;
 
  private:
+  static constexpr struct ParentNodeTag {
+  } kParentNodeTag;
+  static constexpr struct ShadowHostTag {
+  } kShadowHostTag;
+
+  using TaggedParentOrShadowHostNode =
+      subtle::TaggedUncompressedMember<Node, ParentNodeTag, ShadowHostTag>;
+
   Node* ToNode() final;
 
   bool IsUserActionElementActive() const;
@@ -1274,10 +1293,10 @@ class CORE_EXPORT Node : public EventTarget {
   // EventTarget ends with a single 32-bit member, so put one 32-bit member
   // first to avoid padding on 64-bit.
   uint32_t node_flags_;
-  // Both parent and tree_scope are hot accessed members. Keep them uncompressed
+  // Both tree_scope and parent are hot accessed members. Keep them uncompressed
   // for performance reasons.
-  subtle::UncompressedMember<Node> parent_or_shadow_host_node_;
   subtle::UncompressedMember<TreeScope> tree_scope_;
+  TaggedParentOrShadowHostNode parent_or_shadow_host_node_;
   // Compressed members and flags are after uncompressed members to minimize
   // padding.
   Member<Node> previous_;
@@ -1286,14 +1305,22 @@ class CORE_EXPORT Node : public EventTarget {
   Member<NodeRareData> data_;
 };
 
-inline void Node::SetParentOrShadowHostNode(ContainerNode* parent) {
+inline void Node::SetParentNode(ContainerNode* parent) {
   DCHECK(IsMainThread());
-  parent_or_shadow_host_node_ = reinterpret_cast<Node*>(parent);
+  parent_or_shadow_host_node_.SetAs<ParentNodeTag>(
+      reinterpret_cast<Node*>(parent));
+}
+
+inline void Node::SetShadowHostNode(ContainerNode* shadow_host) {
+  DCHECK(IsMainThread());
+  parent_or_shadow_host_node_.SetAs<ShadowHostTag>(
+      reinterpret_cast<Node*>(shadow_host));
 }
 
 inline ContainerNode* Node::ParentOrShadowHostNode() const {
   DCHECK(IsMainThread());
-  return reinterpret_cast<ContainerNode*>(parent_or_shadow_host_node_.Get());
+  return reinterpret_cast<ContainerNode*>(
+      parent_or_shadow_host_node_.GetUntagged());
 }
 
 // Allow equality comparisons of Nodes by reference or pointer, interchangeably.

@@ -113,7 +113,7 @@ void DocumentFragment::ForgetChildren() {
   Node* next_child = firstChild();
   do {
     Node* child = next_child;
-    child->SetParentOrShadowHostNode(nullptr);
+    child->SetParentNode(nullptr);
     child->SetPreviousSibling(nullptr);
     next_child = child->nextSibling();
     child->SetNextSibling(nullptr);

@@ -325,8 +325,8 @@ void Node::DumpStatistics() {
 
 Node::Node(TreeScope* tree_scope, ConstructionType type)
     : node_flags_(type),
-      parent_or_shadow_host_node_(nullptr),
       tree_scope_(tree_scope),
+      parent_or_shadow_host_node_(kParentNodeTag, nullptr),
       previous_(nullptr),
       next_(nullptr),
       layout_object_(nullptr),
@@ -3713,8 +3713,8 @@ void Node::AddConsoleMessage(mojom::blink::ConsoleMessageSource source,
 }
 
 void Node::Trace(Visitor* visitor) const {
-  visitor->Trace(parent_or_shadow_host_node_);
   visitor->Trace(tree_scope_);
+  visitor->Trace(parent_or_shadow_host_node_);
   visitor->Trace(previous_);
   visitor->Trace(next_);
   visitor->Trace(layout_object_);
