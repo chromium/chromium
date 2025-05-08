@@ -208,6 +208,15 @@ void FakeWebAppUiManager::TriggerInstallDialog(
                           webapps::InstallResultCode::kWebAppProviderNotReady);
 }
 
+void FakeWebAppUiManager::TriggerInstallDialogForBackgroundInstall(
+    content::WebContents* initiating_web_contents,
+    std::unique_ptr<webapps::MlInstallOperationTracker> tracker,
+    const GURL& install_url,
+    const std::optional<GURL>& manifest_id,
+    InstallCallback callback) {
+  NOTIMPLEMENTED();
+}
+
 void FakeWebAppUiManager::PresentUserUninstallDialog(
     const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source,

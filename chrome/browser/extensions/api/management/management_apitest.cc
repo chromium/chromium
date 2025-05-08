@@ -261,7 +261,8 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
              });
            });)";
 
-    web_app::SetAutoAcceptPWAInstallConfirmationForTesting(true);
+    auto auto_accept_pwa_install_confirmation =
+        web_app::SetAutoAcceptPWAInstallConfirmationForTesting();
     const GURL start_url = https_test_server_.GetURL(web_app_start_url);
     webapps::AppId web_app_id =
         web_app::GenerateAppId(/*manifest_id_path=*/std::nullopt, start_url);
@@ -284,8 +285,6 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
               web_app::proto::INSTALLED_WITH_OS_INTEGRATION);
     EXPECT_EQ(2, static_cast<int>(
                      provider->ui_manager().GetNumWindowsForApp(web_app_id)));
-
-    web_app::SetAutoAcceptPWAInstallConfirmationForTesting(false);
   }
 
   net::EmbeddedTestServer https_test_server_;

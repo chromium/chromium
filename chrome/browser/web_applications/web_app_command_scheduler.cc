@@ -83,6 +83,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
@@ -689,12 +690,14 @@ void WebAppCommandScheduler::RunIconDiagnosticsForApp(
 void WebAppCommandScheduler::InstallAppFromUrl(
     const GURL& install_url,
     const std::optional<GURL>& manifest_id,
+    base::WeakPtr<content::WebContents> web_contents,
+    WebAppInstallDialogCallback dialog_callback,
     WebInstallFromUrlCommandCallback installed_callback,
     const base::Location& location) {
   provider_->command_manager().ScheduleCommand(
-      std::make_unique<WebInstallFromUrlCommand>(profile_.get(), install_url,
-                                                 manifest_id,
-                                                 std::move(installed_callback)),
+      std::make_unique<WebInstallFromUrlCommand>(
+          profile_.get(), install_url, manifest_id, web_contents,
+          std::move(dialog_callback), std::move(installed_callback)),
       location);
 }
 

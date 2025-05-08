@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_logging.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -32,6 +33,8 @@
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/installable/installable_params.h"
+#include "components/webapps/browser/installable/ml_install_operation_tracker.h"
+#include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
@@ -46,6 +49,8 @@ WebInstallFromUrlCommand::WebInstallFromUrlCommand(
     Profile& profile,
     const GURL& install_url,
     const std::optional<GURL>& manifest_id,
+    base::WeakPtr<content::WebContents> web_contents,
+    WebAppInstallDialogCallback dialog_callback,
     WebInstallFromUrlCommandCallback installed_callback)
     : WebAppCommand<SharedWebContentsLock,
                     const webapps::AppId&,
@@ -60,6 +65,8 @@ WebInstallFromUrlCommand::WebInstallFromUrlCommand(
       profile_(profile),
       manifest_id_(manifest_id),
       install_url_(install_url),
+      web_contents_(web_contents),
+      dialog_callback_(std::move(dialog_callback)),
       install_error_log_entry_(/*background_installation=*/false,
                                kInstallSource) {
   if (manifest_id_.has_value()) {
@@ -237,15 +244,26 @@ void WebInstallFromUrlCommand::OnIconsRetrievedShowDialog(
   install_error_log_entry_.LogDownloadedIconsErrors(
       *web_app_info_, result, icons_map, icons_http_results);
 
-  // TODO(crbug.com/333795265): Show install dialog.
-  OnInstallDialogCompleted(/*user_accepted=*/true);
+  // TODO(crbug.com/415825168): Support detailed install dialog for background
+  // installs. For now, pass `nullptr` to the screenshot_fetcher which will
+  // always show the simple dialog.
+  std::move(dialog_callback_)
+      .Run(
+          /*screenshot_fetcher=*/nullptr, web_contents_.get(),
+          std::move(web_app_info_),
+          base::BindOnce(&WebInstallFromUrlCommand::OnInstallDialogCompleted,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
-void WebInstallFromUrlCommand::OnInstallDialogCompleted(bool user_accepted) {
+void WebInstallFromUrlCommand::OnInstallDialogCompleted(
+    bool user_accepted,
+    std::unique_ptr<WebAppInstallInfo> web_app_info) {
   if (!user_accepted) {
     Abort(webapps::InstallResultCode::kUserInstallDeclined);
     return;
   }
+
+  web_app_info_ = std::move(web_app_info);
 
   web_app_info_->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;

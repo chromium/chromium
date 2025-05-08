@@ -127,6 +127,10 @@ enum class PwaInProductHelpState {
   kNotShown
 };
 
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kSimpleInstallDialogAppTitle);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kSimpleInstallDialogIconView);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kSimpleInstallDialogOriginLabel);
+
 // Shows the PWA installation confirmation bubble anchored off the PWA install
 // icon in the omnibox.
 //
@@ -165,7 +169,7 @@ void ShowWebAppDetailedInstallDialog(
 
 // Sets whether |ShowSimpleInstallDialogForWebApps| should accept immediately
 // without any user interaction.
-void SetAutoAcceptPWAInstallConfirmationForTesting(bool auto_accept);
+base::AutoReset<bool> SetAutoAcceptPWAInstallConfirmationForTesting();
 
 // Sets whether |ShowDiyInstallDialogForWebApps| should accept immediately
 // without any user interaction.

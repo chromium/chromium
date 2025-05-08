@@ -1182,13 +1182,13 @@ void TestDeclineDialogCallback(
 webapps::AppId InstallPwaForCurrentUrl(Browser* browser) {
   // Depending on the installability criteria, different dialogs can be used.
   SetAutoAcceptWebAppDialogForTesting(true, true);
-  SetAutoAcceptPWAInstallConfirmationForTesting(true);
+  auto auto_accept_pwa_install_confirmation =
+      SetAutoAcceptPWAInstallConfirmationForTesting();
   SetAutoAcceptDiyAppsInstallDialogForTesting(true);
   WebAppTestInstallWithOsHooksObserver observer(browser->profile());
   observer.BeginListening();
   CHECK(chrome::ExecuteCommand(browser, IDC_INSTALL_PWA));
   webapps::AppId app_id = observer.Wait();
-  SetAutoAcceptPWAInstallConfirmationForTesting(false);
   SetAutoAcceptWebAppDialogForTesting(false, false);
   SetAutoAcceptDiyAppsInstallDialogForTesting(false);
   return app_id;

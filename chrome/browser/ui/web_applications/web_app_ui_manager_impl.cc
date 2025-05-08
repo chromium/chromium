@@ -53,6 +53,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/user_education_data.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/clear_site_data_utils.h"
@@ -422,6 +423,17 @@ void WebAppUiManagerImpl::TriggerInstallDialog(
     webapps::WebappInstallSource source,
     InstallCallback callback) {
   web_app::CreateWebAppFromManifest(web_contents, source, std::move(callback));
+}
+
+void WebAppUiManagerImpl::TriggerInstallDialogForBackgroundInstall(
+    content::WebContents* initiating_web_contents,
+    std::unique_ptr<webapps::MlInstallOperationTracker> tracker,
+    const GURL& install_url,
+    const std::optional<GURL>& manifest_id,
+    InstallCallback callback) {
+  web_app::CreateWebAppForBackgroundInstall(initiating_web_contents,
+                                            std::move(tracker), install_url,
+                                            manifest_id, std::move(callback));
 }
 
 void WebAppUiManagerImpl::PresentUserUninstallDialog(

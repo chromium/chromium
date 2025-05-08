@@ -585,11 +585,14 @@ class WebAppCommandScheduler {
       WebAppIconDiagnosticResultCallback result_callback,
       const base::Location& location = FROM_HERE);
 
-  // Installs the web content at `install_url`, verifying that it has the
-  // given resolved `manifest_id`. Returns the `InstallResultCode` and the
-  // computed manifest id if successful. Used by Web Install API.
+  // User initiated install uses the shared web contents to install the content
+  // at `install_url`, with optional `manifest_id`.
+  // Calls `installed_callback` with the `InstallResultCode` and the computed
+  // manifest id if successful. Used by Web Install API.
   void InstallAppFromUrl(const GURL& install_url,
                          const std::optional<GURL>& manifest_id,
+                         base::WeakPtr<content::WebContents> web_contents,
+                         WebAppInstallDialogCallback dialog_callback,
                          WebInstallFromUrlCommandCallback installed_callback,
                          const base::Location& location = FROM_HERE);
 

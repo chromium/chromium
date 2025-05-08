@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "components/webapps/common/web_app_id.h"
 
 class Browser;
@@ -23,6 +24,9 @@ namespace base {
 class FilePath;
 }  // namespace base
 
+namespace webapps {
+class MlInstallOperationTracker;
+}  // namespace webapps
 namespace web_app {
 
 class FakeWebAppUiManager : public WebAppUiManager {
@@ -113,6 +117,12 @@ class FakeWebAppUiManager : public WebAppUiManager {
   void TriggerInstallDialog(content::WebContents* web_contents,
                             webapps::WebappInstallSource source,
                             InstallCallback callback) override;
+  void TriggerInstallDialogForBackgroundInstall(
+      content::WebContents* initiating_web_contents,
+      std::unique_ptr<webapps::MlInstallOperationTracker> tracker,
+      const GURL& install_url,
+      const std::optional<GURL>& manifest_id,
+      InstallCallback callback) override;
 
   void PresentUserUninstallDialog(
       const webapps::AppId& app_id,

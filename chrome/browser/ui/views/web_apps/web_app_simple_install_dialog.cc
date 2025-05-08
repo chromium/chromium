@@ -148,8 +148,8 @@ void ShowSimpleInstallDialogForWebApps(
   }
 }
 
-void SetAutoAcceptPWAInstallConfirmationForTesting(bool auto_accept) {
-  g_auto_accept_pwa_for_testing = auto_accept;
+base::AutoReset<bool> SetAutoAcceptPWAInstallConfirmationForTesting() {
+  return base::AutoReset<bool>(&g_auto_accept_pwa_for_testing, true);
 }
 
 base::AutoReset<bool> SetDontCloseOnDeactivateForTesting() {

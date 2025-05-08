@@ -137,6 +137,12 @@ class WebAppUiManagerImpl : public BrowserListObserver,
   void TriggerInstallDialog(content::WebContents* web_contents,
                             webapps::WebappInstallSource source,
                             InstallCallback callback) override;
+  void TriggerInstallDialogForBackgroundInstall(
+      content::WebContents* initiating_web_contents,
+      std::unique_ptr<webapps::MlInstallOperationTracker> tracker,
+      const GURL& install_url,
+      const std::optional<GURL>& manifest_id,
+      InstallCallback callback) override;
 
   void PresentUserUninstallDialog(
       const webapps::AppId& app_id,
