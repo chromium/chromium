@@ -33,6 +33,8 @@ TAG_SPECIALIZATIONS = {
             'android-s',
             'android-t',
             'android-14',
+            'android-15',
+            'android-16',
         ],
         'chromeos': [],
         'fuchsia': [],
@@ -106,6 +108,7 @@ TAG_SPECIALIZATIONS = {
             'intel-0x3e92',
             'intel-0x3e9b',
             'intel-0x4680',
+            'intel-0x46a8',
             'intel-0x5912',
             'intel-0x9bc5',
         ],
@@ -188,6 +191,7 @@ TAG_HEADER = """\
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv android-sm-a137f
 #             android-sm-a236b android-sm-s911u1
+#         android-brya
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
 #             chromeos-board-octopus chromeos-board-volteer
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
