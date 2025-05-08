@@ -145,9 +145,8 @@ void AndroidInputHelper::RecordToolTypeForActionDown(
 }
 
 void AndroidInputHelper::ComputeEventLatencyOSTouchHistograms(
-    const ui::MotionEvent& event) {
-  base::TimeTicks event_time = event.GetEventTime();
-  base::TimeTicks current_time = base::TimeTicks::Now();
+    const ui::MotionEvent& event,
+    const base::TimeTicks& processing_time) {
   ui::EventType event_type;
   switch (event.GetAction()) {
     case ui::MotionEvent::Action::DOWN:
@@ -164,7 +163,7 @@ void AndroidInputHelper::ComputeEventLatencyOSTouchHistograms(
     default:
       return;
   }
-  ui::ComputeEventLatencyOS(event_type, event_time, current_time);
+  ui::ComputeEventLatencyOS(event_type, event.GetEventTime(), processing_time);
 }
 
 }  // namespace input

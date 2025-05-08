@@ -46,7 +46,9 @@ class COMPONENT_EXPORT(INPUT) AndroidInputHelper {
       gfx::PointF* transformed_point);
 
   void RecordToolTypeForActionDown(const ui::MotionEventAndroid& event);
-  void ComputeEventLatencyOSTouchHistograms(const ui::MotionEvent& event);
+  void ComputeEventLatencyOSTouchHistograms(
+      const ui::MotionEvent& event,
+      const base::TimeTicks& processing_time);
 
  private:
   // |view_| is supposed to outlive |this|.

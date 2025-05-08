@@ -33,6 +33,16 @@ MATCHER_P(EqPixToDip, pix_to_dip, "Matches pix_to_dip value of MotionEvent") {
   return pix_to_dip == (arg.GetX(0) / arg.GetXPix(0));
 }
 
+MATCHER_P(EqEventTime, event_time, "Matches event time of MotionEvent") {
+  if (arg.GetEventTime() == event_time) {
+    return true;
+  }
+
+  *result_listener << "GetEventTime: " << arg.GetEventTime()
+                   << ", event_time: " << event_time;
+  return false;
+}
+
 MATCHER_P2(EqXYInPixels, x, y, "Matches x,y values of MotionEvent") {
   if (x == arg.GetXPix(0) && y == arg.GetYPix(0)) {
     return true;
@@ -608,6 +618,31 @@ TEST_F(AndroidStateTransferHandlerTest, OlderStatesAreDropped) {
   }
   EXPECT_EQ(handler_.GetPendingTransferredStatesSizeForTesting(), 0u);
   EXPECT_EQ(handler_.GetEventsBufferSizeForTesting(), 0u);
+}
+
+TEST_F(AndroidStateTransferHandlerTest, DownEventUsesDownTimeAsEventTime) {
+  base::TimeTicks event_time = base::TimeTicks::Now() - base::Milliseconds(100);
+  const jlong down_time_ms = event_time.ToUptimeMillis();
+  const base::TimeTicks down_time =
+      base::TimeTicks::FromUptimeMillis(down_time_ms);
+
+  // Create an ACTION_DOWN event with different event time and down time.
+  event_time += base::Milliseconds(8);
+  base::android::ScopedInputEvent down_event =
+      GetInputEvent(down_time_ms, event_time.ToUptimeMillis(),
+                    kAndroidActionDown, /*x=*/100, /*y*/ 100);
+
+  {
+    auto state = input::mojom::TouchTransferState::New();
+    state->down_time_ms = base::TimeTicks::FromUptimeMillis(down_time_ms);
+    state->root_widget_frame_sink_id = kRootWidgetFrameSinkId;
+    handler_.StateOnTouchTransfer(std::move(state),
+                                  mock_rir_support_.GetWeakPtr());
+  }
+
+  EXPECT_CALL(mock_rir_support_, OnTouchEvent(EqEventTime(down_time), _))
+      .Times(1);
+  handler_.OnMotionEvent(std::move(down_event), kRootCompositorFrameSinkId);
 }
 
 }  // namespace viz

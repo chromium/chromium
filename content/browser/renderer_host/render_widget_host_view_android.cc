@@ -208,6 +208,29 @@ TakeContentToVisibleTimeRequest(RenderWidgetHostImpl* host) {
   return host->GetVisibleTimeRequestTrigger().TakeRequest();
 }
 
+class ScopedLatencyHistogram {
+ public:
+  ScopedLatencyHistogram(input::AndroidInputHelper& input_helper,
+                         const ui::MotionEventAndroid& event)
+      : event_processing_time_(base::TimeTicks::Now()),
+        input_helper_(input_helper),
+        event_(event) {}
+  void DoNotEmitHistograms() { emit_histogrmams_ = false; }
+  ~ScopedLatencyHistogram() {
+    if (!emit_histogrmams_) {
+      return;
+    }
+    input_helper_->ComputeEventLatencyOSTouchHistograms(*event_,
+                                                        event_processing_time_);
+  }
+
+ private:
+  base::TimeTicks event_processing_time_;
+  const raw_ref<input::AndroidInputHelper> input_helper_;
+  const raw_ref<const ui::MotionEventAndroid> event_;
+  bool emit_histogrmams_ = true;
+};
+
 }  // namespace
 
 // static
@@ -1471,7 +1494,7 @@ bool RenderWidgetHostViewAndroid::OnTouchEvent(
   if (!host() || !host()->delegate())
     return false;
 
-  input_helper_->ComputeEventLatencyOSTouchHistograms(event);
+  ScopedLatencyHistogram latency_histogram(*input_helper_, event);
 
   // Receiving any other touch event before the double-tap timeout expires
   // cancels opening the spellcheck menu.
@@ -1513,6 +1536,9 @@ bool RenderWidgetHostViewAndroid::OnTouchEvent(
   // Browser is now handling.
   if (input_transfer_handler_) {
     if (input_transfer_handler_->OnTouchEvent(event)) {
+      if (event.GetAction() == ui::MotionEvent::Action::DOWN) {
+        latency_histogram.DoNotEmitHistograms();
+      }
       return true;
     } else if (event.GetAction() == ui::MotionEvent::Action::DOWN) {
       // Stop any ongoing fling on VizCompositorThread if the new input sequence
