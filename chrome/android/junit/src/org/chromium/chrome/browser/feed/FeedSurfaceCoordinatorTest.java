@@ -94,6 +94,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -166,6 +167,7 @@ public class FeedSurfaceCoordinatorTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private SnapScrollHelper mSnapHelper;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
     @Mock private SectionHeaderView mSectionHeaderView;
     @Mock private FeedActionDelegate mFeedActionDelegate;
@@ -514,6 +516,7 @@ public class FeedSurfaceCoordinatorTest {
         when(mRenderer.bind(mContentManagerCaptor.capture(), isNull(), anyInt()))
                 .thenReturn(recyclerview);
         when(mRenderer.getAdapter()).thenReturn(mAdapter);
+        when(mWindowAndroid.getModalDialogManager()).thenReturn(mModalDialogManager);
         return new FeedSurfaceCoordinator(
                 mActivity,
                 mSnackbarManager,

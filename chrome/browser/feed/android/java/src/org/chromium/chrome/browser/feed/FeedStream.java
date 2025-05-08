@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.feed;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -763,8 +764,7 @@ public class FeedStream implements Stream {
                 new WebFeedSnackbarController(
                         activity,
                         snackbarAction,
-                        // TODO: Update tests that set this to null, then change to assert.
-                        assumeNonNull(windowAndroid.getModalDialogManager()),
+                        assertNonNull(windowAndroid.getModalDialogManager()),
                         snackbarManager);
 
         mHandlersMap = new HashMap<>();

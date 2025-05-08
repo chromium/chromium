@@ -80,6 +80,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.feed.proto.FeedUiProto;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.nio.charset.StandardCharsets;
@@ -118,6 +119,7 @@ public class FeedStreamTest {
     @Captor private ArgumentCaptor<Snackbar> mSnackbarCaptor;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
     private StubSnackbarController mSnackbarController = new StubSnackbarController();
     @Mock private Runnable mMockRunnable;
@@ -180,6 +182,7 @@ public class FeedStreamTest {
                 .thenReturn(LOAD_MORE_TRIGGER_LOOKAHEAD);
         when(mFeedServiceBridgeJniMock.getLoadMoreTriggerScrollDistanceDp())
                 .thenReturn(LOAD_MORE_TRIGGER_SCROLL_DISTANCE_DP);
+        when(mWindowAndroid.getModalDialogManager()).thenReturn(mModalDialogManager);
         mFeedStream =
                 new FeedStream(
                         mActivity,
