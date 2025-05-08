@@ -112,6 +112,49 @@ TEST_F(ReadAnythingNodeUtilsTest,
   EXPECT_NE(text.find('\r'), std::string::npos);
 }
 
+TEST_F(ReadAnythingNodeUtilsTest, IsIgnored_ReturnsTrueWhenAXNodeIsIgnored) {
+  static constexpr ui::AXNodeID kId = 2;
+  ui::AXNodeData data = test::TextNode(kId);
+  data.role = ax::mojom::Role::kNone;
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, kId, 0);
+  node.SetData(std::move(data));
+
+  EXPECT_TRUE(node.IsIgnored());
+  // The node should be ignored regardless of whether it is a PDF.
+  EXPECT_TRUE(a11y::IsIgnored(&node, /*is_pdf=*/false));
+  EXPECT_TRUE(a11y::IsIgnored(&node, /*is_pdf=*/true));
+}
+
+TEST_F(ReadAnythingNodeUtilsTest, IsIgnored_ControlElementsIgnored) {
+  const std::u16string sentence = u"One day more!";
+
+  static constexpr ui::AXNodeID kId = 2;
+  ui::AXNodeData control_not_text_field_data = test::TextNode(kId, sentence);
+  control_not_text_field_data.role = ax::mojom::Role::kSpinButton;
+
+  ui::AXNodeData text_field_data = test::TextNode(kId, sentence);
+  text_field_data.role = ax::mojom::Role::kTextField;
+
+  ui::AXNodeData select_data = test::TextNode(kId, sentence);
+  select_data.role = ax::mojom::Role::kRadioGroup;
+
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, kId, 0);
+
+  // Control nodes are ignored.
+  node.SetData(std::move(control_not_text_field_data));
+  EXPECT_TRUE(a11y::IsIgnored(&node, false));
+
+  // Text field nodes are not ignored.
+  node.SetData(std::move(text_field_data));
+  EXPECT_FALSE(a11y::IsIgnored(&node, false));
+
+  // Select field nodes are ignored
+  node.SetData(std::move(select_data));
+  EXPECT_TRUE(a11y::IsIgnored(&node, false));
+}
+
 TEST_F(ReadAnythingNodeUtilsTest, IsSuperscript) {
   const std::u16string sentence =
       u"This is a superscript: <sup>superscript</sup>";
