@@ -146,6 +146,12 @@ constexpr auto kTwoPageVerticalLayoutHorzLinePage1Inputs =
         {kTwoPageVerticalLayoutHorzLinePoint1Canonical, base::Seconds(0)},
     });
 
+// Commonly used test brush message params. The color corresponds to "Red1" for
+// pen brushes and "Light Red" for highlighter brushes.
+constexpr TestAnnotationBrushMessageParams kRedBrushParams{
+    /*color_r=*/0xF2, /*color_g=*/0x8B,
+    /*color_b=*/0x82, /*size=*/6.0f};
+
 // Matcher for ink::Stroke objects against their expected brush and inputs.
 MATCHER_P(InkStrokeEq, expected_brush, "") {
   const auto& [actual_stroke, expected_inputs] = arg;
@@ -587,9 +593,10 @@ TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessageEraser) {
 TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessagePen) {
   EnableAnnotationMode();
 
-  TestAnnotationBrushMessageParams message_params{/*color_r=*/10,
-                                                  /*color_g=*/255,
-                                                  /*color_b=*/50, /*size=*/8.0};
+  TestAnnotationBrushMessageParams message_params{/*color_r=*/0x0A,
+                                                  /*color_g=*/0xFF,
+                                                  /*color_b=*/0x32,
+                                                  /*size=*/8.0f};
   base::Value::Dict message =
       CreateSetAnnotationBrushMessageForTesting("pen", &message_params);
   EXPECT_TRUE(ink_module().OnMessage(message));
@@ -598,7 +605,7 @@ TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessagePen) {
   ASSERT_TRUE(brush);
 
   const ink::Brush& ink_brush = brush->ink_brush();
-  EXPECT_EQ(SkColorSetRGB(10, 255, 50), GetSkColorFromInkBrush(ink_brush));
+  EXPECT_EQ(SkColorSetRGB(0x0A, 0xFF, 0x32), GetSkColorFromInkBrush(ink_brush));
   EXPECT_EQ(8.0f, ink_brush.GetSize());
   ASSERT_EQ(1u, ink_brush.CoatCount());
   const ink::BrushCoat& coat = ink_brush.GetCoats()[0];
@@ -611,9 +618,10 @@ TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessagePen) {
 TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
   EnableAnnotationMode();
 
-  TestAnnotationBrushMessageParams message_params{/*color_r=*/240,
-                                                  /*color_g=*/133,
-                                                  /*color_b=*/0, /*size=*/4.5};
+  TestAnnotationBrushMessageParams message_params{/*color_r=*/0xF0,
+                                                  /*color_g=*/0x85,
+                                                  /*color_b=*/0x00,
+                                                  /*size=*/4.5f};
   base::Value::Dict message =
       CreateSetAnnotationBrushMessageForTesting("highlighter", &message_params);
   EXPECT_TRUE(ink_module().OnMessage(message));
@@ -622,7 +630,7 @@ TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
   ASSERT_TRUE(brush);
 
   const ink::Brush& ink_brush = brush->ink_brush();
-  EXPECT_EQ(SkColorSetRGB(240, 133, 0), GetSkColorFromInkBrush(ink_brush));
+  EXPECT_EQ(SkColorSetRGB(0xF0, 0x85, 0x00), GetSkColorFromInkBrush(ink_brush));
   EXPECT_EQ(4.5f, ink_brush.GetSize());
   ASSERT_EQ(1u, ink_brush.CoatCount());
   const ink::BrushCoat& coat = ink_brush.GetCoats()[0];
@@ -635,8 +643,9 @@ TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
 TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessageColorZero) {
   EnableAnnotationMode();
 
-  TestAnnotationBrushMessageParams message_params{/*color_r=*/0, /*color_g=*/0,
-                                                  /*color_b=*/0, /*size=*/4.5};
+  TestAnnotationBrushMessageParams message_params{
+      /*color_r=*/0x00, /*color_g=*/0x00,
+      /*color_b=*/0x00, /*size=*/4.5f};
   base::Value::Dict message =
       CreateSetAnnotationBrushMessageForTesting("pen", &message_params);
   EXPECT_TRUE(ink_module().OnMessage(message));
@@ -738,9 +747,10 @@ TEST_P(PdfInkModuleTest, MaybeSetCursorWhenChangingBrushes) {
 
   EnableAnnotationMode();
 
-  TestAnnotationBrushMessageParams message_params{/*color_r=*/0,
-                                                  /*color_g=*/255,
-                                                  /*color_b=*/0, /*size=*/16.0};
+  TestAnnotationBrushMessageParams message_params{/*color_r=*/0x00,
+                                                  /*color_g=*/0xFF,
+                                                  /*color_b=*/0x00,
+                                                  /*size=*/16.0f};
   base::Value::Dict message =
       CreateSetAnnotationBrushMessageForTesting("pen", &message_params);
   EXPECT_TRUE(ink_module().OnMessage(message));
@@ -777,10 +787,10 @@ TEST_P(PdfInkModuleTest, MaybeSetCursorWhenChangingZoom) {
 
   EnableAnnotationMode();
 
-  TestAnnotationBrushMessageParams message_params{/*color_r=*/0,
-                                                  /*color_g=*/255,
-                                                  /*color_b=*/0,
-                                                  /*size=*/16.0};
+  TestAnnotationBrushMessageParams message_params{/*color_r=*/0x00,
+                                                  /*color_g=*/0xFF,
+                                                  /*color_b=*/0x00,
+                                                  /*size=*/16.0f};
   base::Value::Dict message =
       CreateSetAnnotationBrushMessageForTesting("pen", &message_params);
   EXPECT_TRUE(ink_module().OnMessage(message));
@@ -1941,10 +1951,10 @@ TEST_P(PdfInkModuleStrokeTest, ChangeBrushColorDuringDrawing) {
   // Start drawing a stroke with a black pen.  The stroke will not finish
   // until the mouse-up event.
   EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(0);
-  TestAnnotationBrushMessageParams black_pen_message_params{/*color_r=*/0,
-                                                            /*color_g=*/0,
-                                                            /*color_b=*/0,
-                                                            /*size=*/3.0};
+  TestAnnotationBrushMessageParams black_pen_message_params{/*color_r=*/0x00,
+                                                            /*color_g=*/0x00,
+                                                            /*color_b=*/0x00,
+                                                            /*size=*/3.0f};
   SelectBrushTool(PdfInkBrush::Type::kPen, black_pen_message_params);
 
   blink::WebMouseEvent mouse_down_event =
@@ -1955,10 +1965,10 @@ TEST_P(PdfInkModuleStrokeTest, ChangeBrushColorDuringDrawing) {
 
   // While the stroke is still in progress, change the pen color.  This has no
   // immediate effect on the in-progress stroke.
-  TestAnnotationBrushMessageParams red_pen_message_params{/*color_r=*/242,
-                                                          /*color_g=*/139,
-                                                          /*color_b=*/130,
-                                                          /*size=*/3.0};
+  TestAnnotationBrushMessageParams red_pen_message_params{/*color_r=*/0xF2,
+                                                          /*color_g=*/0x8B,
+                                                          /*color_b=*/0x82,
+                                                          /*size=*/3.0f};
   SelectBrushTool(PdfInkBrush::Type::kPen, red_pen_message_params);
   VerifyAndClearExpectations();
 
@@ -1979,9 +1989,10 @@ TEST_P(PdfInkModuleStrokeTest, ChangeBrushColorDuringDrawing) {
 
   // Do another stroke.  Notice that the changed pen color is in effect for
   // the new stroke that is added.
-  EXPECT_CALL(client(),
-              StrokeAdded(kPageIndex, InkStrokeId(1),
-                          InkStrokeBrushColorEq(SkColorSetRGB(242, 139, 130))));
+  EXPECT_CALL(
+      client(),
+      StrokeAdded(kPageIndex, InkStrokeId(1),
+                  InkStrokeBrushColorEq(SkColorSetRGB(0xF2, 0x8B, 0x82))));
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 }
@@ -1996,9 +2007,10 @@ TEST_P(PdfInkModuleStrokeTest, ChangeBrushSizeDuringDrawing) {
   EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(0);
   EXPECT_CALL(client(),
               UpdateInkCursor(CursorBitmapImageSizeEq(SkISize(6, 6))));
-  TestAnnotationBrushMessageParams message_params{/*color_r=*/0,
-                                                  /*color_g=*/0,
-                                                  /*color_b=*/0, /*size=*/2.0};
+  TestAnnotationBrushMessageParams message_params{/*color_r=*/0x00,
+                                                  /*color_g=*/0x00,
+                                                  /*color_b=*/0x00,
+                                                  /*size=*/2.0f};
   SelectBrushTool(PdfInkBrush::Type::kPen, message_params);
 
   blink::WebMouseEvent mouse_down_event =
@@ -2009,7 +2021,7 @@ TEST_P(PdfInkModuleStrokeTest, ChangeBrushSizeDuringDrawing) {
 
   // While the stroke is still in progress, change the pen size.  This has no
   // immediate effect on the in-progress stroke.
-  message_params.size = 6.0;
+  message_params.size = 6.0f;
   SelectBrushTool(PdfInkBrush::Type::kPen, message_params);
   VerifyAndClearExpectations();
 
@@ -2122,9 +2134,10 @@ TEST_P(PdfInkModuleStrokeTest, ChangeToDrawingDuringErasing) {
   // While the stroke is still in progress, change the input tool type to a
   // pen.  Note that this causes the in-progress erase stroke to finish even
   // before the mouse-up event.
-  TestAnnotationBrushMessageParams message_params{/*color_r=*/0,
-                                                  /*color_g=*/0,
-                                                  /*color_b=*/0, /*size=*/8.0};
+  TestAnnotationBrushMessageParams message_params{/*color_r=*/0x00,
+                                                  /*color_g=*/0x00,
+                                                  /*color_b=*/0x00,
+                                                  /*size=*/8.0f};
   SelectBrushTool(PdfInkBrush::Type::kPen, message_params);
   VerifyAndClearExpectations();
 
@@ -2161,10 +2174,10 @@ TEST_P(PdfInkModuleStrokeTest, ChangeDrawingBrushTypeDuringDrawing) {
   EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(0);
   EXPECT_CALL(client(),
               UpdateInkCursor(CursorBitmapImageSizeEq(SkISize(6, 6))));
-  TestAnnotationBrushMessageParams pen_message_params{/*color_r=*/0,
-                                                      /*color_g=*/0,
-                                                      /*color_b=*/0,
-                                                      /*size=*/2.0};
+  TestAnnotationBrushMessageParams pen_message_params{/*color_r=*/0x00,
+                                                      /*color_g=*/0x00,
+                                                      /*color_b=*/0x00,
+                                                      /*size=*/2.0f};
   SelectBrushTool(PdfInkBrush::Type::kPen, pen_message_params);
 
   blink::WebMouseEvent mouse_down_event =
@@ -2175,10 +2188,10 @@ TEST_P(PdfInkModuleStrokeTest, ChangeDrawingBrushTypeDuringDrawing) {
 
   // While the stroke is still in progress, change the input tool type to a
   // highlighter.  The entire stroke changes to this new type.
-  TestAnnotationBrushMessageParams highlighter_message_params{/*color_r=*/221,
-                                                              /*color_g=*/243,
-                                                              /*color_b=*/0,
-                                                              /*size=*/8.0};
+  TestAnnotationBrushMessageParams highlighter_message_params{/*color_r=*/0xDD,
+                                                              /*color_g=*/0xF3,
+                                                              /*color_b=*/0x00,
+                                                              /*size=*/8.0f};
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, highlighter_message_params);
   VerifyAndClearExpectations();
 
@@ -2827,8 +2840,7 @@ TEST_P(PdfInkModuleMetricsTest, StrokeBrushColorPen) {
                                 1);
 
   // Draw a stroke with "Red 1" color.
-  TestAnnotationBrushMessageParams params = {/*color_r=*/0xF2, /*color_g=*/0x8B,
-                                             /*color_b=*/0x82, /*size=*/3.0};
+  TestAnnotationBrushMessageParams params = kRedBrushParams;
   SelectBrushTool(PdfInkBrush::Type::kPen, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
@@ -2853,8 +2865,7 @@ TEST_P(PdfInkModuleMetricsTest, StrokeBrushColorHighlighter) {
   base::HistogramTester histograms;
 
   // Draw a stroke with "Light Red" color.
-  TestAnnotationBrushMessageParams params = {/*color_r=*/0xF2, /*color_g=*/0x8B,
-                                             /*color_b=*/0x82, /*size=*/6.0};
+  TestAnnotationBrushMessageParams params = kRedBrushParams;
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
@@ -2885,8 +2896,8 @@ TEST_P(PdfInkModuleMetricsTest, StrokeBrushSizePen) {
   histograms.ExpectUniqueSample(kPenSizeMetric, StrokeMetricBrushSize::kMedium,
                                 1);
 
-  TestAnnotationBrushMessageParams params = {/*color_r=*/242, /*color_g=*/139,
-                                             /*color_b=*/130, /*size=*/1.0};
+  TestAnnotationBrushMessageParams params = {/*color_r=*/0xF2, /*color_g=*/0x8B,
+                                             /*color_b=*/0x82, /*size=*/1.0f};
   SelectBrushTool(PdfInkBrush::Type::kPen, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
@@ -2894,7 +2905,7 @@ TEST_P(PdfInkModuleMetricsTest, StrokeBrushSizePen) {
                                StrokeMetricBrushSize::kExtraThin, 1);
   histograms.ExpectTotalCount(kPenSizeMetric, 2);
 
-  params.size = 8.0;
+  params.size = 8.0f;
   SelectBrushTool(PdfInkBrush::Type::kPen, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
@@ -2910,8 +2921,8 @@ TEST_P(PdfInkModuleMetricsTest, StrokeBrushSizeHighlighter) {
   base::HistogramTester histograms;
 
   // Draw a stroke with medium size.
-  TestAnnotationBrushMessageParams params = {/*color_r=*/242, /*color_g=*/139,
-                                             /*color_b=*/130, /*size=*/8.0};
+  TestAnnotationBrushMessageParams params = {/*color_r=*/0xF2, /*color_g=*/0x8B,
+                                             /*color_b=*/0x82, /*size=*/8.0f};
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
@@ -2919,7 +2930,7 @@ TEST_P(PdfInkModuleMetricsTest, StrokeBrushSizeHighlighter) {
                                 StrokeMetricBrushSize::kMedium, 1);
 
   // Draw a stroke with extra thin size.
-  params.size = 4.0;
+  params.size = 4.0f;
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
@@ -2928,7 +2939,7 @@ TEST_P(PdfInkModuleMetricsTest, StrokeBrushSizeHighlighter) {
   histograms.ExpectTotalCount(kHighlighterSizeMetric, 2);
 
   // Draw a stroke with extra thick size.
-  params.size = 16.0;
+  params.size = 16.0f;
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
@@ -2952,8 +2963,7 @@ TEST_P(PdfInkModuleMetricsTest, StrokeBrushType) {
   histograms.ExpectUniqueSample(kTypeMetric, StrokeMetricBrushType::kPen, 1);
 
   // Draw a highlighter stroke.
-  TestAnnotationBrushMessageParams params = {/*color_r=*/242, /*color_g=*/139,
-                                             /*color_b=*/130, /*size=*/6.0};
+  TestAnnotationBrushMessageParams params = kRedBrushParams;
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
@@ -2977,7 +2987,7 @@ TEST_P(PdfInkModuleMetricsTest, StrokeBrushType) {
   histograms.ExpectTotalCount(kTypeMetric, 3);
 
   // Draw another pen stroke.
-  params.size = 3.0;
+  params.size = 3.0f;
   SelectBrushTool(PdfInkBrush::Type::kPen, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
@@ -3081,6 +3091,10 @@ TEST_P(PdfInkModuleMetricsTest, StrokeInputDevicePen) {
 
 class PdfInkModuleTextHighlightTest : public PdfInkModuleStrokeTest {
  public:
+  static constexpr TestAnnotationBrushMessageParams kOrangeBrushParams{
+      /*color_r=*/0xFF,
+      /*color_g=*/0x63,
+      /*color_b=*/0x0C, /*size=*/6.0f};
   static constexpr gfx::Rect kHorizontalSelection{10, 15, 30, 10};
   static constexpr gfx::Rect kVerticalSelection{10, 15, 6, 10};
   static constexpr gfx::PointF kStartPointInsidePage0{10.0, 10.0};
@@ -3109,11 +3123,7 @@ class PdfInkModuleTextHighlightTest : public PdfInkModuleStrokeTest {
     EnableAnnotationMode();
     InitializeSimpleSinglePageBasicLayout();
 
-    // Select the highlighter tool with an "Orange" color.
-    TestAnnotationBrushMessageParams params = {/*color_r=*/0xFF,
-                                               /*color_g=*/0x63,
-                                               /*color_b=*/0x0C, /*size=*/6.0f};
-    SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
+    SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
 
     std::vector<gfx::Rect> selection_rects{selection_rect};
     EXPECT_CALL(client(), GetSelectionRects())
@@ -3184,9 +3194,7 @@ TEST_P(PdfInkModuleTextHighlightTest, PenDoesNotSelectText) {
   InitializeSimpleSinglePageBasicLayout();
 
   // Select the pen tool with a "Light Red" color.
-  TestAnnotationBrushMessageParams params = {/*color_r=*/0xF2, /*color_g=*/0x8B,
-                                             /*color_b=*/0x82, /*size=*/6.0f};
-  SelectBrushTool(PdfInkBrush::Type::kPen, params);
+  SelectBrushTool(PdfInkBrush::Type::kPen, kRedBrushParams);
 
   EXPECT_CALL(client(), GetSelectionRects()).Times(0);
   EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kStartPointInsidePage0))
@@ -3342,11 +3350,7 @@ TEST_P(PdfInkModuleTextHighlightTest, MultipleSelection) {
   EnableAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
-  // Select the highlighter tool with an "Orange" color.
-  TestAnnotationBrushMessageParams params = {/*color_r=*/0xFF,
-                                             /*color_g=*/0x63,
-                                             /*color_b=*/0x0C, /*size=*/6.0f};
-  SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
 
   constexpr gfx::Rect kHorizontalSelection2{15, 25, 10, 5};
   std::vector<gfx::Rect> selection_rects{kHorizontalSelection,
@@ -3410,11 +3414,7 @@ TEST_P(PdfInkModuleTextHighlightTest, OneClickCount) {
   EnableAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
-  // Select the highlighter tool with an "Orange" color.
-  TestAnnotationBrushMessageParams params = {/*color_r=*/0xFF,
-                                             /*color_g=*/0x63,
-                                             /*color_b=*/0x0C, /*size=*/6.0};
-  SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
 
   // There will be no text selection rects.
   std::vector<gfx::Rect> selection_rects{};
@@ -3440,11 +3440,7 @@ TEST_P(PdfInkModuleTextHighlightTest, TwoClickCount) {
   EnableAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
-  // Select the highlighter tool with an "Orange" color.
-  TestAnnotationBrushMessageParams params = {/*color_r=*/0xFF,
-                                             /*color_g=*/0x63,
-                                             /*color_b=*/0x0C, /*size=*/6.0};
-  SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
 
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/1);
 
@@ -3483,11 +3479,7 @@ TEST_P(PdfInkModuleTextHighlightTest, ThreeClickCount) {
   EnableAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
-  // Select the highlighter tool with an "Orange" color.
-  TestAnnotationBrushMessageParams params = {/*color_r=*/0xFF,
-                                             /*color_g=*/0x63,
-                                             /*color_b=*/0x0C, /*size=*/6.0};
-  SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
 
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/1);
 
@@ -3537,11 +3529,7 @@ TEST_P(PdfInkModuleTextHighlightTest, MouseUpOnNonSelection) {
   EnableAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
-  // Select the highlighter tool with an "Orange" color.
-  TestAnnotationBrushMessageParams params = {/*color_r=*/0xFF,
-                                             /*color_g=*/0x63,
-                                             /*color_b=*/0x0C, /*size=*/6.0f};
-  SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
 
   // Start in a text area.
   EXPECT_CALL(client(), IsSelectableTextOrLinkArea(_)).WillOnce(Return(true));
@@ -3601,11 +3589,7 @@ TEST_P(PdfInkModuleTextHighlightTest, MultiplePages) {
   EnableAnnotationMode();
   InitializeVerticalTwoPageLayout();
 
-  // Select the highlighter tool with an "Orange" color.
-  TestAnnotationBrushMessageParams params = {/*color_r=*/0xFF,
-                                             /*color_g=*/0x63,
-                                             /*color_b=*/0x0C, /*size=*/6.0f};
-  SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
 
   // Start on page 0.
   EXPECT_CALL(client(), IsSelectableTextOrLinkArea(_))
@@ -3681,11 +3665,7 @@ TEST_P(PdfInkModuleTextHighlightTest,
   EnableAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
 
-  // Select the highlighter tool with an "Orange" color.
-  TestAnnotationBrushMessageParams params = {/*color_r=*/0xFF,
-                                             /*color_g=*/0x63,
-                                             /*color_b=*/0x0C, /*size=*/6.0f};
-  SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
 
   std::vector<gfx::Rect> selection_rects{gfx::Rect(9, 14, 5, 10)};
   EXPECT_CALL(client(), GetSelectionRects())
@@ -3709,8 +3689,7 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMove) {
   EXPECT_CALL(client(),
               UpdateInkCursor(CursorBitmapImageSizeEq(SkISize(8, 8))));
 
-  TestAnnotationBrushMessageParams params = {/*color_r=*/0xF2, /*color_g=*/0x8B,
-                                             /*color_b=*/0x82, /*size=*/6.0f};
+  TestAnnotationBrushMessageParams params = kRedBrushParams;
   SelectBrushTool(PdfInkBrush::Type::kPen, params);
 
   // `kStartPointInsidePage0` will be the selectable text area position, while
@@ -3765,10 +3744,8 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMoveWhileTextSelecting) {
   // Select the highlighter tool. The cursor should be the custom highlighter
   // cursor.
   EXPECT_CALL(client(),
-              UpdateInkCursor(CursorBitmapImageSizeEq(SkISize(10, 10))));
-  TestAnnotationBrushMessageParams params = {/*color_r=*/0xF2, /*color_g=*/0x8B,
-                                             /*color_b=*/0x82, /*size=*/8.0f};
-  SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
+              UpdateInkCursor(CursorBitmapImageSizeEq(SkISize(8, 8))));
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kRedBrushParams);
 
   VerifyAndClearExpectations();
 
@@ -3805,7 +3782,7 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMoveWhileTextSelecting) {
   // End text highlighting. The cursor should restore to the custom highlighter
   // cursor.
   EXPECT_CALL(client(),
-              UpdateInkCursor(CursorBitmapImageSizeEq(SkISize(10, 10))));
+              UpdateInkCursor(CursorBitmapImageSizeEq(SkISize(8, 8))));
   blink::WebMouseEvent mouse_up_event =
       MouseEventBuilder()
           .CreateLeftMouseUpAtPosition(kEndPointInsidePage0)
@@ -3820,10 +3797,8 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMoveWhileBrushDrawing) {
   // Select the highlighter tool. The cursor should be the custom highlighter
   // cursor.
   EXPECT_CALL(client(),
-              UpdateInkCursor(CursorBitmapImageSizeEq(SkISize(10, 10))));
-  TestAnnotationBrushMessageParams params = {/*color_r=*/0xF2, /*color_g=*/0x8B,
-                                             /*color_b=*/0x82, /*size=*/8.0f};
-  SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
+              UpdateInkCursor(CursorBitmapImageSizeEq(SkISize(8, 8))));
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kRedBrushParams);
 
   VerifyAndClearExpectations();
 
