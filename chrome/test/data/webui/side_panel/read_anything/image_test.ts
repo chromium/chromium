@@ -44,8 +44,8 @@ suite('Images', () => {
     chrome.readingMode.onConnected = () => {};
     speech = new TestSpeechBrowserProxy();
     SpeechBrowserProxyImpl.setInstance(speech);
-    SpeechController.setInstance(new SpeechController());
     VoicePackController.setInstance(new VoicePackController());
+    SpeechController.setInstance(new SpeechController());
 
     // Override chrome.readingMode.requestImageData to avoid the cross-process
     // hop.

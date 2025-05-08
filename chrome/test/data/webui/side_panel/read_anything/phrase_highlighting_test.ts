@@ -65,11 +65,11 @@ suite('PhraseHighlighting', () => {
     // the rest of the Read Anything feature, which we are not testing here.
     chrome.readingMode.onConnected = () => {};
 
-    SpeechController.setInstance(new SpeechController());
     VoicePackController.setInstance(new VoicePackController());
     wordBoundaries = new WordBoundaries();
     WordBoundaries.setInstance(wordBoundaries);
     ReadAloudHighlighter.setInstance(new ReadAloudHighlighter());
+    SpeechController.setInstance(new SpeechController());
     metrics = mockMetrics();
     app = await createApp();
 

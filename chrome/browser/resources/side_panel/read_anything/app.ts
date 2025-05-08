@@ -26,11 +26,9 @@ import {ReadAloudHighlighter} from './read_aloud/highlighter.js';
 import {SpeechController} from './read_aloud/speech_controller.js';
 import type {SpeechListener} from './read_aloud/speech_controller.js';
 import {PauseActionSource, SpeechEngineState} from './read_aloud/speech_model.js';
-import type {SpeechPlayingState} from './read_aloud/speech_model.js';
 import {VoicePackController} from './read_aloud/voice_pack_controller.js';
 import type {VoiceLanguageListener} from './read_aloud/voice_pack_controller.js';
 import {WordBoundaries} from './read_aloud/word_boundaries.js';
-import type {WordBoundaryState} from './read_aloud/word_boundaries.js';
 import {ReadAnythingLogger, TimeFrom} from './read_anything_logger.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 import type {SpeechBrowserProxy} from './speech_browser_proxy.js';
@@ -164,12 +162,6 @@ export class AppElement extends AppElementBase implements
   // If the node id of the first text node that should be used by Read Aloud
   // has been set. This is null if the id has not been set.
   firstTextNodeSetForReadAloud: number|null = null;
-
-  // With minor page changes, we redistill or redraw sometimes and end up losing
-  // our reading position if read aloud has started. This keeps track of the
-  // last position so we can check if it's still in the new page.
-  private lastReadingId_: number|null = null;
-  private lastReadingOffset_: number|null = null;
 
   constructor() {
     super();
@@ -578,29 +570,8 @@ export class AppElement extends AppElementBase implements
     // If the previous reading position still exists and we haven't reached the
     // end of speech, keep that spot.
     if (previousSpeechPlayingState.hasSpeechBeenTriggered) {
-      this.setPreviousReadingPositionIfExists_(
+      this.speechController_.setPreviousReadingPositionIfExists(
           previousWordBoundaryState, previousSpeechPlayingState);
-    }
-  }
-
-  private setPreviousReadingPositionIfExists_(
-      previousWordBoundaryState: WordBoundaryState,
-      previousSpeechPlayingState: SpeechPlayingState) {
-    if (this.lastReadingId_ === null || this.lastReadingOffset_ === null) {
-      return;
-    }
-
-    if (this.nodeStore_.getDomNode(this.lastReadingId_)) {
-      this.movePlaybackToNode_(this.lastReadingId_, this.lastReadingOffset_);
-      this.speechController_.setState(previousSpeechPlayingState);
-      this.wordBoundaries_.state = {...previousWordBoundaryState};
-      // Since we're setting the reading position after a content update when
-      // we're paused, redraw the highlight after moving the traversal state to
-      // the right spot above.
-      this.highlightCurrentGranularity(chrome.readingMode.getCurrentText());
-    } else {
-      this.lastReadingId_ = null;
-      this.lastReadingOffset_ = null;
     }
   }
 
@@ -736,7 +707,8 @@ export class AppElement extends AppElementBase implements
     // toggled on or off to ensure the entire granularity segment is
     // highlighted.
     if (shouldRehighlightCurrentNodes && originallyHadHighlights) {
-      this.highlightCurrentGranularity(chrome.readingMode.getCurrentText());
+      this.speechController_.highlightCurrentGranularity(
+          chrome.readingMode.getCurrentText());
     }
     this.loadImages_();
   }
@@ -1062,7 +1034,8 @@ export class AppElement extends AppElementBase implements
       // updateContent, such as via a preference change, rehighlight the nodes
       // after a pause.
       if (!playedFromSelection) {
-        this.highlightCurrentGranularity(chrome.readingMode.getCurrentText());
+        this.speechController_.highlightCurrentGranularity(
+            chrome.readingMode.getCurrentText());
       }
 
       return;
@@ -1165,7 +1138,7 @@ export class AppElement extends AppElementBase implements
     // Iterate through the nodes asynchronously so that we can show the spinner
     // in the toolbar while we move up to the selection.
     setTimeout(() => {
-      this.movePlaybackToNode_(startingNodeId, startingOffset);
+      this.speechController_.movePlaybackToNode(startingNodeId, startingOffset);
       // Set everything to previous and then play the next granularity, which
       // includes the selection.
       this.highlighter_.resetPreviousHighlight();
@@ -1175,27 +1148,6 @@ export class AppElement extends AppElementBase implements
     }, playFromSelectionTimeout);
 
     return true;
-  }
-
-  private movePlaybackToNode_(nodeId: number, offset: number): void {
-    let currentTextIds = chrome.readingMode.getCurrentText();
-    let hasCurrentText = currentTextIds.length > 0;
-    // Since a node could spread across multiple granularities, we use the
-    // offset to determine if the selected text is in this granularity or if
-    // we have to move to the next one.
-    let startOfSelectionIsInCurrentText = currentTextIds.includes(nodeId) &&
-        chrome.readingMode.getCurrentTextEndIndex(nodeId) > offset;
-    while (hasCurrentText && !startOfSelectionIsInCurrentText) {
-      this.highlightCurrentGranularity(
-          currentTextIds, /*scrollIntoView=*/ false,
-          /*shouldUpdateSentenceHighlight=*/ true,
-          /*shouldSetLastReadingPos=*/ false);
-      chrome.readingMode.movePositionToNextGranularity();
-      currentTextIds = chrome.readingMode.getCurrentText();
-      hasCurrentText = currentTextIds.length > 0;
-      startOfSelectionIsInCurrentText = currentTextIds.includes(nodeId) &&
-          chrome.readingMode.getCurrentTextEndIndex(nodeId) > offset;
-    }
   }
 
   highlightAndPlayInterruptedMessage(): boolean {
@@ -1254,7 +1206,7 @@ export class AppElement extends AppElementBase implements
       this.playText(utteranceText);
     }
 
-    this.highlightCurrentGranularity(axNodeIds);
+    this.speechController_.highlightCurrentGranularity(axNodeIds);
     return true;
   }
 
@@ -1266,20 +1218,6 @@ export class AppElement extends AppElementBase implements
       chrome.readingMode.movePositionToNextGranularity();
     }
     return this.highlightAndPlayMessage(isInterrupted, isMovingBackward);
-  }
-
-  // Highlights or rehighlights the current granularity, sentence or word.
-  highlightCurrentGranularity(
-      axNodeIds: number[], scrollIntoView: boolean = true,
-      shouldUpdateSentenceHighlight: boolean = true,
-      shouldSetLastReadingPos: boolean = true) {
-    if (shouldSetLastReadingPos && axNodeIds.length && axNodeIds[0]) {
-      this.lastReadingId_ = axNodeIds[0];
-      this.lastReadingOffset_ =
-          chrome.readingMode.getCurrentTextStartIndex(this.lastReadingId_);
-    }
-    this.highlighter_.highlightCurrentGranularity(
-        axNodeIds, scrollIntoView, shouldUpdateSentenceHighlight);
   }
 
   // Gets the accessible text boundary for the given string.
@@ -1332,24 +1270,7 @@ export class AppElement extends AppElementBase implements
       this.handleSpeechSynthesisError(error, utteranceText);
     };
 
-    message.addEventListener('boundary', (event) => {
-      // Some voices may give sentence boundaries, but we're only concerned
-      // with word boundaries in boundary event because we're speaking text at
-      // the sentence granularity level, so we'll retrieve these boundaries in
-      // message.onEnd instead.
-      if (event.name === 'word') {
-        this.wordBoundaries_.updateBoundary(event.charIndex, event.charLength);
-
-        // No need to update the highlight on word boundary events if
-        // highlighting is off or if sentence highlighting is used.
-        // Therefore, we don't need to pass in axIds because these are
-        // calculated downstream.
-        this.highlightCurrentGranularity(
-            [], /* scrollIntoView= */ true,
-            /*shouldUpdateSentenceHighlight= */ false);
-      }
-    });
-
+    this.speechController_.setOnBoundary(message);
     this.speechController_.setOnSpeechSynthesisUtteranceStart(message);
 
     message.onend = () => {
@@ -1372,19 +1293,6 @@ export class AppElement extends AppElementBase implements
         this.onSpeechFinished();
       }
     };
-
-    const voice = this.voicePackController_.getCurrentVoiceOrDefault();
-    if (!voice) {
-      // TODO: crbug.com/40927698 - Handle when no voices are available.
-      return;
-    }
-
-    // This should only be false in tests where we can't properly construct an
-    // actual SpeechSynthesisVoice object even though the test voices pass the
-    // type checking of method signatures.
-    if (voice instanceof SpeechSynthesisVoice) {
-      message.voice = voice;
-    }
 
     this.speechController_.speakMessage(message);
   }
@@ -1607,7 +1515,8 @@ export class AppElement extends AppElementBase implements
 
     // Rehighlight the new granularity.
     if (changedHighlight !== chrome.readingMode.noHighlighting) {
-      this.highlightCurrentGranularity(chrome.readingMode.getCurrentText());
+      this.speechController_.highlightCurrentGranularity(
+          chrome.readingMode.getCurrentText());
     }
 
     // Log these highlight granularity changes when the phrase menu is shown.

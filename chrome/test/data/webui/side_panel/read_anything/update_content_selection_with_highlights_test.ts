@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {currentReadHighlightClass, previousReadHighlightClass} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, currentReadHighlightClass, previousReadHighlightClass, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -28,6 +27,7 @@ import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.j
 suite('UpdateContentSelectionWithHighlights', () => {
   let app: AppElement;
   let fakeTree: FakeTree;
+  let speechController: SpeechController;
 
   const textNodeIds = [3, 5, 7, 9];
   const texts = [
@@ -43,6 +43,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
+    speechController = new SpeechController();
 
     // Don't use await createApp() when using a FakeTree, as it seems to cause
     // flakiness.
@@ -70,13 +71,13 @@ suite('UpdateContentSelectionWithHighlights', () => {
     let i = 0;
     while (textNodeIds[i]! !== id) {
       fakeTree.highlightNode(textNodeIds[i]!);
-      app.highlightCurrentGranularity([textNodeIds[i]!]);
+      speechController.highlightCurrentGranularity([textNodeIds[i]!]);
       i++;
     }
 
     // highlight given node
     fakeTree.highlightNode(id);
-    app.highlightCurrentGranularity([id]);
+    speechController.highlightCurrentGranularity([id]);
     return microtasksFinished();
   }
 
@@ -86,7 +87,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
     let i = 0;
     while (fromId !== textNodeIds[i]!) {
       fakeTree.highlightNode(textNodeIds[i]!);
-      app.highlightCurrentGranularity([textNodeIds[i]!]);
+      speechController.highlightCurrentGranularity([textNodeIds[i]!]);
       i++;
     }
 
@@ -96,7 +97,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
     if (toId !== fromId) {
       nodeIds.push(toId);
     }
-    app.highlightCurrentGranularity(nodeIds);
+    speechController.highlightCurrentGranularity(nodeIds);
     return microtasksFinished();
   }
 

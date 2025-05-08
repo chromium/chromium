@@ -65,12 +65,12 @@ suite('WordHighlighting', () => {
     chrome.readingMode.onConnected = () => {};
     speech = new TestSpeechBrowserProxy();
     SpeechBrowserProxyImpl.setInstance(speech);
-    speechController = new SpeechController();
-    SpeechController.setInstance(speechController);
     VoicePackController.setInstance(new VoicePackController());
     wordBoundaries = new WordBoundaries();
     WordBoundaries.setInstance(wordBoundaries);
     ReadAloudHighlighter.setInstance(new ReadAloudHighlighter());
+    speechController = new SpeechController();
+    SpeechController.setInstance(speechController);
 
     app = await createApp();
     chrome.readingMode.setContentForTesting(axTree, [2, 4]);

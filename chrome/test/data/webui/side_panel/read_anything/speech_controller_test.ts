@@ -1,7 +1,7 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {BrowserProxy, PauseActionSource, SpeechBrowserProxyImpl, SpeechController, SpeechEngineState} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, PauseActionSource, SpeechBrowserProxyImpl, SpeechController, SpeechEngineState, VoicePackController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createSpeechSynthesisVoice, mockMetrics} from './common.js';
@@ -56,6 +56,10 @@ suite('SpeechController', () => {
       },
     };
 
+    const voicePackController = new VoicePackController();
+    voicePackController.setCurrentVoice(
+        createSpeechSynthesisVoice({lang: 'en', name: 'Google Alpaca'}));
+    VoicePackController.setInstance(voicePackController);
     speechController = new SpeechController();
     speechController.addListener(speechListener);
   });

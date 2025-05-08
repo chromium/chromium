@@ -44,6 +44,11 @@ export enum SpeechEngineState {
   LOADED,
 }
 
+interface ReadingPosition {
+  nodeId: number;
+  offset: number;
+}
+
 export class SpeechModel {
   private speechPlayingState_: SpeechPlayingState = {
     isSpeechTreeInitialized: false,
@@ -57,6 +62,11 @@ export class SpeechModel {
   private speechEngineState_: SpeechEngineState = SpeechEngineState.NONE;
   private previewVoicePlaying_: SpeechSynthesisVoice|null = null;
 
+  // With minor page changes, we redistill or redraw sometimes and end up losing
+  // our reading position if read aloud has started. This keeps track of the
+  // last position so we can check if it's still in the new page.
+  private lastReadingPosition_: ReadingPosition|null = null;
+
   reset(): void {
     this.speechPlayingState_ = {
       isSpeechTreeInitialized: false,
@@ -68,6 +78,14 @@ export class SpeechModel {
     };
     this.speechEngineState_ = SpeechEngineState.NONE;
     this.previewVoicePlaying_ = null;
+  }
+
+  getLastPosition(): ReadingPosition|null {
+    return this.lastReadingPosition_;
+  }
+
+  setLastPosition(position: ReadingPosition|null) {
+    this.lastReadingPosition_ = position;
   }
 
   getEngineState(): SpeechEngineState {
