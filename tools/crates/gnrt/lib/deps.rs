@@ -9,7 +9,7 @@ use crate::{
     inherit::find_inherited_privilege_group,
 };
 
-use anyhow::{bail, Context, Result};
+use anyhow::{anyhow, bail, Context, Result};
 use guppy::{
     graph::cargo::{CargoOptions, CargoSet},
     graph::feature::{FeatureSet, StandardFeatures},
@@ -327,11 +327,63 @@ pub fn collect_dependencies(
         })
         .collect::<Result<Vec<_>>>()?;
 
+    // Complain if the dependency graph contains multiple versions of any crate.
+    check_multiversion_packages(&packages, extra_config)?;
+
     // Return a flat list of dependencies.
     packages.sort_unstable_by(|a, b| {
         a.package_name.cmp(&b.package_name).then(a.version.cmp(&b.version))
     });
     Ok(packages)
+}
+
+fn check_multiversion_packages(packages: &[Package], extra_config: &BuildConfig) -> Result<()> {
+    let multiversion_packages = packages
+        .iter()
+        .chunk_by(|package| &package.package_name)
+        .into_iter()
+        .map(|(package_name, packages)| {
+            (package_name, packages.map(|p| &p.version).sorted().collect_vec())
+        })
+        .filter(|(_package_name, package_versions)| package_versions.len() > 1)
+        .filter(|(package_name, _package_versions)| {
+            let has_bug = extra_config
+                .per_crate_config
+                .get(*package_name)
+                .and_then(|crate_cfg| crate_cfg.multiversion_cleanup_bug.as_ref())
+                .is_some();
+            !has_bug
+        })
+        .collect_vec();
+    if multiversion_packages.is_empty() {
+        return Ok(());
+    }
+
+    let description = multiversion_packages
+        .iter()
+        .map(|(package_name, package_versions)| {
+            format!("{package_name} ({})", package_versions.iter().join(", "))
+        })
+        .join(", ");
+    let fix = multiversion_packages
+        .iter()
+        .map(|(package_name, _package_versions)| {
+            format!(
+                "[crate.{package_name}]\n\
+                     multiversion_cleanup_bug = 'https://crbug.com/some-bug-number'\n"
+            )
+        })
+        .join("\n");
+    Err(anyhow!(
+        "Transitive dependency graph includes multiple versions of the same crate: \
+         {description}. \
+         Please open a bug to track removing one of the versions and put a link to \
+         the bug into `gnrt_config.toml` like this:\n
+         \n\
+         ```\n\
+         {fix}
+         ```"
+    ))
 }
 
 fn resolve_root_package_set<'g>(
@@ -1129,4 +1181,48 @@ mod tests {
     // `gnrt/sample_package3` directory.  See the `Cargo.toml` for more
     // information.
     static SAMPLE_CARGO_METADATA3: &str = include_str!("test_metadata3.json");
+
+    /// This test checks that `collect_dependencies` will return an error if
+    /// multiple versions of a crate are present in the dependency graph
+    /// (unless `gnrt_config.toml` points out a bug that tracks removing one
+    /// of the versions).
+    #[test]
+    fn collect_dependencies_on_sample_output4() -> Result<()> {
+        // Error expected if we depend on multiple versions of the same crate.
+        let mut config = BuildConfig::default();
+        let metadata = PackageGraph::from_json(SAMPLE_CARGO_METADATA4)?;
+
+        let err_msg =
+            collect_dependencies(&metadata, "sample_package4", &config).unwrap_err().to_string();
+        assert!(err_msg.contains(
+            "Transitive dependency graph includes multiple versions of \
+             the same crate: getrandom (0.2.16, 0.3.2), zerocopy (0.7.35, 0.8.25)"
+        ));
+        assert!(err_msg.contains("[crate.getrandom]\nmultiversion_cleanup_bug = "));
+        assert!(err_msg.contains("[crate.zerocopy]\nmultiversion_cleanup_bug = "));
+
+        // But no error should be reported if the config has `multiversion_cleanup_bug`.
+        config.per_crate_config.insert(
+            "getrandom".to_string(),
+            CrateConfig {
+                multiversion_cleanup_bug: Some("blah".to_string()),
+                ..Default::default()
+            },
+        );
+        config.per_crate_config.insert(
+            "zerocopy".to_string(),
+            CrateConfig {
+                multiversion_cleanup_bug: Some("blah".to_string()),
+                ..Default::default()
+            },
+        );
+        collect_dependencies(&metadata, "sample_package4", &config)?;
+
+        Ok(())
+    }
+
+    // `test_metadata4.json` contains the output of `cargo metadata` run in
+    // `gnrt/sample_package4` directory.  See the `Cargo.toml` for more
+    // information.
+    static SAMPLE_CARGO_METADATA4: &str = include_str!("test_metadata4.json");
 }
