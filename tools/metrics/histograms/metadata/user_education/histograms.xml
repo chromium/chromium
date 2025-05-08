@@ -50,6 +50,9 @@ chromium-metrics-reviews@google.com.
       summary="Plus address manual fallback entry point in the context menu."/>
   <variant name="SideBySide"
       summary="Promotion for Split View in the tab context menu"/>
+  <variant name="SideBySideLinkMenuNewBadge"
+      summary="Promotion for Split View in the render view context menu when
+               right clicking a link."/>
   <variant name="TabOrganization"
       summary="Promotion for Organize Tabs in the app menu."/>
   <variant name="TabstripDeclutter"

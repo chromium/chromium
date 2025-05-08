@@ -110,6 +110,7 @@ class RenderViewContextMenu
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kComposeMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kGlicCloseMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kGlicReloadMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOpenLinkInSplitMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kRegionSearchItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSearchForImageItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSearchForVideoFrameItem);
@@ -457,6 +458,14 @@ class RenderViewContextMenu
   void ShowClipboardHistoryMenu(int event_flags);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Opens the link in a new split view so that the linked page will be visible
+  // next to the active tab. If the active tab is already in the split view,
+  // then the tab that wasn't the source of the link will be navigated to the
+  // link instead.
+  void OpenLinkInSplitView();
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   // The destination URL to use if the user tries to search for or navigate to
   // a text selection.
   GURL selection_navigation_url_;
@@ -577,6 +586,7 @@ class RenderViewContextMenu
            IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
            IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD,
            IDC_OPEN_LINK_IN_PROFILE_FIRST, IDC_OPEN_LINK_IN_PROFILE_LAST,
+           IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW,
 
            // Open link commands that appear in certain scenarios.
            IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP,

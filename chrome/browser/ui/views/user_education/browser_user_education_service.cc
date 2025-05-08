@@ -1753,6 +1753,12 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
           141, "emshack@chromium.org",
           "Shown in the tab context menu when the user enters or exits split "
           "view.")));
+
+  registry.RegisterFeature(user_education::NewBadgeSpecification(
+      features::kSideBySideLinkMenuNewBadge,
+      user_education::Metadata(141, "emshack@chromium.org",
+                               "Shown in the link context menu to open the "
+                               "link in a new split tab.")));
 }
 
 std::unique_ptr<user_education::FeaturePromoControllerCommon>

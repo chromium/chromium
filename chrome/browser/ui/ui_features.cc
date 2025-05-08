@@ -133,6 +133,11 @@ BASE_FEATURE(KScrimForTabModal,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSideBySide, "SideBySide", base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSideBySideLinkMenuNewBadge,
+             "SideBySideLinkMenuNewBadge",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsNtpFooterEnabledWithoutSideBySide() {
   return (base::FeatureList::IsEnabled(ntp_features::kNtpFooter) &&
           !base::FeatureList::IsEnabled(features::kSideBySide));

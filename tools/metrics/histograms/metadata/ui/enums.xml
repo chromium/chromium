@@ -75,6 +75,7 @@ chromium-metrics-reviews@google.com.
   <int value="28" label="Translate text in image with Google Lens"/>
   <int value="29" label="Search web for... in new tab"/>
   <int value="30" label="Open link in preview"/>
+  <int value="31" label="Open link in split view"/>
 </enum>
 
 <enum name="DefaultBrowserInfoBarUserInteraction">
@@ -285,6 +286,7 @@ chromium-metrics-reviews@google.com.
   <int value="153" label="IDC_CONTENT_CONTEXT_USE_PASSKEY_FROM_ANOTHER_DEVICE"/>
   <int value="154" label="IDC_CONTENT_CONTEXT_RELOAD_GLIC"/>
   <int value="155" label="IDC_CONTENT_CONTEXT_CLOSE_GLIC"/>
+  <int value="156" label="IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW"/>
 </enum>
 
 <enum name="ShapeRunFallback">

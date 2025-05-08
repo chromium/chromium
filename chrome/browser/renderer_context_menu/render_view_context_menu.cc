@@ -9,8 +9,10 @@
 #include <algorithm>
 #include <memory>
 #include <set>
+#include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -45,10 +47,6 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/glic/glic_enabling.h"
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/glic_keyed_service.h"
-#include "chrome/browser/glic/glic_keyed_service_factory.h"
-#endif  // BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_features.h"
@@ -261,6 +259,11 @@
 #include "extensions/common/extension.h"
 #endif
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
+#endif  // BUILDFLAG(ENABLE_GLIC)
+
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/pdf/pdf_extension_util.h"
 #include "components/pdf/browser/pdf_frame_util.h"
@@ -319,6 +322,10 @@
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "components/tabs/public/split_tab_data.h"
+#include "components/tabs/public/split_tab_id.h"
+#include "components/tabs/public/tab_interface.h"
+#include "ui/base/page_transition_types.h"
 #endif
 
 using base::UserMetricsAction;
@@ -526,13 +533,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_USE_PASSKEY_FROM_ANOTHER_DEVICE, 153},
        {IDC_CONTENT_CONTEXT_RELOAD_GLIC, 154},
        {IDC_CONTENT_CONTEXT_CLOSE_GLIC, 155},
+       {IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW, 156},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/metadata/ui/enums.xml.
-       {0, 156}});
+       {0, 157}});
 
   // These UMA values are for the ContextMenuOptionDesktop enum, used for
   // the ContextMenu.SelectedOptionDesktop histograms.
@@ -568,12 +576,13 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        // Removed: {IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS, 28},
        {IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB, 29},
        {IDC_CONTENT_CONTEXT_OPENLINKPREVIEW, 30},
+       {IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW, 31},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the ContextMenuOptionDesktop enum in
-       //     tools/metrics/histograms/enums.xml.
+       //     tools/metrics/histograms/metadata/enums.xml.
        {0, 31}});
 
   return *(type == UmaEnumIdLookupType::GeneralEnumId ? kGeneralMap
@@ -638,6 +647,7 @@ bool IsCommandForOpenLink(int id) {
   return id == IDC_CONTENT_CONTEXT_OPENLINKNEWTAB ||
          id == IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW ||
          id == IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD ||
+         id == IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW ||
          (id >= IDC_OPEN_LINK_IN_PROFILE_FIRST &&
           id <= IDC_OPEN_LINK_IN_PROFILE_LAST);
 }
@@ -856,6 +866,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
                                       kGlicCloseMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
                                       kGlicReloadMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
+                                      kOpenLinkInSplitMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu, kRegionSearchItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
                                       kSearchForImageItem);
@@ -1783,6 +1795,25 @@ void RenderViewContextMenu::AppendLinkItems() {
     }
 
 #if !BUILDFLAG(IS_ANDROID)
+    // Opening a link in split view should also go through the same constraints
+    // as opening a link in a new tab since a split view tab is a new tab that
+    // is then joined with the current active tab.
+    Browser* const browser = GetBrowser();
+    if (base::FeatureList::IsEnabled(features::kSideBySide) && browser &&
+        browser->is_type_normal() && show_open_in_new_tab) {
+      menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW,
+                                      IDS_CONTENT_CONTEXT_OPENLINKSPLITVIEW);
+      const int command_index =
+          menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW)
+              .value();
+      menu_model_.SetIsNewFeatureAt(
+          command_index,
+          UserEducationService::MaybeShowNewBadge(
+              GetBrowserContext(), features::kSideBySideLinkMenuNewBadge));
+      menu_model_.SetElementIdentifierAt(command_index,
+                                         kOpenLinkInSplitMenuItem);
+    }
+
     if (base::FeatureList::IsEnabled(blink::features::kLinkPreview) &&
         !is_link_to_iwa) {
       menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKPREVIEW,
@@ -2908,6 +2939,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_CONTENT_CONTEXT_OPENLINKNEWTAB:
     case IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW:
     case IDC_CONTENT_CONTEXT_OPENLINKPREVIEW:
+    case IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW:
       return navigation_allowed && params_.link_url.is_valid() &&
              IsOpenLinkAllowedByDlp(params_.link_url);
 
@@ -3266,6 +3298,11 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       ExecOpenLinkPreview();
       break;
 
+    case IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW:
+#if !BUILDFLAG(IS_ANDROID)
+      OpenLinkInSplitView();
+#endif  // !BUILDFLAG(IS_ANDROID)
+      break;
     case IDC_CONTENT_CONTEXT_SAVELINKAS:
       CheckSupervisedUserURLFilterAndSaveLinkAs();
       break;
@@ -4868,6 +4905,40 @@ void RenderViewContextMenu::ShowClipboardHistoryMenu(int event_flags) {
           kRenderViewContextMenu);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_ANDROID)
+void RenderViewContextMenu::OpenLinkInSplitView() {
+  Browser* const browser = GetBrowser();
+  CHECK(browser);
+  CHECK(browser->is_type_normal());
+
+  TabStripModel* const tab_strip_model = browser->tab_strip_model();
+  tabs::TabInterface* const source_tab =
+      tabs::TabInterface::GetFromContents(source_web_contents_);
+  if (source_tab->IsSplit()) {
+    // Navigate the inactive tab to the URL
+    const split_tabs::SplitTabId split_id = source_tab->GetSplit().value();
+    for (tabs::TabInterface* tab :
+         tab_strip_model->GetSplitData(split_id)->ListTabs()) {
+      if (tab != source_tab) {
+        // Navigate the tab that wasn't the source of the context menu to the
+        // URL
+        tab->GetContents()->GetController().LoadURL(
+            params_.link_url, content::Referrer(),
+            ui::PageTransition::PAGE_TRANSITION_LINK, std::string());
+        break;
+      }
+    }
+  } else {  // Create new split tab
+    const int active_index = tab_strip_model->active_index();
+    tab_strip_model->delegate()->AddTabAt(
+        params_.link_url, active_index + 1, true,
+        tab_strip_model->GetTabGroupForTab(active_index));
+    tab_strip_model->AddToNewSplit({active_index},
+                                   split_tabs::SplitTabLayout::kVertical);
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 bool RenderViewContextMenu::IsLinkToIsolatedWebApp() const {
   // Using `unfiltered_link_url`, because `link_url` is being replaced with
