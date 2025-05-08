@@ -93,6 +93,13 @@ bool IsMerchantViewerEnabled(AccountChecker* account_checker);
 // user-facing feature.
 bool IsShoppingPageTypesApiEnabled(AccountChecker* account_checker);
 
+// This is a feature check for showing discounts at the checkout page, which
+// will return true if the user has the feature flag enabled, is signed-in and
+// synced, has MSBB enabled, and (if applicable) is in an eligible country and
+// locale. The value returned by this method can change at runtime, so it
+// should not be used when deciding whether to create critical,
+// feature-related infrastructure.
+bool IsDiscountAutofillEnabled(AccountChecker* account_checker);
 }  // namespace commerce
 
 #endif  // COMPONENTS_COMMERCE_CORE_FEATURE_UTILS_H_

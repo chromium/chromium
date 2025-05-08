@@ -2281,6 +2281,14 @@
     "expiry_milestone": 145
   },
   {
+    "name": "discount-autofill",
+    "owners": [
+      "jennycho@google.com",
+      "promotions-eng@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "discount-on-navigation",
     "owners": [
       "meiliang@chromium.org",

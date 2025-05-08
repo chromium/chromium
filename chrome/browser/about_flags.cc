@@ -12400,6 +12400,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(toast_features::kPinnedTabToastOnClose)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+    {"discount-autofill", commerce::flag_descriptions::kDiscountAutofillName,
+     commerce::flag_descriptions::kDiscountAutofillDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(commerce::kDiscountAutofill)},
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

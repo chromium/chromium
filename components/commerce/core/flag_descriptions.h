@@ -53,6 +53,9 @@ extern const char kPriceTrackingSubscriptionServiceLocaleKeyDescription[];
 extern const char kPriceTrackingSubscriptionServiceProductVersionName[];
 extern const char kPriceTrackingSubscriptionServiceProductVersionDescription[];
 
+extern const char kDiscountAutofillName[];
+extern const char kDiscountAutofillDescription[];
+
 }  // namespace commerce::flag_descriptions
 
 #endif  // COMPONENTS_COMMERCE_CORE_FLAG_DESCRIPTIONS_H_

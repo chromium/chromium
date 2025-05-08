@@ -14435,6 +14435,7 @@ from previous Chrome versions.
   <int value="155977192" label="EnableFileManagerFormatDialog:disabled"/>
   <int value="156285060" label="UseMultipleOverlays:disabled"/>
   <int value="156345797" label="BorealisZinkGlDriver:enabled"/>
+  <int value="156657549" label="DiscountAutofill:enabled"/>
   <int value="157217034" label="enable-tab-for-desktop-share"/>
   <int value="157318016" label="AutomaticTabDiscarding:enabled"/>
   <int value="158490417" label="PhoneHubCameraRoll:enabled"/>
@@ -17754,6 +17755,7 @@ from previous Chrome versions.
   <int value="1425103276" label="SharedHighlightingV2:enabled"/>
   <int value="1425425055" label="WiFiDirect:disabled"/>
   <int value="1426588012" label="WebXRLayers:enabled"/>
+  <int value="1427040726" label="DiscountAutofill:disabled"/>
   <int value="1427427985"
       label="CacheControlNoStoreEnterBackForwardCache:enabled"/>
   <int value="1427683927"

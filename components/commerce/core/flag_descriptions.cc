@@ -73,4 +73,8 @@ const char kPriceTrackingSubscriptionServiceProductVersionDescription[] =
     "Enable the product version logging for price tracking subscription "
     "service";
 
+const char kDiscountAutofillName[] = "Discount Autofill";
+const char kDiscountAutofillDescription[] =
+    "Enable discount autofill experiment.";
+
 }  // namespace commerce::flag_descriptions

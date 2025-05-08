@@ -192,4 +192,11 @@ bool IsShoppingPageTypesApiEnabled(AccountChecker* account_checker) {
              account_checker->GetCountry(), account_checker->GetLocale());
 }
 
+bool IsDiscountAutofillEnabled(AccountChecker* account_checker) {
+  return account_checker && account_checker->IsSignedIn() &&
+         account_checker->IsAnonymizedUrlDataCollectionEnabled() &&
+         commerce::IsRegionLockedFeatureEnabled(
+             kDiscountAutofill, kDiscountAutofillRegionLaunched,
+             account_checker->GetCountry(), account_checker->GetLocale());
+}
 }  // namespace commerce

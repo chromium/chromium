@@ -64,6 +64,9 @@ BASE_DECLARE_FEATURE(kShoppingPDPMetricsRegionLaunched);
 BASE_DECLARE_FEATURE(kSubscriptionsApi);
 BASE_DECLARE_FEATURE(kSubscriptionsApiRegionLaunched);
 BASE_DECLARE_FEATURE(kTrackByDefaultOnMobile);
+// Feature flag for showing discounts on checkout autofill.
+BASE_DECLARE_FEATURE(kDiscountAutofill);
+BASE_DECLARE_FEATURE(kDiscountAutofillRegionLaunched);
 
 #if BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kPriceInsightsIos);
