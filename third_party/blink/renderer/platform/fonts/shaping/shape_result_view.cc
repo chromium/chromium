@@ -186,7 +186,7 @@ ShapeResult* ShapeResultView::CreateShapeResult() const {
   new_result->runs_.ReserveInitialCapacity(parts_.size());
   for (const auto& part : RunsOrParts()) {
     auto* new_run = MakeGarbageCollected<ShapeResultRun>(
-        part.run_->font_data_.Get(), part.run_->direction_,
+        part.run_->font_data_.Get(), part.run_->HbDirection(),
         part.run_->canvas_rotation_, part.run_->script_, part.start_index_,
         part.NumGlyphs(), part.num_characters_);
     new_run->glyph_data_.CopyFromRange(part.range_);
@@ -394,7 +394,7 @@ float ShapeResultView::ForEachGlyphImpl(float initial_advance,
   auto glyph_offsets = part.GetGlyphOffsets<has_non_zero_glyph_offsets>();
   const auto& run = part.run_;
   auto total_advance = InlineLayoutUnit::FromFloatRound(initial_advance);
-  bool is_horizontal = HB_DIRECTION_IS_HORIZONTAL(run->direction_);
+  bool is_horizontal = run->IsHorizontal();
   const SimpleFontData* font_data = run->font_data_.Get();
   const unsigned character_index_offset_for_glyph_data =
       CharacterIndexOffsetForGlyphData(part);
@@ -437,7 +437,7 @@ float ShapeResultView::ForEachGlyphImpl(float initial_advance,
   auto glyph_offsets = part.GetGlyphOffsets<has_non_zero_glyph_offsets>();
   auto total_advance = InlineLayoutUnit::FromFloatRound(initial_advance);
   const auto& run = part.run_;
-  bool is_horizontal = HB_DIRECTION_IS_HORIZONTAL(run->direction_);
+  bool is_horizontal = run->IsHorizontal();
   const SimpleFontData* font_data = run->font_data_.Get();
   const unsigned character_index_offset_for_glyph_data =
       CharacterIndexOffsetForGlyphData(part);

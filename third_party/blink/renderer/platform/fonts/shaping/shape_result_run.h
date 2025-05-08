@@ -68,7 +68,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
         num_characters_(num_characters),
         width_(0.0f),
         script_(script),
-        direction_(dir),
+        hb_direction_(dir),
         canvas_rotation_(canvas_rotation) {}
 
   ShapeResultRun(const ShapeResultRun& other)
@@ -79,7 +79,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
         num_characters_(other.num_characters_),
         width_(other.width_),
         script_(other.script_),
-        direction_(other.direction_),
+        hb_direction_(other.hb_direction_),
         canvas_rotation_(other.canvas_rotation_) {}
 
   void Trace(Visitor* visitor) const {
@@ -90,9 +90,14 @@ struct PLATFORM_EXPORT ShapeResultRun final
 
   unsigned NumGlyphs() const { return glyph_data_.size(); }
   bool HasLigatures() const { return NumGlyphs() < num_characters_; }
-  bool IsLtr() const { return HB_DIRECTION_IS_FORWARD(direction_); }
-  bool IsRtl() const { return HB_DIRECTION_IS_BACKWARD(direction_); }
-  bool IsHorizontal() const { return HB_DIRECTION_IS_HORIZONTAL(direction_); }
+  hb_direction_t HbDirection() const {
+    return static_cast<hb_direction_t>(hb_direction_);
+  }
+  bool IsLtr() const { return HB_DIRECTION_IS_FORWARD(HbDirection()); }
+  bool IsRtl() const { return HB_DIRECTION_IS_BACKWARD(HbDirection()); }
+  bool IsHorizontal() const {
+    return HB_DIRECTION_IS_HORIZONTAL(HbDirection());
+  }
   CanvasRotationInVertical CanvasRotation() const { return canvas_rotation_; }
   unsigned NextSafeToBreakOffset(unsigned) const;
   unsigned PreviousSafeToBreakOffset(unsigned) const;
@@ -138,7 +143,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
     }
 
     auto* run = MakeGarbageCollected<ShapeResultRun>(
-        font_data_.Get(), direction_, canvas_rotation_, script_,
+        font_data_.Get(), HbDirection(), canvas_rotation_, script_,
         start_index_ + start, number_of_glyphs, number_of_characters);
 
     run->glyph_data_.CopyFromRange(glyphs);
@@ -163,8 +168,8 @@ struct PLATFORM_EXPORT ShapeResultRun final
     }
     DCHECK_LT(start_index_, other.start_index_);
     auto* run = MakeGarbageCollected<ShapeResultRun>(
-        font_data_.Get(), direction_, canvas_rotation_, script_, start_index_,
-        glyph_data_.size() + other.glyph_data_.size(),
+        font_data_.Get(), HbDirection(), canvas_rotation_, script_,
+        start_index_, glyph_data_.size() + other.glyph_data_.size(),
         num_characters_ + other.num_characters_);
     // Note: We populate |graphemes_| on demand, e.g. hit testing.
     const int index_adjust = other.start_index_ - start_index_;
@@ -192,8 +197,8 @@ struct PLATFORM_EXPORT ShapeResultRun final
   bool CanMerge(const ShapeResultRun& other) const {
     return start_index_ + num_characters_ == other.start_index_ &&
            canvas_rotation_ == other.canvas_rotation_ &&
-           font_data_ == other.font_data_ && direction_ == other.direction_ &&
-           script_ == other.script_ &&
+           font_data_ == other.font_data_ &&
+           hb_direction_ == other.hb_direction_ && script_ == other.script_ &&
            glyph_data_.size() + other.glyph_data_.size() <
                HarfBuzzRunGlyphData::kMaxCharacterIndex + 1;
   }
@@ -389,7 +394,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
   float width_;
 
   hb_script_t script_;
-  hb_direction_t direction_;
+  uint8_t hb_direction_;  // hb_direction_t
 
   // For upright-in-vertical we need to tell the ShapeResultBloberizer to rotate
   // the canvas back 90deg for this ShapeResultRun.
