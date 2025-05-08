@@ -219,7 +219,7 @@ class Port(object):
         ('win11', 'x86_64'),
         ('linux', 'x86_64'),
         ('fuchsia', 'x86_64'),
-        ('ios17-simulator', 'x86_64'),
+        ('ios18-simulator', 'x86_64'),
         ('android', 'x86_64'),
         ('webview', 'x86_64'),
     )
@@ -229,7 +229,7 @@ class Port(object):
             'mac11', 'mac11-arm64', 'mac12', 'mac12-arm64', 'mac13',
             'mac13-arm64', 'mac14', 'mac14-arm64', 'mac15', 'mac15-arm64'
         ],
-        'ios': ['ios17-simulator'],
+        'ios': ['ios18-simulator'],
         'win': ['win10.20h2', 'win11-arm64', 'win11'],
         'linux': ['linux'],
         'fuchsia': ['fuchsia'],

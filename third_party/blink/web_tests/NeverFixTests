@@ -1,4 +1,4 @@
-# tags: [ Android Fuchsia Linux Mac Mac11 Mac11-arm64 Mac12 Mac12-arm64 Mac13 Mac13-arm64 Mac14 Mac14-arm64 Mac15 Mac15-arm64 Win Win10.20h2 Win11 Win11-arm64 iOS17-simulator ]
+# tags: [ Android Fuchsia Linux Mac Mac11 Mac11-arm64 Mac12 Mac12-arm64 Mac13 Mac13-arm64 Mac14 Mac14-arm64 Mac15 Mac15-arm64 Win Win10.20h2 Win11 Win11-arm64 iOS18-simulator ]
 # tags: [ Release Debug ]
 # results: [ Skip Pass ]
 
@@ -34,19 +34,19 @@
 # Chrome Win/Linux/iOS doesn't support emacs key-bindings.
 [ Win ] editing/pasteboard/emacs-cntl-y-001.html [ Skip ]
 [ Linux ] editing/pasteboard/emacs-cntl-y-001.html [ Skip ]
-[ iOS17-simulator ] editing/pasteboard/emacs-cntl-y-001.html [ Skip ]
+[ iOS18-simulator ] editing/pasteboard/emacs-cntl-y-001.html [ Skip ]
 [ Win ] editing/pasteboard/emacs-ctrl-a-k-y.html [ Skip ]
 [ Linux ] editing/pasteboard/emacs-ctrl-a-k-y.html [ Skip ]
-[ iOS17-simulator ] editing/pasteboard/emacs-ctrl-a-k-y.html [ Skip ]
+[ iOS18-simulator ] editing/pasteboard/emacs-ctrl-a-k-y.html [ Skip ]
 [ Win ] editing/pasteboard/emacs-ctrl-k-with-move.html [ Skip ]
 [ Linux ] editing/pasteboard/emacs-ctrl-k-with-move.html [ Skip ]
-[ iOS17-simulator ] editing/pasteboard/emacs-ctrl-k-with-move.html [ Skip ]
+[ iOS18-simulator ] editing/pasteboard/emacs-ctrl-k-with-move.html [ Skip ]
 [ Win ] editing/pasteboard/emacs-ctrl-k-y-001.html [ Skip ]
 [ Linux ] editing/pasteboard/emacs-ctrl-k-y-001.html [ Skip ]
-[ iOS17-simulator ] editing/pasteboard/emacs-ctrl-k-y-001.html [ Skip ]
+[ iOS18-simulator ] editing/pasteboard/emacs-ctrl-k-y-001.html [ Skip ]
 [ Win ] editing/input/emacs-ctrl-o.html [ Skip ]
 [ Linux ] editing/input/emacs-ctrl-o.html [ Skip ]
-[ iOS17-simulator ] editing/input/emacs-ctrl-o.html [ Skip ]
+[ iOS18-simulator ] editing/input/emacs-ctrl-o.html [ Skip ]
 [ Win ] fast/events/inputevents/inputevent-yank.html [ Skip ]
 [ Linux ] fast/events/inputevents/inputevent-yank.html [ Skip ]
 
@@ -100,7 +100,7 @@
 [ Mac ] dark-mode/colors/select-popup.html [ Skip ]
 
 # IOS's popup behavior is different.
-[ iOS17-simulator ] fast/forms/select-popup/* [ Skip ]
+[ iOS18-simulator ] fast/forms/select-popup/* [ Skip ]
 
 # These tests are specific to Windows and Linux.
 [ Mac ] fast/forms/calendar-picker/date-open-picker-with-f4-key.html [ Skip ]
@@ -1889,7 +1889,7 @@ external/wpt/infrastructure/* [ Skip ]
 # Web Bluetooth Emulation is not supported on Android, Fuchsia and iOS due to binary size constraints.
 crbug.com/342191615 [ Android ] inspector-protocol/bluetooth/* [ Skip ]
 crbug.com/342191615 [ Fuchsia ] inspector-protocol/bluetooth/* [ Skip ]
-crbug.com/342191615 [ iOS17-simulator ] inspector-protocol/bluetooth/* [ Skip ]
+crbug.com/342191615 [ iOS18-simulator ] inspector-protocol/bluetooth/* [ Skip ]
 
 # These html5lib parser tests always time out.
 html5lib/generated/run-foreign-fragment-data.html [ Skip ]

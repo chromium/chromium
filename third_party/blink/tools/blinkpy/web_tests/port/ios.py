@@ -16,11 +16,11 @@ from blinkpy.web_tests.port import mac
 _log = logging.getLogger(__name__)
 
 BOOT_STATE = 'Booted'
-DEFAULT_SDK_VERSION = '17.4'
+DEFAULT_SDK_VERSION = '18.4'
 
 
 class IOSPort(base.Port):
-    SUPPORTED_VERSIONS = ('ios17-simulator', )
+    SUPPORTED_VERSIONS = ('ios18-simulator', )
 
     port_name = 'ios'
 
@@ -28,7 +28,7 @@ class IOSPort(base.Port):
 
     FALLBACK_PATHS = {}
 
-    FALLBACK_PATHS['ios17-simulator'] = (
+    FALLBACK_PATHS['ios18-simulator'] = (
         ['ios'] + mac.MacPort.latest_platform_fallback_path())
 
     BUILD_REQUIREMENTS_URL = 'https://chromium.googlesource.com/chromium/src/+/main/docs/ios/build_instructions.md'
@@ -36,7 +36,7 @@ class IOSPort(base.Port):
     @classmethod
     def determine_full_port_name(cls, host, options, port_name):
         if port_name.endswith('ios'):
-            parts = [port_name, 'ios17-simulator']
+            parts = [port_name, 'ios18-simulator']
             return '-'.join(parts)
         return port_name
 
@@ -85,7 +85,7 @@ class IOSPort(base.Port):
         return self.build_path('iossim', target=target)
 
     def device_name(self, target=None):
-        return 'iPhone 13'
+        return 'iPhone 16'
 
     def sdk_version(self, target=None):
         if len(self.runtime_version) != 0:
