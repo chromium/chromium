@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {MAX_SPEECH_LENGTH, SpeechBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {MAX_SPEECH_LENGTH, SpeechBrowserProxyImpl, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertGT, assertLT, assertNotEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createApp} from './common.js';
@@ -14,6 +14,7 @@ suite('SpeechUsesMaxTextLength', () => {
   let app: AppElement;
   let maxSpeechLength: number;
   let speech: TestSpeechBrowserProxy;
+  let speechController: SpeechController;
 
   const shortSentence =
       'The snow glows white on the mountain tonight, not a footprint to be ' +
@@ -79,6 +80,8 @@ suite('SpeechUsesMaxTextLength', () => {
     chrome.readingMode.onConnected = () => {};
     speech = new TestSpeechBrowserProxy();
     SpeechBrowserProxyImpl.setInstance(speech);
+    speechController = new SpeechController();
+    SpeechController.setInstance(speechController);
 
     app = await createApp();
     maxSpeechLength = MAX_SPEECH_LENGTH;
@@ -103,7 +106,8 @@ suite('SpeechUsesMaxTextLength', () => {
 
   suite('on long sentence', () => {
     test('accessible text boundary is before max speech length', () => {
-      const firstBoundary = app.getAccessibleTextLength(longSentence);
+      const firstBoundary =
+          speechController.getUtteranceEndBoundary(longSentence, true);
       assertLT(firstBoundary, maxSpeechLength);
     });
 
@@ -122,7 +126,8 @@ suite('SpeechUsesMaxTextLength', () => {
     let firstBoundary: number;
 
     setup(() => {
-      firstBoundary = app.getAccessibleTextLength(longSentenceWithFewCommas);
+      firstBoundary = speechController.getUtteranceEndBoundary(
+          longSentenceWithFewCommas, true);
     });
 
 
@@ -134,7 +139,8 @@ suite('SpeechUsesMaxTextLength', () => {
     test('next accessible text boundary is before end of string', () => {
       const afterFirstBoundary = longSentenceWithFewCommas.substring(
           firstBoundary, longSentenceWithFewCommas.length);
-      const secondBoundary = app.getAccessibleTextLength(afterFirstBoundary);
+      const secondBoundary =
+          speechController.getUtteranceEndBoundary(afterFirstBoundary, true);
       const afterSecondBoundary = longSentenceWithFewCommas.substring(
           secondBoundary, longSentenceWithFewCommas.length);
 
@@ -150,13 +156,14 @@ suite('SpeechUsesMaxTextLength', () => {
 
     // When there are no other commas in a phrase, we don't splice on the
     // commas within numbers.
-    let boundary = app.getAccessibleTextLength(invalidCommaSplices);
+    let boundary =
+        speechController.getUtteranceEndBoundary(invalidCommaSplices, true);
     assertEquals(
         invalidCommaSplices, invalidCommaSplices.substring(0, boundary));
 
     // When there is a valid comma in a string, we splice on that instead of
     // on the commas within numbers
-    boundary = app.getAccessibleTextLength(validCommaSplice);
+    boundary = speechController.getUtteranceEndBoundary(validCommaSplice, true);
     assertEquals('525,600 minutes', validCommaSplice.substring(0, boundary));
   });
 
@@ -164,17 +171,20 @@ suite('SpeechUsesMaxTextLength', () => {
     let firstBoundary: number;
 
     setup(() => {
-      firstBoundary = app.getAccessibleTextLength(longSentenceWithLateComma);
+      firstBoundary = speechController.getUtteranceEndBoundary(
+          longSentenceWithLateComma, true);
     });
 
 
     test('commas after max speech length aren\'t used', () => {
       const afterFirstBoundary = longSentenceWithFewCommas.substring(
           firstBoundary, longSentenceWithFewCommas.length);
-      const secondBoundary = app.getAccessibleTextLength(afterFirstBoundary);
+      const secondBoundary =
+          speechController.getUtteranceEndBoundary(afterFirstBoundary, true);
       const afterSecondBoundary = longSentenceWithFewCommas.substring(
           firstBoundary, longSentenceWithFewCommas.length);
-      const thirdBoundary = app.getAccessibleTextLength(afterSecondBoundary);
+      const thirdBoundary =
+          speechController.getUtteranceEndBoundary(afterSecondBoundary, true);
 
       assertLT(firstBoundary, maxSpeechLength);
       assertLT(secondBoundary, maxSpeechLength);

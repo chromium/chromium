@@ -41,10 +41,6 @@ const AppElementBase = WebUiListenerMixinLit(CrLitElement);
 
 const linkDataAttribute = 'link';
 
-// The maximum speech length that should be used with remote voices
-// due to a TTS engine bug with voices timing out on too-long text.
-export const MAX_SPEECH_LENGTH: number = 175;
-
 export interface AppElement {
   $: {
     toolbar: ReadAnythingToolbarElement,
@@ -1209,31 +1205,6 @@ export class AppElement extends AppElementBase implements
     return this.highlightAndPlayMessage(isInterrupted, isMovingBackward);
   }
 
-  // Gets the accessible text boundary for the given string.
-  getAccessibleTextLength(utteranceText: string): number {
-    // Splicing on commas won't work for all locales, but since this is a
-    // simple strategy for splicing text in languages that do use commas
-    // that reduces the need for calling getAccessibleBoundary.
-    // TODO(crbug.com/40927698): Investigate if we can utilize comma splices
-    // directly in the utils methods called by #getAccessibleBoundary.
-    const lastCommaIndex =
-        utteranceText.substring(0, MAX_SPEECH_LENGTH).lastIndexOf(', ');
-
-    // To prevent infinite looping, only use the lastCommaIndex if it's not the
-    // first character. Otherwise, use getAccessibleBoundary to prevent
-    // repeatedly splicing on the first comma of the same substring.
-    if (lastCommaIndex > 0) {
-      return lastCommaIndex;
-    }
-
-    // TODO: crbug.com/40927698 - getAccessibleBoundary breaks on the nearest
-    // word boundary, but if there's some type of punctuation (such as a comma),
-    // it would be preferable to break on the punctuation so the pause in
-    // speech sounds more natural.
-    return chrome.readingMode.getAccessibleBoundary(
-        utteranceText, MAX_SPEECH_LENGTH);
-  }
-
   private playText(utteranceText: string) {
     // This check is needed due limits of TTS audio for remote voices. See
     // crbug.com/1176078 for more details.
@@ -1241,12 +1212,9 @@ export class AppElement extends AppElementBase implements
     // maximum text length if we're using a local voice. If we do somehow
     // attempt to speak text that's too long, this will be able to be handled
     // by listening for a text-too-long error in message.onerror.
-    const isTextTooLong = this.selectedVoice_?.localService ?
-        false :
-        utteranceText.length > MAX_SPEECH_LENGTH;
-    const endBoundary = isTextTooLong ?
-        this.getAccessibleTextLength(utteranceText) :
-        utteranceText.length;
+    const isTextTooLong = this.speechController_.isTextTooLong(utteranceText);
+    const endBoundary = this.speechController_.getUtteranceEndBoundary(
+        utteranceText, isTextTooLong);
     this.playTextWithBoundaries(utteranceText, isTextTooLong, endBoundary);
   }
 
@@ -1312,7 +1280,8 @@ export class AppElement extends AppElementBase implements
       // this is still preferable to no speech.
       this.speech_.cancel();
       this.playTextWithBoundaries(
-          utteranceText, true, this.getAccessibleTextLength(utteranceText));
+          utteranceText, true,
+          this.speechController_.getUtteranceEndBoundary(utteranceText, true));
       return;
     }
     if (error.error === 'invalid-argument') {

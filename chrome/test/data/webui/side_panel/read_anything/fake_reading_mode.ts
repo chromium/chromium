@@ -390,6 +390,11 @@ export class FakeReadingMode {
   // Signal that the page language has changed.
   languageChanged(): void {}
 
+  // Gets the accessible text boundary for the given string
+  getAccessibleBoundary(_text: string, _maxSpeechLength: number): number {
+    return 0;
+  }
+
   // Requests the image in the form of bitmap. onImageDownloaded will be
   // called when the image has been downloaded.
   requestImageData(nodeId: number): void {

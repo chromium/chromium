@@ -428,7 +428,8 @@ suite('Speech', () => {
           selectedVoice: speech.getVoices()[0],
         },
       });
-      const accessibleTextLength = app.getAccessibleTextLength(longSentences);
+      const accessibleTextLength =
+          speechController.getUtteranceEndBoundary(longSentences, true);
       app.playSpeech();
       assertEquals(longSentences, getSpokenText());
       const utterance = speech.getArgs('speak')[0];
