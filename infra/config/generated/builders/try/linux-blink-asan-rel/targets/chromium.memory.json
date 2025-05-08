@@ -61,7 +61,8 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter"
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
+          "-j6"
         ],
         "merge": {
           "args": [

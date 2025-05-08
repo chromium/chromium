@@ -1102,6 +1102,11 @@ ci.builder(
             "linux-jammy",
         ],
         per_test_modifications = {
+            "chrome_wpt_tests": targets.mixin(
+                args = [
+                    "-j6",
+                ],
+            ),
             "blink_web_tests": targets.mixin(
                 args = [
                     "--timeout-ms",
