@@ -11,10 +11,10 @@
 #include "base/command_line.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "gpu/command_buffer/client/fake_gpu_memory_buffer.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/test_data_util.h"
 #include "media/capture/video/video_capture_gpu_channel_host.h"
-#include "media/video/fake_gpu_memory_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -106,7 +106,7 @@ class MockCaptureHandleProvider
     : public VideoCaptureDevice::Client::Buffer::HandleProvider {
  public:
   MockCaptureHandleProvider(const gfx::Size& size, gfx::BufferFormat format) {
-    gmb_handle_ = CreatePixmapHandleForTesting(size, format);
+    gmb_handle_ = gpu::CreatePixmapHandleForTesting(size, format);
   }
   // Duplicate as an writable (unsafe) shared memory region.
   base::UnsafeSharedMemoryRegion DuplicateAsUnsafeRegion() override {

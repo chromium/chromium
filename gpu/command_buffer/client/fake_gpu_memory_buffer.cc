@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "media/video/fake_gpu_memory_buffer.h"
+#include "gpu/command_buffer/client/fake_gpu_memory_buffer.h"
 
 #include "base/atomic_sequence_num.h"
 #include "build/build_config.h"
@@ -25,7 +25,7 @@
 #include <lib/zx/object.h>
 #endif
 
-namespace media {
+namespace gpu {
 
 namespace {
 
@@ -46,14 +46,15 @@ gfx::GpuMemoryBufferHandle CreatePixmapHandleForTesting(
     const gfx::Size& size,
     gfx::BufferFormat format,
     uint64_t modifier) {
-  std::optional<VideoPixelFormat> video_pixel_format =
-      GfxBufferFormatToVideoPixelFormat(format);
+  std::optional<media::VideoPixelFormat> video_pixel_format =
+      media::GfxBufferFormatToVideoPixelFormat(format);
   CHECK(video_pixel_format);
 
   gfx::NativePixmapHandle native_pixmap_handle;
-  for (size_t i = 0; i < VideoFrame::NumPlanes(*video_pixel_format); i++) {
+  for (size_t i = 0; i < media::VideoFrame::NumPlanes(*video_pixel_format);
+       i++) {
     const gfx::Size plane_size_in_bytes =
-        VideoFrame::PlaneSize(*video_pixel_format, i, size);
+        media::VideoFrame::PlaneSize(*video_pixel_format, i, size);
     native_pixmap_handle.planes.emplace_back(plane_size_in_bytes.width(), 0,
                                              plane_size_in_bytes.GetArea(),
                                              GetDummyFD());
@@ -83,13 +84,13 @@ FakeGpuMemoryBuffer::FakeGpuMemoryBuffer(const gfx::Size& size,
                                          gfx::BufferFormat format,
                                          uint64_t modifier)
     : size_(size), format_(format) {
-  std::optional<VideoPixelFormat> video_pixel_format =
-      GfxBufferFormatToVideoPixelFormat(format);
+  std::optional<media::VideoPixelFormat> video_pixel_format =
+      media::GfxBufferFormatToVideoPixelFormat(format);
   CHECK(video_pixel_format);
   video_pixel_format_ = *video_pixel_format;
 
   const size_t allocation_size =
-      VideoFrame::AllocationSize(video_pixel_format_, size_);
+      media::VideoFrame::AllocationSize(video_pixel_format_, size_);
   data_ = std::vector<uint8_t>(allocation_size);
 
   handle_.type = gfx::SHARED_MEMORY_BUFFER;
@@ -115,11 +116,11 @@ bool FakeGpuMemoryBuffer::AsyncMappingIsNonBlocking() const {
 }
 
 void* FakeGpuMemoryBuffer::memory(size_t plane) {
-  DCHECK_LT(plane, VideoFrame::NumPlanes(video_pixel_format_));
+  DCHECK_LT(plane, media::VideoFrame::NumPlanes(video_pixel_format_));
   auto* data_ptr = data_.data();
   for (size_t i = 1; i <= plane; i++) {
-    data_ptr +=
-        VideoFrame::PlaneSize(video_pixel_format_, i - 1, size_).GetArea();
+    data_ptr += media::VideoFrame::PlaneSize(video_pixel_format_, i - 1, size_)
+                    .GetArea();
   }
   return data_ptr;
 }
@@ -135,8 +136,9 @@ gfx::BufferFormat FakeGpuMemoryBuffer::GetFormat() const {
 }
 
 int FakeGpuMemoryBuffer::stride(size_t plane) const {
-  DCHECK_LT(plane, VideoFrame::NumPlanes(video_pixel_format_));
-  return VideoFrame::PlaneSize(video_pixel_format_, plane, size_).width();
+  DCHECK_LT(plane, media::VideoFrame::NumPlanes(video_pixel_format_));
+  return media::VideoFrame::PlaneSize(video_pixel_format_, plane, size_)
+      .width();
 }
 
 gfx::GpuMemoryBufferId FakeGpuMemoryBuffer::GetId() const {
@@ -157,4 +159,4 @@ void FakeGpuMemoryBuffer::OnMemoryDump(
     uint64_t tracing_process_id,
     int importance) const {}
 
-}  // namespace media
+}  // namespace gpu

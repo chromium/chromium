@@ -27,7 +27,6 @@
 #include "media/base/video_util.h"
 #include "media/parsers/h264_parser.h"
 #include "media/parsers/vp9_parser.h"
-#include "media/video/fake_gpu_memory_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/libyuv/include/libyuv/convert_from.h"

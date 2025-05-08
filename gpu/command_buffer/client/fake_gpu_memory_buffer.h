@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_VIDEO_FAKE_GPU_MEMORY_BUFFER_H_
-#define MEDIA_VIDEO_FAKE_GPU_MEMORY_BUFFER_H_
+#ifndef GPU_COMMAND_BUFFER_CLIENT_FAKE_GPU_MEMORY_BUFFER_H_
+#define GPU_COMMAND_BUFFER_CLIENT_FAKE_GPU_MEMORY_BUFFER_H_
 
 #include <memory>
 
 #include "media/base/video_types.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
-namespace media {
+namespace gpu {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // This method is used by tests to create a fake pixmap handle instead of
@@ -74,13 +74,13 @@ class FakeGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
  private:
   gfx::Size size_;
   gfx::BufferFormat format_;
-  VideoPixelFormat video_pixel_format_ = PIXEL_FORMAT_UNKNOWN;
+  media::VideoPixelFormat video_pixel_format_ = media::PIXEL_FORMAT_UNKNOWN;
   std::vector<uint8_t> data_;
   gfx::GpuMemoryBufferHandle handle_;
   bool premapped_ = true;
   raw_ptr<MapCallbackController> map_callback_controller_ = nullptr;
 };
 
-}  // namespace media
+}  // namespace gpu
 
-#endif  // MEDIA_VIDEO_FAKE_GPU_MEMORY_BUFFER_H_
+#endif  // GPU_COMMAND_BUFFER_CLIENT_FAKE_GPU_MEMORY_BUFFER_H_

@@ -51,7 +51,6 @@ specific_include_rules = {
     "+gpu/command_buffer/client/test_shared_image_interface.h",
     "+media/mojo/services",
     "+media/renderers",
-    "+media/video/fake_gpu_memory_buffer.h",
     "+gin/v8_initializer.h",
 
     # Allow test support dependencies.

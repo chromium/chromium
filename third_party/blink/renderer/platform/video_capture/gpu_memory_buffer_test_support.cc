@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/video_capture/gpu_memory_buffer_test_support.h"
 
 #include "components/viz/test/test_context_provider.h"
-#include "media/video/fake_gpu_memory_buffer.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

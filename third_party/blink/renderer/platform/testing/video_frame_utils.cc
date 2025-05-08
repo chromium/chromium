@@ -9,7 +9,6 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/format_utils.h"
-#include "media/video/fake_gpu_memory_buffer.h"
 
 namespace blink {
 

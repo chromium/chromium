@@ -83,7 +83,6 @@ specific_include_rules = {
         "+base/task/sequence_manager/test/sequence_manager_for_test.h",
     ],
     "video_frame_utils\.cc": [
-        "+media/video/fake_gpu_memory_buffer.h",
         "+media/base/format_utils.h",
 	"+components/viz/common/resources/shared_image_format.h",
 	"+components/viz/common/resources/shared_image_format_utils.h",

@@ -92,8 +92,6 @@ static_library("test_support") {
   visibility = [ "//media:test_support" ]
   testonly = true
   sources = [
-    "fake_gpu_memory_buffer.cc",
-    "fake_gpu_memory_buffer.h",
     "fake_video_encode_accelerator.cc",
     "fake_video_encode_accelerator.h",
     "mock_gpu_memory_buffer_video_frame_pool.cc",

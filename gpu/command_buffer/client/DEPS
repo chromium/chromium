@@ -14,4 +14,11 @@ specific_include_rules = {
 "shared_image_pool_unittest.cc": [
     "+components/viz/test/test_context_provider.h",
   ],
+  "fake_gpu_memory_buffer.cc": [
+    "+media/base/format_utils.h",
+    "+media/base/video_frame.h",
+  ],
+  "fake_gpu_memory_buffer.h": [
+    "+media/base/video_types.h",
+  ],
 }

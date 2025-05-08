@@ -80,6 +80,8 @@ static_library("test_support") {
   sources = [
     "command_buffer/client/client_test_helper.cc",
     "command_buffer/client/client_test_helper.h",
+    "command_buffer/client/fake_gpu_memory_buffer.cc",
+    "command_buffer/client/fake_gpu_memory_buffer.h",
     "command_buffer/client/gles2_interface_stub.cc",
     "command_buffer/client/gles2_interface_stub.h",
     "command_buffer/client/gles2_interface_stub_autogen.h",
@@ -131,6 +133,7 @@ static_library("test_support") {
     "//gpu/ipc/common",
     "//gpu/ipc/service",
     "//gpu/skia_bindings:skia_bindings",
+    "//media",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx:test_support",

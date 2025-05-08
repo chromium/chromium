@@ -12,11 +12,11 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "gpu/command_buffer/client/fake_gpu_memory_buffer.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/format_utils.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
-#include "media/video/fake_gpu_memory_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/testing/video_frame_utils.h"
@@ -60,7 +60,7 @@ TEST(WebRtcVideoTrackSourceRefreshFrameTest, CallsRefreshFrame) {
 class WebRtcVideoTrackSourceTest
     : public ::testing::TestWithParam<
           std::tuple<media::VideoFrame::StorageType, media::VideoPixelFormat>>,
-      public media::FakeGpuMemoryBuffer::MapCallbackController {
+      public gpu::FakeGpuMemoryBuffer::MapCallbackController {
  public:
   WebRtcVideoTrackSourceTest()
       : shared_resources_(
@@ -120,8 +120,8 @@ class WebRtcVideoTrackSourceTest
   void SendTestFrameWithMappableGMB(const FrameParameters& frame_parameters,
                                     base::TimeDelta timestamp,
                                     bool premapped) {
-    std::unique_ptr<media::FakeGpuMemoryBuffer> fake_gmb =
-        std::make_unique<media::FakeGpuMemoryBuffer>(
+    std::unique_ptr<gpu::FakeGpuMemoryBuffer> fake_gmb =
+        std::make_unique<gpu::FakeGpuMemoryBuffer>(
             frame_parameters.coded_size,
             media::VideoPixelFormatToGfxBufferFormat(
                 frame_parameters.pixel_format)

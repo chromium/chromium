@@ -33,7 +33,6 @@
 #include "media/capture/capture_switches.h"
 #include "media/mojo/clients/mock_mojo_video_encoder_metrics_provider_factory.h"
 #include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
-#include "media/video/fake_gpu_memory_buffer.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "media/video/mock_video_encode_accelerator.h"
 #include "media/webrtc/webrtc_features.h"

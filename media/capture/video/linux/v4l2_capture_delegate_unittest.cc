@@ -26,11 +26,11 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "base/command_line.h"
+#include "gpu/command_buffer/client/fake_gpu_memory_buffer.h"
 #include "media/capture/capture_switches.h"
 #include "media/capture/video/linux/fake_device_provider.h"
 #include "media/capture/video/linux/fake_v4l2_impl.h"
 #include "media/capture/video/linux/video_capture_device_linux.h"
-#include "media/video/fake_gpu_memory_buffer.h"
 #endif  // BUILDFLAG(IS_LINUX)
 
 using base::test::RunClosure;
@@ -318,7 +318,7 @@ class MockCaptureHandleProvider
     : public VideoCaptureDevice::Client::Buffer::HandleProvider {
  public:
   MockCaptureHandleProvider(const gfx::Size& size, gfx::BufferFormat format) {
-    gmb_handle_ = CreatePixmapHandleForTesting(size, format);
+    gmb_handle_ = gpu::CreatePixmapHandleForTesting(size, format);
   }
   // Duplicate as an writable (unsafe) shared memory region.
   base::UnsafeSharedMemoryRegion DuplicateAsUnsafeRegion() override {
