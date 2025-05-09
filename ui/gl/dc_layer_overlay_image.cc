@@ -45,6 +45,12 @@ DCLayerOverlayImage::DCLayerOverlayImage(
       size_(size),
       dcomp_surface_proxy_(std::move(dcomp_surface_proxy)) {}
 
+DCLayerOverlayImage::DCLayerOverlayImage(const DCLayerOverlayImage& other) =
+    default;
+
+DCLayerOverlayImage& DCLayerOverlayImage::operator=(
+    const DCLayerOverlayImage& other) = default;
+
 DCLayerOverlayImage::DCLayerOverlayImage(DCLayerOverlayImage&&) = default;
 
 DCLayerOverlayImage& DCLayerOverlayImage::operator=(DCLayerOverlayImage&&) =

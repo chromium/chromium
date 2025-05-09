@@ -50,6 +50,8 @@ class GL_EXPORT DCLayerOverlayImage {
   DCLayerOverlayImage& operator=(DCLayerOverlayImage&&);
   ~DCLayerOverlayImage();
 
+  DCLayerOverlayImage CloneForTesting() const { return *this; }
+
   DCLayerOverlayType type() const { return type_; }
   const gfx::Size& size() const { return size_; }
 
@@ -83,6 +85,11 @@ class GL_EXPORT DCLayerOverlayImage {
   }
 
  private:
+  // Private copy constructors used for testing purposes for reusing overlay
+  // images.
+  DCLayerOverlayImage(const DCLayerOverlayImage& other);
+  DCLayerOverlayImage& operator=(const DCLayerOverlayImage& other);
+
   // Type of overlay image.
   DCLayerOverlayType type_;
   // Size of overlay image.

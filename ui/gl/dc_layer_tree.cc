@@ -481,6 +481,24 @@ IDXGISwapChain1* DCLayerTree::GetLayerSwapChainForTesting(
   return nullptr;
 }
 
+DCLayerTree::VisualTree::VisualSubtree*
+DCLayerTree::GetFrontMostVideoVisualSubtreeForTesting() const {
+  CHECK_IS_TEST();
+  VisualTree::VisualSubtree* front_sub_tree =
+      visual_tree_->GetFrontMostVisualSubtreeForTesting();  // IN-TEST
+  // `dcomp_visual_content` on front-most subtree should match
+  // SwapChainPresenter::content() in `video_swap_chains`
+  for (const auto& video_swap_chain : video_swap_chains_) {
+    const auto& swap_chain_presenter = video_swap_chain.second;
+    if (swap_chain_presenter->content().Get() ==
+        front_sub_tree->dcomp_visual_content()) {
+      return front_sub_tree;
+    }
+  }
+
+  return nullptr;
+}
+
 DCLayerTree::VisualTree::VisualSubtree::VisualSubtree() = default;
 DCLayerTree::VisualTree::VisualSubtree::~VisualSubtree() {
   if (content_visual_) {
@@ -1152,6 +1170,12 @@ void DCLayerTree::VisualTree::DetachSubtreeFromRoot(VisualSubtree* subtree) {
   HRESULT hr = dc_layer_tree_->dcomp_root_visual_.Get()->RemoveVisual(
       subtree->container_visual());
   CHECK_EQ(hr, S_OK);
+}
+
+DCLayerTree::VisualTree::VisualSubtree*
+DCLayerTree::VisualTree::GetFrontMostVisualSubtreeForTesting() const {
+  CHECK_IS_TEST();
+  return visual_subtrees_.back().get();
 }
 
 base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(

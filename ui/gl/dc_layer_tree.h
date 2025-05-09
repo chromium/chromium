@@ -345,6 +345,14 @@ class GL_EXPORT DCLayerTree {
       int z_order() const { return z_order_; }
       void set_z_order(int z_order) { z_order_ = z_order; }
 
+      gfx::Transform GetQuadToRootTransformForTesting() const {
+        return quad_to_root_transform_;
+      }
+
+      std::optional<gfx::Rect> GetClipRectInRootForTesting() const {
+        return clip_rect_in_root_;
+      }
+
      private:
 #if DCHECK_IS_ON()
       friend class VisualTree;
@@ -434,6 +442,8 @@ class GL_EXPORT DCLayerTree {
 #endif  // DCHECK_IS_ON()
     };
 
+    VisualSubtree* GetFrontMostVisualSubtreeForTesting() const;
+
    private:
     // This function is called as part of |BuildTreeOptimized|.
     // For each given overlay:
@@ -502,6 +512,8 @@ class GL_EXPORT DCLayerTree {
     const VisualSubtree* GetSubtreeFromLayerIdForTesting(
         const gfx::OverlayLayerId& layer_id) const;
   };
+
+  VisualTree::VisualSubtree* GetFrontMostVideoVisualSubtreeForTesting() const;
 
  private:
   const bool disable_nv12_dynamic_textures_;
