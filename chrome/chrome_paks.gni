@@ -215,6 +215,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/signin_resources.pak",
         "$root_gen_dir/chrome/suggest_internals_resources.pak",
         "$root_gen_dir/chrome/support_tool_resources.pak",
+        "$root_gen_dir/chrome/tab_group_home_resources.pak",
         "$root_gen_dir/chrome/tab_search_resources.pak",
         "$root_gen_dir/chrome/web_app_internals_resources.pak",
         "$root_gen_dir/chrome/webui_gallery_resources.pak",
@@ -230,6 +231,7 @@ template("chrome_extra_paks") {
         "//chrome/browser/resources/lens/overlay:resources",
         "//chrome/browser/resources/lens/shared:resources",
         "//chrome/browser/resources/search_engine_choice:resources",
+        "//chrome/browser/resources/tabs/tab_group_home:resources",
         "//content/browser/tracing:resources",
       ]
       if (is_chrome_branded) {

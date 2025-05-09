@@ -9,6 +9,8 @@
 
 namespace tabs {
 
+inline constexpr char kTabGroupHomeHost[] = "tab-group-home";
+
 namespace flag_descriptions {
 extern const char kTabGroupHomeName[];
 extern const char kTabGroupHomeDescription[];

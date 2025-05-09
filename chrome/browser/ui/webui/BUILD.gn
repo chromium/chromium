@@ -28,7 +28,10 @@ source_set("configs") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   if (!is_android) {
-    public_deps = [ "//chrome/browser/ui/webui/commerce" ]
+    public_deps = [
+      "//chrome/browser/ui/tabs/tab_group_home",
+      "//chrome/browser/ui/webui/commerce",
+    ]
   }
 
   deps = [

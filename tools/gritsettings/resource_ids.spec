@@ -676,6 +676,10 @@
     "META": {"sizes": {"includes": [30]}},
     "includes": [5060],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/tabs/tab_group_home/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [5065],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/tts_engine/resources.grd": {
     "META": {"sizes": {"includes": [20]}},
     "includes": [5070],
