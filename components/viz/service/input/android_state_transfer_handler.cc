@@ -216,7 +216,7 @@ void AndroidStateTransferHandler::HandleTouchEvent(
 
   if (GetEventDowntime(input_event) !=
       state_for_curr_sequence_->transfer_state->down_time_ms) {
-    TRACE_EVENT_INSTANT("input", "DifferentDownTimeInSequence");
+    TRACE_EVENT_INSTANT("input,input.scrolling", "DifferentDownTimeInSequence");
   }
 
   if (!state_for_curr_sequence_->rir_support) {

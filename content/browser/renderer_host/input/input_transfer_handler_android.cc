@@ -120,7 +120,7 @@ bool InputTransferHandlerAndroid::OnTouchEvent(
   if (delta < 0) {
     // TODO(crbug.com/406485568): Investigate this negative delta and
     // potentially file an Android platform bug.
-    TRACE_EVENT_INSTANT("input", "DownTimeAfterEventTime");
+    TRACE_EVENT_INSTANT("input,input.scrolling", "DownTimeAfterEventTime");
     EmitTransferResultHistogramAndTraceEvent(
         TransferInputToVizResult::kDownTimeAfterEventTime);
     if (active_touch_sequence_on_viz) {
@@ -256,7 +256,8 @@ void InputTransferHandlerAndroid::ConsumeEventsUntilCancel(
     if (event.GetDownTime() != cached_transferred_sequence_down_time_ms_) {
       // TODO(crbug.com/411338242): Investigate touch cancel received with
       // different downtime.
-      TRACE_EVENT_INSTANT("input", "CancelWithDifferentDownTime");
+      TRACE_EVENT_INSTANT("input,input.scrolling",
+                          "CancelWithDifferentDownTime");
     }
     base::UmaHistogramCustomCounts(
         kTouchMovesSeenHistogram, touch_moves_seen_after_transfer_,
