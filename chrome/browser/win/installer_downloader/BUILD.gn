@@ -34,7 +34,7 @@ source_set("installer_downloader") {
     "//chrome/browser:browser_process",
     "//chrome/browser/win:cloud_synced_folder_checker",
     "//components/prefs",
-    "//url:url",
+    "//url",
   ]
 }
 
