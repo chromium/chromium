@@ -88,12 +88,13 @@ Channel::AlignedBuffer MakeAlignedBuffer(size_t size) {
   // Generic allocators (such as malloc) return a pointer that is suitably
   // aligned for storing any type of object with a fundamental alignment
   // requirement. Buffers have no additional alignment requirement beyond that.
-  auto* ptr = new char[size];
+  auto buffer = Channel::AlignedBuffer::Uninit(size);
+
   // Even though the allocator is configured in such a way that it crashes
   // rather than return nullptr, ASAN and friends don't know about that. This
   // CHECK() prevents Clusterfuzz from complaining. crbug.com/1180576.
-  CHECK(ptr);
-  return Channel::AlignedBuffer(ptr);
+  CHECK(buffer.data());
+  return buffer;
 }
 
 struct TrivialMessage;
@@ -105,9 +106,9 @@ struct IpczMessage : public Channel::Message {
   IpczMessage(base::span<const uint8_t> data,
               std::vector<PlatformHandle> handles) {
     size_ = sizeof(IpczHeader) + data.size();
-    data_.reset(new char[size_]);
+    data_ = Channel::AlignedBuffer::Uninit(size_);
 
-    IpczHeader& header = *reinterpret_cast<IpczHeader*>(data_.get());
+    IpczHeader& header = *reinterpret_cast<IpczHeader*>(data_.data());
     header.size = sizeof(IpczHeader);
 
     DCHECK_LE(handles.size(), std::numeric_limits<uint16_t>::max());
@@ -135,7 +136,7 @@ struct IpczMessage : public Channel::Message {
   }
   size_t NumHandlesForTransit() const override { return handles_.size(); }
 
-  const void* data() const override { return data_.get(); }
+  const void* data() const override { return data_.data(); }
   void* mutable_data() override { NOTREACHED(); }
   size_t capacity() const override { return size_; }
 
@@ -165,8 +166,8 @@ struct ComplexMessage : public Channel::Message {
   std::vector<PlatformHandleInTransit> TakeHandles() override;
   size_t NumHandlesForTransit() const override;
 
-  const void* data() const override { return data_.get(); }
-  void* mutable_data() override { return data_.get(); }
+  const void* data() const override { return data_.data(); }
+  void* mutable_data() override { return data_.data(); }
   size_t capacity() const override;
 
   bool ExtendPayload(size_t new_payload_size) override;
@@ -299,8 +300,7 @@ Channel::MessagePtr Channel::Message::CreateRawForFuzzing(
   auto message = std::make_unique<ComplexMessage>();
   message->size_ = data.size();
   if (data.size()) {
-    message->data_ = MakeAlignedBuffer(data.size());
-    std::ranges::copy(data, message->data_.get());
+    message->data_ = Channel::AlignedBuffer::CopiedFrom(base::as_chars(data));
   }
   return base::WrapUnique<Channel::Message>(message.release());
 }
@@ -610,7 +610,7 @@ bool ComplexMessage::ExtendPayload(size_t new_payload_size) {
                  new_payload_size) +
         header_size;
     Channel::AlignedBuffer new_data = MakeAlignedBuffer(new_capacity);
-    memcpy(new_data.get(), data_.get(), capacity_);
+    new_data.copy_prefix_from(data_);
     data_ = std::move(new_data);
     capacity_ = new_capacity;
 
@@ -791,10 +791,10 @@ class Channel::ReadBuffer {
   ReadBuffer(const ReadBuffer&) = delete;
   ReadBuffer& operator=(const ReadBuffer&) = delete;
 
-  ~ReadBuffer() { DCHECK(data_); }
+  ~ReadBuffer() { DCHECK(data_.data()); }
 
   const char* occupied_bytes() const {
-    return data_.get() + num_discarded_bytes_;
+    return data_.subspan(num_discarded_bytes_).data();
   }
 
   size_t num_occupied_bytes() const {
@@ -808,11 +808,11 @@ class Channel::ReadBuffer {
       size_ = std::max(static_cast<size_t>(size_ * kGrowthFactor),
                        num_occupied_bytes_ + num_bytes);
       AlignedBuffer new_data = MakeAlignedBuffer(size_);
-      memcpy(new_data.get(), data_.get(), num_occupied_bytes_);
+      new_data.copy_prefix_from(data_.first(num_occupied_bytes_));
       data_ = std::move(new_data);
     }
 
-    return data_.get() + num_occupied_bytes_;
+    return data_.subspan(num_occupied_bytes_).data();
   }
 
   // Marks the first |num_bytes| unoccupied bytes as occupied.
@@ -840,8 +840,8 @@ class Channel::ReadBuffer {
       size_t num_preserved_bytes = num_occupied_bytes_ - num_discarded_bytes_;
       size_ = std::max(num_preserved_bytes, kReadBufferSize);
       AlignedBuffer new_data = MakeAlignedBuffer(size_);
-      memcpy(new_data.get(), data_.get() + num_discarded_bytes_,
-             num_preserved_bytes);
+      new_data.copy_prefix_from(
+          data_.subspan(num_discarded_bytes_, num_preserved_bytes));
       data_ = std::move(new_data);
       num_discarded_bytes_ = 0;
       num_occupied_bytes_ = num_preserved_bytes;
@@ -859,7 +859,9 @@ class Channel::ReadBuffer {
 
   void Realign() {
     size_t num_bytes = num_occupied_bytes();
-    memmove(data_.get(), occupied_bytes(), num_bytes);
+    auto new_data = MakeAlignedBuffer(data_.size());
+    new_data.copy_prefix_from(data_.subspan(num_discarded_bytes_, num_bytes));
+    data_ = std::move(new_data);
     num_discarded_bytes_ = 0;
     num_occupied_bytes_ = num_bytes;
   }

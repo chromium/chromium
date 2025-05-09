@@ -5,9 +5,12 @@
 #ifndef MOJO_CORE_CHANNEL_H_
 #define MOJO_CORE_CHANNEL_H_
 
+#include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -66,7 +69,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
   struct Message;
 
   using MessagePtr = std::unique_ptr<Message>;
-  using AlignedBuffer = std::unique_ptr<char[]>;
+  using AlignedBuffer = base::HeapArray<char>;
 
   // A message to be written to a channel.
   struct MOJO_SYSTEM_IMPL_EXPORT Message {
