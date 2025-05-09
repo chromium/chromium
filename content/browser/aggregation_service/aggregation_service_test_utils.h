@@ -160,22 +160,6 @@ class MockAggregationService : public AggregationService {
               (override));
 
   MOCK_METHOD(void,
-              SendReport,
-              (GURL url,
-               const AggregatableReport& report,
-               std::optional<AggregatableReportRequest::DelayType> delay_type,
-               AggregationService::SendCallback callback),
-              (override));
-
-  MOCK_METHOD(void,
-              SendReport,
-              (GURL url,
-               const base::Value& value,
-               std::optional<AggregatableReportRequest::DelayType> delay_type,
-               AggregationService::SendCallback callback),
-              (override));
-
-  MOCK_METHOD(void,
               ClearData,
               (base::Time delete_begin,
                base::Time delete_end,

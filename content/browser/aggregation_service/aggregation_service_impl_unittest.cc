@@ -346,26 +346,6 @@ TEST_F(AggregationServiceImplTest, AssembleReport_Fail) {
   VerifyUnscheduledHistograms();
 }
 
-TEST_F(AggregationServiceImplTest, SendReport) {
-  EXPECT_CALL(*test_sender_, SendReport)
-      .WillOnce(base::test::RunOnceCallback<3>(
-          AggregatableReportSender::RequestStatus::kOk));
-
-  base::RunLoop run_loop;
-  service_impl_->SendReport(
-      GURL("https://example.com/reports"), CreateExampleAggregatableReport(),
-      AggregatableReportRequest::DelayType::Unscheduled,
-      base::BindLambdaForTesting([&](AggregationService::SendStatus status) {
-        EXPECT_EQ(status, AggregationService::SendStatus::kOk);
-        run_loop.Quit();
-      }));
-
-  run_loop.Run();
-
-  VerifyScheduledHistograms();
-  VerifyUnscheduledHistograms();
-}
-
 TEST_F(AggregationServiceImplTest, ScheduleReport_Success) {
   std::vector<AggregationServiceStorage::RequestAndId> requests_and_ids;
 

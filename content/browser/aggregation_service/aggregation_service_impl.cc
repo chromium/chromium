@@ -126,24 +126,6 @@ void AggregationServiceImpl::AssembleReport(
   assembler_->AssembleReport(std::move(report_request), std::move(callback));
 }
 
-void AggregationServiceImpl::SendReport(
-    GURL url,
-    const AggregatableReport& report,
-    std::optional<AggregatableReportRequest::DelayType> delay_type,
-    SendCallback callback) {
-  SendReport(std::move(url), base::Value(report.GetAsJson()), delay_type,
-             std::move(callback));
-}
-
-void AggregationServiceImpl::SendReport(
-    GURL url,
-    const base::Value& contents,
-    std::optional<AggregatableReportRequest::DelayType> delay_type,
-    SendCallback callback) {
-  sender_->SendReport(std::move(url), contents, delay_type,
-                      std::move(callback));
-}
-
 const base::SequenceBound<AggregationServiceStorage>&
 AggregationServiceImpl::GetStorage() {
   return storage_;
@@ -258,14 +240,15 @@ void AggregationServiceImpl::OnReportAssemblyComplete(
   // origin to perform this check.
   base::Value value(report->GetAsJson());
   auto delay_type = report_request.delay_type();
-  SendReport(std::move(reporting_url), value, delay_type,
-             /*callback=*/
-             base::BindOnce(
-                 &AggregationServiceImpl::OnReportSendingComplete,
-                 // `base::Unretained` is safe as the sender is owned by `this`.
-                 base::Unretained(this), std::move(done),
-                 std::move(report_request), request_id, std::move(*report),
-                 /*sending_timer=*/base::ElapsedTimer()));
+  sender_->SendReport(
+      std::move(reporting_url), value, delay_type,
+      /*callback=*/
+      base::BindOnce(
+          &AggregationServiceImpl::OnReportSendingComplete,
+          // `base::Unretained` is safe as the sender is owned by `this`.
+          base::Unretained(this), std::move(done), std::move(report_request),
+          request_id, std::move(*report),
+          /*sending_timer=*/base::ElapsedTimer()));
 }
 
 void AggregationServiceImpl::OnReportSendingComplete(

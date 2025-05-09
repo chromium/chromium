@@ -75,16 +75,6 @@ class CONTENT_EXPORT AggregationServiceImpl
   // AggregationService:
   void AssembleReport(AggregatableReportRequest report_request,
                       AssemblyCallback callback) override;
-  void SendReport(
-      GURL url,
-      const AggregatableReport& report,
-      std::optional<AggregatableReportRequest::DelayType> delay_type,
-      SendCallback callback) override;
-  void SendReport(
-      GURL url,
-      const base::Value& contents,
-      std::optional<AggregatableReportRequest::DelayType> delay_type,
-      SendCallback callback) override;
   void ClearData(base::Time delete_begin,
                  base::Time delete_end,
                  StoragePartition::StorageKeyMatcherFunction filter,
