@@ -249,15 +249,9 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
       pool_resource.InstallGpuBacking(sii, raster_caps.tile_overlay_candidate,
                                       raster_caps.use_gpu_rasterization,
                                       "HeadsUpDisplayLayer");
-
-      auto* ri = raster_context_provider->RasterInterface();
-      ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+      pool_resource.backing()->returned_sync_token =
+          pool_resource.backing()->shared_image()->creation_sync_token();
       needs_clear = true;
-    } else if (pool_resource.backing()->returned_sync_token.HasData()) {
-      auto* ri = raster_context_provider->RasterInterface();
-      ri->WaitSyncTokenCHROMIUM(
-          pool_resource.backing()->returned_sync_token.GetConstData());
-      pool_resource.backing()->returned_sync_token = gpu::SyncToken();
     }
   } else {
     DCHECK_EQ(draw_mode, DRAW_MODE_SOFTWARE);
@@ -278,6 +272,10 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     auto* backing = pool_resource.backing();
     auto* ri = raster_context_provider->RasterInterface();
 
+    ri->WaitSyncTokenCHROMIUM(backing->returned_sync_token.GetConstData());
+    if (backing->returned_sync_token.HasData()) {
+      backing->returned_sync_token = gpu::SyncToken();
+    }
     if (raster_caps.use_gpu_rasterization) {
       // If using |gpu_raster|, DrawHudContents() directly to a gpu texture
       // which is wrapped in an SkSurface.
