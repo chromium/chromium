@@ -1,0 +1,46 @@
+Document
+++Group IsControlElement=false
+++++Image
+++++++Text Name='Static fallback'
+++++Image
+++++++Text Name='<newline>    '
+++++++Group IsControlElement=false
+++++++++Text Name='<newline>      '
+++++++++Text Name='Here we list the contents:'
+++++++++Text Name='<newline>      '
+++++++++List
+++++++++++Text Name='<newline>        '
+++++++++++ListItem Name='A red circle.<newline>        '
+++++++++++++Text Name='A red circle.<newline>        ' IsControlElement=false
+++++++++++ListItem Name='A blue line.<newline>        '
+++++++++++++Text Name='A blue line.<newline>        ' IsControlElement=false
+++++++++++ListItem Name='Text saying Welcome to canvas<newline>      '
+++++++++++++Text Name='Text saying ' IsControlElement=false
+++++++++++++Group
+++++++++++++++Text Name='Welcome to canvas'
+++++++++++++Text Name='<newline>      ' IsControlElement=false
+++++++++Text Name='<newline>    '
+++++++Text Name='<newline>  '
+++++Image
+++++++Text Name='<newline>    '
+++++++Group IsControlElement=false
+++++++++Text Name='<newline>      '
+++++++++Group IsControlElement=false
+++++++++++Text Name='Here we list the contents:'
+++++++++Text Name='<newline>      '
+++++++++List
+++++++++++Text Name='<newline>        '
+++++++++++ListItem Name='A red circle.'
+++++++++++++Text Name='1. ' IsControlElement=false
+++++++++++++Text Name='A red circle.' IsControlElement=false
+++++++++++ListItem Name='A blue line.'
+++++++++++++Text Name='2. ' IsControlElement=false
+++++++++++++Text Name='A blue line.' IsControlElement=false
+++++++++++ListItem Name='Text sayingWelcome to canvas<newline>      '
+++++++++++++Text Name='3. ' IsControlElement=false
+++++++++++++Text Name='Text saying' IsControlElement=false
+++++++++++++Group
+++++++++++++++Text Name='Welcome to canvas'
+++++++++++++Text Name='<newline>      ' IsControlElement=false
+++++++++Text Name='<newline>    '
+++++++Text Name='<newline>  '

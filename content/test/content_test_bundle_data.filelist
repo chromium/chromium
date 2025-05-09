@@ -3320,6 +3320,16 @@ data/accessibility/html/button-with-listbox-popup-expected-uia-win.txt
 data/accessibility/html/button-with-listbox-popup-expected-win.txt
 data/accessibility/html/button-with-listbox-popup.html
 data/accessibility/html/button.html
+data/accessibility/html/canvas-complex-fallback-expected-android-assist-data.txt
+data/accessibility/html/canvas-complex-fallback-expected-android-external.txt
+data/accessibility/html/canvas-complex-fallback-expected-android.txt
+data/accessibility/html/canvas-complex-fallback-expected-auralinux.txt
+data/accessibility/html/canvas-complex-fallback-expected-blink.txt
+data/accessibility/html/canvas-complex-fallback-expected-fuchsia.txt
+data/accessibility/html/canvas-complex-fallback-expected-mac.txt
+data/accessibility/html/canvas-complex-fallback-expected-uia-win.txt
+data/accessibility/html/canvas-complex-fallback-expected-win.txt
+data/accessibility/html/canvas-complex-fallback.html
 data/accessibility/html/canvas-expected-android-assist-data.txt
 data/accessibility/html/canvas-expected-android-external.txt
 data/accessibility/html/canvas-expected-android.txt

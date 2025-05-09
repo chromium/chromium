@@ -1,0 +1,56 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++canvas
+++++++++staticText name='Static fallback'
+++++++canvas
+++++++++staticText name='<newline>    '
+++++++++genericContainer
+++++++++++staticText name='<newline>      '
+++++++++++staticText name='Here we list the contents:'
+++++++++++staticText name='<newline>      '
+++++++++++list
+++++++++++++staticText name='<newline>        '
+++++++++++++listItem hierarchicalLevel=1
+++++++++++++++staticText name='A red circle.<newline>        '
+++++++++++++listItem hierarchicalLevel=1
+++++++++++++++staticText name='A blue line.<newline>        '
+++++++++++++listItem hierarchicalLevel=1
+++++++++++++++staticText name='Text saying '
+++++++++++++++blockquote
+++++++++++++++++staticText name='Welcome to canvas'
+++++++++++++++staticText name='<newline>      '
+++++++++++staticText name='<newline>    '
+++++++++staticText name='<newline>  '
+++++++canvas
+++++++++staticText name='<newline>    '
+++++++++genericContainer
+++++++++++staticText name='<newline>      '
+++++++++++paragraph
+++++++++++++staticText name='Here we list the contents:'
+++++++++++++++inlineTextBox name='Here we list the contents:'
+++++++++++staticText name='<newline>      '
+++++++++++list
+++++++++++++staticText name='<newline>        '
+++++++++++++listItem hierarchicalLevel=1
+++++++++++++++listMarker name='1. '
+++++++++++++++++staticText ignored
+++++++++++++++staticText name='A red circle.'
+++++++++++++++++inlineTextBox name='A red circle.'
+++++++++++++listItem hierarchicalLevel=1
+++++++++++++++listMarker name='2. '
+++++++++++++++++staticText ignored
+++++++++++++++staticText name='A blue line.'
+++++++++++++++++inlineTextBox name='A blue line.'
+++++++++++++listItem hierarchicalLevel=1
+++++++++++++++listMarker name='3. '
+++++++++++++++++staticText ignored
+++++++++++++++staticText name='Text saying'
+++++++++++++++++inlineTextBox name='Text saying'
+++++++++++++++blockquote
+++++++++++++++++staticText name='Welcome to canvas'
+++++++++++++++++++inlineTextBox name='Welcome '
+++++++++++++++++++inlineTextBox name='to canvas'
+++++++++++++++staticText name='<newline>      '
+++++++++++staticText name='<newline>    '
+++++++++staticText name='<newline>  '

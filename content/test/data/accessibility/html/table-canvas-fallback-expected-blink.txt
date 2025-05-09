@@ -25,6 +25,33 @@ rootWebArea
 ++++++++++++++staticText name='<newline>    '
 ++++++++++++staticText name='<newline>  '
 ++++++++staticText name='<newline>'
+++++++canvas
+++++++++staticText name='<newline>  '
+++++++++layoutTable
+++++++++++genericContainer ignored
+++++++++++++layoutTableRow
+++++++++++++++staticText name='<newline>      '
+++++++++++++++layoutTableCell name='Rabbits'
+++++++++++++++++staticText name='Rabbits'
+++++++++++++++++++inlineTextBox name='Rabbits'
+++++++++++++++staticText name='<newline>      '
+++++++++++++++layoutTableCell name='Goldfish'
+++++++++++++++++staticText name='Goldfish'
+++++++++++++++++++inlineTextBox name='Goldfish'
+++++++++++++++staticText name='<newline>    '
+++++++++++++staticText name='<newline>    '
+++++++++++++layoutTableRow
+++++++++++++++staticText name='<newline>      '
+++++++++++++++layoutTableCell name='Cats'
+++++++++++++++++staticText name='Cats'
+++++++++++++++++++inlineTextBox name='Cats'
+++++++++++++++staticText name='<newline>      '
+++++++++++++++layoutTableCell name='Dogs'
+++++++++++++++++staticText name='Dogs'
+++++++++++++++++++inlineTextBox name='Dogs'
+++++++++++++++staticText name='<newline>    '
+++++++++++++staticText name='<newline>  '
+++++++++staticText name='<newline>'
 ++++++layoutTable
 ++++++++genericContainer ignored
 ++++++++++layoutTableRow

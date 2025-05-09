@@ -10,3 +10,12 @@ android.webkit.WebView focusable focused
 ++++++android.widget.TextView name='<newline>    '
 ++++++android.widget.TextView name='<newline>    '
 ++++++android.widget.TextView name='<newline>  '
+++++android.widget.Image
+++++++android.widget.TextView name='<newline>    '
+++++++android.widget.TextView interesting name='Line breaking content in a fallback' hint='Aria hidden paragraph in fallback content'
+++++++android.widget.TextView name='<newline>    '
+++++++android.widget.TextView interesting name='This is another paragraph in fallback' hint='Visibility hidden paragraph in fallback content'
+++++++android.widget.TextView name='<newline>    '
+++++++android.widget.TextView name='<newline>    '
+++++++android.widget.TextView name='<newline>    '
+++++++android.widget.TextView name='<newline>  '

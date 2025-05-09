@@ -1510,12 +1510,21 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @CommandLineFlags.Add({"enable-blink-features=CanvasElementDrawElement"})
+    public void test_canvasComplexFallback() {
+        performHtmlTest("canvas-complex-fallback.html");
+    }
+
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add({"enable-blink-features=CanvasElementDrawElement"})
     public void test_canvasFallback() {
         performHtmlTest("canvas-fallback.html");
     }
 
     @Test
     @SmallTest
+    @CommandLineFlags.Add({"enable-blink-features=CanvasElementDrawElement"})
     public void test_canvas() {
         performHtmlTest("canvas.html");
     }

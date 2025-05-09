@@ -1,0 +1,46 @@
+[document web]
+++[section]
+++++[canvas]
+++++++[static] name='Static fallback'
+++++[canvas]
+++++++[static] name='<newline>    '
+++++++[section]
+++++++++[static] name='<newline>      '
+++++++++[static] name='Here we list the contents:'
+++++++++[static] name='<newline>      '
+++++++++[list]
+++++++++++[static] name='<newline>        '
+++++++++++[list item]
+++++++++++++[static] name='A red circle.<newline>        '
+++++++++++[list item]
+++++++++++++[static] name='A blue line.<newline>        '
+++++++++++[list item]
+++++++++++++[static] name='Text saying '
+++++++++++++[block quote]
+++++++++++++++[static] name='Welcome to canvas'
+++++++++++++[static] name='<newline>      '
+++++++++[static] name='<newline>    '
+++++++[static] name='<newline>  '
+++++[canvas]
+++++++[static] name='<newline>    '
+++++++[section]
+++++++++[static] name='<newline>      '
+++++++++[paragraph]
+++++++++++[static] name='Here we list the contents:'
+++++++++[static] name='<newline>      '
+++++++++[list]
+++++++++++[static] name='<newline>        '
+++++++++++[list item]
+++++++++++++[static] name='1. '
+++++++++++++[static] name='A red circle.'
+++++++++++[list item]
+++++++++++++[static] name='2. '
+++++++++++++[static] name='A blue line.'
+++++++++++[list item]
+++++++++++++[static] name='3. '
+++++++++++++[static] name='Text saying'
+++++++++++++[block quote]
+++++++++++++++[static] name='Welcome to canvas'
+++++++++++++[static] name='<newline>      '
+++++++++[static] name='<newline>    '
+++++++[static] name='<newline>  '

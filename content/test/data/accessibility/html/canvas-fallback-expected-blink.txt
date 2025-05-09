@@ -18,3 +18,24 @@ rootWebArea
 ++++++++heading ignored invisible
 ++++++++++staticText ignored invisible
 ++++++++staticText name='<newline>  '
+++++++canvas
+++++++++staticText name='<newline>    '
+++++++++paragraph description='Aria hidden paragraph in fallback content'
+++++++++++staticText name='Line breaking content in a fallback'
+++++++++++++inlineTextBox name='Line breaking '
+++++++++++++inlineTextBox name='content in a '
+++++++++++++inlineTextBox name='fallback'
+++++++++staticText name='<newline>    '
+++++++++paragraph description='Visibility hidden paragraph in fallback content'
+++++++++++staticText name='This is another paragraph in fallback'
+++++++++++++inlineTextBox name='This is another '
+++++++++++++inlineTextBox name='paragraph in '
+++++++++++++inlineTextBox name='fallback'
+++++++++staticText name='<newline>    '
+++++++++heading ignored invisible
+++++++++++staticText ignored invisible
+++++++++staticText name='<newline>    '
+++++++++staticText name='<newline>    '
+++++++++heading ignored invisible
+++++++++++staticText ignored invisible
+++++++++staticText name='<newline>  '
