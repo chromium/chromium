@@ -134,11 +134,6 @@ class BleV2GattServerTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(BleV2GattServerTest, GetBlePeripheral) {
-  BluetoothAdapter& ble_v2_periphral = ble_v2_gatt_server_->GetBlePeripheral();
-  EXPECT_EQ(fake_adapter_->address_, ble_v2_periphral.GetAddress());
-}
-
 TEST_F(BleV2GattServerTest,
        CreateCharacteristic_CreateGattService_AlreadyExists) {
   auto fake_gatt_service = std::make_unique<bluetooth::FakeGattService>();

@@ -95,8 +95,6 @@ class BleV2Medium : public ::nearby::api::ble_v2::BleMedium,
 
   bool IsExtendedAdvertisementsAvailable() override;
 
-  bool GetRemotePeripheral(const std::string& mac_address,
-                           GetRemotePeripheralCallback callback) override;
   bool GetRemotePeripheral(api::ble_v2::BlePeripheral::UniqueId id,
                            GetRemotePeripheralCallback callback) override;
 
