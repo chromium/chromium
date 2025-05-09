@@ -38,7 +38,7 @@ using ResourceType = resource_attribution::ResourceType;
 // 100.0] range. The CPU usage is usually below 1%, so the UKM is
 // reported out of 10,000 instead of out of 100 to make analyzing the data
 // easier. This is the same scale factor used by the
-// PerformanceMonitor.AverageCPU8 histograms recorded in
+// PerformanceMonitor.AverageCPU9 histograms recorded in
 // chrome/browser/metrics/power/process_metrics_recorder_util.cc.
 constexpr int kCPUUsageFactor = 100 * 100;
 

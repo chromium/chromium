@@ -269,19 +269,19 @@ chromium-metrics-reviews@google.com.
                but there was in the last 2 minutes"/>
 </variants>
 
-<histogram name="PerformanceMonitor.AverageCPU8.Total{UsageScenario}"
+<histogram name="PerformanceMonitor.AverageCPU9.Total{UsageScenario}"
     units="1/100 %" expires_after="2025-10-19">
   <owner>fdoray@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    See definition of PerformanceClass.AverageCPU8.ProcessName. This is recorded
+    See definition of PerformanceClass.AverageCPU9.ProcessName. This is recorded
     every 2 minutes for {UsageScenario} (see go/chrome_power_use_per_scenario).
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
 
-<histogram name="PerformanceMonitor.AverageCPU8.{ProcessName}" units="1/100 %"
+<histogram name="PerformanceMonitor.AverageCPU9.{ProcessName}" units="1/100 %"
     expires_after="2025-10-19">
   <owner>fdoray@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
@@ -289,16 +289,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Sum of the average CPU utilization of each process of the type
     {ProcessName}, read out at each two-minute interval. The utilization is in
-    the 0-100% range per CPU, which is then summed up and multiplied by 100. The
-    histogram is capped at 20000 (equivalent to 2 cores fully loaded). I.e. 4
-    cores busy at 25% each will read as 25 * 4 * 100 = 10000. If no process of
-    type {ProcessName} existed during the interval, a sample of zero is still
-    emitted.
+    the 0-100% range per CPU, which is then summed up and multiplied by 100.
+    I.e. 4 cores busy at 25% each will read as 25 * 4 * 100 = 10000. Capped at
+    160,000 (equivalent to 16 cores fully loaded) to accomodate the long tail of
+    heavy workloads.
 
-    Not recorded on Android.
+    If no process of type {ProcessName} existed during the interval, a sample of
+    zero is still emitted.
 
-    NOTE: On Windows, this is not recorded on CPUs that do not support constant
-    rate TSC.
+    Not recorded on Android. On Windows, this is not recorded on CPUs that do
+    not support constant rate TSC.
   </summary>
   <token key="ProcessName" variants="ProcessName"/>
 </histogram>

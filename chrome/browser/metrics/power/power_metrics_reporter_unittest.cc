@@ -235,13 +235,13 @@ TEST_F(PowerMetricsReporterWithoutBatteryLevelProviderUnitTest,
   const std::vector<const char*> suffixes({"", kScenarioSuffix});
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
   // Windows ARM64 does not support Constant Rate TSC so
-  // PerformanceMonitor.AverageCPU8.Total is not recorded there.
+  // PerformanceMonitor.AverageCPU9.Total is not recorded there.
   ExpectHistogramSamples(
       &histogram_tester_, suffixes,
-      {{"PerformanceMonitor.AverageCPU8.Total", std::nullopt}});
+      {{"PerformanceMonitor.AverageCPU9.Total", std::nullopt}});
 #else
   ExpectHistogramSamples(&histogram_tester_, suffixes,
-                         {{"PerformanceMonitor.AverageCPU8.Total", 500}});
+                         {{"PerformanceMonitor.AverageCPU9.Total", 500}});
 #endif
 }
 
@@ -262,14 +262,14 @@ TEST_F(PowerMetricsReporterWithoutBatteryLevelProviderUnitTest,
   const std::vector<const char*> suffixes({"", kScenarioSuffix});
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
   // Windows ARM64 does not support Constant Rate TSC so
-  // PerformanceMonitor.AverageCPU8.Total is not recorded there.
+  // PerformanceMonitor.AverageCPU9.Total is not recorded there.
   ExpectHistogramSamples(
       &histogram_tester_, suffixes,
-      {{"PerformanceMonitor.AverageCPU8.Total", std::nullopt}});
+      {{"PerformanceMonitor.AverageCPU9.Total", std::nullopt}});
 #else
   // Missing `cpu_usage` recorded as 0.
   ExpectHistogramSamples(&histogram_tester_, suffixes,
-                         {{"PerformanceMonitor.AverageCPU8.Total", 0}});
+                         {{"PerformanceMonitor.AverageCPU9.Total", 0}});
 #endif
 }
 
@@ -289,13 +289,13 @@ TEST_F(PowerMetricsReporterUnitTest, LongIntervalHistograms) {
   const std::vector<const char*> suffixes({"", kScenarioSuffix});
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
   // Windows ARM64 does not support Constant Rate TSC so
-  // PerformanceMonitor.AverageCPU8.Total is not recorded there.
+  // PerformanceMonitor.AverageCPU9.Total is not recorded there.
   ExpectHistogramSamples(
       &histogram_tester_, suffixes,
-      {{"PerformanceMonitor.AverageCPU8.Total", std::nullopt}});
+      {{"PerformanceMonitor.AverageCPU9.Total", std::nullopt}});
 #else
   ExpectHistogramSamples(&histogram_tester_, suffixes,
-                         {{"PerformanceMonitor.AverageCPU8.Total", 500}});
+                         {{"PerformanceMonitor.AverageCPU9.Total", 500}});
 #endif
 }
 

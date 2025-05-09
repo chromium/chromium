@@ -57,22 +57,24 @@ TEST(PowerMetricsTest, ReportAggregatedProcessMetricsHistograms) {
 
   ReportAggregatedProcessMetricsHistograms(process_metrics, suffixes);
 
-  ExpectHistogramSamples(&histogram_tester, suffixes, {
+  ExpectHistogramSamples(
+      &histogram_tester, suffixes,
+      {
 // Windows ARM64 does not support Constant Rate TSC so
-// PerformanceMonitor.AverageCPU8.Total is not recorded there.
+// PerformanceMonitor.AverageCPU9.Total is not recorded there.
 #if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_ARM64)
-    {"PerformanceMonitor.AverageCPU8.Total", 20},
+          {"PerformanceMonitor.AverageCPU9.Total", 20},
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_AIX)
-        {"PerformanceMonitor.IdleWakeups2.Total", 51},
+          {"PerformanceMonitor.IdleWakeups2.Total", 51},
 #endif
 
 #if BUILDFLAG(IS_MAC)
-        {"PerformanceMonitor.PackageExitIdleWakeups2.Total", 52},
+          {"PerformanceMonitor.PackageExitIdleWakeups2.Total", 52},
 #endif
-  });
+      });
 }
 
 TEST(PowerMetricsTest, CalculateDischargeRateMilliwatts_mWh) {
