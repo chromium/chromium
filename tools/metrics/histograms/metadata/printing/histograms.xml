@@ -798,8 +798,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PrintPreview.RenderToPDFTime" units="ms"
-    expires_after="2025-05-11">
+<histogram name="PrintPreview.RenderToPDFTime" units="ms" expires_after="never">
+<!-- expires-never: Monitors printing system health. -->
+
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>Time taken to render to PDF for print preview.</summary>
