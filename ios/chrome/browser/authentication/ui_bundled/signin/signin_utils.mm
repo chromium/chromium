@@ -284,33 +284,13 @@ bool ShouldPresentUserSigninUpgrade(ProfileIOS* profile,
     return false;
   }
 
-  if (IsFullscreenSigninPromoManagerMigrationEnabled()) {
-    feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForProfile(profile);
-    unsigned int interactions = 0;
-    std::vector<std::pair<feature_engagement::EventConfig, int>> events =
-        tracker->ListEvents(
-            feature_engagement::kIPHiOSPromoSigninFullscreenFeature);
-    for (const auto& event : events) {
-      if (event.first.name ==
-          feature_engagement::events::kIOSSigninFullscreenPromoTrigger) {
-        interactions = event.second;
-        break;
-      }
-    }
-
-    if (interactions <= 1) {
-      return true;
-    }
-
-  } else {
-    // The sign-in promo should be shown twice, even if no account has been
-    // added.
-    NSInteger display_count =
-        [defaults integerForKey:kSigninPromoViewDisplayCountKey];
-    if (display_count <= 1) {
-      return true;
-    }
+  // TODO(crbug.com/416634715): Replace user defaults interaction count with FET
+  // event count. The sign-in promo should be shown twice, even if no account
+  // has been added.
+  NSInteger display_count =
+      [defaults integerForKey:kSigninPromoViewDisplayCountKey];
+  if (display_count <= 1) {
+    return true;
   }
 
   // Otherwise, it can be shown only if a new account has been added.
