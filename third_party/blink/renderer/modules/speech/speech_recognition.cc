@@ -246,10 +246,34 @@ ScriptPromise<IDLBoolean> SpeechRecognition::installOnDevice(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
       script_state, exception_state.GetContext());
   auto result = resolver->Promise();
-  controller->InstallOnDeviceSpeechRecognition(
-      lang, WTF::BindOnce([](ScriptPromiseResolver<IDLBoolean>* resolver,
-                             bool success) { resolver->Resolve(success); },
-                          WrapPersistent(resolver)));
+
+  controller->OnDeviceWebSpeechAvailable(
+      lang,
+      WTF::BindOnce(
+          [](ScriptPromiseResolver<IDLBoolean>* resolver,
+             ScriptState* script_state, const String& lang,
+             media::mojom::blink::AvailabilityStatus status) {
+            LocalDOMWindow& window = *LocalDOMWindow::From(script_state);
+            auto* controller = SpeechRecognitionController::From(window);
+            if (!ExecutionContext::From(script_state)
+                     ->IsServiceWorkerGlobalScope() &&
+                status ==
+                    media::mojom::blink::AvailabilityStatus::kDownloadable &&
+                !LocalFrame::ConsumeTransientUserActivation(
+                    window.GetFrame())) {
+              resolver->RejectWithDOMException(
+                  DOMExceptionCode::kNotAllowedError,
+                  "Requires handling a user gesture when availability is "
+                  "\"downloadable\".");
+              return;
+            }
+            controller->InstallOnDeviceSpeechRecognition(
+                lang,
+                WTF::BindOnce([](ScriptPromiseResolver<IDLBoolean>* resolver,
+                                 bool success) { resolver->Resolve(success); },
+                              WrapPersistent(resolver)));
+          },
+          WrapPersistent(resolver), WrapPersistent(script_state), lang));
 
   return result;
 }
