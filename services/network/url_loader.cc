@@ -219,7 +219,7 @@ net::HttpRequestHeaders AttachCookies(const net::HttpRequestHeaders& headers,
                                            &parsed_cookies_from_browser);
 
   // Add the browser cookies to the request.
-  for (auto cookie : parsed_cookies_from_browser) {
+  for (const auto& cookie : parsed_cookies_from_browser) {
     DCHECK(!cookie.first.empty());
 
     // Ensure we're not adding duplicate cookies.
