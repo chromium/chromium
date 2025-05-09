@@ -21,8 +21,8 @@ void LaunchQueue::Enqueue(LaunchParams* params) {
     return;
   }
 
-  MeasureLatencyFromBrowserProcess(
-      params->time_navigation_started_in_browser());
+  MeasureLatencyFromBrowserProcess(params->time_navigation_started_in_browser(),
+                                   params->navigation_started());
   consumer_->InvokeAndReportException(nullptr, params);
 }
 
@@ -38,7 +38,8 @@ void LaunchQueue::setConsumer(V8LaunchConsumer* consumer) {
     unconsumed_launch_params_.EraseAt(0);
 
     MeasureLatencyFromBrowserProcess(
-        params->time_navigation_started_in_browser());
+        params->time_navigation_started_in_browser(),
+        params->navigation_started());
     consumer_->InvokeAndReportException(nullptr, params);
   }
 }
@@ -50,16 +51,23 @@ void LaunchQueue::Trace(Visitor* visitor) const {
 }
 
 void LaunchQueue::MeasureLatencyFromBrowserProcess(
-    const base::TimeTicks time_navigation_started_in_browser) {
+    const base::TimeTicks time_navigation_started_in_browser,
+    bool navigation_started) {
   if (time_navigation_started_in_browser.is_null()) {
     return;
   }
 
-  // Measure how long it took the launch params to be enqueued after the browser
-  // process receives the navigation request that created these params.
+  base::TimeDelta time_to_navigate =
+      base::TimeTicks::Now() - time_navigation_started_in_browser;
   base::UmaHistogramMediumTimes(
-      "WebApp.NavigationCapturing.LaunchParamsConsumedTime",
-      base::TimeTicks::Now() - time_navigation_started_in_browser);
+      "Webapp.NavigationCapturing.LaunchParamsConsumedTime", time_to_navigate);
+
+  std::string histogram_variant =
+      navigation_started ? ".WithNavigation" : ".WithoutNavigation";
+  std::string histogram_name =
+      base::StrCat({"WebApp.NavigationCapturing.LaunchParamsConsumedTime",
+                    histogram_variant});
+  base::UmaHistogramMediumTimes(histogram_name, time_to_navigate);
 }
 
 }  // namespace blink

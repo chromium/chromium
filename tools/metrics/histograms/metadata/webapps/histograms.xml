@@ -1699,7 +1699,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.NavigationCapturing.LaunchParamsConsumedTime"
-    units="ms" expires_after="2026-05-01">
+    units="ms" expires_after="2026-10-01">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the time it takes the browser process to start using the navigation
+    capturing logic all the way to finally having the launch params for that
+    navigation enqueued (if any), regardless of whether a navigation happened or
+    not (like for apps with launch handler mode of focus-existing). This is not
+    measured on reloads.
+  </summary>
+</histogram>
+
+<histogram
+    name="Webapp.NavigationCapturing.LaunchParamsConsumedTime.{DidNavigate}"
+    units="ms" expires_after="2026-10-01">
   <owner>dibyapal@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -1711,7 +1725,17 @@ chromium-metrics-reviews@google.com.
     recorded for all types of navigations if the navigation was captured and
     launch queues were enqueued, including ones that might arise out of
     reparenting into an app container. This is not persisted across reloads.
+    Measurement is divided across whether navigation happened or not in the
+    container the launch handlers are enqueued in.
   </summary>
+  <token key="DidNavigate">
+    <variant name="WithNavigation"
+        summary="launch handlers were enqueued for an app container where a
+                 new navigation happened"/>
+    <variant name="WithoutNavigation"
+        summary="launch handlers were enqueued for an existing app container
+                 with no new navigation"/>
+  </token>
 </histogram>
 
 <histogram name="Webapp.NavigationCapturing.Redirection.FinalResult"

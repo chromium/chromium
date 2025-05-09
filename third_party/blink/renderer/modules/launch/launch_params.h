@@ -20,7 +20,8 @@ class LaunchParams final : public ScriptWrappable {
 
  public:
   explicit LaunchParams(KURL target_url,
-                        base::TimeTicks time_navigation_started_in_browser);
+                        base::TimeTicks time_navigation_started_in_browser,
+                        bool navigation_started);
   explicit LaunchParams(HeapVector<Member<FileSystemHandle>> files);
   ~LaunchParams() override;
 
@@ -30,6 +31,7 @@ class LaunchParams final : public ScriptWrappable {
   const base::TimeTicks time_navigation_started_in_browser() const {
     return time_navigation_started_in_browser_;
   }
+  bool navigation_started() const { return navigation_started_; }
 
   void Trace(Visitor*) const override;
 
@@ -37,6 +39,7 @@ class LaunchParams final : public ScriptWrappable {
   KURL target_url_;
   HeapVector<Member<FileSystemHandle>> files_;
   base::TimeTicks time_navigation_started_in_browser_;
+  bool navigation_started_ = false;
 };
 
 }  // namespace blink

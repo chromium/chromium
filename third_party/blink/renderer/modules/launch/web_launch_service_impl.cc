@@ -72,9 +72,11 @@ void WebLaunchServiceImpl::SetLaunchFiles(
 
 void WebLaunchServiceImpl::EnqueueLaunchParams(
     const KURL& launch_url,
-    base::TimeTicks time_navigation_started_in_browser) {
+    base::TimeTicks time_navigation_started_in_browser,
+    bool navigation_started) {
   DOMWindowLaunchQueue::EnqueueLaunchParams(GetSupplementable(), launch_url,
-                                            time_navigation_started_in_browser);
+                                            time_navigation_started_in_browser,
+                                            navigation_started);
 }
 
 }  // namespace blink

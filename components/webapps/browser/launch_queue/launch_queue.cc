@@ -207,7 +207,8 @@ void LaunchQueue::SendLaunchParams(LaunchParams launch_params,
   } else {
     launch_service->EnqueueLaunchParams(
         launch_params.target_url,
-        launch_params.time_navigation_started_for_enqueue);
+        launch_params.time_navigation_started_for_enqueue,
+        launch_params.started_new_navigation);
   }
 }
 

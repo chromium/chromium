@@ -25,5 +25,6 @@ interface WebLaunchService {
   // TODO(crbug.com/1250225): Unify SetLaunchFiles() into this method.
   EnqueueLaunchParams(
       url.mojom.Url launch_url,
-      mojo_base.mojom.TimeTicks time_navigation_started_in_browser);
+      mojo_base.mojom.TimeTicks time_navigation_started_in_browser,
+      bool navigation_started);
 };

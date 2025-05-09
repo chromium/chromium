@@ -32,9 +32,10 @@ void DOMWindowLaunchQueue::UpdateLaunchFiles(
 void DOMWindowLaunchQueue::EnqueueLaunchParams(
     LocalDOMWindow* window,
     const KURL& launch_url,
-    base::TimeTicks time_navigation_started_in_browser) {
+    base::TimeTicks time_navigation_started_in_browser,
+    bool navigation_started) {
   FromState(window)->launch_queue_->Enqueue(MakeGarbageCollected<LaunchParams>(
-      launch_url, time_navigation_started_in_browser));
+      launch_url, time_navigation_started_in_browser, navigation_started));
 }
 
 void DOMWindowLaunchQueue::Trace(Visitor* visitor) const {

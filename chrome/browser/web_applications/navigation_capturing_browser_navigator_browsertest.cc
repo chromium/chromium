@@ -50,8 +50,10 @@ constexpr char kFocusExistingUrl[] =
     "/web_apps/simple_focus_existing/index.html";
 constexpr char kFocusExistingSecondUrl[] =
     "/web_apps/simple_focus_existing/index2.html";
-constexpr char kLaunchParamsEnqueueMetric[] =
-    "WebApp.NavigationCapturing.LaunchParamsConsumedTime";
+constexpr char kLaunchParamsEnqueueMetricWithNavigation[] =
+    "WebApp.NavigationCapturing.LaunchParamsConsumedTime.WithNavigation";
+constexpr char kLaunchParamsEnqueueMetricWithoutNavigation[] =
+    "WebApp.NavigationCapturing.LaunchParamsConsumedTime.WithoutNavigation";
 
 // Actually start a navigation in an existing web contents for the
 // `navigate-existing` use-case.
@@ -243,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
   // Ensure that capturing happened.
   histograms.ExpectUniqueSample(
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
-  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 1);
+  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetricWithNavigation, 1);
   EXPECT_THAT(
       GetNavigationCapturingFinalDisplayMetric(histograms),
       testing::ElementsAre(
@@ -311,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
           NavigationCapturingDisplayModeResult::kAppStandaloneFinalStandalone));
 
   // This is measured twice, once for each launch param obtained.
-  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 2);
+  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetricWithNavigation, 2);
 }
 
 // Test that the browser provided in NavigateParams is used when finding an app
@@ -375,8 +377,12 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
       testing::ElementsAre(
           NavigationCapturingDisplayModeResult::kAppStandaloneFinalStandalone));
 
-  // This is measured twice, once for each launch param obtained.
-  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 2);
+  // This is measured twice, once for each launch param obtained. The first
+  // metric is measured when the navigate-existing container enqueues the launch
+  // params, while the 2nd metric is measured when the focus-existing container
+  // does so.
+  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetricWithNavigation, 1);
+  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetricWithoutNavigation, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
@@ -424,7 +430,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
 
   histograms.ExpectUniqueSample(
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
-  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 1);
+  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetricWithNavigation, 1);
   EXPECT_THAT(
       GetNavigationCapturingFinalDisplayMetric(histograms),
       testing::ElementsAre(
@@ -474,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
 
   histograms.ExpectUniqueSample(
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
-  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 1);
+  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetricWithNavigation, 1);
   EXPECT_THAT(
       GetNavigationCapturingFinalDisplayMetric(histograms),
       testing::ElementsAre(
@@ -530,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
   // Ensure that capturing happened.
   histograms.ExpectUniqueSample(
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
-  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 1);
+  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetricWithNavigation, 1);
   EXPECT_THAT(
       GetNavigationCapturingFinalDisplayMetric(histograms),
       testing::ElementsAre(
@@ -588,7 +594,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
 
   // With the absence of a consumer set on the site, launch params will not be
   // enqueued, and hence this metric will not be measured.
-  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 0);
+  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetricWithNavigation, 0);
 
   EXPECT_THAT(
       GetNavigationCapturingFinalDisplayMetric(histograms),
@@ -660,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(
   // Ensure that capturing happened.
   histograms.ExpectUniqueSample(
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
-  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 1);
+  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetricWithNavigation, 1);
 
   EXPECT_THAT(
       GetNavigationCapturingFinalDisplayMetric(histograms),
@@ -724,7 +730,7 @@ IN_PROC_BROWSER_TEST_F(
   // Ensure that capturing happened.
   histograms.ExpectUniqueSample(
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
-  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 1);
+  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetricWithNavigation, 1);
   EXPECT_THAT(
       GetNavigationCapturingFinalDisplayMetric(histograms),
       testing::ElementsAre(
@@ -768,7 +774,7 @@ IN_PROC_BROWSER_TEST_F(LaunchQueueLatencyMetricBrowserTest,
   content::WaitForLoadStop(new_tab);
   apps::test::FlushLaunchQueuesForAllBrowserTabs();
   AwaitMetricsAvailableFromRenderer();
-  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 1);
+  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetricWithNavigation, 1);
   EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
                   new_tab, "launchParamsTargetUrls"),
               testing::ElementsAre(GetLandingPage()));
@@ -779,7 +785,7 @@ IN_PROC_BROWSER_TEST_F(LaunchQueueLatencyMetricBrowserTest,
   content::WaitForLoadStop(new_tab);
   apps::test::FlushLaunchQueuesForAllBrowserTabs();
   AwaitMetricsAvailableFromRenderer();
-  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 1);
+  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetricWithNavigation, 1);
   EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
                   new_tab, "launchParamsTargetUrls"),
               testing::ElementsAre(GetLandingPage()));
@@ -903,7 +909,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingWithRedirectionBrowserNavigatorTest,
   // Ensure that capturing happened.
   histograms.ExpectUniqueSample(
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 1);
-  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 1);
+  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetricWithNavigation, 1);
 
   // Make sure that web contents is a tab in `browser()` and not `new_browser`.
   EXPECT_NE(browser()->tab_strip_model()->GetIndexOfWebContents(new_tab),
@@ -944,7 +950,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingWithRedirectionBrowserNavigatorTest,
 
   histograms.ExpectUniqueSample(
       "WebApp.LaunchSource", apps::LaunchSource::kFromNavigationCapturing, 0);
-  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetric, 0);
+  histograms.ExpectTotalCount(kLaunchParamsEnqueueMetricWithNavigation, 0);
   EXPECT_THAT(GetNavigationCapturingFinalDisplayMetric(histograms),
               testing::IsEmpty());
 

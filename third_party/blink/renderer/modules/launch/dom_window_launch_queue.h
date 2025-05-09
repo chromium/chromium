@@ -37,7 +37,8 @@ class DOMWindowLaunchQueue final
   static void EnqueueLaunchParams(
       LocalDOMWindow*,
       const KURL& launch_url,
-      base::TimeTicks time_navigation_started_in_browser);
+      base::TimeTicks time_navigation_started_in_browser,
+      bool navigation_started);
 
   void Trace(Visitor*) const override;
 
