@@ -601,14 +601,19 @@ AuthenticatorTouchIdSheetModel::AuthenticatorTouchIdSheetModel(
 
 std::u16string AuthenticatorTouchIdSheetModel::GetStepTitle() const {
   const std::u16string rp_id = GetRelyingPartyIdString(dialog_model());
+  std::optional<int> id = std::nullopt;
   switch (dialog_model()->request_type) {
     case device::FidoRequestType::kMakeCredential:
-      return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_GPM_CREATE_PASSKEY_TITLE,
-                                        rp_id);
+      id = IDS_WEBAUTHN_GPM_CREATE_PASSKEY_TITLE;
+      break;
     case device::FidoRequestType::kGetAssertion:
-      return l10n_util::GetStringFUTF16(
-          IDS_WEBAUTHN_CHOOSE_PASSKEY_FOR_RP_TITLE, rp_id);
+      id = dialog_model()->ui_presentation == UIPresentation::kModalImmediate
+               ? IDS_WEBAUTHN_SIGN_IN_TO_WEBSITE_DIALOG_TITLE
+               : IDS_WEBAUTHN_CHOOSE_PASSKEY_FOR_RP_TITLE;
+      break;
   }
+  CHECK(id.has_value());
+  return l10n_util::GetStringFUTF16(id.value(), rp_id);
 }
 
 std::u16string AuthenticatorTouchIdSheetModel::GetStepDescription() const {
@@ -619,9 +624,11 @@ std::u16string AuthenticatorTouchIdSheetModel::GetStepDescription() const {
           base::UTF8ToUTF16(dialog_model()->GetGpmAccountEmail()));
 
     case device::FidoRequestType::kGetAssertion:
-      return l10n_util::GetStringFUTF16(
-          IDS_WEBAUTHN_TOUCH_ID_ASSERTION_DESC,
-          GetRelyingPartyIdString(dialog_model()));
+      return dialog_model()->ui_presentation == UIPresentation::kModalImmediate
+                 ? std::u16string()
+                 : l10n_util::GetStringFUTF16(
+                       IDS_WEBAUTHN_TOUCH_ID_ASSERTION_DESC,
+                       GetRelyingPartyIdString(dialog_model()));
   }
 }
 
@@ -639,6 +646,12 @@ bool AuthenticatorTouchIdSheetModel::IsCancelButtonVisible() const {
 
 std::u16string AuthenticatorTouchIdSheetModel::GetAcceptButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_WEBAUTHN_TOUCH_ID_ENTER_PASSWORD);
+}
+
+std::u16string AuthenticatorTouchIdSheetModel::GetCancelButtonLabel() const {
+  return dialog_model()->ui_presentation == UIPresentation::kModalImmediate
+             ? l10n_util::GetStringUTF16(IDS_SIGNIN_ACCESSIBLE_CLOSE_BUTTON)
+             : l10n_util::GetStringUTF16(IDS_CANCEL);
 }
 
 void AuthenticatorTouchIdSheetModel::OnAccept() {

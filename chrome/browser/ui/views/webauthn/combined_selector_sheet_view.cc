@@ -53,7 +53,7 @@ CombinedSelectorSheetView::~CombinedSelectorSheetView() = default;
 std::unique_ptr<views::View>
 CombinedSelectorSheetView::BuildStepSpecificHeader() {
   std::u16string title = l10n_util::GetStringFUTF16(
-      IDS_WEBAUTHN_AMBIENT_BUBBLE_TITLE,
+      IDS_WEBAUTHN_SIGN_IN_TO_WEBSITE_DIALOG_TITLE,
       base::UTF8ToUTF16(static_cast<CombinedSelectorSheetModel*>(model())
                             ->dialog_model()
                             ->relying_party_id));

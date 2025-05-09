@@ -17549,9 +17549,8 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Google Password Manager
       </message>
 
-      <!-- WebAuthn Ambient UI -->
-      <!-- TODO(crbug.com/358119268): Remove translateable property when the strings are final. -->
-      <message name="IDS_WEBAUTHN_AMBIENT_BUBBLE_TITLE" desc="The title of a bubble that displays passkeys or passwords for signing in to a given site." translateable="false">
+      <!-- WebAuthn passkey / password selector UIs -->
+      <message name="IDS_WEBAUTHN_SIGN_IN_TO_WEBSITE_DIALOG_TITLE" desc="The title of a bubble that displays passkeys or passwords for signing in to a given site.">
         Sign in to <ph name="RP_ID">$1<ex>webauthn.io</ex></ph>
       </message>
 
