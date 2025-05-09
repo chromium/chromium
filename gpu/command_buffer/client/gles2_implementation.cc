@@ -448,7 +448,7 @@ void GLES2Implementation::CallDeferredErrorCallbacks() {
 
   std::deque<DeferredErrorCallback> local_callbacks;
   std::swap(deferred_error_callbacks_, local_callbacks);
-  for (auto c : local_callbacks) {
+  for (const auto& c : local_callbacks) {
     error_message_callback_.Run(c.message.c_str(), c.id);
   }
 }

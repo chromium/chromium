@@ -1593,7 +1593,7 @@ bool Program::DetectAttribLocationBindingConflicts() const {
 
 bool Program::DetectUniformLocationBindingConflicts() const {
   std::set<GLint> location_binding_used;
-  for (auto it : bind_uniform_location_map_) {
+  for (const auto& it : bind_uniform_location_map_) {
     // Find out if an attribute is statically used in this program's shaders.
     const sh::Uniform* uniform = nullptr;
     const std::string* mapped_name = GetUniformMappedName(it.first);
