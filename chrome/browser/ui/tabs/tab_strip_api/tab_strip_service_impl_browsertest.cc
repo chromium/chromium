@@ -79,9 +79,6 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CreateTabAt) {
-  mojo::Remote<tabs_api::mojom::TabStripService> remote;
-  tab_strip_service_impl_->Accept(remote.BindNewPipeAndPassReceiver());
-
   TabStripModel* model = GetTabStripModel();
   const int expected_tab_count = model->count() + 1;
   const GURL url("http://example.com/");
@@ -90,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CreateTabAt) {
   base::RunLoop run_loop;
   tabs_api::mojom::PositionPtr position = CreatePosition(0);
 
-  remote->CreateTabAt(
+  tab_strip_service_impl_->CreateTabAt(
       std::move(position), std::make_optional(url),
       base::BindOnce(&TabStripServiceImplBrowserTest::CreateTabAtApiCallback,
                      base::Unretained(this), &run_loop, &result));
@@ -103,10 +100,8 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CreateTabAt) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ObserverOnTabsCreated) {
-  mojo::Remote<tabs_api::mojom::TabStripService> remote;
-  tab_strip_service_impl_->Accept(remote.BindNewPipeAndPassReceiver());
   MockTabsObserver mock_observer;
-  mojo::Receiver<tabs_api::mojom::TabsObserver> receiver(&mock_observer);
+  tab_strip_service_impl_->AddObserver(&mock_observer);
   const GURL url("http://example.com/");
   uint32_t target_index = 0;
 
@@ -129,16 +124,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ObserverOnTabsCreated) {
   base::RunLoop run_loop;
   tabs_api::mojom::PositionPtr position = CreatePosition(target_index);
 
-  base::RunLoop get_tabs_loop;
-  remote->GetTabs(base::BindLambdaForTesting(
-      [&](tabs_api::mojom::TabStripService::GetTabsResult result) {
-        ASSERT_TRUE(result.has_value());
-        receiver.Bind(std::move(result.value()->stream));
-        get_tabs_loop.Quit();
-      }));
-  get_tabs_loop.Run();
-
-  remote->CreateTabAt(
+  tab_strip_service_impl_->CreateTabAt(
       std::move(position), std::make_optional(url),
       base::BindOnce(&TabStripServiceImplBrowserTest::CreateTabAtApiCallback,
                      base::Unretained(this), &run_loop, &result));
@@ -147,4 +133,6 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ObserverOnTabsCreated) {
   ASSERT_TRUE(result.has_value())
       << "CreateTabAt failed: " << (result.error()->message);
   EXPECT_TRUE(result.value());
+
+  tab_strip_service_impl_->RemoveObserver(&mock_observer);
 }
