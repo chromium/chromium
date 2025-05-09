@@ -33,7 +33,7 @@ class ExtensionInstallAllowlistTest(ChromeEnterpriseTestCase):
 
   @test
   def test_ExtensionAllowlist_hangout(self):
-    extension = 'nckgahadagoaajjgafhacjanaoiihapd'
+    extension = 'aapbdbdomjkkjkaonfhkkikfgjllcleb'
     self.SetPolicy(self.win_config['dc'], r'ExtensionInstallBlocklist\1', '*',
                    'String')
     self.SetPolicy(self.win_config['dc'], r'ExtensionInstallAllowlist\1',
@@ -42,10 +42,10 @@ class ExtensionInstallAllowlistTest(ChromeEnterpriseTestCase):
     logging.info('Allowlist extension install for ' + extension +
                  ' while disabling others')
 
-    test_url = 'https://chrome.google.com/webstore/detail/google-hangouts/nckgahadagoaajjgafhacjanaoiihapd'
+    test_url = 'https://chromewebstore.google.com/detail/google-translate/aapbdbdomjkkjkaonfhkkikfgjllcleb'
     output = self.installExtension(test_url)
-    self.assertIn('Not blocked', output)
+    self.assertIn('Ok', output)
 
-    negative_test_url = 'https://chrome.google.com/webstore/detail/grammarly-for-chrome/kbfnbcaeplbcioakkpcpgfkobkghlhen'
+    negative_test_url = 'https://chromewebstore.google.com/detail/grammarly-ai-writing-and/kbfnbcaeplbcioakkpcpgfkobkghlhen'
     output = self.installExtension(negative_test_url)
     self.assertIn('blocked', output)
