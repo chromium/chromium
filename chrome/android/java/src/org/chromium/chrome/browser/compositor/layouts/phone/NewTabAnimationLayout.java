@@ -695,6 +695,7 @@ public class NewTabAnimationLayout extends Layout {
         mAnimationRunnable =
                 () -> {
                     mAnimationRunnable = null;
+                    mTimeoutRunnable = null;
                     AnimationInterruptor interruptor =
                             new AnimationInterruptor(
                                     mLayoutStateProvider,
@@ -718,7 +719,6 @@ public class NewTabAnimationLayout extends Layout {
                                 public void onAnimationEnd(Animator animation) {
                                     interruptor.destroy();
                                     mTabCreatedBackgroundAnimation = null;
-                                    mTimeoutRunnable = null;
                                     mAnimationHostView.removeView(mBackgroundHostView);
                                     browserControlsVisibilityDelegate.releasePersistentShowingToken(
                                             token);
