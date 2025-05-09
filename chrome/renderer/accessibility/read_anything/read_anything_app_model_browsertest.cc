@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/test/base/chrome_render_view_test.h"
+#include "read_anything_app_model.h"
 #include "read_anything_test_utils.h"
 #include "services/strings/grit/services_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -86,9 +87,11 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
 
   bool AreAllPendingUpdatesEmpty() const {
     return std::ranges::all_of(
-        model().pending_updates_for_testing(),
-        &ReadAnythingAppModel::Updates::empty,
-        &ReadAnythingAppModel::PendingUpdates::value_type::second);
+        model().pending_updates_for_testing(), [](const auto& pair) {
+          const auto& updateList = pair.second;
+          return std::ranges::all_of(updateList,
+                                     &ReadAnythingAppModel::Updates::empty);
+        });
   }
 
   void AccessibilityEventReceived(const ReadAnythingAppModel::Updates& updates,
@@ -580,8 +583,16 @@ TEST_F(ReadAnythingAppModelTest, ChangeActiveTreeWithPendingUpdates_UnknownID) {
   ASSERT_TRUE(AreAllPendingUpdatesEmpty());
   model().set_distillation_in_progress(true);
   AccessibilityEventReceived(std::move(updates));
-  EXPECT_EQ(num_pending_updates,
-            model().pending_updates_for_testing().at(tree_id_).size());
+
+  size_t actual_pending_updates = 0;
+  std::vector<ReadAnythingAppModel::Updates> pending_updates_for_testing =
+      model().pending_updates_for_testing().at(tree_id_);
+  // Get the sum of the size of all the updates in the list.
+  for (ReadAnythingAppModel::Updates& pending_update :
+       pending_updates_for_testing) {
+    actual_pending_updates += pending_update.size();
+  }
+  EXPECT_EQ(num_pending_updates, actual_pending_updates);
 
   // Switch to a new active tree. Should not crash.
   model().SetActiveTreeId(ui::AXTreeIDUnknown());

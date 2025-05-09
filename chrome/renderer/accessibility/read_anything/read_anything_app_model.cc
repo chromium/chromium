@@ -468,10 +468,7 @@ bool ReadAnythingAppModel::IsReload() const {
 
 void ReadAnythingAppModel::AddPendingUpdates(const ui::AXTreeID& tree_id,
                                              Updates& updates) {
-  Updates& update = pending_updates_[tree_id];
-  for (auto& item : updates) {
-    update.emplace_back(std::move(item));
-  }
+  pending_updates_[tree_id].emplace_back(std::move(updates));
 }
 
 void ReadAnythingAppModel::ClearPendingUpdates() {
@@ -486,9 +483,13 @@ void ReadAnythingAppModel::UnserializePendingUpdates(
   // TODO(crbug.com/40802192): Ensure there are no crashes/unexpected behavior
   // if an accessibility event is received on the same tree after
   // unserialization has begun.
-  Updates update = pending_updates_.extract(tree_id).mapped();
-  DCHECK(update.empty() || tree_id == active_tree_id_);
-  UnserializeUpdates(update, tree_id);
+  std::vector<Updates> updates = pending_updates_.extract(tree_id).mapped();
+  for (Updates update : updates) {
+    // Unserialize the updates in batches in the groupings in which they were
+    // received by AccessibilityEventReceived.
+    DCHECK(update.empty() || tree_id == active_tree_id_);
+    UnserializeUpdates(update, tree_id);
+  }
 }
 
 void ReadAnythingAppModel::UnserializeUpdates(Updates& updates,
@@ -504,21 +505,12 @@ void ReadAnythingAppModel::UnserializeUpdates(Updates& updates,
       static_cast<ui::AXSerializableTree*>(it->second->manager->ax_tree());
   CHECK(tree);
 
-  // Try to merge updates. If the updates are mergeable, MergeAXTreeUpdates will
-  // return true and merge_updates_out will contain the updates. Otherwise, if
-  // the updates are not mergeable, merge_updates_out will be empty.
-  const Updates* merged_updates = &updates;
-  Updates merge_updates_out;
-  if (ui::MergeAXTreeUpdates(updates, &merge_updates_out)) {
-    merged_updates = &merge_updates_out;
-  }
-
   // Build an event generator prior to any unserializations.
   ui::AXEventGenerator event_generator(tree);
 
   // Unserialize the updates.
   const size_t prev_tree_size = tree->size();
-  for (const ui::AXTreeUpdate& update : *merged_updates) {
+  for (const ui::AXTreeUpdate& update : updates) {
     tree->Unserialize(update);
   }
 
