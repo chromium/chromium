@@ -22,6 +22,9 @@ CSSValue* ConsumeCounterStyleSymbol(CSSParserTokenStream& stream,
     return string;
   }
   if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleImageSymbolsEnabled()) {
+    // TODO(crbug.com/40747846): Image values may contain relative units and
+    // tree counting functions. They need to handled somehow. <image> values are
+    // marked at-risk in the spec.
     if (CSSValue* image = css_parsing_utils::ConsumeImage(stream, context)) {
       return image;
     }
@@ -45,11 +48,14 @@ CSSValue* ConsumeCounterStyleSystem(CSSParserTokenStream& stream,
 
   if (CSSValue* ident =
           css_parsing_utils::ConsumeIdent<CSSValueID::kFixed>(stream)) {
-    CSSValue* first_symbol_value =
+    CSSPrimitiveValue* first_symbol_value =
         css_parsing_utils::ConsumeInteger(stream, context);
     if (!first_symbol_value) {
       first_symbol_value = CSSNumericLiteralValue::Create(
           1, CSSPrimitiveValue::UnitType::kInteger);
+    }
+    if (first_symbol_value->IsElementDependent()) {
+      return nullptr;
     }
     return MakeGarbageCollected<CSSValuePair>(
         ident, first_symbol_value, CSSValuePair::kKeepIdenticalValues);
@@ -114,8 +120,11 @@ CSSValue* ConsumeCounterStyleRangeBound(CSSParserTokenStream& stream,
           css_parsing_utils::ConsumeIdent<CSSValueID::kInfinite>(stream)) {
     return infinite;
   }
-  if (CSSValue* integer = css_parsing_utils::ConsumeInteger(stream, context)) {
-    return integer;
+  if (CSSPrimitiveValue* integer =
+          css_parsing_utils::ConsumeInteger(stream, context)) {
+    if (!integer->IsElementDependent()) {
+      return integer;
+    }
   }
   return nullptr;
 }
@@ -161,12 +170,15 @@ CSSValue* ConsumeCounterStyleRange(CSSParserTokenStream& stream,
 CSSValue* ConsumeCounterStylePad(CSSParserTokenStream& stream,
                                  const CSSParserContext& context) {
   // Syntax: <integer [0,∞]> && <symbol>
-  CSSValue* integer = nullptr;
+  CSSPrimitiveValue* integer = nullptr;
   CSSValue* symbol = nullptr;
   while (!integer || !symbol) {
     if (!integer) {
       integer = css_parsing_utils::ConsumeInteger(stream, context, 0);
       if (integer) {
+        if (integer->IsElementDependent()) {
+          return nullptr;
+        }
         continue;
       }
     }
@@ -215,6 +227,9 @@ CSSValue* ConsumeCounterStyleAdditiveSymbols(CSSParserTokenStream& stream,
       if (!integer) {
         integer = css_parsing_utils::ConsumeInteger(stream, context, 0);
         if (integer) {
+          if (integer->IsElementDependent()) {
+            return nullptr;
+          }
           continue;
         }
       }
