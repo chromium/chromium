@@ -16,8 +16,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.ResultReceiver;
 
+import androidx.annotation.OptIn;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
+import androidx.credentials.GetDigitalCredentialOption;
 
 import com.google.android.gms.identitycredentials.CredentialOption;
 import com.google.android.gms.identitycredentials.GetCredentialException;
@@ -66,6 +68,7 @@ public class DigitalCredentialsPresentationDelegate {
     public static final String EXTRA_CREDENTIAL_DATA =
             "androidx.credentials.provider.extra.EXTRA_CREDENTIAL_DATA";
 
+    @OptIn(markerClass = androidx.credentials.ExperimentalDigitalCredentialApi.class)
     public Promise<DigitalCredential> get(Activity window, String origin, String request) {
         final IdentityCredentialClient client;
         try {
@@ -104,13 +107,14 @@ public class DigitalCredentialsPresentationDelegate {
                     }
                 };
 
+        GetDigitalCredentialOption option = new GetDigitalCredentialOption(request);
         client.getCredential(
                         new GetCredentialRequest(
                                 Arrays.asList(
                                         new CredentialOption(
-                                                "com.credman.IdentityCredential",
-                                                new Bundle(),
-                                                new Bundle(),
+                                                option.getType(),
+                                                option.getRequestData(),
+                                                option.getCandidateQueryData(),
                                                 request,
                                                 "",
                                                 "")),
