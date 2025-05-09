@@ -394,6 +394,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kCSSSelectorPseudoState, WebDXFeature::kState},
           {WebFeature::kV8Window_GetScreenDetails_Method,
            WebDXFeature::kWindowManagement},
+          {WebFeature::kCSSLightDark, WebDXFeature::kLightDark},
           // Add new features above this line.
       }};
 

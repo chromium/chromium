@@ -392,6 +392,7 @@ enum WebDXFeature {
   kUint8arrayBase64Hex = 334,
   kLineBreak = 335,
   kOverflowClip = 336,
+  kLightDark = 337,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
