@@ -24,12 +24,12 @@ namespace autofill {
 // - If ShouldIgnoreAutocompleteAttribute(autocomplete) is true.
 // An unrecognizable field_type doesn't stop parsing and yields
 // HtmlFieldType::kUnrecognized instead.
-// When adding a new field, keep the traits updated in
-// components/autofill/core/common/mojom/autofill_types.mojom.
 struct AutocompleteParsingResult {
   std::string ToString() const;
 
   bool operator==(const AutocompleteParsingResult&) const;
+
+  // LINT.IfChange(AutocompleteParsingResult)
 
   // `section` corresponds to the string after "section-".
   std::string section;
@@ -38,9 +38,10 @@ struct AutocompleteParsingResult {
   HtmlFieldType field_type = HtmlFieldType::kUnspecified;
   // Whether the field has a `webauthn` token.
   bool webauthn = false;
-
   // Whether the field has a `webidentity` token.
   bool webidentity = false;
+
+  // LINT.ThenChange(components/autofill/core/common/mojom/autofill_types.mojom)
 };
 
 std::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
