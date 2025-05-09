@@ -450,8 +450,7 @@ inline constexpr char kNetworkPredictionOptions[] =
 inline constexpr char kPreinstalledAppsInstallState[] =
     "default_apps_install_state";
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 // A list of extensions ids that have to be allowed to run in Incognito by the
 // user in order to use Incognito mode.
 inline constexpr char kMandatoryExtensionsForIncognitoNavigation[] =

@@ -4308,7 +4308,6 @@ static_library("browser") {
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/contextual_cueing",
       "//chrome/browser/contextual_cueing:impl",
-      "//chrome/browser/enterprise/incognito",
       "//chrome/browser/error_reporting",
       "//chrome/browser/feedback:feedback_enum",
       "//chrome/browser/hid",
@@ -7451,6 +7450,7 @@ static_library("browser") {
       "//extensions/browser",
     ]
     deps += [
+      "//chrome/browser/enterprise/incognito",
       "//chrome/browser/extensions/api/browsing_data",
 
       # This dependency should be removed when //chrome/browser/notifications

@@ -224,13 +224,12 @@
       <if expr="not is_android or enable_extensions_core">
         <!-- Page not available for guest. -->
         <include name="IDR_PAGE_NOT_AVAILABLE_FOR_GUEST_APP_HTML" file="resources\page_not_available_for_guest\app.html" type="BINDATA" />
+        <include name="IDR_INCOGNITO_NAVIGATION_BLOCKED_PAGE_HTML" file="resources\enterprise\incognito_navigation_blocked_page\incognito_blocked.html" flattenhtml="true" type="BINDATA" />
       </if>
       <if expr="not is_android">
         <include name="IDR_IME_WINDOW_CLOSE" file="resources\input_ime\ime_window_close.png" type="BINDATA" />
         <include name="IDR_IME_WINDOW_CLOSE_C" file="resources\input_ime\ime_window_close_click.png" type="BINDATA" />
         <include name="IDR_IME_WINDOW_CLOSE_H" file="resources\input_ime\ime_window_close_hover.png" type="BINDATA" />
-        <!-- Extensions required in Incognito -->
-        <include name="IDR_INCOGNITO_NAVIGATION_BLOCKED_PAGE_HTML" file="resources\enterprise\incognito_navigation_blocked_page\incognito_blocked.html" flattenhtml="true" type="BINDATA" />
         <!-- FedCM -->
         <part file="ui/views/webid/resources/webid_resources.grdp" />
       </if>

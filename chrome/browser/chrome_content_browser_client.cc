@@ -631,12 +631,12 @@
 #include "chrome/browser/ui/webui/app_settings/web_app_settings_navigation_throttle.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/enterprise/connectors/device_trust/navigation_throttle.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/enterprise/incognito/incognito_navigation_throttle.h"
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h"
@@ -1630,8 +1630,7 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       policy::policy_prefs::kForcePermissionPolicyUnloadDefaultEnabled, false);
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   registry->RegisterListPref(prefs::kMandatoryExtensionsForIncognitoNavigation);
 #endif
 
@@ -5621,13 +5620,13 @@ void ChromeContentBrowserClient::CreateThrottlesForNavigation(
       apps::AppInstallNavigationThrottle::MaybeCreate(&handle));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (profile && profile->IsIncognitoProfile() && profile->IsOffTheRecord()) {
     registry.MaybeAddThrottle(
         enterprise_incognito::IncognitoNavigationThrottle::
             MaybeCreateThrottleFor(&handle));
   }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if !BUILDFLAG(IS_ANDROID)
   registry.MaybeAddThrottle(
