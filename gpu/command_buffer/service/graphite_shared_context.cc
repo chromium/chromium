@@ -4,11 +4,24 @@
 
 #include "gpu/command_buffer/service/graphite_shared_context.h"
 
+#include "base/logging.h"
+#include "base/memory/ptr_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/PrecompileContext.h"
 
 namespace gpu {
+
+namespace {
+
+struct RecordingContext {
+  skgpu::graphite::GpuFinishedProc old_finished_proc;
+  skgpu::graphite::GpuFinishedContext old_context;
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner;
+};
+
+}  // namespace
 
 // Helper class used by subclasses to acquire |lock_| if it exists.
 class SCOPED_LOCKABLE GraphiteSharedContext::AutoLock {
@@ -58,6 +71,34 @@ GraphiteSharedContext::makePrecompileContext() {
 bool GraphiteSharedContext::insertRecording(
     const skgpu::graphite::InsertRecordingInfo& info) {
   AutoLock auto_lock(this);
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      IsThreadSafe() && base::SingleThreadTaskRunner::HasCurrentDefault()
+          ? base::SingleThreadTaskRunner::GetCurrentDefault()
+          : nullptr;
+
+  // Ensure fFinishedProc is called on the original thread if there is only one
+  // graphite::Context.
+  if (info.fFinishedProc && task_runner) {
+    skgpu::graphite::InsertRecordingInfo info_copy = info;
+
+    info_copy.fFinishedContext = new RecordingContext{
+        info.fFinishedProc, info.fFinishedContext, task_runner};
+
+    info_copy.fFinishedProc = [](void* ctx, skgpu::CallbackResult result) {
+      auto context = base::WrapUnique(static_cast<RecordingContext*>(ctx));
+      DCHECK(context->old_finished_proc);
+      base::SingleThreadTaskRunner* task_runner = context->task_runner.get();
+      if (task_runner && !task_runner->BelongsToCurrentThread()) {
+        task_runner->PostTask(FROM_HERE,
+                              base::BindOnce(context->old_finished_proc,
+                                             context->old_context, result));
+        return;
+      }
+      context->old_finished_proc(context->old_context, result);
+    };
+
+    return graphite_context_->insertRecording(info_copy);
+  }
   return graphite_context_->insertRecording(info);
 }
 
