@@ -319,7 +319,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling PDFium
   # and whatever else without interference from each other.
-  'pdfium_revision': 'b62e4269829cfe3b019c3c494227409d72cc4eb4',
+  'pdfium_revision': 'c82c611f105c0df064cc8c76363578caf9eafb75',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling BoringSSL
   # and whatever else without interference from each other.
@@ -395,7 +395,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '74fe4707aa6428c96ddc8ae96e8055e63e2e684f',
+  'devtools_frontend_revision': '07d0a96013778a866cf0465b70561c1d62562138',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
