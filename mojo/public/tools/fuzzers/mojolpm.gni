@@ -100,18 +100,20 @@ template("mojolpm_fuzzer_test") {
       sources = [ invoker.proto_source ]
       generate_python = false
 
-      proto_deps = []
-
       import_dirs = [
         root_gen_dir,
         "//",
       ]
 
-      link_deps = []
-
       if (defined(invoker.proto_deps)) {
-        proto_deps += invoker.proto_deps
-        link_deps += invoker.proto_deps
+        deps = []
+        foreach(proto_dep, invoker.proto_deps) {
+          deps += [ "${proto_dep}_proto" ]
+        }
+      }
+
+      if (defined(invoker.proto_gen_deps)) {
+        proto_deps = invoker.proto_gen_deps
       }
 
       if (defined(invoker.proto_gen_deps)) {
@@ -144,7 +146,9 @@ template("mojolpm_fuzzer_test") {
         deps = []
 
         if (defined(invoker.proto_deps)) {
-          deps += invoker.proto_deps
+          foreach(proto_dep, invoker.proto_deps) {
+            deps += [ "${proto_dep}_proto" ]
+          }
         }
 
         testonly = true
@@ -321,13 +325,15 @@ template("mojolpm_generated_fuzzer") {
       proto_source = "${target_gen_dir}/${_target_name}.proto"
       proto_in_dir = "${root_gen_dir}"
       proto_out_dir = "."
+      deps = []
 
       if (defined(invoker.proto_deps)) {
         proto_deps = invoker.proto_deps
+        deps += invoker.proto_deps
       }
 
       if (defined(invoker.deps)) {
-        deps = invoker.deps
+        deps += invoker.deps
       }
 
       if (defined(invoker.seed_corpus_sources)) {

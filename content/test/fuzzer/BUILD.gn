@@ -200,6 +200,7 @@ content_mojolpm_fuzzer_test("code_cache_host_mojolpm_fuzzer") {
     ":mojolpm_fuzzer_support",
     "//content/browser:for_content_tests",
     "//content/public/browser:browser_sources",
+    "//third_party/blink/public/mojom:mojom_platform_mojolpm",
   ]
 
   proto_deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm" ]
@@ -219,10 +220,11 @@ content_mojolpm_fuzzer_test("file_system_manager_mojolpm_fuzzer") {
     ":mojolpm_fuzzer_support",
     "//testing/libfuzzer/proto:url_proto_converter",
     "//third_party/blink/public/common:storage_key_proto_converter",
+    "//third_party/blink/public/mojom:mojom_platform_mojolpm",
   ]
 
   proto_deps = [
-    "//third_party/blink/public/common:storage_key_proto",
+    "//third_party/blink/public/common:storage_key",
     "//third_party/blink/public/mojom:mojom_platform_mojolpm",
   ]
 }
@@ -236,6 +238,7 @@ content_mojolpm_fuzzer_test("audio_context_manager_mojolpm_fuzzer") {
     ":mojolpm_fuzzer_support",
     "//content/browser:for_content_tests",
     "//content/public/browser:browser_sources",
+    "//third_party/blink/public/mojom:mojom_platform_mojolpm",
   ]
 
   proto_deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm" ]
@@ -363,6 +366,7 @@ content_mojolpm_fuzzer_test("media_stream_dispatcher_host_mojolpm_fuzzer") {
     "//content/browser:browser",
     "//content/browser:for_content_tests",
     "//content/public/browser:browser_sources",
+    "//third_party/blink/public/mojom:mojom_platform_mojolpm",
   ]
 
   proto_deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm" ]
@@ -384,6 +388,7 @@ if (is_linux) {
       "//media:test_support",
       "//media/capture:capture_lib",
       "//media/capture:test_support",
+      "//media/capture/mojom:video_capture_mojolpm",
       "//third_party/blink/public/common:common",
     ]
 
@@ -401,6 +406,7 @@ content_mojolpm_fuzzer_test("image_capture_mojolpm_fuzzer") {
     "//content/browser:for_content_tests",
     "//content/public/browser:browser_sources",
     "//media/capture:capture_lib",
+    "//media/capture/mojom:image_capture_mojolpm",
   ]
 
   proto_deps = [ "//media/capture/mojom:image_capture_mojolpm" ]
@@ -415,11 +421,12 @@ content_mojolpm_fuzzer_test("presentation_service_mojolpm_fuzzer") {
     ":controller_presentation_service_delegate_for_fuzzing",
     ":mojolpm_fuzzer_support",
     "//content/browser:for_content_tests",
+    "//third_party/blink/public/mojom:mojom_platform_mojolpm",
     "//ui/events/devices:devices",
   ]
 
   proto_deps = [
-    ":controller_presentation_service_delegate_for_fuzzing_proto",
+    ":controller_presentation_service_delegate_for_fuzzing",
     "//third_party/blink/public/mojom:mojom_platform_mojolpm",
   ]
 }
@@ -434,6 +441,7 @@ content_mojolpm_fuzzer_test("clipboard_host_mojolpm_fuzzer") {
     "//content/browser:browser",
     "//content/browser:for_content_tests",
     "//content/public/browser:browser_sources",
+    "//third_party/blink/public/mojom:mojom_platform_mojolpm",
   ]
 
   proto_deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm" ]
@@ -464,11 +472,12 @@ content_mojolpm_fuzzer_test("ad_auction_service_mojolpm_fuzzer") {
     "//content/public/browser:browser_sources",
     "//content/test:test_support",
     "//services/data_decoder/public/cpp:test_support",
+    "//third_party/blink/public/mojom:mojom_platform_mojolpm",
     "//third_party/metrics_proto",
   ]
 
   proto_deps = [
-    ":ad_auction_service_mojolpm_fuzzer_stringifiers_proto",
+    ":ad_auction_service_mojolpm_fuzzer_stringifiers",
     "//third_party/blink/public/mojom:mojom_platform_mojolpm",
   ]
 
@@ -511,14 +520,7 @@ if (enable_mojom_fuzzer) {
     sources = [ "controller_presentation_service_delegate_for_fuzzing.proto" ]
     generate_python = false
 
-    proto_deps = [
-      "//third_party/blink/public/mojom:mojom_platform_mojolpm",
-      "//url/mojom:url_mojom_gurl_mojolpm",
-    ]
-    link_deps = [
-      "//third_party/blink/public/mojom:mojom_platform_mojolpm",
-      "//url/mojom:url_mojom_gurl_mojolpm",
-    ]
+    deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm_proto" ]
 
     import_dirs = [ root_gen_dir ]
     testonly = true
