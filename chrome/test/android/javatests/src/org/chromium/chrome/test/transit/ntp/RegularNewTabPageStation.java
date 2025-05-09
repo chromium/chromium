@@ -40,15 +40,6 @@ public class RegularNewTabPageStation extends PageStation {
 
     protected <T extends RegularNewTabPageStation> RegularNewTabPageStation(Builder<T> builder) {
         super(builder.withIncognito(false).withExpectedUrlSubstring(UrlConstants.NTP_URL));
-    }
-
-    public static Builder<RegularNewTabPageStation> newBuilder() {
-        return new Builder<>(RegularNewTabPageStation::new);
-    }
-
-    @Override
-    public void declareExtraElements() {
-        super.declareExtraElements();
 
         declareElementFactory(
                 mActivityElement,
@@ -71,6 +62,10 @@ public class RegularNewTabPageStation extends PageStation {
                         "Regular NTP is loaded",
                         nativePageElement,
                         nativePage -> whether(nativePage.isLoadedForTests())));
+    }
+
+    public static Builder<RegularNewTabPageStation> newBuilder() {
+        return new Builder<>(RegularNewTabPageStation::new);
     }
 
     /** Opens the app menu by pressing the toolbar "..." button */

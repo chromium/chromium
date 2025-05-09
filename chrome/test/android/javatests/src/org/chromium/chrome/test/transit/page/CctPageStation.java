@@ -28,7 +28,6 @@ public class CctPageStation extends BasePageStation<CustomTabActivity> {
         }
     }
 
-    protected boolean mIsNativePage;
     public Element<WebContents> webContentsElement;
 
     public static Builder newBuilder() {
@@ -39,14 +38,7 @@ public class CctPageStation extends BasePageStation<CustomTabActivity> {
         super(CustomTabActivity.class, builder);
 
         // isNativePage is optional and defaults to false
-        mIsNativePage = builder.mIsNativePage;
-    }
-
-    @Override
-    public void declareExtraElements() {
-        super.declareExtraElements();
-
-        if (!mIsNativePage) {
+        if (!builder.mIsNativePage) {
             webContentsElement =
                     declareEnterConditionAsElement(
                             new WebContentsPresentCondition(loadedTabElement));

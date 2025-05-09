@@ -23,6 +23,13 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
 
     public RegularTabSwitcherStation(boolean regularTabsExist, boolean incognitoTabsExist) {
         super(/* isIncognito= */ false, regularTabsExist, incognitoTabsExist);
+
+        assert regularTabsButtonElement != null;
+        declareEnterCondition(
+                new ViewElementMatchesCondition(regularTabsButtonElement, isSelected()));
+        if (!mRegularTabsExist) {
+            declareView(EMPTY_STATE_TEXT);
+        }
     }
 
     /**
@@ -37,17 +44,6 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
     @Override
     public @PaneId int getPaneId() {
         return PaneId.TAB_SWITCHER;
-    }
-
-    @Override
-    public void declareExtraElements() {
-        super.declareExtraElements();
-        assert regularTabsButtonElement != null;
-        declareEnterCondition(
-                new ViewElementMatchesCondition(regularTabsButtonElement, isSelected()));
-        if (!mRegularTabsExist) {
-            declareView(EMPTY_STATE_TEXT);
-        }
     }
 
     /** Open a new tab using the New Tab action button. */

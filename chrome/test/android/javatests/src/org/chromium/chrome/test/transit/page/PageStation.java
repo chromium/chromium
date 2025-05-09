@@ -74,11 +74,6 @@ public class PageStation extends BasePageStation<ChromeTabbedActivity> {
     /** Use the PageStation's subclass |newBuilder()|. */
     protected <T extends PageStation> PageStation(Builder<T> builder) {
         super(ChromeTabbedActivity.class, builder);
-    }
-
-    @Override
-    public void declareExtraElements() {
-        super.declareExtraElements();
 
         declareEnterCondition(
                 new LayoutTypeVisibleCondition(mActivityElement, LayoutType.BROWSING));

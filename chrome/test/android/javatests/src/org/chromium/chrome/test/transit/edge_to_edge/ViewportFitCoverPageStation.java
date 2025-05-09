@@ -41,19 +41,6 @@ public class ViewportFitCoverPageStation extends WebPageStation {
     protected <T extends ViewportFitCoverPageStation> ViewportFitCoverPageStation(
             Builder<T> builder) {
         super(builder);
-    }
-
-    /** Load the test page viewport-fit-cover-sub-frames-main.html. */
-    public static ViewportFitCoverPageStation loadViewportFitCoverPage(
-            ChromeTabbedActivityTestRule activityTestRule, PageStation currentPageStation) {
-        String url = activityTestRule.getTestServer().getURL(PATH_VIEWPORT_FIT_COVER_SUB_FRAMES);
-        return currentPageStation.loadPageProgrammatically(
-                url, new Builder<>(ViewportFitCoverPageStation::new));
-    }
-
-    @Override
-    public void declareExtraElements() {
-        super.declareExtraElements();
 
         // Ensure the web page elements are drawn and visible.
         mAvoidBottomElement = declareElement(new HtmlElement(AVOID_BOTTOM_DIV, webContentsElement));
@@ -72,6 +59,14 @@ public class ViewportFitCoverPageStation extends WebPageStation {
                         "Bottom chin is not on display",
                         this::isBottomChinShowing,
                         bottomControlsStacker));
+    }
+
+    /** Load the test page viewport-fit-cover-sub-frames-main.html. */
+    public static ViewportFitCoverPageStation loadViewportFitCoverPage(
+            ChromeTabbedActivityTestRule activityTestRule, PageStation currentPageStation) {
+        String url = activityTestRule.getTestServer().getURL(PATH_VIEWPORT_FIT_COVER_SUB_FRAMES);
+        return currentPageStation.loadPageProgrammatically(
+                url, new Builder<>(ViewportFitCoverPageStation::new));
     }
 
     private ConditionStatus isBottomChinShowing(BottomControlsStacker bottomControlsStacker) {

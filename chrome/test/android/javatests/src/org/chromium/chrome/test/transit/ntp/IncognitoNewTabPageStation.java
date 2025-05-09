@@ -38,15 +38,6 @@ public class IncognitoNewTabPageStation extends PageStation {
     protected <T extends IncognitoNewTabPageStation> IncognitoNewTabPageStation(
             Builder<T> builder) {
         super(builder.withIncognito(true).withExpectedUrlSubstring(UrlConstants.NTP_URL));
-    }
-
-    public static Builder<IncognitoNewTabPageStation> newBuilder() {
-        return new Builder<>(IncognitoNewTabPageStation::new);
-    }
-
-    @Override
-    public void declareExtraElements() {
-        super.declareExtraElements();
 
         urlBarElement = declareView(URL_BAR);
         iconElement = declareView(viewSpec(withId(R.id.new_tab_incognito_icon)));
@@ -59,6 +50,10 @@ public class IncognitoNewTabPageStation extends PageStation {
                         "Incognito NTP is loaded",
                         nativePageElement,
                         nativePage -> whether(nativePage.isLoadedForTests())));
+    }
+
+    public static Builder<IncognitoNewTabPageStation> newBuilder() {
+        return new Builder<>(IncognitoNewTabPageStation::new);
     }
 
     /** Opens the app menu by pressing the toolbar "..." button */

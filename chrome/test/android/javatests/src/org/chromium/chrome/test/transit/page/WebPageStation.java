@@ -26,17 +26,24 @@ import java.util.function.Function;
 
 /** The screen that shows a loaded webpage with the omnibox and the toolbar. */
 public class WebPageStation extends PageStation {
-    private boolean mIgnoreUrlBar;
     public Element<WebContents> webContentsElement;
     public ViewElement<UrlBar> urlBarElement;
 
     protected <T extends WebPageStation> WebPageStation(Builder<T> builder) {
         super(builder);
-    }
 
-    protected <T extends WebPageStation> WebPageStation(WebStationBuilder<T> builder) {
-        super(builder);
-        mIgnoreUrlBar = builder.mIgnoreUrlBar;
+        webContentsElement =
+                declareEnterConditionAsElement(new WebContentsPresentCondition(loadedTabElement));
+        declareEnterCondition(new FrameInfoUpdatedCondition(webContentsElement));
+
+        // TODO(crbug.com/416558040): Do not add this if builder.mIgnoreUrlBar is set.
+        // TODO(crbug.com/41497463): This should be shared, not unscoped, but the toolbar exists
+        // in the tab switcher and it is not completely occluded.
+        urlBarElement = declareView(URL_BAR, ViewElement.unscopedOption());
+
+        // Make sure that the new tab page is not considered a WebPageStation
+        List<String> prohibitedUrls = List.of("chrome://newtab", "chrome-native://newtab");
+        declareEnterCondition(new PageUrlDoesNotMatchCondition(prohibitedUrls, loadedTabElement));
     }
 
     public static class WebStationBuilder<T extends WebPageStation> extends PageStation.Builder<T> {
@@ -59,25 +66,6 @@ public class WebPageStation extends PageStation {
 
     public static WebStationBuilder<WebPageStation> newBuilder() {
         return new WebStationBuilder<>(WebPageStation::new);
-    }
-
-    @Override
-    public void declareExtraElements() {
-        super.declareExtraElements();
-
-        webContentsElement =
-                declareEnterConditionAsElement(new WebContentsPresentCondition(loadedTabElement));
-        declareEnterCondition(new FrameInfoUpdatedCondition(webContentsElement));
-
-        if (!mIgnoreUrlBar) {
-            // TODO(crbug.com/41497463): This should be shared, not unscoped, but the toolbar exists
-            // in the tab switcher and it is not completely occluded.
-            urlBarElement = declareView(URL_BAR, ViewElement.unscopedOption());
-        }
-
-        // Make sure that the new tab page is not considered a WebPageStation
-        List<String> prohibitedUrls = List.of("chrome://newtab", "chrome-native://newtab");
-        declareEnterCondition(new PageUrlDoesNotMatchCondition(prohibitedUrls, loadedTabElement));
     }
 
     /** Condition to check the page url does not match any of the prohibited urls. */

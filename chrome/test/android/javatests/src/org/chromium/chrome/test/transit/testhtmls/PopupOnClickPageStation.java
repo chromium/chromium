@@ -24,6 +24,13 @@ public class PopupOnClickPageStation extends WebPageStation {
 
     protected <T extends PopupOnClickPageStation> PopupOnClickPageStation(Builder<T> builder) {
         super(builder);
+
+        linkToPopup =
+                declareElement(new HtmlElement(new HtmlElementSpec("link"), webContentsElement));
+        linkToPopupWithBounds =
+                declareElement(
+                        new HtmlElement(
+                                new HtmlElementSpec("link_with_bounds"), webContentsElement));
     }
 
     /** Load popup_on_click.html in current tab. */
@@ -33,18 +40,6 @@ public class PopupOnClickPageStation extends WebPageStation {
 
         String url = activityTestRule.getTestServer().getURL(PATH);
         return currentPageStation.loadPageProgrammatically(url, builder);
-    }
-
-    @Override
-    public void declareExtraElements() {
-        super.declareExtraElements();
-
-        linkToPopup =
-                declareElement(new HtmlElement(new HtmlElementSpec("link"), webContentsElement));
-        linkToPopupWithBounds =
-                declareElement(
-                        new HtmlElement(
-                                new HtmlElementSpec("link_with_bounds"), webContentsElement));
     }
 
     /** Opens the same page as a pop-up (in Android, this means in a new tab). */
