@@ -146,19 +146,20 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout {
         mIsTopToolbar = isTopToolbar;
         mFakeTabSwitcherButton.setTabCount(tabCount, isIncognito);
 
+        Context context = getContext();
+        @BrandedColorScheme
+        int brandedColorScheme =
+                ThemeUtils.getBrandedColorScheme(context, backgroundColor, isIncognito);
+        mFakeTabSwitcherButton.setBrandedColorScheme(brandedColorScheme);
+
         Rect tabSwitcherRect = new Rect();
         boolean tabSwitcherButtonIsVisible =
                 tabSwitcherButton.getGlobalVisibleRect(tabSwitcherRect);
         int horizontalMargin = tabSwitcherRect.left;
         int verticalMargin = toolbarHeight - statusBarHeight;
 
-        Context context = getContext();
         if (tabSwitcherButtonIsVisible || !isNtp) {
             mAnimationType = AnimationType.DEFAULT;
-            @BrandedColorScheme
-            int brandedColorScheme =
-                    ThemeUtils.getBrandedColorScheme(context, backgroundColor, isIncognito);
-            mFakeTabSwitcherButton.setBrandedColorScheme(brandedColorScheme);
             mFakeTabSwitcherButton.setButtonColor(backgroundColor);
             mFakeTabSwitcherButton.setNotificationIconStatus(
                     tabSwitcherButton.shouldShowNotificationIcon());
