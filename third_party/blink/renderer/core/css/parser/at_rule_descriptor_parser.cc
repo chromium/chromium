@@ -334,6 +334,8 @@ CSSValue* AtRuleDescriptorParser::ParseFontFaceDescriptor(
     const CSSParserContext& context) {
   CSSValue* parsed_value = nullptr;
   stream.ConsumeWhitespace();
+  CSSParserContext::ParserModeOverridingScope scope(context,
+                                                    kCSSFontFaceRuleMode);
   switch (id) {
     case AtRuleDescriptorID::FontFamily:
       // In order to avoid confusion, <family-name> does not accept unquoted
@@ -359,14 +361,10 @@ CSSValue* AtRuleDescriptorParser::ParseFontFaceDescriptor(
       parsed_value = ConsumeFontDisplay(stream);
       break;
     case AtRuleDescriptorID::FontStretch: {
-      CSSParserContext::ParserModeOverridingScope scope(context,
-                                                        kCSSFontFaceRuleMode);
       parsed_value = css_parsing_utils::ConsumeFontStretch(stream, context);
       break;
     }
     case AtRuleDescriptorID::FontStyle: {
-      CSSParserContext::ParserModeOverridingScope scope(context,
-                                                        kCSSFontFaceRuleMode);
       parsed_value = css_parsing_utils::ConsumeFontStyle(stream, context);
       break;
     }
@@ -374,8 +372,6 @@ CSSValue* AtRuleDescriptorParser::ParseFontFaceDescriptor(
       parsed_value = ConsumeFontVariantList(stream);
       break;
     case AtRuleDescriptorID::FontWeight: {
-      CSSParserContext::ParserModeOverridingScope scope(context,
-                                                        kCSSFontFaceRuleMode);
       parsed_value = css_parsing_utils::ConsumeFontWeight(stream, context);
       break;
     }

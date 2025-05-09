@@ -17,11 +17,15 @@
     font-family: my-font;
     font-weight: 300;
     font-weight: calc(max(0 * sibling-index(), 400));
+    font-feature-settings: "vert" 2;
+    font-feature-settings: "vert" calc(max(sibling-index(), 1));
   }
   @font-face {
     font-family: my-font;
     font-weight: 300;
     font-weight: calc(max(0 * sibling-count(), 400));
+    font-feature-settings: "vert" 2;
+    font-feature-settings: "vert" calc(max(sibling-count(), 1));
   }
 </style>
 <script>
@@ -37,9 +41,11 @@
 
   test(() => {
     assert_equals(rules[2].style.fontWeight, "300");
+    assert_equals(rules[2].style.fontFeatureSettings, "\"vert\" 2");
   }, "sibling-index() should not be allowed in @font-face descriptors");
 
   test(() => {
     assert_equals(rules[3].style.fontWeight, "300");
+    assert_equals(rules[3].style.fontFeatureSettings, "\"vert\" 2");
   }, "sibling-count() should not be allowed in @font-face descriptors");
 </script>
