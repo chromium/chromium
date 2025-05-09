@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/base/address_tracker_linux.h"
 
 #include <linux/if.h>
@@ -59,17 +54,17 @@ const int kTestInterfaceAp = 456;
 
 const char kIgnoredInterfaceName[] = "uap0";
 
-char* TestGetInterfaceName(int interface_index, char* buf) {
-  if (interface_index == kTestInterfaceEth) {
-    snprintf(buf, IFNAMSIZ, "%s", "eth0");
-  } else if (interface_index == kTestInterfaceTun) {
-    snprintf(buf, IFNAMSIZ, "%s", "tun0");
-  } else if (interface_index == kTestInterfaceAp) {
-    snprintf(buf, IFNAMSIZ, "%s", kIgnoredInterfaceName);
-  } else {
-    snprintf(buf, IFNAMSIZ, "%s", "");
+std::string TestGetInterfaceName(int interface_index) {
+  switch (interface_index) {
+    case kTestInterfaceEth:
+      return "eth0";
+    case kTestInterfaceTun:
+      return "tun0";
+    case kTestInterfaceAp:
+      return kIgnoredInterfaceName;
+    default:
+      return std::string();
   }
-  return buf;
 }
 
 }  // namespace
@@ -590,13 +585,12 @@ TEST_F(AddressTrackerLinuxTest, TunnelInterface) {
 }
 
 // Check AddressTrackerLinux::get_interface_name_ original implementation
-// doesn't crash or return NULL.
+// doesn't crash.
 TEST_F(AddressTrackerLinuxTest, GetInterfaceName) {
   InitializeAddressTracker(true);
 
   for (int i = 0; i < 10; i++) {
-    char buf[IFNAMSIZ] = {};
-    EXPECT_NE((const char*)nullptr, original_get_interface_name_(i, buf));
+    original_get_interface_name_(i);
   }
 }
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/base/network_interfaces_linux.h"
 
 #include <net/if.h>
@@ -35,17 +30,15 @@ static const unsigned char kIPv6Addr[] = {0x24, 0x01, 0xfa, 0x00, 0x00, 0x04,
                                           0x10, 0x00, 0xbe, 0x30, 0x5b, 0xff,
                                           0xfe, 0xe5, 0x00, 0xc3};
 
-char* GetInterfaceName(int interface_index, char* ifname) {
+std::string GetInterfaceName(int interface_index) {
   static_assert(std::size(kIfnameEm1) < IF_NAMESIZE, "Invalid interface name");
-  memcpy(ifname, kIfnameEm1, std::size(kIfnameEm1));
-  return ifname;
+  return kIfnameEm1;
 }
 
-char* GetInterfaceNameVM(int interface_index, char* ifname) {
+std::string GetInterfaceNameVM(int interface_index) {
   static_assert(std::size(kIfnameVmnet) < IF_NAMESIZE,
                 "Invalid interface name");
-  memcpy(ifname, kIfnameVmnet, std::size(kIfnameVmnet));
-  return ifname;
+  return kIfnameVmnet;
 }
 
 TEST(NetworkInterfacesTest, NetworkListTrimmingLinux) {

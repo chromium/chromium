@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "net/base/network_interfaces_linux.h"
 
 #include <memory>
@@ -20,9 +15,10 @@
 #include <linux/if.h>
 #include <linux/sockios.h>
 #include <linux/wireless.h>
-#include <set>
 #include <sys/ioctl.h>
 #include <sys/types.h>
+
+#include <set>
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -38,6 +34,7 @@
 #include "net/base/features.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/base/net_platform_api_util.h"
 #include "net/base/network_interfaces_posix.h"
 #include "url/gurl.h"
 
@@ -90,14 +87,17 @@ namespace internal {
 // Gets the connection type for interface |ifname| by checking for wireless
 // or ethtool extensions.
 NetworkChangeNotifier::ConnectionType GetInterfaceConnectionType(
-    const std::string& ifname) {
+    std::string_view ifname) {
   base::ScopedFD s = GetSocketForIoctl();
   if (!s.is_valid())
     return NetworkChangeNotifier::CONNECTION_UNKNOWN;
 
   // Test wireless extensions for CONNECTION_WIFI
   struct iwreq pwrq = {};
-  strncpy(pwrq.ifr_name, ifname.c_str(), IFNAMSIZ - 1);
+
+  // This should never CHECK, since `ifname` came from a call to
+  // GetInterfaceName(), which never returns anything longer than will fit.
+  CopyStringAndNulToSpan(ifname, base::span(pwrq.ifr_name));
   if (ioctl(s.get(), SIOCGIWNAME, &pwrq) != -1)
     return NetworkChangeNotifier::CONNECTION_WIFI;
 
@@ -107,7 +107,7 @@ NetworkChangeNotifier::ConnectionType GetInterfaceConnectionType(
   ecmd.cmd = ETHTOOL_GSET;
   struct ifreq ifr = {};
   ifr.ifr_data = &ecmd;
-  strncpy(ifr.ifr_name, ifname.c_str(), IFNAMSIZ - 1);
+  CopyStringAndNulToSpan(ifname, base::span(ifr.ifr_name));
   if (ioctl(s.get(), SIOCETHTOOL, &ifr) != -1)
     return NetworkChangeNotifier::CONNECTION_ETHERNET;
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -120,13 +120,15 @@ std::string GetInterfaceSSID(const std::string& ifname) {
   if (!ioctl_socket.is_valid())
     return std::string();
   struct iwreq wreq = {};
-  strncpy(wreq.ifr_name, ifname.c_str(), IFNAMSIZ - 1);
+  // This should never CHECK, since `ifname` came from a call to
+  // GetInterfaceName(), which never returns anything longer than will fit.
+  CopyStringAndNulToSpan(ifname, base::span(wreq.ifr_name));
 
   char ssid[IW_ESSID_MAX_SIZE + 1] = {};
   wreq.u.essid.pointer = ssid;
   wreq.u.essid.length = IW_ESSID_MAX_SIZE;
   if (ioctl(ioctl_socket.get(), SIOCGIWESSID, &wreq) != -1)
-    return ssid;
+    return std::string(SpanMaybeWithNulToStringView(ssid));
   return std::string();
 }
 
@@ -171,8 +173,7 @@ bool GetNetworkListImpl(
         ifnames.find(it.second.ifa_index);
     std::string ifname;
     if (itname == ifnames.end()) {
-      char buffer[IFNAMSIZ] = {};
-      ifname.assign(get_interface_name(it.second.ifa_index, buffer));
+      ifname = get_interface_name(it.second.ifa_index);
       // Ignore addresses whose interface name can't be retrieved.
       if (ifname.empty())
         continue;
@@ -189,9 +190,8 @@ bool GetNetworkListImpl(
     NetworkChangeNotifier::ConnectionType type =
         GetInterfaceConnectionType(ifname);
 
-    networks->push_back(
-        NetworkInterface(ifname, ifname, it.second.ifa_index, type, it.first,
-                         it.second.ifa_prefixlen, ip_attributes));
+    networks->emplace_back(ifname, ifname, it.second.ifa_index, type, it.first,
+                           it.second.ifa_prefixlen, ip_attributes);
   }
 
   return true;
