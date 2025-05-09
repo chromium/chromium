@@ -179,10 +179,6 @@ pub struct CrateConfig {
     /// Whether the crate is permitted to have no license files.
     #[serde(default)]
     pub no_license_file_tracked_in_crbug_369075726: bool,
-    /// Link to a bug that tracks avoiding having multiple versions of a crate
-    /// in the transitive dependency graph.
-    #[serde(default)]
-    pub multiversion_cleanup_bug: Option<String>,
 }
 
 #[cfg(test)]
