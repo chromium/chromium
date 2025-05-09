@@ -69,8 +69,14 @@ bool IntegrityPolicy::AllowRequest(
     network::mojom::RequestMode request_mode,
     const IntegrityMetadataSet& integrity_metadata,
     const KURL& url) {
-  if (!context ||
-      (!integrity_metadata.empty() &&
+  if (!context) {
+    return true;
+  }
+  const DOMWrapperWorld* world = context->GetCurrentWorld();
+  if (world && world->IsIsolatedWorld()) {
+    return true;
+  }
+  if ((!integrity_metadata.empty() &&
        request_mode != network::mojom::RequestMode::kNoCors) ||
       url.ProtocolIsData() || url.ProtocolIs("blob")) {
     return true;
