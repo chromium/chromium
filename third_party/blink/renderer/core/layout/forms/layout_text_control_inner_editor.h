@@ -25,11 +25,25 @@ class LayoutTextControlInnerEditor final : public LayoutBlockFlow {
     return true;
   }
 
+  // Returns true if the host is a <textarea> and TextareaMultipleIfcs flag
+  // is enabled.
+  bool IsMultiline() const {
+    NOT_DESTROYED();
+    return is_multiline_;
+  }
+
   void AddChild(LayoutObject* new_child,
                 LayoutObject* before_child = nullptr) override;
 
  private:
   const bool is_multiline_;
+};
+
+template <>
+struct DowncastTraits<LayoutTextControlInnerEditor> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsTextControlInnerEditor();
+  }
 };
 
 }  // namespace blink

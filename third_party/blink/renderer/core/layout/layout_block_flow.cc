@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/layout/absolute_utils.h"
+#include "third_party/blink/renderer/core/layout/forms/layout_text_control_inner_editor.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
@@ -80,8 +81,10 @@ namespace {
 // returned, and there are inline children, an anonymous block wrapper needs to
 // be created.
 bool AllowsInlineChildren(const LayoutBlockFlow& block) {
+  const auto* inner_editor = DynamicTo<LayoutTextControlInnerEditor>(block);
   return !IsA<LayoutMultiColumnFlowThread>(block) &&
-         !block.IsScrollMarkerGroup();
+         !block.IsScrollMarkerGroup() &&
+         !(inner_editor && inner_editor->IsMultiline());
 }
 
 bool IsInnerEditorChild(const LayoutBlockFlow& block) {
@@ -310,9 +313,7 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
 
   if (FirstChild() && !BeingDestroyed() &&
       !old_child->IsFloatingOrOutOfFlowPositioned() &&
-      !old_child->IsAnonymousBlockFlow() &&
-      !(RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled() &&
-        IsTextControlInnerEditor())) {
+      !old_child->IsAnonymousBlockFlow()) {
     // If the child we're removing means that we can now treat all children as
     // inline without the need for anonymous blocks, then do that.
     MakeChildrenInlineIfPossible();
