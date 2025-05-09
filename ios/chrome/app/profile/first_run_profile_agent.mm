@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/device_orientation/ui_bundled/scoped_force_portrait_orientation.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_coordinator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_provider.h"
+#import "ios/chrome/browser/first_run/ui_bundled/guided_tour/guided_tour_coordinator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/guided_tour/guided_tour_promo_coordinator.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -22,10 +23,14 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/guided_tour_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 
 @interface FirstRunProfileAgent () <FirstRunCoordinatorDelegate,
+                                    GuidedTourCoordinatorDelegate,
                                     GuidedTourPromoCoordinatorDelegate,
                                     SceneStateObserver>
 
@@ -44,6 +49,9 @@
 
   // Coordinator for the Guided Tour Promo.
   GuidedTourPromoCoordinator* _guidedTourPromoCoordinator;
+
+  // Coordinator for the first step of the guided tour.
+  GuidedTourCoordinator* _guidedTourCoordinator;
 
   // Used to force the device orientation in portrait mode on iPhone.
   std::unique_ptr<ScopedForcePortraitOrientation> _scopedForceOrientation;
@@ -85,8 +93,8 @@
   }
 
   if (fromInitStage == ProfileInitStage::kFirstRun) {
-    _scopedForceOrientation.reset();
     if (!IsBestOfAppGuidedTourEnabled()) {
+      _scopedForceOrientation.reset();
       [profileState removeAgent:self];
       return;
     }
@@ -174,6 +182,48 @@
   [_guidedTourPromoCoordinator start];
 }
 
+- (void)showNTPStep {
+  // Command Dispatcher to show NTP IPH
+  id<BrowserProvider> presentingInterface =
+      _presentingSceneState.browserProviderInterface.currentBrowserProvider;
+  Browser* browser = presentingInterface.browser;
+  id<GuidedTourCommands> handler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), GuidedTourCommands);
+  [handler highlightViewInStep:GuidedTourStepNTP];
+
+  _guidedTourCoordinator = [[GuidedTourCoordinator alloc]
+            initWithStep:GuidedTourStepNTP
+      baseViewController:presentingInterface.viewController
+                 browser:browser
+                delegate:self];
+  [_guidedTourCoordinator start];
+}
+
+#pragma mark - GuidedTourCoordinatorDelegate
+
+- (void)stepCompleted:(GuidedTourStep)step {
+  if (step == GuidedTourStepNTP) {
+    id<BrowserProvider> presentingInterface =
+        _presentingSceneState.browserProviderInterface.currentBrowserProvider;
+    Browser* browser = presentingInterface.browser;
+    id<ApplicationCommands> applicationHandler = HandlerForProtocol(
+        browser->GetCommandDispatcher(), ApplicationCommands);
+    [applicationHandler displayTabGridInMode:TabGridOpeningMode::kRegular];
+    // TODO(crbug.com/413461470): Trigger next step.
+  }
+}
+
+- (void)nextTappedForStep:(GuidedTourStep)step {
+  if (step == GuidedTourStepNTP) {
+    id<BrowserProvider> presentingInterface =
+        _presentingSceneState.browserProviderInterface.currentBrowserProvider;
+    Browser* browser = presentingInterface.browser;
+    id<GuidedTourCommands> handler =
+        HandlerForProtocol(browser->GetCommandDispatcher(), GuidedTourCommands);
+    [handler stepCompleted:GuidedTourStepNTP];
+  }
+}
+
 #pragma mark - GuidedTourPromoCoordinatorDelegate
 
 - (void)dismissGuidedTourPromo {
@@ -181,7 +231,11 @@
 }
 
 - (void)startGuidedTour {
-  // TODO(crbug.com/413461470): Implement.
+  __weak FirstRunProfileAgent* weakSelf = self;
+  ProceduralBlock completion = ^{
+    [weakSelf showNTPStep];
+  };
+  [_guidedTourPromoCoordinator stopWithCompletion:completion];
 }
 
 #pragma mark - FirstRunCoordinatorDelegate
