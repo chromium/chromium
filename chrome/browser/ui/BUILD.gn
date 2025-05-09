@@ -3552,7 +3552,6 @@ static_library("ui") {
       "//chrome/browser:titlebar_config",
       "//chrome/browser/win:mica_titlebar",
       "//chrome/browser/win/conflicts:module_info",
-      "//chrome/browser/win/installer_downloader:prefs",
       "//chrome/credential_provider/common:common_constants",
       "//chrome/services/util_win/public/mojom:mojom",
       "//components/lens",
@@ -3575,7 +3574,10 @@ static_library("ui") {
         "webui/settings/incompatible_applications_handler_win.cc",
         "webui/settings/incompatible_applications_handler_win.h",
       ]
-      deps += [ "//chrome/updater/app/server/win:updater_legacy_idl" ]
+      deps += [
+        "//chrome/browser/win/installer_downloader:prefs",
+        "//chrome/updater/app/server/win:updater_legacy_idl",
+      ]
     } else {
       sources += [ "webui/help/version_updater_basic.cc" ]
     }

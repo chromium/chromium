@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/permissions/system/platform_handle.h"
@@ -30,7 +31,7 @@
 #include "components/user_education/common/user_education_features.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/win/installer_downloader/installer_downloader_feature.h"
 #endif
 
@@ -84,7 +85,7 @@ void GlobalFeatures::Init() {
 
   application_locale_storage_ = std::make_unique<ApplicationLocaleStorage>();
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (base::FeatureList::IsEnabled(
           installer_downloader::kInstallerDownloader)) {
     // TODO(crbug.com/414780983): Instantiate and initialize the installer

@@ -2590,7 +2590,7 @@ static_library("browser") {
     "//ui/webui",
   ]
 
-  if (is_win) {
+  if (is_win && is_chrome_branded) {
     deps += [ "//chrome/browser/win/installer_downloader" ]
   }
 
