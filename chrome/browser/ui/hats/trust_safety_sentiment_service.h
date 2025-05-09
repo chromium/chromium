@@ -25,8 +25,8 @@
 using PasswordProtectionUIType = safe_browsing::WarningUIType;
 using PasswordProtectionUIAction = safe_browsing::WarningAction;
 
-const base::TimeDelta kPasswordChangeInactivity = base::Minutes(30);
-const base::TimeDelta kSafetyHubSurveyDelay = base::Minutes(10);
+inline constexpr base::TimeDelta kPasswordChangeInactivity = base::Minutes(30);
+inline constexpr base::TimeDelta kSafetyHubSurveyDelay = base::Minutes(10);
 
 // Service which receives events from Trust & Safety features and determines
 // whether or not to launch a HaTS survey on the NTP for the user.

@@ -19,7 +19,7 @@ class WebContents;
 
 namespace signin::test {
 
-const base::TimeDelta kDialogTimeout = base::Seconds(10);
+inline constexpr base::TimeDelta kDialogTimeout = base::Seconds(10);
 
 // A wrapper importing the settings module when the chrome://settings serve the
 // Polymer 3 version.

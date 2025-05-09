@@ -30,7 +30,7 @@ class RenderFrameHost;
 enum class WebShareMethod { kShare = 0, kMaxValue = kShare };
 
 // UMA metric name for Web Share API count.
-constexpr const char* kWebShareApiCountMetric = "WebShare.ApiCount";
+inline constexpr char kWebShareApiCountMetric[] = "WebShare.ApiCount";
 
 inline constexpr size_t kMaxSharedFileCount = 10;
 inline constexpr uint64_t kMaxSharedFileBytes = 50 * 1024 * 1024;

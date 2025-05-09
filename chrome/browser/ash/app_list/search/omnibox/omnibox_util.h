@@ -34,7 +34,7 @@ class OmniboxResult;
 inline constexpr double kMaxOmniboxScore = 1500.0;
 
 // Traffic annotation details for fetching Omnibox image icons.
-constexpr net::NetworkTrafficAnnotationTag kOmniboxTrafficAnnotation =
+inline constexpr net::NetworkTrafficAnnotationTag kOmniboxTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("cros_launcher_omnibox", R"(
         semantics {
           sender: "Chrome OS Launcher"

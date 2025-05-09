@@ -36,7 +36,7 @@ class Widget;
 namespace arc::input_overlay {
 
 // I/O time to wait.
-constexpr base::TimeDelta kIORead = base::Milliseconds(50);
+inline constexpr base::TimeDelta kIORead = base::Milliseconds(50);
 
 inline constexpr char kEnabledPackageName[] =
     "org.chromium.arc.testapp.inputoverlay";

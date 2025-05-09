@@ -29,16 +29,19 @@ inline constexpr int64_t kDiskSpaceThresholdForStoppingArc = 256LL << 20;
 //                    instead of deciding them on a hunch.
 // Disk space check interval used when free disk space is lower than
 // kDiskSpaceThresholdForPreStopNotification.
-constexpr base::TimeDelta kDiskSpaceCheckIntervalShort = base::Seconds(1);
+inline constexpr base::TimeDelta kDiskSpaceCheckIntervalShort =
+    base::Seconds(1);
 
 // Disk space check interval used when free disk space is higher than
 // kDiskSpaceThresholdForPreStopNotification.
-constexpr base::TimeDelta kDiskSpaceCheckIntervalLong = base::Seconds(10);
+inline constexpr base::TimeDelta kDiskSpaceCheckIntervalLong =
+    base::Seconds(10);
 
 // A pre-stop warning notification should not be shown more than once within
 // this interval.
 // TODO(b/237040345): Finalize the value.
-constexpr base::TimeDelta kPreStopNotificationReshowInterval = base::Minutes(2);
+inline constexpr base::TimeDelta kPreStopNotificationReshowInterval =
+    base::Minutes(2);
 
 // Notifier ID of ArcDiskSpaceMonitor.
 inline constexpr char kDiskSpaceMonitorNotifierId[] = "arc_disk_space_monitor";

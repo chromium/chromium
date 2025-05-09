@@ -18,7 +18,7 @@ class Image;
 }
 
 // Thumbnail size is 100*100 pixels
-constexpr gfx::Size kDefaultThumbnailSize = {100, 100};
+inline constexpr gfx::Size kDefaultThumbnailSize = {100, 100};
 
 // Base class for DesktopMediaList implementations. Implements logic shared
 // between implementations. Specifically it's responsible for keeping current

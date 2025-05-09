@@ -15,7 +15,8 @@ class Browser;
 
 namespace login_ui_test_utils {
 
-constexpr base::TimeDelta kSyncConfirmationDialogTimeout = base::Seconds(30);
+inline constexpr base::TimeDelta kSyncConfirmationDialogTimeout =
+    base::Seconds(30);
 
 // Blocks until the login UI is available and ready for authorization.
 void WaitUntilUIReady(Browser* browser);

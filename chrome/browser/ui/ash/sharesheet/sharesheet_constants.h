@@ -35,17 +35,17 @@ inline constexpr size_t kImagePreviewMaxIcons = 4;
 // be removed and set to |::sharesheet::kIconSize|.
 inline constexpr size_t kImagePreviewHalfIconSize = 21;
 inline constexpr size_t kImagePreviewFullIconSize = 44;
-constexpr gfx::Size kImagePreviewFullSize(kImagePreviewFullIconSize,
-                                          kImagePreviewFullIconSize);
-constexpr gfx::Size kImagePreviewHalfSize(kImagePreviewFullIconSize,
-                                          kImagePreviewHalfIconSize);
-constexpr gfx::Size kImagePreviewQuarterSize(kImagePreviewHalfIconSize,
-                                             kImagePreviewHalfIconSize);
+inline constexpr gfx::Size kImagePreviewFullSize(kImagePreviewFullIconSize,
+                                                 kImagePreviewFullIconSize);
+inline constexpr gfx::Size kImagePreviewHalfSize(kImagePreviewFullIconSize,
+                                                 kImagePreviewHalfIconSize);
+inline constexpr gfx::Size kImagePreviewQuarterSize(kImagePreviewHalfIconSize,
+                                                    kImagePreviewHalfIconSize);
 inline constexpr int kImagePreviewFileEnumerationLineHeight = 10;
 inline constexpr int kImagePreviewBetweenChildSpacing = 2;
 inline constexpr int kImagePreviewIconCornerRadius = 2;
 inline constexpr int kImagePreviewPlaceholderIconContentSize = 20;
-constexpr SkAlpha kImagePreviewBackgroundAlphaComponent = 0x32;
+inline constexpr SkAlpha kImagePreviewBackgroundAlphaComponent = 0x32;
 
 inline constexpr int kHeaderViewBetweenChildSpacing = 12;
 inline constexpr int kHeaderViewNarrowInsideBorderInsets = 14;

@@ -24,7 +24,7 @@ struct EncryptFlags {
   bool use_latest_key = false;
 };
 
-constexpr IID kTestElevatorClsid = {
+inline constexpr IID kTestElevatorClsid = {
     0x416C51AC,
     0x4DEF,
     0x43CA,

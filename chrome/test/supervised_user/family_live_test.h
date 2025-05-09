@@ -23,16 +23,16 @@
 namespace supervised_user {
 
 // Refers to the family prefix in resources/signin/test_accounts.json
-const char* const kAccountRepositoryPath =
+inline constexpr char kAccountRepositoryPath[] =
     "supervised-tests-account-repository-path";
-const char* const kFamilyFeatureIdentifierSwitch =
+inline constexpr char kFamilyFeatureIdentifierSwitch[] =
     "supervised-tests-family-identifier";
 
 // Alternatively, use these two to provide head of household's and child's
 // credentials directly, in <username>:<password> syntax (colon separated).
-const char* const kHeadOfHouseholdCredentialsSwitch =
+inline constexpr char kHeadOfHouseholdCredentialsSwitch[] =
     "supervised-tests-hoh-credentials";
-const char* const kChildCredentialsSwitch =
+inline constexpr char kChildCredentialsSwitch[] =
     "supervised-tests-child-credentials";
 
 // A LiveTest which assumes a specific structure of provided test accounts,

@@ -39,7 +39,7 @@ inline constexpr int kAnnotationPaddingLeft = 12;
 inline constexpr int kAnnotationPaddingBottom = 16;
 inline constexpr int kAnnotationPaddingTop = 6;
 inline constexpr char kTabKey[] = "tab";
-constexpr cros_styles::ColorName kButtonHighlightColor =
+inline constexpr cros_styles::ColorName kButtonHighlightColor =
     cros_styles::ColorName::kRippleColor;
 
 // CompletionSuggestionView renders a suggestion.

@@ -45,7 +45,7 @@ class TouchInjectorObserver;
 // If the following touch move sent immediately, the touch move event is not
 // processed correctly by apps. This is a delayed time to send touch move
 // event.
-constexpr base::TimeDelta kSendTouchMoveDelay = base::Milliseconds(50);
+inline constexpr base::TimeDelta kSendTouchMoveDelay = base::Milliseconds(50);
 
 gfx::RectF CalculateWindowContentBounds(aura::Window* window);
 

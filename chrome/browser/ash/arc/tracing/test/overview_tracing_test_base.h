@@ -24,7 +24,7 @@ namespace arc {
 
 class OverviewTracingTestHandler;
 
-constexpr inline char kBasicSystrace[] =
+inline constexpr char kBasicSystrace[] =
     "{\"traceEvents\":[],\"systemTraceEvents\":\""
     // clang-format off
     "          <idle>-0     [003] d..0 44442.000001: cpu_idle: state=0 cpu_id=3\n"

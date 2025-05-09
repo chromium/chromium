@@ -49,7 +49,7 @@ inline constexpr char kSupplementaryIcon[] = "supplementary_icon";
 
 // This must match the HTML element id of the svg to show as a supplementary
 // icon on the default offline error page.
-const char16_t kOfflineIconId[] = u"offlineIcon";
+inline constexpr char16_t kOfflineIconId[] = u"offlineIcon";
 }  // namespace error_page
 
 // These functions return true if the WebAppProvider is allowed

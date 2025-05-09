@@ -23,8 +23,8 @@ namespace parent_access {
 // Values used in default parent access code configuration for tests.
 inline constexpr char kTestSharedSecret[] =
     "AIfVJHITSar8keeq3779V70dWiS1xbPv8g";
-constexpr base::TimeDelta kDefaultCodeValidity = base::Minutes(10);
-constexpr base::TimeDelta kDefaultClockDrift = base::Minutes(5);
+inline constexpr base::TimeDelta kDefaultCodeValidity = base::Minutes(10);
+inline constexpr base::TimeDelta kDefaultClockDrift = base::Minutes(5);
 
 // Used for storing sample parent access code data. Map that contains pairs of
 // corresponding timestamp and code.

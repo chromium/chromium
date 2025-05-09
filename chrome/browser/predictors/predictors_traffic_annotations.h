@@ -9,7 +9,7 @@
 
 namespace predictors {
 
-const net::NetworkTrafficAnnotationTag
+inline constexpr net::NetworkTrafficAnnotationTag
     kSearchEnginePreconnectTrafficAnnotation =
         net::DefineNetworkTrafficAnnotation("search_engine_preconnect",
                                             R"(
@@ -53,7 +53,7 @@ const net::NetworkTrafficAnnotationTag
       "(or a combination of both) limits the scope of these requests."
 )");
 
-const net::NetworkTrafficAnnotationTag
+inline constexpr net::NetworkTrafficAnnotationTag
     kLoadingPredictorPreconnectTrafficAnnotation =
         net::DefineNetworkTrafficAnnotation("predictive_preconnect",
                                             R"(
@@ -97,9 +97,10 @@ const net::NetworkTrafficAnnotationTag
       "(or a combination of both) limits the scope of these requests."
 )");
 
-const net::NetworkTrafficAnnotationTag kNetworkHintsTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("network_hints_preconnect",
-                                        R"(
+inline constexpr net::NetworkTrafficAnnotationTag
+    kNetworkHintsTrafficAnnotation =
+        net::DefineNetworkTrafficAnnotation("network_hints_preconnect",
+                                            R"(
     semantics {
       sender: "Linkrel preconnector"
       description:

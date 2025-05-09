@@ -35,11 +35,11 @@ inline constexpr int kDefaultSamlLockScreenOfflineSigninTimeLimitDays =
     kOfflineSigninTimeLimitNotSet;
 
 // In-session password-change feature (includes password expiry notifications).
-const bool kDefaultSamlInSessionPasswordChangeEnabled = false;
+inline constexpr bool kDefaultSamlInSessionPasswordChangeEnabled = false;
 inline constexpr int kDefaultSamlPasswordExpirationAdvanceWarningDays = 14;
 
 // Online reauthentication on the lock screen.
-const bool kDefaultLockScreenReauthenticationEnabled = false;
+inline constexpr bool kDefaultLockScreenReauthenticationEnabled = false;
 
 // Default value for authentication flow automatic reloading controlled by
 // `DeviceAuthenticationFlowAutoReloadInterval` policy

@@ -34,7 +34,7 @@
 namespace app_mode {
 
 // Mach message ID used by the shim to connect to Chrome.
-constexpr mach_msg_id_t kBootstrapMsgId = 'apps';
+inline constexpr mach_msg_id_t kBootstrapMsgId = 'apps';
 
 // Name fragment of the Mach server endpoint published in the bootstrap
 // namespace. The full name is "<bundle-id>.apps.<profile_path_hash>".

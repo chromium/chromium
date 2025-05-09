@@ -40,8 +40,9 @@ extern const char kPluginVmName[];
 // Base directory for shared paths in Plugin VM, formatted for display.
 extern const char kChromeOSBaseDirectoryDisplayText[];
 
-const net::NetworkTrafficAnnotationTag kPluginVmNetworkTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("plugin_vm_image_download", R"(
+inline constexpr net::NetworkTrafficAnnotationTag
+    kPluginVmNetworkTrafficAnnotation =
+        net::DefineNetworkTrafficAnnotation("plugin_vm_image_download", R"(
       semantics {
         sender: "Plugin VM image manager"
         description: "Request to download Plugin VM image is sent in order "

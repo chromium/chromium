@@ -41,11 +41,11 @@ class Profile;
 namespace arc {
 
 // The file exists only when ARC container is in use.
-constexpr const char kGeneratedBuildPropertyFilePath[] =
+inline constexpr char kGeneratedBuildPropertyFilePath[] =
     "/run/arc/host_generated/build.prop";
 
 // The file exists only when ARCVM is in use.
-constexpr const char kGeneratedCombinedPropertyFilePathVm[] =
+inline constexpr char kGeneratedCombinedPropertyFilePathVm[] =
     "/run/arcvm/host_generated/combined.prop";
 
 // Maximum number of auto-resumes for ARCVM /data migration. When this number of
