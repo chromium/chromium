@@ -192,7 +192,6 @@
 #include "chrome/browser/ui/prefs/pref_watcher.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/web_applications/navigation_capturing_redirection_throttle.h"
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/ui/webui/internal_debug_pages_disabled/internal_debug_pages_disabled_ui.h"
@@ -480,8 +479,6 @@
 #include "chrome/browser/ash/fileapi/external_file_url_loader_factory.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/ash/fileapi/mtp_file_system_backend_delegate.h"
-#include "chrome/browser/ash/login/signin/merge_session_navigation_throttle.h"
-#include "chrome/browser/ash/login/signin/merge_session_throttling_utils.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/main_parts/chrome_browser_main_parts_ash.h"
@@ -513,7 +510,6 @@
 #include "base/android/application_status_listener.h"
 #include "base/android/build_info.h"
 #include "base/feature_list.h"
-#include "chrome/android/features/dev_ui/buildflags.h"
 #include "chrome/browser/android/customtabs/client_data_header_web_contents_observer.h"
 #include "chrome/browser/android/devtools_manager_delegate_android.h"
 #include "chrome/browser/android/ntp/new_tab_page_url_handler.h"
@@ -522,7 +518,6 @@
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
 #include "chrome/browser/chrome_browser_main_android.h"
 #include "chrome/browser/digital_credentials/digital_identity_provider_android.h"
-#include "chrome/browser/download/android/intercept_oma_download_navigation_throttle.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/safe_browsing/android/safe_browsing_referring_app_bridge_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -530,7 +525,6 @@
 #include "components/browser_ui/accessibility/android/font_size_prefs_android.h"
 #include "components/crash/content/browser/child_exit_observer_android.h"
 #include "components/crash/content/browser/crash_memory_metrics_collector_android.h"
-#include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/viz_utils.h"
 #include "content/public/browser/android/java_interfaces.h"
@@ -538,9 +532,6 @@
 #include "ui/base/resource/resource_bundle_android.h"
 #include "ui/base/ui_base_paths.h"
 #include "ui/display/util/display_util.h"
-#if BUILDFLAG(DFMIFY_DEV_UI)
-#include "chrome/browser/dev_ui/android/dev_ui_loader_throttle.h"
-#endif  // BUILDFLAG(DFMIFY_DEV_UI)
 #elif BUILDFLAG(IS_POSIX)
 #include "chrome/browser/chrome_browser_main_posix.h"
 #endif
@@ -565,9 +556,6 @@
 #include "ash/shell.h"
 #include "base/debug/leak_annotations.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_navigation_throttle.h"
-#include "chrome/browser/apps/intent_helper/chromeos_disabled_apps_throttle.h"
-#include "chrome/browser/apps/link_capturing/chromeos_link_capturing_delegate.h"
-#include "chrome/browser/apps/link_capturing/chromeos_reimpl_navigation_capturing_throttle.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
 #include "chrome/browser/chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part.h"
 #include "chrome/browser/file_system_access/cloud_identifier/cloud_identifier_util_cros.h"
@@ -583,7 +571,6 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/apps/link_capturing/link_capturing_navigation_throttle.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/direct_sockets/chrome_direct_sockets_delegate.h"
@@ -632,8 +619,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/crash/content/browser/crash_handler_host_linux.h"
-#else
-#include "chrome/browser/apps/link_capturing/web_app_link_capturing_delegate.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
@@ -679,7 +664,6 @@
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/extensions/chrome_extension_cookies.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
-#include "extensions/browser/extension_navigation_throttle.h"
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
@@ -697,7 +681,6 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/accessibility/animation_policy_prefs.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/user_script_listener.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -709,10 +692,6 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
-#endif
-
-#if BUILDFLAG(ENABLE_PLATFORM_APPS)
-#include "chrome/browser/apps/platform_apps/platform_app_navigation_redirector.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -5402,103 +5381,10 @@ void ChromeContentBrowserClient::CreateThrottlesForNavigation(
   CreateAndAddChromeThrottlesForNavigation(registry);
 
   content::NavigationHandle& handle = registry.GetNavigationHandle();
-  // TODO(https://crbug.com/412524375): Move the following code to
-  // CreateAndAddChromeThrottlesForNavigation().
-
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(davidben): This is insufficient to integrate with prerender properly.
-  // https://crbug.com/370595
-  prerender::NoStatePrefetchContents* no_state_prefetch_contents =
-      prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
-          handle.GetWebContents());
-  if (!no_state_prefetch_contents) {
-    navigation_interception::InterceptNavigationDelegate::MaybeCreateAndAdd(
-        registry, navigation_interception::SynchronyMode::kAsync);
-  }
-  registry.AddThrottle(InterceptOMADownloadNavigationThrottle::Create(&handle));
-
-#if BUILDFLAG(DFMIFY_DEV_UI)
-  // If the DevUI DFM is already installed, then this is a no-op, except for the
-  // side effect of ensuring that the DevUI DFM is loaded.
-  registry.MaybeAddThrottle(
-      dev_ui::DevUiLoaderThrottle::MaybeCreateThrottleFor(&handle));
-#endif  // BUILDFLAG(DFMIFY_DEV_UI)
-
-#elif BUILDFLAG(ENABLE_PLATFORM_APPS)
-  // Redirect some navigations to apps that have registered matching URL
-  // handlers ('url_handlers' in the manifest).
-  PlatformAppNavigationRedirector::MaybeCreateAndAdd(registry);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Check if we need to add merge session throttle. This throttle will postpone
-  // loading of main frames.
-  if (handle.IsInMainFrame()) {
-    // Add interstitial page while merge session process (cookie reconstruction
-    // from OAuth2 refresh token in ChromeOS login) is still in progress while
-    // we are attempting to load a google property.
-    if (ash::merge_session_throttling_utils::ShouldAttachNavigationThrottle() &&
-        !ash::merge_session_throttling_utils::AreAllSessionMergedAlready() &&
-        handle.GetURL().SchemeIsHTTPOrHTTPS()) {
-      registry.AddThrottle(
-          ash::MergeSessionNavigationThrottle::Create(&handle));
-    }
-  }
-
-  registry.MaybeAddThrottle(
-      apps::ChromeOsDisabledAppsThrottle::MaybeCreate(&handle));
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if !BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<apps::LinkCapturingNavigationThrottle::Delegate>
-      link_capturing_delegate;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  link_capturing_delegate =
-      std::make_unique<apps::ChromeOsLinkCapturingDelegate>();
-#else
-  link_capturing_delegate =
-      std::make_unique<web_app::WebAppLinkCapturingDelegate>();
-#endif
-  std::unique_ptr<content::NavigationThrottle> url_to_apps_throttle =
-      apps::LinkCapturingNavigationThrottle::MaybeCreate(
-          &handle, std::move(link_capturing_delegate));
-
-  bool url_to_apps_throttle_created = url_to_apps_throttle != nullptr;
-  if (url_to_apps_throttle_created) {
-    registry.AddThrottle(std::move(url_to_apps_throttle));
-  }
-#if BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/366547977): This currently does nothing and allows all
-  // navigations to proceed if v2 is enabled on ChromeOS. Implement.
-  std::unique_ptr<content::NavigationThrottle>
-      chromeos_reimpl_navigation_throttle =
-          apps::ChromeOsReimplNavigationCapturingThrottle::MaybeCreate(&handle);
-  if (chromeos_reimpl_navigation_throttle) {
-    // Verify the v1 throttle has not been created.
-    CHECK(!url_to_apps_throttle_created);
-    registry.AddThrottle(std::move(chromeos_reimpl_navigation_throttle));
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  registry.MaybeAddThrottle(
-      web_app::NavigationCapturingRedirectionThrottle::MaybeCreate(&handle));
-#endif  // !BUILDFLAG(IS_ANDROID)
-
   Profile* profile =
       Profile::FromBrowserContext(handle.GetWebContents()->GetBrowserContext());
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (!ChromeContentBrowserClientExtensionsPart::
-          AreExtensionsDisabledForProfile(profile)) {
-    registry.AddThrottle(
-        std::make_unique<extensions::ExtensionNavigationThrottle>(&handle));
-
-    registry.MaybeAddThrottle(extensions::ExtensionsBrowserClient::Get()
-                                  ->GetUserScriptListener()
-                                  ->CreateNavigationThrottle(&handle));
-  }
-#endif
+  // TODO(https://crbug.com/412524375): Move the following code to
+  // CreateAndAddChromeThrottlesForNavigation().
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   registry.MaybeAddThrottle(
