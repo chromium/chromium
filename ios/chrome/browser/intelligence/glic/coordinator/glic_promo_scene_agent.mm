@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/glic/coordinator/glic_promo_scene_agent.h"
 
 #import "base/memory/raw_ptr.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 
@@ -26,7 +27,9 @@
     transitionedToActivationLevel:(SceneActivationLevel)level {
   switch (level) {
     case SceneActivationLevelForegroundActive: {
-      [self registerPromoForSingleDisplay];
+      if (IsPageActionMenuEnabled()) {
+        [self registerPromoForSingleDisplay];
+      }
       break;
     }
     case SceneActivationLevelUnattached:

@@ -17,6 +17,7 @@ source_set("coordinator") {
   deps = [
     "//base",
     "//components/prefs:prefs",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/glic/metrics",
     "//ios/chrome/browser/intelligence/glic/ui",
     "//ios/chrome/browser/promos_manager/model",
@@ -25,5 +26,30 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "glic_promo_scene_agent_unittest.mm" ]
+
+  deps = [
+    ":coordinator",
+    "//base/test:test_support",
+    "//ios/chrome/app:app_internal",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/application_delegate:test_support",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/promos_manager/model:constants",
+    "//ios/chrome/browser/promos_manager/model:features",
+    "//ios/chrome/browser/promos_manager/model:test_support",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public/test",
+    "//third_party/ocmock",
   ]
 }
