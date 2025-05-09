@@ -27,13 +27,13 @@ import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.Mode;
 
 import java.util.OptionalInt;
 
-/** Robolectric unit tests for {@link SelectionController}. */
+/** Robolectric unit tests for {@link SimpleSelectionController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class SelectionControllerUnitTest {
+public class SimpleSelectionControllerUnitTest {
     private static final int MAX_POSITION = 3; // Items 0‒2 inclusive.
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private @Mock SelectionController.OnSelectionChangedListener mListener;
+    private @Mock SimpleSelectionController.OnSelectionChangedListener mListener;
 
     @Before
     public void setUp() {
@@ -42,7 +42,7 @@ public class SelectionControllerUnitTest {
         when(mListener.onSelectionChanged(anyInt(), eq(false))).thenReturn(true);
     }
 
-    private void verifyPositionReset(SelectionController c, int position) {
+    private void verifyPositionReset(SimpleSelectionController c, int position) {
         verify(mListener).onSelectionChanged(position, false);
         assertEquals(OptionalInt.empty(), c.getPosition());
         assertTrue(c.isParkedAtSentinel());
@@ -63,7 +63,8 @@ public class SelectionControllerUnitTest {
 
     @Test
     public void advanceForward_saturating() {
-        SelectionController c = new SelectionController(mListener, MAX_POSITION, Mode.SATURATING);
+        SimpleSelectionController c =
+                new SimpleSelectionController(mListener, MAX_POSITION, Mode.SATURATING);
         verifyPositionSet(c, 0);
 
         assertTrue(c.advanceForward());
@@ -81,8 +82,9 @@ public class SelectionControllerUnitTest {
 
     @Test
     public void advanceForward_saturatingWithSentinel() {
-        SelectionController c =
-                new SelectionController(mListener, MAX_POSITION, Mode.SATURATING_WITH_SENTINEL);
+        SimpleSelectionController c =
+                new SimpleSelectionController(
+                        mListener, MAX_POSITION, Mode.SATURATING_WITH_SENTINEL);
         assertTrue(c.isParkedAtSentinel());
 
         assertTrue(c.advanceForward());
@@ -103,7 +105,8 @@ public class SelectionControllerUnitTest {
 
     @Test
     public void advanceBack_saturating() {
-        SelectionController c = new SelectionController(mListener, MAX_POSITION, Mode.SATURATING);
+        SimpleSelectionController c =
+                new SimpleSelectionController(mListener, MAX_POSITION, Mode.SATURATING);
         c.setPosition(MAX_POSITION);
         verifyPositionChanged(c, 0, 2);
 
@@ -122,8 +125,9 @@ public class SelectionControllerUnitTest {
 
     @Test
     public void advanceBack_saturatingWithSentinel() {
-        SelectionController c =
-                new SelectionController(mListener, MAX_POSITION, Mode.SATURATING_WITH_SENTINEL);
+        SimpleSelectionController c =
+                new SimpleSelectionController(
+                        mListener, MAX_POSITION, Mode.SATURATING_WITH_SENTINEL);
         c.setPosition(MAX_POSITION - 1);
         verifyPositionSet(c, 2);
 
@@ -144,21 +148,21 @@ public class SelectionControllerUnitTest {
     public void advanceForward_saturating_listenerReturnsFalse() {
         when(mListener.onSelectionChanged(1, true)).thenReturn(false);
 
-        SelectionController c =
-                new SelectionController(
-                        mListener, MAX_POSITION, SelectionController.Mode.SATURATING);
+        SimpleSelectionController c =
+                new SimpleSelectionController(mListener, MAX_POSITION, Mode.SATURATING);
         verifyPositionSet(c, 0);
         assertFalse(c.advanceForward());
         verifyPositionChanged(c, 0, 0);
     }
 
     @Test
-    public void updateMaxPosition() {
-        SelectionController c = new SelectionController(mListener, MAX_POSITION, Mode.SATURATING);
+    public void setItemCount() {
+        SimpleSelectionController c =
+                new SimpleSelectionController(mListener, MAX_POSITION, Mode.SATURATING);
         verifyPositionSet(c, 0);
 
         // Grow list of items
-        c.updateMaxPosition(5);
+        c.setItemCount(5);
         verifyPositionSet(c, 0);
 
         assertTrue(c.advanceForward()); // Should now reach index 4 without saturating
@@ -171,13 +175,33 @@ public class SelectionControllerUnitTest {
         verifyPositionChanged(c, 3, 4);
 
         // Shrink list of items
-        c.updateMaxPosition(2);
-        verifyPositionSet(c, 0);
+        c.setItemCount(2);
+        verifyPositionSet(c, 1);
+    }
+
+    @Test
+    public void selectionControllerWithNoItems() {
+        SimpleSelectionController c = new SimpleSelectionController(mListener, 0, Mode.SATURATING);
+        // Normally, saturating controller should start at valid range, but this is an edge case.
+        assertTrue(c.isParkedAtSentinel());
+        assertEquals(OptionalInt.empty(), c.getPosition());
+
+        // Simulate we now have an item. This should make the saturating controller immediately jump
+        // to the first valid item.
+        c.setItemCount(1);
+        assertFalse(c.isParkedAtSentinel());
+        assertEquals(OptionalInt.of(0), c.getPosition());
+
+        // Simulate we lost all items. This should make the saturating controller revert to sentnel.
+        c.setItemCount(0);
+        assertTrue(c.isParkedAtSentinel());
+        assertEquals(OptionalInt.empty(), c.getPosition());
     }
 
     @Test
     public void reset_saturating() {
-        SelectionController c = new SelectionController(mListener, MAX_POSITION, Mode.SATURATING);
+        SimpleSelectionController c =
+                new SimpleSelectionController(mListener, MAX_POSITION, Mode.SATURATING);
         verifyPositionSet(c, 0);
 
         c.advanceForward(); // 1

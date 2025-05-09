@@ -16,20 +16,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.OptionalInt;
 
-/**
- * Helper class allowing advancing forward/backward while saturating outside the valid range.
- *
- * <p>TODO(344930378): Explore possibility to reconcile this with RecyclerViewSelectionController.
- * The two classes serve similar purpose, but the complexity of view recycling may make the merge
- * difficult. This controller expands RVSC capabilities, however the following aspects make
- * immediate merge difficult: - volume of items changing at runtime, - exposure triggering (to
- * ensure we can locate views for items not currently bound), - reused views propagate the selected
- * state when rebound to a different item,
- *
- * <p>Consider adding WRAPPING and WRAPPING_WITH_SENTINEL variants to allow cycling through.
- */
+/** Helper class allowing advancing forward/backward while saturating outside the valid range. */
 @NullMarked
-public class SelectionController {
+public abstract class SelectionController {
     /**
      * Operational modes of the SelectionController
      *
@@ -54,44 +43,17 @@ public class SelectionController {
         int SATURATING_WITH_SENTINEL = 1;
     }
 
-    private final OnSelectionChangedListener mListener;
-    private final @Mode int mMode;
-    private final int mDefaultPosition;
-    private int mNumItems;
+    protected final @Mode int mMode;
+    protected final int mDefaultPosition;
+
     private int mPosition;
 
-    @FunctionalInterface
-    public interface OnSelectionChangedListener {
-        /**
-         * Invoked whenever selected state at specific position changed.
-         *
-         * @param position the position to apply selection change to
-         * @param isSelected whether that position should be selected
-         * @return whether selection was applied at requested position
-         */
-        boolean onSelectionChanged(int position, boolean isSelected);
-    }
-
     /**
      * SelectionController constructor.
      *
-     * @param listener the listener receiving notifications about selection changes
-     */
-    public SelectionController(OnSelectionChangedListener listener, @Mode int mode) {
-        this(listener, 0, mode);
-    }
-
-    /**
-     * SelectionController constructor.
-     *
-     * @param listener the listener receiving notifications about selection changes
-     * @param itemCount the number of valid positions [0; itemCount-1)
      * @param mode Selection mode that defines how the controller will behave
      */
-    public SelectionController(OnSelectionChangedListener listener, int itemCount, @Mode int mode) {
-        assert itemCount < Integer.MAX_VALUE;
-        assert itemCount >= 0;
-
+    public SelectionController(@Mode int mode) {
         switch (mode) {
             case Mode.SATURATING:
                 mDefaultPosition = 0;
@@ -103,35 +65,17 @@ public class SelectionController {
                 break;
         }
 
-        // Initialization step only, to ensure we do not emit bogus selection change event.
         mPosition = Integer.MIN_VALUE;
-        mListener = listener;
         mMode = mode;
-        updateMaxPosition(itemCount);
-    }
-
-    /**
-     * Update range of valid positions.
-     *
-     * @param numItems total number of items, determining the upper position.
-     */
-    public void updateMaxPosition(int numItems) {
-        if (!isParkedAtSentinel()) {
-            mListener.onSelectionChanged(mPosition, false);
-        }
-
-        mNumItems = numItems;
-        mPosition = mDefaultPosition;
-
-        if (!isParkedAtSentinel()) {
-            mListener.onSelectionChanged(mPosition, true);
-        }
     }
 
     /** Resets the controller, making the current position point to default item. */
     public void reset() {
         setPosition(mDefaultPosition);
     }
+
+    /** Returns the maximum valid position the SelectionController can assume. */
+    protected abstract int getItemCount();
 
     /**
      * Advances the counter towards the maxPosition, returning false if the held value has
@@ -153,7 +97,7 @@ public class SelectionController {
      */
     public boolean advanceBack() {
         if (mPosition == Integer.MIN_VALUE) return false;
-        if (mPosition == Integer.MAX_VALUE) return setPosition(mNumItems - 1);
+        if (mPosition == Integer.MAX_VALUE) return setPosition(getItemCount());
         return setPosition(mPosition - 1);
     }
 
@@ -177,17 +121,18 @@ public class SelectionController {
     @VisibleForTesting
     boolean setPosition(int newPosition) {
         if (!isParkedAtSentinel()) {
-            mListener.onSelectionChanged(mPosition, false);
+            setItemState(mPosition, false);
         }
 
         int oldPosition = mPosition;
+        int itemCount = getItemCount();
         mPosition = newPosition;
         switch (mMode) {
             case Mode.SATURATING:
-                if (mNumItems == 0) {
+                if (itemCount == 0) {
                     mPosition = Integer.MIN_VALUE;
                 } else {
-                    mPosition = MathUtils.clamp(mPosition, 0, mNumItems - 1);
+                    mPosition = MathUtils.clamp(mPosition, 0, itemCount - 1);
                 }
                 break;
 
@@ -195,7 +140,7 @@ public class SelectionController {
                 // Park outside the valid range, keeping the information which edge we hit.
                 if (mPosition < 0) { // Underflow
                     mPosition = Integer.MIN_VALUE;
-                } else if (mPosition >= mNumItems) {
+                } else if (mPosition >= itemCount) {
                     mPosition = Integer.MAX_VALUE;
                 }
                 break;
@@ -204,13 +149,22 @@ public class SelectionController {
         if (isParkedAtSentinel()) return false;
 
         // Select new item, fall back to old position if not possible.
-        if (!mListener.onSelectionChanged(mPosition, true)) {
+        if (!setItemState(mPosition, true)) {
             mPosition = oldPosition;
-            mListener.onSelectionChanged(mPosition, true);
+            setItemState(mPosition, true);
             // We failed to select the requested entry.
             return false;
         }
 
         return true;
     }
+
+    /**
+     * Applies selection change at specific position.
+     *
+     * @param position the index of an element to change the state of
+     * @param state the desired new state
+     * @return the applied state of the item at specified position.
+     */
+    protected abstract boolean setItemState(int position, boolean isSelected);
 }

@@ -20,7 +20,7 @@ import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.suggestions.SelectionController;
+import org.chromium.chrome.browser.omnibox.suggestions.SimpleSelectionController;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 
@@ -42,7 +42,7 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
     public final ActionChipsView actionChipsView;
     public final RoundedCornerOutlineProvider decorationIconOutline;
     private final List<ImageView> mActionButtons;
-    private final SelectionController mActionButtonsHighlighter;
+    private final SimpleSelectionController mActionButtonsHighlighter;
     private Optional<Runnable> mOnFocusViaSelectionListener = Optional.empty();
 
     /**
@@ -87,10 +87,10 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
         addView(contentView);
 
         mActionButtonsHighlighter =
-                new SelectionController(
+                new SimpleSelectionController(
                         this::highlightActionButton,
                         0,
-                        SelectionController.Mode.SATURATING_WITH_SENTINEL);
+                        SimpleSelectionController.Mode.SATURATING_WITH_SENTINEL);
     }
 
     /**
@@ -107,7 +107,7 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
             decreaseActionButtonsCount(desiredViewCount);
         }
 
-        mActionButtonsHighlighter.updateMaxPosition(desiredViewCount);
+        mActionButtonsHighlighter.setItemCount(desiredViewCount);
     }
 
     /**
