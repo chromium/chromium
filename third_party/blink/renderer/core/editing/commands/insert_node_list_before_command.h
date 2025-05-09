@@ -20,6 +20,7 @@ class InsertNodeListBeforeCommand final : public SimpleEditCommand {
  private:
   void DoApply(EditingState* editing_stae) override;
   void DoUnapply() override;
+  String ToString() const override;
 
   HeapVector<Member<Node>> insert_children_;
   Member<Node> parent_;

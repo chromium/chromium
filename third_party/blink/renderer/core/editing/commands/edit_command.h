@@ -85,6 +85,8 @@ class CORE_EXPORT SimpleEditCommand : public EditCommand {
   virtual void DoUnapply() = 0;
   virtual void DoReapply();  // calls doApply()
 
+  virtual String ToString() const = 0;
+
  protected:
   explicit SimpleEditCommand(Document& document) : EditCommand(document) {}
 

@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/editing/commands/editing_state.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -50,6 +51,11 @@ void InsertNodeListBeforeCommand::DoUnapply() {
   for (auto& child : insert_children_) {
     child->remove(IGNORE_EXCEPTION_FOR_TESTING);
   }
+}
+
+String InsertNodeListBeforeCommand::ToString() const {
+  return WTF::StrCat({"InsertNodeListBeforeCommand {insert_children:[",
+                      String::Number(insert_children_.size()), " nodes]}"});
 }
 
 void InsertNodeListBeforeCommand::Trace(Visitor* visitor) const {

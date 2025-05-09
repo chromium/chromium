@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -63,6 +64,11 @@ void SetCharacterDataCommand::DoUnapply() {
 
   node_->replaceData(offset_, new_text_.length(), previous_text_for_undo_,
                      IGNORE_EXCEPTION_FOR_TESTING);
+}
+
+String SetCharacterDataCommand::ToString() const {
+  return WTF::StrCat({"SetCharacterDataCommand {new_text:",
+                      new_text_.EncodeForDebugging(), "}"});
 }
 
 void SetCharacterDataCommand::Trace(Visitor* visitor) const {

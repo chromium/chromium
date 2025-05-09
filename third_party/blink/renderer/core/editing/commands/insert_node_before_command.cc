@@ -80,6 +80,10 @@ void InsertNodeBeforeCommand::DoUnapply() {
   insert_child_->remove(IGNORE_EXCEPTION_FOR_TESTING);
 }
 
+String InsertNodeBeforeCommand::ToString() const {
+  return "InsertNodeBeforeCommand";
+}
+
 void InsertNodeBeforeCommand::Trace(Visitor* visitor) const {
   visitor->Trace(insert_child_);
   visitor->Trace(ref_child_);

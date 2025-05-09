@@ -39,6 +39,7 @@ class MergeIdenticalElementsCommand final : public SimpleEditCommand {
  private:
   void DoApply(EditingState*) override;
   void DoUnapply() override;
+  String ToString() const override;
 
   Member<Element> element1_;
   Member<Element> element2_;

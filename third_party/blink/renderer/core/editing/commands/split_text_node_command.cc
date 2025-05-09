@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -100,6 +101,11 @@ void SplitTextNodeCommand::InsertText1AndTrimText2() {
     return;
   text2_->deleteData(0, offset_, exception_state);
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+}
+
+String SplitTextNodeCommand::ToString() const {
+  return WTF::StrCat(
+      {"SplitTextNodeCommand {offset:", String::Number(offset_), "}"});
 }
 
 void SplitTextNodeCommand::Trace(Visitor* visitor) const {

@@ -53,6 +53,10 @@ void AppendNodeCommand::DoUnapply() {
   node_->remove(IGNORE_EXCEPTION_FOR_TESTING);
 }
 
+String AppendNodeCommand::ToString() const {
+  return "AppendNodeCommand";
+}
+
 void AppendNodeCommand::Trace(Visitor* visitor) const {
   visitor->Trace(parent_);
   visitor->Trace(node_);

@@ -84,6 +84,10 @@ void MergeIdenticalElementsCommand::DoUnapply() {
     element1_->AppendChild(child.Release(), exception_state);
 }
 
+String MergeIdenticalElementsCommand::ToString() const {
+  return "MergeIdenticalElementsCommand";
+}
+
 void MergeIdenticalElementsCommand::Trace(Visitor* visitor) const {
   visitor->Trace(element1_);
   visitor->Trace(element2_);

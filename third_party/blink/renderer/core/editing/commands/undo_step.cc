@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/editing/set_selection_options.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -143,6 +144,19 @@ void UndoStep::SetStartingSelection(const SelectionForUndoStep& selection) {
 
 void UndoStep::SetEndingSelection(const SelectionForUndoStep& selection) {
   ending_selection_ = selection;
+}
+
+String UndoStep::ToString() const {
+  StringBuilder builder;
+  builder.Append("UndoStep {commands:[");
+  String delimiter = "\n    ";
+  for (const auto& command : commands_) {
+    builder.Append(delimiter);
+    builder.Append(command->ToString());
+    delimiter = ",\n    ";
+  }
+  builder.Append("]}");
+  return builder.ReleaseString();
 }
 
 void UndoStep::Trace(Visitor* visitor) const {

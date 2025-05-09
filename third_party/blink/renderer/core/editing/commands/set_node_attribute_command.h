@@ -42,6 +42,7 @@ class SetNodeAttributeCommand final : public SimpleEditCommand {
  private:
   void DoApply(EditingState*) override;
   void DoUnapply() override;
+  String ToString() const override;
 
   Member<Element> element_;
   QualifiedName attribute_;

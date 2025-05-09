@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -67,6 +68,11 @@ void RemoveCSSPropertyCommand::DoUnapply() {
       property_, String(), old_value_, important_,
       GetDocument().GetExecutionContext()->GetSecureContextMode(),
       IGNORE_EXCEPTION_FOR_TESTING);
+}
+
+String RemoveCSSPropertyCommand::ToString() const {
+  return WTF::StrCat({"RemoveCSSPropertyCommand {",
+                      CSSPropertyName(property_).ToAtomicString(), "}"});
 }
 
 void RemoveCSSPropertyCommand::Trace(Visitor* visitor) const {

@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/editing/commands/editing_state.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -71,6 +72,10 @@ void RemoveNodeCommand::DoUnapply() {
     return;
 
   parent->InsertBefore(node_.Get(), ref_child, IGNORE_EXCEPTION_FOR_TESTING);
+}
+
+String RemoveNodeCommand::ToString() const {
+  return WTF::StrCat({"RemoveNodeCommand {node:", node_->ToString(), "}"});
 }
 
 void RemoveNodeCommand::Trace(Visitor* visitor) const {

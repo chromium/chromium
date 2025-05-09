@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/editing/commands/set_node_attribute_command.h"
 
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -47,6 +48,11 @@ void SetNodeAttributeCommand::DoApply(EditingState*) {
 void SetNodeAttributeCommand::DoUnapply() {
   element_->setAttribute(attribute_, old_value_);
   old_value_ = g_null_atom;
+}
+
+String SetNodeAttributeCommand::ToString() const {
+  return WTF::StrCat(
+      {"SetNodeAttributeCommand {attribute:", attribute_.ToString(), "}"});
 }
 
 void SetNodeAttributeCommand::Trace(Visitor* visitor) const {

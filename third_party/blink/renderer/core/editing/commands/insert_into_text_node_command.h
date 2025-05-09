@@ -41,6 +41,7 @@ class InsertIntoTextNodeCommand final : public SimpleEditCommand {
  private:
   void DoApply(EditingState*) override;
   void DoUnapply() override;
+  String ToString() const override;
 
   Member<Text> node_;
   unsigned offset_;
