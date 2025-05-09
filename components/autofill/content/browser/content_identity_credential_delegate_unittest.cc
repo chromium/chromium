@@ -43,7 +43,7 @@ class MockFederatedAuthAutofillSource
 IdentityRequestAccountPtr CreateTestAccount() {
   IdentityRequestAccountPtr account =
       base::MakeRefCounted<content::IdentityRequestAccount>(
-          "id", "display_identifier", "display_name", "john@email.com", "name",
+          "id", "display_identifier", "display_name", "john@email.com", "John",
           "given_name", GURL(), "+1 (234) 567-8910", "username",
           /*login_hints=*/std::vector<std::string>(),
           /*domain_hints=*/std::vector<std::string>(),
@@ -73,7 +73,46 @@ TEST_F(ContentIdentityCredentialDelegateTest, NoPendingRequest) {
   }));
   std::vector<Suggestion> suggestions =
       delegate.GetVerifiedAutofillSuggestions(EMAIL_ADDRESS);
-  EXPECT_EQ(0ul, suggestions.size());
+  ASSERT_EQ(0ul, suggestions.size());
+}
+
+TEST_F(ContentIdentityCredentialDelegateTest, NoAccounts) {
+  MockFederatedAuthAutofillSource mock;
+
+  ContentIdentityCredentialDelegate delegate(
+      base::BindLambdaForTesting([&mock]() {
+        content::FederatedAuthAutofillSource* result = &mock;
+        return result;
+      }));
+
+  std::vector<IdentityRequestAccountPtr> accounts = {};
+
+  EXPECT_CALL(mock, GetAutofillSuggestions).WillOnce(Return(accounts));
+
+  std::vector<Suggestion> suggestions =
+      delegate.GetVerifiedAutofillSuggestions(EMAIL_ADDRESS);
+  ASSERT_EQ(0ul, suggestions.size());
+}
+
+TEST_F(ContentIdentityCredentialDelegateTest, UnsupportedFieldType) {
+  MockFederatedAuthAutofillSource mock;
+
+  ContentIdentityCredentialDelegate delegate(
+      base::BindLambdaForTesting([&mock]() {
+        content::FederatedAuthAutofillSource* result = &mock;
+        return result;
+      }));
+
+  IdentityRequestAccountPtr account = CreateTestAccount();
+  account->identity_provider->disclosure_fields = {
+      content::IdentityRequestDialogDisclosureField::kEmail};
+  std::vector<IdentityRequestAccountPtr> accounts = {account};
+
+  EXPECT_CALL(mock, GetAutofillSuggestions).WillOnce(Return(accounts));
+
+  std::vector<Suggestion> suggestions =
+      delegate.GetVerifiedAutofillSuggestions(IBAN_VALUE);
+  ASSERT_EQ(0ul, suggestions.size());
 }
 
 TEST_F(ContentIdentityCredentialDelegateTest, GetVerifiedEmailRequest) {
@@ -95,12 +134,13 @@ TEST_F(ContentIdentityCredentialDelegateTest, GetVerifiedEmailRequest) {
 
   std::vector<Suggestion> suggestions =
       delegate.GetVerifiedAutofillSuggestions(EMAIL_ADDRESS);
-  EXPECT_EQ(1ul, suggestions.size());
+  ASSERT_EQ(1ul, suggestions.size());
 
   Suggestion suggestion = suggestions[0];
   EXPECT_EQ(suggestion.main_text.value, u"john@email.com");
-  EXPECT_EQ(suggestion.labels.size(), 1ul);
-  EXPECT_EQ(suggestion.minor_texts.size(), 1ul);
+  ASSERT_EQ(suggestion.labels.size(), 1ul);
+  ASSERT_EQ(suggestion.minor_texts.size(), 1ul);
+  EXPECT_EQ(suggestion.icon, Suggestion::Icon::kEmail);
 
   // Expect the payload to be populated properly.
   Suggestion::IdentityCredentialPayload payload =
@@ -109,7 +149,7 @@ TEST_F(ContentIdentityCredentialDelegateTest, GetVerifiedEmailRequest) {
   EXPECT_EQ(payload.config_url, GURL("https://idp.example"));
 
   // Expect only one field to be available in the payload.
-  EXPECT_EQ(payload.fields.size(), 1ul);
+  ASSERT_EQ(payload.fields.size(), 1ul);
 
   // Expect that email is previewed/filled because it was requested in the
   // conditional request.
@@ -141,12 +181,11 @@ TEST_F(ContentIdentityCredentialDelegateTest, SuggestPhoneNumbers) {
 
   std::vector<Suggestion> suggestions =
       delegate.GetVerifiedAutofillSuggestions(PHONE_HOME_WHOLE_NUMBER);
-  EXPECT_EQ(1ul, suggestions.size());
+  ASSERT_EQ(1ul, suggestions.size());
 
   Suggestion suggestion = suggestions[0];
   EXPECT_EQ(suggestion.main_text.value, u"+1 (234) 567-8910");
-  EXPECT_EQ(suggestion.labels.size(), 1ul);
-  EXPECT_EQ(suggestion.minor_texts.size(), 1ul);
+  ASSERT_EQ(suggestion.minor_texts.size(), 1ul);
 
   // Expect the payload to be populated properly.
   Suggestion::IdentityCredentialPayload payload =
@@ -155,7 +194,7 @@ TEST_F(ContentIdentityCredentialDelegateTest, SuggestPhoneNumbers) {
   EXPECT_EQ(payload.config_url, GURL("https://idp.example"));
 
   // Expect two fields to be available in the payload: emails and usernames.
-  EXPECT_EQ(payload.fields.size(), 2ul);
+  ASSERT_EQ(payload.fields.size(), 2ul);
 
   // Expect that email is previewed/filled because it was requested in the
   // conditional request.
@@ -188,7 +227,7 @@ TEST_F(ContentIdentityCredentialDelegateTest,
 
   std::vector<Suggestion> suggestions =
       delegate.GetVerifiedAutofillSuggestions(NAME_FULL);
-  EXPECT_EQ(0ul, suggestions.size());
+  ASSERT_EQ(0ul, suggestions.size());
 }
 
 TEST_F(ContentIdentityCredentialDelegateTest,
@@ -215,7 +254,7 @@ TEST_F(ContentIdentityCredentialDelegateTest,
 
   std::vector<Suggestion> suggestions =
       delegate.GetVerifiedAutofillSuggestions(EMAIL_ADDRESS);
-  EXPECT_EQ(0ul, suggestions.size());
+  ASSERT_EQ(0ul, suggestions.size());
 }
 
 TEST_F(ContentIdentityCredentialDelegateTest, GetSuggestionsForPassword) {
@@ -253,7 +292,7 @@ TEST_F(ContentIdentityCredentialDelegateTest, GetSuggestionsForPassword) {
 
   std::vector<Suggestion> suggestions =
       delegate.GetVerifiedAutofillSuggestions(PASSWORD);
-  EXPECT_EQ(1ul, suggestions.size());
+  ASSERT_EQ(1ul, suggestions.size());
 
   Suggestion suggestion = suggestions[0];
   EXPECT_EQ(suggestion.main_text.value, u"john@email.com");
@@ -268,6 +307,48 @@ TEST_F(ContentIdentityCredentialDelegateTest, GetSuggestionsForPassword) {
 
   // Expect no field to be available in the payload for PASSWORD.
   EXPECT_TRUE(payload.fields.empty());
+}
+
+TEST_F(ContentIdentityCredentialDelegateTest, GetProvidedNameRequest) {
+  MockFederatedAuthAutofillSource mock;
+
+  ContentIdentityCredentialDelegate delegate(
+      base::BindLambdaForTesting([&mock]() {
+        content::FederatedAuthAutofillSource* result = &mock;
+        return result;
+      }));
+
+  IdentityRequestAccountPtr account = CreateTestAccount();
+  // Use only "name" in the selective disclosure request.
+  account->identity_provider->disclosure_fields = {
+      content::IdentityRequestDialogDisclosureField::kName};
+  std::vector<IdentityRequestAccountPtr> accounts = {account};
+
+  EXPECT_CALL(mock, GetAutofillSuggestions).WillOnce(Return(accounts));
+
+  std::vector<Suggestion> suggestions =
+      delegate.GetVerifiedAutofillSuggestions(NAME_FULL);
+  ASSERT_EQ(1ul, suggestions.size());
+
+  Suggestion suggestion = suggestions[0];
+  EXPECT_EQ(suggestion.main_text.value, u"John");
+  EXPECT_EQ(suggestion.labels.size(), 0ul);
+  EXPECT_EQ(suggestion.minor_texts.size(), 1ul);
+  EXPECT_EQ(suggestion.icon, Suggestion::Icon::kAccount);
+
+  // Expect the payload to be populated properly.
+  Suggestion::IdentityCredentialPayload payload =
+      suggestion.GetPayload<Suggestion::IdentityCredentialPayload>();
+  EXPECT_EQ(payload.account_id, "id");
+  EXPECT_EQ(payload.config_url, GURL("https://idp.example"));
+
+  // Expect only one field to be available in the payload.
+  ASSERT_EQ(payload.fields.size(), 1ul);
+
+  // Expect that email is previewed/filled because it was requested in the
+  // conditional request.
+  EXPECT_TRUE(payload.fields.contains(NAME_FULL));
+  EXPECT_EQ(payload.fields[NAME_FULL], u"John");
 }
 
 }  // namespace

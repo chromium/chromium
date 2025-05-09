@@ -184,11 +184,15 @@
   </message>
 
   <!-- Autofill Identity Credentials Suggestions -->
-  <message name="IDS_AUTOFILL_IDENTITY_CREDENTIAL_MINOR_TEXT" desc="The minor text to display in an autofill suggestion (e.g. an email) that is verified by a third party website (e.g. google.com)." translateable="false">
+  <message name="IDS_AUTOFILL_IDENTITY_CREDENTIAL_PROVIDED_MINOR_TEXT" desc="The minor text to display in an autofill suggestion (e.g. an email) that is provided by a third party website (e.g. google.com)." translateable="false">
+    Provided by <ph name="IDP_ORIGIN">$1<ex>accounts.google.com</ex></ph>
+  </message>
+
+  <message name="IDS_AUTOFILL_IDENTITY_CREDENTIAL_VERIFIED_MINOR_TEXT" desc="The minor text to display in an autofill suggestion (e.g. an email) that is verified by a third party website (e.g. google.com)." translateable="false">
     Verified by <ph name="IDP_ORIGIN">$1<ex>accounts.google.com</ex></ph>
   </message>
 
-  <message name="IDS_AUTOFILL_IDENTITY_CREDENTIAL_EMAIL_LABEL" desc="The label text to display for verified autofill suggestions. If the user selects such email suggestion, the website receives cryptographic proof that the user has access to the email. The benefit for the user indicate in this message is that they can skip the manual process of receiving a confirmation email and pressing a link to prove ownership of the email." translateable="false">
+  <message name="IDS_AUTOFILL_IDENTITY_CREDENTIAL_VERIFIED_EMAIL_LABEL" desc="The label text to display for verified autofill suggestions. If the user selects such email suggestion, the website receives cryptographic proof that the user has access to the email. The benefit for the user indicate in this message is that they can skip the manual process of receiving a confirmation email and pressing a link to prove ownership of the email." translateable="false">
     Skip confirmation emails
   </message>
 

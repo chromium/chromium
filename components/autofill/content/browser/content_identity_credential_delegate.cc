@@ -17,6 +17,95 @@
 
 namespace autofill {
 
+namespace {
+
+Suggestion::IdentityCredentialPayload CreateFederatedProfile(
+    IdentityRequestAccountPtr account) {
+  Suggestion::IdentityCredentialPayload profile =
+      Suggestion::IdentityCredentialPayload(
+          account->identity_provider->idp_metadata.config_url, account->id);
+
+  if (!account->email.empty() &&
+      base::Contains(account->identity_provider->disclosure_fields,
+                     content::IdentityRequestDialogDisclosureField::kEmail)) {
+    profile.fields[EMAIL_ADDRESS] = base::UTF8ToUTF16(account->email);
+  }
+
+  if (!account->name.empty() &&
+      base::Contains(account->identity_provider->disclosure_fields,
+                     content::IdentityRequestDialogDisclosureField::kName)) {
+    profile.fields[NAME_FULL] = base::UTF8ToUTF16(account->name);
+  }
+
+  if (!account->phone.empty() &&
+      base::Contains(
+          account->identity_provider->disclosure_fields,
+          content::IdentityRequestDialogDisclosureField::kPhoneNumber)) {
+    profile.fields[PHONE_HOME_WHOLE_NUMBER] = base::UTF8ToUTF16(account->phone);
+  }
+
+  return profile;
+}
+
+std::optional<Suggestion> CreateVerifiedEmailSuggestion(
+    IdentityRequestAccountPtr account) {
+  Suggestion::IdentityCredentialPayload profile =
+      CreateFederatedProfile(account);
+
+  if (!profile.fields.contains(EMAIL_ADDRESS)) {
+    return std::nullopt;
+  }
+
+  Suggestion suggestion(SuggestionType::kIdentityCredential);
+  suggestion.main_text = Suggestion::Text(profile.fields[EMAIL_ADDRESS]);
+  suggestion.icon = Suggestion::Icon::kEmail;
+  suggestion.minor_texts.emplace_back(l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_IDENTITY_CREDENTIAL_VERIFIED_MINOR_TEXT,
+      base::UTF8ToUTF16(account->identity_provider->idp_for_display)));
+  suggestion.labels.push_back({Suggestion::Text(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_IDENTITY_CREDENTIAL_VERIFIED_EMAIL_LABEL))});
+  suggestion.payload = profile;
+
+  return suggestion;
+}
+
+Suggestion CreatePasswordSuggestion(IdentityRequestAccountPtr account) {
+  Suggestion suggestion(SuggestionType::kIdentityCredential);
+
+  suggestion.main_text = Suggestion::Text(base::UTF8ToUTF16(account->email));
+  suggestion.custom_icon = account->decoded_picture;
+  // TODO(crbug.com/410421491): support more context.
+  suggestion.labels.push_back({Suggestion::Text(l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_IDENTITY_CREDENTIAL_LABEL_TEXT,
+      base::UTF8ToUTF16(account->identity_provider->idp_for_display)))});
+  suggestion.payload = CreateFederatedProfile(account);
+
+  return suggestion;
+}
+
+std::optional<Suggestion> CreateProvidedFieldSuggestion(
+    IdentityRequestAccountPtr account,
+    const FieldType& field_type) {
+  Suggestion::IdentityCredentialPayload profile =
+      CreateFederatedProfile(account);
+
+  if (!profile.fields.contains(field_type)) {
+    return std::nullopt;
+  }
+
+  Suggestion suggestion(SuggestionType::kIdentityCredential);
+  suggestion.main_text = Suggestion::Text(profile.fields[field_type]);
+  suggestion.icon = Suggestion::Icon::kAccount;
+  suggestion.minor_texts.emplace_back(l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_IDENTITY_CREDENTIAL_PROVIDED_MINOR_TEXT,
+      base::UTF8ToUTF16(account->identity_provider->idp_for_display)));
+  suggestion.payload = profile;
+
+  return suggestion;
+}
+
+}  // namespace
+
 ContentIdentityCredentialDelegate::ContentIdentityCredentialDelegate(
     content::WebContents* web_contents)
     : ContentIdentityCredentialDelegate(base::BindRepeating(
@@ -37,10 +126,6 @@ ContentIdentityCredentialDelegate::~ContentIdentityCredentialDelegate() =
 std::vector<Suggestion>
 ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
     const FieldType& field_type) const {
-  if (!(field_type == PASSWORD || field_type == EMAIL_ADDRESS ||
-        field_type == NAME_FULL || field_type == PHONE_HOME_WHOLE_NUMBER)) {
-    return {};
-  }
   // TODO(crbug.com/380367784): reproduce and add a test to make sure this
   // works properly when FedCM is called from inner frames.
   content::FederatedAuthAutofillSource* source = source_.Run();
@@ -58,57 +143,33 @@ ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
 
   std::vector<Suggestion> suggestions;
   for (IdentityRequestAccountPtr account : *accounts) {
-    Suggestion suggestion(SuggestionType::kIdentityCredential);
-    auto payload = Suggestion::IdentityCredentialPayload(
-        account->identity_provider->idp_metadata.config_url, account->id);
-
-    if (!account->email.empty() &&
-        base::Contains(account->identity_provider->disclosure_fields,
-                       content::IdentityRequestDialogDisclosureField::kEmail)) {
-      payload.fields[EMAIL_ADDRESS] = base::UTF8ToUTF16(account->email);
-    }
-
-    if (!account->name.empty() &&
-        base::Contains(account->identity_provider->disclosure_fields,
-                       content::IdentityRequestDialogDisclosureField::kName)) {
-      payload.fields[NAME_FULL] = base::UTF8ToUTF16(account->name);
-    }
-
-    if (!account->phone.empty() &&
-        base::Contains(
-            account->identity_provider->disclosure_fields,
-            content::IdentityRequestDialogDisclosureField::kPhoneNumber)) {
-      payload.fields[PHONE_HOME_WHOLE_NUMBER] =
-          base::UTF8ToUTF16(account->phone);
-    }
-
-    if (field_type == EMAIL_ADDRESS || field_type == NAME_FULL ||
-        field_type == PHONE_HOME_WHOLE_NUMBER) {
-      if (!payload.fields.contains(field_type)) {
-        continue;
+    switch (field_type) {
+      case EMAIL_ADDRESS: {
+        if (std::optional<Suggestion> suggestion =
+                CreateVerifiedEmailSuggestion(account);
+            suggestion) {
+          suggestions.emplace_back(std::move(*suggestion));
+        }
+        break;
       }
-
-      suggestion.main_text = Suggestion::Text(payload.fields[field_type]);
-      // TODO(crbug.com/380367784): revisit the iconography of the suggestion
-      // if the field goes beyond email.
-      suggestion.icon = Suggestion::Icon::kEmail;
-      suggestion.minor_texts.emplace_back(l10n_util::GetStringFUTF16(
-          IDS_AUTOFILL_IDENTITY_CREDENTIAL_MINOR_TEXT,
-          base::UTF8ToUTF16(account->identity_provider->idp_for_display)));
-      suggestion.labels.push_back({Suggestion::Text(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_IDENTITY_CREDENTIAL_EMAIL_LABEL))});
-    } else if (field_type == PASSWORD) {
-      suggestion.main_text =
-          Suggestion::Text(base::UTF8ToUTF16(account->email));
-      suggestion.custom_icon = account->decoded_picture;
-      // TODO(crbug.com/410421491): support more context.
-      suggestion.labels.push_back({Suggestion::Text(l10n_util::GetStringFUTF16(
-          IDS_AUTOFILL_IDENTITY_CREDENTIAL_LABEL_TEXT,
-          base::UTF8ToUTF16(account->identity_provider->idp_for_display)))});
+      case NAME_FULL:
+        [[fallthrough]];  // Intentional fall through.
+      case PHONE_HOME_WHOLE_NUMBER: {
+        if (std::optional<Suggestion> suggestion =
+                CreateProvidedFieldSuggestion(account, field_type);
+            suggestion) {
+          suggestions.emplace_back(std::move(*suggestion));
+        }
+        break;
+      }
+      case PASSWORD: {
+        suggestions.emplace_back(CreatePasswordSuggestion(account));
+        break;
+      }
+      default:
+        // Unsupported field type.
+        return {};
     }
-
-    suggestion.payload = payload;
-    suggestions.push_back(std::move(suggestion));
   }
 
   return suggestions;
