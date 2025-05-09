@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/privacy_sandbox/dialog_origin_marker.h"
+#include "chrome/browser/ui/views/privacy_sandbox/dialog_view_context.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -159,9 +159,8 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
     views::Widget* dialog_widget = waiter.WaitIfNeededAndGet();
     auto* privacy_sandbox_dialog_view = static_cast<PrivacySandboxDialogView*>(
         dialog_widget->widget_delegate()->GetContentsView());
-    // Verify that the DialogOriginMarker is present for WebContents created
-    // within the dialog view context.
-    ASSERT_NE(privacy_sandbox::DialogOriginMarker::FromWebContents(
+    // Verify that the DialogViewContext is present from the WebContents.
+    ASSERT_NE(privacy_sandbox::DialogViewContext::FromWebContents(
                   privacy_sandbox_dialog_view->GetWebContentsForTesting()),
               nullptr);
   }
@@ -314,9 +313,8 @@ class PrivacySandboxDialogViewPrivacyPolicyBrowserTest
 
     auto* privacy_sandbox_dialog_view = static_cast<PrivacySandboxDialogView*>(
         dialog_widget->widget_delegate()->GetContentsView());
-    // Verify that the DialogOriginMarker is present for WebContents created
-    // within the dialog view context.
-    ASSERT_NE(privacy_sandbox::DialogOriginMarker::FromWebContents(
+    // Verify that the DialogViewContext is present from the WebContents.
+    ASSERT_NE(privacy_sandbox::DialogViewContext::FromWebContents(
                   privacy_sandbox_dialog_view->GetWebContentsForTesting()),
               nullptr);
 
@@ -417,9 +415,8 @@ class PrivacySandboxDialogViewAdsApiUxEnhancementsLearnMoreBrowserTest
 
     auto* privacy_sandbox_dialog_view = static_cast<PrivacySandboxDialogView*>(
         dialog_widget->widget_delegate()->GetContentsView());
-    // Verify that the DialogOriginMarker is present for WebContents created
-    // within the dialog view context.
-    ASSERT_NE(privacy_sandbox::DialogOriginMarker::FromWebContents(
+    // Verify that the DialogViewContext is present from the WebContents.
+    ASSERT_NE(privacy_sandbox::DialogViewContext::FromWebContents(
                   privacy_sandbox_dialog_view->GetWebContentsForTesting()),
               nullptr);
 

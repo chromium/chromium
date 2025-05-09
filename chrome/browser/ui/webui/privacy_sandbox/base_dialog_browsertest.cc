@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/privacy_sandbox/dialog_origin_marker.h"
+#include "chrome/browser/ui/views/privacy_sandbox/dialog_view_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -24,7 +24,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxBaseDialogTest, PageLoads) {
       browser()->tab_strip_model()->GetActiveWebContents();
   // Verify the marker is absent when the URL is loaded directly in a tab, as
   // opposed to being instantiated via the dialog view.
-  EXPECT_EQ(privacy_sandbox::DialogOriginMarker::FromWebContents(web_contents),
+  EXPECT_EQ(privacy_sandbox::DialogViewContext::FromWebContents(web_contents),
             nullptr);
   ASSERT_TRUE(web_contents);
   EXPECT_EQ(web_contents->GetLastCommittedURL(), kUrl);

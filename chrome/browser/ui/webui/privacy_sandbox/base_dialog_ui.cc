@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/webui/privacy_sandbox/base_dialog_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/views/privacy_sandbox/dialog_origin_marker.h"
+#include "chrome/browser/ui/views/privacy_sandbox/dialog_view_context.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/privacy_sandbox_resources.h"
 #include "chrome/grit/privacy_sandbox_resources_map.h"
@@ -30,11 +30,11 @@ BaseDialogUI::BaseDialogUI(content::WebUI* web_ui)
       {"adPrivacyPageTitle", IDS_SETTINGS_AD_PRIVACY_PAGE_TITLE}};
 
   source->AddLocalizedStrings(kStrings);
-  privacy_sandbox::DialogOriginMarker* origin_marker =
-      privacy_sandbox::DialogOriginMarker::FromWebContents(
+  privacy_sandbox::DialogViewContext* view_context =
+      privacy_sandbox::DialogViewContext::FromWebContents(
           web_ui->GetWebContents());
-  if (origin_marker) {
-    delegate_ = &origin_marker->GetDelegate();
+  if (view_context) {
+    delegate_ = &view_context->GetDelegate();
   }
 }
 
