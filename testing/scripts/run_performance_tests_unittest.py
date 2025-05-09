@@ -440,3 +440,7 @@ def _create_crossbench_args(browser='./chrome'):
       '--benchmark-display-name=speedometer3.crossbench',
       f'--browser={browser}',
   ]
+
+
+if __name__ == '__main__':
+  unittest.main()

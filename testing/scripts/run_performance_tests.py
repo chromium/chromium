@@ -31,7 +31,7 @@ could be histogram or graph json), and test_results.json.
 TESTING:
 To test changes to this script, please run unit tests:
 $ cd testing/scripts
-$ vpython3 -m unittest run_performance_tests_unittest.py
+$ vpython3 run_performance_tests_unittest.py
 
 Run end-to-end tests:
 $ cd tools/perf
