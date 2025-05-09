@@ -103,6 +103,32 @@ class AITestUtils {
         this};
   };
 
+  class MockLanguageModelAppendClient
+      : public blink::mojom::AILanguageModelAppendClient {
+   public:
+    MockLanguageModelAppendClient();
+    ~MockLanguageModelAppendClient() override;
+    MockLanguageModelAppendClient(const MockLanguageModelAppendClient&) =
+        delete;
+    MockLanguageModelAppendClient& operator=(
+        const MockLanguageModelAppendClient&) = delete;
+
+    mojo::PendingRemote<blink::mojom::AILanguageModelAppendClient>
+    BindNewPipeAndPassRemote();
+
+    MOCK_METHOD(void, OnAppendComplete, (), (override));
+
+    MOCK_METHOD(void, OnQuotaOverflow, (), (override));
+
+    MOCK_METHOD(void,
+                OnError,
+                (blink::mojom::ModelStreamingResponseStatus error),
+                (override));
+
+   private:
+    mojo::Receiver<blink::mojom::AILanguageModelAppendClient> receiver_{this};
+  };
+
   class FakeComponent {
    public:
     FakeComponent(std::string id, uint64_t total_bytes);

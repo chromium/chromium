@@ -13,6 +13,10 @@ dictionary LanguageModelPromptOptions {
   AbortSignal signal;
 };
 
+dictionary LanguageModelAppendOptions {
+  AbortSignal signal;
+};
+
 [
   Exposed(Window AIPromptAPI, Worker AIPromptAPIForWorkers),
   RuntimeEnabled=AIPromptAPI,
@@ -58,6 +62,15 @@ interface LanguageModel : EventTarget {
   ReadableStream promptStreaming(
     LanguageModelPromptInput input,
     optional LanguageModelPromptOptions options = {}
+  );
+  [
+    MeasureAs=LanguageModel_Append,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<undefined> append(
+    LanguageModelPromptInput input,
+    optional LanguageModelAppendOptions options = {}
   );
 
   [

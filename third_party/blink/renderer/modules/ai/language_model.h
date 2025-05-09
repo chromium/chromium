@@ -9,6 +9,7 @@
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_append_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_clone_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_expected_input.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_prompt_options.h"
@@ -70,6 +71,10 @@ class LanguageModel final : public EventTarget, public ExecutionContextClient {
                                   const V8LanguageModelPromptInput* input,
                                   const LanguageModelPromptOptions* options,
                                   ExceptionState& exception_state);
+  ScriptPromise<IDLUndefined> append(ScriptState* script_state,
+                                     const V8LanguageModelPromptInput* input,
+                                     const LanguageModelAppendOptions* options,
+                                     ExceptionState& exception_state);
   ScriptPromise<IDLDouble> measureInputUsage(
       ScriptState* script_state,
       const V8LanguageModelPromptInput* input,

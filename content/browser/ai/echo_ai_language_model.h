@@ -30,6 +30,9 @@ class EchoAILanguageModel : public blink::mojom::AILanguageModel {
               on_device_model::mojom::ResponseConstraintPtr constraint,
               mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
                   pending_responder) override;
+  void Append(std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
+              mojo::PendingRemote<blink::mojom::AILanguageModelAppendClient>
+                  client) override;
   void Fork(
       mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
           client) override;

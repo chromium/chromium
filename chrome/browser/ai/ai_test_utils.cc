@@ -37,6 +37,17 @@ mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
 AITestUtils::MockCreateLanguageModelClient::BindNewPipeAndPassRemote() {
   return receiver_.BindNewPipeAndPassRemote();
 }
+
+AITestUtils::MockLanguageModelAppendClient::MockLanguageModelAppendClient() =
+    default;
+AITestUtils::MockLanguageModelAppendClient::~MockLanguageModelAppendClient() =
+    default;
+
+mojo::PendingRemote<blink::mojom::AILanguageModelAppendClient>
+AITestUtils::MockLanguageModelAppendClient::BindNewPipeAndPassRemote() {
+  return receiver_.BindNewPipeAndPassRemote();
+}
+
 AITestUtils::FakeComponent::FakeComponent(std::string id, uint64_t total_bytes)
     : id_(std::move(id)), total_bytes_(total_bytes) {}
 

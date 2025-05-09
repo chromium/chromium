@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
@@ -84,6 +85,9 @@ const char kExpectedFormattedInitialPrompts[] =
      "U: How are you?\n"
      "M: I'm fine, thank you, and you?\n"
      "U: I'm fine too.\n");
+
+const char kTestAppendPrompt[] = "Test append prompt";
+const char kExpectedFormattedAppendPrompt[] = "U: Test append prompt\n";
 
 SkBitmap CreateTestBitmap(int width, int height) {
   SkBitmap bitmap;
@@ -1055,6 +1059,109 @@ TEST_F(AILanguageModelTest, MultimodalInput) {
   mock_session->Prompt(std::move(input), /*constraint=*/nullptr,
                        mock_responder.BindNewPipeAndPassRemote());
   run_loop.Run();
+}
+
+TEST_F(AILanguageModelTest, Append) {
+  SetupMockOptimizationGuideKeyedService();
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce([&](optimization_guide::ModelBasedCapabilityKey feature,
+                    const std::optional<
+                        optimization_guide::SessionConfigParams>&
+                        config_params) {
+        auto session = std::make_unique<
+            testing::NiceMock<optimization_guide::MockSession>>();
+
+        SetUpMockSession(*session);
+
+        ON_CALL(*session, GetContextSizeInTokens(_, _))
+            .WillByDefault(
+                [&](MultimodalMessageReadView request_metadata,
+                    optimization_guide::
+                        OptimizationGuideModelSizeInTokenCallback callback) {
+                  std::move(callback).Run(1);
+                });
+        ON_CALL(*session, SetInput(_, _))
+            .WillByDefault(
+                [&, is_append = true](MultimodalMessage request_metadata,
+                                      SetInputCallback callback) mutable {
+                  if (is_append) {
+                    is_append = false;
+                    EXPECT_THAT(ToString(request_metadata),
+                                kExpectedFormattedAppendPrompt);
+                    std::move(callback).Run(1ul);
+                  } else {
+                    EXPECT_THAT(ToString(request_metadata),
+                                base::StrCat({kExpectedFormattedAppendPrompt,
+                                              kExpectedFormattedTestPrompt}));
+                  }
+                });
+
+        EXPECT_CALL(*session, ExecuteModelWithResponseConstraint(_, _, _))
+            .WillOnce(
+                [&](const google::protobuf::MessageLite& request_metadata,
+                    on_device_model::mojom::ResponseConstraintPtr constraint,
+                    optimization_guide::
+                        OptimizationGuideModelExecutionResultStreamingCallback
+                            callback) {
+                  EXPECT_THAT(request_metadata.ByteSizeLong(), 0);
+                  callback.Run(
+                      CreateExecutionResult("OK", /*is_complete=*/true,
+                                            /*input_token_count=*/1u,
+                                            /*output_token_count=*/1u));
+                });
+        return session;
+      });
+
+  base::test::TestFuture<mojo::PendingRemote<blink::mojom::AILanguageModel>>
+      session_future;
+  AITestUtils::MockCreateLanguageModelClient mock_create_language_model_client;
+
+  EXPECT_CALL(mock_create_language_model_client, OnResult(_, _))
+      .WillOnce(
+          [&](mojo::PendingRemote<blink::mojom::AILanguageModel> language_model,
+              blink::mojom::AILanguageModelInstanceInfoPtr info) {
+            EXPECT_TRUE(language_model);
+            EXPECT_EQ(info->input_quota,
+                      AITestUtils::GetFakeTokenLimits().max_context_tokens);
+            EXPECT_EQ(info->input_usage, 0ul);
+            session_future.SetValue(
+                mojo::PendingRemote<blink::mojom::AILanguageModel>(
+                    std::move(language_model)));
+          });
+
+  mojo::Remote<blink::mojom::AIManager> mock_remote = GetAIManagerRemote();
+
+  mock_remote->CreateLanguageModel(
+      mock_create_language_model_client.BindNewPipeAndPassRemote(),
+      blink::mojom::AILanguageModelCreateOptions::New(
+          /*sampling_params=*/nullptr,
+          /*initial_prompts=*/
+          std::vector<blink::mojom::AILanguageModelPromptPtr>(),
+          /*expected_inputs=*/std::nullopt));
+
+  auto mock_responder = std::make_unique<
+      testing::NiceMock<AITestUtils::MockModelStreamingResponder>>();
+  base::RunLoop responder_run_loop;
+  EXPECT_CALL(*mock_responder, OnCompletion(_))
+      .WillOnce(testing::Invoke(
+          [&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
+            responder_run_loop.Quit();
+          }));
+  auto mock_append_client = std::make_unique<
+      testing::NiceMock<AITestUtils::MockLanguageModelAppendClient>>();
+  base::RunLoop append_run_loop;
+  EXPECT_CALL(*mock_append_client, OnAppendComplete()).WillOnce([&]() {
+    append_run_loop.Quit();
+  });
+  mojo::Remote<blink::mojom::AILanguageModel> mock_session(
+      session_future.Take());
+  mock_session->Append(MakeInput(kTestAppendPrompt),
+                       mock_append_client->BindNewPipeAndPassRemote());
+  append_run_loop.Run();
+  mock_session->Prompt(MakeInput(kTestPrompt),
+                       /*constraint=*/nullptr,
+                       mock_responder->BindNewPipeAndPassRemote());
+  responder_run_loop.Run();
 }
 
 // Tests `AILanguageModel::Context` creation without initial prompts.

@@ -130,6 +130,9 @@ class AILanguageModel : public AIContextBoundObject,
               on_device_model::mojom::ResponseConstraintPtr constraint,
               mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
                   pending_responder) override;
+  void Append(std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
+              mojo::PendingRemote<blink::mojom::AILanguageModelAppendClient>
+                  client) override;
   void Fork(
       mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
           client) override;
@@ -151,6 +154,10 @@ class AILanguageModel : public AIContextBoundObject,
   mojo::PendingRemote<blink::mojom::AILanguageModel> TakePendingRemote();
 
  private:
+  void AppendItemGetInputSizeCompletion(
+      std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
+      mojo::Remote<blink::mojom::AILanguageModelAppendClient> client,
+      std::optional<uint32_t> result);
   void PromptGetInputSizeCompletion(
       mojo::RemoteSetElementId responder_id,
       Context::ContextItem current_item,

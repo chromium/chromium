@@ -4857,6 +4857,7 @@ enum WebFeature {
   kEditContextTextFormatUpdateFireEvent = 5553,
   kEditContextTextFormatUpdateTextFormatThicknessOrStyleNotNone = 5554,
   kC2PAManifest = 5555,
+  kLanguageModel_Append = 5556,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

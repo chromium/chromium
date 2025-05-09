@@ -11,8 +11,10 @@
 #include "base/types/expected_macros.h"
 #include "base/types/pass_key.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom-blink.h"
+#include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_prompt_dict.h"
@@ -169,6 +171,72 @@ class MeasureInputUsageClient
   Member<LanguageModel> language_model_;
   HeapMojoReceiver<mojom::blink::AILanguageModelMeasureInputUsageClient,
                    MeasureInputUsageClient>
+      receiver_;
+};
+
+class AppendClient : public GarbageCollected<AppendClient>,
+                     public mojom::blink::AILanguageModelAppendClient,
+                     public AIContextObserver<IDLUndefined> {
+ public:
+  AppendClient(ScriptState* script_state,
+               LanguageModel* language_model,
+               ScriptPromiseResolver<IDLUndefined>* resolver,
+               WTF::Vector<mojom::blink::AILanguageModelPromptPtr> prompts,
+               AbortSignal* signal,
+               base::RepeatingClosure overflow_callback,
+               base::PassKey<LanguageModel>)
+      : AIContextObserver(script_state, language_model, resolver, signal),
+        language_model_(language_model),
+        overflow_callback_(overflow_callback),
+        receiver_(this, language_model->GetExecutionContext()) {
+    mojo::PendingRemote<mojom::blink::AILanguageModelAppendClient>
+        client_remote;
+    receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
+                   language_model->GetTaskRunner());
+    language_model_->GetAILanguageModelRemote()->Append(
+        std::move(prompts), std::move(client_remote));
+  }
+  ~AppendClient() override = default;
+
+  AppendClient(const AppendClient&) = delete;
+  AppendClient& operator=(const AppendClient&) = delete;
+
+  void Trace(Visitor* visitor) const override {
+    AIContextObserver::Trace(visitor);
+    visitor->Trace(language_model_);
+    visitor->Trace(receiver_);
+  }
+
+  // mojom::blink::AILanguageModelAppendClient implementation.
+  void OnAppendComplete() override {
+    if (!GetResolver()) {
+      return;
+    }
+
+    GetResolver()->Resolve();
+    Cleanup();
+  }
+
+  void OnQuotaOverflow() override {
+    if (overflow_callback_) {
+      overflow_callback_.Run();
+    }
+  }
+
+  void OnError(ModelStreamingResponseStatus status) override {
+    if (GetResolver()) {
+      GetResolver()->Reject(
+          ConvertModelStreamingResponseErrorToDOMException(status));
+    }
+    Cleanup();
+  }
+
+  void ResetReceiver() override { receiver_.reset(); }
+
+ private:
+  Member<LanguageModel> language_model_;
+  base::RepeatingClosure overflow_callback_;
+  HeapMojoReceiver<mojom::blink::AILanguageModelAppendClient, AppendClient>
       receiver_;
 };
 
@@ -411,6 +479,54 @@ LanguageModel::ValidateAndProcessPromptInput(
       .processed_constraint = std::move(constraint),
       .processed_prompts = std::move(prompts).value(),
   };
+}
+
+ScriptPromise<IDLUndefined> LanguageModel::append(
+    ScriptState* script_state,
+    const V8LanguageModelPromptInput* input,
+    const LanguageModelAppendOptions* options,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    ThrowInvalidContextException(exception_state);
+    return ScriptPromise<IDLUndefined>();
+  }
+
+  ScriptPromiseResolver<IDLUndefined>* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+  auto promise = resolver->Promise();
+
+  // The API impl only accepts a string by default for now, more to come soon!
+  if (!input->IsString() &&
+      !RuntimeEnabledFeatures::AIPromptAPIMultimodalInputEnabled()) {
+    exception_state.ThrowTypeError("Input type not supported");
+    return promise;
+  }
+
+  auto prompts = BuildPrompts(input, script_state, exception_state,
+                              GetExecutionContext(), input_types_);
+  if (!prompts.has_value()) {
+    // `BuildPrompts` will throw the exception if it fails.
+    resolver->Reject();
+    return promise;
+  }
+
+  if (!language_model_remote_) {
+    ThrowSessionDestroyedException(exception_state);
+    return promise;
+  }
+
+  AbortSignal* signal = options->getSignalOr(nullptr);
+  if (HandleAbortSignal(signal, script_state, exception_state)) {
+    return promise;
+  }
+
+  MakeGarbageCollected<AppendClient>(
+      script_state, this, resolver, std::move(prompts).value(), signal,
+      WTF::BindRepeating(&LanguageModel::OnQuotaOverflow,
+                         WrapWeakPersistent(this)),
+      base::PassKey<LanguageModel>());
+
+  return promise;
 }
 
 ScriptPromise<LanguageModel> LanguageModel::clone(

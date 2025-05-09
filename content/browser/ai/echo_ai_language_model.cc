@@ -106,6 +106,14 @@ void EchoAILanguageModel::Prompt(
       base::Seconds(1));
 }
 
+void EchoAILanguageModel::Append(
+    std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
+    mojo::PendingRemote<blink::mojom::AILanguageModelAppendClient> client) {
+  mojo::Remote<blink::mojom::AILanguageModelAppendClient> client_remote(
+      std::move(client));
+  client_remote->OnAppendComplete();
+}
+
 void EchoAILanguageModel::Fork(
     mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
         client) {

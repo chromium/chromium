@@ -5730,6 +5730,7 @@ interface LanguageModel : EventTarget
     getter onquotaoverflow
     getter temperature
     getter topK
+    method append
     method clone
     method constructor
     method destroy

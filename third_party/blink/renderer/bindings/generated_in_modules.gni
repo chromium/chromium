@@ -692,6 +692,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_language_detector_create_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_language_detector_detect_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_language_detector_detect_options.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_language_model_append_options.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_language_model_append_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_language_model_clone_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_language_model_clone_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_language_model_create_core_options.cc",

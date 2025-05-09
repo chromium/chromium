@@ -347,6 +347,66 @@ void AILanguageModel::ModelExecutionCallback(
   }
 }
 
+void AILanguageModel::AppendItemGetInputSizeCompletion(
+    std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
+    mojo::Remote<blink::mojom::AILanguageModelAppendClient> client_remote,
+    std::optional<uint32_t> result) {
+  if (!client_remote.is_connected()) {
+    return;
+  }
+  if (!session_) {
+    // If the session is destroyed before this callback is invoked, we should
+    // not do anything further.
+    client_remote->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
+    return;
+  }
+
+  if (!result.has_value()) {
+    client_remote->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorRetryableError);
+    return;
+  }
+
+  Context::ContextItem item;
+  item.prompts = std::move(prompts);
+  item.tokens = result.value();
+  switch (context_->ReserveSpace(item.tokens)) {
+    case Context::SpaceReservationResult::kSufficientSpace:
+      context_->AddContextItem(std::move(item));
+      break;
+    case Context::SpaceReservationResult::kSpaceMadeAvailable:
+      client_remote->OnQuotaOverflow();
+      context_->AddContextItem(std::move(item));
+      break;
+    case Context::SpaceReservationResult::kInsufficientSpace:
+      client_remote->OnError(
+          blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
+      return;
+  }
+
+  // TODO(crbug.com/409355678): currently the append cannot be aborted once it's
+  // sent to the `session_`, we should improve this so the `SetInput` call can
+  // be cancelled.
+  session_->SetInput(
+      context_->MakeRequest(session_->GetCapabilities()),
+      base::BindOnce(
+          [](mojo::Remote<blink::mojom::AILanguageModelAppendClient>
+                 client_remote,
+             base::expected<
+                 size_t,
+                 optimization_guide::OptimizationGuideModelExecutionError>
+                 result) {
+            if (!result.has_value()) {
+              client_remote->OnError(
+                  AIUtils::ConvertModelExecutionError(result.error().error()));
+            } else {
+              client_remote->OnAppendComplete();
+            }
+          },
+          std::move(client_remote)));
+}
+
 void AILanguageModel::PromptGetInputSizeCompletion(
     mojo::RemoteSetElementId responder_id,
     Context::ContextItem current_item,
@@ -425,6 +485,28 @@ void AILanguageModel::Prompt(
       base::BindOnce(&AILanguageModel::PromptGetInputSizeCompletion,
                      weak_ptr_factory_.GetWeakPtr(), responder_id,
                      std::move(item), std::move(constraint)));
+}
+
+void AILanguageModel::Append(
+    std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
+    mojo::PendingRemote<blink::mojom::AILanguageModelAppendClient> client) {
+  // Build the request to calculate the token size, the prompts will only be
+  // added to the context in the completion callback.
+  MultimodalMessage request = EmptyMessage();
+  for (auto& prompt : prompts) {
+    AddPromptToField(*prompt,
+                     request.edit().MutableRepeatedField(
+                         PromptApiRequest::kPromptHistoryFieldNumber),
+                     session_->GetCapabilities());
+  }
+
+  mojo::Remote<blink::mojom::AILanguageModelAppendClient> client_remote(
+      std::move(client));
+  session_->GetContextSizeInTokens(
+      request.read(),
+      base::BindOnce(&AILanguageModel::AppendItemGetInputSizeCompletion,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(prompts),
+                     std::move(client_remote)));
 }
 
 void AILanguageModel::Fork(
