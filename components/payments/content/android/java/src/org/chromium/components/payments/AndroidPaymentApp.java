@@ -209,8 +209,10 @@ public class AndroidPaymentApp extends PaymentApp
 
         Intent isReadyToPayIntent =
                 WebPaymentIntentHelper.createIsReadyToPayIntent(
-                        /* packageName= */ mPackageName,
-                        /* serviceName= */ mIsReadyToPayServiceName,
+                        /* callerPackageName= */ ContextUtils.getApplicationContext()
+                                .getPackageName(),
+                        /* paymentAppPackageName= */ mPackageName,
+                        /* paymentAppServiceName= */ mIsReadyToPayServiceName,
                         removeUrlScheme(origin),
                         removeUrlScheme(iframeOrigin),
                         certificateChain,
@@ -389,7 +391,10 @@ public class AndroidPaymentApp extends PaymentApp
                     new PaymentDetailsUpdateConnection(
                             ContextUtils.getApplicationContext(),
                             WebPaymentIntentHelper.createPaymentDetailsUpdateServiceIntent(
-                                    mPackageName, mPaymentDetailsUpdateServiceName),
+                                    /* callerPackageName= */ ContextUtils.getApplicationContext()
+                                            .getPackageName(),
+                                    mPackageName,
+                                    mPaymentDetailsUpdateServiceName),
                             new PaymentDetailsUpdateService().getBinder());
             mPaymentDetailsUpdateConnection.connectToService();
         }

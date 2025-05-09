@@ -121,8 +121,8 @@ public class WebPaymentIntentHelperTest {
 
         Intent intent =
                 WebPaymentIntentHelper.createPayIntent(
-                        "package.name",
-                        "activity.name",
+                        "payment.app.package.name",
+                        "payment.app.activity.name",
                         "payment.request.id",
                         "merchant.name",
                         "schemeless.origin",
@@ -136,8 +136,8 @@ public class WebPaymentIntentHelperTest {
                         shippingOptions,
                         /* removeDeprecatedFields= */ false);
         Assert.assertEquals(WebPaymentIntentHelper.ACTION_PAY, intent.getAction());
-        Assert.assertEquals("package.name", intent.getComponent().getPackageName());
-        Assert.assertEquals("activity.name", intent.getComponent().getClassName());
+        Assert.assertEquals("payment.app.package.name", intent.getComponent().getPackageName());
+        Assert.assertEquals("payment.app.activity.name", intent.getComponent().getClassName());
         Bundle bundle = intent.getExtras();
         Assert.assertNotNull(bundle);
         Assert.assertEquals(
@@ -240,8 +240,8 @@ public class WebPaymentIntentHelperTest {
 
         Intent intent =
                 WebPaymentIntentHelper.createPayIntent(
-                        "package.name",
-                        "activity.name",
+                        "payment.app.package.name",
+                        "payment.app.activity.name",
                         "payment.request.id",
                         "merchant.name",
                         "schemeless.origin",
@@ -313,8 +313,8 @@ public class WebPaymentIntentHelperTest {
 
         Intent intent =
                 WebPaymentIntentHelper.createPayIntent(
-                        "package.name",
-                        "activity.name",
+                        "payment.app.package.name",
+                        "payment.app.activity.name",
                         "payment.request.id",
                         "merchant.name",
                         "schemeless.origin",
@@ -345,9 +345,9 @@ public class WebPaymentIntentHelperTest {
     @Test
     @SmallTest
     @Feature({"Payments"})
-    public void nullPackageNameExceptionTest() throws Throwable {
+    public void nullPaymentAppPackageNameExceptionTest() throws Throwable {
         thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("packageName should not be null or empty.");
+        thrown.expectMessage("paymentAppPackageName should not be null or empty.");
 
         Map<String, PaymentMethodData> methodDataMap = new HashMap<String, PaymentMethodData>();
         PaymentMethodData bobPayMethodData = new PaymentMethodData("method", "null");
@@ -356,8 +356,8 @@ public class WebPaymentIntentHelperTest {
         PaymentItem total = new PaymentItem(new PaymentCurrencyAmount("CAD", "200"));
 
         WebPaymentIntentHelper.createPayIntent(
-                /* packageName= */ null,
-                "activity.name",
+                /* paymentAppPackageName= */ null,
+                "payment.app.activity.name",
                 "payment.request.id",
                 "merchant.name",
                 "schemeless.origin",
@@ -377,7 +377,7 @@ public class WebPaymentIntentHelperTest {
     @Feature({"Payments"})
     public void nullActivityNameExceptionTest() throws Throwable {
         thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("activityName should not be null or empty.");
+        thrown.expectMessage("paymentAppActivityName should not be null or empty.");
 
         Map<String, PaymentMethodData> methodDataMap = new HashMap<String, PaymentMethodData>();
         PaymentMethodData bobPayMethodData = new PaymentMethodData("method", "null");
@@ -386,8 +386,8 @@ public class WebPaymentIntentHelperTest {
         PaymentItem total = new PaymentItem(new PaymentCurrencyAmount("CAD", "200"));
 
         WebPaymentIntentHelper.createPayIntent(
-                "package.name",
-                /* activityName= */ null,
+                "payment.app.package.name",
+                /* paymentAppActivityName= */ null,
                 "payment.request.id",
                 "merchant.name",
                 "schemeless.origin",
@@ -416,8 +416,8 @@ public class WebPaymentIntentHelperTest {
         PaymentItem total = new PaymentItem(new PaymentCurrencyAmount("CAD", "200"));
 
         WebPaymentIntentHelper.createPayIntent(
-                "package.name",
-                "activity.name",
+                "payment.app.package.name",
+                "payment.app.activity.name",
                 /* id= */ null,
                 "merchant.name",
                 "schemeless.origin",
@@ -446,8 +446,8 @@ public class WebPaymentIntentHelperTest {
         PaymentItem total = new PaymentItem(new PaymentCurrencyAmount("CAD", "200"));
 
         WebPaymentIntentHelper.createPayIntent(
-                "package.name",
-                "activity.name",
+                "payment.app.package.name",
+                "payment.app.activity.name",
                 /* id= */ "",
                 "merchant.name",
                 "schemeless.origin",
@@ -476,8 +476,8 @@ public class WebPaymentIntentHelperTest {
         PaymentItem total = new PaymentItem(new PaymentCurrencyAmount("CAD", "200"));
 
         WebPaymentIntentHelper.createPayIntent(
-                "package.name",
-                "activity.name",
+                "payment.app.package.name",
+                "payment.app.activity.name",
                 "id",
                 /* merchantName= */ null,
                 "schemeless.origin",
@@ -503,8 +503,8 @@ public class WebPaymentIntentHelperTest {
         PaymentItem total = new PaymentItem(new PaymentCurrencyAmount("CAD", "200"));
 
         WebPaymentIntentHelper.createPayIntent(
-                "package.name",
-                "activity.name",
+                "payment.app.package.name",
+                "payment.app.activity.name",
                 "id",
                 /* merchantName= */ "",
                 "schemeless.origin",
@@ -533,8 +533,8 @@ public class WebPaymentIntentHelperTest {
         PaymentItem total = new PaymentItem(new PaymentCurrencyAmount("CAD", "200"));
 
         WebPaymentIntentHelper.createPayIntent(
-                "package.name",
-                "activity.name",
+                "payment.app.package.name",
+                "payment.app.activity.name",
                 "id",
                 "merchant.name",
                 /* schemelessOrigin= */ null,
@@ -563,8 +563,8 @@ public class WebPaymentIntentHelperTest {
         PaymentItem total = new PaymentItem(new PaymentCurrencyAmount("CAD", "200"));
 
         WebPaymentIntentHelper.createPayIntent(
-                "package.name",
-                "activity.name",
+                "payment.app.package.name",
+                "payment.app.activity.name",
                 "id",
                 "merchant.name",
                 /* schemelessOrigin= */ "",
@@ -593,8 +593,8 @@ public class WebPaymentIntentHelperTest {
         PaymentItem total = new PaymentItem(new PaymentCurrencyAmount("CAD", "200"));
 
         WebPaymentIntentHelper.createPayIntent(
-                "package.name",
-                "activity.name",
+                "payment.app.package.name",
+                "payment.app.activity.name",
                 "id",
                 "merchant.name",
                 "schemeless.origin",
@@ -623,8 +623,8 @@ public class WebPaymentIntentHelperTest {
         PaymentItem total = new PaymentItem(new PaymentCurrencyAmount("CAD", "200"));
 
         WebPaymentIntentHelper.createPayIntent(
-                "package.name",
-                "activity.name",
+                "payment.app.package.name",
+                "payment.app.activity.name",
                 "id",
                 "merchant.name",
                 "schemeless.origin",
@@ -655,8 +655,8 @@ public class WebPaymentIntentHelperTest {
         PaymentItem total = new PaymentItem(new PaymentCurrencyAmount("CAD", "200"));
 
         WebPaymentIntentHelper.createPayIntent(
-                "package.name",
-                "activity.name",
+                "payment.app.package.name",
+                "payment.app.activity.name",
                 "id",
                 "merchant.name",
                 "schemeless.origin",
@@ -685,8 +685,8 @@ public class WebPaymentIntentHelperTest {
         PaymentItem total = new PaymentItem(new PaymentCurrencyAmount("CAD", "200"));
 
         WebPaymentIntentHelper.createPayIntent(
-                "package.name",
-                "activity.name",
+                "payment.app.package.name",
+                "payment.app.activity.name",
                 "payment.request.id",
                 "merchant.name",
                 "schemeless.origin",
@@ -712,8 +712,8 @@ public class WebPaymentIntentHelperTest {
         PaymentItem total = new PaymentItem(new PaymentCurrencyAmount("CAD", "200"));
 
         WebPaymentIntentHelper.createPayIntent(
-                "package.name",
-                "activity.name",
+                "payment.app.package.name",
+                "payment.app.activity.name",
                 "payment.request.id",
                 "merchant.name",
                 "schemeless.origin",
@@ -741,8 +741,8 @@ public class WebPaymentIntentHelperTest {
         PaymentItem total = new PaymentItem(new PaymentCurrencyAmount("CAD", "200"));
 
         WebPaymentIntentHelper.createPayIntent(
-                "package.name",
-                "activity.name",
+                "payment.app.package.name",
+                "payment.app.activity.name",
                 "payment.request.id",
                 "merchant.name",
                 "schemeless.origin",
@@ -769,8 +769,8 @@ public class WebPaymentIntentHelperTest {
         methodDataMap.put("bobPay", bobPayMethodData);
 
         WebPaymentIntentHelper.createPayIntent(
-                "package.name",
-                "activity.name",
+                "payment.app.package.name",
+                "payment.app.activity.name",
                 "id",
                 "merchant.name",
                 "schemeless.origin",
@@ -804,8 +804,8 @@ public class WebPaymentIntentHelperTest {
         modifiers.put("bobPay", null);
 
         WebPaymentIntentHelper.createPayIntent(
-                "package.name",
-                "activity.name",
+                "payment.app.package.name",
+                "payment.app.activity.name",
                 "payment.request.id",
                 "merchant.name",
                 "schemeless.origin",
@@ -1129,8 +1129,9 @@ public class WebPaymentIntentHelperTest {
 
         Intent intent =
                 WebPaymentIntentHelper.createIsReadyToPayIntent(
-                        "package.name",
-                        "service.name",
+                        "caller.package.name",
+                        "payment.app.package.name",
+                        "payment.app.service.name",
                         "schemeless.origin",
                         "schemeless.iframe.origin",
                         certificateChain,
@@ -1138,10 +1139,13 @@ public class WebPaymentIntentHelperTest {
                         /* clearIdFields= */ false,
                         /* removeDeprecatedFields= */ false);
         Assert.assertEquals(WebPaymentIntentHelper.ACTION_IS_READY_TO_PAY, intent.getAction());
-        Assert.assertEquals("package.name", intent.getComponent().getPackageName());
-        Assert.assertEquals("service.name", intent.getComponent().getClassName());
+        Assert.assertEquals("payment.app.package.name", intent.getComponent().getPackageName());
+        Assert.assertEquals("payment.app.service.name", intent.getComponent().getClassName());
         Bundle bundle = intent.getExtras();
         Assert.assertNotNull(bundle);
+        Assert.assertEquals(
+                "caller.package.name",
+                bundle.get(WebPaymentIntentHelper.EXTRA_CALLER_PACKAGE_NAME));
         Assert.assertEquals(
                 "schemeless.origin", bundle.get(WebPaymentIntentHelper.EXTRA_TOP_ORIGIN));
         Assert.assertEquals(
@@ -1181,8 +1185,9 @@ public class WebPaymentIntentHelperTest {
 
         Intent intent =
                 WebPaymentIntentHelper.createIsReadyToPayIntent(
-                        "package.name",
-                        "service.name",
+                        "caller.package.name",
+                        "payment.app.package.name",
+                        "payment.app.service.name",
                         "schemeless.origin",
                         "schemeless.iframe.origin",
                         certificateChain,
@@ -1222,8 +1227,9 @@ public class WebPaymentIntentHelperTest {
 
         Intent intent =
                 WebPaymentIntentHelper.createIsReadyToPayIntent(
-                        "package.name",
-                        "service.name",
+                        "caller.package.name",
+                        "payment.app.package.name",
+                        "payment.app.service.name",
                         "schemeless.origin",
                         "schemeless.iframe.origin",
                         certificateChain,
@@ -1257,8 +1263,9 @@ public class WebPaymentIntentHelperTest {
 
         Intent intent =
                 WebPaymentIntentHelper.createIsReadyToPayIntent(
-                        "package.name",
-                        "service.name",
+                        "caller.package.name",
+                        "payment.app.package.name",
+                        "payment.app.service.name",
                         "schemeless.origin",
                         "schemeless.iframe.origin",
                         certificateChain,
@@ -1266,8 +1273,8 @@ public class WebPaymentIntentHelperTest {
                         /* clearIdFields= */ true,
                         /* removeDeprecatedFields= */ false);
         Assert.assertEquals(WebPaymentIntentHelper.ACTION_IS_READY_TO_PAY, intent.getAction());
-        Assert.assertEquals("package.name", intent.getComponent().getPackageName());
-        Assert.assertEquals("service.name", intent.getComponent().getClassName());
+        Assert.assertEquals("payment.app.package.name", intent.getComponent().getPackageName());
+        Assert.assertEquals("payment.app.service.name", intent.getComponent().getClassName());
         Bundle bundle = intent.getExtras();
         Assert.assertNotNull(bundle);
         Assert.assertEquals(null, bundle.get(WebPaymentIntentHelper.EXTRA_TOP_ORIGIN));
@@ -1285,18 +1292,43 @@ public class WebPaymentIntentHelperTest {
     @Test
     @SmallTest
     @Feature({"Payments"})
-    public void createIsReadyToPayIntentNullPackageNameExceptionTestWithIdentity()
+    public void createIsReadyToPayIntentNullCallerPackageNameExceptionTestWithIdentity()
             throws Throwable {
         thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("packageName should not be null or empty.");
+        thrown.expectMessage("callerPackageName should not be null or empty.");
 
         Map<String, PaymentMethodData> methodDataMap = new HashMap<String, PaymentMethodData>();
         PaymentMethodData bobPayMethodData = new PaymentMethodData("method", "null");
         methodDataMap.put("bobPay", bobPayMethodData);
 
         WebPaymentIntentHelper.createIsReadyToPayIntent(
-                /* packageName= */ null,
-                "service.name",
+                /* callerPackageName= */ null,
+                "payment.app.package.name",
+                "payment.app.service.name",
+                "schemeless.origin",
+                "schemeless.iframe.origin",
+                /* certificateChain= */ null,
+                methodDataMap,
+                /* clearIdFields= */ false,
+                /* removeDeprecatedFields= */ false);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Payments"})
+    public void createIsReadyToPayIntentNullPaymentAppPackageNameExceptionTestWithIdentity()
+            throws Throwable {
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("paymentAppPackageName should not be null or empty.");
+
+        Map<String, PaymentMethodData> methodDataMap = new HashMap<String, PaymentMethodData>();
+        PaymentMethodData bobPayMethodData = new PaymentMethodData("method", "null");
+        methodDataMap.put("bobPay", bobPayMethodData);
+
+        WebPaymentIntentHelper.createIsReadyToPayIntent(
+                "caller.package.name",
+                /* paymentAppPackageName= */ null,
+                "payment.app.service.name",
                 "schemeless.origin",
                 "schemeless.iframe.origin",
                 /* certificateChain= */ null,
@@ -1311,15 +1343,16 @@ public class WebPaymentIntentHelperTest {
     public void createIsReadyToPayIntentNullPackageNameExceptionTestWithoutIdentity()
             throws Throwable {
         thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("packageName should not be null or empty.");
+        thrown.expectMessage("paymentAppPackageName should not be null or empty.");
 
         Map<String, PaymentMethodData> methodDataMap = new HashMap<String, PaymentMethodData>();
         PaymentMethodData bobPayMethodData = new PaymentMethodData("method", "null");
         methodDataMap.put("bobPay", bobPayMethodData);
 
         WebPaymentIntentHelper.createIsReadyToPayIntent(
-                /* packageName= */ null,
-                "service.name",
+                "caller.package.name",
+                /* paymentAppPackageName= */ null,
+                "payment.app.service.name",
                 "schemeless.origin",
                 "schemeless.iframe.origin",
                 /* certificateChain= */ null,
@@ -1334,23 +1367,46 @@ public class WebPaymentIntentHelperTest {
     public void createPaymentDetailsUpdateServiceIntent() throws Throwable {
         Intent intent =
                 WebPaymentIntentHelper.createPaymentDetailsUpdateServiceIntent(
-                        "package.name", "service.name");
+                        "caller.package.name",
+                        "payment.app.package.name",
+                        "payment.app.service.name");
         Assert.assertEquals(
                 WebPaymentIntentHelper.ACTION_UPDATE_PAYMENT_DETAILS, intent.getAction());
-        Assert.assertEquals("package.name", intent.getComponent().getPackageName());
-        Assert.assertEquals("service.name", intent.getComponent().getClassName());
-        Assert.assertNull(intent.getExtras());
+        Assert.assertEquals("payment.app.package.name", intent.getComponent().getPackageName());
+        Assert.assertEquals("payment.app.service.name", intent.getComponent().getClassName());
+        Bundle bundle = intent.getExtras();
+        Assert.assertNotNull(bundle);
+        Assert.assertEquals(
+                "caller.package.name",
+                bundle.get(WebPaymentIntentHelper.EXTRA_CALLER_PACKAGE_NAME));
     }
 
     @Test
     @SmallTest
     @Feature({"Payments"})
-    public void createPaymentDetailsUpdateServiceIntentThrowsWithoutPackageName() throws Throwable {
+    public void createPaymentDetailsUpdateServiceIntentThrowsWithoutCallerPackageName()
+            throws Throwable {
         thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("packageName should not be null or empty.");
+        thrown.expectMessage("callerPackageName should not be null or empty.");
 
         WebPaymentIntentHelper.createPaymentDetailsUpdateServiceIntent(
-                /* packageName= */ null, "service.name");
+                /* callerPackageName= */ null,
+                "payment.app.package.name",
+                "payment.app.service.name");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Payments"})
+    public void createPaymentDetailsUpdateServiceIntentThrowsWithoutPaymentAppPackageName()
+            throws Throwable {
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("paymentAppPackageName should not be null or empty.");
+
+        WebPaymentIntentHelper.createPaymentDetailsUpdateServiceIntent(
+                "caller.package.name",
+                /* paymentAppPackageName= */ null,
+                "payment.app.service.name");
     }
 
     @Test
@@ -1358,9 +1414,11 @@ public class WebPaymentIntentHelperTest {
     @Feature({"Payments"})
     public void createPaymentDetailsUpdateServiceIntentThrowsWithoutServiceName() throws Throwable {
         thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("serviceName should not be null or empty.");
+        thrown.expectMessage("paymentAppServiceName should not be null or empty.");
 
         WebPaymentIntentHelper.createPaymentDetailsUpdateServiceIntent(
-                "package.name", /* serviceName= */ null);
+                "caller.package.name",
+                "payment.app.package.name",
+                /* paymentAppServiceName= */ null);
     }
 }
