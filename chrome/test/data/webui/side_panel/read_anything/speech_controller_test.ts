@@ -54,6 +54,7 @@ suite('SpeechController', () => {
       onPreviewVoicePlaying() {
         onPreviewVoicePlaying = true;
       },
+      onSpeechRateChange() {},
     };
 
     const voicePackController = new VoicePackController();

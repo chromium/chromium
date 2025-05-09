@@ -27,6 +27,7 @@ export interface SpeechListener {
   onIsAudioCurrentlyPlayingChange(): void;
   onEngineStateChange(): void;
   onPreviewVoicePlaying(): void;
+  onSpeechRateChange(): void;
 }
 
 export class SpeechController {
@@ -158,6 +159,203 @@ export class SpeechController {
 
   onPlay() {
     this.model_.setPlaySessionStartTime(Date.now());
+  }
+
+  highlightAndPlayInterruptedMessage(): boolean {
+    return this.highlightAndPlayMessage(/* isInterrupted = */ true);
+  }
+
+  // Play text of these axNodeIds. When finished, read and highlight to read the
+  // following text.
+  // TODO: crbug.com/1474951 - Investigate using AXRange.GetText to get text
+  // between start node / end nodes and their offsets.
+  highlightAndPlayMessage(
+      isInterrupted: boolean = false,
+      isMovingBackward: boolean = false): boolean {
+    // getCurrentText gets the AX Node IDs of text that should be spoken and
+    // highlighted.
+    const axNodeIds: number[] = chrome.readingMode.getCurrentText();
+
+    // If there aren't any valid ax node ids returned by getCurrentText,
+    // speech should stop.
+    if (axNodeIds.length === 0) {
+      return false;
+    }
+
+    if (this.nodeStore_.areNodesAllHidden(axNodeIds)) {
+      return this.skipCurrentPosition_(isInterrupted, isMovingBackward);
+    }
+
+    const utteranceText = this.extractTextOf_(axNodeIds);
+    // If node ids were returned but they don't exist in the Reading Mode panel,
+    // there's been a mismatch between Reading Mode and Read Aloud. In this
+    // case, we should move to the next Read Aloud node and attempt to continue
+    // playing. TODO: crbug.com/332694565 - This fallback should never be
+    // needed, but it is. Investigate root cause of Read Aloud / Reading Mode
+    // mismatch. Additionally, the TTS engine may not like attempts to speak
+    // whitespace, so move to the next utterance in that case.
+    if (!utteranceText || utteranceText.trim().length === 0) {
+      return this.skipCurrentPosition_(isInterrupted, isMovingBackward);
+    }
+
+    // If we're resuming a previously interrupted message, use word
+    // boundaries (if available) to resume at the beginning of the current
+    // word.
+    if (isInterrupted && this.wordBoundaries_.hasBoundaries()) {
+      const utteranceTextForWordBoundary =
+          utteranceText.substring(this.wordBoundaries_.getResumeBoundary());
+      // If we paused right at the end of the sentence, no need to speak the
+      // ending punctuation.
+      if (this.highlighter_.isInvalidHighlightForWordHighlighting(
+              utteranceTextForWordBoundary.trim())) {
+        this.wordBoundaries_.resetToDefaultState();
+        return this.skipCurrentPosition_(isInterrupted, isMovingBackward);
+      } else {
+        this.playText_(utteranceTextForWordBoundary);
+      }
+    } else {
+      this.playText_(utteranceText);
+    }
+
+    this.highlightCurrentGranularity(axNodeIds);
+    return true;
+  }
+
+  private skipCurrentPosition_(
+      isInterrupted: boolean, isMovingBackward: boolean): boolean {
+    if (isMovingBackward) {
+      chrome.readingMode.movePositionToPreviousGranularity();
+    } else {
+      chrome.readingMode.movePositionToNextGranularity();
+    }
+    return this.highlightAndPlayMessage(isInterrupted, isMovingBackward);
+  }
+
+  private playText_(utteranceText: string) {
+    // This check is needed due limits of TTS audio for remote voices. See
+    // crbug.com/1176078 for more details.
+    // Since the TTS bug only impacts remote voices, no need to check for
+    // maximum text length if we're using a local voice. If we do somehow
+    // attempt to speak text that's too long, this will be able to be handled
+    // by listening for a text-too-long error in message.onerror.
+    const isTextTooLong = this.isTextTooLong(utteranceText);
+    const endBoundary =
+        this.getUtteranceEndBoundary(utteranceText, isTextTooLong);
+    this.playTextWithBoundaries_(utteranceText, isTextTooLong, endBoundary);
+  }
+
+  private playTextWithBoundaries_(
+      utteranceText: string, isTextTooLong: boolean, endBoundary: number) {
+    const message =
+        new SpeechSynthesisUtterance(utteranceText.substring(0, endBoundary));
+
+    message.onerror = (error) => {
+      this.handleSpeechSynthesisError_(error, utteranceText);
+    };
+
+    this.setOnBoundary(message);
+    this.setOnSpeechSynthesisUtteranceStart(message);
+
+    message.onend = () => {
+      if (isTextTooLong) {
+        // Since our previous utterance was too long, continue speaking pieces
+        // of the current utterance until the utterance is complete. The
+        // entire utterance is highlighted, so there's no need to update
+        // highlighting until the utterance substring is an acceptable size.
+        this.playText_(utteranceText.substring(endBoundary));
+        return;
+      }
+
+      // Now that we've finiished reading this utterance, update the
+      // Granularity state to point to the next one Reset the word boundary
+      // index whenever we move the granularity position.
+      this.wordBoundaries_.resetToDefaultState();
+      chrome.readingMode.movePositionToNextGranularity();
+      // Continue speaking with the next block of text.
+      if (!this.highlightAndPlayMessage()) {
+        this.onSpeechFinished();
+      }
+    };
+
+    this.speakMessage(message);
+  }
+
+  private handleSpeechSynthesisError_(
+      error: SpeechSynthesisErrorEvent, utteranceText: string) {
+    // We can't be sure that the engine has loaded at this point, but
+    // if there's an error, we want to ensure we keep the play buttons
+    // to prevent trapping users in a state where they can no longer play
+    // Read Aloud, as this is preferable to a long delay before speech
+    // with no feedback.
+    this.setEngineState(SpeechEngineState.LOADED);
+
+    if (error.error === 'interrupted') {
+      this.onSpeechInterrupted();
+      return;
+    }
+
+    // Log a speech error. We aren't concerned with logging an interrupted
+    // error, since that can be triggered from play / pause.
+    this.logger_.logSpeechError(error.error);
+
+    if (error.error === 'text-too-long') {
+      // This is unlikely to happen, as the length limit on most voices
+      // is quite long. However, if we do hit a limit, we should just use
+      // the accessible text length boundaries to shorten the text. Even
+      // if this gives a much smaller sentence than TTS would have supported,
+      // this is still preferable to no speech.
+      this.speech_.cancel();
+      this.playTextWithBoundaries_(
+          utteranceText, true,
+          this.getUtteranceEndBoundary(utteranceText, true));
+      return;
+    }
+    if (error.error === 'invalid-argument') {
+      // invalid-argument can be triggered when the rate, pitch, or volume
+      // is not supported by the synthesizer. Since we're only setting the
+      // speech rate, update the speech rate to the WebSpeech default of 1.
+      chrome.readingMode.onSpeechRateChange(1);
+      this.listeners_.forEach(l => l.onSpeechRateChange());
+      return;
+    }
+
+    // When we hit an error, stop speech to clear all utterances, update the
+    // button state, and highlighting in order to give visual feedback that
+    // something went wrong.
+    // TODO: crbug.com/40927698 - Consider showing an error message.
+    this.logger_.logSpeechStopSource(chrome.readingMode.engineErrorStopSource);
+    this.stopSpeech(PauseActionSource.DEFAULT);
+
+    // No appropriate voice is available for the language designated in
+    // SpeechSynthesisUtterance lang.
+    if (error.error === 'language-unavailable') {
+      this.voicePackController_.onLanguageUnavailableError();
+    }
+
+    // The voice designated in SpeechSynthesisUtterance voice attribute
+    // is not available.
+    if (error.error === 'voice-unavailable') {
+      this.voicePackController_.onVoiceUnavailableError();
+    }
+  }
+
+  private extractTextOf_(axNodeIds: number[]): string {
+    let utteranceText: string = '';
+    for (const nodeId of axNodeIds) {
+      const startIndex = chrome.readingMode.getCurrentTextStartIndex(nodeId);
+      const endIndex = chrome.readingMode.getCurrentTextEndIndex(nodeId);
+      const element = this.nodeStore_.getDomNode(nodeId);
+      if (!element || startIndex < 0 || endIndex < 0) {
+        continue;
+      }
+      const content = chrome.readingMode.getTextContent(nodeId).substring(
+          startIndex, endIndex);
+      if (content) {
+        // Add all of the text from the current nodes into a single utterance.
+        utteranceText += content;
+      }
+    }
+    return utteranceText;
   }
 
   stopSpeech(pauseSource: PauseActionSource) {
