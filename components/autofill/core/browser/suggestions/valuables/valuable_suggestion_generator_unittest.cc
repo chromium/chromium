@@ -268,6 +268,64 @@ TEST_F(ValuableSuggestionGeneratorTest,
                                             u"Manage addresses...")));
 }
 
+TEST_F(
+    ValuableSuggestionGeneratorTest,
+    ExtendAutocompleteSuggestionsWithLoyaltyCardSuggestions_ExistingLoyaltyCards) {
+  const std::vector<LoyaltyCard> loyalty_cards = {LoyaltyCard(
+      /*loyalty_card_id=*/ValuableId("loyalty_card_id_1"),
+      /*merchant_name=*/"CVS Pharmacy",
+      /*program_name=*/"CVS Extra",
+      /*program_logo=*/GURL("https://empty.url.com"),
+      /*loyalty_card_number=*/"987654321987654321",
+      {GURL("https://domain1.example"),
+       GURL("https://common-domain.example")})};
+
+  test_api(valuables_data_manager()).SetLoyaltyCards(loyalty_cards);
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(u"foobar1", SuggestionType::kAutocompleteEntry),
+      Suggestion(u"foobar2", SuggestionType::kAutocompleteEntry)};
+
+  ExtendAutocompleteSuggestionsWithLoyaltyCardSuggestions(
+      suggestions, valuables_data_manager(),
+      GURL("https://common-domain.example/test"));
+
+  EXPECT_THAT(
+      suggestions,
+      testing::ElementsAre(
+          EqualsSuggestion(SuggestionType::kAutocompleteEntry, u"foobar1"),
+          EqualsSuggestion(SuggestionType::kAutocompleteEntry, u"foobar2"),
+          EqualsSuggestion(SuggestionType::kSeparator),
+          EqualsSuggestion(
+              SuggestionType::kLoyaltyCardEntry, u"987654321987654321",
+              /*is_main_text_primary=*/true, Suggestion::Icon::kNoIcon,
+              {{Suggestion::Text(u"CVS Pharmacy")}},
+              Suggestion::Guid("loyalty_card_id_1")),
+          EqualsSuggestion(SuggestionType::kSeparator),
+          EqualsSuggestion(SuggestionType::kManageLoyaltyCard,
+                           u"Manage loyalty cards...",
+                           Suggestion::Icon::kSettings)));
+}
+
+TEST_F(ValuableSuggestionGeneratorTest,
+       ExtendAutocompleteSuggestionsWithLoyaltyCardSuggestions_NoLoyaltyCards) {
+  test_api(valuables_data_manager()).SetLoyaltyCards({});
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(u"foobar1", SuggestionType::kAutocompleteEntry),
+      Suggestion(u"foobar2", SuggestionType::kAutocompleteEntry)};
+
+  ExtendAutocompleteSuggestionsWithLoyaltyCardSuggestions(
+      suggestions, valuables_data_manager(),
+      GURL("https://common-domain.example/test"));
+
+  EXPECT_THAT(
+      suggestions,
+      testing::ElementsAre(
+          EqualsSuggestion(SuggestionType::kAutocompleteEntry, u"foobar1"),
+          EqualsSuggestion(SuggestionType::kAutocompleteEntry, u"foobar2")));
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(ValuableSuggestionGeneratorTest,
        GetLoyaltyCardSuggestions_SuggestionsIPH) {
