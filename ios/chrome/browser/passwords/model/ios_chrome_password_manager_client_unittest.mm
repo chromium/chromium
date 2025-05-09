@@ -63,6 +63,13 @@ class MockRouter : public enterprise_connectors::ReportingEventRouter {
                const url::SchemeHostPort& federated_origin,
                const std::u16string& username),
               (override));
+
+  MOCK_METHOD(
+      void,
+      OnPasswordBreach,
+      (const std::string& trigger,
+       (const std::vector<std::pair<GURL, std::u16string>>& identities)),
+      (override));
 };
 
 std::unique_ptr<KeyedService> MakeMockRouter(web::BrowserState* browser_state) {
@@ -243,4 +250,20 @@ TEST_F(IOSChromePasswordManagerClientTest, OnLogInInvoked) {
   client->MaybeReportEnterpriseLoginEvent(GURL("https://www.example.com/"),
                                           url::SchemeHostPort().IsValid(),
                                           url::SchemeHostPort(), u"Fakeuser");
+}
+
+// Tests that MaybeReportEnterprisePasswordBreachEvent invoked
+// router->OnPasswordBreach as expected.
+TEST_F(IOSChromePasswordManagerClientTest, OnPasswordBreachInvoked) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS};
+
+  PasswordManagerClient* client = passwordController_.passwordManagerClient;
+  std::vector<std::pair<GURL, std::u16string>> expected_data;
+  expected_data.emplace_back(GURL("https://first.example.com"),
+                             u"first_user_name");
+  EXPECT_CALL(*reporting_event_router_,
+              OnPasswordBreach(_, testing::Eq(expected_data)))
+      .Times(1);
+  client->MaybeReportEnterprisePasswordBreachEvent(expected_data);
 }

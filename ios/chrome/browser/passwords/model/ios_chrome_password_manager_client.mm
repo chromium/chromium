@@ -253,7 +253,6 @@ void IOSChromePasswordManagerClient::MaybeReportEnterpriseLoginEvent(
   router->OnLoginEvent(url, is_federated, federated_origin, login_user_name);
 }
 
-// TODO(crbug.com/409047852): Add unit test to confirm the event trigger.
 void IOSChromePasswordManagerClient::MaybeReportEnterprisePasswordBreachEvent(
     const std::vector<std::pair<GURL, std::u16string>>& identities) const {
   // Guard the realtime event reporting feature on iOS behind the feature flag.

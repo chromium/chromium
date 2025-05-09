@@ -37,7 +37,7 @@ class ReportingEventRouter : public KeyedService {
                             const url::SchemeHostPort& federated_origin,
                             const std::u16string& username);
 
-  void OnPasswordBreach(
+  virtual void OnPasswordBreach(
       const std::string& trigger,
       const std::vector<std::pair<GURL, std::u16string>>& identities);
 
