@@ -136,9 +136,17 @@ void CreateTranslatorClient::OnResult(
 
 void CreateTranslatorClient::OnGotAvailability(
     CanCreateTranslatorResult result) {
-  LocalDOMWindow* const window = LocalDOMWindow::From(GetScriptState());
+  ScriptState* script_state = GetScriptState();
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  LocalDOMWindow* const window = LocalDOMWindow::From(script_state);
+
+  // The Translator API is only available within a window or extension
+  // service worker context. User activation is not consumed by workers, as
+  // they lack the ability to do so.
+  CHECK(window != nullptr || context->IsServiceWorkerGlobalScope());
 
   if (RuntimeEnabledFeatures::TranslationAPIV1Enabled() &&
+      !context->IsServiceWorkerGlobalScope() &&
       RequiresUserActivation(result) &&
       !LocalFrame::ConsumeTransientUserActivation(window->GetFrame())) {
     GetResolver()->RejectWithDOMException(
