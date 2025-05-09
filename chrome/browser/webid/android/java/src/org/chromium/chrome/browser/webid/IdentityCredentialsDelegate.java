@@ -41,8 +41,8 @@ public class IdentityCredentialsDelegate {
     }
 
     public Promise<String> create(Activity window, String origin, String request) {
-        DigitalCredentialsCreationDelegateImplementation creationDelegate =
-                new DigitalCredentialsCreationDelegateImplementation();
+        DigitalCredentialsCreationDelegate creationDelegate =
+                new DigitalCredentialsCreationDelegate();
         return creationDelegate.create(window, origin, request);
     }
 }

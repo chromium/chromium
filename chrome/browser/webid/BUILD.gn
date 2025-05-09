@@ -7,7 +7,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   sources = [
-    "android/java/src/org/chromium/chrome/browser/webid/DigitalCredentialsCreationDelegateImplementation.java",
+    "android/java/src/org/chromium/chrome/browser/webid/DigitalCredentialsCreationDelegate.java",
     "android/java/src/org/chromium/chrome/browser/webid/DigitalCredentialsPresentationDelegate.java",
     "android/java/src/org/chromium/chrome/browser/webid/DigitalIdentityProvider.java",
     "android/java/src/org/chromium/chrome/browser/webid/IdentityCredentialsDelegate.java",

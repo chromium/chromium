@@ -30,8 +30,8 @@ import org.chromium.base.Promise;
 import org.chromium.build.annotations.NullMarked;
 
 @NullMarked
-public class DigitalCredentialsCreationDelegateImplementation {
-    private static final String TAG = "DCCreateDelegateImpl";
+public class DigitalCredentialsCreationDelegate {
+    private static final String TAG = "DCCreationDelegate";
 
     // Arbitrary request code that is used when invoking the GMSCore API.
     private static final int REQUEST_CODE_DIGITAL_CREDENTIALS_CREATION = 777;
