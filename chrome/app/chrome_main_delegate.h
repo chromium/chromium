@@ -81,7 +81,7 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
   content::ContentUtilityClient* CreateContentUtilityClient() override;
 
   // Initialization that happens in all process types.
-  void CommonEarlyInitialization(InvokedIn invoked_in);
+  void CommonEarlyInitialization();
 
   // Initializes |tracing_sampler_profiler_|. Deletes any existing
   // |tracing_sampler_profiler_| as well.

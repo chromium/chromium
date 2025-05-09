@@ -749,7 +749,7 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   const auto* invoked_in_browser =
       std::get_if<InvokedInBrowserProcess>(&invoked_in);
   if (!invoked_in_browser) {
-    CommonEarlyInitialization(invoked_in);
+    CommonEarlyInitialization();
     return std::nullopt;
   }
 
@@ -849,7 +849,7 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
       ->ChromeProcessSingleton::InitializeFeatures();
 #endif
 
-  CommonEarlyInitialization(invoked_in);
+  CommonEarlyInitialization();
 
   // Initializes the resource bundle and determines the locale.
   std::string actual_locale = LoadLocalState(
@@ -930,7 +930,7 @@ void ChromeMainDelegate::CreateThreadPool(std::string_view name) {
 #endif
 }
 
-void ChromeMainDelegate::CommonEarlyInitialization(InvokedIn invoked_in) {
+void ChromeMainDelegate::CommonEarlyInitialization() {
   const base::CommandLine* const command_line =
       base::CommandLine::ForCurrentProcess();
   std::string process_type =
