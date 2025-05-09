@@ -139,6 +139,10 @@ enum Destination {
   // devices.
   DESKTOP_USAGE_LOGS = 36;
 
+  // |DESKTOP_INTERMEDIATE_STATUS_REPORT| is for holding a intermediate state of
+  // the desktop status report.
+  DESKTOP_INTERMEDIATE_STATUS_REPORT = 37;
+
   reserved 8;
 }
 
