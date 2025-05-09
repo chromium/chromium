@@ -135,10 +135,15 @@ class BLINK_EXPORT WebElement : public WebNode {
   // Returns the open shadow root or the closed shadow root.
   WebNode OpenOrClosedShadowRoot();
 
-  // Returns the bounds of the element in Visual Viewport. The bounds
-  // have been adjusted to include any transformations, including page scale.
-  // This function will update the layout if required.
+  // Returns the bounds of the element relative to the RenderWidget (local root
+  // frame + viewport transform in the main frame). The bounds have been
+  // adjusted to include any transformations, including page scale. This
+  // function will update the layout if required.
   gfx::Rect BoundsInWidget() const;
+
+  // Same as above but this method will clip the bounds based on any of the
+  // element's ancestor overflow or frame boxes.
+  gfx::Rect VisibleBoundsInWidget() const;
 
   // Returns the image contents of this element or a null SkBitmap
   // if there isn't any.

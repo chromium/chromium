@@ -531,8 +531,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // origin. While the rect is relative to the local root, it is intersected
   // with all ancestor frame clips, including the visual viewport transform and
   // clip in the main frame. While this applies ancestor frame clipping, it
-  // does not (yet) apply (overflow) element clipping (crbug.com/889840).
+  // does not (yet) apply (overflow) element clipping (crbug.com/41417572).
   gfx::Rect VisibleBoundsInLocalRoot() const;
+
+  // TODO(crbug.com/41417572): This method should replace the above method.
+  gfx::Rect VisibleBoundsRespectingClipsInLocalRoot() const;
 
   DOMRectList* getClientRects();
   // Returns a rectangle in zoomed pixel units.

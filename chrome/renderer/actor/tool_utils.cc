@@ -25,13 +25,10 @@ std::optional<gfx::PointF> InteractionPointFromWebNode(
     return std::nullopt;
   }
 
-  gfx::Rect rect = element.BoundsInWidget();
+  gfx::Rect rect = element.VisibleBoundsInWidget();
   if (rect.IsEmpty()) {
     return std::nullopt;
   }
-
-  // TODO(crbug.com/389739308): This should clip to the viewport so the center
-  // point stays within the viewport..
 
   return gfx::PointF(rect.CenterPoint());
 }

@@ -2873,6 +2873,29 @@ gfx::Rect Element::VisibleBoundsInLocalRoot() const {
   return ToPixelSnappedRect(rect);
 }
 
+gfx::Rect Element::VisibleBoundsRespectingClipsInLocalRoot() const {
+  if (!GetLayoutObject()) {
+    return gfx::Rect();
+  }
+
+  gfx::RectF rect_in_viewport =
+      GetLayoutObject()->LocalBoundingBoxRectForAccessibility();
+
+  GetLayoutObject()->MapToVisualRectInAncestorSpace(/*ancestor=*/nullptr,
+                                                    rect_in_viewport);
+
+  PhysicalRect rect_in_local_root =
+      GetDocument()
+          .GetFrame()
+          ->LocalFrameRoot()
+          .ContentLayoutObject()
+          ->AbsoluteToLocalRect(
+              PhysicalRect::EnclosingRect(rect_in_viewport),
+              kTraverseDocumentBoundaries | kApplyRemoteMainFrameTransform);
+
+  return ToPixelSnappedRect(rect_in_local_root);
+}
+
 void Element::ClientQuads(Vector<gfx::QuadF>& quads) const {
   LayoutObject* element_layout_object = GetLayoutObject();
   if (!element_layout_object) {

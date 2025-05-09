@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/events/text_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
@@ -55,6 +56,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -310,6 +312,32 @@ WebNode WebElement::OpenOrClosedShadowRoot() {
 
 gfx::Rect WebElement::BoundsInWidget() const {
   return ConstUnwrap<Element>()->BoundsInWidget();
+}
+
+gfx::Rect WebElement::VisibleBoundsInWidget() const {
+  const Element* element = ConstUnwrap<Element>();
+  LocalFrame* frame = element->GetDocument().GetFrame();
+  if (!frame || !frame->View()) {
+    return gfx::Rect();
+  }
+
+  gfx::Rect bounds_in_local_root =
+      element->VisibleBoundsRespectingClipsInLocalRoot();
+
+  if (!frame->IsOutermostMainFrame()) {
+    return bounds_in_local_root;
+  }
+
+  // In the outermost main frame the widget includes the viewport transform
+  // (i.e. pinch-zoom). VisibleBoundsRespectingClipsInLocalRoot should already
+  // have clipped to the visual viewport (but then transforms back into local
+  // root space).
+  VisualViewport& visual_viewport =
+      element->GetDocument().GetPage()->GetVisualViewport();
+  gfx::Rect bounds_in_viewport =
+      visual_viewport.RootFrameToViewport(bounds_in_local_root);
+  bounds_in_viewport.Intersect(gfx::Rect(visual_viewport.Size()));
+  return bounds_in_viewport;
 }
 
 SkBitmap WebElement::ImageContents() {

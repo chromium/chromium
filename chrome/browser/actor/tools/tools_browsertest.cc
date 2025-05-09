@@ -5,6 +5,7 @@
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -30,6 +31,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/dns/mock_host_resolver.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/display/display_switches.h"
@@ -269,6 +271,31 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_OffscreenElement) {
 
   // The page should not have received any events.
   EXPECT_EQ("", EvalJs(web_contents(), "mouse_event_log.join(',')"));
+}
+
+// Ensure clicks can be sent to elements that are only partially onscreen.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_ClippedElements) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/click_with_overflow_clip.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  std::vector<std::string> test_cases = {
+      "offscreenButton", "overflowHiddenButton", "overflowScrollButton"};
+
+  for (auto button : test_cases) {
+    SCOPED_TRACE(testing::Message() << "WHILE TESTING: " << button);
+    std::optional<int> button_id =
+        GetDOMNodeId(*main_frame(), base::StrCat({"#", button}));
+    ASSERT_TRUE(button_id);
+
+    BrowserAction action = MakeClick(button_id.value());
+    TestFuture<bool> result;
+    actor_coordinator().Act(action, result.GetCallback());
+    EXPECT_TRUE(result.Get());
+    EXPECT_EQ(button, EvalJs(web_contents(), "clicked_button"));
+
+    ASSERT_TRUE(ExecJs(web_contents(), "clicked_button = ''"));
+  }
 }
 
 // ===============================================
