@@ -35,39 +35,6 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest, MANUAL_Dialog_Basic) {
   EXPECT_FALSE(test_ui_->IsDialogShown());
   test_ui_->ShowDialog();
   test_ui_->WaitForSinkAvailable(receiver_);
-
-  // NOTE: There is no status or issue text for the GMC button.
-  // TODO(issuetracker.google.com/388289776): re-enable once the GMC test
-  // UI supports stopping a cast session.
-  // test_ui_->StopCasting(receiver_);
-  // WaitUntilNoRoutes(GetActiveWebContents());
-}
-
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
-                       MANUAL_Dialog_RouteCreationTimedOut) {
-  const base::TimeDelta route_creation_timeout =
-      GetRouteRequestTimeout(PRESENTATION);
-  test_provider_->set_delay(route_creation_timeout);
-  OpenTestPage(FILE_PATH_LITERAL("basic_test.html"));
-
-  // The video needs to be playing before the GMC button will show up.
-  content::WebContents* web_contents = GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
-  ExecuteJavaScriptAPI(web_contents, "playVideo();");
-
-  test_ui_->ShowDialog();
-  test_ui_->WaitForSinkAvailable(receiver_);
-
-  const auto start_time = base::TimeTicks::Now();
-  test_ui_->StartCasting(receiver_);
-
-  // TODO(issuetracker.google.com/388289776): once we can observe the dialog
-  // state, we should be able to actually wait for the timeout and then
-  // ensure it took a reasonable amount of time to fail.
-  test_ui_->WaitForAnyIssue();
-
-  const base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
-  EXPECT_GT(elapsed, base::TimeDelta::Min());
 }
 
 }  // namespace media_router
