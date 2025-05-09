@@ -295,6 +295,13 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   SkM44 color_matrix_;
 };
 
+#if BUILDFLAG(IS_WIN)
+// Helper to check that DComp textures are supported before checking for
+// `features::IsDelegatedCompositingEnabled()`.
+bool IsDelegatedCompositingSupportedAndEnabled(
+    OutputSurface::DCSupportLevel support_level);
+#endif
+
 }  // namespace viz
 
 #endif  // COMPONENTS_VIZ_SERVICE_DISPLAY_OUTPUT_SURFACE_H_

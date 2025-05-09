@@ -590,19 +590,6 @@ bool IsCrosContentAdjustedRefreshRateEnabled() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
-bool ShouldUseDCompSurfacesForDelegatedInk() {
-  // kDCompSurfacesForDelegatedInk is for delegated ink to work with partial
-  // delegated compositing. This function should return true if the feature
-  // is enabled or partial delegated compositing is enabled - a condition
-  // which requires the use of DCOMP surfaces for delegated ink.
-  if (IsDelegatedCompositingEnabled() &&
-      kDelegatedCompositingModeParam.Get() ==
-          DelegatedCompositingMode::kLimitToUi) {
-    return true;
-  }
-  return base::FeatureList::IsEnabled(kDCompSurfacesForDelegatedInk);
-}
-
 bool ShouldRemoveRedirectionBitmap() {
   // Windows.UI.Composition DesktopWindowTarget is supported on on Win10 version
   // 1511 and higher, therefore limit the bitmap removal to those versions or

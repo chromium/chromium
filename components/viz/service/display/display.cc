@@ -545,11 +545,10 @@ void Display::InitializeRenderer() {
   }
 #if BUILDFLAG(IS_WIN)
   const bool prevent_merging_surfaces_to_root_pass =
-      features::IsDelegatedCompositingEnabled() &&
+      IsDelegatedCompositingSupportedAndEnabled(
+          output_surface_->capabilities().dc_support_level) &&
       features::kDelegatedCompositingModeParam.Get() ==
-          features::DelegatedCompositingMode::kLimitToUi &&
-      output_surface_->capabilities().dc_support_level >=
-          OutputSurface::DCSupportLevel::kDCompTexture;
+          features::DelegatedCompositingMode::kLimitToUi;
 #else
   const bool prevent_merging_surfaces_to_root_pass = false;
 #endif

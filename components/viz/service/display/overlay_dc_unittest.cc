@@ -3030,7 +3030,8 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, FrameHasDelegatedInk) {
                      render_pass_backdrop_filters, SurfaceDamageRectList(),
                      &dc_layer_list);
   // Make sure |frame_has_delegated_ink_| has been set to false.
-  EXPECT_FALSE(overlay_processor_->frame_has_delegated_ink_for_testing());
+  EXPECT_FALSE(
+      overlay_processor_->frame_has_forced_dcomp_surface_for_testing());
   EXPECT_TRUE(pass_list[0]->needs_synchronous_dcomp_commit);
 }
 
@@ -3057,7 +3058,8 @@ TEST_P(OverlayProcessorWinSurfacePlaneTest, DelegatedInkSurfaceHysteresis) {
                        render_pass_backdrop_filters, SurfaceDamageRectList(),
                        &dc_layer_list);
     // Make sure |frame_has_delegated_ink_| has been set to false.
-    EXPECT_FALSE(overlay_processor_->frame_has_delegated_ink_for_testing());
+    EXPECT_FALSE(
+        overlay_processor_->frame_has_forced_dcomp_surface_for_testing());
     if (frame <= 60) {
       EXPECT_TRUE(pass_list[0]->needs_synchronous_dcomp_commit);
     } else {

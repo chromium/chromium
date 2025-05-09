@@ -862,12 +862,14 @@ DirectRenderer::CalculateRenderPassRequirements(
   // All root render pass backings allocated by the renderer needs to eventually
   // go into some composition tree. Other things that own/allocate the root pass
   // backing include the output device and buffer queue.
-  // Windows also can support scanout backings for non-root passes to optimize
-  // partially delegated compositing iff they will not be read in Viz.
-  requirements.is_scanout =
-      is_root || (features::IsDelegatedCompositingEnabled() &&
-                  render_pass->is_from_surface_root_pass &&
-                  !render_pass->will_backing_be_read_by_viz);
+  requirements.is_scanout = is_root;
+  if (IsDelegatedCompositingSupportedAndEnabled(
+          output_surface_->capabilities().dc_support_level)) {
+    // Windows also can support scanout backings for non-root passes to optimize
+    // partially delegated compositing iff they will not be read in Viz.
+    requirements.is_scanout |= render_pass->is_from_surface_root_pass &&
+                               !render_pass->will_backing_be_read_by_viz;
+  }
 
   requirements.scanout_dcomp_surface =
       requirements.is_scanout && render_pass->needs_synchronous_dcomp_commit;

@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/features.h"
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/output_surface_frame.h"
 #include "ui/gfx/geometry/rect.h"
@@ -81,5 +82,17 @@ void OutputSurface::ReadbackForTesting(
     CopyOutputRequest::CopyOutputRequestCallback result_callback) {
   NOTIMPLEMENTED();
 }
+
+#if BUILDFLAG(IS_WIN)
+bool IsDelegatedCompositingSupportedAndEnabled(
+    OutputSurface::DCSupportLevel support_level) {
+  if (support_level < OutputSurface::DCSupportLevel::kDCompTexture) {
+    return false;
+  }
+
+  // Ensure we check the feature flag iff the feature is supported.
+  return features::IsDelegatedCompositingEnabled();
+}
+#endif
 
 }  // namespace viz

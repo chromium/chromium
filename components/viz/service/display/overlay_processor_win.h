@@ -69,9 +69,9 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
 
   void SetFrameHasDelegatedInk() override;
 
-  bool frame_has_delegated_ink_for_testing() const {
+  bool frame_has_forced_dcomp_surface_for_testing() const {
     CHECK_IS_TEST();
-    return frame_has_delegated_ink_;
+    return frame_has_forced_dcomp_surface_;
   }
 
   // Sets whether or not |render_pass_id| will be marked for a DComp surface
@@ -209,9 +209,9 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
 
   bool delegation_succeeded_last_frame_ = false;
 
-  // If true, causes the use of DComp surfaces as the backing image of a render
-  // pass, given that UseDCompSurfacesForDelegatedInk is also enabled.
-  bool frame_has_delegated_ink_ = false;
+  // If true, causes the use of DComp surfaces as the backing image of all
+  // render passes for the frame.
+  bool frame_has_forced_dcomp_surface_ = false;
 
   // Returned and reset by |GetAndResetOverlayDamage| to fully damage the root
   // render pass when we drop out of delegated compositing. This is essentially
