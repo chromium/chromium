@@ -64,6 +64,7 @@ class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
 class PaymentsDataManager;
 class SaveAndFillDialogControllerImpl;
+class SaveAndFillManager;
 class TouchToFillDelegate;
 struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
@@ -209,6 +210,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       override;
   PaymentsDataManager& GetPaymentsDataManager() final;
   void ShowCreditCardSaveAndFillDialog() override;
+  payments::SaveAndFillManager* GetSaveAndFillManager() override;
   void ShowSelectBnplIssuerDialog(
       std::vector<BnplIssuerContext> bnpl_issuer_context,
       std::string app_locale,
@@ -330,6 +332,8 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
 
   std::unique_ptr<SaveAndFillDialogControllerImpl>
       save_and_fill_dialog_controller_;
+
+  std::unique_ptr<SaveAndFillManager> save_and_fill_manager_;
 
   std::unique_ptr<SelectBnplIssuerDialogControllerImpl>
       select_bnpl_issuer_dialog_controller_;

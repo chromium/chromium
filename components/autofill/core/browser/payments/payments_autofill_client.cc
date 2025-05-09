@@ -252,6 +252,10 @@ PaymentsAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
 
 void PaymentsAutofillClient::ShowCreditCardSaveAndFillDialog() {}
 
+payments::SaveAndFillManager* PaymentsAutofillClient::GetSaveAndFillManager() {
+  return nullptr;
+}
+
 void PaymentsAutofillClient::ShowSelectBnplIssuerDialog(
     std::vector<BnplIssuerContext> bnpl_issuer_context,
     std::string app_locale,

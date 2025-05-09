@@ -61,6 +61,7 @@ struct BnplIssuerContext;
 class MandatoryReauthManager;
 class PaymentsNetworkInterface;
 class PaymentsWindowManager;
+class SaveAndFillManager;
 
 // A payments-specific client interface that handles dependency injection, and
 // its implementations serve as the integration for platform-specific code. One
@@ -573,6 +574,10 @@ class PaymentsAutofillClient : public RiskDataLoader {
 
   // Shows the `Save and Fill` modal dialog.
   virtual void ShowCreditCardSaveAndFillDialog();
+
+  // Gets the payments Save and Fill manager owned by the client. This will be
+  // used to handle the Save and Fill dialog.
+  virtual payments::SaveAndFillManager* GetSaveAndFillManager();
 
   // Shows the issuer selection dialog for BNPL when the BNPL suggestion is
   // selected to let users choose a BNPL issuer.

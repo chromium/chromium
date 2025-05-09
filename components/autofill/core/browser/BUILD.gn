@@ -543,6 +543,8 @@ static_library("browser") {
     "payments/payments_window_manager_util.cc",
     "payments/payments_window_manager_util.h",
     "payments/risk_data_loader.h",
+    "payments/save_and_fill_manager.cc",
+    "payments/save_and_fill_manager.h",
     "payments/virtual_card_enroll_metrics_logger.cc",
     "payments/virtual_card_enroll_metrics_logger.h",
     "payments/virtual_card_enrollment_flow.h",

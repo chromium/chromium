@@ -47,6 +47,7 @@
 #include "components/autofill/core/browser/payments/otp_unmask_result.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/save_and_fill_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/single_field_fillers/payments/merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -962,6 +963,18 @@ void ChromePaymentsAutofillClient::ShowCreditCardSaveAndFillDialog() {
 #else
   NOTIMPLEMENTED();
 #endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+SaveAndFillManager* ChromePaymentsAutofillClient::GetSaveAndFillManager() {
+#if BUILDFLAG(IS_ANDROID)
+  return nullptr;
+#else
+  if (!save_and_fill_manager_) {
+    save_and_fill_manager_ =
+        std::make_unique<payments::SaveAndFillManager>(this);
+  }
+  return save_and_fill_manager_.get();
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ChromePaymentsAutofillClient::ShowSelectBnplIssuerDialog(
