@@ -314,6 +314,7 @@ template("mac_framework_bundle") {
     visibility = [ ":$_framework_target+link" ]
     framework_dirs = [ root_out_dir ]
     frameworks = [ _framework_name ]
+    inputs = [ "$root_out_dir/$_framework_name" ]
   }
 
   create_bundle(_framework_target) {
