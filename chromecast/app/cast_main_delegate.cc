@@ -41,7 +41,9 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/apk_assets.h"
+#include "base/android/java_exception_reporter.h"
 #include "chromecast/app/android/cast_crash_reporter_client_android.h"
+#include "components/crash/core/app/crashpad.h"
 #include "ui/base/resource/resource_bundle_android.h"
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "chromecast/app/linux/cast_crash_reporter_client.h"
@@ -49,14 +51,6 @@
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace {
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-chromecast::CastCrashReporterClient* GetCastCrashReporter() {
-  static base::NoDestructor<chromecast::CastCrashReporterClient>
-      crash_reporter_client;
-  return crash_reporter_client.get();
-}
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
 const int kMaxCrashFiles = 10;
@@ -179,18 +173,27 @@ void CastMainDelegate::PreSandboxStartup() {
   bool enable_crash_reporter =
       !command_line->HasSwitch(switches::kDisableCrashReporter);
   if (enable_crash_reporter) {
+#if BUILDFLAG(IS_ANDROID)
+    static base::NoDestructor<chromecast::CastCrashReporterClientAndroid>
+        crash_reporter_client(process_type);
+#else
+    static base::NoDestructor<CastCrashReporterClient> crash_reporter_client;
+#endif
+    crash_reporter::SetCrashReporterClient(crash_reporter_client.get());
+
     // TODO(crbug.com/40188745): Complete crash reporting integration on
     // Fuchsia.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-    crash_reporter::SetCrashReporterClient(GetCastCrashReporter());
-
     if (process_type != switches::kZygoteProcess) {
       CastCrashReporterClient::InitCrashReporter(process_type);
     }
-    crash_reporter::InitializeCrashKeys();
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID)
+    crash_reporter::InitializeCrashpad(process_type.empty(), process_type);
+    base::android::InitJavaExceptionReporter();
+#endif
+    crash_reporter::InitializeCrashKeys();
   }
-
   InitializeResourceBundle();
 }
 
