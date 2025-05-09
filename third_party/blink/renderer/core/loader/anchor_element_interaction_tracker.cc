@@ -28,8 +28,8 @@
 
 namespace blink {
 
-BASE_FEATURE(kNoSamePageFragmentPreloadingAnchorTracking,
-             "NoSamePageFragmentPreloadingAnchorTracking",
+BASE_FEATURE(kPreloadingNoSamePageFragmentAnchorTracking,
+             "PreloadingNoSamePageFragmentAnchorTracking",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
@@ -489,7 +489,7 @@ KURL AnchorElementInteractionTracker::GetHrefEligibleForPreloading(
     return KURL();
   }
   if (base::FeatureList::IsEnabled(
-          kNoSamePageFragmentPreloadingAnchorTracking) &&
+          kPreloadingNoSamePageFragmentAnchorTracking) &&
       url.HasFragmentIdentifier()) {
     const KURL& document_url = anchor.GetDocument().Url();
     if (EqualIgnoringFragmentIdentifier(url, document_url)) {

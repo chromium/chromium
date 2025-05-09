@@ -17429,7 +17429,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "NoSamePageFragmentPreloadingAnchorTracking"
+                        "PreloadingNoSamePageFragmentAnchorTracking"
                     ]
                 }
             ]

@@ -144,7 +144,7 @@ class AnchorElementInteractionFragmentTest
  public:
   AnchorElementInteractionFragmentTest()
       : base::test::WithFeatureOverride(
-            blink::kNoSamePageFragmentPreloadingAnchorTracking) {}
+            blink::kPreloadingNoSamePageFragmentAnchorTracking) {}
 };
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(AnchorElementInteractionFragmentTest);
@@ -166,7 +166,7 @@ TEST_P(AnchorElementInteractionFragmentTest, SamePageFragment) {
   EXPECT_EQ(url_received.has_value(), !IsParamFeatureEnabled());
 }
 
-TEST_F(AnchorElementInteractionTest, OtherPageFragment) {
+TEST_P(AnchorElementInteractionFragmentTest, OtherPageFragment) {
   String source("https://example.com/p1");
   SimRequest main_resource(source, "text/html");
   LoadURL(source);

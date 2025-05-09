@@ -24,7 +24,7 @@ class MouseEvent;
 class Node;
 class PointerEvent;
 
-CORE_EXPORT BASE_DECLARE_FEATURE(kNoSamePageFragmentPreloadingAnchorTracking);
+CORE_EXPORT BASE_DECLARE_FEATURE(kPreloadingNoSamePageFragmentAnchorTracking);
 
 // Tracks pointerdown events anywhere on a document.  On receiving a pointerdown
 // event, the tracker will retrieve the valid href from the anchor element from
