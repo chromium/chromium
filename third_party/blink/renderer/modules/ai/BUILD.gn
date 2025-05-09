@@ -42,6 +42,8 @@ blink_modules_sources("ai") {
     "on_device_translation/resolver_with_abort_signal.h",
     "on_device_translation/translator.cc",
     "on_device_translation/translator.h",
+    "proofreader.cc",
+    "proofreader.h",
     "rewriter.cc",
     "rewriter.h",
     "summarizer.cc",

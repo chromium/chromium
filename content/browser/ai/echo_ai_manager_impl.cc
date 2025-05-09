@@ -10,6 +10,7 @@
 #include "components/language/core/common/locale_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/browser/ai/echo_ai_language_model.h"
+#include "content/browser/ai/echo_ai_proofreader.h"
 #include "content/browser/ai/echo_ai_rewriter.h"
 #include "content/browser/ai/echo_ai_summarizer.h"
 #include "content/browser/ai/echo_ai_writer.h"
@@ -267,6 +268,16 @@ void EchoAIManagerImpl::ReturnAISummarizerCreationResult(
   mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAISummarizer>(),
                               summarizer.InitWithNewPipeAndPassReceiver());
   client_remote->OnResult(std::move(summarizer));
+}
+
+void EchoAIManagerImpl::ReturnAIProofreaderCreationResult(
+    mojo::Remote<blink::mojom::AIManagerCreateProofreaderClient>
+        client_remote) {
+  model_downloaded_ = true;
+  mojo::PendingRemote<blink::mojom::AIProofreader> proofreader;
+  mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAIProofreader>(),
+                              proofreader.InitWithNewPipeAndPassReceiver());
+  client_remote->OnResult(std::move(proofreader));
 }
 
 void EchoAIManagerImpl::DoMockDownloadingAndReturn(base::OnceClosure callback) {

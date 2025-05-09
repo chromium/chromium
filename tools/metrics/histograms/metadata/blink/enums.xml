@@ -6185,6 +6185,14 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5557" label="IntegrityPolicyInServiceWorkerResponse"/>
   <int value="5558" label="EditContextTextFormatUnderlineStyle"/>
   <int value="5559" label="EditContextTextFormatUnderlineThickness"/>
+  <int value="5560" label="Proofreader_IncludeCorrectionTypes"/>
+  <int value="5561" label="Proofreader_IncludeCorrectionExplanations"/>
+  <int value="5562" label="Proofreader_ExpectedInputLanguages"/>
+  <int value="5563" label="Proofreader_CorrectionExplanationLanguage"/>
+  <int value="5564" label="Proofreader_Destroy"/>
+  <int value="5565" label="Proofreader_Proofread"/>
+  <int value="5566" label="Proofreader_Availability"/>
+  <int value="5567" label="Proofreader_Create"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -6808,7 +6816,7 @@ Called by update_permissions_policy_enum.py.-->
 </enum>
 
 <enum name="ImageHasMultipleGeneratorClientIds">
-  <int value="0" label="Image decode is requested by at least one client"/>
+  <int value="0" label="Image decode is requested bfy at least one client"/>
   <int value="1" label="Image decode is requested by more than one client"/>
 </enum>
 

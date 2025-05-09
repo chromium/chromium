@@ -78,6 +78,9 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
   void ReturnAISummarizerCreationResult(
       mojo::Remote<blink::mojom::AIManagerCreateSummarizerClient>
           client_remote);
+  void ReturnAIProofreaderCreationResult(
+      mojo::Remote<blink::mojom::AIManagerCreateProofreaderClient>
+          client_remot);
 
   void DoMockDownloadingAndReturn(base::OnceClosure callback);
 

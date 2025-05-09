@@ -357,6 +357,10 @@
       implied_by: ["AIPromptAPI"],
     },
     {
+      name: "AIProofreadingAPI",
+      status: "test",
+    },
+    {
       name: "AIRewriterAPI",
       public: true,
       status: "experimental",
@@ -704,6 +708,7 @@
         "AIWriterAPI",
         "LanguageDetectionAPI",
         "TranslationAPI",
+        "AIProofreadingAPI",
       ]
     },
     {

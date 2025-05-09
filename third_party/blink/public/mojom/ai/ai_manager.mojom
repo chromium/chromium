@@ -6,6 +6,7 @@ module blink.mojom;
 
 import "third_party/blink/public/mojom/ai/ai_common.mojom";
 import "third_party/blink/public/mojom/ai/ai_language_model.mojom";
+import "third_party/blink/public/mojom/ai/ai_proofreader.mojom";
 import "third_party/blink/public/mojom/ai/ai_rewriter.mojom";
 import "third_party/blink/public/mojom/ai/ai_summarizer.mojom";
 import "third_party/blink/public/mojom/ai/ai_writer.mojom";
@@ -101,6 +102,16 @@ interface AIManagerCreateSummarizerClient {
   OnResult(pending_remote<blink.mojom.AISummarizer> summarizer);
 
   // Called when the manager cannot create an AISummarizer.
+  OnError(AIManagerCreateClientError error);
+};
+
+// The client interface that receives an AIProofreader from an AIManager.
+interface AIManagerCreateProofreaderClient {
+  // Called with a created proofreader's mojo interface as a result for the
+  // CreateProofreader() method of the AIManager.
+  OnResult(pending_remote<blink.mojom.AIProofreader> proofreader);
+
+  // Called when the manager cannot create an AIProofreader.
   OnError(AIManagerCreateClientError error);
 };
 

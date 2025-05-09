@@ -8,9 +8,11 @@
 #include "base/types/expected.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink.h"
+#include "third_party/blink/public/mojom/ai/ai_proofreader.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_rewriter.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_summarizer.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_writer.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_proofreader_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rewriter_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_summarizer_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_writer_create_options.h"
@@ -50,6 +52,10 @@ mojom::blink::AIRewriterCreateOptionsPtr ToMojoRewriterCreateOptions(
     const RewriterCreateOptions* options);
 mojom::blink::AIRewriterCreateOptionsPtr ToMojoRewriterCreateOptions(
     const RewriterCreateCoreOptions* core_options);
+mojom::blink::AIProofreaderCreateOptionsPtr ToMojoProofreaderCreateOptions(
+    const ProofreaderCreateOptions* options);
+mojom::blink::AIProofreaderCreateOptionsPtr ToMojoProofreaderCreateOptions(
+    const ProofreaderCreateCoreOptions* core_options);
 
 // Implementation of LookupMatchingLocaleByBestFit
 // (https://tc39.es/ecma402/#sec-lookupmatchinglocalebybestfit) as

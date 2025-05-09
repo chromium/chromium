@@ -4861,6 +4861,14 @@ enum WebFeature {
   kIntegrityPolicyInServiceWorkerResponse = 5557,
   kEditContextTextFormatUnderlineStyle = 5558,
   kEditContextTextFormatUnderlineThickness = 5559,
+  kProofreader_IncludeCorrectionTypes = 5560,
+  kProofreader_IncludeCorrectionExplanations = 5561,
+  kProofreader_ExpectedInputLanguages = 5562,
+  kProofreader_CorrectionExplanationLanguage = 5563,
+  kProofreader_Destroy = 5564,
+  kProofreader_Proofread = 5565,
+  kProofreader_Availability = 5566,
+  kProofreader_Create = 5567,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

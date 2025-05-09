@@ -1551,6 +1551,17 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter promise
 [Worker]     getter reason
 [Worker]     method constructor
+[Worker] interface Proofreader
+[Worker]     static method availability
+[Worker]     static method create
+[Worker]     attribute @@toStringTag
+[Worker]     getter correctionExplanationLanguage
+[Worker]     getter expectedInputLanguages
+[Worker]     getter includeCorrectionExplanations
+[Worker]     getter includeCorrectionTypes
+[Worker]     method constructor
+[Worker]     method destroy
+[Worker]     method proofread
 [Worker] interface PushManager
 [Worker]     static getter supportedContentEncodings
 [Worker]     attribute @@toStringTag

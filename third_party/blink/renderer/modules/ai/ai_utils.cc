@@ -151,6 +151,16 @@ mojom::blink::AIRewriterCreateOptionsPtr ToMojoRewriterCreateOptionsImpl(
           options->getOutputLanguageOr(g_empty_string)));
 }
 
+mojom::blink::AIProofreaderCreateOptionsPtr ToMojoProofreaderCreateOptionsImpl(
+    const ProofreaderCreateCoreOptions* options) {
+  return mojom::blink::AIProofreaderCreateOptions::New(
+      options->includeCorrectionTypes(),
+      options->includeCorrectionExplanations(),
+      mojom::blink::AILanguageCode::New(
+          options->getCorrectionExplanationLanguageOr(g_empty_string)),
+      ToMojoLanguageCodes(options->getExpectedInputLanguagesOr({})));
+}
+
 }  // namespace
 
 Vector<mojom::blink::AILanguageCodePtr> ToMojoLanguageCodes(
@@ -224,6 +234,16 @@ mojom::blink::AIRewriterCreateOptionsPtr ToMojoRewriterCreateOptions(
 mojom::blink::AIRewriterCreateOptionsPtr ToMojoRewriterCreateOptions(
     const RewriterCreateCoreOptions* core_options) {
   return ToMojoRewriterCreateOptionsImpl(core_options, g_empty_string);
+}
+
+mojom::blink::AIProofreaderCreateOptionsPtr ToMojoProofreaderCreateOptions(
+    const ProofreaderCreateOptions* options) {
+  return ToMojoProofreaderCreateOptionsImpl(options);
+}
+
+mojom::blink::AIProofreaderCreateOptionsPtr ToMojoProofreaderCreateOptions(
+    const ProofreaderCreateCoreOptions* core_options) {
+  return ToMojoProofreaderCreateOptionsImpl(core_options);
 }
 
 std::optional<Vector<String>> ValidateAndCanonicalizeBCP47Languages(

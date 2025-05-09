@@ -462,6 +462,8 @@ source_set("browser") {
     "ai/echo_ai_language_model.h",
     "ai/echo_ai_manager_impl.cc",
     "ai/echo_ai_manager_impl.h",
+    "ai/echo_ai_proofreader.h",
+    "ai/echo_ai_proofreader.cc",
     "ai/echo_ai_rewriter.cc",
     "ai/echo_ai_rewriter.h",
     "ai/echo_ai_summarizer.cc",

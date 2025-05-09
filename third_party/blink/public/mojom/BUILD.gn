@@ -30,6 +30,7 @@ mojom("mojom_platform") {
     "ai/ai_common.mojom",
     "ai/ai_language_model.mojom",
     "ai/ai_manager.mojom",
+    "ai/ai_proofreader.mojom",
     "ai/ai_rewriter.mojom",
     "ai/ai_summarizer.mojom",
     "ai/ai_writer.mojom",
