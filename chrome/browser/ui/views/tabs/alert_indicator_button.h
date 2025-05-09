@@ -88,7 +88,7 @@ class AlertIndicatorButton : public views::ImageButton,
   gfx::ImageSkia GetImageToPaint() override;
 
  private:
-  friend class AlertIndicatorButtonTest;
+  friend class TabContentsTest;
   friend class TabTest;
   class FadeAnimationDelegate;
 
