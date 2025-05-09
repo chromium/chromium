@@ -75,8 +75,7 @@ class OverlayPresentationContextViewControllerTest : public PlatformTest {
 
 // Tests that `view_controller_`'s frame is CGRectZero when there is no overlay
 // UI presented upon it.
-// TODO(crbug.com/409942614): Fix this flaky test.
-TEST_F(OverlayPresentationContextViewControllerTest, FLAKY_NoPresentedUI) {
+TEST_F(OverlayPresentationContextViewControllerTest, NoPresentedUI) {
   CGRect container_view_frame =
       view_controller_.presentationController.containerView.frame;
   EXPECT_TRUE(CGRectEqualToRect(container_view_frame, CGRectZero));
@@ -88,13 +87,6 @@ TEST_F(OverlayPresentationContextViewControllerTest, FLAKY_NoPresentedUI) {
 // showing overlay UI presented over its context.
 TEST_F(OverlayPresentationContextViewControllerTest,
        PresentedOverCurrentContext) {
-  if (@available(iOS 15.7.1, *)) {
-    if (@available(iOS 15.7.2, *)) {
-    } else {
-      // TODO(crbug.com/40254110): Failing on a few 15.7.1 devices.
-      return;
-    }
-  }
   // Create a fake overlay coordinator that presents its UI over
   // `view_controller_`.
   std::unique_ptr<OverlayRequest> request =
@@ -146,16 +138,7 @@ TEST_F(OverlayPresentationContextViewControllerTest,
 // Tests that `view_controller_`'s frame is the same as its presented view's
 // container view if it is shown using custom UIViewController presentation that
 // resizes the contianer view.
-// TODO(crbug.com/409942614): Fix this flaky test.
-TEST_F(OverlayPresentationContextViewControllerTest,
-       FLAKY_ResizingPresentedOverlay) {
-  if (@available(iOS 15.7.1, *)) {
-    if (@available(iOS 15.7.2, *)) {
-    } else {
-      // TODO(crbug.com/40254110): Failing on a few 15.7.1 devices.
-      return;
-    }
-  }
+TEST_F(OverlayPresentationContextViewControllerTest, ResizingPresentedOverlay) {
   // Create a fake overlay coordinator that presents its UI over
   // `view_controller_` and resizes its presentation container view to
   // kWindowFrame.
