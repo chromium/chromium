@@ -83,7 +83,9 @@ public class TabGroupListBottomSheetView implements BottomSheetContent {
 
     @Override
     public int getPriority() {
-        return ContentPriority.LOW;
+        // Since this is the result of a user action, this needs to be able to override
+        // more persistent bottom sheets.
+        return ContentPriority.HIGH;
     }
 
     @Override
