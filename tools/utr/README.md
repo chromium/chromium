@@ -30,8 +30,16 @@ command line args). So if you're investigating a failure encountered on a
 builder, you can re-use the UTR command printed alongside the failure.
 This will re-compile & re-launch the test locally:
 
-<!-- TODO(crbug.com/349529661): Replace with a SS of repro instructions.-->
 ![Milo UTR invocation](docs/milo_command.png)
+
+You can also find the corresponding UTR invocation in the "reproduction
+instructions" for a test by clicking the 📄 symbol next to its result at the
+top of the build page:
+
+![UTR repro instruction](docs/utr_repro_instruction.png)
+
+You can also click on the same 📄 symbol next to a test suite's step further
+down the build page to see the UTR invocation that will run the entire suite.
 
 Alternatively, if you don't have a specific builder name already at hand, you
 can choose a relevant gardened builder on the
@@ -46,6 +54,9 @@ you're interested in. Some basic builders you can use are listed below:
 - [mac14-tests](https://ci.chromium.org/ui/p/chromium/builders/ci/mac14-tests),
   runs basic functional test suites on Mac-14 VMs. Use `-B ci -b mac14-tests`
   on the UTR cmd line.
+- [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/ci/ios-simulator),
+  runs basic functional test suites on iOS simulators hosted on Mac VMs. Use
+  `-B ci -b ios-simulator` on the UTR cmd line.
 - [android-13-x64-rel](https://ci.chromium.org/ui/p/chromium/builders/ci/android-13-x64-rel),
   runs basic functional test suites on Android-13 emulators on intel. Use `-B
   ci -b android-13-x64-rel` on the UTR cmd line.
@@ -62,11 +73,18 @@ you're interested in. Some basic builders you can use are listed below:
   runs basic functional test suites on CrOS VMs running on intel. Use `-B ci -b
   chromeos-amd64-generic-rel-gtest` on the UTR cmd line.
 
-Note that the names of the above builders may change over time and the links
-may eventually break. Navigate the build console to find the current list of
-running builders.
+*** note
+Note the following:
+- The names of the above builders may change over time and the links may
+  eventually break. Navigate [the build console](https://build.chromium.org/)
+  to find the current list of running builders.
+- Not all cross-compilations are supported. The UTR will flag a warning in such
+  cases (eg compiling a Mac test from a Linux machine). Your mileage may vary
+  when running the UTR from a platform that differs from the one used on the
+  builder.
+***
 
-## Command-line Examples
+### Command-line Examples
 
 Below are some example invocations of the UTR:
 
@@ -159,6 +177,47 @@ $ vpython3 run.py -B ci -b 'Linux Tests' -t base_unittests compile-and-test
 
 See [here](../../infra/config/targets/README.md) for more info about how a
 builder's tests are configured in starlark.
+
+## Tips/tricks
+
+### Git bisect
+
+If you're investigating a regression on a builder that's consistently failing,
+it may help to use the UTR to bisect down to the revision that introduced the
+regression. For example,
+`OpticalCharacterRecognizerResultsTest.PerformOCRLargeImage` in browser_tests
+started consistently failing on this builder:
+
+![build regression range](docs/regression_range.png)
+
+**1.** To bisect it, first open the build of the first red build, navigate to the
+blamelist tab, and copy the revision range:
+
+![blamelist](docs/blamelist.png)
+
+**2.** Then enter those revisions into this git command. (Note: need to swap the
+revs on the git command so that the known-bad rev comes first followed by the
+known-good rev.)
+```
+git bisect start 9743247a 41fcf2a7
+```
+
+**3.** Then copy the UTR reproduction command for the failing test:
+
+![utr bisect command](docs/utr_bisect_cmd.png)
+
+**4.** And paste that into the following git command to initiate the bisect:
+```
+git bisect run bash -c 'gclient sync && vpython3 tools/utr -p chromium -B ci -b "Linux Tests (dbg)(1)" -t browser_tests compile-and-test -- --gtest_filter=OpticalCharacterRecognizerResultsTest.PerformOCRLargeImage'
+```
+
+**5.** Given the size of the revision range, it may take some time to fully
+bisect. But when it's finished, it should hopefully report the revision that
+introduced the regression:
+
+![bisect result](docs/bisect_result.png)
+
+**6.** Don't forget to `git bisect reset` when finished bisecting.
 
 ## Questions/feedback
 
