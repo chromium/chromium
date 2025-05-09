@@ -1670,9 +1670,7 @@ const CSSUrlData* CollectUrlData(const StringView& url,
   AtomicString url_string = url.ToAtomicString();
   return MakeGarbageCollected<CSSUrlData>(
       url_string, context.CompleteNonEmptyURL(url_string),
-      context.GetReferrer(),
-      context.IsOriginClean() ? OriginClean::kTrue : OriginClean::kFalse,
-      context.IsAdRelated());
+      context.GetReferrer(), context.IsOriginClean(), context.IsAdRelated());
 }
 
 }  // namespace
