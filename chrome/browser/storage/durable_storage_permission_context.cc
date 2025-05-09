@@ -21,12 +21,14 @@
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/common/origin_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -69,6 +71,9 @@ void DurableStoragePermissionContext::DecidePermission(
       CookieSettingsFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context()));
 
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+      request_data->id.global_render_frame_host_id());
+  CHECK(rfh);
   // Don't grant durable for session-only storage, since it won't be persisted
   // anyway. Don't grant durable if we can't write cookies.
   if (cookie_settings->IsCookieSessionOnly(request_data->requesting_origin) ||
@@ -76,7 +81,8 @@ void DurableStoragePermissionContext::DecidePermission(
           request_data->requesting_origin,
           net::SiteForCookies::FromUrl(request_data->requesting_origin),
           url::Origin::Create(request_data->requesting_origin),
-          net::CookieSettingOverrides())) {
+          net::CookieSettingOverrides(),
+          rfh->GetStorageKey().ToCookiePartitionKey())) {
     NotifyPermissionSet(request_data, std::move(callback),
                         /*persist=*/false, CONTENT_SETTING_DEFAULT,
                         /*is_one_time=*/false,
