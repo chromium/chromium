@@ -86,7 +86,7 @@ blink::mojom::IDBReturnValuePtr ExtractReturnValueFromCursorValue(
       (!idb_return_value.empty() && object_store_metadata.auto_increment &&
        !object_store_metadata.key_path.IsNull());
   if (is_generated_key) {
-    idb_return_value.primary_key = cursor.GetPrimaryKey();
+    idb_return_value.primary_key = cursor.GetPrimaryKey().Clone();
     idb_return_value.key_path = object_store_metadata.key_path;
   }
 
@@ -339,7 +339,7 @@ Status Database::VersionChangeOperation(int64_t version,
 
 Status Database::GetOperation(int64_t object_store_id,
                               int64_t index_id,
-                              std::unique_ptr<IndexedDBKeyRange> key_range,
+                              IndexedDBKeyRange key_range,
                               CursorType cursor_type,
                               blink::mojom::IDBDatabase::GetCallback callback,
                               Transaction* transaction) {
@@ -356,37 +356,36 @@ Status Database::GetOperation(int64_t object_store_id,
   const IndexedDBObjectStoreMetadata& object_store_metadata =
       GetObjectStoreMetadata(object_store_id);
 
-  const IndexedDBKey* key;
-
-  base::expected<std::unique_ptr<BackingStore::Cursor>, Status>
-      backing_store_cursor;
-  if (key_range->IsOnlyKey()) {
-    key = &key_range->lower();
+  IndexedDBKey key;
+  if (key_range.IsOnlyKey()) {
+    key = std::move(key_range).TakeOnlyKey();
   } else {
+    base::expected<std::unique_ptr<BackingStore::Cursor>, Status>
+        backing_store_cursor;
     if (index_id == IndexedDBIndexMetadata::kInvalidId) {
       // ObjectStore Retrieval Operation
       if (cursor_type == CursorType::kKeyOnly) {
         backing_store_cursor =
             transaction->BackingStoreTransaction()->OpenObjectStoreKeyCursor(
-                object_store_id, *key_range,
+                object_store_id, key_range,
                 blink::mojom::IDBCursorDirection::Next);
       } else {
         backing_store_cursor =
             transaction->BackingStoreTransaction()->OpenObjectStoreCursor(
-                object_store_id, *key_range,
+                object_store_id, key_range,
                 blink::mojom::IDBCursorDirection::Next);
       }
     } else if (cursor_type == CursorType::kKeyOnly) {
       // Index Value Retrieval Operation
       backing_store_cursor =
           transaction->BackingStoreTransaction()->OpenIndexKeyCursor(
-              object_store_id, index_id, *key_range,
+              object_store_id, index_id, key_range,
               blink::mojom::IDBCursorDirection::Next);
     } else {
       // Index Referenced Value Retrieval Operation
       backing_store_cursor =
           transaction->BackingStoreTransaction()->OpenIndexCursor(
-              object_store_id, index_id, *key_range,
+              object_store_id, index_id, key_range,
               blink::mojom::IDBCursorDirection::Next);
     }
 
@@ -405,14 +404,14 @@ Status Database::GetOperation(int64_t object_store_id,
       return Status::OK();
     }
 
-    key = &(*backing_store_cursor)->GetKey();
+    key = std::move(**backing_store_cursor).TakeKey();
   }
 
   if (index_id == IndexedDBIndexMetadata::kInvalidId) {
     // Object Store Retrieval Operation
     IndexedDBReturnValue value;
     Status s = transaction->BackingStoreTransaction()->GetRecord(
-        object_store_id, *key, &value);
+        object_store_id, key, &value);
     if (!s.ok()) {
       std::move(callback).Run(
           blink::mojom::IDBDatabaseGetResult::NewErrorResult(
@@ -429,13 +428,13 @@ Status Database::GetOperation(int64_t object_store_id,
 
     if (cursor_type == CursorType::kKeyOnly) {
       std::move(callback).Run(
-          blink::mojom::IDBDatabaseGetResult::NewKey(std::move(*key)));
+          blink::mojom::IDBDatabaseGetResult::NewKey(std::move(key)));
       return s;
     }
 
     if (object_store_metadata.auto_increment &&
         !object_store_metadata.key_path.IsNull()) {
-      value.primary_key = *key;
+      value.primary_key = std::move(key);
       value.key_path = object_store_metadata.key_path;
     }
 
@@ -451,7 +450,7 @@ Status Database::GetOperation(int64_t object_store_id,
   // From here we are dealing only with indexes.
   std::unique_ptr<IndexedDBKey> primary_key;
   Status s = transaction->BackingStoreTransaction()->GetPrimaryKeyViaIndex(
-      object_store_id, index_id, *key, &primary_key);
+      object_store_id, index_id, key, &primary_key);
   if (!s.ok()) {
     std::move(callback).Run(blink::mojom::IDBDatabaseGetResult::NewErrorResult(
         CreateIDBErrorPtr(blink::mojom::IDBException::kUnknownError,
@@ -487,7 +486,7 @@ Status Database::GetOperation(int64_t object_store_id,
   }
   if (object_store_metadata.auto_increment &&
       !object_store_metadata.key_path.IsNull()) {
-    value.primary_key = *primary_key;
+    value.primary_key = std::move(*primary_key);
     value.key_path = object_store_metadata.key_path;
   }
 
@@ -503,7 +502,7 @@ Status Database::GetOperation(int64_t object_store_id,
 Transaction::Operation Database::CreateGetAllOperation(
     int64_t object_store_id,
     int64_t index_id,
-    std::unique_ptr<blink::IndexedDBKeyRange> key_range,
+    blink::IndexedDBKeyRange key_range,
     blink::mojom::IDBGetAllResultType result_type,
     int64_t max_count,
     blink::mojom::IDBCursorDirection direction,
@@ -570,7 +569,7 @@ Database::GetAllResultSinkWrapper::Get() {
 Status Database::GetAllOperation(
     int64_t object_store_id,
     int64_t index_id,
-    std::unique_ptr<IndexedDBKeyRange> key_range,
+    IndexedDBKeyRange key_range,
     blink::mojom::IDBGetAllResultType result_type,
     int64_t max_count,
     blink::mojom::IDBCursorDirection direction,
@@ -597,22 +596,22 @@ Status Database::GetAllOperation(
     if (index_id == IndexedDBIndexMetadata::kInvalidId) {
       // Object Store: Key Retrieval Operation
       cursor = transaction->BackingStoreTransaction()->OpenObjectStoreKeyCursor(
-          object_store_id, *key_range, direction);
+          object_store_id, key_range, direction);
     } else {
       // Index Value: (Primary Key) Retrieval Operation
       cursor = transaction->BackingStoreTransaction()->OpenIndexKeyCursor(
-          object_store_id, index_id, *key_range, direction);
+          object_store_id, index_id, key_range, direction);
     }
   } else {
     // Retrieving values
     if (index_id == IndexedDBIndexMetadata::kInvalidId) {
       // Object Store: Value Retrieval Operation
       cursor = transaction->BackingStoreTransaction()->OpenObjectStoreCursor(
-          object_store_id, *key_range, direction);
+          object_store_id, key_range, direction);
     } else {
       // Object Store: Referenced Value Retrieval Operation
       cursor = transaction->BackingStoreTransaction()->OpenIndexCursor(
-          object_store_id, index_id, *key_range, direction);
+          object_store_id, index_id, key_range, direction);
     }
   }
 
@@ -676,9 +675,10 @@ Status Database::GetAllOperation(
     blink::mojom::IDBRecordPtr return_record;
 
     if (result_type == blink::mojom::IDBGetAllResultType::Keys) {
-      return_record = blink::mojom::IDBRecord::New((*cursor)->GetPrimaryKey(),
-                                                   /*value=*/nullptr,
-                                                   /*index_key=*/std::nullopt);
+      return_record =
+          blink::mojom::IDBRecord::New((*cursor)->GetPrimaryKey().Clone(),
+                                       /*value=*/nullptr,
+                                       /*index_key=*/std::nullopt);
     } else if (result_type == blink::mojom::IDBGetAllResultType::Values) {
       blink::mojom::IDBReturnValuePtr return_value =
           ExtractReturnValueFromCursorValue(bucket_context_.get(),
@@ -695,16 +695,16 @@ Status Database::GetAllOperation(
       std::optional<IndexedDBKey> index_key;
       if (index_id != IndexedDBIndexMetadata::kInvalidId) {
         // The index key only exists for `IDBIndex::getAllRecords()`.
-        index_key = (*cursor)->GetKey();
+        index_key = (*cursor)->GetKey().Clone();
       }
-      return_record = blink::mojom::IDBRecord::New((*cursor)->GetPrimaryKey(),
-                                                   std::move(return_value),
-                                                   std::move(index_key));
+      return_record = blink::mojom::IDBRecord::New(
+          (*cursor)->GetPrimaryKey().Clone(), std::move(return_value),
+          std::move(index_key));
     } else {
       NOTREACHED();
     }
 
-    found_records.push_back(std::move(return_record));
+    found_records.emplace_back(std::move(return_record));
 
     // Periodically stream records if we have too many.
     if (found_records.size() >= max_values_before_sending) {
@@ -717,8 +717,8 @@ Status Database::GetAllOperation(
 
 Status Database::SetIndexKeysOperation(
     int64_t object_store_id,
-    std::unique_ptr<IndexedDBKey> primary_key,
-    const std::vector<IndexedDBIndexKeys>& index_keys,
+    IndexedDBKey primary_key,
+    std::vector<IndexedDBIndexKeys> index_keys,
     Transaction* transaction) {
   DCHECK(transaction);
   TRACE_EVENT1("IndexedDB", "Database::SetIndexKeysOperation", "txn.id",
@@ -729,7 +729,7 @@ Status Database::SetIndexKeysOperation(
   BackingStore::RecordIdentifier record_identifier;
   bool found = false;
   Status s = transaction->BackingStoreTransaction()->KeyExistsInObjectStore(
-      object_store_id, *primary_key, &record_identifier, &found);
+      object_store_id, primary_key, &record_identifier, &found);
   if (!s.ok()) {
     return s;
   }
@@ -745,9 +745,10 @@ Status Database::SetIndexKeysOperation(
 
   const IndexedDBObjectStoreMetadata& object_store_metadata =
       GetObjectStoreMetadata(object_store_id);
-  bool backing_store_success = MakeIndexWriters(
-      transaction, object_store_metadata, *primary_key, false, index_keys,
-      &index_writers, &error_message, &obeys_constraints);
+  bool backing_store_success =
+      MakeIndexWriters(transaction, object_store_metadata, primary_key, false,
+                       std::move(index_keys), &index_writers, &error_message,
+                       &obeys_constraints);
   if (!backing_store_success) {
     return transaction->Abort(DatabaseError(
         blink::mojom::IDBException::kUnknownError,
@@ -806,23 +807,23 @@ Status Database::OpenCursorOperation(
       DCHECK_EQ(params->task_type, blink::mojom::IDBTaskType::Normal);
       backing_store_cursor =
           transaction->BackingStoreTransaction()->OpenObjectStoreKeyCursor(
-              params->object_store_id, *params->key_range, params->direction);
+              params->object_store_id, params->key_range, params->direction);
     } else {
       backing_store_cursor =
           transaction->BackingStoreTransaction()->OpenObjectStoreCursor(
-              params->object_store_id, *params->key_range, params->direction);
+              params->object_store_id, params->key_range, params->direction);
     }
   } else {
     DCHECK_EQ(params->task_type, blink::mojom::IDBTaskType::Normal);
     if (params->cursor_type == CursorType::kKeyOnly) {
       backing_store_cursor =
           transaction->BackingStoreTransaction()->OpenIndexKeyCursor(
-              params->object_store_id, params->index_id, *params->key_range,
+              params->object_store_id, params->index_id, params->key_range,
               params->direction);
     } else {
       backing_store_cursor =
           transaction->BackingStoreTransaction()->OpenIndexCursor(
-              params->object_store_id, params->index_id, *params->key_range,
+              params->object_store_id, params->index_id, params->key_range,
               params->direction);
     }
   }
@@ -861,15 +862,15 @@ Status Database::OpenCursorOperation(
   std::move(params->callback)
       .Run(blink::mojom::IDBDatabaseOpenCursorResult::NewValue(
           blink::mojom::IDBDatabaseOpenCursorValue::New(
-              std::move(pending_remote), cursor->key(), cursor->primary_key(),
-              std::move(mojo_value))));
+              std::move(pending_remote), cursor->key().Clone(),
+              cursor->primary_key().Clone(), std::move(mojo_value))));
   return Status::OK();
 }
 
 Status Database::CountOperation(
     int64_t object_store_id,
     int64_t index_id,
-    std::unique_ptr<IndexedDBKeyRange> key_range,
+    IndexedDBKeyRange key_range,
     blink::mojom::IDBDatabase::CountCallback callback,
     Transaction* transaction) {
   TRACE_EVENT1("IndexedDB", "Database::CountOperation", "txn.id",
@@ -884,12 +885,11 @@ Status Database::CountOperation(
   if (index_id == IndexedDBIndexMetadata::kInvalidId) {
     backing_store_cursor =
         transaction->BackingStoreTransaction()->OpenObjectStoreKeyCursor(
-            object_store_id, *key_range,
-            blink::mojom::IDBCursorDirection::Next);
+            object_store_id, key_range, blink::mojom::IDBCursorDirection::Next);
   } else {
     backing_store_cursor =
         transaction->BackingStoreTransaction()->OpenIndexKeyCursor(
-            object_store_id, index_id, *key_range,
+            object_store_id, index_id, key_range,
             blink::mojom::IDBCursorDirection::Next);
   }
   if (!backing_store_cursor.has_value()) {
@@ -917,7 +917,7 @@ Status Database::CountOperation(
 
 Status Database::DeleteRangeOperation(
     int64_t object_store_id,
-    std::unique_ptr<IndexedDBKeyRange> key_range,
+    IndexedDBKeyRange key_range,
     blink::mojom::IDBDatabase::DeleteRangeCallback success_callback,
     Transaction* transaction) {
   TRACE_EVENT1("IndexedDB", "Database::DeleteRangeOperation", "txn.id",
@@ -926,7 +926,7 @@ Status Database::DeleteRangeOperation(
   Status s;
   if (IsObjectStoreIdInMetadata(object_store_id)) {
     s = transaction->BackingStoreTransaction()->DeleteRange(object_store_id,
-                                                            *key_range);
+                                                            key_range);
   } else {
     s = Status::InvalidArgument("Invalid object_store_id.");
   }

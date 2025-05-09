@@ -448,9 +448,9 @@ void Transaction::DeleteObjectStore(int64_t object_store_id) {
 
 void Transaction::Put(int64_t object_store_id,
                       blink::mojom::IDBValuePtr input_value,
-                      const blink::IndexedDBKey& key,
+                      blink::IndexedDBKey key,
                       blink::mojom::IDBPutMode mode,
-                      const std::vector<blink::IndexedDBIndexKeys>& index_keys,
+                      std::vector<blink::IndexedDBIndexKeys> index_keys,
                       blink::mojom::IDBTransaction::PutCallback callback) {
   if (!IsAcceptingRequests()) {
     return;
@@ -489,8 +489,9 @@ void Transaction::Put(int64_t object_store_id,
   // This is decremented in DoPut.
   in_flight_memory_ += value.SizeEstimate();
   ScheduleTask(BindWeakOperation(&Transaction::DoPut, AsWeakPtr(),
-                                 object_store_id, std::move(value), key, mode,
-                                 index_keys, std::move(wrapped_callback)));
+                                 object_store_id, std::move(value),
+                                 std::move(key), mode, std::move(index_keys),
+                                 std::move(wrapped_callback)));
 }
 
 Status Transaction::DoPut(int64_t object_store_id,
@@ -563,9 +564,9 @@ Status Transaction::DoPut(int64_t object_store_id,
   std::vector<std::unique_ptr<IndexWriter>> index_writers;
   std::string error_message;
   bool obeys_constraints = false;
-  bool backing_store_success =
-      MakeIndexWriters(this, object_store, key, key_was_generated, index_keys,
-                       &index_writers, &error_message, &obeys_constraints);
+  bool backing_store_success = MakeIndexWriters(
+      this, object_store, key, key_was_generated, std::move(index_keys),
+      &index_writers, &error_message, &obeys_constraints);
   if (!backing_store_success) {
     on_put_error(std::move(callback), blink::mojom::IDBException::kUnknownError,
                  u"Internal error: backing store error updating index keys.");
@@ -618,7 +619,8 @@ Status Transaction::DoPut(int64_t object_store_id,
   {
     TRACE_EVENT1("IndexedDB", "Database::PutOperation.Callbacks", "txn.id",
                  id());
-    std::move(callback).Run(blink::mojom::IDBTransactionPutResult::NewKey(key));
+    std::move(callback).Run(
+        blink::mojom::IDBTransactionPutResult::NewKey(std::move(key)));
   }
 
   bucket_context()->delegate().on_content_changed.Run(

@@ -218,17 +218,18 @@ class BackingStore {
 
     virtual const blink::IndexedDBKey& GetKey() const = 0;
     virtual const blink::IndexedDBKey& GetPrimaryKey() const = 0;
+    virtual blink::IndexedDBKey TakeKey() && = 0;
     virtual IndexedDBValue& GetValue() = 0;
 
-    virtual bool Continue(const blink::IndexedDBKey* key,
-                          const blink::IndexedDBKey* primary_key,
+    virtual bool Continue(const blink::IndexedDBKey& key,
+                          const blink::IndexedDBKey& primary_key,
                           IteratorState state,
                           Status*) = 0;
     virtual bool Advance(uint32_t count, Status*) = 0;
     // Clone may return a nullptr if cloning fails for any reason.
     virtual std::unique_ptr<Cursor> Clone() const = 0;
 
-    bool Continue(Status* s) { return Continue(nullptr, nullptr, SEEK, s); }
+    bool Continue(Status* s) { return Continue({}, {}, SEEK, s); }
   };
 
   virtual ~BackingStore() = default;

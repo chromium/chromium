@@ -635,7 +635,7 @@ bool DecodeIDBKeyRecursive(std::string_view* slice,
         std::unique_ptr<IndexedDBKey> key;
         if (!DecodeIDBKeyRecursive(slice, &key, recursion + 1))
           return false;
-        array.push_back(*key);
+        array.push_back(std::move(*key));
       }
       *value = std::make_unique<IndexedDBKey>(std::move(array));
       return true;

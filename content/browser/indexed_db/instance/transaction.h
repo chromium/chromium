@@ -198,9 +198,9 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   void DeleteObjectStore(int64_t object_store_id) override;
   void Put(int64_t object_store_id,
            blink::mojom::IDBValuePtr value,
-           const blink::IndexedDBKey& key,
+           blink::IndexedDBKey key,
            blink::mojom::IDBPutMode mode,
-           const std::vector<blink::IndexedDBIndexKeys>& index_keys,
+           std::vector<blink::IndexedDBIndexKeys> index_keys,
            blink::mojom::IDBTransaction::PutCallback callback) override;
   void Commit(int64_t num_errors_handled) override;
 

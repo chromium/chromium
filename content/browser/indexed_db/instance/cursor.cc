@@ -146,8 +146,10 @@ Status Cursor::AdvanceOperation(
     mojo_value = blink::mojom::IDBValue::New();
   }
 
-  std::vector<IndexedDBKey> keys = {key()};
-  std::vector<IndexedDBKey> primary_keys = {primary_key()};
+  std::vector<IndexedDBKey> keys;
+  keys.emplace_back(key().Clone());
+  std::vector<IndexedDBKey> primary_keys;
+  primary_keys.emplace_back(primary_key().Clone());
   std::vector<blink::mojom::IDBValuePtr> values;
   values.push_back(std::move(mojo_value));
   std::move(callback).Run(blink::mojom::IDBCursorResult::NewValues(
@@ -156,8 +158,8 @@ Status Cursor::AdvanceOperation(
   return s;
 }
 
-void Cursor::Continue(const IndexedDBKey& key,
-                      const IndexedDBKey& primary_key,
+void Cursor::Continue(IndexedDBKey key,
+                      IndexedDBKey primary_key,
                       blink::mojom::IDBCursor::ContinueCallback callback) {
   TRACE_EVENT0("IndexedDB", "Cursor::Continue");
   if (!transaction_) {
@@ -178,23 +180,19 @@ void Cursor::Continue(const IndexedDBKey& key,
   transaction_->ScheduleTask(
       task_type_,
       BindWeakOperation<Cursor>(
-          &Cursor::ContinueOperation, ptr_factory_.GetWeakPtr(),
-          key.IsValid() ? std::make_unique<blink::IndexedDBKey>(key) : nullptr,
-          primary_key.IsValid()
-              ? std::make_unique<blink::IndexedDBKey>(primary_key)
-              : nullptr,
-          std::move(aborting_callback)));
+          &Cursor::ContinueOperation, ptr_factory_.GetWeakPtr(), std::move(key),
+          std::move(primary_key), std::move(aborting_callback)));
 }
 
 Status Cursor::ContinueOperation(
-    std::unique_ptr<IndexedDBKey> key,
-    std::unique_ptr<IndexedDBKey> primary_key,
+    IndexedDBKey key,
+    IndexedDBKey primary_key,
     blink::mojom::IDBCursor::ContinueCallback callback,
     Transaction* /*transaction*/) {
   TRACE_EVENT0("IndexedDB", "Cursor::ContinueOperation");
   Status s = Status::OK();
-  if (!cursor_ || !cursor_->Continue(key.get(), primary_key.get(),
-                                     BackingStore::Cursor::SEEK, &s)) {
+  if (!cursor_ ||
+      !cursor_->Continue(key, primary_key, BackingStore::Cursor::SEEK, &s)) {
     cursor_.reset();
     if (s.ok()) {
       // This happens if we reach the end of the iterator and can't continue.
@@ -224,8 +222,10 @@ Status Cursor::ContinueOperation(
     mojo_value = blink::mojom::IDBValue::New();
   }
 
-  std::vector<IndexedDBKey> keys = {this->key()};
-  std::vector<IndexedDBKey> primary_keys = {this->primary_key()};
+  std::vector<IndexedDBKey> keys;
+  keys.emplace_back(this->key().Clone());
+  std::vector<IndexedDBKey> primary_keys;
+  primary_keys.emplace_back(this->primary_key().Clone());
   std::vector<blink::mojom::IDBValuePtr> values;
   values.push_back(std::move(mojo_value));
   std::move(callback).Run(blink::mojom::IDBCursorResult::NewValues(
@@ -303,8 +303,8 @@ Status Cursor::PrefetchIterationOperation(
       saved_cursor_ = cursor_->Clone();
     }
 
-    found_keys.push_back(cursor_->GetKey());
-    found_primary_keys.push_back(cursor_->GetPrimaryKey());
+    found_keys.emplace_back(cursor_->GetKey().Clone());
+    found_primary_keys.emplace_back(cursor_->GetPrimaryKey().Clone());
 
     switch (cursor_type_) {
       case indexed_db::CursorType::kKeyOnly:

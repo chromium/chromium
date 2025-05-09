@@ -67,12 +67,16 @@ struct TestIDBRecord {
   TestIDBRecord(IndexedDBKey primary_key,
                 const IndexedDBValue& value,
                 std::optional<IndexedDBKey> index_key)
-      : primary_key(primary_key), value(value.Clone()), index_key(index_key) {}
+      : primary_key(std::move(primary_key)),
+        value(value.Clone()),
+        index_key(std::move(index_key)) {}
 
   TestIDBRecord(const TestIDBRecord& other) {
-    primary_key = other.primary_key;
+    primary_key = other.primary_key.Clone();
     value = other.value.Clone();
-    index_key = other.index_key;
+    if (other.index_key) {
+      index_key = other.index_key->Clone();
+    }
   }
 
   IndexedDBKey primary_key;
@@ -263,12 +267,14 @@ void ExpectEqualsIDBReturnValuePtr(
 // `external_objects` is not set and remains empty.
 blink::mojom::IDBReturnValuePtr CreateIDBReturnValuePtr(
     const std::string& bits,
-    IndexedDBKey primary_key = {},
+    const IndexedDBKey* primary_key = nullptr,
     IndexedDBKeyPath key_path = {}) {
   blink::mojom::IDBReturnValuePtr result = blink::mojom::IDBReturnValue::New();
   result->value = blink::mojom::IDBValue::New();
   result->value->bits.assign(bits.begin(), bits.end());
-  result->primary_key = std::move(primary_key);
+  if (primary_key) {
+    result->primary_key = primary_key->Clone();
+  }
   result->key_path = std::move(key_path);
   return result;
 }
@@ -734,11 +740,12 @@ class DatabaseOperationTest : public DatabaseTest {
 
     // Populate the object store and optionally the index with the provided
     // records.
-    for (const TestIDBRecord& record : database_parameters.records) {
+    for (TestIDBRecord& record : database_parameters.records) {
       std::vector<IndexedDBIndexKeys> index_keys;
       ASSERT_EQ(record.index_key.has_value(), has_index);
       if (has_index) {
-        IndexedDBIndexKeys index_key{index_id, {*record.index_key}};
+        IndexedDBIndexKeys index_key{index_id, {}};
+        index_key.keys.emplace_back(std::move(*record.index_key));
         index_keys.emplace_back(std::move(index_key));
       }
 
@@ -751,7 +758,7 @@ class DatabaseOperationTest : public DatabaseTest {
       transaction_->in_flight_memory_ += 1000;
 
       status = transaction_->DoPut(
-          store_id, record.value.Clone(), record.primary_key,
+          store_id, record.value.Clone(), std::move(record.primary_key),
           blink::mojom::IDBPutMode::AddOnly, std::move(index_keys),
           callback.Get(), transaction_);
       EXPECT_TRUE(status.ok()) << status.ToString();
@@ -767,15 +774,11 @@ class DatabaseOperationTest : public DatabaseTest {
             transaction_->AsWeakPtr(), std::move(get_all_callback));
     result_sink_wrapper->UseDedicatedReceiverForTesting();
 
-    std::unique_ptr<blink::IndexedDBKeyRange> key_range =
-        std::make_unique<blink::IndexedDBKeyRange>(
-            get_all_parameters.key_range);
-
-    status = db_->GetAllOperation(store_id, index_id, std::move(key_range),
-                                  get_all_parameters.result_type,
-                                  get_all_parameters.max_count,
-                                  get_all_parameters.direction,
-                                  std::move(result_sink_wrapper), transaction_);
+    status = db_->GetAllOperation(
+        store_id, index_id, std::move(get_all_parameters.key_range),
+        get_all_parameters.result_type, get_all_parameters.max_count,
+        get_all_parameters.direction, std::move(result_sink_wrapper),
+        transaction_);
     EXPECT_TRUE(status.ok()) << status.ToString();
 
     result_sink.WaitForResults();
@@ -1657,13 +1660,10 @@ TEST_F(DatabaseOperationTest, ObjectStoreGetAllKeysWithInvalidObjectStoreId) {
 
   TestGetAllParameters get_all_parameters;
 
-  std::unique_ptr<blink::IndexedDBKeyRange> key_range =
-      std::make_unique<blink::IndexedDBKeyRange>(get_all_parameters.key_range);
-
   Status status = db_->GetAllOperation(
       kTestObjectStoreId,
       /*index_id=*/blink::IndexedDBIndexMetadata::kInvalidId,
-      std::move(key_range), get_all_parameters.result_type,
+      std::move(get_all_parameters.key_range), get_all_parameters.result_type,
       get_all_parameters.max_count, get_all_parameters.direction,
       std::move(result_sink_wrapper), transaction_);
   ASSERT_TRUE(status.IsInvalidArgument()) << status.ToString();
@@ -1702,11 +1702,8 @@ TEST_F(DatabaseOperationTest, IndexGetAllKeysWithInvalidIndexId) {
 
   TestGetAllParameters get_all_parameters;
 
-  std::unique_ptr<blink::IndexedDBKeyRange> key_range =
-      std::make_unique<blink::IndexedDBKeyRange>(get_all_parameters.key_range);
-
   status = db_->GetAllOperation(
-      kTestObjectStoreId, kTestIndexId, std::move(key_range),
+      kTestObjectStoreId, kTestIndexId, std::move(get_all_parameters.key_range),
       get_all_parameters.result_type, get_all_parameters.max_count,
       get_all_parameters.direction, std::move(result_sink_wrapper),
       transaction_);
@@ -1782,21 +1779,21 @@ TEST_F(DatabaseOperationTest, IndexGetAllRecordsWithAutoIncrementingKeys) {
 
   const blink::mojom::IDBRecordPtr expected_results[] = {
       blink::mojom::IDBRecord::New(
-          /*primary_key=*/expected_generated_keys[2],
+          /*primary_key=*/expected_generated_keys[2].Clone(),
           /*value=*/
-          CreateIDBReturnValuePtr("value3", expected_generated_keys[2],
+          CreateIDBReturnValuePtr("value3", &expected_generated_keys[2],
                                   object_store_key_path),
           /*index_key=*/IndexedDBKey{"index_key1"}),
       blink::mojom::IDBRecord::New(
-          /*primary_key=*/expected_generated_keys[1],
+          /*primary_key=*/expected_generated_keys[1].Clone(),
           /*value=*/
-          CreateIDBReturnValuePtr("value2", expected_generated_keys[1],
+          CreateIDBReturnValuePtr("value2", &expected_generated_keys[1],
                                   object_store_key_path),
           /*index_key=*/IndexedDBKey{"index_key2"}),
       blink::mojom::IDBRecord::New(
-          /*primary_key=*/expected_generated_keys[0],
+          /*primary_key=*/expected_generated_keys[0].Clone(),
           /*value=*/
-          CreateIDBReturnValuePtr("value1", expected_generated_keys[0],
+          CreateIDBReturnValuePtr("value1", &expected_generated_keys[0],
                                   object_store_key_path),
           /*index_key=*/IndexedDBKey{"index_key3"}),
   };

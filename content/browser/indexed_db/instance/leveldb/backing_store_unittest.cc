@@ -712,7 +712,7 @@ class BackingStoreTestWithBlobs : public BackingStoreTestWithExternalObjects {
 
 TEST_F(BackingStoreTest, PutGetConsistency) {
   base::RunLoop loop;
-  const IndexedDBKey key = key1_;
+  const IndexedDBKey& key = key1_;
   IndexedDBValue& value = value1_;
   BackingStore::Database db(*backing_store(),
                             BackingStore::DatabaseMetadata{u"name"});
@@ -810,7 +810,11 @@ TEST_P(BackingStoreTestWithExternalObjects, PutGetConsistency) {
                            blink::mojom::IDBTransactionMode::ReadWrite);
 
   transaction3->Begin(CreateDummyLock());
-  EXPECT_TRUE(transaction3->DeleteRange(1, IndexedDBKeyRange(key3_)).ok());
+  EXPECT_TRUE(
+      transaction3
+          ->DeleteRange(
+              1, IndexedDBKeyRange(key3_.Clone(), key3_.Clone(), false, false))
+          .ok());
   succeeded = false;
   EXPECT_TRUE(
       transaction3->CommitPhaseOne(CreateBlobWriteCallback(&succeeded)).ok());
@@ -831,9 +835,9 @@ TEST_P(BackingStoreTestWithExternalObjects, BlobWriteCleanup) {
   BackingStore::Database db(*backing_store(),
                             BackingStore::DatabaseMetadata{u"name"});
   db.metadata().id = 1;
-  const std::vector<IndexedDBKey> keys = {
-      IndexedDBKey(u"key0"), IndexedDBKey(u"key1"), IndexedDBKey(u"key2"),
-      IndexedDBKey(u"key3")};
+  const auto keys =
+      std::to_array({IndexedDBKey(u"key0"), IndexedDBKey(u"key1"),
+                     IndexedDBKey(u"key2"), IndexedDBKey(u"key3")});
 
   const int64_t object_store_id = 1;
 
@@ -843,12 +847,12 @@ TEST_P(BackingStoreTestWithExternalObjects, BlobWriteCleanup) {
     external_objects().push_back(CreateBlobInfo(base::UTF8ToUTF16(type), 1));
   }
 
-  std::array<IndexedDBValue, 4> values{
+  auto values = std::to_array({
       IndexedDBValue("value0", {external_objects()[0]}),
       IndexedDBValue("value1", {external_objects()[1]}),
       IndexedDBValue("value2", {external_objects()[2]}),
       IndexedDBValue("value3", {external_objects()[3]}),
-  };
+  });
   ASSERT_GE(keys.size(), values.size());
 
   // Validate that cleaning up after writing blobs does not delete those
@@ -885,15 +889,15 @@ TEST_P(BackingStoreTestWithExternalObjects, DeleteRange) {
   BackingStore::Database db(*backing_store(),
                             BackingStore::DatabaseMetadata{u"name"});
   db.metadata().id = 1;
-  const std::vector<IndexedDBKey> keys = {
-      IndexedDBKey(u"key0"), IndexedDBKey(u"key1"), IndexedDBKey(u"key2"),
-      IndexedDBKey(u"key3")};
+  const auto keys =
+      std::to_array({IndexedDBKey(u"key0"), IndexedDBKey(u"key1"),
+                     IndexedDBKey(u"key2"), IndexedDBKey(u"key3")});
   const auto ranges = std::to_array({
-      IndexedDBKeyRange(keys[1], keys[2], false, false),
-      IndexedDBKeyRange(keys[1], keys[2], false, false),
-      IndexedDBKeyRange(keys[0], keys[2], true, false),
-      IndexedDBKeyRange(keys[1], keys[3], false, true),
-      IndexedDBKeyRange(keys[0], keys[3], true, true),
+      IndexedDBKeyRange(keys[1].Clone(), keys[2].Clone(), false, false),
+      IndexedDBKeyRange(keys[1].Clone(), keys[2].Clone(), false, false),
+      IndexedDBKeyRange(keys[0].Clone(), keys[2].Clone(), true, false),
+      IndexedDBKeyRange(keys[1].Clone(), keys[3].Clone(), false, true),
+      IndexedDBKeyRange(keys[0].Clone(), keys[3].Clone(), true, true),
   });
 
   for (size_t i = 0; i < std::size(ranges); ++i) {
@@ -910,12 +914,12 @@ TEST_P(BackingStoreTestWithExternalObjects, DeleteRange) {
     blob_context_->ClearWrites();
     file_system_access_context_->ClearWrites();
 
-    std::array<IndexedDBValue, 4> values{
+    auto values = std::to_array({
         IndexedDBValue("value0", {external_objects[0]}),
         IndexedDBValue("value1", {external_objects[1]}),
         IndexedDBValue("value2", {external_objects[2]}),
         IndexedDBValue("value3", {external_objects[3]}),
-    };
+    });
     ASSERT_GE(keys.size(), values.size());
 
     // Initiate transaction1 - write records.
@@ -969,15 +973,18 @@ TEST_P(BackingStoreTestWithExternalObjects, DeleteRangeEmptyRange) {
   BackingStore::Database db(*backing_store(),
                             BackingStore::DatabaseMetadata{u"name"});
   db.metadata().id = 1;
-  const std::vector<IndexedDBKey> keys = {
-      IndexedDBKey(u"key0"), IndexedDBKey(u"key1"), IndexedDBKey(u"key2"),
-      IndexedDBKey(u"key3"), IndexedDBKey(u"key4"),
-  };
-  const std::vector<IndexedDBKeyRange> ranges = {
-      IndexedDBKeyRange(keys[3], keys[4], true, false),
-      IndexedDBKeyRange(keys[2], keys[1], false, false),
-      IndexedDBKeyRange(keys[2], keys[1], true, true),
-  };
+  const auto keys = std::to_array({
+      IndexedDBKey(u"key0"),
+      IndexedDBKey(u"key1"),
+      IndexedDBKey(u"key2"),
+      IndexedDBKey(u"key3"),
+      IndexedDBKey(u"key4"),
+  });
+  const auto ranges = std::to_array({
+      IndexedDBKeyRange(keys[3].Clone(), keys[4].Clone(), true, false),
+      IndexedDBKeyRange(keys[2].Clone(), keys[1].Clone(), false, false),
+      IndexedDBKeyRange(keys[2].Clone(), keys[1].Clone(), true, true),
+  });
 
   for (size_t i = 0; i < std::size(ranges); ++i) {
     const int64_t object_store_id = i + 1;
@@ -993,12 +1000,12 @@ TEST_P(BackingStoreTestWithExternalObjects, DeleteRangeEmptyRange) {
     blob_context_->ClearWrites();
     file_system_access_context_->ClearWrites();
 
-    std::array<IndexedDBValue, 4> values{
+    auto values = std::to_array({
         IndexedDBValue("value0", {external_objects[0]}),
         IndexedDBValue("value1", {external_objects[1]}),
         IndexedDBValue("value2", {external_objects[2]}),
         IndexedDBValue("value3", {external_objects[3]}),
-    };
+    });
     ASSERT_GE(keys.size(), values.size());
 
     // Initiate transaction1 - write records.
@@ -1141,7 +1148,10 @@ TEST_P(BackingStoreTestWithExternalObjects, ActiveBlobJournal) {
       db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
                            blink::mojom::IDBTransactionMode::ReadWrite);
   transaction3->Begin(CreateDummyLock());
-  EXPECT_TRUE(transaction3->DeleteRange(1, IndexedDBKeyRange(key3_)).ok());
+  EXPECT_TRUE(
+      transaction3
+          ->DeleteRange(1, IndexedDBKeyRange(key3_.Clone(), {}, false, false))
+          .ok());
   succeeded = false;
   EXPECT_TRUE(
       transaction3->CommitPhaseOne(CreateBlobWriteCallback(&succeeded)).ok());
@@ -1246,8 +1256,8 @@ TEST_F(BackingStoreTest, CreateAndDeleteIndex) {
 // Make sure that using very high ( more than 32 bit ) values for
 // database_id and object_store_id still work.
 TEST_F(BackingStoreTest, HighIds) {
-  IndexedDBKey key1 = key1_;
-  IndexedDBKey key2 = key2_;
+  IndexedDBKey& key1 = key1_;
+  IndexedDBKey& key2 = key2_;
   IndexedDBValue& value1 = value1_;
 
   const int64_t high_database_id = 1ULL << 35;
@@ -1323,7 +1333,7 @@ TEST_F(BackingStoreTest, HighIds) {
 
 // Make sure that other invalid ids do not crash.
 TEST_F(BackingStoreTest, InvalidIds) {
-  const IndexedDBKey key = key1_;
+  const IndexedDBKey& key = key1_;
   IndexedDBValue& value = value1_;
 
   // valid ids for use when testing invalid ids
@@ -1765,7 +1775,7 @@ TEST_P(BackingStoreTestWithExternalObjects, RollbackClearsDiskSpace) {
   transaction.Begin(CreateDummyLock());
 
   // Prepare test data for second transaction.
-  IndexedDBKey key = IndexedDBKey(u"key0");
+  IndexedDBKey key(u"key0");
   std::string name = "name0";
   IndexedDBExternalObject test_blob =
       CreateBlobInfo(base::UTF8ToUTF16(name), 100);
@@ -2022,7 +2032,7 @@ TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV4ToV5) {
   transaction->Begin(CreateDummyLock());
   BackingStore::RecordIdentifier record;
 
-  IndexedDBKey key = IndexedDBKey(u"key");
+  IndexedDBKey key(u"key");
   IndexedDBValue value = IndexedDBValue("value3", external_objects());
 
   EXPECT_TRUE(
@@ -2093,9 +2103,9 @@ TEST_F(BackingStoreTestWithBlobs, SchemaUpgradeV4ToV5) {
 // See: http://crbug.com/488851
 // TODO(enne): we could use more comprehensive testing for ClearObjectStore.
 TEST_P(BackingStoreTestWithExternalObjects, ClearObjectStoreObjects) {
-  const std::vector<IndexedDBKey> keys = {
-      IndexedDBKey(u"key0"), IndexedDBKey(u"key1"), IndexedDBKey(u"key2"),
-      IndexedDBKey(u"key3")};
+  const auto keys =
+      std::to_array({IndexedDBKey(u"key0"), IndexedDBKey(u"key1"),
+                     IndexedDBKey(u"key2"), IndexedDBKey(u"key3")});
 
   const int64_t object_store_id = 999;
 
@@ -2113,12 +2123,12 @@ TEST_P(BackingStoreTestWithExternalObjects, ClearObjectStoreObjects) {
       external_objects.push_back(CreateBlobInfo(base::UTF8ToUTF16(type), 1));
     }
 
-    std::array<IndexedDBValue, 4> values{
+    auto values = std::to_array({
         IndexedDBValue("value0", {external_objects[0]}),
         IndexedDBValue("value1", {external_objects[1]}),
         IndexedDBValue("value2", {external_objects[2]}),
         IndexedDBValue("value3", {external_objects[3]}),
-    };
+    });
     ASSERT_GE(keys.size(), values.size());
 
     // Initiate transaction1 - write records.

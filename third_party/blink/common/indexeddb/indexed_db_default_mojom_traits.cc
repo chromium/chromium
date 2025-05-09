@@ -190,8 +190,8 @@ bool StructTraits<blink::mojom::IDBKeyRangeDataView, blink::IndexedDBKeyRange>::
   if (!data.ReadLower(&lower) || !data.ReadUpper(&upper))
     return false;
 
-  *out = blink::IndexedDBKeyRange(lower, upper, data.lower_open(),
-                                  data.upper_open());
+  *out = blink::IndexedDBKeyRange(std::move(lower), std::move(upper),
+                                  data.lower_open(), data.upper_open());
   return true;
 }
 

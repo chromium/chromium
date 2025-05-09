@@ -108,15 +108,15 @@ class CONTENT_EXPORT Database {
 
   Status GetOperation(int64_t object_store_id,
                       int64_t index_id,
-                      std::unique_ptr<blink::IndexedDBKeyRange> key_range,
+                      blink::IndexedDBKeyRange key_range,
                       indexed_db::CursorType cursor_type,
                       blink::mojom::IDBDatabase::GetCallback callback,
                       Transaction* transaction);
 
   Status SetIndexKeysOperation(
       int64_t object_store_id,
-      std::unique_ptr<blink::IndexedDBKey> primary_key,
-      const std::vector<blink::IndexedDBIndexKeys>& index_keys,
+      blink::IndexedDBKey primary_key,
+      std::vector<blink::IndexedDBIndexKeys> index_keys,
       Transaction* transaction);
 
   Status SetIndexesReadyOperation(size_t index_count, Transaction* transaction);
@@ -131,7 +131,7 @@ class CONTENT_EXPORT Database {
     ~OpenCursorOperationParams();
     int64_t object_store_id;
     int64_t index_id;
-    std::unique_ptr<blink::IndexedDBKeyRange> key_range;
+    blink::IndexedDBKeyRange key_range;
     blink::mojom::IDBCursorDirection direction;
     indexed_db::CursorType cursor_type;
     blink::mojom::IDBTaskType task_type;
@@ -143,13 +143,13 @@ class CONTENT_EXPORT Database {
 
   Status CountOperation(int64_t object_store_id,
                         int64_t index_id,
-                        std::unique_ptr<blink::IndexedDBKeyRange> key_range,
+                        blink::IndexedDBKeyRange key_range,
                         blink::mojom::IDBDatabase::CountCallback callback,
                         Transaction* transaction);
 
   Status DeleteRangeOperation(
       int64_t object_store_id,
-      std::unique_ptr<blink::IndexedDBKeyRange> key_range,
+      blink::IndexedDBKeyRange key_range,
       blink::mojom::IDBDatabase::DeleteRangeCallback success_callback,
       Transaction* transaction);
 
@@ -167,7 +167,7 @@ class CONTENT_EXPORT Database {
   base::OnceCallback<Status(Transaction*)> CreateGetAllOperation(
       int64_t object_store_id,
       int64_t index_id,
-      std::unique_ptr<blink::IndexedDBKeyRange> key_range,
+      blink::IndexedDBKeyRange key_range,
       blink::mojom::IDBGetAllResultType result_type,
       int64_t max_count,
       blink::mojom::IDBCursorDirection direction,
@@ -245,7 +245,7 @@ class CONTENT_EXPORT Database {
 
   Status GetAllOperation(int64_t object_store_id,
                          int64_t index_id,
-                         std::unique_ptr<blink::IndexedDBKeyRange> key_range,
+                         blink::IndexedDBKeyRange key_range,
                          blink::mojom::IDBGetAllResultType result_type,
                          int64_t max_count,
                          blink::mojom::IDBCursorDirection direction,

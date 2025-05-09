@@ -44,8 +44,8 @@ class Cursor : public blink::mojom::IDBCursor {
   // blink::mojom::IDBCursor implementation
   void Advance(uint32_t count,
                blink::mojom::IDBCursor::AdvanceCallback callback) override;
-  void Continue(const blink::IndexedDBKey& key,
-                const blink::IndexedDBKey& primary_key,
+  void Continue(blink::IndexedDBKey key,
+                blink::IndexedDBKey primary_key,
                 blink::mojom::IDBCursor::ContinueCallback callback) override;
   void Prefetch(int32_t count,
                 blink::mojom::IDBCursor::PrefetchCallback callback) override;
@@ -69,8 +69,8 @@ class Cursor : public blink::mojom::IDBCursor {
          blink::mojom::IDBTaskType task_type,
          base::WeakPtr<Transaction> transaction);
 
-  Status ContinueOperation(std::unique_ptr<blink::IndexedDBKey> key,
-                           std::unique_ptr<blink::IndexedDBKey> primary_key,
+  Status ContinueOperation(blink::IndexedDBKey key,
+                           blink::IndexedDBKey primary_key,
                            blink::mojom::IDBCursor::ContinueCallback callback,
                            Transaction* transaction);
   Status AdvanceOperation(uint32_t count,

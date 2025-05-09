@@ -366,8 +366,9 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     // indexed_db::BackingStore::Cursor:
     const blink::IndexedDBKey& GetKey() const override;
     const blink::IndexedDBKey& GetPrimaryKey() const override;
-    bool Continue(const blink::IndexedDBKey* key,
-                  const blink::IndexedDBKey* primary_key,
+    blink::IndexedDBKey TakeKey() && override;
+    bool Continue(const blink::IndexedDBKey& key,
+                  const blink::IndexedDBKey& primary_key,
                   IteratorState state,
                   Status*) override;
     bool Advance(uint32_t count, Status*) override;
@@ -414,15 +415,15 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     enum class ContinueResult { LEVELDB_ERROR, DONE, OUT_OF_BOUNDS };
 
     // For cursors with direction Next or NextNoDuplicate.
-    ContinueResult ContinueNext(const blink::IndexedDBKey* key,
-                                const blink::IndexedDBKey* primary_key,
+    ContinueResult ContinueNext(const blink::IndexedDBKey& key,
+                                const blink::IndexedDBKey& primary_key,
                                 IteratorState state,
                                 Status*);
     // For cursors with direction Prev or PrevNoDuplicate. The PrevNoDuplicate
     // case has additional complexity of not being symmetric with
     // NextNoDuplicate.
-    ContinueResult ContinuePrevious(const blink::IndexedDBKey* key,
-                                    const blink::IndexedDBKey* primary_key,
+    ContinueResult ContinuePrevious(const blink::IndexedDBKey& key,
+                                    const blink::IndexedDBKey& primary_key,
                                     IteratorState state,
                                     Status*);
 

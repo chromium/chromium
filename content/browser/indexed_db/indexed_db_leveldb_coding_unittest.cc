@@ -33,13 +33,16 @@ static IndexedDBKey CreateArrayIDBKey() {
 }
 
 static IndexedDBKey CreateArrayIDBKey(const IndexedDBKey& key1) {
-  IndexedDBKey::KeyArray array = {key1};
+  IndexedDBKey::KeyArray array;
+  array.emplace_back(key1.Clone());
   return IndexedDBKey(std::move(array));
 }
 
 static IndexedDBKey CreateArrayIDBKey(const IndexedDBKey& key1,
                                       const IndexedDBKey& key2) {
-  IndexedDBKey::KeyArray array = {key1, key2};
+  IndexedDBKey::KeyArray array;
+  array.emplace_back(key1.Clone());
+  array.emplace_back(key2.Clone());
   return IndexedDBKey(std::move(array));
 }
 
@@ -514,21 +517,21 @@ TEST(IndexedDBLevelDBCodingTest, EncodeDecodeIDBKey) {
   std::string v;
   std::string_view slice;
 
-  std::vector<IndexedDBKey> test_cases = {
-      IndexedDBKey(1234, blink::mojom::IDBKeyType::Number),
-      IndexedDBKey(7890, blink::mojom::IDBKeyType::Date),
-      IndexedDBKey(u"Hello World!"), IndexedDBKey(std::string("\x01\x02")),
-      IndexedDBKey(IndexedDBKey::KeyArray())};
+  IndexedDBKey::KeyArray array;
+  array.emplace_back(1234, blink::mojom::IDBKeyType::Number);
+  array.emplace_back(7890, blink::mojom::IDBKeyType::Date);
+  array.emplace_back(u"Hello World!");
+  array.emplace_back(std::string("\x01\x02"));
+  array.emplace_back(IndexedDBKey::KeyArray());
 
-  IndexedDBKey::KeyArray array = {
-      IndexedDBKey(1234, blink::mojom::IDBKeyType::Number),
-      IndexedDBKey(7890, blink::mojom::IDBKeyType::Date),
-      IndexedDBKey(u"Hello World!"), IndexedDBKey(std::string("\x01\x02")),
-      IndexedDBKey(IndexedDBKey::KeyArray())};
-  test_cases.push_back(IndexedDBKey(std::move(array)));
+  auto test_cases = std::to_array(
+      {IndexedDBKey(1234, blink::mojom::IDBKeyType::Number),
+       IndexedDBKey(7890, blink::mojom::IDBKeyType::Date),
+       IndexedDBKey(u"Hello World!"), IndexedDBKey(std::string("\x01\x02")),
+       IndexedDBKey(IndexedDBKey::KeyArray()), IndexedDBKey(std::move(array))});
 
   for (size_t i = 0; i < test_cases.size(); ++i) {
-    expected_key = test_cases[i];
+    expected_key = test_cases[i].Clone();
     v.clear();
     EncodeIDBKey(expected_key, &v);
     slice = std::string_view(&*v.begin(), v.size());
@@ -710,7 +713,7 @@ TEST(IndexedDBLevelDBCodingTest, DecodeLegacyIDBKeyPath) {
 }
 
 TEST(IndexedDBLevelDBCodingTest, ExtractAndCompareIDBKeys) {
-  std::vector<IndexedDBKey> keys = {
+  auto keys = std::to_array({
       IndexedDBKey(-10, blink::mojom::IDBKeyType::Number),
       IndexedDBKey(0, blink::mojom::IDBKeyType::Number),
       IndexedDBKey(3.14, blink::mojom::IDBKeyType::Number),
@@ -753,7 +756,7 @@ TEST(IndexedDBLevelDBCodingTest, ExtractAndCompareIDBKeys) {
       CreateArrayIDBKey(CreateArrayIDBKey(CreateArrayIDBKey())),
       CreateArrayIDBKey(
           CreateArrayIDBKey(CreateArrayIDBKey(CreateArrayIDBKey()))),
-  };
+  });
 
   for (size_t i = 0; i < keys.size() - 1; ++i) {
     const IndexedDBKey& key_a = keys[i];
@@ -793,7 +796,7 @@ TEST(IndexedDBLevelDBCodingTest, ExtractAndCompareIDBKeys) {
 }
 
 TEST(IndexedDBLevelDBCodingTest, EncodeAndCompareIDBKeysWithSentinels) {
-  std::vector<IndexedDBKey> keys = {
+  auto keys = std::to_array({
       IndexedDBKey(-15, blink::mojom::IDBKeyType::Number),
       IndexedDBKey(-10, blink::mojom::IDBKeyType::Number),
       IndexedDBKey(0, blink::mojom::IDBKeyType::Number),
@@ -838,7 +841,7 @@ TEST(IndexedDBLevelDBCodingTest, EncodeAndCompareIDBKeysWithSentinels) {
       CreateArrayIDBKey(CreateArrayIDBKey(CreateArrayIDBKey())),
       CreateArrayIDBKey(
           CreateArrayIDBKey(CreateArrayIDBKey(CreateArrayIDBKey()))),
-  };
+  });
 
   for (size_t i = 0; i < keys.size() - 1; ++i) {
     const IndexedDBKey& key_a = keys[i];
@@ -867,8 +870,12 @@ TEST(IndexedDBLevelDBCodingTest, EncodeAndCompareIDBKeysWithSentinels) {
     EXPECT_EQ(sqlite_compare(encoded_b, encoded_b), 0);
   }
 
+  std::vector<IndexedDBKey> keys_vec;
+  for (const auto& key : keys) {
+    keys_vec.emplace_back(key.Clone());
+  }
   // Also test decoding by treating all test cases as one massive array key.
-  const IndexedDBKey all_keys_key(keys);
+  const IndexedDBKey all_keys_key(std::move(keys_vec));
   std::string encoded;
   EncodeSortableIDBKey(all_keys_key, &encoded);
   IndexedDBKey decoded_value;

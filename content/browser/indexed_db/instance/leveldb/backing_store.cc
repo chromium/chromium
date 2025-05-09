@@ -3193,7 +3193,8 @@ BackingStore::Cursor::Cursor(
       database_id_(other->database_id_),
       cursor_options_(other->cursor_options_),
       iterator_(std::move(iterator)),
-      current_key_(std::make_unique<IndexedDBKey>(*other->current_key_)) {
+      current_key_(
+          std::make_unique<IndexedDBKey>(other->current_key_->Clone())) {
   DCHECK(transaction_);
   DCHECK(iterator_);
 }
@@ -3215,6 +3216,10 @@ BackingStore::Cursor::~Cursor() {
 
 const blink::IndexedDBKey& BackingStore::Cursor::GetKey() const {
   return *current_key_;
+}
+
+blink::IndexedDBKey BackingStore::Cursor::TakeKey() && {
+  return std::move(*current_key_);
 }
 
 // static
@@ -3267,7 +3272,7 @@ bool BackingStore::Cursor::FirstSeek(Status* s) {
       return false;
     }
   }
-  return Continue(nullptr, nullptr, READY, s);
+  return Continue({}, {}, READY, s);
 }
 
 bool BackingStore::Cursor::Advance(uint32_t count, Status* s) {
@@ -3280,40 +3285,40 @@ bool BackingStore::Cursor::Advance(uint32_t count, Status* s) {
   return true;
 }
 
-bool BackingStore::Cursor::Continue(const IndexedDBKey* key,
-                                    const IndexedDBKey* primary_key,
+bool BackingStore::Cursor::Continue(const IndexedDBKey& key,
+                                    const IndexedDBKey& primary_key,
                                     IteratorState next_state,
                                     Status* s) {
   TRACE_EVENT0("IndexedDB", "BackingStore::Cursor::Continue");
-  DCHECK(!key || next_state == SEEK);
+  DCHECK(!key.IsValid() || next_state == SEEK);
 
   if (cursor_options_.forward) {
     return ContinueNext(key, primary_key, next_state, s) ==
            ContinueResult::DONE;
-  } else {
-    return ContinuePrevious(key, primary_key, next_state, s) ==
-           ContinueResult::DONE;
   }
+  return ContinuePrevious(key, primary_key, next_state, s) ==
+         ContinueResult::DONE;
 }
 
 BackingStore::Cursor::ContinueResult BackingStore::Cursor::ContinueNext(
-    const IndexedDBKey* key,
-    const IndexedDBKey* primary_key,
+    const IndexedDBKey& key,
+    const IndexedDBKey& primary_key,
     IteratorState next_state,
     Status* s) {
   DCHECK(cursor_options_.forward);
-  DCHECK(!key || key->IsValid());
-  DCHECK(!primary_key || primary_key->IsValid());
   *s = Status::OK();
 
   // TODO(alecflett): avoid a copy here?
-  IndexedDBKey previous_key = current_key_ ? *current_key_ : IndexedDBKey();
+  std::optional<IndexedDBKey> previous_key;
+  if (current_key_) {
+    previous_key.emplace(current_key_->Clone());
+  }
 
   // If seeking to a particular key (or key and primary key), skip the cursor
   // forward rather than iterating it.
-  if (next_state == SEEK && key) {
+  if (next_state == SEEK && key.IsValid()) {
     std::string leveldb_key =
-        primary_key ? EncodeKey(*key, *primary_key) : EncodeKey(*key);
+        primary_key.IsValid() ? EncodeKey(key, primary_key) : EncodeKey(key);
     *s = iterator_->Seek(leveldb_key);
     if (!s->ok()) {
       return ContinueResult::LEVELDB_ERROR;
@@ -3358,8 +3363,8 @@ BackingStore::Cursor::ContinueResult BackingStore::Cursor::ContinueNext(
     // Cursor is now positioned at a non-stale record in range.
 
     // "Unique" cursors should continue seeking until a new key value is seen.
-    if (cursor_options_.unique && previous_key.IsValid() &&
-        current_key_->Equals(previous_key)) {
+    if (cursor_options_.unique && previous_key && previous_key->IsValid() &&
+        current_key_->Equals(*previous_key)) {
       continue;
     }
 
@@ -3370,17 +3375,18 @@ BackingStore::Cursor::ContinueResult BackingStore::Cursor::ContinueNext(
 }
 
 BackingStore::Cursor::ContinueResult BackingStore::Cursor::ContinuePrevious(
-    const IndexedDBKey* key,
-    const IndexedDBKey* primary_key,
+    const IndexedDBKey& key,
+    const IndexedDBKey& primary_key,
     IteratorState next_state,
     Status* s) {
   DCHECK(!cursor_options_.forward);
-  DCHECK(!key || key->IsValid());
-  DCHECK(!primary_key || primary_key->IsValid());
   *s = Status::OK();
 
   // TODO(alecflett): avoid a copy here?
-  IndexedDBKey previous_key = current_key_ ? *current_key_ : IndexedDBKey();
+  std::optional<IndexedDBKey> previous_key;
+  if (current_key_) {
+    previous_key.emplace(current_key_->Clone());
+  }
 
   // When iterating with PrevNoDuplicate, spec requires that the value we
   // yield for each key is the *first* duplicate in forwards order. We do this
@@ -3430,12 +3436,12 @@ BackingStore::Cursor::ContinueResult BackingStore::Cursor::ContinuePrevious(
 
     // If seeking to a key (or key and primary key), continue until found.
     // TODO(jsbell): If Seek() optimization is added above, remove this.
-    if (key) {
-      if (primary_key && key->Equals(*current_key_) &&
-          primary_key->IsLessThan(this->GetPrimaryKey())) {
+    if (key.IsValid()) {
+      if (primary_key.IsValid() && key.Equals(*current_key_) &&
+          primary_key.IsLessThan(this->GetPrimaryKey())) {
         continue;
       }
-      if (key->IsLessThan(*current_key_)) {
+      if (key.IsLessThan(*current_key_)) {
         continue;
       }
     }
@@ -3447,13 +3453,14 @@ BackingStore::Cursor::ContinueResult BackingStore::Cursor::ContinuePrevious(
       // cursor should be positioned at the first duplicate already, new
       // duplicates may have been inserted since the cursor was last iterated,
       // and should be skipped to maintain "unique" iteration.
-      if (previous_key.IsValid() && current_key_->Equals(previous_key)) {
+      if (previous_key && previous_key->IsValid() &&
+          current_key_->Equals(*previous_key)) {
         continue;
       }
 
       // If we've found a new key, remember it and keep going.
       if (!duplicate_key.IsValid()) {
-        duplicate_key = *current_key_;
+        duplicate_key = current_key_->Clone();
         earliest_duplicate = std::string(iterator_->Key());
         continue;
       }
@@ -3732,7 +3739,8 @@ class IndexKeyCursorImpl : public BackingStore::Cursor {
       const IndexKeyCursorImpl* other,
       std::unique_ptr<TransactionalLevelDBIterator> iterator)
       : BackingStore::Cursor(other, std::move(iterator)),
-        primary_key_(std::make_unique<IndexedDBKey>(*other->primary_key_)) {}
+        primary_key_(
+            std::make_unique<IndexedDBKey>(other->primary_key_->Clone())) {}
 
   std::unique_ptr<IndexedDBKey> primary_key_;
 };
@@ -3842,11 +3850,11 @@ class IndexCursorImpl : public BackingStore::Cursor {
   }
 
  private:
-  explicit IndexCursorImpl(
-      const IndexCursorImpl* other,
-      std::unique_ptr<TransactionalLevelDBIterator> iterator)
+  IndexCursorImpl(const IndexCursorImpl* other,
+                  std::unique_ptr<TransactionalLevelDBIterator> iterator)
       : BackingStore::Cursor(other, std::move(iterator)),
-        primary_key_(std::make_unique<IndexedDBKey>(*other->primary_key_)),
+        primary_key_(
+            std::make_unique<IndexedDBKey>(other->primary_key_->Clone())),
         current_value_(other->current_value_.Clone()),
         primary_leveldb_key_(other->primary_leveldb_key_) {}
 

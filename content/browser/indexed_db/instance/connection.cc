@@ -303,7 +303,7 @@ void Connection::VersionChangeIgnored() {
 void Connection::Get(int64_t transaction_id,
                      int64_t object_store_id,
                      int64_t index_id,
-                     const IndexedDBKeyRange& key_range,
+                     IndexedDBKeyRange key_range,
                      bool key_only,
                      blink::mojom::IDBDatabase::GetCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -338,18 +338,18 @@ void Connection::Get(int64_t transaction_id,
                                     blink::mojom::IDBDatabaseGetResultPtr>(
           std::move(callback), transaction->AsWeakPtr());
 
-  transaction->ScheduleTask(BindWeakOperation(
-      &Database::GetOperation, database_, object_store_id, index_id,
-      std::make_unique<IndexedDBKeyRange>(key_range),
-      key_only ? indexed_db::CursorType::kKeyOnly
-               : indexed_db::CursorType::kKeyAndValue,
-      std::move(aborting_callback)));
+  transaction->ScheduleTask(
+      BindWeakOperation(&Database::GetOperation, database_, object_store_id,
+                        index_id, std::move(key_range),
+                        key_only ? indexed_db::CursorType::kKeyOnly
+                                 : indexed_db::CursorType::kKeyAndValue,
+                        std::move(aborting_callback)));
 }
 
 void Connection::GetAll(int64_t transaction_id,
                         int64_t object_store_id,
                         int64_t index_id,
-                        const IndexedDBKeyRange& key_range,
+                        IndexedDBKeyRange key_range,
                         blink::mojom::IDBGetAllResultType result_type,
                         int64_t max_count,
                         blink::mojom::IDBCursorDirection direction,
@@ -392,15 +392,14 @@ void Connection::GetAll(int64_t transaction_id,
   }
 
   transaction->ScheduleTask(database_->CreateGetAllOperation(
-      object_store_id, index_id, std::make_unique<IndexedDBKeyRange>(key_range),
-      result_type, max_count, direction, std::move(callback), transaction));
+      object_store_id, index_id, std::move(key_range), result_type, max_count,
+      direction, std::move(callback), transaction));
 }
 
-void Connection::SetIndexKeys(
-    int64_t transaction_id,
-    int64_t object_store_id,
-    const IndexedDBKey& primary_key,
-    const std::vector<IndexedDBIndexKeys>& index_keys) {
+void Connection::SetIndexKeys(int64_t transaction_id,
+                              int64_t object_store_id,
+                              IndexedDBKey primary_key,
+                              std::vector<IndexedDBIndexKeys> index_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsConnected()) {
     return;
@@ -433,9 +432,9 @@ void Connection::SetIndexKeys(
 
   transaction->ScheduleTask(
       blink::mojom::IDBTaskType::Preemptive,
-      BindWeakOperation(
-          &Database::SetIndexKeysOperation, database_, object_store_id,
-          std::make_unique<IndexedDBKey>(primary_key), index_keys));
+      BindWeakOperation(&Database::SetIndexKeysOperation, database_,
+                        object_store_id, std::move(primary_key),
+                        std::move(index_keys)));
 }
 
 void Connection::SetIndexesReady(int64_t transaction_id,
@@ -476,7 +475,7 @@ void Connection::OpenCursor(
     int64_t transaction_id,
     int64_t object_store_id,
     int64_t index_id,
-    const IndexedDBKeyRange& key_range,
+    IndexedDBKeyRange key_range,
     blink::mojom::IDBCursorDirection direction,
     bool key_only,
     blink::mojom::IDBTaskType task_type,
@@ -528,7 +527,7 @@ void Connection::OpenCursor(
       std::make_unique<Database::OpenCursorOperationParams>());
   params->object_store_id = object_store_id;
   params->index_id = index_id;
-  params->key_range = std::make_unique<IndexedDBKeyRange>(key_range);
+  params->key_range = std::move(key_range);
   params->direction = direction;
   params->cursor_type = key_only ? indexed_db::CursorType::kKeyOnly
                                  : indexed_db::CursorType::kKeyAndValue;
@@ -542,7 +541,7 @@ void Connection::OpenCursor(
 void Connection::Count(int64_t transaction_id,
                        int64_t object_store_id,
                        int64_t index_id,
-                       const IndexedDBKeyRange& key_range,
+                       IndexedDBKeyRange key_range,
                        CountCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -565,13 +564,12 @@ void Connection::Count(int64_t transaction_id,
 
   transaction->ScheduleTask(BindWeakOperation(
       &Database::CountOperation, database_, object_store_id, index_id,
-      std::make_unique<blink::IndexedDBKeyRange>(key_range),
-      std::move(wrapped_callback)));
+      std::move(key_range), std::move(wrapped_callback)));
 }
 
 void Connection::DeleteRange(int64_t transaction_id,
                              int64_t object_store_id,
-                             const IndexedDBKeyRange& key_range,
+                             IndexedDBKeyRange key_range,
                              DeleteRangeCallback success_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -598,8 +596,7 @@ void Connection::DeleteRange(int64_t transaction_id,
 
   transaction->ScheduleTask(BindWeakOperation(
       &Database::DeleteRangeOperation, database_, object_store_id,
-      std::make_unique<IndexedDBKeyRange>(key_range),
-      std::move(wrapped_callback)));
+      std::move(key_range), std::move(wrapped_callback)));
 }
 
 void Connection::GetKeyGeneratorCurrentNumber(

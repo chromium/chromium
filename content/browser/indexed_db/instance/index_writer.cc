@@ -29,8 +29,8 @@ IndexWriter::IndexWriter(const IndexedDBIndexMetadata& index_metadata)
     : index_metadata_(index_metadata) {}
 
 IndexWriter::IndexWriter(const IndexedDBIndexMetadata& index_metadata,
-                         const std::vector<IndexedDBKey>& keys)
-    : index_metadata_(index_metadata), keys_(keys) {}
+                         std::vector<IndexedDBKey> keys)
+    : index_metadata_(index_metadata), keys_(std::move(keys)) {}
 
 IndexWriter::~IndexWriter() {}
 
@@ -104,22 +104,22 @@ bool IndexWriter::AddingKeyAllowed(BackingStore::Transaction* transaction,
 
 bool MakeIndexWriters(Transaction* transaction,
                       const IndexedDBObjectStoreMetadata& object_store,
-                      const IndexedDBKey& primary_key,  // makes a copy
+                      const IndexedDBKey& primary_key,
                       bool key_was_generated,
-                      const std::vector<IndexedDBIndexKeys>& index_keys,
+                      std::vector<IndexedDBIndexKeys> index_keys,
                       std::vector<std::unique_ptr<IndexWriter>>* index_writers,
                       std::string* error_message,
                       bool* completed) {
   *completed = false;
 
-  for (const auto& it : index_keys) {
+  for (IndexedDBIndexKeys& it : index_keys) {
     auto found = object_store.indexes.find(it.id);
     if (found == object_store.indexes.end()) {
       continue;
     }
     const IndexedDBIndexMetadata& index = found->second;
     // A copy is made because additional keys may be added.
-    std::vector<IndexedDBKey> keys = it.keys;
+    std::vector<IndexedDBKey> keys = std::move(it.keys);
 
     // If the object_store is using a key generator to produce the primary key,
     // and the store uses in-line keys, index key paths may reference it.
@@ -127,7 +127,7 @@ bool MakeIndexWriters(Transaction* transaction,
       if (index.key_path == object_store.key_path) {
         // The index key path is the same as the store's key path - no index key
         // will have been sent by the front end, so synthesize one here.
-        keys.push_back(primary_key);
+        keys.emplace_back(primary_key.Clone());
 
       } else if (index.key_path.type() == blink::mojom::IDBKeyPathType::Array) {
         // An index with compound keys for a store with a key generator and

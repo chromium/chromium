@@ -1738,6 +1738,7 @@ mojom("mojom_modules") {
         {
           mojom = "blink.mojom.IDBIndexKeys"
           cpp = "::blink::IndexedDBIndexKeys"
+          move_only = true
         },
 
         {
@@ -1748,6 +1749,7 @@ mojom("mojom_modules") {
         {
           mojom = "blink.mojom.IDBKey"
           cpp = "::blink::IndexedDBKey"
+          move_only = true
         },
 
         {
@@ -1758,6 +1760,7 @@ mojom("mojom_modules") {
         {
           mojom = "blink.mojom.IDBKeyRange"
           cpp = "::blink::IndexedDBKeyRange"
+          move_only = true
         },
 
         {
