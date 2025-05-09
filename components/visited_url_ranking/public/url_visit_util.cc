@@ -169,8 +169,8 @@ scoped_refptr<InputContext> AsInputContextInternal(
   signal_value_map.emplace(
       "title", ProcessedValue(base::UTF16ToUTF8(
                    *url_visit_aggregate.GetAssociatedTitles().begin())));
-  signal_value_map.emplace(
-      "url", ProcessedValue(*url_visit_aggregate.GetAssociatedURLs().begin()));
+  GURL url = *(*url_visit_aggregate.GetAssociatedURLs().begin());
+  signal_value_map.emplace("url", std::move(url));
   signal_value_map.emplace("url_key",
                            ProcessedValue(url_visit_aggregate.url_key));
 

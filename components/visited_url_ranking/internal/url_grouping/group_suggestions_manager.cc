@@ -55,15 +55,6 @@ FetchOptions GetFetchOptionsForSuggestions() {
                       std::move(transforms));
 }
 
-const char* GetNameForInput(URLVisitAggregateRankingModelInputSignals signal) {
-  for (const auto& field : kSuggestionsPredictionSchema) {
-    if (field.signal == signal) {
-      return field.name;
-    }
-  }
-  return nullptr;
-}
-
 void RecordSuggestionUKM(
     const GroupSuggestion& shown_suggestion,
     const std::vector<scoped_refptr<segmentation_platform::InputContext>>&
@@ -295,7 +286,8 @@ void GroupSuggestionsManager::OnFinishComputeSuggestions(
     return;
   }
   std::erase_if(suggestions->suggestions, [&](const auto& suggestion) {
-    return !suggestion_tracker_->ShouldShowSuggestion(suggestion);
+    return !suggestion_tracker_->ShouldShowSuggestion(suggestion,
+                                                      result.inputs);
   });
   base::UmaHistogramCounts100(
       "GroupSuggestionsService.SuggestionsCountAfterThrottling",
@@ -352,7 +344,7 @@ void GroupSuggestionsManager::ShowSuggestion(
 }
 
 void GroupSuggestionsManager::OnSuggestionResult(
-    GroupSuggestion shown_suggestion,
+    const GroupSuggestion& shown_suggestion,
     const std::vector<scoped_refptr<segmentation_platform::InputContext>>&
         inputs,
     GroupSuggestionsDelegate::UserResponseMetadata user_response) {
@@ -365,7 +357,7 @@ void GroupSuggestionsManager::OnSuggestionResult(
   }
   // TODO(ssid): Track all suggestions instead of assuming UI shows the first.
   DCHECK_EQ(user_response.suggestion_id, shown_suggestion.suggestion_id);
-  suggestion_tracker_->AddSuggestion(shown_suggestion,
+  suggestion_tracker_->AddSuggestion(shown_suggestion, inputs,
                                      user_response.user_response);
 }
 

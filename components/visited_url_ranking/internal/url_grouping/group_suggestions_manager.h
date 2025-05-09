@@ -67,7 +67,7 @@ class GroupSuggestionsManager {
           inputs);
 
   void OnSuggestionResult(
-      GroupSuggestion shown_suggestion,
+      const GroupSuggestion& shown_suggestion,
       const std::vector<scoped_refptr<segmentation_platform::InputContext>>&
           inputs,
       GroupSuggestionsDelegate::UserResponseMetadata user_response);

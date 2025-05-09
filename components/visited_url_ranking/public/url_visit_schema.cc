@@ -158,4 +158,13 @@ constexpr std::array<FieldSchema, kSuggestionsNumInputs>
          {.signal = URLVisitAggregateRankingModelInputSignals::kIsLastTab,
           .name = kSignalIsLastTab}}};
 
+const char* GetNameForInput(URLVisitAggregateRankingModelInputSignals signal) {
+  for (const auto& field : kSuggestionsPredictionSchema) {
+    if (field.signal == signal) {
+      return field.name;
+    }
+  }
+  return nullptr;
+}
+
 }  // namespace visited_url_ranking

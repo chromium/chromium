@@ -6,6 +6,7 @@
 #define COMPONENTS_VISITED_URL_RANKING_INTERNAL_URL_GROUPING_GROUP_SUGGESTIONS_TRACKER_H_
 
 #include "base/containers/flat_set.h"
+#include "components/segmentation_platform/public/input_context.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions_delegate.h"
 
@@ -20,6 +21,7 @@ class GroupSuggestionsTracker {
   static const char kGroupSuggestionsTrackerTimeKey[];
   static const char kGroupSuggestionsTrackerUserResponseKey[];
   static const char kGroupSuggestionsTrackerUserTabIdsKey[];
+  static const char kGroupSuggestionsTrackerHostHashesKey[];
 
   explicit GroupSuggestionsTracker(PrefService* pref_service);
   ~GroupSuggestionsTracker();
@@ -29,10 +31,16 @@ class GroupSuggestionsTracker {
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  void AddSuggestion(const GroupSuggestion& suggestion,
-                     GroupSuggestionsDelegate::UserResponse user_response);
+  void AddSuggestion(
+      const GroupSuggestion& suggestion,
+      const std::vector<scoped_refptr<segmentation_platform::InputContext>>&
+          inputs,
+      GroupSuggestionsDelegate::UserResponse user_response);
 
-  bool ShouldShowSuggestion(const GroupSuggestion& suggestion);
+  bool ShouldShowSuggestion(
+      const GroupSuggestion& suggestion,
+      const std::vector<scoped_refptr<segmentation_platform::InputContext>>&
+          inputs);
 
  private:
   struct ShownSuggestion {
@@ -51,6 +59,7 @@ class GroupSuggestionsTracker {
 
     base::Time time_shown;
     std::vector<int> tab_ids;
+    std::set<int> host_hashes;
     GroupSuggestionsDelegate::UserResponse user_response =
         GroupSuggestionsDelegate::UserResponse::kUnknown;
   };

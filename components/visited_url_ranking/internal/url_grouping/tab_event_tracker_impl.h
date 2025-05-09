@@ -49,8 +49,8 @@ class TabEventTrackerImpl : public TabEventTracker {
                  base::Time time);
     ~TabSelection();
 
-    int tab_id;
-    TabSelectionType tab_selection_type;
+    int tab_id{-1};
+    TabSelectionType tab_selection_type{TabSelectionType::kUnknown};
     base::Time time;
     // Whether this selection has been committed to the the TabEventTracker to
     // store.
@@ -61,8 +61,8 @@ class TabEventTrackerImpl : public TabEventTracker {
   std::set<int> closing_tabs_;
   std::optional<TabSelection> current_selection_;
   OnNewEventCallback on_new_event_callback_;
-  bool tab_switcher_trigger_only_;
-  bool trigger_on_navigation_;
+  const bool tab_switcher_trigger_only_;
+  const bool trigger_on_navigation_;
 };
 
 }  // namespace visited_url_ranking

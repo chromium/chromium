@@ -46,15 +46,6 @@ constexpr int kMinSwitchesToGroup = 2;
 
 UrlGroupingSuggestionId::Generator g_id_generator;
 
-const char* GetNameForInput(URLVisitAggregateRankingModelInputSignals signal) {
-  for (const auto& field : kSuggestionsPredictionSchema) {
-    if (field.signal == signal) {
-      return field.name;
-    }
-  }
-  return nullptr;
-}
-
 // A heuristic that find the recently opened tabs and groups them.
 class RecentlyOpenedHeuristic : public GroupingHeuristics::Heuristic {
  public:

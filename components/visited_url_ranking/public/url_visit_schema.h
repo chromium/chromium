@@ -72,6 +72,9 @@ static constexpr size_t kSuggestionsNumInputs = 15;
 extern const std::array<FieldSchema, kSuggestionsNumInputs>
     kSuggestionsPredictionSchema;
 
+// Helper function to get the name of the input signal.
+const char* GetNameForInput(URLVisitAggregateRankingModelInputSignals signal);
+
 }  // namespace visited_url_ranking
 
 #endif  // COMPONENTS_VISITED_URL_RANKING_PUBLIC_URL_VISIT_SCHEMA_H_
