@@ -205,7 +205,10 @@ void TabStripActionContainer::TabStripNudgeAnimationSession::MarkAnimationDone(
     opacity_animation_done_ = true;
   }
 
-  if (expansion_animation_done_ && opacity_animation_done_) {
+  bool opacity_animation_running =
+      opacity_animation_done_ || !is_opacity_animated_;
+
+  if (expansion_animation_done_ && opacity_animation_running) {
     if (on_animation_ended_) {
       std::move(on_animation_ended_).Run();
     }
