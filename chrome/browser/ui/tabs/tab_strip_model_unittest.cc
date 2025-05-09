@@ -2080,7 +2080,7 @@ TEST_F(TabStripModelTest, SplitRatioTest) {
   EXPECT_TRUE(tabstrip()->empty());
 }
 
-TEST_F(TabStripModelTest, ReplaceSplitTab) {
+TEST_F(TabStripModelTest, ReplaceActiveTabInSplit) {
   // Create five tabs with two pinned, select the last.
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(tabstrip(), 5, 2, {2}));
@@ -2096,14 +2096,37 @@ TEST_F(TabStripModelTest, ReplaceSplitTab) {
 
   EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip()));
 
-  tabstrip()->ReplaceActiveTabInSplit(split_tab_id, 3);
+  tabstrip()->UpdateActiveTabInSplit(split_tab_id, 3,
+                                     TabStripModel::SplitUpdateType::kReplace);
   EXPECT_EQ("2ps 3ps 1p 4", GetTabStripStateString(tabstrip()));
 
   tabstrip()->CloseAllTabs();
   EXPECT_TRUE(tabstrip()->empty());
 }
 
-TEST_F(TabStripModelTest, SwapTabsInSplit) {
+TEST_F(TabStripModelTest, SwapActiveTabInSplit) {
+  // Create five tabs with two pinned, select the last.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 5, 2, {2}));
+
+  tabstrip()->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+
+  split_tabs::SplitTabId split_tab_id =
+      tabstrip()->AddToNewSplit({3}, split_tabs::SplitTabLayout::kVertical);
+
+  EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip()));
+
+  tabstrip()->UpdateActiveTabInSplit(split_tab_id, 3,
+                                     TabStripModel::SplitUpdateType::kSwap);
+  EXPECT_EQ("2ps 3ps 1p 0 4", GetTabStripStateString(tabstrip()));
+
+  tabstrip()->CloseAllTabs();
+  EXPECT_TRUE(tabstrip()->empty());
+}
+
+TEST_F(TabStripModelTest, ReverseTabsInSplit) {
   // Create five tabs with two pinned, select the last.
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(tabstrip(), 5, 2, {2}));
@@ -2122,7 +2145,7 @@ TEST_F(TabStripModelTest, SwapTabsInSplit) {
       tabstrip()->GetSplitData(split_tab_id)->ListTabs();
   EXPECT_EQ(2ul, old_tabs.size());
 
-  tabstrip()->SwapTabsInSplit(split_tab_id);
+  tabstrip()->ReverseTabsInSplit(split_tab_id);
 
   EXPECT_EQ("3ps 0ps 1p 2 4", GetTabStripStateString(tabstrip()));
   std::vector<tabs::TabInterface*> new_tabs =

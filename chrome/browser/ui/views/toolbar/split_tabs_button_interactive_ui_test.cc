@@ -212,30 +212,30 @@ IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, OpenMenu) {
 }
 
 IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest,
-                       SwapPositionMenuItemUpdates) {
+                       ReversePositionMenuItemUpdates) {
   const GURL url1 = embedded_test_server()->GetURL("/title1.html");
   RunTestSequence(AddInstrumentedTab(kWebContents2Id, url1),
                   SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
                   WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
                   PressButton(kToolbarSplitTabsToolbarButtonElementId),
-                  WaitForShow(SplitTabMenuModel::kSwapPositionMenuItem),
-                  CheckMenuString(SplitTabMenuModel::kSwapPositionMenuItem,
+                  WaitForShow(SplitTabMenuModel::kReversePositionMenuItem),
+                  CheckMenuString(SplitTabMenuModel::kReversePositionMenuItem,
                                   IDS_SPLIT_TAB_REVERSE_VIEWS),
-                  CheckMenuIcon(SplitTabMenuModel::kSwapPositionMenuItem,
+                  CheckMenuIcon(SplitTabMenuModel::kReversePositionMenuItem,
                                 kSplitSceneRightIcon),
                   ClickActiveTabInSplit(),
                   WaitForHide(SplitTabsToolbarButton::kSplitTabButtonMenu),
                   // Change the focus and reopen the menu
                   FocusInactiveTabInSplit(),
                   PressButton(kToolbarSplitTabsToolbarButtonElementId),
-                  WaitForShow(SplitTabMenuModel::kSwapPositionMenuItem),
-                  CheckMenuString(SplitTabMenuModel::kSwapPositionMenuItem,
+                  WaitForShow(SplitTabMenuModel::kReversePositionMenuItem),
+                  CheckMenuString(SplitTabMenuModel::kReversePositionMenuItem,
                                   IDS_SPLIT_TAB_REVERSE_VIEWS),
-                  CheckMenuIcon(SplitTabMenuModel::kSwapPositionMenuItem,
+                  CheckMenuIcon(SplitTabMenuModel::kReversePositionMenuItem,
                                 kSplitSceneLeftIcon));
 }
 
-IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, SwapSplitTabPosition) {
+IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, ReverseSplitTabPosition) {
   RunTestSequence(
       InstrumentTab(kWebContents1Id),
       AddInstrumentedTab(kWebContents2Id, GetTestUrl("/links.html")),
@@ -244,11 +244,11 @@ IN_PROC_BROWSER_TEST_F(SplitTabButtonInteractiveTest, SwapSplitTabPosition) {
       // The newly created split tab should be active
       CheckSplitTabButtonIcon(kSplitSceneLeftIcon),
       NavigateWebContents(kWebContents1Id, GetTestUrl()),
-      // Swapping the tab positions should move the active tab to the left.
+      // Reversing the tab positions should move the active tab to the left.
       PressButton(kToolbarSplitTabsToolbarButtonElementId),
       WaitForShow(SplitTabsToolbarButton::kSplitTabButtonMenu),
       ObserveState(kActiveTabChanged, browser()->tab_strip_model()),
-      SelectMenuItem(SplitTabMenuModel::kSwapPositionMenuItem),
+      SelectMenuItem(SplitTabMenuModel::kReversePositionMenuItem),
       WaitForState(kActiveTabChanged, true),
       CheckSplitTabButtonIcon(kSplitSceneRightIcon),
       CheckResult(

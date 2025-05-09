@@ -570,12 +570,14 @@ class TabStripModel : public TabGroupController {
   void UpdateSplitRatio(split_tabs::SplitTabId split_id,
                         double start_content_ratio);
 
-  // Reverses the order of tabs with `split_id`.
-  void SwapTabsInSplit(split_tabs::SplitTabId split_id);
+  // Updates the active tab within `split_id` with the tab at `update_index`.
+  enum class SplitUpdateType { kReplace, kSwap };
+  void UpdateActiveTabInSplit(split_tabs::SplitTabId split_id,
+                              int update_index,
+                              SplitUpdateType update_type);
 
-  // Replaces the active tab with `split_id` with the tab at `replace_index`.
-  void ReplaceActiveTabInSplit(split_tabs::SplitTabId split_id,
-                               int replace_index);
+  // Reverses the order of tabs with `split_id`.
+  void ReverseTabsInSplit(split_tabs::SplitTabId split_id);
 
   // Create a new split view with the active tab and add the set of tabs pointed
   // to by |indices| to it. Reorders the tabs so they are contiguous. |indices|
@@ -948,7 +950,7 @@ class TabStripModel : public TabGroupController {
       TabStripModelObserver::ChangeReason reason,
       bool triggered_by_other_operation);
 
-  // direction of relative tab movements or selections. kNext indicates moving
+  // Direction of relative tab movements or selections. kNext indicates moving
   // forward (positive increment) in the tab strip. kPrevious indicates
   // backward (negative increment).
   enum class TabRelativeDirection {
@@ -975,9 +977,11 @@ class TabStripModel : public TabGroupController {
   split_tabs::SplitTabId AddToSplitImpl(
       split_tabs::SplitTabId split_id,
       std::vector<int> indices,
-      split_tabs::SplitTabVisualData visual_data);
+      split_tabs::SplitTabVisualData visual_data,
+      TabStripModelObserver::SplitTabAddReason reasons);
 
-  void RemoveSplitImpl(split_tabs::SplitTabId split_id);
+  void RemoveSplitImpl(split_tabs::SplitTabId split_id,
+                       TabStripModelObserver::SplitTabRemoveReason reason);
 
   // Adds tabs to newly-allocated group id |new_group|. This group must be new
   // and have no tabs in it.

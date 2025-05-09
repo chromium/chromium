@@ -1525,7 +1525,7 @@ void BrowserView::HideSplitView() {
   multi_contents_view_->CloseSplitView();
 }
 
-void BrowserView::UpdateActiveSplitView() {
+void BrowserView::UpdateActiveTabInSplitView() {
   CHECK(multi_contents_view_ && multi_contents_view_->IsInSplitView());
   const int active_index = browser_->tab_strip_model()->active_index();
 
@@ -1551,7 +1551,7 @@ void BrowserView::SwapTabsInActiveSplit() {
       browser_->tab_strip_model()->GetTabAtIndex(active_index)->GetSplit();
 
   CHECK(split_tab_id.has_value());
-  browser_->tab_strip_model()->SwapTabsInSplit(split_tab_id.value());
+  browser_->tab_strip_model()->ReverseTabsInSplit(split_tab_id.value());
 }
 
 bool BrowserView::IsTabChangeInSplitView(content::WebContents* old_contents,
@@ -2114,7 +2114,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
     // DevTools WebContents.
     UpdateDevToolsForContents(new_contents, true);
   } else if (tab_change_in_split_view) {
-    UpdateActiveSplitView();
+    UpdateActiveTabInSplitView();
   }
 
   if (will_restore_focus) {

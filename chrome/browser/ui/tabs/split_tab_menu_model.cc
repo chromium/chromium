@@ -23,7 +23,8 @@
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/menus/simple_menu_model.h"
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SplitTabMenuModel, kSwapPositionMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SplitTabMenuModel,
+                                      kReversePositionMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SplitTabMenuModel, kCloseMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SplitTabMenuModel, kExitSplitMenuItem);
 
@@ -32,7 +33,7 @@ SplitTabMenuModel::SplitTabMenuModel(TabStripModel* tab_strip_model,
     : ui::SimpleMenuModel(this),
       tab_strip_model_(tab_strip_model),
       split_tab_index_(split_tab_index) {
-  AddItem(static_cast<int>(CommandId::kSwapPosition), std::u16string());
+  AddItem(static_cast<int>(CommandId::kReversePosition), std::u16string());
   AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
   AddItemWithStringIdAndIcon(
       static_cast<int>(CommandId::kClose), IDS_SPLIT_TAB_CLOSE,
@@ -45,8 +46,9 @@ SplitTabMenuModel::SplitTabMenuModel(TabStripModel* tab_strip_model,
                                      ui::SimpleMenuModel::kDefaultIconSize));
 
   SetElementIdentifierAt(
-      GetIndexOfCommandId(static_cast<int>(CommandId::kSwapPosition)).value(),
-      kSwapPositionMenuItem);
+      GetIndexOfCommandId(static_cast<int>(CommandId::kReversePosition))
+          .value(),
+      kReversePositionMenuItem);
   SetElementIdentifierAt(
       GetIndexOfCommandId(static_cast<int>(CommandId::kClose)).value(),
       kCloseMenuItem);
@@ -59,12 +61,12 @@ SplitTabMenuModel::~SplitTabMenuModel() = default;
 
 bool SplitTabMenuModel::IsItemForCommandIdDynamic(int command_id) const {
   const CommandId id = static_cast<CommandId>(command_id);
-  return id == CommandId::kSwapPosition;
+  return id == CommandId::kReversePosition;
 }
 
 std::u16string SplitTabMenuModel::GetLabelForCommandId(int command_id) const {
   const CommandId id = static_cast<CommandId>(command_id);
-  if (id == CommandId::kSwapPosition) {
+  if (id == CommandId::kReversePosition) {
     return l10n_util::GetStringUTF16(IDS_SPLIT_TAB_REVERSE_VIEWS);
   } else {
     NOTREACHED() << "There are no other commands that are dynamic so this case "
@@ -78,8 +80,8 @@ ui::ImageModel SplitTabMenuModel::GetIconForCommandId(int command_id) const {
 
   const CommandId id = static_cast<CommandId>(command_id);
   const gfx::VectorIcon* icon = nullptr;
-  if (id == CommandId::kSwapPosition) {
-    icon = &GetSwapPositionIcon(active_split_tab_location);
+  if (id == CommandId::kReversePosition) {
+    icon = &GetReversePositionIcon(active_split_tab_location);
   }
   CHECK(icon);
   return ui::ImageModel::FromVectorIcon(*icon, ui::kColorMenuIcon,
@@ -89,8 +91,8 @@ ui::ImageModel SplitTabMenuModel::GetIconForCommandId(int command_id) const {
 void SplitTabMenuModel::ExecuteCommand(int command_id, int event_flags) {
   split_tabs::SplitTabId split_id = GetSplitTabId();
   switch (static_cast<CommandId>(command_id)) {
-    case CommandId::kSwapPosition:
-      tab_strip_model_->SwapTabsInSplit(split_id);
+    case CommandId::kReversePosition:
+      tab_strip_model_->ReverseTabsInSplit(split_id);
       break;
     case CommandId::kClose:
       tab_strip_model_->CloseWebContentsAt(
@@ -113,7 +115,7 @@ split_tabs::SplitTabId SplitTabMenuModel::GetSplitTabId() const {
   return tab->GetSplit().value();
 }
 
-const gfx::VectorIcon& SplitTabMenuModel::GetSwapPositionIcon(
+const gfx::VectorIcon& SplitTabMenuModel::GetReversePositionIcon(
     split_tabs::SplitTabActiveLocation active_split_tab_location) const {
   switch (active_split_tab_location) {
     case split_tabs::SplitTabActiveLocation::kStart:

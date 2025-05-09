@@ -493,7 +493,7 @@ class BrowserView : public BrowserWindow,
   void HideSplitView();
 
   // Update the index of the active split based on the active tab's web contents
-  void UpdateActiveSplitView();
+  void UpdateActiveTabInSplitView();
 
   // Reverses the order of the tabs in the active split.
   void SwapTabsInActiveSplit();

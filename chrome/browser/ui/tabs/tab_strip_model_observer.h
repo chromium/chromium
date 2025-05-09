@@ -420,12 +420,14 @@ class TabStripModelObserver {
   virtual void OnTabGroupWillBeRemoved(const tab_groups::TabGroupId& group_id);
 
   enum class SplitTabAddReason {
-    kNewSplitTabCreated,
+    kNewSplitTabAdded,
+    kSplitTabUpdated,
     kInsertedFromAnotherTabstrip
   };
 
   enum class SplitTabRemoveReason {
-    kSplitTabClosed,
+    kSplitTabRemoved,
+    kSplitTabUpdated,
     kDetachedToAnotherTabstrip
   };
 
