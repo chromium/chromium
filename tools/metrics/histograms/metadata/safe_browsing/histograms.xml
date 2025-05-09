@@ -128,10 +128,21 @@ chromium-metrics-reviews@google.com.
   <owner>meacer@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
-    Records whether the user has Advanced Protection enabled. Logged on startup
-    when the enabled status changes. Can be logged multiple times for a user. In
-    practice, this counts the number of Chrome startups with Advanced Protection
-    enabled/disabled, rather than the actual user count.
+    Records whether the user has Advanced Protection enabled on desktop. Logged
+    on startup when the enabled status changes. Can be logged multiple times for
+    a user. In practice, this counts the number of Chrome startups with Advanced
+    Protection enabled/disabled, rather than the actual user count.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.Android.AdvancedProtection.Enabled"
+    enum="BooleanEnabled" expires_after="2025-12-01">
+  <owner>pkotwicz@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the user has Advanced Protection enabled. Logged on startup.
+    In practice, this counts the number of Chrome startups with Advanced
+    Protection enabled/disabled, rather than the actual user count.
   </summary>
 </histogram>
 
