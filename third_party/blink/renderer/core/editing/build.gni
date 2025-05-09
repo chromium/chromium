@@ -56,6 +56,8 @@ blink_core_sources_editing = [
   "commands/insert_list_command.h",
   "commands/insert_node_before_command.cc",
   "commands/insert_node_before_command.h",
+  "commands/insert_node_list_before_command.cc",
+  "commands/insert_node_list_before_command.h",
   "commands/insert_paragraph_separator_command.cc",
   "commands/insert_paragraph_separator_command.h",
   "commands/insert_text_command.cc",

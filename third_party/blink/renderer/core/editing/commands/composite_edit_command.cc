@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/editing/commands/insert_into_text_node_command.h"
 #include "third_party/blink/renderer/core/editing/commands/insert_line_break_command.h"
 #include "third_party/blink/renderer/core/editing/commands/insert_node_before_command.h"
+#include "third_party/blink/renderer/core/editing/commands/insert_node_list_before_command.h"
 #include "third_party/blink/renderer/core/editing/commands/insert_paragraph_separator_command.h"
 #include "third_party/blink/renderer/core/editing/commands/merge_identical_elements_command.h"
 #include "third_party/blink/renderer/core/editing/commands/remove_css_property_command.h"
@@ -345,6 +346,20 @@ void CompositeEditCommand::InsertNodeAfter(Node* insert_child,
     DCHECK(ref_child->nextSibling()) << ref_child;
     InsertNodeBefore(insert_child, ref_child->nextSibling(), editing_state);
   }
+}
+
+void CompositeEditCommand::InsertNodeListAfter(Node& insert_first_child,
+                                               Node& ref_child,
+                                               EditingState* editing_state) {
+  ContainerNode* parent = ref_child.parentNode();
+  ABORT_EDITING_COMMAND_IF(!parent);
+  ABORT_EDITING_COMMAND_IF(GetDocument().body() == &ref_child);
+  ABORT_EDITING_COMMAND_IF(!IsEditable(*parent) && parent->InActiveDocument());
+  DCHECK(!parent->IsShadowRoot()) << parent;
+  ApplyCommandToComposite(
+      MakeGarbageCollected<InsertNodeListBeforeCommand>(
+          insert_first_child, *parent, ref_child.nextSibling()),
+      editing_state);
 }
 
 void CompositeEditCommand::InsertNodeAt(Node* insert_child,
