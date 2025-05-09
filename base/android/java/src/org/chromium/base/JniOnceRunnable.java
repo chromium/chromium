@@ -6,7 +6,6 @@ package org.chromium.base;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 /*
  * A wrapper that owns a native side base::OnceCallback.
@@ -18,4 +17,4 @@ import org.chromium.build.annotations.Nullable;
  * base::RepeatingCallback.
  */
 @NullMarked
-public interface JniOnceCallback<T extends @Nullable Object> extends Callback<T>, Destroyable {}
+public interface JniOnceRunnable extends Runnable, Destroyable {}

@@ -31,6 +31,13 @@ BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
 BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
     JNIEnv* env,
     const JniRepeatingWrappedCallbackType& callback);
+// Overloads that accept no parameter.
+BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
+    JNIEnv* env,
+    base::OnceCallback<void()>&& callback);
+BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
+    JNIEnv* env,
+    const base::RepeatingCallback<void()>& callback);
 
 // Java Callbacks don't return a value so any return value by the passed in
 // callback will be ignored.
