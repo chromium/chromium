@@ -893,7 +893,7 @@ class CrossbenchTest(object):
 
     env = os.environ.copy()
     env['CHROME_HEADLESS'] = '1'
-    env['PATH'] = f'{GSUTIL_DIR}:' + env['PATH']
+    env['PATH'] = f"{GSUTIL_DIR}{';' if IsWindows() else ':'}{env['PATH']}"
 
     return_code = 1
     output_paths = OutputFilePaths(self.isolated_out_dir, display_name).SetUp()
