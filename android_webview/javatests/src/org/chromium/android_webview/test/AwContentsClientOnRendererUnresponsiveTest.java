@@ -26,6 +26,8 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.ThreadUtils;
+import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 
 import java.util.concurrent.CountDownLatch;
@@ -215,6 +217,8 @@ public class AwContentsClientOnRendererUnresponsiveTest extends AwParameterizedT
                 awContents,
                 contentsClient.getOnPageFinishedHelper(),
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> WebContentsUtils.simulateEndOfPaintHolding(awContents.getWebContents()));
 
         contentsClient.permanentlyBlockBlinkThread(awContents);
         // Sending a key event while the renderer is unresponsive will cause onRendererUnresponsive
@@ -239,6 +243,9 @@ public class AwContentsClientOnRendererUnresponsiveTest extends AwParameterizedT
                 awContents,
                 contentsClient.getOnPageFinishedHelper(),
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> WebContentsUtils.simulateEndOfPaintHolding(awContents.getWebContents()));
+
         contentsClient.transientlyBlockBlinkThread(awContents);
         sendInputEvent(awContents);
         contentsClient.awaitRecovery();

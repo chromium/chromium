@@ -28,6 +28,7 @@ import org.chromium.android_webview.AwSettings;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.TestThreadUtils;
+import org.chromium.content_public.browser.test.util.WebContentsUtils;
 
 import java.util.Locale;
 
@@ -393,6 +394,8 @@ public class AwZoomTest extends AwParameterizedTest {
                 getZoomableHtml(pageMinimumScale),
                 "text/html",
                 false);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> WebContentsUtils.simulateEndOfPaintHolding(mAwContents.getWebContents()));
         waitForScaleToBecome(pageMinimumScale);
 
         Assert.assertTrue(
