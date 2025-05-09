@@ -104,6 +104,7 @@ class LegacyRunner:
                build_dir,
                additional_test_args=None,
                swarming_dimensions=None,
+               swarming_shards=None,
                reuse_task=None,
                skip_coverage=False,
                no_rbe=False,
@@ -122,7 +123,8 @@ class LegacyRunner:
       skip_prompts: If True, skip Y/N prompts for warnings.
       build_dir: pathlib.Path to the build dir to build in.
       additional_test_args: List of additional args to pass to the tests.
-      dimensions: List of dimensions to overwrite in the tests.
+      swarming_dimensions: List of dimensions to overwrite in the tests.
+      swarming_shards: Number of swarming shards to overrite in the tests.
       reuse_task: String of a swarming task to reuse.
       skip_coverage: If True, skip code coverage instrumentation.
       no_rbe: If True, disables RBE during compile.
@@ -159,6 +161,8 @@ class LegacyRunner:
       input_props['additional_test_args'] = additional_test_args
     if swarming_dimensions:
       input_props['swarming_dimensions'] = swarming_dimensions
+    if swarming_shards:
+      input_props['swarming_shards'] = swarming_shards
     # The recipe will overwrite this property so we have to put it preserve it
     # elsewhere
     if 'recipe' in input_props:

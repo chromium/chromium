@@ -115,6 +115,14 @@ def add_common_args(parser):
                       'tests to be run. These should be in the form '
                       '"{key}={value}". To remove an existing dimension leave '
                       'the value empty: "{key}="')
+  parser.add_argument(
+      '--shards',
+      type=int,
+      help='Shard count override to use for all swarming tests. Increasing '
+      'shard count can make a suite finish more quickly. However, this '
+      'will change the batching of test cases which may expose failures '
+      'caused by test cases that implicitly depend on running in the same '
+      'batch as others.')
 
 
 def add_compile_args(parser):
@@ -175,10 +183,15 @@ def parse_args(args=None):
   if args.reuse_task and args.run_mode != 'test':
     parser.print_help()
     parser.error('reuse-task is only compatible with "test"')
-  if args.run_mode == 'compile' and args.dimensions:
-    parser.error(
-        'Dimensions flags (-d) are only applicable to run modes that run '
-        'tests: test or compile-and-test.')
+  if args.run_mode == 'compile':
+    if args.dimensions:
+      parser.error(
+          'Dimensions flags (-d) are only applicable to run modes that run '
+          'tests: test or compile-and-test.')
+    if args.shards:
+      parser.error(
+          'Shards flag (--shards) is only applicable when running tests via '
+          '"test" or "compile-and-test" run modes.')
   if args.dimensions and any(not re.match(r'^[^=]+=.*$', d)
                              for d in args.dimensions):
     parser.error('Dimensions flags (-d) must be in the format {key}={value} or '
@@ -253,6 +266,7 @@ def main():
       build_dir,
       additional_test_args=None if skip_test else args.additional_test_args,
       swarming_dimensions=args.dimensions,
+      swarming_shards=args.shards,
       reuse_task=args.reuse_task,
       skip_coverage=not skip_compile and args.no_coverage_instrumentation,
       no_rbe=not skip_compile and args.no_rbe,
