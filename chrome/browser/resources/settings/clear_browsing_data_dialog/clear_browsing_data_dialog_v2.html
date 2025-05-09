@@ -60,20 +60,21 @@
     show-on-attach ignore-popstate ignore-enter-key>
   <div slot="title">$i18n{clearBrowsingData}</div>
   <div slot="body">
-    <!-- TODO(crbug.com/397187800): Update counters on selected time period.-->
     <settings-clear-browsing-data-time-picker id="timePicker" prefs="{{prefs}}"
         on-selected-time-period-change="onTimePeriodChanged_">
     </settings-clear-browsing-data-time-picker>
     <div id="checkboxContainer">
       <template is="dom-repeat"
           items="[[expandedBrowsingDataTypeOptionsList_]]">
-        <settings-checkbox pref="[[item.pref]]" no-set-pref>
+        <settings-checkbox pref="[[item.pref]]" no-set-pref
+            sub-label="[[item.subLabel]]">
           <div class="checkbox-title">[[item.label]]</div>
         </settings-checkbox>
       </template>
       <template is="dom-if" if="[[dataTypesExpanded_]]">
         <template is="dom-repeat" items="[[moreBrowsingDataTypeOptionsList_]]">
-          <settings-checkbox pref="[[item.pref]]" no-set-pref>
+          <settings-checkbox pref="[[item.pref]]" no-set-pref
+              sub-label="[[item.subLabel]]">
             <div class="checkbox-title">[[item.label]]</div>
           </settings-checkbox>
         </template>

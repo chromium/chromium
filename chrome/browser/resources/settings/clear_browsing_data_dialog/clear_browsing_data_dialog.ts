@@ -283,7 +283,8 @@ export class SettingsClearBrowsingDataDialogElement extends
     this.addWebUiListener(
         'update-sync-state', this.updateSyncState_.bind(this));
     this.addWebUiListener(
-        'update-counter-text', this.updateCounterText_.bind(this));
+        'browsing-data-counter-text-update',
+        this.updateCounterText_.bind(this));
 
     this.addEventListener(
         'settings-boolean-control-change', this.updateClearButtonState_);

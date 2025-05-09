@@ -61,21 +61,35 @@ namespace {
 const int kMaxTimesHistoryNoticeShown = 1;
 
 // TODO(msramek): Get the list of deletion preferences from the JS side.
-const char* kCounterPrefsAdvanced[] = {
-    browsing_data::prefs::kDeleteBrowsingHistory,
-    browsing_data::prefs::kDeleteCache,
-    browsing_data::prefs::kDeleteCookies,
-    browsing_data::prefs::kDeleteDownloadHistory,
-    browsing_data::prefs::kDeleteFormData,
-    browsing_data::prefs::kDeleteHostedAppsData,
-    browsing_data::prefs::kDeletePasswords,
-    browsing_data::prefs::kDeleteSiteSettings,
-};
+// TODO(crbug.com/397187800): Remove basic and password counters when
+// kDbdRevampDesktop is launched.
+std::vector<std::string> GetAdvancedCounterPrefs() {
+  std::vector<std::string> counter_prefs_advanced = {
+      browsing_data::prefs::kDeleteBrowsingHistory,
+      browsing_data::prefs::kDeleteCache,
+      browsing_data::prefs::kDeleteCookies,
+      browsing_data::prefs::kDeleteDownloadHistory,
+      browsing_data::prefs::kDeleteFormData,
+      browsing_data::prefs::kDeleteHostedAppsData,
+      browsing_data::prefs::kDeleteSiteSettings,
+  };
 
-// Additional counters for the basic tab of CBD.
-const char* kCounterPrefsBasic[] = {
-    browsing_data::prefs::kDeleteCacheBasic,
-};
+  if (!base::FeatureList::IsEnabled(features::kDbdRevampDesktop)) {
+    counter_prefs_advanced.push_back(browsing_data::prefs::kDeletePasswords);
+  }
+
+  return counter_prefs_advanced;
+}
+
+std::vector<std::string> GetBasicCounterPrefs() {
+  std::vector<std::string> counter_prefs_basic = {};
+
+  if (!base::FeatureList::IsEnabled(features::kDbdRevampDesktop)) {
+    counter_prefs_basic.push_back(browsing_data::prefs::kDeleteCacheBasic);
+  }
+
+  return counter_prefs_basic;
+}
 
 }  // namespace
 
@@ -121,11 +135,11 @@ void ClearBrowsingDataHandler::OnJavascriptAllowed() {
 
   DCHECK(counters_basic_.empty());
   DCHECK(counters_advanced_.empty());
-  for (const std::string& pref : kCounterPrefsBasic) {
+  for (const std::string& pref : GetBasicCounterPrefs()) {
     AddCounter(BrowsingDataCounterFactory::GetForProfileAndPref(profile_, pref),
                browsing_data::ClearBrowsingDataTab::BASIC);
   }
-  for (const std::string& pref : kCounterPrefsAdvanced) {
+  for (const std::string& pref : GetAdvancedCounterPrefs()) {
     AddCounter(BrowsingDataCounterFactory::GetForProfileAndPref(profile_, pref),
                browsing_data::ClearBrowsingDataTab::ADVANCED);
   }
@@ -432,7 +446,8 @@ void ClearBrowsingDataHandler::AddCounter(
 void ClearBrowsingDataHandler::UpdateCounterText(
     std::unique_ptr<browsing_data::BrowsingDataCounter::Result> result) {
   FireWebUIListener(
-      "update-counter-text", base::Value(result->source()->GetPrefName()),
+      "browsing-data-counter-text-update",
+      base::Value(result->source()->GetPrefName()),
       base::Value(browsing_data_counter_utils::GetChromeCounterTextFromResult(
           result.get(), profile_)));
 }

@@ -18,11 +18,14 @@ import './clear_browsing_data_time_picker.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
-import {BrowsingDataType} from './clear_browsing_data_browser_proxy.js';
+import type {ClearBrowsingDataBrowserProxy} from './clear_browsing_data_browser_proxy.js';
+import {BrowsingDataType, ClearBrowsingDataBrowserProxyImpl} from './clear_browsing_data_browser_proxy.js';
 import {getTemplate} from './clear_browsing_data_dialog_v2.html.js';
 import type {SettingsClearBrowsingDataTimePicker} from './clear_browsing_data_time_picker.js';
 
@@ -60,6 +63,7 @@ const DEFAULT_BROWSING_DATATYPES_LIST: BrowsingDataType[] = [
 
 interface BrowsingDataTypeOption {
   label: string;
+  subLabel?: string;
   pref: chrome.settingsPrivate.PrefObject;
 }
 
@@ -101,7 +105,8 @@ export function getDataTypePrefName(datatypes: BrowsingDataType) {
   }
 }
 
-const SettingsClearBrowsingDataDialogV2ElementBase = PrefsMixin(PolymerElement);
+const SettingsClearBrowsingDataDialogV2ElementBase =
+    WebUiListenerMixin(PrefsMixin(PolymerElement));
 
 export class SettingsClearBrowsingDataDialogV2Element extends
     SettingsClearBrowsingDataDialogV2ElementBase {
@@ -131,10 +136,23 @@ export class SettingsClearBrowsingDataDialogV2Element extends
       BrowsingDataTypeOption[];
   declare private moreBrowsingDataTypeOptionsList_: BrowsingDataTypeOption[];
 
+  private clearBrowsingDataBrowserProxy_: ClearBrowsingDataBrowserProxy =
+      ClearBrowsingDataBrowserProxyImpl.getInstance();
+
   override ready() {
     super.ready();
 
+    this.addWebUiListener(
+        'browsing-data-counter-text-update',
+        this.updateCounterText_.bind(this));
+
     this.setUpDataTypeOptionLists_();
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.clearBrowsingDataBrowserProxy_.initialize();
   }
 
   private setUpDataTypeOptionLists_() {
@@ -158,13 +176,43 @@ export class SettingsClearBrowsingDataDialogV2Element extends
     this.moreBrowsingDataTypeOptionsList_ = moreOptionsList;
   }
 
+  /**
+   * Updates the text of a browsing data counter corresponding to the given
+   * preference.
+   * @param prefName Browsing data type deletion preference.
+   * @param text The text with which to update the counter.
+   */
+  private updateCounterText_(prefName: string, text: string) {
+    // If the corresponding datatype is in the expanded options list, update the
+    // sub-label.
+    const expandedListIndex =
+        this.expandedBrowsingDataTypeOptionsList_.map(option => option.pref.key)
+            .indexOf(prefName);
+    if (expandedListIndex !== -1) {
+      this.set(
+          `expandedBrowsingDataTypeOptionsList_.${expandedListIndex}.subLabel`,
+          text);
+      return;
+    }
+
+    // If the datatype is not found in the expanded options list, it should be
+    // in the more options list.
+    const moreListIndex =
+        this.moreBrowsingDataTypeOptionsList_.map(option => option.pref.key)
+            .indexOf(prefName);
+    assert(moreListIndex !== -1);
+    this.set(
+        `moreBrowsingDataTypeOptionsList_.${moreListIndex}.subLabel`, text);
+  }
+
   private shouldDataTypeBeExpanded_(datatype: BrowsingDataType) {
     return DEFAULT_BROWSING_DATATYPES_LIST.includes(datatype) ||
         this.getPref(getDataTypePrefName(datatype)).value;
   }
 
   private onTimePeriodChanged_() {
-    // TODO(crbug.com/397187800): Restart counters.
+    this.clearBrowsingDataBrowserProxy_.restartCounters(
+        /*isBasic=*/ false, this.$.timePicker.getSelectedTimePeriod());
   }
 
   private onCancelClick_() {

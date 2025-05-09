@@ -750,7 +750,8 @@ suite('ClearBrowsingDataAllPlatforms', function() {
 
     // Simulate a browsing data counter result for history. This checkbox's
     // sublabel should be updated.
-    webUIListenerCallback('update-counter-text', checkbox.pref!.key, 'result');
+    webUIListenerCallback(
+        'browsing-data-counter-text-update', checkbox.pref!.key, 'result');
     assertEquals('result', checkbox.subLabel);
   });
 

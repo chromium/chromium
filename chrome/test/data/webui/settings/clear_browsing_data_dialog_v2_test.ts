@@ -5,17 +5,21 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {SettingsCheckboxElement, SettingsClearBrowsingDataDialogV2Element} from 'chrome://settings/lazy_load.js';
-import {BrowsingDataType, getDataTypePrefName} from 'chrome://settings/lazy_load.js';
+import {BrowsingDataType, ClearBrowsingDataBrowserProxyImpl, getDataTypePrefName, TimePeriod} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
+import {TestClearBrowsingDataBrowserProxy} from './test_clear_browsing_data_browser_proxy.js';
+
 // clang-format on
 
 suite('DeleteBrowsingDataDialog', function() {
+  let testClearBrowsingDataBrowserProxy: TestClearBrowsingDataBrowserProxy;
   let dialog: SettingsClearBrowsingDataDialogV2Element;
   let settingsPrefs: SettingsPrefsElement;
 
@@ -25,6 +29,9 @@ suite('DeleteBrowsingDataDialog', function() {
   });
 
   setup(function() {
+    testClearBrowsingDataBrowserProxy = new TestClearBrowsingDataBrowserProxy();
+    ClearBrowsingDataBrowserProxyImpl.setInstance(
+        testClearBrowsingDataBrowserProxy);
     setClearBrowsingDataPrefs(false);
     return createDialog();
   });
@@ -317,5 +324,50 @@ suite('DeleteBrowsingDataDialog', function() {
     assertEquals(
         'browser.clear_data.hosted_apps_data',
         getDataTypePrefName(BrowsingDataType.HOSTED_APPS_DATA));
+  });
+
+  test('TimePeriodChangesRestartCounters', async function() {
+    // Clear previous restartCounters calls.
+    testClearBrowsingDataBrowserProxy.reset();
+
+    // Dispatch a |selected-time-period-change| event to trigger the Counters'
+    // restart. LAST_HOUR is the default selected time period.
+    dialog.$.timePicker.dispatchEvent(
+        new CustomEvent('selected-time-period-change'));
+    await flushTasks();
+
+    const args =
+        await testClearBrowsingDataBrowserProxy.whenCalled('restartCounters');
+    assertEquals(args[0], /*isBasic=*/ false);
+    assertEquals(args[1], TimePeriod.LAST_HOUR);
+  });
+
+  test('CountersUpdateCheckboxSubLabel', async function() {
+    // Case 1, Counter updates a checkbox in the expanded options list.
+    // Simulate a browsing data counter result for history. The History
+    // checkbox's subLabel should be updated.
+    webUIListenerCallback(
+        'browsing-data-counter-text-update',
+        'browser.clear_data.browsing_history', 'history result');
+    await flushTasks();
+
+    const historyCheckbox = getCheckboxForDataType(BrowsingDataType.HISTORY);
+    assertTrue(!!historyCheckbox);
+    assertEquals('history result', historyCheckbox.subLabel);
+
+    // Case 2, Counter updates a checkbox in the more options list.
+    // Simulate a browsing data counter result for Site settings. The Site
+    // settings checkbox's subLabel should be updated.
+    webUIListenerCallback(
+        'browsing-data-counter-text-update', 'browser.clear_data.site_settings',
+        'site settings result');
+
+    dialog.$.showMoreButton.click();
+    await flushTasks();
+
+    const siteSettingsCheckbox =
+        getCheckboxForDataType(BrowsingDataType.SITE_SETTINGS);
+    assertTrue(!!siteSettingsCheckbox);
+    assertEquals('site settings result', siteSettingsCheckbox.subLabel);
   });
 });
