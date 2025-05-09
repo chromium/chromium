@@ -12,7 +12,8 @@
 #pragma mark - StandardPromoDisplayHandler
 
 - (void)handleDisplay {
-  // TODO(crbug.com/414805017): Implement the GLIC view.
+  DCHECK(self.handler);
+  [self.handler showGLICPromo];
 }
 
 #pragma mark - PromoProtocol

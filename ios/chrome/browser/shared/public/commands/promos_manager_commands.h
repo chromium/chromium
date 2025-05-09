@@ -33,6 +33,9 @@
 // Shows the sign-in fullscreen promo.
 - (void)showSigninPromo;
 
+// Shows GLIC promo.
+- (void)showGLICPromo;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_PROMOS_MANAGER_COMMANDS_H_

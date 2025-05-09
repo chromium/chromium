@@ -13,6 +13,9 @@
 // promo to eligible users.
 @interface GLICPromoDisplayHandler : NSObject <StandardPromoDisplayHandler>
 
+// PromosManagerCommands handler.
+@property(nonatomic, weak) id<PromosManagerCommands> handler;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_GLIC_UI_GLIC_PROMO_DISPLAY_HANDLER_H_

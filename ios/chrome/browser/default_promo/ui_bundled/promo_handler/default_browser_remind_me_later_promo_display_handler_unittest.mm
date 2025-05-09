@@ -49,6 +49,9 @@
 - (void)showSigninPromo {
 }
 
+- (void)showGLICPromo {
+}
+
 @end
 
 class DefaultBrowserRemindMeLaterPromoDisplayHandlerTest : public PlatformTest {

@@ -9,6 +9,8 @@ source_set("coordinator") {
     "glic_consent_mediator.h",
     "glic_consent_mediator.mm",
     "glic_consent_mediator_delegate.h",
+    "glic_promo_coordinator.h",
+    "glic_promo_coordinator.mm",
     "glic_promo_scene_agent.h",
     "glic_promo_scene_agent.mm",
   ]
