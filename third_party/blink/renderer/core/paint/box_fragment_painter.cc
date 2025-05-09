@@ -1472,8 +1472,8 @@ void BoxFragmentPainter::PaintGaps(GridTrackSizingDirection track_direction,
       };
 
   LayoutUnit cross_gutter_width = track_direction == kForRows
-                                      ? gap_geometry.GetBlockGapSize()
-                                      : gap_geometry.GetInlineGapSize();
+                                      ? gap_geometry.GetInlineGapSize()
+                                      : gap_geometry.GetBlockGapSize();
 
   const auto gaps = gap_geometry.GetGapIntersections(track_direction);
   for (wtf_size_t gap_index = 0; gap_index < gaps.size(); ++gap_index) {
