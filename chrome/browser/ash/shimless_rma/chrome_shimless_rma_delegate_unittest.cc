@@ -134,6 +134,21 @@ class FakeWebAppCommandScheduler : public web_app::WebAppCommandScheduler {
                            web_app::IwaStorageOwnedBundle{
                                "random_folder", /*dev_mode=*/false})));
   }
+
+  void RemoveInstallManagementMaybeUninstall(
+      const webapps::AppId& app_id,
+      web_app::WebAppManagement::Type install_management,
+      webapps::WebappUninstallSource uninstall_source,
+      UninstallCallback callback,
+      const base::Location& location) override {
+    EXPECT_EQ(install_management,
+              web_app::WebAppManagement::Type::kIwaShimlessRma);
+    EXPECT_EQ(uninstall_source, webapps::WebappUninstallSource::kUnknown);
+
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  webapps::UninstallResultCode::kAppRemoved));
+  }
 };
 
 class FakeDiagnosticsAppProfileHelperDelegate
@@ -171,7 +186,7 @@ class FakeDiagnosticsAppProfileHelperDelegate
  protected:
   FakeServiceWorkerContext fake_service_worker_context_;
   FakeWebAppCommandScheduler web_app_command_scheduler_;
-  web_app::WebApp web_app_{/*AppId=*/""};
+  web_app::WebApp web_app_{/*app_id=*/""};
 };
 
 class ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest

@@ -39,6 +39,7 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/service_worker_context.h"
 #include "extensions/browser/crx_file_info.h"
@@ -216,6 +217,33 @@ void OnIsolatedWebAppInstalled(
 void InstallIsolatedWebApp(
     std::unique_ptr<PrepareDiagnosticsAppProfileState> state) {
   CHECK(state->context);
+  CHECK(state->iwa_id);
+
+  auto url_info = web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+      state->iwa_id.value());
+  auto install_source = web_app::IsolatedWebAppInstallSource::FromShimlessRma(
+      web_app::IwaSourceBundleProdModeWithFileOp(
+          state->swbn_path, web_app::IwaSourceBundleProdFileOp::kCopy));
+  state->delegate->GetWebAppCommandScheduler(state->context)
+      ->InstallIsolatedWebApp(
+          url_info, install_source,
+          /*expected_version=*/std::nullopt, /*optional_keep_alive=*/nullptr,
+          /*optional_profile_keep_alive=*/nullptr,
+          base::BindOnce(&OnIsolatedWebAppInstalled, std::move(state)));
+}
+
+void OnIsolatedWebAppRemoved(
+    std::unique_ptr<PrepareDiagnosticsAppProfileState> state,
+    webapps::UninstallResultCode code) {
+  if (!webapps::UninstallSucceeded(code)) {
+    LOG(WARNING) << "Failed to unsintalled IWA before installing IWA";
+  }
+  InstallIsolatedWebApp(std::move(state));
+}
+
+void PrepareIsolatedWebApp(
+    std::unique_ptr<PrepareDiagnosticsAppProfileState> state) {
+  CHECK(state->context);
   CHECK(state->extension_id);
 
   auto info =
@@ -229,15 +257,24 @@ void InstallIsolatedWebApp(
 
   auto url_info = web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
       state->iwa_id.value());
-  auto install_source = web_app::IsolatedWebAppInstallSource::FromShimlessRma(
-      web_app::IwaSourceBundleProdModeWithFileOp(
-          state->swbn_path, web_app::IwaSourceBundleProdFileOp::kCopy));
+  const web_app::WebApp* web_app =
+      state->delegate->GetWebAppById(url_info.app_id(), state->context);
+  if (!web_app) {
+    // Install the IWA directly if IWA doesn't exist.
+    InstallIsolatedWebApp((std::move(state)));
+    return;
+  }
+
+  // Since we can not install IWA when the IWA is already installed, we should
+  // remove the existing IWA first before installation.
+  // It is safe to run uninstall job here since Shimless RMA is the only install
+  // source for the third-party diagnostics IWA.
+  // Note that the flow will be broken if there are multiple install sources.
   state->delegate->GetWebAppCommandScheduler(state->context)
-      ->InstallIsolatedWebApp(
-          url_info, install_source,
-          /*expected_version=*/std::nullopt, /*optional_keep_alive=*/nullptr,
-          /*optional_profile_keep_alive=*/nullptr,
-          base::BindOnce(&OnIsolatedWebAppInstalled, std::move(state)));
+      ->RemoveInstallManagementMaybeUninstall(
+          url_info.app_id(), web_app::WebAppManagement::Type::kIwaShimlessRma,
+          webapps::WebappUninstallSource::kUnknown,
+          base::BindOnce(&OnIsolatedWebAppRemoved, std::move(state)));
 }
 
 void CheckExtensionIsReady(
@@ -267,7 +304,7 @@ void OnCheckExtensionIsReadyResponse(
     return;
   }
 
-  InstallIsolatedWebApp(std::move(state));
+  PrepareIsolatedWebApp(std::move(state));
 }
 
 void CheckExtensionIsReady(

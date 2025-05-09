@@ -85,6 +85,7 @@ inline constexpr WebAppManagementTypes kUserUninstallableSources = {
     WebAppManagement::kOem,
     WebAppManagement::kOneDriveIntegration,
     WebAppManagement::kIwaUserInstalled,
+    WebAppManagement::kIwaShimlessRma,
 };
 
 // Management types that resulted from a user web app install.
