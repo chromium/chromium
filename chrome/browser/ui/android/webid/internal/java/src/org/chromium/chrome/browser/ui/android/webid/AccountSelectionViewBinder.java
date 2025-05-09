@@ -315,6 +315,11 @@ class AccountSelectionViewBinder {
                                         identityProvider.getIdpForDisplay())
                                 : context.getString(R.string.account_selection_add_account);
                 subject.setText(buttonText);
+                String buttonTextWithOpensInNewTab =
+                        context.getString(
+                                R.string.account_selection_add_account_opens_in_new_tab,
+                                buttonText);
+                subject.setContentDescription(buttonTextWithOpensInNewTab);
 
                 view.setOnClickListener(
                         clickedView -> {
@@ -675,6 +680,9 @@ class AccountSelectionViewBinder {
             HeaderProperties.HeaderType headerType = properties.mHeaderType;
             if (headerType == HeaderProperties.HeaderType.SIGN_IN_TO_IDP_STATIC) {
                 btnText = context.getString(R.string.signin_continue);
+                button.setContentDescription(
+                        context.getString(
+                                R.string.account_selection_add_account_opens_in_new_tab, btnText));
             } else if (headerType == HeaderProperties.HeaderType.SIGN_IN_ERROR) {
                 btnText = context.getString(R.string.signin_error_dialog_got_it_button);
             } else {

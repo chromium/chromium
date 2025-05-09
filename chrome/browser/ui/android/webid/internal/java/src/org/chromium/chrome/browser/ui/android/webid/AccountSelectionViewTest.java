@@ -418,6 +418,7 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
                 mContentView.findViewById(R.id.account_selection_continue_btn);
         assertTrue(continueButton.isShown());
         assertEquals("Continue", continueButton.getText());
+        assertEquals("Continue, opens in a new tab", continueButton.getContentDescription());
         continueButton.performClick();
 
         ArgumentCaptor<ButtonData> captor = ArgumentCaptor.forClass(ButtonData.class);
@@ -559,6 +560,25 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
         // Check that there is not a period in the content description since one will be appended.
         assertEquals(
                 "Sign in bottom sheet", mBottomSheetContent.getSheetContentDescription(mContext));
+    }
+
+    @Test
+    public void testMultipleIdPLogins() {
+        mSheetAccountItems.addAll(
+                asList(
+                        buildIdpLoginItem(mIdpData, /* showIdp= */ true),
+                        buildIdpLoginItem(mIdpDataWithoutIcons, /* showIdp= */ true)));
+        ShadowLooper.shadowMainLooper().idle();
+
+        assertEquals(View.VISIBLE, mContentView.getVisibility());
+        RecyclerView buttons = mContentView.findViewById(R.id.sheet_item_list);
+        assertEquals("Incorrect account count", 2, buttons.getChildCount());
+        View idpLogin = buttons.getChildAt(0);
+        TextView title = idpLogin.findViewById(R.id.title);
+        assertEquals("Use your " + mTestEtldPlusOne2 + " account", title.getText());
+        assertEquals(
+                "Use your " + mTestEtldPlusOne2 + " account, opens in a new tab",
+                title.getContentDescription());
     }
 
     private RecyclerView getAccounts() {

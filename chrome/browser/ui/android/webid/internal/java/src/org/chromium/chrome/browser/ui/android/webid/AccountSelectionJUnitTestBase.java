@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ButtonData;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.LoginButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
@@ -125,6 +126,7 @@ public class AccountSelectionJUnitTestBase {
     protected static final float ALPHA_COMPARISON_DELTA = 0.00001f;
 
     @Mock Callback<ButtonData> mAccountCallback;
+    @Mock Callback<ButtonData> mIdpLoginCallback;
     @Mock AccountSelectionComponent.Delegate mMockDelegate;
     @Mock BottomSheetController mMockBottomSheetController;
     @Mock Tab mTab;
@@ -455,6 +457,19 @@ public class AccountSelectionJUnitTestBase {
                         .with(AccountProperties.ACCOUNT, account)
                         .with(AccountProperties.ON_CLICK_LISTENER, mAccountCallback)
                         .with(AccountProperties.SHOW_IDP, showIdp)
+                        .build());
+    }
+
+    MVCListAdapter.ListItem buildIdpLoginItem(IdentityProviderData idpData, boolean showIdp) {
+        LoginButtonProperties.Properties properties = new LoginButtonProperties.Properties();
+        properties.mIdentityProvider = idpData;
+        properties.mOnClickListener = mIdpLoginCallback;
+        properties.mRpMode = mRpMode;
+        properties.mShowIdp = showIdp;
+        return new MVCListAdapter.ListItem(
+                AccountSelectionProperties.ITEM_TYPE_LOGIN,
+                new PropertyModel.Builder(LoginButtonProperties.ALL_KEYS)
+                        .with(LoginButtonProperties.PROPERTIES, properties)
                         .build());
     }
 
