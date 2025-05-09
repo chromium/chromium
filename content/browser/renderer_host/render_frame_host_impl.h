@@ -770,7 +770,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const std::optional<blink::FrameToken>& previous_frame_token,
       const std::optional<blink::FrameToken>& opener_frame_token,
       const std::optional<blink::FrameToken>& parent_frame_token,
-      const std::optional<blink::FrameToken>& previous_sibling_frame_token);
+      const std::optional<blink::FrameToken>& previous_sibling_frame_token,
+      const std::optional<base::UnguessableToken>& navigation_metrics_token);
 
   // Deletes the RenderFrame in the renderer process.
   // Postcondition: |IsPendingDeletion()| is true.

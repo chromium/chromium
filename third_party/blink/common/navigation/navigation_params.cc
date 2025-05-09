@@ -24,6 +24,7 @@ mojom::CommitNavigationParamsPtr CreateCommitNavigationParams() {
   commit_params->navigation_api_history_entry_arrays =
       mojom::NavigationApiHistoryEntryArrays::New();
   commit_params->content_settings = CreateDefaultRendererContentSettings();
+  commit_params->navigation_metrics_token = base::UnguessableToken::Create();
 
   return commit_params;
 }

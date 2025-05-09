@@ -1135,9 +1135,10 @@ TEST_F(RenderViewImplScaleFactorTest, DeviceScaleCorrectAfterCrossOriginNav) {
       /*opener_frame_token=*/std::nullopt,
       /*parent_frame_token=*/std::nullopt,
       /*previous_sibling_frame_token=*/std::nullopt,
-      base::UnguessableToken::Create(), blink::mojom::TreeScopeType::kDocument,
-      std::move(replication_state), std::move(widget_params),
-      blink::mojom::FrameOwnerProperties::New(),
+      base::UnguessableToken::Create(),
+      /*navigation_metrics_token=*/base::UnguessableToken::Create(),
+      blink::mojom::TreeScopeType::kDocument, std::move(replication_state),
+      std::move(widget_params), blink::mojom::FrameOwnerProperties::New(),
       /*is_on_initial_empty_document=*/true, blink::DocumentToken(),
       CreateStubPolicyContainer(), /*is_for_nested_main_frame=*/false);
 
@@ -1205,8 +1206,9 @@ TEST_F(RenderViewImplTest, DetachingProxyAlsoDestroysProvisionalFrame) {
       /*opener_frame_token=*/std::nullopt,
       /*parent_frame_token=*/web_frame->GetFrameToken(),
       /*previous_sibling_frame_token=*/std::nullopt,
-      base::UnguessableToken::Create(), blink::mojom::TreeScopeType::kDocument,
-      std::move(replication_state),
+      base::UnguessableToken::Create(),
+      /*navigation_metrics_token=*/base::UnguessableToken::Create(),
+      blink::mojom::TreeScopeType::kDocument, std::move(replication_state),
       /*widget_params=*/nullptr, blink::mojom::FrameOwnerProperties::New(),
       /*is_on_initial_empty_document=*/true, blink::DocumentToken(),
       CreateStubPolicyContainer(), /*is_for_nested_main_frame=*/false);

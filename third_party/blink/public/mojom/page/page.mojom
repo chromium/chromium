@@ -146,12 +146,15 @@ interface PageBroadcast {
   //    Must not be used to look up a RenderFrameHostImpl or
   //    RenderFrameProxyHost in the browser process, as the token is shared,
   //    making the mapping ambiguous and non-authoritative.
+  // `navigation_metrics_token`: Identifies the navigation responsible for
+  //    creating this RemoteFrame, if any, for tracing/metrics purposes.
   CreateRemoteMainFrame(
     RemoteFrameToken token,
     FrameToken? opener_frame_token,
     FrameReplicationState replication_state,
     bool is_loading,
     mojo_base.mojom.UnguessableToken devtools_frame_token,
+    mojo_base.mojom.UnguessableToken? navigation_metrics_token,
     RemoteFrameInterfacesFromBrowser remote_frame_interfaces,
     RemoteMainFrameInterfaces remote_main_frame_interfaces);
 

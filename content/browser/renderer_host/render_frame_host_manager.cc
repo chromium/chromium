@@ -1133,11 +1133,13 @@ void RenderFrameHostManager::UpdateOpener(
 
   // `render_frame_host` (the frame whose opener is being updated) might not
   // have had proxies for the new opener chain in its SiteInstance's group. Make
-  // sure they exist.
+  // sure they exist. This is not related to a navigation, so no
+  // navigation_metrics_token is needed.
   if (frame_tree_node_->opener()) {
     frame_tree_node_->opener()->render_manager()->CreateOpenerProxies(
         render_frame_host->GetSiteInstance()->group(), frame_tree_node_,
-        render_frame_host->browsing_context_state());
+        render_frame_host->browsing_context_state(),
+        /*navigation_metrics_token=*/std::nullopt);
   }
 
   auto opener_frame_token =
@@ -1327,7 +1329,7 @@ void RenderFrameHostManager::DiscardUnusedFrame(
   // renderer, so that other frames can still communicate with this frame.  See
   // https://crbug.com/653746.
   if (proxy && !proxy->is_render_frame_proxy_live())
-    proxy->InitRenderFrameProxy();
+    proxy->InitRenderFrameProxy(/*navigation_metrics_token=*/std::nullopt);
 }
 
 bool RenderFrameHostManager::DeleteFromPendingList(
@@ -1967,9 +1969,15 @@ RenderFrameHostManager::GetFrameHostForNavigation(
       }
 
       DiscardSpeculativeRFH(request->GetTypeForNavigationDiscardReason());
+
+      // Ensure that the navigation metrics token has been created, which should
+      // have happened when `request` was created.
+      CHECK(!request->navigation_metrics_token().is_empty());
+
       bool success = CreateSpeculativeRenderFrameHost(
           current_site_instance, dest_site_instance.get(),
-          recovering_without_early_commit, process_allocation_context);
+          recovering_without_early_commit, process_allocation_context,
+          request->navigation_metrics_token());
       DCHECK(success);
 
       if (should_keep_target_process_alive) {
@@ -2025,7 +2033,8 @@ RenderFrameHostManager::GetFrameHostForNavigation(
                               RenderFrameHostImpl::LifecycleStateImplToString(
                                   navigation_rfh->lifecycle_state()));
 
-    if (!ReinitializeMainRenderFrame(navigation_rfh)) {
+    if (!ReinitializeMainRenderFrame(navigation_rfh,
+                                     request->navigation_metrics_token())) {
       AppendReason(reason,
                    "GetFrameHostForNavigation / main-frame-not-reinitialized");
       TRACE_EVENT_INSTANT("navigation",
@@ -3230,7 +3239,8 @@ bool RenderFrameHostManager::InitializeMainRenderFrameForImmediateUse() {
         render_frame_host_.get(), blink::RuntimeFeatureStateContext());
   }
 
-  if (!ReinitializeMainRenderFrame(render_frame_host_.get())) {
+  if (!ReinitializeMainRenderFrame(render_frame_host_.get(),
+                                   /*navigation_metrics_token=*/std::nullopt)) {
     NOTREACHED();
   }
 
@@ -3935,10 +3945,12 @@ void RenderFrameHostManager::CreateProxiesForNewRenderFrameHost(
     SiteInstanceGroup* old_group,
     SiteInstanceGroup* new_group,
     bool recovering_without_early_commit,
-    const scoped_refptr<BrowsingContextState>& browsing_context_state) {
+    const scoped_refptr<BrowsingContextState>& browsing_context_state,
+    const std::optional<base::UnguessableToken>& navigation_metrics_token) {
   // Only create opener proxies if they are in the same BrowsingInstance.
   if (new_group->IsRelatedSiteInstanceGroup(old_group)) {
-    CreateOpenerProxies(new_group, frame_tree_node_, browsing_context_state);
+    CreateOpenerProxies(new_group, frame_tree_node_, browsing_context_state,
+                        navigation_metrics_token);
   } else {
     // Ensure that the frame tree has RenderFrameProxyHosts for the
     // new SiteInstanceGroup in all necessary nodes.  We do this for all frames
@@ -3948,7 +3960,8 @@ void RenderFrameHostManager::CreateProxiesForNewRenderFrameHost(
     // here.  We will still check whether two frames are in the same
     // BrowsingInstance before we allow them to interact (e.g., postMessage).
     frame_tree_node_->frame_tree().CreateProxiesForSiteInstanceGroup(
-        frame_tree_node_, new_group, browsing_context_state);
+        frame_tree_node_, new_group, browsing_context_state,
+        navigation_metrics_token);
   }
 
   // When navigating same-site and recovering from a crash, create a proxy
@@ -3968,7 +3981,8 @@ void RenderFrameHostManager::CreateProxiesForNewRenderFrameHost(
     // |render_frame_host_->browsing_context_state()| is the right
     // BrowsingContextState to use.
     CreateRenderFrameProxy(new_group,
-                           render_frame_host_->browsing_context_state());
+                           render_frame_host_->browsing_context_state(),
+                           navigation_metrics_token);
   }
 }
 
@@ -4004,12 +4018,14 @@ void RenderFrameHostManager::CreateProxiesForNewNamedFrame(
   // Start from opener's parent.  There's no need to create a proxy in the
   // opener's SiteInstance's group, since new windows are always first opened in
   // the same SiteInstanceGroup as their opener, and if the new window navigates
-  // cross-site, that proxy would be created as part of unloading.
+  // cross-site, that proxy would be created as part of unloading. This is not
+  // related to a navigation, so navigation_metrics_token is not passed.
   for (RenderFrameHostImpl* ancestor = opener->parent(); ancestor;
        ancestor = ancestor->GetParent()) {
     if (ancestor->GetSiteInstance()->group() != current_group) {
       CreateRenderFrameProxy(ancestor->GetSiteInstance()->group(),
-                             browsing_context_state);
+                             browsing_context_state,
+                             /*navigation_metrics_token=*/std::nullopt);
     }
   }
 }
@@ -4134,7 +4150,8 @@ bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
     SiteInstanceImpl* old_instance,
     SiteInstanceImpl* new_instance,
     bool recovering_without_early_commit,
-    const ProcessAllocationContext& process_allocation_context) {
+    const ProcessAllocationContext& process_allocation_context,
+    const std::optional<base::UnguessableToken>& navigation_metrics_token) {
   TRACE_EVENT("navigation",
               "RenderFrameHostManager::CreateSpeculativeRenderFrameHost",
               ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_,
@@ -4240,10 +4257,12 @@ bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
 
   CreateProxiesForNewRenderFrameHost(
       old_instance->group(), new_instance->group(),
-      recovering_without_early_commit, browsing_context_state);
+      recovering_without_early_commit, browsing_context_state,
+      navigation_metrics_token);
 
   speculative_render_frame_host_ = CreateSpeculativeRenderFrame(
-      new_instance, recovering_without_early_commit, browsing_context_state);
+      new_instance, recovering_without_early_commit, browsing_context_state,
+      navigation_metrics_token);
   return !!speculative_render_frame_host_;
 }
 
@@ -4251,7 +4270,8 @@ std::unique_ptr<RenderFrameHostImpl>
 RenderFrameHostManager::CreateSpeculativeRenderFrame(
     SiteInstanceImpl* instance,
     bool recovering_without_early_commit,
-    const scoped_refptr<BrowsingContextState>& browsing_context_state) {
+    const scoped_refptr<BrowsingContextState>& browsing_context_state,
+    const std::optional<base::UnguessableToken>& navigation_metrics_token) {
   TRACE_EVENT("navigation",
               "RenderFrameHostManager::CreateSpeculativeRenderFrame",
               ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_);
@@ -4318,7 +4338,8 @@ RenderFrameHostManager::CreateSpeculativeRenderFrame(
     SiteInstanceGroup* site_instance_group = instance->group();
     if (!InitRenderView(site_instance_group, render_view_host,
                         browsing_context_state->GetRenderFrameProxyHost(
-                            site_instance_group))) {
+                            site_instance_group),
+                        navigation_metrics_token)) {
       return nullptr;
     }
 
@@ -4349,8 +4370,9 @@ RenderFrameHostManager::CreateSpeculativeRenderFrame(
   // CreateRenderFrame. In such a case, InitRenderView will not create the
   // RenderFrame in the renderer process and it needs to be done
   // explicitly.
-  if (!InitRenderFrame(new_render_frame_host.get()))
+  if (!InitRenderFrame(new_render_frame_host.get(), navigation_metrics_token)) {
     return nullptr;
+  }
 
   return new_render_frame_host;
 }
@@ -4358,6 +4380,7 @@ RenderFrameHostManager::CreateSpeculativeRenderFrame(
 void RenderFrameHostManager::CreateRenderFrameProxy(
     SiteInstanceGroup* group,
     const scoped_refptr<BrowsingContextState>& browsing_context_state,
+    const std::optional<base::UnguessableToken>& navigation_metrics_token,
     BatchedProxyIPCSender* batched_proxy_ipc_sender) {
   CHECK(group);
   TRACE_EVENT("navigation.debug",
@@ -4442,9 +4465,11 @@ void RenderFrameHostManager::CreateRenderFrameProxy(
 
   // Make sure that the `blink::RemoteFrame` is present in the renderer.
   if (frame_tree_node_->IsMainFrame() && proxy->GetRenderViewHost()) {
-    InitRenderView(group, proxy->GetRenderViewHost(), proxy);
+    InitRenderView(group, proxy->GetRenderViewHost(), proxy,
+                   navigation_metrics_token);
   } else {
-    proxy->InitRenderFrameProxy(batched_proxy_ipc_sender);
+    proxy->InitRenderFrameProxy(navigation_metrics_token,
+                                batched_proxy_ipc_sender);
   }
 }
 
@@ -4498,15 +4523,19 @@ void RenderFrameHostManager::CreateProxiesForChildFrame(FrameTreeNode* child) {
       continue;
     }
 
+    // Note: Since this is not related to a navigation, no
+    // navigation_metrics_token is passed.
     child->render_manager()->CreateRenderFrameProxy(
         pair.second->site_instance_group(),
-        child->current_frame_host()->browsing_context_state());
+        child->current_frame_host()->browsing_context_state(),
+        /*navigation_metrics_token=*/std::nullopt);
   }
 }
 
 void RenderFrameHostManager::EnsureRenderViewInitialized(
     RenderViewHostImpl* render_view_host,
-    SiteInstanceGroup* group) {
+    SiteInstanceGroup* group,
+    const std::optional<base::UnguessableToken>& navigation_metrics_token) {
   DCHECK(frame_tree_node_->IsMainFrame());
 
   if (render_view_host->IsRenderViewLive())
@@ -4520,7 +4549,7 @@ void RenderFrameHostManager::EnsureRenderViewInitialized(
   if (!proxy)
     return;
 
-  InitRenderView(group, render_view_host, proxy);
+  InitRenderView(group, render_view_host, proxy, navigation_metrics_token);
 }
 
 void RenderFrameHostManager::SwapOuterDelegateFrame(
@@ -4552,7 +4581,8 @@ void RenderFrameHostManager::SetRWHViewForInnerFrameTree(
 bool RenderFrameHostManager::InitRenderView(
     SiteInstanceGroup* site_instance_group,
     RenderViewHostImpl* render_view_host,
-    RenderFrameProxyHost* proxy) {
+    RenderFrameProxyHost* proxy,
+    const std::optional<base::UnguessableToken>& navigation_metrics_token) {
   // Ensure the renderer process is initialized before creating the
   // `blink::WebView`.
   if (!render_view_host->GetAgentSchedulingGroup().Init())
@@ -4565,7 +4595,7 @@ bool RenderFrameHostManager::InitRenderView(
   auto opener_frame_token = GetOpenerFrameToken(site_instance_group);
 
   bool created = delegate_->CreateRenderViewForRenderManager(
-      render_view_host, opener_frame_token, proxy);
+      render_view_host, opener_frame_token, proxy, navigation_metrics_token);
 
   if (created && proxy) {
     proxy->SetRenderFrameProxyCreated(true);
@@ -4688,7 +4718,8 @@ RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
 }
 
 bool RenderFrameHostManager::InitRenderFrame(
-    RenderFrameHostImpl* render_frame_host) {
+    RenderFrameHostImpl* render_frame_host,
+    const std::optional<base::UnguessableToken>& navigation_metrics_token) {
   if (render_frame_host->IsRenderFrameLive()) {
     return true;
   }
@@ -4729,7 +4760,7 @@ bool RenderFrameHostManager::InitRenderFrame(
       render_frame_host->browsing_context_state()->GetRenderFrameProxyHost(
           site_instance_group);
   if (existing_proxy && !existing_proxy->is_render_frame_proxy_live())
-    existing_proxy->InitRenderFrameProxy();
+    existing_proxy->InitRenderFrameProxy(navigation_metrics_token);
 
   // Figure out the FrameToken of the frame or proxy that this frame will
   // replace. This usually will be `existing_proxy`'s FrameToken, but
@@ -4739,7 +4770,7 @@ bool RenderFrameHostManager::InitRenderFrame(
 
   return render_frame_host->CreateRenderFrame(
       previous_frame_token, opener_frame_token, parent_frame_token,
-      previous_sibling_frame_token);
+      previous_sibling_frame_token, navigation_metrics_token);
 }
 
 std::optional<blink::FrameToken>
@@ -4789,7 +4820,8 @@ RenderFrameHostManager::GetReplacementFrameToken(
 }
 
 bool RenderFrameHostManager::ReinitializeMainRenderFrame(
-    RenderFrameHostImpl* render_frame_host) {
+    RenderFrameHostImpl* render_frame_host,
+    const std::optional<base::UnguessableToken>& navigation_metrics_token) {
   CHECK(!frame_tree_node_->parent());
 
   // This should be used only when the RenderFrame is not live.
@@ -4797,17 +4829,19 @@ bool RenderFrameHostManager::ReinitializeMainRenderFrame(
   DCHECK(!render_frame_host->must_be_replaced_for_crash());
 
   // Recreate the opener chain.
-  CreateOpenerProxies(render_frame_host->GetSiteInstance()->group(),
-                      frame_tree_node_,
-                      render_frame_host_->browsing_context_state());
+  CreateOpenerProxies(
+      render_frame_host->GetSiteInstance()->group(), frame_tree_node_,
+      render_frame_host_->browsing_context_state(), navigation_metrics_token);
 
   // Main frames need both the `blink::WebView` and `RenderFrame` reinitialized,
   // so use `InitRenderView`.
   DCHECK(!render_frame_host->browsing_context_state()->GetRenderFrameProxyHost(
       render_frame_host->GetSiteInstance()->group()));
   if (!InitRenderView(render_frame_host->GetSiteInstance()->group(),
-                      render_frame_host->render_view_host(), nullptr))
+                      render_frame_host->render_view_host(), nullptr,
+                      navigation_metrics_token)) {
     return false;
+  }
 
   DCHECK(render_frame_host->IsRenderFrameLive());
 
@@ -5512,7 +5546,8 @@ void RenderFrameHostManager::CollectOpenerFrameTrees(
 void RenderFrameHostManager::CreateOpenerProxies(
     SiteInstanceGroup* group,
     FrameTreeNode* skip_this_node,
-    const scoped_refptr<BrowsingContextState>& browsing_context_state) {
+    const scoped_refptr<BrowsingContextState>& browsing_context_state,
+    const std::optional<base::UnguessableToken>& navigation_metrics_token) {
   base::ElapsedTimer timer;
 
   // TODO(crbug.com/40205442): Add a DCHECK verifying that |instance
@@ -5530,7 +5565,8 @@ void RenderFrameHostManager::CreateOpenerProxies(
   // nodes need to reference them.
   for (FrameTree* tree : base::Reversed(opener_frame_trees)) {
     tree->root()->render_manager()->CreateOpenerProxiesForFrameTree(
-        group, skip_this_node, browsing_context_state);
+        group, skip_this_node, browsing_context_state,
+        navigation_metrics_token);
   }
 
   // Set openers for nodes in |nodes_with_back_links| in a second pass.
@@ -5563,7 +5599,8 @@ void RenderFrameHostManager::CreateOpenerProxies(
 void RenderFrameHostManager::CreateOpenerProxiesForFrameTree(
     SiteInstanceGroup* group,
     FrameTreeNode* skip_this_node,
-    const scoped_refptr<BrowsingContextState>& browsing_context_state) {
+    const scoped_refptr<BrowsingContextState>& browsing_context_state,
+    const std::optional<base::UnguessableToken>& navigation_metrics_token) {
   // Currently, this function is only called on main frames.  It should
   // actually work correctly for subframes as well, so if that need ever
   // arises, it should be sufficient to remove this DCHECK.
@@ -5577,8 +5614,8 @@ void RenderFrameHostManager::CreateOpenerProxiesForFrameTree(
   if (skip_this_node && &skip_this_node->frame_tree() != &frame_tree) {
     skip_this_node = nullptr;
   }
-  frame_tree.CreateProxiesForSiteInstanceGroup(skip_this_node, group,
-                                               browsing_context_state);
+  frame_tree.CreateProxiesForSiteInstanceGroup(
+      skip_this_node, group, browsing_context_state, navigation_metrics_token);
 }
 
 std::optional<blink::FrameToken> RenderFrameHostManager::GetOpenerFrameToken(
@@ -5707,7 +5744,8 @@ void RenderFrameHostManager::CreateNewFrameForInnerDelegateAttachIfNecessary() {
           current_frame_host()->GetParent()->GetSiteInstance(),
           /*recovering_without_early_commit=*/false,
           ProcessAllocationContext{
-              ProcessAllocationSource::kNoProcessCreationExpected})) {
+              ProcessAllocationSource::kNoProcessCreationExpected},
+          /*navigation_metrics_token=*/std::nullopt)) {
     NotifyPrepareForInnerDelegateAttachComplete(false /* success */);
     return;
   }

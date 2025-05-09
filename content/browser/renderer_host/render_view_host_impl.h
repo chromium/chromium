@@ -153,10 +153,14 @@ class CONTENT_EXPORT RenderViewHostImpl
   //   "noopener", and even if the opener has been closed since.
   // `proxy_route_id` is only used when creating a `blink::WebView` in an
   //   inactive state.
+  // `navigation_metrics_token` identifies the navigation for which this
+  //   view is being created, if any. This is used for navigation-related
+  //   metrics and trace events recorded in the renderer process.
   virtual bool CreateRenderView(
       const std::optional<blink::FrameToken>& opener_frame_token,
       int proxy_route_id,
-      bool window_was_opened_by_another_window);
+      bool window_was_opened_by_another_window,
+      const std::optional<base::UnguessableToken>& navigation_metrics_token);
 
   RenderViewHostDelegate* GetDelegate();
 

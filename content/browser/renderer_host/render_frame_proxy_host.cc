@@ -225,6 +225,7 @@ std::string RenderFrameProxyHost::ToDebugString() {
 }
 
 bool RenderFrameProxyHost::InitRenderFrameProxy(
+    const std::optional<base::UnguessableToken>& navigation_metrics_token,
     BatchedProxyIPCSender* batched_proxy_ipc_sender) {
   DCHECK(!render_frame_proxy_created_);
   // We shouldn't be creating proxies for subframes of frames in
@@ -308,6 +309,12 @@ bool RenderFrameProxyHost::InitRenderFrameProxy(
       // `BatchedProxyIPCSender::CreateAllProxies`, after all proxies
       // are created.
     } else {
+      // Note that `navigation_metrics_token` is intentionally *not* passed in
+      // this IPC. This is because in practice, this path is no longer used for
+      // creating proxies during a navigation; this is done via
+      // `batched_proxy_ipc_sender` above instead. This path is still used for
+      // non-navigation proxy creation, such as creating proxies for a newly
+      // created subframe.
       parent_proxy->GetAssociatedRemoteFrame()->CreateRemoteChild(
           frame_token_, opener_frame_token, frame_tree_node_->tree_scope_type(),
           frame_tree_node_->current_replication_state().Clone(),
@@ -321,7 +328,7 @@ bool RenderFrameProxyHost::InitRenderFrameProxy(
         frame_token_, opener_frame_token,
         frame_tree_node_->current_replication_state().Clone(),
         frame_tree_node_->IsLoading(), devtools_frame_token,
-        CreateAndBindRemoteFrameInterfaces(),
+        navigation_metrics_token, CreateAndBindRemoteFrameInterfaces(),
         CreateAndBindRemoteMainFrameInterfaces());
     SetRenderFrameProxyCreated(true);
   }
@@ -379,7 +386,8 @@ void RenderFrameProxyHost::UpdateOpener() {
   if (frame_tree_node_->opener()) {
     frame_tree_node_->opener()->render_manager()->CreateOpenerProxies(
         site_instance_group(), frame_tree_node_,
-        frame_tree_node_->current_frame_host()->browsing_context_state());
+        frame_tree_node_->current_frame_host()->browsing_context_state(),
+        /*navigation_metrics_token=*/std::nullopt);
   }
 
   if (!is_render_frame_proxy_live())
@@ -685,7 +693,8 @@ void RenderFrameProxyHost::RouteMessageEvent(
             ->render_manager()
             ->CreateRenderFrameProxy(
                 target_rfh->GetSiteInstance()->group(),
-                source_rfh->GetMainFrame()->browsing_context_state());
+                source_rfh->GetMainFrame()->browsing_context_state(),
+                /*navigation_metrics_token=*/std::nullopt);
       } else if (is_guest_to_embedder_communication) {
         // A RenderFrameProxyHost was already created when the guest was
         // attached.
@@ -737,9 +746,10 @@ void RenderFrameProxyHost::RouteMessageEvent(
                      source_rfh->frame_tree_node()->current_frame_host());
             source_rfh->frame_tree_node()
                 ->render_manager()
-                ->CreateOpenerProxies(target_rfh->GetSiteInstance()->group(),
-                                      nullptr,
-                                      source_rfh->browsing_context_state());
+                ->CreateOpenerProxies(
+                    target_rfh->GetSiteInstance()->group(), nullptr,
+                    source_rfh->browsing_context_state(),
+                    /*navigation_metrics_token=*/std::nullopt);
             did_call_create_opener_proxies = true;
           }
         }

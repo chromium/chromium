@@ -182,6 +182,7 @@ class RenderFrameImplTest : public RenderViewTest {
         /*parent_frame_token=*/blink::FrameToken(remote_child_token),
         /*previous_sibling_frame_token=*/std::nullopt,
         base::UnguessableToken::Create(),
+        /*navigation_metrics_token=*/std::nullopt,
         blink::mojom::TreeScopeType::kDocument,
         std::move(frame_replication_state), std::move(widget_params),
         blink::mojom::FrameOwnerProperties::New(),

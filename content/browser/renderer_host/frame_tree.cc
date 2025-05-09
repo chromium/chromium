@@ -494,7 +494,8 @@ void FrameTree::CreateProxiesForSiteInstanceGroup(
     FrameTreeNode* source,
     SiteInstanceGroup* site_instance_group,
     const scoped_refptr<BrowsingContextState>&
-        source_new_browsing_context_state) {
+        source_new_browsing_context_state,
+    const std::optional<base::UnguessableToken>& navigation_metrics_token) {
   // Will be instantiated with the root proxy later and passed to
   // `CreateRenderFrameProxy()` to batch create proxies for child frames.
   std::unique_ptr<BatchedProxyIPCSender> batched_proxy_ipc_sender;
@@ -504,7 +505,7 @@ void FrameTree::CreateProxiesForSiteInstanceGroup(
         GetRenderViewHost(site_instance_group).get();
     if (render_view_host) {
       root()->render_manager()->EnsureRenderViewInitialized(
-          render_view_host, site_instance_group);
+          render_view_host, site_instance_group, navigation_metrics_token);
     } else {
       // Due to the check above, we are creating either an opener proxy (when
       // source is null) or a main frame proxy due to a subframe navigation
@@ -523,6 +524,7 @@ void FrameTree::CreateProxiesForSiteInstanceGroup(
       // pass an instance of `BatchedProxyIPCSender` here instead of nullptr.
       root()->render_manager()->CreateRenderFrameProxy(
           site_instance_group, root_browsing_context_state,
+          navigation_metrics_token,
           /*batched_proxy_ipc_sender=*/nullptr);
 
       // We only need to use `BatchedProxyIPCSender` when navigating to a new
@@ -537,8 +539,8 @@ void FrameTree::CreateProxiesForSiteInstanceGroup(
           root_browsing_context_state
               ->GetRenderFrameProxyHost(site_instance_group)
               ->GetSafeRef();
-      batched_proxy_ipc_sender =
-          std::make_unique<BatchedProxyIPCSender>(std::move(root_proxy));
+      batched_proxy_ipc_sender = std::make_unique<BatchedProxyIPCSender>(
+          std::move(root_proxy), navigation_metrics_token);
     }
   }
 
@@ -608,7 +610,7 @@ void FrameTree::CreateProxiesForSiteInstanceGroup(
           site_instance_group,
           node == source ? source_new_browsing_context_state
                          : node->current_frame_host()->browsing_context_state(),
-          batched_proxy_ipc_sender.get());
+          navigation_metrics_token, batched_proxy_ipc_sender.get());
     }
   }
 

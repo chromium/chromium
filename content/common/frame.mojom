@@ -173,6 +173,10 @@ struct CreateViewParams {
   // This must be null unless the view being created is a partitioned popin.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
   blink.mojom.PartitionedPopinParams? partitioned_popin_params;
+
+  // Identifies the navigation that triggered this view creation, if any. Used
+  // for collecting metrics.
+  mojo_base.mojom.UnguessableToken? navigation_metrics_token;
 };
 
 // A union to distinguish between parameters specific to local main frame
@@ -353,6 +357,10 @@ struct CreateFrameParams {
   // Set if this frame corresponds to the main frame for a non top-level
   // FrameTree (GuestView, fenced frame etc.).
   bool is_for_nested_main_frame;
+
+  // Identifies the navigation that triggered this frame creation, if any. Used
+  // for collecting metrics.
+  mojo_base.mojom.UnguessableToken? navigation_metrics_token;
 };
 
 // Provided with each call to Frame::GetSerializedHtmlWithLocalLinks() so that

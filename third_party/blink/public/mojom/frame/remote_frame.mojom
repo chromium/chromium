@@ -483,7 +483,11 @@ interface RemoteFrame {
   // at the root (see https://crbug.com/1393697).
   //
   // `params`: An array of the root's immediate children.
-  CreateRemoteChildren(array<CreateRemoteChildParams> params);
+  // `navigation_metrics_token`: Identifies the navigation responsible for
+  //    creating these RemoteFrames, if any, for tracing/metrics purposes.
+  CreateRemoteChildren(
+      array<CreateRemoteChildParams> params,
+      mojo_base.mojom.UnguessableToken? navigation_metrics_token);
 
   // Propagates a censored version of the event from a fenced frame to its
   // embedder that omits privacy-sensitive information like mouse coordinates or

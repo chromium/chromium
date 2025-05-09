@@ -102,7 +102,9 @@ class FakeRemoteFrame : public blink::mojom::RemoteFrame {
       blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces)
       override;
   void CreateRemoteChildren(
-      std::vector<blink::mojom::CreateRemoteChildParamsPtr> params) override;
+      std::vector<blink::mojom::CreateRemoteChildParamsPtr> params,
+      const std::optional<base::UnguessableToken>& navigation_metrics_token)
+      override;
   void ForwardFencedFrameEventToEmbedder(
       const std::string& event_type) override;
 

@@ -1165,7 +1165,8 @@ void RemoteFrame::CreateRemoteChild(
 }
 
 void RemoteFrame::CreateRemoteChildren(
-    Vector<mojom::blink::CreateRemoteChildParamsPtr> params) {
+    Vector<mojom::blink::CreateRemoteChildParamsPtr> params,
+    const std::optional<base::UnguessableToken>& navigation_metrics_token) {
   Client()->CreateRemoteChildren(params);
 }
 

@@ -685,6 +685,10 @@ struct CommitNavigationParams {
   // matters for cross-origin navigations (apart from error pages with the same
   // precursor origin).
   bool force_new_document_sequence_number = false;
+
+  // A token used for associated various events/IPCs together to a particular
+  // navigation, for the purposes of tracing and metrics collection.
+  mojo_base.mojom.UnguessableToken navigation_metrics_token;
 };
 
 // Parameters used to dispatch the `pageswap` event on the old Document for

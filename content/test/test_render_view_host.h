@@ -288,7 +288,9 @@ class TestRenderViewHost : public RenderViewHostImpl,
   bool CreateRenderView(
       const std::optional<blink::FrameToken>& opener_frame_token,
       int proxy_route_id,
-      bool window_was_created_with_opener) override;
+      bool window_was_created_with_opener,
+      const std::optional<base::UnguessableToken>& navigation_metrics_token)
+      override;
   bool IsTestRenderViewHost() const override;
 
   // RenderViewHostTester implementation.

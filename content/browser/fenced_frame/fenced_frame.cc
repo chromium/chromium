@@ -313,7 +313,8 @@ FencedFrame::InitInnerFrameTreeAndReturnProxyToOuterFrameTree(
           inner_render_manager->current_frame_host()
               ->GetSiteInstance()
               ->group(),
-          static_cast<RenderViewHostImpl*>(rvh), nullptr)) {
+          static_cast<RenderViewHostImpl*>(rvh), /*proxy=*/nullptr,
+          /*navigation_metrics_token=*/std::nullopt)) {
     return proxy_host;
   }
 

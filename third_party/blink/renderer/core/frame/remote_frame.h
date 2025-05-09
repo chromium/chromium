@@ -230,7 +230,9 @@ class CORE_EXPORT RemoteFrame final : public Frame,
       mojom::blink::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces)
       override;
   void CreateRemoteChildren(
-      Vector<mojom::blink::CreateRemoteChildParamsPtr> params) override;
+      Vector<mojom::blink::CreateRemoteChildParamsPtr> params,
+      const std::optional<base::UnguessableToken>& navigation_metrics_token)
+      override;
   void ForwardFencedFrameEventToEmbedder(
       const WTF::String& event_type) override;
 

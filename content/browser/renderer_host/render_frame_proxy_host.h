@@ -123,10 +123,13 @@ class CONTENT_EXPORT RenderFrameProxyHost
   RenderProcessHost* GetProcess() const { return process_; }
 
   // Initializes the object and creates the `blink::RemoteFrame` in the process
-  // for the `site_instance_group_`. If `batched_proxy_ipc_sender` is not null,
+  // for the `site_instance_group_`. If this proxy is being initialized as part
+  // of a new navigation, `navigation_metrics_token` identifies that navigation
+  // for metrics purposes. If `batched_proxy_ipc_sender` is not null,
   // then the proxy will not be created immediately. It will be batch created
   // later.
   bool InitRenderFrameProxy(
+      const std::optional<base::UnguessableToken>& navigation_metrics_token,
       BatchedProxyIPCSender* batched_proxy_ipc_sender = nullptr);
 
   int GetRoutingID() const { return routing_id_; }
