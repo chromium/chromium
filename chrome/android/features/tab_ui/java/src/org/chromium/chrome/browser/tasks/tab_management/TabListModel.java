@@ -158,7 +158,7 @@ class TabListModel extends ModelList {
         int lastTabIndex = TabModel.INVALID_TAB_INDEX;
         for (int i = 0; i < size(); i++) {
             PropertyModel model = get(i).model;
-            if (model.get(CARD_TYPE) == TAB) {
+            if (model.get(CARD_TYPE) == TAB || model.get(CARD_TYPE) == TAB_GROUP) {
                 if (tabCount++ == n) return i;
                 lastTabIndex = i;
             }
@@ -175,6 +175,18 @@ class TabListModel extends ModelList {
         }
 
         return getTabCardCountsBefore(index);
+    }
+
+    /** Get the number of TAB_GROUP cards in the TabListModel. */
+    public int getTabGroupCardCount() {
+        int tabGroupCardCount = 0;
+        for (int i = 0; i < size(); i++) {
+            PropertyModel model = get(i).model;
+            if (model.get(CARD_TYPE) == TAB_GROUP) {
+                tabGroupCardCount++;
+            }
+        }
+        return tabGroupCardCount;
     }
 
     /**

@@ -184,8 +184,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
      * dialog when no archived tabs remain.
      */
     private final Callback<Integer> mTabCountObserver =
-            (count) -> {
-                if (count == 0 && !ArchivedTabsDialogCoordinator.this.mIsOpeningLastTab) {
+            (tabCount) -> {
+                if (tabCount == 0 && !ArchivedTabsDialogCoordinator.this.mIsOpeningLastItem) {
                     // Post task to allow the last tab to be unregistered.
                     PostTask.postTask(
                             TaskTraits.UI_DEFAULT,
@@ -196,7 +196,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
             };
 
     /** Used to override the default tab click behavior to restore/open the tab. */
-    private final GridCardOnClickListenerProvider mGridCardOnCLickListenerProvider =
+    private final GridCardOnClickListenerProvider mGridCardOnClickListenerProvider =
             new GridCardOnClickListenerProvider() {
                 @Nullable
                 @Override
@@ -219,6 +219,10 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                                 View view,
                                 String syncId,
                                 @Nullable MotionEvent triggeringMotionEvent) {
+                            SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(syncId);
+                            mIsOpeningLastItem =
+                                    getArchivedTabCount() == savedTabGroup.savedTabs.size();
+
                             TabSwitcherPaneBase tabSwitcherPaneBase =
                                     (TabSwitcherPaneBase)
                                             mPaneManagerSupplier
@@ -247,7 +251,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
 
                 @Override
                 public void onTabSelecting(int tabId, boolean fromActionButton) {
-                    mIsOpeningLastTab = mArchivedTabModel.getCount() == 1;
+                    mIsOpeningLastItem = getArchivedTabCount() == 1;
                     Tab tab = mArchivedTabModel.getTabById(tabId);
                     mArchivedTabModelOrchestrator
                             .getTabArchiver()
@@ -357,7 +361,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     private OnTabSelectingListener mOnTabSelectingListener;
     private PropertyModel mIphMessagePropertyModel;
     private int mSnackbarOverrideToken;
-    private boolean mIsOpeningLastTab;
+    private boolean mIsOpeningLastItem;
     private boolean mIsShowing;
 
     /**
@@ -511,7 +515,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         }
 
         mOnTabSelectingListener = onTabSelectingListener;
-        mArchivedTabModel.getTabCountSupplier().addObserver(mTabCountObserver);
+        mArchivedTabModelOrchestrator.getTabCountSupplier().addObserver(mTabCountObserver);
         mUndoBarController.initialize();
 
         TabListEditorController controller = mTabListEditorCoordinator.getController();
@@ -646,7 +650,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         controller.setLifecycleObserver(null);
         mBackPressManager.removeHandler(mTabListEditorCoordinator.getController());
         mTabArchiveSettings.removeObserver(mTabArchiveSettingsObserver);
-        mArchivedTabModel.getTabCountSupplier().removeObserver(mTabCountObserver);
+        mArchivedTabModelOrchestrator.getTabCountSupplier().removeObserver(mTabCountObserver);
         mSnackbarOverrideToken = TokenHolder.INVALID_TOKEN;
         mIsShowing = false;
         mTabSwitcherRecyclerView.get().setBlockTouchInput(false);
@@ -673,7 +677,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
 
     @VisibleForTesting
     void updateTitle() {
-        int numInactiveTabs = mArchivedTabModel.getCount();
+        int numInactiveTabs = getArchivedTabCount();
         String title =
                 mActivity
                         .getResources()
@@ -702,7 +706,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                         mSnackbarManager,
                         /* bottomSheetController= */ null,
                         TabProperties.TabActionState.CLOSABLE,
-                        mGridCardOnCLickListenerProvider,
+                        mGridCardOnClickListenerProvider,
                         mModalDialogManager,
                         mDesktopWindowStateManager,
                         /* edgeToEdgeSupplier= */ null,
@@ -761,6 +765,10 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                     }
                     return DialogDismissType.DISMISS_IMMEDIATELY;
                 });
+    }
+
+    private int getArchivedTabCount() {
+        return mArchivedTabModelOrchestrator.getTabCountSupplier().get();
     }
 
     private void restoreArchivedTabs(List<Tab> tabs) {
@@ -870,7 +878,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     }
 
     GridCardOnClickListenerProvider getGridCardOnClickListenerProviderForTesting() {
-        return mGridCardOnCLickListenerProvider;
+        return mGridCardOnClickListenerProvider;
     }
 
     /** Returns the Edge to edge pad adjuster. */

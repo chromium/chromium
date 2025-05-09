@@ -12,7 +12,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -129,7 +128,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
 
     private Activity mActivity;
     private ArchivedTabsDialogCoordinator mCoordinator;
-    private ObservableSupplierImpl<Integer> mTabCountSupplier = new ObservableSupplierImpl<>();
+    private ObservableSupplierImpl<Integer> mTabCountSupplier = new ObservableSupplierImpl<>(1);
     private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
             new ObservableSupplierImpl<>();
     private OneshotSupplierImpl<PaneManager> mPaneManagerSupplier = new OneshotSupplierImpl<>();
@@ -201,13 +200,12 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
                     }
                 });
 
-        doReturn(mArchivedTabModelSelector)
-                .when(mArchivedTabModelOrchestrator)
-                .getTabModelSelector();
-        doReturn(mArchivedTabModel).when(mArchivedTabModelSelector).getModel(false);
-        doReturn(mTabCountSupplier).when(mArchivedTabModel).getTabCountSupplier();
+        when(mArchivedTabModelOrchestrator.getTabModelSelector())
+                .thenReturn(mArchivedTabModelSelector);
+        when(mArchivedTabModelSelector.getModel(false)).thenReturn(mArchivedTabModel);
+        when(mArchivedTabModelOrchestrator.getTabCountSupplier()).thenReturn(mTabCountSupplier);
 
-        doReturn(mTabListEditorController).when(mTabListEditorCoordinator).getController();
+        when(mTabListEditorCoordinator.getController()).thenReturn(mTabListEditorController);
         doAnswer(
                         invocationOnMock -> {
                             mCoordinator.getTabListEditorLifecycleObserver().willHide();
@@ -224,15 +222,10 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         verify(mRootView).addView(any());
         verify(mTabListEditorController).show(any(), eq(Collections.emptyList()), eq(null));
         verify(mTabListEditorController).setNavigationProvider(any());
-        verify(mTabListEditorController).setToolbarTitle("0 inactive tabs");
+        verify(mTabListEditorController, times(2)).setToolbarTitle("1 inactive tab");
         verify(mBackPressManager).addHandler(any(), eq(BackPressHandler.Type.ARCHIVED_TABS_DIALOG));
 
-        doReturn(1).when(mArchivedTabModel).getCount();
-        mCoordinator.updateTitle();
-        verify(mTabListEditorController).setToolbarTitle("1 inactive tab");
-
-        doReturn(2).when(mArchivedTabModel).getCount();
-        mCoordinator.updateTitle();
+        mTabCountSupplier.set(2);
         verify(mTabListEditorController).setToolbarTitle("2 inactive tabs");
     }
 
@@ -255,22 +248,17 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     public void testAddRemoveTab() {
         mCoordinator.show(mOnTabSelectingListener);
 
-        // First add a tab
-        doReturn(1).when(mArchivedTabModel).getCount();
-        mTabCountSupplier.set(1);
-        verify(mTabListEditorController).setToolbarTitle("1 inactive tab");
+        // First verify a tab exists as the base condition for showing.
+        verify(mTabListEditorController, times(2)).setToolbarTitle("1 inactive tab");
 
-        // Then a second
-        doReturn(2).when(mArchivedTabModel).getCount();
+        // Then add a second tab.
         mTabCountSupplier.set(2);
         verify(mTabListEditorController).setToolbarTitle("2 inactive tabs");
 
-        // Then close bloth
-        doReturn(1).when(mArchivedTabModel).getCount();
+        // Then close both tabs.
         mTabCountSupplier.set(1);
-        verify(mTabListEditorController, times(2)).setToolbarTitle("1 inactive tab");
+        verify(mTabListEditorController, times(3)).setToolbarTitle("1 inactive tab");
 
-        doReturn(0).when(mArchivedTabModel).getCount();
         mTabCountSupplier.set(0);
 
         // Allow animations to finish.
@@ -294,7 +282,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
 
     @Test
     public void testDestroyHidesDialog() {
-        doReturn(true).when(mTabListEditorController).isVisible();
+        when(mTabListEditorController.isVisible()).thenReturn(true);
         mCoordinator.show(mOnTabSelectingListener);
         mCoordinator.destroy();
 
@@ -353,9 +341,10 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         when(mPaneManager.getPaneForId(PaneId.TAB_SWITCHER)).thenReturn(mTabSwitcherPaneBase);
         when(mTabGroupSyncService.getGroup(TAB_GROUP_ID_STRING))
                 .thenReturn(savedTabGroupBefore)
+                .thenReturn(savedTabGroupBefore)
                 .thenReturn(savedTabGroupAfter);
         when(mCurrentTabGroupModelFilter.getRootIdFromTabGroupId(TAB_GROUP_ID)).thenReturn(TAB1_ID);
-        doReturn(true).when(mTabListEditorController).isVisible();
+        when(mTabListEditorController.isVisible()).thenReturn(true);
 
         // Show the dialog.
         mCoordinator.show(mOnTabSelectingListener);

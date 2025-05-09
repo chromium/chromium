@@ -1483,8 +1483,14 @@ class TabListMediator implements TabListNotificationHandler {
                 }
             }
         }
+
+        // The current implementation of TAB_GROUP card types places all groups at the beginning of
+        // the model list. As a result, if any tab group cards exist, adjust the index for tab
+        // insertion to start after the allotted count of tab groups in the model list.
+        tabIndex += mModelList.getTabGroupCardCount();
+
         // Get the position of the nth tab card ignoring any other CARD_TYPE entries present in the
-        // model list.
+        // model list outside of TAB and TAB_GROUP.
         return mModelList.indexOfNthTabCard(tabIndex);
     }
 
