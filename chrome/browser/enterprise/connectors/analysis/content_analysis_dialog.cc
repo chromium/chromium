@@ -13,9 +13,11 @@
 #include "cc/paint/paint_flags.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/guest_view/browser/guest_view_base.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -52,6 +54,13 @@
 #include "ui/views/layout/table_layout_view.h"
 
 #include "base/win/windows_h_disallowed.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "base/metrics/histogram_functions.h"
+#include "chrome/browser/glic/host/guest_util.h"
+#include "chrome/browser/glic/widget/glic_widget.h"
+#include "components/guest_view/browser/guest_view_base.h"
+#endif
 
 namespace enterprise_connectors {
 
@@ -104,6 +113,25 @@ class CircleBackground : public views::Background {
   }
 
 };
+
+gfx::Rect GetDialogBounds(content::WebContents* contents,
+                          const gfx::Rect& current_widget_bounds) {
+  gfx::Rect rect = contents->GetContainerBounds();
+
+  // This will show the dialog right above the top of the contents.
+  rect.set_y(rect.y() - 40);
+#if BUILDFLAG(ENABLE_GLIC)
+  if (glic::IsGlicWebUI(contents)) {
+    // This will show the dialog right below the "header" part of Glic.
+    rect.set_y(rect.y() + 80);
+  }
+#endif  // BUILDFLAG(ENABLE_GLIC)
+
+  rect.set_x(rect.x() + (rect.width() / 2) -
+             (current_widget_bounds.width() / 2));
+
+  return rect;
+}
 
 ContentAnalysisDialog::TestObserver* observer_for_testing = nullptr;
 
@@ -246,10 +274,11 @@ ContentAnalysisDialog::ContentAnalysisDialog(
     download_item_->AddObserver(this);
 
   // Because the display of the dialog is delayed, it won't block UI
-  // interaction with the tab until it is visible.  To block interaction as of
-  // now, ignore input events manually.
+  // interaction with the top level web contents until it is visible.  To block
+  // interaction as of now, ignore input events manually.
   top_level_contents_ =
       constrained_window::GetTopLevelWebContents(web_contents())->GetWeakPtr();
+
   top_level_contents_->StoreFocus();
   scoped_ignore_input_events_ =
       top_level_contents_->IgnoreInputEvents(std::nullopt);
@@ -278,6 +307,22 @@ void ContentAnalysisDialog::ShowDialogNow() {
     return;
   }
 
+// Glic port enabled for Mac only at the moment until fixed on Windows.
+// TODO(416748209): Follow up with full port of ContentAnalysisDialog to use
+// non web modals on both Mac and Windows for all sources.
+#if BUILDFLAG(IS_MAC)
+  if (glic::IsGlicWebUI(top_level_contents_.get())) {
+    // make sure only one dialog is displayed at a time. If a dialog exists we
+    // just update the view.
+    if (contents_view_) {
+      return;
+    }
+    ShowNonTabDialogNow();
+    base::UmaHistogramEnumeration("Glic.Modal.DeepScan", access_point_);
+    return;
+  }
+#endif
+
   auto* manager =
       web_modal::WebContentsModalDialogManager::FromWebContents(web_contents());
   if (!manager) {
@@ -300,6 +345,23 @@ void ContentAnalysisDialog::ShowDialogNow() {
     constrained_window::ShowWebModalDialogViews(this, web_contents());
     if (observer_for_testing)
       observer_for_testing->ViewsFirstShown(this, first_shown_timestamp_);
+  }
+}
+
+void ContentAnalysisDialog::ShowNonTabDialogNow() {
+  content::WebContents* top_web_contents =
+      guest_view::GuestViewBase::GetTopLevelWebContents(web_contents());
+  raw_ptr<views::Widget> dialog_widget =
+      views::DialogDelegate::CreateDialogWidget(
+          weak_ptr_factory_.GetWeakPtr().get(), gfx::NativeWindow(),
+          top_web_contents->GetNativeView());
+
+  dialog_widget->SetBounds(GetDialogBounds(
+      top_web_contents, dialog_widget->GetWindowBoundsInScreen()));
+
+  dialog_widget->Show();
+  if (observer_for_testing) {
+    observer_for_testing->ViewsFirstShown(this, first_shown_timestamp_);
   }
 }
 
