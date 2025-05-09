@@ -1013,9 +1013,6 @@ void GlicWindowControllerImpl::CloseInternal(
     return;
   }
 
-  // The widget may have moved without a drag event so save the final position.
-  SaveWidgetPosition();
-
   const bool reopen_detached = state_ == State::kClosingToReopenDetached;
   DCHECK(!reopen_detached || reopen_detached_source.has_value());
 
@@ -1033,6 +1030,10 @@ void GlicWindowControllerImpl::CloseFinish(
   if (state_ == State::kClosed) {
     return;
   }
+
+  // Save the widge position on close so we can restore in the same position.
+  SaveWidgetPosition();
+
   glic_window_animator_.reset();
   glic_service_->metrics()->OnGlicWindowClose();
   base::UmaHistogramEnumeration("Glic.PanelWebUiState.FinishState2",
