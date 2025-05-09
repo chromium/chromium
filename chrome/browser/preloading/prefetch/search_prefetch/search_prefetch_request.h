@@ -82,6 +82,8 @@ enum class SearchPrefetchStatus {
 //   more easily.
 class SearchPrefetchRequest {
  public:
+  static void SetIsTest();
+
   SearchPrefetchRequest(const GURL& canonical_search_url,
                         const GURL& prefetch_url,
                         bool navigation_prefetch,
