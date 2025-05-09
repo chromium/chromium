@@ -127,7 +127,6 @@ static_library("common_lib") {
     "//chrome/common/win:eventlog_messages",
   ]
   sources = [
-    "actor/actor_logging.h",
     "all_messages.h",
     "chrome_content_client.cc",
     "chrome_content_client.h",
@@ -442,6 +441,14 @@ static_library("common_lib") {
 
   if (enable_bound_session_credentials) {
     sources += [ "bound_session_request_throttled_handler.h" ]
+  }
+
+  if (enable_glic) {
+    sources += [
+      "actor/action_result.cc",
+      "actor/action_result.h",
+      "actor/actor_logging.h",
+    ]
   }
 }
 

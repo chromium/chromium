@@ -5,7 +5,7 @@
 #include "chrome/browser/actor/tools/page_tool.h"
 
 #include "chrome/browser/actor/actor_coordinator.h"
-#include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -187,7 +187,7 @@ PageTool::~PageTool() = default;
 void PageTool::Validate(ValidateCallback callback) {
   // No browser-side validation yet.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), true));
+      FROM_HERE, base::BindOnce(std::move(callback), MakeOkResult()));
 }
 
 void PageTool::Invoke(InvokeCallback callback) {
@@ -198,7 +198,8 @@ void PageTool::Invoke(InvokeCallback callback) {
     case ActionInformation::ActionInfoCase::kClick: {
       auto click = mojom::ClickAction::New();
       if (!SetClickToolArgs(click, action_info)) {
-        std::move(callback).Run(false);
+        std::move(callback).Run(
+            MakeResult(mojom::ActionResultCode::kClickInvalidArguments));
         return;
       }
       request->action = mojom::ToolAction::NewClick(std::move(click));
@@ -207,7 +208,8 @@ void PageTool::Invoke(InvokeCallback callback) {
     case ActionInformation::ActionInfoCase::kType: {
       auto type = mojom::TypeAction::New();
       if (!SetTypeToolArgs(type, action_info)) {
-        std::move(callback).Run(false);
+        std::move(callback).Run(
+            MakeResult(mojom::ActionResultCode::kTypeInvalidArguments));
         return;
       }
       request->action = mojom::ToolAction::NewType(std::move(type));
@@ -216,7 +218,8 @@ void PageTool::Invoke(InvokeCallback callback) {
     case ActionInformation::ActionInfoCase::kScroll: {
       auto scroll = mojom::ScrollAction::New();
       if (!SetScrollToolArgs(scroll, action_info)) {
-        std::move(callback).Run(false);
+        std::move(callback).Run(
+            MakeResult(mojom::ActionResultCode::kScrollInvalidArguments));
         return;
       }
       request->action = mojom::ToolAction::NewScroll(std::move(scroll));

@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/common/actor.mojom-forward.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 
 class Profile;
@@ -71,7 +72,7 @@ class GlicActorController {
       FocusedTabData focused_tab_data,
       const mojom::GetTabContextOptions& options,
       glic::mojom::WebClientHandler::ActInFocusedTabCallback callback,
-      bool action_succeeded) const;
+      actor::mojom::ActionResultPtr result) const;
 
   void GetContextFromFocusedTab(
       FocusedTabData focused_tab_data,

@@ -13,6 +13,8 @@
 #include "chrome/browser/actor/actor_coordinator.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
@@ -145,8 +147,8 @@ void GlicActorController::OnActionFinished(
     FocusedTabData focused_tab_data,
     const mojom::GetTabContextOptions& options,
     mojom::WebClientHandler::ActInFocusedTabCallback callback,
-    bool action_succeeded) const {
-  if (!action_succeeded) {
+    actor::mojom::ActionResultPtr result) const {
+  if (!actor::IsOk(*result)) {
     PostTaskForActCallback(std::move(callback),
                            mojom::ActInFocusedTabErrorReason::kTargetNotFound);
     return;

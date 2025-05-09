@@ -120,7 +120,92 @@ union ToolAction {
   TypeAction type;
 };
 
+// Result codes for outcomes of an action.
+// kOk     - Action was successful.
+// 10-99   - An error occurred that is not specific to the tool.
+// X00-X99 - A tool-specific error; each tool gets a reserved range of values.
+//
+// These codes will be used in UMA histograms and in
+// optimization_guide.proto.BrowserActionResult.  New Codes may be added to
+// unused values, but existing codes should not be removed, reordered, or
+// renumbered.
+enum ActionResultCode {
+  kOk = 0,
+
+  // A generic error that does not have a more specific code. Avoid using this.
+  kError = 10,
+
+  // Actions are not allowed on the current URL.
+  kUrlBlocked = 11,
+
+  // The task requires opening a new tab, and we were unable to do so.
+  kNewTabCreationFailed = 12,
+
+  // The tab we were trying to act on no longer exists.
+  kTabWentAway = 13,
+
+  // The task for the action no longer exists.
+  kTaskWentAway = 14,
+
+  // The tab we were trying to act on performed a cross-origin navigation and is
+  // no longer able to be acted upon.
+  kCrossOriginNavigation = 15,
+
+  // An unknown tool was requested.
+  kToolUnknown = 16,
+
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 100-199: Errors for navigation.  (Not part of the ToolAction union.)
+
+  // The requested URL was not valid.
+  kNavigateInvalidUrl = 100,
+
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 200-299: Errors for ClickAction.
+
+  // Arguments passed to the click tool were invalid.
+  kClickInvalidArguments = 200,
+
+  // The DOM node targeted for the click is invalid.
+  kClickInvalidDomNodeId = 201,
+
+  // The form element targeted for the click is disabled.
+  kClickElementDisabled = 202,
+
+  // The element targeted for the click is offscreen.
+  kClickElementOffscreen = 203,
+
+  // The frame targeted for the click is invalid.
+  kClickInvalidFrame = 204,
+
+  // The click point for the element was not valid.
+  kClickInvalidPoint = 205,
+
+  // The click event was suppressed.
+  kClickSuppressed = 206,
+
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 500-599: Errors for ScrollAction.
+
+  // Arguments passed to the scroll tool were invalid.
+  kScrollInvalidArguments = 500,
+
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 700-799: Errors for TypeAction.
+
+  // Arguments passed to the type tool were invalid.
+  kTypeInvalidArguments = 700,
+};
+
 // All information required to invoke a tool in the renderer.
 struct ToolInvocation {
   ToolAction action;
+};
+
+struct ActionResult {
+  // A code with the outcome of the tool invocation.
+  ActionResultCode code;
+
+  // If the code is not kOk, an English language message describing the error.
+  string message;
 };

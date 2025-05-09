@@ -9,6 +9,7 @@
 
 #include "base/strings/to_string.h"
 #include "base/time/time.h"
+#include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_logging.h"
 #include "chrome/renderer/actor/tool_utils.h"
 #include "content/public/renderer/render_frame.h"
@@ -86,7 +87,8 @@ WebMouseEvent ClickTool::CreateClickMouseEvent(mojom::ClickAction::Type type,
 void ClickTool::Execute(ToolFinishedCallback callback) {
   std::optional<gfx::PointF> click_point = ValidateAndGetClickPoint();
   if (!click_point) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(
+        MakeResult(mojom::ActionResultCode::kClickInvalidPoint));
     return;
   }
 
@@ -100,7 +102,8 @@ void ClickTool::Execute(ToolFinishedCallback callback) {
           WebCoalescedInputEvent(mouse_down, ui::LatencyInfo()));
 
   if (result == WebInputEventResult::kHandledSuppressed) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(
+        MakeResult(mojom::ActionResultCode::kClickSuppressed));
     return;
   }
 
@@ -114,11 +117,12 @@ void ClickTool::Execute(ToolFinishedCallback callback) {
       WebCoalescedInputEvent(std::move(mouse_up), ui::LatencyInfo()));
 
   if (result == WebInputEventResult::kHandledSuppressed) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(
+        MakeResult(mojom::ActionResultCode::kClickSuppressed));
     return;
   }
 
-  std::move(callback).Run(true);
+  std::move(callback).Run(MakeOkResult());
 }
 
 std::string ClickTool::DebugString() const {

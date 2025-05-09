@@ -10,6 +10,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/actor/tools/tool.h"
+#include "chrome/common/actor.mojom-forward.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
@@ -45,7 +46,7 @@ class HistoryTool : public Tool, content::WebContentsObserver {
       content::NavigationHandle* navigation_handle) override;
 
  private:
-  void FinishToolInvocationIfNeeded(bool result);
+  void FinishToolInvocationIfNeeded(mojom::ActionResultPtr result);
 
   void LegacyBrowserBasedBeforeUnloadReplyComplete();
 

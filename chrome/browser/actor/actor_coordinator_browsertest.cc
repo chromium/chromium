@@ -13,6 +13,8 @@
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/actor.mojom-forward.h"
+#include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -75,9 +77,9 @@ class ActorCoordinatorBrowserTest : public InProcessBrowserTest {
         content::GetDOMNodeId(*main_frame(), query_selector);
     ASSERT_TRUE(dom_node_id);
     BrowserAction action = MakeClick(dom_node_id.value());
-    TestFuture<bool> result;
+    TestFuture<mojom::ActionResultPtr> result;
     actor_coordinator().Act(action, result.GetCallback());
-    EXPECT_TRUE(result.Get());
+    ExpectOkResult(result);
   }
 
  private:

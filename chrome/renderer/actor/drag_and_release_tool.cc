@@ -5,6 +5,7 @@
 #include "chrome/renderer/actor/drag_and_release_tool.h"
 
 #include "base/time/time.h"
+#include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_logging.h"
 #include "chrome/renderer/actor/tool_utils.h"
 #include "content/public/renderer/render_frame.h"
@@ -38,7 +39,7 @@ void DragAndReleaseTool::Execute(ToolFinishedCallback callback) {
   WebLocalFrame* web_frame = frame_->GetWebFrame();
   if (!web_frame || !web_frame->FrameWidget()) {
     ACTOR_LOG() << "RenderFrame or FrameWidget is invalid.";
-    std::move(callback).Run(false);
+    std::move(callback).Run(MakeErrorResult());
     return;
   }
 
@@ -48,7 +49,7 @@ void DragAndReleaseTool::Execute(ToolFinishedCallback callback) {
   if (from_target->is_dom_node_id() || to_target->is_dom_node_id()) {
     NOTIMPLEMENTED()
         << "DragAndRelease currently supports only coordinate targets.";
-    std::move(callback).Run(false);
+    std::move(callback).Run(MakeErrorResult());
     return;
   }
 
@@ -58,7 +59,7 @@ void DragAndReleaseTool::Execute(ToolFinishedCallback callback) {
   if (!IsPointWithinViewport(from_point, frame_.get()) ||
       !IsPointWithinViewport(to_point, frame_.get())) {
     ACTOR_LOG() << "Target point is outside of viewport";
-    std::move(callback).Run(false);
+    std::move(callback).Run(MakeErrorResult());
     return;
   }
 
@@ -67,30 +68,30 @@ void DragAndReleaseTool::Execute(ToolFinishedCallback callback) {
   // Move and press down the mouse on the from_point.
   if (!InjectMouseEvent(EventType::kMouseMove, from_point,
                         WebMouseEvent::Button::kNoButton)) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(MakeErrorResult());
     return;
   }
 
   if (!InjectMouseEvent(EventType::kMouseDown, from_point,
                         WebMouseEvent::Button::kLeft)) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(MakeErrorResult());
     return;
   }
 
   // Move and release the mouse on the to_point.
   if (!InjectMouseEvent(EventType::kMouseMove, to_point,
                         WebMouseEvent::Button::kLeft)) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(MakeErrorResult());
     return;
   }
 
   if (!InjectMouseEvent(EventType::kMouseUp, to_point,
                         WebMouseEvent::Button::kLeft)) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(MakeErrorResult());
     return;
   }
 
-  std::move(callback).Run(true);
+  std::move(callback).Run(MakeOkResult());
 }
 
 std::string DragAndReleaseTool::DebugString() const {

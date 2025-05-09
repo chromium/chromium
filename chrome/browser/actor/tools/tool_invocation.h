@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "chrome/common/actor.mojom-forward.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 
 namespace content {
@@ -24,7 +25,7 @@ namespace actor {
 // methods.
 class ToolInvocation {
  public:
-  using ResultCallback = base::OnceCallback<void(bool)>;
+  using ResultCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
 
   explicit ToolInvocation(
       const optimization_guide::proto::ActionInformation& action_information,

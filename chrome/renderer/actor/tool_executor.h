@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/stack_allocated.h"
+#include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/renderer/actor/tool_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -30,7 +31,7 @@ class ToolExecutor {
   STACK_ALLOCATED();
 
  public:
-  using ToolExecutorCallback = base::OnceCallback<void(bool)>;
+  using ToolExecutorCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
   explicit ToolExecutor(content::RenderFrame* frame);
   ~ToolExecutor();
 
@@ -41,7 +42,8 @@ class ToolExecutor {
                   ToolExecutorCallback callback);
 
  private:
-  void ToolFinished(ToolExecutorCallback callback, bool tool_status);
+  void ToolFinished(ToolExecutorCallback callback,
+                    mojom::ActionResultPtr result);
 
   // Raw ref since the executor is currently only stack allocated by the
   // render frame so it must be outlived.

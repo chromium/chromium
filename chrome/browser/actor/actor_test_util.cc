@@ -6,9 +6,13 @@
 
 #include <string_view>
 
+#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chrome/browser/actor/actor_coordinator.h"
+#include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor/action_result.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace actor {
 
@@ -132,6 +136,20 @@ BrowserAction MakeWait() {
 
 void OverrideActionObservationDelay(const base::TimeDelta& delta) {
   ActorCoordinator::SetActionObservationDelayForTesting(delta);
+}
+
+void ExpectOkResult(base::test::TestFuture<mojom::ActionResultPtr>& future) {
+  const auto& result = *(future.Get());
+  EXPECT_TRUE(IsOk(result))
+      << "Expected OK result, got " << ToDebugString(result);
+}
+
+void ExpectErrorResult(base::test::TestFuture<mojom::ActionResultPtr>& future,
+                       mojom::ActionResultCode expected_code) {
+  const auto& result = *(future.Get());
+  EXPECT_EQ(result.code, expected_code)
+      << "Expected error " << base::to_underlying(expected_code) << ", got "
+      << ToDebugString(result);
 }
 
 }  // namespace actor

@@ -9,6 +9,7 @@
 #include "base/notimplemented.h"
 #include "base/strings/to_string.h"
 #include "base/time/time.h"
+#include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_logging.h"
 #include "chrome/renderer/actor/tool_utils.h"
 #include "content/public/renderer/render_frame.h"
@@ -37,14 +38,14 @@ void ScrollTool::Execute(ToolFinishedCallback callback) {
   // The scroll distance should always be positive.
   if (action_->distance <= 0.0) {
     ACTOR_LOG() << "Invalid scroll distance: " << action_->distance;
-    std::move(callback).Run(false);
+    std::move(callback).Run(MakeErrorResult());
     return;
   }
 
   WebLocalFrame* web_frame = frame_->GetWebFrame();
   if (!web_frame || !web_frame->FrameWidget()) {
     ACTOR_LOG() << "WebLocalFrame or FrameWidget is null.";
-    std::move(callback).Run(false);
+    std::move(callback).Run(MakeErrorResult());
     return;
   }
 
@@ -55,7 +56,7 @@ void ScrollTool::Execute(ToolFinishedCallback callback) {
   } else {
     if (action_->target->is_coordinate()) {
       NOTIMPLEMENTED() << "Coordinate-based target not yet supported.";
-      std::move(callback).Run(false);
+      std::move(callback).Run(MakeErrorResult());
       return;
     }
 
@@ -66,7 +67,7 @@ void ScrollTool::Execute(ToolFinishedCallback callback) {
 
   if (scrolling_element.IsNull()) {
     ACTOR_LOG() << "Target element not found.";
-    std::move(callback).Run(false);
+    std::move(callback).Run(MakeErrorResult());
     return;
   }
 
@@ -95,7 +96,7 @@ void ScrollTool::Execute(ToolFinishedCallback callback) {
     ACTOR_LOG() << "Target " << scrolling_element
                 << " is not user scrollable for scroll offset "
                 << offset_physical.ToString();
-    std::move(callback).Run(false);
+    std::move(callback).Run(MakeErrorResult());
     return;
   }
 
@@ -107,7 +108,7 @@ void ScrollTool::Execute(ToolFinishedCallback callback) {
   scrolling_element.SetScrollOffset(start_offset_css + offset_css);
 
   bool did_scroll = scrolling_element.GetScrollOffset() != start_offset_css;
-  std::move(callback).Run(did_scroll);
+  std::move(callback).Run(did_scroll ? MakeOkResult() : MakeErrorResult());
 }
 
 std::string ScrollTool::DebugString() const {

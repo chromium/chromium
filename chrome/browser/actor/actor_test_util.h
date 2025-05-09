@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_ACTOR_ACTOR_TEST_UTIL_H_
 #define CHROME_BROWSER_ACTOR_ACTOR_TEST_UTIL_H_
 
+#include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/common/actor.mojom-forward.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -33,6 +35,10 @@ optimization_guide::proto::BrowserAction MakeDragAndRelease(
 optimization_guide::proto::BrowserAction MakeWait();
 
 void OverrideActionObservationDelay(const base::TimeDelta& delta);
+
+void ExpectOkResult(base::test::TestFuture<mojom::ActionResultPtr>& future);
+void ExpectErrorResult(base::test::TestFuture<mojom::ActionResultPtr>& future,
+                       mojom::ActionResultCode expected_code);
 
 }  // namespace actor
 

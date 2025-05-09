@@ -66,6 +66,8 @@
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor/action_result.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -973,7 +975,7 @@ void AiDataKeyedService::OnActionFinished(
         callback,
     int task_id,
     int tab_id,
-    bool success) {
+    actor::mojom::ActionResultPtr action_result) {
   if (!tab_ || tab_id_ != tab_id || task_id_ != task_id) {
     VLOG(1) << "Execute Action failed: Tab id or task id does not match "
                "current task.";
@@ -990,7 +992,8 @@ void AiDataKeyedService::OnActionFinished(
       focused_tab_data, DefaultOptions(),
       base::BindOnce(&AiDataKeyedService::ConvertToBrowserActionResult,
                      weak_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(fetcher), task_id_, tab_id_, success));
+                     std::move(fetcher), task_id_, tab_id_,
+                     std::move(action_result)));
 }
 
 void AiDataKeyedService::ConvertToBrowserActionResult(
@@ -999,15 +1002,16 @@ void AiDataKeyedService::ConvertToBrowserActionResult(
     std::unique_ptr<glic::GlicPageContextFetcher> fetcher,
     int task_id,
     int tab_id,
-    bool action_success,
+    actor::mojom::ActionResultPtr action_result,
     glic::mojom::GetContextResultPtr context_result) {
-  optimization_guide::proto::BrowserActionResult action_result;
+  optimization_guide::proto::BrowserActionResult browser_action_result;
   if (task_id != task_id_ || tab_id != tab_id_ ||
       context_result->is_error_reason()) {
     VLOG(1) << "Execute Action failed: Tab id or task id does not match "
                "current task.";
-    action_result.set_action_result(0);
-    RunLater(base::BindOnce(std::move(callback), std::move(action_result)));
+    browser_action_result.set_action_result(0);
+    RunLater(
+        base::BindOnce(std::move(callback), std::move(browser_action_result)));
     return;
   }
   if (context_result->get_tab_context() &&
@@ -1019,20 +1023,21 @@ void AiDataKeyedService::ConvertToBrowserActionResult(
                    .As<optimization_guide::proto::AnnotatedPageContent>();
     if (apc.has_value()) {
       auto apc_value = *std::move(apc);
-      action_result.mutable_annotated_page_content()->Swap(&apc_value);
+      browser_action_result.mutable_annotated_page_content()->Swap(&apc_value);
     }
   }
   if (context_result->get_tab_context()->viewport_screenshot &&
       context_result->get_tab_context()->viewport_screenshot->data.size() !=
           0) {
     auto& data = context_result->get_tab_context()->viewport_screenshot->data;
-    action_result.set_screenshot(data.data(), data.size());
-    action_result.set_screenshot_mime_type(
+    browser_action_result.set_screenshot(data.data(), data.size());
+    browser_action_result.set_screenshot_mime_type(
         context_result->get_tab_context()->viewport_screenshot->mime_type);
   }
-  action_result.set_task_id(task_id);
-  action_result.set_tab_id(tab_id);
-  action_result.set_action_result(action_success ? 1 : 0);
-  RunLater(base::BindOnce(std::move(callback), std::move(action_result)));
+  browser_action_result.set_task_id(task_id);
+  browser_action_result.set_tab_id(tab_id);
+  browser_action_result.set_action_result(actor::IsOk(*action_result) ? 1 : 0);
+  RunLater(
+      base::BindOnce(std::move(callback), std::move(browser_action_result)));
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)

@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/check.h"
+#include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_logging.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/renderer/actor/tool_utils.h"
@@ -35,7 +36,7 @@ SelectTool::~SelectTool() = default;
 
 void SelectTool::Execute(ToolFinishedCallback callback) {
   if (!Validate()) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(MakeErrorResult());
     return;
   }
 
@@ -46,11 +47,11 @@ void SelectTool::Execute(ToolFinishedCallback callback) {
 
   // Check if the set value is now the current value in the <select>
   if (element.Value() != value) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(MakeErrorResult());
     return;
   }
 
-  std::move(callback).Run(true);
+  std::move(callback).Run(MakeOkResult());
 }
 
 std::string SelectTool::DebugString() const {

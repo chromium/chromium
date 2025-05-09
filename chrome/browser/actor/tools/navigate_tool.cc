@@ -5,6 +5,8 @@
 #include "chrome/browser/actor/tools/navigate_tool.h"
 
 #include "chrome/browser/actor/tools/tool_callbacks.h"
+#include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor/action_result.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -27,13 +29,14 @@ NavigateTool::~NavigateTool() = default;
 void NavigateTool::Validate(ValidateCallback callback) {
   if (!url_.is_valid()) {
     // URL is invalid.
-    PostResponseTask(std::move(callback), false);
+    PostResponseTask(std::move(callback),
+                     MakeResult(mojom::ActionResultCode::kNavigateInvalidUrl));
     return;
   }
 
   // TODO(crbug.com/402731599): Validate URL and state here.
 
-  PostResponseTask(std::move(callback), true);
+  PostResponseTask(std::move(callback), MakeOkResult());
 }
 
 void NavigateTool::Invoke(InvokeCallback callback) {
@@ -63,12 +66,14 @@ void NavigateTool::DidFinishNavigation(NavigationHandle* navigation_handle) {
   // page navigates before it's done loading. Common with client-side redirects.
   if (pending_navigation_handle_id_ &&
       navigation_handle->GetNavigationId() == *pending_navigation_handle_id_) {
+    auto result =
+        navigation_handle->HasCommitted() && !navigation_handle->IsErrorPage()
+            ? MakeOkResult()
+            : MakeErrorResult();
 
-    bool success =
-        navigation_handle->HasCommitted() && !navigation_handle->IsErrorPage();
-
-    if ((!success || navigation_handle->IsSameDocument()) && invoke_callback_) {
-      PostResponseTask(std::move(invoke_callback_), success);
+    if ((!IsOk(*result) || navigation_handle->IsSameDocument()) &&
+        invoke_callback_) {
+      PostResponseTask(std::move(invoke_callback_), std::move(result));
       return;
     }
 
@@ -98,7 +103,7 @@ void NavigateTool::DidStopLoading() {
 
   post_navigation_state_->waiting_for_load = false;
   if (post_navigation_state_->Done() && invoke_callback_) {
-    PostResponseTask(std::move(invoke_callback_), /*response=*/true);
+    PostResponseTask(std::move(invoke_callback_), MakeOkResult());
   }
 }
 
@@ -109,7 +114,7 @@ void NavigateTool::OnFirstContentfulPaintInPrimaryMainFrame() {
 
   post_navigation_state_->waiting_for_fcp = false;
   if (post_navigation_state_->Done() && invoke_callback_) {
-    PostResponseTask(std::move(invoke_callback_), /*response=*/true);
+    PostResponseTask(std::move(invoke_callback_), MakeOkResult());
   }
 }
 
@@ -119,7 +124,7 @@ void NavigateTool::NavigationHandleCallback(NavigationHandle& handle) {
 
 void NavigateTool::Timeout() {
   if (invoke_callback_) {
-    PostResponseTask(std::move(invoke_callback_), /*response=*/true);
+    PostResponseTask(std::move(invoke_callback_), MakeOkResult());
   }
 }
 

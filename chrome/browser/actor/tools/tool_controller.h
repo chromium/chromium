@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/actor/tools/tool_invocation.h"
+#include "chrome/common/actor.mojom-forward.h"
 
 namespace content {
 class RenderFrameHost;
@@ -36,13 +37,13 @@ class ToolController {
 
   // Call to clear the current tool invocation and return the given result to
   // the initiator. Must only be called when a tool invocation is in-progress.
-  void CompleteToolRequest(bool result);
+  void CompleteToolRequest(mojom::ActionResultPtr result);
 
  private:
   std::unique_ptr<Tool> CreateTool(content::RenderFrameHost& frame,
                                    const ToolInvocation& invocation);
 
-  void ValidationComplete(bool success);
+  void ValidationComplete(mojom::ActionResultPtr result);
 
   // This state is non-null whenever a tool invocation is in progress.
   struct ActiveState {

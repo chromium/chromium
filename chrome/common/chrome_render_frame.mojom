@@ -104,5 +104,6 @@ interface ChromeRenderFrame {
   // Requests invoking of a tool from the actor automation framework. See
   // chrome/browser/actor
   [EnableIf=enable_glic]
-  InvokeTool(actor.mojom.ToolInvocation request) => (bool success);
+  InvokeTool(actor.mojom.ToolInvocation request) =>
+      (actor.mojom.ActionResult result);
 };

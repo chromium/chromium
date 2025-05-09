@@ -21,6 +21,7 @@
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/actor/actor_coordinator.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
+#include "chrome/common/actor.mojom-forward.h"
 #endif
 
 namespace content {
@@ -109,7 +110,7 @@ class AiDataKeyedService : public KeyedService {
       std::unique_ptr<glic::GlicPageContextFetcher> fetcher,
       int task_id,
       int tab_id,
-      bool action_success,
+      actor::mojom::ActionResultPtr action_result,
       glic::mojom::GetContextResultPtr result);
   // Called when the actor coordinator has started a tas.
   void OnTaskCreated(
@@ -125,7 +126,7 @@ class AiDataKeyedService : public KeyedService {
           callback,
       int task_id,
       int tab_id,
-      bool success);
+      actor::mojom::ActionResultPtr action_result);
   // The actor coordinator which manages task and action routing.
   std::unique_ptr<actor::ActorCoordinator> actor_coordinator_;
 

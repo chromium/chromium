@@ -12,6 +12,7 @@
 #include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "chrome/common/actor.mojom-shared.h"
+#include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_logging.h"
 #include "chrome/renderer/actor/tool_utils.h"
 #include "content/public/renderer/render_frame.h"
@@ -238,7 +239,7 @@ bool TypeTool::SimulateKeyPress(TypeTool::KeyParams params) {
 void TypeTool::Execute(ToolFinishedCallback callback) {
   if (!frame_->GetWebFrame() || !frame_->GetWebFrame()->FrameWidget()) {
     ACTOR_LOG() << "RenderFrame or FrameWidget is invalid.";
-    std::move(callback).Run(false);
+    std::move(callback).Run(MakeErrorResult());
     return;
   }
 
@@ -247,7 +248,7 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
 
   if (target->is_coordinate()) {
     NOTIMPLEMENTED() << "Coordinate-based target not yet supported.";
-    std::move(callback).Run(false);
+    std::move(callback).Run(MakeErrorResult());
     return;
   }
   int32_t dom_node_id = target->get_dom_node_id();
@@ -255,7 +256,7 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
   WebNode node = GetNodeFromId(frame_.get(), dom_node_id);
   if (node.IsNull()) {
     ACTOR_LOG() << "Cannot find dom node with id " << dom_node_id;
-    std::move(callback).Run(false);
+    std::move(callback).Run(MakeErrorResult());
     return;
   }
 
@@ -263,13 +264,13 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
   // TODO(crbug.com/414398425): This seems too restrictive for non-input cases.
   if (!node.IsElementNode()) {
     ACTOR_LOG() << "Target node " << node << " is not an element.";
-    std::move(callback).Run(false);
+    std::move(callback).Run(MakeErrorResult());
     return;
   }
   WebElement element = node.To<WebElement>();
   if (!element.IsEditable()) {
     ACTOR_LOG() << "Target element " << element << " is not editable.";
-    std::move(callback).Run(false);
+    std::move(callback).Run(MakeErrorResult());
     return;
   }
 
@@ -280,7 +281,7 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
     } else {
       ACTOR_LOG() << "Target element " << element
                   << " is not focusable for typing.";
-      std::move(callback).Run(false);
+      std::move(callback).Run(MakeErrorResult());
       return;
     }
   }
@@ -288,7 +289,7 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
   if (!PrepareTargetForMode(*frame_->GetWebFrame(), action_->mode)) {
     ACTOR_LOG() << "Failed to prepare target element based on mode: "
                 << action_->mode;
-    std::move(callback).Run(false);
+    std::move(callback).Run(MakeErrorResult());
     return;
   }
 
@@ -301,7 +302,7 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
   if (!base::IsStringASCII(action_->text)) {
     // TODO(crbug.com/409032824): Add support beyond ASCII.
     ACTOR_LOG() << "Characters beyond ASCII not supported" << action_->text;
-    std::move(callback).Run(false);
+    std::move(callback).Run(MakeErrorResult());
     return;
   }
 
@@ -313,7 +314,7 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
     std::optional<KeyParams> params = GetKeyParamsForChar(c);
     if (!params.has_value()) {
       ACTOR_LOG() << "Failed to map char to key " << c;
-      std::move(callback).Run(false);
+      std::move(callback).Run(MakeErrorResult());
       return;
     }
     key_sequence.push_back(params.value());
@@ -325,12 +326,12 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
   for (const auto& param : key_sequence) {
     if (!SimulateKeyPress(param)) {
       ACTOR_LOG() << "Failed to simulate key press for " << param.dom_key;
-      std::move(callback).Run(false);
+      std::move(callback).Run(MakeErrorResult());
       return;
     }
   }
 
-  std::move(callback).Run(true);
+  std::move(callback).Run(MakeOkResult());
 }
 
 std::string TypeTool::DebugString() const {

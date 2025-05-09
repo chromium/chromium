@@ -8,14 +8,15 @@
 
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/common/actor.mojom.h"
 
 namespace actor {
 
-void PostResponseTask(base::OnceCallback<void(bool)> task,
-                      bool response,
+void PostResponseTask(base::OnceCallback<void(mojom::ActionResultPtr)> task,
+                      mojom::ActionResultPtr result,
                       base::TimeDelta delay) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, base::BindOnce(std::move(task), response), delay);
+      FROM_HERE, base::BindOnce(std::move(task), std::move(result)), delay);
 }
 
 }  // namespace actor

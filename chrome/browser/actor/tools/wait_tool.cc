@@ -10,6 +10,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
+#include "chrome/common/actor/action_result.h"
 
 namespace actor {
 
@@ -26,7 +27,7 @@ WaitTool::WaitTool() = default;
 WaitTool::~WaitTool() = default;
 
 void WaitTool::Validate(ValidateCallback callback) {
-  PostResponseTask(std::move(callback), true);
+  PostResponseTask(std::move(callback), MakeOkResult());
 }
 
 void WaitTool::Invoke(InvokeCallback callback) {
@@ -48,7 +49,7 @@ bool WaitTool::ShouldAddCompletionDelay() const {
 void WaitTool::OnDelayFinished(InvokeCallback callback) {
   // TODO(crbug.com/409566732): Add more robust methods for detecting that the
   // page has settled.
-  std::move(callback).Run(true);
+  std::move(callback).Run(MakeOkResult());
 }
 
 // static

@@ -7,7 +7,6 @@
 #include <cstddef>
 #include <utility>
 
-#include "actor_coordinator.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/feature_list.h"
@@ -21,6 +20,8 @@
 #include "chrome/browser/actor/tools/tool_invocation.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
@@ -45,9 +46,9 @@ void PostTaskForStartCallback(ActorCoordinator::StartTaskCallback callback,
 }
 
 void PostTaskForActCallback(ActorCoordinator::ActionResultCallback callback,
-                            bool success) {
+                            mojom::ActionResultPtr result) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), success));
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
 }
 
 }  // namespace
@@ -159,7 +160,8 @@ void ActorCoordinator::StopTask() {
   }
 
   if (task_state_->current_action) {
-    CompleteAction(false);
+    CompleteAction(
+        MakeResult(mojom::ActionResultCode::kTaskWentAway, "Task was stopped"));
   }
 
   task_state_.reset();
@@ -186,21 +188,30 @@ void ActorCoordinator::Act(const BrowserAction& action,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // StartTask must have been called to initialize the tab for action.
+  // NOTE: Improve this API by moving Act() to Task:: instead of permitting
+  // actions without a Task.
   if (!task_state_) {
     VLOG(1) << "Unable to perform action: task hasn't been started";
-    PostTaskForActCallback(std::move(callback), /*success=*/false);
+    PostTaskForActCallback(std::move(callback),
+                           MakeResult(mojom::ActionResultCode::kError,
+                                      "Task hasn't been started"));
     return;
   }
 
   if (!task_state_->HasTab()) {
     VLOG(1) << "Unable to perform action: tab has been destroyed";
-    PostTaskForActCallback(std::move(callback), /*success=*/false);
+    PostTaskForActCallback(std::move(callback),
+                           MakeResult(mojom::ActionResultCode::kTabWentAway));
     return;
   }
 
+  // NOTE: Improve this API by queuing the action instead.
   if (task_state_->HasAction()) {
     VLOG(1) << "Unable to perform action: task already has action in progress";
-    PostTaskForActCallback(std::move(callback), /*success=*/false);
+    PostTaskForActCallback(std::move(callback),
+                           MakeResult(mojom::ActionResultCode::kError,
+                                      "Task already has action in progress"));
+
     return;
   }
 
@@ -316,7 +327,8 @@ void ActorCoordinator::OnMayActOnTabResponse(
   if (!task_state_->HasTab()) {
     VLOG(1)
         << "Unable to perform action: Tab closed while checking site policy";
-    CompleteAction(/*success=*/false);
+    CompleteAction(MakeResult(mojom::ActionResultCode::kTabWentAway,
+                              "Tab closed while checking site policy"));
     return;
   }
 
@@ -327,12 +339,14 @@ void ActorCoordinator::OnMayActOnTabResponse(
     // is no longer applicable. For now just fail.
     // TODO(mcnee): Handle this gracefully.
     NOTIMPLEMENTED() << "Acting after cross-origin navigation occurred";
-    CompleteAction(/*success=*/false);
+    CompleteAction(MakeResult(mojom::ActionResultCode::kCrossOriginNavigation,
+                              "Acting after cross-origin navigation occurred"));
     return;
   }
 
   if (!may_act) {
-    CompleteAction(/*success=*/false);
+    CompleteAction(MakeResult(mojom::ActionResultCode::kUrlBlocked,
+                              "URL blocked for actions"));
     return;
   }
 
@@ -341,7 +355,8 @@ void ActorCoordinator::OnMayActOnTabResponse(
   // Currently, only one action at a time is supported.
   if (proto.action_information_size() != 1) {
     NOTIMPLEMENTED() << "Multi-action BrowserAction";
-    CompleteAction(/*success=*/false);
+    CompleteAction(MakeResult(mojom::ActionResultCode::kError,
+                              "Multiple actions are not supported"));
     return;
   }
 
@@ -352,13 +367,13 @@ void ActorCoordinator::OnMayActOnTabResponse(
       base::BindOnce(&ActorCoordinator::CompleteAction, GetWeakPtr()));
 }
 
-void ActorCoordinator::CompleteAction(bool success) {
+void ActorCoordinator::CompleteAction(mojom::ActionResultPtr result) {
   if (!task_state_ || !task_state_->HasAction()) {
     return;
   }
 
   PostTaskForActCallback(std::move(task_state_->current_action->callback),
-                         success);
+                         std::move(result));
   task_state_->current_action.reset();
 }
 

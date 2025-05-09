@@ -9,17 +9,16 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "chrome/common/actor.mojom-forward.h"
 
 namespace actor {
 class ToolBase {
  public:
-  using ToolFinishedCallback = base::OnceCallback<void(bool)>;
+  using ToolFinishedCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
   virtual ~ToolBase() = default;
 
-  // Invokes the tool. The callback is invoked with true if the tool use was
-  // successful, false otherwise.
-  // TODO(crbug.com/409558980): Return more detail than true/false.
-  virtual void Execute(ToolFinishedCallback done_cb) = 0;
+  // Executes the tool. `callback` is invoked with the tool result.
+  virtual void Execute(ToolFinishedCallback callback) = 0;
 
   // Returns a human readable string representing this tool and its parameters.
   // Used primarily for logging and debugging.

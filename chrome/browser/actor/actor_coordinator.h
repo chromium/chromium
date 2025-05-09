@@ -7,12 +7,13 @@
 
 #include <memory>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/id_type.h"
 #include "chrome/browser/actor/tools/tool_controller.h"
+#include "chrome/common/actor.mojom-forward.h"
 #include "content/public/browser/web_contents_observer.h"
 
 class Profile;
@@ -38,7 +39,7 @@ namespace actor {
 // Coordinates the execution of a multi-step task.
 class ActorCoordinator {
  public:
-  using ActionResultCallback = base::OnceCallback<void(bool)>;
+  using ActionResultCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
   using StartTaskCallback =
       base::OnceCallback<void(base::WeakPtr<tabs::TabInterface>)>;
 
@@ -115,7 +116,7 @@ class ActorCoordinator {
                              const url::Origin& evaluated_origin,
                              bool may_act);
 
-  void CompleteAction(bool success);
+  void CompleteAction(mojom::ActionResultPtr result);
 
   base::WeakPtr<ActorCoordinator> GetWeakPtr();
 
@@ -126,7 +127,7 @@ class ActorCoordinator {
 
   struct Action {
     Action(const optimization_guide::proto::BrowserAction& action,
-           ActionResultCallback callback);
+           ActorCoordinator::ActionResultCallback callback);
     ~Action();
     Action(const Action&) = delete;
     Action& operator=(const Action&) = delete;

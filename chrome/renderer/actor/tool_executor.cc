@@ -86,11 +86,11 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr request,
 }
 
 void ToolExecutor::ToolFinished(ToolExecutorCallback callback,
-                                bool tool_status) {
+                                mojom::ActionResultPtr result) {
   CHECK(tool_);
   // Release current tool so we can accept a new tool invocation.
   tool_.reset();
-  std::move(callback).Run(tool_status);
+  std::move(callback).Run(std::move(result));
 }
 
 }  // namespace actor

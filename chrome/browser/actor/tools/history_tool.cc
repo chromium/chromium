@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/tools/history_tool.h"
 
 #include "chrome/browser/actor/tools/tool_callbacks.h"
+#include "chrome/common/actor/action_result.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
@@ -29,14 +30,14 @@ void HistoryTool::Validate(ValidateCallback callback) {
   NavigationController& controller = web_contents()->GetController();
   if ((direction_ == kBack && !controller.CanGoBack()) ||
       (direction_ == kForward && !controller.CanGoForward())) {
-    PostResponseTask(std::move(callback), false);
+    PostResponseTask(std::move(callback), MakeErrorResult());
     return;
   }
 
   // TODO(crbug.com/402731599): Additional validation here (e.g. is URL in
   // allowlist).
 
-  PostResponseTask(std::move(callback), true);
+  PostResponseTask(std::move(callback), MakeOkResult());
 }
 
 void HistoryTool::Invoke(InvokeCallback callback) {
@@ -87,17 +88,19 @@ void HistoryTool::DidStartNavigation(NavigationHandle* navigation_handle) {
 
 void HistoryTool::DidFinishNavigation(NavigationHandle* navigation_handle) {
   if (navigation_handle_ids_.erase(navigation_handle->GetNavigationId())) {
-    bool success =
-        navigation_handle->HasCommitted() && !navigation_handle->IsErrorPage();
-    FinishToolInvocationIfNeeded(success);
+    auto result =
+        (navigation_handle->HasCommitted() && !navigation_handle->IsErrorPage())
+            ? MakeOkResult()
+            : MakeErrorResult();
+    FinishToolInvocationIfNeeded(std::move(result));
   }
 }
 
-void HistoryTool::FinishToolInvocationIfNeeded(bool result) {
+void HistoryTool::FinishToolInvocationIfNeeded(mojom::ActionResultPtr result) {
   CHECK(invoke_callback_);
   // This responds with failure if any navigations fails.
-  if (navigation_handle_ids_.empty() || !result) {
-    PostResponseTask(std::move(invoke_callback_), result);
+  if (navigation_handle_ids_.empty() || !IsOk(*result)) {
+    PostResponseTask(std::move(invoke_callback_), std::move(result));
   }
 }
 
@@ -107,7 +110,7 @@ void HistoryTool::LegacyBrowserBasedBeforeUnloadReplyComplete() {
   // If no navigations were started, we should complete now. Respond with
   // failure since nothing changed.
   if (navigation_handle_ids_.empty()) {
-    FinishToolInvocationIfNeeded(false);
+    FinishToolInvocationIfNeeded(MakeErrorResult());
   }
 }
 

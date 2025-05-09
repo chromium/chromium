@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/time/time.h"
+#include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_logging.h"
 #include "chrome/renderer/actor/tool_utils.h"
 #include "content/public/renderer/render_frame.h"
@@ -46,7 +47,7 @@ void MouseMoveTool::Execute(ToolFinishedCallback callback) {
   blink::WebLocalFrame* web_frame = frame_->GetWebFrame();
   if (!web_frame || !web_frame->FrameWidget()) {
     ACTOR_LOG() << "RenderFrame or FrameWidget is invalid.";
-    std::move(callback).Run(false);
+    std::move(callback).Run(MakeErrorResult());
     return;
   }
 
@@ -54,7 +55,7 @@ void MouseMoveTool::Execute(ToolFinishedCallback callback) {
 
   if (target->is_coordinate()) {
     NOTIMPLEMENTED() << "Coordinate-based target not yet supported.";
-    std::move(callback).Run(false);
+    std::move(callback).Run(MakeErrorResult());
     return;
   }
 
@@ -63,7 +64,7 @@ void MouseMoveTool::Execute(ToolFinishedCallback callback) {
   blink::WebNode node = GetNodeFromId(frame_.get(), dom_node_id);
   if (node.IsNull()) {
     ACTOR_LOG() << "Cannot find dom node with id " << dom_node_id;
-    std::move(callback).Run(false);
+    std::move(callback).Run(MakeErrorResult());
     return;
   }
 
@@ -72,13 +73,13 @@ void MouseMoveTool::Execute(ToolFinishedCallback callback) {
   if (!center_point.has_value()) {
     ACTOR_LOG() << "Cannot get center interaction point for node id "
                 << dom_node_id;
-    std::move(callback).Run(false);
+    std::move(callback).Run(MakeErrorResult());
     return;
   }
 
   if (!IsPointWithinViewport(center_point.value(), frame_.get())) {
     ACTOR_LOG() << "Target is outside viewport";
-    std::move(callback).Run(false);
+    std::move(callback).Run(MakeErrorResult());
     return;
   }
 
@@ -94,10 +95,10 @@ void MouseMoveTool::Execute(ToolFinishedCallback callback) {
       move_result == blink::WebInputEventResult::kHandledSuppressed) {
     ACTOR_LOG() << "MouseMove event was not handled or suppressed for node id "
                 << dom_node_id;
-    std::move(callback).Run(false);
+    std::move(callback).Run(MakeErrorResult());
     return;
   }
-  std::move(callback).Run(true);
+  std::move(callback).Run(MakeOkResult());
 }
 
 std::string MouseMoveTool::DebugString() const {
