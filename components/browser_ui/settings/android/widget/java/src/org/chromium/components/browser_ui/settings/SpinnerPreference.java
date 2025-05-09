@@ -23,7 +23,7 @@ import org.chromium.build.annotations.Nullable;
 
 /** A preference that takes value from a specified list of objects, presented as a dropdown. */
 @NullMarked
-public class SpinnerPreference extends Preference {
+public class SpinnerPreference extends Preference implements Preference.OnPreferenceClickListener {
     private @Nullable Spinner mSpinner;
     private @Nullable ArrayAdapter<Object> mAdapter;
     private int mSelectedIndex;
@@ -40,6 +40,7 @@ public class SpinnerPreference extends Preference {
         } else {
             setLayoutResource(R.layout.preference_spinner);
         }
+        setOnPreferenceClickListener(this);
     }
 
     /**
@@ -95,6 +96,14 @@ public class SpinnerPreference extends Preference {
 
         ((TextView) holder.findViewById(R.id.title)).setText(getTitle());
         mSpinner = (Spinner) holder.findViewById(R.id.spinner);
+        assert mSpinner != null;
+        // Set the inner spinner to non-focusable/clickable, this allows the screen reader to
+        // include the content description of all the Preference's inner elements in a single
+        // announcement. The click action of the inner spinner will instead be handled by
+        // onPreferenceClick().
+        mSpinner.setFocusable(false);
+        mSpinner.setClickable(false);
+        mSpinner.setLongClickable(false);
         mSpinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     @Override
@@ -121,5 +130,13 @@ public class SpinnerPreference extends Preference {
             mSpinner.setAdapter(mAdapter);
         }
         mSpinner.setSelection(mSelectedIndex);
+    }
+
+    @Override
+    public boolean onPreferenceClick(Preference preference) {
+        if (mSpinner != null) {
+            mSpinner.performClick();
+        }
+        return true;
     }
 }
