@@ -198,8 +198,8 @@ HistogramBase* Histogram::Factory::Build() {
       // CreateHistogram, which calls HashMetricName. We already have the hash,
       // so we could pass it in.
       tentative_histogram = allocator->AllocateHistogram(
-          histogram_type_, name_, minimum_, maximum_, registered_ranges, flags_,
-          &histogram_ref);
+          histogram_type_, name_, name_hash, minimum_, maximum_,
+          registered_ranges, flags_, &histogram_ref);
     }
 
     // Handle the case where no persistent allocator is present or the

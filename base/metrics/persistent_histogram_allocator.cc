@@ -310,6 +310,7 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::GetHistogram(
   // Check that metadata is reasonable: metric_name is non-empty,
   // ID fields have been loaded with a hash of the name (0 is considered
   // unset/invalid).
+  uint64_t name_hash = HashMetricName(*durable_metric_name);
   if (durable_metric_name->empty() ||
       UNSAFE_TODO(reinterpret_cast<const char*>(data)[alloc_size - 1]) !=
           '\0' ||
@@ -321,15 +322,16 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::GetHistogram(
       // could just verify the name length based on the overall alloc length,
       // but that doesn't work because the allocated block may have been
       // aligned to the next boundary value.
-      HashMetricName(*durable_metric_name) != data->samples_metadata.id) {
+      name_hash != data->samples_metadata.id) {
     return nullptr;
   }
-  return CreateHistogram(data, durable_metric_name);
+  return CreateHistogram(data, durable_metric_name, name_hash);
 }
 
 std::unique_ptr<HistogramBase> PersistentHistogramAllocator::AllocateHistogram(
     HistogramType histogram_type,
     std::string_view name,
+    uint64_t name_hash,
     int minimum,
     int maximum,
     const BucketRanges* bucket_ranges,
@@ -438,7 +440,7 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::AllocateHistogram(
     DurableStringView durable_name(
         std::string_view(histogram_data->name, name.size()));
     std::unique_ptr<HistogramBase> histogram =
-        CreateHistogram(histogram_data, durable_name);
+        CreateHistogram(histogram_data, durable_name, name_hash);
     DCHECK(histogram);
     DCHECK_NE(0U, histogram_data->samples_metadata.id);
     DCHECK_NE(0U, histogram_data->logged_metadata.id);
@@ -549,7 +551,8 @@ void PersistentHistogramAllocator::ClearLastCreatedReferenceForTesting() {
 
 std::unique_ptr<HistogramBase> PersistentHistogramAllocator::CreateHistogram(
     PersistentHistogramData* histogram_data_ptr,
-    DurableStringView durable_name) {
+    DurableStringView durable_name,
+    uint64_t name_hash) {
   if (!histogram_data_ptr) {
     return nullptr;
   }
@@ -561,7 +564,7 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::CreateHistogram(
   // Sparse histograms are quite different so handle them as a special case.
   if (histogram_data_ptr->histogram_type == SPARSE_HISTOGRAM) {
     std::unique_ptr<HistogramBase> histogram =
-        SparseHistogram::PersistentCreate(this, durable_name,
+        SparseHistogram::PersistentCreate(this, durable_name, name_hash,
                                           &histogram_data_ptr->samples_metadata,
                                           &histogram_data_ptr->logged_metadata);
     DCHECK(histogram);
@@ -654,6 +657,8 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::CreateHistogram(
 
   // Create the right type of histogram.
   std::unique_ptr<HistogramBase> histogram;
+  // TODO(crbug.com/394149163): We can pass the name_hash to the histogram
+  // constructors, and then use it here.
   switch (histogram_type) {
     case HISTOGRAM:
       histogram = Histogram::PersistentCreate(

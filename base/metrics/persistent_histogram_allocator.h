@@ -254,6 +254,7 @@ class BASE_EXPORT PersistentHistogramAllocator {
   std::unique_ptr<HistogramBase> AllocateHistogram(
       HistogramType histogram_type,
       std::string_view name,
+      uint64_t name_hash,
       int minimum,
       int maximum,
       const BucketRanges* bucket_ranges,
@@ -340,7 +341,8 @@ class BASE_EXPORT PersistentHistogramAllocator {
   // `alloc_size` returned from the `memory_allocator`.
   std::unique_ptr<HistogramBase> CreateHistogram(
       PersistentHistogramData* histogram_data_ptr,
-      DurableStringView durable_name);
+      DurableStringView durable_name,
+      uint64_t name_hash);
 
   // Gets or creates an object in the global StatisticsRecorder matching
   // the `histogram` passed. Null is returned if one was not found and
