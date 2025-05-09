@@ -115,6 +115,64 @@ void RecordSuggestionUKM(
   }
 }
 
+void RecordTabIndexMetrics(
+    const GroupSuggestion& shown_suggestion,
+    const std::vector<scoped_refptr<segmentation_platform::InputContext>>&
+        inputs) {
+  const char* tab_id_input =
+      GetNameForInput(URLVisitAggregateRankingModelInputSignals::kTabId);
+  const char* tab_index_input =
+      GetNameForInput(URLVisitAggregateRankingModelInputSignals::kTabIndex);
+  const char* is_last_tab_input =
+      GetNameForInput(URLVisitAggregateRankingModelInputSignals::kIsLastTab);
+
+  bool is_last_tab_in_suggestion = false;
+  std::vector<int> tab_indexes;
+  for (const auto& input : inputs) {
+    std::optional<ProcessedValue> tab_id =
+        input->GetMetadataArgument(tab_id_input);
+    std::optional<ProcessedValue> tab_index =
+        input->GetMetadataArgument(tab_index_input);
+    std::optional<ProcessedValue> is_last_tab =
+        input->GetMetadataArgument(is_last_tab_input);
+    if (!base::Contains(shown_suggestion.tab_ids, tab_id->float_val)) {
+      continue;
+    }
+    if (is_last_tab->float_val) {
+      is_last_tab_in_suggestion = true;
+    }
+    if (tab_index->float_val != -1) {
+      tab_indexes.push_back(tab_index->float_val);
+    }
+  }
+  // Find the biggest and average index gap between every tab and its adjacent
+  // tabs.
+  std::sort(tab_indexes.begin(), tab_indexes.end());
+  int max_gap = 0;
+  int gap_sum = 0;
+  for (size_t i = 1; i < tab_indexes.size(); ++i) {
+    gap_sum += (tab_indexes[i] - tab_indexes[i - 1]);
+    max_gap = std::max(max_gap, tab_indexes[i] - tab_indexes[i - 1]);
+  }
+  int average_gap =
+      tab_indexes.size() > 1 ? gap_sum / (tab_indexes.size() - 1) : 0;
+
+  base::UmaHistogramBoolean(
+      base::StrCat(
+          {"GroupSuggestionsService.TopSuggestionContainsLastTab.",
+           GetSuggestionReasonString(shown_suggestion.suggestion_reason)}),
+      is_last_tab_in_suggestion);
+  base::UmaHistogramCounts100(
+      base::StrCat(
+          {"GroupSuggestionsService.TopSuggestionTabIndexMaxGap.",
+           GetSuggestionReasonString(shown_suggestion.suggestion_reason)}),
+      max_gap);
+  base::UmaHistogramCounts100(
+      base::StrCat(
+          {"GroupSuggestionsService.TopSuggestionTabIndexAverageGap.",
+           GetSuggestionReasonString(shown_suggestion.suggestion_reason)}),
+      average_gap);
+}
 }  // namespace
 
 class GroupSuggestionsManager::GroupSuggestionComputer {
@@ -260,11 +318,11 @@ void GroupSuggestionsManager::OnFinishComputeSuggestions(
                         suggestions->suggestions[0].suggestion_reason)}),
       suggestions->suggestions[0].tab_ids.size());
 
+  RecordTabIndexMetrics(suggestions->suggestions[0], result.inputs);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&GroupSuggestionsManager::ShowSuggestion,
-                     weak_ptr_factory_.GetWeakPtr(), scope,
-                     std::move(*suggestions), std::move(result.inputs)));
+      FROM_HERE, base::BindOnce(&GroupSuggestionsManager::ShowSuggestion,
+                                weak_ptr_factory_.GetWeakPtr(), scope,
+                                std::move(*suggestions), result.inputs));
 }
 
 void GroupSuggestionsManager::ShowSuggestion(

@@ -4,6 +4,7 @@
 
 #include "components/visited_url_ranking/internal/url_grouping/group_suggestions_manager.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
@@ -130,6 +131,12 @@ class GroupSuggestionsManagerTest : public testing::Test {
                                              inputs, std::move(user_response));
   }
 
+  void OnFinishComputeSuggestions(
+      const GroupSuggestionsService::Scope& scope,
+      GroupingHeuristics::SuggestionsResult result) {
+    suggestions_manager_->OnFinishComputeSuggestions(scope, std::move(result));
+  }
+
   base::test::TaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList features_;
@@ -248,4 +255,68 @@ TEST_F(GroupSuggestionsManagerTest,
                    GroupSuggestionsDelegate::UserResponse::kAccepted);
 }
 
+TEST_F(GroupSuggestionsManagerTest,
+       OnFinishComputeSuggestions_RecordHistograms) {
+  base::HistogramTester histogram_tester;
+  // Prepare suggestion.
+  GroupSuggestion shown_suggestion;
+  shown_suggestion.tab_ids = {111, 222, 333};
+  shown_suggestion.suggestion_reason =
+      GroupSuggestion::SuggestionReason::kRecentlyOpened;
+  // Prepare input.
+  // Tab indexes are 1, 4, 9. Max gap is 5 and average gap is 4.
+  std::vector<scoped_refptr<segmentation_platform::InputContext>> inputs;
+  std::vector<URLVisitAggregate> candidates = {};
+  candidates.push_back(CreateVisitForTab(111, base::Seconds(60), 2, true));
+  GetTabMetadata(candidates[0]).tab_model_index = 1;
+  GetTabMetadata(candidates[0]).is_last_tab_in_tab_model = false;
+  candidates.push_back(CreateVisitForTab(222, base::Seconds(250), 1, false));
+  GetTabMetadata(candidates[1]).tab_model_index = 4;
+  GetTabMetadata(candidates[1]).is_last_tab_in_tab_model = false;
+  candidates.push_back(CreateVisitForTab(333, base::Seconds(350), 1, false));
+  GetTabMetadata(candidates[2]).tab_model_index = 9;
+  GetTabMetadata(candidates[2]).is_last_tab_in_tab_model = true;
+  for (const auto& candidate : candidates) {
+    inputs.push_back(AsInputContext(kSuggestionsPredictionSchema, candidate));
+  }
+
+  GroupingHeuristics::SuggestionsResult result;
+  GroupSuggestions suggestions;
+  suggestions.suggestions.push_back(std::move(shown_suggestion));
+  result.suggestions = std::move(suggestions);
+  result.inputs = std::move(inputs);
+
+  OnFinishComputeSuggestions(GroupSuggestionsService::Scope(),
+                             std::move(result));
+
+  histogram_tester.ExpectBucketCount("GroupSuggestionsService.SuggestionsCount",
+                                     1, 1);
+  histogram_tester.ExpectBucketCount(
+      "GroupSuggestionsService.SuggestionsCountAfterThrottling", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "GroupSuggestionsService.TopSuggestionReason",
+      shown_suggestion.suggestion_reason, 1);
+  histogram_tester.ExpectBucketCount(
+      "GroupSuggestionsService.TopSuggestionTabCount", 3, 1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat(
+          {"GroupSuggestionsService.TopSuggestionTabCount.",
+           GetSuggestionReasonString(shown_suggestion.suggestion_reason)}),
+      3, 1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat(
+          {"GroupSuggestionsService.TopSuggestionContainsLastTab.",
+           GetSuggestionReasonString(shown_suggestion.suggestion_reason)}),
+      1, 1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat(
+          {"GroupSuggestionsService.TopSuggestionTabIndexMaxGap.",
+           GetSuggestionReasonString(shown_suggestion.suggestion_reason)}),
+      5, 1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat(
+          {"GroupSuggestionsService.TopSuggestionTabIndexAverageGap.",
+           GetSuggestionReasonString(shown_suggestion.suggestion_reason)}),
+      4, 1);
+}
 }  // namespace visited_url_ranking

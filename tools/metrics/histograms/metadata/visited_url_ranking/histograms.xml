@@ -30,7 +30,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the number of opened tabs in last 10 minutes, that are being
     considered as part of the group suggestion. Logged every time the group
-    suggestion computation is run, every page load.
+    suggestion computation is run.
   </summary>
 </histogram>
 
@@ -40,7 +40,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>
     Records the number of group suggestions that are available to show. Logged
-    every time the group suggestion computation is run, every page load.
+    every time the group suggestion computation is run.
   </summary>
 </histogram>
 
@@ -50,9 +50,27 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>
     Records the number of group suggestions that are available to show after
-    throttling. Logged every time the group suggestion computation is run, every
-    page load.
+    throttling. Logged every time the group suggestion is available to show.
   </summary>
+</histogram>
+
+<histogram
+    name="GroupSuggestionsService.TopSuggestionContainsLastTab.{ReasonVariant}"
+    enum="Boolean" expires_after="2025-11-02">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records whether the top suggestion contains the tab that is in the last
+    position in the tab model. Logged every time the group suggestion is
+    available to show.
+  </summary>
+  <token key="ReasonVariant">
+    <variant name="RecentlyOpened" summary="Recently opened"/>
+    <variant name="SameOrigin" summary="Same origin"/>
+    <variant name="SimilarSource" summary="Similar source"/>
+    <variant name="SwitchedBetween" summary="Switched between"/>
+  </token>
 </histogram>
 
 <histogram name="GroupSuggestionsService.TopSuggestionReason"
@@ -82,6 +100,44 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the number of tabs in the top group suggestion. Logged every time
     the group suggestion is available to show.
+  </summary>
+  <token key="ReasonVariant">
+    <variant name="RecentlyOpened" summary="Recently opened"/>
+    <variant name="SameOrigin" summary="Same origin"/>
+    <variant name="SimilarSource" summary="Similar source"/>
+    <variant name="SwitchedBetween" summary="Switched between"/>
+  </token>
+</histogram>
+
+<histogram
+    name="GroupSuggestionsService.TopSuggestionTabIndexAverageGap.{ReasonVariant}"
+    units="counts" expires_after="2025-11-02">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the average index difference between any tab with its adjacent tabs
+    in the top suggestion. This is recorded once per top suggestion, and
+    recorded every time when suggestion is available to show after throttling.
+  </summary>
+  <token key="ReasonVariant">
+    <variant name="RecentlyOpened" summary="Recently opened"/>
+    <variant name="SameOrigin" summary="Same origin"/>
+    <variant name="SimilarSource" summary="Similar source"/>
+    <variant name="SwitchedBetween" summary="Switched between"/>
+  </token>
+</histogram>
+
+<histogram
+    name="GroupSuggestionsService.TopSuggestionTabIndexMaxGap.{ReasonVariant}"
+    units="counts" expires_after="2025-11-02">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    Records the max index difference between any tab with its adjacent tabs in
+    the top suggestion. This is recorded once per top suggestion, and recorded
+    every time when suggestion is available to show after throttling.
   </summary>
   <token key="ReasonVariant">
     <variant name="RecentlyOpened" summary="Recently opened"/>

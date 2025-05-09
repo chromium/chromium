@@ -51,6 +51,13 @@ struct TabMetadata {
 
   // Android only: The package name of the app that created the tab.
   std::optional<std::string> launch_package_name;
+
+  // Android only: Index of the tab in the current tab model.
+  int tab_model_index = -1;
+
+  // Android only: Boolean indicating whether this tab is at the last position
+  // in the tab model.
+  bool is_last_tab_in_tab_model{false};
 };
 
 }  // namespace visited_url_ranking
