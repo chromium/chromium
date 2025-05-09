@@ -1152,10 +1152,7 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
       break;
     }
     case mojom::Operation::Tag::kReshape: {
-      const mojom::Reshape& reshape = *op.get_reshape();
-      ASSIGN_OR_RETURN(operator_offset,
-                       SerializeReshape(reshape.input_operand_id,
-                                        reshape.output_operand_id));
+      ASSIGN_OR_RETURN(operator_offset, SerializeReshape(*op.get_reshape()));
       break;
     }
     case mojom::Operation::Tag::kReverse: {
@@ -1716,6 +1713,54 @@ GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Pool2d& pool2d) {
       output_scale_values[0];
   if (!checked_sub_scale.IsValid() ||
       checked_sub_scale.Abs().ValueOrDie() > 1.0e-6) {
+    return std::nullopt;
+  }
+
+  base::FixedArray<int64_t> input_zero_point_values =
+      GetConstantInt64Value(input_dequantize.zero_point_operand_id);
+  base::FixedArray<int64_t> output_zero_point_values =
+      GetConstantInt64Value(output_quantize.zero_point_operand_id);
+  if (input_zero_point_values[0] != output_zero_point_values[0]) {
+    return std::nullopt;
+  }
+
+  return TrySerializeQuantizedOutput(*next_op);
+}
+
+std::optional<GraphBuilderTflite::TensorInfo>
+GraphBuilderTflite::CanFuseQuantizeAndGetOutput(const mojom::Reshape& reshape) {
+  if (!IsDequantizeOutput(reshape.input_operand_id)) {
+    return std::nullopt;
+  }
+
+  // TODO(crbug.com/413083273): Consider the restriction in GPU delegate.
+  // For XNNPack delegate, the scale and zero point of input and output have to
+  // be scaler, and the scale and zero point of output must be the same as
+  // input.
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.cc;l=5199;drc=1379ddb0f0535ff846ce0fbad8ee49af303140c4
+  const mojom::DequantizeLinear& input_dequantize =
+      GetDequantizeOp(reshape.input_operand_id);
+  if (!IsInts8AndScalarScale(input_dequantize)) {
+    return std::nullopt;
+  }
+
+  std::optional<size_t> next_op = IsNextOpQuantize(
+      reshape.output_operand_id,
+      {GetOperand(input_dequantize.input_operand_id).descriptor.data_type()});
+  if (!next_op) {
+    return std::nullopt;
+  }
+
+  const mojom::QuantizeLinear& output_quantize = GetQuantizeOp(*next_op);
+  if (!IsInts8AndScalarScale(output_quantize)) {
+    return std::nullopt;
+  }
+
+  base::span<const float> input_scale_values =
+      GetConstantValue<float>(input_dequantize.scale_operand_id);
+  base::span<const float> output_scale_values =
+      GetConstantValue<float>(output_quantize.scale_operand_id);
+  if (input_scale_values[0] != output_scale_values[0]) {
     return std::nullopt;
   }
 
@@ -6232,24 +6277,36 @@ auto GraphBuilderTflite::SerializeResample2d(
       builtin_options);
 }
 
-auto GraphBuilderTflite::SerializeReshape(OperandId input_operand_id,
-                                          OperandId output_operand_id)
+auto GraphBuilderTflite::SerializeReshape(const mojom::Reshape& reshape)
     -> base::expected<OperatorOffset, std::string> {
   CHECK(context_properties_.data_type_limits.reshape_input.Supports(
-      GetOperand(input_operand_id).descriptor));
-  ASSIGN_OR_RETURN(
-      const TensorInfo& input_tensor_info,
-      SerializeInputTensorInfo(input_operand_id, /*quantize_params=*/0,
-                               /*operation_supports_float16=*/true));
-  ASSIGN_OR_RETURN(
-      const TensorInfo& output_tensor_info,
-      SerializeOutputTensorInfo(output_operand_id, /*quantize_params=*/0,
-                                /*operation_supports_float16=*/true,
-                                input_tensor_info.data_type));
+      GetOperand(reshape.input_operand_id).descriptor));
 
-  return SerializeReshapeOperation(input_tensor_info.index,
-                                   output_tensor_info.index,
-                                   output_tensor_info.dimensions);
+  std::optional<TensorInfo> quantized_output =
+      CanFuseQuantizeAndGetOutput(reshape);
+  const bool fuse_dequantize = quantized_output.has_value();
+  ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
+                   SerializeInputTensorInfo(
+                       reshape.input_operand_id, /*quantize_params=*/0,
+                       /*operation_supports_float16=*/true, fuse_dequantize));
+
+  TensorIndex output_tensor_index;
+  std::vector<int32_t> output_tensor_shape;
+  if (fuse_dequantize) {
+    output_tensor_index = quantized_output->index;
+    output_tensor_shape = std::move(quantized_output->dimensions);
+  } else {
+    ASSIGN_OR_RETURN(
+        TensorInfo output_tensor_info,
+        SerializeOutputTensorInfo(
+            reshape.output_operand_id, /*quantize_params=*/0,
+            /*operation_supports_float16=*/true, input_tensor_info.data_type));
+    output_tensor_index = output_tensor_info.index;
+    output_tensor_shape = std::move(output_tensor_info.dimensions);
+  }
+
+  return SerializeReshapeOperation(input_tensor_info.index, output_tensor_index,
+                                   output_tensor_shape);
 }
 
 auto GraphBuilderTflite::SerializeReverse(const mojom::Reverse& reverse)

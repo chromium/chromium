@@ -678,8 +678,7 @@ class GraphBuilderTflite final {
   base::expected<OperatorOffset, std::string> SerializeResample2d(
       const mojom::Resample2d& resample2d);
   base::expected<OperatorOffset, std::string> SerializeReshape(
-      OperandId input_operand_id,
-      OperandId output_operand_id);
+      const mojom::Reshape& reshape);
   base::expected<OperatorOffset, std::string> SerializeReverse(
       const mojom::Reverse& reverse);
   base::expected<OperatorOffset, std::string> SerializeScatterElements(
@@ -725,6 +724,8 @@ class GraphBuilderTflite final {
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(const mojom::Elu& elu);
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
       const mojom::Pool2d& pool2d);
+  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
+      const mojom::Reshape& reshape);
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
       const mojom::Transpose& transpose);
   std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(

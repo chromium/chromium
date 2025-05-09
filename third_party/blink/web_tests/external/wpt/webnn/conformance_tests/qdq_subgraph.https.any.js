@@ -535,12 +535,12 @@ const subgraphTests = [
             {'input': 'transposeOutput'},
             {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
           ],
-          'outputs': 'quantizedtransposeOutput'
+          'outputs': 'quantizedTransposeOutput'
         },
         {
           'name': 'dequantizeLinear',
           'arguments': [
-            {'input': 'quantizedtransposeOutput'},
+            {'input': 'quantizedTransposeOutput'},
             {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
           ],
           'outputs': 'output'
@@ -619,12 +619,12 @@ const subgraphTests = [
             {'input': 'tanhOutput'},
             {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
           ],
-          'outputs': 'quantizedtanhOutput'
+          'outputs': 'quantizedTanhOutput'
         },
         {
           'name': 'dequantizeLinear',
           'arguments': [
-            {'input': 'quantizedtanhOutput'},
+            {'input': 'quantizedTanhOutput'},
             {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
           ],
           'outputs': 'output'
@@ -702,12 +702,12 @@ const subgraphTests = [
             {'input': 'sigmoidOutput'},
             {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
           ],
-          'outputs': 'quantizedsigmoidOutput'
+          'outputs': 'quantizedSigmoidOutput'
         },
         {
           'name': 'dequantizeLinear',
           'arguments': [
-            {'input': 'quantizedsigmoidOutput'},
+            {'input': 'quantizedSigmoidOutput'},
             {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
           ],
           'outputs': 'output'
@@ -788,12 +788,12 @@ const subgraphTests = [
             {'input': 'leakyReluOutput'},
             {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
           ],
-          'outputs': 'quantizedleakyReluOutput'
+          'outputs': 'quantizedLeakyReluOutput'
         },
         {
           'name': 'dequantizeLinear',
           'arguments': [
-            {'input': 'quantizedleakyReluOutput'},
+            {'input': 'quantizedLeakyReluOutput'},
             {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
           ],
           'outputs': 'output'
@@ -985,12 +985,12 @@ const subgraphTests = [
             {'input': 'eluOutput'},
             {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
           ],
-          'outputs': 'quantizedeluOutput'
+          'outputs': 'quantizedEluOutput'
         },
         {
           'name': 'dequantizeLinear',
           'arguments': [
-            {'input': 'quantizedeluOutput'},
+            {'input': 'quantizedEluOutput'},
             {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
           ],
           'outputs': 'output'
@@ -1167,6 +1167,90 @@ const subgraphTests = [
             8.577322959899902,
           ],
           'descriptor': {shape: [1, 1, 1, 1], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'quantized reshape',
+    'graph': {
+      'inputs': {
+        'input': {
+          'data': [
+            1.6811466217041016, 0.0479511022567749, 0.33355462551116943,
+            -0.1988269537687301, -0.0041167140007019, -0.0634240251779556,
+          ],
+          'descriptor': {shape: [2, 3], dataType: 'float32'},
+          'constant': false
+        },
+        'inputScale': {
+          'data': [0.003921568859368563],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'inputZeroPoint': {
+          'data': [16],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+        'outputScale': {
+          'data': [0.003921568859368563],
+          'descriptor': {shape: [1], dataType: 'float32'},
+          'constant': true
+        },
+        'outputZeroPoint': {
+          'data': [16],
+          'descriptor': {shape: [1], dataType: 'int8'},
+          'constant': true
+        },
+      },
+      'operators': [
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'input'},
+            {'scale': 'inputScale', 'zeroPoint': 'inputZeroPoint'}
+          ],
+          'outputs': 'quantizedInput'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedInput'},
+            {'scale': 'inputScale', 'zeroPoint': 'inputZeroPoint'}
+          ],
+          'outputs': 'dequantizedInput'
+        },
+        {
+          'name': 'reshape',
+          'arguments': [{'input': 'dequantizedInput'}, {'newShape': [3, 2]}],
+          'outputs': 'reshapeOutput'
+        },
+        {
+          'name': 'quantizeLinear',
+          'arguments': [
+            {'input': 'reshapeOutput'},
+            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
+          ],
+          'outputs': 'quantizedReshapeOutput'
+        },
+        {
+          'name': 'dequantizeLinear',
+          'arguments': [
+            {'input': 'quantizedReshapeOutput'},
+            {'scale': 'outputScale', 'zeroPoint': 'outputZeroPoint'}
+          ],
+          'outputs': 'output'
+        }
+      ],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            0.43529415130615234, 0.0470588281750679,
+            0.3333333432674408, -0.20000001788139343,
+            -0.003921568859368563, -0.062745101749897,
+          ],
+          'descriptor': {shape: [3, 2], dataType: 'float32'}
         }
       }
     }
