@@ -41,6 +41,25 @@
                     modernize-use-override,
                     modernize-use-transparent-functors,
                     readability-redundant-member-init'
+  # DISABLED CHECKS:
+  # An analysis was done of the following checks and they were deemed to either
+  # have too high of a false positive rate, or were redundant/useless (e.g.
+  # never fired once in the entirety of chromium). We list them here so that
+  # future editors of this file are aware these checks have already been
+  # considered and accordingly rejected.
+  #                 bugprone-undelegated-constructor
+  #                 bugprone-macro-repeated-side-effects
+  #                 bugprone-misplaced-operator-in-strlen-in-alloc
+  #                 bugprone-misplaced-pointer-arithmetic-in-alloc
+  #                 bugprone-multiple-statement-macro
+  #                 bugprone-no-escape
+  #                 bugprone-posix-return
+  #                 bugprone-shared-ptr-array-mismatch
+  #                 bugprone-spuriously-wake-up-functions
+  #                 bugprone-standalone-empty
+  #                 bugprone-stringview-nullptr
+  #                 bugprone-suspicious-enum-usage
+  #                 bugprone-unhandled-exception-at-new
   CheckOptions:
     - key:          bugprone-assert-side-effect.AssertMacros
       value:        assert,DCHECK
