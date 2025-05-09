@@ -104,13 +104,9 @@ void GpuRasterBufferProvider::RasterBufferImpl::Playback(
 
   viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
       client_->worker_context_provider_, url.possibly_invalid_spec().c_str());
-  gpu::raster::RasterInterface* ri =
-      client_->worker_context_provider_->RasterInterface();
   PlaybackOnWorkerThread(raster_source, raster_full_rect, raster_dirty_rect,
                          new_content_id, transform, playback_settings, url);
 
-  backing_->mailbox_sync_token =
-      viz::ClientResourceProvider::GenerateSyncTokenHelper(ri);
   backing_->returned_sync_token = gpu::SyncToken();
 }
 
@@ -390,6 +386,8 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
       playback_settings.raster_inducing_scroll_offsets,
       const_cast<RasterSource*>(raster_source)->max_op_size_hint());
   ri->EndRasterCHROMIUM();
+  backing_->mailbox_sync_token =
+      viz::ClientResourceProvider::GenerateSyncTokenHelper(ri);
 }
 
 }  // namespace cc
