@@ -4,6 +4,7 @@
 
 #include "chrome/renderer/accessibility/read_anything/read_anything_node_utils.h"
 
+#include <cinttypes>
 #include <string>
 
 #include "read_anything_test_utils.h"
@@ -13,6 +14,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_tree.h"
+#include "ui/base/l10n/l10n_util.h"
 
 class ReadAnythingNodeUtilsTest : public testing::Test {
  protected:
@@ -268,4 +270,115 @@ TEST_F(ReadAnythingNodeUtilsTest, GetHtmlTag_ReturnsExpectedTag) {
   data.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "img");
   node.SetData(std::move(data));
   EXPECT_EQ(a11y::GetHtmlTag(&node, false, false), "img");
+}
+
+TEST_F(ReadAnythingNodeUtilsTest, GetHtmlTagForPdf_EmptyTagReturnsSpan) {
+  ui::AXNodeData data;
+  data.id = 2;
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, 2, 0);
+  node.SetData(std::move(data));
+  EXPECT_EQ(a11y::GetHtmlTagForPDF(&node, ""), "span");
+}
+
+TEST_F(ReadAnythingNodeUtilsTest, GetHtmlTagForPdf_SpanTagReturned) {
+  ui::AXNodeData data = test::TextNode(2);
+  data.role = ax::mojom::Role::kEmbeddedObject;
+
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, 2, 0);
+  node.SetData(std::move(data));
+  EXPECT_EQ(a11y::GetHtmlTagForPDF(&node, "p"), "span");
+
+  data.role = ax::mojom::Role::kRegion;
+  node.SetData(std::move(data));
+  EXPECT_EQ(a11y::GetHtmlTagForPDF(&node, "p"), "span");
+
+  data.role = ax::mojom::Role::kPdfRoot;
+  node.SetData(std::move(data));
+  EXPECT_EQ(a11y::GetHtmlTagForPDF(&node, "p"), "span");
+
+  data.role = ax::mojom::Role::kRootWebArea;
+  node.SetData(std::move(data));
+  EXPECT_EQ(a11y::GetHtmlTagForPDF(&node, "p"), "span");
+}
+
+TEST_F(ReadAnythingNodeUtilsTest,
+       GetHtmlTagForPdf_ParagraphRoleReturnsParagraphTag) {
+  ui::AXNodeData data = test::TextNode(2);
+  data.role = ax::mojom::Role::kParagraph;
+
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, 2, 0);
+  node.SetData(std::move(data));
+  EXPECT_EQ(a11y::GetHtmlTagForPDF(&node, "span"), "p");
+}
+
+TEST_F(ReadAnythingNodeUtilsTest, GetHtmlTagForPdf_StaticTextReturnsEmptyTag) {
+  ui::AXNodeData data = test::TextNode(2);
+  data.role = ax::mojom::Role::kStaticText;
+
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, 2, 0);
+  node.SetData(std::move(data));
+  EXPECT_EQ(a11y::GetHtmlTagForPDF(&node, "span"), "");
+}
+
+TEST_F(ReadAnythingNodeUtilsTest, GetHtmlTagForPdf_ContentInfoReturnsBr) {
+  const std::u16string ending_text =
+      l10n_util::GetStringUTF16(IDS_PDF_OCR_RESULT_END);
+  ui::AXNodeData data = test::TextNode(2, ending_text);
+  data.role = ax::mojom::Role::kContentInfo;
+
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, 2, 0);
+  node.SetData(std::move(data));
+  EXPECT_EQ(a11y::GetHtmlTagForPDF(&node, "span"), "br");
+}
+
+TEST_F(ReadAnythingNodeUtilsTest, GetHtmlTagForPdf_UsesDefaultHtmlTag) {
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, 2, 0);
+  EXPECT_EQ(a11y::GetHtmlTagForPDF(&node, "span"), "span");
+  EXPECT_EQ(a11y::GetHtmlTagForPDF(&node, "p"), "p");
+  EXPECT_EQ(a11y::GetHtmlTagForPDF(&node, "br"), "br");
+}
+
+TEST_F(ReadAnythingNodeUtilsTest, GetHtmlTagForPdf_LongTextTreatedAsParagraph) {
+  std::u16string long_text =
+      u"I have waited five years and today is the day- I have spared no "
+      u"expense, all that stands in my way is a tiny little cottage with a "
+      u"tiny little table filld with tiny finger sandwiches... I am not okay.";
+  ui::AXNodeData data = test::TextNode(2, long_text);
+  data.role = ax::mojom::Role::kHeading;
+
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, 2, 0);
+  node.SetData(std::move(data));
+  EXPECT_EQ(a11y::GetHtmlTagForPDF(&node, "span"), "p");
+}
+
+TEST_F(ReadAnythingNodeUtilsTest,
+       GetHeadingHtmlTagForPdf_LongTextTreatedAsParagraph) {
+  std::u16string long_text =
+      u"I have waited five years and today is the day- I have spared no "
+      u"expense, all that stands in my way is a tiny little cottage with a "
+      u"tiny little table filld with tiny finger sandwiches... I am not okay.";
+  ui::AXNodeData data = test::TextNode(2, long_text);
+
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, 2, 0);
+  node.SetData(std::move(data));
+  EXPECT_EQ(a11y::GetHeadingHtmlTagForPDF(&node, "span"), "p");
+}
+
+TEST_F(ReadAnythingNodeUtilsTest, GetAltText) {
+  std::string alt_text = "this is some alt text";
+  ui::AXNodeData data = test::TextNode(2);
+  data.AddStringAttribute(ax::mojom::StringAttribute::kName, alt_text);
+
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, 2, 0);
+  node.SetData(std::move(data));
+  EXPECT_EQ(a11y::GetAltText(&node), alt_text);
 }

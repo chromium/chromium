@@ -5,6 +5,7 @@
 #ifndef CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_READ_ANYTHING_NODE_UTILS_H_
 #define CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_READ_ANYTHING_NODE_UTILS_H_
 
+#include "services/strings/grit/services_strings.h"
 #include "ui/accessibility/ax_node.h"
 
 // Utilities for getting html or text info about ax nodes.  These are used by
