@@ -11,8 +11,8 @@ source_set("public") {
     "public/split_tab_visual_data.h",
     "public/supports_handles.h",
     "public/tab_collection.h",
-    "public/tab_collection_node_interface.h",
     "public/tab_interface.h",
+    "public/tab_interface_holder.h",
   ]
 
   # TODO(crbug.com/404296389): Move to the non-public target and refactor

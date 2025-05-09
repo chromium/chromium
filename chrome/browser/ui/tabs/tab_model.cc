@@ -298,6 +298,10 @@ void TabModel::Close() {
   tab_strip->CloseWebContentsAt(tab_idx, TabCloseTypes::CLOSE_NONE);
 }
 
+TabInterface* TabModel::GetTabInterface() {
+  return this;
+}
+
 void TabModel::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
