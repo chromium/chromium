@@ -9,6 +9,7 @@
 #include "base/supports_user_data.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/glic/media/glic_media_context.h"
+#include "chrome/browser/glic/media/glic_media_page_cache.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/live_caption/caption_controller_base.h"
 #include "components/live_caption/caption_util.h"
@@ -34,10 +35,13 @@ class GlicMediaIntegrationImpl : public glic::GlicMediaIntegration,
       content::WebContents* web_contents,
       optimization_guide::proto::ContentNode* context_root) override;
 
+  void OnContextUpdated(glic::GlicMediaContext* context);
+
  protected:
   raw_ptr<Profile> profile_;
   // Don't let the transcript grow unbounded.
   static constexpr size_t max_size_bytes_ = 20000;
+  glic::GlicMediaPageCache page_cache_;
 };
 
 class CaptionListenerImpl : public captions::CaptionControllerBase::Listener {
@@ -50,6 +54,9 @@ class CaptionListenerImpl : public captions::CaptionControllerBase::Listener {
                        const media::SpeechRecognitionResult& result) override {
     if (auto* context = glic::GlicMediaContext::GetOrCreateFor(web_contents)) {
       context->OnResult(result);
+      static_cast<GlicMediaIntegrationImpl*>(
+          glic::GlicMediaIntegration::GetFor(web_contents))
+          ->OnContextUpdated(context);
     }
 
     return true;
@@ -82,8 +89,9 @@ void GlicMediaIntegrationImpl::AppendContext(
   context_root->mutable_content_attributes()->set_attribute_type(
       optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
 
-  // Get the context for `web_contents`, which is not the right thing to do.
-  auto* context = glic::GlicMediaContext::GetOrCreateFor(web_contents);
+  // Get the most recently updated context.  Alternatively we could get the
+  // context for `web_contents`.
+  auto* context = static_cast<glic::GlicMediaContext*>(page_cache_.front());
   std::string result;
   if (context != nullptr) {
     result = context->GetContext();
@@ -107,6 +115,11 @@ void GlicMediaIntegrationImpl::AppendContext(
   context_root->mutable_content_attributes()
       ->mutable_text_data()
       ->set_text_content(std::move(result));
+}
+
+void GlicMediaIntegrationImpl::OnContextUpdated(
+    glic::GlicMediaContext* context) {
+  page_cache_.PlaceAtFront(context);
 }
 
 }  // namespace
