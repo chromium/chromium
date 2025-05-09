@@ -720,12 +720,17 @@ test(function(){
   const kEditContextTextFormatUpdateAddListener = 5552;
   const kEditContextTextFormatUpdateFireEvent = 5553;
   const kEditContextTextFormatUpdateTextFormatThicknessOrStyleNotNone = 5554;
+  const kEditContextTextFormatUnderlineStyle = 5558;
+  const kEditContextTextFormatUnderlineThickness = 5559;
   internals.clearUseCounter(document, kEditContextTextFormatUpdateAddListener);
   internals.clearUseCounter(document, kEditContextTextFormatUpdateFireEvent);
   internals.clearUseCounter(document, kEditContextTextFormatUpdateTextFormatThicknessOrStyleNotNone);
+  internals.clearUseCounter(document, kEditContextTextFormatUnderlineStyle);
+  internals.clearUseCounter(document, kEditContextTextFormatUnderlineThickness);
 
   const editContext = new EditContext();
   const test = document.createElement("div");
+  let textFormats = [];
   document.body.appendChild(test);
   test.editContext = editContext;
   test.focus();
@@ -733,9 +738,9 @@ test(function(){
 
   assert_false(internals.isUseCounted(document, kEditContextTextFormatUpdateAddListener));
   assert_false(internals.isUseCounted(document, kEditContextTextFormatUpdateFireEvent));
-
-  editContext.addEventListener("textformatupdate", e => {});
-
+  editContext.addEventListener("textformatupdate", e => {
+    textFormats = e.getTextFormats();
+  });
   assert_true(internals.isUseCounted(document, kEditContextTextFormatUpdateAddListener));
   assert_false(internals.isUseCounted(document, kEditContextTextFormatUpdateFireEvent));
 
@@ -743,6 +748,14 @@ test(function(){
 
   assert_true(internals.isUseCounted(document, kEditContextTextFormatUpdateFireEvent));
   assert_true(internals.isUseCounted(document, kEditContextTextFormatUpdateTextFormatThicknessOrStyleNotNone));
+  assert_false(internals.isUseCounted(document, kEditContextTextFormatUnderlineStyle));
+  assert_false(internals.isUseCounted(document, kEditContextTextFormatUnderlineThickness));
+
+  assert_equals(textFormats.length, 1);
+  assert_equals(textFormats[0].underlineStyle, "Solid");
+  assert_equals(textFormats[0].underlineThickness, "Thin");
+  assert_true(internals.isUseCounted(document, kEditContextTextFormatUnderlineStyle));
+  assert_true(internals.isUseCounted(document, kEditContextTextFormatUnderlineThickness));
 
   test.remove();
 }, 'Testing UseCounter for textformatupdate event.');

@@ -21,6 +21,6 @@ enum UnderlineThickness { "none", "thin", "thick" };
     // https://crbug.com/354497121 These should be UnderlineStyle and
     // UnderlineThickness enumerations but the values returned by the
     // implementation do not match what the IDL defines.
-    readonly attribute DOMString underlineStyle;
-    readonly attribute DOMString underlineThickness;
+    [MeasureAs=EditContextTextFormatUnderlineStyle] readonly attribute DOMString underlineStyle;
+    [MeasureAs=EditContextTextFormatUnderlineThickness] readonly attribute DOMString underlineThickness;
 };
