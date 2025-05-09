@@ -1969,7 +1969,7 @@ bool InspectorDOMAgent::ContainerQueriedByElement(Element* container,
     return false;
   }
   for (auto it = matched_rules->rbegin(); it != matched_rules->rend(); ++it) {
-    CSSRule* parent_rule = std::get<0>(*it);
+    CSSRule* parent_rule = it->first;
     while (parent_rule) {
       auto* container_rule = DynamicTo<CSSContainerRule>(parent_rule);
       if (container_rule) {

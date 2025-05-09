@@ -568,14 +568,14 @@ TEST_F(ElementRuleCollectorTest, FindStyleRuleWithNesting) {
 
   RuleIndexList* foo_css_rules = GetMatchedCSSRuleList(foo, rule_set);
   ASSERT_EQ(2u, foo_css_rules->size());
-  CSSRule* foo_css_rule_1 = std::get<0>(foo_css_rules->at(0));
+  CSSRule* foo_css_rule_1 = foo_css_rules->at(0).first;
   EXPECT_EQ("#foo", DynamicTo<CSSStyleRule>(foo_css_rule_1)->selectorText());
-  CSSRule* foo_css_rule_2 = std::get<0>(foo_css_rules->at(1));
+  CSSRule* foo_css_rule_2 = foo_css_rules->at(1).first;
   EXPECT_EQ("&.a", DynamicTo<CSSStyleRule>(foo_css_rule_2)->selectorText());
 
   RuleIndexList* bar_css_rules = GetMatchedCSSRuleList(bar, rule_set);
   ASSERT_EQ(1u, bar_css_rules->size());
-  CSSRule* bar_css_rule_1 = std::get<0>(bar_css_rules->at(0));
+  CSSRule* bar_css_rule_1 = bar_css_rules->at(0).first;
   EXPECT_EQ("& > .b", DynamicTo<CSSStyleRule>(bar_css_rule_1)->selectorText());
 }
 
