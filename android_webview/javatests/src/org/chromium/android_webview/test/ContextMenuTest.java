@@ -47,6 +47,7 @@ import org.chromium.android_webview.contextmenu.AwContextMenuItem.Item;
 import org.chromium.android_webview.contextmenu.AwContextMenuItemDelegate;
 import org.chromium.android_webview.contextmenu.AwContextMenuPopulator;
 import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactory;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -56,6 +57,7 @@ import org.chromium.base.test.util.Features;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
+import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.mojom.MenuSourceType;
@@ -452,6 +454,8 @@ public class ContextMenuTest extends AwParameterizedTest {
         mRule.loadUrlSync(
                 mTestContainerView.getAwContents(), mContentsClient.getOnPageFinishedHelper(), url);
         done.waitForCallback(callCount);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> WebContentsUtils.simulateEndOfPaintHolding(mAwContents.getWebContents()));
     }
 
     private void assertStringContains(String subString, String superString) {

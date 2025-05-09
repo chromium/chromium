@@ -23,9 +23,11 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.test.util.AwTestTouchUtils;
 import org.chromium.android_webview.test.util.CommonResources;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
+import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.util.ArrayList;
@@ -152,6 +154,8 @@ public class ClientOnReceivedHttpErrorTest extends AwParameterizedTest {
                         null);
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
         mActivityTestRule.loadUrlAsync(mAwContents, pageWithLinkUrl);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> WebContentsUtils.simulateEndOfPaintHolding(mAwContents.getWebContents()));
         mActivityTestRule.waitForPixelColorAtCenterOfView(
                 mAwContents, mTestContainerView, CommonResources.LINK_COLOR);
 
