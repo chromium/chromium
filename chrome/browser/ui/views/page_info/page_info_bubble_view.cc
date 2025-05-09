@@ -235,6 +235,10 @@ void PageInfoBubbleView::OpenMainPage(base::OnceClosure initialized_callback) {
       view_factory_->CreateMainPageView(std::move(initialized_callback));
   main_page_view->SetID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_CURRENT_VIEW);
   page_container_->SwitchToPage(std::move(main_page_view));
+
+  auto* close_button = page_container_->GetViewByID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_CLOSE_BUTTON);
+  close_button->RequestFocus();
 }
 
 void PageInfoBubbleView::OpenSecurityPage() {

@@ -625,6 +625,7 @@ std::unique_ptr<views::View> PageInfoMainView::CreateBubbleHeaderView() {
               views::BubbleFrameView::CreateCloseButton(
                   base::BindRepeating(&PageInfoNavigationHandler::CloseBubble,
                                       base::Unretained(navigation_handler_))))
+              .SetID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_CLOSE_BUTTON)
               .SetVisible(true)
               .SetProperty(views::kCrossAxisAlignmentKey,
                            views::LayoutAlignment::kStart)
