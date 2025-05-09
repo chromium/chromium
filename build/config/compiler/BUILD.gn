@@ -631,6 +631,13 @@ config("compiler") {
         default_toolchain != "//build/toolchain/cros:target") {
       cflags += [ "-Wa,--crel,--allow-experimental-crel" ]
     }
+
+    # TODO(crbug.com/413427035): Remove once
+    # https://github.com/llvm/llvm-project/pull/136867/ is landed.
+    if (!is_win && !llvm_android_mainline &&
+        default_toolchain != "//build/toolchain/cros:target") {
+      cflags += [ "-fextend-variable-liveness=none" ]
+    }
   }
 
   # C11/C++11 compiler flags setup.
