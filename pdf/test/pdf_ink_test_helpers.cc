@@ -64,11 +64,11 @@ base::Value::Dict CreateSetAnnotationBrushMessageForTesting(
   base::Value::Dict data;
   data.Set("type", type);
   if (params) {
-    base::Value::Dict color;
-    color.Set("r", params->color_r);
-    color.Set("g", params->color_g);
-    color.Set("b", params->color_b);
-    data.Set("color", std::move(color));
+    data.Set("color",
+             base::Value::Dict()
+                 .Set("r", static_cast<int>(SkColorGetR(params->color)))
+                 .Set("g", static_cast<int>(SkColorGetG(params->color)))
+                 .Set("b", static_cast<int>(SkColorGetB(params->color))));
     data.Set("size", params->size);
   }
   message.Set("data", std::move(data));

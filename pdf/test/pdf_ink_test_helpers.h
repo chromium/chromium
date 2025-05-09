@@ -5,6 +5,8 @@
 #ifndef PDF_TEST_PDF_INK_TEST_HELPERS_H_
 #define PDF_TEST_PDF_INK_TEST_HELPERS_H_
 
+#include <stdint.h>
+
 #include <optional>
 #include <string_view>
 
@@ -16,6 +18,8 @@
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
 #include "third_party/ink/src/ink/strokes/input/stroke_input_batch.h"
 #include "ui/gfx/geometry/point_f.h"
+
+using SkColor = uint32_t;
 
 namespace chrome_pdf {
 
@@ -33,9 +37,7 @@ enum class TestAnnotationUndoRedoMessageType {
 // Optional parameters that the `setAnnotationBrushMessage` may have, depending
 // on the brush type.
 struct TestAnnotationBrushMessageParams {
-  int color_r;
-  int color_g;
-  int color_b;
+  SkColor color;
   double size;
 };
 

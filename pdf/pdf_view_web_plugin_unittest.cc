@@ -95,7 +95,6 @@
 #include "pdf/pdf_ink_metrics_handler.h"
 #include "pdf/pdf_ink_module_client.h"
 #include "pdf/test/pdf_ink_test_helpers.h"
-#include "pdf/test/test_helpers.h"
 #include "third_party/ink/src/ink/strokes/stroke.h"
 #endif
 
@@ -3333,10 +3332,9 @@ TEST_P(PdfViewWebPluginInkTextHighlightTest, SelectionDoesNotChange) {
 
   // Enter annotation mode and select the highlighter.
   plugin_->OnMessage(CreateSetAnnotationModeMessageForTesting(/*enable=*/true));
-  TestAnnotationBrushMessageParams message_params{/*color_r=*/0xF0,
-                                                  /*color_g=*/0x85,
-                                                  /*color_b=*/0x00,
-                                                  /*size=*/4.5f};
+  TestAnnotationBrushMessageParams message_params{
+      SkColorSetRGB(0xF0, 0x85, 0x00),
+      /*size=*/4.5};
   plugin_->OnMessage(CreateSetAnnotationBrushMessageForTesting(
       "highlighter", &message_params));
 
@@ -3364,10 +3362,9 @@ TEST_P(PdfViewWebPluginInkTextHighlightTest, SelectionDoesNotChange) {
 TEST_P(PdfViewWebPluginInkTextHighlightTest, DrawInProgressTextHighlight) {
   // Enter annotation mode and select the highlighter.
   plugin_->OnMessage(CreateSetAnnotationModeMessageForTesting(/*enable=*/true));
-  TestAnnotationBrushMessageParams message_params{/*color_r=*/0xF0,
-                                                  /*color_g=*/0x85,
-                                                  /*color_b=*/0x00,
-                                                  /*size=*/4.5f};
+  TestAnnotationBrushMessageParams message_params{
+      SkColorSetRGB(0xF0, 0x85, 0x00),
+      /*size=*/4.5};
   plugin_->OnMessage(CreateSetAnnotationBrushMessageForTesting(
       "highlighter", &message_params));
 
