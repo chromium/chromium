@@ -34,6 +34,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkSaveFlowProperties.FolderText;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -219,5 +220,23 @@ public class ImprovedBookmarkSaveFlowRenderTest {
                     mModel.set(ImprovedBookmarkSaveFlowProperties.SUBTITLE, "On this device ");
                 });
         mRenderTestRule.render(mContentView, "title_and_subtitle");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRtlFlipsChevron() throws IOException {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    LocalizationUtils.setRtlForTesting(true);
+                    mModel.set(
+                            ImprovedBookmarkSaveFlowProperties.TITLE,
+                            BookmarkSaveFlowMediator.createHighlightedCharSequence(
+                                    mActivity, new FolderText("Saved in Mobile bookmarks", 9, 16)));
+                    mModel.set(ImprovedBookmarkSaveFlowProperties.SUBTITLE, "On this device ");
+                });
+
+        mRenderTestRule.render(mContentView, "rtl_chevron");
+        ThreadUtils.runOnUiThreadBlocking(() -> LocalizationUtils.setRtlForTesting(true));
     }
 }
