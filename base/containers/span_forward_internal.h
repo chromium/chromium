@@ -5,6 +5,10 @@
 #ifndef BASE_CONTAINERS_SPAN_FORWARD_INTERNAL_H_
 #define BASE_CONTAINERS_SPAN_FORWARD_INTERNAL_H_
 
+#include <stddef.h>
+
+#include <limits>
+
 namespace base {
 
 // [span.syn]: Constants
