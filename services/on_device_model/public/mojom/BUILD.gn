@@ -32,6 +32,13 @@ mojom("mojom") {
         {
           mojom = "on_device_model.mojom.ModelAssets"
           cpp = "::on_device_model::ModelAssets"
+          default_constructible = false
+          move_only = true
+        },
+        {
+          mojom = "on_device_model.mojom.ModelFile"
+          cpp = "::on_device_model::ModelFile"
+          default_constructible = false
           move_only = true
         },
         {
@@ -61,6 +68,7 @@ mojom("mojom") {
         "//services/on_device_model/public/cpp/adaptation_assets_mojom_traits.h",
         "//services/on_device_model/public/cpp/capabilities_mojom_traits.h",
         "//services/on_device_model/public/cpp/model_assets_mojom_traits.h",
+        "//services/on_device_model/public/cpp/model_file_mojom_traits.h",
       ]
       traits_sources =
           [ "//services/on_device_model/ml/chrome_ml_types_traits.cc" ]

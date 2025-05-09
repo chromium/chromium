@@ -105,7 +105,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) OnDeviceModelExecutor final {
 
   static on_device_model::Capabilities GetCapabilities(
       const ChromeML& chrome_ml,
-      on_device_model::ModelAssets assets);
+      on_device_model::ModelFile model_file);
 
   std::unique_ptr<SessionImpl> CreateSession(
       const ScopedAdaptation* adaptation,

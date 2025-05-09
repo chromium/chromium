@@ -33,6 +33,8 @@ component("types") {
     "model_assets.h",
     "model_assets_mojom_traits.cc",
     "model_assets_mojom_traits.h",
+    "model_file_mojom_traits.cc",
+    "model_file_mojom_traits.h",
   ]
   public_deps = [
     "//base",

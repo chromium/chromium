@@ -92,6 +92,7 @@ class OnDeviceModelServiceTest : public testing::Test {
     params->backend_type = backend_type;
     params->performance_hint = performance_hint;
     params->max_tokens = 8000;
+    params->assets = ModelAssets::FromPath(base::FilePath());
     base::test::TestFuture<mojom::LoadModelResult> future;
     service()->LoadModel(std::move(params), remote.BindNewPipeAndPassReceiver(),
                          future.GetCallback());
@@ -647,10 +648,9 @@ TEST_F(OnDeviceModelServiceTest, Capabilities) {
   auto expect_capabilities = [&](const std::string& data,
                                  const Capabilities& expected) {
     FakeFile file(data);
-    ModelAssets assets;
-    assets.weights = file.Open();
+    ModelFile model_file(file.Open());
     base::test::TestFuture<const Capabilities&> future;
-    service()->GetCapabilities(std::move(assets), future.GetCallback());
+    service()->GetCapabilities(std::move(model_file), future.GetCallback());
     EXPECT_EQ(expected, future.Take());
   };
   expect_capabilities("none", {});
@@ -664,10 +664,9 @@ TEST_F(OnDeviceModelServiceTest, CapabilitiesFromFilePath) {
   auto expect_capabilities = [&](const std::string& data,
                                  const Capabilities& expected) {
     FakeFile file(data);
-    ModelAssets assets;
-    assets.weights_path = file.Path();
+    ModelFile model_file(file.Path());
     base::test::TestFuture<const Capabilities&> future;
-    service()->GetCapabilities(std::move(assets), future.GetCallback());
+    service()->GetCapabilities(std::move(model_file), future.GetCallback());
     EXPECT_EQ(expected, future.Take());
   };
   expect_capabilities("none", {});

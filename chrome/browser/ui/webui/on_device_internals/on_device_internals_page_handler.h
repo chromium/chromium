@@ -7,7 +7,8 @@
 
 #include "chrome/browser/ui/webui/on_device_internals/on_device_internals_page.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/on_device_model/public/cpp/buildflags.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
@@ -46,7 +47,7 @@ class PageHandler : public mojom::PageHandler,
       ml::ModelPerformanceHint performance_hint,
       on_device_model::ModelAssets assets);
   void OnModelLoaded(LoadModelCallback callback,
-                     on_device_model::ModelAssets assets,
+                     on_device_model::ModelFile weights,
                      on_device_model::mojom::LoadModelResult result);
 #endif
 

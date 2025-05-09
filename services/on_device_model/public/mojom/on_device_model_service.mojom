@@ -11,17 +11,21 @@ import "sandbox/policy/mojom/context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "services/on_device_model/public/mojom/on_device_model.mojom";
 
+// Model weights could be passed as an opened file or a file path.
+union ModelFile {
+  // This should be used with the GPU backend.
+  //
+  // TODO(b/313919363): This should be a ReadOnlyFile.
+  mojo_base.mojom.File file;
+
+  // This should be used with the APU backend.
+  mojo_base.mojom.FilePath path;
+};
+
 // Opened file resources needed to define the model.
 struct ModelAssets {
-  // Model weights could be passed as an opened file or a file path.
-  // The backend type will decide which one should be used, or
-  // which one is preferred if both are passed. If both are unset,
-  // usually the operation should fail.
-  // APU backend: weights_path should be used.
-  // GPU backend: weights should be used.
-  // TODO(b/313919363): This should also be a ReadOnlyFile.
-  mojo_base.mojom.File? weights;
-  mojo_base.mojom.FilePath? weights_path;
+  // Model weights. The backend may prefer these to be passed a certain way.
+  ModelFile weights;
 
   // Currently the only usage of sp model will be passed by file path.
   mojo_base.mojom.FilePath? sp_model_path;
@@ -128,9 +132,9 @@ interface OnDeviceModelService {
   LoadModel(LoadModelParams params, pending_receiver<OnDeviceModel> model)
       => (LoadModelResult result);
 
-  // Returns the capabilities for a model specified by `params`. Note that this
+  // Returns the capabilities for a model specified by `weights`. Note that this
   // will not load the model, so is much cheaper than calling LoadModel().
-  GetCapabilities(ModelAssets assets) => (Capabilities capabilities);
+  GetCapabilities(ModelFile weights) => (Capabilities capabilities);
 
   // Initializes a new TextSafetyModel with the provided params.
   // The model is disconnected on any errors with it.

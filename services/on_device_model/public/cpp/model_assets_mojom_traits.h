@@ -5,13 +5,13 @@
 #ifndef SERVICES_ON_DEVICE_MODEL_PUBLIC_CPP_MODEL_ASSETS_MOJOM_TRAITS_H_
 #define SERVICES_ON_DEVICE_MODEL_PUBLIC_CPP_MODEL_ASSETS_MOJOM_TRAITS_H_
 
+#include <utility>
+
 #include "base/component_export.h"
-#include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "mojo/public/cpp/base/file_mojom_traits.h"
-#include "mojo/public/cpp/base/file_path_mojom_traits.h"
-#include "mojo/public/cpp/base/read_only_file_mojom_traits.h"
+#include "mojo/public/cpp/bindings/struct_traits.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
+#include "services/on_device_model/public/cpp/model_file_mojom_traits.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom-shared.h"
 
 namespace mojo {
@@ -20,12 +20,9 @@ template <>
 struct COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
     StructTraits<on_device_model::mojom::ModelAssetsDataView,
                  on_device_model::ModelAssets> {
-  static base::File weights(on_device_model::ModelAssets& assets) {
+  static on_device_model::ModelFile weights(
+      on_device_model::ModelAssets& assets) {
     return std::move(assets.weights);
-  }
-
-  static base::FilePath weights_path(on_device_model::ModelAssets& assets) {
-    return std::move(assets.weights_path);
   }
 
   static base::FilePath sp_model_path(on_device_model::ModelAssets& assets) {

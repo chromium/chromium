@@ -388,7 +388,7 @@ void FakeOnDeviceModelService::LoadModel(
     return;
   }
   FakeOnDeviceModel::Data data;
-  data.base_weight = ReadFile(params->assets.weights);
+  data.base_weight = ReadFile(params->assets.weights.file());
   auto test_model = std::make_unique<FakeOnDeviceModel>(
       settings_, std::move(data), params->performance_hint);
   model_receivers_.Add(std::move(test_model), std::move(model));
@@ -396,9 +396,9 @@ void FakeOnDeviceModelService::LoadModel(
 }
 
 void FakeOnDeviceModelService::GetCapabilities(
-    ModelAssets assets,
+    ModelFile model_file,
     GetCapabilitiesCallback callback) {
-  std::string contents = ReadFile(assets.weights);
+  std::string contents = ReadFile(model_file.file());
   Capabilities capabilities;
   if (contents.find("image") != std::string::npos) {
     capabilities.Put(CapabilityFlags::kImageInput);

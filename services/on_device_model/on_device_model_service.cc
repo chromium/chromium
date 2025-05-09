@@ -445,10 +445,10 @@ void OnDeviceModelService::LoadModel(
   std::move(callback).Run(mojom::LoadModelResult::kSuccess);
 }
 
-void OnDeviceModelService::GetCapabilities(ModelAssets assets,
+void OnDeviceModelService::GetCapabilities(ModelFile model_file,
                                            GetCapabilitiesCallback callback) {
   std::move(callback).Run(ml::OnDeviceModelExecutor::GetCapabilities(
-      *chrome_ml_, std::move(assets)));
+      *chrome_ml_, std::move(model_file)));
 }
 
 void OnDeviceModelService::GetEstimatedPerformanceClass(
