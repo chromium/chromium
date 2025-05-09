@@ -19,21 +19,8 @@ from test_helpers import execute_command
 
 from . import (BATTERY_SERVICE_UUID, FAKE_DEVICE_ADDRESS,
                HEART_RATE_SERVICE_UUID, create_gatt_connection,
-               disable_simulation, setup_device, setup_granted_device)
-
-
-async def simulate_service(websocket, context_id: str, address: str, uuid: str,
-                           type: str) -> None:
-    await execute_command(
-        websocket, {
-            'method': 'bluetooth.simulateService',
-            'params': {
-                'context': context_id,
-                'address': address,
-                'uuid': uuid,
-                'type': type
-            }
-        })
+               disable_simulation, setup_device, setup_granted_device,
+               simulate_service)
 
 
 async def get_services(websocket, context_id: str) -> list[str]:
@@ -137,7 +124,7 @@ async def test_bluetooth_remove_unknown_service_uuid(websocket, context_id):
             Exception,
             match=str({
                 'error': 'invalid argument',
-                'message': f'Service with UUID {HEART_RATE_SERVICE_UUID} does not exist'
+                'message': f'Service with UUID {HEART_RATE_SERVICE_UUID} on device {device_address} does not exist'
             })):
         await simulate_service(websocket, context_id, device_address,
                                HEART_RATE_SERVICE_UUID, 'remove')

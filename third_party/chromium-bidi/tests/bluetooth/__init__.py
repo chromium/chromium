@@ -23,6 +23,10 @@ FAKE_DEVICE_ADDRESS = '09:09:09:09:09:09'
 FAKE_DEVICE_NAME = 'SomeDevice'
 HEART_RATE_SERVICE_UUID = '0000180d-0000-1000-8000-00805f9b34fb'
 BATTERY_SERVICE_UUID = '0000180f-0000-1000-8000-00805f9b34fb'
+MEASUREMENT_INTERVAL_CHARACTERISTIC_UUID = '00002a21-0000-1000-8000-00805f9b34fb'
+DATE_TIME_CHARACTERISTIC_UUID = '00002a08-0000-1000-8000-00805f9b34fb'
+CHARACTERISTIC_USER_DESCRIPTION_DESCRIPTOR_UUID = '00002901-0000-1000-8000-00805f9b34fb'
+CLIENT_CHARACTERISTIC_CONFIGURATION_DESCRIPTOR_UUID = '00002902-0000-1000-8000-00805f9b34fb'
 
 
 async def setup_device(websocket, context_id: str) -> str:
@@ -136,6 +140,53 @@ async def create_gatt_connection(websocket, context_id: str) -> None:
                 'context': context_id,
                 'address': event['params']['address'],
                 'code': 0x0
+            }
+        })
+
+
+async def simulate_service(websocket, context_id: str, address: str, uuid: str,
+                           type: str) -> None:
+    await execute_command(
+        websocket, {
+            'method': 'bluetooth.simulateService',
+            'params': {
+                'context': context_id,
+                'address': address,
+                'uuid': uuid,
+                'type': type
+            }
+        })
+
+
+async def add_characteristic(websocket, context_id: str, address: str,
+                             service_uuid: str, characteristic_uuid: str,
+                             characteristic_properties) -> None:
+    await execute_command(
+        websocket, {
+            'method': 'bluetooth.simulateCharacteristic',
+            'params': {
+                'context': context_id,
+                'address': address,
+                'serviceUuid': service_uuid,
+                'characteristicUuid': characteristic_uuid,
+                'characteristicProperties': characteristic_properties,
+                'type': 'add'
+            }
+        })
+
+
+async def remove_characteristic(websocket, context_id: str, address: str,
+                                service_uuid: str,
+                                characteristic_uuid: str) -> None:
+    await execute_command(
+        websocket, {
+            'method': 'bluetooth.simulateCharacteristic',
+            'params': {
+                'context': context_id,
+                'address': address,
+                'serviceUuid': service_uuid,
+                'characteristicUuid': characteristic_uuid,
+                'type': 'remove'
             }
         })
 

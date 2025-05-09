@@ -24,12 +24,50 @@ import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import type {EventManager} from '../session/EventManager.js';
 
-/** Represents a Bluetooth service. */
-class BluetoothService {
+/** Represents a base Bluetooth GATT item. */
+class BluetoothGattItem {
   readonly id: string;
+  readonly uuid: string;
 
-  constructor(id: string) {
+  constructor(id: string, uuid: string) {
     this.id = id;
+    this.uuid = uuid;
+  }
+}
+
+/** Represents a Bluetooth descriptor. */
+class BluetoothDescriptor extends BluetoothGattItem {
+  readonly characteristic: BluetoothCharacteristic;
+
+  constructor(
+    id: string,
+    uuid: string,
+    characteristic: BluetoothCharacteristic,
+  ) {
+    super(id, uuid);
+    this.characteristic = characteristic;
+  }
+}
+
+/** Represents a Bluetooth characteristic. */
+class BluetoothCharacteristic extends BluetoothGattItem {
+  readonly descriptors = new Map<string, BluetoothDescriptor>();
+  readonly service: BluetoothService;
+
+  constructor(id: string, uuid: string, service: BluetoothService) {
+    super(id, uuid);
+    this.service = service;
+  }
+}
+
+/** Represents a Bluetooth service. */
+class BluetoothService extends BluetoothGattItem {
+  readonly characteristics = new Map<string, BluetoothCharacteristic>();
+  readonly device: BluetoothDevice;
+
+  constructor(id: string, uuid: string, device: BluetoothDevice) {
+    super(id, uuid);
+    this.device = device;
   }
 }
 
@@ -57,6 +95,51 @@ export class BluetoothProcessor {
     this.#bluetoothDevices = new Map();
   }
 
+  #getDevice(address: string): BluetoothDevice {
+    const device = this.#bluetoothDevices.get(address);
+    if (!device) {
+      throw new InvalidArgumentException(
+        `Bluetooth device with address ${address} does not exist`,
+      );
+    }
+    return device;
+  }
+
+  #getService(device: BluetoothDevice, serviceUuid: string): BluetoothService {
+    const service = device.services.get(serviceUuid);
+    if (!service) {
+      throw new InvalidArgumentException(
+        `Service with UUID ${serviceUuid} on device ${device.address} does not exist`,
+      );
+    }
+    return service;
+  }
+
+  #getCharacteristic(
+    service: BluetoothService,
+    characteristicUuid: string,
+  ): BluetoothCharacteristic {
+    const characteristic = service.characteristics.get(characteristicUuid);
+    if (!characteristic) {
+      throw new InvalidArgumentException(
+        `Characteristic with UUID ${characteristicUuid} does not exist for service ${service.uuid} on device ${service.device.address}`,
+      );
+    }
+    return characteristic;
+  }
+
+  #getDescriptor(
+    characteristic: BluetoothCharacteristic,
+    descriptorUuid: string,
+  ): BluetoothDescriptor {
+    const descriptor = characteristic.descriptors.get(descriptorUuid);
+    if (!descriptor) {
+      throw new InvalidArgumentException(
+        `Descriptor with UUID ${descriptorUuid} does not exist for characteristic ${characteristic.uuid} on service ${characteristic.service.uuid} on device ${characteristic.service.device.address}`,
+      );
+    }
+    return descriptor;
+  }
   async simulateAdapter(
     params: Bluetooth.SimulateAdapterParameters,
   ): Promise<EmptyResult> {
@@ -136,6 +219,123 @@ export class BluetoothProcessor {
     return {};
   }
 
+  async simulateCharacteristic(
+    params: Bluetooth.SimulateCharacteristicParameters,
+  ): Promise<EmptyResult> {
+    const device = this.#getDevice(params.address);
+    const service = this.#getService(device, params.serviceUuid);
+    const context = this.#browsingContextStorage.getContext(params.context);
+    switch (params.type) {
+      case 'add': {
+        if (params.characteristicProperties === undefined) {
+          throw new InvalidArgumentException(
+            `Parameter "characteristicProperties" is required for adding a Bluetooth characteristic`,
+          );
+        }
+        if (service.characteristics.has(params.characteristicUuid)) {
+          throw new InvalidArgumentException(
+            `Characteristic with UUID ${params.characteristicUuid} already exists`,
+          );
+        }
+        const response = await context.cdpTarget.browserCdpClient.sendCommand(
+          'BluetoothEmulation.addCharacteristic',
+          {
+            serviceId: service.id,
+            characteristicUuid: params.characteristicUuid,
+            properties: params.characteristicProperties,
+          },
+        );
+        service.characteristics.set(
+          params.characteristicUuid,
+          new BluetoothCharacteristic(
+            response.characteristicId,
+            params.characteristicUuid,
+            service,
+          ),
+        );
+        return {};
+      }
+      case 'remove': {
+        if (params.characteristicProperties !== undefined) {
+          throw new InvalidArgumentException(
+            `Parameter "characteristicProperties" should not be provided for removing a Bluetooth characteristic`,
+          );
+        }
+        const characteristic = this.#getCharacteristic(
+          service,
+          params.characteristicUuid,
+        );
+        await context.cdpTarget.browserCdpClient.sendCommand(
+          'BluetoothEmulation.removeCharacteristic',
+          {
+            characteristicId: characteristic.id,
+          },
+        );
+        service.characteristics.delete(params.characteristicUuid);
+        return {};
+      }
+      default:
+        throw new InvalidArgumentException(
+          `Parameter "type" of ${params.type} is not supported`,
+        );
+    }
+  }
+
+  async simulateDescriptor(
+    params: Bluetooth.SimulateDescriptorParameters,
+  ): Promise<EmptyResult> {
+    const device = this.#getDevice(params.address);
+    const service = this.#getService(device, params.serviceUuid);
+    const characteristic = this.#getCharacteristic(
+      service,
+      params.characteristicUuid,
+    );
+    const context = this.#browsingContextStorage.getContext(params.context);
+    switch (params.type) {
+      case 'add': {
+        if (characteristic.descriptors.has(params.descriptorUuid)) {
+          throw new InvalidArgumentException(
+            `Descriptor with UUID ${params.descriptorUuid} already exists`,
+          );
+        }
+        const response = await context.cdpTarget.browserCdpClient.sendCommand(
+          'BluetoothEmulation.addDescriptor',
+          {
+            characteristicId: characteristic.id,
+            descriptorUuid: params.descriptorUuid,
+          },
+        );
+        characteristic.descriptors.set(
+          params.descriptorUuid,
+          new BluetoothDescriptor(
+            response.descriptorId,
+            params.descriptorUuid,
+            characteristic,
+          ),
+        );
+        return {};
+      }
+      case 'remove': {
+        const descriptor = this.#getDescriptor(
+          characteristic,
+          params.descriptorUuid,
+        );
+        await context.cdpTarget.browserCdpClient.sendCommand(
+          'BluetoothEmulation.removeDescriptor',
+          {
+            descriptorId: descriptor.id,
+          },
+        );
+        characteristic.descriptors.delete(params.descriptorUuid);
+        return {};
+      }
+      default:
+        throw new InvalidArgumentException(
+          `Parameter "type" of ${params.type} is not supported`,
+        );
+    }
+  }
+
   async simulateGattConnectionResponse(
     params: Bluetooth.SimulateGattConnectionResponseParameters,
   ): Promise<EmptyResult> {
@@ -167,16 +367,11 @@ export class BluetoothProcessor {
   async simulateService(
     params: Bluetooth.SimulateServiceParameters,
   ): Promise<EmptyResult> {
-    if (!this.#bluetoothDevices.has(params.address)) {
-      throw new InvalidArgumentException(
-        `Bluetooth device with address ${params.address} does not exist`,
-      );
-    }
-    const device = this.#bluetoothDevices.get(params.address);
+    const device = this.#getDevice(params.address);
     const context = this.#browsingContextStorage.getContext(params.context);
     switch (params.type) {
       case 'add': {
-        if (device!.services.has(params.uuid)) {
+        if (device.services.has(params.uuid)) {
           throw new InvalidArgumentException(
             `Service with UUID ${params.uuid} already exists`,
           );
@@ -188,26 +383,21 @@ export class BluetoothProcessor {
             serviceUuid: params.uuid,
           },
         );
-        device!.services.set(
+        device.services.set(
           params.uuid,
-          new BluetoothService(response.serviceId),
+          new BluetoothService(response.serviceId, params.uuid, device),
         );
         return {};
       }
       case 'remove': {
-        if (!device!.services.has(params.uuid)) {
-          throw new InvalidArgumentException(
-            `Service with UUID ${params.uuid} does not exist`,
-          );
-        }
-        const service = device!.services.get(params.uuid);
+        const service = this.#getService(device, params.uuid);
         await context.cdpTarget.browserCdpClient.sendCommand(
           'BluetoothEmulation.removeService',
           {
-            serviceId: service!.id,
+            serviceId: service.id,
           },
         );
-        device!.services.delete(params.uuid);
+        device.services.delete(params.uuid);
         return {};
       }
       default:

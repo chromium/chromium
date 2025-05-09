@@ -45,6 +45,12 @@ export interface BidiCommandParameterParser {
   parseSimulateAdvertisementParameters(
     params: unknown,
   ): Bluetooth.SimulateAdvertisementParameters;
+  parseSimulateCharacteristicParameters(
+    params: unknown,
+  ): Bluetooth.SimulateCharacteristicParameters;
+  parseSimulateDescriptorParameters(
+    params: unknown,
+  ): Bluetooth.SimulateDescriptorParameters;
   parseSimulateGattConnectionResponseParameters(
     params: unknown,
   ): Bluetooth.SimulateGattConnectionResponseParameters;
