@@ -101,7 +101,7 @@ public final class TabGridViewBinderUnitTest {
     private PropertyModel mModel;
     private LayoutParams mLayoutParams;
     private BitmapDrawable mBitmapDrawable;
-    private PriceDrop mPriceDrop = new PriceDrop("$7", "$89");
+    private final PriceDrop mPriceDrop = new PriceDrop("$7", "$89");
 
     @Before
     public void setUp() {

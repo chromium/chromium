@@ -141,12 +141,12 @@ public class PrivacySandboxSurveyController {
                     .build();
 
     private ActivityTabTabObserver mActivityTabTabObserver;
-    private Activity mActivity;
-    private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private final Activity mActivity;
+    private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private PropertyModel mMessage;
-    private TabModelSelector mTabModelSelector;
-    private MessageDispatcher mMessageDispatcher;
-    private Profile mProfile;
+    private final TabModelSelector mTabModelSelector;
+    private final MessageDispatcher mMessageDispatcher;
+    private final Profile mProfile;
     private boolean mHasSeenNtp;
     private boolean mOverrideChannelForTesting;
     private int mChannelForTesting;

@@ -73,7 +73,7 @@ public class DisplayCutoutControllerTest {
 
     private WeakReference<Activity> mActivityRef;
 
-    private UserDataHost mTabDataHost = new UserDataHost();
+    private final UserDataHost mTabDataHost = new UserDataHost();
 
     @Before
     public void setUp() {

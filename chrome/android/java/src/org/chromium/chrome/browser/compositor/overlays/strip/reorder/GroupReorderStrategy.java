@@ -35,7 +35,7 @@ import java.util.List;
 /** Tab group reorder - drag collapsed or expanded group within the tab strip. */
 public class GroupReorderStrategy extends ReorderStrategyBase {
     private StripLayoutGroupTitle mInteractingGroupTitle;
-    private ArrayList<StripLayoutView> mInteractingViews = new ArrayList<>();
+    private final ArrayList<StripLayoutView> mInteractingViews = new ArrayList<>();
     private StripLayoutTab mSelectedTab;
     private StripLayoutTab mFirstTabInGroup;
     private StripLayoutTab mLastTabInGroup;

@@ -36,7 +36,7 @@ public class CookieControlsServiceBridge {
     }
 
     private long mNativeCookieControlsServiceBridge;
-    private CookieControlsServiceObserver mObserver;
+    private final CookieControlsServiceObserver mObserver;
 
     /**
      * Initializes a CookieControlsServiceBridge instance.

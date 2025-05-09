@@ -355,11 +355,11 @@ public class TabPersistentStore {
     private SparseIntArray mNormalTabsRestored;
     private SparseIntArray mIncognitoTabsRestored;
 
-    private SequencedTaskRunner mSequencedTaskRunner;
+    private final SequencedTaskRunner mSequencedTaskRunner;
     private AsyncTask<DataInputStream> mPrefetchTabListTask;
-    private List<Pair<AsyncTask<DataInputStream>, String>> mPrefetchTabListToMergeTasks;
+    private final List<Pair<AsyncTask<DataInputStream>, String>> mPrefetchTabListToMergeTasks;
     // A set of filenames which are tracked to merge.
-    private Set<String> mMergedFileNames;
+    private final Set<String> mMergedFileNames;
     private TabModelSelectorMetadata mLastSavedMetadata;
 
     // Tracks whether this TabPersistentStore's tabs are being loaded.
@@ -1614,10 +1614,10 @@ public class TabPersistentStore {
     }
 
     private class SaveTabTask extends AsyncTask<Void> {
-        Tab mTab;
-        int mId;
+        final Tab mTab;
+        final int mId;
         TabState mState;
-        boolean mEncrypted;
+        final boolean mEncrypted;
         boolean mStateSaved;
 
         SaveTabTask(Tab tab) {

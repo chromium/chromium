@@ -55,7 +55,7 @@ public class AutofillPaymentMethodsFragmentCardBenefitsTest {
 
     /** Provides parameters for testing card benefit preference with different flag combinations. */
     public static class CardBenefitsPreferenceTestParams implements ParameterProvider {
-        private static List<ParameterSet> sCardBenefitsPreferenceTestParams =
+        private static final List<ParameterSet> sCardBenefitsPreferenceTestParams =
                 Arrays.asList(
                         new ParameterSet()
                                 .value(true, true)

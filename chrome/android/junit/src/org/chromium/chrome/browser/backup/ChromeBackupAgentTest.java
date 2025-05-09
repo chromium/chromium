@@ -155,7 +155,7 @@ public class ChromeBackupAgentTest {
     private static final int DEFAULT_TRUE_BOOL_PREF_COUNT = 2;
 
     // Mutable map containing boolean preferences names and their values for the fake backup.
-    private Map<String, Boolean> mNativeBoolPrefBackupValues =
+    private final Map<String, Boolean> mNativeBoolPrefBackupValues =
             new BoolPrefBackupSerializer()
                     .getAllowlistedPrefs().stream()
                             .collect(Collectors.toMap(identity(), pref -> false));

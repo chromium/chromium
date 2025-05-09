@@ -65,7 +65,7 @@ public class ContextualPageActionController {
     }
 
     private final ObservableSupplier<Profile> mProfileSupplier;
-    private ObservableSupplier<Tab> mTabSupplier;
+    private final ObservableSupplier<Tab> mTabSupplier;
     private final AdaptiveToolbarButtonController mAdaptiveToolbarButtonController;
     private CurrentTabObserver mCurrentTabObserver;
     private SignalAccumulator mSignalAccumulator;

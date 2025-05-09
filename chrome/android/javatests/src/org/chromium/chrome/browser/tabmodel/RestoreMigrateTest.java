@@ -103,7 +103,7 @@ public class RestoreMigrateTest {
     }
 
     static class AdvancedMockContextWithTestDir extends AdvancedMockContext {
-        private File mFileTestDir;
+        private final File mFileTestDir;
 
         AdvancedMockContextWithTestDir(Context base) {
             super(base);

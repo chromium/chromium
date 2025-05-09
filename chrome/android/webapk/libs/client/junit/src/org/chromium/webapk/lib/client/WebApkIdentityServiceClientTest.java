@@ -53,7 +53,7 @@ public class WebApkIdentityServiceClientTest {
 
     /** Mocks the Identity service of a WebAPK. */
     private static class TestIdentityService extends IIdentityService.Stub {
-        private String mRuntimeHost;
+        private final String mRuntimeHost;
 
         public TestIdentityService(String runtimeHost) {
             mRuntimeHost = runtimeHost;

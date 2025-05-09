@@ -128,13 +128,15 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
 
     private Activity mActivity;
     private ArchivedTabsDialogCoordinator mCoordinator;
-    private ObservableSupplierImpl<Integer> mTabCountSupplier = new ObservableSupplierImpl<>(1);
-    private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
+    private final ObservableSupplierImpl<Integer> mTabCountSupplier =
+            new ObservableSupplierImpl<>(1);
+    private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
             new ObservableSupplierImpl<>();
-    private OneshotSupplierImpl<PaneManager> mPaneManagerSupplier = new OneshotSupplierImpl<>();
-    private OneshotSupplierImpl<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier =
+    private final OneshotSupplierImpl<PaneManager> mPaneManagerSupplier =
             new OneshotSupplierImpl<>();
-    private ObservableSupplierImpl<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier =
+    private final OneshotSupplierImpl<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier =
+            new OneshotSupplierImpl<>();
+    private final ObservableSupplierImpl<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier =
             new ObservableSupplierImpl<>();
 
     @Before

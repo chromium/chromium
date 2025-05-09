@@ -132,11 +132,11 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Mock private AppBannerManager.Natives mAppBannerManagerJniMock;
     @Mock private ReadAloudController mReadAloudController;
     @Mock private TranslateBridge.Natives mTranslateBridgeJniMock;
-    private OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
+    private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
-    private ObservableSupplierImpl<BookmarkModel> mBookmarkModelSupplier =
+    private final ObservableSupplierImpl<BookmarkModel> mBookmarkModelSupplier =
             new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<ReadAloudController> mReadAloudControllerSupplier =
+    private final ObservableSupplierImpl<ReadAloudController> mReadAloudControllerSupplier =
             new ObservableSupplierImpl<>();
 
     private AppMenuPropertiesDelegateImpl mAppMenuPropertiesDelegate;

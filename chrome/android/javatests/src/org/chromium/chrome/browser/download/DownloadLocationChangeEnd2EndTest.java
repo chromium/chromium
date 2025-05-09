@@ -95,7 +95,7 @@ public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStar
 
     /** Matches the {@link DirectoryOption} used in the {@link DownloadDirectoryAdapter}. */
     private static class DirectoryOptionMatcher extends TypeSafeMatcher<DirectoryOption> {
-        private Matcher<String> mNameMatcher;
+        private final Matcher<String> mNameMatcher;
 
         public DirectoryOptionMatcher(Matcher<String> nameMatcher) {
             mNameMatcher = nameMatcher;

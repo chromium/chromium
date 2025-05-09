@@ -201,8 +201,8 @@ public class ChromeFeedbackCollectorUnitTest {
     private static class MockAsyncFeedbackSource implements AsyncFeedbackSource {
         private Runnable mCallback;
         private boolean mDone;
-        private Map<String, String> mFeedback;
-        private Pair<String, String> mLogs;
+        private final Map<String, String> mFeedback;
+        private final Pair<String, String> mLogs;
 
         MockAsyncFeedbackSource(Map<String, String> feedback, Pair<String, String> logs) {
             mFeedback = feedback;

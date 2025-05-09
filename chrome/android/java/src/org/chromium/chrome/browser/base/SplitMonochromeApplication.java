@@ -17,6 +17,7 @@ import org.chromium.content_public.browser.ChildProcessCreationParams;
  * SplitChromeApplication} for more info.
  */
 public class SplitMonochromeApplication extends SplitChromeApplication {
+    @SuppressWarnings("FieldCanBeFinal") // @IdentifierNameString requires non-final
     private static @IdentifierNameString String sImplClassName =
             "org.chromium.chrome.browser.MonochromeApplicationImpl";
 

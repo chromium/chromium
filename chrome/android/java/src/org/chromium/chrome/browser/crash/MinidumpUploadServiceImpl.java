@@ -68,8 +68,8 @@ public class MinidumpUploadServiceImpl extends MinidumpUploadService.Impl {
     private static final int FAILURE = 0;
     private static final int SUCCESS = 1;
 
-    private static AtomicBoolean sBrowserCrashMetricsInitialized = new AtomicBoolean();
-    private static AtomicBoolean sDidBrowserCrashRecently = new AtomicBoolean();
+    private static final AtomicBoolean sBrowserCrashMetricsInitialized = new AtomicBoolean();
+    private static final AtomicBoolean sDidBrowserCrashRecently = new AtomicBoolean();
 
     @StringDef({ProcessType.BROWSER, ProcessType.RENDERER, ProcessType.GPU, ProcessType.OTHER})
     @Retention(RetentionPolicy.SOURCE)

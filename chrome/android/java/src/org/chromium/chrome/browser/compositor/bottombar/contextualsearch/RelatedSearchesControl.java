@@ -91,7 +91,7 @@ public class RelatedSearchesControl {
     private float mViewY;
 
     /** The reference to the host for this part of the panel (callbacks to the Panel). */
-    private RelatedSearchesSectionHost mPanelSectionHost;
+    private final RelatedSearchesSectionHost mPanelSectionHost;
 
     /** The number of chips that have been selected so far. */
     private int mChipsSelected;

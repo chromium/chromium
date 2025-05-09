@@ -109,7 +109,7 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
     // Metrics. True if sheet was opened from long-press on back button.
     private boolean mOpenedAsPopup;
 
-    private Profile mProfile;
+    private final Profile mProfile;
 
     /** Construct a new NavigationSheet. */
     NavigationSheetCoordinator(

@@ -39,12 +39,12 @@ import org.chromium.components.background_task_scheduler.TaskInfo;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BackgroundSchedulerTest {
-    private TriggerConditions mConditions1 =
+    private final TriggerConditions mConditions1 =
             new TriggerConditions(
                     /* requirePowerConnected= */ true,
                     10 /* battery percentage */,
                     true /* requires unmetered */);
-    private TriggerConditions mConditions2 =
+    private final TriggerConditions mConditions2 =
             new TriggerConditions(
                     /* requirePowerConnected= */ false,
                     0 /* battery percentage */,

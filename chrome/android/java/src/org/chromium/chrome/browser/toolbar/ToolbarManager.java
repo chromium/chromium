@@ -221,7 +221,7 @@ public class ToolbarManager
     private final TopUiThemeColorProvider mTopUiThemeColorProvider;
     private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     private AppThemeColorProvider mAppThemeColorProvider;
-    private SettableThemeColorProvider mCustomTabThemeColorProvider;
+    private final SettableThemeColorProvider mCustomTabThemeColorProvider;
     private final TopToolbarCoordinator mToolbar;
     private final ToolbarControlContainer mControlContainer;
     private final View mToolbarHairline;
@@ -241,7 +241,7 @@ public class ToolbarManager
     private final ConstraintsProxy mConstraintsProxy = new ConstraintsProxy();
     private ObservableSupplierImpl<BottomControlsCoordinator> mBottomControlsCoordinatorSupplier =
             new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<Boolean> mSuppressToolbarSceneLayerSupplier =
+    private final ObservableSupplierImpl<Boolean> mSuppressToolbarSceneLayerSupplier =
             new ObservableSupplierImpl<>(false);
     private TabModelSelector mTabModelSelector;
     private final Callback<TabModel> mCurrentTabModelObserver;
@@ -260,16 +260,16 @@ public class ToolbarManager
 
     private LayoutManagerImpl mLayoutManager;
 
-    private BookmarkModelObserver mBookmarksObserver;
-    private FindToolbarObserver mFindToolbarObserver;
+    private final BookmarkModelObserver mBookmarksObserver;
+    private final FindToolbarObserver mFindToolbarObserver;
 
     private LayoutStateProvider mLayoutStateProvider;
-    private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
+    private final LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
     private OneshotSupplier<LayoutStateProvider> mLayoutStateProviderSupplier;
     private CallbackController mCallbackController = new CallbackController();
 
     private final ActionBarDelegate mActionBarDelegate;
-    private ActionModeController mActionModeController;
+    private final ActionModeController mActionModeController;
     private final Callback<Boolean> mUrlFocusChangedCallback;
     private final Handler mHandler = new Handler();
     private final AppCompatActivity mActivity;
@@ -280,7 +280,7 @@ public class ToolbarManager
     private final BrowserControlsSizer mBrowserControlsSizer;
     private final FullscreenManager mFullscreenManager;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
-    private LocationBarFocusScrimHandler mLocationBarFocusHandler;
+    private final LocationBarFocusScrimHandler mLocationBarFocusHandler;
     private ComponentCallbacks mComponentCallbacks;
     private final LoadProgressCoordinator mProgressBarCoordinator;
     private final ToolbarTabControllerImpl mToolbarTabController;
@@ -288,7 +288,7 @@ public class ToolbarManager
     private MenuButtonCoordinator mOverviewModeMenuButtonCoordinator;
     private HomepageManager.HomepageStateListener mHomepageStateListener;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
-    private StatusBarColorController mStatusBarColorController;
+    private final StatusBarColorController mStatusBarColorController;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final BottomSheetController mBottomSheetController;
     private final DataSharingTabManager mDataSharingTabManager;
@@ -308,7 +308,7 @@ public class ToolbarManager
     private @Nullable BackButtonCoordinator mBackButtonCoordinator;
     private @Nullable ExtensionToolbarManager mExtensionToolbarManager;
 
-    private BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
+    private final BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
     private int mFullscreenFocusToken = TokenHolder.INVALID_TOKEN;
     private int mFullscreenFindInPageToken = TokenHolder.INVALID_TOKEN;
 
@@ -326,16 +326,16 @@ public class ToolbarManager
 
     private final ScrimManager mScrimManager;
 
-    private OneshotSupplier<Boolean> mPromoShownOneshotSupplier;
-    private OverlayPanelManagerObserver mOverlayPanelManagerObserver;
-    private ObservableSupplierImpl<Boolean> mOverlayPanelVisibilitySupplier =
+    private final OneshotSupplier<Boolean> mPromoShownOneshotSupplier;
+    private final OverlayPanelManagerObserver mOverlayPanelManagerObserver;
+    private final ObservableSupplierImpl<Boolean> mOverlayPanelVisibilitySupplier =
             new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<Integer> mTabStripHeightSupplier;
     private TabStripHeightObserver mTabStripHeightObserver;
-    private @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
-    private @Nullable MultiInstanceManager mMultiInstanceManager;
-    private OneshotSupplierImpl<TabStripTransitionDelegate> mTabStripTransitionDelegateSupplier =
-            new OneshotSupplierImpl<>();
+    private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
+    private final @Nullable MultiInstanceManager mMultiInstanceManager;
+    private final OneshotSupplierImpl<TabStripTransitionDelegate>
+            mTabStripTransitionDelegateSupplier = new OneshotSupplierImpl<>();
 
     private @Nullable TabGroupUiOneshotSupplier mTabGroupUiOneshotSupplier;
 
@@ -354,12 +354,13 @@ public class ToolbarManager
 
     private boolean mBackGestureInProgress;
     private boolean mStartNavDuringOngoingGesture;
-    private WindowAndroid.ProgressBarConfig.Provider mProgressBarConfigProvider;
+    private final WindowAndroid.ProgressBarConfig.Provider mProgressBarConfigProvider;
     // Supplier of the offset, relative to the bottom of the viewport, of the bottom-anchored
     // toolbar. This value is only meaningful when the current ControlsPosition is BOTTOM.
     private final ObservableSupplierImpl<Integer> mBottomToolbarControlsOffsetSupplier =
             new ObservableSupplierImpl<>(0);
-    private FormFieldFocusedSupplier mFormFieldFocusedSupplier = new FormFieldFocusedSupplier();
+    private final FormFieldFocusedSupplier mFormFieldFocusedSupplier =
+            new FormFieldFocusedSupplier();
     private final View mProgressBarContainer;
     private @Nullable ObservableSupplier<Integer> mBookmarkBarHeightSupplier;
     private boolean mInTabSwitcherTransition;

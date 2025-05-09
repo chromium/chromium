@@ -15,7 +15,7 @@ import org.chromium.components.webapps.WebApkDistributor;
 
 /** LaunchCauseMetrics for WebappActivity. */
 public class WebappLaunchCauseMetrics extends LaunchCauseMetrics {
-    @Nullable private WebappInfo mWebappInfo;
+    @Nullable private final WebappInfo mWebappInfo;
 
     public WebappLaunchCauseMetrics(Activity activity, @Nullable WebappInfo info) {
         super(activity);

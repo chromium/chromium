@@ -62,17 +62,17 @@ public class PwaRestoreBottomSheetIntegrationTest {
     public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
-    private static @DisplayStage int sFlagValueMissing = DisplayStage.UNKNOWN_STATUS;
+    private static final @DisplayStage int sFlagValueMissing = DisplayStage.UNKNOWN_STATUS;
 
     private static final String ICON_URL1 = "/chrome/test/data/banners/256x256-green.png";
     private static final String ICON_URL2 = "/chrome/test/data/banners/256x256-red.png";
 
-    private static String[][] sDefaultApps = {
+    private static final String[][] sDefaultApps = {
         {"https://example.com/app1/", "App 1", ICON_URL1},
         {"https://example.com/app2/", "App 2", ICON_URL2},
         {"https://example.com/app3/", "App 3", ICON_URL1}
     };
-    private static int[] sDefaultLastUsed = {1, 2, 3};
+    private static final int[] sDefaultLastUsed = {1, 2, 3};
 
     private static final String TAG = "PwaRestoreIntegrTest";
 

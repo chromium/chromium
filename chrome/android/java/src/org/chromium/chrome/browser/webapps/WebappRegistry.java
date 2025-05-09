@@ -78,9 +78,9 @@ public class WebappRegistry {
     private boolean mIsInitialized;
 
     /** Maps webapp ids to storages. */
-    private Map<String, WebappDataStorage> mStorages;
+    private final Map<String, WebappDataStorage> mStorages;
 
-    private SharedPreferences mPreferences;
+    private final SharedPreferences mPreferences;
     private InstalledWebappPermissionStore mPermissionStore;
 
     /**

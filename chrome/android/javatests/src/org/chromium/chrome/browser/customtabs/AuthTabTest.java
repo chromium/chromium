@@ -54,7 +54,7 @@ public class AuthTabTest {
     private String mTestPage;
     private EmbeddedTestServer mTestServer;
     private AuthTabIntent.AuthResult mLastAuthResult;
-    private CallbackHelper mAuthResultCallbackHelper = new CallbackHelper();
+    private final CallbackHelper mAuthResultCallbackHelper = new CallbackHelper();
 
     @Before
     public void setUp() {

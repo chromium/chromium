@@ -871,8 +871,8 @@ public class TabUiTestHelper {
             int TAB_SUGGESTION_MESSAGE = 1;
         }
 
-        private int mExpectedCount;
-        @ChildrenType private int mExpectedChildrenType;
+        private final int mExpectedCount;
+        @ChildrenType private final int mExpectedChildrenType;
 
         public static ChildrenCountAssertion havingTabCount(int tabCount) {
             return new ChildrenCountAssertion(ChildrenType.TAB, tabCount);

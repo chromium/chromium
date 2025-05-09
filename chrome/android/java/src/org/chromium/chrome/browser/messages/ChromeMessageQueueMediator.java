@@ -46,7 +46,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
     private MessageContainerCoordinator mContainerCoordinator;
     private BrowserControlsManager mBrowserControlsManager;
     private int mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
-    private BrowserControlsObserver mBrowserControlsObserver;
+    private final BrowserControlsObserver mBrowserControlsObserver;
     @Nullable private LayoutStateProvider mLayoutStateProvider;
     @Nullable private ActivityTabProvider mActivityTabProvider;
     @Nullable private ModalDialogManager mModalDialogManager;
@@ -59,7 +59,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
 
     private boolean mIsDestroyed;
 
-    private LayoutStateObserver mLayoutStateObserver =
+    private final LayoutStateObserver mLayoutStateObserver =
             new LayoutStateObserver() {
                 private int mToken = TokenHolder.INVALID_TOKEN;
 
@@ -80,7 +80,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
                 }
             };
 
-    private ModalDialogManagerObserver mModalDialogManagerObserver =
+    private final ModalDialogManagerObserver mModalDialogManagerObserver =
             new ModalDialogManagerObserver() {
                 private int mToken = TokenHolder.INVALID_TOKEN;
 
@@ -100,7 +100,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
                 }
             };
 
-    private PauseResumeWithNativeObserver mPauseResumeWithNativeObserver =
+    private final PauseResumeWithNativeObserver mPauseResumeWithNativeObserver =
             new PauseResumeWithNativeObserver() {
                 private int mToken = TokenHolder.INVALID_TOKEN;
 
@@ -120,7 +120,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
                 }
             };
 
-    private EmptyBottomSheetObserver mBottomSheetObserver =
+    private final EmptyBottomSheetObserver mBottomSheetObserver =
             new EmptyBottomSheetObserver() {
                 private int mToken = TokenHolder.INVALID_TOKEN;
 

@@ -35,7 +35,7 @@ public class DownloadActivityLauncher implements ApplicationStatus.ActivityState
     private static final String EXTRA_SHOW_PREFETCHED_CONTENT =
             "org.chromium.chrome.browser.download.SHOW_PREFETCHED_CONTENT";
     private @DownloadActivityStatus int mActivityStatus = DownloadActivityStatus.NOT_CREATED;
-    private List<Callback<Activity>> mActivityCallbacks = new ArrayList();
+    private final List<Callback<Activity>> mActivityCallbacks = new ArrayList();
 
     /** A set of states that represent the last state change of an Activity. */
     @Retention(RetentionPolicy.SOURCE)

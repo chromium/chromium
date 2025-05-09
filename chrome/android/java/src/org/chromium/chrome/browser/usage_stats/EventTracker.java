@@ -21,7 +21,7 @@ import java.util.function.Function;
  */
 public class EventTracker {
     private final UsageStatsBridge mBridge;
-    private Promise<List<WebsiteEvent>> mRootPromise;
+    private final Promise<List<WebsiteEvent>> mRootPromise;
 
     public EventTracker(UsageStatsBridge bridge) {
         mBridge = bridge;

@@ -547,7 +547,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
         private final List<TextView> mLineItemAmountsForTest = new ArrayList<>();
 
         /** The runnable used to fade out the mUpdatedView. */
-        private Runnable mFadeOutRunnable =
+        private final Runnable mFadeOutRunnable =
                 new Runnable() {
                     @Override
                     public void run() {
@@ -560,7 +560,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
                 };
 
         /** The Handler used to post the mFadeOutRunnables. */
-        private Handler mHandler = new Handler();
+        private final Handler mHandler = new Handler();
 
         public LineItemBreakdownSection(
                 Context context, String sectionName, SectionDelegate delegate, String updatedText) {

@@ -35,7 +35,7 @@ public class CompositorVisibilityTest {
 
     private CompositorView mCompositorView;
 
-    private LayoutRenderHost mRenderHost =
+    private final LayoutRenderHost mRenderHost =
             new LayoutRenderHost() {
                 @Override
                 public void requestRender() {}

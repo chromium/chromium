@@ -46,7 +46,7 @@ public class TabSwitcherThumbnailTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    private ThumbnailFetcher mNullThumbnailFetcher =
+    private final ThumbnailFetcher mNullThumbnailFetcher =
             new ThumbnailFetcher(
                     (tabId, thumbnailSize, isSelected, callback) -> callback.onResult(null),
                     Tab.INVALID_TAB_ID);
@@ -122,8 +122,8 @@ public class TabSwitcherThumbnailTest {
             return new ThumbnailAspectRatioAssertion(ratio, position);
         }
 
-        private int mPosition;
-        private float mExpectedRatio;
+        private final int mPosition;
+        private final float mExpectedRatio;
 
         ThumbnailAspectRatioAssertion(float ratio, int position) {
             mExpectedRatio = ratio;
@@ -152,7 +152,7 @@ public class TabSwitcherThumbnailTest {
             return new ThumbnailHeightAssertion(position);
         }
 
-        private int mPosition;
+        private final int mPosition;
 
         ThumbnailHeightAssertion(int position) {
             mPosition = position;

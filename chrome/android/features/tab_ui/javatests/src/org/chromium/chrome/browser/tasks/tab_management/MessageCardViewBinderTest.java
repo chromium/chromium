@@ -57,19 +57,19 @@ public class MessageCardViewBinderTest {
     private ViewGroup mItemView;
     private PropertyModel mItemViewModel;
     private PropertyModelChangeProcessor mItemMCP;
-    private AtomicBoolean mReviewButtonClicked = new AtomicBoolean();
-    private AtomicBoolean mDismissButtonClicked = new AtomicBoolean();
+    private final AtomicBoolean mReviewButtonClicked = new AtomicBoolean();
+    private final AtomicBoolean mDismissButtonClicked = new AtomicBoolean();
 
-    private AtomicBoolean mMessageServiceReviewCallbackRan = new AtomicBoolean();
-    private AtomicBoolean mMessageServiceDismissCallbackRan = new AtomicBoolean();
+    private final AtomicBoolean mMessageServiceReviewCallbackRan = new AtomicBoolean();
+    private final AtomicBoolean mMessageServiceDismissCallbackRan = new AtomicBoolean();
 
-    private MessageCardView.ReviewActionProvider mUiReviewHandler =
+    private final MessageCardView.ReviewActionProvider mUiReviewHandler =
             () -> mReviewButtonClicked.set(true);
-    private MessageCardView.DismissActionProvider mUiDismissHandler =
+    private final MessageCardView.DismissActionProvider mUiDismissHandler =
             (int messageType) -> mDismissButtonClicked.set(true);
-    private MessageCardView.ReviewActionProvider mMessageServiceActionHandler =
+    private final MessageCardView.ReviewActionProvider mMessageServiceActionHandler =
             () -> mMessageServiceReviewCallbackRan.set(true);
-    private MessageCardView.DismissActionProvider mMessageServiceDismissHandler =
+    private final MessageCardView.DismissActionProvider mMessageServiceDismissHandler =
             (int messageType) -> mMessageServiceDismissCallbackRan.set(true);
 
     @BeforeClass

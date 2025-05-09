@@ -83,10 +83,10 @@ public class InterceptNavigationDelegateTest {
     private static final long LONG_MAX_TIME_TO_WAIT_IN_MS = 20000;
 
     private ChromeActivity mActivity;
-    private List<NavigationHandle> mNavParamHistory = new ArrayList<>();
-    private List<ExternalNavigationParams> mExternalNavParamHistory = new ArrayList<>();
+    private final List<NavigationHandle> mNavParamHistory = new ArrayList<>();
+    private final List<ExternalNavigationParams> mExternalNavParamHistory = new ArrayList<>();
     private EmbeddedTestServer mTestServer;
-    private CallbackHelper mSubframeExternalProtocolCalled = new CallbackHelper();
+    private final CallbackHelper mSubframeExternalProtocolCalled = new CallbackHelper();
     private GURL mSubframeRedirectTarget;
 
     class TestExternalNavigationHandler extends ExternalNavigationHandler {

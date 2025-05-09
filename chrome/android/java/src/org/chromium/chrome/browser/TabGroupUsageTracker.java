@@ -24,7 +24,7 @@ public class TabGroupUsageTracker implements PauseResumeWithNativeObserver, Dest
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final TabModelSelector mTabModelSelector;
     private final Supplier<Boolean> mIsWarmOnResumeSupplier;
-    private CallbackController mCallbackController = new CallbackController();
+    private final CallbackController mCallbackController = new CallbackController();
 
     /**
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} for the activity.

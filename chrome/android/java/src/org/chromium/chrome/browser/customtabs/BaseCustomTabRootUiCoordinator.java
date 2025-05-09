@@ -143,10 +143,10 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     private @Nullable TrackingProtectionSnackbarController mTrackingProtectionSnackbarController;
 
     private @Nullable EdgeToEdgeSupplier.ChangeObserver mEdgeToEdgeChangeObserver;
-    private @NonNull Runnable mOpenInBrowserRunnable;
-    private @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
+    private final @NonNull Runnable mOpenInBrowserRunnable;
+    private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private @Nullable WebAppHeaderLayoutCoordinator mWebAppHeaderLayoutCoordinator;
-    private Supplier<BrowserServicesThemeColorProvider> mWebAppThemeColorProvider;
+    private final Supplier<BrowserServicesThemeColorProvider> mWebAppThemeColorProvider;
 
     // TODO(crbug.com/402213312): This can be NonNull once the flag is enabled by default.
     private @Nullable CustomTabToolbarButtonsCoordinator mToolbarButtonsCoordinator;

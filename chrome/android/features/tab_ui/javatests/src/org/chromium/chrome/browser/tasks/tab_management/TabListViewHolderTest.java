@@ -190,7 +190,7 @@ public class TabListViewHolderTest {
     @Mock private OptimizationGuideBridgeFactory.Natives mOptimizationGuideBridgeFactoryJniMock;
     @Mock private OptimizationGuideBridge mOptimizationGuideBridge;
 
-    private ThumbnailFetcher mMockThumbnailFetcher =
+    private final ThumbnailFetcher mMockThumbnailFetcher =
             new ThumbnailFetcher(
                     new ThumbnailProvider() {
                         @Override
@@ -209,9 +209,9 @@ public class TabListViewHolderTest {
                         }
                     },
                     Tab.INVALID_TAB_ID);
-    private AtomicInteger mThumbnailFetchedCount = new AtomicInteger();
+    private final AtomicInteger mThumbnailFetchedCount = new AtomicInteger();
 
-    private TabListMediator.TabActionListener mMockCloseListener =
+    private final TabListMediator.TabActionListener mMockCloseListener =
             new TabListMediator.TabActionListener() {
                 @Override
                 public void run(View view, int tabId, @Nullable MotionEvent triggeringMotionEvent) {
@@ -223,10 +223,10 @@ public class TabListViewHolderTest {
                 public void run(
                         View view, String syncId, @Nullable MotionEvent triggeringMotionEvent) {}
             };
-    private AtomicBoolean mCloseClicked = new AtomicBoolean();
-    private AtomicInteger mCloseTabId = new AtomicInteger();
+    private final AtomicBoolean mCloseClicked = new AtomicBoolean();
+    private final AtomicInteger mCloseTabId = new AtomicInteger();
 
-    private TabListMediator.TabActionListener mMockSelectedListener =
+    private final TabListMediator.TabActionListener mMockSelectedListener =
             new TabListMediator.TabActionListener() {
                 @Override
                 public void run(View view, int tabId, @Nullable MotionEvent triggeringMotionEvent) {
@@ -238,10 +238,10 @@ public class TabListViewHolderTest {
                 public void run(
                         View view, String syncId, @Nullable MotionEvent triggeringMotionEvent) {}
             };
-    private AtomicBoolean mSelectClicked = new AtomicBoolean();
-    private AtomicInteger mSelectTabId = new AtomicInteger();
+    private final AtomicBoolean mSelectClicked = new AtomicBoolean();
+    private final AtomicInteger mSelectTabId = new AtomicInteger();
 
-    private TabListMediator.TabActionListener mMockCreateGroupButtonListener =
+    private final TabListMediator.TabActionListener mMockCreateGroupButtonListener =
             new TabListMediator.TabActionListener() {
                 @Override
                 public void run(View view, int tabId, @Nullable MotionEvent triggeringMotionEvent) {
@@ -253,8 +253,8 @@ public class TabListViewHolderTest {
                 public void run(
                         View view, String syncId, @Nullable MotionEvent triggeringMotionEvent) {}
             };
-    private AtomicBoolean mCreateGroupButtonClicked = new AtomicBoolean();
-    private AtomicInteger mCreateGroupTabId = new AtomicInteger();
+    private final AtomicBoolean mCreateGroupButtonClicked = new AtomicBoolean();
+    private final AtomicInteger mCreateGroupTabId = new AtomicInteger();
     private boolean mShouldReturnBitmap;
 
     @BeforeClass

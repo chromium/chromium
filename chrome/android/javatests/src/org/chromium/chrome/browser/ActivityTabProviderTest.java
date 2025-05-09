@@ -87,7 +87,7 @@ public class ActivityTabProviderTest {
     private ChromeTabbedActivity mActivity;
     private ActivityTabProvider mProvider;
     private Tab mActivityTab;
-    private CallbackHelper mActivityTabChangedHelper = new CallbackHelper();
+    private final CallbackHelper mActivityTabChangedHelper = new CallbackHelper();
 
     @Before
     public void setUp() throws Exception {

@@ -290,7 +290,7 @@ public class TracingSettingsTest {
     }
 
     public static class CategoryParams implements ParameterProvider {
-        private static List<ParameterSet> sParams =
+        private static final List<ParameterSet> sParams =
                 Arrays.asList(
                         new ParameterSet()
                                 .value(TracingSettings.UI_PREF_DEFAULT_CATEGORIES, "toplevel")

@@ -70,13 +70,10 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    ChromeSwitches.DISABLE_ALL_IPH
-})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_ALL_IPH})
 public class IncognitoDownloadLeakageTest {
     private String mDownloadTestPage;
-    private final String mDownloadedFileName = "test.gzip";
+    private static final String DOWNLOADED_FILE_NAME = "test.gzip";
 
     private static final File DOWNLOAD_DIRECTORY =
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
@@ -84,13 +81,13 @@ public class IncognitoDownloadLeakageTest {
             "/chrome/test/data/android/download/get.html";
 
     private EmbeddedTestServer mTestServer;
-    private CallbackHelper mHttpDownloadFinishedCallback = new CallbackHelper();
-    private CallbackHelper mRetrieveDownloadsCallback = new CallbackHelper();
+    private final CallbackHelper mHttpDownloadFinishedCallback = new CallbackHelper();
+    private final CallbackHelper mRetrieveDownloadsCallback = new CallbackHelper();
 
     private List<DownloadItem> mOffTheRecordDownloadItems;
     private List<DownloadItem> mRegularDownloadItems;
 
-    private DownloadManagerService.DownloadObserver mTestDownloadManagerServiceObserver =
+    private final DownloadManagerService.DownloadObserver mTestDownloadManagerServiceObserver =
             new DownloadManagerService.DownloadObserver() {
                 @Override
                 public void onAllDownloadsRetrieved(
@@ -116,7 +113,7 @@ public class IncognitoDownloadLeakageTest {
                 public void onAddOrReplaceDownloadSharedPreferenceEntry(ContentId id) {}
             };
 
-    private OfflineContentProvider.Observer mTestDownloadBackendObserver =
+    private final OfflineContentProvider.Observer mTestDownloadBackendObserver =
             new OfflineContentProvider.Observer() {
                 @Override
                 public void onItemsAdded(List<OfflineItem> items) {}
@@ -165,12 +162,12 @@ public class IncognitoDownloadLeakageTest {
                                     DownloadPromptStatus.DONT_SHOW);
                 });
 
-        deleteFilesInDownloadDirectory(mDownloadedFileName);
+        deleteFilesInDownloadDirectory(DOWNLOADED_FILE_NAME);
     }
 
     @After
     public void tearDown() {
-        deleteFilesInDownloadDirectory(mDownloadedFileName);
+        deleteFilesInDownloadDirectory(DOWNLOADED_FILE_NAME);
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         DownloadManagerService.getDownloadManagerService()
@@ -230,7 +227,7 @@ public class IncognitoDownloadLeakageTest {
         startDownload(incognitoTab);
 
         // Check the file is downloaded
-        assertTrue(hasFileDownloaded(mDownloadedFileName));
+        assertTrue(hasFileDownloaded(DOWNLOADED_FILE_NAME));
 
         // Retrieve downloads from the incognito DownloadService.
         ThreadUtils.runOnUiThreadBlocking(
@@ -279,7 +276,7 @@ public class IncognitoDownloadLeakageTest {
         startDownload(incognitoTab1);
 
         // Check the file is downloaded
-        assertTrue(hasFileDownloaded(mDownloadedFileName));
+        assertTrue(hasFileDownloaded(DOWNLOADED_FILE_NAME));
 
         // Retrieve downloads from the incognito DownloadService.
         ThreadUtils.runOnUiThreadBlocking(

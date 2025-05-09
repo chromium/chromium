@@ -41,9 +41,9 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
     private final long mNativeAutofillSaveCardInfoBar;
     private final List<CardDetail> mCardDetails = new ArrayList<>();
     private int mIconDrawableId = -1;
-    private String mTitleText;
+    private final String mTitleText;
     private String mDescriptionText;
-    private boolean mIsGooglePayBrandingEnabled;
+    private final boolean mIsGooglePayBrandingEnabled;
     private final LinkedList<LegalMessageLine> mLegalMessageLines =
             new LinkedList<LegalMessageLine>();
 

@@ -18,7 +18,7 @@ import org.chromium.components.minidump_uploader.MinidumpUploadJobService;
  */
 @NullMarked
 public class SplitCompatMinidumpUploadJobService extends MinidumpUploadJobService {
-    private String mServiceClassName;
+    private final String mServiceClassName;
     private Impl mImpl;
 
     public SplitCompatMinidumpUploadJobService(String serviceClassName) {

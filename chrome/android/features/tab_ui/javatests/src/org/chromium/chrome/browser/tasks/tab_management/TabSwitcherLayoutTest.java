@@ -137,8 +137,8 @@ public class TabSwitcherLayoutTest {
 
     private String mUrl;
     private int mRepeat;
-    private List<WeakReference<Bitmap>> mAllBitmaps = new LinkedList<>();
-    private Callback<Bitmap> mBitmapListener =
+    private final List<WeakReference<Bitmap>> mAllBitmaps = new LinkedList<>();
+    private final Callback<Bitmap> mBitmapListener =
             (bitmap) -> mAllBitmaps.add(new WeakReference<>(bitmap));
     private ModalDialogManager mModalDialogManager;
 
@@ -323,7 +323,7 @@ public class TabSwitcherLayoutTest {
     }
 
     private static class ThumbnailAspectRatioAssertion implements ViewAssertion {
-        private double mExpectedRatio;
+        private final double mExpectedRatio;
 
         public static ThumbnailAspectRatioAssertion havingAspectRatio(double ratio) {
             return new ThumbnailAspectRatioAssertion(ratio);

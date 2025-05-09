@@ -459,7 +459,7 @@ public class SerialChooserDialogTest {
     }
 
     private static class TestAndroidPermissionDelegate implements AndroidPermissionDelegate {
-        Dialog mDialog;
+        final Dialog mDialog;
         PermissionCallback mCallback;
         String[] mPermissionsRequested;
         public boolean mLocationGranted;

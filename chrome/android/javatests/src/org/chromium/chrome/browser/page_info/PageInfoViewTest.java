@@ -171,14 +171,14 @@ public class PageInfoViewTest {
 
     private static final int DAYS_UNTIL_EXPIRATION = 33;
 
-    private static String[] sCookieDataTypes = {
+    private static final String[] sCookieDataTypes = {
         "Cookie", "LocalStorage", "ServiceWorker", "CacheStorage", "IndexedDb", "FileSystem"
     };
 
     // June 4, 2021 12:00:00 GMT+00:00
-    private static long sTimestampJune4 = 1622808000000L;
+    private static final long TIMESTAMP_JUNE_4 = 1622808000000L;
     // April 4, 2021 12:00:00 GMT+00:00
-    private static long sTimestampApril4 = 1617537600000L;
+    private static final long TIMESTAMPE_APRIL_4 = 1617537600000L;
 
     /**
      * Parameter provider for testing the different timestamps for the history section's "last
@@ -193,14 +193,14 @@ public class PageInfoViewTest {
 
             List<ParameterSet> parameters = new ArrayList<>();
             // ParameterSet = {timestamp, string}
-            timestamp = CalendarUtils.getStartOfDay(sTimestampJune4).getTime().getTime();
+            timestamp = CalendarUtils.getStartOfDay(TIMESTAMP_JUNE_4).getTime().getTime();
             parameters.add(
                     new ParameterSet()
                             .value(
                                     timestamp,
                                     res.getString(R.string.page_info_history_last_visit_today))
                             .name("Today"));
-            timestamp = sTimestampJune4 - 1 * DateUtils.DAY_IN_MILLIS;
+            timestamp = TIMESTAMP_JUNE_4 - 1 * DateUtils.DAY_IN_MILLIS;
             parameters.add(
                     new ParameterSet()
                             .value(
@@ -208,7 +208,7 @@ public class PageInfoViewTest {
                                     res.getString(R.string.page_info_history_last_visit_yesterday))
                             .name("Yesterday"));
             int offset = random.nextInt(6) + 2;
-            timestamp = sTimestampJune4 - offset * DateUtils.DAY_IN_MILLIS;
+            timestamp = TIMESTAMP_JUNE_4 - offset * DateUtils.DAY_IN_MILLIS;
             parameters.add(
                     new ParameterSet()
                             .value(
@@ -219,11 +219,11 @@ public class PageInfoViewTest {
             parameters.add(
                     new ParameterSet()
                             .value(
-                                    sTimestampApril4,
+                                    TIMESTAMPE_APRIL_4,
                                     res.getString(
                                             R.string.page_info_history_last_visit_date,
                                             StringUtils.dateToHeaderString(
-                                                    new Date(sTimestampApril4))))
+                                                    new Date(TIMESTAMPE_APRIL_4))))
                             .name("ExactDay"));
             return parameters;
         }
@@ -509,8 +509,8 @@ public class PageInfoViewTest {
     private void addSomeHistoryEntries() {
         StubbedHistoryProvider historyProvider = new StubbedHistoryProvider();
         // Need to always have the same dates for render tests.
-        historyProvider.addItem(StubbedHistoryProvider.createHistoryItem(1, sTimestampApril4));
-        historyProvider.addItem(StubbedHistoryProvider.createHistoryItem(1, sTimestampJune4));
+        historyProvider.addItem(StubbedHistoryProvider.createHistoryItem(1, TIMESTAMPE_APRIL_4));
+        historyProvider.addItem(StubbedHistoryProvider.createHistoryItem(1, TIMESTAMP_JUNE_4));
         HistoryContentManager.setProviderForTests(historyProvider);
         PageInfoHistoryController.setProviderForTests(historyProvider);
     }
@@ -1773,7 +1773,7 @@ public class PageInfoViewTest {
         PageInfoHistoryController.setProviderForTests(historyProvider);
         PageInfoHistoryController.setClockForTesting(
                 () -> {
-                    return sTimestampJune4;
+                    return TIMESTAMP_JUNE_4;
                 });
 
         loadUrlAndOpenPageInfo(
@@ -1786,7 +1786,7 @@ public class PageInfoViewTest {
     @MediumTest
     public void testHistorySubpageItemClick() throws Exception {
         StubbedHistoryProvider historyProvider = new StubbedHistoryProvider();
-        historyProvider.addItem(StubbedHistoryProvider.createHistoryItem(1, sTimestampJune4));
+        historyProvider.addItem(StubbedHistoryProvider.createHistoryItem(1, TIMESTAMP_JUNE_4));
         HistoryContentManager.setProviderForTests(historyProvider);
         PageInfoHistoryController.setProviderForTests(historyProvider);
         loadUrlAndOpenPageInfo(

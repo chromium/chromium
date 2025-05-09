@@ -166,8 +166,8 @@ public class ContextualSearchManager
 
     // The panel.
     private ContextualSearchPanel mSearchPanel;
-    private ObservableSupplierImpl<OverlayPanelStateProvider> mOverlayPanelStateProviderSupplier =
-            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<OverlayPanelStateProvider>
+            mOverlayPanelStateProviderSupplier = new ObservableSupplierImpl<>();
 
     // The native manager associated with this object.
     private long mNativeContextualSearchManagerPtr;
@@ -227,7 +227,7 @@ public class ContextualSearchManager
     private int mSelectAroundCaretCounter;
 
     /** A means of accessing the currently active tab. */
-    private Supplier<Tab> mTabSupplier;
+    private final Supplier<Tab> mTabSupplier;
 
     /** A means of observing scene changes and attaching overlays. */
     private LayoutManagerImpl mLayoutManager;

@@ -67,7 +67,7 @@ public class RecentTabsPage
 
     private final ObservableSupplier<Integer> mTabStripHeightSupplier;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
-    private Callback<Integer> mTabStripHeightChangeCallback;
+    private final Callback<Integer> mTabStripHeightChangeCallback;
     private SmoothTransitionDelegate mSmoothTransitionDelegate;
     private EdgeToEdgePadAdjuster mPadAdjuster;
 

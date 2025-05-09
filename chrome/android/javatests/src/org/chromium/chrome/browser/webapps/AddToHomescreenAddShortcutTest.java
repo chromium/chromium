@@ -155,7 +155,7 @@ public class AddToHomescreenAddShortcutTest {
         private String mTitle;
 
         // The type of of dialog expected to show (at the time of submission).
-        private @AppType int mExpectedDialogType;
+        private final @AppType int mExpectedDialogType;
 
         TestAddToHomescreenCoordinator(
                 WebContents webContents,

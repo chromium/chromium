@@ -106,7 +106,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
 
     private @Nullable OnSharedPreferenceChangeListener mPriceAnnotationsPrefListener;
     private @Nullable TabGroupSyncService mTabGroupSyncService;
-    private TabSwitcherDrawable mTabSwitcherDrawable;
+    private final TabSwitcherDrawable mTabSwitcherDrawable;
 
     /**
      * @param context The activity context.

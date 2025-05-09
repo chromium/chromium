@@ -42,13 +42,14 @@ public class ChromeTabSwitcherTest {
     private static final String TEST_PAGE =
             "/chrome/android/javatests/src/org/chromium/chrome/test/smoke/test.html";
 
-    private IUi2Locator mTabSwitcherButton = Ui2Locators.withAnyResEntry(R.id.tab_switcher_button);
+    private final IUi2Locator mTabSwitcherButton =
+            Ui2Locators.withAnyResEntry(R.id.tab_switcher_button);
 
-    private IUi2Locator mHubToolbar = Ui2Locators.withAnyResEntry(R.id.hub_toolbar);
+    private final IUi2Locator mHubToolbar = Ui2Locators.withAnyResEntry(R.id.hub_toolbar);
 
-    private IUi2Locator mTabList = Ui2Locators.withAnyResEntry(R.id.tab_list_recycler_view);
+    private final IUi2Locator mTabList = Ui2Locators.withAnyResEntry(R.id.tab_list_recycler_view);
 
-    private FirstRunNavigator mFirstRunNavigator = new FirstRunNavigator();
+    private final FirstRunNavigator mFirstRunNavigator = new FirstRunNavigator();
 
     public static final long TIMEOUT_MS = 20000L;
     public static final long UI_CHECK_INTERVAL = 1000L;

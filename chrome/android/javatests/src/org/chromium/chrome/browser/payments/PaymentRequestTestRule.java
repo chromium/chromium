@@ -146,8 +146,8 @@ import java.util.concurrent.atomic.AtomicReference;
     private final CallbackHelper mRendererClosedMojoConnection;
     private ChromePaymentRequestDelegateImpl mChromePaymentRequestDelegateImpl;
     private PaymentRequestUi mUi;
-    private FakeClock mClock;
-    private InputProtector mInputProtector;
+    private final FakeClock mClock;
+    private final InputProtector mInputProtector;
 
     private final boolean mDelayStartActivity;
     private boolean mAutoAdvanceInputProtectorClock;

@@ -18,7 +18,7 @@ import org.chromium.build.annotations.Nullable;
  */
 @NullMarked
 public class SplitCompatGcmTaskService extends GcmTaskService {
-    private String mServiceClassName;
+    private final String mServiceClassName;
     private Impl mImpl;
 
     public SplitCompatGcmTaskService(String serviceClassName) {

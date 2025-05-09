@@ -43,9 +43,9 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
 
     private final Context mContext;
     private final Supplier<Profile> mProfileSupplier;
-    private Map<Integer, List<Message>> mMessageItems = new LinkedHashMap<>();
-    private Map<Integer, Message> mShownMessageItems = new LinkedHashMap<>();
-    private MessageCardView.DismissActionProvider mUiDismissActionProvider;
+    private final Map<Integer, List<Message>> mMessageItems = new LinkedHashMap<>();
+    private final Map<Integer, Message> mShownMessageItems = new LinkedHashMap<>();
+    private final MessageCardView.DismissActionProvider mUiDismissActionProvider;
 
     public MessageCardProviderMediator(
             Context context,

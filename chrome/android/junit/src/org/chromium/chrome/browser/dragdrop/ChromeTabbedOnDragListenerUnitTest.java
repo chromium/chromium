@@ -59,9 +59,9 @@ public class ChromeTabbedOnDragListenerUnitTest {
     @Mock private TabGroupMetadata mTabGroupMetadata;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
     private OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplierImpl;
-    private ClipDescription mTabClipDescription =
+    private final ClipDescription mTabClipDescription =
             new ClipDescription(null, new String[] {"chrome/tab"});
-    private ClipDescription mTabGroupClipDescription =
+    private final ClipDescription mTabGroupClipDescription =
             new ClipDescription(null, new String[] {"chrome/tab-group"});
     private Context mContext;
     private ChromeTabbedOnDragListener mChromeTabbedOnDragListener;

@@ -1797,7 +1797,7 @@ public class CompositorViewHolder extends FrameLayout
      */
     private class CompositorAccessibilityProvider extends ExploreByTouchHelper {
         private final float mDpToPx;
-        List<VirtualView> mVirtualViews = new ArrayList<>();
+        final List<VirtualView> mVirtualViews = new ArrayList<>();
         private final Rect mPlaceHolderRect = new Rect(0, 0, 1, 1);
         private static final String PLACE_HOLDER_STRING = "";
         private final RectF mTouchTarget = new RectF();

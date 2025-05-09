@@ -74,8 +74,8 @@ public class PartialCustomTabDisplayManager extends CustomTabHeightStrategy
     private CustomTabToolbarButtonsCoordinator mToolbarButtonsCoordinator;
     private PartialCustomTabHandleStrategyFactory mHandleStrategyFactory;
     private SizeStrategyCreator mSizeStrategyCreator = this::createSizeStrategy;
-    private Supplier<TouchEventProvider> mTouchEventProvider;
-    private Supplier<Tab> mTab;
+    private final Supplier<TouchEventProvider> mTouchEventProvider;
+    private final Supplier<Tab> mTab;
     private boolean mIsInPip;
     private final BooleanSupplier mIsEnteringPip;
 

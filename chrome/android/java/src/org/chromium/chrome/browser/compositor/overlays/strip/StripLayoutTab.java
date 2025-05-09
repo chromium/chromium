@@ -171,7 +171,7 @@ public class StripLayoutTab extends StripLayoutView {
     // Preallocated
     private final RectF mClosePlacement = new RectF();
 
-    private ObserverList<Observer> mObservers = new ObserverList<>();
+    private final ObserverList<Observer> mObservers = new ObserverList<>();
 
     /**
      * Create a {@link StripLayoutTab} that represents the {@link Tab} with an id of {@code id}.

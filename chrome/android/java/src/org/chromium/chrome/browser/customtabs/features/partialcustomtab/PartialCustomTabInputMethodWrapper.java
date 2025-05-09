@@ -21,8 +21,8 @@ import org.chromium.ui.base.WindowAndroid;
  * trigger PCCT height change when the soft keyboard appears.
  */
 public class PartialCustomTabInputMethodWrapper implements InputMethodManagerWrapper {
-    private InputMethodManagerWrapper mWrapper;
-    private Callback<Runnable> mShowSoftKeyInputCallback;
+    private final InputMethodManagerWrapper mWrapper;
+    private final Callback<Runnable> mShowSoftKeyInputCallback;
 
     public PartialCustomTabInputMethodWrapper(
             Context context, WindowAndroid window, Callback<Runnable> softKeyInputCallback) {

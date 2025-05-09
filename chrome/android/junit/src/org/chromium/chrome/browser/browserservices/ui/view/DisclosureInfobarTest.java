@@ -41,7 +41,7 @@ public class DisclosureInfobarTest {
     @Mock public SnackbarManager mSnackbarManager;
     @Mock public TrustedWebActivityModel.DisclosureEventsCallback mCallback;
 
-    private TrustedWebActivityModel mModel = new TrustedWebActivityModel();
+    private final TrustedWebActivityModel mModel = new TrustedWebActivityModel();
     private DisclosureInfobar mInfobar;
 
     @Before

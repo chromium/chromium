@@ -144,7 +144,7 @@ public class OMADownloadHandlerTest {
 
     /** Helper class to verify the result of {@DownloadManagerDelegate.queryDownloadResult}. */
     private static class DownloadQueryResultVerifier implements Callback<DownloadQueryResult> {
-        private int mExpectedDownloadStatus;
+        private final int mExpectedDownloadStatus;
 
         public boolean mQueryCompleted;
 

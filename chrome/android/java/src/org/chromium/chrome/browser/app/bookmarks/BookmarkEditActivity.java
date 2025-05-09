@@ -70,7 +70,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
     private MenuItem mDeleteButton;
     private FrameLayout mFolderPickerRowContainer;
 
-    private BookmarkUiPrefs.Observer mBookmarkUiPrefsObserver =
+    private final BookmarkUiPrefs.Observer mBookmarkUiPrefsObserver =
             new BookmarkUiPrefs.Observer() {
                 @Override
                 public void onBookmarkRowDisplayPrefChanged(
@@ -79,7 +79,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
                 }
             };
 
-    private BookmarkModelObserver mBookmarkModelObserver =
+    private final BookmarkModelObserver mBookmarkModelObserver =
             new BookmarkModelObserver() {
                 @Override
                 public void bookmarkModelChanged() {

@@ -38,12 +38,12 @@ public class IncognitoNewTabPage extends BasicNativePage
     private final Profile mProfile;
     private final int mIncognitoNtpBackgroundColor;
 
-    private String mTitle;
+    private final String mTitle;
     protected IncognitoNewTabPageView mIncognitoNewTabPageView;
 
     private boolean mIsLoaded;
 
-    private IncognitoNewTabPageManager mIncognitoNewTabPageManager;
+    private final IncognitoNewTabPageManager mIncognitoNewTabPageManager;
     private IncognitoCookieControlsManager mCookieControlsManager;
     private IncognitoCookieControlsManager.Observer mCookieControlsObserver;
     private EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;

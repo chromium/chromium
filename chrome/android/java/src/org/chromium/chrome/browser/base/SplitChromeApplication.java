@@ -34,12 +34,18 @@ import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 @NullMarked
 public class SplitChromeApplication extends SplitCompatApplication {
 
+    @SuppressWarnings("FieldCanBeFinal") // @IdentifierNameString requires non-final
     private static @IdentifierNameString String sImplClassName =
             "org.chromium.chrome.browser.ChromeApplicationImpl";
+
+    @SuppressWarnings("FieldCanBeFinal") // @IdentifierNameString requires non-final
     private static @IdentifierNameString String sChromePreloadName =
             "org.chromium.chrome.browser.ChromeTabbedActivity$Preload";
+
+    @SuppressWarnings("FieldCanBeFinal") // @IdentifierNameString requires non-final
     private static @IdentifierNameString String sGoogle3PreloadName =
             "org.chromium.chrome.modules.google3.Google3ModuleEntryImpl";
+
     private static final Object sSplitLock = new Object();
     private static final ArraySet<String> sCachedSplits = new ArraySet<>();
 

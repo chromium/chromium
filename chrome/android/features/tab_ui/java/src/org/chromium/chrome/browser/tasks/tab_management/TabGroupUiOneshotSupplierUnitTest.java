@@ -83,9 +83,9 @@ public class TabGroupUiOneshotSupplierUnitTest {
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor private ArgumentCaptor<Callback<Tab>> mActivityTabObserverCaptor;
 
-    private ObservableSupplierImpl<Boolean> mOmniboxFocusStateSupplier =
+    private final ObservableSupplierImpl<Boolean> mOmniboxFocusStateSupplier =
             new ObservableSupplierImpl<>();
-    private OneshotSupplier<LayoutStateProvider> mLayoutStateProviderSupplier =
+    private final OneshotSupplier<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
 
     private TabGroupUiOneshotSupplier mTabGroupUiOneshotSupplier;

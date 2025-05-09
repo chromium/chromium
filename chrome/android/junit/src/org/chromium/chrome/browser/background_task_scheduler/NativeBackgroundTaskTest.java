@@ -138,7 +138,7 @@ public class NativeBackgroundTaskTest {
     private static class TaskFinishedCallback implements BackgroundTask.TaskFinishedCallback {
         private boolean mWasCalled;
         private boolean mNeedsReschedule;
-        private CountDownLatch mCallbackLatch;
+        private final CountDownLatch mCallbackLatch;
 
         TaskFinishedCallback() {
             mCallbackLatch = new CountDownLatch(1);
@@ -171,10 +171,10 @@ public class NativeBackgroundTaskTest {
         @StartBeforeNativeResult private int mStartBeforeNativeResult;
         private boolean mWasOnStartTaskWithNativeCalled;
         private boolean mNeedsReschedulingAfterStop;
-        private CountDownLatch mStartWithNativeLatch;
+        private final CountDownLatch mStartWithNativeLatch;
         private boolean mWasOnStopTaskWithNativeCalled;
         private boolean mWasOnStopTaskBeforeNativeLoadedCalled;
-        private BrowserStartupController mBrowserStartupController;
+        private final BrowserStartupController mBrowserStartupController;
 
         public TestNativeBackgroundTask(BrowserStartupController controller) {
             super();

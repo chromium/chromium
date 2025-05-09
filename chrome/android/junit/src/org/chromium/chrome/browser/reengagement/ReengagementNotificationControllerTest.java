@@ -60,7 +60,7 @@ public class ReengagementNotificationControllerTest {
 
     private class TestingReengagementNotificationController
             extends ReengagementNotificationController {
-        private DefaultBrowserInfo.DefaultInfo mInfo;
+        private final DefaultBrowserInfo.DefaultInfo mInfo;
 
         TestingReengagementNotificationController(DefaultBrowserInfo.DefaultInfo info) {
             super(mContext, mTracker, Activity.class);

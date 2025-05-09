@@ -51,8 +51,8 @@ public class SearchActivityClientImpl implements SearchActivityClient {
     private final @IntentOrigin int mOrigin;
 
     private static class IntentBuilderImpl implements IntentBuilder {
-        private Intent mIntent;
-        private @IntentOrigin int mOrigin;
+        private final Intent mIntent;
+        private final @IntentOrigin int mOrigin;
         private @SearchType int mSearchType;
 
         IntentBuilderImpl(Context context, int origin) {

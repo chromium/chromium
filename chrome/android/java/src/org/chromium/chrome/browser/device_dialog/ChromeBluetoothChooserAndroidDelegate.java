@@ -13,7 +13,7 @@ import org.chromium.components.permissions.BluetoothChooserAndroidDelegate;
 
 /** The implementation of {@link BluetoothChooserAndroidDelegate} for Chrome. */
 public class ChromeBluetoothChooserAndroidDelegate implements BluetoothChooserAndroidDelegate {
-    private Profile mProfile;
+    private final Profile mProfile;
 
     @CalledByNative
     ChromeBluetoothChooserAndroidDelegate(Profile profile) {

@@ -50,7 +50,7 @@ import java.util.List;
 @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_ALL_BUT_ACTIVE)
 public class ArchivedTabsTest {
     private static class FakeDeferredStartupHandler extends DeferredStartupHandler {
-        private List<Runnable> mTasks = new ArrayList<>();
+        private final List<Runnable> mTasks = new ArrayList<>();
 
         @Override
         public void addDeferredTask(Runnable task) {

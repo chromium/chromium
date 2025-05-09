@@ -24,7 +24,7 @@ import org.chromium.components.offline_items_collection.OfflineItemState;
  */
 public class DownloadItem {
     private final ContentId mContentId = new ContentId();
-    private boolean mUseAndroidDownloadManager;
+    private final boolean mUseAndroidDownloadManager;
     private DownloadInfo mDownloadInfo;
     private long mDownloadId = DownloadConstants.INVALID_DOWNLOAD_ID;
     private long mStartTime;

@@ -54,7 +54,7 @@ public class MHTMLPageTest implements CustomMainActivityStart {
      * receive the update.
      */
     private static class TestNewDownloadBackendObserver implements OfflineContentProvider.Observer {
-        private Semaphore mSemaphore;
+        private final Semaphore mSemaphore;
 
         TestNewDownloadBackendObserver(Semaphore semaphore) {
             mSemaphore = semaphore;

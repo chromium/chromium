@@ -49,8 +49,8 @@ public class MostVisitedSitesMetadataUtils {
     private static final int CACHE_VERSION = 1;
 
     private static File sStateDirectory;
-    private static String sStateDirName = "top_sites";
-    private static String sStateFileName = "top_sites";
+    private static final String STATE_DIR_NAME = "top_sites";
+    private static final String STATE_FILENAME = "top_sites";
 
     private Runnable mCurrentTask;
     private Runnable mPendingTask;
@@ -98,7 +98,7 @@ public class MostVisitedSitesMetadataUtils {
     public static List<Tile> restoreFileToSuggestionLists() throws IOException {
         List<Tile> tiles;
         try {
-            byte[] listData = restoreFileToBytes(getOrCreateTopSitesDirectory(), sStateFileName);
+            byte[] listData = restoreFileToBytes(getOrCreateTopSitesDirectory(), STATE_FILENAME);
             tiles = deserializeTopSitesData(listData);
         } catch (IOException e) {
             getOrCreateTopSitesDirectory().delete();
@@ -132,7 +132,7 @@ public class MostVisitedSitesMetadataUtils {
                 try {
                     byte[] listData = serializeTopSitesData(suggestionTiles);
                     saveSuggestionListsToFile(
-                            getOrCreateTopSitesDirectory(), sStateFileName, listData);
+                            getOrCreateTopSitesDirectory(), STATE_FILENAME, listData);
                 } catch (IOException e) {
                     Log.e(TAG, "Fail to save file.");
                 }
@@ -265,7 +265,7 @@ public class MostVisitedSitesMetadataUtils {
             if (sStateDirectory == null) {
                 sStateDirectory =
                         ContextUtils.getApplicationContext()
-                                .getDir(sStateDirName, Context.MODE_PRIVATE);
+                                .getDir(STATE_DIR_NAME, Context.MODE_PRIVATE);
             }
         }
         return sStateDirectory;

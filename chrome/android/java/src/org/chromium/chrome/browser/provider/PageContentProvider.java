@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.base.SplitCompatContentProvider;
 /** See {@link PageContentProviderImpl}. */
 @NullMarked
 public class PageContentProvider extends SplitCompatContentProvider {
+    @SuppressWarnings("FieldCanBeFinal") // @IdentifierNameString requires non-final
     private static @IdentifierNameString String sImplClassName =
             "org.chromium.chrome.browser.provider.PageContentProviderImpl";
 

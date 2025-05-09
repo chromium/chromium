@@ -51,8 +51,8 @@ import java.util.List;
 @SuppressWarnings("UnusedMethod")
 public class OmahaBaseTest {
     private static class TimestampPair {
-        public long timestampNextRequest;
-        public long timestampNextPost;
+        public final long timestampNextRequest;
+        public final long timestampNextPost;
 
         public TimestampPair(long timestampNextRequest, long timestampNextPost) {
             this.timestampNextRequest = timestampNextRequest;
@@ -68,7 +68,6 @@ public class OmahaBaseTest {
         private final boolean mIsInForeground;
         private final boolean mIsInSystemImage;
         private final ExponentialBackoffScheduler mScheduler;
-        private MockRequestGenerator mMockGenerator;
 
         private int mNumUUIDsGenerated;
         private long mNextScheduledTimestamp = -1;
@@ -91,9 +90,9 @@ public class OmahaBaseTest {
 
         @Override
         protected RequestGenerator createRequestGenerator() {
-            mMockGenerator =
+            MockRequestGenerator mockGenerator =
                     new MockRequestGenerator(mIsOnTablet ? DeviceType.TABLET : DeviceType.HANDSET);
-            return mMockGenerator;
+            return mockGenerator;
         }
 
         @Override

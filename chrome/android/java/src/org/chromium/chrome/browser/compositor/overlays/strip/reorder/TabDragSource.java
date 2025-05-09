@@ -773,9 +773,9 @@ public class TabDragSource implements View.OnDragListener {
     @VisibleForTesting
     static class TabDragShadowBuilder extends View.DragShadowBuilder {
         // Touch offset for drag shadow view.
-        private PointF mDragShadowOffset;
+        private final PointF mDragShadowOffset;
         // Source initiating drag - to call updateDragShadow().
-        private View mDragSourceView;
+        private final View mDragSourceView;
         // Whether drag shadow should be shown.
         private boolean mShowDragShadow;
 

@@ -66,7 +66,7 @@ public class DisclosureUiPickerTest {
             new AutomotiveContextWrapperTestRule();
 
     private DisclosureUiPicker mPicker;
-    private List<NotificationChannel> mEnabledChannels = new ArrayList<>();
+    private final List<NotificationChannel> mEnabledChannels = new ArrayList<>();
 
     @Before
     public void setUp() {

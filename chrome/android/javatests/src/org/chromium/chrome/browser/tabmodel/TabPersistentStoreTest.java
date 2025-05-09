@@ -132,12 +132,12 @@ public class TabPersistentStoreTest {
     private static final int NEW_ROOT_ID = 42;
 
     private static class TabRestoredDetails {
-        public int index;
-        public int id;
-        public String url;
-        public boolean isStandardActiveIndex;
-        public boolean isIncognitoActiveIndex;
-        public Boolean isIncognito;
+        public final int index;
+        public final int id;
+        public final String url;
+        public final boolean isStandardActiveIndex;
+        public final boolean isIncognitoActiveIndex;
+        public final Boolean isIncognito;
 
         /** Store information about a Tab that's been restored. */
         TabRestoredDetails(

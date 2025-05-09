@@ -95,17 +95,17 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     private final BottomSheetController mBottomSheetController;
     private final UndoBarThrottle mUndoBarThrottle;
     private @Nullable final TabLabeller mTabLabeller;
-    private ObservableSupplierImpl<Boolean> mShowingOrAnimationSupplier =
+    private final ObservableSupplierImpl<Boolean> mShowingOrAnimationSupplier =
             new ObservableSupplierImpl<>(false);
     private final ObservableSupplierImpl<Token> mCurrentTabGroupId = new ObservableSupplierImpl<>();
-    private TabContentManager mTabContentManager;
+    private final TabContentManager mTabContentManager;
     private TabListEditorCoordinator mTabListEditorCoordinator;
     private TabGridDialogView mDialogView;
     private ColorPickerCoordinator mColorPickerCoordinator;
-    private @Nullable SnackbarManager mSnackbarManager;
+    private final @Nullable SnackbarManager mSnackbarManager;
     private @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     private @Nullable AnchoredPopupWindow mColorIconPopupWindow;
-    private @Nullable TabSwitcherResetHandler mTabSwitcherResetHandler;
+    private final @Nullable TabSwitcherResetHandler mTabSwitcherResetHandler;
     private @Nullable Integer mUndoBarThrottleToken;
 
     TabGridDialogCoordinator(

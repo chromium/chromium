@@ -86,8 +86,8 @@ class AccessorySheetTabItemsModel
             int LOYALTY_CARD_INFO = 13;
         }
 
-        private Object mDataPiece;
-        private @Type int mType;
+        private final Object mDataPiece;
+        private final @Type int mType;
 
         AccessorySheetDataPiece(Object dataPiece, @Type int type) {
             mDataPiece = dataPiece;

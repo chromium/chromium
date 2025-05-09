@@ -401,7 +401,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
      * instances.
      */
     private static class CipherLazyHolder {
-        private static CipherFactory sCipherInstance = new CipherFactory();
+        private static final CipherFactory sCipherInstance = new CipherFactory();
     }
 
     /**

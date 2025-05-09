@@ -75,7 +75,7 @@ public class OverlayPanelContent {
     private long mNativeOverlayPanelContentPtr;
 
     /** The activity that this content is contained in. */
-    private Activity mActivity;
+    private final Activity mActivity;
 
     /** Observer used for tracking loading and navigation. */
     private WebContentsObserver mWebContentsObserver;
@@ -109,10 +109,10 @@ public class OverlayPanelContent {
     private boolean mIsContentViewShowing;
 
     /** The observer used by this object to inform implementers of different events. */
-    private OverlayPanelContentDelegate mContentDelegate;
+    private final OverlayPanelContentDelegate mContentDelegate;
 
     /** Used to observe progress bar events. */
-    private OverlayPanelContentProgressObserver mProgressObserver;
+    private final OverlayPanelContentProgressObserver mProgressObserver;
 
     /** If a URL is set to delayed load (load on user interaction), it will be stored here. */
     private String mPendingUrl;

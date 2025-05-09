@@ -71,7 +71,7 @@ public class TabStripSceneLayerTest {
     @Mock private TintedCompositorButton mCloseButton;
     @Mock private StripLayoutGroupTitle mStripGroupTitle;
 
-    private final float mDpToPx = 1.f;
+    private static final float DP_TO_PX = 1.f;
 
     private CompositorButton mModelSelectorButton;
     private TintedCompositorButton mNewTabButton;
@@ -100,7 +100,7 @@ public class TabStripSceneLayerTest {
     }
 
     private void initializeTest() {
-        mTabStripSceneLayer = new TabStripSceneLayer(mDpToPx);
+        mTabStripSceneLayer = new TabStripSceneLayer(DP_TO_PX);
         when(mTabStripSceneMock.init(mTabStripSceneLayer)).thenReturn(1L);
         mModelSelectorButton =
                 new TintedCompositorButton(
@@ -206,8 +206,8 @@ public class TabStripSceneLayerTest {
                         eq(mTabStripSceneLayer),
                         /* resourceId= */ anyInt(),
                         /* backgroundResourceId= */ anyInt(),
-                        /* x= */ eq(mNewTabButton.getDrawX() * mDpToPx),
-                        /* y= */ eq(mNewTabButton.getDrawY() * mDpToPx),
+                        /* x= */ eq(mNewTabButton.getDrawX() * DP_TO_PX),
+                        /* y= */ eq(mNewTabButton.getDrawY() * DP_TO_PX),
                         /* touchTargetOffset= */ anyFloat(),
                         /* visible= */ eq(mNewTabButton.isVisible()),
                         /* isHovered= */ eq(mNewTabButton.isHovered()),

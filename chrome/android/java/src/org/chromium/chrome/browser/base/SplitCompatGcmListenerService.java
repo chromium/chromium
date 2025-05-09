@@ -19,7 +19,7 @@ import org.chromium.build.annotations.Nullable;
  */
 @NullMarked
 public class SplitCompatGcmListenerService extends FirebaseMessagingService {
-    private String mServiceClassName;
+    private final String mServiceClassName;
     private Impl mImpl;
 
     public SplitCompatGcmListenerService(String serviceClassName) {

@@ -213,7 +213,7 @@ public class StripLayoutHelperManager
     private final float mDensity;
     private int mOrientation;
     @Nullable private TintedCompositorButton mModelSelectorButton;
-    private Context mContext;
+    private final Context mContext;
     private float mStripTransitionScrimOpacity;
     private Animator mFadeTransitionAnimator;
     // This will be set only when a strip height transition runs to update the strip visibility and
@@ -223,7 +223,7 @@ public class StripLayoutHelperManager
     private final StatusBarColorController mStatusBarColorController;
     private TabStripSceneLayer mTabStripTreeProvider;
     private TabStripEventHandler mTabStripEventHandler;
-    private TabSwitcherLayoutObserver mTabSwitcherLayoutObserver;
+    private final TabSwitcherLayoutObserver mTabSwitcherLayoutObserver;
     private final View mToolbarControlContainer;
     private final ViewStub mTabHoverCardViewStub;
     @Nullable private TooltipManager mTooltipManager;
@@ -240,7 +240,7 @@ public class StripLayoutHelperManager
     private final DesktopWindowStateManager mDesktopWindowStateManager;
 
     // 3-dots menu button with tab strip end padding
-    private float mStripEndPadding;
+    private final float mStripEndPadding;
     private TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
     private final Callback<TabModel> mCurrentTabModelObserver =
@@ -254,7 +254,7 @@ public class StripLayoutHelperManager
     private final ObservableSupplier<LayerTitleCache> mLayerTitleCacheSupplier;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final Callback<Integer> mStripVisibilityStateObserver;
-    private ObservableSupplierImpl<Integer> mStripVisibilityStateSupplier;
+    private final ObservableSupplierImpl<Integer> mStripVisibilityStateSupplier;
 
     // Drag-Drop
     @Nullable private TabDragSource mTabDragSource;

@@ -34,7 +34,7 @@ public class DisplayCutoutTabHelper implements UserData {
     private static final Class<DisplayCutoutTabHelper> USER_DATA_KEY = DisplayCutoutTabHelper.class;
 
     /** The tab that this object belongs to. */
-    private Tab mTab;
+    private final Tab mTab;
 
     @VisibleForTesting DisplayCutoutController mCutoutController;
 
@@ -78,7 +78,7 @@ public class DisplayCutoutTabHelper implements UserData {
 
     @VisibleForTesting
     static class ChromeDisplayCutoutDelegate implements DisplayCutoutController.Delegate {
-        private Tab mTab;
+        private final Tab mTab;
 
         ChromeDisplayCutoutDelegate(Tab tab) {
             mTab = tab;

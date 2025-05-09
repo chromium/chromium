@@ -47,7 +47,7 @@ public class DseNewTabUrlManagerUnitTest {
     private static final String NEW_TAB_URL = JUnitTestGURLs.NTP_URL.getSpec();
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
-    private ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
     @Mock private RegionalCapabilitiesService mRegionalCapabilities;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private TemplateUrl mTemplateUrl;

@@ -89,12 +89,12 @@ public class SplashController extends CustomTabTabObserver
     private long mSplashShownTimestamp;
 
     /** Indicates whether translucency should be removed. */
-    private boolean mIsWindowInitiallyTranslucent;
+    private final boolean mIsWindowInitiallyTranslucent;
 
     /** Whether translucency was removed. */
     private boolean mRemovedTranslucency;
 
-    private ObserverList<SplashscreenObserver> mObservers;
+    private final ObserverList<SplashscreenObserver> mObservers;
 
     public SplashController(
             Activity activity,

@@ -170,7 +170,7 @@ public class Fido2CredentialRequestTest {
      * testGetAssertion_with_param as input parameters.
      */
     public static class ErrorTestParams implements ParameterProvider {
-        private static List<ParameterSet> sErrorTestParams =
+        private static final List<ParameterSet> sErrorTestParams =
                 Arrays.asList(
                         new ParameterSet()
                                 .value(
@@ -236,7 +236,7 @@ public class Fido2CredentialRequestTest {
     }
 
     public static class SameOriginTestParams implements ParameterProvider {
-        private static List<ParameterSet> sSameOriginTestParams =
+        private static final List<ParameterSet> sSameOriginTestParams =
                 Arrays.asList(
                         new ParameterSet().value(true).name("SameOrigin"),
                         new ParameterSet().value(false).name("CrossOrigin"));
@@ -327,7 +327,7 @@ public class Fido2CredentialRequestTest {
     }
 
     private static class TestAuthenticatorImplJni implements InternalAuthenticator.Natives {
-        private Fido2ApiTestHelper.AuthenticatorCallback mCallback;
+        private final Fido2ApiTestHelper.AuthenticatorCallback mCallback;
 
         TestAuthenticatorImplJni(Fido2ApiTestHelper.AuthenticatorCallback callback) {
             mCallback = callback;

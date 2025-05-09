@@ -40,7 +40,7 @@ public class SettingsNavigationHelperTest {
     @Mock private SettingsNavigation mMockLauncher;
     @Mock private Context mMockContext;
 
-    private UserActionTester mActionTester = new UserActionTester();
+    private final UserActionTester mActionTester = new UserActionTester();
 
     @Before
     public void setup() {

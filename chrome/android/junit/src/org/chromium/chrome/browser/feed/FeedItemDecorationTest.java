@@ -63,8 +63,8 @@ public final class FeedItemDecorationTest {
     @Mock private Drawable mBottomRightRoundedDrawable;
     @Mock private Drawable mNotRoundedDrawable;
     private Activity mActivity;
-    private ArrayList<View> mViewList = new ArrayList<>();
-    private ArrayList<Rect> mBoundsList = new ArrayList<>();
+    private final ArrayList<View> mViewList = new ArrayList<>();
+    private final ArrayList<Rect> mBoundsList = new ArrayList<>();
 
     @Before
     public void setUp() {

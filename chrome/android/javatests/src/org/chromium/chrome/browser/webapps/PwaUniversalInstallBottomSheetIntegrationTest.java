@@ -76,9 +76,9 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
 
     private BottomSheetController mBottomSheetController;
 
-    private CallbackHelper mOnInstallCallback = new CallbackHelper();
-    private CallbackHelper mOnAddShortcutCallback = new CallbackHelper();
-    private CallbackHelper mOnOpenAppCallback = new CallbackHelper();
+    private final CallbackHelper mOnInstallCallback = new CallbackHelper();
+    private final CallbackHelper mOnAddShortcutCallback = new CallbackHelper();
+    private final CallbackHelper mOnOpenAppCallback = new CallbackHelper();
 
     @Before
     public void setUp() throws Exception {

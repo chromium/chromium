@@ -34,15 +34,15 @@ class StatusIndicatorMediator
     private static final int UPDATE_COLOR_TRANSITION_DURATION_MS = 400;
 
     private PropertyModel mModel;
-    private BrowserControlsStateProvider mBrowserControlsStateProvider;
-    private HashSet<StatusIndicatorCoordinator.StatusIndicatorObserver> mObservers =
+    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final HashSet<StatusIndicatorCoordinator.StatusIndicatorObserver> mObservers =
             new HashSet<>();
     private final TabObscuringHandler mTabObscuringHandler;
-    private Supplier<Integer> mStatusBarWithoutIndicatorColorSupplier;
+    private final Supplier<Integer> mStatusBarWithoutIndicatorColorSupplier;
     private Runnable mOnShowAnimationEnd;
     private Runnable mRegisterResource;
     private Runnable mUnregisterResource;
-    private Supplier<Boolean> mCanAnimateNativeBrowserControls;
+    private final Supplier<Boolean> mCanAnimateNativeBrowserControls;
     private Callback<Runnable> mInvalidateCompositorView;
     private Runnable mRequestLayout;
 

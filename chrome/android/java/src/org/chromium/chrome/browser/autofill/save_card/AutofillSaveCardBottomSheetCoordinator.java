@@ -43,7 +43,7 @@ public class AutofillSaveCardBottomSheetCoordinator {
     private final Context mContext;
     private final AutofillSaveCardBottomSheetView mView;
     private final AutofillSaveCardBottomSheetMediator mMediator;
-    private PropertyModel mModel;
+    private final PropertyModel mModel;
 
     /**
      * Creates the coordinator.

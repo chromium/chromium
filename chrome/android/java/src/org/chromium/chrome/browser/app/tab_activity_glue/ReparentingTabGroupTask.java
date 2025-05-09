@@ -24,7 +24,7 @@ import java.util.List;
 /** Handles the setup of the Intent to move an entire tab group to a different activity. */
 @NullMarked
 public class ReparentingTabGroupTask {
-    private TabGroupMetadata mTabGroupMetadata;
+    private final TabGroupMetadata mTabGroupMetadata;
 
     /**
      * @param tabGroupMetadata {@link TabGroupMetadata} object contains the tab group properties.

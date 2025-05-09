@@ -42,7 +42,7 @@ public class AutofillSaveIbanBottomSheetCoordinator {
     private final Context mContext;
     private final AutofillSaveIbanBottomSheetMediator mMediator;
     private final AutofillSaveIbanBottomSheetView mView;
-    private PropertyModel mModel;
+    private final PropertyModel mModel;
     protected EditText mNickname;
 
     /**

@@ -114,21 +114,21 @@ public class FeedSurfaceCoordinator
 
     private FeedSurfaceMediator mMediator;
 
-    private UiConfig mUiConfig;
-    private FrameLayout mRootView;
+    private final UiConfig mUiConfig;
+    private final FrameLayout mRootView;
     private boolean mIsActive;
     private int mHeaderCount;
     private int mHeaderIndex;
-    private View mHeaderView;
-    private int mToolbarHeight;
+    private final View mHeaderView;
+    private final int mToolbarHeight;
 
     // Used when Feed is enabled.
-    private @Nullable Profile mProfile;
+    private final @Nullable Profile mProfile;
     private @Nullable FeedSurfaceLifecycleManager mFeedSurfaceLifecycleManager;
     private @Nullable View mSigninPromoView;
     // Feed header fields.
     private @Nullable PropertyModel mSectionHeaderModel;
-    private @Nullable ViewGroup mViewportView;
+    private final @Nullable ViewGroup mViewportView;
     private @Nullable ListModelChangeProcessor<
                     PropertyListModel<PropertyModel, PropertyKey>, SectionHeaderView, PropertyKey>
             mSectionHeaderListModelChangeProcessor;
@@ -136,7 +136,7 @@ public class FeedSurfaceCoordinator
             mSectionHeaderModelChangeProcessor;
     // Feed RecyclerView/xSurface fields.
     private @Nullable FeedListContentManager mContentManager;
-    private @Nullable RecyclerView mRecyclerView;
+    private final @Nullable RecyclerView mRecyclerView;
     private @Nullable FeedSurfaceScope mSurfaceScope;
     private @Nullable FeedSurfaceScopeDependencyProviderImpl mDependencyProvider;
     private @Nullable HybridListRenderer mHybridListRenderer;
@@ -158,7 +158,7 @@ public class FeedSurfaceCoordinator
 
     private boolean mWebFeedHasContent;
     private final ObservableSupplier<Integer> mTabStripHeightSupplier;
-    private Callback<Integer> mTabStripHeightChangeCallback;
+    private final Callback<Integer> mTabStripHeightChangeCallback;
 
     // Used to handle padding adjustment when edge to edge is enabled.
     private @Nullable EdgeToEdgePadAdjuster mEdgePadAdjuster;

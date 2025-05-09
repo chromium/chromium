@@ -27,7 +27,7 @@ public class BrowsingDataCounterBridge {
     }
 
     private long mNativeBrowsingDataCounterBridge;
-    private BrowsingDataCounterCallback mCallback;
+    private final BrowsingDataCounterCallback mCallback;
 
     /**
      * Initializes BrowsingDataCounterBridge.

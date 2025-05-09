@@ -19,7 +19,7 @@ import org.chromium.ui.base.ActivityWindowAndroid;
  */
 public class CustomTabOrientationController {
     private final ActivityWindowAndroid mActivityWindowAndroid;
-    private int mLockScreenOrientation;
+    private final int mLockScreenOrientation;
 
     public CustomTabOrientationController(
             ActivityWindowAndroid windowAndroid,

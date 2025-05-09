@@ -93,9 +93,9 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
 
     @Mock private Verifier mVerifier;
 
-    private ObservableSupplierImpl<BookmarkModel> mBookmarkModelSupplier =
+    private final ObservableSupplierImpl<BookmarkModel> mBookmarkModelSupplier =
             new ObservableSupplierImpl<>();
-    private Supplier<ReadAloudController> mReadAloudControllerSupplier =
+    private final Supplier<ReadAloudController> mReadAloudControllerSupplier =
             new ObservableSupplierImpl<>();
 
     @Before

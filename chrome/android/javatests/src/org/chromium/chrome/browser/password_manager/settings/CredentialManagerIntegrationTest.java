@@ -70,7 +70,7 @@ public class CredentialManagerIntegrationTest {
     public SettingsActivityTestRule<MainSettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(MainSettings.class);
 
-    private FakeCredentialManagerLauncherFactoryImpl mFakeLauncherFactory =
+    private final FakeCredentialManagerLauncherFactoryImpl mFakeLauncherFactory =
             new FakeCredentialManagerLauncherFactoryImpl();
 
     final PayloadCallbackHelper<PendingIntent> mSuccessCallbackHelper =

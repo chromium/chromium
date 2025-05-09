@@ -29,7 +29,7 @@ public class AreaMotionEventFilter extends MotionEventFilter {
     private boolean mHoverExitedArea;
 
     /** The handler for this instance that is used to notify owner of events/actions. */
-    private MotionEventHandler mHandler;
+    private final MotionEventHandler mHandler;
 
     /**
      * Creates a {@link AreaMotionEventFilter}.

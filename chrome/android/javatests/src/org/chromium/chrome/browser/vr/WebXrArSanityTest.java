@@ -46,12 +46,12 @@ public class WebXrArSanityTest {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
 
     @ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             ArTestRuleUtils.generateDefaultTestRuleParameters();
 
     @Rule public RuleChain mRuleChain;
 
-    private ChromeActivityTestRule mTestRule;
+    private final ChromeActivityTestRule mTestRule;
     private WebXrArTestFramework mWebXrArTestFramework;
 
     public WebXrArSanityTest(Callable<ChromeActivityTestRule> callable) throws Exception {

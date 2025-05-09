@@ -83,7 +83,7 @@ public class MediaNotificationTestBase {
     }
 
     class MockListenerService extends SplitCompatService {
-        private MockListenerServiceImpl mImpl;
+        private final MockListenerServiceImpl mImpl;
 
         MockListenerService() {
             super(null);

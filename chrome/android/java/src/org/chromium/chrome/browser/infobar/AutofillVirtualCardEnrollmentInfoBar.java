@@ -38,7 +38,7 @@ public class AutofillVirtualCardEnrollmentInfoBar extends ConfirmInfoBar {
     private Bitmap mIssuerIcon;
     private String mCardLabel;
     private int mIconDrawableId = -1;
-    private String mTitleText;
+    private final String mTitleText;
     private String mDescriptionText;
     private String mLearnMoreLinkText;
     private final LinkedList<LegalMessageLine> mGoogleLegalMessageLines =

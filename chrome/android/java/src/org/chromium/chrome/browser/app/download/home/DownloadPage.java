@@ -26,7 +26,7 @@ public class DownloadPage extends BasicNativePage implements DownloadManagerCoor
     private ActivityStateListener mActivityStateListener;
 
     private DownloadManagerCoordinator mDownloadCoordinator;
-    private String mTitle;
+    private final String mTitle;
 
     /**
      * Create a new instance of the downloads page.

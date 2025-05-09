@@ -28,16 +28,16 @@ import java.util.Locale;
 /** Convenience wrapper for parameters to {@link HostBrowserLauncher} methods. */
 @NullMarked
 public class HostBrowserLauncherParams {
-    private boolean mIsArcChromeOs;
-    private PackageNameAndComponentName mHostBrowserPackageNameAndComponentName;
-    private boolean mDialogShown;
-    private Intent mOriginalIntent;
-    private String mStartUrl;
-    private int mSource;
-    private boolean mForceNavigation;
-    private long mLaunchTimeMs;
-    private long mSplashShownTimeMs;
-    private @Nullable String mSelectedShareTargetActivityClassName;
+    private final boolean mIsArcChromeOs;
+    private final PackageNameAndComponentName mHostBrowserPackageNameAndComponentName;
+    private final boolean mDialogShown;
+    private final Intent mOriginalIntent;
+    private final String mStartUrl;
+    private final int mSource;
+    private final boolean mForceNavigation;
+    private final long mLaunchTimeMs;
+    private final long mSplashShownTimeMs;
+    private final @Nullable String mSelectedShareTargetActivityClassName;
 
     /**
      * Constructs a HostBrowserLauncherParams object from the passed in Intent and from <meta-data>

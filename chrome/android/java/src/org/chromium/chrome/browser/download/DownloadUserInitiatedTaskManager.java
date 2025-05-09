@@ -58,7 +58,7 @@ public class DownloadUserInitiatedTaskManager extends DownloadContinuityManager 
      * maintaining a boolean {@code mHasUnseenCallbacks} which is set when a new callback is
      * received.
      */
-    private Map<Integer, TaskFinishedCallback> mTaskNotificationCallbacks = new HashMap<>();
+    private final Map<Integer, TaskFinishedCallback> mTaskNotificationCallbacks = new HashMap<>();
 
     /**
      * Accounts for callbacks for jobs started that haven't yet been attached with a notification.

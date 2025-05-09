@@ -121,7 +121,7 @@ public class NewTabPageLayout extends LinearLayout {
 
     private FeedSurfaceScrollDelegate mScrollDelegate;
 
-    private int mTileViewWidth;
+    private final int mTileViewWidth;
     private Integer mInitialTileNum;
     private Boolean mIsMvtAllFilledLandscape;
     private Boolean mIsMvtAllFilledPortrait;

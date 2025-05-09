@@ -83,7 +83,7 @@ public class BluetoothChooserDialogTest {
     private int mRestartSearchCount;
 
     private class TestBluetoothChooserDialogJni implements BluetoothChooserDialog.Natives {
-        private BluetoothChooserDialog mBluetoothChooserDialog;
+        private final BluetoothChooserDialog mBluetoothChooserDialog;
 
         TestBluetoothChooserDialogJni(BluetoothChooserDialog dialog) {
             mBluetoothChooserDialog = dialog;
@@ -606,7 +606,7 @@ public class BluetoothChooserDialogTest {
     }
 
     private static class TestAndroidPermissionDelegate implements AndroidPermissionDelegate {
-        Dialog mDialog;
+        final Dialog mDialog;
         PermissionCallback mCallback;
         String[] mPermissionsRequested;
         public boolean mLocationGranted;

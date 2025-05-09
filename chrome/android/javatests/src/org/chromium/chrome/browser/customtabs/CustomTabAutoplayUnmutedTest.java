@@ -41,7 +41,7 @@ public final class CustomTabAutoplayUnmutedTest {
                             .value(ActivityType.TRUSTED_WEB_ACTIVITY)
                             .name("TrustedWebActivity"));
 
-    private @ActivityType int mActivityType;
+    private final @ActivityType int mActivityType;
 
     @Rule public final ChromeActivityTestRule<?> mActivityTestRule;
 

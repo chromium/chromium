@@ -56,7 +56,7 @@ public class ScreenshotMonitorTest {
     private TestScreenshotMonitorDelegate mTestScreenshotMonitorDelegate;
     private ContentObserver mContentObserver;
 
-    private MockContentResolver mMockContentResolver = new MockContentResolver();
+    private final MockContentResolver mMockContentResolver = new MockContentResolver();
 
     @Mock private DisplayAndroid mDisplayAndroid;
 

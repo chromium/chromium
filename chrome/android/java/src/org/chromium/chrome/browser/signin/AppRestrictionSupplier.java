@@ -49,8 +49,8 @@ public class AppRestrictionSupplier {
     private boolean mInitialized;
     private boolean mHasAppRestriction;
     private long mCompletionElapsedRealtimeMs;
-    private Queue<Callback<Boolean>> mCallbacks = new LinkedList<>();
-    private Queue<Callback<Long>> mCompletionTimeCallbacks = new LinkedList<>();
+    private final Queue<Callback<Boolean>> mCallbacks = new LinkedList<>();
+    private final Queue<Callback<Long>> mCompletionTimeCallbacks = new LinkedList<>();
 
     private AsyncTask<Boolean> mFetchAppRestrictionAsyncTask;
 

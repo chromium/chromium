@@ -21,7 +21,7 @@ import org.chromium.net.NetworkChangeNotifier;
  * URL.
  */
 public class WebApkSplashNetworkErrorObserver extends EmptyTabObserver {
-    private Activity mActivity;
+    private final Activity mActivity;
     private WebApkOfflineDialog mOfflineDialog;
 
     private boolean mDidShowNetworkErrorDialog;

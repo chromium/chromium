@@ -93,7 +93,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     private static Integer sIconThresholdForTesting;
 
     /** The activity context to use. */
-    private Context mContext;
+    private final Context mContext;
 
     /** The minimum shell version the WebAPK needs to be using. */
     private static int sWebApkTargetShellVersion;

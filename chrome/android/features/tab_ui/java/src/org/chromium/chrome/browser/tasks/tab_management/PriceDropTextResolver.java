@@ -18,8 +18,8 @@ import org.chromium.ui.base.LocalizationUtils;
 
 /** A {@link TextResolver} for the {@link TabCardLabelView} when showing a price drop. */
 public class PriceDropTextResolver implements TextResolver {
-    private String mPrice;
-    private String mPreviousPrice;
+    private final String mPrice;
+    private final String mPreviousPrice;
 
     /**
      * @param price The current price.

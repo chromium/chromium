@@ -82,8 +82,8 @@ public class TabListEditorActionUnitTestHelper {
      * {@link TabListEditorAction}.
      */
     public static class TabListHolder {
-        private List<Tab> mSelectedTabs;
-        private List<Tab> mSelectedAndRelatedTabs;
+        private final List<Tab> mSelectedTabs;
+        private final List<Tab> mSelectedAndRelatedTabs;
 
         /**
          * @param selectedTabs the selected tabs in the TabListEditor.

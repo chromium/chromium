@@ -93,7 +93,7 @@ public abstract class XrTestFramework {
         int FAILED = 2;
     }
 
-    private ChromeActivityTestRule mRule;
+    private final ChromeActivityTestRule mRule;
 
     static final int getShortPollTimeout() {
         return getPollTimeout(1000);

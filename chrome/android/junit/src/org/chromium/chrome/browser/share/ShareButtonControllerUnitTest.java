@@ -72,7 +72,7 @@ public final class ShareButtonControllerUnitTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Tracker mTracker;
 
-    private Configuration mConfiguration = new Configuration();
+    private final Configuration mConfiguration = new Configuration();
     private ShareButtonController mShareButtonController;
 
     @Before

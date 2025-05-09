@@ -147,7 +147,7 @@ class CreditCardAccessorySheetViewBinder {
     /** View which represents a single Google Wallet loyalty card and its fields. */
     static class LoyaltyCardInfoViewHolder
             extends ElementViewHolder<KeyboardAccessoryData.LoyaltyCardInfo, LoyaltyCardInfoView> {
-        private Function<KeyboardAccessoryData.LoyaltyCardInfo, Drawable>
+        private final Function<KeyboardAccessoryData.LoyaltyCardInfo, Drawable>
                 mLoyaltyCardDrawableFunction;
 
         LoyaltyCardInfoViewHolder(

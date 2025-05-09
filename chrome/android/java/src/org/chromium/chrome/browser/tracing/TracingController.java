@@ -86,7 +86,7 @@ public class TracingController {
     // Only set while a trace is in progress to avoid leaking native resources.
     private TracingControllerAndroid mNativeController;
 
-    private ObserverList<Observer> mObservers = new ObserverList<>();
+    private final ObserverList<Observer> mObservers = new ObserverList<>();
     private @State int mState = State.INITIALIZING;
     private Set<String> mKnownCategories;
     private File mTracingTempFile;
@@ -367,7 +367,7 @@ public class TracingController {
     }
 
     private static class TracingTempFileDeletion implements Runnable {
-        private File mTempFile;
+        private final File mTempFile;
 
         public TracingTempFileDeletion(File file) {
             mTempFile = file;

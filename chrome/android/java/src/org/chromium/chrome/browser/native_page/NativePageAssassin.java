@@ -32,7 +32,7 @@ public class NativePageAssassin {
      * The most recently hidden tabs, limited to MAX_RECENT_TABS elements, ordered from oldest to
      * newest. Visible tabs are not included in this list.
      */
-    private ArrayList<WeakReference<Tab>> mRecentTabs =
+    private final ArrayList<WeakReference<Tab>> mRecentTabs =
             new ArrayList<WeakReference<Tab>>(MAX_RECENT_TABS + 1);
 
     private NativePageAssassin() {}

@@ -9,7 +9,6 @@ import static org.chromium.chrome.browser.vr.WebXrArTestFramework.POLL_TIMEOUT_S
 
 import androidx.test.filters.MediumTest;
 
-import org.chromium.base.test.util.DisabledTest;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,6 +21,7 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.modaldialog.ChromeModalDialogTestUtils;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
@@ -45,12 +45,12 @@ import java.util.concurrent.TimeoutException;
 })
 public class WebXrArSessionTest {
     @ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             ArTestRuleUtils.generateDefaultTestRuleParameters();
 
     @Rule public RuleChain mRuleChain;
 
-    private ChromeActivityTestRule mTestRule;
+    private final ChromeActivityTestRule mTestRule;
     private WebXrArTestFramework mWebXrArTestFramework;
 
     public WebXrArSessionTest(Callable<ChromeActivityTestRule> callable) throws Exception {

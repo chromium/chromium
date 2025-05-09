@@ -69,7 +69,8 @@ public class MessageCardProviderTest {
     private MessageService mTestingService;
     private MessageService mPriceService;
 
-    private MessageCardView.DismissActionProvider mUiDismissActionProvider = (messageType) -> {};
+    private final MessageCardView.DismissActionProvider mUiDismissActionProvider =
+            (messageType) -> {};
 
     @Mock private PriceMessageService.PriceMessageData mPriceMessageData;
 

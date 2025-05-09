@@ -124,13 +124,13 @@ public class FeedSurfaceCoordinatorTest {
         }
     }
 
-    private class TestSurfaceDelegate implements FeedSurfaceDelegate {
+    private static class TestSurfaceDelegate implements FeedSurfaceDelegate {
         @Override
         public FeedSurfaceLifecycleManager createStreamLifecycleManager(
                 Activity activity, SurfaceCoordinator coordinator, Profile profile) {
-            mLifecycleManager =
+            TestLifecycleManager lifecycleManager =
                     new TestLifecycleManager(activity, (FeedSurfaceCoordinator) coordinator);
-            return mLifecycleManager;
+            return lifecycleManager;
         }
 
         @Override
@@ -143,7 +143,7 @@ public class FeedSurfaceCoordinatorTest {
     }
 
     private static class TestTabModel extends EmptyTabModel {
-        public ArrayList<TabModelObserver> mObservers = new ArrayList<TabModelObserver>();
+        public final ArrayList<TabModelObserver> mObservers = new ArrayList<TabModelObserver>();
 
         @Override
         public void addObserver(TabModelObserver observer) {
@@ -151,15 +151,14 @@ public class FeedSurfaceCoordinatorTest {
         }
     }
 
-    private TestTabModel mTabModel = new TestTabModel();
-    private TestTabModel mTabModelIncognito = new TestTabModel();
+    private final TestTabModel mTabModel = new TestTabModel();
+    private final TestTabModel mTabModelIncognito = new TestTabModel();
 
     private FeedSurfaceCoordinator mCoordinator;
 
     private Activity mActivity;
     private RecyclerView mRecyclerView;
     @Mock private LinearLayoutManager mLayoutManager;
-    private TestLifecycleManager mLifecycleManager;
 
     // Mocked Direct dependencies.
     @Mock private SnackbarManager mSnackbarManager;

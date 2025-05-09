@@ -107,7 +107,7 @@ public class ShareDelegateImplUnitTest {
 
     @Mock private DataProtectionBridge.Natives mDataProtectionBridgeMock;
 
-    private ArgumentCaptor<ShareParams> mShareParamsCaptor =
+    private final ArgumentCaptor<ShareParams> mShareParamsCaptor =
             ArgumentCaptor.forClass(ShareParams.class);
 
     private ShareDelegateImpl mShareDelegate;

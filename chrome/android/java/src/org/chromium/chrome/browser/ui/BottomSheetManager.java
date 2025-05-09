@@ -55,21 +55,21 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
     private final ExpandedSheetHelper mExpandedSheetHelper;
 
     /** A browser controls manager for polling browser controls offsets. */
-    private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
+    private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
 
     /**
      * A handle to the {@link ManagedBottomSheetController} this class manages interactions with.
      */
-    private ManagedBottomSheetController mSheetController;
+    private final ManagedBottomSheetController mSheetController;
 
     /** A mechanism for accessing the currently active tab. */
-    private ActivityTabProvider mTabProvider;
+    private final ActivityTabProvider mTabProvider;
 
     /** A supplier of a snackbar manager for the bottom sheet. */
-    private Supplier<SnackbarManager> mSnackbarManager;
+    private final Supplier<SnackbarManager> mSnackbarManager;
 
     /** The manager for overlay panels to attach listeners to. */
-    private Supplier<OverlayPanelManager> mOverlayPanelManager;
+    private final Supplier<OverlayPanelManager> mOverlayPanelManager;
 
     /** The last known activity tab, if available. */
     private Tab mLastActivityTab;

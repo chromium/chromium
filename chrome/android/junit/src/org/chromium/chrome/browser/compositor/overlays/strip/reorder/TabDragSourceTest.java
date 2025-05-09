@@ -158,7 +158,7 @@ public class TabDragSourceTest {
     private Tab mTabBeingDragged;
     private Tab mGroupedTab1;
     private Tab mGroupedTab2;
-    private ArrayList<Tab> mTabGroupBeingDragged = new ArrayList();
+    private final ArrayList<Tab> mTabGroupBeingDragged = new ArrayList();
     private TabGroupMetadata mTabGroupMetadata;
     private static final PointF DRAG_START_POINT = new PointF(250, 0);
     private static final float TAB_POSITION_X = 200f;
@@ -1563,7 +1563,7 @@ public class TabDragSourceTest {
 
     class DragEventInvoker {
 
-        private boolean mIsGroupDrag;
+        private final boolean mIsGroupDrag;
 
         DragEventInvoker(boolean isGroupDrag, boolean isGroupShared) {
             mIsGroupDrag = isGroupDrag;

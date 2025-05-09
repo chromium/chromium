@@ -54,8 +54,8 @@ public class SearchActivityClientImplUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock ResourceRequestBodyJni mResourceRequestBodyJni;
 
-    private Activity mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
-    private SearchActivityClientImpl mClient =
+    private final Activity mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+    private final SearchActivityClientImpl mClient =
             new SearchActivityClientImpl(mActivity, IntentOrigin.CUSTOM_TAB);
 
     @Before

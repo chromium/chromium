@@ -41,7 +41,7 @@ public class CustomTabCookiesFetcherUnitTest {
 
     @Mock private CookiesFetcher.Natives mCookiesFetcherJni;
 
-    private PausedExecutorService mExecutor = new PausedExecutorService();
+    private final PausedExecutorService mExecutor = new PausedExecutorService();
 
     @Before
     public void setUp() {

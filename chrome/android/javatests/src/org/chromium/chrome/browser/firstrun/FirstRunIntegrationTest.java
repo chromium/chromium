@@ -142,7 +142,7 @@ public class FirstRunIntegrationTest {
     private Instrumentation mInstrumentation;
     private Context mContext;
 
-    private FirstRunActivityTestObserver mTestObserver = new FirstRunActivityTestObserver();
+    private final FirstRunActivityTestObserver mTestObserver = new FirstRunActivityTestObserver();
     private Activity mLastActivity;
 
     @Before
@@ -1389,7 +1389,7 @@ public class FirstRunIntegrationTest {
      */
     private static class TestFirstRunFlowSequencerDelegate
             extends FirstRunFlowSequencer.FirstRunFlowSequencerDelegate {
-        private FirstRunPagesTestCase mTestCase;
+        private final FirstRunPagesTestCase mTestCase;
 
         public TestFirstRunFlowSequencerDelegate(
                 FirstRunPagesTestCase testCase, OneshotSupplier<ProfileProvider> profileProvider) {

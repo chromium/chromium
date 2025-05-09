@@ -585,7 +585,7 @@ public class TabsTest {
     }
 
     private static class FocusListener implements View.OnFocusChangeListener {
-        private View mView;
+        private final View mView;
         private int mTimesFocused;
         private int mTimesUnfocused;
 

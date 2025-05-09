@@ -13,7 +13,7 @@ public class InterceptNavigationDelegateTabHelper implements UserData {
             InterceptNavigationDelegateTabHelper.class;
 
     private InterceptNavigationDelegateImpl mInterceptNavigationDelegate;
-    private InterceptNavigationDelegateClientImpl mInterceptNavigationDelegateClient;
+    private final InterceptNavigationDelegateClientImpl mInterceptNavigationDelegateClient;
 
     public static void setDelegateForTesting(Tab tab, InterceptNavigationDelegateImpl delegate) {
         InterceptNavigationDelegateTabHelper helper =

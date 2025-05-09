@@ -26,7 +26,7 @@ public class TabArchiveTimeDeltaPreference extends Preference
     private static final int[] ARCHIVE_TIME_DELTA_DAYS_OPTS = new int[] {0, 7, 14, 21};
     private static final String TIME_DELTA_HISTOGRAM = "Tabs.ArchiveSettings.TimeDeltaPreference";
 
-    private RadioButtonWithDescription[] mRadioButtons = new RadioButtonWithDescription[4];
+    private final RadioButtonWithDescription[] mRadioButtons = new RadioButtonWithDescription[4];
     private TabArchiveSettings mTabArchiveSettings;
 
     public TabArchiveTimeDeltaPreference(Context context, AttributeSet attrs) {

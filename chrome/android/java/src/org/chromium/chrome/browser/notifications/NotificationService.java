@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.base.SplitCompatIntentService;
 public class NotificationService extends SplitCompatIntentService {
     private static final String TAG = NotificationService.class.getSimpleName();
 
+    @SuppressWarnings("FieldCanBeFinal") // @IdentifierNameString requires non-final
     private static @IdentifierNameString String sImplClassName =
             "org.chromium.chrome.browser.notifications.NotificationServiceImpl";
 

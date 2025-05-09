@@ -53,7 +53,7 @@ public class ImmersiveModeControllerTest {
     @Mock public ActivityWindowAndroid mWindowAndroid;
     @Mock public Window mWindow;
     @Mock public View mDecorView;
-    private WindowManager.LayoutParams mLayoutParams = new WindowManager.LayoutParams();
+    private final WindowManager.LayoutParams mLayoutParams = new WindowManager.LayoutParams();
     public UnownedUserDataHost mWindowUserDataHost = new UnownedUserDataHost();
 
     private ImmersiveModeController mController;

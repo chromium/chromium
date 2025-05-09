@@ -281,7 +281,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private final SessionHolder<CustomTabsSessionToken> mSession;
     private final boolean mIsTrustedIntent;
     private final Intent mKeepAliveServiceIntent;
-    private Bundle mAnimationBundle;
+    private final Bundle mAnimationBundle;
 
     private final int mUiType;
     private final int mTitleVisibilityState;
@@ -296,22 +296,22 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Nullable private final TrustedWebActivityDisplayMode mTrustedWebActivityDisplayMode;
     @Nullable private String mUrlToLoad;
 
-    private boolean mEnableUrlBarHiding;
+    private final boolean mEnableUrlBarHiding;
     private boolean mInteractWithBackground;
     private List<CustomButtonParams> mCustomButtonParams;
     private Drawable mCloseButtonIcon;
-    private boolean mIsCloseButtonEnabled;
-    private List<Pair<String, PendingIntent>> mMenuEntries = new ArrayList<>();
+    private final boolean mIsCloseButtonEnabled;
+    private final List<Pair<String, PendingIntent>> mMenuEntries = new ArrayList<>();
     private boolean mShowShareItemInMenu;
-    private List<CustomButtonParams> mToolbarButtons = new ArrayList<>(1);
-    private List<CustomButtonParams> mBottombarButtons = new ArrayList<>(2);
-    private List<CustomButtonParams> mGoogleBottomBarButtons = new ArrayList<>();
-    private RemoteViews mRemoteViews;
-    @ActivitySideSheetDecorationType private int mSideSheetDecorationType;
-    @ActivitySideSheetRoundedCornersPosition private int mSideSheetRoundedCornersPosition;
-    private int[] mClickableViewIds;
-    private PendingIntent mRemoteViewsPendingIntent;
-    private PendingIntent mSecondaryToolbarSwipeUpPendingIntent;
+    private final List<CustomButtonParams> mToolbarButtons = new ArrayList<>(1);
+    private final List<CustomButtonParams> mBottombarButtons = new ArrayList<>(2);
+    private final List<CustomButtonParams> mGoogleBottomBarButtons = new ArrayList<>();
+    private final RemoteViews mRemoteViews;
+    @ActivitySideSheetDecorationType private final int mSideSheetDecorationType;
+    @ActivitySideSheetRoundedCornersPosition private final int mSideSheetRoundedCornersPosition;
+    private final int[] mClickableViewIds;
+    private final PendingIntent mRemoteViewsPendingIntent;
+    private final PendingIntent mSecondaryToolbarSwipeUpPendingIntent;
     private PendingIntent.OnFinished mOnFinishedForTesting;
     private @DisplayMode.EnumType int mResolvedDisplayMode = DisplayMode.UNDEFINED;
 

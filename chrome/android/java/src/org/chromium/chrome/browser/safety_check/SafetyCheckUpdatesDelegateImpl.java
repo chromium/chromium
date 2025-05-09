@@ -21,7 +21,7 @@ import java.lang.ref.WeakReference;
  * modularized as well, this class will not be needed anymore.
  */
 public class SafetyCheckUpdatesDelegateImpl implements SafetyCheckUpdatesDelegate {
-    private OmahaService mOmaha;
+    private final OmahaService mOmaha;
 
     /**
      * Creates a new instance of the glue class to be passed to {@link SafetyCheckSettingsFragment}.

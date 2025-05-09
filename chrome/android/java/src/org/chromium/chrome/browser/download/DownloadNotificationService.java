@@ -99,11 +99,11 @@ public class DownloadNotificationService {
 
     private static DownloadNotificationService sInstanceForTesting;
 
-    private BaseNotificationManagerProxy mNotificationManager;
+    private final BaseNotificationManagerProxy mNotificationManager;
     private Bitmap mDownloadSuccessLargeIcon;
-    private DownloadSharedPreferenceHelper mDownloadSharedPreferenceHelper;
+    private final DownloadSharedPreferenceHelper mDownloadSharedPreferenceHelper;
     private DownloadForegroundServiceManager mDownloadForegroundServiceManager;
-    private DownloadUserInitiatedTaskManager mDownloadUserInitiatedTaskManager;
+    private final DownloadUserInitiatedTaskManager mDownloadUserInitiatedTaskManager;
 
     private static class LazyHolder {
         private static final DownloadNotificationService INSTANCE =

@@ -35,7 +35,7 @@ public class StripStackerUnitTest {
     private static final float STRIP_WIDTH = 200;
     private static final float BUTTON_WIDTH = 10;
 
-    private StripStacker mTarget = new TestStacker();
+    private final StripStacker mTarget = new TestStacker();
 
     @Mock private StripLayoutTab mTab1;
     @Mock private StripLayoutTab mTab2;

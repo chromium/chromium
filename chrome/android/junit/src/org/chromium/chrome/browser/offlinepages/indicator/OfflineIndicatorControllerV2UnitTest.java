@@ -53,7 +53,7 @@ public class OfflineIndicatorControllerV2UnitTest {
     @Mock private OfflineIndicatorMetricsDelegate mMetricsDelegate;
 
     private Context mContext;
-    private ObservableSupplierImpl<Boolean> mIsUrlBarFocusedSupplier =
+    private final ObservableSupplierImpl<Boolean> mIsUrlBarFocusedSupplier =
             new ObservableSupplierImpl<>();
     private OfflineIndicatorControllerV2 mController;
     private long mElapsedTimeMs;

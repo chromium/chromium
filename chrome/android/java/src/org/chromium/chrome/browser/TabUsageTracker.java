@@ -43,7 +43,7 @@ public class TabUsageTracker
     private final TabModelSelector mModelSelector;
     private @Nullable TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
     private boolean mApplicationResumed;
-    private CallbackController mCallbackController = new CallbackController();
+    private final CallbackController mCallbackController = new CallbackController();
 
     /**
      * This method is used to initialize the TabUsageTracker.

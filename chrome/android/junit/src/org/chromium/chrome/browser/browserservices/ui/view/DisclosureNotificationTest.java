@@ -53,7 +53,7 @@ public class DisclosureNotificationTest {
     @Mock public TrustedWebActivityModel.DisclosureEventsCallback mCallback;
     @Mock public NotificationManagerProxy mNotificationManager;
 
-    private TrustedWebActivityModel mModel = new TrustedWebActivityModel();
+    private final TrustedWebActivityModel mModel = new TrustedWebActivityModel();
     private DisclosureNotification mNotification;
 
     @Before

@@ -60,7 +60,7 @@ public class IncognitoNewTabPageUnitTest {
 
     private TestActivity mActivity;
     private IncognitoNewTabPage mIncognitoNtp;
-    private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
+    private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
             new ObservableSupplierImpl<>();
 
     @Before

@@ -110,7 +110,7 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
     private @FindLocationBarState int mCurrentState = FindLocationBarState.HIDDEN;
     private @FindLocationBarState int mDesiredState = FindLocationBarState.HIDDEN;
 
-    private Handler mHandler = new Handler();
+    private final Handler mHandler = new Handler();
 
     /** Subclasses EditText in order to intercept BACK key presses. */
     @SuppressLint("Instantiatable")

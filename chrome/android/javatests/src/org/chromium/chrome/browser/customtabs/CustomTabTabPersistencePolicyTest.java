@@ -84,7 +84,7 @@ public class CustomTabTabPersistencePolicyTest {
 
     private TestTabModelDirectory mMockDirectory;
     private AdvancedMockContext mAppContext;
-    private SequencedTaskRunner mSequencedTaskRunner =
+    private final SequencedTaskRunner mSequencedTaskRunner =
             PostTask.createSequencedTaskRunner(TaskTraits.USER_VISIBLE);
 
     @Before

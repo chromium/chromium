@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 package org.chromium.webapk.lib.client;
-import org.chromium.build.annotations.NullMarked;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -15,9 +14,10 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.webapk.lib.common.identity_service.IIdentityService;
-import org.chromium.build.annotations.Nullable;
 
 /**
  * Provides APIs for browsers to communicate with WebAPK Identity services. Each WebAPK has its own
@@ -53,7 +53,7 @@ public class WebApkIdentityServiceClient {
     private static @Nullable WebApkIdentityServiceClient sInstance;
 
     /** Manages connections between the browser application and WebAPK Identity services. */
-    private WebApkServiceConnectionManager mConnectionManager;
+    private final WebApkServiceConnectionManager mConnectionManager;
 
     public static WebApkIdentityServiceClient getInstance(@TaskTraits int uiThreadTaskTraits) {
         if (sInstance == null) {

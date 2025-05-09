@@ -36,8 +36,8 @@ public class SplashContentProvider extends ContentProvider
         /** Time in milliseconds after constructing the object to clear the cached data. */
         private static final int CLEAR_CACHED_DATA_INTERVAL_MS = 10000;
 
-        private byte[] mCachedData;
-        private Handler mHandler;
+        private final byte[] mCachedData;
+        private final Handler mHandler;
 
         public ExpiringData(byte[] cachedData, Runnable expiryTask) {
             mCachedData = cachedData;
@@ -64,7 +64,7 @@ public class SplashContentProvider extends ContentProvider
     /** The encoding type of the last image vended by the ContentProvider. */
     private static Bitmap.@Nullable CompressFormat sEncodingFormat;
 
-    private static AtomicReference<ExpiringData> sCachedSplashBytes = new AtomicReference<>();
+    private static final AtomicReference<ExpiringData> sCachedSplashBytes = new AtomicReference<>();
 
     /** The URI handled by this content provider. */
     private String mContentProviderUri;

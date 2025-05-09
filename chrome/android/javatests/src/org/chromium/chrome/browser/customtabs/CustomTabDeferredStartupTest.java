@@ -64,7 +64,7 @@ public class CustomTabDeferredStartupTest {
     }
 
     static class InitialTabCreationObserver extends CustomTabActivityTabProvider.Observer {
-        private TabObserver mObserver;
+        private final TabObserver mObserver;
 
         public InitialTabCreationObserver(TabObserver observer) {
             mObserver = observer;
@@ -81,7 +81,7 @@ public class CustomTabDeferredStartupTest {
                     ApplicationStatus.ActivityStateListener,
                     InflationObserver {
         private BaseCustomTabActivity mActivity;
-        private TabObserver mObserver;
+        private final TabObserver mObserver;
 
         public NewTabObserver(TabObserver observer) {
             mObserver = observer;
@@ -135,9 +135,9 @@ public class CustomTabDeferredStartupTest {
             super.queueDeferredTasksOnIdleHandler();
         }
 
-        private CallbackHelper mHelper;
-        private PageLoadFinishedTabObserver mObserver;
-        private ChromeActivityTestRule<?> mActivityTestRule;
+        private final CallbackHelper mHelper;
+        private final PageLoadFinishedTabObserver mObserver;
+        private final ChromeActivityTestRule<?> mActivityTestRule;
     }
 
     @ClassParameter
@@ -149,7 +149,7 @@ public class CustomTabDeferredStartupTest {
                             .value(ActivityType.TRUSTED_WEB_ACTIVITY)
                             .name("TrustedWebActivity"));
 
-    private @ActivityType int mActivityType;
+    private final @ActivityType int mActivityType;
 
     @Rule public final ChromeActivityTestRule<?> mActivityTestRule;
 

@@ -40,7 +40,7 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TabObserverRegistrarTest {
     private static class LoadUrlTabObserver extends CustomTabTabObserver {
-        private List<String> mUrlLoadRequests = new ArrayList<>();
+        private final List<String> mUrlLoadRequests = new ArrayList<>();
 
         List<String> getLoadUrlRequests() {
             return mUrlLoadRequests;

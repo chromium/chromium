@@ -103,7 +103,7 @@ class NavigationHandler implements TouchEventObserver {
     private final Handler mHandler = new Handler();
 
     private GestureDetector mDetector;
-    private View.OnAttachStateChangeListener mAttachStateListener;
+    private final View.OnAttachStateChangeListener mAttachStateListener;
     private final BackActionDelegate mBackActionDelegate;
     @Nullable private TabOnBackGestureHandler mTabOnBackGestureHandler;
     private Tab mTab;
@@ -111,7 +111,7 @@ class NavigationHandler implements TouchEventObserver {
 
     private @GestureState int mState;
 
-    private PropertyModel mModel;
+    private final PropertyModel mModel;
 
     // Total horizontal pull offset for a swipe gesture.
     private float mPullOffsetX;
@@ -123,7 +123,7 @@ class NavigationHandler implements TouchEventObserver {
     private int mIncorrectEdgeSwipeCount;
     private boolean mBackGestureForTabHistoryInProgress;
     private boolean mStartNavDuringOngoingGesture;
-    private TabObserver mTabObserver =
+    private final TabObserver mTabObserver =
             new EmptyTabObserver() {
                 @Override
                 public void onDidStartNavigationInPrimaryMainFrame(

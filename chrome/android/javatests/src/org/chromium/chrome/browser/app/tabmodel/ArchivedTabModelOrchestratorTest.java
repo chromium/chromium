@@ -82,7 +82,7 @@ public class ArchivedTabModelOrchestratorTest {
     private static final String TEST_PATH_2 = "/chrome/test/data/android/google.html";
 
     private static class FakeDeferredStartupHandler extends DeferredStartupHandler {
-        private List<Runnable> mTasks = new ArrayList<>();
+        private final List<Runnable> mTasks = new ArrayList<>();
 
         @Override
         public void addDeferredTask(Runnable task) {

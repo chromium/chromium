@@ -14,7 +14,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
  * the state changes.
  */
 public class TabListOnScrollListener extends RecyclerView.OnScrollListener {
-    private ObservableSupplierImpl<Boolean> mYOffsetNonZeroSupplier =
+    private final ObservableSupplierImpl<Boolean> mYOffsetNonZeroSupplier =
             new ObservableSupplierImpl<>();
 
     public ObservableSupplier<Boolean> getYOffsetNonZeroSupplier() {

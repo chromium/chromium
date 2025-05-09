@@ -37,7 +37,7 @@ public class UndoRefocusHelper {
     private int mSelectedTabIdWhenTabClosed = Tab.INVALID_TAB_ID;
     private boolean mTabSwitcherActive;
     private Callback<LayoutManagerImpl> mLayoutManagerSupplierCallback;
-    private boolean mIsTablet;
+    private final boolean mIsTablet;
     private int mActivePendingTabClosures;
     private final List<Set<Tab>> mTabsClosedTogether = new ArrayList<>();
 

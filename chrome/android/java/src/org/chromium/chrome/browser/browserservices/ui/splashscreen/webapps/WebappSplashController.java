@@ -32,9 +32,9 @@ import org.chromium.webapk.lib.common.splash.SplashLayout;
 public class WebappSplashController implements SplashDelegate {
     public static final int HIDE_ANIMATION_DURATION_MS = 300;
 
-    private SplashController mSplashController;
-    private TabObserverRegistrar mTabObserverRegistrar;
-    private WebappInfo mWebappInfo;
+    private final SplashController mSplashController;
+    private final TabObserverRegistrar mTabObserverRegistrar;
+    private final WebappInfo mWebappInfo;
 
     private WebApkSplashNetworkErrorObserver mWebApkNetworkErrorObserver;
 

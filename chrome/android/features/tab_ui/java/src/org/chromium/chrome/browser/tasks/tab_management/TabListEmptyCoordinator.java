@@ -27,15 +27,15 @@ import org.chromium.ui.modelutil.ListObservable.ListObserver;
 // @TODO(crbug.com/40910476) Add instrumentation test for TabListEmptyCoordinator class.
 class TabListEmptyCoordinator {
     public final long ILLUSTRATION_ANIMATION_DURATION_MS = 700L;
-    private ViewGroup mRootView;
+    private final ViewGroup mRootView;
     private View mEmptyView;
     private TextView mEmptyStateHeading;
     private TextView mEmptyStateSubheading;
     private ImageView mImageView;
-    private Context mContext;
-    private TabListModel mModel;
-    private ListObserver<Void> mListObserver;
-    private Callback<Runnable> mRunOnItemAnimatorFinished;
+    private final Context mContext;
+    private final TabListModel mModel;
+    private final ListObserver<Void> mListObserver;
+    private final Callback<Runnable> mRunOnItemAnimatorFinished;
     private boolean mIsTabSwitcherShowing;
     private boolean mIsListObserverAttached;
     private @Nullable TabListEmptyIllustrationAnimationManager mIllustrationAnimationManager;

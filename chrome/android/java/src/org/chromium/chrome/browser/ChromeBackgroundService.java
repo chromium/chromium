@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.base.SplitCompatGcmTaskService;
 /** See {@link ChromeBackgroundServiceImpl}. */
 @NullMarked
 public class ChromeBackgroundService extends SplitCompatGcmTaskService {
+    @SuppressWarnings("FieldCanBeFinal") // @IdentifierNameString requires non-final
     private static @IdentifierNameString String sImplClassName =
             "org.chromium.chrome.browser.ChromeBackgroundServiceImpl";
 

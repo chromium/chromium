@@ -25,7 +25,7 @@ public class DuplicateDownloadClickableSpan extends ClickableSpan {
     private final @Nullable Runnable mRunnable;
     private final OtrProfileId mOtrProfileId;
     private final String mFilePath;
-    private @DownloadOpenSource int mSource;
+    private final @DownloadOpenSource int mSource;
 
     /**
      * Constructor.

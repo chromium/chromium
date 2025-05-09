@@ -60,7 +60,7 @@ public class OverlayPanelManager {
      * If a panel was being shown and another panel with higher priority was requested to show,
      * the lower priority one is stored here.
      */
-    private Queue<OverlayPanel> mSuppressedPanels;
+    private final Queue<OverlayPanel> mSuppressedPanels;
 
     /** When a panel is suppressed, this is the panel waiting for the close animation to finish. */
     private OverlayPanel mPendingPanel;

@@ -458,7 +458,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
 
         private String[] mTabFileNames;
         private String[] mThumbnailFileNames;
-        private Supplier<SparseBooleanArray> mOtherTabSupplier;
+        private final Supplier<SparseBooleanArray> mOtherTabSupplier;
         private SparseBooleanArray mOtherTabIds; // Tab in use by other selectors, not be deleted.
 
         CleanUpTabStateDataTask(

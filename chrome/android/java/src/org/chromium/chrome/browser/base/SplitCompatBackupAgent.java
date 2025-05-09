@@ -21,7 +21,7 @@ import java.io.IOException;
  */
 @NullMarked
 public class SplitCompatBackupAgent extends BackupAgent {
-    private String mBackupAgentClassName;
+    private final String mBackupAgentClassName;
     private Impl mImpl;
 
     public SplitCompatBackupAgent(String backupAgentClassName) {

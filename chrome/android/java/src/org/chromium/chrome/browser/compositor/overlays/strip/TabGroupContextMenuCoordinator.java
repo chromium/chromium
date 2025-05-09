@@ -84,8 +84,8 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     // updated or default title.
     private String mCurrentModifiedTitle;
     private boolean mIsPresetTitleUsed;
-    private WindowAndroid mWindowAndroid;
-    private KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
+    private final WindowAndroid mWindowAndroid;
+    private final KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
     protected CollaborationService mCollaborationService;
     private final TabGroupModelFilterObserver mTabGroupModelFilterObserver =
             new TabGroupModelFilterObserver() {

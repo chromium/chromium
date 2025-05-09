@@ -77,7 +77,7 @@ public class CreditCardAccessorySheetViewTest {
             Bitmap.createBitmap(100, 200, Bitmap.Config.ARGB_8888);
 
     private AccessorySheetTabItemsModel mModel;
-    private AtomicReference<RecyclerView> mView = new AtomicReference<>();
+    private final AtomicReference<RecyclerView> mView = new AtomicReference<>();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

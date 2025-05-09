@@ -62,7 +62,7 @@ public class DownloadDialogIncognitoTest {
 
     private ModalDialogManager mModalDialogManager;
 
-    private Callback<Boolean> mResultCallback = Mockito.mock(Callback.class);
+    private final Callback<Boolean> mResultCallback = Mockito.mock(Callback.class);
 
     @Before
     public void setUpTest() throws Exception {

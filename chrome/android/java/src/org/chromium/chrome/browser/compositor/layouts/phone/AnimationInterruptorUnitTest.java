@@ -48,9 +48,9 @@ public class AnimationInterruptorUnitTest {
     @Captor private ArgumentCaptor<LayoutStateObserver> mLayoutStateObserverCaptor;
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
-    private UserDataHost mUserDataHost = new UserDataHost();
-    private ObservableSupplierImpl<Tab> mCurrentTabSupplier = new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<Boolean> mScrimVisibilitySupplier =
+    private final UserDataHost mUserDataHost = new UserDataHost();
+    private final ObservableSupplierImpl<Tab> mCurrentTabSupplier = new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mScrimVisibilitySupplier =
             new ObservableSupplierImpl<>();
     private AnimationInterruptor mAnimationInterruptor;
     private int mInterruptCount;

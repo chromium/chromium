@@ -66,7 +66,7 @@ public class WebShareTest {
 
     /** Waits until the JavaScript code supplies a result. */
     private static class WebShareUpdateWaiter extends EmptyTabObserver {
-        private CallbackHelper mCallbackHelper;
+        private final CallbackHelper mCallbackHelper;
         private String mStatus;
 
         public WebShareUpdateWaiter() {

@@ -76,8 +76,8 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
      * of times. The page title is expected to be of the form <prefix>: <count>.
      */
     public static class PermissionUpdateWaiter extends EmptyTabObserver {
-        private CallbackHelper mCallbackHelper;
-        private String mPrefix;
+        private final CallbackHelper mCallbackHelper;
+        private final String mPrefix;
         private String mExpectedTitle;
         private final ChromeActivity mActivity;
 

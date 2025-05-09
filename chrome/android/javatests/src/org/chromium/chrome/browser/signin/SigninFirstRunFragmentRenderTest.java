@@ -84,7 +84,7 @@ import java.util.List;
 public class SigninFirstRunFragmentRenderTest {
     /** Parameter provider for night mode state and device orientation. */
     public static class NightModeAndOrientationParameterProvider implements ParameterProvider {
-        private static List<ParameterSet> sParams =
+        private static final List<ParameterSet> sParams =
                 Arrays.asList(
                         new ParameterSet()
                                 .value(/* firstArg= */ false, Configuration.ORIENTATION_PORTRAIT)

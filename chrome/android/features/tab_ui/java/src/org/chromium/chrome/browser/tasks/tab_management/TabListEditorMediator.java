@@ -77,8 +77,8 @@ class TabListEditorMediator
     private @Nullable PropertyListModel<PropertyModel, PropertyKey> mActionListModel;
     private ListModelChangeProcessor mActionChangeProcessor;
     private TabListEditorMenu mTabListEditorMenu;
-    private SnackbarManager mSnackbarManager;
-    private BottomSheetController mBottomSheetController;
+    private final SnackbarManager mSnackbarManager;
+    private final BottomSheetController mBottomSheetController;
     private TabListEditorToolbar mTabListEditorToolbar;
     private TabListEditorCoordinator.NavigationProvider mNavigationProvider;
     private @TabActionState int mTabActionState;

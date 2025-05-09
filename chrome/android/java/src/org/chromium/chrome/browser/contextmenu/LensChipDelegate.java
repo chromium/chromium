@@ -19,9 +19,9 @@ import org.chromium.content_public.browser.WebContents;
 
 /** The class to handle Lens chip data and actions. */
 public class LensChipDelegate implements ChipDelegate {
-    private static LensController sLensController = LensController.getInstance();
+    private static final LensController sLensController = LensController.getInstance();
     private static boolean sShouldSkipIsEnabledCheckForTesting;
-    private boolean mIsChipSupported;
+    private final boolean mIsChipSupported;
     private LensQueryParams mLensQueryParams;
     private ContextMenuNativeDelegate mNativeDelegate;
     private Callback<Integer> mOnChipClickedCallback;

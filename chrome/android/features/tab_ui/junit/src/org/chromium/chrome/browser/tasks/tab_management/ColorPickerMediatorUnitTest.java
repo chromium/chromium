@@ -35,7 +35,7 @@ public class ColorPickerMediatorUnitTest {
     private Activity mActivity;
     private ColorPickerMediator mMediator;
     private List<Integer> mColorIds;
-    private List<PropertyModel> mColorItems = new ArrayList<>();
+    private final List<PropertyModel> mColorItems = new ArrayList<>();
 
     @Before
     public void setUp() {

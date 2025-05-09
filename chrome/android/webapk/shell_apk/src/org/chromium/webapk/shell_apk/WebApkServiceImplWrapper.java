@@ -52,9 +52,9 @@ public class WebApkServiceImplWrapper extends IWebApkApi.Stub {
     /**
      * The {@link org.chromium.webapk.lib.runtime_library.WebApkServiceImpl} that this class wraps.
      */
-    private IBinder mIBinderDelegate;
+    private final IBinder mIBinderDelegate;
 
-    private Context mContext;
+    private final Context mContext;
 
     public WebApkServiceImplWrapper(Context context, IBinder delegate, int hostBrowserUid) {
         mContext = context;

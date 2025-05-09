@@ -79,7 +79,7 @@ public class KeyboardAccessoryButtonGroupCoordinator {
     }
 
     private class TemporarySheetOpenerBindings {
-        private PropertyModelChangeProcessor mMcp;
+        private final PropertyModelChangeProcessor mMcp;
         private ViewPager.OnPageChangeListener mOnPageChangeListener;
 
         TemporarySheetOpenerBindings(View view) {

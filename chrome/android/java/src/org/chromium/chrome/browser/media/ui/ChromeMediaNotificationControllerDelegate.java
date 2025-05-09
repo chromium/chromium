@@ -35,7 +35,7 @@ import org.chromium.components.browser_ui.notifications.NotificationWrapperBuild
 
 /** A class that provides Chrome-specific behavior to {@link MediaNotificationController}. */
 class ChromeMediaNotificationControllerDelegate implements MediaNotificationController.Delegate {
-    private int mNotificationId;
+    private final int mNotificationId;
 
     @VisibleForTesting
     static class NotificationOptions {
@@ -79,7 +79,7 @@ class ChromeMediaNotificationControllerDelegate implements MediaNotificationCont
      */
     @VisibleForTesting
     abstract static class ListenerServiceImpl extends SplitCompatService.Impl {
-        private int mNotificationId;
+        private final int mNotificationId;
 
         ListenerServiceImpl(int notificationId) {
             mNotificationId = notificationId;
@@ -159,7 +159,7 @@ class ChromeMediaNotificationControllerDelegate implements MediaNotificationCont
             super.onDestroy();
         }
 
-        private BroadcastReceiver mAudioBecomingNoisyReceiver =
+        private final BroadcastReceiver mAudioBecomingNoisyReceiver =
                 new BroadcastReceiver() {
                     @Override
                     public void onReceive(Context context, Intent intent) {

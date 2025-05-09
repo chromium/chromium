@@ -73,7 +73,7 @@ public class WebappRegistryTest {
 
     private static class FetchStorageCallback
             implements WebappRegistry.FetchWebappDataStorageCallback {
-        BrowserServicesIntentDataProvider mIntentDataProvider;
+        final BrowserServicesIntentDataProvider mIntentDataProvider;
         boolean mCallbackCalled;
 
         FetchStorageCallback(BrowserServicesIntentDataProvider intentDataProvider) {

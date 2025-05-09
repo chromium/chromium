@@ -29,7 +29,7 @@ import java.util.List;
  */
 @NullMarked
 public class SplitCompatCustomTabsService extends CustomTabsService {
-    private String mServiceClassName;
+    private final String mServiceClassName;
     private Impl mImpl;
 
     public SplitCompatCustomTabsService(String serviceClassName) {

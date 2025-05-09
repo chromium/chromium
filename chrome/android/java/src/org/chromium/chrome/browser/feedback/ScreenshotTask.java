@@ -38,7 +38,7 @@ public final class ScreenshotTask implements ScreenshotSource {
     private boolean mDone;
     private Bitmap mBitmap;
     private Runnable mCallback;
-    private @ScreenshotMode int mScreenshotMode;
+    private final @ScreenshotMode int mScreenshotMode;
 
     /**
      * Creates a {@link ScreenshotTask} instance that, will grab a screenshot of {@code activity}.

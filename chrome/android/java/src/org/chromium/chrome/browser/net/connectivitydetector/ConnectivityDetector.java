@@ -205,7 +205,7 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
     /** |mObserver| will be null after destruction. */
     @Nullable private Observer mObserver;
 
-    private Delegate mDelegate;
+    private final Delegate mDelegate;
 
     // Name of the client used for recording histograms.
     private final String mClientName;
@@ -218,7 +218,7 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
             ConnectivityCheckingStage.NOT_STARTED;
     // The delay time, in milliseconds, before we can send next http probe request.
     private int mConnectivityCheckDelayMs;
-    private Handler mHandler;
+    private final Handler mHandler;
     private Runnable mRunnable;
 
     public ConnectivityDetector(Observer observer, String clientName) {

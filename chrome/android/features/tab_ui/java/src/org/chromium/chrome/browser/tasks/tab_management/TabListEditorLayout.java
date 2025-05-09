@@ -28,7 +28,7 @@ class TabListEditorLayout extends SelectableListLayout<TabListEditorItemSelectio
     private boolean mIsInitialized;
     private boolean mIsShowing;
 
-    private Map<View, Integer> mAccessibilityImportanceMap = new HashMap<>();
+    private final Map<View, Integer> mAccessibilityImportanceMap = new HashMap<>();
 
     // TODO(meiliang): inflates R.layout.tab_list_editor_layout in
     // TabListEditorCoordinator.

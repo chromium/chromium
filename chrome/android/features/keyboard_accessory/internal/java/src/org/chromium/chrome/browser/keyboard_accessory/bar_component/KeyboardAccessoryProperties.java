@@ -102,7 +102,7 @@ class KeyboardAccessoryProperties {
             int ACTION_CHIP = 4;
         }
 
-        private @Type int mType;
+        private final @Type int mType;
         private final @Nullable Action mAction;
         private final @StringRes int mCaptionId;
 

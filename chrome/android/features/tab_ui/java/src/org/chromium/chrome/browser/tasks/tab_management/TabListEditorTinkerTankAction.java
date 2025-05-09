@@ -18,7 +18,7 @@ import java.util.List;
 
 /** TinkerTank action for the {@link TabListEditorMenu}. */
 public class TabListEditorTinkerTankAction extends TabListEditorAction {
-    private Activity mActivity;
+    private final Activity mActivity;
 
     /**
      * Create an action for share tabs to tinker tank.

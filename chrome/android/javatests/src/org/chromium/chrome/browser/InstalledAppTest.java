@@ -46,7 +46,7 @@ public class InstalledAppTest {
 
     /** Waits until the JavaScript code supplies a result. */
     private class InstalledAppUpdateWaiter extends EmptyTabObserver {
-        private CallbackHelper mCallbackHelper;
+        private final CallbackHelper mCallbackHelper;
         private String mStatus;
 
         public InstalledAppUpdateWaiter() {

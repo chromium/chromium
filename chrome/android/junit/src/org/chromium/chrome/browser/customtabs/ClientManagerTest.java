@@ -87,7 +87,7 @@ public class ClientManagerTest {
     private ClientManager mClientManager;
     private final SessionHolder<?> mSession =
             new SessionHolder<>(CustomTabsSessionToken.createMockSessionTokenForTesting());
-    private int mUid = Process.myUid();
+    private final int mUid = Process.myUid();
 
     private EngagementSignalsHandler mEngagementSignalsHandler;
     private PostMessageServiceConnection mPostMessageServiceConnection;

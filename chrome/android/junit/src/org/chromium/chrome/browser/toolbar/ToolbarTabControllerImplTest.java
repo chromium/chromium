@@ -50,7 +50,7 @@ import org.chromium.url.GURL;
 @Config(manifest = Config.NONE)
 public class ToolbarTabControllerImplTest {
     private static class LoadUrlParamsMatcher implements ArgumentMatcher<LoadUrlParams> {
-        LoadUrlParams mLoadUrlParams;
+        final LoadUrlParams mLoadUrlParams;
 
         public LoadUrlParamsMatcher(LoadUrlParams loadUrlParams) {
             mLoadUrlParams = loadUrlParams;

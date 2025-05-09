@@ -122,7 +122,7 @@ public class PopularUrlsTest {
     }
 
     private static class RunStatus {
-        private File mFile;
+        private final File mFile;
         private int mIteration;
         private int mPage;
         private String mUrl;

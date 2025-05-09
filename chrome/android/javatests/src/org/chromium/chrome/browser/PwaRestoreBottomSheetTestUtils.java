@@ -18,7 +18,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 /** Static methods for use in tests to manipulate the PWA App list for restoring. */
 @JNINamespace("webapps")
 public class PwaRestoreBottomSheetTestUtils {
-    private static CallbackHelper sCallbackHelper = new CallbackHelper();
+    private static final CallbackHelper sCallbackHelper = new CallbackHelper();
 
     public static void waitForWebApkDatabaseInitialization() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(

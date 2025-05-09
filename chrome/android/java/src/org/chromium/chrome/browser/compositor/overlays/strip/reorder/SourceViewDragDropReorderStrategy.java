@@ -372,7 +372,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
     }
 
     private class GroupReorderSubStrategy extends ReorderSubStrategy {
-        List<StripLayoutView> mViewsBeingDragged = new ArrayList<>();
+        final List<StripLayoutView> mViewsBeingDragged = new ArrayList<>();
 
         GroupReorderSubStrategy(ReorderStrategy groupReorderStrategy) {
             super(groupReorderStrategy);

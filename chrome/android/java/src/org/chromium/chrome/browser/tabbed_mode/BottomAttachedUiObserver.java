@@ -101,7 +101,7 @@ public class BottomAttachedUiObserver
     private boolean mOverlayPanelVisible;
     @PanelState private int mOverlayPanelState;
 
-    private Optional<OmniboxSuggestionsVisualState> mOmniboxSuggestionsVisualState;
+    private final Optional<OmniboxSuggestionsVisualState> mOmniboxSuggestionsVisualState;
     private boolean mOmniboxSuggestionsVisible;
     private @Nullable @ColorInt Integer mOmniboxSuggestionsColor;
 

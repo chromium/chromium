@@ -69,8 +69,8 @@ public class SearchActivityUtilsUnitTest {
     private static final ComponentName COMPONENT_UNTRUSTED =
             new ComponentName("com.some.package", "com.some.package.test.Activity");
 
-    private Activity mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
-    private SearchActivityClientImpl mClient =
+    private final Activity mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+    private final SearchActivityClientImpl mClient =
             new SearchActivityClientImpl(mActivity, IntentOrigin.CUSTOM_TAB);
 
     // UrlFormatter call intercepting mock.

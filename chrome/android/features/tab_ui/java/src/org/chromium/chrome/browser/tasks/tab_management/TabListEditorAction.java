@@ -124,8 +124,8 @@ public abstract class TabListEditorAction {
 
     private static final String EXPECTED_RESOURCE_TYPE_NAME = "plurals";
 
-    private ObserverList<ActionObserver> mObsevers = new ObserverList<>();
-    private PropertyModel mModel;
+    private final ObserverList<ActionObserver> mObsevers = new ObserverList<>();
+    private final PropertyModel mModel;
     private Supplier<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
     private ActionDelegate mActionDelegate;
     private SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegate;

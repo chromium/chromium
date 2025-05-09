@@ -118,7 +118,7 @@ public abstract class FullscreenHtmlApiHandlerBase
     private boolean mDisplayEdgeToEdgeFullscreenToBeExited;
     private boolean mIsInMultiWindowMode;
 
-    private FullscreenMultiWindowModeObserver mMultiWindowModeObserver;
+    private final FullscreenMultiWindowModeObserver mMultiWindowModeObserver;
 
     private boolean mNotifyOnNextExit;
 

@@ -39,7 +39,7 @@ public class TrackingProtectionSnackbarController implements CookieControlsObser
     private final CookieControlsBridge mCookieControlsBridge;
     private final @ActivityType int mActivityType;
     private final ReentrantLock mLock = new ReentrantLock();
-    private SnackbarController mSnackbarController =
+    private final SnackbarController mSnackbarController =
             new SnackbarController() {
                 @Override
                 public void onDismissNoAction(Object actionData) {}
@@ -52,8 +52,8 @@ public class TrackingProtectionSnackbarController implements CookieControlsObser
     private boolean mTrackingProtectionControlsVisible;
     private boolean mTrackingProtectionBlocked;
     private int mBlockingStatus3pcd;
-    private TrackingProtectionSnackbarLimiter mTrackingProtectionLimiter;
-    private WebContents mWebContents;
+    private final TrackingProtectionSnackbarLimiter mTrackingProtectionLimiter;
+    private final WebContents mWebContents;
 
     /**
      * Creates the {@link TrackingProtectionSnackbarController} object.

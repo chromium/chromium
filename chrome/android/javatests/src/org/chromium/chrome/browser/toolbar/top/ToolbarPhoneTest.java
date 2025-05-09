@@ -118,7 +118,7 @@ public class ToolbarPhoneTest {
     @Mock OptionalButtonCoordinator mOptionalButtonCoordinator;
     @Mock private SearchEngineUtils mSearchEngineUtils;
 
-    private Canvas mCanvas = new Canvas();
+    private final Canvas mCanvas = new Canvas();
     private ToolbarPhone mToolbar;
     private View mToolbarButtonsContainer;
     private MenuButton mMenuButton;

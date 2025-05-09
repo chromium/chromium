@@ -12,13 +12,13 @@ import org.jni_zero.JniType;
 @JNINamespace("offline_pages::android")
 public class SavePageRequest {
     // Int representation of the org.chromium.components.offlinepages.RequestState enum.
-    private int mRequestState;
-    private long mRequestId;
-    private String mUrl;
-    private ClientId mClientId;
-    private OfflinePageOrigin mOrigin;
+    private final int mRequestState;
+    private final long mRequestId;
+    private final String mUrl;
+    private final ClientId mClientId;
+    private final OfflinePageOrigin mOrigin;
     // Int representation of SavePageRequest::AutoFetchNotificationState
-    private int mAutoFetchNotificationState;
+    private final int mAutoFetchNotificationState;
 
     /**
      * Creates a SavePageRequest that's a copy of the C++ side version.

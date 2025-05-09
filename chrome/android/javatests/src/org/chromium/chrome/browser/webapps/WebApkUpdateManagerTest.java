@@ -168,9 +168,9 @@ public class WebApkUpdateManagerTest {
      * the constructor when it has been determined whether an update is needed.
      */
     private class TestWebApkUpdateManager extends WebApkUpdateManager {
-        private CallbackHelper mWaiter;
-        private CallbackHelper mCompleteCallback;
-        private boolean mAcceptDialogIfAppears;
+        private final CallbackHelper mWaiter;
+        private final CallbackHelper mCompleteCallback;
+        private final boolean mAcceptDialogIfAppears;
 
         public TestWebApkUpdateManager(
                 Activity activity,

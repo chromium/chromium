@@ -83,7 +83,7 @@ public class OfflinePageAutoFetchTest {
 
     private Profile mProfile;
     private OfflinePageBridge mOfflinePageBridge;
-    private CallbackHelper mPageAddedHelper = new CallbackHelper();
+    private final CallbackHelper mPageAddedHelper = new CallbackHelper();
     private OfflinePageItem mAddedPage;
     private WebServer mWebServer;
 

@@ -74,7 +74,7 @@ public class PasswordsPreferenceAccessLossTest {
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
 
     @ParameterAnnotations.ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             Arrays.asList(
                     new ParameterSet()
                             .value(PasswordAccessLossWarningType.NO_GMS_CORE, "NoGmsCore")
@@ -94,7 +94,7 @@ public class PasswordsPreferenceAccessLossTest {
     SettingsActivityPublicTransitEntryPoints mEntryPoints =
             new SettingsActivityPublicTransitEntryPoints(mSettingsActivityTestRule);
 
-    private @PasswordAccessLossWarningType int mWarningType;
+    private final @PasswordAccessLossWarningType int mWarningType;
 
     public PasswordsPreferenceAccessLossTest(
             @PasswordAccessLossWarningType int warningType, String name) {

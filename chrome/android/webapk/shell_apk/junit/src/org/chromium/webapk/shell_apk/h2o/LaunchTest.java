@@ -72,7 +72,7 @@ public final class LaunchTest {
     private PackageManager mPackageManager;
     private ShadowPackageManager mShadowPackageManager;
 
-    private TestBrowserInstaller mTestBrowserInstaller = new TestBrowserInstaller();
+    private final TestBrowserInstaller mTestBrowserInstaller = new TestBrowserInstaller();
 
     @Before
     public void setUp() {

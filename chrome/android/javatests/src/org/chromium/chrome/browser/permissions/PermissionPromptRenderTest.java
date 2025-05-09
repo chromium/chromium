@@ -52,13 +52,13 @@ import java.util.concurrent.TimeoutException;
 })
 public class PermissionPromptRenderTest {
     @ParameterAnnotations.ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
 
     private static final String TEST_FILE = "/content/test/data/android/geolocation.html";
     private static final int TEST_PORT = 12345;
 
-    private boolean mNightModeEnabled;
+    private final boolean mNightModeEnabled;
     @Rule public PermissionTestRule mPermissionRule = new PermissionTestRule();
 
     @Rule

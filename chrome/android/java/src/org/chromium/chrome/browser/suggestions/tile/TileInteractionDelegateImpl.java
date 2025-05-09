@@ -43,7 +43,7 @@ class TileInteractionDelegateImpl
     private final TileGroup.CustomTileModificationDelegate mCustomTileModificationDelegate;
     private final int mPrerenderDelay;
     private final Tile mTile;
-    private AndroidPrerenderManager mAndroidPrerenderManager;
+    private final AndroidPrerenderManager mAndroidPrerenderManager;
 
     private @Nullable Runnable mOnClickRunnable;
     private @Nullable Runnable mOnRemoveRunnable;

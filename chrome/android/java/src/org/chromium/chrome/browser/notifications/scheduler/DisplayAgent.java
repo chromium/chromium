@@ -91,8 +91,8 @@ public class DisplayAgent {
     private static class NotificationData {
         public final String title;
         public final String message;
-        public HashMap<Integer /*@IconType*/, IconBundle> icons = new HashMap<>();
-        public ArrayList<Button> buttons = new ArrayList<>();
+        public final HashMap<Integer /*@IconType*/, IconBundle> icons = new HashMap<>();
+        public final ArrayList<Button> buttons = new ArrayList<>();
 
         private NotificationData(String title, String message) {
             this.title = title;
@@ -134,7 +134,7 @@ public class DisplayAgent {
      * notification.
      */
     private static class SystemData {
-        public @SchedulerClientType int type;
+        public final @SchedulerClientType int type;
         public final String guid;
 
         public SystemData(@SchedulerClientType int type, String guid) {

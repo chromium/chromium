@@ -57,7 +57,7 @@ public class AutomotiveBackButtonToolbarCoordinator {
     private Animation mShowOnSwipeToolbarAnimation;
     private Animation mHideOnSwipeToolbarAnimation;
     private boolean mIsFullscreen;
-    private boolean mIsVerticalToolbar;
+    private final boolean mIsVerticalToolbar;
     private boolean mIsAnimationActive;
 
     interface OnSwipeCallback {
@@ -68,7 +68,7 @@ public class AutomotiveBackButtonToolbarCoordinator {
         void handleBackSwipe();
     }
 
-    private OnSwipeCallback mOnSwipeCallback =
+    private final OnSwipeCallback mOnSwipeCallback =
             new OnSwipeCallback() {
                 @Override
                 public void handleSwipe() {

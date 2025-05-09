@@ -50,7 +50,7 @@ public class EngagementSignalsHandlerUnitTest {
     @Mock private WebContents mWebContents;
 
     private EngagementSignalsHandler mEngagementSignalsHandler;
-    private ObservableSupplierImpl<Boolean> mCrashUploadPermittedSupplier =
+    private final ObservableSupplierImpl<Boolean> mCrashUploadPermittedSupplier =
             new ObservableSupplierImpl<>();
 
     @Before

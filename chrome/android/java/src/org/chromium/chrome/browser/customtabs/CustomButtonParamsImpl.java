@@ -45,12 +45,12 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
     private static final String TAG = "CustomTabs";
 
     private final PendingIntent mPendingIntent;
-    private int mId;
+    private final int mId;
     private Bitmap mIcon;
     private String mDescription;
-    private boolean mShouldTint;
+    private final boolean mShouldTint;
     private boolean mIsOnToolbar;
-    private @ButtonType int mType;
+    private final @ButtonType int mType;
 
     @VisibleForTesting
     static final String SHOW_ON_TOOLBAR = "android.support.customtabs.customaction.SHOW_ON_TOOLBAR";

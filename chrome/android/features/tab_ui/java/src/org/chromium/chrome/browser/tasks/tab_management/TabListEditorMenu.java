@@ -47,15 +47,15 @@ public class TabListEditorMenu
         int MENU_ITEM = 0;
     }
 
-    private Context mContext;
+    private final Context mContext;
     // Insertion ordering is important and for performance it is ok as size is very small.
-    private Map<Integer, TabListEditorMenuItem> mMenuItems = new LinkedHashMap<>();
+    private final Map<Integer, TabListEditorMenuItem> mMenuItems = new LinkedHashMap<>();
 
-    private View mContentView;
-    private ListView mListView;
-    private TabListEditorActionViewLayout mActionViewLayout;
-    private ModelList mModelList;
-    private ModelListAdapter mAdapter;
+    private final View mContentView;
+    private final ListView mListView;
+    private final TabListEditorActionViewLayout mActionViewLayout;
+    private final ModelList mModelList;
+    private final ModelListAdapter mAdapter;
 
     /**
      * @param context to use for accessing resources.

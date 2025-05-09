@@ -94,7 +94,7 @@ public class SideSlideLayout extends ViewGroup {
     // True while side gesture is in progress.
     private boolean mIsBeingDragged;
 
-    private NavigationBubble mArrowView;
+    private final NavigationBubble mArrowView;
     private int mArrowViewWidth;
 
     // Start position for animation moving the UI back to original offset.

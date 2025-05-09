@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
-import android.content.Context;
-
 import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
@@ -31,7 +29,6 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     private long mNativeAutofillKeyboardAccessory;
     private @Nullable ObservableSupplier<ManualFillingComponent> mManualFillingComponentSupplier;
     private @Nullable ManualFillingComponent mManualFillingComponent;
-    private @Nullable Context mContext;
     private final PropertyProvider<List<AutofillSuggestion>> mChipProvider =
             new PropertyProvider<>(AccessoryAction.AUTOFILL_SUGGESTION);
     private final Callback<ManualFillingComponent> mFillingComponentObserver =
@@ -93,9 +90,6 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
      */
     @CalledByNative
     private void init(long nativeAutofillKeyboardAccessory, WindowAndroid windowAndroid) {
-        mContext = windowAndroid.getActivity().get();
-        assert mContext != null;
-
         mManualFillingComponentSupplier = ManualFillingComponentSupplier.from(windowAndroid);
         if (mManualFillingComponentSupplier != null) {
             ManualFillingComponent currentFillingComponent =
@@ -120,7 +114,6 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
             mManualFillingComponentSupplier.removeObserver(mFillingComponentObserver);
         }
         dismissed();
-        mContext = null;
     }
 
     /**

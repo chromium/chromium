@@ -40,7 +40,7 @@ import java.util.function.BooleanSupplier;
  */
 class ManualFillingCoordinator implements ManualFillingComponent {
     private final ManualFillingMediator mMediator = new ManualFillingMediator();
-    private ObserverList<Observer> mObserverList = new ObserverList<>();
+    private final ObserverList<Observer> mObserverList = new ObserverList<>();
 
     public ManualFillingCoordinator() {}
 

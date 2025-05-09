@@ -17,7 +17,7 @@ import org.chromium.build.annotations.Nullable;
  */
 @NullMarked
 public class SplitCompatIntentService extends IntentService {
-    private String mServiceClassName;
+    private final String mServiceClassName;
     private Impl mImpl;
 
     public SplitCompatIntentService(String serviceClassName, String name) {

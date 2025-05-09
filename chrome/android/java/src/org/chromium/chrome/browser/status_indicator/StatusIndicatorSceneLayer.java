@@ -32,7 +32,7 @@ class StatusIndicatorSceneLayer extends SceneOverlayLayer implements SceneOverla
     private int mResourceId;
 
     /** The {@link BrowserControlsStateProvider} to access browser controls offsets. */
-    private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     private boolean mIsVisible;
 

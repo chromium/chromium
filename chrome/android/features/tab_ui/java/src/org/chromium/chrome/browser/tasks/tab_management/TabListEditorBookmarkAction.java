@@ -23,7 +23,7 @@ import java.util.List;
 
 /** Bookmark action for the {@link TabListEditorMenu}. */
 public class TabListEditorBookmarkAction extends TabListEditorAction {
-    private Activity mActivity;
+    private final Activity mActivity;
     private TabListEditorBookmarkActionDelegate mDelegate;
 
     /** Interface for passing params on bookmark action. */

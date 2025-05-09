@@ -54,7 +54,7 @@ public class TabShareUtilsUnitTest {
     @Mock IdentityManager mIdentityManager;
     @Mock CoreAccountInfo mCoreAccountInfo;
 
-    private LocalTabGroupId mLocalTabGroupId = new LocalTabGroupId(TAB_GROUP_ID);
+    private final LocalTabGroupId mLocalTabGroupId = new LocalTabGroupId(TAB_GROUP_ID);
     private SavedTabGroup mSavedTabGroup;
     private GroupDataOrFailureOutcome mGroupDataOutcome;
 

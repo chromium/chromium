@@ -16,7 +16,8 @@ import java.util.List;
 /** Contains the logic to set the state of the model and react to color change clicks. */
 public class ColorPickerMediator {
     private final @NonNull List<PropertyModel> mColorItems;
-    private ObservableSupplierImpl<Integer> mSelectedColorSupplier = new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Integer> mSelectedColorSupplier =
+            new ObservableSupplierImpl<>();
 
     /**
      * Contains the logic to set the state of the model and react to color change clicks. This

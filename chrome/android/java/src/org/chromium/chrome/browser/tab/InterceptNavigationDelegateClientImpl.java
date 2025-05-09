@@ -23,7 +23,7 @@ import org.chromium.ui.base.WindowAndroid;
  * Tab.
  */
 public class InterceptNavigationDelegateClientImpl implements InterceptNavigationDelegateClient {
-    private TabImpl mTab;
+    private final TabImpl mTab;
     private final TabObserver mTabObserver;
     private InterceptNavigationDelegateImpl mInterceptNavigationDelegate;
 

@@ -47,9 +47,9 @@ public class TabListEditorShareAction extends TabListEditorAction {
                             UrlConstants.CHROME_NATIVE_SCHEME,
                             ContentUrlConstants.ABOUT_SCHEME));
     private static Callback<Intent> sIntentCallbackForTesting;
-    private Context mContext;
+    private final Context mContext;
     private boolean mSkipUrlCheckForTesting;
-    private BroadcastReceiver mBroadcastReceiver;
+    private final BroadcastReceiver mBroadcastReceiver;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.

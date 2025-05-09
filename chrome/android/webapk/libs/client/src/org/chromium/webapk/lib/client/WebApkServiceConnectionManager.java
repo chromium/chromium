@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 package org.chromium.webapk.lib.client;
-import org.chromium.build.annotations.NullMarked;
 
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
@@ -17,11 +16,12 @@ import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
-import org.chromium.build.annotations.Nullable;
 
 /**
  * Each WebAPK has several services. This class manages static global connections between the Chrome
@@ -42,10 +42,10 @@ public class WebApkServiceConnectionManager {
     /** Managed connection to WebAPK service. */
     private static class Connection implements ServiceConnection {
         /** The connection manager who owns this connection. */
-        private WebApkServiceConnectionManager mConnectionManager;
+        private final WebApkServiceConnectionManager mConnectionManager;
 
         /** Callbacks to call once the connection is established. */
-        private ArrayList<ConnectionCallback> mCallbacks = new ArrayList<>();
+        private final ArrayList<ConnectionCallback> mCallbacks = new ArrayList<>();
 
         /** WebAPK IBinder interface. */
         private @Nullable IBinder mBinder;
@@ -86,12 +86,12 @@ public class WebApkServiceConnectionManager {
     private static final String TAG = "WebApkService";
 
     /** The category of the service to connect to. */
-    private @Nullable String mCategory;
+    private final @Nullable String mCategory;
 
     /** The action of the service to connect to. */
-    private String mAction;
+    private final String mAction;
 
-    private @TaskTraits int mUiThreadTaskTraits;
+    private final @TaskTraits int mUiThreadTaskTraits;
 
     private @Nullable TaskRunner mTaskRunner;
 
@@ -99,7 +99,7 @@ public class WebApkServiceConnectionManager {
     private int mNumPendingPostedTasks;
 
     /** Mapping of WebAPK package to WebAPK service connection. */
-    private HashMap<String, Connection> mConnections = new HashMap<>();
+    private final HashMap<String, Connection> mConnections = new HashMap<>();
 
     public WebApkServiceConnectionManager(
             @TaskTraits int uiThreadTaskTraits, @Nullable String category, String action) {

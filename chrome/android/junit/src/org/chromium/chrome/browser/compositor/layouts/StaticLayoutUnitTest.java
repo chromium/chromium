@@ -107,7 +107,7 @@ public class StaticLayoutUnitTest {
     private ArgumentCaptor<BrowserControlsStateProvider.Observer>
             mBrowserControlsStateProviderObserverCaptor;
 
-    private UserDataHost mUserDataHost = new UserDataHost();
+    private final UserDataHost mUserDataHost = new UserDataHost();
     @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
 
     @Mock private View mTabView;

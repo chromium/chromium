@@ -49,7 +49,7 @@ public class LevelDBPersistedDataStorageTest {
 
     private static final String NAMESPACES[] = {"namespace1", "namesapce2"};
 
-    private LevelDBPersistedDataStorage[] mPersistedDataStorage =
+    private final LevelDBPersistedDataStorage[] mPersistedDataStorage =
             new LevelDBPersistedDataStorage[2];
 
     @Before

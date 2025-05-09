@@ -28,7 +28,7 @@ import java.io.PrintWriter;
 public class SplitCompatContentProvider extends ContentProvider {
     private final Object mImplLock = new Object();
     private @Nullable Impl mImpl;
-    private String mContentProviderClassName;
+    private final String mContentProviderClassName;
 
     public SplitCompatContentProvider(String contentProviderClassName) {
         mContentProviderClassName = contentProviderClassName;

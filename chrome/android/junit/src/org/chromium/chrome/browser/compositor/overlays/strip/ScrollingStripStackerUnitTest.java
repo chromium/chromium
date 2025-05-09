@@ -31,7 +31,7 @@ public final class ScrollingStripStackerUnitTest {
     private static final float FIRST_VIEW_IDEAL_X = -WIDTH - 1;
     private static final float CACHED_TAB_WIDTH = 30;
 
-    private ScrollingStripStacker mTarget = new ScrollingStripStacker();
+    private final ScrollingStripStacker mTarget = new ScrollingStripStacker();
     @Mock private StripLayoutTab mView1;
     @Mock private StripLayoutGroupTitle mView2;
     @Mock private StripLayoutTab mView3;

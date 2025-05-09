@@ -40,7 +40,7 @@ import java.util.List;
  * number or launching Maps for a street address.
  */
 public class ContextualSearchQuickActionControl extends ViewResourceInflater {
-    private Context mContext;
+    private final Context mContext;
     private String mQuickActionUri;
     private int mQuickActionCategory;
     private int mToolbarBackgroundColor;

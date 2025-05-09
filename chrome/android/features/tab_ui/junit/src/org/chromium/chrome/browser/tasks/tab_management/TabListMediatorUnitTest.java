@@ -373,8 +373,8 @@ public class TabListMediatorUnitTest {
     private SimpleRecyclerViewAdapter.ViewHolder mViewHolder2;
     private RecyclerView.ViewHolder mFakeViewHolder1;
     private RecyclerView.ViewHolder mFakeViewHolder2;
-    private View mItemView1 = mock(View.class);
-    private View mItemView2 = mock(View.class);
+    private final View mItemView1 = mock(View.class);
+    private final View mItemView2 = mock(View.class);
     private PriceDrop mPriceDrop;
     private PriceTabData mPriceTabData;
     private String mTab1Domain;

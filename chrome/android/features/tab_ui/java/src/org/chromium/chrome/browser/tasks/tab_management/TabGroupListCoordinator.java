@@ -67,7 +67,7 @@ public class TabGroupListCoordinator {
     private final SimpleRecyclerViewAdapter mSimpleRecyclerViewAdapter;
     private final TabListFaviconProvider mTabListFaviconProvider;
 
-    private TabGroupListMediator mTabGroupListMediator;
+    private final TabGroupListMediator mTabGroupListMediator;
     private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
 
     /**

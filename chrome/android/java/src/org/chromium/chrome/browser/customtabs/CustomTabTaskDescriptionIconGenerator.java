@@ -18,8 +18,8 @@ public class CustomTabTaskDescriptionIconGenerator {
     private static final int APP_ICON_TEXT_SIZE_DP = 30;
     private static final int APP_ICON_DEFAULT_BACKGROUND_COLOR = 0xFF323232;
 
-    private Context mContext;
-    private int mMinSizePx;
+    private final Context mContext;
+    private final int mMinSizePx;
 
     /** The page URL for which {@link #mGeneratedIcon} was generated. */
     private GURL mGeneratedPageUrl;

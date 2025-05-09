@@ -35,7 +35,7 @@ class ContextualSearchRequest {
     private boolean mIsLowPriority;
     private boolean mHasFailedLowPriorityLoad;
     private boolean mIsTranslationForced;
-    private boolean mIsFullSearchUrlProvided;
+    private final boolean mIsFullSearchUrlProvided;
 
     private static final String GWS_NORMAL_PRIORITY_SEARCH_PATH = "search";
     private static final String GWS_LOW_PRIORITY_SEARCH_PATH = "s";

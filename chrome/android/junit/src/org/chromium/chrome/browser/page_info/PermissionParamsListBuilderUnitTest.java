@@ -92,7 +92,7 @@ public class PermissionParamsListBuilderUnitTest {
     }
 
     private static class FakePermissionDelegate implements AndroidPermissionDelegate {
-        private static List<String> sBlockedPermissions = new ArrayList<String>();
+        private static final List<String> sBlockedPermissions = new ArrayList<String>();
 
         private static void blockPermission(String permission) {
             sBlockedPermissions.add(permission);

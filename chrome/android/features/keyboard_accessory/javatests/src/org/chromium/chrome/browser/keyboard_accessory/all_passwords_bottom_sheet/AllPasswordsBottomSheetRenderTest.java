@@ -82,7 +82,7 @@ public class AllPasswordsBottomSheetRenderTest {
     private static final List<Credential> CREDENTIALS = List.of(ANA, NO_ONE, BOB);
 
     @ParameterAnnotations.ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             Arrays.asList(
                     new ParameterSet().value(false, false).name("Default"),
                     new ParameterSet().value(false, true).name("RTL"),

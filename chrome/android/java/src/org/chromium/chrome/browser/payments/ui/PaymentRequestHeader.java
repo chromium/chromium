@@ -27,7 +27,7 @@ import org.chromium.ui.util.ColorUtils;
 /** This class represents a bar to display at the top of the payment request UI. */
 public class PaymentRequestHeader extends FrameLayout {
     private final @ColorInt int mBackgroundColor;
-    private Context mContext;
+    private final Context mContext;
 
     /** Constructor for when the PaymentRequestHeader is inflated from XML. */
     public PaymentRequestHeader(Context context, AttributeSet attrs) {

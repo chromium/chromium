@@ -116,7 +116,7 @@ public class NavigationTransitionsTest {
     private Runnable mRelease;
 
     @ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             Arrays.asList(
                     new ParameterSet()
                             .value(NavigationTransitionsTest.NAVIGATION_MODE_THREE_BUTTON)
@@ -125,7 +125,7 @@ public class NavigationTransitionsTest {
                             .value(NavigationTransitionsTest.NAVIGATION_MODE_GESTURAL)
                             .name("Gestural"));
 
-    private int mTestNavigationMode;
+    private final int mTestNavigationMode;
 
     private static class ScreenshotCallback
             implements ScreenshotCaptureTestHelper.NavScreenshotCallback {
@@ -161,8 +161,8 @@ public class NavigationTransitionsTest {
     }
 
     private class ReleaseController {
-        private Runnable mRelease;
-        private String mExpectedUrl;
+        private final Runnable mRelease;
+        private final String mExpectedUrl;
 
         public ReleaseController(Runnable release, String expectedUrl) {
             mRelease = release;

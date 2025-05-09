@@ -73,15 +73,15 @@ public class BookmarkEditTest {
     private static BookmarkId sOtherNode;
     private static BookmarkEditActivity sBookmarkEditActivity;
 
-    private static CallbackHelper sDestroyedCallback = new CallbackHelper();
-    private static ActivityStateListener sActivityStateListener =
+    private static final CallbackHelper sDestroyedCallback = new CallbackHelper();
+    private static final ActivityStateListener sActivityStateListener =
             new ActivityStateListener() {
                 @Override
                 public void onActivityStateChange(Activity activity, int newState) {
                     if (newState == ActivityState.DESTROYED) sDestroyedCallback.notifyCalled();
                 }
             };
-    private CallbackHelper mModelChangedCallback = new CallbackHelper();
+    private final CallbackHelper mModelChangedCallback = new CallbackHelper();
 
     @Before
     public void setUp() throws TimeoutException {

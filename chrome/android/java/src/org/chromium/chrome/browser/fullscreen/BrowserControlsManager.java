@@ -96,7 +96,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
 
     private final ObserverList<BrowserControlsStateProvider.Observer> mControlsObservers =
             new ObserverList<>();
-    private FullscreenHtmlApiHandlerBase mHtmlApiHandler;
+    private final FullscreenHtmlApiHandlerBase mHtmlApiHandler;
     @Nullable private Tab mTab;
 
     /** The animator for the Android browser controls. */

@@ -86,7 +86,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                             HistorySyncConfig.OptInMode.REQUIRED)
                     .build();
 
-    private Context mContext = ContextUtils.getApplicationContext();
+    private final Context mContext = ContextUtils.getApplicationContext();
     @Mock private IdentityServicesProvider mIdentityProviderMock;
     @Mock private SigninManager mSigninManagerMock;
     @Mock private IdentityManager mIdentityManagerMock;

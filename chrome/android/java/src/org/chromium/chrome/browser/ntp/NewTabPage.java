@@ -182,7 +182,8 @@ public class NewTabPage
     private ViewGroup mSingleTabCardContainer;
     @Nullable private HomeModulesCoordinator mHomeModulesCoordinator;
     @Nullable private ViewGroup mHomeModulesContainer;
-    private ObservableSupplierImpl<Tab> mMostRecentTabSupplier = new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Tab> mMostRecentTabSupplier =
+            new ObservableSupplierImpl<>();
     @Nullable private Point mContextMenuStartPosition;
 
     private final Activity mActivity;
@@ -194,13 +195,13 @@ public class NewTabPage
     @Nullable private SearchResumptionModuleCoordinator mSearchResumptionModuleCoordinator;
     private NtpSmoothTransitionDelegate mSmoothTransitionDelegate;
 
-    private CallbackController mCallbackController = new CallbackController();
+    private final CallbackController mCallbackController = new CallbackController();
 
     @VisibleForTesting
     public static class NtpSmoothTransitionDelegate implements SmoothTransitionDelegate {
         private static final int SMOOTH_TRANSITION_DURATION_MS = 100;
 
-        private View mView;
+        private final View mView;
         private Animator mAnimator;
         private ObservableSupplier<Integer> mRestoringState;
         private boolean mAnimatorStarted;

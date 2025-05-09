@@ -115,7 +115,7 @@ public class TabPersistentStoreIntegrationTest {
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private TabGroupSyncService mTabGroupSyncService;
 
-    private PausedExecutorService mExecutor = new PausedExecutorService();
+    private final PausedExecutorService mExecutor = new PausedExecutorService();
 
     @Before
     public void setUp() {

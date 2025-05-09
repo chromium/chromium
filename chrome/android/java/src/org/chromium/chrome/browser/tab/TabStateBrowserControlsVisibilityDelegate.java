@@ -63,7 +63,7 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
         mTab.addObserver(
                 new EmptyTabObserver() {
                     @SuppressLint("HandlerLeak")
-                    private Handler mHandler =
+                    private final Handler mHandler =
                             new Handler() {
                                 @Override
                                 public void handleMessage(Message msg) {

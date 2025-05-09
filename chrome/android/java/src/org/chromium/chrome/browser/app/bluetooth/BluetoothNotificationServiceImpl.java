@@ -16,7 +16,7 @@ import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManagerDelegat
  * Bluetooth device or scanning for nearby Bluetooth devices.
  */
 public class BluetoothNotificationServiceImpl extends BluetoothNotificationService.Impl {
-    private BluetoothNotificationManagerDelegate mManagerDelegate =
+    private final BluetoothNotificationManagerDelegate mManagerDelegate =
             new BluetoothNotificationManagerDelegate() {
                 @Override
                 public Intent createTrustedBringTabToFrontIntent(int tabId) {

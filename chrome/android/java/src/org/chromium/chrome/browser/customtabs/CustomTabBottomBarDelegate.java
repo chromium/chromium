@@ -97,7 +97,7 @@ public class CustomTabBottomBarDelegate
      */
     private int mBottomBarHeightOverride = -1;
 
-    private OnClickListener mBottomBarClickListener =
+    private final OnClickListener mBottomBarClickListener =
             new OnClickListener() {
                 @Override
                 public void onClick(View v) {

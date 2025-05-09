@@ -313,8 +313,8 @@ public class SingleWebsiteSettingsTest {
 
     /** Test case class that check whether a toggle exists for a given content setting. */
     private static class SingleExceptionTestCase {
-        @ContentSettingValues int mContentSettingValue;
-        @ContentSettingsType.EnumType int mContentSettingsType;
+        @ContentSettingValues final int mContentSettingValue;
+        @ContentSettingsType.EnumType final int mContentSettingsType;
 
         private SettingsActivity mSettingsActivity;
 

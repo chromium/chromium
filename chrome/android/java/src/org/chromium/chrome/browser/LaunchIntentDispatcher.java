@@ -73,7 +73,7 @@ public class LaunchIntentDispatcher {
     private static final String TAG = "ActivityDispatcher";
 
     private final Activity mActivity;
-    private Intent mIntent;
+    private final Intent mIntent;
 
     @IntDef({Action.CONTINUE, Action.FINISH_ACTIVITY, Action.FINISH_ACTIVITY_REMOVE_TASK})
     @Retention(RetentionPolicy.SOURCE)

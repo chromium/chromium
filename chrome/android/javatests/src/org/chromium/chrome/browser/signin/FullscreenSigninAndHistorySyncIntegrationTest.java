@@ -116,7 +116,7 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
     private @SigninAccessPoint int mSigninAccessPoint = SigninAccessPoint.SIGNIN_PROMO;
     private @HistorySyncConfig.OptInMode int mHistoryOptInMode =
             HistorySyncConfig.OptInMode.OPTIONAL;
-    private SigninTestUtil.CustomDeviceLockActivityLauncher mDeviceLockActivityLauncher =
+    private final SigninTestUtil.CustomDeviceLockActivityLauncher mDeviceLockActivityLauncher =
             new SigninTestUtil.CustomDeviceLockActivityLauncher();
 
     @Before

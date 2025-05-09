@@ -91,7 +91,7 @@ public class CreditCardScannerManager implements CreditCardScanner.Delegate {
     private final CreditCardScanner mScanner;
     private final Delegate mDelegate;
     private @ScanResult int mScanResult;
-    private Set<FieldType> mFieldsFilledByScanner;
+    private final Set<FieldType> mFieldsFilledByScanner;
     private boolean mScanResultLogged;
 
     public CreditCardScannerManager(Delegate delegate) {

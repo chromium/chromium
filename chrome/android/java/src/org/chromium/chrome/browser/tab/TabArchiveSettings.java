@@ -55,7 +55,7 @@ public class TabArchiveSettings {
                     ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_ENABLED,
                     ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_TIME_DELTA_HOURS);
 
-    private SharedPreferences.OnSharedPreferenceChangeListener mPrefsListener =
+    private final SharedPreferences.OnSharedPreferenceChangeListener mPrefsListener =
             new SharedPreferences.OnSharedPreferenceChangeListener() {
                 @Override
                 public void onSharedPreferenceChanged(SharedPreferences sharedPrefs, String key) {

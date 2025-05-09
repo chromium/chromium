@@ -66,7 +66,7 @@ public class TabLoadTracker {
         return mLoading;
     }
 
-    private Runnable mLoadFinishedRunnable =
+    private final Runnable mLoadFinishedRunnable =
             new Runnable() {
                 @Override
                 public void run() {

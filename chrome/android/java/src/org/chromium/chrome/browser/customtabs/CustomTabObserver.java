@@ -39,7 +39,7 @@ import java.lang.annotation.RetentionPolicy;
 public class CustomTabObserver extends EmptyTabObserver {
     private final CustomTabsConnection mCustomTabsConnection;
     private final SessionHolder<?> mSession;
-    private final boolean mOpenedByChrome;
+
     private final NavigationInfoCaptureTrigger mNavigationInfoCaptureTrigger =
             new NavigationInfoCaptureTrigger(this::captureNavigationInfo);
 
@@ -100,7 +100,7 @@ public class CustomTabObserver extends EmptyTabObserver {
     }
 
     public CustomTabObserver(boolean openedByChrome, SessionHolder<?> token) {
-        mOpenedByChrome = openedByChrome;
+        boolean mOpenedByChrome = openedByChrome;
         mCustomTabsConnection = mOpenedByChrome ? null : CustomTabsConnection.getInstance();
         mSession = token;
         resetPageLoadTracking();

@@ -41,11 +41,11 @@ import java.util.concurrent.TimeUnit;
         shadows = {ShadowAsyncTask.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public class AsyncInitTaskRunnerTest {
-    private LibraryLoader mLoader;
-    private AsyncInitTaskRunner mRunner;
-    private CountDownLatch mLatch;
+    private final LibraryLoader mLoader;
+    private final AsyncInitTaskRunner mRunner;
+    private final CountDownLatch mLatch;
 
-    private VariationsSeedFetcher mVariationsSeedFetcher;
+    private final VariationsSeedFetcher mVariationsSeedFetcher;
 
     public AsyncInitTaskRunnerTest() {
         LibraryLoader.getInstance().setLibraryProcessType(LibraryProcessType.PROCESS_BROWSER);

@@ -180,7 +180,7 @@ public class HubLayoutUnitTest {
 
     private SyncOneshotSupplierImpl<HubLayoutAnimator> mHubLayoutAnimatorSupplier;
     private Supplier<TabModelSelector> mTabModelSelectorSupplier;
-    private ObservableSupplierImpl<Pane> mPaneSupplier = new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Pane> mPaneSupplier = new ObservableSupplierImpl<>();
     private HubShowPaneHelper mHubShowPaneHelper;
 
     @Before

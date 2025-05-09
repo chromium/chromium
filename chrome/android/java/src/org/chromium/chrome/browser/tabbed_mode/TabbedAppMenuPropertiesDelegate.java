@@ -80,7 +80,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
      */
     private @Nullable IncognitoReauthController mIncognitoReauthController;
 
-    private CallbackController mIncognitoReauthCallbackController = new CallbackController();
+    private final CallbackController mIncognitoReauthCallbackController = new CallbackController();
 
     public TabbedAppMenuPropertiesDelegate(
             Context context,

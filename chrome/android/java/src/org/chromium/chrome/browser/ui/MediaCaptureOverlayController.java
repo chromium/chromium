@@ -33,7 +33,7 @@ public class MediaCaptureOverlayController implements UnownedUserData {
     private final CaptureOverlayTabObserver mTabObserver = new CaptureOverlayTabObserver();
 
     private View mOverlayView;
-    private SparseArray<Tab> mCapturedTabs = new SparseArray<Tab>();
+    private final SparseArray<Tab> mCapturedTabs = new SparseArray<Tab>();
     private Tab mVisibleTab;
 
     private class CaptureOverlayTabObserver extends EmptyTabObserver {

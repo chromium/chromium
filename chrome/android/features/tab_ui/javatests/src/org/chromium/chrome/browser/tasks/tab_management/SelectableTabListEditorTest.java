@@ -159,7 +159,7 @@ public class SelectableTabListEditorTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private TabGroupCreationDialogManager mCreationDialogManager;
 
-    private TabListEditorTestingRobot mRobot = new TabListEditorTestingRobot();
+    private final TabListEditorTestingRobot mRobot = new TabListEditorTestingRobot();
 
     private TabModelSelector mTabModelSelector;
     private TabListEditorCoordinator.TabListEditorController mTabListEditorController;

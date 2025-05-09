@@ -23,10 +23,10 @@ import org.chromium.ui.widget.ViewRectProvider;
 
 /** A controller to handle chip construction and cross-app communication. */
 class ContextMenuChipController implements View.OnClickListener {
-    private View mAnchorView;
+    private final View mAnchorView;
     private ChipView mChipView;
     private AnchoredPopupWindow mPopupWindow;
-    private Context mContext;
+    private final Context mContext;
     private ChipRenderParams mChipRenderParams;
     private final Runnable mDismissContextMenuCallback;
 

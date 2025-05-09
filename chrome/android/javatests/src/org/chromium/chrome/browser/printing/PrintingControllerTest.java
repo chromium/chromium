@@ -110,8 +110,8 @@ public class PrintingControllerTest {
     }
 
     private static class TemporaryFileHandler implements AutoCloseable {
-        private File mTempFile;
-        private ParcelFileDescriptor mFileDescriptor;
+        private final File mTempFile;
+        private final ParcelFileDescriptor mFileDescriptor;
 
         public TemporaryFileHandler() throws IOException {
             mTempFile = File.createTempFile(TEMP_FILE_NAME, TEMP_FILE_EXTENSION);
@@ -140,7 +140,7 @@ public class PrintingControllerTest {
     }
 
     private static class PrintingControllerImplPdfWritingDone extends PrintingControllerImpl {
-        private WaitForOnWriteHelper mWaitForOnWrite;
+        private final WaitForOnWriteHelper mWaitForOnWrite;
 
         public PrintingControllerImplPdfWritingDone(WaitForOnWriteHelper waitForOnWrite) {
             mWaitForOnWrite = waitForOnWrite;

@@ -171,7 +171,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private LocationBarModel mLocationBarModel;
     private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
     private @Nullable CustomTabCaptureStateToken mLastCustomTabCaptureStateToken;
-    private ObserverList<Callback<Integer>> mContainerVisibilityChangeObserverList =
+    private final ObserverList<Callback<Integer>> mContainerVisibilityChangeObserverList =
             new ObserverList<>();
     private @Nullable CustomTabFeatureOverridesManager mFeatureOverridesManager;
 

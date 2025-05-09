@@ -65,8 +65,8 @@ public class OmniboxUrlEmphasizerTest {
 
     /** Convenience class for testing a URL emphasized by OmniboxUrlEmphasizer.emphasizeUrl(). */
     private static class EmphasizedUrlSpanHelper {
-        UrlEmphasisSpan mSpan;
-        Spannable mParent;
+        final UrlEmphasisSpan mSpan;
+        final Spannable mParent;
 
         private EmphasizedUrlSpanHelper(UrlEmphasisSpan span, Spannable parent) {
             mSpan = span;

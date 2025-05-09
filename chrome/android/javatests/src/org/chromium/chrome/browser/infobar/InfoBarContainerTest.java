@@ -72,7 +72,7 @@ public class InfoBarContainerTest {
     // URL takes longer to load for batch tests where the activity is reused across rests
     private static final long EXTENDED_LOAD_TIMEOUT = 10L;
     private static final String MESSAGE_TEXT = "Ding dong. Woof. Translate french? Bears!";
-    private static EmbeddedTestServer sTestServer = sActivityTestRule.getTestServer();
+    private static final EmbeddedTestServer sTestServer = sActivityTestRule.getTestServer();
 
     private static final class TestListener implements SimpleConfirmInfoBarBuilder.Listener {
         public final CallbackHelper dismissedCallback = new CallbackHelper();

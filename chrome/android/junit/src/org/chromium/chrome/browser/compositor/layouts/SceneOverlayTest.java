@@ -70,7 +70,7 @@ public class SceneOverlayTest {
     @Mock private SceneOverlay mOverlay6;
     @Mock private Layout mLayout;
 
-    private DisplayMetrics mDisplayMetrics = new DisplayMetrics();
+    private final DisplayMetrics mDisplayMetrics = new DisplayMetrics();
     private LayoutManagerImpl mLayoutManager;
 
     @Before

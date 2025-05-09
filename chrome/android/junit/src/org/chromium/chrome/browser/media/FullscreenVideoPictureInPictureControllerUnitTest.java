@@ -66,7 +66,7 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
     @Mock private PowerManager mPowerManager;
 
     // Not a mock, since it's just a container and `final` anyway.
-    private UserDataHost mUserDataHost = new UserDataHost();
+    private final UserDataHost mUserDataHost = new UserDataHost();
 
     private FullscreenVideoPictureInPictureController mController;
 

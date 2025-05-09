@@ -53,9 +53,9 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
     private boolean mSearchProviderHasLogo = true;
     private TemplateUrlService mTemplateUrlService;
 
-    private int mLateralMarginSum;
+    private final int mLateralMarginSum;
     private final int mTileViewEdgePaddingForTablet;
-    private int mTileViewIntervalPaddingForTablet;
+    private final int mTileViewIntervalPaddingForTablet;
 
     public MostVisitedTilesMediator(
             Resources resources,

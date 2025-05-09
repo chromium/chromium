@@ -15,9 +15,9 @@ import java.util.function.Function;
 
 /** Class that tracks the mapping between tokens and fully-qualified domain names (FQDNs). */
 public class TokenTracker {
-    private Promise<Map<String, String>> mRootPromise;
+    private final Promise<Map<String, String>> mRootPromise;
     private TokenGenerator mTokenGenerator;
-    private UsageStatsBridge mBridge;
+    private final UsageStatsBridge mBridge;
 
     public TokenTracker(UsageStatsBridge bridge) {
         mBridge = bridge;

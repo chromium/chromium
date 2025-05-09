@@ -65,7 +65,7 @@ public class MismatchNotificationControllerTest {
 
     private int mCloseType;
 
-    private CallbackHelper mCloseCallbackHelper = new CallbackHelper();
+    private final CallbackHelper mCloseCallbackHelper = new CallbackHelper();
 
     @Before
     public void setUp() {

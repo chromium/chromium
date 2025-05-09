@@ -185,7 +185,7 @@ public class UndoTabModelTest {
     // Helper class that notifies after the tab is closed, and a tab restore service entry has been
     // created in tab restore service.
     private static class TabClosedObserver implements TabModelObserver {
-        private CallbackHelper mTabClosedCallback;
+        private final CallbackHelper mTabClosedCallback;
 
         public TabClosedObserver(CallbackHelper closedCallback) {
             mTabClosedCallback = closedCallback;

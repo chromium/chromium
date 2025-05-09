@@ -228,7 +228,7 @@ public class TabRemoverImpl implements TabRemover {
     private static class RemoveTabHandler implements TabModelRemoverFlowHandler {
         private final TabGroupModelFilter mTabGroupModelFilter;
         private final Tab mTabToRemove;
-        private @Nullable TabModelActionListener mListener;
+        private final @Nullable TabModelActionListener mListener;
 
         RemoveTabHandler(
                 @NonNull TabGroupModelFilter tabGroupModelFilter,

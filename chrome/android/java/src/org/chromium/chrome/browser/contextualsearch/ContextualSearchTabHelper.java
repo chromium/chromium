@@ -71,7 +71,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
     /** Whether the current default search engine is Google.  Is {@code null} if not inited. */
     private Boolean mIsDefaultSearchEngineGoogle;
 
-    private Callback<ContextualSearchManager> mManagerCallback;
+    private final Callback<ContextualSearchManager> mManagerCallback;
 
     /** The ReadAloudController supplier to get the active playback tab supplier when available. */
     private ObservableSupplier<ReadAloudController> mReadAloudControllerSupplier;

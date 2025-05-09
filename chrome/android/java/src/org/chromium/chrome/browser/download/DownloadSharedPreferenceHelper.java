@@ -28,7 +28,7 @@ public class DownloadSharedPreferenceHelper {
             new ArrayList<DownloadSharedPreferenceEntry>();
     private final ObserverList<Observer> mObservers = new ObserverList<>();
 
-    private SharedPreferencesManager mSharedPrefs;
+    private final SharedPreferencesManager mSharedPrefs;
 
     // "Initialization on demand holder idiom"
     private static class LazyHolder {

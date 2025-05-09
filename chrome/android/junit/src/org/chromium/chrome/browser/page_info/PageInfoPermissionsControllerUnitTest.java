@@ -58,10 +58,10 @@ public class PageInfoPermissionsControllerUnitTest {
     @Rule(order = -2)
     public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
-    private Context mContext;
-    private String mTestName;
-    private List<PermissionObject> mPermissions;
-    private String mExpectedString;
+    private final Context mContext;
+    private final String mTestName;
+    private final List<PermissionObject> mPermissions;
+    private final String mExpectedString;
 
     public PageInfoPermissionsControllerUnitTest(
             String testName, List<PermissionObject> permissions, String expectedString) {

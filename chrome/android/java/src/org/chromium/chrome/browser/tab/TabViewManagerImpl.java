@@ -56,7 +56,7 @@ class TabViewManagerImpl implements TabViewManager, Comparator<TabViewProvider> 
         }
     }
 
-    private PriorityQueue<TabViewProvider> mTabViewProviders;
+    private final PriorityQueue<TabViewProvider> mTabViewProviders;
     private TabImpl mTab;
     private View mCurrentView;
     private DestroyableObservableSupplier<Rect> mMarginSupplier;

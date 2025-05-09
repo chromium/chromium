@@ -140,7 +140,7 @@ public class NotificationPlatformBridge {
     //  b) however, we won't suppress new notifications from this origin anymore,
     //  c) in the case the user choses to "Undo", we will only be able to restore the notification
     //     they originally clicked "Unsubscribe" on.
-    private static Map<String, Map<String, Notification>>
+    private static final Map<String, Map<String, Notification>>
             sOriginsWithProvisionallyRevokedPermissions =
                     new HashMap<String, Map<String, Notification>>();
 

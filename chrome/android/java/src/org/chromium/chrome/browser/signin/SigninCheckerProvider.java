@@ -15,7 +15,7 @@ import org.chromium.chrome.browser.sync.SyncErrorNotifier;
 
 /** This class is used to get a singleton instance of {@link SigninChecker}. */
 public final class SigninCheckerProvider {
-    private static ProfileKeyedMap<SigninChecker> sProfileMap =
+    private static final ProfileKeyedMap<SigninChecker> sProfileMap =
             ProfileKeyedMap.createMapOfDestroyables();
     private static SigninChecker sInstanceForTesting;
 

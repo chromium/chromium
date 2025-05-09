@@ -61,7 +61,7 @@ public class TabThemeTest {
 
     /** A WebContentsObserver for watching changes in the theme color. */
     private static class ThemeColorWebContentsObserver implements ThemeColorObserver {
-        private CallbackHelper mCallbackHelper;
+        private final CallbackHelper mCallbackHelper;
         private int mColor;
 
         public ThemeColorWebContentsObserver() {

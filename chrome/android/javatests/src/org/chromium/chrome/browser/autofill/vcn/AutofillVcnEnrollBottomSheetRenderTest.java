@@ -86,7 +86,7 @@ public class AutofillVcnEnrollBottomSheetRenderTest {
     private final boolean mIsNightMode;
 
     @ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             ImmutableList.of(
                     new ParameterSet().value(false, false).name("LTR"),
                     new ParameterSet().value(true, false).name("RTL"),

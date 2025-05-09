@@ -89,11 +89,11 @@ public class PictureInPictureActivityTest {
     private Tab mTab;
 
     // Source rect hint that we'll provide as the video element position.
-    private Rect mSourceRectHint = new Rect(100, 200, 300, 400);
+    private final Rect mSourceRectHint = new Rect(100, 200, 300, 400);
 
     // Helper to capture the source rect hint bounds that PictureInPictureActivity would like to use
     // for `makeEnterIntoPip`, if any.
-    private PictureInPictureActivity.LaunchIntoPipHelper mLaunchIntoPipHelper =
+    private final PictureInPictureActivity.LaunchIntoPipHelper mLaunchIntoPipHelper =
             new PictureInPictureActivity.LaunchIntoPipHelper() {
                 @Override
                 public Bundle build(Context activityContext, Rect bounds) {

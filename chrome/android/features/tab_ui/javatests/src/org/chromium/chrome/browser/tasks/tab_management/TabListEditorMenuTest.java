@@ -92,7 +92,7 @@ public class TabListEditorMenuTest {
     private static final Integer[] TAB_IDS = new Integer[] {TAB_ID_0, TAB_ID_1, TAB_ID_2};
 
     @ParameterAnnotations.ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
 
     @ClassRule
@@ -160,7 +160,7 @@ public class TabListEditorMenuTest {
     private SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegate;
     @Mock private ActionDelegate mDelegate;
 
-    private List<Tab> mTabs = new ArrayList<>();
+    private final List<Tab> mTabs = new ArrayList<>();
 
     private TabListEditorToolbar mToolbar;
     private TabListEditorMenu mTabListEditorMenu;
@@ -739,8 +739,8 @@ public class TabListEditorMenuTest {
 
     /** Helper for detecting menu shown popup events. */
     static class PopupListener implements ListMenuHost.PopupMenuShownListener {
-        private CallbackHelper mShown = new CallbackHelper();
-        private CallbackHelper mHidden = new CallbackHelper();
+        private final CallbackHelper mShown = new CallbackHelper();
+        private final CallbackHelper mHidden = new CallbackHelper();
 
         @Override
         public void onPopupMenuShown() {

@@ -40,7 +40,7 @@ public class TwaVerifier implements Verifier, DestroyObserver {
     private boolean mDestroyed;
 
     /** All the origins that have been successfully verified. */
-    private Set<Origin> mVerifiedOrigins = new HashSet<>();
+    private final Set<Origin> mVerifiedOrigins = new HashSet<>();
 
     public TwaVerifier(
             ActivityLifecycleDispatcher lifecycleDispatcher,

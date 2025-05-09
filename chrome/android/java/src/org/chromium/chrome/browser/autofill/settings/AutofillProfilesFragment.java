@@ -54,7 +54,7 @@ import org.chromium.components.sync.UserSelectableType;
 /** Autofill profiles fragment, which allows the user to edit autofill profiles. */
 public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         implements PersonalDataManager.PersonalDataManagerObserver {
-    private Delegate mAddressEditorDelegate =
+    private final Delegate mAddressEditorDelegate =
             new Delegate() {
                 // User has either created a new address, or edited an existing address.
                 // We should save changes in any case.

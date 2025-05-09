@@ -30,7 +30,7 @@ import java.util.List;
 public class WebApkShareTargetUtilTest {
     /** Builder class for {@link WebApkShareTarget} */
     public static class ShareTargetBuilder {
-        private String mAction;
+        private final String mAction;
         private @ShareTarget.RequestMethod String mMethod;
         private @ShareTarget.EncodingType String mEncodingType;
         private String mParamTitle;

@@ -94,13 +94,13 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
 
     @VisibleForTesting protected final int mMaxInstances;
 
-    private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     // Instance ID for the activity associated with this manager.
     private int mInstanceId = INVALID_WINDOW_ID;
 
     private Tab mActiveTab;
-    private TabObserver mActiveTabObserver =
+    private final TabObserver mActiveTabObserver =
             new EmptyTabObserver() {
                 @Override
                 public void onTitleUpdated(Tab tab) {

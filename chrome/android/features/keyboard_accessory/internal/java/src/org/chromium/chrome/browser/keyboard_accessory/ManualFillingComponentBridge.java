@@ -37,7 +37,7 @@ import java.util.HashMap;
 class ManualFillingComponentBridge {
     private final SparseArray<PropertyProvider<AccessorySheetData>> mProviders =
             new SparseArray<>();
-    private HashMap<Integer, PropertyProvider<Action[]>> mActionProviders = new HashMap<>();
+    private final HashMap<Integer, PropertyProvider<Action[]>> mActionProviders = new HashMap<>();
     private final WindowAndroid mWindowAndroid;
     private final WebContents mWebContents;
     private long mNativeView;

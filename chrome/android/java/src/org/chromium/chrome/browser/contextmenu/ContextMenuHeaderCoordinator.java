@@ -25,7 +25,7 @@ import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.ui.modelutil.PropertyModel;
 
 class ContextMenuHeaderCoordinator {
-    private PropertyModel mModel;
+    private final PropertyModel mModel;
 
     ContextMenuHeaderCoordinator(
             Activity activity,

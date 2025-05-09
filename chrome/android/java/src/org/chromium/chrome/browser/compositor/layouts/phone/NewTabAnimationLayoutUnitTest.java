@@ -117,10 +117,10 @@ public class NewTabAnimationLayoutUnitTest {
     @Mock private View mToolbar;
     @Mock private NewTabPage mNtp;
 
-    private ObservableSupplierImpl<Tab> mCurrentTabSupplier = new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<CompositorViewHolder> mCompositorViewHolderSupplier =
+    private final ObservableSupplierImpl<Tab> mCurrentTabSupplier = new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<CompositorViewHolder> mCompositorViewHolderSupplier =
             new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<Boolean> mScrimVisibilitySupplier =
+    private final ObservableSupplierImpl<Boolean> mScrimVisibilitySupplier =
             new ObservableSupplierImpl<>();
     private NewTabAnimationLayout mNewTabAnimationLayout;
     private FrameLayout mContentContainer;

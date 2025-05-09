@@ -111,7 +111,7 @@ public class ContextualSearchPanel extends OverlayPanel {
     private boolean mHasContentBeenTouched;
 
     /** The compositor layer used for drawing the panel. */
-    private ContextualSearchSceneLayer mSceneLayer;
+    private final ContextualSearchSceneLayer mSceneLayer;
 
     /**
      * A ScrimManager for adjusting the Status Bar's brightness when a scrim is present (when the

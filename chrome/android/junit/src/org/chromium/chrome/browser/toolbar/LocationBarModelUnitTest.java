@@ -83,7 +83,7 @@ public class LocationBarModelUnitTest {
                     url -> url.getSpec(),
                     OFFLINE_STATUS);
 
-    private GURL mExampleGurl = new GURL("http://www.example.com/");
+    private final GURL mExampleGurl = new GURL("http://www.example.com/");
 
     @Before
     public void setUp() {

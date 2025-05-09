@@ -23,7 +23,7 @@ public class FakeRwsPrivacySandboxBridge implements PrivacySandboxBridge.Natives
     // Owner of the one RWS group represented by the fake bridge
     private final String mRwsOwner;
     private final Set<String> mRwsMembers;
-    private final String mGoogleEmbeddedPrivacyPolicyURL =
+    private static final String GOOGLE_EMBEDDED_PRIVACY_POLICY_U_R_L =
             "https://policies.google.com/privacy/embedded";
 
     public FakeRwsPrivacySandboxBridge(String rwsOwner, Set<String> rwsMembers) {
@@ -131,6 +131,6 @@ public class FakeRwsPrivacySandboxBridge implements PrivacySandboxBridge.Natives
 
     @Override
     public String getEmbeddedPrivacyPolicyURL(int domainType, int colorScheme, String locale) {
-        return mGoogleEmbeddedPrivacyPolicyURL;
+        return GOOGLE_EMBEDDED_PRIVACY_POLICY_U_R_L;
     }
 }

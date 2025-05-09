@@ -52,7 +52,7 @@ public class SearchWidgetProviderTest {
         public static final int[] ALL_IDS = {11684, 20170525};
 
         public final List<Pair<Integer, RemoteViews>> mViews = new ArrayList<>();
-        private Context mContext;
+        private final Context mContext;
 
         private TestDelegate(Context context) {
             super(context);

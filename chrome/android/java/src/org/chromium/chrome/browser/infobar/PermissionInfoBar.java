@@ -45,16 +45,16 @@ public class PermissionInfoBar extends ConfirmInfoBar
     private boolean mIsExpanded;
 
     /** The text of the link shown in the compact state. */
-    private String mCompactLinkText;
+    private final String mCompactLinkText;
 
     /** The message text in the compact state. */
-    private String mCompactMessage;
+    private final String mCompactMessage;
 
     /** The secondary text shown below the message in the expanded state. */
-    private String mDescription;
+    private final String mDescription;
 
     /** The text of the `Learn more` link shown in the expanded state after the description. */
-    private String mLearnMoreLinkText;
+    private final String mLearnMoreLinkText;
 
     protected PermissionInfoBar(
             WindowAndroid window,

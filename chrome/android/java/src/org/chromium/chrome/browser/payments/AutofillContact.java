@@ -19,9 +19,9 @@ public class AutofillContact extends EditableOption {
     private final AutofillProfile mProfile;
     private final Context mContext;
     private int mCompletionStatus;
-    private boolean mRequestName;
-    private boolean mRequestPhone;
-    private boolean mRequestEmail;
+    private final boolean mRequestName;
+    private final boolean mRequestPhone;
+    private final boolean mRequestEmail;
     @Nullable private String mPayerName;
     @Nullable private String mPayerPhone;
     @Nullable private String mPayerEmail;

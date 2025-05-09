@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.base.SplitCompatIntentService;
 public class TracingNotificationService extends SplitCompatIntentService {
     private static final String TAG = "tracing_notification";
 
+    @SuppressWarnings("FieldCanBeFinal") // @IdentifierNameString requires non-final
     private static @IdentifierNameString String sImplClassName =
             "org.chromium.chrome.browser.tracing.TracingNotificationServiceImpl";
 

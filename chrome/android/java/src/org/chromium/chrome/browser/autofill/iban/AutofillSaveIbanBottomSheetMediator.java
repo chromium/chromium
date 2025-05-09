@@ -43,7 +43,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
     private final BottomSheetController mBottomSheetController;
     private final LayoutStateProvider mLayoutStateProvider;
     private final TabModel mTabModel;
-    private boolean mIsServerSave;
+    private final boolean mIsServerSave;
     private boolean mFinished;
 
     /**

@@ -59,7 +59,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     private final int mRoundedCornersPosition;
 
     private boolean mIsMaximized;
-    private int mDecorationType;
+    private final int mDecorationType;
     private boolean mSlideDownAnimation; // Slide down to bottom when closing the sheet.
     private boolean mSheetOnRight;
     private CustomTabToolbarButtonsCoordinator mToolbarButtonsCoordinator;

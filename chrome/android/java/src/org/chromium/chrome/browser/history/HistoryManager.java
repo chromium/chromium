@@ -73,7 +73,7 @@ public class HistoryManager
     private final InfoHeaderPref mHeaderPref;
     private final String mAppId;
 
-    private ViewGroup mRootView;
+    private final ViewGroup mRootView;
     private ViewGroup mContentView;
     @Nullable private final SelectableListLayout<HistoryItem> mSelectableListLayout;
     private HistoryContentManager mContentManager;

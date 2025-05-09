@@ -24,7 +24,7 @@ public class IphMessageService extends MessageService {
     private final TabSwitcherIphController mIphController;
     private Tracker mTracker;
 
-    private Callback<Boolean> mInitializedCallback =
+    private final Callback<Boolean> mInitializedCallback =
             (result) -> {
                 if (wouldTriggerIph()) {
                     assert mTracker.isInitialized();

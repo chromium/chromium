@@ -30,7 +30,7 @@ public class IntentWithRequestMetadataHandler {
 
     private static final Object INSTANCE_LOCK = new Object();
     private static IntentWithRequestMetadataHandler sIntentWithRequestMetadataHandler;
-    private SecureRandom mSecureRandom = new SecureRandom();
+    private final SecureRandom mSecureRandom = new SecureRandom();
     private RequestMetadata mRequestMetadata;
     private byte[] mIntentToken;
     private String mUri;

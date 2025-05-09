@@ -120,7 +120,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             new OneshotSupplierImpl<>();
 
     private NightModeStateProvider mNightModeStateProvider;
-    private LinkedHashSet<Integer> mThemeResIds = new LinkedHashSet<>();
+    private final LinkedHashSet<Integer> mThemeResIds = new LinkedHashSet<>();
     private ServiceTracingProxyProvider mServiceTracingProxyProvider;
     private InsetObserver mInsetObserver;
     // Created in #onCreate

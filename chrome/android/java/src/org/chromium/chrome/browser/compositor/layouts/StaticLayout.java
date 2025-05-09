@@ -49,8 +49,8 @@ import java.util.Collections;
 public class StaticLayout extends Layout {
     public static final String TAG = "StaticLayout";
 
-    private boolean mHandlesTabLifecycles;
-    private boolean mNeedsOffsetTag;
+    private final boolean mHandlesTabLifecycles;
+    private final boolean mNeedsOffsetTag;
 
     private final Context mContext;
     private final LayoutManagerHost mViewHost;
@@ -64,8 +64,8 @@ public class StaticLayout extends Layout {
     private TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
 
-    private BrowserControlsStateProvider mBrowserControlsStateProvider;
-    private BrowserControlsStateProvider.Observer mBrowserControlsStateProviderObserver;
+    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final BrowserControlsStateProvider.Observer mBrowserControlsStateProviderObserver;
 
     private final Supplier<TopUiThemeColorProvider> mTopUiThemeColorProvider;
 
@@ -73,7 +73,7 @@ public class StaticLayout extends Layout {
 
     private static Integer sToolbarTextBoxBackgroundColorForTesting;
 
-    private float mPxToDp;
+    private final float mPxToDp;
 
     /**
      * Creates an instance of the {@link StaticLayout}.

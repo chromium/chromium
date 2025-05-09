@@ -60,7 +60,7 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
             implements AdapterView.OnItemClickListener {
         private final String[] mDomains;
         private final int mFaviconSize;
-        private RoundedIconGenerator mIconGenerator;
+        private final RoundedIconGenerator mIconGenerator;
 
         private ClearBrowsingDataAdapter(
                 String[] domains, String[] faviconURLs, Resources resources) {
@@ -203,13 +203,13 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
     private String[] mImportantDomains;
 
     /** Map of the reasons the above important domains were chosen. */
-    private Map<String, Integer> mImportantDomainsReasons;
+    private final Map<String, Integer> mImportantDomainsReasons;
 
     /** Array of favicon urls to use for each important domain above. */
     private String[] mFaviconURLs;
 
     /** The map of domains to the checked state, where true is checked. */
-    private Map<String, Boolean> mCheckedState;
+    private final Map<String, Boolean> mCheckedState;
 
     /** The alert dialog shown to the user. */
     private AlertDialog mDialog;

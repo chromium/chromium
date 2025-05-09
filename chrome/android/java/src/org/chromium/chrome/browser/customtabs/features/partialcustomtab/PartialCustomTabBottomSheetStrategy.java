@@ -111,7 +111,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     private GestureDetector mGestureDetector;
     private ContentGestureListener mGestureHandler;
 
-    private TabAnimator mTabAnimator;
+    private final TabAnimator mTabAnimator;
 
     private @HeightStatus int mStatus = HeightStatus.INITIAL_HEIGHT;
 
@@ -120,7 +120,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     private Runnable mSoftKeyboardRunnable;
     private boolean mStopShowingSpinner;
     private boolean mRestoreAfterFindPage;
-    private boolean mContentScrollMayResizeTab;
+    private final boolean mContentScrollMayResizeTab;
 
     // Y offset when a dragging gesture/animation starts.
     private int mMoveStartY;

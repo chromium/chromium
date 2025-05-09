@@ -17,7 +17,7 @@ import org.chromium.components.browser_ui.notifications.BaseNotificationManagerP
  * to a USB device.
  */
 public class UsbNotificationServiceImpl extends UsbNotificationService.Impl {
-    private UsbNotificationManagerDelegate mManagerDelegate =
+    private final UsbNotificationManagerDelegate mManagerDelegate =
             new UsbNotificationManagerDelegate() {
                 @Override
                 public Intent createTrustedBringTabToFrontIntent(int tabId) {

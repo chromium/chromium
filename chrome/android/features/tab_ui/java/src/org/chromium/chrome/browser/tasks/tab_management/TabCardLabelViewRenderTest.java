@@ -51,7 +51,7 @@ import java.util.List;
 @Batch(Batch.PER_CLASS)
 public class TabCardLabelViewRenderTest {
     @ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
 
     @Rule
@@ -66,7 +66,7 @@ public class TabCardLabelViewRenderTest {
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     private TabCardLabelView mTabCardLabelView;
-    private Runnable mCancelRunnable = CallbackUtils.emptyRunnable();
+    private final Runnable mCancelRunnable = CallbackUtils.emptyRunnable();
 
     public TabCardLabelViewRenderTest(boolean nightModeEnabled) {
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);

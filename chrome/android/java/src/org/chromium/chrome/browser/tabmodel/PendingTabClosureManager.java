@@ -228,12 +228,12 @@ public class PendingTabClosureManager {
     private boolean mIsCommittingAllTabClosures;
 
     /** The {@link TabModel} that this {@link PendingTabClosureManager} operates on. */
-    private TabModel mTabModel;
+    private final TabModel mTabModel;
 
-    private PendingTabClosureDelegate mDelegate;
+    private final PendingTabClosureDelegate mDelegate;
 
     /** Representation of a set of tabs that were closed together. */
-    private LinkedList<TabClosureEvent> mTabClosureEvents = new LinkedList<>();
+    private final LinkedList<TabClosureEvent> mTabClosureEvents = new LinkedList<>();
 
     /**
      * A {@link TabList} that represents the complete list of {@link Tab}s. This is so that

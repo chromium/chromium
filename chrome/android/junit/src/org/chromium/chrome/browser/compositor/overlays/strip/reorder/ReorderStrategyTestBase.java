@@ -142,8 +142,9 @@ public abstract class ReorderStrategyTestBase {
 
     private static class TestAnimationHost implements AnimationHost {
 
-        private CompositorAnimationHandler mHandler = new CompositorAnimationHandler(() -> {});
-        private AnimatorSet mRunningAnimations = new AnimatorSet();
+        private final CompositorAnimationHandler mHandler =
+                new CompositorAnimationHandler(() -> {});
+        private final AnimatorSet mRunningAnimations = new AnimatorSet();
 
         TestAnimationHost() {
             CompositorAnimationHandler.setTestingMode(true);

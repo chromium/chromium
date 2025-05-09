@@ -1017,8 +1017,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     /** Monitor user action UMA recording operations. */
     private static class UserActionMonitor extends UserActionTester {
         // TODO(donnd): merge into UserActionTester. See https://crbug.com/1103757.
-        private Set<String> mUserActionPrefixes;
-        private Map<String, Integer> mUserActionCounts;
+        private final Set<String> mUserActionPrefixes;
+        private final Map<String, Integer> mUserActionCounts;
 
         /**
          * @param userActionPrefixes A set of plain prefix strings for user actions to monitor.

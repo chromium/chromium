@@ -92,13 +92,14 @@ public class PasswordCheckupLauncherTest {
 
     @Mock private PendingIntent mMockPendingIntentForAccountCheckup;
 
-    private FakePasswordManagerBackendSupportHelper mFakeBackendSupportHelper =
+    private final FakePasswordManagerBackendSupportHelper mFakeBackendSupportHelper =
             new FakePasswordManagerBackendSupportHelper();
 
     private ModalDialogManager mModalDialogManager;
 
-    private FakePasswordCheckupClientHelperFactoryImpl mFakePasswordCheckupClientHelperFactory =
-            new FakePasswordCheckupClientHelperFactoryImpl();
+    private final FakePasswordCheckupClientHelperFactoryImpl
+            mFakePasswordCheckupClientHelperFactory =
+                    new FakePasswordCheckupClientHelperFactoryImpl();
 
     private FakePasswordCheckupClientHelper mFakePasswordCheckupClientHelper;
 

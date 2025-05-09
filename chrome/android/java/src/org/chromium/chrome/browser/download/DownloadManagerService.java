@@ -128,8 +128,8 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
 
     private final ObserverList<DownloadObserver> mDownloadObservers = new ObserverList<>();
 
-    private OMADownloadHandler mOMADownloadHandler;
-    private DownloadSnackbarController mDownloadSnackbarController;
+    private final OMADownloadHandler mOMADownloadHandler;
+    private final DownloadSnackbarController mDownloadSnackbarController;
     private DownloadMessageUiController mMessageUiController;
     private long mNativeDownloadManagerService;
     // Flag to track if we need to post a task to update download notifications.

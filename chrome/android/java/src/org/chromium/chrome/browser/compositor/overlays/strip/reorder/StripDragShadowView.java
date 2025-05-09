@@ -78,7 +78,7 @@ public class StripDragShadowView extends FrameLayout {
 
     // Internal State
     private int mSourceWidthPx;
-    private int mSourceHeightPx;
+    private final int mSourceHeightPx;
     private int mWidthPx;
     private int mHeightPx;
     private float mProgress;

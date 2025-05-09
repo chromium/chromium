@@ -76,7 +76,7 @@ public class AppLaunchDrawBlockerUnitTest {
     @Mock private Supplier<Boolean> mIsTabletSupplier;
     @Mock private Supplier<Boolean> mShouldShowTabSwitcherOnStartSupplier;
 
-    private ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
 
     @Mock
     private IncognitoRestoreAppLaunchDrawBlockerFactory

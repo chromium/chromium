@@ -92,7 +92,7 @@ public class PaymentDetailsUpdateServiceHelperTest {
 
     private boolean mBound;
     private IPaymentDetailsUpdateService mPaymentDetailsUpdateService;
-    private ServiceConnection mConnection =
+    private final ServiceConnection mConnection =
             new ServiceConnection() {
                 @Override
                 public void onServiceConnected(ComponentName className, IBinder service) {
@@ -274,7 +274,7 @@ public class PaymentDetailsUpdateServiceHelperTest {
     private boolean mMethodChangeListenerNotified;
     private boolean mShippingOptionChangeListenerNotified;
     private boolean mShippingAddressChangeListenerNotified;
-    private PaymentRequestUpdateEventListener mUpdateListener =
+    private final PaymentRequestUpdateEventListener mUpdateListener =
             new FakePaymentRequestUpdateEventListener();
 
     private class FakePaymentRequestUpdateEventListener

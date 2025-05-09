@@ -65,7 +65,7 @@ public class ArchivedTabsMessageService extends MessageService
         implements CustomMessageCardProvider, MessageUpdateObserver {
 
     static class ArchivedTabsMessageData implements MessageService.CustomMessageData {
-        private CustomMessageCardProvider mProvider;
+        private final CustomMessageCardProvider mProvider;
 
         public ArchivedTabsMessageData(CustomMessageCardProvider provider) {
             mProvider = provider;
@@ -167,7 +167,7 @@ public class ArchivedTabsMessageService extends MessageService
     private TabModel mArchivedTabModel;
     private View mCustomCardView;
     private View mEndIconView;
-    private PropertyModel mCustomCardModel;
+    private final PropertyModel mCustomCardModel;
     private boolean mMessageSentToQueue;
     private OnTabSelectingListener mOnTabSelectingListener;
     private boolean mShowTwoStepIph;

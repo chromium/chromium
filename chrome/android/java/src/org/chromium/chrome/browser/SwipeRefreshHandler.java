@@ -115,9 +115,9 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     // The Tab where the swipe occurs.
-    private Tab mTab;
+    private final Tab mTab;
 
-    private EmptyTabObserver mTabObserver;
+    private final EmptyTabObserver mTabObserver;
 
     // The container view the SwipeRefreshHandler instance is currently
     // associated with.

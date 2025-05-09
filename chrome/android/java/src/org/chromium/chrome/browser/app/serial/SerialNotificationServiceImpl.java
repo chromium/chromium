@@ -14,7 +14,7 @@ import org.chromium.components.browser_ui.notifications.BaseNotificationManagerP
 
 /** Service that manages the WebSerial notification when a website is connected to a serial port. */
 public class SerialNotificationServiceImpl extends SerialNotificationService.Impl {
-    private SerialNotificationManagerDelegate mManagerDelegate =
+    private final SerialNotificationManagerDelegate mManagerDelegate =
             new SerialNotificationManagerDelegate() {
                 @Override
                 public Intent createTrustedBringTabToFrontIntent(int tabId) {

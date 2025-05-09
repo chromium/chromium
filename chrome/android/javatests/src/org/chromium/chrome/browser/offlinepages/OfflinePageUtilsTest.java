@@ -198,7 +198,7 @@ public class OfflinePageUtilsTest {
      * a semaphore to clear when the callback is finally called.
      */
     static class TestShareCallback implements Callback<ShareParams> {
-        private Semaphore mSemaphore;
+        private final Semaphore mSemaphore;
         private String mText;
 
         public TestShareCallback(Semaphore semaphore) {

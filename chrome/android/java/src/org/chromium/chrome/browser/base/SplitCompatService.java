@@ -19,7 +19,7 @@ import org.chromium.build.annotations.Nullable;
  */
 @NullMarked
 public class SplitCompatService extends Service {
-    private String mServiceClassName;
+    private final String mServiceClassName;
     private Impl mImpl;
 
     public SplitCompatService(String serviceClassName) {

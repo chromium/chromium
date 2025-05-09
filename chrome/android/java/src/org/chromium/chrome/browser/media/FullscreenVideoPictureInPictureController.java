@@ -121,7 +121,7 @@ public class FullscreenVideoPictureInPictureController {
     private long mLastOnEnteredTimeMillis;
 
     /** Runnable that will update our autopip config. */
-    private Runnable mUpdateAutoPipRunnable = this::updateAutoPictureInPictureStatusIfNeeded;
+    private final Runnable mUpdateAutoPipRunnable = this::updateAutoPictureInPictureStatusIfNeeded;
 
     /** Do we believe that media is currently playing or not? */
     private boolean mIsPlaying;

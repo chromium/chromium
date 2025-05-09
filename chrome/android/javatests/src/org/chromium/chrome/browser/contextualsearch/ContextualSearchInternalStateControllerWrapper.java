@@ -37,8 +37,8 @@ class ContextualSearchInternalStateControllerWrapper
                     InternalState.RESOLVING,
                     InternalState.SHOWING_RESOLVED_LONG_PRESS_SEARCH);
 
-    private List<Integer> mStartedStates = new ArrayList<Integer>();
-    private List<Integer> mFinishedStates = new ArrayList<Integer>();
+    private final List<Integer> mStartedStates = new ArrayList<Integer>();
+    private final List<Integer> mFinishedStates = new ArrayList<Integer>();
 
     /**
      * Creates a wrapper around a {@link ContextualSearchInternalStateController} with the given

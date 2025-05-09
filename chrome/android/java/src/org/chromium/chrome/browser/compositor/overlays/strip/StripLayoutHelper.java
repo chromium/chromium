@@ -423,7 +423,7 @@ public class StripLayoutHelper
      * The {@link Supplier} for the width of a tab based on the number of tabs and the available
      * space on the tab strip. Constricted by MIN_TAB_WIDTH_DP and MAX_TAB_WIDTH_DP.
      */
-    private ObservableSupplierImpl<Float> mCachedTabWidthSupplier =
+    private final ObservableSupplierImpl<Float> mCachedTabWidthSupplier =
             new ObservableSupplierImpl<>(0f);
 
     // Reorder State
@@ -462,7 +462,7 @@ public class StripLayoutHelper
     // Tab menu item IDs
     public static final int ID_CLOSE_ALL_TABS = 0;
 
-    private Context mContext;
+    private final Context mContext;
 
     // Animation states. True while the relevant animations are running, and false otherwise.
     private boolean mMultiStepTabCloseAnimRunning;
@@ -519,20 +519,20 @@ public class StripLayoutHelper
     // Tab context menu.
     @Nullable private TabContextMenuCoordinator mTabContextMenuCoordinator;
     @Nullable private TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
-    @NonNull private MultiInstanceManager mMultiInstanceManager;
+    @NonNull private final MultiInstanceManager mMultiInstanceManager;
 
     // Tab group share.
     @NonNull private DataSharingService mDataSharingService;
     @NonNull private CollaborationService mCollaborationService;
-    @Nullable private DataSharingTabManager mDataSharingTabManager;
+    @Nullable private final DataSharingTabManager mDataSharingTabManager;
     @Nullable private DataSharingService.Observer mDataSharingObserver;
     @Nullable private TabGroupSyncService mTabGroupSyncService;
     @Nullable private TabGroupSyncService.Observer mTabGroupSyncObserver;
-    private ModalDialogManager mModalDialogManager;
+    private final ModalDialogManager mModalDialogManager;
 
     // IPH on tab strip.
     private TabStripIphController mTabStripIphController;
-    private List<QueuedIph> mQueuedIphList = new ArrayList<>();
+    private final List<QueuedIph> mQueuedIphList = new ArrayList<>();
 
     @FunctionalInterface
     interface QueuedIph {

@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.base.SplitCompatIntentService;
 public class GCMBackgroundService extends SplitCompatIntentService {
     private static final String TAG = "GCMBackgroundService";
 
+    @SuppressWarnings("FieldCanBeFinal") // @IdentifierNameString requires non-final
     private static @IdentifierNameString String sImplClassName =
             "org.chromium.chrome.browser.services.gcm.GCMBackgroundServiceImpl";
 

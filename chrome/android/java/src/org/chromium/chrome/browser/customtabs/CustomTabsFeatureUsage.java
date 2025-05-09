@@ -157,7 +157,7 @@ public class CustomTabsFeatureUsage {
     }
 
     /** Tracks whether we have written each enum or not. */
-    private BitSet mUsed = new BitSet(CustomTabsFeature.COUNT);
+    private final BitSet mUsed = new BitSet(CustomTabsFeature.COUNT);
 
     /** Logs the usage of the given feature, if enabled. */
     void log(@CustomTabsFeature int feature) {

@@ -110,7 +110,7 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
     protected final float mPxToDp;
 
     /** The height of the Toolbar in dp. */
-    private float mToolbarHeightDp;
+    private final float mToolbarHeightDp;
 
     /** The background color of the Bar. */
     private final @ColorInt int mBarBackgroundColor;
@@ -560,7 +560,7 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
 
     private float mBarHeight;
     private boolean mIsBarBorderVisible;
-    private float mBarBorderHeight;
+    private final float mBarBorderHeight;
 
     private float mCloseIconOpacity;
     private float mCloseIconWidth;
@@ -719,7 +719,7 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
 
     private float mProgressBarOpacity;
     private boolean mIsProgressBarVisible;
-    private float mProgressBarHeight;
+    private final float mProgressBarHeight;
     private float mProgressBarCompletion;
 
     /**

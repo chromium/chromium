@@ -347,8 +347,8 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      * saving the chosen component.
      */
     private static class SaveComponentCallback implements TargetChosenCallback {
-        private TargetChosenCallback mOriginalCallback;
-        private Profile mProfile;
+        private final TargetChosenCallback mOriginalCallback;
+        private final Profile mProfile;
 
         public SaveComponentCallback(
                 @Nullable Profile profile, @Nullable TargetChosenCallback originalCallback) {

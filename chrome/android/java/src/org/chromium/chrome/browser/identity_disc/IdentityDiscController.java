@@ -85,8 +85,8 @@ public class IdentityDiscController
     // ProfileDataCache facilitates retrieving profile picture.
     private ProfileDataCache mProfileDataCache;
 
-    private ButtonDataImpl mButtonData;
-    private ObserverList<ButtonDataObserver> mObservers = new ObserverList<>();
+    private final ButtonDataImpl mButtonData;
+    private final ObserverList<ButtonDataObserver> mObservers = new ObserverList<>();
     private boolean mNativeIsInitialized;
 
     private boolean mIsTabNtp;

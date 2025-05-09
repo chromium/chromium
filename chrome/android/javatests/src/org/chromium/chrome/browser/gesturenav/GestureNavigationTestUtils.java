@@ -16,7 +16,7 @@ public final class GestureNavigationTestUtils {
     private final ChromeTabbedActivityTestRule mActivityTestRule;
     private final NavigationHandler mNavigationHandler;
     private final HistoryNavigationLayout mNavigationLayout;
-    private float mEdgeWidthPx;
+    private final float mEdgeWidthPx;
 
     public GestureNavigationTestUtils(ChromeTabbedActivityTestRule rule) {
         mActivityTestRule = rule;

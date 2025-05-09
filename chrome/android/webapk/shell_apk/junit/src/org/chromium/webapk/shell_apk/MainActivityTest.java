@@ -37,7 +37,7 @@ public final class MainActivityTest {
     private static final String BROWSER_PACKAGE_NAME = "com.android.chrome";
 
     private PackageManager mPackageManager;
-    private TestBrowserInstaller mBrowserInstaller = new TestBrowserInstaller();
+    private final TestBrowserInstaller mBrowserInstaller = new TestBrowserInstaller();
 
     @Before
     public void setUp() {

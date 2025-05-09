@@ -90,7 +90,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             ChromeFeatureList.sCctBlockTouchesDuringEnterAnimation.isEnabled();
     private boolean mIsEnterAnimationCompleted;
 
-    private CustomTabActivityTabProvider.Observer mTabChangeObserver =
+    private final CustomTabActivityTabProvider.Observer mTabChangeObserver =
             new CustomTabActivityTabProvider.Observer() {
                 @Override
                 public void onInitialTabCreated(@NonNull Tab tab, int mode) {

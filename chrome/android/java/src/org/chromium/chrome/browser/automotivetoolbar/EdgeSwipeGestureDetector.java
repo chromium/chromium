@@ -36,8 +36,8 @@ public class EdgeSwipeGestureDetector implements TouchEventObserver {
     private final float mEdgeWidthPx;
     private final float mSwipeThreshold;
 
-    private AutomotiveBackButtonToolbarCoordinator.OnSwipeCallback mOnSwipeCallback;
-    private GestureDetector mDetector;
+    private final AutomotiveBackButtonToolbarCoordinator.OnSwipeCallback mOnSwipeCallback;
+    private final GestureDetector mDetector;
     private boolean mIsReadyForNewScroll;
 
     private final GestureDetector.SimpleOnGestureListener mSwipeGestureListener =

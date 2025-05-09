@@ -183,7 +183,7 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
     /** Test TabModel that exposes the needed capabilities for testing. */
     public static class TabModelSelectorTestTabModel extends TabModelImpl
             implements IncognitoTabModelInternal {
-        private Set<TabModelObserver> mObserverSet = new HashSet<>();
+        private final Set<TabModelObserver> mObserverSet = new HashSet<>();
 
         public TabModelSelectorTestTabModel(
                 Profile profile,

@@ -16,7 +16,7 @@ public class ClearBrowsingDataFetcher
                 BrowsingDataBridge.OtherFormsOfBrowsingHistoryListener,
                 Parcelable {
     // This is a constant on the C++ side.
-    private int mMaxImportantSites;
+    private final int mMaxImportantSites;
     // This is the sorted list of important registerable domains. If null, then we haven't finished
     // fetching them yet.
     private String[] mSortedImportantDomains;

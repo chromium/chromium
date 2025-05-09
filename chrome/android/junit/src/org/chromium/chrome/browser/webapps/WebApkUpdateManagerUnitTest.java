@@ -225,9 +225,9 @@ public class WebApkUpdateManagerUnitTest {
          * Whether App Identity updates should be enabled. If either of those is true when the tests
          * run, all App Identity update dialogs will be pre-approved (without showing).
          */
-        private boolean mNameUpdatesEnabled;
+        private final boolean mNameUpdatesEnabled;
 
-        private boolean mIconUpdatesEnabled;
+        private final boolean mIconUpdatesEnabled;
 
         public TestWebApkUpdateManager(Activity activity) {
             this(activity, /* nameUpdatesEnabled= */ false, /* iconUpdatesEnabled= */ false);
@@ -391,7 +391,7 @@ public class WebApkUpdateManagerUnitTest {
 
     private static class FakeDefaultBackgroundColorResource extends Resources {
         private static final int ID = 10;
-        private int mColorValue;
+        private final int mColorValue;
 
         public FakeDefaultBackgroundColorResource(int colorValue) {
             super(new AssetManager(), null, null);

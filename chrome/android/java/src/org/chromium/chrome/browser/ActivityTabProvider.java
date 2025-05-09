@@ -72,7 +72,7 @@ public class ActivityTabProvider extends ObservableSupplierImpl<@Nullable Tab>
     private @Nullable LayoutStateProvider mLayoutStateProvider;
 
     /** The observer watching scene changes in the active layout. */
-    private LayoutStateObserver mLayoutStateObserver;
+    private final LayoutStateObserver mLayoutStateObserver;
 
     /** A handle to the {@link TabModelSelector}. */
     private @Nullable TabModelSelector mTabModelSelector;

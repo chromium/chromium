@@ -33,10 +33,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 class ContextMenuHeaderMediator implements View.OnClickListener {
-    private PropertyModel mModel;
+    private final PropertyModel mModel;
 
-    private Context mContext;
-    private GURL mPlainUrl;
+    private final Context mContext;
+    private final GURL mPlainUrl;
 
     ContextMenuHeaderMediator(
             Context context,

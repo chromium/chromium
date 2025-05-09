@@ -76,7 +76,7 @@ public class LauncherShortcutTest {
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private TabModelSelector mTabModelSelector;
-    private CallbackHelper mTabAddedCallback = new CallbackHelper();
+    private final CallbackHelper mTabAddedCallback = new CallbackHelper();
 
     @Before
     public void setUp() {

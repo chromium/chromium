@@ -48,8 +48,8 @@ public class DefaultSearchEngineDialogHelperTest {
     }
 
     private static class TestTemplateUrl extends TemplateUrl {
-        private String mShortName;
-        private String mKeyword;
+        private final String mShortName;
+        private final String mKeyword;
 
         public TestTemplateUrl(String shortName, String keyword) {
             super(0);

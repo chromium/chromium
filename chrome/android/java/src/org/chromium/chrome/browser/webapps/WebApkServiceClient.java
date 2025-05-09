@@ -80,7 +80,7 @@ public class WebApkServiceClient {
     private static WebApkServiceClient sInstance;
 
     /** Manages connections between the browser application and WebAPK services. */
-    private WebApkServiceConnectionManager mConnectionManager;
+    private final WebApkServiceConnectionManager mConnectionManager;
 
     public static WebApkServiceClient getInstance() {
         if (sInstance == null) {

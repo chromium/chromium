@@ -43,7 +43,7 @@ import java.util.concurrent.TimeoutException;
 public class TabObserverTest {
     /** A {@Link TabObserver} that has callback helpers for each event. */
     private static class TestTabObserver extends EmptyTabObserver {
-        private CallbackHelper mInteractabilityHelper = new CallbackHelper();
+        private final CallbackHelper mInteractabilityHelper = new CallbackHelper();
 
         @Override
         public void onInteractabilityChanged(Tab tab, boolean isInteractable) {

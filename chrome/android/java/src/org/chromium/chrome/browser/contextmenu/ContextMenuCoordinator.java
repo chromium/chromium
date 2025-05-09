@@ -78,10 +78,10 @@ public class ContextMenuCoordinator implements ContextMenuUi {
     private ContextMenuHeaderCoordinator mHeaderCoordinator;
 
     private ContextMenuListView mListView;
-    private float mTopContentOffsetPx;
+    private final float mTopContentOffsetPx;
     private ContextMenuDialog mDialog;
     private Runnable mOnMenuClosed;
-    private ContextMenuNativeDelegate mNativeDelegate;
+    private final ContextMenuNativeDelegate mNativeDelegate;
     private boolean mIsInterestTargetWithShiftedMenu;
 
     /**

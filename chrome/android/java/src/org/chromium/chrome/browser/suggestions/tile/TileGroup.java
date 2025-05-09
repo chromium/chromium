@@ -329,7 +329,7 @@ public class TileGroup implements MostVisitedSites.Observer {
      */
     private SparseArray<List<Tile>> mTileSections = createEmptyTileData();
 
-    private PendingChanges mPendingChanges = new PendingChanges();
+    private final PendingChanges mPendingChanges = new PendingChanges();
 
     private boolean mHasReceivedData;
 

@@ -39,7 +39,7 @@ import java.util.concurrent.Executor;
 @LooperMode(LooperMode.Mode.LEGACY)
 public class WebApkServiceConnectionManagerTest {
     private static class TestExecutor implements Executor {
-        private LinkedList<Runnable> mPendingTasks = new LinkedList<>();
+        private final LinkedList<Runnable> mPendingTasks = new LinkedList<>();
 
         @Override
         public void execute(Runnable command) {
@@ -58,7 +58,7 @@ public class WebApkServiceConnectionManagerTest {
     private static final String CATEGORY_WEBAPK_SERVICE_API = "android.intent.category.WEBAPK_API";
 
     private ShadowApplication mShadowApplication;
-    private TestExecutor mTestExecutor = new TestExecutor();
+    private final TestExecutor mTestExecutor = new TestExecutor();
     private WebApkServiceConnectionManager mConnectionManager;
 
     private static class TestCallback implements WebApkServiceConnectionManager.ConnectionCallback {
@@ -181,9 +181,9 @@ public class WebApkServiceConnectionManagerTest {
      * Context#unbindService()} calls.
      */
     private static class BindUnbindRecordingContext extends ContextWrapper {
-        private String mRecordPackage;
-        private ArrayList<Boolean> mStartStopServiceSequence = new ArrayList<>();
-        private HashSet<ServiceConnection> mTrackedConnections = new HashSet<>();
+        private final String mRecordPackage;
+        private final ArrayList<Boolean> mStartStopServiceSequence = new ArrayList<>();
+        private final HashSet<ServiceConnection> mTrackedConnections = new HashSet<>();
 
         public BindUnbindRecordingContext(String recordPackage) {
             super(null);

@@ -200,7 +200,7 @@ public class MinidumpUploadServiceTest {
 
     private static class MinidumpPreparationContext extends AdvancedMockContext {
         /** Field used in overridden versions of startService() so we can support retries. */
-        protected MinidumpUploadServiceImpl mService;
+        protected final MinidumpUploadServiceImpl mService;
 
         public MinidumpPreparationContext(Context targetContext) {
             this(targetContext, null);

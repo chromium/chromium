@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.base.SplitCompatService;
 public class ChromeMediaNotificationControllerServices {
     /** See {@link ChromeMediaNotificationControllerDelegate$PlaybackListenerServiceImpl}. */
     public static class PlaybackListenerService extends SplitCompatService {
+        @SuppressWarnings("FieldCanBeFinal") // @IdentifierNameString requires non-final
         private static @IdentifierNameString String sImplClassName =
                 "org.chromium.chrome.browser.media.ui."
                         + "ChromeMediaNotificationControllerDelegate$PlaybackListenerServiceImpl";
@@ -24,6 +25,7 @@ public class ChromeMediaNotificationControllerServices {
 
     /** See {@link ChromeMediaNotificationControllerDelegate$PresentationListenerServiceImpl}. */
     public static class PresentationListenerService extends SplitCompatService {
+        @SuppressWarnings("FieldCanBeFinal") // @IdentifierNameString requires non-final
         private static @IdentifierNameString String sImplClassName =
                 "org.chromium.chrome.browser.media.ui."
                     + "ChromeMediaNotificationControllerDelegate$PresentationListenerServiceImpl";
@@ -35,6 +37,7 @@ public class ChromeMediaNotificationControllerServices {
 
     /** See {@link ChromeMediaNotificationControllerDelegate$CastListenerServiceImpl}. */
     public static class CastListenerService extends SplitCompatService {
+        @SuppressWarnings("FieldCanBeFinal") // @IdentifierNameString requires non-final
         private static @IdentifierNameString String sImplClassName =
                 "org.chromium.chrome.browser.media.ui."
                         + "ChromeMediaNotificationControllerDelegate$CastListenerServiceImpl";

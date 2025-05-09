@@ -36,7 +36,7 @@ public class TabListEditorActionViewLayout extends LinearLayout {
     /** {@link ListMenuButton} for showing the {@link TabListEditorMenu}. */
     private ListMenuButton mMenuButton;
 
-    private LinearLayout.LayoutParams mActionViewParams;
+    private final LinearLayout.LayoutParams mActionViewParams;
 
     private ActionViewLayoutDelegate mDelegate;
     private boolean mHasMenuOnlyItems;

@@ -43,7 +43,7 @@ public class DownloadNotificationServiceTest {
     private MockDownloadNotificationService mDownloadNotificationService;
     private DownloadForegroundServiceManagerTest.MockDownloadForegroundServiceManager
             mDownloadForegroundServiceManager;
-    private OtrProfileId mPrimaryOtrProfileId = OtrProfileId.getPrimaryOtrProfileId();
+    private final OtrProfileId mPrimaryOtrProfileId = OtrProfileId.getPrimaryOtrProfileId();
 
     @Before
     public void setUp() {

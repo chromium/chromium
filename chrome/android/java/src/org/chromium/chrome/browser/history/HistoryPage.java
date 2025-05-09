@@ -20,7 +20,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 /** Native page for managing browsing history. */
 public class HistoryPage extends BasicNativePage {
     private HistoryManager mHistoryManager;
-    private String mTitle;
+    private final String mTitle;
 
     /**
      * Create a new instance of the history page.

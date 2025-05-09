@@ -97,7 +97,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     private final @ContextMenuMode int mMode;
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
     private final ContextMenuParams mParams;
-    private ContextMenuNativeDelegate mNativeDelegate;
+    private final ContextMenuNativeDelegate mNativeDelegate;
     private static final String LENS_SUPPORT_STATUS_HISTOGRAM_NAME =
             "ContextMenu.LensSupportStatus";
     private final boolean mIsDownloadRestrictedByPolicy;

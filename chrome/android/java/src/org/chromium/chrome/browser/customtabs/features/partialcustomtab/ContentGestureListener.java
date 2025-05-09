@@ -40,10 +40,10 @@ class ContentGestureListener extends GestureDetector.SimpleOnGestureListener {
 
     private @GestureState int mState;
 
-    private VelocityTracker mVelocityTracker;
-    private DragEventCallback mCallback;
-    private Supplier<Tab> mTab;
-    private BooleanSupplier mIsFullyExpanded;
+    private final VelocityTracker mVelocityTracker;
+    private final DragEventCallback mCallback;
+    private final Supplier<Tab> mTab;
+    private final BooleanSupplier mIsFullyExpanded;
 
     /**
      * Constructor.

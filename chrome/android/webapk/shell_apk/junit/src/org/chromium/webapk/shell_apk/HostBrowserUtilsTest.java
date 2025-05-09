@@ -60,10 +60,10 @@ public class HostBrowserUtilsTest {
                     BROWSERS_NOT_SUPPORTING_WEBAPKS);
 
     private Context mContext;
-    private TestBrowserInstaller mBrowserInstaller = new TestBrowserInstaller();
+    private final TestBrowserInstaller mBrowserInstaller = new TestBrowserInstaller();
 
     // Whether we are testing with bound WebAPKs.
-    private boolean mIsBoundWebApk;
+    private final boolean mIsBoundWebApk;
 
     @Parameters
     public static Collection<Object[]> data() {

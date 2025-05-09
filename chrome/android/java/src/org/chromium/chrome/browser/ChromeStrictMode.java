@@ -39,9 +39,9 @@ public class ChromeStrictMode {
     private static final double MAX_UPLOADS_PER_SESSION = 3;
 
     private static boolean sIsStrictModeAlreadyConfigured;
-    private static List<Violation> sCachedViolations =
+    private static final List<Violation> sCachedViolations =
             Collections.synchronizedList(new ArrayList<>());
-    private static AtomicInteger sNumUploads = new AtomicInteger();
+    private static final AtomicInteger sNumUploads = new AtomicInteger();
 
     /**
      * Always process the violation on the UI thread. This ensures other crash reports are not

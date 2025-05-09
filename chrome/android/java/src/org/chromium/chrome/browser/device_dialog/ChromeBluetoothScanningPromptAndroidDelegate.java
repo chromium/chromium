@@ -15,7 +15,7 @@ import org.chromium.components.permissions.BluetoothScanningPromptAndroidDelegat
 public class ChromeBluetoothScanningPromptAndroidDelegate
         implements BluetoothScanningPromptAndroidDelegate {
 
-    private Profile mProfile;
+    private final Profile mProfile;
 
     @CalledByNative
     ChromeBluetoothScanningPromptAndroidDelegate(Profile profile) {

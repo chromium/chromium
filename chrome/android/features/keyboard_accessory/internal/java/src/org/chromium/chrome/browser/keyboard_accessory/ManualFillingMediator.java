@@ -94,8 +94,8 @@ class ManualFillingMediator
     private static final int MINIMAL_AVAILABLE_VERTICAL_SPACE = 128; // in DP.
     private static final int MINIMAL_AVAILABLE_HORIZONTAL_SPACE = 180; // in DP.
 
-    private SparseArray<AccessorySheetTabCoordinator> mSheets = new SparseArray<>();
-    private PropertyModel mModel = ManualFillingProperties.createFillingModel();
+    private final SparseArray<AccessorySheetTabCoordinator> mSheets = new SparseArray<>();
+    private final PropertyModel mModel = ManualFillingProperties.createFillingModel();
     private WindowAndroid mWindowAndroid;
     private ApplicationViewportInsetSupplier mApplicationViewportInsetSupplier;
     private final ObservableSupplierImpl<Integer> mBottomInsetSupplier =
