@@ -1712,8 +1712,7 @@ class MediaStreamManagerTestForTransfers : public MediaStreamManagerTest {
   const base::UnguessableToken transfer_id_ = base::UnguessableToken::Create();
   blink::MediaStreamDevice original_device_;
   blink::MediaStreamDevice transferred_device_;
-  blink::mojom::MediaStreamRequestResult result_ =
-      blink::mojom::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS;
+  std::optional<blink::mojom::MediaStreamRequestResult> result_;
 };
 
 TEST_F(MediaStreamManagerTestForTransfers,
