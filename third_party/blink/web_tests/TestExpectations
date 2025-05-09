@@ -9361,19 +9361,22 @@ crbug.com/407751668 http/tests/devtools/elements/styles-4/styles-update-from-js.
 # This is because the RFHI in the browser process may not be aware that the
 # renderer has requested (and gotten) permission by the time StorageAccessHandle
 # tries to bind mojo endpoints.
-crbug.com/415223384 external/wpt/partitioned-popins/partitioned-popins.localStorage.tentative.sub.https.window.html [ Failure Pass Crash ]
-crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.BlobURLDedicatedWorker.sub.https.tentative.window.html [ Failure Pass Crash ]
-crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.BlobURLSharedWorker.sub.https.tentative.window.html [ Failure Pass Crash ]
-crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.BroadcastChannel.sub.https.window.html [ Failure Pass Crash ]
-crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.SharedWorker.sub.https.window.html [ Failure Pass Crash ]
-crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.blobStorage.sub.https.window.html [ Failure Pass Crash ]
-crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.caches.sub.https.window.html [ Failure Pass Crash ]
-crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.estimate.sub.https.window.html [ Failure Pass Crash ]
-crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.getDirectory.sub.https.window.html [ Failure Pass Crash ]
-crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.indexedDB.sub.https.window.html [ Failure Pass Crash ]
-crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.locks.sub.https.window.html [ Failure Pass Crash ]
+crbug.com/415223384 external/wpt/partitioned-popins/partitioned-popins.localStorage.tentative.sub.https.window.html [ Failure Pass Crash Timeout ]
+crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.BlobURLDedicatedWorker.sub.https.tentative.window.html [ Failure Pass Crash Timeout ]
+crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.BlobURLSharedWorker.sub.https.tentative.window.html [ Failure Pass Crash Timeout ]
+crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.BroadcastChannel.sub.https.window.html [ Failure Pass Crash Timeout ]
+crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.SharedWorker.sub.https.window.html [ Failure Pass Crash Timeout ]
+crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.blobStorage.sub.https.window.html [ Failure Pass Crash Timeout ]
+crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.caches.sub.https.window.html [ Failure Pass Crash Timeout ]
+crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.estimate.sub.https.window.html [ Failure Pass Crash Timeout ]
+crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.getDirectory.sub.https.window.html [ Failure Pass Crash Timeout ]
+crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.indexedDB.sub.https.window.html [ Failure Pass Crash Timeout ]
+crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.localStorage.sub.https.window.html [ Failure Pass Crash Timeout ]
+crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.locks.sub.https.window.html [ Failure Pass Crash Timeout ]
 crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.none.sub.https.window.html [ Failure Pass Crash Timeout ]
+crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.sessionStorage.sub.https.window.html [ Failure Pass Crash Timeout ]
 crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.thirdPartyBlobStorage.sub.https.window.html [ Failure Pass Crash Timeout ]
+crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.unpartitioned.sub.https.window.html [ Failure Pass Crash Timeout ]
 
 # Gardener 2025-05-05
 crbug.com/413289778 [ Mac12 ] wpt_internal/fedcm/fedcm-cache-manifest.https.html [ Failure ]
