@@ -8,7 +8,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.ERROR_MESSAGE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.FOCUSED;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.getDropdownKeyByValue;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.getDropdownValueByKey;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.setDropdownKey;
@@ -54,7 +53,6 @@ class DropdownFieldView implements FieldView {
     private @Nullable ArrayAdapter<String> mAdapter;
     private @Nullable String mHint;
     private @Nullable EditorFieldValidator mValidator;
-    private boolean mShowRequiredIndicator;
 
     /**
      * Builds a dropdown view.
@@ -72,7 +70,6 @@ class DropdownFieldView implements FieldView {
                         .inflate(R.layout.autofill_editor_dialog_dropdown, root, false);
 
         mLabel = (TextView) mLayout.findViewById(R.id.spinner_label);
-        setShowRequiredIndicator(/* showRequiredIndicator= */ false);
 
         mUnderline = mLayout.findViewById(R.id.spinner_underline);
 
@@ -126,10 +123,7 @@ class DropdownFieldView implements FieldView {
     }
 
     void setLabel(String label, boolean isRequired) {
-        mLabel.setText(
-                isRequired && mShowRequiredIndicator
-                        ? label + EditorDialogView.REQUIRED_FIELD_INDICATOR
-                        : label);
+        mLabel.setText(isRequired ? label + EditorDialogView.REQUIRED_FIELD_INDICATOR : label);
     }
 
     void setDropdownValues(List<String> values, @Nullable String hint) {
@@ -217,13 +211,9 @@ class DropdownFieldView implements FieldView {
         mValidator = validator;
     }
 
-    @Override
-    public void setShowRequiredIndicator(boolean showRequiredIndicator) {
-        mShowRequiredIndicator = showRequiredIndicator;
-        setLabel(mFieldModel.get(LABEL), mFieldModel.get(IS_REQUIRED));
-    }
-
-    /** @return The View containing everything. */
+    /**
+     * @return The View containing everything.
+     */
     public View getLayout() {
         return mLayout;
     }

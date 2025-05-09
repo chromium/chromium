@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.autofill.editors;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.ERROR_MESSAGE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.FOCUSED;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
 
 import android.content.Context;
@@ -72,7 +71,6 @@ class TextFieldView extends FrameLayout implements FieldView {
     private TextInputLayout mInputLayout;
     private AutoCompleteTextView mInput;
     private View mIconsLayer;
-    private boolean mShowRequiredIndicator;
     private @Nullable EditorFieldValidator mValidator;
     private @Nullable TextWatcher mTextFormatter;
     private boolean mInFocusChange;
@@ -102,8 +100,6 @@ class TextFieldView extends FrameLayout implements FieldView {
                     imm.showSoftInput(v, 0);
                     return true;
                 });
-
-        setShowRequiredIndicator(/* showRequiredIndicator= */ false);
 
         mIconsLayer = findViewById(R.id.icons_layer);
         mIconsLayer.addOnLayoutChangeListener(
@@ -173,7 +169,7 @@ class TextFieldView extends FrameLayout implements FieldView {
 
     void setLabel(String label, boolean isRequired) {
         // Build up the label. Required fields are indicated by appending a '*'.
-        if (isRequired && mShowRequiredIndicator) {
+        if (isRequired) {
             label += REQUIRED_FIELD_INDICATOR;
         }
         mInputLayout.setHint(label);
@@ -233,12 +229,6 @@ class TextFieldView extends FrameLayout implements FieldView {
 
     void setDoneRunnable(@Nullable Runnable doneRunnable) {
         mDoneRunnable = doneRunnable;
-    }
-
-    @Override
-    public void setShowRequiredIndicator(boolean showRequiredIndicator) {
-        mShowRequiredIndicator = showRequiredIndicator;
-        setLabel(mEditorFieldModel.get(LABEL), mEditorFieldModel.get(IS_REQUIRED));
     }
 
     @Override

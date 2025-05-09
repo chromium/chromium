@@ -193,19 +193,13 @@ public class EditorDialogView extends AlwaysDismissedDialog
         mDeleteConfirmationText = deleteConfirmationText;
     }
 
-    public void setShowRequiredIndicator(boolean showRequiredIndicator) {
-        for (FieldView view : mFieldViews) {
-            view.setShowRequiredIndicator(showRequiredIndicator);
-        }
-
+    public void maybeShowRequiredFieldNotice() {
         TextView requiredFieldsNotice = mFooter.findViewById(R.id.required_fields_notice);
         int requiredFieldsNoticeVisibility = View.GONE;
-        if (showRequiredIndicator) {
-            for (int i = 0; i < mFieldViews.size(); i++) {
-                if (mFieldViews.get(i).isRequired()) {
-                    requiredFieldsNoticeVisibility = View.VISIBLE;
-                    break;
-                }
+        for (int i = 0; i < mFieldViews.size(); i++) {
+            if (mFieldViews.get(i).isRequired()) {
+                requiredFieldsNoticeVisibility = View.VISIBLE;
+                break;
             }
         }
         requiredFieldsNotice.setVisibility(requiredFieldsNoticeVisibility);
@@ -249,9 +243,8 @@ public class EditorDialogView extends AlwaysDismissedDialog
         }
     }
 
-    public void setEditorFields(
-            ListModel<FieldItem> editorFields, boolean shouldShowRequiredIndicator) {
-        prepareEditor(editorFields, shouldShowRequiredIndicator);
+    public void setEditorFields(ListModel<FieldItem> editorFields) {
+        prepareEditor(editorFields);
     }
 
     /** Prevents screenshots of this editor. */
@@ -383,12 +376,13 @@ public class EditorDialogView extends AlwaysDismissedDialog
     /**
      * Create the visual representation of the PropertyModel defined by {@link EditorProperties}.
      *
-     * This would be more optimal as a RelativeLayout, but because it's dynamically generated, it's
-     * much more human-parsable with inefficient LinearLayouts for half-width controls sharing rows.
+     * <p>This would be more optimal as a RelativeLayout, but because it's dynamically generated,
+     * it's much more human-parsable with inefficient LinearLayouts for half-width controls sharing
+     * rows.
      *
      * @param editorFields the list of fields this editor should display.
      */
-    private void prepareEditor(ListModel<FieldItem> editorFields, boolean showRequiredIndicator) {
+    private void prepareEditor(ListModel<FieldItem> editorFields) {
         // Ensure the layout is empty.
         removeTextChangedListeners();
         mContentView.removeAllViews();
@@ -450,7 +444,8 @@ public class EditorDialogView extends AlwaysDismissedDialog
 
         // Add the footer.
         mContentView.addView(mFooter);
-        setShowRequiredIndicator(showRequiredIndicator);
+
+        maybeShowRequiredFieldNotice();
     }
 
     /**

@@ -32,7 +32,6 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.DROPDOWN;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_REQUIRED_INDICATOR;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FIELD_TYPE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.setDropdownKey;
 
@@ -339,27 +338,6 @@ public class AddressEditorTest {
         assertThat(editorFields.get(7).model.get(ERROR_MESSAGE), requiredFieldMatcher);
         assertThat(editorFields.get(8).model.get(ERROR_MESSAGE), requiredFieldMatcher);
         assertThat(editorFields.get(9).model.get(ERROR_MESSAGE), requiredFieldMatcher);
-    }
-
-    @Test
-    @SmallTest
-    public void validateRequiredFieldIndicator() {
-        setUpAddressUiComponents(new ArrayList(), /* countryCode= */ "US");
-        doAnswer(
-                        unused -> {
-                            mAddressEditor.onSubKeysReceived(null, null);
-                            return null;
-                        })
-                .when(mSubKeyRequester)
-                .getRegionSubKeys(anyString(), any());
-
-        mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
-        mAddressEditor.setEditorDialog(mEditorDialog);
-        mAddressEditor.edit(
-                new AutofillAddress(mActivity, sProfile, mPersonalDataManager), unused -> {});
-
-        assertNotNull(mAddressEditor.getEditorModelForTesting());
-        assertTrue(mAddressEditor.getEditorModelForTesting().get(SHOW_REQUIRED_INDICATOR));
     }
 
     @Test

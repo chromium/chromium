@@ -63,8 +63,6 @@ public class EditorProperties {
             new ReadableObjectPropertyKey<>("delete_confirmation_title");
     public static final ReadableObjectPropertyKey<String> DELETE_CONFIRMATION_TEXT =
             new ReadableObjectPropertyKey<>("delete_confirmation_text");
-    public static final ReadableBooleanPropertyKey SHOW_REQUIRED_INDICATOR =
-            new ReadableBooleanPropertyKey("show_required_indicator");
 
     public static final WritableObjectPropertyKey<ListModel<FieldItem>> EDITOR_FIELDS =
             new WritableObjectPropertyKey<>("editor_fields");
@@ -91,7 +89,6 @@ public class EditorProperties {
         FOOTER_MESSAGE,
         DELETE_CONFIRMATION_TITLE,
         DELETE_CONFIRMATION_TEXT,
-        SHOW_REQUIRED_INDICATOR,
         EDITOR_FIELDS,
         DONE_RUNNABLE,
         CANCEL_RUNNABLE,

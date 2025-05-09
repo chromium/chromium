@@ -23,7 +23,6 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_REQUIRED_INDICATOR;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FIELD_TYPE;
 
 import android.app.Activity;
@@ -107,23 +106,6 @@ public class ContactEditorTest {
         assertThat(editorFields.get(0).model.get(ERROR_MESSAGE), requiredFieldMatcher);
         assertThat(editorFields.get(1).model.get(ERROR_MESSAGE), requiredFieldMatcher);
         assertThat(editorFields.get(2).model.get(ERROR_MESSAGE), requiredFieldMatcher);
-    }
-
-    @Test
-    @SmallTest
-    public void validateRequiredFieldIndicator() {
-        ContactEditor editor =
-                new ContactEditor(
-                        /* requestPayerName= */ true,
-                        /* requestPayerPhone= */ false,
-                        /* requestPayerEmail= */ false,
-                        /* saveToDisk= */ false,
-                        mPersonalDataManager);
-        editor.setEditorDialog(mEditorDialog);
-        editor.edit(null, unused -> {});
-
-        assertNotNull(editor.getEditorModelForTesting());
-        assertTrue(editor.getEditorModelForTesting().get(SHOW_REQUIRED_INDICATOR));
     }
 
     @Test

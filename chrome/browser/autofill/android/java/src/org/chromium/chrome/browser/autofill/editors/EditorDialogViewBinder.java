@@ -24,7 +24,6 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALIDATOR;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_REQUIRED_INDICATOR;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FIELD_TYPE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FORMATTER;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_SUGGESTIONS;
@@ -63,10 +62,8 @@ public class EditorDialogViewBinder {
             view.setDeleteConfirmationTitle(model.get(DELETE_CONFIRMATION_TITLE));
         } else if (propertyKey == DELETE_CONFIRMATION_TEXT) {
             view.setDeleteConfirmationText(model.get(DELETE_CONFIRMATION_TEXT));
-        } else if (propertyKey == SHOW_REQUIRED_INDICATOR) {
-            view.setShowRequiredIndicator(model.get(SHOW_REQUIRED_INDICATOR));
         } else if (propertyKey == EDITOR_FIELDS) {
-            view.setEditorFields(model.get(EDITOR_FIELDS), model.get(SHOW_REQUIRED_INDICATOR));
+            view.setEditorFields(model.get(EDITOR_FIELDS));
         } else if (propertyKey == DONE_RUNNABLE) {
             view.setDoneRunnable(model.get(DONE_RUNNABLE));
         } else if (propertyKey == CANCEL_RUNNABLE) {
