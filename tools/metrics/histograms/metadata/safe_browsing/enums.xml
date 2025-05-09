@@ -171,6 +171,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="EMPTY_REPORT"/>
 </enum>
 
+<!-- LINT.IfChange(ClientSafeBrowsingReportType) -->
+
 <enum name="ClientSafeBrowsingReportType">
   <int value="0" label="Unknown"/>
   <int value="1" label="URL phishing"/>
@@ -195,7 +197,11 @@ chromium-metrics-reviews@google.com.
   <int value="24" label="Abusive notification permission accepted"/>
   <int value="25" label="dangerous download auto deleted"/>
   <int value="26" label="dangerous download canceled on profile closure"/>
+  <int value="27" label="URL real-time and hash real-time discrepancy"/>
+  <int value="28" label="External app redirect"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/common/proto/csd.proto:ClientSafeBrowsingReportType) -->
 
 <enum name="DisplayPersistentNotificationEvents">
   <int value="0" label="Request to display persistent notification"/>

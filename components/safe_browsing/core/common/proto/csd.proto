@@ -1622,6 +1622,7 @@ message ClientSafeBrowsingReportRequest {
   // clients to send "stripped down" versions of the message in the
   // future, if we want to.
 
+  // LINT.IfChange(ClientSafeBrowsingReportType)
   enum ReportType {
     UNKNOWN = 0;
     URL_PHISHING = 1;
@@ -1657,6 +1658,7 @@ message ClientSafeBrowsingReportRequest {
     // external protocol scheme (e.g. mailto://) or an Intent.
     EXTERNAL_APP_REDIRECT = 28;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:ClientSafeBrowsingReportType)
 
   message HTTPHeader {
     required bytes name = 1;
