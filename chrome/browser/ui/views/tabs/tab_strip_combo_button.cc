@@ -38,9 +38,6 @@ enum class AccidentalClickType {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:AccidentalClickType)
 
 constexpr int kButtonGapNoBackground = 14;
-constexpr int kSeparatorBorderRadius = 2;
-constexpr int kSeparatorWidth = 2;
-constexpr int kSeparatorHeight = 16;
 constexpr base::TimeDelta kAccidentalClickThreshold = base::Seconds(1);
 constexpr char kNewTabButtonAccidentalClickName[] =
     "Tabs.NewTabButton.AccidentalClicks";
@@ -105,8 +102,8 @@ TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser,
 
   std::unique_ptr<views::Separator> separator =
       std::make_unique<views::Separator>();
-  separator->SetBorderRadius(kSeparatorBorderRadius);
-  separator->SetPreferredSize(gfx::Size(kSeparatorWidth, kSeparatorHeight));
+  separator->SetBorderRadius(TabStyle::Get()->GetSeparatorCornerRadius());
+  separator->SetPreferredSize(TabStyle::Get()->GetSeparatorSize());
   subscriptions_.push_back(browser->RegisterDidBecomeActive(base::BindRepeating(
       &TabStripComboButton::DidBecomeActive, base::Unretained(this))));
   subscriptions_.push_back(

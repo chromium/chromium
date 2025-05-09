@@ -283,7 +283,7 @@ TabStripActionContainer::TabStripActionContainer(
 #if !BUILDFLAG(IS_MAC)
     std::unique_ptr<views::Separator> separator =
         std::make_unique<views::Separator>();
-    separator->SetBorderRadius(TabStyle::Get()->GetSeparatorMargins().right());
+    separator->SetBorderRadius(TabStyle::Get()->GetSeparatorCornerRadius());
     separator->SetPreferredSize(TabStyle::Get()->GetSeparatorSize());
 
     separator->SetColorId(kColorTabDividerFrameActive);
