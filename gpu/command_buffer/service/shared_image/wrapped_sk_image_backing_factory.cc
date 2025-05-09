@@ -189,11 +189,7 @@ bool WrappedSkImageBackingFactory::IsSupported(
     }
   }
 
-  if (format == viz::SinglePlaneFormat::kLUMINANCE_8) {
-    // WrappedSkImage does not support LUMINANCE_8. See
-    // https://crbug.com/1252502 for details.
-    return false;
-  } else if (format == viz::SinglePlaneFormat::kALPHA_8) {
+  if (format == viz::SinglePlaneFormat::kALPHA_8) {
     // For ALPHA8 skia will pick format depending on context version and
     // extensions available and we'll have to match that format when we record
     // DDLs. To avoid matching logic here, fallback to other backings (e.g

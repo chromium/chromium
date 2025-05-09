@@ -35,8 +35,6 @@ const char* SinglePlaneFormatToString(SharedImageFormat format) {
     return "BGRA_8888";
   } else if (format == SinglePlaneFormat::kALPHA_8) {
     return "ALPHA_8";
-  } else if (format == SinglePlaneFormat::kLUMINANCE_8) {
-    return "LUMINANCE_8";
   } else if (format == SinglePlaneFormat::kRGB_565) {
     return "RGB_565";
   } else if (format == SinglePlaneFormat::kBGR_565) {
@@ -383,7 +381,6 @@ int SharedImageFormat::BitsPerPixel() const {
     case mojom::SingleplanarFormat::RG_88:
       return 16;
     case mojom::SingleplanarFormat::ALPHA_8:
-    case mojom::SingleplanarFormat::LUMINANCE_8:
     case mojom::SingleplanarFormat::R_8:
       return 8;
     case mojom::SingleplanarFormat::ETC1:

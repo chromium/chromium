@@ -131,10 +131,7 @@ bool IsFormatSupported(viz::SharedImageFormat format,
   }
 
   // ALPHA_8 is only used by UI and should never need GL/Vulkan interop.
-  // LUMINANCE_8 is only used with GL ES2 contexts and shouldn't be relevant for
-  // devices that support Vulkan.
-  if (format == viz::SinglePlaneFormat::kALPHA_8 ||
-      format == viz::SinglePlaneFormat::kLUMINANCE_8) {
+  if (format == viz::SinglePlaneFormat::kALPHA_8) {
     return false;
   }
 

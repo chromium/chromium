@@ -210,7 +210,7 @@ TEST_F(ResourcePoolTest, SimpleResourceReuse) {
 
   // Different size/format should allocate new resource.
   resource = resource_pool_->AcquireResource(
-      gfx::Size(50, 50), viz::SinglePlaneFormat::kLUMINANCE_8, color_space1);
+      gfx::Size(50, 50), viz::SinglePlaneFormat::kR_8, color_space1);
   EXPECT_EQ(2u, resource_pool_->GetTotalResourceCountForTesting());
   CheckAndReturnResource(std::move(resource));
   EXPECT_EQ(2u, resource_pool_->GetTotalResourceCountForTesting());

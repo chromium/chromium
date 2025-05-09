@@ -29,8 +29,6 @@ SkColorType ToClosestSkColorType(SharedImageFormat format) {
   } else if (format == SinglePlaneFormat::kBGR_565 ||
              format == SinglePlaneFormat::kRGB_565) {
     return kRGB_565_SkColorType;
-  } else if (format == SinglePlaneFormat::kLUMINANCE_8) {
-    return kGray_8_SkColorType;
   } else if (format == SinglePlaneFormat::kRGBX_8888 ||
              format == SinglePlaneFormat::kBGRX_8888 ||
              format == SinglePlaneFormat::kETC1) {
@@ -98,8 +96,6 @@ SharedImageFormat SkColorTypeToSinglePlaneSharedImageFormat(
       return SinglePlaneFormat::kALPHA_8;
     case kRGB_565_SkColorType:
       return SinglePlaneFormat::kBGR_565;
-    case kGray_8_SkColorType:
-      return SinglePlaneFormat::kLUMINANCE_8;
     case kRGB_888x_SkColorType:
       return SinglePlaneFormat::kRGBX_8888;
     case kRGBA_1010102_SkColorType:
@@ -262,8 +258,6 @@ SharedImageFormatRestrictedSinglePlaneUtils::ToGLTextureStorageFormat(
     return GL_RGBA4;
   } else if (format == SinglePlaneFormat::kALPHA_8) {
     return GL_ALPHA8_EXT;
-  } else if (format == SinglePlaneFormat::kLUMINANCE_8) {
-    return GL_LUMINANCE8_EXT;
   } else if (format == SinglePlaneFormat::kBGR_565 ||
              format == SinglePlaneFormat::kRGB_565) {
     return GL_RGB565;

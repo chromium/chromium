@@ -77,8 +77,7 @@ unsigned int ToMTLPixelFormat(viz::SharedImageFormat format, int plane_index) {
   MTLPixelFormat mtl_pixel_format = MTLPixelFormatInvalid;
   if (format.is_single_plane()) {
     if (format == viz::SinglePlaneFormat::kR_8 ||
-        format == viz::SinglePlaneFormat::kALPHA_8 ||
-        format == viz::SinglePlaneFormat::kLUMINANCE_8) {
+        format == viz::SinglePlaneFormat::kALPHA_8) {
       mtl_pixel_format = MTLPixelFormatR8Unorm;
     } else if (format == viz::SinglePlaneFormat::kRG_88) {
       mtl_pixel_format = MTLPixelFormatRG8Unorm;

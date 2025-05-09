@@ -60,8 +60,6 @@ VkFormat ToVkFormatSinglePlanarInternal(viz::SharedImageFormat format) {
     return VK_FORMAT_A2R10G10B10_UNORM_PACK32;
   } else if (format == viz::SinglePlaneFormat::kALPHA_8) {
     return VK_FORMAT_R8_UNORM;
-  } else if (format == viz::SinglePlaneFormat::kLUMINANCE_8) {
-    return VK_FORMAT_R8_UNORM;
   } else if (format == viz::SinglePlaneFormat::kETC1) {
     return VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK;
   } else if (format == viz::SinglePlaneFormat::kLUMINANCE_F16 ||
@@ -86,8 +84,7 @@ GLenum GLDataFormat(viz::SharedImageFormat format, int plane_index) {
       return GL_BGRA_EXT;
     } else if (format == viz::SinglePlaneFormat::kALPHA_8) {
       return GL_ALPHA;
-    } else if (format == viz::SinglePlaneFormat::kLUMINANCE_8 ||
-               format == viz::SinglePlaneFormat::kLUMINANCE_F16) {
+    } else if (format == viz::SinglePlaneFormat::kLUMINANCE_F16) {
       return GL_LUMINANCE;
     } else if (format == viz::SinglePlaneFormat::kRGB_565 ||
                format == viz::SinglePlaneFormat::kBGR_565 ||
@@ -121,7 +118,6 @@ GLenum GLDataType(viz::SharedImageFormat format) {
     if (format == viz::SinglePlaneFormat::kRGBA_8888 ||
         format == viz::SinglePlaneFormat::kBGRA_8888 ||
         format == viz::SinglePlaneFormat::kALPHA_8 ||
-        format == viz::SinglePlaneFormat::kLUMINANCE_8 ||
         format == viz::SinglePlaneFormat::kETC1 ||
         format == viz::SinglePlaneFormat::kR_8 ||
         format == viz::SinglePlaneFormat::kRG_88 ||
@@ -497,8 +493,7 @@ wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format) {
              format == viz::SinglePlaneFormat::kBGRX_8888) {
     return wgpu::TextureFormat::BGRA8Unorm;
   } else if (format == viz::SinglePlaneFormat::kR_8 ||
-             format == viz::SinglePlaneFormat::kALPHA_8 ||
-             format == viz::SinglePlaneFormat::kLUMINANCE_8) {
+             format == viz::SinglePlaneFormat::kALPHA_8) {
     return wgpu::TextureFormat::R8Unorm;
   } else if (format == viz::SinglePlaneFormat::kRG_88) {
     return wgpu::TextureFormat::RG8Unorm;

@@ -129,8 +129,6 @@ SharedImageFormatUMA GetSharedImageFormatUMA(viz::SharedImageFormat format) {
       return SharedImageFormatUMA::kBGRA_8888;
     } else if (format == viz::SinglePlaneFormat::kALPHA_8) {
       return SharedImageFormatUMA::kALPHA_8;
-    } else if (format == viz::SinglePlaneFormat::kLUMINANCE_8) {
-      return SharedImageFormatUMA::kLUMINANCE_8;
     } else if (format == viz::SinglePlaneFormat::kRGB_565) {
       return SharedImageFormatUMA::kRGB_565;
     } else if (format == viz::SinglePlaneFormat::kBGR_565) {
