@@ -8,6 +8,7 @@
 #include "chrome/browser/sync/test/integration/exponential_backoff_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
+#include "components/sync/engine/polling_constants.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/fake_server_http_post_provider.h"
 #include "content/public/test/browser_test.h"
@@ -58,7 +59,9 @@ IN_PROC_BROWSER_TEST_F(SyncExponentialBackoffTest, OfflineToOnline) {
 
   // Verify that the client goes into exponential backoff while it is unable to
   // reach the sync server.
-  ASSERT_TRUE(ExponentialBackoffChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(ExponentialBackoffChecker(
+                  GetSyncService(0), syncer::kInitialBackoffImmediateRetryTime)
+                  .Wait());
 
   // Double check that the folder hasn't been committed.
   ASSERT_EQ(
@@ -101,7 +104,9 @@ IN_PROC_BROWSER_TEST_F(SyncExponentialBackoffTest, ServerRedirect) {
 
   // Verify that the client goes into exponential backoff while it is unable to
   // reach the sync server.
-  ASSERT_TRUE(ExponentialBackoffChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(ExponentialBackoffChecker(GetSyncService(0),
+                                        syncer::kInitialBackoffShortRetryTime)
+                  .Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(SyncExponentialBackoffTest, InternalServerError) {
@@ -118,7 +123,9 @@ IN_PROC_BROWSER_TEST_F(SyncExponentialBackoffTest, InternalServerError) {
 
   // Verify that the client goes into exponential backoff while it is unable to
   // reach the sync server.
-  ASSERT_TRUE(ExponentialBackoffChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(ExponentialBackoffChecker(GetSyncService(0),
+                                        syncer::kInitialBackoffShortRetryTime)
+                  .Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(SyncExponentialBackoffTest, TransientErrorTest) {
@@ -135,7 +142,9 @@ IN_PROC_BROWSER_TEST_F(SyncExponentialBackoffTest, TransientErrorTest) {
 
   // Verify that the client goes into exponential backoff while it is unable to
   // reach the sync server.
-  ASSERT_TRUE(ExponentialBackoffChecker(GetSyncService(0)).Wait());
+  ASSERT_TRUE(ExponentialBackoffChecker(GetSyncService(0),
+                                        syncer::kInitialBackoffShortRetryTime)
+                  .Wait());
 }
 
 }  // namespace

@@ -17,7 +17,8 @@ namespace exponential_backoff_helper {
 class ExponentialBackoffChecker : public SingleClientStatusChangeChecker {
  public:
   // Upon construction, it is expected that backoff hasn't started yet.
-  explicit ExponentialBackoffChecker(syncer::SyncServiceImpl* sync_service);
+  explicit ExponentialBackoffChecker(syncer::SyncServiceImpl* sync_service,
+                                     base::TimeDelta initial_delay);
   ~ExponentialBackoffChecker() override;
 
   ExponentialBackoffChecker(const ExponentialBackoffChecker&) = delete;
@@ -39,7 +40,8 @@ class ExponentialBackoffChecker : public SingleClientStatusChangeChecker {
 
   // Helper functions to build the delay table.
   static DelayRange CalculateDelayRange(base::TimeDelta current_delay);
-  static std::vector<DelayRange> BuildExpectedDelayTable();
+  static std::vector<DelayRange> BuildExpectedDelayTable(
+      base::TimeDelta initial_delay);
 
   const std::vector<DelayRange> expected_delay_table_;
   std::vector<base::TimeDelta> actual_delays_;
