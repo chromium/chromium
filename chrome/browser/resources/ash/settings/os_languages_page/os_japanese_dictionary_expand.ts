@@ -10,6 +10,7 @@ import './os_japanese_dictionary_entry_row.js';
 import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 
 import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import type {BigBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {BigString} from 'chrome://resources/mojo/mojo/public/mojom/base/big_string.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -26,7 +27,8 @@ interface OsJapaneseDictionaryExpandElement {
   };
 }
 
-class OsJapaneseDictionaryExpandElement extends PolymerElement {
+class OsJapaneseDictionaryExpandElement extends I18nMixin
+(PolymerElement) {
   static get is() {
     return 'os-japanese-dictionary-expand' as const;
   }
@@ -163,7 +165,12 @@ class OsJapaneseDictionaryExpandElement extends PolymerElement {
     this.dispatchEvent(
         new CustomEvent('dictionary-saved', {bubbles: true, composed: true}));
   }
+
+  private i18nDialogString_(dictName: string): string {
+    return this.i18n('japaneseDeleteDictionaryDetail', dictName);
+  }
 }
+
 
 customElements.define(
     OsJapaneseDictionaryExpandElement.is, OsJapaneseDictionaryExpandElement);
