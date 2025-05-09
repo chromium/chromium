@@ -1920,26 +1920,26 @@ xsltSaveResultToString(xmlChar **doc_txt_ptr, int * doc_txt_len,
 int
 xsltGetSourceNodeFlags(xmlNodePtr node) {
     /*
-     * Squeeze the bit flags into the upper bits of
+     * Squeeze the bit flags into the upper 4 bits of
      *
-     * - 'int properties' member in struct _xmlDoc
-     * - 'xmlAttributeType atype' member in struct _xmlAttr
+     * - 'unsigned int extra' member in struct _xmlDoc
+     * - 'unsigned int extra' member in struct _xmlAttr
      * - 'unsigned short extra' member in struct _xmlNode
      */
     switch (node->type) {
         case XML_DOCUMENT_NODE:
         case XML_HTML_DOCUMENT_NODE:
-            return ((xmlDocPtr) node)->properties >> 27;
+            return ((xmlDocPtr) node)->extra >> XSLT_SOURCE_NODE_SHIFT_32;
 
         case XML_ATTRIBUTE_NODE:
-            return ((xmlAttrPtr) node)->atype >> 27;
+            return ((xmlAttrPtr) node)->extra >> XSLT_SOURCE_NODE_SHIFT_32;
 
         case XML_ELEMENT_NODE:
         case XML_TEXT_NODE:
         case XML_CDATA_SECTION_NODE:
         case XML_PI_NODE:
         case XML_COMMENT_NODE:
-            return node->extra >> 12;
+            return node->extra >> XSLT_SOURCE_NODE_SHIFT_32;
 
         default:
             return 0;
@@ -1964,11 +1964,11 @@ xsltSetSourceNodeFlags(xsltTransformContextPtr ctxt, xmlNodePtr node,
     switch (node->type) {
         case XML_DOCUMENT_NODE:
         case XML_HTML_DOCUMENT_NODE:
-            ((xmlDocPtr) node)->properties |= flags << 27;
+            ((xmlDocPtr) node)->extra |= (flags << XSLT_SOURCE_NODE_SHIFT_32);
             return 0;
 
         case XML_ATTRIBUTE_NODE:
-            ((xmlAttrPtr) node)->atype |= flags << 27;
+            ((xmlAttrPtr) node)->extra |= (flags << XSLT_SOURCE_NODE_SHIFT_32);
             return 0;
 
         case XML_ELEMENT_NODE:
@@ -1976,7 +1976,7 @@ xsltSetSourceNodeFlags(xsltTransformContextPtr ctxt, xmlNodePtr node,
         case XML_CDATA_SECTION_NODE:
         case XML_PI_NODE:
         case XML_COMMENT_NODE:
-            node->extra |= flags << 12;
+            node->extra |= (flags << XSLT_SOURCE_NODE_SHIFT_16);
             return 0;
 
         default:
@@ -1998,11 +1998,11 @@ xsltClearSourceNodeFlags(xmlNodePtr node, int flags) {
     switch (node->type) {
         case XML_DOCUMENT_NODE:
         case XML_HTML_DOCUMENT_NODE:
-            ((xmlDocPtr) node)->properties &= ~(flags << 27);
+            ((xmlDocPtr) node)->extra &= ~(flags << XSLT_SOURCE_NODE_SHIFT_32);
             return 0;
 
         case XML_ATTRIBUTE_NODE:
-            ((xmlAttrPtr) node)->atype &= ~(flags << 27);
+            ((xmlAttrPtr) node)->extra &= ~(flags << XSLT_SOURCE_NODE_SHIFT_32);
             return 0;
 
         case XML_ELEMENT_NODE:
@@ -2010,7 +2010,7 @@ xsltClearSourceNodeFlags(xmlNodePtr node, int flags) {
         case XML_CDATA_SECTION_NODE:
         case XML_PI_NODE:
         case XML_COMMENT_NODE:
-            node->extra &= ~(flags << 12);
+            node->extra &= ~(flags << XSLT_SOURCE_NODE_SHIFT_16);
             return 0;
 
         default:
