@@ -42,7 +42,7 @@ describe('NavigationTracker', () => {
 
   function assertNoNavigationEvents() {
     // `eventManager.registerEvent` is safe do be used unbound.
-    // eslint-disable-next-line @typescript-eslint/unbound-method
+
     sinon.assert.notCalled(eventManager.registerEvent);
   }
 
@@ -54,7 +54,7 @@ describe('NavigationTracker', () => {
   ) {
     sinon.assert.calledWith(
       // `eventManager.registerEvent` is safe do be used unbound.
-      // eslint-disable-next-line @typescript-eslint/unbound-method
+
       eventManager.registerEvent,
       sinon.match({
         type: 'event',
