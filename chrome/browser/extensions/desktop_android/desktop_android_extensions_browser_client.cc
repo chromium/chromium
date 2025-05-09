@@ -21,6 +21,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_selections.h"
+#include "chrome/browser/ui/webui/devtools/devtools_ui.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/update_client/update_client.h"
 #include "components/value_store/value_store_factory.h"
@@ -32,6 +34,8 @@
 #include "extensions/browser/api/core_extensions_browser_api_provider.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/messaging/messaging_delegate.h"
+#include "extensions/browser/api/web_request/web_request_info.h"
+#include "extensions/browser/api/web_request/web_request_resource_type.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_error.h"
 #include "extensions/browser/extension_util.h"
@@ -117,6 +121,41 @@ class DesktopAndroidExtensionsAPIClient : public ExtensionsAPIClient {
                GaiaUrls::GetInstance()->gaia_url().host_piece() &&
            base::CompareCaseInsensitiveASCII(header_name,
                                              signin::kDiceResponseHeader) == 0;
+  }
+
+  // The following code (duplicated from ChromeExtensionAPIClient) is used to
+  // support chrome.webRequest api where webRequestPermissions calls
+  // PermissionHelper::ShouldHideBrowserNetworkRequest(), until
+  // ChromeExtensionAPIClient is ported for desktop android.
+  bool ShouldHideBrowserNetworkRequest(
+      content::BrowserContext* context,
+      const WebRequestInfo& request) const override {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+    // Note: browser initiated non-navigation requests are hidden from
+    // extensions. But we do still need to protect some sensitive sub-frame
+    // navigation requests. Exclude main frame navigation requests.
+    bool is_browser_request =
+        request.render_process_id == -1 &&
+        request.web_request_type != WebRequestResourceType::MAIN_FRAME;
+
+    // Hide requests made by the Devtools frontend.
+    bool is_sensitive_request =
+        is_browser_request && DevToolsUI::IsFrontendResourceURL(request.url);
+
+    // Hide requests made by the browser on behalf of the NTP.
+    is_sensitive_request |=
+        is_browser_request &&
+        request.initiator ==
+            url::Origin::Create(GURL(chrome::kChromeUINewTabURL));
+
+    // Hide requests made by the browser on behalf of the 1P WebUI NTP.
+    is_sensitive_request |=
+        is_browser_request &&
+        request.initiator ==
+            url::Origin::Create(GURL(chrome::kChromeUINewTabPageURL));
+
+    return is_sensitive_request;
   }
 
  private:
