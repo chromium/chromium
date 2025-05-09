@@ -315,7 +315,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -1594,11 +1593,10 @@ public class ChromeTabbedActivity extends ChromeActivity {
      * @return Whether the Intent was successfully handled.
      */
     private boolean maybeHandleGroupUrlsIntent(Intent intent, TabGroupMetadata tabGroupMetadata) {
-        final LinkedHashMap<Integer, String> tabIdsToUrls = tabGroupMetadata.tabIdsToUrls;
         @TabOpenType int tabOpenType = IntentHandler.getTabOpenType(intent);
 
-        ArrayList<Tab> tabs = new ArrayList();
-        for (Map.Entry<Integer, String> entry : tabIdsToUrls.entrySet()) {
+        ArrayList<Tab> tabs = new ArrayList<>();
+        for (Map.Entry<Integer, String> entry : tabGroupMetadata.tabIdsToUrls) {
             int tabId = entry.getKey();
             String url = entry.getValue();
             assert tabId != Tab.INVALID_TAB_ID : "Invalid tab ID";

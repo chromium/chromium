@@ -103,7 +103,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1554,9 +1553,9 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // Setup.
         mMultiInstanceManager.mTestBuildInstancesList = true;
-        LinkedHashMap<Integer, String> tabIdsToUrls =
-                new LinkedHashMap<>(
-                        Map.ofEntries(
+        ArrayList<Map.Entry<Integer, String>> tabIdsToUrls =
+                new ArrayList<>(
+                        List.of(
                                 Map.entry(1, "https://www.amazon.com"),
                                 Map.entry(2, "https://www.youtube.com"),
                                 Map.entry(3, "https://www.facebook.com")));

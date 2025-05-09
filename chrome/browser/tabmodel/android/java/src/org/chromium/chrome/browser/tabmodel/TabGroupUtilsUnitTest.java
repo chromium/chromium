@@ -51,7 +51,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -72,9 +71,9 @@ public class TabGroupUtilsUnitTest {
     private static final Token TAB_GROUP_ID1 = new Token(2L, 2L);
     private static final Token TAB_GROUP_ID2 = new Token(4L, 4L);
     private static final String TAB_GROUP_TITLE = "Regrouped tabs";
-    private static final LinkedHashMap<Integer, String> TAB_IDS_TO_URLS =
-            new LinkedHashMap<>(
-                    Map.ofEntries(
+    private static final ArrayList<Map.Entry<Integer, String>> TAB_IDS_TO_URLS =
+            new ArrayList<>(
+                    List.of(
                             Map.entry(TAB1_ID, "https://www.amazon.com/"),
                             Map.entry(TAB2_ID, "https://www.youtube.com/"),
                             Map.entry(TAB3_ID, "https://www.facebook.com/")));

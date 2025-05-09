@@ -55,8 +55,10 @@ import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 import org.chromium.url.JUnitTestGURLs;
 
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /** Unit test for {@link ChromeDragAndDropBrowserDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -363,26 +365,24 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
         Token tabGroupId = new Token(2L, 2L);
         String tabGroupTitle = "Regrouped tabs";
         int rootId = 1;
-        LinkedHashMap<Integer, String> tabIdsToUrls =
-                new LinkedHashMap<>(
-                        Map.ofEntries(
+        ArrayList<Entry<Integer, String>> tabIdsToUrls =
+                new ArrayList<>(
+                        List.of(
                                 Map.entry(1, "https://www.amazon.com/"),
                                 Map.entry(2, "https://www.youtube.com/"),
                                 Map.entry(3, "https://www.facebook.com/")));
 
-        TabGroupMetadata tabGroupMetadata =
-                new TabGroupMetadata(
-                        rootId,
-                        /* selectedTabId= */ rootId,
-                        /* sourceWindowId= */ TabWindowManager.INVALID_WINDOW_ID,
-                        tabGroupId,
-                        tabIdsToUrls,
-                        /* tabGroupColor= */ 0,
-                        tabGroupTitle,
-                        /* mhtmlTabTitle= */ null,
-                        /* tabGroupCollapsed= */ false,
-                        /* isGroupShared= */ false,
-                        /* isIncognito= */ false);
-        return tabGroupMetadata;
+        return new TabGroupMetadata(
+                rootId,
+                /* selectedTabId= */ rootId,
+                /* sourceWindowId= */ TabWindowManager.INVALID_WINDOW_ID,
+                tabGroupId,
+                tabIdsToUrls,
+                /* tabGroupColor= */ 0,
+                tabGroupTitle,
+                /* mhtmlTabTitle= */ null,
+                /* tabGroupCollapsed= */ false,
+                /* isGroupShared= */ false,
+                /* isIncognito= */ false);
     }
 }

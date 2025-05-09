@@ -14,8 +14,10 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 
-import java.util.LinkedHashMap;
+import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /** Utility class for extracting metadata from a list of tabs that form a tab group. */
 @NullMarked
@@ -36,12 +38,12 @@ public class TabGroupMetadataExtractor {
             int sourceWindowIndex,
             int selectedTabId,
             boolean isGroupShared) {
-        if (groupedTabs.size() == 0) return null;
+        if (groupedTabs.isEmpty()) return null;
 
         // 1. Collect IDs and URLs for each tab in the group. Check if the selected tab is in the
         // tab group, otherwise default select the first tab in the group after re-parenting to
         // destination window.
-        LinkedHashMap<Integer, String> tabIdsToUrls = new LinkedHashMap();
+        ArrayList<Map.Entry<Integer, String>> tabIdsToUrls = new ArrayList<>();
         @Nullable String mhtmlTabTitle = null;
         boolean selectedTabIsInGroup = false;
         // Tabs are stored in reverse to ensure the correct opening order. Because tabs are inserted
@@ -51,7 +53,7 @@ public class TabGroupMetadataExtractor {
             Tab tab = groupedTabs.get(i);
             if (tab.getId() == selectedTabId) selectedTabIsInGroup = true;
             String url = tab.getUrl().getSpec();
-            tabIdsToUrls.put(tab.getId(), url);
+            tabIdsToUrls.add(new AbstractMap.SimpleImmutableEntry<>(tab.getId(), url));
             if (isMhtmlUrl(url)) {
                 mhtmlTabTitle = tab.getTitle();
             }
@@ -73,20 +75,18 @@ public class TabGroupMetadataExtractor {
         if (tabGroupCollapsed) selectedTabId = Tab.INVALID_TAB_ID;
 
         // 4. Create and populate TabGroupMetadata with data gathered above.
-        TabGroupMetadata tabGroupMetadata =
-                new TabGroupMetadata(
-                        rootId,
-                        selectedTabId,
-                        sourceWindowIndex,
-                        tabGroupId,
-                        tabIdsToUrls,
-                        tabGroupColor,
-                        tabGroupTitle,
-                        mhtmlTabTitle,
-                        tabGroupCollapsed,
-                        isGroupShared,
-                        firstTab.isIncognitoBranded());
-        return tabGroupMetadata;
+        return new TabGroupMetadata(
+                rootId,
+                selectedTabId,
+                sourceWindowIndex,
+                tabGroupId,
+                tabIdsToUrls,
+                tabGroupColor,
+                tabGroupTitle,
+                mhtmlTabTitle,
+                tabGroupCollapsed,
+                isGroupShared,
+                firstTab.isIncognitoBranded());
     }
 
     private static boolean isMhtmlUrl(String url) {

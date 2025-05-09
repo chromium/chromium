@@ -39,7 +39,6 @@ import org.chromium.ui.dragdrop.DragDropGlobalState.TrackerToken;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 /** Tests for {@link ExternalViewDragDropReorderStrategy}. */
@@ -505,7 +504,7 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
                             /* selectedTabId= */ mTabForInteractingView.getId(),
                             /* sourceWindowId= */ 1,
                             /* tabGroupId= */ new Token(2L, 2L),
-                            /* tabIdsToUrls= */ new LinkedHashMap<Integer, String>(),
+                            /* tabIdsToUrls= */ new ArrayList<>(),
                             /* tabGroupColor= */ 0,
                             /* tabGroupTitle= */ "Collaboration Group",
                             /* mhtmlTabTitle= */ null,

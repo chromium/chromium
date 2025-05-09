@@ -79,7 +79,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -91,9 +90,9 @@ public class ChromeTabbedActivityTest {
     private static final Token TAB_GROUP_ID = new Token(2L, 2L);
     private static final String TAB_GROUP_TITLE = "Regrouped tabs";
     private static final int ROOT_ID = 1;
-    private static final LinkedHashMap<Integer, String> TAB_IDS_TO_URLS =
-            new LinkedHashMap<>(
-                    Map.ofEntries(
+    private static final ArrayList<Map.Entry<Integer, String>> TAB_IDS_TO_URLS =
+            new ArrayList<>(
+                    List.of(
                             Map.entry(1, "https://www.amazon.com/"),
                             Map.entry(2, "https://www.youtube.com/"),
                             Map.entry(3, "https://www.facebook.com/")));
@@ -606,13 +605,13 @@ public class ChromeTabbedActivityTest {
                     // Verify urls of the grouped tabs.
                     Criteria.checkThat(
                             tabModel.getTabAt(1).getUrl().getSpec(),
-                            Matchers.equalTo(TAB_IDS_TO_URLS.get(1)));
+                            Matchers.equalTo(TAB_IDS_TO_URLS.get(0).getValue()));
                     Criteria.checkThat(
                             tabModel.getTabAt(2).getUrl().getSpec(),
-                            Matchers.equalTo(TAB_IDS_TO_URLS.get(2)));
+                            Matchers.equalTo(TAB_IDS_TO_URLS.get(1).getValue()));
                     Criteria.checkThat(
                             tabModel.getTabAt(3).getUrl().getSpec(),
-                            Matchers.equalTo(TAB_IDS_TO_URLS.get(3)));
+                            Matchers.equalTo(TAB_IDS_TO_URLS.get(2).getValue()));
 
                     // Verify the tabs are grouped with the correct rootId and tabGroupId.
                     Tab firstGroupedTab = tabModel.getTabAt(1);

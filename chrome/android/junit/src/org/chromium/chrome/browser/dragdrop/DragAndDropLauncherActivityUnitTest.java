@@ -37,8 +37,10 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 import org.chromium.url.JUnitTestGURLs;
 
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /** Unit tests for {@link DragAndDropLauncherActivity}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -238,9 +240,9 @@ public class DragAndDropLauncherActivityUnitTest {
         Token tabGroupId = new Token(2L, 2L);
         String tabGroupTitle = "Regrouped tabs";
         int rootId = 1;
-        LinkedHashMap<Integer, String> tabIdsToUrls =
-                new LinkedHashMap<>(
-                        Map.ofEntries(
+        ArrayList<Entry<Integer, String>> tabIdsToUrls =
+                new ArrayList<>(
+                        List.of(
                                 Map.entry(1, "https://www.amazon.com/"),
                                 Map.entry(2, "https://www.youtube.com/"),
                                 Map.entry(3, "https://www.facebook.com/")));

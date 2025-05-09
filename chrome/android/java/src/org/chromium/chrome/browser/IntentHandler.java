@@ -78,7 +78,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -917,8 +916,8 @@ public class IntentHandler {
                 }
 
                 // Check url validity and remove invalid urls if needed.
-                LinkedHashMap tabIdsToUrls = tabGroupMetadata.tabIdsToUrls;
-                Iterator<Entry<Integer, String>> iterator = tabIdsToUrls.entrySet().iterator();
+                List<Entry<Integer, String>> tabIdsToUrls = tabGroupMetadata.tabIdsToUrls;
+                Iterator<Entry<Integer, String>> iterator = tabIdsToUrls.iterator();
                 while (iterator.hasNext()) {
                     Map.Entry<Integer, String> entry = iterator.next();
                     String url = entry.getValue();
