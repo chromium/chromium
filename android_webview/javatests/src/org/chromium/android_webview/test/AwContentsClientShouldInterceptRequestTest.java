@@ -1932,4 +1932,47 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
                 mShouldInterceptRequestHelper.getUrls().size() >= 1 + parallelRequestCount);
         mContentsClient.getOnPageFinishedHelper().waitForCallback(onPageFinishedCallCount);
     }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testTimingHistogramEmitted() throws Throwable {
+        String syncGetUrl = mWebServer.getResponseUrl("/intercept_me");
+        String aboutPageUrl = addAboutPageToTestServer(mWebServer);
+        AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+        HistogramWatcher.Builder builder =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord(
+                                "Android.WebView.IoThreadClientOnUrlLoaderTime.RequestSetup")
+                        .expectAnyRecord(
+                                "Android.WebView.IoThreadClientOnUrlLoaderTime.RequestDone")
+                        .allowExtraRecordsForHistogramsAbove();
+
+        // No intercept
+        try (HistogramWatcher histogramExpectation = builder.build()) {
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), aboutPageUrl);
+        }
+
+        // Intercept
+        mShouldInterceptRequestHelper.enqueueHtmlResponseForUrl(syncGetUrl, "hello, world", null);
+        try (HistogramWatcher histogramExpectation = builder.build()) {
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), syncGetUrl);
+        }
+
+        // Bad input stream
+        mShouldInterceptRequestHelper.enqueueResponseForUrlWithStream(
+                syncGetUrl, "text/html", "UTF-8", ThrowingInputStream::new);
+        try (HistogramWatcher histogramExpectation = builder.build()) {
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), aboutPageUrl);
+        }
+
+        String redirectUrl = mWebServer.setRedirect("/redirect", aboutPageUrl);
+        try (HistogramWatcher histogramExpectation = builder.build()) {
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), redirectUrl);
+        }
+    }
 }

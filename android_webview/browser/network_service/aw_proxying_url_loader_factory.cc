@@ -223,6 +223,10 @@ class InterceptedRequest : public network::mojom::URLLoader,
 
   void SendNoIntercept(std::optional<bool> xrw_enabled);
 
+  // Logs the cumulative time spent by the AwContentsIoThreadClient during this
+  // request.
+  void LogIoThreadClientTimeSpent();
+
   OptionalGetCookie get_cookie_header_;
   OptionalSetCookie set_cookie_header_;
   const std::optional<WebContentsKey> web_contents_key_;
@@ -261,6 +265,8 @@ class InterceptedRequest : public network::mojom::URLLoader,
   mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
   scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher_;
   scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle_;
+
+  base::TimeDelta io_thread_client_call_duration_;
 
   base::WeakPtrFactory<InterceptedRequest> weak_factory_{this};
 };
@@ -531,10 +537,12 @@ void InterceptedRequest::InterceptWithCookieHeader(
 
 void InterceptedRequest::Restart(std::optional<bool> xrw_enabled) {
   TRACE_EVENT0("android_webview", "InterceptedRequest::Restart");
+  io_thread_client_call_duration_ = base::TimeDelta();
   std::unique_ptr<AwContentsIoThreadClient> io_thread_client =
       GetIoThreadClient();
 
-  if (ShouldBlockURL(request_.url, io_thread_client.get())) {
+  if (ShouldBlockURL(request_.url, io_thread_client.get(),
+                     io_thread_client_call_duration_)) {
     SendErrorAndCompleteImmediately(net::ERR_ACCESS_DENIED);
     return;
   }
@@ -547,7 +555,8 @@ void InterceptedRequest::Restart(std::optional<bool> xrw_enabled) {
   }
 
   request_.load_flags =
-      UpdateLoadFlags(request_.load_flags, io_thread_client.get());
+      UpdateLoadFlags(request_.load_flags, io_thread_client.get(),
+                      io_thread_client_call_duration_);
 
   if (!io_thread_client || ShouldNotInterceptRequest()) {
     SendNoIntercept(xrw_enabled);
@@ -585,9 +594,11 @@ void InterceptedRequest::Restart(std::optional<bool> xrw_enabled) {
                        arg_ready_closure));
 
     if (get_cookie_header_.has_value() && io_thread_client &&
-        io_thread_client->ShouldAcceptCookies()) {
+        io_thread_client->ShouldAcceptCookies(
+            io_thread_client_call_duration_)) {
       bool accept_third_party_cookies =
-          io_thread_client->ShouldAcceptThirdPartyCookies();
+          io_thread_client->ShouldAcceptThirdPartyCookies(
+              io_thread_client_call_duration_);
 
       std::move(get_cookie_header_)
           ->Run(accept_third_party_cookies, request_, std::move(done));
@@ -684,9 +695,16 @@ void InterceptedRequest::InterceptResponseReceived(
   ContinueAfterIntercept();
 }
 
+void InterceptedRequest::LogIoThreadClientTimeSpent() {
+  base::UmaHistogramMicrosecondsTimes(
+      "Android.WebView.IoThreadClientOnUrlLoaderTime.RequestDone",
+      io_thread_client_call_duration_);
+}
+
 // returns true if the request has been restarted or was completed.
 bool InterceptedRequest::InputStreamFailed(bool restart_needed) {
   DCHECK(!input_stream_previously_failed_);
+  LogIoThreadClientTimeSpent();
 
   if (intercept_only_) {
     // This can happen for unsupported schemes, when no proper
@@ -710,6 +728,7 @@ bool InterceptedRequest::InputStreamFailed(bool restart_needed) {
 }
 
 void InterceptedRequest::ContinueAfterIntercept() {
+  LogIoThreadClientTimeSpent();
   // For WebViewClassic compatibility this job can only accept URLs that can be
   // opened. URLs that cannot be opened should be resolved by the next handler.
   //
@@ -745,6 +764,7 @@ void InterceptedRequest::ContinueAfterIntercept() {
 void InterceptedRequest::ContinueAfterInterceptWithOverride(
     std::unique_ptr<embedder_support::WebResourceResponse> response,
     std::unique_ptr<embedder_support::InputStream> input_stream) {
+  LogIoThreadClientTimeSpent();
   embedder_support::AndroidStreamReaderURLLoader* loader =
       new embedder_support::AndroidStreamReaderURLLoader(
           request_, proxied_client_receiver_.BindNewPipeAndPassRemote(),
@@ -895,6 +915,7 @@ void InterceptedRequest::FollowRedirect(
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
     const std::optional<GURL>& new_url) {
+  LogIoThreadClientTimeSpent();
   if (target_loader_) {
     target_loader_->FollowRedirect(removed_headers, modified_headers,
                                    modified_cors_exempt_headers, new_url);
@@ -982,6 +1003,7 @@ void InterceptedRequest::CallOnComplete(
 }
 
 void InterceptedRequest::SendErrorAndCompleteImmediately(int error_code) {
+  LogIoThreadClientTimeSpent();
   auto status = network::URLLoaderCompletionStatus(error_code);
   SendErrorCallback(status.error_code, false);
   target_client_->OnComplete(status);
@@ -1160,25 +1182,30 @@ void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
       GetIoThreadClient(web_contents_key_, frame_tree_node_id_,
                         browser_context_handle_.get());
 
+  base::TimeDelta io_thread_client_setup_time;
+
   // It is possible for us to receive a nullptr for the io_thread_client
   // from AwContentBrowserClient::HandleExternalProtocol.
   // This is because that method can be called while the RenderFrameHost is
   // shutting down. Since this behavior is only expected during shutdown, we
   // will take the safe default and assume cookies are not allowed to avoid
   // leaking data.
-  bool global_cookie_policy = io_thread_client != nullptr
-                                  ? io_thread_client->ShouldAcceptCookies()
-                                  : false;
+  bool global_cookie_policy =
+      io_thread_client != nullptr
+          ? io_thread_client->ShouldAcceptCookies(io_thread_client_setup_time)
+          : false;
 
   bool third_party_cookie_policy =
-      global_cookie_policy && io_thread_client->ShouldAcceptThirdPartyCookies();
+      global_cookie_policy && io_thread_client->ShouldAcceptThirdPartyCookies(
+                                  io_thread_client_setup_time);
 
   // If we are handling an external protocol, we skip providing the cookie
   // manager. In this case, it will not be bound so we move on.
   // We should also only provide cookies if cookies are enabled.
   bool include_cookies_on_intercept =
       cookie_manager_.is_bound() && global_cookie_policy &&
-      io_thread_client->ShouldIncludeCookiesOnIntercept();
+      io_thread_client->ShouldIncludeCookiesOnIntercept(
+          io_thread_client_setup_time);
 
   // WebView treats cookie access on a per request basis and so we have to
   // essentially let the rest of the network stack know if we want to allow
@@ -1220,6 +1247,10 @@ void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
     set_cookie_header = base::BindRepeating(
         &AwProxyingURLLoaderFactory::SetCookieHeader, base::Unretained(this));
   }
+
+  base::UmaHistogramMicrosecondsTimes(
+      "Android.WebView.IoThreadClientOnUrlLoaderTime.RequestSetup",
+      io_thread_client_setup_time);
 
   // manages its own lifecycle
   // TODO(timvolodine): consider keeping track of requests.

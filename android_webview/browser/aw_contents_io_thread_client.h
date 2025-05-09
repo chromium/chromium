@@ -125,31 +125,31 @@ class AwContentsIoThreadClient {
 
   // Retrieve the AllowContentAccess setting value of this AwContents.
   // This method is called on the IO thread only.
-  bool ShouldBlockContentUrls() const;
+  bool ShouldBlockContentUrls(base::TimeDelta& counter) const;
 
   // Retrieve the AllowFileAccess setting value of this AwContents.
   // This method is called on the IO thread only.
-  bool ShouldBlockFileUrls() const;
+  bool ShouldBlockFileUrls(base::TimeDelta& counter) const;
 
   // Retrieves if special android file urls (android_{asset/res}) should be
   // allowed.
-  bool ShouldBlockSpecialFileUrls() const;
+  bool ShouldBlockSpecialFileUrls(base::TimeDelta& counter) const;
 
   // Retrieve the BlockNetworkLoads setting value of this AwContents.
   // This method is called on the IO thread only.
-  bool ShouldBlockNetworkLoads() const;
+  bool ShouldBlockNetworkLoads(base::TimeDelta& counter) const;
 
   // Retrieve the AcceptCookies setting value of this AwContents.
-  bool ShouldAcceptCookies() const;
+  bool ShouldAcceptCookies(base::TimeDelta& counter) const;
 
   // Retrieve the AcceptThirdPartyCookies setting value of this AwContents.
-  bool ShouldAcceptThirdPartyCookies() const;
+  bool ShouldAcceptThirdPartyCookies(base::TimeDelta& counter) const;
 
   // Retrieve the SafeBrowsingEnabled setting value of this AwContents.
   bool GetSafeBrowsingEnabled() const;
 
   // Enables getting and setting cookies as part of shouldInterceptRequest.
-  bool ShouldIncludeCookiesOnIntercept() const;
+  bool ShouldIncludeCookiesOnIntercept(base::TimeDelta& counter) const;
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
