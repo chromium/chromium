@@ -42,15 +42,17 @@ if (is_nacl) {
   import("//build/config/nacl/config.gni")
 }
 
-lld_path = ""
+# Normally, clang will find the correct LLD binary to invoke without needing
+# -B to be passed. For cases where this does not give the correct result,
+# we allow lld_path to be specified.
+default_lld_path = ""
 if (!is_clang) {
-  declare_args() {
-    # This allows overriding the location of lld.
-    lld_path = rebase_path("$clang_base_path/bin", root_build_dir)
-  }
-} else {
-  # clang looks for lld next to it, no need for -B.
-  lld_path = ""
+  default_lld_path = "$clang_base_path/bin"
+}
+
+declare_args() {
+  # This allows overriding the location of lld.
+  lld_path = default_lld_path
 }
 
 declare_args() {
@@ -391,7 +393,7 @@ config("compiler") {
     if (use_lld) {
       ldflags += [ "-fuse-ld=lld" ]
       if (lld_path != "") {
-        ldflags += [ "-B$lld_path" ]
+        ldflags += [ "-B" + rebase_path(lld_path, root_build_dir) ]
       }
     }
 
