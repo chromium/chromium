@@ -426,19 +426,6 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   // https://www.w3.org/TR/filter-effects-1/#interpolation-of-filter-functions.
   CSSPrimitiveValue* ConvertLiteralsFromPercentageToNumber() const;
 
-  // TODO(crbug.com/979895): The semantics of these untyped getters are not very
-  // clear if |this| is a math function. Do not add new callers before further
-  // refactoring and cleanups.
-  // These getters can be called only when |this| is a numeric literal or a math
-  // expression can be resolved into a single numeric value *without any type
-  // conversion* (e.g., between px and em). Otherwise, it hits a DCHECK.
-  // In particular, you cannot call this if IsResolvableBeforeLayout()
-  // returns false.
-  double GetDoubleValue() const;
-
-  // Returns Double Value including infinity, -infinity, and NaN.
-  double GetDoubleValueWithoutClamping() const;
-
   template <typename T>
     requires std::integral<T> || std::floating_point<T>
   inline T ConvertTo(const CSSLengthResolver& length_resolver) const {

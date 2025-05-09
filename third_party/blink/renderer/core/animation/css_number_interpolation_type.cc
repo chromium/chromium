@@ -115,7 +115,7 @@ CSSNumberInterpolationType::MaybeConvertCustomPropertyUnderlyingValue(
     const CSSValue& value) const {
   if (const auto* number_value = DynamicTo<CSSNumericLiteralValue>(value)) {
     if (number_value->IsNumber()) {
-      return CreateNumberValue(number_value->GetDoubleValue());
+      return CreateNumberValue(number_value->ClampedDoubleValue());
     }
   }
   return nullptr;

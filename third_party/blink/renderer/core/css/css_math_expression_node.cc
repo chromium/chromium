@@ -833,7 +833,7 @@ CSSMathExpressionNumericLiteral::ToCalculationExpression(
 
 double CSSMathExpressionNumericLiteral::DoubleValue() const {
   if (HasDoubleValue(ResolvedUnitType())) {
-    return value_->GetDoubleValueWithoutClamping();
+    return value_->DoubleValue();
   }
   DUMP_WILL_BE_NOTREACHED();
   return 0;

@@ -113,7 +113,7 @@ CSSPercentageInterpolationType::MaybeConvertCustomPropertyUnderlyingValue(
     const CSSValue& value) const {
   if (const auto* percentage_value = DynamicTo<CSSNumericLiteralValue>(value)) {
     if (percentage_value->IsPercentage()) {
-      return CreatePercentageValue(percentage_value->GetDoubleValue());
+      return CreatePercentageValue(percentage_value->ClampedDoubleValue());
     }
   }
   return nullptr;

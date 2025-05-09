@@ -471,10 +471,10 @@ double ResolveColorChannelForNumericLiteral(
       if (value->IsAngle()) {
         return value->ComputeDegrees();
       } else {
-        return value->GetDoubleValueWithoutClamping();
+        return value->DoubleValue();
       }
     case ChannelType::kPercentage:
-      return (value->GetDoubleValue() / 100.0) * percentage_base;
+      return (value->ClampedDoubleValue() / 100.0) * percentage_base;
     default:
       NOTREACHED();
   }
@@ -486,9 +486,9 @@ double ResolveAlphaForNumericLiteral(
   using ChannelType = ColorFunctionParser::ChannelType;
   switch (channel_type) {
     case ChannelType::kNumber:
-      return ClampTo<double>(value->GetDoubleValue(), 0.0, 1.0);
+      return ClampTo<double>(value->ClampedDoubleValue(), 0.0, 1.0);
     case ChannelType::kPercentage:
-      return ClampTo<double>(value->GetDoubleValue() / 100.0, 0.0, 1.0);
+      return ClampTo<double>(value->ClampedDoubleValue() / 100.0, 0.0, 1.0);
     default:
       NOTREACHED();
   }
@@ -539,11 +539,9 @@ double ColorFunctionParser::ResolveRelativeChannelValue(
   auto* literal_value = GetNumericLiteralValue(value);
   switch (To<CSSMathFunctionValue>(value)->Category()) {
     case kCalcNumber:
-      return literal_value->DoubleValue();
+      return literal_value->ClampedDoubleValue();
     case kCalcPercent:
-      return (CSSValueClampingUtils::ClampDouble(literal_value->DoubleValue()) /
-              100) *
-             percentage_base;
+      return literal_value->ClampedDoubleValue() / 100 * percentage_base;
     case kCalcAngle:
       return literal_value->ComputeDegrees();
     default:

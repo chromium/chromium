@@ -78,7 +78,7 @@ CompositorKeyframeValue* CompositorKeyframeValueFactory::Create(
       if (const auto* number_value = DynamicTo<CSSNumericLiteralValue>(value)) {
         if (number_value->IsNumber()) {
           return MakeGarbageCollected<CompositorKeyframeDouble>(
-              number_value->GetDoubleValue());
+              number_value->ClampedDoubleValue());
         }
       }
 

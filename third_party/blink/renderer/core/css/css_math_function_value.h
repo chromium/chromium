@@ -69,13 +69,6 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
   bool IsComputationallyIndependent() const;
   bool IsElementDependent() const;
 
-  // TODO(crbug.com/979895): The semantics of this function is still not very
-  // clear. Do not add new callers before further refactoring and cleanups.
-  // |DoubleValue()| can be called only when the math expression can be
-  // resolved into a single numeric value *without any type conversion* (e.g.,
-  // between px and em). Otherwise, it hits a DCHECK.
-  double DoubleValue() const;
-
   double ComputeSeconds(const CSSLengthResolver&) const;
   double ComputeDegrees(const CSSLengthResolver&) const;
   double ComputeLengthPx(const CSSLengthResolver&) const;

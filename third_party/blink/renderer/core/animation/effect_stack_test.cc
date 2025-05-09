@@ -103,7 +103,7 @@ class AnimationEffectStackTest : public PageTestBase {
         To<InterpolableLength>(typed_value->GetInterpolableValue());
     return To<CSSNumericLiteralValue>(
                length.CreateCSSValue(Length::ValueRange::kAll))
-        ->GetDoubleValue();
+        ->ClampedDoubleValue();
   }
 
   double GetZIndexValue(const ActiveInterpolationsMap& active_interpolations) {

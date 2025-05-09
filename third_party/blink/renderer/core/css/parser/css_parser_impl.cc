@@ -3080,7 +3080,7 @@ std::unique_ptr<Vector<KeyframeOffset>> CSSParserImpl::ConsumeKeyframeKeyList(
                                .ConvertTo<TimelineOffset::NamedRange>();
         double percent =
             To<CSSNumericLiteralValue>(stream_name_percent->Item(1))
-                .GetDoubleValue();
+                .ClampedDoubleValue();
         result->push_back(KeyframeOffset(stream_name, percent / 100.0));
       }
     } else {

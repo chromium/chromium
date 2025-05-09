@@ -89,7 +89,7 @@ const CSSValue* CSSAttrType::Parse(StringView text,
     if (CSSNumericLiteralValue* literal =
             DynamicTo<CSSNumericLiteralValue>(number_value)) {
       return MakeGarbageCollected<CSSNumericLiteralValue>(
-          literal->GetDoubleValue(), *dimension_unit_);
+          literal->ClampedDoubleValue(), *dimension_unit_);
     }
     return nullptr;
   }

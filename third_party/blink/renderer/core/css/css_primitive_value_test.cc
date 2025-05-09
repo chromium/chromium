@@ -197,44 +197,42 @@ TEST_F(CSSPrimitiveValueTest, NaNPercentLengthClamp) {
 }
 
 TEST_F(CSSPrimitiveValueTest, GetDoubleValueWithoutClampingAllowNaN) {
-  CSSPrimitiveValue* value =
+  CSSNumericLiteralValue* value =
       Create({std::numeric_limits<double>::quiet_NaN(), UnitType::kPixels});
-  EXPECT_TRUE(std::isnan(value->GetDoubleValueWithoutClamping()));
+  EXPECT_TRUE(std::isnan(value->DoubleValue()));
 }
 
 TEST_F(CSSPrimitiveValueTest,
        GetDoubleValueWithoutClampingAllowPositveInfinity) {
-  CSSPrimitiveValue* value =
+  CSSNumericLiteralValue* value =
       Create({std::numeric_limits<double>::infinity(), UnitType::kPixels});
-  EXPECT_TRUE(std::isinf(value->GetDoubleValueWithoutClamping()) &&
-              value->GetDoubleValueWithoutClamping() > 0);
+  EXPECT_TRUE(std::isinf(value->DoubleValue()) && value->DoubleValue() > 0);
 }
 
 TEST_F(CSSPrimitiveValueTest,
        GetDoubleValueWithoutClampingAllowNegativeInfinity) {
-  CSSPrimitiveValue* value =
+  CSSNumericLiteralValue* value =
       Create({-std::numeric_limits<double>::infinity(), UnitType::kPixels});
 
-  EXPECT_TRUE(std::isinf(value->GetDoubleValueWithoutClamping()) &&
-              value->GetDoubleValueWithoutClamping() < 0);
+  EXPECT_TRUE(std::isinf(value->DoubleValue()) && value->DoubleValue() < 0);
 }
 
 TEST_F(CSSPrimitiveValueTest, GetDoubleValueClampNaN) {
-  CSSPrimitiveValue* value =
+  CSSNumericLiteralValue* value =
       Create({std::numeric_limits<double>::quiet_NaN(), UnitType::kPixels});
-  EXPECT_EQ(0.0, value->GetDoubleValue());
+  EXPECT_EQ(0.0, value->ClampedDoubleValue());
 }
 
 TEST_F(CSSPrimitiveValueTest, GetDoubleValueClampPositiveInfinity) {
-  CSSPrimitiveValue* value =
+  CSSNumericLiteralValue* value =
       Create({std::numeric_limits<double>::infinity(), UnitType::kPixels});
-  EXPECT_EQ(std::numeric_limits<double>::max(), value->GetDoubleValue());
+  EXPECT_EQ(std::numeric_limits<double>::max(), value->ClampedDoubleValue());
 }
 
 TEST_F(CSSPrimitiveValueTest, GetDoubleValueClampNegativeInfinity) {
-  CSSPrimitiveValue* value =
+  CSSNumericLiteralValue* value =
       Create({-std::numeric_limits<double>::infinity(), UnitType::kPixels});
-  EXPECT_EQ(std::numeric_limits<double>::lowest(), value->GetDoubleValue());
+  EXPECT_EQ(std::numeric_limits<double>::lowest(), value->ClampedDoubleValue());
 }
 
 TEST_F(CSSPrimitiveValueTest, TestCanonicalizingNumberUnitCategory) {

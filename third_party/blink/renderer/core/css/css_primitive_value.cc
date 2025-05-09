@@ -557,15 +557,6 @@ Length CSSPrimitiveValue::ConvertToLength(
   return To<CSSMathFunctionValue>(this)->ConvertToLength(length_resolver);
 }
 
-double CSSPrimitiveValue::GetDoubleValue() const {
-  return CSSValueClampingUtils::ClampDouble(GetDoubleValueWithoutClamping());
-}
-
-double CSSPrimitiveValue::GetDoubleValueWithoutClamping() const {
-  return IsCalculated() ? To<CSSMathFunctionValue>(this)->DoubleValue()
-                        : To<CSSNumericLiteralValue>(this)->DoubleValue();
-}
-
 CSSPrimitiveValue::UnitType CSSPrimitiveValue::CanonicalUnitTypeForCategory(
     UnitCategory category) {
   // The canonical unit type is chosen according to the way

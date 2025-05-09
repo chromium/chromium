@@ -101,7 +101,7 @@ class AnimationKeyframeEffectModel : public PageTestBase {
     EXPECT_NEAR(expected_value,
                 To<CSSNumericLiteralValue>(
                     length.CreateCSSValue(Length::ValueRange::kAll))
-                    ->GetDoubleValue(),
+                    ->ClampedDoubleValue(),
                 /*abs_error=*/0.02);
   }
 

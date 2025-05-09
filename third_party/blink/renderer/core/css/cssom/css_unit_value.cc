@@ -115,7 +115,7 @@ CSSUnitValue* CSSUnitValue::FromCSSValue(const CSSNumericLiteralValue& value) {
   if (!IsValidUnit(unit)) {
     return nullptr;
   }
-  return MakeGarbageCollected<CSSUnitValue>(value.GetDoubleValue(), unit);
+  return MakeGarbageCollected<CSSUnitValue>(value.ClampedDoubleValue(), unit);
 }
 
 String CSSUnitValue::unit() const {

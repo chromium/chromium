@@ -327,7 +327,7 @@ InterpolationValue CSSBorderImageLengthBoxInterpolationType::MaybeConvertValue(
           if (auto* side_numeric_value =
                   DynamicTo<CSSNumericLiteralValue>(side)) {
             return ConvertBorderImageNumberSide(
-                side_numeric_value->GetDoubleValue());
+                side_numeric_value->ClampedDoubleValue());
           }
           CHECK(side_primitive_value->IsMathFunctionValue());
           return InterpolationValue(

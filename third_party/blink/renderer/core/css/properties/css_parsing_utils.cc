@@ -802,7 +802,7 @@ CSSFunctionValue* ConsumeFilterFunction(CSSParserTokenStream& stream,
             filter_type != CSSValueID::kContrast) {
           bool is_percentage = literal_value->IsPercentage();
           double max_allowed = is_percentage ? 100.0 : 1.0;
-          if (literal_value->GetDoubleValue() > max_allowed) {
+          if (literal_value->ClampedDoubleValue() > max_allowed) {
             parsed_value = CSSNumericLiteralValue::Create(
                 max_allowed, is_percentage
                                  ? CSSPrimitiveValue::UnitType::kPercentage
@@ -3166,7 +3166,7 @@ static CSSValue* ConsumeDeprecatedWebkitCrossFade(
   if (const auto* percentage_literal =
           DynamicTo<CSSNumericLiteralValue>(percentage)) {
     percentage = CSSNumericLiteralValue::Create(
-        ClampTo<double>(percentage_literal->GetDoubleValue(), 0, 1),
+        ClampTo<double>(percentage_literal->ClampedDoubleValue(), 0, 1),
         CSSPrimitiveValue::UnitType::kNumber);
   }
 
@@ -3193,7 +3193,7 @@ static CSSValue* ConsumeCrossFade(CSSParserTokenStream& stream,
       }
       if (const auto* literal =
               DynamicTo<CSSNumericLiteralValue>(percent_value)) {
-        double val = literal->GetDoubleValue();
+        double val = literal->ClampedDoubleValue();
         if (!(val >= 0.0 &&
               val <= 100.0)) {  // Includes checks for NaN and infinities.
           return nullptr;
