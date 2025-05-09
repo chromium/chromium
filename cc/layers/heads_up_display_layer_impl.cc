@@ -272,7 +272,9 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     auto* backing = pool_resource.backing();
     auto* ri = raster_context_provider->RasterInterface();
 
-    ri->WaitSyncTokenCHROMIUM(backing->returned_sync_token.GetConstData());
+    std::unique_ptr<gpu::RasterScopedAccess> ri_access =
+        backing->shared_image()->BeginRasterAccess(
+            ri, backing->returned_sync_token, /*readonly=*/false);
     if (backing->returned_sync_token.HasData()) {
       backing->returned_sync_token = gpu::SyncToken();
     }
@@ -333,7 +335,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     }
 
     backing->mailbox_sync_token =
-        viz::ClientResourceProvider::GenerateSyncTokenHelper(ri);
+        gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
   } else {
     // If not using gpu compositing, we DrawHudContents() directly into a shared
     // memory bitmap, wrapped in an SkSurface, that can be shared to the display
