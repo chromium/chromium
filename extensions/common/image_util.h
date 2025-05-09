@@ -5,9 +5,11 @@
 #ifndef EXTENSIONS_COMMON_IMAGE_UTIL_H_
 #define EXTENSIONS_COMMON_IMAGE_UTIL_H_
 
+#include <stdint.h>
+
 class SkBitmap;
 
-using SkColor = unsigned int;
+using SkColor = uint32_t;
 
 namespace base {
 class FilePath;
