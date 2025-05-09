@@ -54,7 +54,7 @@ constexpr auto kInvalidAudioInputDevices = std::to_array<const char*>({
 AudioManagerAlsa::AudioManagerAlsa(std::unique_ptr<AudioThread> audio_thread,
                                    AudioLogFactory* audio_log_factory)
     : AudioManagerBase(std::move(audio_thread), audio_log_factory),
-      wrapper_(new AlsaWrapper()) {
+      wrapper_(std::make_unique<AlsaWrapper>()) {
   SetMaxOutputStreamsAllowed(kMaxOutputStreams);
 }
 
