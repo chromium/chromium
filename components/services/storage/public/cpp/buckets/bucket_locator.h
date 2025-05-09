@@ -36,13 +36,10 @@ struct COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT) BucketLocator {
   bool IsEquivalentTo(const BucketLocator& other) const;
 
   COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT)
-  friend bool operator==(const BucketLocator& lhs, const BucketLocator& rhs);
+  friend bool operator==(const BucketLocator&, const BucketLocator&) = default;
 
   COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT)
-  friend bool operator!=(const BucketLocator& lhs, const BucketLocator& rhs);
-
-  COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT)
-  friend bool operator<(const BucketLocator& lhs, const BucketLocator& rhs);
+  friend auto operator<=>(const BucketLocator&, const BucketLocator&) = default;
 
   // Only positive IDs are valid. A default bucket without a specified bucket ID
   // can be represented by this struct when `id` is zero.

@@ -46,9 +46,6 @@ struct COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT) BucketInfo {
   friend bool operator==(const BucketInfo& lhs, const BucketInfo& rhs);
 
   COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT)
-  friend bool operator!=(const BucketInfo& lhs, const BucketInfo& rhs);
-
-  COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT)
   friend bool operator<(const BucketInfo& lhs, const BucketInfo& rhs);
 
   BucketLocator ToBucketLocator() const {

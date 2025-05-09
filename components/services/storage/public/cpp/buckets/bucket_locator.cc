@@ -35,20 +35,6 @@ bool BucketLocator::IsEquivalentTo(const BucketLocator& other) const {
                                std::tie(other.storage_key, other.is_default)));
 }
 
-bool operator==(const BucketLocator& lhs, const BucketLocator& rhs) {
-  return std::tie(lhs.id, lhs.storage_key, lhs.is_default) ==
-         std::tie(rhs.id, rhs.storage_key, rhs.is_default);
-}
-
-bool operator!=(const BucketLocator& lhs, const BucketLocator& rhs) {
-  return !(lhs == rhs);
-}
-
-bool operator<(const BucketLocator& lhs, const BucketLocator& rhs) {
-  return std::tie(lhs.id, lhs.storage_key, lhs.is_default) <
-         std::tie(rhs.id, rhs.storage_key, rhs.is_default);
-}
-
 bool CompareBucketLocators::operator()(const BucketLocator& a,
                                        const BucketLocator& b) const {
   // In this custom comparator, we make default buckets match regardless

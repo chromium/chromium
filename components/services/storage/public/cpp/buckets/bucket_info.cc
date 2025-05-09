@@ -35,10 +35,6 @@ bool operator==(const BucketInfo& lhs, const BucketInfo& rhs) {
   return lhs.id == rhs.id;
 }
 
-bool operator!=(const BucketInfo& lhs, const BucketInfo& rhs) {
-  return !(lhs == rhs);
-}
-
 bool operator<(const BucketInfo& lhs, const BucketInfo& rhs) {
   return lhs.id < rhs.id;
 }
