@@ -133,7 +133,7 @@ RenderFrameProxyHost::RenderFrameProxyHost(
       render_frame_proxy_created_(false),
       render_view_host_(std::move(render_view_host)),
       frame_token_(frame_token) {
-  TRACE_EVENT_BEGIN("navigation", "RenderFrameProxyHost",
+  TRACE_EVENT_BEGIN("navigation.debug", "RenderFrameProxyHost",
                     perfetto::Track::FromPointer(this),
                     "render_frame_proxy_host_when_created", *this);
   GetAgentSchedulingGroup().AddRoute(routing_id_, this);
@@ -197,7 +197,7 @@ RenderFrameProxyHost::~RenderFrameProxyHost() {
   g_routing_id_frame_proxy_map.Get().erase(
       RenderFrameProxyHostID(GetProcess()->GetDeprecatedID(), routing_id_));
   g_token_frame_proxy_map.Get().erase(frame_token_);
-  TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("navigation.debug", perfetto::Track::FromPointer(this));
 }
 
 void RenderFrameProxyHost::SetChildRWHView(RenderWidgetHostViewChildFrame* view,

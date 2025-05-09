@@ -328,7 +328,7 @@ RenderViewHostImpl::RenderViewHostImpl(
       "Navigation.RenderViewHostConstructor");
   TRACE_EVENT("navigation", "RenderViewHostImpl::RenderViewHostImpl",
               ChromeTrackEvent::kRenderViewHost, *this);
-  TRACE_EVENT_BEGIN("navigation", "RenderViewHost",
+  TRACE_EVENT_BEGIN("navigation.debug", "RenderViewHost",
                     perfetto::Track::FromPointer(this),
                     "render_view_host_when_created", this);
 
@@ -390,7 +390,7 @@ RenderViewHostImpl::~RenderViewHostImpl() {
     frame_tree_->UnregisterRenderViewHost(render_view_host_map_id_, this);
 
   // Corresponds to the TRACE_EVENT_BEGIN in RenderViewHostImpl's constructor.
-  TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("navigation.debug", perfetto::Track::FromPointer(this));
 }
 
 RenderViewHostDelegate* RenderViewHostImpl::GetDelegate() {

@@ -42,13 +42,13 @@ BrowsingContextState::BrowsingContextState(
     : replication_state_(std::move(replication_state)),
       parent_(parent),
       browsing_instance_id_(browsing_instance_id) {
-  TRACE_EVENT_BEGIN("navigation", "BrowsingContextState",
+  TRACE_EVENT_BEGIN("navigation.debug", "BrowsingContextState",
                     perfetto::Track::FromPointer(this),
                     "browsing_context_state_when_created", this);
 }
 
 BrowsingContextState::~BrowsingContextState() {
-  TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("navigation.debug", perfetto::Track::FromPointer(this));
   CHECK(proxy_hosts_.empty());
 }
 

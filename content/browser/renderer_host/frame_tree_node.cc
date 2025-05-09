@@ -170,7 +170,7 @@ FrameTreeNode::FrameTreeNode(
       fenced_frame_status_(
           ComputeFencedFrameStatus(frame_tree, parent_, frame_policy)),
       render_manager_(this, frame_tree.manager_delegate()) {
-  TRACE_EVENT_BEGIN("navigation", "FrameTreeNode",
+  TRACE_EVENT_BEGIN("navigation.debug", "FrameTreeNode",
                     perfetto::Track::FromPointer(this),
                     "frame_tree_node_when_created", this);
   std::pair<FrameTreeNodeIdMap::iterator, bool> result =
@@ -320,7 +320,7 @@ FrameTreeNode::~FrameTreeNode() {
   DCHECK(!current_frame_host() || !IsLoading());
 
   // Matches the TRACE_EVENT_BEGIN in the constructor.
-  TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("navigation.debug", perfetto::Track::FromPointer(this));
 }
 
 void FrameTreeNode::AddObserver(Observer* observer) {
