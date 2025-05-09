@@ -521,8 +521,10 @@ class MultiContentsViewDragEntrypointsUiTest : public MultiContentsViewUiTest {
   net::EmbeddedTestServer http_server_;
 };
 
+// TODO(crbug.com/414590951): This test has been flaky on some MacOS versions,
+// and DnD testing isn't well-supported for other platforms.
 IN_PROC_BROWSER_TEST_F(MultiContentsViewDragEntrypointsUiTest,
-                       ShowsDropTargetOnLinkDragged) {
+                       DISABLED_ShowsDropTargetOnLinkDragged) {
   RunTestSequence(
       AddInstrumentedTab(kNewTab, GetURL("/links.html"), 0),
       CheckTabIsActive(0),
@@ -579,8 +581,10 @@ class MultiContentsViewBookmarkDragEntrypointsUiTest
   }
 };
 
+// TODO(crbug.com/414590951): This test has been flaky on some MacOS versions,
+// and DnD testing isn't well-supported for other platforms.
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBookmarkDragEntrypointsUiTest,
-                       ShowsDropTargetOnBookmarkedLinkDragged) {
+                       DISABLED_ShowsDropTargetOnBookmarkedLinkDragged) {
   bookmarks::BookmarkModel* const model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
   const std::u16string bookmark_title = u"Bookmark";
