@@ -42,6 +42,7 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 
 StarView::StarView(CommandUpdater* command_updater,
                    Browser* browser,
@@ -81,9 +82,24 @@ void StarView::AfterPropertyChange(const void* key, int64_t old_value) {
   }
 }
 
+void StarView::OnWidgetDestroyed(views::Widget* widget) {
+  UpdateTooltipText();
+  if (scoped_observation_.IsObserving()) {
+    scoped_observation_.Reset();
+  }
+}
+
 void StarView::UpdateImpl() {
   SetVisible(browser_defaults::bookmarks_enabled &&
              edit_bookmarks_enabled_.GetValue());
+
+  if (GetBubble() && GetBubble()->GetWidget()) {
+    if (scoped_observation_.IsObserving()) {
+      scoped_observation_.Reset();
+    }
+
+    scoped_observation_.Observe(GetBubble()->GetWidget());
+  }
 }
 
 void StarView::OnExecuting(PageActionIconView::ExecuteSource execute_source) {
