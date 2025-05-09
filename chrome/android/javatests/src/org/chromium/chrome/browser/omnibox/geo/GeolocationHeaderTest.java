@@ -136,6 +136,7 @@ public class GeolocationHeaderTest {
     @Test
     @SmallTest
     @Feature({"Location"})
+    @DisabledTest(message = "https://crbug.com/416787235")
     public void testProtoEncoding() {
         setPermission(ContentSettingValues.ALLOW);
         long now = setMockLocationNow();
