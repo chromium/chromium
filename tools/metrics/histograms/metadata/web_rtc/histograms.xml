@@ -1513,6 +1513,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.PeerConnection.SdpMunging.Outcome"
+    enum="SdpMungingOutcome" expires_after="2025-12-31">
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Classifies the outcome when a local description is set; either no SDP
+    munging is detected, it is detected and rejected, or it is detected and
+    accepted. Captured for every local description that is set.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.PeerConnection.SdpMunging.SdpOutcome.{Outcome}"
+    enum="SdpMungingType" expires_after="2025-12-31">
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Classifies the outcome for each SDP munging type when a local description is
+    set and SDP munging has been detected. This is either accepted or rejected.
+    Captured for every local description that is set.
+  </summary>
+  <token key="Outcome">
+    <variant name="Accepted"/>
+    <variant name="Rejected"/>
+  </token>
+</histogram>
+
 <histogram name="WebRTC.PeerConnection.SdpMunging.{DescriptionType}.{Stage}"
     enum="SdpMungingType" expires_after="2025-12-31">
   <owner>hta@chromium.org</owner>

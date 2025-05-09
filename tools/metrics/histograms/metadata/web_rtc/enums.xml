@@ -208,6 +208,11 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="SetPreferredSinkId"/>
 </enum>
 
+<enum name="SdpMungingOutcome">
+  <int value="0" label="Accepted"/>
+  <int value="1" label="Rejected"/>
+</enum>
+
 <enum name="SdpMungingType">
   <int value="0" label="NoModification"/>
   <int value="1" label="UnknownModification"/>
