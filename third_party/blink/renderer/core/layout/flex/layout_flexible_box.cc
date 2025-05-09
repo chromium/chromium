@@ -26,7 +26,7 @@ LayoutFlexibleBox::LayoutFlexibleBox(Element* element) : LayoutBlock(element) {}
 namespace {
 
 LogicalToPhysical<bool> GetOverflowConverter(const ComputedStyle& style) {
-  const bool is_wrap_reverse = style.FlexWrap() == EFlexWrap::kWrapReverse;
+  const bool is_wrap_reverse = style.ResolvedIsFlexWrapReverse();
   const bool is_direction_reverse = style.ResolvedIsReverseFlexDirection();
 
   bool inline_start = false;

@@ -1031,7 +1031,19 @@ class ComputedStyle final : public ComputedStyleBase {
     return FlexDirection() == EFlexDirection::kRowReverse ||
            FlexDirection() == EFlexDirection::kColumnReverse;
   }
-  bool HasBoxReflect() const { return BoxReflect(); }
+  bool ResolvedIsFlexWrapReverse() const {
+    if (IsDeprecatedFlexbox()) {
+      return false;
+    }
+    return FlexWrap() == EFlexWrap::kWrapReverse;
+  }
+  bool ResolvedIsFlexNowrap() const {
+    if (IsDeprecatedFlexbox()) {
+      return true;
+    }
+    return FlexWrap() == EFlexWrap::kNowrap;
+  }
+
   float ResolvedFlexGrow(const ComputedStyle& box_style) const {
     if (box_style.IsDeprecatedFlexbox()) {
       return BoxFlex() > 0 ? BoxFlex() : 0.0f;
@@ -2019,6 +2031,8 @@ class ComputedStyle final : public ComputedStyleBase {
     kSvg,        // For SVG elements without an associated CSS layout box.
   };
   ETransformBox UsedTransformBox(TransformBoxContext) const;
+
+  bool HasBoxReflect() const { return BoxReflect(); }
 
   // Returns |true| if any property that renders using filter operations is
   // used (including, but not limited to, 'filter' and 'box-reflect').

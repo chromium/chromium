@@ -677,9 +677,9 @@ FlexLayoutAlgorithm::FlexLayoutAlgorithm(
     : LayoutAlgorithm(params),
       is_webkit_box_(Style().IsDeprecatedFlexbox()),
       is_column_(Style().ResolvedIsColumnFlexDirection()),
-      is_wrap_reverse_(Style().FlexWrap() == EFlexWrap::kWrapReverse),
+      is_wrap_reverse_(Style().ResolvedIsFlexWrapReverse()),
       is_reverse_direction_(Style().ResolvedIsReverseFlexDirection()),
-      is_multi_line_(Style().FlexWrap() != EFlexWrap::kNowrap),
+      is_multi_line_(!Style().ResolvedIsFlexNowrap()),
       is_horizontal_flow_(Style().IsHorizontalWritingMode() ? !is_column_
                                                             : is_column_),
       is_cross_size_definite_(IsContainerCrossSizeDefinite()),
