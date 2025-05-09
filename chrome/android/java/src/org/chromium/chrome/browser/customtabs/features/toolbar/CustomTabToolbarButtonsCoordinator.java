@@ -62,7 +62,10 @@ public class CustomTabToolbarButtonsCoordinator {
         var minimizeButton =
                 getMinimizeButtonData(
                         mMinimizeButtonAvailable && minimizeDelegate != null, minimizeDelegate);
-        mModel = CustomTabToolbarButtonsProperties.create(customActionButtons, minimizeButton);
+        int closeButtonPosition = intentDataProvider.getCloseButtonPosition();
+        mModel =
+                CustomTabToolbarButtonsProperties.create(
+                        customActionButtons, minimizeButton, closeButtonPosition);
         PropertyModelChangeProcessor.create(mModel, view, viewBinder);
         mCustomActionButtonsMcp =
                 new ListModelChangeProcessor<>(

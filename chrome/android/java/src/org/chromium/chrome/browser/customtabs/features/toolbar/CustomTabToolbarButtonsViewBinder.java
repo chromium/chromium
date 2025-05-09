@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
+import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.CLOSE_BUTTON_POSITION;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.CUSTOM_ACTION_BUTTONS;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.DESCRIPTION;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.ICON;
@@ -47,6 +48,9 @@ public class CustomTabToolbarButtonsViewBinder
             if (minimizeButton != null) {
                 minimizeButton.setOnClickListener(model.get(MINIMIZE_BUTTON).clickListener);
             }
+        } else if (propertyKey == CLOSE_BUTTON_POSITION) {
+            view.setCloseButtonPosition(model.get(CLOSE_BUTTON_POSITION));
+            view.reinflateAndRepositionToolbarElements();
         }
     }
 

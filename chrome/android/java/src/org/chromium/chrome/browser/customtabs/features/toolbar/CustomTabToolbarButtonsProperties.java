@@ -7,10 +7,13 @@ package org.chromium.chrome.browser.customtabs.features.toolbar;
 import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
 
+import androidx.browser.customtabs.CustomTabsIntent.CloseButtonPosition;
+
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabSideSheetStrategy.MaximizeButtonCallback;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyListModel;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -82,14 +85,22 @@ public class CustomTabToolbarButtonsProperties {
     public static final WritableObjectPropertyKey<MinimizeButtonData> MINIMIZE_BUTTON =
             new WritableObjectPropertyKey<>();
 
+    /** Property key for the close button position. See {@link CloseButtonPosition}. */
+    public static final ReadableIntPropertyKey CLOSE_BUTTON_POSITION = new ReadableIntPropertyKey();
+
     public static PropertyModel create(
             PropertyListModel<PropertyModel, PropertyKey> customActionButtons,
-            MinimizeButtonData minimizeButtonData) {
+            MinimizeButtonData minimizeButtonData,
+            @CloseButtonPosition int closeButtonPosition) {
         return new PropertyModel.Builder(
-                        CUSTOM_ACTION_BUTTONS, SIDE_SHEET_MAXIMIZE_BUTTON, MINIMIZE_BUTTON)
+                        CUSTOM_ACTION_BUTTONS,
+                        SIDE_SHEET_MAXIMIZE_BUTTON,
+                        MINIMIZE_BUTTON,
+                        CLOSE_BUTTON_POSITION)
                 .with(CUSTOM_ACTION_BUTTONS, customActionButtons)
                 .with(SIDE_SHEET_MAXIMIZE_BUTTON, new SideSheetMaximizeButtonData())
                 .with(MINIMIZE_BUTTON, minimizeButtonData)
+                .with(CLOSE_BUTTON_POSITION, closeButtonPosition)
                 .build();
     }
 }
