@@ -4,6 +4,9 @@
 
 #include "content/browser/permissions/embedded_permission_control_checker.h"
 
+#include <string>
+
+#include "content/browser/log_console_message.h"
 #include "third_party/blink/public/common/features_generated.h"
 
 using blink::mojom::EmbeddedPermissionControlClient;
@@ -39,8 +42,14 @@ void EmbeddedPermissionControlChecker::CheckPageEmbeddedPermission(
           blink::features::kBypassPepcSecurityForTesting)) {
     client->OnEmbeddedPermissionControlRegistered(/*allow=*/true);
   }
-
   queue.push_back(std::move(client));
+  if (queue.size() == kMaxPEPCPerPage) {
+    page().GetMainDocument().AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        "Maximum limit of " + base::NumberToString(kMaxPEPCPerPage) +
+            " permission elements has been reached. More permission"
+            " elements can be added but they will not be clickable");
+  }
 }
 
 PAGE_USER_DATA_KEY_IMPL(EmbeddedPermissionControlChecker);
