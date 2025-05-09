@@ -22,6 +22,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/win/jumplist_updater.h"
+#include "components/favicon_base/favicon_types.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/top_sites_observer.h"
 #include "components/keyed_service/core/keyed_service.h"

@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "ui/gfx/image/image.h"
 
 class AutocompleteProviderClient;
 class AutocompleteProviderListener;
