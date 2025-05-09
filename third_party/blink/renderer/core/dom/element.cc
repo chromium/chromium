@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_aria_notification_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_check_visibility_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_lock_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_container.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_to_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_shadow_root_init.h"
@@ -1856,8 +1857,13 @@ void Element::scrollIntoViewWithOptions(const ScrollIntoViewOptions* options) {
   mojom::blink::ScrollIntoViewParamsPtr params =
       scroll_into_view_util::CreateScrollIntoViewParams(*options,
                                                         *GetComputedStyle());
+  Element* container = nullptr;
+  if (options->hasContainer() &&
+      options->container() == V8ScrollContainer::Enum::kNearest) {
+    container = this;
+  }
 
-  ScrollIntoViewNoVisualUpdate(std::move(params));
+  ScrollIntoViewNoVisualUpdate(std::move(params), container);
 }
 
 // TODO(crbug.com/385129957): This only searches up to the nearest scroll

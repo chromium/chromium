@@ -637,6 +637,8 @@ generated_enumeration_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_scroll_axis.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_scroll_behavior.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_scroll_behavior.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_scroll_container.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_scroll_container.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_scroll_logical_position.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_scroll_logical_position.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_scroll_restoration.cc",

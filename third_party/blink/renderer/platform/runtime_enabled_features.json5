@@ -4112,6 +4112,10 @@
       name: "ScrollEndEvents",
       status: "stable",
     },
+    {
+      name: "ScrollIntoViewNearest",
+      status: "test"
+    },
     // TODO(355460994): Remove after M129.
     // scroll into root frame didn't take scrollbar and borders into account,
     // while this is fixed, to avoid any web compat issues we have this killswitch.
