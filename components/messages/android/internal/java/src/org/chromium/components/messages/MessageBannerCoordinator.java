@@ -8,17 +8,14 @@ import android.animation.Animator;
 import android.content.res.Resources;
 import android.provider.Settings;
 import android.view.View;
-import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.accessibility.AccessibilityEventCompat;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.messages.MessageStateHandler.Position;
-import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.listmenu.ListMenuHost.PopupMenuShownListener;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -201,7 +198,6 @@ class MessageBannerCoordinator {
                 () -> {
                     setOnTouchRunnable(null);
                     setOnTitleChanged(null);
-                    sendPaneChangeAccessibilityEvent(/* isShowing= */ false);
                     messageHidden.run();
                 });
     }
@@ -229,29 +225,6 @@ class MessageBannerCoordinator {
             msg = mView.getResources().getString(R.string.message_new_actions_available);
         }
         ViewCompat.setAccessibilityPaneTitle(mParentView, msg);
-        sendPaneChangeAccessibilityEvent(/* isShowing= */ true);
-    }
-
-    /**
-     * Sends accessibility events for pane appearance/disappearance when the message is shown/hidden
-     * respectively. This should ideally move accessibility focus automatically to/out of the
-     * message view as applicable.
-     *
-     * @param isShowing Whether the message is visible. {@code true} if shown, {@code false} if
-     *     hidden.
-     */
-    @SuppressWarnings("WrongConstant")
-    private void sendPaneChangeAccessibilityEvent(boolean isShowing) {
-        if (!AccessibilityState.isAnyAccessibilityServiceEnabled()) return;
-        AccessibilityEvent event =
-                AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
-        if (isShowing) {
-            event.setContentChangeTypes(AccessibilityEventCompat.CONTENT_CHANGE_TYPE_PANE_APPEARED);
-        } else {
-            event.setContentChangeTypes(
-                    AccessibilityEventCompat.CONTENT_CHANGE_TYPE_PANE_DISAPPEARED);
-        }
-        mView.requestSendAccessibilityEvent(mView, event);
     }
 
     private void setOnTitleChanged(@Nullable Runnable runnable) {
