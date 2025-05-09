@@ -55,7 +55,6 @@ android_resources("java_resources") {
     "java/res/drawable/checkmark_24dp.xml",
     "java/res/drawable/circle_green.xml",
     "java/res/layout/close_confirmation_dialog.xml",
-    "java/res/layout/instance_switcher_active_list.xml",
     "java/res/layout/instance_switcher_cmd_item.xml",
     "java/res/layout/instance_switcher_dialog.xml",
     "java/res/layout/instance_switcher_dialog_v2.xml",

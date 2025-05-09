@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.multiwindow;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.multiwindow.UiUtils.INVALID_TASK_ID;
 import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
 
 import android.annotation.SuppressLint;
@@ -23,6 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayout.OnTabSelectedListener;
 import com.google.android.material.tabs.TabLayout.Tab;
 
 import org.chromium.base.Callback;
@@ -50,7 +52,6 @@ import org.chromium.ui.widget.Toast;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -79,6 +80,8 @@ public class InstanceSwitcherCoordinator {
     private final ModalDialogManager mModalDialogManager;
 
     private final ModelList mModelList = new ModelList();
+    private final ModelList mActiveModelList = new ModelList();
+    private final ModelList mInactiveModelList = new ModelList();
     private final UiUtils mUiUtils;
     private final View mDialogView;
     private @Nullable TabLayout mTabHeaderRow;
@@ -132,30 +135,42 @@ public class InstanceSwitcherCoordinator {
         mUiUtils = new UiUtils(mContext, iconBridge);
         mNewWindowAction = newWindowAction;
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.INSTANCE_SWITCHER_V2)) {
-            var adapter = new SimpleRecyclerViewAdapter(mModelList);
-            adapter.registerType(
-                    EntryType.INSTANCE,
-                    parentView ->
-                            LayoutInflater.from(mContext)
-                                    .inflate(R.layout.instance_switcher_item, null),
-                    InstanceSwitcherItemViewBinder::bind);
-            adapter.registerType(
-                    EntryType.COMMAND,
-                    parentView ->
-                            LayoutInflater.from(mContext)
-                                    .inflate(R.layout.instance_switcher_cmd_item, null),
-                    InstanceSwitcherItemViewBinder::bind);
+        if (isInstanceSwitcherV2Enabled()) {
+            var activeListAdapter = getInstanceListAdapter(/* active= */ true);
+            var inactiveListAdapter = getInstanceListAdapter(/* active= */ false);
 
             mDialogView =
                     LayoutInflater.from(context)
                             .inflate(R.layout.instance_switcher_dialog_v2, null);
-            mTabHeaderRow = mDialogView.findViewById(R.id.tabs);
-            View listContainer = mDialogView.findViewById(R.id.instance_list_container);
-            RecyclerView recyclerView = listContainer.findViewById(R.id.active_instance_list);
-            recyclerView.setLayoutManager(
+
+            RecyclerView activeInstancesList = mDialogView.findViewById(R.id.active_instance_list);
+            activeInstancesList.setLayoutManager(
                     new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
-            recyclerView.setAdapter(adapter);
+            activeInstancesList.setAdapter(activeListAdapter);
+            RecyclerView inactiveInstancesList =
+                    mDialogView.findViewById(R.id.inactive_instance_list);
+            inactiveInstancesList.setLayoutManager(
+                    new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
+            inactiveInstancesList.setAdapter(inactiveListAdapter);
+
+            mTabHeaderRow = mDialogView.findViewById(R.id.tabs);
+            mTabHeaderRow.addOnTabSelectedListener(
+                    new OnTabSelectedListener() {
+                        @Override
+                        public void onTabSelected(Tab tab) {
+                            boolean isActiveTab = tab.getPosition() == 0;
+                            activeInstancesList.setVisibility(
+                                    isActiveTab ? View.VISIBLE : View.GONE);
+                            inactiveInstancesList.setVisibility(
+                                    isActiveTab ? View.GONE : View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onTabUnselected(Tab tab) {}
+
+                        @Override
+                        public void onTabReselected(Tab tab) {}
+                    });
         } else {
             ModelListAdapter adapter = new ModelListAdapter(mModelList);
             // TODO: Extend modern_list_item_view.xml to replace instance_switcher_item.xml
@@ -179,17 +194,52 @@ public class InstanceSwitcherCoordinator {
         }
     }
 
+    private SimpleRecyclerViewAdapter getInstanceListAdapter(boolean active) {
+        var adapter = new SimpleRecyclerViewAdapter(active ? mActiveModelList : mInactiveModelList);
+        adapter.registerType(
+                EntryType.INSTANCE,
+                parentView ->
+                        LayoutInflater.from(mContext)
+                                .inflate(R.layout.instance_switcher_item, null),
+                InstanceSwitcherItemViewBinder::bind);
+        adapter.registerType(
+                EntryType.COMMAND,
+                parentView ->
+                        LayoutInflater.from(mContext)
+                                .inflate(R.layout.instance_switcher_cmd_item, null),
+                InstanceSwitcherItemViewBinder::bind);
+        return adapter;
+    }
+
     private void show(List<InstanceInfo> items, boolean newWindowEnabled) {
         UiUtils.closeOpenDialogs();
         sPrevInstance = this;
         for (int i = 0; i < items.size(); ++i) {
+            // An active instance should have an associated live task.
+            boolean isActiveInstance = items.get(i).taskId != INVALID_TASK_ID;
             PropertyModel itemModel = generateListItem(items.get(i));
-            mModelList.add(new ModelListAdapter.ListItem(EntryType.INSTANCE, itemModel));
+            if (isInstanceSwitcherV2Enabled()) {
+                if (isActiveInstance) {
+                    mActiveModelList.add(
+                            new ModelListAdapter.ListItem(EntryType.INSTANCE, itemModel));
+                } else {
+                    mInactiveModelList.add(
+                            new ModelListAdapter.ListItem(EntryType.INSTANCE, itemModel));
+                }
+            } else {
+                mModelList.add(new ModelListAdapter.ListItem(EntryType.INSTANCE, itemModel));
+            }
         }
         mNewWindowModel = new PropertyModel(InstanceSwitcherItemProperties.ALL_KEYS);
         enableNewWindowCommand(newWindowEnabled);
         mModelList.add(new ModelListAdapter.ListItem(EntryType.COMMAND, mNewWindowModel));
-        updateTabTitle(items.size(), items.size());
+        if (isInstanceSwitcherV2Enabled()) {
+            // "+New window" should only be added to the active instances list.
+            mActiveModelList.add(new ModelListAdapter.ListItem(EntryType.COMMAND, mNewWindowModel));
+            // Exclude COMMAND item from active instance count.
+            int numActiveInstances = mActiveModelList.size() - 1;
+            updateTabTitle(numActiveInstances, mInactiveModelList.size());
+        }
 
         mDialog = createDialog(mDialogView);
         mModalDialogManager.showDialog(mDialog, ModalDialogType.APP);
@@ -305,22 +355,36 @@ public class InstanceSwitcherCoordinator {
 
     private void removeInstance(InstanceInfo item) {
         int instanceId = item.instanceId;
-        Iterator<ListItem> it = mModelList.iterator();
-        while (it.hasNext()) {
-            ListItem li = it.next();
-            int id = li.model.get(InstanceSwitcherItemProperties.INSTANCE_ID);
-            if (id == instanceId) {
-                mModelList.remove(li);
-                break;
-            }
+
+        if (isInstanceSwitcherV2Enabled()) {
+            removeItemFromModelList(
+                    instanceId,
+                    item.taskId == INVALID_TASK_ID ? mInactiveModelList : mActiveModelList);
+        } else {
+            removeItemFromModelList(instanceId, mModelList);
         }
+
         mCloseCallback.onResult(item);
         RecordUserAction.record("Android.WindowManager.CloseWindow");
         // Removing an instance enables the new window item.
         enableNewWindowCommand(true);
-        // Number of instances is one less than the list size to exclude the new window item.
-        int numInstances = mModelList.size() - 1;
-        updateTabTitle(numInstances, numInstances);
+
+        if (isInstanceSwitcherV2Enabled()) {
+            // Exclude COMMAND item from active instance count.
+            int numActiveInstances = mActiveModelList.size() - 1;
+            int numInactiveInstances = mInactiveModelList.size();
+            updateTabTitle(numActiveInstances, numInactiveInstances);
+        }
+    }
+
+    private void removeItemFromModelList(int instanceId, ModelList list) {
+        for (ListItem li : list) {
+            int id = li.model.get(InstanceSwitcherItemProperties.INSTANCE_ID);
+            if (id == instanceId) {
+                list.remove(li);
+                return;
+            }
+        }
     }
 
     private static boolean canSkipConfirm(InstanceInfo item) {
@@ -379,5 +443,9 @@ public class InstanceSwitcherCoordinator {
                 mContext.getString(R.string.instance_switcher_tabs_active, numActiveInstances));
         inactiveTab.setText(
                 mContext.getString(R.string.instance_switcher_tabs_inactive, numInactiveInstances));
+    }
+
+    private static boolean isInstanceSwitcherV2Enabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.INSTANCE_SWITCHER_V2);
     }
 }

@@ -34,6 +34,16 @@ found in the LICENSE file.
         android:id="@+id/instance_list_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <include layout="@layout/instance_switcher_active_list"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/active_instance_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="@null"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/inactive_instance_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:divider="@null"/>
     </FrameLayout>
 </LinearLayout>
