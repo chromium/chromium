@@ -374,15 +374,6 @@ void RecordOverlayHistograms(
       is_overlay, has_occluding_surface_damage, damage_rects_empty);
 }
 
-QuadList::Iterator FindAnOverlayCandidate(QuadList& quad_list) {
-  for (auto it = quad_list.begin(); it != quad_list.end(); ++it) {
-    if (it->material == DrawQuad::Material::kTextureContent) {
-      return it;
-    }
-  }
-  return quad_list.end();
-}
-
 QuadList::Iterator FindAnOverlayCandidateExcludingMediaFoundationVideoContent(
     QuadList& quad_list) {
   QuadList::Iterator it = quad_list.end();
@@ -884,6 +875,11 @@ void DCLayerOverlayProcessor::CollectCandidates(
         global_overlay_state.processed_yuv_overlay_count,
         allow_promotion_hinting_);
 
+    // There's copy requests, so we'll only allow quads that require overlay.
+    if (render_pass->HasCapture() && !OverlayCandidate::RequiresOverlay(*it)) {
+      result.code = DC_LAYER_FAILED_COPY_REQUESTS;
+    }
+
     if (result.is_yuv_overlay) {
       global_overlay_state.yuv_quads++;
       if (no_undamaged_overlay_promotion_) {
@@ -968,6 +964,15 @@ void DCLayerOverlayProcessor::PromoteCandidates(
     // Quad is considered an "overlay" if it has no occluders.
     bool is_overlay = !IsOccluded(gfx::RectF(quad_rect_in_target_space),
                                   quad_list->begin(), it, render_pass_filters);
+
+    // When the the render pass has capture, always treat the overlay as the
+    // "underlay" case, so we always replace the video quad with a hole punch.
+    // If it is treated in the "overlay" case, we will remove the video quad
+    // from the render pass and potentially show stale/invalid pixels in the
+    // copy output.
+    if (render_pass->HasCapture()) {
+      is_overlay = false;
+    }
 
     // Protected video is always put in an overlay, but texture quads can be
     // skipped if they're not underlay compatible.
@@ -1136,14 +1141,14 @@ bool DCLayerOverlayProcessor::ShouldSkipOverlay(
   // enabled. When video capture is enabled, some frames might not have copy
   // request.
   if (render_pass->HasCapture()) {
-    // Find a valid overlay candidate from quad_list.
-    QuadList::Iterator it = FindAnOverlayCandidate(*quad_list);
+    QuadList::Iterator it =
+        FindAnOverlayCandidateExcludingMediaFoundationVideoContent(*quad_list);
     if (it != quad_list->end()) {
       render_pass->video_capture_enabled
           ? RecordDCLayerResult(DC_LAYER_FAILED_VIDEO_CAPTURE_ENABLED, *it)
           : RecordDCLayerResult(DC_LAYER_FAILED_COPY_REQUESTS, *it);
+      return true;
     }
-    return true;
   }
 
   if (render_pass->content_color_usage == gfx::ContentColorUsage::kHDR) {

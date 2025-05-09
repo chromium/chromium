@@ -34,6 +34,7 @@
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/display/overlay_processor_win.h"
+#include "components/viz/test/draw_quad_matchers.h"
 #include "components/viz/test/fake_skia_output_surface.h"
 #include "components/viz/test/overlay_candidate_matchers.h"
 #include "components/viz/test/test_context_provider.h"
@@ -1292,6 +1293,52 @@ TEST_F(DCLayerOverlayProcessorTest, VideoCapture) {
     int quad_count = root_pass->quad_list.size();
     EXPECT_EQ(2, quad_count);
   }
+}
+
+// Check that a protected video can be promoted to overlay even if there is a
+// video capture on the root render pass.
+TEST_F(DCLayerOverlayProcessorTest, VideoCaptureOnRootPassWithProtectedQuad) {
+  InitializeDCLayerOverlayProcessor();
+
+  // Create a pass with video capture enabled.
+  auto pass = CreateRenderPass();
+  pass->damage_rect = gfx::Rect(0, 0, 256, 256);
+  pass->video_capture_enabled = true;
+  pass->shared_quad_state_list.back()->overlay_damage_index = 0;
+
+  CreateOpaqueQuadAt(resource_provider_.get(),
+                     pass->shared_quad_state_list.back(), pass.get(),
+                     gfx::Rect(0, 0, 32, 32), SkColors::kRed);
+
+  // Create a protected video YUV quad below the red solid quad.
+  auto* quad = CreateFullscreenCandidateYUVTextureQuad(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
+  quad->protected_video_type = gfx::ProtectedVideoType::kHardwareProtected;
+
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(pass));
+
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  SurfaceDamageRectList surface_damage_rect_list = {gfx::Rect(0, 0, 256, 256)};
+  auto overlay_data = ProcessRootPassForOverlays(
+      &pass_list, render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list));
+
+  // Expect the protected video is promoted to overlay.
+  EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
+
+  // Check that we still have the red solid color quad, but the YUV quad has
+  // been replaced with a placeholder.
+  auto* root_pass = pass_list.back().get();
+  EXPECT_THAT(root_pass->quad_list,
+              testing::ElementsAreArray({
+                  // Red quad from input
+                  IsSolidColorQuad(SkColors::kRed),
+                  // Protected video is replaced by a video hole.
+                  IsSolidColorQuad(SkColors::kTransparent),
+              }));
 }
 
 // Check that video capture on a non-root pass does not affect overlay promotion
