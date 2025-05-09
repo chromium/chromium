@@ -15,6 +15,8 @@
 #include <sys/un.h>
 
 #include "base/compiler_specific.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "build/build_config.h"
 #include "net/base/sockaddr_storage.h"
 
@@ -37,6 +39,19 @@ bool FillUnixAddress(const std::string& socket_path,
 
   struct sockaddr_un* socket_addr =
       reinterpret_cast<struct sockaddr_un*>(address->addr());
+
+  // We want to change the behavior here to limit path size to the length of
+  // `sun_path`, rather than the current behavior. This is code is to test the
+  // viability of doing so.
+  //
+  // TODO(crbug.com/416481248): Remove this logic, and, if all goes well, change
+  // behavior of the code above.
+  if (path_size > sizeof(socket_addr->sun_path)) {
+    SCOPED_CRASH_KEY_NUMBER("crbug-416481248", "domain-socket-path-len",
+                            path_size);
+    base::debug::DumpWithoutCrashing();
+  }
+
   memset(socket_addr, 0, address->addr_len);
   socket_addr->sun_family = AF_UNIX;
   address->addr_len = path_size + offsetof(struct sockaddr_un, sun_path);
