@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_MULTI_CONTENTS_VIEW_DRAG_ENTRYPOINT_CONTROLLER_H_
-#define CHROME_BROWSER_UI_VIEWS_FRAME_MULTI_CONTENTS_VIEW_DRAG_ENTRYPOINT_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_MULTI_CONTENTS_VIEW_DROP_TARGET_CONTROLLER_H_
+#define CHROME_BROWSER_UI_VIEWS_FRAME_MULTI_CONTENTS_VIEW_DROP_TARGET_CONTROLLER_H_
 
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/view.h"
@@ -12,20 +12,19 @@ namespace content {
 struct DropData;
 }  // namespace content
 
-// `MultiContentsViewDragEntrypointController` is responsible for handling
+// `MultiContentsViewDropTargetController` is responsible for handling
 // the drag-entrypoint of a single `MultiContentsView`. This includes dragging
 // links,  bookmarks, or tab headers to create a split view.
-// There exists one `MultiContentsViewDragEntrypointController` per
+// There exists one `MultiContentsViewDropTargetController` per
 // `MultiContentesView`.
-class MultiContentsViewDragEntrypointController final {
+class MultiContentsViewDropTargetController final {
  public:
-  explicit MultiContentsViewDragEntrypointController(
-      views::View& drop_target_view);
-  ~MultiContentsViewDragEntrypointController() = default;
-  MultiContentsViewDragEntrypointController(
-      const MultiContentsViewDragEntrypointController&) = delete;
-  MultiContentsViewDragEntrypointController& operator=(
-      const MultiContentsViewDragEntrypointController&) = delete;
+  explicit MultiContentsViewDropTargetController(views::View& drop_target_view);
+  ~MultiContentsViewDropTargetController() = default;
+  MultiContentsViewDropTargetController(
+      const MultiContentsViewDropTargetController&) = delete;
+  MultiContentsViewDropTargetController& operator=(
+      const MultiContentsViewDropTargetController&) = delete;
 
   // Handles a drag within the web contents area.
   // `point` should be relative to the multi contents view.
@@ -38,4 +37,4 @@ class MultiContentsViewDragEntrypointController final {
   const raw_ref<views::View> drop_target_view_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_MULTI_CONTENTS_VIEW_DRAG_ENTRYPOINT_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_MULTI_CONTENTS_VIEW_DROP_TARGET_CONTROLLER_H_

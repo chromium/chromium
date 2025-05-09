@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/multi_contents_view_drag_entrypoint_controller.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
 
 #include <memory>
 
@@ -17,17 +17,17 @@ static constexpr gfx::Size kMultiContentsViewSize(500, 500);
 
 static constexpr gfx::PointF kDragPointForDropTargetShow(450, 450);
 
-class MultiContentsViewDragEntrypointControllerTest : public testing::Test {
+class MultiContentsViewDropTargetControllerTest : public testing::Test {
  public:
-  MultiContentsViewDragEntrypointControllerTest() = default;
-  ~MultiContentsViewDragEntrypointControllerTest() override = default;
+  MultiContentsViewDropTargetControllerTest() = default;
+  ~MultiContentsViewDropTargetControllerTest() override = default;
 
   void SetUp() override {
     multi_contents_view_ = std::make_unique<views::View>();
     drop_target_view_ =
         multi_contents_view_->AddChildView(std::make_unique<views::View>());
     drop_target_view_->SetVisible(false);
-    controller_ = std::make_unique<MultiContentsViewDragEntrypointController>(
+    controller_ = std::make_unique<MultiContentsViewDropTargetController>(
         *drop_target_view_);
 
     multi_contents_view_->SetSize(kMultiContentsViewSize);
@@ -39,21 +39,19 @@ class MultiContentsViewDragEntrypointControllerTest : public testing::Test {
     multi_contents_view_.reset();
   }
 
-  MultiContentsViewDragEntrypointController& controller() {
-    return *controller_;
-  }
+  MultiContentsViewDropTargetController& controller() { return *controller_; }
 
   views::View& drop_target_view() { return *drop_target_view_; }
 
  private:
-  std::unique_ptr<MultiContentsViewDragEntrypointController> controller_;
+  std::unique_ptr<MultiContentsViewDropTargetController> controller_;
   std::unique_ptr<views::View> multi_contents_view_;
   raw_ptr<views::View> drop_target_view_;
 };
 
 // Tests that the drop target is shown when a drag reaches enters the "drop
 // area" and a valid url is being dragged.
-TEST_F(MultiContentsViewDragEntrypointControllerTest,
+TEST_F(MultiContentsViewDropTargetControllerTest,
        OnWebContentsDragUpdate_ShowDropTarget) {
   ASSERT_FALSE(drop_target_view().GetVisible());
 
@@ -66,7 +64,7 @@ TEST_F(MultiContentsViewDragEntrypointControllerTest,
 }
 
 // Tests that the drop target is hidden when an invalid url is being dragged.
-TEST_F(MultiContentsViewDragEntrypointControllerTest,
+TEST_F(MultiContentsViewDropTargetControllerTest,
        OnWebContentsDragUpdate_HideDropTargetOnInvalidURL) {
   drop_target_view().SetVisible(true);
   ASSERT_TRUE(drop_target_view().GetVisible());
@@ -78,7 +76,7 @@ TEST_F(MultiContentsViewDragEntrypointControllerTest,
 }
 
 // Tests that the drop target is hidden when a drag is not in the "drop area".
-TEST_F(MultiContentsViewDragEntrypointControllerTest,
+TEST_F(MultiContentsViewDropTargetControllerTest,
        OnWebContentsDragUpdate_HideDropTargetOnOutOfBounds) {
   drop_target_view().SetVisible(true);
   ASSERT_TRUE(drop_target_view().GetVisible());

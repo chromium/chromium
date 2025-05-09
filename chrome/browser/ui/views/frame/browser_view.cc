@@ -123,7 +123,7 @@
 #include "chrome/browser/ui/views/frame/contents_layout_manager.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
-#include "chrome/browser/ui/views/frame/multi_contents_view_drag_entrypoint_controller.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
 #include "chrome/browser/ui/views/frame/native_browser_frame.h"
 #include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -3655,7 +3655,7 @@ bool BrowserView::PreHandleMouseEvent(const blink::WebMouseEvent& event) {
 void BrowserView::PreHandleDragUpdate(const content::DropData& drop_data,
                                       const gfx::PointF& point) {
   if (multi_contents_view_) {
-    multi_contents_view_->drag_entrypoint_controller().OnWebContentsDragUpdate(
+    multi_contents_view_->drop_target_controller().OnWebContentsDragUpdate(
         drop_data, point);
   }
 }

@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_resize_area.h"
-#include "chrome/browser/ui/views/frame/multi_contents_view_drag_entrypoint_controller.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "content/public/browser/web_contents.h"
@@ -68,8 +68,8 @@ MultiContentsView::MultiContentsView(
   drop_target_view->SetProperty(views::kElementIdentifierKey,
                                 kMultiContentsViewDropTargetElementId);
   drop_target_view->SetVisible(false);
-  drag_entrypoint_controller_ =
-      std::make_unique<MultiContentsViewDragEntrypointController>(
+  drop_target_controller_ =
+      std::make_unique<MultiContentsViewDropTargetController>(
           *drop_target_view);
 }
 
