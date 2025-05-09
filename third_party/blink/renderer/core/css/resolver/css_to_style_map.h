@@ -69,7 +69,6 @@ class CSSToStyleMap {
 
   static Timing::Delay MapAnimationDelayStart(StyleResolverState&,
                                               const CSSValue&);
-  static Timing::Delay MapAnimationDelayEnd(const CSSValue&);
   static Timing::Delay MapAnimationDelayEnd(StyleResolverState&,
                                             const CSSValue&);
   static Timing::PlaybackDirection MapAnimationDirection(StyleResolverState&,
