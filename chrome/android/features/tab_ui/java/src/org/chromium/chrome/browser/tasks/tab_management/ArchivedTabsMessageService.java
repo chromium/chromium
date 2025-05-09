@@ -87,7 +87,9 @@ public class ArchivedTabsMessageService extends MessageService
                     assert mTabArchiveSettings != null;
 
                     mArchivedTabModel = archivedTabModel;
-                    mArchivedTabModel.getTabCountSupplier().addObserver(mTabCountObserver);
+                    mArchivedTabModelOrchestrator
+                            .getTabCountSupplier()
+                            .addObserver(mTabCountObserver);
 
                     mCustomCardView =
                             LayoutInflater.from(mActivity)
@@ -120,10 +122,10 @@ public class ArchivedTabsMessageService extends MessageService
             };
 
     private final Callback<Integer> mTabCountObserver =
-            (count) -> {
-                updateModelProperties();
-                if (count > 0) {
-                    maybeSendMessageToQueue();
+            (tabCount) -> {
+                updateModelProperties(tabCount);
+                if (tabCount > 0) {
+                    maybeSendMessageToQueue(tabCount);
                 } else {
                     maybeInvalidatePreviouslySentMessage();
                 }
@@ -134,7 +136,8 @@ public class ArchivedTabsMessageService extends MessageService
             new TabArchiveSettings.Observer() {
                 @Override
                 public void onSettingChanged() {
-                    updateModelProperties();
+                    updateModelProperties(
+                            mArchivedTabModelOrchestrator.getTabCountSupplier().get());
                 }
             };
 
@@ -258,8 +261,8 @@ public class ArchivedTabsMessageService extends MessageService
                     .removeTabListItemSizeChangedObserver(mTabListItemSizeChangedObserver);
         }
 
-        if (mArchivedTabModel != null) {
-            mArchivedTabModel.getTabCountSupplier().removeObserver(mTabCountObserver);
+        if (mArchivedTabModelOrchestrator.getTabCountSupplier() != null) {
+            mArchivedTabModelOrchestrator.getTabCountSupplier().removeObserver(mTabCountObserver);
         }
     }
 
@@ -318,7 +321,10 @@ public class ArchivedTabsMessageService extends MessageService
     @Override
     public void addObserver(MessageService.MessageObserver obs) {
         super.addObserver(obs);
-        maybeSendMessageToQueue();
+        ObservableSupplier<Integer> tabCountSupplier =
+                mArchivedTabModelOrchestrator.getTabCountSupplier();
+        int tabCount = tabCountSupplier == null ? 0 : tabCountSupplier.get();
+        maybeSendMessageToQueue(tabCount);
     }
 
     public void setOnTabSelectingListener(OnTabSelectingListener onTabSelectingListener) {
@@ -328,11 +334,12 @@ public class ArchivedTabsMessageService extends MessageService
     // Private methods.
 
     @VisibleForTesting
-    void maybeSendMessageToQueue() {
+    void maybeSendMessageToQueue(int tabCount) {
         if (mMessageSentToQueue) return;
         if (mArchivedTabModel == null) return;
-        if (mArchivedTabModel.getCount() <= 0) return;
-        updateModelProperties();
+        if (mTabGroupSyncService == null) return;
+        if (tabCount <= 0) return;
+        updateModelProperties(tabCount);
         sendAvailabilityNotification(new ArchivedTabsMessageData(this));
         mMessageSentToQueue = true;
         mAppendMessageRunnable.run();
@@ -377,8 +384,8 @@ public class ArchivedTabsMessageService extends MessageService
                         mCurrentTabGroupModelFilterSupplier);
     }
 
-    private void updateModelProperties() {
-        mCustomCardModel.set(NUMBER_OF_ARCHIVED_TABS, mArchivedTabModel.getCount());
+    private void updateModelProperties(int tabCount) {
+        mCustomCardModel.set(NUMBER_OF_ARCHIVED_TABS, tabCount);
         mCustomCardModel.set(
                 ARCHIVE_TIME_DELTA_DAYS, mTabArchiveSettings.getArchiveTimeDeltaDays());
     }
