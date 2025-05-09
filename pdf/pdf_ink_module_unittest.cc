@@ -3107,6 +3107,12 @@ class PdfInkModuleTextHighlightTest : public PdfInkModuleStrokeTest {
     VerifySingleSelectionTest(expected_inputs, expected_size);
   }
 
+  // Sets the selection rects that will be given by the client.
+  void SetSelectionRects(base::span<const gfx::Rect> selection_rects) {
+    EXPECT_CALL(client(), GetSelectionRects())
+        .WillRepeatedly(Return(base::ToVector(selection_rects)));
+  }
+
   // Sets `points` as selectable text areas. Any points not included will be
   // considered non-selectable.
   void SetTextAreaPoints(base::span<const gfx::PointF> points) {
@@ -3126,9 +3132,7 @@ class PdfInkModuleTextHighlightTest : public PdfInkModuleStrokeTest {
 
     SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
 
-    std::vector<gfx::Rect> selection_rects{selection_rect};
-    EXPECT_CALL(client(), GetSelectionRects())
-        .WillRepeatedly(Return(selection_rects));
+    SetSelectionRects(base::span_from_ref(selection_rect));
     SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
 
     EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
@@ -3347,11 +3351,7 @@ TEST_P(PdfInkModuleTextHighlightTest, MultipleSelection) {
 
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
 
-  constexpr gfx::Rect kHorizontalSelection2{15, 25, 10, 5};
-  std::vector<gfx::Rect> selection_rects{kHorizontalSelection,
-                                         kHorizontalSelection2};
-  EXPECT_CALL(client(), GetSelectionRects())
-      .WillRepeatedly(Return(selection_rects));
+  SetSelectionRects({kHorizontalSelection, gfx::Rect(15, 25, 10, 5)});
   constexpr gfx::PointF kEndPoint2InsidePage0{25.0, 30.0};
   SetTextAreaPoints({kStartPointInsidePage0, kEndPoint2InsidePage0});
 
@@ -3409,8 +3409,7 @@ TEST_P(PdfInkModuleTextHighlightTest, OneClickCount) {
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
 
   // There will be no text selection rects.
-  std::vector<gfx::Rect> selection_rects;
-  EXPECT_CALL(client(), GetSelectionRects()).WillOnce(Return(selection_rects));
+  SetSelectionRects({});
   SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
 
   EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
@@ -3437,8 +3436,7 @@ TEST_P(PdfInkModuleTextHighlightTest, TwoClickCount) {
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/1);
 
   // The second text click will select the word.
-  std::vector<gfx::Rect> selection_rects{kHorizontalSelection};
-  EXPECT_CALL(client(), GetSelectionRects()).WillOnce(Return(selection_rects));
+  SetSelectionRects(base::span_from_ref(kHorizontalSelection));
 
   EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
                                               /*click_count=*/2));
@@ -3474,16 +3472,12 @@ TEST_P(PdfInkModuleTextHighlightTest, ThreeClickCount) {
 
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/1);
 
-  std::vector<gfx::Rect> two_click_selection_rects{kHorizontalSelection};
-  EXPECT_CALL(client(), GetSelectionRects())
-      .WillOnce(Return(two_click_selection_rects));
+  SetSelectionRects(base::span_from_ref(kHorizontalSelection));
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/2);
 
   // The third text click will remove the original word text highlight and
   // select the line.
-  std::vector<gfx::Rect> three_click_selection_rects{gfx::Rect(5, 15, 45, 12)};
-  EXPECT_CALL(client(), GetSelectionRects())
-      .WillOnce(Return(three_click_selection_rects));
+  SetSelectionRects(base::span_from_ref(gfx::Rect(5, 15, 45, 12)));
 
   EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
                                               /*click_count=*/3));
@@ -3536,10 +3530,7 @@ TEST_P(PdfInkModuleTextHighlightTest, MouseUpOnNonSelection) {
 
   // Move and end in a non-text area. Make the mock selection rect smaller than
   // the distance between the mousedown and mouseup points.
-  constexpr gfx::Rect kSmallHorizontalSelection{10, 15, 2, 10};
-  std::vector<gfx::Rect> selection_rects{kSmallHorizontalSelection};
-  EXPECT_CALL(client(), GetSelectionRects())
-      .WillRepeatedly(Return(selection_rects));
+  SetSelectionRects(base::span_from_ref(gfx::Rect(10, 15, 2, 10)));
 
   EXPECT_CALL(client(), ExtendSelectionByPoint(kEndPointInsidePage0));
 
@@ -3593,10 +3584,7 @@ TEST_P(PdfInkModuleTextHighlightTest, MultiplePages) {
 
   // Move to page 1. Select rects from both pages.
   constexpr gfx::Rect kHorizontalSelectionInPage1{10, 75, 15, 14};
-  std::vector<gfx::Rect> selection_rects{kHorizontalSelection,
-                                         kHorizontalSelectionInPage1};
-  EXPECT_CALL(client(), GetSelectionRects())
-      .WillRepeatedly(Return(selection_rects));
+  SetSelectionRects({kHorizontalSelection, kHorizontalSelectionInPage1});
   EXPECT_CALL(client(),
               PageIndexFromPoint(gfx::PointF(kHorizontalSelection.origin())))
       .WillRepeatedly(Return(0));
@@ -3654,9 +3642,7 @@ TEST_P(PdfInkModuleTextHighlightTest,
 
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
 
-  std::vector<gfx::Rect> selection_rects{gfx::Rect(9, 14, 5, 10)};
-  EXPECT_CALL(client(), GetSelectionRects())
-      .WillRepeatedly(Return(selection_rects));
+  SetSelectionRects(base::span_from_ref(gfx::Rect(9, 14, 5, 10)));
   EXPECT_CALL(client(), IsSelectableTextOrLinkArea(_))
       .WillRepeatedly(Return(true));
 
@@ -3688,8 +3674,7 @@ TEST_P(PdfInkModuleTextHighlightTest, TouchOneClickCount) {
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
 
   // There will be no text selection rects.
-  std::vector<gfx::Rect> selection_rects;
-  EXPECT_CALL(client(), GetSelectionRects()).WillOnce(Return(selection_rects));
+  SetSelectionRects({});
   SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
 
   EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
@@ -3748,8 +3733,7 @@ TEST_P(PdfInkModuleTextHighlightTest, PenOneClickCount) {
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
 
   // There will be no text selection rects.
-  std::vector<gfx::Rect> selection_rects;
-  EXPECT_CALL(client(), GetSelectionRects()).WillOnce(Return(selection_rects));
+  SetSelectionRects({});
   SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
 
   EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
