@@ -510,7 +510,7 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
     version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
     PolicyContainerPolicies policies;
     policies.ip_address_space = network::mojom::IPAddressSpace::kPrivate;
-    version_->set_policy_container_host(
+    version_->SetPolicyContainerHost(
         base::MakeRefCounted<PolicyContainerHost>(std::move(policies)));
     registration_->SetActiveVersion(version_);
 

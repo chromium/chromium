@@ -1206,6 +1206,17 @@ void ServiceWorkerVersion::Doom() {
   main_script_load_params_.reset();
 }
 
+void ServiceWorkerVersion::SetPolicyContainerHost(
+    scoped_refptr<PolicyContainerHost> policy_container_host) {
+  policy_container_host_ = std::move(policy_container_host);
+  if (policy_container_host_ &&
+      policy_container_host_->policies()
+              .integrity_policy.blocked_destinations.size() > 0) {
+    CountFeature(
+        blink::mojom::WebFeature::kIntegrityPolicyInServiceWorkerResponse);
+  }
+}
+
 void ServiceWorkerVersion::InitializeGlobalScope() {
   TRACE_EVENT0("ServiceWorker", "ServiceWorkerVersion::InitializeGlobalScope");
   receiver_.reset();
@@ -3009,7 +3020,7 @@ void ServiceWorkerVersion::PrepareForUpdate(
            ->browser()
            ->ShouldServiceWorkerInheritPolicyContainerFromCreator(
                updated_script_url)) {
-    set_policy_container_host(policy_container_host);
+    SetPolicyContainerHost(policy_container_host);
   }
 }
 

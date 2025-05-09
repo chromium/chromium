@@ -382,7 +382,7 @@ TEST_F(EmbeddedWorkerInstanceTest, CacheStorageOptimization) {
   RegistrationAndVersionPair pair =
       helper_->PrepareRegistrationAndVersion(scope, url);
   // We should set COEP, or cache storage pipe won't be made.
-  pair.second->set_policy_container_host(
+  pair.second->SetPolicyContainerHost(
       base::MakeRefCounted<PolicyContainerHost>());
   auto worker = std::make_unique<EmbeddedWorkerInstance>(pair.second.get());
 

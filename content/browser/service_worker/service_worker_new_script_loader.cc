@@ -294,7 +294,7 @@ void ServiceWorkerNewScriptLoader::OnReceiveResponse(
              ->browser()
              ->ShouldServiceWorkerInheritPolicyContainerFromCreator(
                  request_url_)) {
-      version_->set_policy_container_host(
+      version_->SetPolicyContainerHost(
           base::MakeRefCounted<PolicyContainerHost>(
               // TODO(crbug.com/40235036): Add DCHECK to parsed_headers
               response_head->parsed_headers

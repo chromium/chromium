@@ -6182,6 +6182,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="EditContextTextFormatUpdateTextFormatThicknessOrStyleNotNone"/>
   <int value="5555" label="C2PAManifest"/>
   <int value="5556" label="LanguageModel_Append"/>
+  <int value="5557" label="IntegrityPolicyInServiceWorkerResponse"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

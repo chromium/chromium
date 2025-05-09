@@ -1082,10 +1082,9 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
     version->set_used_features(std::move(used_features));
     // policy_container_host could be null for registration restored from old DB
     if (data.policy_container_policies) {
-      version->set_policy_container_host(
-          base::MakeRefCounted<PolicyContainerHost>(
-              PolicyContainerPolicies(*data.policy_container_policies,
-                                      /*is_web_secure_context=*/true)));
+      version->SetPolicyContainerHost(base::MakeRefCounted<PolicyContainerHost>(
+          PolicyContainerPolicies(*data.policy_container_policies,
+                                  /*is_web_secure_context=*/true)));
     }
     if (data.router_rules) {
       auto error = version->SetupRouterEvaluator(*data.router_rules);

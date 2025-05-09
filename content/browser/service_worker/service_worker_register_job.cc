@@ -588,7 +588,7 @@ void ServiceWorkerRegisterJob::StartWorkerForUpdate(
   if (GetContentClient()
           ->browser()
           ->ShouldServiceWorkerInheritPolicyContainerFromCreator(script_url_)) {
-    new_version()->set_policy_container_host(
+    new_version()->SetPolicyContainerHost(
         base::MakeRefCounted<PolicyContainerHost>(
             std::move(creator_policy_container_policies_)));
   }
