@@ -144,7 +144,6 @@ public class ChromeBaseAppCompatActivityUnitTest {
         // Set XR environment.
         XrUtils.setXrDeviceForTesting(true);
         ChromeBaseAppCompatActivity.applyOverridesForXr(mContext, config);
-        XrUtils.resetXrDeviceForTesting();
 
         float xrScaleUpFactor =
                 (float) DisplayUtil.getUiDensityForXr(mContext, MOCK_REAL_DISPLAY_DENSITY_DPI)
@@ -182,7 +181,6 @@ public class ChromeBaseAppCompatActivityUnitTest {
         // Set XR environment.
         XrUtils.setXrDeviceForTesting(false);
         ChromeBaseAppCompatActivity.applyOverridesForXr(mContext, config);
-        XrUtils.resetXrDeviceForTesting();
 
         assertEquals(
                 "Density dpi should not be scaled up from the real display metric "

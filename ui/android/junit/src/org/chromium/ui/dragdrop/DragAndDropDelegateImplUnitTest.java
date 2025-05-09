@@ -679,8 +679,6 @@ public class DragAndDropDelegateImplUnitTest {
         AccessibilityState.setIsPerformGesturesEnabledForTesting(false);
         Assert.assertTrue(
                 "Drag and drop should start.", calllStartDragAndDrop(shadowImage, dropData));
-
-        XrUtils.resetXrDeviceForTesting();
     }
 
     private boolean calllStartDragAndDrop(Bitmap shadowImage, DropDataAndroid dropData) {

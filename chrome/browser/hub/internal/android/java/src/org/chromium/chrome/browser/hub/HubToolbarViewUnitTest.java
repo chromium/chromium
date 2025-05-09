@@ -44,7 +44,6 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import com.google.android.material.color.MaterialColors;
 import com.google.android.material.tabs.TabLayout;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -122,11 +121,6 @@ public class HubToolbarViewUnitTest {
         XrUtils.setXrDeviceForTesting(mIsXrDevice);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
-    }
-
-    @After
-    public void tearDown() {
-        XrUtils.resetXrDeviceForTesting();
     }
 
     private void onActivity(TestActivity activity) {

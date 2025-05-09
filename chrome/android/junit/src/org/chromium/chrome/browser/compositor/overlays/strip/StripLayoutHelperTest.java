@@ -2605,7 +2605,6 @@ public class StripLayoutHelperTest {
                 "Tab outline should not show.", mStripLayoutHelper.shouldShowTabOutline(tabs[1]));
         assertFalse(
                 "Tab outline should not show.", mStripLayoutHelper.shouldShowTabOutline(tabs[2]));
-        XrUtils.resetXrDeviceForTesting();
     }
 
     @Test
@@ -3189,7 +3188,6 @@ public class StripLayoutHelperTest {
                 expectedEndWidth,
                 groupTitle.getBottomIndicatorWidth(),
                 0.5f);
-        XrUtils.resetXrDeviceForTesting();
     }
 
     private float calculateExpectedBottomIndicatorWidth(
@@ -4988,7 +4986,6 @@ public class StripLayoutHelperTest {
         // Act and verify the broadcast is sent.
         onLongPress_OffTab();
         verify(mWindowAndroid, times(1)).sendBroadcast(any());
-        XrUtils.resetXrDeviceForTesting();
     }
 
     @Test

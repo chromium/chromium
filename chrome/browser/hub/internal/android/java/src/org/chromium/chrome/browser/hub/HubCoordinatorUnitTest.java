@@ -194,7 +194,6 @@ public class HubCoordinatorUnitTest {
         assertFalse(mPreviousLayoutTypeSupplier.hasObservers());
         assertFalse(mIncognitoTabSwitcherBackPressSupplier.hasObservers());
         assertFalse(mTabSupplier.hasObservers());
-        XrUtils.resetXrDeviceForTesting();
     }
 
     @Test

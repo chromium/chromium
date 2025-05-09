@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 
 import android.os.Build.VERSION_CODES;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
@@ -21,12 +20,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = VERSION_CODES.UPSIDE_DOWN_CAKE)
 public class XrUtilsTest {
-
-    /** Resets the environment before each test. */
-    @Before
-    public void beforeTest() {
-        XrUtils.resetXrDeviceForTesting();
-    }
 
     @Test
     public void getInstanceTest_notNull() {

@@ -4802,7 +4802,6 @@ public class TabListMediatorUnitTest {
         assertEquals(
                 TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_MEDIUM,
                 mMediator.getSpanCount(TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP + 1));
-        XrUtils.resetXrDeviceForTesting();
     }
 
     @Test

@@ -1092,7 +1092,6 @@ public class MultiInstanceManagerApi31UnitTest {
         verify(mMultiInstanceManager, times(1))
                 .moveAndReparentTabToNewWindow(
                         any(), eq(INVALID_WINDOW_ID), eq(true), eq(false), eq(true));
-        XrUtils.resetXrDeviceForTesting();
     }
 
     @Test
@@ -1122,7 +1121,6 @@ public class MultiInstanceManagerApi31UnitTest {
                 .moveAndReparentTabToNewWindow(
                         any(), eq(INVALID_WINDOW_ID), eq(true), eq(false), eq(true));
         verify(mMultiInstanceManager, times(1)).openNewWindow(any());
-        XrUtils.resetXrDeviceForTesting();
     }
 
     @Test
@@ -1194,7 +1192,6 @@ public class MultiInstanceManagerApi31UnitTest {
         verify(mMultiInstanceManager, times(0))
                 .moveAndReparentTabToNewWindow(
                         eq(mTab1), eq(INVALID_WINDOW_ID), eq(false), eq(true), eq(true));
-        XrUtils.resetXrDeviceForTesting();
     }
 
     @Test
@@ -1244,7 +1241,6 @@ public class MultiInstanceManagerApi31UnitTest {
                         eq(mTab1), eq(NON_EXISTENT_INSTANCE_ID), eq(false), eq(true), eq(false));
         verify(mMultiInstanceManager, times(0))
                 .reparentTabToRunningActivity(any(), eq(mTab1), eq(0));
-        XrUtils.resetXrDeviceForTesting();
     }
 
     @Test
@@ -1279,7 +1275,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
         verify(mMultiInstanceManager, times(1))
                 .closeInstance(anyInt(), eq(MultiWindowUtils.INVALID_TASK_ID));
-        XrUtils.resetXrDeviceForTesting();
     }
 
     @Test

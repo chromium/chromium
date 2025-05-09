@@ -23,14 +23,10 @@ public class XrUtils {
         return sInstance;
     }
 
-    /** Set the XR device envornment for testing. */
+    /** Set the XR device environment for testing. */
     public static void setXrDeviceForTesting(Boolean isXrDevice) {
         sXrDeviceOverrideForTesting = isXrDevice;
-    }
-
-    /** Reset the XR device envornment to the default value. */
-    public static void resetXrDeviceForTesting() {
-        sXrDeviceOverrideForTesting = null;
+        ResettersForTesting.register(() -> sXrDeviceOverrideForTesting = null);
     }
 
     /** Return if the app is running on an immersive XR device. */

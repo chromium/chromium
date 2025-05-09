@@ -269,7 +269,6 @@ public class TabDragSourceTest {
                 ChromePreferenceKeys.TAB_OR_GROUP_TEARING_MAX_INSTANCES_FAILURE_START_TIME_MS);
         mSharedPreferencesManager.removeKey(
                 ChromePreferenceKeys.TAB_OR_GROUP_TEARING_MAX_INSTANCES_FAILURE_COUNT);
-        XrUtils.resetXrDeviceForTesting();
     }
 
     @Test

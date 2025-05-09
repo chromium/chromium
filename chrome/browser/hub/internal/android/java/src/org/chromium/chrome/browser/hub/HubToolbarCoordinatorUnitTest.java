@@ -16,7 +16,6 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import com.google.common.collect.ImmutableSet;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -115,12 +114,6 @@ public class HubToolbarCoordinatorUnitTest {
                         mHubColorMixer,
                         mUserEducationHelper,
                         mIsAnimatingSupplier);
-    }
-
-    @After
-    public void tearDown() {
-        // Reset static state after each test run to ensure isolation
-        XrUtils.resetXrDeviceForTesting();
     }
 
     @Test
