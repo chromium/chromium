@@ -439,12 +439,13 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void SetAudioDucking(bool enabled,
                        SetAudioDuckingCallback callback) override {
-    if (!page_handler_->GetGuestMainFrame()) {
+    content::RenderFrameHost* guest_frame = page_handler_->GetGuestMainFrame();
+    if (!guest_frame) {
       std::move(callback).Run(false);
       return;
     }
-    AudioDucker* audio_ducker = AudioDucker::GetOrCreateForPage(
-        page_handler_->GetGuestMainFrame()->GetPage());
+    AudioDucker* audio_ducker =
+        AudioDucker::GetOrCreateForPage(guest_frame->GetPage());
     std::move(callback).Run(enabled ? audio_ducker->StartDuckingOtherAudio()
                                     : audio_ducker->StopDuckingOtherAudio());
   }
@@ -828,16 +829,27 @@ void GlicPageHandler::WebviewCommitted(const GURL& url) {
   }
 }
 
-void GlicPageHandler::GuestAdded(extensions::WebViewGuest* guest) {
-  guest_ = guest->GetWeakPtr();
-}
-
 void GlicPageHandler::NotifyWindowIntentToShow() {
   page_->IntentToShow();
 }
 
 content::RenderFrameHost* GlicPageHandler::GetGuestMainFrame() {
-  return guest_ ? guest_->GetGuestMainFrame() : nullptr;
+  extensions::WebViewGuest* web_view_guest = nullptr;
+  content::RenderFrameHost* webui_frame =
+      webui_contents_->GetPrimaryMainFrame();
+  if (!webui_frame) {
+    return nullptr;
+  }
+  webui_frame->ForEachRenderFrameHostWithAction(
+      [&web_view_guest](content::RenderFrameHost* rfh) {
+        if (auto* web_view =
+                extensions::WebViewGuest::FromRenderFrameHost(rfh)) {
+          web_view_guest = web_view;
+          return content::RenderFrameHost::FrameIterationAction::kStop;
+        }
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
+      });
+  return web_view_guest ? web_view_guest->GetGuestMainFrame() : nullptr;
 }
 
 void GlicPageHandler::ClosePanel() {

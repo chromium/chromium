@@ -43,11 +43,6 @@ class GlicPageHandler : public glic::mojom::PageHandler {
 
   content::WebContents* webui_contents() { return webui_contents_; }
 
-  // Called whenever a guest view is added to the WebContents owned by this
-  // WebUI. Because we embed only one webview, there should only ever be one
-  // guest view alive at one time within GlicPageHandler.
-  void GuestAdded(extensions::WebViewGuest* guest);
-
   void NotifyWindowIntentToShow();
 
   // Returns the main frame of the guest view that lives within this WebUI. May

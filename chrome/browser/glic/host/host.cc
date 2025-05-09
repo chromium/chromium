@@ -167,11 +167,6 @@ void Host::GuestAdded(content::WebContents* guest_contents) {
                                   .default_font_size;
     top->SetWebPreferences(prefs);
   }
-  PageHandlerInfo* info = FindInfoForWebUiContents(top);
-  CHECK(info);
-  auto* webview = extensions::WebViewGuest::FromWebContents(guest_contents);
-  CHECK(webview);
-  info->page_handler->GuestAdded(webview);
 }
 
 void Host::NotifyWindowIntentToShow() {

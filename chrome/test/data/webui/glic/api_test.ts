@@ -215,6 +215,15 @@ class ApiTests extends ApiTestFixtureBase {
         location.href + '#background', {openInBackground: true});
   }
 
+  async testCreateTabByClickingOnLink() {
+    assertTrue(!!this.host.setAudioDucking);
+    const link = document.createElement('a');
+    link.setAttribute('href', 'https://www.chromium.org');
+    link.setAttribute('target', '_blank');
+    document.body.appendChild(link);
+    link.click();
+  }
+
   async testOpenGlicSettingsPage() {
     assertTrue(!!this.host.openGlicSettingsPage);
     this.host.openGlicSettingsPage();

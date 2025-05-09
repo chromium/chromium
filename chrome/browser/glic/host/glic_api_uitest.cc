@@ -681,6 +681,22 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testCreateTabInBackground) {
               testing::EndsWith("#foreground"));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testCreateTabByClickingOnLink) {
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents),
+                  CheckTabCount(1));
+  content::RenderFrameHost* guest_frame = FindGlicGuestMainFrame();
+  ExecuteJsTest();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return InProcessBrowserTest::browser()->tab_strip_model()->GetTabCount() ==
+           2;
+  })) << "Timed out waiting for tab count to increase. Tab count = "
+      << InProcessBrowserTest::browser()->tab_strip_model()->GetTabCount();
+  // This assertion is a regression test for b/416464184. The guest frame
+  // shouldn't change.
+  CHECK_EQ(guest_frame, FindGlicGuestMainFrame());
+}
+
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testOpenGlicSettingsPage) {
   ExecuteJsTest();
 
