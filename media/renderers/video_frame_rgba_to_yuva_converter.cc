@@ -40,13 +40,15 @@ std::optional<gpu::SyncToken> CopyRGBATextureToVideoFrame(
     return std::nullopt;
   }
 
-  std::unique_ptr<gpu::RasterScopedAccess> ri_access =
+  std::unique_ptr<gpu::RasterScopedAccess> src_ri_access =
       src_shared_image->BeginRasterAccess(ri, acquire_sync_token,
                                           /*readonly=*/true);
 
   auto dst_sync_token = dst_video_frame->acquire_sync_token();
-  auto dst_mailbox = dst_video_frame->shared_image()->mailbox();
-  ri->WaitSyncTokenCHROMIUM(dst_sync_token.GetConstData());
+  auto dst_shared_image = dst_video_frame->shared_image();
+  std::unique_ptr<gpu::RasterScopedAccess> dst_ri_access =
+      dst_shared_image->BeginRasterAccess(ri, dst_sync_token,
+                                          /*readonly=*/false);
 
   // Note: the destination video frame can have a coded size that is larger
   // than that of the source video to account for alignment needs. In this
@@ -58,15 +60,16 @@ std::optional<gpu::SyncToken> CopyRGBATextureToVideoFrame(
   // details).
   // TODO(crbug.com/40270413): Update this comment when we resolve that bug
   // and change CopySharedImage() to crop rather than stretch.
-  ri->CopySharedImage(src_shared_image->mailbox(), dst_mailbox, 0, 0, 0, 0,
-                      src_size.width(), src_size.height());
+  ri->CopySharedImage(src_shared_image->mailbox(), dst_shared_image->mailbox(),
+                      0, 0, 0, 0, src_size.width(), src_size.height());
   ri->Flush();
 
   // Make access to the `dst_video_frame` wait on copy completion. We also
   // update the ReleaseSyncToken here since it's used when the underlying
   // GpuMemoryBuffer and SharedImage resources are returned to the pool.
+  gpu::RasterScopedAccess::EndAccess(std::move(dst_ri_access));
   gpu::SyncToken completion_sync_token =
-      gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
+      gpu::RasterScopedAccess::EndAccess(std::move(src_ri_access));
   SimpleSyncTokenClient simple_client(completion_sync_token);
   dst_video_frame->UpdateAcquireSyncToken(completion_sync_token);
   dst_video_frame->UpdateReleaseSyncToken(&simple_client);
