@@ -172,7 +172,7 @@ void OnIsolatedWebAppInstalled(
     return;
   }
 
-  const web_app::WebApp* web_app = state->delegate->GetWebAppById(
+  const web_app::WebApp* web_app = state->delegate->GetWebAppByIdUnsafe(
       web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
           *state->iwa_id)
           .app_id(),
@@ -258,7 +258,7 @@ void PrepareIsolatedWebApp(
   auto url_info = web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
       state->iwa_id.value());
   const web_app::WebApp* web_app =
-      state->delegate->GetWebAppById(url_info.app_id(), state->context);
+      state->delegate->GetWebAppByIdUnsafe(url_info.app_id(), state->context);
   if (!web_app) {
     // Install the IWA directly if IWA doesn't exist.
     InstallIsolatedWebApp((std::move(state)));
@@ -472,7 +472,7 @@ DiagnosticsAppProfileHelperDelegate::GetWebAppCommandScheduler(
   return &web_app_provider->scheduler();
 }
 
-const web_app::WebApp* DiagnosticsAppProfileHelperDelegate::GetWebAppById(
+const web_app::WebApp* DiagnosticsAppProfileHelperDelegate::GetWebAppByIdUnsafe(
     const webapps::AppId& app_id,
     content::BrowserContext* browser_context) {
   auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(

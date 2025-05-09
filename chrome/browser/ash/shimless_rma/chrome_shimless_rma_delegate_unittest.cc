@@ -171,7 +171,7 @@ class FakeDiagnosticsAppProfileHelperDelegate
     return &web_app_command_scheduler_;
   }
 
-  const web_app::WebApp* GetWebAppById(
+  const web_app::WebApp* GetWebAppByIdUnsafe(
       const webapps::AppId& app_id,
       content::BrowserContext* browser_context) override {
     return &web_app_;
