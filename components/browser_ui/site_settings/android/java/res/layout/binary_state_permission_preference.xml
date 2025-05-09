@@ -13,12 +13,12 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:focusable="false"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
     <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout
         android:id="@+id/radio_button_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
             android:id="@+id/positive"
@@ -33,4 +33,25 @@ found in the LICENSE file.
             android:paddingStart="?android:attr/listPreferredItemPaddingStart" />
 
     </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
+
+    <TextView
+        android:id="@android:id/summary"
+        style="@style/PreferenceSummary"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintHorizontal_weight="1" />
+
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+        android:id="@+id/managed_disclaimer_text"
+        style="@style/ManagedDisclaimerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:drawablePadding="8dp"
+        android:visibility="gone"
+        android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@android:id/summary"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </LinearLayout>

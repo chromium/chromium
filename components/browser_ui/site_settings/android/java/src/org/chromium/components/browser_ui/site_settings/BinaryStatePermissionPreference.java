@@ -19,7 +19,6 @@ import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.content_settings.ContentSettingValues;
-import org.chromium.ui.base.ViewUtils;
 
 /** A binary state radio group preference for components/permissions/features.cc */
 @NullMarked
@@ -31,7 +30,6 @@ public class BinaryStatePermissionPreference extends Preference
     private @Nullable RadioGroup mRadioGroup;
     private @Nullable ManagedPreferenceDelegate mManagedPrefDelegate;
     private @ContentSettingValues int mSetting = ContentSettingValues.DEFAULT;
-    private final boolean mHasCustomLayout;
 
     /**
      * An array of 4 resource IDs for primary texts for enabled and disabled states and description
@@ -50,7 +48,6 @@ public class BinaryStatePermissionPreference extends Preference
         super(context, attrs);
         // Sets the layout resource that will be inflated for the view.
         setLayoutResource(R.layout.binary_state_permission_preference);
-        mHasCustomLayout = ManagedPreferencesUtils.isCustomLayoutApplied(context, attrs);
 
         // Make unselectable, otherwise BinaryStatePermissionPreference is treated as
         // one selectable Preference, instead of two selectable radio buttons.
@@ -107,9 +104,7 @@ public class BinaryStatePermissionPreference extends Preference
         RadioButtonWithDescription selectedRadioButton = findRadioButton(mSetting);
         if (selectedRadioButton != null) selectedRadioButton.setChecked(true);
 
-        if (mManagedPrefDelegate != null && mManagedPrefDelegate.isPreferenceClickDisabled(this)) {
-            ViewUtils.setEnabledRecursive(holder.itemView, false);
-        }
+        ManagedPreferencesUtils.onBindViewToPreference(mManagedPrefDelegate, this, holder.itemView);
     }
 
     public void setIconMarginEnd(int marginEnd) {
@@ -156,6 +151,6 @@ public class BinaryStatePermissionPreference extends Preference
                 mManagedPrefDelegate,
                 this,
                 /* allowManagedIcon= */ true,
-                /* hasCustomLayout= */ mHasCustomLayout);
+                /* hasCustomLayout= */ true);
     }
 }
