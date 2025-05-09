@@ -36,7 +36,8 @@ class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
     private static final String TAG = "DwTrigger";
 
     private DirectWritingServiceBinder mBinder = new DirectWritingServiceBinder();
-    private DirectWritingServiceConfiguration mConfig = new DirectWritingServiceConfiguration();
+    private final DirectWritingServiceConfiguration mConfig =
+            new DirectWritingServiceConfiguration();
 
     // Track whether DW recognition has been started.
     private boolean mRecognitionStarted;

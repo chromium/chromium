@@ -41,7 +41,7 @@ public class CppWrappedTestTracker implements Tracker {
     //   };
     //   TrackerFactory.getTrackerForProfile(profile).injectTracker(mTracker);
 
-    private String mOurFeature;
+    private final String mOurFeature;
     private boolean mWasDismissed;
     private @Nullable String mLastEvent;
 

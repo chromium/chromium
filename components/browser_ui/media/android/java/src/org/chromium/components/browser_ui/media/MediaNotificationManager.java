@@ -17,7 +17,7 @@ import org.chromium.build.annotations.Nullable;
 @NullMarked
 public class MediaNotificationManager {
     // Maps the notification ids to their corresponding notification managers.
-    private static SparseArray<MediaNotificationController> sControllers;
+    private static final SparseArray<MediaNotificationController> sControllers;
 
     static {
         sControllers = new SparseArray<MediaNotificationController>();

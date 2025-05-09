@@ -31,12 +31,12 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 @JNINamespace("webapps")
 @NullMarked
 public class AddToHomescreenCoordinator {
-    private Context mActivityContext;
-    private ModalDialogManager mModalDialogManager;
+    private final Context mActivityContext;
+    private final ModalDialogManager mModalDialogManager;
     private @Nullable PropertyModel mModel;
-    private WindowAndroid mWindowAndroid;
+    private final WindowAndroid mWindowAndroid;
     // May be null during tests.
-    private WebContents mWebContents;
+    private final WebContents mWebContents;
 
     @VisibleForTesting
     public AddToHomescreenCoordinator(

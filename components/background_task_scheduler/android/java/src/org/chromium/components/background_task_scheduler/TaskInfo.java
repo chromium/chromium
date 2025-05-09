@@ -576,7 +576,7 @@ public class TaskInfo {
         private boolean mUserInitiated;
         private boolean mIsPersisted;
         private boolean mUpdateCurrent;
-        private TimingInfo mTimingInfo;
+        private final TimingInfo mTimingInfo;
 
         Builder(int taskId, TimingInfo timingInfo) {
             mTaskId = taskId;

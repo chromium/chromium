@@ -23,7 +23,7 @@ import org.chromium.components.module_installer.engine.InstallListener;
 @NullMarked
 class ModuleEngine implements InstallEngine {
     private @Nullable InstallEngine mInstallEngine;
-    private EngineFactory mEngineFactory;
+    private final EngineFactory mEngineFactory;
 
     private final String mImplClassName;
 

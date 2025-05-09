@@ -75,7 +75,7 @@ public class FindResultBar extends View {
 
     private boolean mWaitingForActivateAck;
 
-    private static Comparator<RectF> sComparator =
+    private static final Comparator<RectF> sComparator =
             new Comparator<RectF>() {
                 @Override
                 public int compare(RectF a, RectF b) {

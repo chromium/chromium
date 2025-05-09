@@ -24,11 +24,10 @@ public class ArOverlayDelegate implements XrImmersiveOverlay.Delegate {
     private static final String TAG = "ArOverlayDelegate";
     private static final boolean DEBUG_LOGS = false;
 
-    private ArCompositorDelegate mArCompositorDelegate;
-    private boolean mUseOverlay;
-    private boolean mCanRenderDomContent;
-    private boolean mDomSurfaceNeedsConfiguring;
-    private WebContents mWebContents;
+    private final ArCompositorDelegate mArCompositorDelegate;
+    private final boolean mUseOverlay;
+    private final boolean mDomSurfaceNeedsConfiguring;
+    private final WebContents mWebContents;
 
     public ArOverlayDelegate(
             ArCompositorDelegate compositorDelegate,
@@ -41,8 +40,7 @@ public class ArOverlayDelegate implements XrImmersiveOverlay.Delegate {
         mWebContents = webContents;
 
         mUseOverlay = useOverlay;
-        mCanRenderDomContent = canRenderDomContent;
-        mDomSurfaceNeedsConfiguring = mUseOverlay && !mCanRenderDomContent;
+        mDomSurfaceNeedsConfiguring = mUseOverlay && !canRenderDomContent;
     }
 
     @Override

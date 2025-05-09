@@ -63,8 +63,8 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
     private boolean mHasSoundPermission;
     private boolean mDataIsStale;
     private @Nullable SingleWebsiteSettings mSubPage;
-    @ContentSettingsType.EnumType private int mHighlightedPermission;
-    @ColorRes private int mHighlightColor;
+    @ContentSettingsType.EnumType private final int mHighlightedPermission;
+    @ColorRes private final int mHighlightColor;
 
     public PageInfoPermissionsController(
             PageInfoMainController mainController,

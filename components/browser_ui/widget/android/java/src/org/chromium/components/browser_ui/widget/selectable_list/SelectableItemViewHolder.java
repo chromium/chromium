@@ -16,7 +16,7 @@ import org.chromium.build.annotations.NullMarked;
  */
 @NullMarked
 public class SelectableItemViewHolder<E> extends ViewHolder {
-    private SelectableItemView<E> mItemView;
+    private final SelectableItemView<E> mItemView;
 
     /**
      * @param itemView The {@link SelectableItemView} to be held by this ViewHolder.

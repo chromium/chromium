@@ -71,7 +71,8 @@ public class DirectWritingServiceCallbackTest {
     @Mock private StylusWritingImeCallback mImeCallback;
     @Mock private ViewGroup mContainerView;
 
-    private DirectWritingServiceCallback mDwServiceCallback = new DirectWritingServiceCallback();
+    private final DirectWritingServiceCallback mDwServiceCallback =
+            new DirectWritingServiceCallback();
     private Context mContext;
 
     private static String mojoStringToJavaString(String16 mojoString) {

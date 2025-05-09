@@ -28,7 +28,7 @@ public class PlayerFrameScaleController {
     /** Interface for calling shared methods on the mediator. */
     private final PlayerFrameMediatorDelegate mMediatorDelegate;
 
-    private @Nullable Supplier<Boolean> mIsAccessibilityEnabled;
+    private final @Nullable Supplier<Boolean> mIsAccessibilityEnabled;
     private final @Nullable Callback<Boolean> mOnScaleListener;
     private boolean mAcceptUserInput;
 

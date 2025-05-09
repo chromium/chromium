@@ -71,7 +71,7 @@ public class PwaUniversalInstallBottomSheetCoordinator {
     private @AppType @Nullable Integer mAppType;
 
     // Whether we are showing the dialog for the root of the domain (path == '/') or a leaf page.
-    private boolean mIsRoot;
+    private final boolean mIsRoot;
 
     // Whether we are yet to show this dialog (the dialog is shown after a brief delay, possibly
     // with a toast while we wait for it to appear).
@@ -81,7 +81,7 @@ public class PwaUniversalInstallBottomSheetCoordinator {
     private @Nullable Toast mToast;
 
     // Tracks when the fetch application data starts.
-    private long mFetchStartTime;
+    private final long mFetchStartTime;
 
     private final Runnable mInstallCallback;
     private final Runnable mAddShortcutCallback;

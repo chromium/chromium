@@ -32,16 +32,16 @@ import java.util.Optional;
 @JNINamespace("collaboration::messaging")
 public class MessagingBackendServiceBridgeUnitTestCompanion {
     // The service instance we're testing.
-    private MessagingBackendService mService;
+    private final MessagingBackendService mService;
 
-    private MessagingBackendService.PersistentMessageObserver mObserver =
+    private final MessagingBackendService.PersistentMessageObserver mObserver =
             mock(MessagingBackendService.PersistentMessageObserver.class);
-    private MessagingBackendService.InstantMessageDelegate mInstantMessageDelegate =
+    private final MessagingBackendService.InstantMessageDelegate mInstantMessageDelegate =
             mock(MessagingBackendService.InstantMessageDelegate.class);
 
-    private ArgumentCaptor<InstantMessage> mInstantMessageCaptor =
+    private final ArgumentCaptor<InstantMessage> mInstantMessageCaptor =
             ArgumentCaptor.forClass(InstantMessage.class);
-    private ArgumentCaptor<Callback> mInstantMessageCallbackCaptor =
+    private final ArgumentCaptor<Callback> mInstantMessageCallbackCaptor =
             ArgumentCaptor.forClass(Callback.class);
 
     @CalledByNative

@@ -39,7 +39,7 @@ public class RadioButtonWithDescriptionAndAuxButtonTest {
 
     private static class AuxButtonClickedListener
             implements RadioButtonWithDescriptionAndAuxButton.OnAuxButtonClickedListener {
-        private CallbackHelper mCallbackHelper = new CallbackHelper();
+        private final CallbackHelper mCallbackHelper = new CallbackHelper();
         private int mClickedId;
 
         AuxButtonClickedListener() {}

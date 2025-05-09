@@ -39,11 +39,11 @@ import org.chromium.ui.base.ImmutableWeakReference;
  */
 @NullMarked
 public class ChromeDialog extends ComponentDialog {
-    private boolean mIsFullScreen;
-    private Activity mActivity;
+    private final boolean mIsFullScreen;
+    private final Activity mActivity;
     @Nullable private InsetObserver mInsetObserver;
     @Nullable private EdgeToEdgeLayoutCoordinator mEdgeToEdgeLayoutCoordinator;
-    private boolean mShouldPadForWindowInsets;
+    private final boolean mShouldPadForWindowInsets;
 
     /**
      * Constructs the dialog class in Chrome.

@@ -261,11 +261,11 @@ public class VariationsSeedFetcher {
 
     /** Object holding information about the seed download parameters. */
     public static class SeedFetchParameters {
-        private @VariationsPlatform int mPlatform;
-        private @Nullable String mRestrictMode;
-        private @Nullable String mMilestone;
+        private final @VariationsPlatform int mPlatform;
+        private final @Nullable String mRestrictMode;
+        private final @Nullable String mMilestone;
         private @Nullable String mChannel;
-        private boolean mIsFastFetchMode;
+        private final boolean mIsFastFetchMode;
 
         // This is added as a convenience for using Mockito.
         @Override

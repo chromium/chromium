@@ -123,10 +123,10 @@ public class WebApkVerifySignature {
 
     /** Block contains metadata about a zip entry. */
     private static class Block implements Comparable<Block> {
-        String mFilename;
-        int mPosition;
+        final String mFilename;
+        final int mPosition;
         int mHeaderSize;
-        int mCompressedSize;
+        final int mCompressedSize;
 
         Block(String filename, int position, int compressedSize) {
             mFilename = filename;
@@ -142,7 +142,7 @@ public class WebApkVerifySignature {
         }
 
         /** Comparator for sorting the list by position ascending. */
-        public static Comparator<Block> positionComparator =
+        public static final Comparator<Block> POSITION_COMPARATOR =
                 new Comparator<Block>() {
                     @Override
                     public int compare(Block b1, Block b2) {
@@ -353,7 +353,7 @@ public class WebApkVerifySignature {
         }
 
         // We need blocks to be sorted by position at this point.
-        Collections.sort(mBlocks, Block.positionComparator);
+        Collections.sort(mBlocks, Block.POSITION_COMPARATOR);
         int lastByte = 0;
 
         // Read the 'local file header' block to the size of the header in bytes.

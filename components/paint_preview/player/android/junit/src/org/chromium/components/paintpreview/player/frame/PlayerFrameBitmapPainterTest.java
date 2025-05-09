@@ -70,7 +70,7 @@ public class PlayerFrameBitmapPainterTest {
      * Paint)}.
      */
     private class MockCanvas extends Canvas {
-        private List<DrawnBitmap> mDrawnBitmaps = new ArrayList<>();
+        private final List<DrawnBitmap> mDrawnBitmaps = new ArrayList<>();
 
         private static class DrawnBitmap {
             private final Bitmap mBitmap;

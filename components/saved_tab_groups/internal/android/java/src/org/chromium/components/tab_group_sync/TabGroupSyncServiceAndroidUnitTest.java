@@ -44,7 +44,7 @@ public class TabGroupSyncServiceAndroidUnitTest {
 
     private TabGroupSyncService mService;
     private TabGroupSyncService.Observer mObserver;
-    private ArgumentCaptor<SavedTabGroup> mTabGroupCaptor =
+    private final ArgumentCaptor<SavedTabGroup> mTabGroupCaptor =
             ArgumentCaptor.forClass(SavedTabGroup.class);
 
     @CalledByNative

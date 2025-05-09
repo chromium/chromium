@@ -42,7 +42,7 @@ import java.util.List;
 @Batch(Batch.UNIT_TESTS)
 public class PromoDialogRenderTest {
     @ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
 
     @ClassRule

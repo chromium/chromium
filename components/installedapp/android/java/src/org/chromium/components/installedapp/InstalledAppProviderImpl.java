@@ -121,8 +121,8 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
     @UiThread
     private class ResultHolder {
         private int mNumTasks;
-        private FilterInstalledApps_Response mCallback;
-        private ArrayList<RelatedApplication> mInstalledApps;
+        private final FilterInstalledApps_Response mCallback;
+        private final ArrayList<RelatedApplication> mInstalledApps;
         private int mDelayMs;
 
         /**

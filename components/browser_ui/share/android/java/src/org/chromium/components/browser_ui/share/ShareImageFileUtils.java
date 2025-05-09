@@ -575,7 +575,7 @@ public class ShareImageFileUtils {
     }
 
     private static class ExternallyVisibleUriCallback implements Callback<String> {
-        private Callback<@Nullable Uri> mComposedCallback;
+        private final Callback<@Nullable Uri> mComposedCallback;
 
         ExternallyVisibleUriCallback(Callback<@Nullable Uri> cb) {
             mComposedCallback = cb;

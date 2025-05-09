@@ -35,9 +35,9 @@ import java.util.List;
 public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
     private static final int LOW_MEMORY_THRESHOLD_KB = 2048;
 
-    private CompositorListener mCompositorListener;
+    private final CompositorListener mCompositorListener;
     private long mNativePlayerCompositorDelegate;
-    private List<Runnable> mMemoryPressureListeners = new ArrayList<>();
+    private final List<Runnable> mMemoryPressureListeners = new ArrayList<>();
 
     public PlayerCompositorDelegateImpl(
             NativePaintPreviewServiceProvider service,

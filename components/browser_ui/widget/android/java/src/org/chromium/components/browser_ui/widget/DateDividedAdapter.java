@@ -176,7 +176,7 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
 
     /** An item representing a date header. */
     static class DateHeaderTimedItem extends TimedItem {
-        private long mTimestamp;
+        private final long mTimestamp;
 
         public DateHeaderTimedItem(long timestamp) {
             mTimestamp = getDateAtMidnight(timestamp).getTime();
@@ -218,7 +218,7 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
     }
 
     protected static class SubsectionHeaderViewHolder extends RecyclerView.ViewHolder {
-        private View mView;
+        private final View mView;
 
         public SubsectionHeaderViewHolder(View itemView) {
             super(itemView);

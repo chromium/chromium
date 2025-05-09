@@ -41,14 +41,14 @@ public class NetworkStatusListenerAndroid implements BackgroundNetworkStatusList
     static class Helper implements BackgroundNetworkStatusListener.Observer {
         // A thread handler that |mBackgroundNetworkStatusListener| lives on, which performs actual
         // network queries. Use a background thread to avoid jank on main thread.
-        private Handler mNetworkThreadHandler;
+        private final Handler mNetworkThreadHandler;
 
         // The object that performs actual network queries on a background thread.
         private BackgroundNetworkStatusListener mBackgroundNetworkStatusListener;
 
         private boolean mReady;
         private @ConnectionType int mConnectionType = ConnectionType.CONNECTION_UNKNOWN;
-        private ObserverList<BackgroundNetworkStatusListener.Observer> mObservers =
+        private final ObserverList<BackgroundNetworkStatusListener.Observer> mObservers =
                 new ObserverList<>();
 
         Helper() {

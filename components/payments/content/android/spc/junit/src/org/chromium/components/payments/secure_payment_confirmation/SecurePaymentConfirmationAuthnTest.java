@@ -86,7 +86,7 @@ public class SecurePaymentConfirmationAuthnTest {
     private Drawable mIssuerIcon;
     private Drawable mNetworkIcon;
     private SecurePaymentConfirmationAuthnController mAuthnController;
-    private FakeClock mClock = new FakeClock();
+    private final FakeClock mClock = new FakeClock();
     private @SpcResponseStatus int mResponseStatus = SpcResponseStatus.UNKNOWN;
 
     /** The shadow of BottomSheetControllerProvider. Not to use outside the test. */

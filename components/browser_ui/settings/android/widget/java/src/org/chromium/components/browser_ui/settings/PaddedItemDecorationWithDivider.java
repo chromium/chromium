@@ -36,7 +36,7 @@ public class PaddedItemDecorationWithDivider extends RecyclerView.ItemDecoration
     private boolean mAllowDividerAfterLastItem;
     private Supplier<Integer> mDividerPaddingStartSupplier;
     private Supplier<Integer> mDividerPaddingEndSupplier;
-    private Supplier<Integer> mItemOffsetSupplier;
+    private final Supplier<Integer> mItemOffsetSupplier;
 
     /**
      * Create the item decoration with padding.

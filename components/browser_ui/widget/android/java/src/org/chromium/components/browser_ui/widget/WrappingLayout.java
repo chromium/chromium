@@ -42,7 +42,7 @@ public class WrappingLayout extends ViewGroup {
 
     // The indices of visible child views of this layout. Allocated as a member class to avoid
     // allocations while drawing.
-    private ArrayList<Integer> mVisibleChildren = new ArrayList<Integer>();
+    private final ArrayList<Integer> mVisibleChildren = new ArrayList<Integer>();
 
     public WrappingLayout(Context context) {
         this(context, null);

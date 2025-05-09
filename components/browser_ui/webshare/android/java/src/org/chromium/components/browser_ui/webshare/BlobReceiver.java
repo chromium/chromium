@@ -35,7 +35,7 @@ public class BlobReceiver implements BlobReaderClient {
 
     private final ByteBuffer mBuffer;
     private final OutputStream mOutputStream;
-    private long mMaximumContentSize;
+    private final long mMaximumContentSize;
     private long mExpectedContentSize;
     private long mReceivedContentSize;
     private DataPipe.@Nullable ConsumerHandle mConsumerHandle;

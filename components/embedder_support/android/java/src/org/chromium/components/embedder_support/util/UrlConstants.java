@@ -146,7 +146,7 @@ public class UrlConstants {
     private static class Holder {
         private static final String SERIALIZED_NTP_URL =
                 "73,1,true,0,6,0,-1,0,-1,9,6,0,-1,15,1,0,-1,0,-1,false,false,chrome://newtab/";
-        private static GURL sNtpGurl =
+        private static final GURL sNtpGurl =
                 GURL.deserializeLatestVersionOnly(SERIALIZED_NTP_URL.replace(',', '\0'));
     }
 

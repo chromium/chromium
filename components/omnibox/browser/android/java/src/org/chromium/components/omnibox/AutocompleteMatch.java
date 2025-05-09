@@ -72,7 +72,7 @@ public class AutocompleteMatch {
     private String mDisplayText;
     private final List<MatchClassification> mDisplayTextClassifications;
     private String mDescription;
-    private List<MatchClassification> mDescriptionClassifications;
+    private final List<MatchClassification> mDescriptionClassifications;
     private @Nullable RichAnswerTemplate mAnswerTemplate;
     private AnswerType mAnswerType;
     private final String mFillIntoEdit;
@@ -91,7 +91,7 @@ public class AutocompleteMatch {
     private final boolean mAllowedToBeDefaultMatch;
     private final String mInlineAutocompletion;
     private final String mAdditionalText;
-    private @Nullable String mTabGroupUuid;
+    private final @Nullable String mTabGroupUuid;
 
     public AutocompleteMatch(
             int nativeType,

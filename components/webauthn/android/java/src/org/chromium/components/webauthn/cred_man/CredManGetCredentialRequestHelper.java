@@ -45,7 +45,7 @@ class CredManGetCredentialRequestHelper {
     private @Nullable RenderFrameHost mRenderFrameHost;
 
     static class Builder {
-        private CredManGetCredentialRequestHelper mHelper;
+        private final CredManGetCredentialRequestHelper mHelper;
 
         Builder(
                 String requestAsJson,

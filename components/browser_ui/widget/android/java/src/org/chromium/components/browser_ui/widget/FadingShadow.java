@@ -26,9 +26,9 @@ public class FadingShadow {
 
     private static final int SMOOTH_ALGORITHM_INTERPOLATION_POINTS_NUM = 8;
 
-    private Paint mShadowPaint = new Paint();
-    private Matrix mShadowMatrix = new Matrix();
-    private Shader mShadowShader;
+    private final Paint mShadowPaint = new Paint();
+    private final Matrix mShadowMatrix = new Matrix();
+    private final Shader mShadowShader;
 
     /** @param shadowColor The color of the shadow, e.g. 0x11000000. */
     FadingShadow(int shadowColor) {

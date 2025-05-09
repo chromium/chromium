@@ -28,7 +28,7 @@ import java.io.IOException;
 public class InMemoryDownloadFile {
     private static final String TAG = "InMemoryDownload";
     private @Nullable FileOutputStream mFos;
-    private ParcelFileDescriptor mPfd;
+    private final ParcelFileDescriptor mPfd;
 
     @CalledByNative
     @RequiresApi(Build.VERSION_CODES.R)

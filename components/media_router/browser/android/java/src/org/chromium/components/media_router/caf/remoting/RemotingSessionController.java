@@ -31,7 +31,7 @@ public class RemotingSessionController extends BaseSessionController {
     }
 
     private @Nullable FlingingControllerAdapter mFlingingControllerAdapter;
-    private RemotingNotificationController mNotificationController;
+    private final RemotingNotificationController mNotificationController;
 
     RemotingSessionController(CafBaseMediaRouteProvider provider) {
         super(provider);

@@ -30,8 +30,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 @NullMarked
 class AddToHomescreenMediator implements AddToHomescreenViewDelegate {
     private long mNativeAddToHomescreenMediator;
-    private PropertyModel mModel;
-    private WindowAndroid mWindowAndroid;
+    private final PropertyModel mModel;
+    private final WindowAndroid mWindowAndroid;
     private @Nullable AppData mNativeAppData;
 
     AddToHomescreenMediator(PropertyModel model, WindowAndroid windowAndroid) {

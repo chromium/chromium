@@ -28,8 +28,8 @@ import java.util.List;
 @JNINamespace("metrics")
 @NullMarked
 public class UkmRecorder {
-    private WebContents mWebContents;
-    private String mEventName;
+    private final WebContents mWebContents;
+    private final String mEventName;
     private @Nullable List<Metric> mMetrics;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

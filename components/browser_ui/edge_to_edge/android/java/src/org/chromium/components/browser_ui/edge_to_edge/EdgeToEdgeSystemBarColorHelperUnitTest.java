@@ -53,9 +53,9 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
 
     private EdgeToEdgeSystemBarColorHelper mEdgeToEdgeColorHelper;
     private WindowSystemBarColorHelper mWindowHelper;
-    private ObservableSupplierImpl<Boolean> mShouldContentFitsWindowInsetsSupplier =
+    private final ObservableSupplierImpl<Boolean> mShouldContentFitsWindowInsetsSupplier =
             new ObservableSupplierImpl<>();
-    private OneshotSupplierImpl<SystemBarColorHelper> mDelegateHelperSupplier =
+    private final OneshotSupplierImpl<SystemBarColorHelper> mDelegateHelperSupplier =
             new OneshotSupplierImpl<>();
 
     @Before

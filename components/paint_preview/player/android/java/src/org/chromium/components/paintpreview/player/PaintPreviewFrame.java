@@ -20,10 +20,10 @@ import java.util.Arrays;
  */
 @NullMarked
 class PaintPreviewFrame {
-    private UnguessableToken mGuid;
+    private final UnguessableToken mGuid;
     // The content size of this frame. In native, this is represented as 'scroll extent'.
-    private int mContentWidth;
-    private int mContentHeight;
+    private final int mContentWidth;
+    private final int mContentHeight;
 
     // Other frames that this frame embeds, its sub-frames.
     private PaintPreviewFrame[] mSubFrames;
@@ -32,8 +32,8 @@ class PaintPreviewFrame {
     private Rect[] mSubFrameClips;
 
     // The initial scroll position of this frame.
-    private int mInitialScrollX;
-    private int mInitialScrollY;
+    private final int mInitialScrollX;
+    private final int mInitialScrollY;
 
     PaintPreviewFrame(
             UnguessableToken guid,

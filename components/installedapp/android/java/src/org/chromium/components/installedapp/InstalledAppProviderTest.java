@@ -87,11 +87,11 @@ public class InstalledAppProviderTest {
     private TestInstalledAppProviderImplJni mTestInstalledAppProviderImplJni;
 
     private static class FakePackageManager extends PackageManagerDelegate {
-        private Map<String, PackageInfo> mPackageInfo = new HashMap<>();
-        private Map<String, Resources> mResources = new HashMap<>();
+        private final Map<String, PackageInfo> mPackageInfo = new HashMap<>();
+        private final Map<String, Resources> mResources = new HashMap<>();
 
         // The set of installed WebAPKs identified by their manifest URL.
-        private Set<String> mInstalledWebApks = new HashSet<>();
+        private final Set<String> mInstalledWebApks = new HashSet<>();
 
         public void addPackageInfo(PackageInfo packageInfo) {
             mPackageInfo.put(packageInfo.packageName, packageInfo);
@@ -214,7 +214,7 @@ public class InstalledAppProviderTest {
      * for these tests).
      */
     private static class FakeResources extends Resources {
-        private static AssetManager sAssetManager = createAssetManager();
+        private static final AssetManager sAssetManager = createAssetManager();
         private final int mId;
         private final String mValue;
 

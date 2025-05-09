@@ -10,18 +10,18 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.data_sharing.GroupToken;
-import org.chromium.components.sync.protocol.GroupData;
 import org.chromium.components.sync.protocol.CollaborationGroupMetadata;
+import org.chromium.components.sync.protocol.GroupData;
 
 /** Config class for the Data Sharing Create UI. */
 @NullMarked
 public class DataSharingCreateUiConfig {
 
     // --- Create Usage Config ---
-    private @Nullable Bitmap mPreviewImage;
-    private @Nullable CollaborationGroupMetadata mCollaborationGroupMetadata;
-    private @Nullable CreateCallback mCreateCallback;
-    private @Nullable DataSharingUiConfig mCommonConfig;
+    private final @Nullable Bitmap mPreviewImage;
+    private final @Nullable CollaborationGroupMetadata mCollaborationGroupMetadata;
+    private final @Nullable CreateCallback mCreateCallback;
+    private final @Nullable DataSharingUiConfig mCommonConfig;
 
     /** Callback interface for data sharing create UI events. */
     public interface CreateCallback {

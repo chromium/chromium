@@ -18,7 +18,7 @@ import java.util.Map;
 public class BrowsingDataModel {
 
     // A pointer to the C++ object for this model.
-    private long mNativeBrowsingDataModel;
+    private final long mNativeBrowsingDataModel;
 
     /**
      * Creates a `BrowsingDataModel` object.

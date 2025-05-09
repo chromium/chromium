@@ -24,10 +24,10 @@ public class PlayerSwipeRefreshHandler implements OverscrollHandler {
     private static final int STOP_REFRESH_ANIMATION_DELAY_MS = 500;
 
     // The modified AppCompat version of the refresh effect.
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private final SwipeRefreshLayout mSwipeRefreshLayout;
 
     // A handler to delegate refreshes event to.
-    private Runnable mRefreshCallback;
+    private final Runnable mRefreshCallback;
 
     /*
      * Constructs a new instance of the handler.

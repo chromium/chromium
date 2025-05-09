@@ -59,7 +59,7 @@ public class XrSessionCoordinator {
     private static @Nullable XrSessionCoordinator sActiveSessionInstance;
 
     /** Whether there is a non-null valid {@link #sActiveSessionInstance}. */
-    private static XrSessionTypeSupplier sActiveSessionAvailableSupplier =
+    private static final XrSessionTypeSupplier sActiveSessionAvailableSupplier =
             new XrSessionTypeSupplier(SessionType.NONE);
 
     private long mNativeXrSessionCoordinator;

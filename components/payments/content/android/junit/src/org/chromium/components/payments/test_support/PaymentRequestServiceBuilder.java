@@ -54,7 +54,7 @@ public class PaymentRequestServiceBuilder implements Delegate {
     private boolean mIsOriginAllowedToUseWebPaymentApis = true;
     private boolean mIsPaymentDetailsValid = true;
     private PaymentRequestSpec mSpec;
-    private SecurePaymentConfirmationRequest mSecurePaymentConfirmationRequest;
+    private final SecurePaymentConfirmationRequest mSecurePaymentConfirmationRequest;
 
     public static PaymentRequestServiceBuilder defaultBuilder(
             Runnable onClosedListener,

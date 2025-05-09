@@ -22,13 +22,13 @@ import org.chromium.build.annotations.Nullable;
 public class PageInfoView extends FrameLayout implements OnClickListener {
     private static final int COOKIES_ROW_POSITION = 1;
 
-    private LinearLayout mRowWrapper;
-    private PageInfoRowView mConnectionRow;
-    private PageInfoRowView mPermissionsRow;
-    private PageInfoRowView mCookiesRow;
-    private Button mForgetSiteButton;
-    private TextView mHttpsImageCompressionMessage;
-    private Button mOpenOnlineButton;
+    private final LinearLayout mRowWrapper;
+    private final PageInfoRowView mConnectionRow;
+    private final PageInfoRowView mPermissionsRow;
+    private final PageInfoRowView mCookiesRow;
+    private final Button mForgetSiteButton;
+    private final TextView mHttpsImageCompressionMessage;
+    private final Button mOpenOnlineButton;
 
     /**  Parameters to configure the view of the page info popup. */
     public static class Params {

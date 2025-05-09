@@ -46,10 +46,10 @@ class FileEnumWorkerTask extends AsyncTask<@Nullable List<PickerBitmap>> {
     private final WindowAndroid mWindowAndroid;
 
     // The callback to use to communicate the results.
-    private FilesEnumeratedCallback mCallback;
+    private final FilesEnumeratedCallback mCallback;
 
     // The filter to apply to the list.
-    private MimeTypeFilter mFilter;
+    private final MimeTypeFilter mFilter;
 
     // Whether any image MIME types were requested.
     private boolean mIncludeImages;
@@ -58,7 +58,7 @@ class FileEnumWorkerTask extends AsyncTask<@Nullable List<PickerBitmap>> {
     private boolean mIncludeVideos;
 
     // The ContentResolver to use to retrieve image metadata from disk.
-    private ContentResolver mContentResolver;
+    private final ContentResolver mContentResolver;
 
     // The camera directory under DCIM.
     private static final String SAMPLE_DCIM_SOURCE_SUB_DIRECTORY = "Camera";

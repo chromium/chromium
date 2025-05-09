@@ -28,7 +28,7 @@ public class PwaRestoreProperties {
         private final String mAppId;
         private final String mAppName;
         private final Bitmap mAppIcon;
-        private int mLastUsedDaysAgo;
+        private final int mLastUsedDaysAgo;
 
         // Whether the app is selected or not.
         private boolean mSelected;

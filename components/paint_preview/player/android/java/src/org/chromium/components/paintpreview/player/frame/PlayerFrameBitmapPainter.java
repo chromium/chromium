@@ -23,10 +23,10 @@ import org.chromium.build.annotations.Nullable;
 class PlayerFrameBitmapPainter {
     private @Nullable Size mTileSize;
     private Bitmap @Nullable [][] mBitmapMatrix;
-    private Rect mViewPort = new Rect();
-    private Rect mDrawBitmapSrc = new Rect();
-    private Rect mDrawBitmapDst = new Rect();
-    private Runnable mInvalidateCallback;
+    private final Rect mViewPort = new Rect();
+    private final Rect mDrawBitmapSrc = new Rect();
+    private final Rect mDrawBitmapDst = new Rect();
+    private final Runnable mInvalidateCallback;
     private @Nullable Runnable mFirstPaintListener;
     private boolean mDestroyed;
 

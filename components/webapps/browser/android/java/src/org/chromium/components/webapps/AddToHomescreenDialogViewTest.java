@@ -28,10 +28,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 public class AddToHomescreenDialogViewTest {
     private AddToHomescreenDialogView mAddToHomescreenDialogView;
-    private CallbackHelper mAddCallback = new CallbackHelper();
-    private CallbackHelper mTitleClickCallback = new CallbackHelper();
-    private CallbackHelper mDismissCallback = new CallbackHelper();
-    private MockModalDialogManager mModalDialogManager = new MockModalDialogManager();
+    private final CallbackHelper mAddCallback = new CallbackHelper();
+    private final CallbackHelper mTitleClickCallback = new CallbackHelper();
+    private final CallbackHelper mDismissCallback = new CallbackHelper();
+    private final MockModalDialogManager mModalDialogManager = new MockModalDialogManager();
 
     private static final String TEST_TITLE = "YouTube";
     private static final String TEST_URL = "youtube.com";

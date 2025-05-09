@@ -16,8 +16,8 @@ import java.util.List;
 @NullMarked
 public class AutofillAddressEditorUiInfo {
 
-    private String mBestLanguageTag;
-    private List<AutofillAddressUiComponent> mComponents;
+    private final String mBestLanguageTag;
+    private final List<AutofillAddressUiComponent> mComponents;
 
     @CalledByNative
     public AutofillAddressEditorUiInfo(

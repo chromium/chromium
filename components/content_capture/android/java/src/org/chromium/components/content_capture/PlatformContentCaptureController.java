@@ -43,7 +43,7 @@ public class PlatformContentCaptureController {
     private boolean mShouldStartCapture;
     private boolean mIsAiai;
     private @Nullable UrlAllowlist mAllowlist;
-    private ContentCaptureManager mContentCaptureManager;
+    private final ContentCaptureManager mContentCaptureManager;
 
     public static PlatformContentCaptureController lazyInit() {
         if (sContentCaptureController == null) {

@@ -46,7 +46,7 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
     private boolean mFullyVisibleBefore;
     private final boolean mAreExtraHistogramsEnabled;
 
-    private long mMessageEnqueuedTime;
+    private final long mMessageEnqueuedTime;
     // The timestamp when the message was shown. Used for reproting visible duration.
     private long mMessageShownTime;
 

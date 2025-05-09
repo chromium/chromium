@@ -26,7 +26,7 @@ public class InMemoryCachedImageFetcher extends ImageFetcher {
     // Will do the work if the image isn't cached in memory.
     private @Nullable ImageFetcher mImageFetcher;
     private @Nullable BitmapCache mBitmapCache;
-    private @ImageFetcherConfig int mConfig;
+    private final @ImageFetcherConfig int mConfig;
 
     /**
      * Create an instance with a custom max cache size.

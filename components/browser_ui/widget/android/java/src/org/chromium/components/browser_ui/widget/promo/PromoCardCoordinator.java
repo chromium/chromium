@@ -39,9 +39,9 @@ public class PromoCardCoordinator {
 
     private static final double IMPRESSION_THRESHOLD_RATIO = 0.75;
 
-    private PromoCardView mPromoCardView;
-    private PropertyModelChangeProcessor mModelChangeProcessor;
-    private String mFeatureName;
+    private final PromoCardView mPromoCardView;
+    private final PropertyModelChangeProcessor mModelChangeProcessor;
+    private final String mFeatureName;
 
     private @Nullable ImpressionTracker mImpressionTracker;
 

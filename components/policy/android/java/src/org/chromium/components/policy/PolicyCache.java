@@ -48,7 +48,7 @@ public class PolicyCache {
 
     private @Nullable SharedPreferences mSharedPreferences;
 
-    private ThreadUtils.ThreadChecker mThreadChecker = new ThreadUtils.ThreadChecker();
+    private final ThreadUtils.ThreadChecker mThreadChecker = new ThreadUtils.ThreadChecker();
 
     /**
      * Creates and returns SharedPreferences instance that is used to cache policy

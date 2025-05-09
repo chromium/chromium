@@ -14,7 +14,7 @@ import org.chromium.components.content_capture.PlatformSession.PlatformSessionDa
 /** The task to update the title change to plateform */
 @NullMarked
 public class TitleUpdateTask extends NotificationTask {
-    private ContentCaptureFrame mMainFrame;
+    private final ContentCaptureFrame mMainFrame;
 
     public TitleUpdateTask(ContentCaptureFrame mainFrame, PlatformSession platformSession) {
         super(null, platformSession);

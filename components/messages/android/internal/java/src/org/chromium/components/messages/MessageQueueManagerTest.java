@@ -47,7 +47,7 @@ import org.chromium.ui.base.WindowAndroid;
 @EnableFeatures({MessageFeatureList.MESSAGES_ANDROID_EXTRA_HISTOGRAMS})
 public class MessageQueueManagerTest {
 
-    private MessageQueueDelegate mEmptyDelegate =
+    private final MessageQueueDelegate mEmptyDelegate =
             new MessageQueueDelegate() {
                 boolean mIsReadyForShowing;
 

@@ -76,7 +76,7 @@ public abstract class PureJavaExceptionReporter
     private final String mLocalId = UUID.randomUUID().toString().replace("-", "").substring(0, 16);
     private final String mBoundary = "------------" + UUID.randomUUID() + RN;
 
-    private boolean mAttachLogcat;
+    private final boolean mAttachLogcat;
 
     public PureJavaExceptionReporter(boolean attachLogcat) {
         mAttachLogcat = attachLogcat;

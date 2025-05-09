@@ -19,7 +19,7 @@ public class AutofillHintsServiceTestHelper {
         IAutofillHintsService.Stub.asInterface(binder).registerViewTypeCallback(getBinder());
     }
 
-    private IViewTypeCallback.Stub mBinder =
+    private final IViewTypeCallback.Stub mBinder =
             new IViewTypeCallback.Stub() {
                 @Override
                 public void onViewTypeAvailable(List<ViewType> viewTypeList) {
@@ -36,7 +36,7 @@ public class AutofillHintsServiceTestHelper {
 
     private List<ViewType> mViewTypeList;
     private boolean mQueryFailed;
-    private CallbackHelper mCallbackHelper = new CallbackHelper();
+    private final CallbackHelper mCallbackHelper = new CallbackHelper();
 
     public IViewTypeCallback getBinder() {
         return mBinder;

@@ -30,7 +30,7 @@ public class BrowserMediaRouterDialogController implements MediaRouteDialogDeleg
 
     private final long mNativeDialogController;
     private @Nullable BaseMediaRouteDialogManager mDialogManager;
-    private WebContents mWebContents;
+    private final WebContents mWebContents;
 
     /**
      * Returns a new initialized {@link BrowserMediaRouterDialogController}.

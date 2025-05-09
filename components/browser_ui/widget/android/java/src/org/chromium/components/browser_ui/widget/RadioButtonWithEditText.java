@@ -75,7 +75,7 @@ public class RadioButtonWithEditText extends RadioButtonWithDescription {
     @SuppressWarnings("NullAway.Init")
     private EditText mEditText;
 
-    private List<OnTextChangeListener> mListeners;
+    private final List<OnTextChangeListener> mListeners;
 
     public RadioButtonWithEditText(Context context, AttributeSet attrs) {
         super(context, attrs);

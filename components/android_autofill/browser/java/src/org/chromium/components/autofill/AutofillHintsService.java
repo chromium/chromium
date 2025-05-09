@@ -54,7 +54,7 @@ public class AutofillHintsService {
         }
     }
 
-    private IAutofillHintsService.Stub mBinder;
+    private final IAutofillHintsService.Stub mBinder;
     private @Nullable IViewTypeCallback mCallback;
     private @Nullable List<ViewType> mUnsentViewTypes;
 }

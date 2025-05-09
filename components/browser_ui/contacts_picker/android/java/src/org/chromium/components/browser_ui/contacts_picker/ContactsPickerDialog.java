@@ -19,7 +19,7 @@ import org.chromium.ui.base.WindowAndroid;
 public class ContactsPickerDialog extends FullscreenAlertDialog
         implements ContactsPickerToolbar.ContactsToolbarDelegate {
     // The category we're showing contacts for.
-    private PickerCategoryView mCategoryView;
+    private final PickerCategoryView mCategoryView;
 
     /**
      * The ContactsPickerDialog constructor.

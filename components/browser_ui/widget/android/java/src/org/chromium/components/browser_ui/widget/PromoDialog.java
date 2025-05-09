@@ -88,7 +88,7 @@ public abstract class PromoDialog extends AlwaysDismissedDialog
     private static final int[] CLICKABLE_BUTTON_IDS = {R.id.button_primary, R.id.button_secondary};
 
     private final FrameLayout mScrimView;
-    private PromoDialogLayout mDialogLayout;
+    private final PromoDialogLayout mDialogLayout;
 
     protected PromoDialog(Activity activity, boolean shouldPadForWindowInsets) {
         super(activity, R.style.PromoDialog, shouldPadForWindowInsets);

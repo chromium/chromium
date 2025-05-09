@@ -92,10 +92,11 @@ public class CredManHelperRobolectricTest {
     private Fido2ApiTestHelper.AuthenticatorCallback mCallback;
     private PublicKeyCredentialCreationOptions mCreationOptions;
     private PublicKeyCredentialRequestOptions mRequestOptions;
-    private String mOriginString = "https://subdomain.coolwebsitekayserispor.com";
-    private byte[] mClientDataHash = new byte[] {1, 2, 3};
+    private final String mOriginString = "https://subdomain.coolwebsitekayserispor.com";
+    private final byte[] mClientDataHash = new byte[] {1, 2, 3};
 
-    private CredentialManager mCredentialManager = Shadow.newInstanceOf(CredentialManager.class);
+    private final CredentialManager mCredentialManager =
+            Shadow.newInstanceOf(CredentialManager.class);
     @Mock private Context mContext;
     @Mock private RenderFrameHost mFrameHost;
     @Mock private WebContents mWebContents;
@@ -110,7 +111,7 @@ public class CredManHelperRobolectricTest {
     @Mock private CredManGetCredentialRequestHelper mCredManGetCredentialRequestHelper;
     @Mock private GetCredentialRequest mGetCredentialRequest;
     @Mock private AuthenticationContextProvider mAuthenticationContextProviderMock;
-    private WebauthnBrowserBridge.Provider mBridgeProvider =
+    private final WebauthnBrowserBridge.Provider mBridgeProvider =
             new WebauthnBrowserBridge.Provider() {
                 @Override
                 public WebauthnBrowserBridge getBridge() {

@@ -234,7 +234,7 @@ public class BaseSessionControllerTest {
     }
 
     private static class TestSessionController extends BaseSessionController {
-        public BaseNotificationController mNotificationController;
+        public final BaseNotificationController mNotificationController;
 
         public TestSessionController(
                 CafBaseMediaRouteProvider provider,

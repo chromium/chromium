@@ -18,7 +18,7 @@ import java.util.Map;
 @NullMarked
 public class DataSharingStringConfig {
 
-    private Map<Integer, Integer> mResourceIds;
+    private final Map<Integer, Integer> mResourceIds;
 
     public DataSharingStringConfig() {
         mResourceIds = new HashMap<>();
@@ -38,7 +38,7 @@ public class DataSharingStringConfig {
 
     // Builder class
     public static class Builder {
-        private Map<Integer, Integer> mResourceIds = new HashMap<>();
+        private final Map<Integer, Integer> mResourceIds = new HashMap<>();
 
         /**
          * Sets the resource ID for the given key.

@@ -26,7 +26,7 @@ class BackgroundNetworkStatusListener implements NetworkChangeNotifierAutoDetect
 
     // An observer to receive network events on main thread.
     private final Observer mObserver;
-    private Handler mMainThreadHandler = new Handler(ThreadUtils.getUiThreadLooper());
+    private final Handler mMainThreadHandler = new Handler(ThreadUtils.getUiThreadLooper());
 
     /** Observer interface to receive network change events on the main thread. */
     interface Observer {

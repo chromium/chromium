@@ -36,10 +36,10 @@ public class LargeIconBridge {
     private @Nullable LruCache<GURL, CachedFavicon> mFaviconCache;
 
     private static class CachedFavicon {
-        public @Nullable Bitmap icon;
-        public int fallbackColor;
-        public boolean isFallbackColorDefault;
-        public @IconType int iconType;
+        public final @Nullable Bitmap icon;
+        public final int fallbackColor;
+        public final boolean isFallbackColorDefault;
+        public final @IconType int iconType;
 
         CachedFavicon(
                 @Nullable Bitmap newIcon,

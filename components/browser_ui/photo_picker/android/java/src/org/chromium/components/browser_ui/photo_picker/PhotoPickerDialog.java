@@ -29,10 +29,10 @@ public class PhotoPickerDialog extends FullscreenAlertDialog
         implements PhotoPickerToolbar.PhotoPickerToolbarDelegate, PhotoPicker {
 
     // The category we're showing photos for.
-    private PickerCategoryView mCategoryView;
+    private final PickerCategoryView mCategoryView;
 
     // A wrapper around the listener object, watching to see if an external intent is launched.
-    private PhotoPickerListenerWrapper mListenerWrapper;
+    private final PhotoPickerListenerWrapper mListenerWrapper;
 
     // Whether the wait for an external intent launch is over.
     private boolean mDoneWaitingForExternalIntent;
@@ -43,7 +43,7 @@ public class PhotoPickerDialog extends FullscreenAlertDialog
      */
     private static class PhotoPickerListenerWrapper implements PhotoPickerListener {
         // The {@link PhotoPickerListener} to forward the events to.
-        PhotoPickerListener mListener;
+        final PhotoPickerListener mListener;
 
         // Whether the user selected to launch an external intent.
         private boolean mExternalIntentSelected;

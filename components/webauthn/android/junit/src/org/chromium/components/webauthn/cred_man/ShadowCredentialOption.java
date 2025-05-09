@@ -54,7 +54,7 @@ public class ShadowCredentialOption {
         private String mType;
         private Bundle mCredentialRetrievalData;
         private Bundle mCandidateQueryData;
-        private Set<ComponentName> mAllowedProviders = Set.of();
+        private final Set<ComponentName> mAllowedProviders = Set.of();
 
         @Implementation
         protected void __constructor__(

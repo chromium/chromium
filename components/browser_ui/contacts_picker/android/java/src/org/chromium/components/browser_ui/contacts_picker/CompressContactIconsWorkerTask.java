@@ -24,11 +24,11 @@ import java.util.Set;
 /** A worker task to retrieve images for contacts. */
 @NullMarked
 public class CompressContactIconsWorkerTask extends AsyncTask<Void> {
-    private ContentResolver mContentResolver;
-    private Set<String> mNoIconIds;
-    private HashMap<String, Bitmap> mBitmaps;
-    private List<ContactDetails> mSelectedContacts;
-    private CompressContactIconsCallback mCallback;
+    private final ContentResolver mContentResolver;
+    private final Set<String> mNoIconIds;
+    private final HashMap<String, Bitmap> mBitmaps;
+    private final List<ContactDetails> mSelectedContacts;
+    private final CompressContactIconsCallback mCallback;
 
     public static boolean sDisableForTesting;
 

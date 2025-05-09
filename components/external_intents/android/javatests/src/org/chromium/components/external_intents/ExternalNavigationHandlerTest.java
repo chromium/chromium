@@ -2962,9 +2962,9 @@ public class ExternalNavigationHandlerTest {
     }
 
     private static class IntentActivity {
-        private String mUrlPrefix;
-        private String mPackageName;
-        private boolean mIsExported;
+        private final String mUrlPrefix;
+        private final String mPackageName;
+        private final boolean mIsExported;
         private boolean mIsNotSpecialized;
 
         public IntentActivity(String urlPrefix, String packageName) {
@@ -3425,7 +3425,7 @@ public class ExternalNavigationHandlerTest {
 
         private String mReferrerWebappPackageName;
 
-        private ArrayList<IntentActivity> mIntentActivities = new ArrayList<IntentActivity>();
+        private final ArrayList<IntentActivity> mIntentActivities = new ArrayList<IntentActivity>();
         private boolean mCanResolveActivityForExternalSchemes = true;
         private boolean mCanResolveActivityForMarket = true;
         public boolean mIsChromeAppInForeground = true;
@@ -3468,7 +3468,7 @@ public class ExternalNavigationHandlerTest {
         private boolean mChromeAppInForegroundRequired = true;
         private boolean mIsBackgroundTabNavigation;
         private boolean mHasUserGesture;
-        private RedirectHandler mRedirectHandler;
+        private final RedirectHandler mRedirectHandler;
         private boolean mIsRendererInitiated = true;
         private boolean mIsMainFrame = true;
         private boolean mIsInitialNavigationInFrame;
@@ -3632,7 +3632,7 @@ public class ExternalNavigationHandlerTest {
     }
 
     private static class TestPackageManager extends MockPackageManager {
-        private TestExternalNavigationDelegate mDelegate;
+        private final TestExternalNavigationDelegate mDelegate;
 
         public TestPackageManager(TestExternalNavigationDelegate delegate) {
             mDelegate = delegate;
@@ -3651,7 +3651,7 @@ public class ExternalNavigationHandlerTest {
     }
 
     private static class TestContext extends ContextWrapper {
-        private PackageManager mPackageManager;
+        private final PackageManager mPackageManager;
 
         public TestContext(Context baseContext, TestExternalNavigationDelegate delegate) {
             super(baseContext);

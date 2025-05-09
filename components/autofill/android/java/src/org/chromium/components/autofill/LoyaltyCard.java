@@ -17,12 +17,12 @@ import java.util.List;
 @JNINamespace("autofill")
 @NullMarked
 public class LoyaltyCard {
-    private String mLoyaltyCardId;
-    private String mMerchantName;
-    private String mProgramName;
-    private GURL mProgramLogo;
-    private String mLoyaltyCardNumber;
-    private List<GURL> mMerchantDomains;
+    private final String mLoyaltyCardId;
+    private final String mMerchantName;
+    private final String mProgramName;
+    private final GURL mProgramLogo;
+    private final String mLoyaltyCardNumber;
+    private final List<GURL> mMerchantDomains;
 
     @CalledByNative
     public LoyaltyCard(

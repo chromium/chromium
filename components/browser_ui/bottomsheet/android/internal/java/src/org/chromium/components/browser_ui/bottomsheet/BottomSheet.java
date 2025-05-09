@@ -101,7 +101,7 @@ class BottomSheet extends FrameLayout
     private ViewGroup mSheetContainer;
 
     /** For detecting scroll and fling events on the bottom sheet. */
-    private BottomSheetSwipeDetector mGestureDetector;
+    private final BottomSheetSwipeDetector mGestureDetector;
 
     /** The animator used to move the sheet to a fixed state when released by the user. */
     private @Nullable ValueAnimator mSettleAnimator;
@@ -175,7 +175,7 @@ class BottomSheet extends FrameLayout
      */
     public static class ShadowLayerView extends View {
         /** The length of the shadow in any direction. */
-        private int mShadowLength;
+        private final int mShadowLength;
 
         /** Constructor to inflate from XML. */
         public ShadowLayerView(Context context, AttributeSet atts) {

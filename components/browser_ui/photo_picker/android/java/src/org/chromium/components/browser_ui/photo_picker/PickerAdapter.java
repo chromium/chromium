@@ -32,7 +32,7 @@ public class PickerAdapter extends Adapter<ViewHolder> {
     }
 
     // The category view to use to show the images.
-    private PickerCategoryView mCategoryView;
+    private final PickerCategoryView mCategoryView;
 
     // How many times the (high-res) cache was useful.
     @DecodeActions private int mCacheHits;

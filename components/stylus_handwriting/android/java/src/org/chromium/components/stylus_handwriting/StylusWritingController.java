@@ -24,7 +24,7 @@ public class StylusWritingController {
     private @Nullable PointerIcon mHandwritingIcon;
     private @Nullable StylusApiOption mStylusHandler;
     private boolean mIconFetched;
-    private boolean mLazyFetchHandWritingIconFeatureEnabled;
+    private final boolean mLazyFetchHandWritingIconFeatureEnabled;
     private boolean mShouldOverrideStylusHoverIcon;
     private boolean mIsWindowFocused;
 

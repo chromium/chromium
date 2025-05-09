@@ -21,7 +21,7 @@ class PlayerUserActionRecorder {
     private static final String ACTION_LONG_PRESS = "PaintPreview.Player.LongPress";
 
     private static final long NO_RECORD_WINDOW_MS = (long) (.5 * 1000);
-    private static Map<String, Long> sLastRecordMap = new HashMap<>();
+    private static final Map<String, Long> sLastRecordMap = new HashMap<>();
 
     private static boolean shouldNotRecord(String action) {
         long nowMs = System.currentTimeMillis();

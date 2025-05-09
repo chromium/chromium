@@ -53,7 +53,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(PAUSED)
 public class MessageAnimationCoordinatorUnitTest {
-    private MessageQueueDelegate mQueueDelegate =
+    private final MessageQueueDelegate mQueueDelegate =
             Mockito.spy(
                     new MessageQueueDelegate() {
                         @Override

@@ -26,7 +26,7 @@ import java.util.HashMap;
 public class AccountInfo extends CoreAccountInfo {
     /** Used to instantiate `AccountInfo`. */
     public static class Builder {
-        private CoreAccountInfo mCoreAccountInfo;
+        private final CoreAccountInfo mCoreAccountInfo;
         private String mFullName = "";
         private String mGivenName = "";
         private @Nullable String mHostedDomain;
@@ -99,7 +99,7 @@ public class AccountInfo extends CoreAccountInfo {
     private final @Nullable String mHostedDomain;
 
     private final @Nullable Bitmap mAccountImage;
-    private AccountCapabilities mAccountCapabilities;
+    private final AccountCapabilities mAccountCapabilities;
 
     /** Used from JNI to marshal `AccountInfo` from C++ to Java. */
     @CalledByNative

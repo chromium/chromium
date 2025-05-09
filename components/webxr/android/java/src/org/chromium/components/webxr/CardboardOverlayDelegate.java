@@ -40,8 +40,8 @@ public class CardboardOverlayDelegate
                     | View.SYSTEM_UI_FLAG_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
-    private Activity mActivity;
-    private VrCompositorDelegate mCompositorDelegate;
+    private final Activity mActivity;
+    private final VrCompositorDelegate mCompositorDelegate;
 
     private @Nullable View mCardboardView;
 

@@ -34,7 +34,7 @@ public class OnscreenContentProvider {
     private static final String TAG = "ContentCapture";
     private long mNativeOnscreenContentProviderAndroid;
 
-    private ArrayList<ContentCaptureConsumer> mContentCaptureConsumers = new ArrayList<>();
+    private final ArrayList<ContentCaptureConsumer> mContentCaptureConsumers = new ArrayList<>();
 
     private WeakReference<WebContents> mWebContents;
 

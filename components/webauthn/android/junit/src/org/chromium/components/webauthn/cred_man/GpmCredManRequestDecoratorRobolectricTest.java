@@ -38,12 +38,12 @@ public class GpmCredManRequestDecoratorRobolectricTest {
     private static final String ORIGIN = "www.coolwebsite.com";
     private static final byte[] USER_ID = new byte[] {3, 5, 8};
 
-    private CreateCredentialRequest.Builder mBuilder =
+    private final CreateCredentialRequest.Builder mBuilder =
             Shadow.newInstanceOf(CreateCredentialRequest.Builder.class);
     @Mock private CredManCreateCredentialRequestHelper mCreateHelper;
     @Mock private CredManGetCredentialRequestHelper mGetHelper;
 
-    private GpmCredManRequestDecorator mDecorator = GpmCredManRequestDecorator.getInstance();
+    private final GpmCredManRequestDecorator mDecorator = GpmCredManRequestDecorator.getInstance();
 
     @Before
     public void setUp() throws Exception {

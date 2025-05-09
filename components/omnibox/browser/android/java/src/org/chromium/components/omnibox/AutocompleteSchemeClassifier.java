@@ -11,7 +11,7 @@ import org.chromium.build.annotations.NullMarked;
 /** Dumb wrapper around the pointer to the C++ class AutocompleteSchemeClassifier. */
 @NullMarked
 public class AutocompleteSchemeClassifier {
-    private long mNativePtr;
+    private final long mNativePtr;
 
     protected AutocompleteSchemeClassifier(long nativePtr) {
         this.mNativePtr = nativePtr;

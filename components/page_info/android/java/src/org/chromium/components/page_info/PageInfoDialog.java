@@ -55,7 +55,7 @@ public class PageInfoDialog {
     private @Nullable Animator mCurrentAnimation;
 
     private boolean mDismissWithoutAnimation;
-    private @GravityInt int mDialogPosition;
+    private final @GravityInt int mDialogPosition;
 
     /**
      * Creates a new page info dialog. The dialog can appear as a sheet (using Android dialogs) or a

@@ -26,7 +26,7 @@ import java.util.List;
 final class TestMediaRouteProvider extends MediaRouteProvider {
     private static final String TAG = "TestMRP";
 
-    private List<RoutePublisher> mRoutePublishers = new ArrayList<RoutePublisher>();
+    private final List<RoutePublisher> mRoutePublishers = new ArrayList<RoutePublisher>();
 
     public TestMediaRouteProvider(Context context) {
         super(context);

@@ -127,7 +127,7 @@ public class PickerVideoPlayer extends FrameLayout
     private @Nullable Window mWindow;
 
     // The Context to use.
-    private Context mContext;
+    private final Context mContext;
 
     // The Back button in the top corner.
     private final ImageView mBackButton;
@@ -201,7 +201,7 @@ public class PickerVideoPlayer extends FrameLayout
     private boolean mPreviousNavBarColorsSaved;
 
     // The object to convert touch events into gestures.
-    private GestureDetectorCompat mGestureDetector;
+    private final GestureDetectorCompat mGestureDetector;
 
     // An OnGestureListener class for handling double tap.
     private class DoubleTapGestureListener extends GestureDetector.SimpleOnGestureListener {

@@ -31,7 +31,7 @@ class CredManCreateCredentialRequestHelper {
     private byte @Nullable [] mUserId;
 
     static class Builder {
-        private CredManCreateCredentialRequestHelper mHelper;
+        private final CredManCreateCredentialRequestHelper mHelper;
 
         Builder(String requestAsJson, byte @Nullable [] clientDataHash) {
             mHelper = CredManCreateCredentialRequestHelper.getInstance();

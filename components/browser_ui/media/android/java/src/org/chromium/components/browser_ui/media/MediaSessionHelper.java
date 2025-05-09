@@ -51,11 +51,11 @@ public class MediaSessionHelper implements MediaImageCallback {
     private static final String UNICODE_PLAY_CHARACTER = "\u25B6";
     @VisibleForTesting public static final int HIDE_NOTIFICATION_DELAY_MILLIS = 2500;
 
-    private Delegate mDelegate;
+    private final Delegate mDelegate;
     private @Nullable WebContents mWebContents;
     @VisibleForTesting public @Nullable WebContentsObserver mWebContentsObserver;
     @VisibleForTesting public @Nullable MediaSessionObserver mMediaSessionObserver;
-    private MediaImageManager mMediaImageManager;
+    private final MediaImageManager mMediaImageManager;
     private @Nullable Bitmap mPageMediaImage;
     @VisibleForTesting public @Nullable Bitmap mFavicon;
     private @Nullable Bitmap mCurrentMediaImage;
@@ -72,7 +72,7 @@ public class MediaSessionHelper implements MediaImageCallback {
     private @Nullable MediaMetadata mCurrentMetadata;
     private Set<Integer> mMediaSessionActions = Collections.emptySet();
     private @Nullable MediaPosition mMediaPosition;
-    private Handler mHandler;
+    private final Handler mHandler;
     // The delayed task to hide notification. Hiding notification can be immediate or delayed.
     // Delayed hiding will schedule this delayed task to |mHandler|. The task will be canceled when
     // showing or immediate hiding.
@@ -83,7 +83,7 @@ public class MediaSessionHelper implements MediaImageCallback {
     // static getter {@link MediaSession#fromWebContents()}.
     @VisibleForTesting public static @Nullable MediaSession sOverriddenMediaSession;
 
-    private MediaNotificationListener mControlsListener =
+    private final MediaNotificationListener mControlsListener =
             new MediaNotificationListener() {
                 @Override
                 public void onPlay(int actionSource) {

@@ -34,17 +34,17 @@ class FetchIconWorkerTask extends AsyncTask<@Nullable Bitmap> {
     }
 
     // The ID of the contact to look up.
-    private String mContactId;
+    private final String mContactId;
 
     // If positive, the returned icon will be scaled to this size, measured along one side of a
     // square, in pixels. Otherwise, the returned image will be returned as-is.
     private int mDesiredIconSize;
 
     // The content resolver to use for looking up
-    private ContentResolver mContentResolver;
+    private final ContentResolver mContentResolver;
 
     // The callback to use to communicate the results.
-    private IconRetrievedCallback mCallback;
+    private final IconRetrievedCallback mCallback;
 
     /**
      * A FetchIconWorkerTask constructor.

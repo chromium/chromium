@@ -25,7 +25,7 @@ import java.util.ArrayList;
 @NullMarked
 public class OfflineContentAggregatorBridge implements OfflineContentProvider {
     private long mNativeOfflineContentAggregatorBridge;
-    private ObserverList<OfflineContentProvider.Observer> mObservers;
+    private final ObserverList<OfflineContentProvider.Observer> mObservers;
 
     /**
      * A private constructor meant to be called by the C++ OfflineContentAggregatorBridge.

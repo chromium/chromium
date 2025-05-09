@@ -29,7 +29,7 @@ public class AddToHomescreenMediatorTest {
     @Mock private AddToHomescreenMediator.Natives mNativeMock;
     @Mock private WindowAndroid mWindowAndroid;
 
-    private PropertyModel mPropertyModel =
+    private final PropertyModel mPropertyModel =
             new PropertyModel.Builder(AddToHomescreenProperties.ALL_KEYS).build();
 
     private static final long NATIVE_POINTER = 12;

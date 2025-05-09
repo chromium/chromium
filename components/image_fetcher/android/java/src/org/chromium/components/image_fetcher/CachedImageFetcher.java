@@ -72,7 +72,7 @@ public class CachedImageFetcher extends ImageFetcher {
         }
     }
 
-    private ImageLoader mImageLoader;
+    private final ImageLoader mImageLoader;
 
     /**
      * Creates a CachedImageFetcher with the given bridge.

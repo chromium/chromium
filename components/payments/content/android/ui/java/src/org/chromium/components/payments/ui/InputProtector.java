@@ -21,7 +21,7 @@ public class InputProtector {
         long currentTimeMillis();
     }
 
-    private Clock mClock;
+    private final Clock mClock;
     private long mShowTime;
 
     public InputProtector() {

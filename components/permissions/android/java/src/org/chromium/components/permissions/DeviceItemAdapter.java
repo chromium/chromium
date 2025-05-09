@@ -34,8 +34,8 @@ public class DeviceItemAdapter extends ArrayAdapter<DeviceItemRow>
         implements AdapterView.OnItemClickListener {
     /** Item holder for performance boost. */
     private static class ViewHolder {
-        private TextView mTextView;
-        private @Nullable ImageView mImageView;
+        private final TextView mTextView;
+        private final @Nullable ImageView mImageView;
 
         public ViewHolder(View view) {
             mImageView = (ImageView) view.findViewById(R.id.icon);
@@ -67,10 +67,10 @@ public class DeviceItemAdapter extends ArrayAdapter<DeviceItemRow>
     private int mSelectedItem = ListView.INVALID_POSITION;
 
     // Item descriptions are counted in a map.
-    private Map<String, Integer> mItemDescriptionMap = new HashMap<>();
+    private final Map<String, Integer> mItemDescriptionMap = new HashMap<>();
 
     // Map of keys to items so that we can access the items in O(1).
-    private Map<String, DeviceItemRow> mKeyToItemMap = new HashMap<>();
+    private final Map<String, DeviceItemRow> mKeyToItemMap = new HashMap<>();
 
     // True when there is at least one row with an icon.
     private boolean mHasIcon;

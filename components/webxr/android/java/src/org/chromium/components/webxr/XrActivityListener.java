@@ -33,8 +33,8 @@ public class XrActivityListener implements ActivityLifecycleCallbacks {
     private static final boolean DEBUG_LOGS = false;
 
     private long mNativeXrActivityListener;
-    private ImmutableWeakReference<Activity> mWeakActivity;
-    private ImmutableWeakReference<Application> mWeakApplication;
+    private final ImmutableWeakReference<Activity> mWeakActivity;
+    private final ImmutableWeakReference<Application> mWeakApplication;
 
     /**
      * Constructs a new XrActivityListener. This listener will listen for events on the Activity

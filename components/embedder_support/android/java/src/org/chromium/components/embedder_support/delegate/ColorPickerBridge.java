@@ -26,7 +26,7 @@ import org.chromium.ui.base.WindowAndroid;
 @JNINamespace("web_contents_delegate_android")
 @NullMarked
 public class ColorPickerBridge {
-    private long mNativeDialog;
+    private final long mNativeDialog;
     private final ColorPickerCoordinator mColorPickerCoordinator;
 
     @CalledByNative

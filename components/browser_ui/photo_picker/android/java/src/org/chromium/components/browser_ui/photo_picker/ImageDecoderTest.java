@@ -63,7 +63,7 @@ public class ImageDecoderTest {
     }
 
     IDecoderService mIRemoteService;
-    private ServiceConnection mConnection =
+    private final ServiceConnection mConnection =
             new ServiceConnection() {
                 @Override
                 public void onServiceConnected(ComponentName className, IBinder service) {

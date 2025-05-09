@@ -29,7 +29,7 @@ import java.util.Map;
 public class AutofillProfile {
     private String mGUID;
     private @RecordType int mRecordType;
-    private Map<Integer, ValueWithStatus> mFields;
+    private final Map<Integer, ValueWithStatus> mFields;
     private @Nullable String mLabel;
     private String mLanguageCode;
 

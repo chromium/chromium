@@ -34,7 +34,7 @@ public abstract class CheckableSelectableItemView<E> extends SelectableItemViewB
     private final AnimatedVectorDrawableCompat mCheckDrawable;
 
     /** The color state list for the start icon view when the item is selected. */
-    private ColorStateList mIconSelectedColorList;
+    private final ColorStateList mIconSelectedColorList;
 
     /** Drawable for the start icon */
     private @Nullable Drawable mIconDrawable;

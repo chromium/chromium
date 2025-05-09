@@ -86,7 +86,7 @@ public class PageInfoController
     @ContentSettingsType.EnumType
     public static final int NO_HIGHLIGHTED_PERMISSION = ContentSettingsType.DEFAULT;
 
-    private Context mContext;
+    private final Context mContext;
     private final WindowAndroid mWindowAndroid;
     private final WebContents mWebContents;
     private final PageInfoControllerDelegate mDelegate;
@@ -95,27 +95,27 @@ public class PageInfoController
     private long mNativePageInfoController;
 
     // The main PageInfo view.
-    private PageInfoView mView;
+    private final PageInfoView mView;
 
     // The view inside the popup.
-    private PageInfoContainer mContainer;
+    private final PageInfoContainer mContainer;
 
     // The dialog the view is placed in.
     private @Nullable PageInfoDialog mDialog;
 
     // The full URL from the URL bar, which is copied to the user's clipboard when they select 'Copy
     // URL'.
-    private GURL mFullUrl;
+    private final GURL mFullUrl;
 
     // Whether or not this page is an internal chrome page (e.g. the
     // chrome://settings page).
-    private boolean mIsInternalPage;
+    private final boolean mIsInternalPage;
 
     // The security level of the page (a valid ConnectionSecurityLevel).
-    private @ConnectionSecurityLevel int mSecurityLevel;
+    private final @ConnectionSecurityLevel int mSecurityLevel;
 
     // Observer for dismissing dialog if web contents get destroyed, navigate etc.
-    private WebContentsObserver mWebContentsObserver;
+    private final WebContentsObserver mWebContentsObserver;
 
     // A task that should be run once the page info popup is animated out and dismissed. Null if no
     // task is pending.
@@ -131,16 +131,16 @@ public class PageInfoController
     private @Nullable PageInfoSubpageController mCurrentSubpageController;
 
     // The controller for the connection section of the page info.
-    private PageInfoConnectionController mConnectionController;
+    private final PageInfoConnectionController mConnectionController;
 
     // The controller for the permissions section of the page info.
-    private PageInfoPermissionsController mPermissionsController;
+    private final PageInfoPermissionsController mPermissionsController;
 
     // The controller for the cookies section of the page info.
-    private @Nullable PageInfoCookiesController mCookiesController;
+    private final @Nullable PageInfoCookiesController mCookiesController;
 
     // All subpage controllers.
-    private Collection<PageInfoSubpageController> mSubpageControllers;
+    private final Collection<PageInfoSubpageController> mSubpageControllers;
 
     /**
      * Creates the PageInfoController, but does not display it. Also initializes the corresponding

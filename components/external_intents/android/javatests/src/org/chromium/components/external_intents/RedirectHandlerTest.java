@@ -44,7 +44,7 @@ public class RedirectHandlerTest {
     private static Intent sMoblieYtIntent;
     private static Intent sFooIntent;
 
-    private Function<Intent, List<ResolveInfo>> mQueryIntentFunction =
+    private final Function<Intent, List<ResolveInfo>> mQueryIntentFunction =
             (Intent intent) -> queryIntentActivities(intent);
 
     private Context mContextToRestore;

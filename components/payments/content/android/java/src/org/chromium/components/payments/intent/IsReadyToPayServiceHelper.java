@@ -37,9 +37,9 @@ public class IsReadyToPayServiceHelper extends IsReadyToPayServiceCallback.Stub
 
     private boolean mIsServiceBindingInitiated;
     private boolean mIsServiceConnected;
-    private Handler mHandler;
-    private Intent mIsReadyToPayIntent;
-    private String mServiceName;
+    private final Handler mHandler;
+    private final Intent mIsReadyToPayIntent;
+    private final String mServiceName;
 
     /** The callback that returns the result (success or error) to the helper's caller. */
     public interface ResultHandler {

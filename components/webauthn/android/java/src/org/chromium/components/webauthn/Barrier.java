@@ -38,7 +38,7 @@ public class Barrier {
         BOTH,
     }
 
-    private Callback<Integer> mErrorCallback;
+    private final Callback<Integer> mErrorCallback;
     @Nullable private Runnable mFido2ApiRunnable;
     @Nullable private Runnable mCredManRunnable;
     private Status mFido2ApiStatus;

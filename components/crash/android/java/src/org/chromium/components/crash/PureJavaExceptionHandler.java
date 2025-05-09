@@ -21,7 +21,7 @@ public class PureJavaExceptionHandler implements Thread.UncaughtExceptionHandler
     private final Thread.UncaughtExceptionHandler mParent;
     private boolean mHandlingException;
     private static boolean sIsEnabled = true;
-    private JavaExceptionReporterFactory mReporterFactory;
+    private final JavaExceptionReporterFactory mReporterFactory;
 
     /** Interface to allow uploading reports. */
     public interface JavaExceptionReporter {

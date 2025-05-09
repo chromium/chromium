@@ -94,7 +94,7 @@ public class FontPreloadingWorkaround {
     }
 
     private static class PackageManagerWrapper implements InvocationHandler {
-        Object mRealPackageManager;
+        final Object mRealPackageManager;
 
         public PackageManagerWrapper(Object realPackageManager) {
             mRealPackageManager = realPackageManager;

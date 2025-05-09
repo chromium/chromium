@@ -32,7 +32,7 @@ import org.chromium.build.annotations.Nullable;
  */
 @NullMarked
 public class ChromeBasePreference extends Preference {
-    private @Nullable ColorStateList mIconTint;
+    private final @Nullable ColorStateList mIconTint;
     private @Nullable ManagedPreferenceDelegate mManagedPrefDelegate;
 
     /** Indicates if the preference uses a custom layout. */
@@ -42,7 +42,7 @@ public class ChromeBasePreference extends Preference {
     private @Nullable Boolean mDividerAllowedAbove;
 
     private @Nullable Boolean mDividerAllowedBelow;
-    private @Nullable String mUserAction;
+    private final @Nullable String mUserAction;
 
     /** Constructor for use in Java. */
     public ChromeBasePreference(Context context) {

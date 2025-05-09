@@ -52,7 +52,7 @@ public class BrowserUiListMenuRenderTest {
     /** Used to run a test only with night mode. */
     public static class NightModeOnlyParameterProvider implements ParameterProvider {
 
-        private static List<ParameterSet> sNightModeOnly =
+        private static final List<ParameterSet> sNightModeOnly =
                 Collections.singletonList(new ParameterSet().value(true).name("NightModeEnabled"));
 
         @Override

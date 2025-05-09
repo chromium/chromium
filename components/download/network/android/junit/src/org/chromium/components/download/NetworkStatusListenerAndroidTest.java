@@ -38,7 +38,7 @@ public class NetworkStatusListenerAndroidTest {
 
     private static class TestAutoDetectFactory
             extends BackgroundNetworkStatusListener.AutoDetectFactory {
-        private NetworkChangeNotifierAutoDetect mAutoDetect;
+        private final NetworkChangeNotifierAutoDetect mAutoDetect;
 
         TestAutoDetectFactory(NetworkChangeNotifierAutoDetect autoDetect) {
             mAutoDetect = autoDetect;

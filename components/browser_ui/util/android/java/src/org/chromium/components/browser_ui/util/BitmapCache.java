@@ -76,7 +76,7 @@ public class BitmapCache {
      * Static cache used for deduplicating bitmaps. The key is a pair of file name and thumbnail
      * size (as for the {@link #mBitmapCache}.
      */
-    private static Map<String, WeakReference<Bitmap>> sDeduplicationCache = new HashMap<>();
+    private static final Map<String, WeakReference<Bitmap>> sDeduplicationCache = new HashMap<>();
 
     private static int sUsageCount;
 

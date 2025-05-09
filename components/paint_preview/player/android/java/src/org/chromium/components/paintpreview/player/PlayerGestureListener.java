@@ -15,8 +15,8 @@ import org.chromium.url.GURL;
  */
 @NullMarked
 public class PlayerGestureListener {
-    private Runnable mUserInteractionCallback;
-    private LinkClickHandler mLinkClickHandler;
+    private final Runnable mUserInteractionCallback;
+    private final LinkClickHandler mLinkClickHandler;
     private @Nullable PlayerUserFrustrationDetector mUserFrustrationDetector;
 
     public PlayerGestureListener(

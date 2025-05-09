@@ -64,7 +64,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
     private @Nullable Origin mOrigin;
 
     /** The origin of the main frame. */
-    private @Nullable Origin mTopOrigin;
+    private final @Nullable Origin mTopOrigin;
 
     /** The payment information to be added to the "clientDataJson". */
     private @Nullable PaymentOptions mPayment;
@@ -72,7 +72,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
     private @Nullable MakeCredential_Response mMakeCredentialCallback;
     private @Nullable GetCredential_Response mGetCredentialCallback;
     private @Nullable Fido2CredentialRequest mPendingFido2CredentialRequest;
-    private Set<Fido2CredentialRequest> mUnclosedFido2CredentialRequests = new HashSet<>();
+    private final Set<Fido2CredentialRequest> mUnclosedFido2CredentialRequests = new HashSet<>();
 
     // Information about the request cached here for metric reporting purposes.
     private boolean mIsConditionalRequest;

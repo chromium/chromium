@@ -58,22 +58,22 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
     private float mContextMenuSourceYPx;
     private int mContextMenuFirstLocationYPx;
     private @Nullable AnchoredPopupWindow mPopupWindow;
-    private View mLayout;
+    private final View mLayout;
     private @Nullable OnLayoutChangeListener mOnLayoutChangeListener;
     private @Nullable DragEventDispatchHelper mDragEventDispatchHelper;
-    private Rect mRect;
+    private final Rect mRect;
 
-    private int mTopMarginPx;
-    private int mBottomMarginPx;
+    private final int mTopMarginPx;
+    private final int mBottomMarginPx;
 
-    private @Nullable Integer mPopupMargin;
-    private @Nullable Integer mDesiredPopupContentWidth;
+    private final @Nullable Integer mPopupMargin;
+    private final @Nullable Integer mDesiredPopupContentWidth;
 
     /**
      * View that is showing behind the context menu. If menu is shown as a popup without scrim, this
      * view will be used to dispatch touch events other than ACTION_DOWN.
      */
-    private @Nullable View mTouchEventDelegateView;
+    private final @Nullable View mTouchEventDelegateView;
 
     /**
      * Creates an instance of the ContextMenuDialog.

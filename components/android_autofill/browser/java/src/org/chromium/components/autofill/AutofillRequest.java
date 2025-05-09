@@ -39,7 +39,7 @@ public class AutofillRequest {
 
     private static final String TAG = "AutofillRequest";
 
-    private FormData mFormData;
+    private final FormData mFormData;
     private @Nullable FocusField mFocusField;
     private @Nullable AutofillHintsService mAutofillHintsService;
 

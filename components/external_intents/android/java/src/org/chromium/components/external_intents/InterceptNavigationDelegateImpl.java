@@ -126,7 +126,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
 
     private static final long DEFER_NAVIGATION_TIMEOUT_MILLIS = 5000;
 
-    private InterceptNavigationDelegateClient mClient;
+    private final InterceptNavigationDelegateClient mClient;
     private static @Nullable Callback<Pair<GURL, OverrideUrlLoadingResult>>
             sResultCallbackForTesting;
 

@@ -99,7 +99,7 @@ public class OmniboxUrlEmphasizer {
     @VisibleForTesting
     public static class UrlEmphasisColorSpan extends ForegroundColorSpan
             implements UrlEmphasisSpan {
-        private int mEmphasisColor;
+        private final int mEmphasisColor;
 
         /** @param color The color to set the text. */
         public UrlEmphasisColorSpan(int color) {

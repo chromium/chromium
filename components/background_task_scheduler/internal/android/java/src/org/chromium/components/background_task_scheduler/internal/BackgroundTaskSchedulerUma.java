@@ -30,8 +30,8 @@ public class BackgroundTaskSchedulerUma extends BackgroundTaskSchedulerExternalU
 
     private static class CachedUmaEntry {
         private static final String SEPARATOR = ":";
-        private String mEvent;
-        private int mValue;
+        private final String mEvent;
+        private final int mValue;
         private int mCount;
 
         /**

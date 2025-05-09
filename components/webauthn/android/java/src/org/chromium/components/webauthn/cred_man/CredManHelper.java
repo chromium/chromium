@@ -70,13 +70,13 @@ public class CredManHelper {
     private static final String TAG = "CredManHelper";
 
     private @Nullable Barrier mBarrier;
-    private boolean mPlayServicesAvailable;
+    private final boolean mPlayServicesAvailable;
     private boolean mRequestPasswords;
     private final AuthenticationContextProvider mAuthenticationContextProvider;
     private final WebauthnBrowserBridge.Provider mBridgeProvider;
     private byte @Nullable [] mClientDataJson;
     private ConditionalUiState mConditionalUiState = ConditionalUiState.NONE;
-    private @Nullable CredManRequestDecorator mCredManRequestDecorator;
+    private final @Nullable CredManRequestDecorator mCredManRequestDecorator;
     private CredManMetricsHelper mMetricsHelper;
     private @Nullable Runnable mNoCredentialsFallback;
 

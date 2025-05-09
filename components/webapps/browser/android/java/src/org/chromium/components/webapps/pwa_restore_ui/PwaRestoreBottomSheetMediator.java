@@ -32,7 +32,7 @@ class PwaRestoreBottomSheetMediator {
     // The callback for the parent to get notified on when Restore is clicked.
     private final Runnable mParentRestoreClickHandler;
 
-    private long mNativeMediator;
+    private final long mNativeMediator;
 
     PwaRestoreBottomSheetMediator(
             ArrayList apps,

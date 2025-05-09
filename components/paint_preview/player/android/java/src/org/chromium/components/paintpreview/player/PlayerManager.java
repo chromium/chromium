@@ -78,19 +78,19 @@ public class PlayerManager {
     private static PlayerCompositorDelegate.Factory sCompositorDelegateFactory =
             new CompositorDelegateFactory();
 
-    private Context mContext;
+    private final Context mContext;
     private PlayerCompositorDelegate mDelegate;
 
     private @Nullable PaintPreviewFrame mRootFrameData;
 
     private @Nullable PlayerFrameCoordinator mRootFrameCoordinator;
 
-    private FrameLayout mHostView;
+    private final FrameLayout mHostView;
     private static final String sInitEvent = "paint_preview PlayerManager init";
-    private PlayerSwipeRefreshHandler mPlayerSwipeRefreshHandler;
-    private PlayerGestureListener mPlayerGestureListener;
-    private boolean mIgnoreInitialScrollOffset;
-    private Listener mListener;
+    private final PlayerSwipeRefreshHandler mPlayerSwipeRefreshHandler;
+    private final PlayerGestureListener mPlayerGestureListener;
+    private final boolean mIgnoreInitialScrollOffset;
+    private final Listener mListener;
     private long mNativeAxTree;
     private @Nullable PlayerAccessibilityDelegate mAccessibilityDelegate;
     private @Nullable WebContentsAccessibilityImpl mWebContentsAccessibility;

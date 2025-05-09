@@ -31,8 +31,8 @@ public class ArCoreInstallUtils {
      */
     private static class InstallRequest implements ActivityLifecycleCallbacks {
         private @Nullable ArCoreInstallUtils mInstallInstance;
-        private ImmutableWeakReference<Activity> mWeakActivity;
-        private ImmutableWeakReference<Application> mWeakApplication;
+        private final ImmutableWeakReference<Activity> mWeakActivity;
+        private final ImmutableWeakReference<Application> mWeakApplication;
 
         public InstallRequest(ArCoreInstallUtils instance, Activity activity) {
             this.mInstallInstance = instance;

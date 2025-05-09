@@ -18,15 +18,15 @@ import org.chromium.components.sync.protocol.GroupData;
 public class DataSharingJoinUiConfig {
 
     // --- Group related Info ---
-    private @Nullable GroupToken mGroupToken;
+    private final @Nullable GroupToken mGroupToken;
 
     // --- Tab Group Details ---
-    private @Nullable Bitmap mPreviewImage;
-    private @Nullable SharedDataPreview mSharedDataPreview;
+    private final @Nullable Bitmap mPreviewImage;
+    private final @Nullable SharedDataPreview mSharedDataPreview;
 
     // --- Join Usage Config ---
-    private @Nullable JoinCallback mJoinCallback;
-    private @Nullable DataSharingUiConfig mCommonConfig;
+    private final @Nullable JoinCallback mJoinCallback;
+    private final @Nullable DataSharingUiConfig mCommonConfig;
 
     /** Callback interface for data sharing join UI events. */
     public interface JoinCallback {

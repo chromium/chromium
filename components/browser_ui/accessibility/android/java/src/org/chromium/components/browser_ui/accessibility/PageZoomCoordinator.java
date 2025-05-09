@@ -37,7 +37,7 @@ public class PageZoomCoordinator {
 
     private @Nullable WebContentsObserver mWebContentsObserver;
     private int mBottomControlsOffset;
-    private Runnable mDismissalCallback;
+    private final Runnable mDismissalCallback;
 
     private @Nullable View mView;
     private @Nullable BrowserContextHandle mBrowserContextHandle;

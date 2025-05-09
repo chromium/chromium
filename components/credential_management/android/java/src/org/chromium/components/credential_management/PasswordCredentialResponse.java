@@ -17,9 +17,9 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 @JNINamespace("credential_management")
 public class PasswordCredentialResponse {
-    private boolean mSuccess;
-    private String mUsername;
-    private String mPassword;
+    private final boolean mSuccess;
+    private final String mUsername;
+    private final String mPassword;
 
     @CalledByNative
     public PasswordCredentialResponse(

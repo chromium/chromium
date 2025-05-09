@@ -151,7 +151,7 @@ public class XrImmersiveOverlay
 
     private class XrSurfaceView {
         private @Nullable SurfaceView mSurfaceView;
-        private WebContentsObserver mWebContentsObserver;
+        private final WebContentsObserver mWebContentsObserver;
         private boolean mSurfaceViewNeedsDestruction;
         private boolean mDestructionFromVisibilityChanged;
 

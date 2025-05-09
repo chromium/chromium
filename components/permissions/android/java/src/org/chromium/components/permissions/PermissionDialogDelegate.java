@@ -37,7 +37,7 @@ public class PermissionDialogDelegate {
     private @Nullable PermissionDialogController mDialogController;
 
     /** The window for which to create the dialog. */
-    private WindowAndroid mWindow;
+    private final WindowAndroid mWindow;
 
     /** The icon to display in the dialog. */
     private int mDrawableId;
@@ -70,7 +70,7 @@ public class PermissionDialogDelegate {
      * Defines a (potentially empty) list of ranges represented as pairs of <startIndex, endIndex>,
      * which shall be used by the UI to format the specified ranges as bold text.
      */
-    private List<Pair<Integer, Integer>> mBoldedRanges = new ArrayList<>();
+    private final List<Pair<Integer, Integer>> mBoldedRanges = new ArrayList<>();
 
     public WindowAndroid getWindow() {
         return mWindow;

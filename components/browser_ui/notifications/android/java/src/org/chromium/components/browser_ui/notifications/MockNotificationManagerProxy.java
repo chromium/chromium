@@ -61,7 +61,7 @@ public class MockNotificationManagerProxy implements NotificationManagerProxy {
 
     private int mMutationCount;
 
-    private boolean mNotificationsEnabled = true;
+    private final boolean mNotificationsEnabled = true;
 
     public MockNotificationManagerProxy() {
         mNotifications = new LinkedHashMap<>();

@@ -13,9 +13,12 @@ import org.chromium.build.annotations.NullMarked;
 /** Centralizes UMA data collection for Page Zoom. */
 @NullMarked
 public class PageZoomUma {
-    private static int sMinZoomValue = (int) (PageZoomUtils.PAGE_ZOOM_MINIMUM_ZOOM_LEVEL * 100);
-    private static int sMaxZoomValue = (int) (PageZoomUtils.PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL * 100);
-    private static int sZoomValueBucketCount = (int) ((sMaxZoomValue - sMinZoomValue) / 5) + 2;
+    private static final int sMinZoomValue =
+            (int) (PageZoomUtils.PAGE_ZOOM_MINIMUM_ZOOM_LEVEL * 100);
+    private static final int sMaxZoomValue =
+            (int) (PageZoomUtils.PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL * 100);
+    private static final int sZoomValueBucketCount =
+            (int) ((sMaxZoomValue - sMinZoomValue) / 5) + 2;
 
     // AccessibilityPageZoomAppMenuEnabledState defined in
     // tools/metrics/histograms/metadata/accessibility/enums.xml.

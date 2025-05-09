@@ -31,11 +31,11 @@ import java.util.List;
 /** Sets up the view and the logic behind it for a Paint Preview frame. */
 @NullMarked
 public class PlayerFrameCoordinator {
-    private PlayerFrameMediator mMediator;
+    private final PlayerFrameMediator mMediator;
     private @Nullable PlayerFrameScaleController mScaleController;
-    private PlayerFrameScrollController mScrollController;
-    private PlayerFrameView mView;
-    private List<PlayerFrameCoordinator> mSubFrames = new ArrayList<>();
+    private final PlayerFrameScrollController mScrollController;
+    private final PlayerFrameView mView;
+    private final List<PlayerFrameCoordinator> mSubFrames = new ArrayList<>();
 
     /**
      * Creates a {@link PlayerFrameMediator} and {@link PlayerFrameView} for this component and

@@ -217,7 +217,7 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
      * content fades in.
      */
     private class FirstInfoBarAppearingAnimation extends InfoBarAnimation {
-        private InfoBarUiItem mFrontItem;
+        private final InfoBarUiItem mFrontItem;
 
         private InfoBarWrapper mFrontWrapper;
 
@@ -265,7 +265,7 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
      * will be resized simulatenously to the new desired size.
      */
     private class FrontInfoBarAppearingAnimation extends InfoBarAnimation {
-        private InfoBarUiItem mFrontItem;
+        private final InfoBarUiItem mFrontItem;
         private InfoBarWrapper mFrontWrapper;
         private InfoBarWrapper mOldFrontWrapper;
         private View mFrontContents;
@@ -363,7 +363,7 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
      * its top edge peeks out just a bit.
      */
     private class BackInfoBarAppearingAnimation extends InfoBarAnimation {
-        private InfoBarWrapper mAppearingWrapper;
+        private final InfoBarWrapper mAppearingWrapper;
 
         BackInfoBarAppearingAnimation(InfoBarUiItem appearingItem) {
             mAppearingWrapper = new InfoBarWrapper(getContext(), appearingItem);
@@ -556,7 +556,7 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
      */
     private static class FloatingBehavior {
         /** The InfoBarContainerLayout. */
-        private FrameLayout mLayout;
+        private final FrameLayout mLayout;
 
         /**
          * The max width of the infobars. If the available space is wider than this, the infobars
@@ -684,10 +684,10 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
     /** The current animation, or null if no animation is happening currently. */
     private @Nullable InfoBarAnimation mAnimation;
 
-    private FloatingBehavior mFloatingBehavior;
+    private final FloatingBehavior mFloatingBehavior;
 
     /** The runnable to make infobar container fully visible. */
-    private Runnable mMakeContainerVisibleRunnable;
+    private final Runnable mMakeContainerVisibleRunnable;
 
     /**
      * Determines whether any animations need to run in order to make the visible views match the

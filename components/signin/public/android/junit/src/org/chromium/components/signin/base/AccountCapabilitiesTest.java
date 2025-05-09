@@ -104,7 +104,7 @@ public final class AccountCapabilitiesTest {
 
     /** List of parameters to run in capability fetching tests. */
     public static class CapabilitiesTestParams implements ParameterProvider {
-        private static List<ParameterSet> sCapabilties =
+        private static final List<ParameterSet> sCapabilties =
                 Arrays.asList(
                         new ParameterSet()
                                 .name("CanHaveEmailAddressDisplayed")

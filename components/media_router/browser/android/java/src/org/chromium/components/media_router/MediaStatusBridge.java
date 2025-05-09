@@ -21,7 +21,7 @@ import org.chromium.build.annotations.Nullable;
 @JNINamespace("media_router")
 @NullMarked
 public class MediaStatusBridge {
-    private MediaStatus mStatus;
+    private final MediaStatus mStatus;
 
     public MediaStatusBridge(MediaStatus status) {
         mStatus = status;

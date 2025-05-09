@@ -33,13 +33,13 @@ public class WebsiteExceptionRowPreference extends ChromeImageViewPreference {
     // Whether the favicon has been fetched already.
     private boolean mFaviconFetchInProgress;
 
-    private Website mSite;
+    private final Website mSite;
 
-    private TrackingProtectionDelegate mDelegate;
+    private final TrackingProtectionDelegate mDelegate;
 
-    private Context mContext;
+    private final Context mContext;
 
-    private WebsiteExceptionDeletedCallback mCallback;
+    private final WebsiteExceptionDeletedCallback mCallback;
 
     private static final String ANY_SUBDOMAIN_PATTERN = "[*.]";
 

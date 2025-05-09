@@ -40,7 +40,7 @@ public class RemoteSessionManager implements DummyPlayer.Callback {
         return sInstance;
     }
 
-    private String mName;
+    private final String mName;
     private int mSessionId;
     private int mItemId;
     private boolean mPaused;
@@ -52,7 +52,7 @@ public class RemoteSessionManager implements DummyPlayer.Callback {
     private static RemoteSessionManager sInstance;
 
     private LocalSessionManager mLocalSessionManager;
-    private Context mContext;
+    private final Context mContext;
 
     private RemoteSessionManager(String name, Context context) {
         mName = name;

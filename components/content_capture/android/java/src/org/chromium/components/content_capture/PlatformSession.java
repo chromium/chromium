@@ -38,7 +38,7 @@ class PlatformSession {
         }
     }
 
-    private PlatformSessionData mRootPlatformSessionData;
+    private final PlatformSessionData mRootPlatformSessionData;
     private @Nullable HashMap<Long, PlatformSessionData> mFrameIdToPlatformSessionData;
 
     public static @Nullable PlatformSession fromView(View view) {

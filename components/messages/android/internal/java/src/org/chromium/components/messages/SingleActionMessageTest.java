@@ -57,7 +57,7 @@ public class SingleActionMessageTest {
     private static Activity sActivity;
 
     private static class MockDurationProvider implements MessageAutodismissDurationProvider {
-        private long mDuration;
+        private final long mDuration;
 
         public MockDurationProvider(long duration) {
             mDuration = duration;
@@ -77,7 +77,7 @@ public class SingleActionMessageTest {
     private CallbackHelper mPrimaryActionCallback;
     private CallbackHelper mSecondaryActionCallback;
     private CallbackHelper mDismissCallback;
-    private SingleActionMessage.DismissCallback mEmptyDismissCallback =
+    private final SingleActionMessage.DismissCallback mEmptyDismissCallback =
             (model, dismissReason) -> {};
 
     @BeforeClass

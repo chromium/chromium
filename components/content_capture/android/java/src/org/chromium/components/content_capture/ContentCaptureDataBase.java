@@ -17,7 +17,7 @@ import java.util.List;
 @NullMarked
 public abstract class ContentCaptureDataBase {
     private final long mId;
-    private Rect mBounds;
+    private final Rect mBounds;
     private @Nullable ArrayList<ContentCaptureDataBase> mChildren;
 
     public ContentCaptureDataBase(long id, Rect bounds) {

@@ -20,10 +20,10 @@ import org.chromium.build.annotations.Nullable;
 @NullMarked
 class PlayerFrameGestureDetector
         implements GestureDetector.OnGestureListener, ScaleGestureDetector.OnScaleGestureListener {
-    private GestureDetector mGestureDetector;
-    private ScaleGestureDetector mScaleGestureDetector;
-    private boolean mCanDetectZoom;
-    private PlayerFrameGestureDetectorDelegate mDelegate;
+    private final GestureDetector mGestureDetector;
+    private final ScaleGestureDetector mScaleGestureDetector;
+    private final boolean mCanDetectZoom;
+    private final PlayerFrameGestureDetectorDelegate mDelegate;
     private @Nullable PlayerFrameGestureDetector mParentGestureDetector;
 
     /**

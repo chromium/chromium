@@ -20,7 +20,7 @@ import org.chromium.components.webxr.XrSessionCoordinator.SessionType;
 public class XrDelegateImpl implements XrDelegate {
     private @SessionType int mActiveSession = SessionType.NONE;
 
-    private ObservableSupplierImpl<Boolean> mHasActiveSessionSupplier =
+    private final ObservableSupplierImpl<Boolean> mHasActiveSessionSupplier =
             new ObservableSupplierImpl<>();
 
     public XrDelegateImpl() {

@@ -122,8 +122,8 @@ public class AbstractAppRestrictionsProviderTest {
             return mLastRegisteredReceiverFlags.get();
         }
 
-        private AtomicInteger mReceiverCount;
-        private AtomicInteger mLastRegisteredReceiverFlags;
+        private final AtomicInteger mReceiverCount;
+        private final AtomicInteger mLastRegisteredReceiverFlags;
     }
 
     /** Test method for {@link AbstractAppRestrictionsProvider#refresh()}. */

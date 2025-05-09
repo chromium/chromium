@@ -122,9 +122,9 @@ public class PwaBottomSheetController
 
     /** The Adapter for the view's Screenshots RecyclerView. */
     static class ScreenshotsAdapter extends RecyclerView.Adapter<ScreenshotViewHolder> {
-        private Context mContext;
-        private ArrayList<Bitmap> mScreenshots;
-        private boolean mShouldPadForDialogContent;
+        private final Context mContext;
+        private final ArrayList<Bitmap> mScreenshots;
+        private final boolean mShouldPadForDialogContent;
 
         public ScreenshotsAdapter(Context context, boolean shouldPadForDialogContent) {
             mContext = context;

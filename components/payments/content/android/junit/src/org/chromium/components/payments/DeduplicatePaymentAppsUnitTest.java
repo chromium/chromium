@@ -219,7 +219,7 @@ public class DeduplicatePaymentAppsUnitTest {
 
     /** A payment app for testing deduplication. */
     private static final class TestApp extends PaymentApp {
-        private Set<String> mMethods = new HashSet<>();
+        private final Set<String> mMethods = new HashSet<>();
         private Set<String> mIdsThatHideThisApp;
         private String mIdToHide;
         private boolean mIsPreferred;

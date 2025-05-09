@@ -75,7 +75,7 @@ public class Fido2GetCredentialsComparator {
 
     private @Nullable State mPasskeysCacheResultState;
     private @Nullable State mFido2ResultState;
-    private boolean mIsGoogleRp;
+    private final boolean mIsGoogleRp;
 
     void onGetCredentialsSuccessful(int credentialCount) {
         if (mFido2ResultState != null) {

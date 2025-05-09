@@ -59,8 +59,8 @@ class BackgroundTaskSchedulerImpl implements BackgroundTaskScheduler {
     }
 
     private class SchedulingVisitor implements TaskInfo.TimingInfoVisitor {
-        private Context mContext;
-        private TaskInfo mTaskInfo;
+        private final Context mContext;
+        private final TaskInfo mTaskInfo;
         private boolean mSuccess;
 
         SchedulingVisitor(Context context, TaskInfo taskInfo) {

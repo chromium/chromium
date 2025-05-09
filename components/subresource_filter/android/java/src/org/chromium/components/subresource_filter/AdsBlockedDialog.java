@@ -42,7 +42,7 @@ public class AdsBlockedDialog implements ModalDialogProperties.Controller {
     private final ModalDialogManager mModalDialogManager;
     private @Nullable PropertyModel mDialogModel;
     private @Nullable ClickableSpan mClickableSpan;
-    private Handler mDialogHandler;
+    private final Handler mDialogHandler;
 
     @CalledByNative
     static AdsBlockedDialog create(long nativeDialog, WindowAndroid windowAndroid) {

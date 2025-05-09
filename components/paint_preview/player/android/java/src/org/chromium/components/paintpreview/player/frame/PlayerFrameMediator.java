@@ -67,7 +67,7 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
     private boolean mIsSubframe;
 
     /** Transient object to avoid allocation. */
-    private Rect mScaledRectIntersection = new Rect();
+    private final Rect mScaledRectIntersection = new Rect();
 
     private float mInitialScaleFactor;
     private float mMinScaleFactor;
@@ -79,7 +79,7 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
 
     private final PlayerFrameBitmapStateController mBitmapStateController;
 
-    private PlayerGestureListener mGestureListener;
+    private final PlayerGestureListener mGestureListener;
     private @Nullable Runnable mInitialViewportSizeAvailable;
 
     PlayerFrameMediator(

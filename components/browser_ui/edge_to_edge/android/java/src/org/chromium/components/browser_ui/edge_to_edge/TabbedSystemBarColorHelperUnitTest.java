@@ -35,8 +35,8 @@ public class TabbedSystemBarColorHelperUnitTest {
     @Mock private SystemBarColorHelper mEdgeToEdgeBottomChinCoordinator;
 
     private TabbedSystemBarColorHelper mTabbedSystemBarColorHelper;
-    private OneshotSupplierImpl<SystemBarColorHelper> mEdgeToEdgeBottomChinCoordinatorSupplier =
-            new OneshotSupplierImpl<>();
+    private final OneshotSupplierImpl<SystemBarColorHelper>
+            mEdgeToEdgeBottomChinCoordinatorSupplier = new OneshotSupplierImpl<>();
 
     @Before
     public void setup() {

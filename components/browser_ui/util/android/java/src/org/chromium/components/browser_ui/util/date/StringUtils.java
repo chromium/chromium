@@ -18,8 +18,8 @@ import java.util.Date;
 @NullMarked
 public class StringUtils {
     private static final class LazyHolder {
-        private static Calendar sCalendar1 = CalendarFactory.get();
-        private static Calendar sCalendar2 = CalendarFactory.get();
+        private static final Calendar sCalendar1 = CalendarFactory.get();
+        private static final Calendar sCalendar2 = CalendarFactory.get();
     }
 
     private StringUtils() {}

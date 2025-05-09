@@ -27,9 +27,9 @@ public final class UkmRecorderTest {
     private @Mock WebContents mWebContents;
     private @Mock UkmRecorder.Natives mUkmRecorderJniMock;
 
-    private final String mTestEventName = "event1";
-    private final String mMetricName1 = "metricName1";
-    private final String mMetricName2 = "metricName2";
+    private static final String TEST_EVENT_NAME = "event1";
+    private static final String METRIC_NAME1 = "metricName1";
+    private static final String METRIC_NAME2 = "metricName2";
 
     @Before
     public void setUp() {
@@ -38,20 +38,20 @@ public final class UkmRecorderTest {
 
     @Test
     public void record_multipleMetrics() {
-        new UkmRecorder(mWebContents, mTestEventName)
-                .addMetric(mMetricName1, 5)
-                .addMetric(mMetricName2, 10)
+        new UkmRecorder(mWebContents, TEST_EVENT_NAME)
+                .addMetric(METRIC_NAME1, 5)
+                .addMetric(METRIC_NAME2, 10)
                 .record();
         verify(mUkmRecorderJniMock)
                 .recordEventWithMultipleMetrics(
                         any(),
-                        eq(mTestEventName),
+                        eq(TEST_EVENT_NAME),
                         argThat(
                                 metricsList ->
                                         metricsList.length == 2
-                                                && metricsList[0].mName.equals(mMetricName1)
+                                                && metricsList[0].mName.equals(METRIC_NAME1)
                                                 && metricsList[0].mValue == 5
-                                                && metricsList[1].mName.equals(mMetricName2)
+                                                && metricsList[1].mName.equals(METRIC_NAME2)
                                                 && metricsList[1].mValue == 10));
     }
 }

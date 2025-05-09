@@ -46,7 +46,7 @@ public class AutofillManagerWrapper {
     }
 
     private static class AutofillInputUiMonitor extends AutofillManager.AutofillCallback {
-        private WeakReference<AutofillManagerWrapper> mManager;
+        private final WeakReference<AutofillManagerWrapper> mManager;
 
         public AutofillInputUiMonitor(AutofillManagerWrapper manager) {
             mManager = new WeakReference<>(manager);

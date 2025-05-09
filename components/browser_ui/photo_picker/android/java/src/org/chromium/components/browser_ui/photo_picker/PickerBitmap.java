@@ -34,13 +34,13 @@ public class PickerBitmap implements Comparable<PickerBitmap> {
     }
 
     // The URI of the bitmap to show.
-    private @Nullable Uri mUri;
+    private final @Nullable Uri mUri;
 
     // When the bitmap was last modified on disk.
-    private long mLastModified;
+    private final long mLastModified;
 
     // The type of tile involved.
-    @TileTypes private int mType;
+    @TileTypes private final int mType;
 
     /**
      * The PickerBitmap constructor.

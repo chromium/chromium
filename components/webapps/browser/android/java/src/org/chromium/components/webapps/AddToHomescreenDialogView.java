@@ -48,26 +48,26 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class AddToHomescreenDialogView
         implements View.OnClickListener, ModalDialogProperties.Controller {
     private PropertyModel mDialogModel;
-    private ModalDialogManager mModalDialogManager;
+    private final ModalDialogManager mModalDialogManager;
     @VisibleForTesting protected AddToHomescreenViewDelegate mDelegate;
 
-    private View mParentView;
+    private final View mParentView;
 
     /**
      * {@link #mShortcutTitleInput} and the {@link #mAppLayout} are mutually exclusive, depending on
      * whether the home screen item is a bookmark shortcut or a web/native app.
      */
-    private EditText mShortcutTitleInput;
+    private final EditText mShortcutTitleInput;
 
-    private LinearLayout mAppLayout;
-    private TextView mAppNameView;
-    private EditText mHomebrewAppNameInput;
-    private TextView mAppOriginView;
-    private RatingBar mAppRatingBar;
-    private ImageView mPlayLogoView;
+    private final LinearLayout mAppLayout;
+    private final TextView mAppNameView;
+    private final EditText mHomebrewAppNameInput;
+    private final TextView mAppOriginView;
+    private final RatingBar mAppRatingBar;
+    private final ImageView mPlayLogoView;
 
-    private View mProgressBarView;
-    private ImageView mIconView;
+    private final View mProgressBarView;
+    private final ImageView mIconView;
 
     private @AppType int mAppType;
     private boolean mCanSubmit;

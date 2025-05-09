@@ -57,10 +57,10 @@ import java.util.List;
 public final class InfoBarLayout extends ViewGroup implements View.OnClickListener {
     /** Parameters used for laying out children. */
     private static class LayoutParams extends ViewGroup.LayoutParams {
-        public int startMargin;
-        public int endMargin;
-        public int topMargin;
-        public int bottomMargin;
+        public final int startMargin;
+        public final int endMargin;
+        public final int topMargin;
+        public final int bottomMargin;
 
         // Where this view will be laid out. Calculated in onMeasure() and used in onLayout().
         public int start;
@@ -88,8 +88,8 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
     private final List<InfoBarControlLayout> mControlLayouts;
     private @Nullable ViewGroup mFooterViewGroup;
 
-    private TextView mMessageTextView;
-    private @Nullable ImageView mIconView;
+    private final TextView mMessageTextView;
+    private final @Nullable ImageView mIconView;
     private @Nullable DualControlLayout mButtonRowLayout;
 
     private CharSequence mMessageMainText;

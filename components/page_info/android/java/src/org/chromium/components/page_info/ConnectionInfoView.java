@@ -48,7 +48,7 @@ public class ConnectionInfoView implements OnClickListener {
             "https://support.google.com/chrome?p=android_connection_info";
 
     private final Context mContext;
-    private ConnectionInfoDelegate mDelegate;
+    private final ConnectionInfoDelegate mDelegate;
     private final LinearLayout mContainer;
     private final WebContents mWebContents;
     private final int mPaddingSides;
@@ -236,7 +236,7 @@ public class ConnectionInfoView implements OnClickListener {
         private @Nullable ConnectionInfoView mPopup;
         private @Nullable PropertyModel mDialogModel;
         private final ModalDialogManager mModalDialogManager;
-        private WebContents mWebContents;
+        private final WebContents mWebContents;
         private final WebContentsObserver mWebContentsObserver;
 
         ConnectionInfoDialogDelegate(

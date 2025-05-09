@@ -43,10 +43,10 @@ class ContactsFetcherWorkerTask extends AsyncTask<@Nullable ArrayList<ContactDet
     }
 
     // The content resolver to use for looking up contacts.
-    private ContentResolver mContentResolver;
+    private final ContentResolver mContentResolver;
 
     // The callback to use to communicate the results.
-    private ContactsRetrievedCallback mCallback;
+    private final ContactsRetrievedCallback mCallback;
 
     // Whether names were requested by the website.
     private final boolean mIncludeNames;

@@ -66,7 +66,7 @@ public class ColorPickerCoordinator {
     private final Context mContext;
     private final Callback<Integer> mDialogDismissedCallback;
     private final ColorPickerDialogView mColorPickerDialogView;
-    private List<ColorSuggestion> mSuggestions;
+    private final List<ColorSuggestion> mSuggestions;
     private PropertyModel mModel;
     private MVCListAdapter.ModelList mSuggestionsModelList;
     private ModelListAdapter mSuggestionsAdapter;

@@ -100,7 +100,7 @@ public class MediaNotificationController {
 
     @VisibleForTesting public Delegate mDelegate;
 
-    private SparseArray<MediaButtonInfo> mActionToButtonInfo;
+    private final SparseArray<MediaButtonInfo> mActionToButtonInfo;
 
     @VisibleForTesting public @Nullable NotificationWrapperBuilder mNotificationBuilder;
 
@@ -411,16 +411,16 @@ public class MediaNotificationController {
      */
     private static final class MediaButtonInfo {
         /** The resource ID of this media button icon. */
-        public int iconResId;
+        public final int iconResId;
 
         /** The resource ID of this media button description. */
-        public int descriptionResId;
+        public final int descriptionResId;
 
         /** The intent string to be fired when this media button is clicked. */
-        public String intentString;
+        public final String intentString;
 
         /** The ID to identify the notification button. */
-        public int buttonId;
+        public final int buttonId;
 
         public MediaButtonInfo(
                 int buttonResId, int descriptionResId, String intentString, int buttonId) {

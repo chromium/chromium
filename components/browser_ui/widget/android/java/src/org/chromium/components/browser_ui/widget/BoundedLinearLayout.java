@@ -29,8 +29,8 @@ import org.chromium.ui.base.ViewUtils;
 public class BoundedLinearLayout extends LinearLayout {
     private static final int NOT_SPECIFIED = -1;
 
-    private TypedValue mMaxWidthLandscape = new TypedValue();
-    private TypedValue mMaxWidthPortrait = new TypedValue();
+    private final TypedValue mMaxWidthLandscape = new TypedValue();
+    private final TypedValue mMaxWidthPortrait = new TypedValue();
 
     private final int mMaxHeight;
 

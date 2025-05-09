@@ -27,9 +27,9 @@ import java.util.Set;
 public class CastSessionController extends BaseSessionController {
     private static final String TAG = "CafSessionCtrl";
 
-    private List<String> mNamespaces = new ArrayList<String>();
+    private final List<String> mNamespaces = new ArrayList<String>();
     private CastListener mCastListener;
-    private CafNotificationController mNotificationController;
+    private final CafNotificationController mNotificationController;
 
     public CastSessionController(CafBaseMediaRouteProvider provider) {
         super(provider);

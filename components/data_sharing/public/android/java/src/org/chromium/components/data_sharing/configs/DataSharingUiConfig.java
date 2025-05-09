@@ -59,17 +59,17 @@ public class DataSharingUiConfig {
     // LINT.ThenChange(//tools/metrics/histograms/metadata/data_sharing/enums.xml:DataSharingUserAction)
 
     // --- Form Factor Config ---
-    private boolean mIsTablet;
+    private final boolean mIsTablet;
 
     // --- Tab Group Details ---
-    private @Nullable String mTabGroupName;
+    private final @Nullable String mTabGroupName;
 
     // --- Usage Config ---
-    private @Nullable Context mContext;
-    private @Nullable Activity mActivity;
-    private @Nullable GURL mLearnMoreHyperLink;
-    private @Nullable DataSharingStringConfig mDataSharingStringConfig;
-    private @Nullable DataSharingCallback mDataSharingCallback;
+    private final @Nullable Context mContext;
+    private final @Nullable Activity mActivity;
+    private final @Nullable GURL mLearnMoreHyperLink;
+    private final @Nullable DataSharingStringConfig mDataSharingStringConfig;
+    private final @Nullable DataSharingCallback mDataSharingCallback;
 
     /** Callback interface for common data sharing UI events. */
     public interface DataSharingCallback {

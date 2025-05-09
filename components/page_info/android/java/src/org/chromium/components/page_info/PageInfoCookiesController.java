@@ -48,7 +48,7 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
     private long mExpiration;
     private boolean mShouldDisplaySiteBreakageString;
     private @Nullable Website mWebsite;
-    private boolean mBlockAll3pc;
+    private final boolean mBlockAll3pc;
     private boolean mIsIncognito;
     private boolean mIsModeBUi;
     private int mDaysUntilExpirationForTesting;

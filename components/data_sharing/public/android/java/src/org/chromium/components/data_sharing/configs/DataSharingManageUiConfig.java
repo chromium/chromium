@@ -17,13 +17,13 @@ import org.chromium.url.GURL;
 public class DataSharingManageUiConfig {
 
     // --- Group related Info ---
-    private @Nullable GroupToken mGroupToken;
+    private final @Nullable GroupToken mGroupToken;
 
     // --- Manage Usage Config ---
-    private @Nullable ManageCallback mManageCallback;
-    private @Nullable GURL mLearnAboutBlockedAccounts;
-    private @Nullable GURL mActivityLogsUrl;
-    private @Nullable DataSharingUiConfig mCommonConfig;
+    private final @Nullable ManageCallback mManageCallback;
+    private final @Nullable GURL mLearnAboutBlockedAccounts;
+    private final @Nullable GURL mActivityLogsUrl;
+    private final @Nullable DataSharingUiConfig mCommonConfig;
 
     /** Callback interface for data sharing Manage UI events. */
     public interface ManageCallback {

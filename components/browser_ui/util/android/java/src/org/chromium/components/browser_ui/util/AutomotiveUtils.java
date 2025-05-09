@@ -22,7 +22,7 @@ import org.chromium.ui.display.DisplayUtil;
 public class AutomotiveUtils {
     private static boolean sForceHorizontalAutomotiveTesting;
     private static @Nullable Boolean sCarmaPhase2ComplianceForTesting;
-    private static String sCarmaPhase2Compliance =
+    private static final String sCarmaPhase2Compliance =
             "com.google.android.automotive.software.car_ready_mobile_apps.phase2";
 
     /** Returns true if the automotive device supports the OS share sheet, false otherwise. */

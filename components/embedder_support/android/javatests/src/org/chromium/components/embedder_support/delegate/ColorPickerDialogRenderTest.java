@@ -38,7 +38,7 @@ import java.util.List;
 // TODO(crbug.com/344923212): Failing when batched, batch this again.
 public class ColorPickerDialogRenderTest {
     @ParameterAnnotations.ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
 
     @Rule

@@ -53,7 +53,7 @@ public class RedirectHandler {
         final boolean mExternalIntentStartedTask;
 
         // A resolver list which includes all resolvers of |mInitialIntent|.
-        HashSet<ComponentName> mCachedResolvers = new HashSet<ComponentName>();
+        final HashSet<ComponentName> mCachedResolvers = new HashSet<ComponentName>();
 
         IntentState(
                 Intent initialIntent,

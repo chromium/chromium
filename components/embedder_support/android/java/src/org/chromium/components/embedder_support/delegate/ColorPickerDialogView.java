@@ -39,14 +39,14 @@ public class ColorPickerDialogView extends AlertDialog implements OnColorChanged
     @Nullable private Callback<Integer> mDialogDismissedCallback;
 
     // GridView of the suggested colors from the web dev (or the default list if empty).
-    private ColorPickerSuggestionsView mSuggestionsView;
+    private final ColorPickerSuggestionsView mSuggestionsView;
 
     // View elements.
-    private View mDialogContent;
-    private View mChosenColor;
-    private LinearLayout mChosenColorContainer;
-    private ButtonCompat mViewSwitcher;
-    private ColorPickerAdvanced mCustomView;
+    private final View mDialogContent;
+    private final View mChosenColor;
+    private final LinearLayout mChosenColorContainer;
+    private final ButtonCompat mViewSwitcher;
+    private final ColorPickerAdvanced mCustomView;
 
     public ColorPickerDialogView(Context context) {
         super(context);

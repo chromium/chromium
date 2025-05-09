@@ -33,10 +33,10 @@ public class TestBottomSheetContent implements BottomSheetContent {
     private View mContentView;
 
     /** This content's priority. */
-    private @ContentPriority int mPriority;
+    private final @ContentPriority int mPriority;
 
     /** Whether this content is browser specific. */
-    private boolean mHasCustomLifecycle;
+    private final boolean mHasCustomLifecycle;
 
     /** Whether this content has a custom scrim lifecycle. */
     private boolean mHasCustomScrimLifecycle;

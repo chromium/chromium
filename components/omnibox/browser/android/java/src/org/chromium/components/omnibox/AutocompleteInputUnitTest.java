@@ -20,7 +20,7 @@ import java.util.Set;
 /** Tests for {@link AutocompleteMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AutocompleteInputUnitTest {
-    private AutocompleteInput mInput = new AutocompleteInput();
+    private final AutocompleteInput mInput = new AutocompleteInput();
 
     private void verifyCacheablePageClasses(Set<Integer> allowedPageClasses) {
         for (var pageClass : PageClassification.values()) {

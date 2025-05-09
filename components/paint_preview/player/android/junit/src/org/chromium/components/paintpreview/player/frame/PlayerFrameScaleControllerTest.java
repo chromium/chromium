@@ -38,7 +38,7 @@ public class PlayerFrameScaleControllerTest {
     private boolean mDidScale;
 
     private static class MatrixMatcher implements ArgumentMatcher<Matrix> {
-        private Matrix mLeft;
+        private final Matrix mLeft;
 
         MatrixMatcher(Matrix left) {
             mLeft = left;

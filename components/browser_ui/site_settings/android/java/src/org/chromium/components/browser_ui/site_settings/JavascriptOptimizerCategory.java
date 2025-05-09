@@ -15,7 +15,7 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 /** {@link SiteSettingsCategory} for dealing with Javascript-optimizer category. */
 @NullMarked
 public class JavascriptOptimizerCategory extends SiteSettingsCategory {
-    private boolean mBlockedByOs;
+    private final boolean mBlockedByOs;
 
     public JavascriptOptimizerCategory(BrowserContextHandle browserContextHandle) {
         super(browserContextHandle, Type.JAVASCRIPT_OPTIMIZER, /* androidPermission= */ "");

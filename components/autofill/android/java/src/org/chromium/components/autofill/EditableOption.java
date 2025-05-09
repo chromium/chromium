@@ -27,7 +27,7 @@ public class EditableOption implements Completable {
     protected @Nullable String mPromoMessage;
     private @Nullable String mId;
     private @Nullable Drawable mIcon;
-    private @Nullable String[] mLabels = {null, null, null};
+    private final @Nullable String[] mLabels = {null, null, null};
     private boolean mIsValid = true;
 
     /** See {@link #EditableOption(String, String, String, String, int)}. */

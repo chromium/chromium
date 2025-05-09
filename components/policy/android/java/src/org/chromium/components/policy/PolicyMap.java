@@ -16,7 +16,7 @@ import org.chromium.build.annotations.Nullable;
 @JNINamespace("policy::android")
 @NullMarked
 public class PolicyMap {
-    private long mNativePolicyMap;
+    private final long mNativePolicyMap;
 
     /**
      * Returns the value of integer policy.

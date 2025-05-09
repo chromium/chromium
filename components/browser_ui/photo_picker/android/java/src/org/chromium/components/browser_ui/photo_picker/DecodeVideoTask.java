@@ -66,10 +66,10 @@ class DecodeVideoTask extends AsyncTask<@Nullable List<Bitmap>> {
     }
 
     // The callback to use to communicate the results.
-    private VideoDecodingCallback mCallback;
+    private final VideoDecodingCallback mCallback;
 
     // The URI of the video to decode.
-    private Uri mUri;
+    private final Uri mUri;
 
     // The desired width and height (in pixels) of the returned thumbnail from the video.
     int mSize;
@@ -84,7 +84,7 @@ class DecodeVideoTask extends AsyncTask<@Nullable List<Bitmap>> {
     long mIntervalMs;
 
     // The ContentResolver to use to retrieve image metadata from disk.
-    private ContentResolver mContentResolver;
+    private final ContentResolver mContentResolver;
 
     // Keeps track of errors during decoding.
     private @DecodingResult int mDecodingResult;

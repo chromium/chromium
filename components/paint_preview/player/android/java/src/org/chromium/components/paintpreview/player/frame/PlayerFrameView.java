@@ -31,13 +31,13 @@ import java.util.List;
  */
 @NullMarked
 public class PlayerFrameView extends FrameLayout {
-    private PlayerFrameBitmapPainter mBitmapPainter;
-    private PlayerFrameGestureDetector mGestureDetector;
-    private PlayerFrameViewDelegate mDelegate;
+    private final PlayerFrameBitmapPainter mBitmapPainter;
+    private final PlayerFrameGestureDetector mGestureDetector;
+    private final PlayerFrameViewDelegate mDelegate;
     private @Nullable List<View> mSubFrameViews;
     private @Nullable List<Rect> mSubFrameRects;
     private @Nullable Matrix mScaleMatrix;
-    private Matrix mOffset = new Matrix();
+    private final Matrix mOffset = new Matrix();
     protected @Nullable WebContentsAccessibility mWebContentsAccessibility;
 
     /**

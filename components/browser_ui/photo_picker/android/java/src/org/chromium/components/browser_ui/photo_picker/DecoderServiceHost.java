@@ -52,7 +52,7 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
     private final Context mContext;
 
     // A content resolver for providing file descriptors for the images.
-    private ContentResolver mContentResolver;
+    private final ContentResolver mContentResolver;
 
     // The number of successful image decodes (not video), per batch.
     private int mSuccessfulImageDecodes;
@@ -111,7 +111,7 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
     // indicates that {@link unbindService()} should be called.
     private boolean mBindServiceCalled;
     @Nullable IDecoderService mIRemoteService;
-    private ServiceConnection mConnection =
+    private final ServiceConnection mConnection =
             new ServiceConnection() {
                 @Override
                 public void onServiceConnected(ComponentName className, IBinder service) {
@@ -178,7 +178,7 @@ public class DecoderServiceHost extends IDecoderServiceCallback.Stub
 
         // An ordinal used to enforce FIFO decoding, in the case where all other things are equal
         // (when it comes to determining which record to decode first).
-        private int mRequestOrdinal;
+        private final int mRequestOrdinal;
 
         // The callback to use to communicate the results of the decoding.
         final ImagesDecodedCallback mCallback;

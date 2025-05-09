@@ -31,7 +31,7 @@ public class PlayerFrameBitmapState {
     private final Size mTileSize;
 
     /** The scale factor of bitmaps. */
-    private float mScaleFactor;
+    private final float mScaleFactor;
 
     /**
      * Bitmaps that make up the contents.
@@ -50,7 +50,7 @@ public class PlayerFrameBitmapState {
     private boolean @Nullable [][] mRequiredBitmaps;
 
     /** Whether a bitmap is visible for a given request. */
-    private boolean[][] mVisibleBitmaps;
+    private final boolean[][] mVisibleBitmaps;
 
     /** Delegate for accessing native to request bitmaps. */
     private final PlayerCompositorDelegate mCompositorDelegate;
@@ -342,8 +342,8 @@ public class PlayerFrameBitmapState {
 
     /** Used as the callback for bitmap requests from the Paint Preview compositor. */
     private class BitmapRequestHandler implements Callback<Bitmap> {
-        int mRequestRow;
-        int mRequestCol;
+        final int mRequestRow;
+        final int mRequestCol;
         int mRequestId;
 
         private BitmapRequestHandler(int requestRow, int requestCol) {

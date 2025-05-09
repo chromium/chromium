@@ -30,7 +30,7 @@ import org.chromium.build.annotations.NullMarked;
 public class PolicyService {
     private static final String TAG = "PolicyService";
 
-    private long mNativePolicyService;
+    private final long mNativePolicyService;
     private final ObserverList<Observer> mObservers = new ObserverList<Observer>();
 
     /**

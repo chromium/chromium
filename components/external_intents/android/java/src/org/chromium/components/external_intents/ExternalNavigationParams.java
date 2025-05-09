@@ -96,8 +96,8 @@ public class ExternalNavigationParams {
     private final boolean mIsHiddenCrossFrameNavigation;
     private final boolean mIsSandboxedMainFrame;
     private final @Nullable Callback<AsyncActionTakenParams> mAsyncActionTakenCallback;
-    private boolean mIsRendererInitiated;
-    private @Nullable Origin mInitiatorOrigin;
+    private final boolean mIsRendererInitiated;
+    private final @Nullable Origin mInitiatorOrigin;
     private final long mNavigationId;
     private final boolean mIsCustomTab;
 
@@ -273,8 +273,8 @@ public class ExternalNavigationParams {
 
     /** The builder for {@link ExternalNavigationParams} objects. */
     public static class Builder {
-        private GURL mUrl;
-        private boolean mIsIncognito;
+        private final GURL mUrl;
+        private final boolean mIsIncognito;
         private @Nullable GURL mReferrerUrl;
         private int mPageTransition;
         private boolean mIsRedirect;

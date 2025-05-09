@@ -39,7 +39,7 @@ public class MockPackageManagerDelegate extends PackageManagerDelegate {
     private String mInvokedAppPackageName;
 
     // A map of a package name to its installer's package name.
-    private Map<String, String> mMockInstallerPackageMap = new HashMap<>();
+    private final Map<String, String> mMockInstallerPackageMap = new HashMap<>();
 
     /**
      * An enum that can be used to configure the mock package manager for whether it should return

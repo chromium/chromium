@@ -45,7 +45,7 @@ import java.util.List;
 @Batch(Batch.PER_CLASS)
 public class RadioButtonRenderTest {
     @ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
 
     private static final int REVISION = 3;

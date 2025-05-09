@@ -54,7 +54,7 @@ public class SelectionDelegate<E> {
     }
 
     private Set<E> mSelectedItems = new LinkedHashSet<>();
-    private ObserverList<SelectionObserver<E>> mObservers = new ObserverList<>();
+    private final ObserverList<SelectionObserver<E>> mObservers = new ObserverList<>();
 
     /** Sets the mode of this SelectionDelegate to single-selection. */
     public void setSingleSelectionMode() {

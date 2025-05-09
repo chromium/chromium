@@ -90,7 +90,7 @@ public class TranslateOptions {
     private String @Nullable [] mContentLanguagesCodes;
 
     // Language code to UI display language name map Conceptually final
-    private Map<String, String> mCodeToRepresentation;
+    private final Map<String, String> mCodeToRepresentation;
 
     // Will reflect the state before the object was ever modified
     private final boolean[] mOriginalOptions;

@@ -37,20 +37,20 @@ import org.chromium.ui.text.EmptyTextWatcher;
 public class AddExceptionPreference extends Preference
         implements Preference.OnPreferenceClickListener {
     // The callback to notify when the user adds a site.
-    private SiteAddedCallback mSiteAddedCallback;
+    private final SiteAddedCallback mSiteAddedCallback;
 
     // The accent color to use for the icon and title view.
-    private int mPrefAccentColor;
+    private final int mPrefAccentColor;
 
     // The custom message to show in the dialog.
-    private String mDialogMessage;
+    private final String mDialogMessage;
 
     // The Site Settings Category of the exception we are adding.
     private final SiteSettingsCategory mCategory;
 
     // The colors for the site URL EditText
-    private int mErrorColor;
-    private int mDefaultColor;
+    private final int mErrorColor;
+    private final int mDefaultColor;
 
     /** An interface to implement to get a callback when a site exception needs to be added. */
     public interface SiteAddedCallback {

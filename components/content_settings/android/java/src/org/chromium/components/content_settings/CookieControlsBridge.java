@@ -18,7 +18,7 @@ import org.chromium.content_public.browser.WebContents;
 @NullMarked
 public class CookieControlsBridge {
     private long mNativeCookieControlsBridge;
-    private CookieControlsObserver mObserver;
+    private final CookieControlsObserver mObserver;
 
     /**
      * Initializes a CookieControlsBridge instance.

@@ -33,16 +33,17 @@ public final class Website implements WebsiteEntry {
     private final @Nullable WebsiteAddress mEmbedder;
 
     /** Indexed by ContentSettingsType. */
-    private Map<Integer, ContentSettingException> mContentSettingExceptions = new HashMap<>();
+    private final Map<Integer, ContentSettingException> mContentSettingExceptions = new HashMap<>();
 
     /** Indexed by ContentSettingsType. */
-    private Map<Integer, PermissionInfo> mPermissionInfos = new HashMap<>();
+    private final Map<Integer, PermissionInfo> mPermissionInfos = new HashMap<>();
 
     /**
      * Indexed by ContentSettingsType. For Permissions like the StorageAccess API that are keyed by
      * requesting and embedding site.
      */
-    private Map<Integer, List<ContentSettingException>> mEmbeddedPermissionInfos = new HashMap<>();
+    private final Map<Integer, List<ContentSettingException>> mEmbeddedPermissionInfos =
+            new HashMap<>();
 
     private @Nullable LocalStorageInfo mLocalStorageInfo;
     private @Nullable RwsCookieInfo mRwsCookieInfo;

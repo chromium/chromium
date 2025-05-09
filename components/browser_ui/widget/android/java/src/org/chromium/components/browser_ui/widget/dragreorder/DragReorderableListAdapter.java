@@ -50,7 +50,7 @@ public abstract class DragReorderableListAdapter<T> extends RecyclerView.Adapter
     protected DragStateDelegate mDragStateDelegate;
 
     private int mStart;
-    private ObserverList<DragListener> mListeners = new ObserverList<>();
+    private final ObserverList<DragListener> mListeners = new ObserverList<>();
 
     /** A callback for touch actions on drag-reorderable lists. */
     private class DragTouchCallback extends ItemTouchHelper.Callback {

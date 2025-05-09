@@ -28,7 +28,7 @@ import org.chromium.content_public.browser.WebContents;
 @NullMarked
 public class PageInfoConnectionController
         implements PageInfoSubpageController, ConnectionInfoView.ConnectionInfoDelegate {
-    private PageInfoMainController mMainController;
+    private final PageInfoMainController mMainController;
     private final WebContents mWebContents;
     private final PageInfoRowView mRowView;
     private final PageInfoControllerDelegate mDelegate;

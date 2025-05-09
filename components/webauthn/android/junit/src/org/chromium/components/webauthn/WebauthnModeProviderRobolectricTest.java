@@ -29,7 +29,7 @@ import org.chromium.content_public.browser.WebContents;
         manifest = Config.NONE,
         shadows = {})
 public class WebauthnModeProviderRobolectricTest {
-    private WebauthnModeProvider mProvider = WebauthnModeProvider.getInstance();
+    private final WebauthnModeProvider mProvider = WebauthnModeProvider.getInstance();
     @Mock WebContents mWebContents;
     @Mock WebauthnModeProvider.Natives mNatives;
 

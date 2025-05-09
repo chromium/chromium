@@ -20,8 +20,8 @@ import java.util.regex.Pattern;
  */
 @NullMarked
 public class UrlAllowlist {
-    private @Nullable HashSet<String> mAllowedUrls;
-    private @Nullable List<Pattern> mAllowedRe;
+    private final @Nullable HashSet<String> mAllowedUrls;
+    private final @Nullable List<Pattern> mAllowedRe;
 
     /** Nothing is allowed if both allowedUrls and allowedRes is null or empty. */
     public UrlAllowlist(@Nullable HashSet<String> allowedUrls, @Nullable List<Pattern> allowedRe) {

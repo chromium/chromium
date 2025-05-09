@@ -245,8 +245,8 @@ public class ShareParams {
 
     /** The builder for {@link ShareParams} objects. */
     public static class Builder {
-        private WindowAndroid mWindow;
-        private String mTitle;
+        private final WindowAndroid mWindow;
+        private final String mTitle;
         private @Nullable String mText;
         private @Nullable String mTextFormat;
         private String mUrl;

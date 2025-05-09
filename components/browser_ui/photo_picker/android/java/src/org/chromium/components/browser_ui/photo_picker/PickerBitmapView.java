@@ -55,7 +55,7 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
     private static @Nullable AnimationListener sAnimationListenerForTest;
 
     // Our context.
-    private Context mContext;
+    private final Context mContext;
 
     // Our parent category.
     private PickerCategoryView mCategoryView;

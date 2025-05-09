@@ -104,9 +104,9 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
     }
 
     private static class TestData {
-        public Uri mUri;
-        public String mMimeType;
-        public long mDateAdded;
+        public final Uri mUri;
+        public final String mMimeType;
+        public final long mDateAdded;
 
         public TestData(String uri, String mimeType, long dateAdded) {
             mUri = Uri.parse(uri);
@@ -116,7 +116,7 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
     }
 
     private static class FileCursor extends BaseCursor {
-        private List<TestData> mData;
+        private final List<TestData> mData;
 
         private int mIndex;
 

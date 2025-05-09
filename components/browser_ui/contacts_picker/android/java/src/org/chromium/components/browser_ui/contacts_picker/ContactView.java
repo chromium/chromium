@@ -36,7 +36,7 @@ import java.util.List;
 @NullMarked
 public class ContactView extends SelectableItemView<ContactDetails> {
     // Our context.
-    private Context mContext;
+    private final Context mContext;
 
     // Our parent category.
     private PickerCategoryView mCategoryView;

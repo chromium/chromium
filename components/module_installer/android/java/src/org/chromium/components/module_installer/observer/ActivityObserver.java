@@ -22,7 +22,7 @@ import java.util.HashSet;
 @NullMarked
 public class ActivityObserver
         implements InstallerObserver, ApplicationStatus.ActivityStateListener {
-    private static HashSet<Integer> sActivityIds = new HashSet<Integer>();
+    private static final HashSet<Integer> sActivityIds = new HashSet<Integer>();
     private final ActivityObserverFacade mFacade;
     private final InstallEngine mInstallEngine;
 

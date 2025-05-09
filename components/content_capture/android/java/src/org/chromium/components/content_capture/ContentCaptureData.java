@@ -15,7 +15,7 @@ import org.chromium.build.annotations.NullMarked;
 /** The class is Java's representative of components/content_capture/common/content_capture_data.h */
 @NullMarked
 public class ContentCaptureData extends ContentCaptureDataBase {
-    private String mValue;
+    private final String mValue;
 
     @CalledByNative
     @VisibleForTesting

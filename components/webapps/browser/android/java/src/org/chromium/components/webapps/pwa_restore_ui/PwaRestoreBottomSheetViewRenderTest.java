@@ -50,7 +50,7 @@ public class PwaRestoreBottomSheetViewRenderTest {
     private static Activity sActivity;
 
     @ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
 
     @ClassRule

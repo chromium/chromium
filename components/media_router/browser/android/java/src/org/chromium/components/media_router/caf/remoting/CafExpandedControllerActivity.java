@@ -51,7 +51,7 @@ public class CafExpandedControllerActivity extends FragmentActivity
     }
 
     /** Handle actions from on-screen media controls. */
-    private MediaController.Delegate mControllerDelegate =
+    private final MediaController.Delegate mControllerDelegate =
             new MediaController.Delegate() {
                 @Override
                 public void play() {

@@ -82,13 +82,13 @@ public class CafMessageHandler {
                     "MEDIA_SET_VOLUME", "SET_VOLUME", //
                     "MEDIA_GET_STATUS", "GET_STATUS");
 
-    private SparseArray<RequestRecord> mRequests;
-    private ArrayMap<String, Queue<Integer>> mStopRequests;
-    private Queue<RequestRecord> mVolumeRequests;
+    private final SparseArray<RequestRecord> mRequests;
+    private final ArrayMap<String, Queue<Integer>> mStopRequests;
+    private final Queue<RequestRecord> mVolumeRequests;
 
     private final CastSessionController mSessionController;
     private final CafMediaRouteProvider mRouteProvider;
-    private Handler mHandler;
+    private final Handler mHandler;
 
     /**
      * The record for client requests. {@link CafMessageHandler} uses this class to manage the
