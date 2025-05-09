@@ -379,24 +379,6 @@ GPMEnclaveController::~GPMEnclaveController() {
   enclave_manager_->TakeSecret();
 }
 
-std::optional<EnclaveUserVerificationMethod>
-GPMEnclaveController::GetEnclaveUserVerificationMethod() {
-  // TODO(crbug.com/393055190): Figure out why `ready_for_ui` is not enough for
-  // `is_ready`.
-  if (!enclave_manager_->is_ready()) {
-    return std::nullopt;
-  }
-
-  bool has_pin = enclave_manager_->has_wrapped_pin();
-  EnclaveManager::UvKeyState uv_key_state = enclave_manager_->uv_key_state(
-      model_->platform_has_biometrics.value_or(false));
-
-  return PickEnclaveUserVerificationMethod(
-      user_verification_requirement_, /*have_entered_pin_for_recovery=*/false,
-      has_pin, uv_key_state, model_->platform_has_biometrics.value_or(false),
-      BrowserIsApp());
-}
-
 bool GPMEnclaveController::is_active() const {
   return *is_active_;
 }

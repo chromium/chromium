@@ -51,7 +51,6 @@
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/challenge_url_fetcher.h"
 #include "chrome/browser/webauthn/change_pin_controller_impl.h"
-#include "chrome/browser/webauthn/gpm_enclave_transaction.h"
 #include "chrome/browser/webauthn/gpm_user_verification_policy.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/password_credential_controller.h"
@@ -735,6 +734,7 @@ void AuthenticatorRequestDialogController::StartFlow(
   started_ = true;
   transport_availability_ = std::move(transport_availability);
   passwords_ = std::move(passwords);
+  UpdateModelForTransportAvailability();
   // All recognised credentials that are "Chrome implemented" are from the
   // same source, i.e. a platform never has two Chrome implemented platform
   // authenticators.
@@ -2487,7 +2487,7 @@ AuthenticatorRequestDialogController::IndexOfPriorityMechanism() {
   switch (transport_availability_.request_type) {
     case FidoRequestType::kGetAssertion:
       return ui_presentation() == UIPresentation::kModalImmediate
-                 ? IndexOfImmediateGetPriorityMechanism()
+                 ? std::nullopt
                  : IndexOfGetAssertionPriorityMechanism();
     case FidoRequestType::kMakeCredential:
       return IndexOfMakeCredentialPriorityMechanism();
@@ -2564,29 +2564,6 @@ AuthenticatorRequestDialogController::IndexOfGetAssertionPriorityMechanism() {
 }
 
 std::optional<size_t>
-AuthenticatorRequestDialogController::IndexOfImmediateGetPriorityMechanism() {
-  CHECK_EQ(transport_availability_.request_type,
-           FidoRequestType::kGetAssertion);
-  CHECK_EQ(ui_presentation(), UIPresentation::kModalImmediate);
-
-  if (model_->mechanisms.size() != 1) {
-    return std::nullopt;
-  }
-
-  const auto& mechanism = model_->mechanisms[0];
-  if (const auto* cred_variant =
-          std::get_if<Mechanism::Credential>(&mechanism.type)) {
-    if (cred_variant->value().source == AuthenticatorType::kEnclave &&
-        model_->gpm_uv_method.value_or(
-            EnclaveUserVerificationMethod::kUnsatisfiable) ==
-            EnclaveUserVerificationMethod::kUVKeyWithChromeUI) {
-      return 0;
-    }
-  }
-  return std::nullopt;
-}
-
-std::optional<size_t>
 AuthenticatorRequestDialogController::IndexOfMakeCredentialPriorityMechanism() {
   CHECK_EQ(transport_availability_.request_type,
            FidoRequestType::kMakeCredential);
@@ -2658,6 +2635,23 @@ AuthenticatorRequestDialogController::IndexOfMakeCredentialPriorityMechanism() {
   }
 
   return std::nullopt;
+}
+
+void AuthenticatorRequestDialogController::
+    UpdateModelForTransportAvailability() {
+  model_->request_type = transport_availability_.request_type;
+  model_->resident_key_requirement =
+      transport_availability_.resident_key_requirement;
+  model_->attestation_conveyance_preference =
+      transport_availability_.attestation_conveyance_preference;
+  model_->ble_adapter_is_powered =
+      transport_availability_.ble_status == BleStatus::kOn;
+  model_->show_security_key_on_qr_sheet =
+      base::Contains(transport_availability_.available_transports,
+                     device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
+  model_->is_off_the_record = transport_availability_.is_off_the_record_context;
+  model_->platform_has_biometrics =
+      transport_availability_.platform_has_biometrics;
 }
 
 bool AuthenticatorRequestDialogController::CanDefaultToEnclave(

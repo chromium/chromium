@@ -19,7 +19,6 @@
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
-#include "chrome/browser/webauthn/gpm_enclave_transaction.h"
 #include "chrome/browser/webauthn/local_authentication_token.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/global_routing_id.h"
@@ -460,10 +459,6 @@ struct AuthenticatorRequestDialogModel
   // Whether the platform can check biometrics and has biometrics configured.
   std::optional<bool> platform_has_biometrics;
   UIPresentation ui_presentation = UIPresentation::kModal;
-  // Stores the pre-calculated GPM UV method for `getAssertion`.
-  // This is set by `ChromeAuthenticatorRequestDelegate` before `StartFlow` is
-  // called on the controller. This is used for immediate mode requests.
-  std::optional<EnclaveUserVerificationMethod> gpm_uv_method;
 
   // offer_try_again_in_ui indicates whether a button to retry the request
   // should be included on the dialog sheet shown when encountering certain

@@ -100,12 +100,6 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
   GPMEnclaveController& operator=(GPMEnclaveController&&) = delete;
   ~GPMEnclaveController() override;
 
-  // Determines the enclave user verification early depending on the enclave
-  // state and UV requirements. Can return `std::nullopt` if the enclave is not
-  // ready. This is used for immediate mode requests.
-  std::optional<EnclaveUserVerificationMethod>
-  GetEnclaveUserVerificationMethod();
-
   // Returns true if the enclave is active for this request. Crashes the address
   // space if this hasn't yet been resolved.
   bool is_active() const;
