@@ -36,7 +36,7 @@
     [RaisesException=Setter, CEReactions] attribute unsigned long width;
     [RaisesException=Setter, CEReactions] attribute unsigned long height;
 
-    [RuntimeEnabled=CanvasElementDrawImage] attribute boolean layoutSubtree;
+    [RuntimeEnabled=CanvasElementDrawElement] attribute boolean layoutSubtree;
 
     [HighEntropy, MeasureAs=CanvasToDataURL, RaisesException] DOMString toDataURL(optional DOMString type = "image/png", optional any quality);
 

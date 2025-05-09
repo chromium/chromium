@@ -752,7 +752,7 @@
     },
     {
       // https://github.com/WICG/html-in-canvas/blob/main/README.md
-      name: "CanvasElementDrawImage",
+      name: "CanvasElementDrawElement",
       status: "test",
       implied_by: ["CanvasPlaceElement"],
     },

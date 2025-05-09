@@ -96,7 +96,7 @@ class CORE_EXPORT LayoutHTMLCanvas final : public LayoutReplaced {
   }
   bool CanHaveChildren() const final {
     NOT_DESTROYED();
-    return RuntimeEnabledFeatures::CanvasElementDrawImageEnabled();
+    return RuntimeEnabledFeatures::CanvasElementDrawElementEnabled();
   }
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const final;
 

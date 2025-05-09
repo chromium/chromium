@@ -28,7 +28,7 @@ const LayoutResult* ReplacedLayoutAlgorithm::Layout() {
   }
 
   if (Node().IsCanvas() &&
-      RuntimeEnabledFeatures::CanvasElementDrawImageEnabled()) {
+      RuntimeEnabledFeatures::CanvasElementDrawElementEnabled()) {
     LayoutCanvasChildren();
   }
 
