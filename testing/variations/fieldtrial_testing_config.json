@@ -11934,6 +11934,21 @@
             ]
         }
     ],
+    "IOSPartitionAllocMemoryReclaimer": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "PartitionAllocMemoryReclaimer"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSPasskeysM2": [
         {
             "platforms": [
