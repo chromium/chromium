@@ -3107,7 +3107,18 @@ class PdfInkModuleTextHighlightTest : public PdfInkModuleStrokeTest {
     VerifySingleSelectionTest(expected_inputs, expected_size);
   }
 
-  // Set up single selection test expectations before text selection strokes
+  // Sets `points` as selectable text areas. Any points not included will be
+  // considered non-selectable.
+  void SetTextAreaPoints(base::span<const gfx::PointF> points) {
+    EXPECT_CALL(client(), IsSelectableTextOrLinkArea(_))
+        .WillRepeatedly(Return(false));
+    for (const auto& point : points) {
+      EXPECT_CALL(client(), IsSelectableTextOrLinkArea(point))
+          .WillRepeatedly(Return(true));
+    }
+  }
+
+  // Sets up single selection test expectations before text selection strokes
   // have been applied.
   void SetUpSingleSelectionTest(const gfx::Rect& selection_rect) {
     EnableAnnotationMode();
@@ -3118,17 +3129,15 @@ class PdfInkModuleTextHighlightTest : public PdfInkModuleStrokeTest {
     std::vector<gfx::Rect> selection_rects{selection_rect};
     EXPECT_CALL(client(), GetSelectionRects())
         .WillRepeatedly(Return(selection_rects));
-    EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kStartPointInsidePage0))
-        .WillRepeatedly(Return(true));
-    EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kEndPointInsidePage0))
-        .WillRepeatedly(Return(true));
+    SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
 
     EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
                                                 /*click_count=*/1));
     EXPECT_CALL(client(), ExtendSelectionByPoint(kEndPointInsidePage0));
   }
 
-  // Verify single selection test results after applying text selection strokes.
+  // Verifies single selection test results after applying text selection
+  // strokes.
   void VerifySingleSelectionTest(
       base::span<const PdfInkInputData> expected_inputs,
       float expected_size) {
@@ -3161,9 +3170,6 @@ class PdfInkModuleTextHighlightTest : public PdfInkModuleStrokeTest {
   }
 
   void ClickTextAtPoint(const gfx::PointF& point, int click_count) {
-    EXPECT_CALL(client(), IsSelectableTextOrLinkArea(_))
-        .WillRepeatedly(Return(true));
-
     blink::WebMouseEvent mouse_down_event =
         MouseEventBuilder()
             .CreateLeftClickAtPosition(point)
@@ -3187,8 +3193,7 @@ TEST_P(PdfInkModuleTextHighlightTest, PenDoesNotSelectText) {
   SelectBrushTool(PdfInkBrush::Type::kPen, kRedBrushParams);
 
   EXPECT_CALL(client(), GetSelectionRects()).Times(0);
-  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kStartPointInsidePage0))
-      .WillRepeatedly(Return(true));
+  SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
 
   EXPECT_CALL(client(), OnTextOrLinkAreaClick(_, _)).Times(0);
   EXPECT_CALL(client(), ExtendSelectionByPoint(_)).Times(0);
@@ -3347,11 +3352,8 @@ TEST_P(PdfInkModuleTextHighlightTest, MultipleSelection) {
                                          kHorizontalSelection2};
   EXPECT_CALL(client(), GetSelectionRects())
       .WillRepeatedly(Return(selection_rects));
-  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kStartPointInsidePage0))
-      .WillRepeatedly(Return(true));
   constexpr gfx::PointF kEndPoint2InsidePage0{25.0, 30.0};
-  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kEndPoint2InsidePage0))
-      .WillRepeatedly(Return(true));
+  SetTextAreaPoints({kStartPointInsidePage0, kEndPoint2InsidePage0});
 
   EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
                                               /*click_count=*/1));
@@ -3409,8 +3411,7 @@ TEST_P(PdfInkModuleTextHighlightTest, OneClickCount) {
   // There will be no text selection rects.
   std::vector<gfx::Rect> selection_rects;
   EXPECT_CALL(client(), GetSelectionRects()).WillOnce(Return(selection_rects));
-  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kStartPointInsidePage0))
-      .WillRepeatedly(Return(true));
+  SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
 
   EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
                                               /*click_count=*/1));
@@ -3431,14 +3432,13 @@ TEST_P(PdfInkModuleTextHighlightTest, TwoClickCount) {
   InitializeSimpleSinglePageBasicLayout();
 
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+  SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
 
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/1);
 
   // The second text click will select the word.
   std::vector<gfx::Rect> selection_rects{kHorizontalSelection};
   EXPECT_CALL(client(), GetSelectionRects()).WillOnce(Return(selection_rects));
-  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kStartPointInsidePage0))
-      .WillRepeatedly(Return(true));
 
   EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
                                               /*click_count=*/2));
@@ -3470,6 +3470,7 @@ TEST_P(PdfInkModuleTextHighlightTest, ThreeClickCount) {
   InitializeSimpleSinglePageBasicLayout();
 
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+  SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
 
   ClickTextAtPoint(kStartPointInsidePage0, /*click_count=*/1);
 
@@ -3483,8 +3484,6 @@ TEST_P(PdfInkModuleTextHighlightTest, ThreeClickCount) {
   std::vector<gfx::Rect> three_click_selection_rects{gfx::Rect(5, 15, 45, 12)};
   EXPECT_CALL(client(), GetSelectionRects())
       .WillOnce(Return(three_click_selection_rects));
-  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kStartPointInsidePage0))
-      .WillRepeatedly(Return(true));
 
   EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
                                               /*click_count=*/3));
@@ -3522,7 +3521,7 @@ TEST_P(PdfInkModuleTextHighlightTest, MouseUpOnNonSelection) {
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
 
   // Start in a text area.
-  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(_)).WillOnce(Return(true));
+  SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
 
   EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
                                               /*click_count=*/1));
@@ -3541,8 +3540,6 @@ TEST_P(PdfInkModuleTextHighlightTest, MouseUpOnNonSelection) {
   std::vector<gfx::Rect> selection_rects{kSmallHorizontalSelection};
   EXPECT_CALL(client(), GetSelectionRects())
       .WillRepeatedly(Return(selection_rects));
-  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kEndPointInsidePage0))
-      .WillRepeatedly(Return(false));
 
   EXPECT_CALL(client(), ExtendSelectionByPoint(kEndPointInsidePage0));
 
@@ -3581,10 +3578,10 @@ TEST_P(PdfInkModuleTextHighlightTest, MultiplePages) {
 
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
 
-  // Start on page 0.
-  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(_))
-      .WillRepeatedly(Return(true));
+  SetTextAreaPoints(
+      {kStartPointInsidePage0, kTwoPageVerticalLayoutPoint1InsidePage1});
 
+  // Start on page 0.
   EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
                                               /*click_count=*/1));
 
@@ -3693,8 +3690,7 @@ TEST_P(PdfInkModuleTextHighlightTest, TouchOneClickCount) {
   // There will be no text selection rects.
   std::vector<gfx::Rect> selection_rects;
   EXPECT_CALL(client(), GetSelectionRects()).WillOnce(Return(selection_rects));
-  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kStartPointInsidePage0))
-      .WillRepeatedly(Return(true));
+  SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
 
   EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
                                               /*click_count=*/1));
@@ -3754,8 +3750,7 @@ TEST_P(PdfInkModuleTextHighlightTest, PenOneClickCount) {
   // There will be no text selection rects.
   std::vector<gfx::Rect> selection_rects;
   EXPECT_CALL(client(), GetSelectionRects()).WillOnce(Return(selection_rects));
-  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kStartPointInsidePage0))
-      .WillRepeatedly(Return(true));
+  SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
 
   EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
                                               /*click_count=*/1));
@@ -3790,12 +3785,7 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMove) {
   TestAnnotationBrushMessageParams params = kRedBrushParams;
   SelectBrushTool(PdfInkBrush::Type::kPen, params);
 
-  // `kStartPointInsidePage0` will be the selectable text area position, while
-  // all other positions will be non-text areas.
-  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(_))
-      .WillRepeatedly(Return(false));
-  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kStartPointInsidePage0))
-      .WillRepeatedly(Return(true));
+  SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
 
   // Move to a text position. The cursor should remain as the custom pen cursor.
   blink::WebMouseEvent mouse_move_event =
@@ -3847,12 +3837,7 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMoveWhileTextSelecting) {
 
   VerifyAndClearExpectations();
 
-  // `kStartPointInsidePage0` will be the selectable text area position, while
-  // all other positions will be non-text areas.
-  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(_))
-      .WillRepeatedly(Return(false));
-  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kStartPointInsidePage0))
-      .WillRepeatedly(Return(true));
+  SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
 
   // Move to a text position. The cursor should be an I-beam.
   EXPECT_CALL(client(),
@@ -3900,12 +3885,7 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMoveWhileBrushDrawing) {
 
   VerifyAndClearExpectations();
 
-  // `kEndPointInsidePage0` will be the selectable text area position, while
-  // all other positions will be non-text areas.
-  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(_))
-      .WillRepeatedly(Return(false));
-  EXPECT_CALL(client(), IsSelectableTextOrLinkArea(kEndPointInsidePage0))
-      .WillRepeatedly(Return(true));
+  SetTextAreaPoints(base::span_from_ref(kEndPointInsidePage0));
 
   // Move to a non-text position. The cursor should remain as the custom
   // highlighter cursor.
