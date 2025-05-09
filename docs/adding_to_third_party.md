@@ -4,11 +4,10 @@
 
 Using third party code can save time and is consistent with our values - no need
 to reinvent the wheel! We put all code that isn't written by Chromium developers
-into `//third_party` (even if you end up modifying just a few functions). We do
-this to make it easy to track license compliance, security patches, and supply
-the right credit and attributions. It also makes it a lot easier for other
-projects that embed our code to track what is Chromium licensed and what is
-covered by other licenses.
+into `//third_party`. We do this to make it easy to track license compliance,
+security patches, and supply the right credit and attributions. It also makes it
+a lot easier for other projects that embed our code to track what is Chromium
+licensed and what is covered by other licenses.
 
 ## Put the code in //third_party
 
@@ -36,6 +35,9 @@ Apart from that, other locations are only appropriate in a few
 situations and need explicit approval; don't assume that because there's some
 other directory with third_party in the name it's okay to put new things
 there.
+
+Regardless of where you add a third party dependency, you should use the
+[recommended directory structure](#standard-dep-structure).
 
 ## Before you start
 
@@ -171,12 +173,10 @@ will pull it in. If the code is only needed on some platforms, add a condition
 to the deps entry so that developers on other platforms don't pull in things
 they don't need.
 
-As for specifying the path where the library is fetched, a path like
-`//third_party/<project_name>/src` is highly recommended so that you can put
-the file like OWNERS or README.chromium at `//third_party/<project_name>`. If
-you have a wrong path in DEPS and want to change the path of the existing
-library in DEPS, please ask the infrastructure team before committing the
-change.
+Follow the [standard directory structure](#standard-dep-structure) when creating
+a directory for your dependency. If you have a wrong path in
+DEPS and want to change the path of the existing library in DEPS, please ask the
+infrastructure team before committing the change.
 
 Lastly, add the new directory to Chromium's `//third_party/.gitignore`, so that
 it won't show up as untracked files when you run `git status` on the main
@@ -184,14 +184,15 @@ repository.
 
 ### Checking in the code directly
 
-If you are checking in a snapshot, please describe the source in the
-README.chromium file, described below.  For security reasons, please retrieve
-the code as securely as you can, using HTTPS and GPG signatures if available.
+If you are checking in a snapshot, you should follow the [standard directory structure](#standard-dep-structure).
+For security reasons, please retrieve the code as securely as you can, using
+HTTPS and GPG signatures if available.
 If retrieving a tarball, please do not check the tarball itself into the tree,
 but do list the source and the SHA-512 hash (for verification) in the
 README.chromium and Change List. The SHA-512 hash can be computed via
 `sha512sum` or `openssl dgst -sha512`.  If retrieving from a git
-repository, please list the revision that the code was pulled from.
+repository, please list the upstream URL and revision that the code was pulled
+from.
 
 If you are checking the files in directly, you do not need an entry in DEPS
 and do not need to modify `//third_party/.gitignore`.
@@ -202,6 +203,52 @@ This is accessible to Googlers only. Non-Googlers can email one of the people
 in third_party/OWNERS for help.
 
 See [Moving large files to Google Storage](https://goto.google.com/checking-in-large-files)
+
+## Standard directory structure for dependencies {standard-dep-structure}
+
+Regardless of how you import a dependency, you should use the following
+directory structure. This folder layout enforces separation between first and
+third party code, making it easier to manage updates and dependency hygiene
+long term.
+
+Any first party code or files you need for dependency management or
+interoperability should be added to the top level dependency directory, and the
+dependency source imported into the child src directory.
+
+**Recommended directory structure:**
+```
+❯ //third_party/<dependency-name>
+├── BUILD.gn
+├── README.chromium
+├── OWNERS
+├── src <-- import third party code here
+│   ├── LICENSE
+│   ├── a.h
+│   └── b.cc
+```
+
+**What constitutes a dependency:**
+
+* A dependency should be sourced from a single upstream location. Putting code
+  from multiple upstream sources in a single `//third_party` directory makes it
+  difficult to reason about the origin of files and perform automated updates.
+* If your dependency has its own vendored dependencies, it's not necessary to
+  split these into additional directories.
+
+**Formatting:**
+
+Do not reformat or apply Chromium-style formatting to any code within the
+dependency `src` directory. Maintaining the original formatting is essential
+for generating clean diffs against upstream versions. This simplifies
+reviewing upstream changes, applying security patches, and performing updates.
+
+If you experience issues with submitting a CL due to Chromium formatting
+requirements which need to be disabled, or you need to format first party code
+in your top level dependency folder, you can add a language appropriate
+formatting config (e.g [.clang-format-ignore](https://clang.llvm.org/docs/ClangFormat.html#clang-format-ignore))
+to your top level dependency directory. Ensure it does not format the third
+party code.
+
 
 ## Document the code's context
 
@@ -279,9 +326,18 @@ or not.
 
 
 **Multiple packages**
-Each package should have its own README.chromium. However, if this is not
-possible and the information for multiple packages must be placed in a single
-README.chromium, use the below line to separate the data for each package:
+Adding multiple packages in a single third party directory is not recommended,
+because it does not follow the best practices for [third party dependency structure](#standard-dep-structure)
+and complicates vulnerability scanning.
+
+Each dependency should have its own third party directory with a few very
+limited exceptions:
+* A package manager is used to manage dependencies in the directory via a lockfile.
+* Your third party dependency has its own vendored transitive dependencies
+
+If your dependency is covered by one of the above exceptions and the information
+for multiple packages must be placed in a single README.chromium, use the below
+line to separate the data for each package:
 ```
 -------------------- DEPENDENCY DIVIDER --------------------
 ```
