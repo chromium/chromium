@@ -426,6 +426,8 @@ source_set("web_applications") {
 
   if (is_mac) {
     sources += [
+      "commands/rewrite_diy_icons_command.cc",
+      "commands/rewrite_diy_icons_command.h",
       "os_integration/mac/app_shim_launch.h",
       "os_integration/mac/app_shim_launch.mm",
       "os_integration/mac/app_shim_registry.cc",
@@ -959,6 +961,7 @@ source_set("web_applications_unit_tests") {
 
   if (is_mac) {
     sources += [
+      "commands/rewrite_diy_icons_command_unittest.mm",
       "os_integration/mac/app_shim_registry_unittest.cc",
       "os_integration/mac/icns_encoder_unittest.cc",
       "os_integration/mac/icon_utils_unittest.mm",

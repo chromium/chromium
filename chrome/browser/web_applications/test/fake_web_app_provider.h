@@ -227,7 +227,7 @@ class FakeWebAppProvider : public WebAppProvider {
   AutomaticIwaUpdateStrategy automatic_iwa_update_strategy_ =
       AutomaticIwaUpdateStrategy::kForceDisabled;
 
-  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
+  ::testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
 };
 
 // Used in BrowserTests to ensure that the WebAppProvider that is create on

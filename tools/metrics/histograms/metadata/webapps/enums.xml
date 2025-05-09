@@ -327,6 +327,13 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="kIgnorePreviouslyUninstalledByUser"/>
 </enum>
 
+<enum name="RewriteIconResult">
+  <int value="0" label="The app's state was changed unexpectedly"/>
+  <int value="1" label="Icon successfully rewritten with mask"/>
+  <int value="2" label="Failed to fetch shortcut info"/>
+  <int value="3" label="Failed to update shortcuts"/>
+</enum>
+
 <enum name="RunOnOSLoginCommandCompletionState">
   <int value="0" label="Run On OS Login command successfully completed"/>
   <int value="1"

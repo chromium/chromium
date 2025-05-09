@@ -501,6 +501,9 @@ class WebAppRegistrar {
                                                   bool show);
 #endif
 
+  // Returns whether the DIY app's icons are marked as masked on Mac.
+  bool IsDiyAppIconsMarkedMaskedOnMac(const webapps::AppId& app_id) const;
+
   void AddObserver(WebAppRegistrarObserver* observer);
   void RemoveObserver(WebAppRegistrarObserver* observer);
 

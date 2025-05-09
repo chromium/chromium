@@ -84,4 +84,11 @@ WebAppFilter WebAppFilter::InstalledInOperatingSystemForTesting() {
   return filter;
 }
 
+// static
+WebAppFilter WebAppFilter::IsDiyWithOsShortcut() {
+  WebAppFilter filter;
+  filter.is_diy_with_os_shortcut_ = true;
+  return filter;
+}
+
 }  // namespace web_app

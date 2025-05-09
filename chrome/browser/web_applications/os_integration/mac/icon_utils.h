@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_MAC_ICON_UTILS_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_MAC_ICON_UTILS_H_
 
+#include "base/auto_reset.h"
+
 @class NSImage;
 @class NSImageRep;
 namespace gfx {
@@ -31,6 +33,12 @@ gfx::Image MaskDiyAppIcon(const gfx::Image& base_icon);
 // representation from `background` into it (according to Cocoa), then draws
 // `overlay` over it using NSCompositingOperationSourceOver.
 NSImageRep* OverlayImageRep(NSImage* background, NSImageRep* overlay);
+
+namespace testing {
+// Sets whether icon masking should be disabled for testing purposes.
+[[nodiscard]] base::AutoReset<bool> SetDisableIconMaskingForTesting(
+    bool disabled);
+}  // namespace testing
 
 }  // namespace web_app
 

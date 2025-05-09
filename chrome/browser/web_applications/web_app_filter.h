@@ -42,6 +42,9 @@ class WebAppFilter {
   // integrated into the OS. This function should only be used for testing.
   static WebAppFilter InstalledInOperatingSystemForTesting();
 
+  // Only consider web apps that are DIY apps with OS shortcuts.
+  static WebAppFilter IsDiyWithOsShortcut();
+
   WebAppFilter& operator=(const WebAppFilter&) = delete;
   ~WebAppFilter() = default;
 
@@ -66,6 +69,7 @@ class WebAppFilter {
   bool supports_os_notifications_ = false;
   bool installed_in_chrome_ = false;
   bool installed_in_os_ = false;
+  bool is_diy_with_os_shortcut_ = false;
 };
 
 }  // namespace web_app

@@ -861,6 +861,12 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
     return !IsDiyApp(app_id);
   }
 
+  if (filter.is_diy_with_os_shortcut_) {
+    const WebApp* app = GetAppById(app_id);
+    return app && app->is_diy_app() &&
+           install_state == proto::INSTALLED_WITH_OS_INTEGRATION;
+  }
+
   if (filter.displays_badge_on_os_ || filter.supports_os_notifications_) {
     return install_state == proto::INSTALLED_WITH_OS_INTEGRATION;
   }
@@ -1943,6 +1949,12 @@ WebAppRegistrar::CountTotalUserInstalledAppsIncludingDiy() const {
   }
   return std::make_tuple(num_diy_apps_user_installed, num_user_installed,
                          num_non_syncing_user_installed);
+}
+
+bool WebAppRegistrar::IsDiyAppIconsMarkedMaskedOnMac(
+    const webapps::AppId& app_id) const {
+  const WebApp* app = GetAppById(app_id);
+  return app && app->is_diy_app() && app->diy_app_icons_masked_on_mac();
 }
 
 }  // namespace web_app

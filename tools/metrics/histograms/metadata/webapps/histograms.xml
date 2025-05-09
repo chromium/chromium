@@ -469,6 +469,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.DIY.IconMigrationResult" enum="RewriteIconResult"
+    expires_after="2026-04-17">
+  <owner>dmurph@chromium.org</owner>
+  <owner>dibyapal@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the result of rewriting DIY app icon for apps that need icon
+    migration due to https://crbug.com/372688523. This is logged after the
+    RewriteDiyIconsCommand command completes, which occurs on a best-effort task
+    runner, 1 minutes after profile startup.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.DiyAppsInstalledCount.ByUser" units="count"
     expires_after="2026-03-21">
   <owner>dibyapal@chromium.org</owner>

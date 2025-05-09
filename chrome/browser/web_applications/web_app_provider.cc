@@ -19,7 +19,6 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
@@ -66,11 +65,29 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "base/feature_list.h"
+#include "base/mac/mac_util.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
+#include "chrome/browser/web_applications/commands/rewrite_diy_icons_command.h"
+#include "chrome/browser/web_applications/os_integration/mac/apps_folder_support.h"
+#include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_creator.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "content/public/browser/browser_thread.h"
+#endif
 namespace webapps {
 enum class WebappInstallSource;
 }
 
 namespace web_app {
+
+#if BUILDFLAG(IS_MAC)
+BASE_FEATURE(kDiyAppIconsMaskedOnMacUpdate,
+             "DiyAppIconsMaskedOnMacUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 // static
 WebAppProvider* WebAppProvider::GetDeprecated(Profile* profile) {
@@ -487,6 +504,17 @@ void WebAppProvider::OnSyncBridgeReady() {
 
   on_registry_ready_.Signal();
   is_registry_ready_ = true;
+
+#if BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(kDiyAppIconsMaskedOnMacUpdate)) {
+    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+        ->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(&WebAppProvider::DoDelayedPostStartupWork,
+                           AsWeakPtr()),
+            base::Minutes(1));
+  }
+#endif
 }
 
 void WebAppProvider::CheckIsConnected() const {
@@ -494,5 +522,34 @@ void WebAppProvider::CheckIsConnected() const {
                         "WebAppProvider is not connected. You may need to wait "
                         "for on_registry_ready().";
 }
+
+#if BUILDFLAG(IS_MAC)
+void WebAppProvider::DoDelayedPostStartupWork() {
+  CHECK(base::FeatureList::IsEnabled(kDiyAppIconsMaskedOnMacUpdate));
+
+  const WebAppRegistrar& registrar = registrar_unsafe();
+
+  for (const auto& app : registrar.GetApps()) {
+    // Skip apps that don't match our criteria
+    if (!registrar.AppMatches(app.app_id(),
+                              WebAppFilter::IsDiyWithOsShortcut())) {
+      continue;
+    }
+
+    // Skip apps that are already masked
+    if (registrar.IsDiyAppIconsMarkedMaskedOnMac(app.app_id())) {
+      continue;
+    }
+
+    // Skip apps with open windows
+    if (ui_manager_->GetNumWindowsForApp(app.app_id()) != 0) {
+      continue;
+    }
+
+    // Schedule the command for eligible apps
+    scheduler().RewriteDiyIcons(app.app_id(), base::DoNothing());
+  }
+}
+#endif
 
 }  // namespace web_app

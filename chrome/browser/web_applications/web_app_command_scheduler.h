@@ -84,6 +84,9 @@ class CopyBundleToCacheSuccess;
 enum class CopyBundleToCacheError;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_MAC)
+enum class RewriteIconResult;
+#endif  // BUILDFLAG(IS_MAC)
 // The command scheduler is the main API to access the web app system. The
 // scheduler internally ensures:
 // * Operations occur after the WebAppProvider is ready (so you don't have to
@@ -556,6 +559,16 @@ class WebAppCommandScheduler {
                           mojom::UserDisplayMode user_display_mode,
                           base::OnceClosure callback,
                           const base::Location& location = FROM_HERE);
+
+#if BUILDFLAG(IS_MAC)
+  // Rewrites icons for an app if and only if it is a DIY app, where this
+  // operation has not yet occurred (e.g. WebApp::diy_app_icons_masked_on_mac()
+  // returns false). This will set diy_app_icons_masked_on_mac() to true when
+  // complete.
+  void RewriteDiyIcons(const webapps::AppId& app_id,
+                       base::OnceCallback<void(RewriteIconResult)> callback,
+                       const base::Location& location = FROM_HERE);
+#endif  // BUILDFLAG(IS_MAC)
 
   // Finds web apps that share the same install URLs (possibly across different
   // install sources) and dedupes the install URL configs into the most

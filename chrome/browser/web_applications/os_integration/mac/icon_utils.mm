@@ -251,6 +251,16 @@ gfx::Image CreateAppleMaskedAppIconWithPath(
 
 namespace web_app {
 
+namespace testing {
+namespace {
+bool g_disable_icon_masking_for_testing = false;
+}  // namespace
+
+base::AutoReset<bool> SetDisableIconMaskingForTesting(bool disabled) {
+  return base::AutoReset<bool>(&g_disable_icon_masking_for_testing, disabled);
+}
+}  // namespace testing
+
 gfx::Image CreateAppleMaskedAppIcon(const gfx::Image& base_icon) {
   int base_size = base_icon.Width();
   IconGridParameters params = GetIconGridParameters(base_size);
@@ -303,6 +313,10 @@ NSImageRep* OverlayImageRep(NSImage* background, NSImageRep* overlay) {
 }
 
 gfx::Image MaskDiyAppIcon(const gfx::Image& icon) {
+  if (testing::g_disable_icon_masking_for_testing) {
+    return icon;
+  }
+
   // If the alpha value of the color is less than this value then it is ignored
   constexpr uint8_t kMinAlpha = 1;
   // Maximum allowed deviation between RGB components of colors outside the mask
