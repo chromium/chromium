@@ -310,7 +310,7 @@ void DataTransferDlpController::PasteIfAllowed(
                                                           : std::nullopt;
 
   if (std::holds_alternative<std::vector<base::FilePath>>(pasted_content) &&
-      !IsFilesApp(destination)) {
+      !IsFilesApp(destination) && destination.has_value()) {
     auto pasted_files =
         std::move(std::get<std::vector<base::FilePath>>(pasted_content));
     auto* files_controller = dlp_rules_manager_->GetDlpFilesController();
@@ -348,7 +348,7 @@ void DataTransferDlpController::DropIfAllowed(
                                                           : std::nullopt;
 
   if (filenames.has_value() && !filenames->empty() &&
-      !IsFilesApp(destination)) {
+      !IsFilesApp(destination) && destination.has_value()) {
     auto* files_controller = dlp_rules_manager_->GetDlpFilesController();
     if (files_controller) {
       CHECK(destination.has_value());
@@ -622,9 +622,6 @@ void DataTransferDlpController::ContinuePasteIfClipboardRestrictionsAllow(
     size_t size,
     content::RenderFrameHost* rfh,
     base::OnceCallback<void(bool)> paste_cb) {
-  DCHECK(data_dst.has_value());
-  DCHECK(data_dst->IsUrlType());
-
   auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
   if (!web_contents) {
     std::move(paste_cb).Run(false);

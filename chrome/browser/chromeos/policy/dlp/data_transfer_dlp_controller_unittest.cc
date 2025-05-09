@@ -237,6 +237,20 @@ TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_NullWebContents) {
       &data_src, &data_dst, std::move(pasted_content), nullptr, callback.Get());
 }
 
+TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_OffTheRecord) {
+  ui::DataTransferEndpoint data_src((GURL(kExample1Url)));
+  ui::DataTransferEndpoint data_dst((GURL(kExample2Url)),
+                                    {.off_the_record = true});
+
+  ::testing::StrictMock<base::MockOnceCallback<void(bool)>> callback;
+  EXPECT_CALL(callback, Run(false));
+
+  std::variant<size_t, std::vector<base::FilePath>> pasted_content =
+      kNonEmptyPastedContentSize;
+  dlp_controller_->PasteIfAllowed(
+      &data_src, &data_dst, std::move(pasted_content), nullptr, callback.Get());
+}
+
 TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_WarnDst) {
   ui::DataTransferEndpoint data_src((GURL(kExample1Url)));
   ui::DataTransferEndpoint data_dst((GURL(kExample2Url)));
