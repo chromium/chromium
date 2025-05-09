@@ -537,11 +537,13 @@ bool LayerImpl::LayerPropertyChangedNotFromPropertyTrees() const {
 
 void LayerImpl::NoteLayerPropertyChanged() {
   layer_property_changed_not_from_property_trees_ = true;
+  SetNeedsPushProperties();
   layer_tree_impl()->set_needs_update_draw_properties();
 }
 
 void LayerImpl::NoteLayerPropertyChangedFromPropertyTrees() {
   layer_property_changed_from_property_trees_ = true;
+  SetNeedsPushProperties();
   layer_tree_impl()->set_needs_update_draw_properties();
 }
 
