@@ -8944,7 +8944,6 @@ crbug.com/365127791 [ Win11-arm64 ] external/wpt/html/semantics/embedded-content
 crbug.com/365127791 [ Win11 ] fast/canvas/fillText-emoji.html [ Failure Pass ]
 crbug.com/365127791 [ Win11 ] fast/forms/file/file-appearance-bidi-filenames.html [ Failure Pass ]
 crbug.com/365127791 [ Win11 ] fast/loader/json-document-appearance.html [ Failure Pass ]
-crbug.com/365127791 [ Win11 ] fast/ruby/base-shorter-than-text.html [ Failure Pass ]
 crbug.com/365127791 [ Win11 ] fast/ruby/nested-ruby.html [ Failure Pass ]
 crbug.com/365127791 [ Win11 ] inspector-protocol/layout-fonts/languages-emoji-rare-glyphs.js [ Failure Pass ]
 crbug.com/365127791 [ Win11 ] media/track/track-cue-rendering-ruby.html [ Failure Pass ]
@@ -9194,7 +9193,6 @@ crbug.com/393175977 [ Debug Mac14 ] http/tests/devtools/network/preview-searchab
 crbug.com/393175977 [ Debug Mac14 ] http/tests/devtools/sources/debugger-breakpoints/event-listener-breakpoints-xhr.js [ Failure Pass Timeout ]
 
 # Gardener 2025-01-21
-crbug.com/391126821 [ Win11-arm64 ] fast/ruby/base-shorter-than-text.html [ Failure Pass ]
 crbug.com/390565845 [ Win ] virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/waiting-for-audio.html [ Crash Failure Pass Timeout ]
 
 # Gardener 2025-02-04
