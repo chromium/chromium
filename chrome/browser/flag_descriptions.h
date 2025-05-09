@@ -17,6 +17,7 @@
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/webui/flags/feature_entry.h"
+#include "content/public/common/content_features.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
@@ -149,6 +150,11 @@ extern const char kAndroidProgressBarVisualUpdateDescription[];
 #if BUILDFLAG(IS_ANDROID)
 extern const char kAndroidSmsOtpFillingName[];
 extern const char kAndroidSmsOtpFillingDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+extern const char kAndroidWebAppLaunchHandler[];
+extern const char kAndroidWebAppLaunchHandlerDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)

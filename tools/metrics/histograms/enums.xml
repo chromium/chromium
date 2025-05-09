@@ -12861,6 +12861,7 @@ from previous Chrome versions.
   <int value="-441972413" label="OobeJellyModal:disabled"/>
   <int value="-441840790" label="TailoredSecurityUpdatedMessages:disabled"/>
   <int value="-441139232" label="ExcludeDisplayInMirrorMode:enabled"/>
+  <int value="-439110184" label="AndroidWebAppLaunchHandler:disabled"/>
   <int value="-438529902" label="CaptivePortalErrorPage:enabled"/>
   <int value="-438379844" label="SwapSideVolumeButtonsForOrientation:enabled"/>
   <int value="-438348502" label="LogUrlScoringSignals:disabled"/>
@@ -16262,6 +16263,7 @@ from previous Chrome versions.
   <int value="852703179" label="OptimizeNetworkBuffers:enabled"/>
   <int value="852931300"
       label="NewTabPageAndroidTriggerForPrerender2:disabled"/>
+  <int value="853278133" label="AndroidWebAppLaunchHandler:enabled"/>
   <int value="853279705"
       label="DesktopPWAsAdditionalWindowingControls:disabled"/>
   <int value="853695274" label="ForestFeature:disabled"/>

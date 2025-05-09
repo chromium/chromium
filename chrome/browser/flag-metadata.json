@@ -348,6 +348,11 @@
     "expiry_milestone": 142
   },
   {
+    "name": "android-web-app-launch-handler",
+    "owners": [ "sselyvon@google.com", "tkachenkoo@google.com", "cros-web-apps-team@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "android-window-management-web-api",
     "owners": [
       "renkens@google.com",
