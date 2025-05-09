@@ -81,6 +81,8 @@ suite('<history-item> integration test', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const testService = new TestBrowserService();
     BrowserServiceImpl.setInstance(testService);
+    // Force a super tall body so that cr-lazy-list renders all items.
+    document.body.style.height = '1000px';
     const app = document.createElement('history-app');
     document.body.appendChild(app);
     element = app.$.history;
