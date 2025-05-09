@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/tabs/test/mock_tab_interface.h"
@@ -928,8 +929,10 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, OneIdpWithMismatch) {
 
   // Add one for the separator.
   ++index;
-  CheckMismatchIdp(contents[index],
-                   u"Use your " + kSecondIdpETLDPlusOne + u" account");
+  ASSERT_LT(index, contents.size());
+  CheckMismatchIdp(
+      contents[index],
+      base::StrCat({u"Use your ", kSecondIdpETLDPlusOne, u" account"}));
 }
 
 TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
@@ -1072,9 +1075,12 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultiIdpWithAllIdpsMismatch) {
   std::vector<raw_ptr<views::View, VectorExperimental>> contents =
       GetContents(children[1]);
 
-  CheckMismatchIdp(contents[0], u"Use your " + kIdpETLDPlusOne + u" account");
-  CheckMismatchIdp(contents[1],
-                   u"Use your " + kSecondIdpETLDPlusOne + u" account");
+  ASSERT_GE(contents.size(), 2u);
+  CheckMismatchIdp(contents[0],
+                   base::StrCat({u"Use your ", kIdpETLDPlusOne, u" account"}));
+  CheckMismatchIdp(
+      contents[1],
+      base::StrCat({u"Use your ", kSecondIdpETLDPlusOne, u" account"}));
 }
 
 TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultipleReturningAccounts) {
