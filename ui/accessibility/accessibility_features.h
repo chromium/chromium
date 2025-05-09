@@ -237,6 +237,15 @@ AX_BASE_EXPORT bool IsAccessibilityManifestV3EnabledForSwitchAccess();
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_ANDROID)
+
+// When populating the AccessibilityNodeInfo on Android, Clank will insert Line
+// Separator U+2028 characters in the text to denote soft line breaks.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityInlineLineSeparators);
+AX_BASE_EXPORT bool IsAccessibilityInlineLineSeparatorsEnabled();
+
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if !BUILDFLAG(IS_ANDROID)
 // Use the AXTree fixing code, which may be an assortment of different
 // tools/methods to fix the AXTree. This is not available on Android.

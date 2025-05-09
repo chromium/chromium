@@ -334,6 +334,18 @@ bool IsAccessibilityManifestV3EnabledForSwitchAccess() {
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_ANDROID)
+
+BASE_FEATURE(kAccessibilityInlineLineSeparators,
+             "AccessibilityInlineLineSeparators",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityInlineLineSeparatorsEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityInlineLineSeparators);
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kAXTreeFixing, "AXTreeFixing", base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsAXTreeFixingEnabled() {
