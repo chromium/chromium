@@ -1533,7 +1533,7 @@ crbug.com/335223786 virtual/html-anchor-attribute-disabled/external/wpt/html/sem
 
 # Interesttarget related tests
 crbug.com/326681249 external/wpt/html/semantics/the-button-element/interest-target/interesttarget-svg-a-event-dispatch.tentative.html [ Failure ]
-crbug.com/326681249 [ Mac ] virtual/interest-target-no-partial-interest/external/wpt/html/semantics/the-button-element/interest-target/interesttarget-partial-interest.tentative.html [ Pass Failure ]
+crbug.com/326681249 [ Mac ] virtual/interest-target-no-partial-interest/external/wpt/html/semantics/the-button-element/interest-target/interesttarget-partial-interest.tentative.html [ Failure Pass ]
 
 crbug.com/1107923 inspector-protocol/debugger/wasm-streaming-url.js [ Failure Pass Timeout ]
 crbug.com/350730710 inspector-protocol/css/css-get-position-try.js [ Failure Skip ]
@@ -2788,12 +2788,12 @@ crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/
 crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/url-image-referrerpolicy-same-origin.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/css/css-contain/contain-layout-stacking-context-001.html [ Failure ]
-[ Mac ] external/wpt/html/semantics/the-button-element/interest-target/interesttarget-keyboard-invalidation.tentative.html [ Failure Pass ]
+crbug.com/416615751 external/wpt/css/css-contain/contain-layout-stacking-context-001.html [ Failure ]
+crbug.com/416633174 [ Mac ] external/wpt/html/semantics/the-button-element/interest-target/interesttarget-keyboard-invalidation.tentative.html [ Failure Pass ]
 crbug.com/416129743 [ Mac15-arm64 ] external/wpt/css/css-flexbox/overflow-auto-005.html [ Failure ]
-virtual/not-split-http-cache/external/wpt/fetch/http-cache/pragma-no-cache-with-cache-control.html [ Failure ]  # Random timestamps in `-expected.txt`
-virtual/split-cache-by-include-credentials/external/wpt/fetch/http-cache/pragma-no-cache-with-cache-control.html [ Failure ]  # Random timestamps in `-expected.txt`
-virtual/split-http-cache/external/wpt/fetch/http-cache/pragma-no-cache-with-cache-control.html [ Failure ]  # Random timestamps in `-expected.txt`
+crbug.com/416704402 virtual/not-split-http-cache/external/wpt/fetch/http-cache/pragma-no-cache-with-cache-control.html [ Failure ]
+crbug.com/416704402 virtual/split-cache-by-include-credentials/external/wpt/fetch/http-cache/pragma-no-cache-with-cache-control.html [ Failure ]
+crbug.com/416704402 virtual/split-http-cache/external/wpt/fetch/http-cache/pragma-no-cache-with-cache-control.html [ Failure ]
 crbug.com/415669416 [ Mac15 ] external/wpt/css/css-position/sticky/position-sticky-fractional-offset.html [ Failure ]
 crbug.com/415738357 [ Linux ] external/wpt/webdriver/tests/bidi/emulation/set_geolocation_override/error.py [ Failure ]
 crbug.com/415738357 [ Linux ] external/wpt/webdriver/tests/bidi/emulation/set_geolocation_override/invalid.py [ Failure ]
@@ -9361,22 +9361,22 @@ crbug.com/407751668 http/tests/devtools/elements/styles-4/styles-update-from-js.
 # This is because the RFHI in the browser process may not be aware that the
 # renderer has requested (and gotten) permission by the time StorageAccessHandle
 # tries to bind mojo endpoints.
-crbug.com/415223384 external/wpt/partitioned-popins/partitioned-popins.localStorage.tentative.sub.https.window.html [ Failure Pass Crash Timeout ]
-crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.BlobURLDedicatedWorker.sub.https.tentative.window.html [ Failure Pass Crash Timeout ]
-crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.BlobURLSharedWorker.sub.https.tentative.window.html [ Failure Pass Crash Timeout ]
-crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.BroadcastChannel.sub.https.window.html [ Failure Pass Crash Timeout ]
-crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.SharedWorker.sub.https.window.html [ Failure Pass Crash Timeout ]
-crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.blobStorage.sub.https.window.html [ Failure Pass Crash Timeout ]
-crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.caches.sub.https.window.html [ Failure Pass Crash Timeout ]
-crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.estimate.sub.https.window.html [ Failure Pass Crash Timeout ]
-crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.getDirectory.sub.https.window.html [ Failure Pass Crash Timeout ]
-crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.indexedDB.sub.https.window.html [ Failure Pass Crash Timeout ]
-crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.localStorage.sub.https.window.html [ Failure Pass Crash Timeout ]
-crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.locks.sub.https.window.html [ Failure Pass Crash Timeout ]
-crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.none.sub.https.window.html [ Failure Pass Crash Timeout ]
-crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.sessionStorage.sub.https.window.html [ Failure Pass Crash Timeout ]
-crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.thirdPartyBlobStorage.sub.https.window.html [ Failure Pass Crash Timeout ]
-crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.unpartitioned.sub.https.window.html [ Failure Pass Crash Timeout ]
+crbug.com/415223384 external/wpt/partitioned-popins/partitioned-popins.localStorage.tentative.sub.https.window.html [ Crash Failure Pass Timeout ]
+crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.BlobURLDedicatedWorker.sub.https.tentative.window.html [ Crash Failure Pass Timeout ]
+crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.BlobURLSharedWorker.sub.https.tentative.window.html [ Crash Failure Pass Timeout ]
+crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.BroadcastChannel.sub.https.window.html [ Crash Failure Pass Timeout ]
+crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.SharedWorker.sub.https.window.html [ Crash Failure Pass Timeout ]
+crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.blobStorage.sub.https.window.html [ Crash Failure Pass Timeout ]
+crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.caches.sub.https.window.html [ Crash Failure Pass Timeout ]
+crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.estimate.sub.https.window.html [ Crash Failure Pass Timeout ]
+crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.getDirectory.sub.https.window.html [ Crash Failure Pass Timeout ]
+crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.indexedDB.sub.https.window.html [ Crash Failure Pass Timeout ]
+crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.localStorage.sub.https.window.html [ Crash Failure Pass Timeout ]
+crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.locks.sub.https.window.html [ Crash Failure Pass Timeout ]
+crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.none.sub.https.window.html [ Crash Failure Pass Timeout ]
+crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.sessionStorage.sub.https.window.html [ Crash Failure Pass Timeout ]
+crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.thirdPartyBlobStorage.sub.https.window.html [ Crash Failure Pass Timeout ]
+crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.unpartitioned.sub.https.window.html [ Crash Failure Pass Timeout ]
 
 # Gardener 2025-05-05
 crbug.com/413289778 [ Mac12 ] wpt_internal/fedcm/fedcm-cache-manifest.https.html [ Failure ]
