@@ -88,7 +88,7 @@ void ManagedProfileCreator::OnProfileCreationStarted(Profile* profile) {
     return;
   }
 
-  enterprise::PresetProfileManagmentData::Get(profile)->SetGuid(preset_guid_);
+  enterprise::PresetProfileManagementData::Get(profile)->SetGuid(preset_guid_);
   profile_manager_observer_.Reset();
 }
 

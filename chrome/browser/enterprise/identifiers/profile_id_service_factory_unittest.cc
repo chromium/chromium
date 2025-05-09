@@ -97,7 +97,7 @@ class ProfileIdServiceFactoryTest : public testing::Test,
 
   void OnProfileCreationStarted(Profile* profile) override {
     if (!preset_guid_.empty()) {
-      enterprise::PresetProfileManagmentData::Get(profile)->SetGuid(
+      enterprise::PresetProfileManagementData::Get(profile)->SetGuid(
           preset_guid_);
     }
   }

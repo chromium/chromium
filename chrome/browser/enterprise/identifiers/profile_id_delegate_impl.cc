@@ -40,7 +40,7 @@ void CreateProfileGUID(Profile* profile, const base::FilePath& profile_path) {
   }
 
   auto* preset_profile_management_data =
-      PresetProfileManagmentData::Get(profile);
+      PresetProfileManagementData::Get(profile);
   std::string profile_guid = preset_profile_management_data->guid();
   if (profile_guid.empty()) {
     profile_guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
@@ -52,34 +52,36 @@ void CreateProfileGUID(Profile* profile, const base::FilePath& profile_path) {
 
 }  // namespace
 
-PresetProfileManagmentData* PresetProfileManagmentData::Get(Profile* profile) {
+PresetProfileManagementData* PresetProfileManagementData::Get(
+    Profile* profile) {
   CHECK(profile);
 
   if (!profile->GetUserData(kPresetProfileManagementData)) {
     profile->SetUserData(
         kPresetProfileManagementData,
-        std::make_unique<PresetProfileManagmentData>(std::string()));
+        std::make_unique<PresetProfileManagementData>(std::string()));
   }
 
-  return static_cast<PresetProfileManagmentData*>(
+  return static_cast<PresetProfileManagementData*>(
       profile->GetUserData(kPresetProfileManagementData));
 }
 
-void PresetProfileManagmentData::SetGuid(std::string guid) {
+void PresetProfileManagementData::SetGuid(std::string guid) {
   CHECK(!guid.empty());
   CHECK(guid_.empty());
 
   guid_ = std::move(guid);
 }
 
-void PresetProfileManagmentData::ClearGuid() {
+void PresetProfileManagementData::ClearGuid() {
   guid_.clear();
 }
 
-PresetProfileManagmentData::PresetProfileManagmentData(std::string preset_guid)
+PresetProfileManagementData::PresetProfileManagementData(
+    std::string preset_guid)
     : guid_(std::move(preset_guid)) {}
 
-PresetProfileManagmentData::~PresetProfileManagmentData() = default;
+PresetProfileManagementData::~PresetProfileManagementData() = default;
 
 ProfileIdDelegateImpl::ProfileIdDelegateImpl(Profile* profile)
     : profile_(profile) {

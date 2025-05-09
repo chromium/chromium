@@ -28,7 +28,7 @@ void CreateProfileGUID(ProfileIOS* profile) {
   }
 
   auto* preset_profile_management_data =
-      PresetProfileManagmentDataIOS::Get(profile);
+      PresetProfileManagementDataIOS::Get(profile);
   std::string preset_profile_guid = preset_profile_management_data->GetGuid();
 
   std::string new_profile_guid =
@@ -42,36 +42,36 @@ void CreateProfileGUID(ProfileIOS* profile) {
 
 }  // namespace
 
-PresetProfileManagmentDataIOS* PresetProfileManagmentDataIOS::Get(
+PresetProfileManagementDataIOS* PresetProfileManagementDataIOS::Get(
     ProfileIOS* profile) {
   CHECK(profile);
 
   if (!profile->GetUserData(kPresetProfileManagementDataIOS)) {
     profile->SetUserData(
         kPresetProfileManagementDataIOS,
-        std::make_unique<PresetProfileManagmentDataIOS>(std::string()));
+        std::make_unique<PresetProfileManagementDataIOS>(std::string()));
   }
 
-  return static_cast<PresetProfileManagmentDataIOS*>(
+  return static_cast<PresetProfileManagementDataIOS*>(
       profile->GetUserData(kPresetProfileManagementDataIOS));
 }
 
-void PresetProfileManagmentDataIOS::SetGuid(std::string guid) {
+void PresetProfileManagementDataIOS::SetGuid(std::string guid) {
   CHECK(!guid.empty());
   CHECK(guid_.empty());
 
   guid_ = std::move(guid);
 }
 
-std::string PresetProfileManagmentDataIOS::GetGuid() {
+std::string PresetProfileManagementDataIOS::GetGuid() {
   return guid_;
 }
 
-void PresetProfileManagmentDataIOS::ClearGuid() {
+void PresetProfileManagementDataIOS::ClearGuid() {
   guid_.clear();
 }
 
-PresetProfileManagmentDataIOS::PresetProfileManagmentDataIOS(
+PresetProfileManagementDataIOS::PresetProfileManagementDataIOS(
     std::string preset_guid)
     : guid_(std::move(preset_guid)) {}
 

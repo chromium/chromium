@@ -16,16 +16,17 @@ namespace enterprise {
 // This class manages the collection of data needed for profile management,
 // before the new profile is fully initialized. For now this class only contains
 // the preset profile GUID for a newly created profile.
-class PresetProfileManagmentDataIOS : public base::SupportsUserData::Data {
+class PresetProfileManagementDataIOS : public base::SupportsUserData::Data {
  public:
-  explicit PresetProfileManagmentDataIOS(std::string preset_guid);
-  ~PresetProfileManagmentDataIOS() override = default;
+  explicit PresetProfileManagementDataIOS(std::string preset_guid);
+  ~PresetProfileManagementDataIOS() override = default;
 
-  PresetProfileManagmentDataIOS(const PresetProfileManagmentDataIOS&) = delete;
-  PresetProfileManagmentDataIOS& operator=(
-      const PresetProfileManagmentDataIOS&) = delete;
+  PresetProfileManagementDataIOS(const PresetProfileManagementDataIOS&) =
+      delete;
+  PresetProfileManagementDataIOS& operator=(
+      const PresetProfileManagementDataIOS&) = delete;
 
-  static PresetProfileManagmentDataIOS* Get(ProfileIOS* profile);
+  static PresetProfileManagementDataIOS* Get(ProfileIOS* profile);
   void SetGuid(std::string guid);
   std::string GetGuid();
   void ClearGuid();
