@@ -1448,6 +1448,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_OPEN_CLEAR_BROWSING_DATA_DIALOG_BUTTON" desc="Title of the button that will open the delete browsing data dialog.">
         Delete browsing data…
       </message>
+      <message name="IDS_OPEN_CLEAR_BROWSING_DATA_DIALOG_BUTTON_ACCESSIBILITY_DESCRIPTION" desc="Accessibility description of the button that will open the delete browsing data dialog.">
+        Delete browsing data; select data to delete
+      </message>
       <message name="IDS_OPEN_FULL_CHROME_HISTORY" desc="Title of the button that will open the full history in Chrome browser from CCT history page.">
               Open full Chrome history
       </message>
