@@ -40,6 +40,9 @@ Suggestion CreateManageLoyaltyCardsSuggestion() {
   Suggestion suggestion(u"Manage loyalty cards...",
                         SuggestionType::kManageLoyaltyCard);
   suggestion.icon = Suggestion::Icon::kSettings;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  suggestion.trailing_icon = Suggestion::Icon::kGoogleWallet;
+#endif
   return suggestion;
 }
 

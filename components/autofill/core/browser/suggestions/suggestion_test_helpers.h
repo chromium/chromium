@@ -47,6 +47,8 @@ namespace autofill {
 
 ::testing::Matcher<Suggestion> HasIcon(Suggestion::Icon icon);
 
+::testing::Matcher<Suggestion> HasTrailingIcon(Suggestion::Icon icon);
+
 ::testing::Matcher<Suggestion> HasIphFeature(
     raw_ptr<const base::Feature> feature);
 

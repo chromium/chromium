@@ -185,7 +185,10 @@ TEST_F(ValuableSuggestionGeneratorTest,
                   EqualsSuggestion(SuggestionType::kManageLoyaltyCard,
                                    u"Manage loyalty cards...",
                                    Suggestion::Icon::kSettings)));
-
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_THAT(suggestions.back(),
+              HasTrailingIcon(Suggestion::Icon::kGoogleWallet));
+#endif
   // Verify that for loyalty cards, the custom icon is shown.
   EXPECT_THAT(suggestions[0],
               SuggestionIconHasImageOrUrl(fake_image, program_logo));
@@ -241,6 +244,10 @@ TEST_F(ValuableSuggestionGeneratorTest,
                   EqualsSuggestion(SuggestionType::kManageLoyaltyCard,
                                    u"Manage loyalty cards...",
                                    Suggestion::Icon::kSettings)));
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_THAT(lc_submenu_suggestion.children.back(),
+              HasTrailingIcon(Suggestion::Icon::kGoogleWallet));
+#endif
 }
 
 TEST_F(ValuableSuggestionGeneratorTest,

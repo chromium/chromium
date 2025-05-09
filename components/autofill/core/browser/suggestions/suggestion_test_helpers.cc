@@ -73,6 +73,10 @@ Matcher<Suggestion> HasIcon(Suggestion::Icon icon) {
   return Field(&Suggestion::icon, icon);
 }
 
+Matcher<Suggestion> HasTrailingIcon(Suggestion::Icon icon) {
+  return Field(&Suggestion::trailing_icon, icon);
+}
+
 Matcher<Suggestion> HasIphFeature(
     raw_ptr<const base::Feature> feature_for_iph) {
   return Field(&Suggestion::iph_metadata,
