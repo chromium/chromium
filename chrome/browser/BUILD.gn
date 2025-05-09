@@ -8438,6 +8438,7 @@ static_library("browser_public_dependencies") {
     "//services/network/public/mojom",
     "//services/screen_ai/buildflags",
     "//sql",
+    "//ui/lottie",
   ]
   if (is_android) {
     public_deps += [
@@ -8481,7 +8482,6 @@ static_library("browser_public_dependencies") {
       "//third_party/lens_server_proto:lens_overlay_proto",
       "//third_party/nearby:encrypted_metadata_proto",
       "//third_party/nearby:rpc_resources_proto",
-      "//ui/lottie",
     ]
   }
   if (is_win) {

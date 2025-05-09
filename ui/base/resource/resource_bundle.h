@@ -23,13 +23,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/image.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ui/base/models/image_model.h"
-#endif
 
 class SkBitmap;
 
@@ -160,10 +157,8 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   };
 
   using LottieData = std::vector<uint8_t>;
-#if BUILDFLAG(IS_CHROMEOS)
   using LottieImageParseFunction = gfx::ImageSkia (*)(LottieData);
   using LottieThemedImageParseFunction = ui::ImageModel (*)(LottieData);
-#endif
 
   // Initialize the ResourceBundle for this process. Does not take ownership of
   // the |delegate| value. Returns the language selected or an empty string if
@@ -211,11 +206,11 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // Return the global resource loader instance.
   static ResourceBundle& GetSharedInstance();
 
-#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/415384540): Simplify the injection after enabling lottie
+  // on all platforms.
   static void SetLottieParsingFunctions(
       LottieImageParseFunction parse_lottie_as_still_image,
       LottieThemedImageParseFunction parse_lottie_as_themed_still_image);
-#endif
 
   // Exposed for testing, otherwise use GetSharedInstance().
   explicit ResourceBundle(Delegate* delegate);
@@ -292,11 +287,9 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // `SkottieWrapper`.
   std::optional<LottieData> GetLottieData(int resource_id) const;
 
-#if BUILDFLAG(IS_CHROMEOS)
   // Gets a themed Lottie image (not animated) with the specified |resource_id|
   // from the current module data. |ResourceBundle| owns the result.
   const ui::ImageModel& GetThemedLottieImageNamed(int resource_id);
-#endif
 
   // Returns true if LoadDataResourceBytes would return non-null data for the
   // specified |resource_id|.
@@ -510,9 +503,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // Returns an empty image for when a resource cannot be loaded. This is a
   // bright red bitmap.
   gfx::Image& GetEmptyImage();
-#if BUILDFLAG(IS_CHROMEOS)
   const ui::ImageModel& GetEmptyImageModel();
-#endif
 
   const base::FilePath& GetOverriddenPakPath() const;
 
@@ -547,15 +538,11 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // ownership of the pointers.
   using ImageMap = std::map<int, gfx::Image>;
   ImageMap images_;
-#if BUILDFLAG(IS_CHROMEOS)
   using ImageModelMap = std::map<int, ui::ImageModel>;
   ImageModelMap image_models_;
-#endif
 
   gfx::Image empty_image_;
-#if BUILDFLAG(IS_CHROMEOS)
   ui::ImageModel empty_image_model_;
-#endif
 
   // The various font lists used, as a map from a signed size delta from the
   // platform base font size, plus style, to the FontList. Cached to avoid

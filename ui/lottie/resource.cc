@@ -15,18 +15,15 @@
 #include "cc/paint/skottie_color_map.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/lottie/animation.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ui/base/models/image_model.h"  // nogncheck
-#include "ui/color/color_id.h"           // nogncheck
-#include "ui/color/color_provider.h"     // nogncheck
-#endif
 
 namespace lottie {
 
@@ -67,9 +64,9 @@ gfx::ImageSkia CreateImageSkia(Animation* content) {
                         rep.pixel_size());
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 // Creates a |cc::SkottieColorMap| with theme colors from a |ui::ColorProvider|.
 cc::SkottieColorMap CreateColorMap(const ui::ColorProvider* color_provider) {
+#if BUILDFLAG(IS_CHROMEOS)
   return {
       cc::SkottieMapColor("cros.sys.illo.color1",
                           color_provider->GetColor(ui::kColorNativeColor1)),
@@ -134,6 +131,10 @@ cc::SkottieColorMap CreateColorMap(const ui::ColorProvider* color_provider) {
       cc::SkottieMapColor(
           "_CrOS_SecondaryColor",
           color_provider->GetColor(ui::kColorNativeSecondaryColor))};
+#else
+  // TODO(crbug.com/414416729): Add color mapping for other platform.
+  return {};
+#endif
 }
 
 // Used for a |ui::ImageModel::ImageGenerator|.
@@ -145,7 +146,6 @@ gfx::ImageSkia CreateImageSkiaWithCurrentTheme(
       CreateColorMap(color_provider));
   return CreateImageSkia(content.get());
 }
-#endif
 
 }  // namespace
 
@@ -155,7 +155,6 @@ gfx::ImageSkia ParseLottieAsStillImage(std::vector<uint8_t> data) {
   return CreateImageSkia(content.get());
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 ui::ImageModel ParseLottieAsThemedStillImage(std::vector<uint8_t> data) {
   const gfx::Size size = std::make_unique<Animation>(
                              cc::SkottieWrapper::UnsafeCreateSerializable(data))
@@ -164,6 +163,5 @@ ui::ImageModel ParseLottieAsThemedStillImage(std::vector<uint8_t> data) {
       base::BindRepeating(&CreateImageSkiaWithCurrentTheme, std::move(data)),
       size);
 }
-#endif
 
 }  // namespace lottie

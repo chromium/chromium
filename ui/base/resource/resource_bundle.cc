@@ -91,7 +91,6 @@ const unsigned char kPngDataChunkType[4] = { 'I', 'D', 'A', 'T' };
 const char kPakFileExtension[] = ".pak";
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
 // Pointers to the functions |lottie::ParseLottieAsStillImage| and
 // |lottie::ParseLottieAsThemedStillImage|, so that dependencies used by those
 // functions do not need to be included directly in ui/base.
@@ -99,7 +98,6 @@ ResourceBundle::LottieImageParseFunction g_parse_lottie_as_still_image_ =
     nullptr;
 ResourceBundle::LottieThemedImageParseFunction
     g_parse_lottie_as_themed_still_image_ = nullptr;
-#endif
 
 ResourceBundle* g_shared_instance_ = nullptr;
 
@@ -353,7 +351,6 @@ ResourceBundle& ResourceBundle::GetSharedInstance() {
   return *g_shared_instance_;
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 // static
 void ResourceBundle::SetLottieParsingFunctions(
     LottieImageParseFunction parse_lottie_as_still_image,
@@ -361,7 +358,6 @@ void ResourceBundle::SetLottieParsingFunctions(
   g_parse_lottie_as_still_image_ = parse_lottie_as_still_image;
   g_parse_lottie_as_themed_still_image_ = parse_lottie_as_themed_still_image;
 }
-#endif
 
 void ResourceBundle::LoadSecondaryLocaleDataWithPakFileRegion(
     base::File pak_file,
@@ -623,7 +619,6 @@ std::optional<ResourceBundle::LottieData> ResourceBundle::GetLottieData(
   return result;
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 const ui::ImageModel& ResourceBundle::GetThemedLottieImageNamed(
     int resource_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -643,7 +638,6 @@ const ui::ImageModel& ResourceBundle::GetThemedLottieImageNamed(
   DCHECK(inserted.second);
   return inserted.first->second;
 }
-#endif
 
 constexpr uint8_t ResourceBundle::kBrotliConst[];
 
@@ -1071,11 +1065,13 @@ void ResourceBundle::InitDefaultFontList() {
 
 gfx::ImageSkia ResourceBundle::CreateImageSkia(int resource_id) {
   DCHECK(!resource_handles_.empty()) << "Missing call to SetResourcesDataDLL?";
-#if BUILDFLAG(IS_CHROMEOS)
+
   std::optional<LottieData> data = GetLottieData(resource_id);
   if (data) {
     return (*g_parse_lottie_as_still_image_)(std::move(*data));
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
   const ResourceScaleFactor scale_factor_to_load = GetMaxResourceScaleFactor();
 #elif BUILDFLAG(IS_WIN)
   const ResourceScaleFactor scale_factor_to_load =
@@ -1084,6 +1080,7 @@ gfx::ImageSkia ResourceBundle::CreateImageSkia(int resource_id) {
 #else
   const ResourceScaleFactor scale_factor_to_load = ui::k100Percent;
 #endif
+
   // TODO(oshima): Consider reading the image size from png IHDR chunk and
   // skip decoding here and remove #ifdef below.
   // |ResourceBundle::GetSharedInstance()| is destroyed after the

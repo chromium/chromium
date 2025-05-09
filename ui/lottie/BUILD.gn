@@ -18,13 +18,8 @@ component("lottie") {
   deps = [
     "//base",
     "//cc/paint",
+    "//ui/base",
+    "//ui/color",
     "//ui/gfx",
   ]
-
-  if (is_chromeos) {
-    deps += [
-      "//ui/base",
-      "//ui/color",
-    ]
-  }
 }

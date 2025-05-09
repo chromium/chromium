@@ -157,7 +157,7 @@ static_library("test_support") {
     "//ui/base",
     "//v8:v8_headers",
   ]
-  public_deps = []
+  public_deps = [ "//ui/lottie" ]
 
   if (is_android) {
     deps += [
@@ -191,7 +191,6 @@ static_library("test_support") {
       "//chromeos/ash/experiences/arc:arc_base_utils",
       "//chromeos/dbus/constants",
     ]
-    public_deps += [ "//ui/lottie" ]
   }
 
   if (use_ozone) {

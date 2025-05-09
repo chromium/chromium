@@ -72,7 +72,6 @@ constexpr char kLottieData[] = "LOTTIEtest";
 // The contents after the prefix has been removed.
 constexpr uint8_t kLottieExpected[] = {'t', 'e', 's', 't'};
 
-#if BUILDFLAG(IS_CHROMEOS)
 // Mock of |lottie::ParseLottieAsStillImage|. Checks that |kLottieData| is
 // properly stripped of the "LOTTIE" prefix.
 gfx::ImageSkia ParseLottieAsStillImageForTesting(std::vector<uint8_t> data) {
@@ -82,7 +81,6 @@ gfx::ImageSkia ParseLottieAsStillImageForTesting(std::vector<uint8_t> data) {
   return gfx::ImageSkia(
       gfx::ImageSkiaRep(gfx::Size(kDimension, kDimension), 0.f));
 }
-#endif
 
 // Returns |bitmap_data| with |custom_chunk| inserted after the IHDR chunk.
 void AddCustomChunk(std::string_view custom_chunk,
@@ -722,7 +720,6 @@ TEST_F(ResourceBundleImageTest, Lottie) {
   ASSERT_TRUE(data.has_value());
   EXPECT_TRUE(std::ranges::equal(*data, kLottieExpected));
 
-#if BUILDFLAG(IS_CHROMEOS)
   ui::ResourceBundle::SetLottieParsingFunctions(
       &ParseLottieAsStillImageForTesting,
       /*parse_lottie_as_themed_still_image=*/nullptr);
@@ -738,7 +735,6 @@ TEST_F(ResourceBundleImageTest, Lottie) {
 
   // Lottie resource should be 'unscaled'.
   EXPECT_TRUE(image_skia->image_reps()[0].unscaled());
-#endif
 }
 
 }  // namespace ui

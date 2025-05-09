@@ -106,6 +106,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/scoped_startup_resource_bundle.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/lottie/resource.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <malloc.h>
@@ -165,7 +166,6 @@
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "content/public/common/content_features.h"
-#include "ui/lottie/resource.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
