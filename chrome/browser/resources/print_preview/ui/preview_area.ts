@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import './print_preview_vars.css.js';
 import '/strings.m.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {DarkModeMixin} from '../dark_mode_mixin.js';
+import {DarkModeMixinLit} from '../dark_mode_mixin_lit.js';
 import {Coordinate2d} from '../data/coordinate2d.js';
 import type {Destination} from '../data/destination.js';
 import type {Margins, MarginsSetting} from '../data/margins.js';
@@ -31,8 +29,9 @@ import type {PrintPreviewMarginControlContainerElement} from './margin_control_c
 import {MARGIN_KEY_MAP} from './margin_control_container.js';
 import type {PluginProxy} from './plugin_proxy.js';
 import {PluginProxyImpl} from './plugin_proxy.js';
-import {getTemplate} from './preview_area.html.js';
-import {SettingsMixin} from './settings_mixin.js';
+import {getCss} from './preview_area.css.js';
+import {getHtml} from './preview_area.html.js';
+import {SettingsMixinLit} from './settings_mixin_lit.js';
 
 export type PreviewTicket = Ticket&{
   headerFooterEnabled: boolean,
@@ -54,8 +53,8 @@ export interface PrintPreviewPreviewAreaElement {
   $: {marginControlContainer: PrintPreviewMarginControlContainerElement};
 }
 
-const PrintPreviewPreviewAreaElementBase =
-    WebUiListenerMixin(I18nMixin(SettingsMixin(DarkModeMixin(PolymerElement))));
+const PrintPreviewPreviewAreaElementBase = WebUiListenerMixinLit(
+    I18nMixinLit(SettingsMixinLit(DarkModeMixinLit(CrLitElement))));
 
 export class PrintPreviewPreviewAreaElement extends
     PrintPreviewPreviewAreaElementBase {
@@ -63,72 +62,49 @@ export class PrintPreviewPreviewAreaElement extends
     return 'print-preview-preview-area';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      destination: Object,
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      documentModifiable: Boolean,
+  static override get properties() {
+    return {
+      destination: {type: Object},
+      documentModifiable: {type: Boolean},
 
       error: {
         type: Number,
         notify: true,
       },
 
-      margins: Object,
-
-      measurementSystem: Object,
-
-      pageSize: Object,
+      margins: {type: Object},
+      measurementSystem: {type: Object},
+      pageSize: {type: Object},
 
       previewState: {
         type: String,
         notify: true,
-        value: PreviewAreaState.LOADING,
       },
 
-      state: Number,
-
-      pluginLoadComplete_: {
-        type: Boolean,
-        value: false,
-      },
-
-      documentReady_: {
-        type: Boolean,
-        value: false,
-      },
-
-      previewLoaded_: {
-        type: Boolean,
-        notify: true,
-        computed: 'computePreviewLoaded_(documentReady_, pluginLoadComplete_)',
-      },
+      state: {type: Number},
+      pluginLoadComplete_: {type: Boolean},
+      documentReady_: {type: Boolean},
     };
   }
 
-  static get observers() {
-    return [
-      'onDarkModeChanged_(inDarkMode)',
-      'pluginOrDocumentStatusChanged_(pluginLoadComplete_, documentReady_)',
-      'onStateOrErrorChange_(state, error)',
-    ];
-  }
-
-  declare destination: Destination;
-  declare documentModifiable: boolean;
-  declare error: Error;
-  declare margins: Margins;
-  declare measurementSystem: MeasurementSystem|null;
-  declare pageSize: Size;
-  declare previewState: PreviewAreaState;
-  declare state: State;
-  declare private pluginLoadComplete_: boolean;
-  declare private documentReady_: boolean;
-  declare private previewLoaded_: boolean;
+  accessor destination: Destination;
+  accessor documentModifiable: boolean;
+  accessor error: Error;
+  accessor margins: Margins;
+  accessor measurementSystem: MeasurementSystem|null;
+  accessor pageSize: Size;
+  accessor previewState: PreviewAreaState = PreviewAreaState.LOADING;
+  accessor state: State;
+  private accessor pluginLoadComplete_: boolean = false;
+  private accessor documentReady_: boolean = false;
 
   private nativeLayer_: NativeLayer|null = null;
   private lastTicket_: PreviewTicket|null = null;
@@ -144,8 +120,28 @@ export class PrintPreviewPreviewAreaElement extends
         'page-preview-ready', this.onPagePreviewReady_.bind(this));
   }
 
-  private computePreviewLoaded_(): boolean {
-    return this.documentReady_ && this.pluginLoadComplete_;
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedProperties.has('state') || changedProperties.has('error')) {
+      this.onStateOrErrorChange_();
+    }
+
+    if (changedPrivateProperties.has('documentReady_') ||
+        changedPrivateProperties.has('pluginLoadComplete_')) {
+      this.pluginOrDocumentStatusChanged_();
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('inDarkMode')) {
+      this.onDarkModeChanged_();
+    }
   }
 
   getLastTicketForTest(): PreviewTicket|null {
@@ -153,7 +149,7 @@ export class PrintPreviewPreviewAreaElement extends
   }
 
   previewLoaded(): boolean {
-    return this.previewLoaded_;
+    return this.documentReady_ && this.pluginLoadComplete_;
   }
 
   /**
@@ -207,42 +203,35 @@ export class PrintPreviewPreviewAreaElement extends
   /**
    * @return 'invisible' if overlay is invisible, '' otherwise.
    */
-  private getInvisible_(): string {
+  protected getInvisible_(): string {
     return this.isInDisplayPreviewState_() ? 'invisible' : '';
-  }
-
-  /**
-   * @return 'true' if overlay is aria-hidden, 'false' otherwise.
-   */
-  private getAriaHidden_(): string {
-    return this.isInDisplayPreviewState_().toString();
   }
 
   /**
    * @return Whether the preview area is in DISPLAY_PREVIEW state.
    */
-  private isInDisplayPreviewState_(): boolean {
+  protected isInDisplayPreviewState_(): boolean {
     return this.previewState === PreviewAreaState.DISPLAY_PREVIEW;
   }
 
   /**
    * @return Whether the preview is currently loading.
    */
-  private isPreviewLoading_(): boolean {
+  protected isPreviewLoading_(): boolean {
     return this.previewState === PreviewAreaState.LOADING;
   }
 
   /**
    * @return 'jumping-dots' to enable animation, '' otherwise.
    */
-  private getJumpingDots_(): string {
+  protected getJumpingDots_(): string {
     return this.isPreviewLoading_() ? 'jumping-dots' : '';
   }
 
   /**
    * @return The current preview area message to display.
    */
-  private currentMessage_(): TrustedHTML {
+  protected currentMessage_(): TrustedHTML {
     switch (this.previewState) {
       case PreviewAreaState.LOADING:
         return this.i18nAdvanced('loading');
@@ -309,8 +298,8 @@ export class PrintPreviewPreviewAreaElement extends
     if (!this.pluginProxy_.pluginReady()) {
       const plugin = this.pluginProxy_.createPlugin(previewUid, index);
       this.pluginProxy_.setKeyEventCallback(this.keyEventCallback_!);
-      this.shadowRoot!.querySelector(
-                          '.preview-area-plugin-wrapper')!.appendChild(plugin);
+      this.shadowRoot.querySelector(
+                         '.preview-area-plugin-wrapper')!.appendChild(plugin);
       this.pluginProxy_.setLoadCompleteCallback(
           this.onPluginLoadComplete_.bind(this));
       this.pluginProxy_.setViewportChangedCallback(
@@ -357,7 +346,7 @@ export class PrintPreviewPreviewAreaElement extends
     // Ensure the PDF viewer isn't tabbable if the window is small enough that
     // the zoom toolbar isn't displayed.
     const tabindex = viewportWidth < 300 || viewportHeight < 200 ? '-1' : '0';
-    this.shadowRoot!.querySelector('.preview-area-plugin')!.setAttribute(
+    this.shadowRoot.querySelector('.preview-area-plugin')!.setAttribute(
         'tabindex', tabindex);
     this.$.marginControlContainer.updateTranslationTransform(
         new Coordinate2d(pageX, pageY));
@@ -368,7 +357,7 @@ export class PrintPreviewPreviewAreaElement extends
     // Align the margin control container with the preview content area.
     // The offset may be caused by the scrollbar on the left in the preview
     // area in right-to-left direction.
-    const previewDocument = this.shadowRoot!
+    const previewDocument = this.shadowRoot
                                 .querySelector<HTMLIFrameElement>(
                                     '.preview-area-plugin')!.contentDocument;
     if (previewDocument && previewDocument.documentElement) {
@@ -481,7 +470,7 @@ export class PrintPreviewPreviewAreaElement extends
   /**
    * Called when dragging margins starts or stops.
    */
-  private onMarginDragChanged_(e: CustomEvent<boolean>) {
+  protected onMarginDragChanged_(e: CustomEvent<boolean>) {
     if (!this.pluginProxy_.pluginReady()) {
       return;
     }
@@ -496,7 +485,7 @@ export class PrintPreviewPreviewAreaElement extends
   /**
    * @param e Contains information about where the plugin should scroll to.
    */
-  private onTextFocusPosition_(e: CustomEvent<{x: number, y: number}>) {
+  protected onTextFocusPosition_(e: CustomEvent<{x: number, y: number}>) {
     // TODO(tkent): This is a workaround of a preview-area scrolling
     // issue. Blink scrolls preview-area on focus, but we don't want it.  We
     // should adjust scroll position of PDF preview and positions of
@@ -517,7 +506,7 @@ export class PrintPreviewPreviewAreaElement extends
   /**
    * @return Whether margin settings are valid for the print ticket.
    */
-  private marginsValid_(): boolean {
+  protected marginsValid_(): boolean {
     const type = this.getSettingValue('margins') as MarginsType;
     if (!Object.values(MarginsType).includes(type)) {
       // Unrecognized margins type.
@@ -762,6 +751,8 @@ export class PrintPreviewPreviewAreaElement extends
     }
   }
 }
+
+export type PreviewAreaElement = PrintPreviewPreviewAreaElement;
 
 declare global {
   interface HTMLElementTagNameMap {

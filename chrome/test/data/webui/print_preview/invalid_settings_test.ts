@@ -82,9 +82,9 @@ suite('InvalidSettingsTest', function() {
     // Get references to relevant elements.
     const previewAreaEl = page.$.previewArea;
     const overlay =
-        previewAreaEl.shadowRoot!.querySelector('.preview-area-overlay-layer')!;
+        previewAreaEl.shadowRoot.querySelector('.preview-area-overlay-layer')!;
     const messageEl =
-        previewAreaEl.shadowRoot!.querySelector('.preview-area-message')!;
+        previewAreaEl.shadowRoot.querySelector('.preview-area-message')!;
     const sidebar = page.shadowRoot!.querySelector('print-preview-sidebar')!;
     let printButton: CrButtonElement;
     const destinationSettings =
