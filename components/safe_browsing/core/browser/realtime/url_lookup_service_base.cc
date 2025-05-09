@@ -139,8 +139,7 @@ void InvokeLookupResponseCallbacks(
 }  // namespace
 
 RealTimeUrlLookupServiceBase::PendingRTLookupRequestData::
-    PendingRTLookupRequestData(std::unique_ptr<network::SimpleURLLoader> loader)
-    : loader_(std::move(loader)) {}
+    PendingRTLookupRequestData() = default;
 RealTimeUrlLookupServiceBase::PendingRTLookupRequestData::
     PendingRTLookupRequestData(PendingRTLookupRequestData&&) = default;
 RealTimeUrlLookupServiceBase::PendingRTLookupRequestData&
@@ -154,6 +153,12 @@ void RealTimeUrlLookupServiceBase::PendingRTLookupRequestData::AddCallback(
   if (!callback.is_null()) {
     callbacks_.emplace_back(std::move(callback));
   }
+}
+
+void RealTimeUrlLookupServiceBase::PendingRTLookupRequestData::SetLoader(
+    std::unique_ptr<network::SimpleURLLoader> loader) {
+  CHECK(!loader_);
+  loader_ = std::move(loader);
 }
 
 RealTimeUrlLookupServiceBase::RealTimeUrlLookupServiceBase(
@@ -408,11 +413,17 @@ void RealTimeUrlLookupServiceBase::MaybeSendRequest(
     return;
   }
 
+  // Add request data with the associated callback early to avoid
+  // race conditions from multiple requests being sent at the same time.
+  CHECK_EQ(pending_requests_.count(sanitized_url), 0u);
+  PendingRTLookupRequestData request_data;
+  request_data.AddCallback(std::move(response_callback));
+  pending_requests_.emplace(sanitized_url, std::move(request_data));
+
   StartFillingRequestProto(
       sanitized_url, is_sampled_report, tab_id, std::move(referring_app_info),
       base::BindOnce(&RealTimeUrlLookupServiceBase::OnRequestProtoFilled,
                      GetWeakPtr(), sanitized_url, access_token_string,
-                     std::move(response_callback),
                      std::move(callback_task_runner), is_sampled_report));
 }
 
@@ -421,7 +432,6 @@ void RealTimeUrlLookupServiceBase::SendRequestInternal(
     std::unique_ptr<network::ResourceRequest> resource_request,
     const std::string& req_data,
     std::optional<std::string> access_token_string,
-    RTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     ChromeUserPopulation::UserPopulation user_population,
     bool is_sampled_report,
@@ -444,10 +454,8 @@ void RealTimeUrlLookupServiceBase::SendRequestInternal(
                      start_time, is_sampled_report,
                      std::move(callback_task_runner), webui_token));
 
-  DCHECK_EQ(pending_requests_.count(url), 0u);
-  PendingRTLookupRequestData data(std::move(loader));
-  data.AddCallback(std::move(response_callback));
-  pending_requests_.emplace(url, std::move(data));
+  CHECK_EQ(pending_requests_.count(url), 1u);
+  pending_requests_.at(url).SetLoader(std::move(loader));
 }
 
 void RealTimeUrlLookupServiceBase::OnURLLoaderComplete(
@@ -685,7 +693,6 @@ void RealTimeUrlLookupServiceBase::OnIpAddressesFetched(
 void RealTimeUrlLookupServiceBase::OnRequestProtoFilled(
     const GURL& sanitized_url,
     const std::string& access_token_string,
-    RTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     bool is_sampled_report,
     std::unique_ptr<RTLookupRequest> request) {
@@ -720,10 +727,10 @@ void RealTimeUrlLookupServiceBase::OnRequestProtoFilled(
 
   // NOTE: Pass |callback_task_runner| by copying it here as it's also needed
   // just below.
-  SendRequestInternal(
-      sanitized_url, std::move(resource_request), req_data, access_token_string,
-      std::move(response_callback), callback_task_runner,
-      request->population().user_population(), is_sampled_report, webui_token);
+  SendRequestInternal(sanitized_url, std::move(resource_request), req_data,
+                      access_token_string, callback_task_runner,
+                      request->population().user_population(),
+                      is_sampled_report, webui_token);
 }
 
 std::optional<int> RealTimeUrlLookupServiceBase::LogLookupRequest(
