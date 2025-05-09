@@ -70,9 +70,8 @@ AmbientSigninBubbleView::AmbientSigninBubbleView(
   SetShowIcon(true);
   SetIcon(ui::ImageModel::FromVectorIcon(GooglePasswordManagerVectorIcon()));
   SetShowTitle(true);
-  // TODO(crbug.com/358119268): Make sure to  translate the final string.
-  SetTitle(l10n_util::GetStringFUTF16(IDS_WEBAUTHN_AMBIENT_BUBBLE_TITLE,
-                                      controller_->GetRpId()));
+  SetTitle(l10n_util::GetStringFUTF16(
+      IDS_WEBAUTHN_SIGN_IN_TO_WEBSITE_DIALOG_TITLE, controller_->GetRpId()));
 
   auto layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical);
