@@ -4,6 +4,7 @@
 
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_mac.h"
 
+#import <Cocoa/Cocoa.h>
 #include <CoreGraphics/CoreGraphics.h>
 
 #include <ostream>
@@ -17,6 +18,8 @@
 #include "base/memory/scoped_policy.h"
 #include "base/strings/pattern.h"
 #include "base/strings/sys_string_conversions.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/accessibility/platform/ax_platform_tree_manager.h"
 #include "ui/accessibility/platform/ax_private_attributes_mac.h"
 #include "ui/accessibility/platform/inspect/ax_element_wrapper_mac.h"
 
@@ -254,6 +257,24 @@ base::apple::ScopedCFTypeRef<AXUIElementRef> FindAXWindowChild(
   }
 
   return base::apple::ScopedCFTypeRef<AXUIElementRef>();
+}
+
+bool IsWebContent(AXUIElementRef element,
+                  base::WeakPtr<AXPlatformTreeManager> manager) {
+  if (!element || !manager) {
+    return false;
+  }
+
+  AXElementWrapper wrapper((__bridge id)element);
+  NSString* chrome_node_id =
+      *wrapper.GetAttributeValue(NSAccessibilityChromeAXNodeIdAttribute);
+  if (!chrome_node_id) {
+    return false;
+  }
+
+  AXPlatformNode* ax_platform_node =
+      manager->GetPlatformNodeFromTree([chrome_node_id intValue]);
+  return ax_platform_node ? ax_platform_node->IsWebContent() : false;
 }
 
 }  // namespace ui

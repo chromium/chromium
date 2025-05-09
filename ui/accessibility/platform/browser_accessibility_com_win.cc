@@ -1129,7 +1129,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_attributes(USHORT max_attribs,
   if (IsDestroyed()) {
     return E_FAIL;
   }
-  if (!GetDelegate()->IsWebContent()) {
+  if (!IsWebContent()) {
     return E_FAIL;
   }
 
@@ -1394,7 +1394,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_innerHTML(BSTR* innerHTML) {
   if (IsDestroyed()) {
     return E_FAIL;
   }
-  if (!GetDelegate()->IsWebContent()) {
+  if (!IsWebContent()) {
     return E_FAIL;
   }
   // Inner HTML is exposed only for math, only when kExtendedProperties is on.

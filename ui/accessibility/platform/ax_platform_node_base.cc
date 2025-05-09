@@ -488,6 +488,10 @@ std::string AXPlatformNodeBase::GetRootURL() const {
   return GetDelegate()->GetRootURL();
 }
 
+bool AXPlatformNodeBase::IsWebContent() const {
+  return GetDelegate()->IsWebContent();
+}
+
 AXPlatformNodeDelegate* AXPlatformNodeBase::GetDelegate() const {
   return &CHECK_DEREF(delegate_.get());
 }

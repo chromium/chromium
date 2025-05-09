@@ -107,6 +107,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   // correspond to what would be shown in the Omnibox.
   std::string GetRootURL() const override;
 
+  // Returns true if this node from web content.
+  bool IsWebContent() const override;
+
 #if BUILDFLAG(IS_APPLE)
   void AnnounceTextAs(const std::u16string& text,
                       AnnouncementType announcement_type) override;

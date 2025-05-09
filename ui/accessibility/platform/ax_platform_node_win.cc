@@ -730,7 +730,7 @@ void AXPlatformNodeWin::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
   // TODO(benjamin.beaudry): Uncomment DCHECK once https://crbug.com/331840469
   // is fixed.
   // DCHECK(event_type != ax::mojom::Event::kLiveRegionChanged ||
-  //        GetDelegate()->IsWebContent() || IsUIAControl())
+  //        IsWebContent() || IsUIAControl())
   //     << "For views, the LiveRegionChanged event should only be fired on
   //     nodes that are UIA controls.";
 
@@ -741,7 +741,7 @@ void AXPlatformNodeWin::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
     // need to update the nodes' hypertext
     // when the value changes. Otherwise, for web and PDF content, this is
     // handled by "BrowserAccessibilityComWin".
-    if (!GetDelegate()->IsWebContent()) {
+    if (!IsWebContent()) {
       UpdateComputedHypertext();
     }
   }
@@ -7512,7 +7512,7 @@ bool AXPlatformNodeWin::IsUIAControl() const {
   // populate the content and control views with items that make sense to
   // traverse over.
 
-  if (GetDelegate()->IsWebContent()) {
+  if (IsWebContent()) {
     // Invisible or ignored elements should not show up in control view at all.
     if (IsInvisibleOrIgnored())
       return false;
@@ -8534,7 +8534,7 @@ void AXPlatformNodeWin::SanitizeTextAttributeValue(const std::string& input,
 
 void AXPlatformNodeWin::NotifyAPIObserverForPatternRequest(
     PATTERNID pattern_id) const {
-  if (!GetDelegate()->IsWebContent()) {
+  if (!IsWebContent()) {
     return;
   }
 
@@ -8562,7 +8562,7 @@ void AXPlatformNodeWin::NotifyAPIObserverForPropertyRequest(
     PROPERTYID property_id) const {
   // Non-web content is always enabled, if a client isn't looking for web
   // content, don't enable.
-  if (!GetDelegate()->IsWebContent()) {
+  if (!IsWebContent()) {
     return;
   }
 
@@ -8794,7 +8794,7 @@ bool AXPlatformNodeWin::IsInvokeSupported() const {
 }
 
 void AXPlatformNodeWin::OnPropertiesUsed() const {
-  if (GetDelegate()->IsWebContent()) {
+  if (IsWebContent()) {
     AXPlatform::GetInstance().OnPropertiesUsedInWebContent();
   } else {
     AXPlatform::GetInstance().OnPropertiesUsedInBrowserUI();
@@ -8802,13 +8802,13 @@ void AXPlatformNodeWin::OnPropertiesUsed() const {
 }
 
 void AXPlatformNodeWin::OnExtendedPropertiesUsed() const {
-  if (GetDelegate()->IsWebContent()) {
+  if (IsWebContent()) {
     AXPlatform::GetInstance().OnExtendedPropertiesUsedInWebContent();
   }
 }
 
 void AXPlatformNodeWin::OnInlineTextBoxesUsed() const {
-  if (GetDelegate()->IsWebContent()) {
+  if (IsWebContent()) {
     AXPlatform::GetInstance().OnInlineTextBoxesUsedInWebContent();
   }
 }

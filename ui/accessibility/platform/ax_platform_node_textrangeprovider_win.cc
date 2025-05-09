@@ -1068,7 +1068,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ScrollIntoView(BOOL align_to_top) {
   // Return early when we're trying to scroll in a View.
   // TODO(accessibility): Investigate if Views support scrolling and how to
   // implement it.
-  if (!GetOwner()->GetDelegate()->IsWebContent()) {
+  if (!GetOwner()->IsWebContent()) {
     return S_OK;
   }
 

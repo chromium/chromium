@@ -12,9 +12,12 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 namespace ui {
+
+class AXPlatformTreeManager;
 
 // Returns true if the given accessibility attribute is valid, and could have
 // been exposed on certain accessibility objects.
@@ -50,6 +53,12 @@ COMPONENT_EXPORT(AX_PLATFORM)
 base::apple::ScopedCFTypeRef<AXUIElementRef> FindAXWindowChild(
     AXUIElementRef parent,
     const std::string& pattern);
+
+// Returns true if the given AXUIElementRef corresponds to an AXPlatformNode
+// that is web content.
+COMPONENT_EXPORT(AX_PLATFORM)
+bool IsWebContent(AXUIElementRef element,
+                  base::WeakPtr<AXPlatformTreeManager> manager);
 
 }  // namespace ui
 

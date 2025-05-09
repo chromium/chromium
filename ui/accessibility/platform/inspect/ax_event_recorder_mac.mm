@@ -146,6 +146,10 @@ void AXEventRecorderMac::EventReceived(AXUIElementRef element,
     return;
   }
 
+  if (only_web_events_ && !IsWebContent(element, manager_)) {
+    return;
+  }
+
   auto formatter = AXTreeFormatterMac();
   formatter.SetPropertyFilters(property_filters_,
                                AXTreeFormatter::kFiltersDefaultSet);

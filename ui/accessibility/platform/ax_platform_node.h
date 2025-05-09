@@ -96,6 +96,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
   // correspond to what would be shown in the Omnibox.
   virtual std::string GetRootURL() const = 0;
 
+  // Returns true if this node from web content.
+  virtual bool IsWebContent() const = 0;
+
 #if BUILDFLAG(IS_APPLE)
   // Fire a platform-specific notification to speak the |text| string.
   // AnnouncementType kPolite will speak the given string.
