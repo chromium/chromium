@@ -43,6 +43,9 @@ class OsJapaneseDictionaryExpandElement extends PolymerElement {
       syncedEntriesCount: {
         type: Number,
       },
+      showingDeleteDialog_: {
+        type: Boolean,
+      },
     };
   }
 
@@ -55,6 +58,8 @@ class OsJapaneseDictionaryExpandElement extends PolymerElement {
 
   // Whether or not this container UI is expanded or folded.
   private expanded_ = false;
+
+  private showingDeleteDialog_ = false;
 
   // Adds a new entry locally to create an entry-row component.
   private addEntry_(): void {
@@ -87,6 +92,15 @@ class OsJapaneseDictionaryExpandElement extends PolymerElement {
     if (dictionarySaved) {
       this.dispatchSavedEvent_();
     }
+    this.showingDeleteDialog_ = false;
+  }
+
+  private hideDeleteDialog_() {
+    this.showingDeleteDialog_ = false;
+  }
+
+  private showDeleteDialog_() {
+    this.showingDeleteDialog_ = true;
   }
 
   // Export dictionary.

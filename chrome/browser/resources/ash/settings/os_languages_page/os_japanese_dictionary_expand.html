@@ -46,7 +46,7 @@
   </cr-expand-button>
   <div class="separator"></div>
   <cr-icon-button class="icon-clear"
-    on-click="deleteDictionary_"
+    on-click="showDeleteDialog_"
     title="DeleteDictionary"
   >
   </cr-icon-button>
@@ -86,3 +86,14 @@
     </cr-button>
   </template>
 </iron-collapse>
+
+<template is="dom-if" if="[[showingDeleteDialog_]]" restamp>
+  <cr-dialog close-text="delete" show-on-attach>
+    <div slot="title">Delete this dictionary</div>
+    <div slot="body">[[dict.name]] will be permanently deleted. This action can't be undone</div>
+    <div slot="button-container">
+        <cr-button class="cancel-button" on-click="hideDeleteDialog_">Cancel</cr-button>
+        <cr-button class="action-button" on-click="deleteDictionary_">Delete</cr-button>
+    </div>
+  </cr-dialog>
+</template>
