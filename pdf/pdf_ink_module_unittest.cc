@@ -147,7 +147,11 @@ constexpr auto kTwoPageVerticalLayoutHorzLinePage1Inputs =
         {kTwoPageVerticalLayoutHorzLinePoint1Canonical, base::Seconds(0)},
     });
 
-// Commonly used test brush message params. The color corresponds to "Red1" for
+// Commonly used test brush color. The color corresponds to "Yellow 1" for pen
+// brushes and "Light Yellow" for highlighter brushes.
+constexpr SkColor kYellow = SkColorSetRGB(0xFD, 0xD6, 0x63);
+
+// Commonly used test brush message params. The color corresponds to "Red 1" for
 // pen brushes and "Light Red" for highlighter brushes.
 constexpr TestAnnotationBrushMessageParams kRedBrushParams{
     SkColorSetRGB(0xF2, 0x8B, 0x82),
@@ -594,9 +598,9 @@ TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessageEraser) {
 TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessagePen) {
   EnableAnnotationMode();
 
-  TestAnnotationBrushMessageParams message_params{
-      SkColorSetRGB(0x0A, 0xFF, 0x32),
-      /*size=*/8.0};
+  // Select the "Yellow 1" color.
+  TestAnnotationBrushMessageParams message_params{kYellow,
+                                                  /*size=*/8.0};
   base::Value::Dict message =
       CreateSetAnnotationBrushMessageForTesting("pen", &message_params);
   EXPECT_TRUE(ink_module().OnMessage(message));
@@ -605,7 +609,7 @@ TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessagePen) {
   ASSERT_TRUE(brush);
 
   const ink::Brush& ink_brush = brush->ink_brush();
-  EXPECT_EQ(SkColorSetRGB(0x0A, 0xFF, 0x32), GetSkColorFromInkBrush(ink_brush));
+  EXPECT_EQ(kYellow, GetSkColorFromInkBrush(ink_brush));
   EXPECT_EQ(8.0f, ink_brush.GetSize());
   ASSERT_EQ(1u, ink_brush.CoatCount());
   const ink::BrushCoat& coat = ink_brush.GetCoats()[0];
@@ -618,9 +622,9 @@ TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessagePen) {
 TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
   EnableAnnotationMode();
 
-  TestAnnotationBrushMessageParams message_params{
-      SkColorSetRGB(0xF0, 0x85, 0x00),
-      /*size=*/4.5};
+  // Select the "Light Yellow" color.
+  TestAnnotationBrushMessageParams message_params{kYellow,
+                                                  /*size=*/4.5};
   base::Value::Dict message =
       CreateSetAnnotationBrushMessageForTesting("highlighter", &message_params);
   EXPECT_TRUE(ink_module().OnMessage(message));
@@ -629,7 +633,7 @@ TEST_P(PdfInkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
   ASSERT_TRUE(brush);
 
   const ink::Brush& ink_brush = brush->ink_brush();
-  EXPECT_EQ(SkColorSetRGB(0xF0, 0x85, 0x00), GetSkColorFromInkBrush(ink_brush));
+  EXPECT_EQ(kYellow, GetSkColorFromInkBrush(ink_brush));
   EXPECT_EQ(4.5f, ink_brush.GetSize());
   ASSERT_EQ(1u, ink_brush.CoatCount());
   const ink::BrushCoat& coat = ink_brush.GetCoats()[0];

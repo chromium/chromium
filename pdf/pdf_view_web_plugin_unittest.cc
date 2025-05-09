@@ -3306,6 +3306,9 @@ TEST_P(PdfViewWebPluginInkTest, DrawInProgressStroke) {
 
 class PdfViewWebPluginInkTextHighlightTest : public PdfViewWebPluginInkTest {
  public:
+  static constexpr TestAnnotationBrushMessageParams kLightGreenBrushParams{
+      SkColorSetRGB(0x34, 0xA8, 0x53),
+      /*size=*/4.5};
   static constexpr gfx::PointF kStartTextPosition{55.0f, 60.0f};
   static constexpr gfx::PointF kEndTextPosition{75.0f, 65.0f};
 
@@ -3315,8 +3318,10 @@ class PdfViewWebPluginInkTextHighlightTest : public PdfViewWebPluginInkTest {
     // The start position and end position are in screen coordinates, while the
     // values passed to and returned from PDFiumEngine are in device
     // coordinates.
-    EXPECT_CALL(*engine_ptr_, OnTextOrLinkAreaClick(gfx::PointF(5, 60), 1));
-    EXPECT_CALL(*engine_ptr_, ExtendSelectionByPoint(gfx::PointF(25, 65)));
+    EXPECT_CALL(*engine_ptr_,
+                OnTextOrLinkAreaClick(gfx::PointF(5.0f, 60.0f), 1));
+    EXPECT_CALL(*engine_ptr_,
+                ExtendSelectionByPoint(gfx::PointF(25.0f, 65.0f)));
     std::vector<gfx::Rect> mock_selection_rects = {gfx::Rect(5, 60, 20, 5)};
     ON_CALL(*engine_ptr_, GetSelectionRects())
         .WillByDefault(Return(mock_selection_rects));
@@ -3332,11 +3337,8 @@ TEST_P(PdfViewWebPluginInkTextHighlightTest, SelectionDoesNotChange) {
 
   // Enter annotation mode and select the highlighter.
   plugin_->OnMessage(CreateSetAnnotationModeMessageForTesting(/*enable=*/true));
-  TestAnnotationBrushMessageParams message_params{
-      SkColorSetRGB(0xF0, 0x85, 0x00),
-      /*size=*/4.5};
   plugin_->OnMessage(CreateSetAnnotationBrushMessageForTesting(
-      "highlighter", &message_params));
+      "highlighter", &kLightGreenBrushParams));
 
   SetUpMouseDownMoveTextTestExpectations();
   TestSendInputEvent(
@@ -3362,18 +3364,15 @@ TEST_P(PdfViewWebPluginInkTextHighlightTest, SelectionDoesNotChange) {
 TEST_P(PdfViewWebPluginInkTextHighlightTest, DrawInProgressTextHighlight) {
   // Enter annotation mode and select the highlighter.
   plugin_->OnMessage(CreateSetAnnotationModeMessageForTesting(/*enable=*/true));
-  TestAnnotationBrushMessageParams message_params{
-      SkColorSetRGB(0xF0, 0x85, 0x00),
-      /*size=*/4.5};
   plugin_->OnMessage(CreateSetAnnotationBrushMessageForTesting(
-      "highlighter", &message_params));
+      "highlighter", &kLightGreenBrushParams));
 
   SetUpMouseDownMoveTextTestExpectations();
 
   TestInProgressDraw(
       /*expected_filename=*/FILE_PATH_LITERAL("text_highlight_stroke.png"),
-      /*start_position=*/gfx::PointF(55, 60),
-      /*end_position=*/gfx::PointF(75, 65));
+      /*start_position=*/gfx::PointF(55.0f, 60.0f),
+      /*end_position=*/gfx::PointF(75.0f, 65.0f));
 }
 
 class PdfViewWebPluginInk2SaveTest : public PdfViewWebPluginSaveTest {
