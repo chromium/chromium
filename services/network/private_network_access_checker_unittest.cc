@@ -6,11 +6,14 @@
 
 #include <string_view>
 
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/transport_info.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/client_security_state.mojom-shared.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
@@ -335,6 +338,54 @@ TEST(PrivateNetworkAccessCheckerTest, CheckAllowedNoLessPublic) {
                                       mojom::kURLLoadOptionNone);
 
   EXPECT_EQ(checker.Check(DirectTransport(PrivateEndpoint())),
+            Result::kAllowedNoLessPublic);
+
+  histogram_tester.ExpectUniqueSample(kCheckResultHistogramName,
+                                      Result::kAllowedNoLessPublic, 1);
+}
+
+// PNA doesn't collapse private and local address spaces, so private -> local
+// should be blocked.
+TEST(PrivateNetworkAccessCheckerTest,
+     CheckBlockedPNADoesNotCollapsePrivateLocal) {
+  base::HistogramTester histogram_tester;
+
+  mojom::ClientSecurityState client_security_state;
+  client_security_state.ip_address_space = mojom::IPAddressSpace::kPrivate;
+  client_security_state.private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kBlock;
+
+  PrivateNetworkAccessChecker checker(ResourceRequest(), &client_security_state,
+                                      mojom::kURLLoadOptionNone);
+
+  EXPECT_EQ(checker.Check(DirectTransport(LocalEndpoint())),
+            Result::kBlockedByPolicyBlock);
+
+  histogram_tester.ExpectUniqueSample(kCheckResultHistogramName,
+                                      Result::kBlockedByPolicyBlock, 1);
+}
+
+// LNA collapses private and local address spaces (or in LNA terminology local
+// and loopback), so private -> local should be allowed.
+TEST(PrivateNetworkAccessCheckerTest,
+     CheckAllowedNoLessPublicCollapsePrivateLocal) {
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams params;
+  params["LocalNetworkAccessChecksWarn"] = "false";
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kLocalNetworkAccessChecks, params);
+
+  base::HistogramTester histogram_tester;
+
+  mojom::ClientSecurityState client_security_state;
+  client_security_state.ip_address_space = mojom::IPAddressSpace::kPrivate;
+  client_security_state.private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kBlock;
+
+  PrivateNetworkAccessChecker checker(ResourceRequest(), &client_security_state,
+                                      mojom::kURLLoadOptionNone);
+
+  EXPECT_EQ(checker.Check(DirectTransport(LocalEndpoint())),
             Result::kAllowedNoLessPublic);
 
   histogram_tester.ExpectUniqueSample(kCheckResultHistogramName,

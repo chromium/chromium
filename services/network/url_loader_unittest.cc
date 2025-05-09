@@ -2287,7 +2287,7 @@ TEST_F(URLLoaderTest, SecurePublicToLocalPermissionGranted) {
           mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal)));
 }
 
-TEST_F(URLLoaderTest, SecurePrivateToLocalPermissionDenied) {
+TEST_F(URLLoaderTest, SecurePrivateToLocalLNAPermissionNotRequired) {
   base::test::ScopedFeatureList feature_list(
       features::kLocalNetworkAccessChecks);
   auto client_security_state = NewSecurityState();
@@ -2303,37 +2303,8 @@ TEST_F(URLLoaderTest, SecurePrivateToLocalPermissionDenied) {
 
   ResourceRequest request = CreateCrossOriginResourceRequest();
 
-  EXPECT_EQ(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
-            LoadRequest(request));
-  EXPECT_THAT(
-      client()->completion_status().cors_error_status,
-      Optional(CorsErrorStatus(
-          mojom::CorsError::kLocalNetworkAccessPermissionDenied,
-          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal)));
-}
-
-TEST_F(URLLoaderTest, SecurePrivateToLocalPermissionGranted) {
-  base::test::ScopedFeatureList feature_list(
-      features::kLocalNetworkAccessChecks);
-  auto client_security_state = NewSecurityState();
-  client_security_state->ip_address_space = mojom::IPAddressSpace::kPrivate;
-  client_security_state->private_network_request_policy =
-      mojom::PrivateNetworkRequestPolicy::kPermissionBlock;
-  set_factory_client_security_state(std::move(client_security_state));
-
-  // Simulate that the permission request was granted.
-  TestLNAPermissionURLLoaderNetworkObserver observer(
-      /*permission_granted=*/true);
-  set_network_observer_for_next_request(&observer);
-
-  ResourceRequest request = CreateCrossOriginResourceRequest();
-
+  // Request not blocked because private -> local is not current an LNA request.
   EXPECT_EQ(net::OK, LoadRequest(request));
-  EXPECT_THAT(
-      client()->completion_status().cors_error_status,
-      Optional(CorsErrorStatus(
-          mojom::CorsError::kLocalNetworkAccessPermissionDenied,
-          mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal)));
 }
 
 TEST_F(URLLoaderTest, SecureLocalToLocalPermission) {
