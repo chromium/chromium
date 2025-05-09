@@ -136,7 +136,7 @@ struct IpczMessage : public Channel::Message {
   size_t NumHandlesForTransit() const override { return handles_.size(); }
 
   const void* data() const override { return data_.get(); }
-  void* mutable_data() const override { NOTREACHED(); }
+  void* mutable_data() override { NOTREACHED(); }
   size_t capacity() const override { return size_; }
 
   bool ExtendPayload(size_t) override { NOTREACHED(); }
@@ -166,7 +166,7 @@ struct ComplexMessage : public Channel::Message {
   size_t NumHandlesForTransit() const override;
 
   const void* data() const override { return data_.get(); }
-  void* mutable_data() const override { return data_.get(); }
+  void* mutable_data() override { return data_.get(); }
   size_t capacity() const override;
 
   bool ExtendPayload(size_t new_payload_size) override;
@@ -208,9 +208,7 @@ struct TrivialMessage : public Channel::Message {
 
   // Message impl:
   const void* data() const override { return &data_[0]; }
-  void* mutable_data() const override {
-    return const_cast<uint8_t*>(&data_[0]);
-  }
+  void* mutable_data() override { return data_; }
 
   size_t capacity() const override;
 
@@ -503,13 +501,20 @@ bool Channel::Message::is_legacy_message() const {
   return legacy_header()->message_type == MessageType::NORMAL_LEGACY;
 }
 
-Channel::Message::LegacyHeader* Channel::Message::legacy_header() const {
+Channel::Message::LegacyHeader* Channel::Message::legacy_header() {
   return reinterpret_cast<LegacyHeader*>(mutable_data());
 }
+const Channel::Message::LegacyHeader* Channel::Message::legacy_header() const {
+  return reinterpret_cast<const LegacyHeader*>(data());
+}
 
-Channel::Message::Header* Channel::Message::header() const {
+Channel::Message::Header* Channel::Message::header() {
   DCHECK(!is_legacy_message());
   return reinterpret_cast<Header*>(mutable_data());
+}
+const Channel::Message::Header* Channel::Message::header() const {
+  DCHECK(!is_legacy_message());
+  return reinterpret_cast<const Header*>(data());
 }
 
 ComplexMessage::ComplexMessage(size_t capacity,

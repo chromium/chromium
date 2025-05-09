@@ -237,7 +237,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
         base::ProcessHandle from_process = base::kNullProcessHandle);
 
     virtual const void* data() const = 0;
-    virtual void* mutable_data() const = 0;
+    virtual void* mutable_data() = 0;
 
     size_t data_num_bytes() const { return size_; }
 
@@ -257,8 +257,10 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
     bool has_handles() const;
 
     bool is_legacy_message() const;
-    LegacyHeader* legacy_header() const;
-    Header* header() const;
+    LegacyHeader* legacy_header();
+    const LegacyHeader* legacy_header() const;
+    Header* header();
+    const Header* header() const;
 
     // Note: SetHandles() and TakeHandles() invalidate any previous value of
     // handles().
