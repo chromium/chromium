@@ -105,15 +105,6 @@ struct V1MigrationData {
       base::JSONValueConverter<V1MigrationData>* converter);
 };
 
-// TODO(crbug.com/414648495): These are only used in tests now, refactor the
-// tests & remove.
-std::optional<base::Time> GetNoticeFirstShownFromEvents(
-    const NoticeStorageData& notice_data);
-
-std::optional<NoticeEventTimestampPair>
-GetNoticeActionTakenForFirstShownFromEvents(
-    const NoticeStorageData& notice_data);
-
 std::string GetNoticeActionStringFromEvent(
     notice::mojom::PrivacySandboxNoticeEvent event);
 
