@@ -755,7 +755,7 @@ public class DataSharingTabManager {
                                 R.string.collaboration_group_is_full_description)
                         .setResourceId(
                                 DataSharingStringConfig.StringKey.ACTIVITY_LOGS_TITLE,
-                                R.string.data_sharing_shared_tab_group_activity)
+                                R.string.data_sharing_shared_tab_groups_activity)
                         .build();
 
         DataSharingManageUiConfig.ManageCallback manageCallback =

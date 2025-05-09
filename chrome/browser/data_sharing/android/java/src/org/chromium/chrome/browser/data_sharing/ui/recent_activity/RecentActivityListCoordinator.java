@@ -159,14 +159,14 @@ public class RecentActivityListCoordinator {
             ModelList modelList = new ModelList();
             modelList.add(
                     BrowserUiListMenuUtils.buildMenuListItem(
-                            R.string.data_sharing_shared_tab_group_activity,
+                            R.string.data_sharing_shared_tab_groups_activity,
                             R.id.see_full_activity,
                             0,
                             /* enabled= */ true));
             ListMenu.Delegate delegate =
                     (model) -> {
                         int textId = model.get(ListMenuItemProperties.TITLE_ID);
-                        if (textId == R.string.data_sharing_shared_tab_group_activity) {
+                        if (textId == R.string.data_sharing_shared_tab_groups_activity) {
                             mShowFullActivityRunnable.run();
                         }
                     };
@@ -194,6 +194,8 @@ public class RecentActivityListCoordinator {
                         }
                     };
 
+            menuView.setMenuMaxWidth(
+                    view.getResources().getDimensionPixelSize(R.dimen.recent_activity_menu_width));
             menuView.setDelegate(listMenuDelegate);
             menuView.tryToFitLargestItem(true);
             menuView.showMenu();
