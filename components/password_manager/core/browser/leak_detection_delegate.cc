@@ -9,6 +9,7 @@
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory_impl.h"
@@ -166,7 +167,9 @@ LeakedPasswordDetails LeakDetectionDelegate::PrepareLeakDetails(
   } else {
     // Credential saved to the local-or-syncable store.
 #if BUILDFLAG(IS_ANDROID)
+    // After login db deprecation, all users have split stores on Android.
     const bool uses_split_stores_for_sync_users =
+        base::FeatureList::IsEnabled(features::kLoginDbDeprecationAndroid) ||
         UsesSplitStoresAndUPMForLocal(client_->GetPrefs());
 #else
     const bool uses_split_stores_for_sync_users = false;
