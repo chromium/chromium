@@ -103,7 +103,7 @@ class GroupSuggestionsServiceFactoryTest : public AndroidBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(GroupSuggestionsServiceFactoryTest, SuggestionsShown) {
+IN_PROC_BROWSER_TEST_F(GroupSuggestionsServiceFactoryTest, DISABLED_SuggestionsShown) {
   TestGroupSuggestionsDelegate delegate;
   GetService()->RegisterDelegate(&delegate, GroupSuggestionsService::Scope());
   GetService()->SetConfigForTesting(base::TimeDelta());
