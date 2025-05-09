@@ -107,7 +107,6 @@ class AiDataKeyedService : public KeyedService {
   void ConvertToBrowserActionResult(
       base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
           callback,
-      std::unique_ptr<glic::GlicPageContextFetcher> fetcher,
       int task_id,
       int tab_id,
       actor::mojom::ActionResultPtr action_result,

@@ -986,20 +986,18 @@ void AiDataKeyedService::OnActionFinished(
   }
   // TODO(https://crbug.com/398271171): Remove when the actor coordinator
   // handles getting a new observation.
-  auto fetcher = std::make_unique<glic::GlicPageContextFetcher>();
+
   glic::FocusedTabData focused_tab_data{tab_->GetContents()->GetWeakPtr()};
-  fetcher->Fetch(
+  glic::GlicPageContextFetcher::Fetch(
       focused_tab_data, DefaultOptions(),
       base::BindOnce(&AiDataKeyedService::ConvertToBrowserActionResult,
-                     weak_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(fetcher), task_id_, tab_id_,
-                     std::move(action_result)));
+                     weak_factory_.GetWeakPtr(), std::move(callback), task_id_,
+                     tab_id_, std::move(action_result)));
 }
 
 void AiDataKeyedService::ConvertToBrowserActionResult(
     base::OnceCallback<void(optimization_guide::proto::BrowserActionResult)>
         callback,
-    std::unique_ptr<glic::GlicPageContextFetcher> fetcher,
     int task_id,
     int tab_id,
     actor::mojom::ActionResultPtr action_result,
