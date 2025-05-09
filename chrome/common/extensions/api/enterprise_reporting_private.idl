@@ -80,7 +80,6 @@ namespace enterprise.reportingPrivate {
     boolean builtInDnsClientEnabled;
     PasswordProtectionTrigger passwordProtectionWarningTrigger;
     boolean chromeRemoteDesktopAppBlocked;
-    boolean? thirdPartyBlockingEnabled;
     SettingValue osFirewall;
     DOMString[] systemDnsServers;
     DOMString? enterpriseProfileId;
