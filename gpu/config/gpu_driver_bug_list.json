@@ -3445,6 +3445,21 @@
       "features": [
         "force_rgb10a2_overlay_support"
       ]
+    },
+    {
+      "id": 443,
+      "cr_bugs": [385039726],
+      "description": "Disable DComp texture support on older Windows versions",
+      "os": {
+        "type": "win",
+        "version": {
+          "op": "<",
+          "value": "10.0.26100.3624"
+        }
+      },
+      "features": [
+        "disable_dcomp_texture"
+      ]
     }
   ]
 }

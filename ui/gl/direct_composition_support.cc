@@ -1109,6 +1109,8 @@ UINT GetDXGIWaitableSwapChainMaxQueuedFrames() {
       features::kDXGIWaitableSwapChainMaxQueuedFrames.Get());
 }
 
+std::optional<bool> g_direct_composition_texture_supported;
+
 void SetDirectCompositionOverlayWorkarounds(
     const DirectCompositionOverlayWorkarounds& workarounds) {
   // This has to be set before initializing overlay caps.
@@ -1121,6 +1123,10 @@ void SetDirectCompositionOverlayWorkarounds(
   g_force_rgb10a2_overlay_support = workarounds.force_rgb10a2_overlay_support;
   g_check_ycbcr_studio_g22_left_p709_for_nv12_support =
       workarounds.check_ycbcr_studio_g22_left_p709_for_nv12_support;
+  CHECK(!g_direct_composition_texture_supported.has_value());
+  if (workarounds.disable_dcomp_texture) {
+    g_direct_composition_texture_supported = false;
+  }
 }
 
 void SetDirectCompositionMonitorInfoForTesting(
@@ -1130,7 +1136,6 @@ void SetDirectCompositionMonitorInfoForTesting(
   g_primary_monitor_size = primary_monitor_size;
 }
 
-std::optional<bool> g_direct_composition_texture_supported;
 
 bool DirectCompositionTextureSupported() {
   if (g_direct_composition_texture_supported.has_value()) {

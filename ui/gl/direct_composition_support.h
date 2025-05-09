@@ -149,6 +149,15 @@ struct DirectCompositionOverlayWorkarounds {
   // Enable NV12 overlay support only when
   // DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P709 is supported.
   bool check_ycbcr_studio_g22_left_p709_for_nv12_support = false;
+
+  // Before 10.0.26100.3624, Windows could return PRESENTATION_ERROR_LOST in
+  // some cases that are potentially recoverable by destroying all the DComp
+  // textures associated with our DComp device. However, Viz is not
+  // well-equipped to do this since most DComp textures are owned by pools in
+  // the renderer processes. This version and beyond, Windows has a fix to only
+  // return PRESENTATION_ERROR_LOST in truly unrecoverable cases, which we will
+  // treat the same as context loss.
+  bool disable_dcomp_texture = false;
 };
 GL_EXPORT void SetDirectCompositionOverlayWorkarounds(
     const DirectCompositionOverlayWorkarounds& workarounds);

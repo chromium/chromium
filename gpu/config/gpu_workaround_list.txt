@@ -22,6 +22,7 @@ disable_d3d11
 disable_d3d11_update_subresource1
 disable_d3d11_video_decoder
 disable_d3d11_vp9_ksvc_decoding
+disable_dcomp_texture
 disable_decode_swap_chain
 disable_depth_texture
 disable_direct_composition_sw_video_overlays
