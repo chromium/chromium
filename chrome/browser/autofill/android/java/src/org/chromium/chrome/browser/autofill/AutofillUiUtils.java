@@ -41,6 +41,7 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import androidx.annotation.DimenRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
@@ -121,30 +122,43 @@ public class AutofillUiUtils {
     /** Contains dimensional specs for icons by the {@code AutofillImageFetcher}. */
     public static class IconSpecs {
         private final Context mContext;
-        private final int mWidthId;
-        private final int mHeightId;
-        private final int mCornerRadiusId;
-        private final int mBorderWidthId;
+        private final @ImageType int mImageType;
+        private final @DimenRes int mWidthId;
+        private final @DimenRes int mHeightId;
+        private final @DimenRes int mCornerRadiusId;
+        private final @DimenRes int mBorderWidthId;
 
         /**
          * @param context to get the resources.
+         * @param imageType the type of the image supported by the {@link AutofillImageFetcher}.
          * @param widthId Resource Id for the icon's width spec.
          * @param heightId Resource Id for the icon's height spec.
          */
-        private IconSpecs(Context context, int widthId, int heightId) {
-            this(context, widthId, heightId, 0, 0);
+        private IconSpecs(
+                Context context,
+                @ImageType int imageType,
+                @DimenRes int widthId,
+                @DimenRes int heightId) {
+            this(context, imageType, widthId, heightId, 0, 0);
         }
 
         /**
          * @param context to get the resources.
+         * @param imageType the type of the image supported by the {@link AutofillImageFetcher}.
          * @param widthId Resource Id for the icon's width spec.
          * @param heightId Resource Id for the icon's height spec.
          * @param cornerRadiusId Resource Id for the icon's corner radius spec.
          * @param borderWidthId Resource Id for the icon's border width spec.
          */
         private IconSpecs(
-                Context context, int widthId, int heightId, int cornerRadiusId, int borderWidthId) {
+                Context context,
+                @ImageType int imageType,
+                @DimenRes int widthId,
+                @DimenRes int heightId,
+                @DimenRes int cornerRadiusId,
+                @DimenRes int borderWidthId) {
             mContext = context;
+            mImageType = imageType;
             mWidthId = widthId;
             mHeightId = heightId;
             mCornerRadiusId = cornerRadiusId;
@@ -180,6 +194,7 @@ public class AutofillUiUtils {
                 case ImageSize.LARGE:
                     return new IconSpecs(
                             context,
+                            ImageType.CREDIT_CARD_ART_IMAGE,
                             R.dimen.large_card_icon_width,
                             R.dimen.large_card_icon_height,
                             R.dimen.large_card_icon_corner_radius,
@@ -187,6 +202,7 @@ public class AutofillUiUtils {
                 case ImageSize.SQUARE:
                     return new IconSpecs(
                             context,
+                            ImageType.CREDIT_CARD_ART_IMAGE,
                             R.dimen.square_card_icon_side_length,
                             R.dimen.square_card_icon_side_length,
                             R.dimen.square_card_icon_corner_radius,
@@ -194,6 +210,7 @@ public class AutofillUiUtils {
                 case ImageSize.SMALL:
                     return new IconSpecs(
                             context,
+                            ImageType.CREDIT_CARD_ART_IMAGE,
                             R.dimen.small_card_icon_width,
                             R.dimen.small_card_icon_height,
                             R.dimen.small_card_icon_corner_radius,
@@ -208,11 +225,13 @@ public class AutofillUiUtils {
                 case ImageSize.LARGE:
                     return new IconSpecs(
                             context,
+                            ImageType.VALUABLE_IMAGE,
                             R.dimen.large_valuable_icon_size,
                             R.dimen.large_valuable_icon_size);
                 case ImageSize.SMALL:
                     return new IconSpecs(
                             context,
+                            ImageType.VALUABLE_IMAGE,
                             R.dimen.small_valuable_icon_size,
                             R.dimen.small_valuable_icon_size);
             }
@@ -221,7 +240,17 @@ public class AutofillUiUtils {
         }
 
         public GURL getResolvedIconUrl(GURL iconUrl) {
-            return getFifeIconUrlWithParams(iconUrl, getWidth(), getHeight());
+            switch (mImageType) {
+                case ImageType.CREDIT_CARD_ART_IMAGE:
+                case ImageType.PIX_ACCOUNT_IMAGE:
+                    return getFifeIconUrlWithParams(
+                            iconUrl, getWidth(), getHeight(), /* circleCrop= */ false);
+                case ImageType.VALUABLE_IMAGE:
+                    return getFifeIconUrlWithParams(
+                            iconUrl, getWidth(), getHeight(), /* circleCrop= */ true);
+            }
+            assert false : "Image type not handled: " + mImageType;
+            return assumeNonNull(null);
         }
 
         public @Px int getWidth() {
@@ -639,14 +668,19 @@ public class AutofillUiUtils {
      * @param customIconUrl A FIFE URL to fetch the image.
      * @param width in pixels.
      * @param height in pixels.
+     * @param circleCrop whether to the circle crop parameter to the URL ('-cc').
      * @return {@link GURL} formatted with the icon dimensions to fetch the image.
      */
     @VisibleForTesting
-    static GURL getFifeIconUrlWithParams(GURL customIconUrl, @Px int width, @Px int height) {
+    static GURL getFifeIconUrlWithParams(
+            GURL customIconUrl, @Px int width, @Px int height, boolean circleCrop) {
         // Params can be added to a FIFE URL by appending them at the end like URL[=params]. "w"
         // option is used to set the width in pixels, and "h" is used to set the height in pixels.
         StringBuilder url = new StringBuilder(customIconUrl.getSpec());
         url.append("=w").append(width).append("-h").append(height);
+        if (circleCrop) {
+            url.append("-cc");
+        }
 
         return new GURL(url.toString());
     }

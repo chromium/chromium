@@ -389,7 +389,10 @@ public class PersonalDataManagerTest {
         // The URL should be updated as `cardArtUrl=w{width}-h{height}`.
         assertThat(
                         AutofillUiUtils.getFifeIconUrlWithParams(
-                                capitalOneIconUrl, widthPixels, heightPixels))
+                                capitalOneIconUrl,
+                                widthPixels,
+                                heightPixels,
+                                /* circleCrop= */ false))
                 .isEqualTo(
                         new GURL(
                                 capitalOneIconUrl.getSpec()
@@ -397,7 +400,24 @@ public class PersonalDataManagerTest {
                                         + widthPixels
                                         + "-h"
                                         + heightPixels));
-        assertThat(AutofillUiUtils.getFifeIconUrlWithParams(cardArtUrl, widthPixels, heightPixels))
+        // The URL should be updated as `cardArtUrl=w{width}-h{height}-cc`.
+        assertThat(
+                        AutofillUiUtils.getFifeIconUrlWithParams(
+                                capitalOneIconUrl,
+                                widthPixels,
+                                heightPixels,
+                                /* circleCrop= */ true))
+                .isEqualTo(
+                        new GURL(
+                                capitalOneIconUrl.getSpec()
+                                        + "=w"
+                                        + widthPixels
+                                        + "-h"
+                                        + heightPixels
+                                        + "-cc"));
+        assertThat(
+                        AutofillUiUtils.getFifeIconUrlWithParams(
+                                cardArtUrl, widthPixels, heightPixels, /* circleCrop= */ false))
                 .isEqualTo(
                         new GURL(cardArtUrl.getSpec() + "=w" + widthPixels + "-h" + heightPixels));
     }
