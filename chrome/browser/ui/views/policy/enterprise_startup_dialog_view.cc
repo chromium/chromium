@@ -162,7 +162,6 @@ EnterpriseStartupDialogView::EnterpriseStartupDialogView(
           views::DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING));
 
   set_draggable(true);
-  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Show Google Chrome Enterprise logo only for official build.
   SetExtraView(std::make_unique<LogoView>());
@@ -190,7 +189,7 @@ EnterpriseStartupDialogView::~EnterpriseStartupDialogView() = default;
 
 void EnterpriseStartupDialogView::DisplayLaunchingInformationWithThrobber(
     const std::u16string& information) {
-  ResetDialog(false);
+  ResetDialog(std::nullopt);
 
   std::unique_ptr<views::Label> text = CreateText(information);
   auto throbber = std::make_unique<views::Throbber>();
@@ -204,18 +203,12 @@ void EnterpriseStartupDialogView::DisplayLaunchingInformationWithThrobber(
 void EnterpriseStartupDialogView::DisplayErrorMessage(
     const std::u16string& error_message,
     const std::optional<std::u16string>& accept_button) {
-  ResetDialog(accept_button.has_value());
+  ResetDialog(accept_button);
   std::unique_ptr<views::Label> text = CreateText(error_message);
   auto error_icon =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
           kBrowserToolsErrorIcon, ui::kColorAlertHighSeverity, kIconSize));
 
-  if (accept_button) {
-    // TODO(ellyjones): This should use SetButtonLabel()
-    // instead of changing the button text directly - this might break the
-    // dialog's layout.
-    GetOkButton()->SetText(*accept_button);
-  }
   AddContent(std::move(error_icon), std::move(text));
 }
 
@@ -266,10 +259,19 @@ gfx::Size EnterpriseStartupDialogView::CalculatePreferredSize(
   return gfx::Size(kDialogContentWidth, kDialogContentHeight);
 }
 
-void EnterpriseStartupDialogView::ResetDialog(bool show_accept_button) {
-  DCHECK(GetOkButton());
+void EnterpriseStartupDialogView::ResetDialog(
+    const std::optional<std::u16string>& accept_button) {
+  if (accept_button.has_value()) {
+    SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
+    SetButtonLabel(ui::mojom::DialogButton::kOk, *accept_button);
 
-  GetOkButton()->SetVisible(show_accept_button);
+    // TODO(https://crbug.com/414502419): Explicitly request focus to ensure the
+    // focus ring appears, as DialogDelegate::SetDefaultButton does not visually
+    // indicate focus.
+    GetOkButton()->RequestFocus();
+  } else {
+    SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  }
   RemoveAllChildViews();
 }
 

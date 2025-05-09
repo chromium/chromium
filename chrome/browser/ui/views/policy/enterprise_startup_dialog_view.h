@@ -54,8 +54,9 @@ class EnterpriseStartupDialogView : public views::DialogDelegateView {
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
 
-  // Remove all existing child views from the dialog, show/hide dialog buttons.
-  void ResetDialog(bool show_accept_button);
+  // Removes all existing child views from the dialog and sets the dialog
+  // buttons.
+  void ResetDialog(const std::optional<std::u16string>& accept_button);
   // Append child views to the content area.
   void AddContent(std::unique_ptr<views::View> icon,
                   std::unique_ptr<views::View> text);
