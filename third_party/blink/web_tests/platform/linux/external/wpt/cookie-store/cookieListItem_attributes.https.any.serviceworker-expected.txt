@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Test max-age attribute over the 400 days
+  promise_test: Unhandled rejection with value: object "ReferenceError: document is not defined"
+Harness: the test ran to completion.
+
