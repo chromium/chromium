@@ -5016,8 +5016,8 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="PasswordProtection.CSDCacheSizeAtHit" units="bytes"
-    expires_after="2026-02-23">
+<histogram name="PasswordProtection.CSDCacheSizeAtHit2" units="bytes"
+    expires_after="2026-05-09">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

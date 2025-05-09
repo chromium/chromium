@@ -221,8 +221,8 @@ void PasswordProtectionRequestContent::GetDomFeatures() {
       LogCSDCacheContainsImages(
           verdict->mutable_visual_features()->has_image());
 
-      base::UmaHistogramCounts100(
-          "PasswordProtection.CSDCacheSizeAtHit",
+      base::UmaHistogramCounts100000(
+          "PasswordProtection.CSDCacheSizeAtHit2",
           feature_cache_map->GetTotalVerdictEntriesSize());
 
       ExtractClientPhishingRequestFeatures(*verdict);
