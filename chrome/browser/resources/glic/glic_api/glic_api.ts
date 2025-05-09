@@ -161,7 +161,16 @@ export declare interface GlicBrowserHost {
 
   /**
    * Fetches page context for the currently focused tab, optionally including
-   * more expensive-to-generate data.
+   * more expensive-to-generate data. Requesting only the base data is cheap,
+   * but the returned information should be identical to the latest push-update
+   * received by the web client from `getFocusedTabStateV2`.
+   *
+   * All optional data, which are expensive to extract, should only be requested
+   * when necessary.
+   *
+   * Critically, this function may return information from a previously focused
+   * page due its asynchronous nature. To confirm, tabId and URL should match
+   * the respective values of the tab of interest.
    *
    * @throws {Error} on failure.
    */
@@ -287,6 +296,10 @@ export declare interface GlicBrowserHost {
   isBrowserOpen?(): ObservableValue<boolean>;
 
   /**
+   * @deprecated Use `getFocusedTabStateV2` instead. This function returns a
+   * TabData on success but no information at all on failure. V2 solves this by
+   * returning error codes to signal why no focus was available.
+   *
    * Returns the observable state of the currently focused tab. Updates are sent
    * whenever the focus changes due to the user switching tabs or navigating the
    * current focused tab.
@@ -295,20 +308,24 @@ export declare interface GlicBrowserHost {
    *          a new tab is focused or the current tab is navigated. The value
    *          will be `undefined` if there's no active tab or it cannot be
    *          focused (i.e. the URL is ineligible for tab context sharing).
-   *
-   * @deprecated Use `getFocusedTabStateV2` instead. This function returns a
-   * TabData on success but no information at all on failure. V2 solves this by
-   * returning error codes to signal why no focus was available.
    */
   getFocusedTabState?(): ObservableValue<TabData|undefined>;
 
   /**
    * Returns the observable state of the currently focused tab. Updates are sent
    * whenever:
-   * - the user switches active tabs
-   * - the active tab navigates to a new url
-   * - tab focus changes or is lost
-   * - any field of TabData needs to be updated to match the current tab
+   * - The user switches active tabs, which causes a change in `tabId`.
+   * - The tab navigates to a new page, which causes a change in `url`.
+   * - The user moves the current tab to a new window,  which causes a change in
+   *   `windowId`.
+   * - The user switches active windows, which would definitely change both
+   *   `tabId` and `windowId` and, likely, all other data fields, too.
+   * - The user switches between tabs that can and cannot be focused (or
+   *   vice-versa), which changes which field has a value set between `hasFocus`
+   *   and `hasNoFocus`.
+   * - Any other data represented in `TabData` (title, favicon, mime type)
+   *   changes and needs to be updated to match the respective tab state.
+   *   Updates are possible throughout the lifetime of a page.
    */
   getFocusedTabStateV2?(): ObservableValue<FocusedTabData>;
 
@@ -480,8 +497,6 @@ export declare interface CreateTabOptions {
 }
 
 /**
- * @todo Not yet implemented. https://crbug.com/391417447
- *
  * Provides measurement-related functionality to the Glic web client.
  *
  * The typical sequence of events should be either:
@@ -769,21 +784,32 @@ export declare interface PageMetadata {
  * itself.
  */
 export declare interface TabData {
-  /** Unique ID of the tab that owns the page. */
+  /**
+   * Unique ID of the tab that owns the page. These values are unique across
+   * all tabs from all windows, and will not change even if the user moves the
+   * tab to a different window.
+   */
   tabId: string;
-  /** Unique ID of the browser window holding the tab. */
+  /**
+   * Unique ID of the browser window holding the tab. This value may change if
+   * the tab is moved to a different window.
+   */
   windowId: string;
-  /** URL of the page. */
+  /**
+   * URL of the page. For a given tab, this value will change if the tab is
+   * navigated to a different URL.
+   */
   url: string;
   /**
    * The title of the loaded page. Returned only if the page is loaded enough
-   * for it to be available. It may be empty if the page did not define a title.
+   * for it to be available. It may be empty if the page did not specify a
+   * title.
    */
   title?: string;
   /**
-   * Returns the favicon for the tab, encoded as a PNG image. Returned only if
-   * the page is loaded enough for it to be available and the page specifies
-   * one.
+   * Returns the favicon for the tab, encoded as a PNG image. An image is
+   * returned only if the page is loaded enough for it to be available and the
+   * page specifies a favicon.
    */
   favicon?(): Promise<Blob|undefined>;
   /**
@@ -793,23 +819,24 @@ export declare interface TabData {
   documentMimeType?: string;
 }
 
-/** Data class holding information about the focused tab state. */
+/**
+ * Data class holding information about the focused tab state. It works as a
+ * discriminated union type: exactly one field is ever present.
+ */
 export declare interface FocusedTabData {
-  // This is a union. Exactly one field is present.
-
-  /** Present if a tab has focus. */
+  /** Present only if a tab has focus. */
   hasFocus?: FocusedTabDataHasFocus;
-  /** Present if no tab has focus. */
+  /** Present only if no tab has focus. */
   hasNoFocus?: FocusedTabDataHasNoFocus;
 }
 
-/** FocusedTabData variant with focus. */
+/** FocusedTabData variant for when a tab has focus. */
 export declare interface FocusedTabDataHasFocus {
   /** Information about the focused tab. */
   tabData: TabData;
 }
 
-/** FocusedTabData variant without focus. */
+/** FocusedTabData variant for when no tabs have focus. */
 export declare interface FocusedTabDataHasNoFocus {
   /**
    * Information about the active tab, which cannot be focused. Present only

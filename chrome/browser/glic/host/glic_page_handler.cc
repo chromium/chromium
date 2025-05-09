@@ -368,7 +368,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
           mojom::PanelOpeningData::New();
       panel_opening_data->panel_state =
           glic_service_->window_controller().GetPanelState().Clone();
-      // Defaulting invocation source to OS button.
       panel_opening_data->invocation_source =
           mojom::InvocationSource::kUnsupported;
       web_client_->NotifyPanelWillOpen(std::move(panel_opening_data),

@@ -206,8 +206,8 @@ export class WebviewController {
     }
     switch (e.permission) {
       case 'media': {
-        // TODO(crbug.com/409118577): Block mic requests if the mic permission
-        // is not enabled.
+        // TODO(b/416092165): Block mic requests if the mic permission was not
+        // granted.
         e.request.allow();
         return;
       }

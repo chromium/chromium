@@ -332,9 +332,6 @@ void GlicPageContextFetcher::RunCallbackIfComplete() {
 
   auto tab_context = mojom::TabContext::New();
   tab_context->tab_data = CreateTabData(web_contents());
-  // TODO(crbug.com/379773651): Clean up logspam when it's no longer useful.
-  LOG(WARNING) << "GlicPageContextFetcher: Returning context for "
-               << tab_context->tab_data->url;
   if (inner_text_result_) {
     // Get trimmed text without copying.
     std::string trimmed_text = std::move(inner_text_result_->inner_text);
