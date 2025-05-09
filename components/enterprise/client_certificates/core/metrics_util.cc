@@ -20,6 +20,8 @@ std::string_view ProvisioningScenarioToString(ProvisioningScenario scenario) {
       return "CertificateCreation";
     case ProvisioningScenario::kCertificateRenewal:
       return "CertificateRenewal";
+    case ProvisioningScenario::kExistingIdentity:
+      return "ExistingIdentity";
   }
 }
 

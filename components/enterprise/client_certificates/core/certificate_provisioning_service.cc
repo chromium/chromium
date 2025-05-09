@@ -261,6 +261,9 @@ void CertificateProvisioningServiceImpl::OnPermanentIdentityLoaded(
       // If the certificate has expired (or is close to), then update it before
       // responding to pending callbacks.
       if (!IsCertExpiringSoon(*permanent_identity_optional->certificate)) {
+        provisioning_context_->scenario =
+            ProvisioningScenario::kExistingIdentity;
+        OnFinishedProvisioning(/*success=*/true);
         return;
       }
 
