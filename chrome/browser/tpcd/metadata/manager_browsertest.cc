@@ -40,6 +40,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/base/features.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/dns/mock_host_resolver.h"
@@ -237,9 +238,12 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest, GetTpcdMetadataGrants) {
 
   const GURL kEmbedded = GURL("http://www.bar.com");
   const url::Origin kEmbedder = url::Origin::Create(GURL("http://www.foo.com"));
+  net::CookiePartitionKey cookie_partition_key =
+      net::CookiePartitionKey::FromURLForTesting(kEmbedder.GetURL());
+
   ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 0u);
   EXPECT_FALSE(GetCookieSettings()->IsFullCookieAccessAllowed(
-      kEmbedded, net::SiteForCookies(), kEmbedder, {}));
+      kEmbedded, net::SiteForCookies(), kEmbedder, {}, cookie_partition_key));
 
   Metadata metadata;
   tpcd::metadata::helpers::AddEntryToMetadata(metadata, "[*.]bar.com",
@@ -255,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest, GetTpcdMetadataGrants) {
                 .metadata.tpcd_metadata_rule_source(),
             content_settings::mojom::TpcdMetadataRuleSource::SOURCE_TEST);
   EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
-      kEmbedded, net::SiteForCookies(), kEmbedder, {}));
+      kEmbedded, net::SiteForCookies(), kEmbedder, {}, cookie_partition_key));
 }
 
 IN_PROC_BROWSER_TEST_F(ManagerBrowserTest, SuccessfullyUpdated) {
@@ -264,9 +268,13 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest, SuccessfullyUpdated) {
   const GURL kEmbedded1 = GURL("http://www.bar.com");
   const url::Origin kEmbedder1 =
       url::Origin::Create(GURL("http://www.foo.com"));
+  net::CookiePartitionKey cookie_partition_key_1 =
+      net::CookiePartitionKey::FromURLForTesting(kEmbedder1.GetURL());
   const GURL kEmbedded2 = GURL("http://www.baz.com");
   const url::Origin kEmbedder2 =
       url::Origin::Create(GURL("http://www.daz.com"));
+  net::CookiePartitionKey cookie_partition_key_2 =
+      net::CookiePartitionKey::FromURLForTesting(kEmbedder2.GetURL());
 
   {
     Metadata metadata;
@@ -276,13 +284,15 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest, SuccessfullyUpdated) {
 
     ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 0u);
     EXPECT_FALSE(GetCookieSettings()->IsFullCookieAccessAllowed(
-        kEmbedded1, net::SiteForCookies(), kEmbedder1, {}));
+        kEmbedded1, net::SiteForCookies(), kEmbedder1, {},
+        cookie_partition_key_1));
 
     MockComponentInstallation(metadata);
 
     ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 1u);
     EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
-        kEmbedded1, net::SiteForCookies(), kEmbedder1, {}));
+        kEmbedded1, net::SiteForCookies(), kEmbedder1, {},
+        cookie_partition_key_1));
   }
 
   {
@@ -293,17 +303,21 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest, SuccessfullyUpdated) {
 
     ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 1u);
     EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
-        kEmbedded1, net::SiteForCookies(), kEmbedder1, {}));
+        kEmbedded1, net::SiteForCookies(), kEmbedder1, {},
+        cookie_partition_key_1));
     EXPECT_FALSE(GetCookieSettings()->IsFullCookieAccessAllowed(
-        kEmbedded2, net::SiteForCookies(), kEmbedder2, {}));
+        kEmbedded2, net::SiteForCookies(), kEmbedder2, {},
+        cookie_partition_key_2));
 
     MockComponentInstallation(metadata);
 
     ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 1u);
     EXPECT_FALSE(GetCookieSettings()->IsFullCookieAccessAllowed(
-        kEmbedded1, net::SiteForCookies(), kEmbedder1, {}));
+        kEmbedded1, net::SiteForCookies(), kEmbedder1, {},
+        cookie_partition_key_1));
     EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
-        kEmbedded2, net::SiteForCookies(), kEmbedder2, {}));
+        kEmbedded2, net::SiteForCookies(), kEmbedder2, {},
+        cookie_partition_key_2));
   }
 }
 
@@ -348,11 +362,14 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
   auto* service = tpcd::trial::TopLevelTrialServiceFactory::GetForProfile(
       browser()->profile());
   auto embedder_origin = url::Origin::Create(first_party_url);
+  net::CookiePartitionKey cookie_partition_key =
+      net::CookiePartitionKey::FromURLForTesting(embedder_origin.GetURL());
   service->UpdateTopLevelTrialSettingsForTesting(
       embedder_origin, /*match_subdomains=*/true, /*enabled=*/true);
 
   EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
-      third_party_url_1, net::SiteForCookies(), embedder_origin, {}));
+      third_party_url_1, net::SiteForCookies(), embedder_origin, {},
+      cookie_partition_key));
   {
     base::HistogramTester histogram_tester;
     content::CookieChangeObserver observer(GetWebContents(),
@@ -370,7 +387,8 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
   }
 
   EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
-      third_party_url_2, net::SiteForCookies(), embedder_origin, {}));
+      third_party_url_2, net::SiteForCookies(), embedder_origin, {},
+      cookie_partition_key));
   {
     base::HistogramTester histogram_tester;
     content::CookieChangeObserver observer(GetWebContents(),
@@ -388,7 +406,8 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
   }
 
   EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
-      third_party_url_3, net::SiteForCookies(), embedder_origin, {}));
+      third_party_url_3, net::SiteForCookies(), embedder_origin, {},
+      cookie_partition_key));
   {
     base::HistogramTester histogram_tester;
     content::CookieChangeObserver observer(GetWebContents(),
@@ -449,9 +468,12 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
   EXPECT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 2u);
 
   auto embedder_origin = url::Origin::Create(first_party_url);
+  net::CookiePartitionKey cookie_partition_key =
+      net::CookiePartitionKey::FromURLForTesting(embedder_origin.GetURL());
 
   EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
-      third_party_url_1, net::SiteForCookies(), embedder_origin, {}));
+      third_party_url_1, net::SiteForCookies(), embedder_origin, {},
+      cookie_partition_key));
   {
     base::HistogramTester histogram_tester;
 
@@ -470,7 +492,8 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
   }
 
   EXPECT_FALSE(GetCookieSettings()->IsFullCookieAccessAllowed(
-      third_party_url_1_sub, net::SiteForCookies(), embedder_origin, {}));
+      third_party_url_1_sub, net::SiteForCookies(), embedder_origin, {},
+      cookie_partition_key));
   {
     base::HistogramTester histogram_tester;
 
@@ -527,9 +550,12 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
   EXPECT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 2u);
 
   auto embedder_origin = url::Origin::Create(first_party_url);
+  net::CookiePartitionKey cookie_partition_key =
+      net::CookiePartitionKey::FromURLForTesting(embedder_origin.GetURL());
 
   EXPECT_FALSE(GetCookieSettings()->IsFullCookieAccessAllowed(
-      third_party_url_1, net::SiteForCookies(), embedder_origin, {}));
+      third_party_url_1, net::SiteForCookies(), embedder_origin, {},
+      cookie_partition_key));
   {
     base::HistogramTester histogram_tester;
 
@@ -545,7 +571,8 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
   }
 
   EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
-      third_party_url_1_sub, net::SiteForCookies(), embedder_origin, {}));
+      third_party_url_1_sub, net::SiteForCookies(), embedder_origin, {},
+      cookie_partition_key));
   {
     base::HistogramTester histogram_tester;
 
@@ -603,9 +630,12 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
   EXPECT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 3u);
 
   auto embedder_origin = url::Origin::Create(first_party_url);
+  net::CookiePartitionKey cookie_partition_key =
+      net::CookiePartitionKey::FromURLForTesting(embedder_origin.GetURL());
 
   EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
-      third_party_url_1, net::SiteForCookies(), embedder_origin, {}));
+      third_party_url_1, net::SiteForCookies(), embedder_origin, {},
+      cookie_partition_key));
   {
     base::HistogramTester histogram_tester;
     content::CookieChangeObserver observer(GetWebContents(),
@@ -623,7 +653,8 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
   }
 
   EXPECT_FALSE(GetCookieSettings()->IsFullCookieAccessAllowed(
-      third_party_url_2, net::SiteForCookies(), embedder_origin, {}));
+      third_party_url_2, net::SiteForCookies(), embedder_origin, {},
+      cookie_partition_key));
   {
     base::HistogramTester histogram_tester;
     NavigateToPageWithFrame(kFirstPartyHost);
@@ -638,7 +669,8 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
   }
 
   EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
-      third_party_url_3, net::SiteForCookies(), embedder_origin, {}));
+      third_party_url_3, net::SiteForCookies(), embedder_origin, {},
+      cookie_partition_key));
   {
     base::HistogramTester histogram_tester;
     content::CookieChangeObserver observer(GetWebContents(),

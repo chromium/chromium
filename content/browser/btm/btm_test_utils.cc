@@ -410,7 +410,8 @@ bool TpcBlockingBrowserClient::IsFullCookieAccessAllowed(
     const blink::StorageKey& storage_key,
     net::CookieSettingOverrides overrides) {
   return IsFullCookieAccessAllowed(url, storage_key.ToNetSiteForCookies(),
-                                   storage_key.origin(), overrides);
+                                   storage_key.origin(), overrides,
+                                   storage_key.ToCookiePartitionKey());
 }
 
 void TpcBlockingBrowserClient::GrantCookieAccessDueToHeuristic(
