@@ -249,7 +249,7 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
         bool has_high_latency =
             (termination_time - generated_timestamp) > kHighLatencyThreshold;
         event_latency->set_has_high_latency(has_high_latency);
-        for (auto stage : event_metrics->GetHighLatencyStages()) {
+        for (const auto& stage : event_metrics->GetHighLatencyStages()) {
           // TODO(crbug.com/40228308): Consider changing the high_latency_stage
           // type from a string to enum type in chrome_track_event.proto,
           // similar to event_type.

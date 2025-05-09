@@ -1546,7 +1546,7 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
           reporter->set_frame_type(ChromeFrameReporter2::BACKFILL);
         }
 
-        for (auto stage : high_latency_substages_) {
+        for (const auto& stage : high_latency_substages_) {
           reporter->add_high_latency_contribution_stage(stage);
         }
 
@@ -2426,7 +2426,7 @@ void CompositorFrameReporter::FindEventLatencyAttribution(
         GetStageName(static_cast<StageType>(i)), high_latency_stages);
   }
 
-  for (auto stage : high_latency_stages) {
+  for (const auto& stage : high_latency_stages) {
     event_metrics->SetHighLatencyStage(stage);
   }
 }

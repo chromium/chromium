@@ -136,7 +136,7 @@ bool FrameSorter::IsAlreadyReportedDropped(const viz::BeginFrameId& id) const {
 }
 
 void FrameSorter::Reset() {
-  for (auto pending_frame : pending_frames_) {
+  for (const auto& pending_frame : pending_frames_) {
     const auto& frame_id = pending_frame.frame_id;
     auto& frame_state = frame_states_[frame_id];
     if (frame_state.IsComplete() && !frame_state.should_ignore()) {
