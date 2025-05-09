@@ -482,5 +482,8 @@ enum ContentSettingsType {
   // Stores information on-device language packs for which a site has
   // installed using the Web Speech API.
   ON_DEVICE_SPEECH_RECOGNITION_LANGUAGES_DOWNLOADED,
+
+  // Stores which Translator API language packs the site has initialized.
+  INITIALIZED_TRANSLATIONS,
 };
 // LINT.ThenChange(//components/content_settings/core/browser/content_settings_uma_util.cc:kHistogramValue)

@@ -199,6 +199,7 @@ TEST_F(ControlledFramePermissionsTest, Verify) {
       case ContentSettingsType::LOCAL_NETWORK_ACCESS:
       case ContentSettingsType::
           ON_DEVICE_SPEECH_RECOGNITION_LANGUAGES_DOWNLOADED:
+      case ContentSettingsType::INITIALIZED_TRANSLATIONS:
         break;
 
       default:

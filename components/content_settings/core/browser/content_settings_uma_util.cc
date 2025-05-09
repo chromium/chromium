@@ -157,6 +157,7 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     {ContentSettingsType::LOCAL_NETWORK_ACCESS, 135},
     {ContentSettingsType::ON_DEVICE_SPEECH_RECOGNITION_LANGUAGES_DOWNLOADED,
      136},
+    {ContentSettingsType::INITIALIZED_TRANSLATIONS, 137},
 
     // As mentioned at the top, please don't forget to update ContentType in
     // enums.xml when you add entries here!
