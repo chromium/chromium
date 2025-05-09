@@ -68,7 +68,8 @@ namespace {
 
 // TODO(crbug.com/400473072): revisit the duration.
 // Also, we may want to use the same constant we use for service workers.
-constexpr base::TimeDelta kSharedWorkerDestructionDelay = base::Seconds(30);
+// Current value come from `ServiceWorkerVersion::kRequestTimeout`.
+constexpr base::TimeDelta kSharedWorkerDestructionDelay = base::Minutes(5);
 
 }  // namespace
 
