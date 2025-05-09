@@ -387,6 +387,10 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
       }
       break;
 
+    case ui::AXEventGenerator::Event::CHILDREN_CHANGED:
+      wcax->ClearNodeInfoCacheForGivenId(android_node->GetUniqueId());
+      break;
+
     // Currently unused events on this platform.
     case ui::AXEventGenerator::Event::NONE:
     case ui::AXEventGenerator::Event::ACCESS_KEY_CHANGED:
@@ -399,7 +403,6 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::BUSY_CHANGED:
     case ui::AXEventGenerator::Event::CARET_BOUNDS_CHANGED:
     case ui::AXEventGenerator::Event::CHECKED_STATE_DESCRIPTION_CHANGED:
-    case ui::AXEventGenerator::Event::CHILDREN_CHANGED:
     case ui::AXEventGenerator::Event::CONTROLS_CHANGED:
     case ui::AXEventGenerator::Event::DETAILS_CHANGED:
     case ui::AXEventGenerator::Event::DESCRIBED_BY_CHANGED:
