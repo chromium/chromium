@@ -8846,6 +8846,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Reading list
         </message>
       </if>
+      <message name="IDS_READ_LATER_EXPAND_BUTTON_ARIA_LABEL" desc="Aria label for the Read later list expand button.">
+        Expand <ph name="HEADER">$1<ex>Unread</ex></ph>
+      </message>
+      <message name="IDS_READ_LATER_COLLAPSE_BUTTON_ARIA_LABEL" desc="Aria label for the Read later list collapse button.">
+        Collapse <ph name="HEADER">$1<ex>Unread</ex></ph>
+      </message>
       <message name="IDS_READ_LATER_MENU_UNREAD_HEADER" desc="Header for section of unread Read later items.">
         Unread
       </message>

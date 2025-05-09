@@ -45,10 +45,12 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
       profile, chrome::kChromeUIReadLaterHost);
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"addCurrentTab", IDS_READ_LATER_ADD_CURRENT_TAB},
+      {"collapseButtonAriaLabel", IDS_READ_LATER_COLLAPSE_BUTTON_ARIA_LABEL},
       {"emptyStateAddFromDialogSubheader",
        IDS_READ_LATER_MENU_EMPTY_STATE_ADD_FROM_DIALOG_SUBHEADER},
       {"emptyStateHeader", IDS_READ_LATER_MENU_EMPTY_STATE_HEADER},
       {"emptyStateSubheader", IDS_READ_LATER_MENU_EMPTY_STATE_SUBHEADER},
+      {"expandButtonAriaLabel", IDS_READ_LATER_EXPAND_BUTTON_ARIA_LABEL},
       {"markCurrentTabAsRead", IDS_READ_LATER_MARK_CURRENT_TAB_READ},
       {"readHeader", IDS_READ_LATER_MENU_READ_HEADER},
       {"title", IDS_READ_LATER_TITLE},

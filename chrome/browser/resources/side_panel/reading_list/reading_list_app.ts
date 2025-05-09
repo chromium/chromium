@@ -246,6 +246,23 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
     };
   }
 
+  protected getExpandButtonAriaLabel_(title: string): string {
+    let labelString: string;
+    switch (title) {
+      case this.unreadHeader_:
+        labelString = this.unreadExpanded_ ? 'collapseButtonAriaLabel' :
+                                             'expandButtonAriaLabel';
+        break;
+      case this.readHeader_:
+        labelString = this.readExpanded_ ? 'collapseButtonAriaLabel' :
+                                           'expandButtonAriaLabel';
+        break;
+      default:
+        assertNotReached();
+    }
+    return loadTimeData.getStringF(labelString, title);
+  }
+
   protected getExpandButtonIcon_(title: string): string {
     switch (title) {
       case this.unreadHeader_:
