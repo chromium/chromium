@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/local_caret_rect.h"
 #include "third_party/blink/renderer/core/editing/relocatable_position.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
@@ -849,15 +850,38 @@ void DeleteSelectionCommand::HandleGeneralDelete(EditingState* editing_state) {
         downstream_end_.IsConnected() &&
         downstream_end_.ComputeEditingOffset() >=
             CaretMinOffset(downstream_end_.AnchorNode())) {
-      bool is_node_fully_selected =
-          downstream_end_.AtLastEditingPositionForNode() &&
-          !CanHaveChildrenForEditing(downstream_end_.AnchorNode());
-      // Even though `downstream_end_` has children, it can be fully selected.
-      // Update `is_node_fully_selected` if the selection includes the first
-      // position of the node.
-      if (!is_node_fully_selected &&
-          downstream_end_.AtLastEditingPositionForNode()) {
-        is_node_fully_selected = end_node_is_selected_from_first_position;
+      bool is_node_fully_selected = false;
+      if (downstream_end_.AtLastEditingPositionForNode()) {
+        if (!CanHaveChildrenForEditing(downstream_end_.AnchorNode())) {
+          is_node_fully_selected = true;
+        } else if (end_node_is_selected_from_first_position) {
+          // If the selection includes the first position of the
+          // node, the node may be considered fully selected.
+          if (RuntimeEnabledFeatures::
+                  RemoveNodeDetermineNodeFullySelectedEnabled()) {
+            if (downstream_end_.AnchorNode()->IsDescendantOf(
+                    upstream_start_.AnchorNode())) {
+              // The node is a child of the `upstream_start_.AnchorNode()`,
+              // the node be fully selected.
+              // See https://issues.chromium.org/issues/331074432.
+              is_node_fully_selected = true;
+            } else if (ComparePositions(downstream_end_,
+                                        GetDocument()
+                                            .GetFrame()
+                                            ->Selection()
+                                            .GetSelectionInDOMTree()
+                                            .Focus()) <= 0) {
+              // `downstream_end_` in FrameSelection(Use FrameSelection because
+              // we need non-visual selection), the node be fully selected.
+              // FrameSelection can be used to delete the node that is
+              // invisible, such as `<span></span>`.
+              // See https://issues.chromium.org/issues/415911524.
+              is_node_fully_selected = true;
+            }
+          } else {
+            is_node_fully_selected = true;
+          }
+        }
       }
       if (is_node_fully_selected) {
         // The node itself is fully selected, not just its contents.  Delete it.

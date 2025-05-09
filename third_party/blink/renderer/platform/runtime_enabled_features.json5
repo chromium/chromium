@@ -3814,6 +3814,12 @@
       status: "stable",
     },
     {
+      // This feature was shipped in M138, so this flag can be removed in M140.
+      // See https://issues.chromium.org/issues/415911524.
+      name: "RemoveNodeDetermineNodeFullySelected",
+      status: "stable",
+    },
+    {
       // crbug.com/41047725
       name: "RemovePlaceholderBRForDisplayInline",
       status: "stable",
