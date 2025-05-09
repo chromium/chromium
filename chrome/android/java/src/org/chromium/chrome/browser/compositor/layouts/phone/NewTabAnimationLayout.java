@@ -344,15 +344,20 @@ public class NewTabAnimationLayout extends Layout {
     }
 
     /**
-     * Returns true if animations are running (excluding {@link #mFadeAnimator}).
+     * Returns true if the foreground animation is running (excluding {@link #mFadeAnimator}).
      *
      * <p>Including {@link #mFadeAnimator} would prevent {@link #doneHiding} from being called
      * during the animation cycle in {@link
      * org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl#onUpdate(long, long)}.
+     *
+     * <p>There is also a race condition in {@link #tabCreatedInBackground} where {@link
+     * org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl#onUpdate(long, long)} gets
+     * called when the animation already started, causing the layout to freeze. Hence, we skip this
+     * check for the background animation.
      */
     @Override
     public boolean isRunningAnimations() {
-        return mTabCreatedForegroundAnimation != null || mTabCreatedBackgroundAnimation != null;
+        return mTabCreatedForegroundAnimation != null;
     }
 
     private void reset() {
@@ -632,14 +637,8 @@ public class NewTabAnimationLayout extends Layout {
             @Px int y,
             ObservableSupplier<Boolean> visibilitySupplier) {
         boolean isIncognito = animationTab.isIncognitoBranded();
-
-        // TODO(crbug.com/40282469): Investigate why NTP presents lower quality during the
-        // animation and how to stop forcing browser controls in the NTP.
         assert mLayoutTabs.length == 1;
         forceNewTabAnimationToFinish();
-
-        // TODO(crbug.com/40282469): Fix bug where the animation has a weird state and does not call
-        // startHiding when opening multiple tabs from NTP MVT context menu.
         mSkipForceAnimationToFinish = true;
         startHiding();
 
