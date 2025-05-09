@@ -153,6 +153,7 @@ found in the LICENSE file.
 
     <!-- Snackbar colors -->
     <color name="snackbar_background_color_baseline_dark">@color/baseline_neutral_10_with_surface_tint_dark_alpha_12</color>
+    <color name="floating_snackbar_background_incognito">@color/gm3_baseline_surface_container_high_dark</color>
 
     <!-- Rating star colors -->
     <color name="rating_star_yellow_dark">@color/modern_yellow_500</color>

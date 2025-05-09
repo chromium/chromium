@@ -342,8 +342,8 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
         final String snackBarTestString = "This is written inside the snackbar.";
         when(mContextMock.getString(R.string.incognito_reauth_snackbar_text))
                 .thenReturn(snackBarTestString);
-        when(mContextMock.getColor(R.color.snackbar_background_color_baseline_dark))
-                .thenReturn(R.color.snackbar_background_color_baseline_dark);
+        when(mContextMock.getColor(R.color.floating_snackbar_background_incognito))
+                .thenReturn(R.color.floating_snackbar_background_incognito);
         doNothing().when(mSnackbarManagerMock).showSnackbar(mSnackbarArgumentCaptor.capture());
 
         IncognitoReauthPromoMessageService.setIsPromoEnabledForTesting(true);
@@ -357,7 +357,7 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
         verify(mMessageObserverMock, times(1)).messageInvalidate(MessageType.FOR_TESTING);
 
         verify(mContextMock, times(1)).getString(R.string.incognito_reauth_snackbar_text);
-        verify(mContextMock, times(1)).getColor(R.color.snackbar_background_color_baseline_dark);
+        verify(mContextMock, times(1)).getColor(R.color.floating_snackbar_background_incognito);
         verify(mSnackbarManagerMock, times(1)).showSnackbar(mSnackbarArgumentCaptor.getValue());
 
         assertFalse(

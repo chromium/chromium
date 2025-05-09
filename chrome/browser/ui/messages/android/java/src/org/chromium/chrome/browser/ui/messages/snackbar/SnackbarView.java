@@ -358,6 +358,10 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
             return snackbar.getBackgroundColor();
         }
 
+        if (SnackbarManager.isFloatingSnackbarEnabled()) {
+            return SemanticColorUtils.getFloatingSnackbarBackgroundColor(view.getContext());
+        }
+
         return SemanticColorUtils.getSnackbarBackgroundColor(view.getContext());
     }
 
@@ -402,6 +406,9 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
         if (SnackbarManager.isFloatingSnackbarEnabled()) {
             // Round the corners for snackbars in both tablets and non-tablets.
             mSnackbarView.setBackgroundResource(R.drawable.snackbar_background);
+            GradientDrawable backgroundDrawable =
+                    (GradientDrawable) mSnackbarView.getBackground().mutate();
+            backgroundDrawable.setColor(mBackgroundColor);
         } else if (mIsTablet) {
             // isFloatingSnackbarEnabled == false, mIsTablet == true
             // On tablet, snackbars have rounded corners.
