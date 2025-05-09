@@ -19,7 +19,7 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {AppStyleUpdater} from './app_style_updater.js';
 import type {SettingsPrefs} from './common.js';
-import {minOverflowLengthToScroll, playFromSelectionTimeout} from './common.js';
+import {minOverflowLengthToScroll} from './common.js';
 import type {LanguageToastElement} from './language_toast.js';
 import {NodeStore} from './node_store.js';
 import {ReadAloudHighlighter} from './read_aloud/highlighter.js';
@@ -319,7 +319,7 @@ export class AppElement extends AppElementBase implements
     };
 
     chrome.readingMode.onLockScreen = () => {
-      this.onLockScreen();
+      this.speechController_.onLockScreen();
     };
 
     chrome.readingMode.onTtsEngineInstalled = () => {
@@ -845,36 +845,11 @@ export class AppElement extends AppElementBase implements
   }
 
   protected playNextGranularity_() {
-    this.speechController_.setIsSpeechBeingRepositioned(true);
-
-    this.speech_.cancel();
-    this.highlighter_.resetPreviousHighlight();
-    // Reset the word boundary index whenever we move the granularity position.
-    this.wordBoundaries_.resetToDefaultState();
-    chrome.readingMode.movePositionToNextGranularity();
-
-    if (!this.speechController_.highlightAndPlayMessage()) {
-      this.speechController_.onSpeechFinished();
-    }
+    this.speechController_.playNextGranularity();
   }
 
   protected playPreviousGranularity_() {
-    this.speechController_.setIsSpeechBeingRepositioned(true);
-    this.speech_.cancel();
-    // This must be called BEFORE calling
-    // chrome.readingMode.movePositionToPreviousGranularity so we can accurately
-    // determine what's currently being highlighted.
-    this.highlighter_.removeCurrentHighlight();
-    this.highlighter_.resetPreviousHighlight();
-    // Reset the word boundary index whenever we move the granularity position.
-    this.wordBoundaries_.resetToDefaultState();
-    chrome.readingMode.movePositionToPreviousGranularity();
-
-    if (!this.speechController_.highlightAndPlayMessage(
-            /*isInterrupted=*/ false,
-            /*isMovingBackward=*/ true)) {
-      this.speechController_.onSpeechFinished();
-    }
+    this.speechController_.playPreviousGranularity();
   }
 
   playSpeech() {
@@ -1021,23 +996,7 @@ export class AppElement extends AppElementBase implements
     // Clear the selection so we don't keep trying to play from the same
     // selection every time they press play.
     selection.removeAllRanges();
-
-    // Iterate through the page from the beginning until we get to the
-    // selection. This is so clicking previous works before the selection and
-    // so the previous highlights are properly set.
-    chrome.readingMode.resetGranularityIndex();
-    // Iterate through the nodes asynchronously so that we can show the spinner
-    // in the toolbar while we move up to the selection.
-    setTimeout(() => {
-      this.speechController_.movePlaybackToNode(startingNodeId, startingOffset);
-      // Set everything to previous and then play the next granularity, which
-      // includes the selection.
-      this.highlighter_.resetPreviousHighlight();
-      if (!this.speechController_.highlightAndPlayMessage()) {
-        this.speechController_.onSpeechFinished();
-      }
-    }, playFromSelectionTimeout);
-
+    this.speechController_.playFromSelection(startingNodeId, startingOffset);
     return true;
   }
 
@@ -1066,21 +1025,9 @@ export class AppElement extends AppElementBase implements
   }
 
   protected resetSpeechPostSettingChange_() {
-    // Don't call stopSpeech() if the speech tree hasn't been initialized or
-    // if speech hasn't been triggered yet.
-    if (!this.speechController_.isSpeechTreeInitialized() ||
-        !this.speechController_.hasSpeechBeenTriggered()) {
-      return;
-    }
-
-    const playSpeechOnChange = this.speechController_.isSpeechActive();
-
-    // Cancel the queued up Utterance using the old speech settings
-    this.speechController_.stopSpeech(PauseActionSource.VOICE_SETTINGS_CHANGE);
-
     // If speech was playing when a setting was changed, continue playing
     // speech
-    if (playSpeechOnChange) {
+    if (this.speechController_.onSpeechSettingsChange()) {
       this.playSpeech();
     }
   }
@@ -1135,28 +1082,9 @@ export class AppElement extends AppElementBase implements
   }
 
   protected onHighlightChange_(event: CustomEvent<{data: number}>) {
-    // Handler for HIGHLIGHT_CHANGE.
-    const changedHighlight = event.detail.data;
-    chrome.readingMode.onHighlightGranularityChanged(changedHighlight);
+    this.speechController_.onHighlightGranularityChange(event.detail.data);
     // Apply highlighting changes to the DOM.
     this.styleUpdater_.setHighlight();
-
-    // Rehighlight the new granularity.
-    if (changedHighlight !== chrome.readingMode.noHighlighting) {
-      this.speechController_.highlightCurrentGranularity(
-          chrome.readingMode.getCurrentText());
-    }
-
-    // Log these highlight granularity changes when the phrase menu is shown.
-    // (Toggles are already logged in the toolbar.)
-    this.logger_.logHighlightGranularity(changedHighlight);
-  }
-
-  // If the screen is locked during speech, we should stop speaking.
-  onLockScreen() {
-    if (this.speechController_.isSpeechActive()) {
-      this.speechController_.stopSpeech(PauseActionSource.DEFAULT);
-    }
   }
 
   onNodeWillBeDeleted(nodeId: number) {

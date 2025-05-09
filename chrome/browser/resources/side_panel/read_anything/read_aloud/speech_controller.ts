@@ -4,7 +4,7 @@
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
-import {getCurrentSpeechRate} from '../common.js';
+import {getCurrentSpeechRate, playFromSelectionTimeout} from '../common.js';
 import {NodeStore} from '../node_store.js';
 import {ReadAnythingLogger} from '../read_anything_logger.js';
 import type {SpeechBrowserProxy} from '../speech_browser_proxy.js';
@@ -157,8 +157,93 @@ export class SpeechController {
     chrome.readingMode.preprocessTextForSpeech();
   }
 
+  // If the screen is locked during speech, we should stop speaking.
+  onLockScreen() {
+    if (this.isSpeechActive()) {
+      this.stopSpeech(PauseActionSource.DEFAULT);
+    }
+  }
+
+  onSpeechSettingsChange(): boolean {
+    // Don't call stopSpeech() if the speech tree hasn't been initialized or
+    // if speech hasn't been triggered yet.
+    if (!this.isSpeechTreeInitialized() || !this.hasSpeechBeenTriggered()) {
+      return false;
+    }
+
+    const playSpeechOnChange = this.isSpeechActive();
+
+    // Cancel the queued up Utterance using the old speech settings
+    this.stopSpeech(PauseActionSource.VOICE_SETTINGS_CHANGE);
+    return playSpeechOnChange;
+  }
+
+  onHighlightGranularityChange(newGranularity: number) {
+    chrome.readingMode.onHighlightGranularityChanged(newGranularity);
+
+    // Rehighlight the new granularity.
+    if (newGranularity !== chrome.readingMode.noHighlighting) {
+      this.highlightCurrentGranularity(chrome.readingMode.getCurrentText());
+    }
+
+    // Log these highlight granularity changes when the phrase menu is shown.
+    // (Toggles are already logged in the toolbar.)
+    this.logger_.logHighlightGranularity(newGranularity);
+  }
+
   onPlay() {
     this.model_.setPlaySessionStartTime(Date.now());
+  }
+
+  playNextGranularity() {
+    this.setIsSpeechBeingRepositioned(true);
+
+    this.speech_.cancel();
+    this.highlighter_.resetPreviousHighlight();
+    // Reset the word boundary index whenever we move the granularity position.
+    this.wordBoundaries_.resetToDefaultState();
+    chrome.readingMode.movePositionToNextGranularity();
+
+    if (!this.highlightAndPlayMessage()) {
+      this.onSpeechFinished();
+    }
+  }
+
+  playPreviousGranularity() {
+    this.setIsSpeechBeingRepositioned(true);
+    this.speech_.cancel();
+    // This must be called BEFORE calling
+    // chrome.readingMode.movePositionToPreviousGranularity so we can accurately
+    // determine what's currently being highlighted.
+    this.highlighter_.removeCurrentHighlight();
+    this.highlighter_.resetPreviousHighlight();
+    // Reset the word boundary index whenever we move the granularity position.
+    this.wordBoundaries_.resetToDefaultState();
+    chrome.readingMode.movePositionToPreviousGranularity();
+
+    if (!this.highlightAndPlayMessage(
+            /*isInterrupted=*/ false,
+            /*isMovingBackward=*/ true)) {
+      this.onSpeechFinished();
+    }
+  }
+
+  playFromSelection(startingNodeId: number, startingOffset: number) {
+    // Iterate through the page from the beginning until we get to the
+    // selection. This is so clicking previous works before the selection and
+    // so the previous highlights are properly set.
+    chrome.readingMode.resetGranularityIndex();
+    // Iterate through the nodes asynchronously so that we can show the spinner
+    // in the toolbar while we move up to the selection.
+    setTimeout(() => {
+      this.movePlaybackToNode(startingNodeId, startingOffset);
+      // Set everything to previous and then play the next granularity, which
+      // includes the selection.
+      this.highlighter_.resetPreviousHighlight();
+      if (!this.highlightAndPlayMessage()) {
+        this.onSpeechFinished();
+      }
+    }, playFromSelectionTimeout);
   }
 
   highlightAndPlayInterruptedMessage(): boolean {

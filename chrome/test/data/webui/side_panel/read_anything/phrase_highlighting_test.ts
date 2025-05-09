@@ -69,8 +69,8 @@ suite('PhraseHighlighting', () => {
     wordBoundaries = new WordBoundaries();
     WordBoundaries.setInstance(wordBoundaries);
     ReadAloudHighlighter.setInstance(new ReadAloudHighlighter());
-    SpeechController.setInstance(new SpeechController());
     metrics = mockMetrics();
+    SpeechController.setInstance(new SpeechController());
     app = await createApp();
 
     // Use a tree with just one sentence. For the actual implementation of
