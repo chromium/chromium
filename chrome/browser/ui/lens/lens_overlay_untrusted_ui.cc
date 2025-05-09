@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/browser/ui/lens/lens_overlay_untrusted_ui.h"
 
 #include "base/strings/strcat.h"
@@ -11,6 +10,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_theme_utils.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/lens/lens_searchbox_controller.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -315,13 +316,14 @@ void LensOverlayUntrustedUI::BindInterface(
 
 void LensOverlayUntrustedUI::BindInterface(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> receiver) {
-  LensOverlayController& controller = GetLensOverlayController();
+  LensSearchboxController* controller =
+      GetLensSearchController().lens_searchbox_controller();
 
   auto handler = std::make_unique<LensSearchboxHandler>(
       std::move(receiver), Profile::FromWebUI(web_ui()),
       web_ui()->GetWebContents(),
-      /*metrics_reporter=*/nullptr, /*lens_searchbox_client=*/&controller);
-  controller.SetContextualSearchboxHandler(std::move(handler));
+      /*metrics_reporter=*/nullptr, /*lens_searchbox_client=*/controller);
+  controller->SetContextualSearchboxHandler(std::move(handler));
 }
 
 void LensOverlayUntrustedUI::BindInterface(
@@ -337,6 +339,13 @@ void LensOverlayUntrustedUI::BindInterface(
     help_bubble_handler_factory_receiver_.reset();
   }
   help_bubble_handler_factory_receiver_.Bind(std::move(pending_receiver));
+}
+
+LensSearchController& LensOverlayUntrustedUI::GetLensSearchController() {
+  LensSearchController* controller =
+      LensSearchController::FromWebUIWebContents(web_ui()->GetWebContents());
+  CHECK(controller);
+  return *controller;
 }
 
 LensOverlayController& LensOverlayUntrustedUI::GetLensOverlayController() {

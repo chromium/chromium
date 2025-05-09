@@ -43,6 +43,7 @@ class View;
 namespace lens {
 
 class LensOverlaySidePanelNavigationThrottle;
+class LensSearchboxController;
 
 // Data struct representing a previous search query.
 struct SearchQuery {
@@ -130,6 +131,11 @@ class LensOverlaySidePanelCoordinator
   // Return the LensOverlayController that is part of this tab.
   LensOverlayController* GetLensOverlayController() {
     return lens_search_controller_->lens_overlay_controller();
+  }
+
+  // Return the LensSearchboxController that is part of this tab.
+  LensSearchboxController* GetLensSearchboxController() {
+    return lens_search_controller_->lens_searchbox_controller();
   }
 
   // Handles rendering text highlights on the main browser window based on

@@ -27,7 +27,7 @@
 
 namespace {
 // Interface that allows the Lens searchbox to interact with its embedder
-// (i.e., LensOverlayController).
+// (i.e., LensSearchboxController).
 class LensOmniboxClient : public OmniboxClient {
  public:
   LensOmniboxClient(Profile* profile,

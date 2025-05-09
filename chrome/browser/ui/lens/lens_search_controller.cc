@@ -17,12 +17,20 @@
 #include "chrome/browser/ui/lens/lens_searchbox_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "components/lens/lens_overlay_permission_utils.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace {
+
+void CheckInitialized(bool initialized) {
+  CHECK(initialized)
+      << "The LensSearchController has not been initialized. Initialize() must "
+         "be called before using the LensSearchController.";
+}
+
 LensSearchController* GetLensSearchControllerFromTabInterface(
     tabs::TabInterface* tab_interface) {
   return tab_interface
@@ -47,6 +55,7 @@ void LensSearchController::Initialize(
   initialized_ = true;
   variations_client_ = variations_client;
   identity_manager_ = identity_manager;
+  pref_service_ = pref_service;
   theme_service_ = theme_service;
 
   // Create Gen204 controller first as query controller depends on it.
@@ -80,9 +89,7 @@ LensSearchController* LensSearchController::FromTabWebContents(
 
 void LensSearchController::OpenLensOverlay(
     lens::LensOverlayInvocationSource invocation_source) {
-  CHECK(initialized_)
-      << "The LensSearchController has not been initialized. Initialize() must "
-         "be called before using the LensSearchController.";
+  CheckInitialized(initialized_);
 
   // The UI should only show if the tab is in the foreground or if the tab web
   // contents is not in a crash state.
@@ -246,30 +253,38 @@ tabs::TabInterface* LensSearchController::GetTabInterface() {
   return tab_;
 }
 
+const GURL& LensSearchController::GetPageURL() const {
+  if (lens::CanSharePageURLWithLensOverlay(pref_service_)) {
+    return tab_->GetContents()->GetVisibleURL();
+  }
+  return GURL::EmptyGURL();
+}
+
 base::WeakPtr<LensSearchController> LensSearchController::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
 LensOverlayController* LensSearchController::lens_overlay_controller() {
-  CHECK(initialized_) << "The LensSearchController has not been initialized. "
-                         "Initialize() must "
-                         "be called before using the LensSearchController.";
+  CheckInitialized(initialized_);
   return lens_overlay_controller_.get();
 }
 
 lens::LensOverlaySidePanelCoordinator*
 LensSearchController::lens_overlay_side_panel_coordinator() {
-  CHECK(initialized_) << "The LensSearchController has not been initialized. "
-                         "Initialize() must "
-                         "be called before using the LensSearchController.";
+  CheckInitialized(initialized_);
+
   return lens_overlay_side_panel_coordinator_.get();
+}
+
+lens::LensSearchboxController*
+LensSearchController::lens_searchbox_controller() {
+  CheckInitialized(initialized_);
+  return lens_searchbox_controller_.get();
 }
 
 optimization_guide::PageContextEligibility*
 LensSearchController::page_context_eligibility() {
-  CHECK(initialized_) << "The LensSearchController has not been initialized. "
-                         "Initialize() must "
-                         "be called before using the LensSearchController.";
+  CheckInitialized(initialized_);
   if (page_context_eligibility_) {
     return page_context_eligibility_;
   }
@@ -370,6 +385,8 @@ void LensSearchController::NotifyOverlayOpened() {
 void LensSearchController::CloseLensPart2() {
   // Cleanup the query controller.
   lens_overlay_query_controller_.reset();
+  // Let the controllers know to cleanup.
+  lens_searchbox_controller_->CloseUI();
   state_ = State::kOff;
 }
 
@@ -403,5 +420,5 @@ void LensSearchController::HandlePageContentUploadProgress(uint64_t position,
 
 void LensSearchController::HandleThumbnailCreated(
     const std::string& thumbnail_bytes) {
-  lens_overlay_controller_->HandleThumbnailCreated(thumbnail_bytes);
+  lens_searchbox_controller_->HandleThumbnailCreated(thumbnail_bytes);
 }

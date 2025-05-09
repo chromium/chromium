@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/lens/lens_permission_bubble_controller.h"
 #include "chrome/browser/ui/lens/lens_preselection_bubble.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/lens/lens_searchbox_controller.h"
 #include "chrome/browser/ui/lens/page_content_type_conversions.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -63,7 +64,6 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
-#include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/common/pref_names.h"
@@ -79,7 +79,6 @@
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/permissions/permission_request_manager.h"
-#include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/viz/common/frame_timing_details.h"
@@ -95,7 +94,6 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/browser/web_ui.h"
 #include "net/base/network_change_notifier.h"
-#include "net/base/url_util.h"
 #include "pdf/buildflags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -144,9 +142,6 @@ constexpr float kByteChangeTolerancePercent = 0.01;
 // The maximum length of the DOM text to consider for OCR similarity.
 // Currently 50 MB
 constexpr int kMaxDomTextLengthForOcrSimilarity = 50 * 1000 * 1000;
-
-// The url query param key for the search query.
-inline constexpr char kTextQueryParameterKey[] = "q";
 
 // Copy the objects of a vector into another without transferring
 // ownership.
@@ -458,20 +453,6 @@ void LensOverlayController::BindSidePanelGhostLoader(
   side_panel_ghost_loader_page_.Bind(std::move(page));
 }
 
-void LensOverlayController::SetSidePanelSearchboxHandler(
-    std::unique_ptr<LensSearchboxHandler> handler) {
-  side_panel_searchbox_handler_ = std::move(handler);
-}
-
-void LensOverlayController::SetContextualSearchboxHandler(
-    std::unique_ptr<LensSearchboxHandler> handler) {
-  overlay_searchbox_handler_ = std::move(handler);
-}
-
-void LensOverlayController::ResetSidePanelSearchboxHandler() {
-  side_panel_searchbox_handler_.reset();
-}
-
 uint64_t LensOverlayController::GetInvocationTimeSinceEpoch() {
   return invocation_time_since_epoch_.InMillisecondsSinceUnixEpoch();
 }
@@ -553,18 +534,6 @@ bool LensOverlayController::IsOverlayInitializing() {
 
 bool LensOverlayController::IsOverlayClosing() {
   return state_ == State::kClosing || state_ == State::kClosingSidePanel;
-}
-
-bool LensOverlayController::IsContextualSearchbox() {
-  // TODO(crbug.com/405441183): This logic will break the side panel searchbox
-  // if there is no overlay, so it should be moved to a shared location.
-  return GetPageClassification() ==
-         metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX;
-}
-
-void LensOverlayController::GetIsContextualSearchbox(
-    GetIsContextualSearchboxCallback callback) {
-  std::move(callback).Run(IsContextualSearchbox());
 }
 
 bool LensOverlayController::IsScreenshotPossible(
@@ -678,7 +647,7 @@ void LensOverlayController::IssueTranslateFullPageRequest(
     const std::string& source_language,
     const std::string& target_language) {
   // Remove the selection thumbnail, if it exists.
-  SetSearchboxThumbnail(std::string());
+  GetLensSearchboxController()->SetSearchboxThumbnail(std::string());
   ClearRegionSelection();
   // Set the coachmark text.
   if (preselection_widget_) {
@@ -865,11 +834,11 @@ LensOverlayController::GetSidePanelWebContentsForTesting() {
 }
 
 const GURL& LensOverlayController::GetPageURLForTesting() {
-  return GetPageURL();
+  return lens_search_controller_->GetPageURL();
 }
 
 SessionID LensOverlayController::GetTabIdForTesting() {
-  return GetTabId();
+  return GetLensSearchboxController()->GetTabId();
 }
 
 metrics::OmniboxEventProto::PageClassification
@@ -878,19 +847,19 @@ LensOverlayController::GetPageClassificationForTesting() {
 }
 
 const std::string& LensOverlayController::GetThumbnailForTesting() {
-  return GetThumbnail();
+  return GetLensSearchboxController()->GetThumbnail();
 }
 
 void LensOverlayController::OnTextModifiedForTesting() {
-  OnTextModified();
+  GetLensSearchboxController()->OnTextModified();
 }
 
 void LensOverlayController::OnThumbnailRemovedForTesting() {
-  OnThumbnailRemoved();
+  GetLensSearchboxController()->OnThumbnailRemoved();
 }
 
 void LensOverlayController::OnFocusChangedForTesting(bool focused) {
-  OnFocusChanged(focused);
+  GetLensSearchboxController()->OnFocusChanged(focused);
 }
 
 void LensOverlayController::OnZeroSuggestShownForTesting() {
@@ -1079,7 +1048,8 @@ void LensOverlayController::IssueContextualSearchRequest(
   // TODO(crbug.com/401583049): Revisit if this should go through the
   // OnSuggestionAccepted flow or if there should be a more direct contextual
   // search flow.
-  OnSuggestionAccepted(destination_url, match_type, is_zero_prefix_suggestion);
+  GetLensSearchboxController()->OnSuggestionAccepted(
+      destination_url, match_type, is_zero_prefix_suggestion);
 }
 
 void LensOverlayController::StartContextualizationWithoutOverlay(
@@ -1139,34 +1109,25 @@ void LensOverlayController::SetPostRegionSelection(
   initialization_data_->selected_region_ = std::move(box);
 }
 
-void LensOverlayController::SetSearchboxInputText(const std::string& text) {
-  if (side_panel_searchbox_handler_ &&
-      side_panel_searchbox_handler_->IsRemoteBound()) {
-    side_panel_searchbox_handler_->SetInputText(text);
-  } else {
-    // If the side panel was not bound at the time of request, we store the
-    // query as pending to send it to the searchbox on bind.
-    pending_text_query_ = text;
-  }
-}
-
-void LensOverlayController::SetSearchboxThumbnail(
-    const std::string& thumbnail_uri) {
-  if (side_panel_searchbox_handler_ &&
-      side_panel_searchbox_handler_->IsRemoteBound()) {
-    side_panel_searchbox_handler_->SetThumbnail(thumbnail_uri);
-    selected_region_thumbnail_uri_ = thumbnail_uri;
-  } else {
-    // If the side panel was not bound at the time of request, we store the
-    // thumbnail as pending to send it to the searchbox on bind.
-    pending_thumbnail_uri_ = thumbnail_uri;
-  }
-}
-
 void LensOverlayController::SetAdditionalSearchQueryParams(
     std::map<std::string, std::string> additional_search_query_params) {
   initialization_data_->additional_search_query_params_ =
       additional_search_query_params;
+}
+
+void LensOverlayController::ClearTextSelection() {
+  if (initialization_data_->selected_text_.has_value()) {
+    initialization_data_->selected_text_.reset();
+    page_->ClearTextSelection();
+  }
+}
+
+void LensOverlayController::ClearRegionSelection() {
+  GetLensSearchboxController()->SetSearchboxThumbnail("");
+  lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
+  initialization_data_->selected_region_.reset();
+  initialization_data_->selected_region_bitmap_.reset();
+  page_->ClearRegionSelection();
 }
 
 void LensOverlayController::ClearAllSelections() {
@@ -1179,13 +1140,64 @@ void LensOverlayController::ClearAllSelections() {
   }
 }
 
+void LensOverlayController::OnSearchboxFocusChanged(bool focused) {
+  if (!focused) {
+    return;
+  }
+
+  if (IsContextualSearchbox()) {
+    if (!csb_session_end_metrics_.searchbox_focused_) {
+      // This is the first time the searchbox is focused in this session.
+      // Record the time between the overlay being invoked and the searchbox
+      // being focused.
+      lens::RecordContextualSearchboxTimeToFirstFocus(
+          base::TimeTicks::Now() - invocation_time_,
+          initialization_data_->primary_content_type_);
+    } else {
+      RecordContextualSearchboxTimeToFocusAfterNavigation();
+    }
+    csb_session_end_metrics_.searchbox_focused_ = true;
+
+    if (state() == State::kLivePageAndResults) {
+      // If the live page is showing and the searchbox becomes focused, showing
+      // intent to issue a new query, upload the new page content for
+      // contextualization.
+      TryUpdatePageContextualization();
+    }
+  }
+}
+
+void LensOverlayController::ShowGhostLoaderErrorState() {
+  if (!IsContextualSearchbox()) {
+    return;
+  }
+  if (overlay_ghost_loader_page_) {
+    overlay_ghost_loader_page_->ShowErrorState();
+  }
+  if (side_panel_ghost_loader_page_) {
+    side_panel_ghost_loader_page_->ShowErrorState();
+  }
+}
+
+void LensOverlayController::OnZeroSuggestShown() {
+  if (!IsContextualSearchbox()) {
+    return;
+  }
+
+  if (state() == State::kOverlay) {
+    csb_session_end_metrics_.zps_shown_on_initial_query_ = true;
+  } else {
+    csb_session_end_metrics_.zps_shown_on_follow_up_query_ = true;
+  }
+}
+
 void LensOverlayController::IssueLensRequest(
     lens::mojom::CenterRotatedBoxPtr region,
     lens::LensOverlaySelectionType selection_type,
     std::optional<SkBitmap> region_bytes) {
   CHECK(initialization_data_);
   CHECK(region);
-  SetSearchboxInputText(std::string());
+  GetLensSearchboxController()->SetSearchboxInputText(std::string());
   initialization_data_->selected_region_ = region.Clone();
   initialization_data_->selected_text_.reset();
   initialization_data_->additional_search_query_params_.clear();
@@ -1220,6 +1232,41 @@ void LensOverlayController::IssueMultimodalRequest(
   }
 }
 
+void LensOverlayController::IssueSearchBoxRequest(
+    const std::string& search_box_text,
+    AutocompleteMatchType::Type match_type,
+    bool is_zero_prefix_suggestion,
+    std::map<std::string, std::string> additional_query_params) {
+  // Log the interaction time here so the time to fetch new page bytes is not
+  // intcluded.
+  RecordContextualSearchboxTimeToInteractionAfterNavigation();
+  RecordTimeToFirstInteraction(
+      lens::LensOverlayFirstInteractionType::kSearchbox);
+
+  // Do not attempt to contextualize if CSB is disabled, if recontextualization
+  // on each query is disabled, if the live page is not being displayed, or if
+  // the user is not in the contextual search flow (aka, issues an image request
+  // already).
+  if (!lens::features::IsLensOverlayContextualSearchboxEnabled() ||
+      !lens::features::ShouldLensOverlayRecontextualizeOnQuery() ||
+      state() != State::kLivePageAndResults || !IsContextualSearchbox()) {
+    IssueSearchBoxRequestPart2(search_box_text, match_type,
+                               is_zero_prefix_suggestion,
+                               additional_query_params);
+    return;
+  }
+
+  // If contextual searchbox is enabled, make sure the page bytes are current
+  // prior to issuing the search box request.
+  GetPageContextualization(
+      base::BindOnce(&LensOverlayController::UpdatePageContextualization,
+                     weak_factory_.GetWeakPtr())
+          .Then(base::BindOnce(
+              &LensOverlayController::IssueSearchBoxRequestPart2,
+              weak_factory_.GetWeakPtr(), search_box_text, match_type,
+              is_zero_prefix_suggestion, additional_query_params)));
+}
+
 void LensOverlayController::IssueContextualTextRequest(
     const std::string& text_query,
     lens::LensOverlaySelectionType selection_type) {
@@ -1233,9 +1280,9 @@ void LensOverlayController::IssueContextualTextRequest(
 void LensOverlayController::AddOverlayStateToSearchQuery(
     lens::SearchQuery& search_query) {
   // In the case where a query was triggered by a selection on the overlay or
-  // use of the searchbox, initialization_data_, additional_search_query_params_
-  // and selected_region_thumbnail_uri_ will have already been set. Record
-  // that state in a search query struct.
+  // use of the searchbox, initialization_data_ and
+  // additional_search_query_params_ will have already been set. Record that
+  // state in a search query struct.
   if (initialization_data_->selected_region_) {
     search_query.selected_region_ =
         initialization_data_->selected_region_->Clone();
@@ -1244,7 +1291,6 @@ void LensOverlayController::AddOverlayStateToSearchQuery(
     search_query.selected_region_bitmap_ =
         initialization_data_->selected_region_bitmap_;
   }
-  search_query.selected_region_thumbnail_uri_ = selected_region_thumbnail_uri_;
   if (initialization_data_->selected_text_.has_value()) {
     search_query.selected_text_ = initialization_data_->selected_text_.value();
   }
@@ -1449,7 +1495,7 @@ void LensOverlayController::DidCaptureScreenshot(
     const auto& tab_url = tab_->GetContents()->GetLastCommittedURL();
 
     auto bitmap_to_send = bitmap;
-    auto page_url = GetPageURL();
+    auto page_url = lens_search_controller_->GetPageURL();
     auto page_title = GetPageTitle();
     if (!IsPageContextEligible(
             tab_url, {}, lens_search_controller_->page_context_eligibility())) {
@@ -1517,8 +1563,8 @@ void LensOverlayController::ContinueCreateInitializationData(
   }
 
   auto initialization_data = std::make_unique<OverlayInitializationData>(
-      screenshot, std::move(rgb_screenshot), color_palette, GetPageURL(),
-      GetPageTitle());
+      screenshot, std::move(rgb_screenshot), color_palette,
+      lens_search_controller_->GetPageURL(), GetPageTitle());
   initialization_data->significant_region_boxes_ =
       ConvertSignificantRegionBoxes(all_bounds);
   initialization_data->last_retrieved_most_visible_page_ = pdf_current_page;
@@ -2016,7 +2062,8 @@ void LensOverlayController::UpdatePageContextualizationPart3(
   is_first_upload_handler_event_ = true;
   lens_overlay_query_controller_->SendUpdatedPageContent(
       initialization_data_->page_contents_,
-      initialization_data_->primary_content_type_, GetPageURL(), GetPageTitle(),
+      initialization_data_->primary_content_type_,
+      lens_search_controller_->GetPageURL(), GetPageTitle(),
       initialization_data_->last_retrieved_most_visible_page_,
       sending_bitmap ? bitmap : SkBitmap());
 
@@ -2186,7 +2233,6 @@ void LensOverlayController::CloseUIPart2(
   }
 
   permission_bubble_controller_.reset();
-  side_panel_searchbox_handler_.reset();
   results_side_panel_coordinator_ = nullptr;
   side_panel_in_use_.reset();
   pre_initialization_suggest_inputs_.reset();
@@ -2218,18 +2264,18 @@ void LensOverlayController::CloseUIPart2(
   page_.reset();
   languages_controller_.reset();
   scoped_tab_modal_ui_.reset();
-  pending_text_query_.reset();
-  pending_thumbnail_uri_.reset();
-  selected_region_thumbnail_uri_.clear();
   pending_region_.reset();
   fullscreen_observation_.Reset();
   immersive_mode_observer_.Reset();
   lens_overlay_blur_layer_delegate_.reset();
-  overlay_searchbox_handler_.reset();
   last_navigation_time_.reset();
 #if BUILDFLAG(IS_MAC)
   pref_change_registrar_.Reset();
 #endif  // BUILDFLAG(IS_MAC)
+
+  // Notify the searchbox controller to reset its handlers before the overlay
+  // is cleaned up. This is needed to prevent a dangling ptr.
+  GetLensSearchboxController()->ResetOverlaySearchboxHandler();
 
   // Cleanup all of the lens overlay related views. The overlay view is owned by
   // the browser view and is reused for each Lens overlay session. Clean it up
@@ -2320,8 +2366,9 @@ void LensOverlayController::InitializeOverlay(
     // original StartQueryFlow call.
     lens_overlay_query_controller_->SendUpdatedPageContent(
         initialization_data_->page_contents_,
-        initialization_data_->primary_content_type_, GetPageURL(),
-        GetPageTitle(), initialization_data_->last_retrieved_most_visible_page_,
+        initialization_data_->primary_content_type_,
+        lens_search_controller_->GetPageURL(), GetPageTitle(),
+        initialization_data_->last_retrieved_most_visible_page_,
         should_send_screenshot_on_init_
             ? initialization_data_->initial_screenshot_
             : SkBitmap());
@@ -2436,6 +2483,11 @@ void LensOverlayController::InitializeOverlayUI(
 
   // Record the UMA for lens overlay invocation.
   lens::RecordInvocation(invocation_source_, initial_document_type_);
+}
+
+bool LensOverlayController::IsContextualSearchbox() {
+  return lens_search_controller_->lens_searchbox_controller()
+      ->IsContextualSearchbox();
 }
 
 raw_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
@@ -2634,32 +2686,10 @@ void LensOverlayController::OnHandshakeComplete() {
   pending_suggest_inputs_callbacks_.Notify(GetLensSuggestInputs());
 }
 
-const GURL& LensOverlayController::GetPageURL() const {
-  if (lens::CanSharePageURLWithLensOverlay(pref_service_)) {
-    return tab_->GetContents()->GetVisibleURL();
-  }
-  return GURL::EmptyGURL();
-}
-
-SessionID LensOverlayController::GetTabId() const {
-  return sessions::SessionTabHelper::IdForTab(tab_->GetContents());
-}
-
 metrics::OmniboxEventProto::PageClassification
 LensOverlayController::GetPageClassification() const {
-  // There are two cases where we are assuming to be in a contextual flow:
-  // 1) We are in the zero state with the overlay CSB showing.
-  // 2) A user has made a contextual query and the live page is now showing.
-  if (state_ == State::kLivePageAndResults || state_ == State::kOverlay) {
-    return metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX;
-  }
-  return selected_region_thumbnail_uri_.empty()
-             ? metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX
-             : metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX;
-}
-
-std::string& LensOverlayController::GetThumbnail() {
-  return selected_region_thumbnail_uri_;
+  return lens_search_controller_->lens_searchbox_controller()
+      ->GetPageClassification();
 }
 
 const lens::proto::LensOverlaySuggestInputs&
@@ -2669,123 +2699,6 @@ LensOverlayController::GetLensSuggestInputs() const {
   }
   return initialization_data_ ? initialization_data_->suggest_inputs_
                               : pre_initialization_suggest_inputs_.value();
-}
-
-void LensOverlayController::OnTextModified() {
-  if (initialization_data_->selected_text_.has_value()) {
-    initialization_data_->selected_text_.reset();
-    page_->ClearTextSelection();
-  }
-}
-
-void LensOverlayController::ClearRegionSelection() {
-  selected_region_thumbnail_uri_.clear();
-  lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
-  initialization_data_->selected_region_.reset();
-  initialization_data_->selected_region_bitmap_.reset();
-  page_->ClearRegionSelection();
-}
-
-void LensOverlayController::OnThumbnailRemoved() {
-  // This is called by the searchbox after the thumbnail is
-  // removed from there, so no need to manually replace the
-  // searchbox thumbnail uri here.
-  ClearRegionSelection();
-}
-
-void LensOverlayController::OnSuggestionAccepted(
-    const GURL& destination_url,
-    AutocompleteMatchType::Type match_type,
-    bool is_zero_prefix_suggestion) {
-  std::string query_text = "";
-  std::map<std::string, std::string> additional_query_parameters;
-
-  net::QueryIterator query_iterator(destination_url);
-  while (!query_iterator.IsAtEnd()) {
-    std::string_view key = query_iterator.GetKey();
-    std::string_view value = query_iterator.GetUnescapedValue();
-    if (kTextQueryParameterKey == key) {
-      query_text = value;
-    } else {
-      additional_query_parameters.insert(std::make_pair(
-          query_iterator.GetKey(), query_iterator.GetUnescapedValue()));
-    }
-    query_iterator.Advance();
-  }
-
-  IssueSearchBoxRequest(query_text, match_type, is_zero_prefix_suggestion,
-                        additional_query_parameters);
-}
-
-void LensOverlayController::OnFocusChanged(bool focused) {
-  if (!focused) {
-    return;
-  }
-
-  if (IsContextualSearchbox()) {
-    if (!csb_session_end_metrics_.searchbox_focused_) {
-      // This is the first time the searchbox is focused in this session.
-      // Record the time between the overlay being invoked and the searchbox
-      // being focused.
-      lens::RecordContextualSearchboxTimeToFirstFocus(
-          base::TimeTicks::Now() - invocation_time_,
-          initialization_data_->primary_content_type_);
-    } else {
-      RecordContextualSearchboxTimeToFocusAfterNavigation();
-    }
-    csb_session_end_metrics_.searchbox_focused_ = true;
-
-    if (state() == State::kLivePageAndResults) {
-      // If the live page is showing and the searchbox becomes focused, showing
-      // intent to issue a new query, upload the new page content for
-      // contextualization.
-      TryUpdatePageContextualization();
-    }
-  }
-}
-
-void LensOverlayController::OnPageBound() {
-  // If the side panel closes before the remote gets bound,
-  // side_panel_searchbox_handler_ could become unset. Verify it is set before
-  // sending to the side panel.
-  if (!side_panel_searchbox_handler_ ||
-      !side_panel_searchbox_handler_->IsRemoteBound()) {
-    return;
-  }
-
-  // Send any pending inputs for the searchbox.
-  if (pending_text_query_.has_value()) {
-    side_panel_searchbox_handler_->SetInputText(*pending_text_query_);
-    pending_text_query_.reset();
-  }
-  if (pending_thumbnail_uri_.has_value()) {
-    SetSearchboxThumbnail(*pending_thumbnail_uri_);
-    pending_thumbnail_uri_.reset();
-  }
-}
-
-void LensOverlayController::ShowGhostLoaderErrorState() {
-  if (!IsContextualSearchbox()) {
-    return;
-  }
-  if (overlay_ghost_loader_page_) {
-    overlay_ghost_loader_page_->ShowErrorState();
-  }
-  if (side_panel_ghost_loader_page_) {
-    side_panel_ghost_loader_page_->ShowErrorState();
-  }
-}
-
-void LensOverlayController::OnZeroSuggestShown() {
-  if (!IsContextualSearchbox()) {
-    return;
-  }
-
-  if (state() == State::kOverlay) {
-    csb_session_end_metrics_.zps_shown_on_initial_query_ = true;
-  } else {
-    csb_session_end_metrics_.zps_shown_on_follow_up_query_ = true;
-  }
 }
 
 base::CallbackListSubscription
@@ -3108,12 +3021,11 @@ void LensOverlayController::IssueTextSelectionRequestInner(
     int selection_end_index) {
   initialization_data_->selected_region_.reset();
   initialization_data_->selected_region_bitmap_.reset();
-  selected_region_thumbnail_uri_.clear();
   initialization_data_->selected_text_ =
       std::make_pair(selection_start_index, selection_end_index);
 
-  SetSearchboxInputText(query);
-  SetSearchboxThumbnail(std::string());
+  GetLensSearchboxController()->SetSearchboxInputText(query);
+  GetLensSearchboxController()->SetSearchboxThumbnail(std::string());
 
   lens_overlay_query_controller_->SendTextOnlyQuery(
       query, lens_selection_type_,
@@ -3235,41 +3147,6 @@ void LensOverlayController::HidePreselectionBubble() {
   }
 }
 
-void LensOverlayController::IssueSearchBoxRequest(
-    const std::string& search_box_text,
-    AutocompleteMatchType::Type match_type,
-    bool is_zero_prefix_suggestion,
-    std::map<std::string, std::string> additional_query_params) {
-  // Log the interaction time here so the time to fetch new page bytes is not
-  // intcluded.
-  RecordContextualSearchboxTimeToInteractionAfterNavigation();
-  RecordTimeToFirstInteraction(
-      lens::LensOverlayFirstInteractionType::kSearchbox);
-
-  // Do not attempt to contextualize if CSB is disabled, if recontextualization
-  // on each query is disabled, if the live page is not being displayed, or if
-  // the user is not in the contextual search flow (aka, issues an image request
-  // already).
-  if (!lens::features::IsLensOverlayContextualSearchboxEnabled() ||
-      !lens::features::ShouldLensOverlayRecontextualizeOnQuery() ||
-      state() != State::kLivePageAndResults || !IsContextualSearchbox()) {
-    IssueSearchBoxRequestPart2(search_box_text, match_type,
-                               is_zero_prefix_suggestion,
-                               additional_query_params);
-    return;
-  }
-
-  // If contextual searchbox is enabled, make sure the page bytes are current
-  // prior to issuing the search box request.
-  GetPageContextualization(
-      base::BindOnce(&LensOverlayController::UpdatePageContextualization,
-                     weak_factory_.GetWeakPtr())
-          .Then(base::BindOnce(
-              &LensOverlayController::IssueSearchBoxRequestPart2,
-              weak_factory_.GetWeakPtr(), search_box_text, match_type,
-              is_zero_prefix_suggestion, additional_query_params)));
-}
-
 void LensOverlayController::IssueSearchBoxRequestPart2(
     const std::string& search_box_text,
     AutocompleteMatchType::Type match_type,
@@ -3352,7 +3229,7 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
   // The searchbox text is set once the URL loads in the results frame, however,
   // adding it here allows the user to see the text query in the searchbox while
   // a long query loads.
-  SetSearchboxInputText(search_box_text);
+  GetLensSearchboxController()->SetSearchboxInputText(search_box_text);
 
   MaybeOpenSidePanel();
   // Only set the side panel to loading if the page is context eligible because
@@ -3475,13 +3352,6 @@ void LensOverlayController::HandlePageContentUploadProgress(uint64_t position,
 
   results_side_panel_coordinator_->SetPageContentUploadProgress(
       total > 0 ? static_cast<float>(position) / total : 1.0f);
-}
-
-void LensOverlayController::HandleThumbnailCreated(
-    const std::string& thumbnail_bytes) {
-  selected_region_thumbnail_uri_ =
-      webui::MakeDataURIForImage(base::as_byte_span(thumbnail_bytes), "jpeg");
-  SetSearchboxThumbnail(selected_region_thumbnail_uri_);
 }
 
 void LensOverlayController::RecordTimeToFirstInteraction(
@@ -3865,4 +3735,9 @@ void LensOverlayController::UpdateEntryPointsState() {
       .lens_overlay_entry_point_controller()
       ->UpdateEntryPointsState(
           /*hide_toolbar_entrypoint=*/false);
+}
+
+lens::LensSearchboxController*
+LensOverlayController::GetLensSearchboxController() {
+  return lens_search_controller_->lens_searchbox_controller();
 }

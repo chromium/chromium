@@ -5,15 +5,23 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_SEARCHBOX_CONTROLLER_H_
 #define CHROME_BROWSER_UI_LENS_LENS_SEARCHBOX_CONTROLLER_H_
 
+#include "chrome/browser/lens/core/mojom/lens_side_panel.mojom.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
+#include "chrome/browser/ui/webui/searchbox/lens_searchbox_handler.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/sessions/core/session_id.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "url/gurl.h"
 
 class LensSearchController;
 
+using GetIsContextualSearchboxCallback =
+    lens::mojom::LensSidePanelPageHandler::GetIsContextualSearchboxCallback;
+
 namespace lens {
+
+struct SearchQuery;
 
 // Controller for the Lens searchbox. This class is responsible for handling
 // communications between the Lens WebUI searchbox and other Lens components.
@@ -24,7 +32,51 @@ class LensSearchboxController : public LensSearchboxClient {
       LensSearchController* lens_search_controller);
   ~LensSearchboxController() override;
 
- private:
+  // This method is used to set up communication between this instance and the
+  // searchbox WebUI. This is called by the WebUIController when the WebUI is
+  // executing javascript and has bound the handler. Takes ownership of
+  // `handler`.
+  void SetSidePanelSearchboxHandler(
+      std::unique_ptr<LensSearchboxHandler> handler);
+
+  // Passes ownership of the lens searchbox handler to the search bubble
+  // controller. This is called by the WebUIController when the WebUI is
+  // executing javascript and has bound the handler.
+  void SetContextualSearchboxHandler(
+      std::unique_ptr<LensSearchboxHandler> handler);
+
+  // This method is used to release the owned `SearchboxHandler` for the
+  // overlay. It should be called before the overlay web contents is destroyed
+  // since it contains a reference to that web contents.
+  void ResetOverlaySearchboxHandler();
+
+  // This method is used to release the owned `SearchboxHandler`. It should be
+  // called before the side panel web contents is destroyed since it contains a
+  // reference to that web contents.
+  void ResetSidePanelSearchboxHandler();
+
+  // Sets the input text for the searchbox. If the searchbox has not been bound,
+  // it stores it in `pending_text_query_` instead.
+  void SetSearchboxInputText(const std::string& text);
+
+  // Sets the thumbnail URI values on the searchbox if it is
+  // bound. If it hasn't yet been bound, stores the value in
+  // `pending_thumbnail_uri_` instead.
+  void SetSearchboxThumbnail(const std::string& thumbnail_uri);
+
+  // Handles the creation of a new thumbnail based on the user selection.
+  void HandleThumbnailCreated(const std::string& thumbnail_bytes);
+
+  // Cleans up internal state associated with the searchbox.
+  void CloseUI();
+
+  // Gets whether this is currently a contextual searchbox.
+  bool IsContextualSearchbox() const;
+
+  // Returns whether the searchbox is in contextual mode by passing the result
+  // of IsContextualSearchbox() to the callback.
+  void GetIsContextualSearchbox(GetIsContextualSearchboxCallback callback);
+
   // Overridden from LensSearchboxClient:
   const GURL& GetPageURL() const override;
   SessionID GetTabId() const override;
@@ -43,11 +95,49 @@ class LensSearchboxController : public LensSearchboxClient {
   void ShowGhostLoaderErrorState() override;
   void OnZeroSuggestShown() override;
 
+  // Adds searchbox related state to the search query.
+  void AddSearchboxStateToSearchQuery(lens::SearchQuery& search_query);
+
+  // Returns the WebContents associated with the tab this instance of Lens is
+  // invoked on.
+  content::WebContents* GetTabWebContents() const;
+
   // Owns this.
   const raw_ptr<LensSearchController> lens_search_controller_;
 
-  // TODO(crbug.com/413138792): Implement temporary placeholder.
+  // Searchbox handler for passing in image and text selections. The handler is
+  // null if the WebUI containing the searchbox has not been initialized yet,
+  // like in the case of side panel opening. In addition, the handler may be
+  // initialized, but the remote not yet set because the WebUI calls SetPage()
+  // once it is ready to receive data from C++. Therefore, we must always check
+  // that:
+  //      1) searchbox_handler_ exists and
+  //      2) searchbox_handler_->IsRemoteBound() is true.
+  std::unique_ptr<LensSearchboxHandler> side_panel_searchbox_handler_;
+
+  // Handler for the contextual searchbox in the overlay. The handler is
+  // null if the WebUI containing the searchbox has not been initialized yet.
+  // In addition, the handler may be initialized, but the remote not yet set
+  // because the WebUI calls SetPage() once it is ready to receive data from
+  // C++. Therefore, we must always check that:
+  //      1) contextual_searchbox_handler_ exists and
+  //      2) contextual_searchbox_handler_->IsRemoteBound() is true.
+  // TODO(crbug.com/404941800): Does this actually need to be kept alive? Its
+  // currently unused.
+  std::unique_ptr<LensSearchboxHandler> overlay_searchbox_handler_;
+
+  // Thumbnail URI referencing the data defined by the user image selection on
+  // the overlay. If the user hasn't made any selection or has made a text
+  // selection this will contain an empty string. Returned by GetThumbnail().
   std::string selected_region_thumbnail_uri_;
+
+  // A pending text query to be loaded in the side panel. Needed when the side
+  // panel is not bound at the time of a text request.
+  std::optional<std::string> pending_text_query_ = std::nullopt;
+
+  // A pending thumbnail URI to be loaded in the side panel. Needed when the
+  // side panel is not bound at the time of a region request.
+  std::optional<std::string> pending_thumbnail_uri_ = std::nullopt;
 };
 }  // namespace lens
 

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/lens/lens_side_panel_untrusted_ui.h"
 
-
 #include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -13,6 +12,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_overlay_theme_utils.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/lens/lens_searchbox_controller.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
@@ -168,13 +168,14 @@ void LensSidePanelUntrustedUI::BindInterface(
 
 void LensSidePanelUntrustedUI::BindInterface(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> receiver) {
-  LensOverlayController& controller = GetLensOverlayController();
+  LensSearchboxController* controller =
+      GetLensSearchController().lens_searchbox_controller();
 
   auto handler = std::make_unique<LensSearchboxHandler>(
       std::move(receiver), Profile::FromWebUI(web_ui()),
       web_ui()->GetWebContents(),
-      /*metrics_reporter=*/nullptr, /*lens_searchbox_client=*/&controller);
-  controller.SetSidePanelSearchboxHandler(std::move(handler));
+      /*metrics_reporter=*/nullptr, /*lens_searchbox_client=*/controller);
+  controller->SetSidePanelSearchboxHandler(std::move(handler));
 }
 
 void LensSidePanelUntrustedUI::BindInterface(

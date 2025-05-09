@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/lens/lens_searchbox_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -94,7 +95,8 @@ class LensOverlayTest : public LensOverlayWebUIBrowserTest {
 
     // Clean up (the searchbox handler will leave a dangling pointer if not
     // explicitly destroyed).
-    overlay_controller->ResetSidePanelSearchboxHandler();
+    search_controller->lens_searchbox_controller()
+        ->ResetSidePanelSearchboxHandler();
   }
 
   // Lens overlay takes a screenshot of the tab. In order to take a screenshot

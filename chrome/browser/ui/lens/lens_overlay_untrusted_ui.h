@@ -18,6 +18,7 @@
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #include "ui/webui/resources/cr_components/searchbox/searchbox.mojom-forward.h"
 
+class LensSearchController;
 class LensOverlayController;
 
 namespace ui {
@@ -81,6 +82,7 @@ class LensOverlayUntrustedUI
   static constexpr std::string GetWebUIName() { return "LensOverlayUntrusted"; }
 
  private:
+  LensSearchController& GetLensSearchController();
   LensOverlayController& GetLensOverlayController();
 
   // lens::mojom::LensPageHandlerFactory:

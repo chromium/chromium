@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_web_view.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/lens/lens_searchbox_controller.h"
 #include "chrome/browser/ui/lens/page_content_type_conversions.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
@@ -192,7 +193,7 @@ void LensOverlaySidePanelCoordinator::WebViewClosing() {
   // This is called from the destructor of the WebView. Synchronously clear all
   // state associated with the WebView.
   if (side_panel_web_view_) {
-    GetLensOverlayController()->ResetSidePanelSearchboxHandler();
+    GetLensSearchboxController()->ResetSidePanelSearchboxHandler();
     side_panel_web_view_ = nullptr;
   }
 }
@@ -276,15 +277,16 @@ void LensOverlaySidePanelCoordinator::NotifyNewQueryLoaded(std::string query,
   if (lens_mode.empty()) {
     GetLensOverlayController()->SetAdditionalSearchQueryParams(
         /*additional_search_query_params=*/{});
-    GetLensOverlayController()->SetSearchboxThumbnail("");
+    GetLensSearchboxController()->SetSearchboxThumbnail("");
     GetLensOverlayController()->ClearAllSelections();
-    GetLensOverlayController()->SetSearchboxThumbnail(std::string());
+    GetLensSearchboxController()->SetSearchboxThumbnail(std::string());
   }
 
   // Grab the current state of the overlay and use it to update populate the
   // query stack and currently loaded query.
   lens::SearchQuery search_query(query, search_url);
   GetLensOverlayController()->AddOverlayStateToSearchQuery(search_query);
+  GetLensSearchboxController()->AddSearchboxStateToSearchQuery(search_query);
 
   // Add what was the currently loaded search query to the query stack,
   // if it is present.
@@ -299,7 +301,7 @@ void LensOverlaySidePanelCoordinator::NotifyNewQueryLoaded(std::string query,
   initialization_data_->currently_loaded_search_query_ = search_query;
 
   // Update searchbox and selection state to match the new query.
-  GetLensOverlayController()->SetSearchboxInputText(query);
+  GetLensSearchboxController()->SetSearchboxInputText(query);
 }
 void LensOverlaySidePanelCoordinator::PopAndLoadQueryFromHistory() {
   if (initialization_data_->search_query_history_stack_.empty()) {
@@ -337,8 +339,8 @@ void LensOverlaySidePanelCoordinator::PopAndLoadQueryFromHistory() {
   }
   GetLensOverlayController()->SetAdditionalSearchQueryParams(
       query.additional_search_query_params_);
-  GetLensOverlayController()->SetSearchboxInputText(query.search_query_text_);
-  GetLensOverlayController()->SetSearchboxThumbnail(
+  GetLensSearchboxController()->SetSearchboxInputText(query.search_query_text_);
+  GetLensSearchboxController()->SetSearchboxThumbnail(
       query.selected_region_thumbnail_uri_);
 
   const bool is_contextual_query =
@@ -406,7 +408,7 @@ void LensOverlaySidePanelCoordinator::PopAndLoadQueryFromHistory() {
 
 void LensOverlaySidePanelCoordinator::GetIsContextualSearchbox(
     GetIsContextualSearchboxCallback callback) {
-  GetLensOverlayController()->GetIsContextualSearchbox(std::move(callback));
+  GetLensSearchboxController()->GetIsContextualSearchbox(std::move(callback));
 }
 
 void LensOverlaySidePanelCoordinator::RequestSendFeedback() {

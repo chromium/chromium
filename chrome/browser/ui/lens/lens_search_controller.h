@@ -129,6 +129,9 @@ class LensSearchController {
   // Returns the tab interface that owns this controller.
   tabs::TabInterface* GetTabInterface();
 
+  // Returns the page URL of the tab if Lens has access to it.
+  const GURL& GetPageURL() const;
+
   // Returns the weak pointer to this class.
   base::WeakPtr<LensSearchController> GetWeakPtr();
 
@@ -140,6 +143,9 @@ class LensSearchController {
 
   // Returns the LensOverlaySidePanelCoordinator.
   lens::LensOverlaySidePanelCoordinator* lens_overlay_side_panel_coordinator();
+
+  // Returns the LensSearchboxController.
+  lens::LensSearchboxController* lens_searchbox_controller();
 
   optimization_guide::PageContextEligibility* page_context_eligibility();
 
@@ -305,6 +311,10 @@ class LensSearchController {
   // Unowned IdentityManager for fetching access tokens. Could be null for
   // incognito profiles.
   raw_ptr<signin::IdentityManager> identity_manager_;
+
+  // The pref service associated with the current profile. Owned by Profile,
+  // and thus guaranteed to outlive this instance.
+  raw_ptr<PrefService> pref_service_;
 
   // The theme service associated with the current profile. Owned by Profile,
   // and thus guaranteed to outlive this instance.

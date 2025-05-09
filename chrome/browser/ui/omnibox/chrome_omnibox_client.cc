@@ -59,8 +59,8 @@
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/lens/lens_searchbox_controller.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
@@ -116,12 +116,6 @@
 namespace {
 
 using predictors::AutocompleteActionPredictor;
-
-LensOverlayController* GetLensOverlayController(
-    content::WebContents* web_contents) {
-  return web_contents ? LensOverlayController::FromTabWebContents(web_contents)
-                      : nullptr;
-}
 
 LensSearchController* GetLensSearchController(
     content::WebContents* web_contents) {
@@ -792,9 +786,10 @@ bool ChromeOmniboxClient::IsHistoryEmbeddingsEnabled() const {
 
 std::optional<lens::proto::LensOverlaySuggestInputs>
 ChromeOmniboxClient::GetLensOverlaySuggestInputs() const {
-  if (LensSearchboxClient* lens_overlay_controller =
-          GetLensOverlayController(location_bar_->GetWebContents())) {
-    return lens_overlay_controller->GetLensSuggestInputs();
+  if (LensSearchController* lens_search_controller =
+          GetLensSearchController(location_bar_->GetWebContents())) {
+    return lens_search_controller->lens_searchbox_controller()
+        ->GetLensSuggestInputs();
   }
   return std::nullopt;
 }
