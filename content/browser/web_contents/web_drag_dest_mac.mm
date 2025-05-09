@@ -274,6 +274,8 @@ void DropCompletionCallback(WebDragDest* drag_dest,
   if (_webContents->ShouldIgnoreInputEvents())
     return;
 
+  _webContents->PreHandleDragExit();
+
   if (!_dropDataFiltered || !_dropDataUnfiltered)
     return;
 

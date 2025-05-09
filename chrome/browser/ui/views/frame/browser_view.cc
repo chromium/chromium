@@ -3660,6 +3660,12 @@ void BrowserView::PreHandleDragUpdate(const content::DropData& drop_data,
   }
 }
 
+void BrowserView::PreHandleDragExit() {
+  if (multi_contents_view_) {
+    multi_contents_view_->drop_target_controller().OnWebContentsDragExit();
+  }
+}
+
 content::KeyboardEventProcessingResult BrowserView::PreHandleKeyboardEvent(
     const NativeWebKeyboardEvent& event) {
   if ((event.GetType() != blink::WebInputEvent::Type::kRawKeyDown) &&

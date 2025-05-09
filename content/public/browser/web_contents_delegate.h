@@ -310,6 +310,7 @@ class CONTENT_EXPORT WebContentsDelegate {
                                    const blink::WebMouseEvent& event);
   virtual void PreHandleDragUpdate(const DropData& drop_data,
                                    const gfx::PointF& client_pt) {}
+  virtual void PreHandleDragExit() {}
 
   // Allows delegates to handle keyboard events before sending to the renderer.
   // See enum for description of return values.

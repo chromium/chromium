@@ -1120,6 +1120,7 @@ class CONTENT_EXPORT WebContentsImpl
   bool PreHandleMouseEvent(const blink::WebMouseEvent& event) override;
   void PreHandleDragUpdate(const DropData& drop_data,
                            const gfx::PointF& client_pt);
+  void PreHandleDragExit();
   KeyboardEventProcessingResult PreHandleKeyboardEvent(
       const input::NativeWebKeyboardEvent& event) override;
   bool HandleMouseEvent(const blink::WebMouseEvent& event) override;

@@ -1912,6 +1912,10 @@ void Browser::PreHandleDragUpdate(const content::DropData& drop_data,
   window()->PreHandleDragUpdate(drop_data, client_pt);
 }
 
+void Browser::PreHandleDragExit() {
+  window()->PreHandleDragExit();
+}
+
 content::KeyboardEventProcessingResult Browser::PreHandleKeyboardEvent(
     content::WebContents* source,
     const NativeWebKeyboardEvent& event) {

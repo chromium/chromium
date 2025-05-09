@@ -778,6 +778,7 @@ class Browser : public TabStripModelObserver,
                            const blink::WebMouseEvent& event) override;
   void PreHandleDragUpdate(const content::DropData& drop_data,
                            const gfx::PointF& client_pt) override;
+  void PreHandleDragExit() override;
   content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
       content::WebContents* source,
       const input::NativeWebKeyboardEvent& event) override;

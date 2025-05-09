@@ -30,6 +30,7 @@ class MultiContentsViewDropTargetController final {
   // `point` should be relative to the multi contents view.
   void OnWebContentsDragUpdate(const content::DropData& data,
                                const gfx::PointF& point);
+  void OnWebContentsDragExit();
 
  private:
   // The view that is displayed when drags hover over the "drop" region of

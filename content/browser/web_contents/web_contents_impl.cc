@@ -4236,6 +4236,12 @@ void WebContentsImpl::PreHandleDragUpdate(const DropData& drop_data,
   }
 }
 
+void WebContentsImpl::PreHandleDragExit() {
+  if (delegate_) {
+    delegate_->PreHandleDragExit();
+  }
+}
+
 KeyboardEventProcessingResult WebContentsImpl::PreHandleKeyboardEvent(
     const input::NativeWebKeyboardEvent& event) {
   OPTIONAL_TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("content.verbose"),

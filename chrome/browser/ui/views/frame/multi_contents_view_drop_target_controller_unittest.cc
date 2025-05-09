@@ -88,4 +88,10 @@ TEST_F(MultiContentsViewDropTargetControllerTest,
   EXPECT_FALSE(drop_target_view().GetVisible());
 }
 
+TEST_F(MultiContentsViewDropTargetControllerTest, OnWebContentsDragExit) {
+  drop_target_view().SetVisible(true);
+  controller().OnWebContentsDragExit();
+  EXPECT_FALSE(drop_target_view().GetVisible());
+}
+
 }  // namespace

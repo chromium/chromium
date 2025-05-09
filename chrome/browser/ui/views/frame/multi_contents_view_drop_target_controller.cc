@@ -27,3 +27,7 @@ void MultiContentsViewDropTargetController::OnWebContentsDragUpdate(
   // TODO(crbug.com/394369035): Add a timer to delay showing the drop zone.
   drop_target_view_->SetVisible(should_show_drop_zone);
 }
+
+void MultiContentsViewDropTargetController::OnWebContentsDragExit() {
+  drop_target_view_->SetVisible(false);
+}
