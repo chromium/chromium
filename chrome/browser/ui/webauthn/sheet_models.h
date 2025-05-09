@@ -273,7 +273,6 @@ class AuthenticatorTouchIdSheetModel : public AuthenticatorSheetModelBase {
   AcceptButtonState GetAcceptButtonState() const override;
   bool IsCancelButtonVisible() const override;
   std::u16string GetAcceptButtonLabel() const override;
-  std::u16string GetCancelButtonLabel() const override;
   void OnAccept() override;
 
   bool touch_id_completed_ = false;
