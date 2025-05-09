@@ -30,7 +30,7 @@ import java.util.OptionalInt;
 /** Robolectric unit tests for {@link SelectionController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SelectionControllerUnitTest {
-    private static final int MAX_POSITION = 2; // Items 0‒2 inclusive.
+    private static final int MAX_POSITION = 3; // Items 0‒2 inclusive.
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock SelectionController.OnSelectionChangedListener mListener;
@@ -124,7 +124,7 @@ public class SelectionControllerUnitTest {
     public void advanceBack_saturatingWithSentinel() {
         SelectionController c =
                 new SelectionController(mListener, MAX_POSITION, Mode.SATURATING_WITH_SENTINEL);
-        c.setPosition(MAX_POSITION);
+        c.setPosition(MAX_POSITION - 1);
         verifyPositionSet(c, 2);
 
         assertTrue(c.advanceBack());
@@ -158,7 +158,7 @@ public class SelectionControllerUnitTest {
         verifyPositionSet(c, 0);
 
         // Grow list of items
-        c.updateMaxPosition(4);
+        c.updateMaxPosition(5);
         verifyPositionSet(c, 0);
 
         assertTrue(c.advanceForward()); // Should now reach index 4 without saturating

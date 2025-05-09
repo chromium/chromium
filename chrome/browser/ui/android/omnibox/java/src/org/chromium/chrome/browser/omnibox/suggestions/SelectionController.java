@@ -57,7 +57,7 @@ public class SelectionController {
     private final OnSelectionChangedListener mListener;
     private final @Mode int mMode;
     private final int mDefaultPosition;
-    private int mMaxPosition;
+    private int mNumItems;
     private int mPosition;
 
     @FunctionalInterface
@@ -85,13 +85,12 @@ public class SelectionController {
      * SelectionController constructor.
      *
      * @param listener the listener receiving notifications about selection changes
-     * @param maxPosition the maximum valid position that can be reported to the listener
+     * @param itemCount the number of valid positions [0; itemCount-1)
      * @param mode Selection mode that defines how the controller will behave
      */
-    public SelectionController(
-            OnSelectionChangedListener listener, int maxPosition, @Mode int mode) {
-        assert maxPosition < Integer.MAX_VALUE;
-        assert maxPosition >= 0;
+    public SelectionController(OnSelectionChangedListener listener, int itemCount, @Mode int mode) {
+        assert itemCount < Integer.MAX_VALUE;
+        assert itemCount >= 0;
 
         switch (mode) {
             case Mode.SATURATING:
@@ -100,7 +99,7 @@ public class SelectionController {
 
             case Mode.SATURATING_WITH_SENTINEL:
             default:
-                mDefaultPosition = -1; // Just before the first entry.
+                mDefaultPosition = Integer.MIN_VALUE; // Lower-end sentinel.
                 break;
         }
 
@@ -108,20 +107,20 @@ public class SelectionController {
         mPosition = Integer.MIN_VALUE;
         mListener = listener;
         mMode = mode;
-        updateMaxPosition(maxPosition);
+        updateMaxPosition(itemCount);
     }
 
     /**
      * Update range of valid positions.
      *
-     * @param maxPosition the upper value in the selection range (inclusive)
+     * @param numItems total number of items, determining the upper position.
      */
-    public void updateMaxPosition(int maxPosition) {
+    public void updateMaxPosition(int numItems) {
         if (!isParkedAtSentinel()) {
             mListener.onSelectionChanged(mPosition, false);
         }
 
-        mMaxPosition = maxPosition;
+        mNumItems = numItems;
         mPosition = mDefaultPosition;
 
         if (!isParkedAtSentinel()) {
@@ -141,6 +140,8 @@ public class SelectionController {
      * @return whether selection was applied to the new element.
      */
     public boolean advanceForward() {
+        if (mPosition == Integer.MAX_VALUE) return false;
+        if (mPosition == Integer.MIN_VALUE) return setPosition(0);
         return setPosition(mPosition + 1);
     }
 
@@ -151,12 +152,14 @@ public class SelectionController {
      * @return whether selection was applied to the new element.
      */
     public boolean advanceBack() {
+        if (mPosition == Integer.MIN_VALUE) return false;
+        if (mPosition == Integer.MAX_VALUE) return setPosition(mNumItems - 1);
         return setPosition(mPosition - 1);
     }
 
     /** Returns true if selection controller is currently parked outside the valid range. */
     public boolean isParkedAtSentinel() {
-        return mPosition < 0 || mPosition > mMaxPosition;
+        return mPosition == Integer.MIN_VALUE || mPosition == Integer.MAX_VALUE;
     }
 
     /** Returns current counter value (unless saturated). */
@@ -181,12 +184,20 @@ public class SelectionController {
         mPosition = newPosition;
         switch (mMode) {
             case Mode.SATURATING:
-                mPosition = MathUtils.clamp(mPosition, 0, mMaxPosition);
+                if (mNumItems == 0) {
+                    mPosition = Integer.MIN_VALUE;
+                } else {
+                    mPosition = MathUtils.clamp(mPosition, 0, mNumItems - 1);
+                }
                 break;
 
             case Mode.SATURATING_WITH_SENTINEL:
                 // Park outside the valid range, keeping the information which edge we hit.
-                mPosition = MathUtils.clamp(mPosition, -1, mMaxPosition + 1);
+                if (mPosition < 0) { // Underflow
+                    mPosition = Integer.MIN_VALUE;
+                } else if (mPosition >= mNumItems) {
+                    mPosition = Integer.MAX_VALUE;
+                }
                 break;
         }
 
