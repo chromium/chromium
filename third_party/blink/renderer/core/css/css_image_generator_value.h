@@ -45,6 +45,7 @@ class Document;
 class Image;
 class ComputedStyle;
 class ImageResourceObserver;
+class Node;
 
 // These maps do not contain many objects because we do not expect any
 // particular CSSGeneratedImageValue to have clients at many different
@@ -97,7 +98,7 @@ class CORE_EXPORT CSSImageGeneratorValue : public CSSValue {
   // The |target_size| is the desired image size. Background images should not
   // be snapped. In other case the target size must be pixel snapped already.
   scoped_refptr<Image> GetImage(const ImageResourceObserver&,
-                                const Document&,
+                                const Node&,
                                 const ComputedStyle&,
                                 const ContainerSizes&,
                                 const gfx::SizeF& target_size);

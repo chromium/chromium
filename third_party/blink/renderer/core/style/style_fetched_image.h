@@ -78,7 +78,7 @@ class CORE_EXPORT StyleFetchedImage final : public StyleImage,
   void RemoveClient(ImageResourceObserver*) override;
   String DebugName() const override { return "StyleFetchedImage"; }
   scoped_refptr<Image> GetImage(const ImageResourceObserver&,
-                                const Document&,
+                                const Node&,
                                 const ComputedStyle&,
                                 const gfx::SizeF& target_size) const override;
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const override;

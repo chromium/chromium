@@ -33,7 +33,7 @@ class CORE_EXPORT CSSPaintValue : public CSSImageGeneratorValue {
   // The |target_size| is container size with subpixel snapping when used
   // in the context of paint images.
   scoped_refptr<Image> GetImage(const ImageResourceObserver&,
-                                const Document&,
+                                const Node&,
                                 const ComputedStyle&,
                                 const gfx::SizeF& target_size);
 

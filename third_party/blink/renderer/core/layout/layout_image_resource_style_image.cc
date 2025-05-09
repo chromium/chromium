@@ -63,9 +63,14 @@ scoped_refptr<Image> LayoutImageResourceStyleImage::GetImage(
     const gfx::SizeF& size) const {
   // Generated content may trigger calls to image() while we're still pending,
   // don't assert but gracefully exit.
-  if (style_image_->IsPendingImage())
+  if (style_image_->IsPendingImage()) {
     return nullptr;
-  return style_image_->GetImage(*layout_object_, layout_object_->GetDocument(),
+  }
+  const Node* node = layout_object_->GetNode();
+  if (!node) {
+    node = &layout_object_->GetDocument();
+  }
+  return style_image_->GetImage(*layout_object_, *node,
                                 layout_object_->StyleRef(), size);
 }
 

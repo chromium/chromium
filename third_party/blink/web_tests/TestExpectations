@@ -736,6 +736,10 @@ crbug.com/1174873 external/wpt/css/css-images/object-position-svg-002p.html [ Fa
 crbug.com/378046059 virtual/gpu-rasterization/external/wpt/css/css-images/object-fit-fill-png-001c.html [ Failure ]
 crbug.com/378046059 virtual/gpu-rasterization/external/wpt/css/css-images/object-fit-fill-png-002c.html [ Failure ]
 
+# Gradients are computed at paint time and backgrounds propagated from body to
+# viewport uses the root element index for resolving sibling-index()
+crbug.com/40620723 external/wpt/css/css-images/linear-gradient-body-sibling-index.html [ Failure ]
+
 # [css-backgrounds]
 crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-png.html [ Failure ]
 crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-svg.html [ Failure ]

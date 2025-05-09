@@ -102,10 +102,10 @@ bool StyleGeneratedImage::IsUsingCurrentColor() const {
 
 scoped_refptr<Image> StyleGeneratedImage::GetImage(
     const ImageResourceObserver& observer,
-    const Document& document,
+    const Node& node,
     const ComputedStyle& style,
     const gfx::SizeF& target_size) const {
-  return image_generator_value_->GetImage(observer, document, style,
+  return image_generator_value_->GetImage(observer, node, style,
                                           container_sizes_, target_size);
 }
 

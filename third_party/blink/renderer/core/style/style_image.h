@@ -46,6 +46,7 @@ class ImageResourceContent;
 class Document;
 class ComputedStyle;
 class ImageResourceObserver;
+class Node;
 enum class CSSValuePhase;
 
 // A const pointer to either an ImageResource or a CSSImageGeneratorValue. It is
@@ -145,7 +146,7 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
   // `target_size` is not zoomed.
   virtual scoped_refptr<Image> GetImage(
       const ImageResourceObserver&,
-      const Document&,
+      const Node&,
       const ComputedStyle&,
       const gfx::SizeF& target_size) const = 0;
 

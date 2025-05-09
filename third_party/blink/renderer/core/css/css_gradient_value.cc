@@ -134,7 +134,7 @@ void CSSGradientColorStop::Trace(Visitor* visitor) const {
 
 scoped_refptr<Image> CSSGradientValue::GetImage(
     const ImageResourceObserver& client,
-    const Document& document,
+    const Node& node,
     const ComputedStyle& style,
     const ContainerSizes& container_sizes,
     const gfx::SizeF& size) const {
@@ -152,6 +152,15 @@ scoped_refptr<Image> CSSGradientValue::GetImage(
     }
   }
 
+  const Document& document = node.GetDocument();
+  const Element* element = DynamicTo<Element>(node);
+  if (!element) {
+    element = document.documentElement();
+  }
+  if (!element) {
+    return nullptr;
+  }
+
   // We need to create an image.
   const ComputedStyle* root_style =
       document.documentElement()->GetComputedStyle();
@@ -162,7 +171,7 @@ scoped_refptr<Image> CSSGradientValue::GetImage(
       style, &style, root_style,
       CSSToLengthConversionData::ViewportSize(document.GetLayoutView()),
       container_sizes, CSSToLengthConversionData::AnchorData(),
-      style.EffectiveZoom(), ignored_flags, /*element=*/nullptr);
+      style.EffectiveZoom(), ignored_flags, element);
 
   scoped_refptr<Gradient> gradient;
   switch (GetClassType()) {

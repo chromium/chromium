@@ -213,10 +213,15 @@ bool NinePieceImagePainter::Paint(GraphicsContext& graphics_context,
   const gfx::SizeF default_object_size(border_image_rect.size);
   gfx::SizeF image_size = style_image->ImageSize(
       style.EffectiveZoom(), default_object_size, respect_orientation);
+  const Node* ref_node = node;
+  if (!node) {
+    ref_node = &document;
+  }
   scoped_refptr<Image> image =
-      style_image->GetImage(observer, document, style, image_size);
-  if (!image)
+      style_image->GetImage(observer, *ref_node, style, image_size);
+  if (!image) {
     return true;
+  }
 
   // Resolve the image size again, this time with a size-multiplier of one, to
   // yield the size in CSS pixels. This is the unit/scale we expect the

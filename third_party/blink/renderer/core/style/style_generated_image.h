@@ -67,7 +67,7 @@ class CORE_EXPORT StyleGeneratedImage final : public StyleImage {
   void RemoveClient(ImageResourceObserver*) override;
   // The |target_size| is the desired image size
   scoped_refptr<Image> GetImage(const ImageResourceObserver&,
-                                const Document&,
+                                const Node&,
                                 const ComputedStyle&,
                                 const gfx::SizeF& target_size) const override;
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const override;

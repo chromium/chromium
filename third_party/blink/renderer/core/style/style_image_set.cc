@@ -134,13 +134,12 @@ void StyleImageSet::RemoveClient(ImageResourceObserver* observer) {
 
 scoped_refptr<Image> StyleImageSet::GetImage(
     const ImageResourceObserver& image_resource_observer,
-    const Document& document,
+    const Node& node,
     const ComputedStyle& style,
     const gfx::SizeF& target_size) const {
-  return best_fit_image_
-             ? best_fit_image_->GetImage(image_resource_observer, document,
-                                         style, target_size)
-             : nullptr;
+  return best_fit_image_ ? best_fit_image_->GetImage(image_resource_observer,
+                                                     node, style, target_size)
+                         : nullptr;
 }
 
 float StyleImageSet::ImageScaleFactor() const {

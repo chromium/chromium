@@ -251,7 +251,7 @@ void StyleCrossfadeImage::RemoveClient(ImageResourceObserver* observer) {
 
 scoped_refptr<Image> StyleCrossfadeImage::GetImage(
     const ImageResourceObserver& observer,
-    const Document& document,
+    const Node& node,
     const ComputedStyle& style,
     const gfx::SizeF& target_size) const {
   if (target_size.IsEmpty()) {
@@ -269,7 +269,7 @@ scoped_refptr<Image> StyleCrossfadeImage::GetImage(
   DCHECK_EQ(images_.size(), weights_.size());
   for (unsigned i = 0; i < images_.size(); ++i) {
     scoped_refptr<Image> image =
-        images_[i]->GetImage(*proxy_observer, document, style, target_size);
+        images_[i]->GetImage(*proxy_observer, node, style, target_size);
     images.push_back(
         CrossfadeGeneratedImage::WeightedImage{std::move(image), weights_[i]});
   }

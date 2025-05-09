@@ -114,13 +114,13 @@ void StyleMaskSourceImage::RemoveClient(ImageResourceObserver* observer) {
 
 scoped_refptr<Image> StyleMaskSourceImage::GetImage(
     const ImageResourceObserver& observer,
-    const Document& document,
+    const Node& node,
     const ComputedStyle& style,
     const gfx::SizeF& target_size) const {
   if (!image_) {
     return Image::NullImage();
   }
-  return image_->GetImage(observer, document, style, target_size);
+  return image_->GetImage(observer, node, style, target_size);
 }
 
 float StyleMaskSourceImage::ImageScaleFactor() const {

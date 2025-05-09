@@ -142,8 +142,10 @@ void PaintMaskLayer(const FillLayer& layer,
   }
 
   const Document& document = object.GetDocument();
-  scoped_refptr<Image> image = style_image->GetImage(
-      observer, document, style, gfx::SizeF(geometry.TileSize()));
+  const Node* node = object.GetNode();
+  scoped_refptr<Image> image =
+      style_image->GetImage(observer, node ? *node : document, style,
+                            gfx::SizeF(geometry.TileSize()));
   if (!image) {
     return;
   }
