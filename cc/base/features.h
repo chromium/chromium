@@ -248,6 +248,17 @@ CC_BASE_EXPORT extern const base::FeatureParam<int>
 // disabled if need be to override this.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseLayerListsByDefault);
 
+// When enabled, the default programmatic scroll animation curve can be
+// overridden with extra params.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kProgrammaticScrollAnimationOverride);
+// Extra params to override the programmatic scroll animation.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(double, kCubicBezierX1);
+CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(double, kCubicBezierY1);
+CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(double, kCubicBezierX2);
+CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(double, kCubicBezierY2);
+CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                                          kMaxAnimtionDuration);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

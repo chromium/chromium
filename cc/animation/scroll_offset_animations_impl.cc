@@ -49,8 +49,7 @@ void ScrollOffsetAnimationImpl::AutoScrollAnimationCreate(
     base::TimeDelta animation_start_offset) {
   std::unique_ptr<ScrollOffsetAnimationCurve> curve =
       ScrollOffsetAnimationCurveFactory::CreateAnimation(
-          target_offset,
-          ScrollOffsetAnimationCurveFactory::ScrollType::kAutoScroll);
+          target_offset, ScrollOffsetAnimationCurve::ScrollType::kAutoScroll);
   curve->SetInitialValue(current_offset, base::TimeDelta(),
                          autoscroll_velocity);
   ScrollAnimationCreateInternal(element_id, std::move(curve),
@@ -66,8 +65,7 @@ void ScrollOffsetAnimationImpl::MouseWheelScrollAnimationCreate(
     base::TimeDelta animation_start_offset) {
   std::unique_ptr<ScrollOffsetAnimationCurve> curve =
       ScrollOffsetAnimationCurveFactory::CreateAnimation(
-          target_offset,
-          ScrollOffsetAnimationCurveFactory::ScrollType::kMouseWheel);
+          target_offset, ScrollOffsetAnimationCurve::ScrollType::kMouseWheel);
 
   curve->SetInitialValue(current_offset, delayed_by);
   ScrollAnimationCreateInternal(element_id, std::move(curve),

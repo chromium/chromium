@@ -298,10 +298,10 @@ void ScrollAnimator::CreateAnimationCurve() {
   DCHECK(!animation_curve_);
   // It is not correct to assume the input type from the granularity, but we've
   // historically determined animation parameters from granularity.
-  cc::ScrollOffsetAnimationCurveFactory::ScrollType scroll_type =
+  cc::ScrollOffsetAnimationCurve::ScrollType scroll_type =
       (last_granularity_ == ui::ScrollGranularity::kScrollByPixel)
-          ? cc::ScrollOffsetAnimationCurveFactory::ScrollType::kMouseWheel
-          : cc::ScrollOffsetAnimationCurveFactory::ScrollType::kKeyboard;
+          ? cc::ScrollOffsetAnimationCurve::ScrollType::kMouseWheel
+          : cc::ScrollOffsetAnimationCurve::ScrollType::kKeyboard;
   animation_curve_ = cc::ScrollOffsetAnimationCurveFactory::CreateAnimation(
       CompositorOffsetFromBlinkOffset(target_offset_), scroll_type);
   animation_curve_->SetInitialValue(

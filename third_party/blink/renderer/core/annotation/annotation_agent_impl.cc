@@ -7,6 +7,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/typed_macros.h"
+#include "cc/base/features.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
@@ -163,7 +164,12 @@ bool ShouldUseIsValidRangeAndMarkable(mojom::blink::AnnotationType type) {
 // The maximum scroll distance for which an AnnotationAgent of type kGlic should
 // use a smooth (animated) scroll. For longer distances, the scroll will be
 // instant.
-int kGlicSmoothScrollThresholdInDIPs = 7000;
+int GetGlicSmoothScrollThresholdInDIPs() {
+  const base::FeatureParam<int> glic_smooth_scroll_threshold_in_dips{
+      &features::kProgrammaticScrollAnimationOverride,
+      "glic_smooth_scroll_threshold_in_dips", 15000};
+  return glic_smooth_scroll_threshold_in_dips.Get();
+}
 
 std::optional<DocumentMarker::MarkerTypes> GetMarkerTypesForAnnotationType(
     mojom::blink::AnnotationType annotation_type) {
@@ -604,7 +610,7 @@ mojom::blink::ScrollBehavior AnnotationAgentImpl::ComputeScrollIntoViewBehavior(
               client->GetScreenInfo(view->GetFrame()).device_scale_factor;
           max_distance_in_dips = max_distance_in_dips / device_scale_factor;
         }
-        if (max_distance_in_dips < kGlicSmoothScrollThresholdInDIPs) {
+        if (max_distance_in_dips < GetGlicSmoothScrollThresholdInDIPs()) {
           return ScrollBehavior::kSmooth;
         }
       }
