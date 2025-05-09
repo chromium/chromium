@@ -318,6 +318,9 @@ class ChromeAuthenticatorRequestDelegate
   void OnPasswordCredentialsReceived(
       PasswordCredentialController::PasswordCredentials credentials);
 
+  void UpdateModelForTransportAvailability(
+      const device::FidoRequestHandlerBase::TransportAvailabilityInfo& tai);
+
   const content::GlobalRenderFrameHostId render_frame_host_id_;
   const scoped_refptr<AuthenticatorRequestDialogModel> dialog_model_;
   const std::unique_ptr<AuthenticatorRequestDialogController>

@@ -465,14 +465,11 @@ class AuthenticatorRequestDialogController
   std::optional<size_t> IndexOfPriorityMechanism();
 
   std::optional<size_t> IndexOfGetAssertionPriorityMechanism();
+  std::optional<size_t> IndexOfImmediateGetPriorityMechanism();
   std::optional<size_t> IndexOfMakeCredentialPriorityMechanism();
 
   // Sets correct step for entering GPM pin based on `gpm_pin_is_arbitrary_`.
   void PromptForGPMPin();
-
-  // Update fields in `model_` based on the value of `transport_availability_`
-  // and `priority_mechanism_index_`.
-  void UpdateModelForTransportAvailability();
 
   // Returns true if this request could pick the enclave authenticator by
   // default. This only makes sense for a create() call.
