@@ -28,7 +28,7 @@ class MediaCodecEncoder extends MediaCodecBridge {
     private static final String TAG = "MediaCodecEncoder";
 
     // Output buffers mapping with MediaCodec output buffers for the possible frame-merging.
-    private SparseArray<ByteBuffer> mOutputBuffers = new SparseArray<>();
+    private final SparseArray<ByteBuffer> mOutputBuffers = new SparseArray<>();
     // SPS and PPS NALs (Config frame).
     private @Nullable ByteBuffer mConfigData;
 

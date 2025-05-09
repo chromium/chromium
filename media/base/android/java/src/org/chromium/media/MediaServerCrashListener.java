@@ -32,7 +32,7 @@ public class MediaServerCrashListener implements MediaPlayer.OnErrorListener {
     // The last time we reported a failure to create the watchdog as a server crash.
     private long mLastReportedWatchdogCreationFailure = UNKNOWN_TIME;
 
-    private long mNativeMediaServerCrashListener;
+    private final long mNativeMediaServerCrashListener;
 
     @CalledByNative
     private static MediaServerCrashListener create(long nativeMediaServerCrashListener) {

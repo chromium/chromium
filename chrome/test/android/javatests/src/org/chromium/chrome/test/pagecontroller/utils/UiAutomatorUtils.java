@@ -54,8 +54,8 @@ public class UiAutomatorUtils {
     // clicking, steps is one of the parameters to drag.
     public static final int CLICK_STEPS_PER_SECOND = 100;
 
-    private UiDevice mDevice;
-    private UiLocatorHelper mLocatorHelper;
+    private final UiDevice mDevice;
+    private final UiLocatorHelper mLocatorHelper;
 
     private static class LazyHolder {
         static final UiAutomatorUtils sInstance = new UiAutomatorUtils();

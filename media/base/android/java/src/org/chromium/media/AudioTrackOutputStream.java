@@ -67,7 +67,7 @@ class AudioTrackOutputStream {
     private static final int CHANNEL_ALIGNMENT = 16;
 
     private long mNativeAudioTrackOutputStream;
-    private Callback mCallback;
+    private final Callback mCallback;
     private @Nullable AudioTrack mAudioTrack;
     private int mBufferSizeInBytes;
     private @Nullable WorkerThread mWorkerThread;

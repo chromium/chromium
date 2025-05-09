@@ -52,7 +52,8 @@ public class ActivityKeyboardVisibilityDelegateUnitTest {
     @Captor private ArgumentCaptor<View.OnLayoutChangeListener> mOnLayoutChangeListener;
 
     private FrameLayout mRootView;
-    private ObservableSupplierImpl<Integer> mKeyboardInsetSupplier = new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Integer> mKeyboardInsetSupplier =
+            new ObservableSupplierImpl<>();
     private LazyOneshotSupplier<ObservableSupplier<Integer>> mLazyKeyboardInsetSupplier;
     private ActivityKeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
 

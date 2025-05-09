@@ -439,7 +439,7 @@ public class FileUtilsTest {
     }
 
     private static class TestContentProvider extends ContentProvider {
-        private HashMap<String, String> mUriToFilename;
+        private final HashMap<String, String> mUriToFilename;
 
         public TestContentProvider() {
             mUriToFilename = new HashMap<String, String>();

@@ -15,7 +15,7 @@ import java.util.LinkedList;
 /** Helper class for tracking accessibility actions and events for end-to-end tests. */
 @NullMarked
 public class AccessibilityActionAndEventTracker {
-    private LinkedList<String> mEvents;
+    private final LinkedList<String> mEvents;
     private boolean mTestComplete;
 
     public AccessibilityActionAndEventTracker() {

@@ -44,8 +44,8 @@ public class WaitForFocusHelper implements View.OnFocusChangeListener {
         Assert.assertTrue(view.hasFocus());
     }
 
-    private CallbackHelper mOnFocusCallbackHelper;
-    private View.OnFocusChangeListener mExistingListener;
+    private final CallbackHelper mOnFocusCallbackHelper;
+    private final View.OnFocusChangeListener mExistingListener;
 
     WaitForFocusHelper(View.OnFocusChangeListener existingListener) {
         mOnFocusCallbackHelper = new CallbackHelper();

@@ -92,7 +92,7 @@ public class RouterImpl implements Router {
     private long mNextRequestId = 1;
 
     /** The map from request ids to {@link MessageReceiver} of request currently in flight. */
-    private Map<Long, MessageReceiver> mResponders = new HashMap<Long, MessageReceiver>();
+    private final Map<Long, MessageReceiver> mResponders = new HashMap<Long, MessageReceiver>();
 
     /**
      * An Executor that will run on the thread associated with the MessagePipe to which

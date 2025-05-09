@@ -37,7 +37,7 @@ public final class DeviceInfo {
     private static boolean sInitialized;
 
     /** The versionCode of Play Services. Can be overridden in tests. */
-    private String mGmsVersionCode;
+    private final String mGmsVersionCode;
 
     /** Whether we're running on Android TV or not */
     private final boolean mIsTv;

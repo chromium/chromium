@@ -59,7 +59,7 @@ public class ListMenuHost implements AnchoredPopupWindow.LayoutObserver {
 
     private @Nullable AnchoredPopupWindow mPopupMenu;
     private @Nullable ListMenuDelegate mDelegate;
-    private ObserverList<PopupMenuShownListener> mPopupListeners = new ObserverList<>();
+    private final ObserverList<PopupMenuShownListener> mPopupListeners = new ObserverList<>();
     private boolean mTryToFitLargestItem;
     private final boolean mPositionedAtStart;
     private final boolean mPositionedAtEnd;

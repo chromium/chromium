@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class TestBrowsingHistoryObserver implements BrowsingHistoryObserver {
     private List<HistoryItem> mHistory;
-    private CallbackHelper mQueryCallback;
+    private final CallbackHelper mQueryCallback;
 
     public TestBrowsingHistoryObserver() {
         mQueryCallback = new CallbackHelper();

@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class EmbeddedTestServerImpl extends IEmbeddedTestServerImpl.Stub {
     private static final String TAG = "TestServer";
 
-    private static AtomicInteger sCount = new AtomicInteger();
+    private static final AtomicInteger sCount = new AtomicInteger();
 
     private final Context mContext;
     private Handler mHandler;

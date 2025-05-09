@@ -50,7 +50,7 @@ public class MockTabModel extends EmptyTabModel {
      * this is either irrelevant to the test or requires customization for different states.
      */
     public static class ComprehensiveTabList extends EmptyTabModel {
-        private List<Tab> mAllTabs = new ArrayList<>();
+        private final List<Tab> mAllTabs = new ArrayList<>();
 
         /** Returns the list of tabs backing the comprehensive model. */
         public List<Tab> getTabList() {

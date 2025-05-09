@@ -110,7 +110,7 @@ public class NFCTest {
     }
 
     private static class TestNfcDelegate implements NfcDelegate {
-        Activity mActivity;
+        final Activity mActivity;
         Callback<Activity> mCallback;
 
         public TestNfcDelegate(Activity activity) {

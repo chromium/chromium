@@ -37,7 +37,7 @@ public class AndroidOverlayProviderImpl implements AndroidOverlayProvider {
     private int mNumOverlays;
 
     // Runnable that notifies us that a client has been released.
-    private Runnable mNotifyReleasedRunnable =
+    private final Runnable mNotifyReleasedRunnable =
             new Runnable() {
                 @Override
                 public void run() {

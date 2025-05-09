@@ -90,8 +90,8 @@ class CameraAvailabilityObserver extends CameraManager.AvailabilityCallback {
     // Lock for guarding |mNativeCameraAvailabilityObserver|.
     private final Object mNativeCameraAvailabilityObserverLock = new Object();
     private long mNativeCameraAvailabilityObserver;
-    private CameraManager mCameraManager;
-    private Handler mObservationThreadHandler;
+    private final CameraManager mCameraManager;
+    private final Handler mObservationThreadHandler;
 
     @NativeMethods
     interface Natives {

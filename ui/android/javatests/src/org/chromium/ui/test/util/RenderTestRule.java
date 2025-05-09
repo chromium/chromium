@@ -107,11 +107,11 @@ public class RenderTestRule extends TestWatcher {
     /** Prefix on the render test images that describes light/dark mode. */
     private String mNightModePrefix;
 
-    private String mSkiaGoldCorpus;
-    private int mSkiaGoldRevision;
-    private String mSkiaGoldRevisionDescription;
-    private boolean mFailOnUnsupportedConfigs;
-    private String mBugComponent;
+    private final String mSkiaGoldCorpus;
+    private final int mSkiaGoldRevision;
+    private final String mSkiaGoldRevisionDescription;
+    private final boolean mFailOnUnsupportedConfigs;
+    private final String mBugComponent;
 
     @StringDef({
         Corpus.ANDROID_RENDER_TESTS_PUBLIC,

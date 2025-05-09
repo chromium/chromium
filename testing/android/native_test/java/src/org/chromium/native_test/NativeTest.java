@@ -30,7 +30,7 @@ public class NativeTest {
     private static final String TAG = "NativeTest";
 
     private String mCommandLineFilePath;
-    private StringBuilder mCommandLineFlags = new StringBuilder();
+    private final StringBuilder mCommandLineFlags = new StringBuilder();
     private TestStatusReporter mReporter;
     private boolean mRunInSubThread;
     private String mStdoutFilePath;
@@ -38,8 +38,8 @@ public class NativeTest {
     private static class ReportingUncaughtExceptionHandler
             implements Thread.UncaughtExceptionHandler {
 
-        private TestStatusReporter mReporter;
-        private Thread.UncaughtExceptionHandler mWrappedHandler;
+        private final TestStatusReporter mReporter;
+        private final Thread.UncaughtExceptionHandler mWrappedHandler;
 
         public ReportingUncaughtExceptionHandler(
                 TestStatusReporter reporter, Thread.UncaughtExceptionHandler wrappedHandler) {

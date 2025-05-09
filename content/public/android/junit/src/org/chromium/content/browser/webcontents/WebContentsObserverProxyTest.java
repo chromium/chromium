@@ -30,7 +30,7 @@ public class WebContentsObserverProxyTest {
     @Mock private WebContentsObserverProxy.Natives mWebContentsObserverProxyJni;
 
     private WebContentsImpl mWebContentsImpl;
-    private final long mNativeWebContentsAndroid = 1;
+    private static final long M_NATIVE_WEB_CONTENTS_ANDROID = 1;
 
     @Before
     public void setUp() {

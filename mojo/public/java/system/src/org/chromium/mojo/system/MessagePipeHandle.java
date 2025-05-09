@@ -43,7 +43,7 @@ public interface MessagePipeHandle extends Handle {
 
     /** Used to specify creation parameters for a message pipe to |Core#createMessagePipe()|. */
     public static class CreateOptions {
-        private CreateFlags mFlags = CreateFlags.NONE;
+        private final CreateFlags mFlags = CreateFlags.NONE;
 
         /**
          * @return the flags

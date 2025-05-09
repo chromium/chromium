@@ -17,7 +17,7 @@ import java.util.List;
  */
 @JNINamespace("device")
 final class ChromeBluetoothScanFilter {
-    private ScanFilter mScanFilter;
+    private final ScanFilter mScanFilter;
 
     /** Constructs a ChromeBluetoothScanFilter */
     public ChromeBluetoothScanFilter(ScanFilter filter) {

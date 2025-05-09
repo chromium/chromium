@@ -48,7 +48,7 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
     private static final boolean DEBUG = false;
     private final SmsProviderGms mProvider;
     private boolean mDestroyed;
-    private Wrappers.WebOTPServiceContext mContext;
+    private final Wrappers.WebOTPServiceContext mContext;
 
     @IntDef({
         BackendAvailability.AVAILABLE,

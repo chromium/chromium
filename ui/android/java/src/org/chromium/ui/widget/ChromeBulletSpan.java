@@ -20,7 +20,7 @@ import org.chromium.ui.R;
  */
 @NullMarked
 public class ChromeBulletSpan extends BulletSpan {
-    private int mXOffset;
+    private final int mXOffset;
 
     /**
      * Construts a new ChromeBuletSpan.

@@ -26,8 +26,8 @@ import java.util.Map;
  */
 @NullMarked
 public abstract class AndroidPermissionDelegateWithRequester implements AndroidPermissionDelegate {
-    private Handler mHandler;
-    private SparseArray<PermissionRequestInfo> mOutstandingPermissionRequests;
+    private final Handler mHandler;
+    private final SparseArray<PermissionRequestInfo> mOutstandingPermissionRequests;
     private int mNextRequestCode;
 
     // Constants used for permission request code bounding.

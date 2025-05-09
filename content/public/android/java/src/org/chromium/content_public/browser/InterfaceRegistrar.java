@@ -28,7 +28,7 @@ public interface InterfaceRegistrar<ParamType> {
         private static @Nullable Registry<WebContents> sWebContentsRegistry;
         private static @Nullable Registry<RenderFrameHost> sRenderFrameHostRegistry;
 
-        private List<InterfaceRegistrar<ParamType>> mRegistrars =
+        private final List<InterfaceRegistrar<ParamType>> mRegistrars =
                 new ArrayList<InterfaceRegistrar<ParamType>>();
 
         public static void applySingletonRegistrars(InterfaceRegistry interfaceRegistry) {

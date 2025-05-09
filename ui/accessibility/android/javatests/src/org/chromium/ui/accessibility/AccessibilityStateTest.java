@@ -417,7 +417,7 @@ public class AccessibilityStateTest {
 
     public static class BuilderForTests {
 
-        private Context mContext;
+        private final Context mContext;
         private String mPackageName = "com.example.google";
         private String mClassName = "app.accessibility.AccessibilityService";
         private int mEventTypes;

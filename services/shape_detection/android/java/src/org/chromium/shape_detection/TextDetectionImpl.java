@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 package org.chromium.shape_detection;
-import org.chromium.build.annotations.NullMarked;
 
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -15,20 +14,21 @@ import com.google.android.gms.vision.text.TextRecognizer;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.gfx.mojom.PointF;
 import org.chromium.gfx.mojom.RectF;
 import org.chromium.gms.ChromiumPlayServicesAvailability;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.shape_detection.mojom.TextDetection;
 import org.chromium.shape_detection.mojom.TextDetectionResult;
-import org.chromium.build.annotations.Nullable;
 
 /** Implementation of mojo TextDetection, using Google Play Services vision package. */
 @NullMarked
 public class TextDetectionImpl implements TextDetection {
     private static final String TAG = "TextDetectionImpl";
 
-    private TextRecognizer mTextRecognizer;
+    private final TextRecognizer mTextRecognizer;
 
     public TextDetectionImpl() {
         mTextRecognizer = new TextRecognizer.Builder(ContextUtils.getApplicationContext()).build();

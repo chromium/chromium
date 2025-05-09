@@ -41,15 +41,15 @@ public class GamepadMappingsTest {
     private static final String XBOX_WIRELESS_DEVICE_NAME = "Xbox Wireless Controller";
 
     /** Set bits indicate that we don't expect the button at mMappedButtons[index] to be mapped. */
-    private BitSet mUnmappedButtons = new BitSet(CanonicalButtonIndex.COUNT);
+    private final BitSet mUnmappedButtons = new BitSet(CanonicalButtonIndex.COUNT);
 
     /** Set bits indicate that we don't expect the axis at mMappedAxes[index] to be mapped. */
-    private BitSet mUnmappedAxes = new BitSet(CanonicalAxisIndex.COUNT);
+    private final BitSet mUnmappedAxes = new BitSet(CanonicalAxisIndex.COUNT);
 
-    private float[] mMappedButtons = new float[CanonicalButtonIndex.COUNT + 2];
-    private float[] mMappedAxes = new float[CanonicalAxisIndex.COUNT];
-    private float[] mRawButtons = new float[GamepadDevice.MAX_RAW_BUTTON_VALUES];
-    private float[] mRawAxes = new float[GamepadDevice.MAX_RAW_AXIS_VALUES];
+    private final float[] mMappedButtons = new float[CanonicalButtonIndex.COUNT + 2];
+    private final float[] mMappedAxes = new float[CanonicalAxisIndex.COUNT];
+    private final float[] mRawButtons = new float[GamepadDevice.MAX_RAW_BUTTON_VALUES];
+    private final float[] mRawAxes = new float[GamepadDevice.MAX_RAW_AXIS_VALUES];
 
     @Before
     public void setUp() {

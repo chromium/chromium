@@ -19,8 +19,8 @@ public class NavigationEntry {
     private final GURL mVirtualUrl;
     private final String mTitle;
     private Bitmap mFavicon;
-    private int mTransition;
-    private long mTimestamp;
+    private final int mTransition;
+    private final long mTimestamp;
     private final boolean mIsInitialEntry;
 
     /** Default constructor. */

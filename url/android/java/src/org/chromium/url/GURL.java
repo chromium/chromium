@@ -75,7 +75,7 @@ public class GURL {
     private Parsed mParsed;
 
     private static class Holder {
-        private static GURL sEmptyGURL = new GURL("");
+        private static final GURL sEmptyGURL = new GURL("");
     }
 
     @CalledByNative

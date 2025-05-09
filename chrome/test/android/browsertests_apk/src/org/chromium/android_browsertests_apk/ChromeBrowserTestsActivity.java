@@ -18,7 +18,7 @@ import java.io.File;
 public class ChromeBrowserTestsActivity extends ChromeTabbedActivity {
     private static final String TAG = "browser_test";
 
-    private NativeTest mTest = new NativeTest();
+    private final NativeTest mTest = new NativeTest();
 
     @Override
     public void performPreInflationStartup() {

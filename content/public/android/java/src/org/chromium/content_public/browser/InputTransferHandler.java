@@ -25,10 +25,10 @@ import org.chromium.ui.base.WindowAndroid;
 public class InputTransferHandler implements WindowAndroid.SelectionHandlesObserver {
     private static @Nullable Integer sInitialBrowserToken;
 
-    private InputTransferToken mBrowserToken;
+    private final InputTransferToken mBrowserToken;
     private @Nullable InputTransferToken mVizToken;
     private boolean mSelectionHandlesActive;
-    private WindowAndroid mWindowAndroid;
+    private final WindowAndroid mWindowAndroid;
 
     public InputTransferHandler(InputTransferToken browserToken, WindowAndroid windowAndroid) {
         if (sInitialBrowserToken == null) {

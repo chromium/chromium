@@ -433,8 +433,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
         public long pageLoadFinishedMs = NONE;
         public long firstContentfulPaintMs = NONE;
         public long largeContentfulPaintMs = NONE;
-        public PinInfo pinInfo;
-        public long extraBriefMemoryMb;
+        public final PinInfo pinInfo;
+        public final long extraBriefMemoryMb;
 
         public CustomCallback(
                 String packageName,

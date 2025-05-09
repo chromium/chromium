@@ -44,9 +44,9 @@ public class JavaBridgeCoercionTest {
     @Rule public JavaBridgeActivityTestRule mActivityTestRule = new JavaBridgeActivityTestRule();
 
     private static class TestObject extends Controller {
-        private Object mObjectInstance;
-        private CustomType mCustomTypeInstance;
-        private CustomType2 mCustomType2Instance;
+        private final Object mObjectInstance;
+        private final CustomType mCustomTypeInstance;
+        private final CustomType2 mCustomType2Instance;
 
         private boolean mBooleanValue;
         private byte mByteValue;

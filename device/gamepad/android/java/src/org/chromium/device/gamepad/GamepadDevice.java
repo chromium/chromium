@@ -85,13 +85,13 @@ class GamepadDevice {
     static final int VIBRATION_MAX_AMPLITUDE = 255;
 
     // An id for the gamepad.
-    private int mDeviceId;
+    private final int mDeviceId;
     // The index of the gamepad in the Navigator.
-    private int mDeviceIndex;
+    private final int mDeviceIndex;
     // The vendor ID of the gamepad, or zero if the gamepad does not have a vendor ID.
-    private int mDeviceVendorId;
+    private final int mDeviceVendorId;
     // The product ID of the gamepad, or zero if the gamepad does not have a product ID.
-    private int mDeviceProductId;
+    private final int mDeviceProductId;
 
     // Last time the data for this gamepad was updated.
     private long mTimestamp;
@@ -117,13 +117,13 @@ class GamepadDevice {
     private final float[] mRawAxes = new float[MAX_RAW_AXIS_VALUES];
 
     // An identification string for the gamepad.
-    private String mDeviceName;
+    private final String mDeviceName;
 
     // Array of axes ids.
-    private int[] mAxes;
+    private final int[] mAxes;
 
     // Mappings to canonical gamepad
-    private GamepadMappings mMappings;
+    private final GamepadMappings mMappings;
 
     // True if the gamepad supports "dual-rumble" vibration effects.
     private boolean mSupportsDualRumble;

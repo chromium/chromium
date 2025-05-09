@@ -13,7 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 
 @NullMarked
 public class DeviceConnectStateReceiverWrapper extends BroadcastReceiver {
-    private Callback mCallback;
+    private final Callback mCallback;
 
     DeviceConnectStateReceiverWrapper(Callback callback) {
         mCallback = callback;

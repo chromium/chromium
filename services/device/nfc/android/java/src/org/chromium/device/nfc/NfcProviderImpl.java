@@ -16,7 +16,7 @@ import org.chromium.services.service_manager.InterfaceFactory;
 @NullMarked
 public class NfcProviderImpl implements NfcProvider {
     private static final String TAG = "NfcProviderImpl";
-    private NfcDelegate mDelegate;
+    private final NfcDelegate mDelegate;
     private @Nullable NfcImpl mNfcImpl;
 
     public NfcProviderImpl(NfcDelegate delegate) {
@@ -70,7 +70,7 @@ public class NfcProviderImpl implements NfcProvider {
 
     /** A factory for implementations of the NfcProvider interface. */
     public static class Factory implements InterfaceFactory<NfcProvider> {
-        private NfcDelegate mDelegate;
+        private final NfcDelegate mDelegate;
 
         public Factory(NfcDelegate delegate) {
             mDelegate = delegate;

@@ -52,7 +52,7 @@ public class ApplicationStatus {
 
     private static class ActivityInfo {
         private int mStatus = ActivityState.DESTROYED;
-        private ObserverList<ActivityStateListener> mListeners = new ObserverList<>();
+        private final ObserverList<ActivityStateListener> mListeners = new ObserverList<>();
 
         /**
          * @return The current {@link ActivityState} of the activity.

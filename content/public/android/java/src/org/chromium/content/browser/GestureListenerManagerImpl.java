@@ -66,7 +66,7 @@ public class GestureListenerManagerImpl
     private final RewindableIterator<GestureStateListener> mIterator;
     private final HashMap<GestureStateListener, Integer> mListenerFrequency;
     private @Nullable SelectionPopupControllerImpl mSelectionPopupController;
-    private ViewAndroidDelegate mViewDelegate;
+    private final ViewAndroidDelegate mViewDelegate;
     private @Nullable InternalAccessDelegate mScrollDelegate;
     private final boolean mHidePastePopupOnGSB;
     private final boolean mResetGestureDetectionOnLosingFocus;

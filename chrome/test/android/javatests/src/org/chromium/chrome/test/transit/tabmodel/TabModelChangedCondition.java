@@ -10,7 +10,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /** Condition fulfilled when tab model changes from regular to incognito or vice versa. */
 public class TabModelChangedCondition extends InstrumentationThreadCondition {
-    private TabModelSelector mTabModelSelector;
+    private final TabModelSelector mTabModelSelector;
     private Boolean mStartingModelIsIncognito;
 
     public TabModelChangedCondition(TabModelSelector tabModelSelector) {

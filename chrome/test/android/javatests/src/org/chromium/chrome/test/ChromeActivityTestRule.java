@@ -72,7 +72,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     // The number of ms to wait for the rendering activity to be started.
     private static final int ACTIVITY_START_TIMEOUT_MS = 1000;
 
-    private EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
+    private final EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
 
     protected ChromeActivityTestRule(Class<T> activityClass) {
         super(activityClass);

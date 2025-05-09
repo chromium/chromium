@@ -866,9 +866,9 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     }
 
     private class GetCameraIntentTask extends AsyncTask<@Nullable Uri> {
-        private Boolean mDirectToCamera;
-        private WindowAndroid mWindow;
-        private WindowAndroid.IntentCallback mCallback;
+        private final Boolean mDirectToCamera;
+        private final WindowAndroid mWindow;
+        private final WindowAndroid.IntentCallback mCallback;
 
         public GetCameraIntentTask(
                 Boolean directToCamera,

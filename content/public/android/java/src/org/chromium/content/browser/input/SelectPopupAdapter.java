@@ -25,7 +25,7 @@ import java.util.List;
 @NullMarked
 public class SelectPopupAdapter extends ArrayAdapter<SelectPopupItem> {
     // Holds the items of the select popup alert dialog list.
-    private List<SelectPopupItem> mItems;
+    private final List<SelectPopupItem> mItems;
 
     // True if all items have type PopupItemType.ENABLED.
     private boolean mAreAllItemsEnabled;

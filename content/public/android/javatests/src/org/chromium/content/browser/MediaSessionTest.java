@@ -98,11 +98,11 @@ public class MediaSessionTest {
 
     private MediaSessionObserver mObserver;
 
-    private ArrayList<StateRecord> mStateRecords = new ArrayList<StateRecord>();
+    private final ArrayList<StateRecord> mStateRecords = new ArrayList<StateRecord>();
 
     private static class StateRecord {
-        public boolean isControllable;
-        public boolean isSuspended;
+        public final boolean isControllable;
+        public final boolean isSuspended;
 
         public StateRecord(boolean isControllable, boolean isSuspended) {
             this.isControllable = isControllable;

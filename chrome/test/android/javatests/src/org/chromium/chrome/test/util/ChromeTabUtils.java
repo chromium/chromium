@@ -90,9 +90,9 @@ public class ChromeTabUtils {
      * with either scenario #2 *or* #3, so we have to keep watching for a call to onCrash.
      */
     private static class TabPageLoadedObserver extends EmptyTabObserver {
-        private CallbackHelper mCallback;
-        private String mExpectedUrl;
-        private CountDownLatch mLoadStoppedLatch;
+        private final CallbackHelper mCallback;
+        private final String mExpectedUrl;
+        private final CountDownLatch mLoadStoppedLatch;
 
         public TabPageLoadedObserver(
                 CallbackHelper loadCompleteCallback,
@@ -356,8 +356,8 @@ public class ChromeTabUtils {
      * or opens a new foreground tab (popup), and may not become interactable.
      */
     private static class TabPageInteractableObserver extends EmptyTabObserver {
-        private Tab mTab;
-        private CallbackHelper mCallback;
+        private final Tab mTab;
+        private final CallbackHelper mCallback;
 
         public TabPageInteractableObserver(Tab tab, CallbackHelper interactableCallback) {
             mTab = tab;

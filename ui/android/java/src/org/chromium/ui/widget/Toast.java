@@ -57,7 +57,7 @@ public class Toast {
         int NORMAL = 1;
     }
 
-    private android.widget.Toast mToast;
+    private final android.widget.Toast mToast;
     private @Nullable ViewGroup mSWLayout;
     private @ToastPriority int mPriority;
     private @Nullable CharSequence mText;

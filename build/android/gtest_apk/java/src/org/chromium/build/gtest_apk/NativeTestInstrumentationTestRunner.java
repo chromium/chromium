@@ -49,12 +49,12 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
     // Default to no size limit.
     private static final int DEFAULT_SHARD_SIZE_LIMIT = 0;
 
-    private Handler mHandler = new Handler();
-    private Bundle mLogBundle = new Bundle();
-    private SparseArray<ShardMonitor> mMonitors = new SparseArray<ShardMonitor>();
+    private final Handler mHandler = new Handler();
+    private final Bundle mLogBundle = new Bundle();
+    private final SparseArray<ShardMonitor> mMonitors = new SparseArray<ShardMonitor>();
     private String mNativeTestActivity;
     private TestStatusReceiver mReceiver;
-    private Queue<String> mShards = new ArrayDeque<String>();
+    private final Queue<String> mShards = new ArrayDeque<String>();
     private long mShardNanoTimeout = DEFAULT_SHARD_NANO_TIMEOUT;
     private int mShardSizeLimit = DEFAULT_SHARD_SIZE_LIMIT;
     private File mStdoutFile;
@@ -184,9 +184,9 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
     private class ShardMonitor implements Runnable {
         private static final int MONITOR_FREQUENCY_MS = 1000;
 
-        private long mExpirationNanoTime;
-        private int mPid;
-        private AtomicBoolean mStopped;
+        private final long mExpirationNanoTime;
+        private final int mPid;
+        private final AtomicBoolean mStopped;
 
         public ShardMonitor(int pid, long expirationNanoTime) {
             mPid = pid;
@@ -254,7 +254,7 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
     private class ShardEnder implements Runnable {
         private static final int WAIT_FOR_DEATH_MILLIS = 10;
 
-        private int mPid;
+        private final int mPid;
 
         public ShardEnder(int pid) {
             mPid = pid;

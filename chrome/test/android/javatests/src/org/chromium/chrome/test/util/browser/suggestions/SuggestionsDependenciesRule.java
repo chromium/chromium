@@ -23,7 +23,7 @@ import org.chromium.components.favicon.LargeIconBridge;
  * @see SuggestionsDependencyFactory
  */
 public class SuggestionsDependenciesRule extends TestWatcher {
-    private TestFactory mFactory;
+    private final TestFactory mFactory;
 
     public TestFactory getFactory() {
         return mFactory;

@@ -718,7 +718,7 @@ public class JavaBridgeBasicsTest {
     @Feature({"AndroidWebView", "Android-JavaBridge"})
     public void testBlockingUiThreadDoesNotBlockCallsFromJs() {
         class TestObject {
-            private CountDownLatch mLatch;
+            private final CountDownLatch mLatch;
 
             public TestObject() {
                 mLatch = new CountDownLatch(1);
@@ -874,7 +874,7 @@ public class JavaBridgeBasicsTest {
                         return getClass();
                     }
 
-                    public String field = "foo";
+                    public final String field = "foo";
                 },
                 "testObject",
                 null);
@@ -1207,7 +1207,7 @@ public class JavaBridgeBasicsTest {
                 return mValue;
             }
 
-            private int mValue;
+            private final int mValue;
         }
         mActivityTestRule.injectObjectAndReload(new Test(13), "testObject");
         Assert.assertEquals("13", executeJavaScriptAndGetStringResult("testObject.getValue()"));
@@ -1223,7 +1223,7 @@ public class JavaBridgeBasicsTest {
     @Feature({"AndroidWebView", "Android-JavaBridge"})
     public void testMethodCalledOnAnotherInstance() throws Throwable {
         class TestObject {
-            private int mIndex;
+            private final int mIndex;
 
             TestObject(int index) {
                 mIndex = index;
@@ -1253,7 +1253,7 @@ public class JavaBridgeBasicsTest {
     @Feature({"AndroidWebView", "Android-JavaBridge"})
     public void testWebViewAfterRenderViewSwapped() throws Throwable {
         class TestObject {
-            private int mIndex;
+            private final int mIndex;
 
             TestObject(int index) {
                 mIndex = index;

@@ -49,10 +49,10 @@ public class FrameMetricsListener implements OnFrameMetricsAvailableListener {
         }
     }
 
-    private DisplayListenerBackend mBackend = new DisplayListenerBackend();
+    private final DisplayListenerBackend mBackend = new DisplayListenerBackend();
 
     private final FrameMetricsStore mFrameMetricsStore;
-    private AtomicBoolean mIsRecording = new AtomicBoolean(false);
+    private final AtomicBoolean mIsRecording = new AtomicBoolean(false);
     // Microseconds between each frame.
     private long mVsyncInterval;
 

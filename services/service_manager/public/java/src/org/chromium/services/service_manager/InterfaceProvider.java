@@ -16,8 +16,8 @@ import org.chromium.mojo.system.Pair;
 /** Provides access to interfaces exposed by an InterfaceProvider mojo interface. */
 @NullMarked
 public class InterfaceProvider implements ConnectionErrorHandler {
-    private Core mCore;
-    private org.chromium.service_manager.mojom.InterfaceProvider.Proxy mInterfaceProvider;
+    private final Core mCore;
+    private final org.chromium.service_manager.mojom.InterfaceProvider.Proxy mInterfaceProvider;
 
     public InterfaceProvider(MessagePipeHandle pipe) {
         Core core = pipe.getCore();

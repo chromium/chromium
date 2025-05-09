@@ -13,7 +13,7 @@ import java.lang.ref.WeakReference;
 /** AndroidPermissionDelegate implementation for Activity. */
 @NullMarked
 public class ActivityAndroidPermissionDelegate extends AndroidPermissionDelegateWithRequester {
-    private WeakReference<Activity> mActivity;
+    private final WeakReference<Activity> mActivity;
 
     public ActivityAndroidPermissionDelegate(WeakReference<Activity> activity) {
         mActivity = activity;

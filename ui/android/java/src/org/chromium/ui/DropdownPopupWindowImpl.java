@@ -34,14 +34,14 @@ class DropdownPopupWindowImpl
     private final View mAnchorView;
     private boolean mRtl;
     private int mInitialSelection = -1;
-    private OnLayoutChangeListener mLayoutChangeListener;
+    private final OnLayoutChangeListener mLayoutChangeListener;
     private @Nullable CharSequence mDescription;
-    private AnchoredPopupWindow mAnchoredPopupWindow;
+    private final AnchoredPopupWindow mAnchoredPopupWindow;
     @Nullable ListAdapter mAdapter;
 
     private final ListView mListView;
-    private Drawable mBackground;
-    private int mHorizontalPadding;
+    private final Drawable mBackground;
+    private final int mHorizontalPadding;
 
     public DropdownPopupWindowImpl(Context context, View anchorView) {
         this(context, anchorView, null);

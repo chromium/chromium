@@ -36,7 +36,7 @@ import java.util.WeakHashMap;
 public class ScreenOrientationProviderImpl
         implements ActivityStateListener, ScreenOrientationProvider {
     private static class Holder {
-        private static ScreenOrientationProviderImpl sInstance =
+        private static final ScreenOrientationProviderImpl sInstance =
                 new ScreenOrientationProviderImpl();
     }
 
@@ -54,7 +54,7 @@ public class ScreenOrientationProviderImpl
      * The values of the map are the most recent default web screen orientation request for each
      * activity.
      */
-    private Map<Activity, Byte> mDefaultOrientationOverrides = new WeakHashMap<>();
+    private final Map<Activity, Byte> mDefaultOrientationOverrides = new WeakHashMap<>();
 
     /**
      * The keys of the map are the activities for which screen orientation requests are
@@ -63,7 +63,7 @@ public class ScreenOrientationProviderImpl
      * The map will contain an entry with a null value if screen orientation requests are delayed
      * for an activity but no screen orientation requests have been made for the activity.
      */
-    private Map<Activity, Pair<Boolean, Integer>> mDelayedRequests = new WeakHashMap<>();
+    private final Map<Activity, Pair<Boolean, Integer>> mDelayedRequests = new WeakHashMap<>();
 
     private static final class PendingRequest implements WindowEventObserver {
         private final ScreenOrientationProviderImpl mProvider;

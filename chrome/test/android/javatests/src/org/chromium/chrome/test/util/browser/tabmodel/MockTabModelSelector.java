@@ -28,7 +28,7 @@ public class MockTabModelSelector extends TabModelSelectorBase {
     public static final int ID_OFFSET = 100000;
     public static final int INCOGNITO_ID_OFFSET = 200000;
     private static int sCurTabOffset;
-    private int mTabCount;
+    private final int mTabCount;
 
     public MockTabModelSelector(
             Profile profile,

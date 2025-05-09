@@ -44,7 +44,7 @@ public interface DataPipe {
     public static class CreateOptions {
 
         /** Used to specify different modes of operation, see |DataPipe.CreateFlags|. */
-        private CreateFlags mFlags = CreateFlags.none();
+        private final CreateFlags mFlags = CreateFlags.none();
 
         /**
          * The size of an element, in bytes. All transactions and buffers will consist of an

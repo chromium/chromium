@@ -15,7 +15,7 @@ import java.util.List;
 /** Class runner delegate that extends BaseJUnit4ClassRunner */
 public final class BaseJUnit4RunnerDelegate extends BaseJUnit4ClassRunner
         implements ParameterizedRunnerDelegate {
-    private ParameterizedRunnerDelegateCommon mDelegateCommon;
+    private final ParameterizedRunnerDelegateCommon mDelegateCommon;
 
     public BaseJUnit4RunnerDelegate(
             Class<?> klass, ParameterizedRunnerDelegateCommon delegateCommon)

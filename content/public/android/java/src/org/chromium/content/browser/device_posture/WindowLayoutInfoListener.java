@@ -32,7 +32,8 @@ public class WindowLayoutInfoListener implements UnownedUserData {
             new UnownedUserDataKey<>(WindowLayoutInfoListener.class);
     private final Consumer<WindowLayoutInfo> mWindowLayoutInfoChangedCallback;
     private @Nullable WindowAndroid mWindowAndroid;
-    private ObserverList<DevicePosturePlatformProviderAndroid> mObservers = new ObserverList<>();
+    private final ObserverList<DevicePosturePlatformProviderAndroid> mObservers =
+            new ObserverList<>();
     private @Nullable WindowLayoutInfo mCurrentWindowLayoutInfo;
 
     private WindowLayoutInfoListener(WindowAndroid window) {

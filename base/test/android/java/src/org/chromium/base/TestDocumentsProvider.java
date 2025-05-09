@@ -33,7 +33,7 @@ import java.net.URLDecoder;
 public class TestDocumentsProvider extends DocumentsProvider {
     private static final String AUTHORITY = "org.chromium.native_test.docprov";
 
-    private PipeDataWriter mPipeDataWriter =
+    private final PipeDataWriter mPipeDataWriter =
             new ContentProvider.PipeDataWriter<byte[]>() {
                 @Override
                 public void writeDataToPipe(

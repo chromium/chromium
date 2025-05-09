@@ -41,7 +41,7 @@ public class TestViewStructure extends ViewStructure {
     private Bundle mBundle;
     private HtmlInfo mHtmlInfo;
     private int mChildCount;
-    private ArrayList<TestViewStructure> mChildren = new ArrayList<TestViewStructure>();
+    private final ArrayList<TestViewStructure> mChildren = new ArrayList<TestViewStructure>();
     private float mTextSize;
     private int mFgColor;
     private int mBgColor;

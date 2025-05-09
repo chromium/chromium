@@ -45,7 +45,7 @@ class MediaCodecBridge {
     private static final String KEY_CROP_TOP = "crop-top";
 
     protected MediaCodec mMediaCodec;
-    private @BitrateAdjuster.Type int mBitrateAdjuster;
+    private final @BitrateAdjuster.Type int mBitrateAdjuster;
 
     private String mMediaCodecName = "unknown";
 
@@ -60,7 +60,7 @@ class MediaCodecBridge {
     // Once the callback has been set on MediaCodec, these variables must only
     // be accessed from synchronized(this) blocks since MediaCodecCallback may
     // execute on an arbitrary thread.
-    private boolean mUseAsyncApi;
+    private final boolean mUseAsyncApi;
     private Queue<MediaFormatWrapper> mPendingFormat;
     private @Nullable MediaFormatWrapper mCurrentFormat;
     private boolean mPendingError;
@@ -572,7 +572,7 @@ class MediaCodecBridge {
                     if (mPendingError) return false;
 
                     class CompletePendingStartTask implements Runnable {
-                        private int mThisSequence;
+                        private final int mThisSequence;
 
                         CompletePendingStartTask(int sequence) {
                             mThisSequence = sequence;

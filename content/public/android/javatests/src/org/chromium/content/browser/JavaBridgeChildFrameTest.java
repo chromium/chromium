@@ -155,9 +155,9 @@ public class JavaBridgeChildFrameTest {
     @DisabledTest(message = "https://crbug.com/677053")
     public void testRemovingTransientObjectHolders() throws Throwable {
         class Test {
-            private Object mInner = new Object();
+            private final Object mInner = new Object();
             // Expecting the inner object to be retrieved twice.
-            private CountDownLatch mLatch = new CountDownLatch(2);
+            private final CountDownLatch mLatch = new CountDownLatch(2);
 
             @JavascriptInterface
             public Object getInner() {
@@ -227,7 +227,7 @@ public class JavaBridgeChildFrameTest {
     public void testHolderFrame() throws Throwable {
         class Test {
             WeakReference<Object> mWeakRefForInner;
-            private CountDownLatch mLatch = new CountDownLatch(1);
+            private final CountDownLatch mLatch = new CountDownLatch(1);
 
             @JavascriptInterface
             public Object getInner() {

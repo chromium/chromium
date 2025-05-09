@@ -1112,8 +1112,8 @@ public class VideoCaptureCamera2 extends VideoCapture {
     // asynchronous callbacks to. The native thread that calls the constructor
     // and public API cannot be used for this, because it does not have a
     // Looper.
-    private Handler mCameraThreadHandler;
-    private ConditionVariable mWaitForDeviceClosedConditionVariable = new ConditionVariable();
+    private final Handler mCameraThreadHandler;
+    private final ConditionVariable mWaitForDeviceClosedConditionVariable = new ConditionVariable();
 
     private @Nullable Range<Integer> mAeFpsRange;
     private @CameraState int mCameraState = CameraState.STOPPED;

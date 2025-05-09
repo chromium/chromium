@@ -30,7 +30,7 @@ public class SmsUserConsentReceiver extends BroadcastReceiver {
     private static final boolean DEBUG = false;
     private final SmsProviderGms mProvider;
     private boolean mDestroyed;
-    private Wrappers.WebOTPServiceContext mContext;
+    private final Wrappers.WebOTPServiceContext mContext;
 
     public SmsUserConsentReceiver(SmsProviderGms provider, Wrappers.WebOTPServiceContext context) {
         mDestroyed = false;

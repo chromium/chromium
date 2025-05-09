@@ -971,7 +971,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
     // mNetworkCallback and mNetworkRequest are only non-null in Android L and above.
     // mNetworkCallback will be null if ConnectivityManager.registerNetworkCallback() ever fails.
     private @Nullable MyNetworkCallback mNetworkCallback;
-    private NetworkRequest mNetworkRequest;
+    private final NetworkRequest mNetworkRequest;
     private boolean mRegistered;
 
     private NetworkState mNetworkState;

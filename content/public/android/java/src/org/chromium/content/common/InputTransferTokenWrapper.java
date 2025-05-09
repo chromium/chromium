@@ -18,7 +18,7 @@ import org.chromium.build.annotations.NullMarked;
  */
 @NullMarked
 public class InputTransferTokenWrapper implements Parcelable {
-    private InputTransferToken mToken;
+    private final InputTransferToken mToken;
 
     public InputTransferTokenWrapper(InputTransferToken token) {
         assert token != null;

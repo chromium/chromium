@@ -36,9 +36,9 @@ public abstract class TwoFieldDatePicker extends FrameLayout {
     // It'd be nice to use android.text.Time like in other Dialogs but
     // it suffers from the 2038 effect so it would prevent us from
     // having dates over 2038.
-    private Calendar mMinDate;
+    private final Calendar mMinDate;
 
-    private Calendar mMaxDate;
+    private final Calendar mMaxDate;
 
     private Calendar mCurrentDate;
 

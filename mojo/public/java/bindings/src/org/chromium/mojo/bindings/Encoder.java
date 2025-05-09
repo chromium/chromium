@@ -86,7 +86,7 @@ public class Encoder {
     private static final int INITIAL_BUFFER_SIZE = 1024;
 
     /** Base offset in the byte buffer for writing. */
-    private int mBaseOffset;
+    private final int mBaseOffset;
 
     /** The encoder state shared by the main encoder and all its sub-encoder. */
     private final EncoderState mEncoderState;

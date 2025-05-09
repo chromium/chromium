@@ -18,13 +18,13 @@ import org.chromium.build.annotations.NullMarked;
 @JNINamespace("media_session")
 @NullMarked
 public final class MediaPosition {
-    private Long mDuration;
+    private final Long mDuration;
 
-    private Long mPosition;
+    private final Long mPosition;
 
-    private Float mPlaybackRate;
+    private final Float mPlaybackRate;
 
-    private Long mLastUpdatedTime;
+    private final Long mLastUpdatedTime;
 
     /** Creates a new MediaPosition. */
     public MediaPosition(long duration, long position, float playbackRate, long lastUpdatedTime) {

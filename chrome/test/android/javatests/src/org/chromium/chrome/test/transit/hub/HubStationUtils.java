@@ -14,7 +14,7 @@ public class HubStationUtils {
     // R.string.accessibility_tab_switcher_standard_stack.
     // The incognito contentDescription is the actual string found in the resource:
     // R.string.accessibility_tab_switcher_incognito_stack.
-    private static Map<Integer, String> sPaneIdToContentDescriptionMap =
+    private static final Map<Integer, String> sPaneIdToContentDescriptionMap =
             Map.ofEntries(
                     Map.entry(PaneId.TAB_SWITCHER, "standard tab"),
                     Map.entry(PaneId.INCOGNITO_TAB_SWITCHER, "Incognito tabs"),

@@ -20,7 +20,7 @@ import org.chromium.build.annotations.NullMarked;
 @JNINamespace("device")
 @NullMarked
 final class ChromeBluetoothScanFilterBuilder {
-    private ScanFilter.Builder mBuilder;
+    private final ScanFilter.Builder mBuilder;
 
     /** Constructs a ChromeBluetoothScanFilter */
     public ChromeBluetoothScanFilterBuilder() {

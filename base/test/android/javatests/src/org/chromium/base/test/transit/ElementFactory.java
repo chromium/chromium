@@ -10,8 +10,8 @@ import org.chromium.build.annotations.NullMarked;
 /** Fabricates new elements after a Condition is first fulfilled. */
 @NullMarked
 public class ElementFactory {
-    private Elements mOwner;
-    private Callback<Elements.Builder> mDelayedDeclarations;
+    private final Elements mOwner;
+    private final Callback<Elements.Builder> mDelayedDeclarations;
     private boolean mIsProcessed;
 
     ElementFactory(Elements owner, Callback<Elements.Builder> delayedDeclarations) {

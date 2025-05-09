@@ -192,7 +192,7 @@ public class ChildProcessConnection {
 
     private final Handler mLauncherHandler;
     private final Executor mLauncherExecutor;
-    private ComponentName mServiceName;
+    private final ComponentName mServiceName;
     private final @Nullable ComponentName mFallbackServiceName;
     private @Nullable Intent mBindIntent;
 

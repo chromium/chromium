@@ -20,7 +20,7 @@ import org.chromium.ui.widget.RectProvider;
 /** The dropdown popup window that decides what widget should be used for the popup. */
 @NullMarked
 public class DropdownPopupWindow {
-    private DropdownPopupWindowInterface mPopup;
+    private final DropdownPopupWindowInterface mPopup;
 
     public DropdownPopupWindow(Context context, View anchorView) {
         this(context, anchorView, null);

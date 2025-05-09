@@ -25,7 +25,7 @@ public class AdvancedProtectionTestRule extends ExternalResource {
     private static class TestProvider extends OsAdditionalSecurityPermissionProvider {
         private boolean mIsAdvancedProtectionRequestedByOs;
 
-        private ObserverList<OsAdditionalSecurityPermissionProvider.Observer> mObserverList =
+        private final ObserverList<OsAdditionalSecurityPermissionProvider.Observer> mObserverList =
                 new ObserverList<>();
 
         public void setIsAdvancedProtectionRequestedByOs(boolean isAdvancedProtectionRequested) {

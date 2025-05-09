@@ -30,7 +30,7 @@ public class MemConsumer extends Activity {
     private int mMemory;
     private NumberPicker mMemoryPicker;
 
-    private ServiceConnection mServiceConnection =
+    private final ServiceConnection mServiceConnection =
             new ServiceConnection() {
                 @Override
                 public void onServiceConnected(ComponentName name, IBinder binder) {

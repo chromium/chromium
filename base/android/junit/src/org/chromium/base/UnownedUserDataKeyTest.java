@@ -49,7 +49,7 @@ public class UnownedUserDataKeyTest {
     }
 
     private static class TestUnownedUserData implements UnownedUserData {
-        private List<UnownedUserDataHost> mDetachedHosts = new ArrayList<>();
+        private final List<UnownedUserDataHost> mDetachedHosts = new ArrayList<>();
 
         public boolean informOnDetachment = true;
 

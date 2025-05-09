@@ -34,7 +34,7 @@ import java.util.List;
 public class WatcherImplTest {
     @Rule public MojoTestRule mTestRule = new MojoTestRule();
 
-    private List<Handle> mHandlesToClose = new ArrayList<Handle>();
+    private final List<Handle> mHandlesToClose = new ArrayList<Handle>();
     private Watcher mWatcher;
     private Core mCore;
 
@@ -75,7 +75,7 @@ public class WatcherImplTest {
 
     private static class WatcherResult implements Callback {
         private int mResult = Integer.MIN_VALUE;
-        private MessagePipeHandle mReadPipe;
+        private final MessagePipeHandle mReadPipe;
 
         /**
          * @param readPipe A MessagePipeHandle to read from when onResult triggers success.

@@ -41,7 +41,7 @@ public class GamepadList {
     private @Nullable InputManager mInputManager;
     private int mAttachedToWindowCounter;
     private boolean mIsGamepadAPIActive;
-    private InputDeviceListener mInputDeviceListener;
+    private final InputDeviceListener mInputDeviceListener;
 
     private GamepadList() {
         mInputDeviceListener =

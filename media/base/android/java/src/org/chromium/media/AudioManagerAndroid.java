@@ -91,7 +91,7 @@ class AudioManagerAndroid {
     private @Nullable ContentObserver mSettingsObserver;
     private @Nullable HandlerThread mSettingsObserverThread;
 
-    private CommunicationDeviceSelector mCommunicationDeviceSelector;
+    private final CommunicationDeviceSelector mCommunicationDeviceSelector;
 
     /** Construction */
     @CalledByNative

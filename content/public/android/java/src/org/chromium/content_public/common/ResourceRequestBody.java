@@ -24,7 +24,7 @@ public final class ResourceRequestBody {
      * different from the value passed as an argument of
      * ResourceRequestBody.createFromBytes method below).
      */
-    private byte[] mEncodedNativeForm;
+    private final byte[] mEncodedNativeForm;
 
     // ResourceRequestBody Java objects can only be constructed by
     // - ResourceRequestBody::createFromBytes(byte[])

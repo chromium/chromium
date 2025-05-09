@@ -23,8 +23,8 @@ import java.util.Set;
 @RunWith(BaseJUnit4ClassRunner.class)
 public class AccessibilityEventDispatcherTest {
     private AccessibilityEventDispatcher mDispatcher;
-    private Map<Integer, Integer> mEventDelays = new HashMap<Integer, Integer>();
-    private Set<Integer> mViewIndependentEvents = new HashSet<Integer>();
+    private final Map<Integer, Integer> mEventDelays = new HashMap<Integer, Integer>();
+    private final Set<Integer> mViewIndependentEvents = new HashSet<Integer>();
 
     // Helper member variables for testing.
     private boolean mRunnablePosted;

@@ -305,7 +305,7 @@ public class BasePageStation<HostActivity extends ChromeActivity> extends Statio
     private class TabAddedCondition<ActivityT extends ChromeActivity> extends CallbackCondition
             implements TabModelObserver {
         private TabModel mTabModel;
-        private Supplier<ActivityT> mActivitySupplier;
+        private final Supplier<ActivityT> mActivitySupplier;
 
         protected TabAddedCondition(int numTabsBeingOpened, Supplier<ActivityT> activitySupplier) {
             super("didAddTab", numTabsBeingOpened);
@@ -345,7 +345,7 @@ public class BasePageStation<HostActivity extends ChromeActivity> extends Statio
             implements TabModelObserver, Supplier<Tab> {
         private final List<Tab> mTabsSelected = new ArrayList<>();
         private TabModel mTabModel;
-        private Supplier<ActivityT> mActivitySupplier;
+        private final Supplier<ActivityT> mActivitySupplier;
 
         private TabSelectedCondition(
                 int numTabsBeingSelected, Supplier<ActivityT> activitySupplier) {

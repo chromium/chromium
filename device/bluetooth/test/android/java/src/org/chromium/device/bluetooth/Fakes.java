@@ -1469,8 +1469,8 @@ class Fakes {
     }
 
     private static class FakeSocketInputStream extends InputStream {
-        private FakeBluetoothSocket mSocket;
-        private ByteArrayInputStream mInputStream;
+        private final FakeBluetoothSocket mSocket;
+        private final ByteArrayInputStream mInputStream;
 
         FakeSocketInputStream(byte[] buffer, FakeBluetoothSocket socket) {
             mInputStream = new ByteArrayInputStream(buffer);
@@ -1491,8 +1491,8 @@ class Fakes {
     }
 
     private static class FakeSocketOutputStream extends OutputStream {
-        private FakeBluetoothSocket mSocket;
-        private ByteArrayOutputStream mOutputStream;
+        private final FakeBluetoothSocket mSocket;
+        private final ByteArrayOutputStream mOutputStream;
 
         private FakeSocketOutputStream(FakeBluetoothSocket socket) {
             mSocket = socket;

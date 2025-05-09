@@ -56,7 +56,7 @@ public class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoD
     private static @Nullable BackgroundSyncNetworkObserver sInstance;
 
     // List of native observers. These are each called when the network state changes.
-    private List<Long> mNativePtrs;
+    private final List<Long> mNativePtrs;
 
     private @ConnectionType int mLastBroadcastConnectionType;
     private boolean mHasBroadcastConnectionType;

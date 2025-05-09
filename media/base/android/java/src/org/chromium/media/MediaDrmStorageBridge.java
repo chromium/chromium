@@ -21,7 +21,7 @@ import org.chromium.build.annotations.Nullable;
 class MediaDrmStorageBridge {
     private static final long INVALID_NATIVE_MEDIA_DRM_STORAGE_BRIDGE = -1;
 
-    private long mNativeMediaDrmStorageBridge;
+    private final long mNativeMediaDrmStorageBridge;
 
     /** Information that need to be persistent on the device. Exposed to JNI. */
     static class PersistentInfo {

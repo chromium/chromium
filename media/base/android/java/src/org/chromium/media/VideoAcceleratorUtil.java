@@ -72,8 +72,8 @@ class VideoAcceleratorUtil {
     };
 
     private static class Resolution {
-        private int mWidth;
-        private int mHeight;
+        private final int mWidth;
+        private final int mHeight;
 
         public Resolution(int width, int height) {
             mWidth = width;

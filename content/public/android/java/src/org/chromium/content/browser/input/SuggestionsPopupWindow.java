@@ -191,7 +191,7 @@ public abstract class SuggestionsPopupWindow
     }
 
     private class SuggestionAdapter extends BaseAdapter {
-        private LayoutInflater mInflater =
+        private final LayoutInflater mInflater =
                 (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         @Override

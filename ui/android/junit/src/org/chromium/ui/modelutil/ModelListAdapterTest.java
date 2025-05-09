@@ -67,7 +67,7 @@ public class ModelListAdapterTest {
     }
 
     private static class TestObject {
-        private String mId;
+        private final String mId;
 
         public TestObject(String id) {
             mId = id;

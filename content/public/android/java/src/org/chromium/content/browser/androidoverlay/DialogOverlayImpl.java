@@ -42,7 +42,7 @@ public class DialogOverlayImpl
 
     private @Nullable AndroidOverlayClient mClient;
     // Runnable that we'll run when the overlay notifies us that it's been released.
-    private Runnable mReleasedRunnable;
+    private final Runnable mReleasedRunnable;
 
     private @Nullable DialogOverlayCore mDialogCore;
 

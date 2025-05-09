@@ -21,8 +21,8 @@ import java.util.List;
 @NullMarked
 public class FragmentElement<FragmentT extends Fragment, ActivityT extends FragmentActivity>
         extends Element<FragmentT> {
-    private ActivityElement<ActivityT> mActivityElement;
-    private Class<FragmentT> mFragmentClass;
+    private final ActivityElement<ActivityT> mActivityElement;
+    private final Class<FragmentT> mFragmentClass;
 
     /**
      * Constructor.

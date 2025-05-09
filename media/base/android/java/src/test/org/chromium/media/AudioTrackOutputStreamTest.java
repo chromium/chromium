@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 @Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.Q)
 public class AudioTrackOutputStreamTest {
     static class ObservableAudioTrack extends AudioTrack {
-        private List<Byte> mReceivedData = new ArrayList<Byte>();
+        private final List<Byte> mReceivedData = new ArrayList<Byte>();
         private boolean mPartialWrite = true;
 
         public ObservableAudioTrack(
@@ -81,7 +81,7 @@ public class AudioTrackOutputStreamTest {
 
     static class DataProvider implements AudioTrackOutputStream.Callback {
         private static final int MIN_BUFFER_SIZE = 800;
-        private List<Byte> mGeneratedData = new ArrayList<Byte>();
+        private final List<Byte> mGeneratedData = new ArrayList<Byte>();
         private CountDownLatch mDoneSignal;
         private ObservableAudioTrack mAudioTrack;
 

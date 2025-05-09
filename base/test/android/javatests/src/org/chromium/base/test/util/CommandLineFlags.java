@@ -44,7 +44,7 @@ public final class CommandLineFlags {
             Set.of(ENABLE_FEATURES, DISABLE_FEATURES, FORCE_FIELDTRIALS, FORCE_FIELDTRIAL_PARAMS);
 
     // Features set by original command-line --enable-features / --disable-features.
-    private static FieldTrials sOrigFieldTrials = new FieldTrials();
+    private static final FieldTrials sOrigFieldTrials = new FieldTrials();
     private static final Map<String, String> sActiveFlagPrevValues = new HashMap<>();
 
     /** Adds command-line flags to the {@link org.chromium.base.CommandLine} for this test. */

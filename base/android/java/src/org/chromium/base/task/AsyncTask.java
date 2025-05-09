@@ -69,7 +69,7 @@ public abstract class AsyncTask<Result extends @Nullable Object> {
 
     private final AtomicBoolean mCancelled = new AtomicBoolean();
     private final AtomicBoolean mTaskInvoked = new AtomicBoolean();
-    private int mIterationIdForTesting = PostTask.sTestIterationForTesting;
+    private final int mIterationIdForTesting = PostTask.sTestIterationForTesting;
 
     private static class StealRunnableHandler implements RejectedExecutionHandler {
         @Override

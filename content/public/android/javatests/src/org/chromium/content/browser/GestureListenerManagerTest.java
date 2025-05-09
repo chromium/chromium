@@ -48,7 +48,7 @@ public class GestureListenerManagerTest {
 
     private static final class GestureStateListenerImpl extends GestureStateListener {
         private int mNumOnScrollOffsetOrExtentChangedCalls;
-        public CallbackHelper mCallbackHelper = new CallbackHelper();
+        public final CallbackHelper mCallbackHelper = new CallbackHelper();
         private boolean mGotStarted;
         private boolean mDidScrollOffsetChangeWhileScrolling;
         private Integer mLastScrollOffsetY;

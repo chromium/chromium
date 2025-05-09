@@ -42,7 +42,7 @@ public class ToastManager {
     private final PriorityQueue<Toast> mToastQueue =
             new PriorityQueue<>((toast1, toast2) -> toast1.getPriority() - toast2.getPriority());
 
-    private Handler mHandler = new Handler(Looper.getMainLooper());
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     // Handles toast events per SDK version.
     private interface ToastEvent {

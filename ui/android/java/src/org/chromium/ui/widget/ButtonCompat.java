@@ -43,7 +43,7 @@ import org.chromium.ui.R;
  */
 @NullMarked
 public class ButtonCompat extends AppCompatButton {
-    private RippleBackgroundHelper mRippleBackgroundHelper;
+    private final RippleBackgroundHelper mRippleBackgroundHelper;
 
     /**
      * Constructor for programmatically creating a {@link ButtonCompat}.

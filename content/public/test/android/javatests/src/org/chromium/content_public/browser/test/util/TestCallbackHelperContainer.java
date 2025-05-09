@@ -46,7 +46,7 @@ public class TestCallbackHelperContainer {
 
     /** CallbackHelper for OnPageFinished. */
     public static class OnPageFinishedHelper extends CallbackHelper {
-        private List<String> mUrlList = Collections.synchronizedList(new ArrayList<>());
+        private final List<String> mUrlList = Collections.synchronizedList(new ArrayList<>());
         private String mUrl;
 
         public void notifyCalled(String url) {

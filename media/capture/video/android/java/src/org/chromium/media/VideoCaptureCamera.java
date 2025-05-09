@@ -98,7 +98,7 @@ public class VideoCaptureCamera extends VideoCapture
 
     private android.hardware.@Nullable Camera mCamera;
     // Lock to mutually exclude execution of OnPreviewFrame() and {start/stop}Capture().
-    private ReentrantLock mPreviewBufferLock = new ReentrantLock();
+    private final ReentrantLock mPreviewBufferLock = new ReentrantLock();
     // True when native code has started capture.
     private boolean mIsRunning;
 

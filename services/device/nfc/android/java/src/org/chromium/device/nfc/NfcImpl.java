@@ -111,7 +111,7 @@ public class NfcImpl implements Nfc {
     private final List<Integer> mWatchIds = new ArrayList<Integer>();
 
     /** Vibrator. @see android.os.Vibrator */
-    private Vibrator mVibrator;
+    private final Vibrator mVibrator;
 
     /** Last time in milliseconds when a Tag was discovered. */
     private long mTagDiscoveredLastTimeMs = -1;

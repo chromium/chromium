@@ -145,19 +145,19 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     private final Handler mHandler;
     private @Nullable Context mContext;
     private @Nullable WindowAndroid mWindowAndroid;
-    private WebContentsImpl mWebContents;
+    private final WebContentsImpl mWebContents;
     private @Nullable ActionModeCallback mCallback;
     private @Nullable RenderFrameHost mRenderFrameHost;
     private long mNativeSelectionPopupController;
 
-    private SelectionClient.ResultCallback mResultCallback;
+    private final SelectionClient.ResultCallback mResultCallback;
 
     // Selection rectangle in DIP.
     private final Rect mSelectionRect = new Rect();
 
     // Self-repeating task that repeatedly hides the ActionMode. This is
     // required because ActionMode only exposes a temporary hide routine.
-    private Runnable mRepeatingHideRunnable;
+    private final Runnable mRepeatingHideRunnable;
 
     // Can be null temporarily when switching between WindowAndroid.
     private @Nullable View mView;

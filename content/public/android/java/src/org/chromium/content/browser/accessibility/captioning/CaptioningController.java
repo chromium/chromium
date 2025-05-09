@@ -15,7 +15,7 @@ import org.chromium.content_public.browser.WebContents;
 @JNINamespace("content")
 @NullMarked
 public class CaptioningController implements SystemCaptioningBridge.SystemCaptioningBridgeListener {
-    private SystemCaptioningBridge mSystemCaptioningBridge;
+    private final SystemCaptioningBridge mSystemCaptioningBridge;
     private long mNativeCaptioningController;
 
     public CaptioningController(WebContents webContents) {

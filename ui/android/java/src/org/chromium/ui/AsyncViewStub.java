@@ -34,7 +34,7 @@ public class AsyncViewStub extends View implements AsyncLayoutInflater.OnInflate
     private int mLayoutResource;
     private @Nullable View mInflatedView;
 
-    private AsyncLayoutInflater mAsyncLayoutInflater;
+    private final AsyncLayoutInflater mAsyncLayoutInflater;
 
     private final ObserverList<Callback<View>> mListeners = new ObserverList<>();
     private boolean mOnBackground;

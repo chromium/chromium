@@ -82,7 +82,7 @@ public class DialogOverlayCoreTest {
 
     /** The default fake surface holder doesn't let us provide a surface. */
     public static class MyFakeSurfaceHolder extends ShadowSurfaceView.FakeSurfaceHolder {
-        private Surface mSurface;
+        private final Surface mSurface;
 
         // @param surface The Surface that we'll provide via getSurface.
         public MyFakeSurfaceHolder(Surface surface) {

@@ -41,7 +41,7 @@ class CommunicationDeviceSelectorPreS extends CommunicationDeviceSelector {
 
     private boolean mHasBluetoothPermission;
 
-    private boolean[] mDeviceExistence = new boolean[Devices.DEVICE_COUNT];
+    private final boolean[] mDeviceExistence = new boolean[Devices.DEVICE_COUNT];
 
     public CommunicationDeviceSelectorPreS(AudioManager audioManager) {
         super(audioManager);

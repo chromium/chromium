@@ -38,7 +38,7 @@ public class SimpleRecyclerViewAdapter
                 mCurrentMcp;
 
         /** The view binder that knows how to apply a model to the view this holder owns. */
-        private ViewBinder<PropertyModel, View, PropertyKey> mBinder;
+        private final ViewBinder<PropertyModel, View, PropertyKey> mBinder;
 
         /** A handle to the model currently held by this view holder. */
         public @Nullable PropertyModel model;

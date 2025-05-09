@@ -93,7 +93,7 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
     private @Nullable Printable mPrintable;
 
     /** The object through which the framework will make calls for generating PDF. */
-    private PrintDocumentAdapterWrapper mPrintDocumentAdapterWrapper;
+    private final PrintDocumentAdapterWrapper mPrintDocumentAdapterWrapper;
 
     private int mPrintingState = PRINTING_STATE_READY;
 

@@ -41,7 +41,7 @@ public final class ChromiumExecutorServiceFactoryTest {
     private final Runnable mMockRunnable = mock(Runnable.class);
 
     private ListeningScheduledExecutorService mExecutor;
-    private Runnable mSlowRunnable =
+    private final Runnable mSlowRunnable =
             () -> {
                 mMockRunnable.run();
                 shadowOf(Looper.getMainLooper()).idleFor(Duration.ofSeconds(8));

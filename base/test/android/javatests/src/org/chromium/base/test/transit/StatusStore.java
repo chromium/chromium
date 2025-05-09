@@ -18,7 +18,7 @@ import java.util.Objects;
 /** Receives status updates and stores them as regions of equal updates. */
 @NullMarked
 class StatusStore {
-    private ArrayList<StatusRegion> mStatusRegions = new ArrayList<>();
+    private final ArrayList<StatusRegion> mStatusRegions = new ArrayList<>();
     private @Nullable StatusRegion mLastRegion;
     private boolean mAnyErrorsReported;
     private boolean mAnyMessages;
@@ -70,10 +70,10 @@ class StatusStore {
     /** Represents one or more consecutive reports of the same status message. */
     static class StatusRegion {
 
-        private @Status int mStatus;
-        private long mFirstTimestamp;
+        private final @Status int mStatus;
+        private final long mFirstTimestamp;
         private long mLastTimestamp;
-        private @Nullable String mMessage;
+        private final @Nullable String mMessage;
         private int mCount = 1;
 
         private StatusRegion(ConditionStatus firstStatus) {

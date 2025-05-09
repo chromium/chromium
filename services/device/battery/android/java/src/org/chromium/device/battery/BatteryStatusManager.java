@@ -48,7 +48,7 @@ class BatteryStatusManager {
                     BatteryStatusManager.this.onReceive(intent);
                 }
             };
-    private @Nullable AndroidBatteryManagerWrapper mAndroidBatteryManager;
+    private final @Nullable AndroidBatteryManagerWrapper mAndroidBatteryManager;
     private volatile boolean mEnabled;
 
     private static final TaskRunner sSequencedTaskRunner =

@@ -26,7 +26,7 @@ import org.chromium.build.annotations.Nullable;
  */
 @NullMarked
 public class PrintDocumentAdapterWrapper extends PrintDocumentAdapter {
-    private PdfGenerator mPdfGenerator;
+    private final PdfGenerator mPdfGenerator;
 
     public PrintDocumentAdapterWrapper(PdfGenerator pdfGenerator) {
         mPdfGenerator = pdfGenerator;
@@ -68,7 +68,7 @@ public class PrintDocumentAdapterWrapper extends PrintDocumentAdapter {
     }
 
     public static class LayoutResultCallbackWrapperImpl implements LayoutResultCallbackWrapper {
-        private LayoutResultCallback mCallback;
+        private final LayoutResultCallback mCallback;
 
         public LayoutResultCallbackWrapperImpl(LayoutResultCallback callback) {
             assert callback != null;
@@ -92,7 +92,7 @@ public class PrintDocumentAdapterWrapper extends PrintDocumentAdapter {
     }
 
     public static class WriteResultCallbackWrapperImpl implements WriteResultCallbackWrapper {
-        private WriteResultCallback mCallback;
+        private final WriteResultCallback mCallback;
 
         public WriteResultCallbackWrapperImpl(WriteResultCallback callback) {
             assert callback != null;

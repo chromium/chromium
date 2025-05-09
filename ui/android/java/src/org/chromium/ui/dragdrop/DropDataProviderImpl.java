@@ -109,7 +109,7 @@ public class DropDataProviderImpl {
     private long mLastUriClearedTimestamp;
     private long mLastUriCreatedTimestamp;
     private boolean mLastUriRecorded;
-    private DropPipeDataWriter mDropPipeDataWriter = new DropPipeDataWriter();
+    private final DropPipeDataWriter mDropPipeDataWriter = new DropPipeDataWriter();
 
     /** Update the delayed time before clearing the image cache. */
     public void setClearCachedDataIntervalMs(int milliseconds) {

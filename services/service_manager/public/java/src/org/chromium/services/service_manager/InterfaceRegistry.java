@@ -59,8 +59,8 @@ public class InterfaceRegistry implements InterfaceProvider {
     InterfaceRegistry() {}
 
     private static class InterfaceBinder<I extends Interface> {
-        private Interface.Manager<I, ? extends Interface.Proxy> mManager;
-        private InterfaceFactory<I> mFactory;
+        private final Interface.Manager<I, ? extends Interface.Proxy> mManager;
+        private final InterfaceFactory<I> mFactory;
 
         public InterfaceBinder(
                 Interface.Manager<I, ? extends Interface.Proxy> manager,

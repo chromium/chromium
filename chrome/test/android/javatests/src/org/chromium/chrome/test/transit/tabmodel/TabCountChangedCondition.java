@@ -10,7 +10,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 
 /** Condition fulfilled when N number of tabs are opened/closed. */
 public class TabCountChangedCondition extends InstrumentationThreadCondition {
-    private TabModel mTabModel;
+    private final TabModel mTabModel;
     private int mStartingTabs = -1;
     private final int mExpectedChange;
 

@@ -23,7 +23,7 @@ public class TrafficControl {
     private static final List<Pair<String, String>> sAllStationNames = new ArrayList<>();
     private static @Nullable String sCurrentTestCase;
 
-    private static List<Station<?>> sActiveStations = new ArrayList<>();
+    private static final List<Station<?>> sActiveStations = new ArrayList<>();
 
     static void notifyCreatedStation(Station<?> station) {
         sAllStationNames.add(Pair.create(sCurrentTestCase, station.getName()));

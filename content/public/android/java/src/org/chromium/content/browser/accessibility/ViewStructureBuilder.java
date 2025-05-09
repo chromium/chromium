@@ -32,7 +32,7 @@ import java.util.Arrays;
  */
 @NullMarked
 public class ViewStructureBuilder {
-    private RenderCoordinatesImpl mRenderCoordinates;
+    private final RenderCoordinatesImpl mRenderCoordinates;
 
     public ViewStructureBuilder(RenderCoordinatesImpl renderCoordinates) {
         this.mRenderCoordinates = renderCoordinates;

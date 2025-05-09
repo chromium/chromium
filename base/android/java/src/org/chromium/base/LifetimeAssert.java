@@ -77,8 +77,8 @@ public class LifetimeAssert {
             sActiveWrappers.add(this);
         }
 
-        private static ReferenceQueue<Object> sReferenceQueue = new ReferenceQueue<>();
-        private static Set<WrappedReference> sActiveWrappers =
+        private static final ReferenceQueue<Object> sReferenceQueue = new ReferenceQueue<>();
+        private static final Set<WrappedReference> sActiveWrappers =
                 Collections.synchronizedSet(new HashSet<>());
 
         static {

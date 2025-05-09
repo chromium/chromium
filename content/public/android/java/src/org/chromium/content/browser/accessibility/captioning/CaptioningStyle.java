@@ -19,12 +19,12 @@ import org.chromium.build.annotations.Nullable;
  */
 @NullMarked
 public class CaptioningStyle {
-    private @Nullable Integer mBackgroundColor;
-    private @Nullable Integer mEdgeColor;
-    private @Nullable Integer mEdgeType;
-    private @Nullable Integer mForegroundColor;
-    private @Nullable Integer mWindowColor;
-    private @Nullable Typeface mTypeface;
+    private final @Nullable Integer mBackgroundColor;
+    private final @Nullable Integer mEdgeColor;
+    private final @Nullable Integer mEdgeType;
+    private final @Nullable Integer mForegroundColor;
+    private final @Nullable Integer mWindowColor;
+    private final @Nullable Typeface mTypeface;
 
     /**
      * Construct a Chromium CaptioningStyle object.

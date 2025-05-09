@@ -119,7 +119,7 @@ public class MediaDrmBridge {
     private MediaDrmSessionManager mSessionManager;
 
     // The persistent storage to record origin provisioning information.
-    private MediaDrmStorageBridge mStorage;
+    private final MediaDrmStorageBridge mStorage;
 
     // Whether the current MediaDrmBridge instance is waiting for provisioning response.
     private boolean mProvisioningPending;

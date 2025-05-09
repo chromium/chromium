@@ -24,7 +24,7 @@ public class NinePatchData {
     private final int[] mDivX;
     private final int[] mDivY;
 
-    private Rect mAperture;
+    private final Rect mAperture;
 
     /**
      * Creates a {@link NinePatchData} that stores 9-patch metadata.

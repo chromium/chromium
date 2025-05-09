@@ -51,7 +51,7 @@ public class ModalDialogManagerTest {
     @Mock private ModalDialogManager.Presenter mTabModalPresenter;
 
     private ModalDialogManager mModalDialogManager;
-    private List<PropertyModel> mDialogModels = new ArrayList<>();
+    private final List<PropertyModel> mDialogModels = new ArrayList<>();
 
     @Mock private ModalDialogManagerObserver mObserver;
 

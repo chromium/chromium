@@ -36,7 +36,7 @@ public class InputMethodManagerWrapperImpl implements InputMethodManagerWrapper 
 
     private @Nullable WindowAndroid mWindowAndroid;
 
-    private Delegate mDelegate;
+    private final Delegate mDelegate;
 
     private @Nullable Runnable mPendingRunnableOnInputConnection;
 

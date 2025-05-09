@@ -18,7 +18,7 @@ import org.chromium.build.annotations.Nullable;
 public class AnimationPerformanceTracker {
     /** Tracks metrics about animation performance. */
     public static class AnimationMetrics {
-        private long mStartTimeMs;
+        private final long mStartTimeMs;
         private long mLastFrameTimeMs;
         private long mFirstFrameTimeMs;
         private long mFirstFrameLatencyMs;

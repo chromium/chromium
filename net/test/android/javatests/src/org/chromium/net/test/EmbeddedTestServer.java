@@ -57,7 +57,7 @@ public class EmbeddedTestServer {
     @GuardedBy("mImplMonitor")
     private IEmbeddedTestServerImpl mImpl;
 
-    private ServiceConnection mConn =
+    private final ServiceConnection mConn =
             new ServiceConnection() {
                 @Override
                 public void onServiceConnected(ComponentName name, IBinder service) {

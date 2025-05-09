@@ -38,7 +38,8 @@ public class WebContentsObserverAndroidTest {
                     "<html><head></head><body>didFirstVisuallyNonEmptyPaint test</body></html>");
 
     private static class TestWebContentsObserver extends WebContentsObserver {
-        private CallbackHelper mDidFirstVisuallyNonEmptyPaintCallbackHelper = new CallbackHelper();
+        private final CallbackHelper mDidFirstVisuallyNonEmptyPaintCallbackHelper =
+                new CallbackHelper();
 
         public TestWebContentsObserver(WebContents webContents) {
             super(webContents);

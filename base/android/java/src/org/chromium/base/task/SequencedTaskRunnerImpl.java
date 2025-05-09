@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @NullMarked
 public class SequencedTaskRunnerImpl extends TaskRunnerImpl implements SequencedTaskRunner {
-    private AtomicInteger mPendingTasks = new AtomicInteger();
+    private final AtomicInteger mPendingTasks = new AtomicInteger();
 
     private volatile boolean mReadyToCreateNativeTaskRunner;
 

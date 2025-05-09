@@ -24,8 +24,8 @@ import org.chromium.ui.base.WindowAndroid;
 public class TextSuggestionsPopupWindow extends SuggestionsPopupWindow {
     private SuggestionInfo[] mSuggestionInfos;
 
-    private TextAppearanceSpan mPrefixSpan;
-    private TextAppearanceSpan mSuffixSpan;
+    private final TextAppearanceSpan mPrefixSpan;
+    private final TextAppearanceSpan mSuffixSpan;
 
     /**
      * @param context Android context to use.

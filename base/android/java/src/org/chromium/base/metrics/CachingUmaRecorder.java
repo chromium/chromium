@@ -223,7 +223,7 @@ final class CachingUmaRecorder implements UmaRecorder {
      * <p>
      * Using {@link AtomicInteger} because the value may need to be updated with a read lock held.
      */
-    private AtomicInteger mDroppedHistogramSampleCount = new AtomicInteger();
+    private final AtomicInteger mDroppedHistogramSampleCount = new AtomicInteger();
 
     /** Cache of user actions. */
     @GuardedBy("mRwLock")

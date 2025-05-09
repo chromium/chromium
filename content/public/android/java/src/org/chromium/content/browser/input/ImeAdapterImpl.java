@@ -140,7 +140,7 @@ public class ImeAdapterImpl
     private @Nullable ShowKeyboardResultReceiver mShowKeyboardResultReceiver;
 
     private final WebContentsImpl mWebContents;
-    private ViewAndroidDelegate mViewDelegate;
+    private final ViewAndroidDelegate mViewDelegate;
 
     // This holds the information necessary for constructing CursorAnchorInfo, and notifies to
     // InputMethodManager on appropriate timing, depending on how IME requested the information
@@ -174,7 +174,7 @@ public class ImeAdapterImpl
     private boolean mRestartInputOnNextStateUpdate;
     // Do not access directly, use getStylusWritingImeCallback() instead.
     private @Nullable StylusWritingImeCallback mStylusWritingImeCallback;
-    private SparseArray<OngoingGesture> mOngoingGestures = new SparseArray<>();
+    private final SparseArray<OngoingGesture> mOngoingGestures = new SparseArray<>();
 
     // True if ImeAdapter is connected to render process.
     private boolean mIsConnected;

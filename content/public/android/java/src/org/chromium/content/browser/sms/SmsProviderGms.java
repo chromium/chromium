@@ -42,7 +42,7 @@ public class SmsProviderGms {
     private @Nullable SmsUserConsentReceiver mUserConsentReceiver;
     private @Nullable SmsVerificationReceiver mVerificationReceiver;
 
-    private Wrappers.WebOTPServiceContext mContext;
+    private final Wrappers.WebOTPServiceContext mContext;
     private @Nullable WindowAndroid mWindow;
     private Wrappers.@Nullable SmsRetrieverClientWrapper mClient;
 
