@@ -47,6 +47,19 @@ TEST(CSSParsingUtilsTest, BasicShapeUseCount) {
   EXPECT_TRUE(document.IsUseCounted(feature));
 }
 
+TEST(CSSParsingUtilsTest, OverflowClipUseCount) {
+  test::TaskEnvironment task_environment;
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
+  Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
+  Document& document = dummy_page_holder->GetDocument();
+  WebDXFeature feature = WebDXFeature::kOverflowClip;
+  EXPECT_FALSE(document.IsWebDXFeatureCounted(feature));
+  document.documentElement()->setInnerHTML(
+      "<style>span { overflow: clip; }</style>");
+  EXPECT_TRUE(document.IsWebDXFeatureCounted(feature));
+}
+
 TEST(CSSParsingUtilsTest, Revert) {
   EXPECT_TRUE(css_parsing_utils::IsCSSWideKeyword(CSSValueID::kRevert));
   EXPECT_TRUE(css_parsing_utils::IsCSSWideKeyword("revert"));

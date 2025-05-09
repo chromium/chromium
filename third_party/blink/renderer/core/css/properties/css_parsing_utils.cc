@@ -3713,6 +3713,8 @@ void CountKeywordOnlyPropertyUsage(CSSPropertyID property,
     case CSSPropertyID::kOverflowY:
       if (value_id == CSSValueID::kOverlay) {
         context.Count(WebFeature::kCSSValueOverflowOverlay);
+      } else if (value_id == CSSValueID::kClip) {
+        context.Count(WebDXFeature::kOverflowClip);
       }
       break;
     case CSSPropertyID::kWritingMode:
