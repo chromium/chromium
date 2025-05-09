@@ -16,6 +16,8 @@ from blinkpy.web_tests.port.base import Port
 _log = logging.getLogger(__name__)
 IOS_VERSION = '17.0'
 IOS_DEVICE = 'iPhone 14 Pro'
+# Use a hard coded version, we might need to update this occasionally
+CHROME_ANDROID_STABLE_VERSION = '138.0.7158.0'
 
 
 def do_delay_imports():
@@ -81,7 +83,7 @@ class Product:
         # pylint: disable=assignment-from-none
         options.browser_version = self.get_version()
         if self._options.stable:
-            options.browser_channel = 'stable'
+            options.channel = 'stable'
         options.webdriver_binary = self._options.webdriver_binary or self.webdriver_binary
         options.webdriver_args.extend(self.additional_webdriver_args())
 
@@ -238,8 +240,12 @@ class ChromeAndroidBase(Product):
     def _install_chrome_stable(self, device):
         install_script = self._port._path_finder.path_from_chromium_base(
             'clank', 'bin', 'install_chrome.py')
-        self._host.executive.run_command(
-            [install_script, '--serial', device.serial, '--channel', 'stable'])
+        self._host.executive.run_command([
+            install_script, '--serial', device.serial, '--channel', 'stable',
+            '--adb', self.adb_binary, '--chrome-version',
+            CHROME_ANDROID_STABLE_VERSION, '--package',
+            'TrichromeChromeGoogle6432'
+        ])
         try:
             yield
         finally:
@@ -304,6 +310,8 @@ class ChromeAndroidBase(Product):
         options.package_name = self.get_browser_package_name()
 
     def get_version(self):
+        if self._options.stable:
+            return CHROME_ANDROID_STABLE_VERSION
         version_provider = self.get_version_provider_package_name()
         if self.devices and version_provider:
             # Assume devices are identically provisioned, so select any.
@@ -338,6 +346,8 @@ class ChromeAndroidBase(Product):
         See Also:
             https://github.com/web-platform-tests/wpt/blob/merge_pr_33203/tools/wpt/browser.py#L867-L924
         """
+        if self._options.stable:
+            return 'com.android.chrome'
         if self.browser_apk:
             # pylint: disable=undefined-variable;
             with contextlib.suppress(apk_helper.ApkHelperError):
