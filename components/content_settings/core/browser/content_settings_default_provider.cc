@@ -68,8 +68,6 @@ constexpr char kObsoleteFederatedIdentityDefaultPref[] =
 // except via enterprise policy, so it is temporarily cleaned up here to revert
 // it to its default value.
 // TODO(https://crbug.com/367181093): clean this up.
-constexpr char kBug364820109DefaultSettingToClear[] =
-    "profile.default_content_setting_values.javascript_jit";
 constexpr char kBug364820109AlreadyWorkedAroundPref[] =
     "profile.did_work_around_bug_364820109_default";
 #endif  // !BUILDFLAG(IS_IOS)
@@ -368,10 +366,7 @@ void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
 
 #if !BUILDFLAG(IS_IOS)
   // TODO(https://crbug.com/367181093): clean this up.
-  if (!prefs_->GetBoolean(kBug364820109AlreadyWorkedAroundPref)) {
-    prefs_->ClearPref(kBug364820109DefaultSettingToClear);
-    prefs_->SetBoolean(kBug364820109AlreadyWorkedAroundPref, true);
-  }
+  prefs_->ClearPref(kBug364820109AlreadyWorkedAroundPref);
 #endif  // !BUILDFLAG(IS_IOS)
 }
 
