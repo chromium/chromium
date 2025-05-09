@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.accessibility;
 
+
 import android.app.Activity;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
@@ -17,6 +19,7 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
 
 /** Controller for In-Product Help for the Page Zoom feature. */
+@NullMarked
 public class PageZoomIphController {
     private final AppMenuHandler mAppMenuHandler;
     private final View mToolbarMenuButton;

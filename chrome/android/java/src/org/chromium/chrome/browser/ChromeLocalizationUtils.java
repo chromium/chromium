@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser;
 
+
 import android.os.LocaleList;
 import android.text.TextUtils;
 
@@ -13,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
@@ -23,6 +25,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 
 /** This class provides the locale related methods for Chrome. */
+@NullMarked
 public class ChromeLocalizationUtils {
     // Constants used to log UI language availability. Must stay in sync with values in the
     // LanguageUsage.UI.Available enum. These values are persisted to logs. Entries should

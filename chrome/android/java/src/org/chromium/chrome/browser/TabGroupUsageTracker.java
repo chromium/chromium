@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
@@ -16,6 +19,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 
 /** Tracks TabGroup usages related statistics. */
+@NullMarked
 public class TabGroupUsageTracker implements PauseResumeWithNativeObserver, DestroyObserver {
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final TabModelSelector mTabModelSelector;
@@ -74,6 +78,8 @@ public class TabGroupUsageTracker implements PauseResumeWithNativeObserver, Dest
         TabGroupModelFilterProvider provider = mTabModelSelector.getTabGroupModelFilterProvider();
         TabGroupModelFilter normalFilter = provider.getTabGroupModelFilter(false);
         TabGroupModelFilter incognitoFilter = provider.getTabGroupModelFilter(true);
+        assumeNonNull(normalFilter);
+        assumeNonNull(incognitoFilter);
         int groupCount = normalFilter.getTabGroupCount() + incognitoFilter.getTabGroupCount();
         RecordHistogram.recordCount1MHistogram("TabGroups.UserGroupCount", groupCount);
     }

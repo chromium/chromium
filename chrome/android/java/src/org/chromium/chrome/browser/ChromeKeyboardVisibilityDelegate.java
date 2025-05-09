@@ -4,15 +4,16 @@
 
 package org.chromium.chrome.browser;
 
+
 import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.ui.KeyboardUtils;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
@@ -23,6 +24,7 @@ import java.lang.ref.WeakReference;
  * A {@link ActivityKeyboardVisibilityDelegate} that considers UI elements of an {@link Activity}
  * which amend or replace the keyboard.
  */
+@NullMarked
 public class ChromeKeyboardVisibilityDelegate extends ActivityKeyboardVisibilityDelegate
         implements ManualFillingComponent.SoftKeyboardDelegate {
     private final Supplier<ManualFillingComponent> mManualFillingComponentSupplier;
@@ -33,7 +35,7 @@ public class ChromeKeyboardVisibilityDelegate extends ActivityKeyboardVisibility
      */
     public ChromeKeyboardVisibilityDelegate(
             WeakReference<Activity> activity,
-            @NonNull Supplier<ManualFillingComponent> manualFillingComponentSupplier) {
+            Supplier<ManualFillingComponent> manualFillingComponentSupplier) {
         super(activity);
         mManualFillingComponentSupplier = manualFillingComponentSupplier;
     }

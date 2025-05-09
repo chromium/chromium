@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.accessibility.settings;
 
+
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -14,6 +16,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 /** The Chrome implementation of AccessibilitySettingsDelegate. */
+@NullMarked
 public class ChromeAccessibilitySettingsDelegate implements AccessibilitySettingsDelegate {
     private static class TextSizeContrastAccessibilityDelegate
             implements IntegerPreferenceDelegate {

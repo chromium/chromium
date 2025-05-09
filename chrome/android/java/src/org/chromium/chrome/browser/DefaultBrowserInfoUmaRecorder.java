@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser;
 
+
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.util.DefaultBrowserInfo;
@@ -18,6 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** A utility class for querying information about the default browser setting. */
+@NullMarked
 public final class DefaultBrowserInfoUmaRecorder {
 
     //  LINT.IfChange(MobileDefaultBrowserState)

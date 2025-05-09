@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser;
 
+
 import android.content.Context;
 import android.net.Uri;
 
@@ -11,10 +12,12 @@ import androidx.core.content.FileProvider;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileProviderUtils;
+import org.chromium.build.annotations.NullMarked;
 
 import java.io.File;
 
 /** Utilities for translating a file into content URI. */
+@NullMarked
 public class FileProviderHelper implements FileProviderUtils.FileProviderUtil {
     // Keep this variable in sync with the value defined in file_paths.xml.
     private static final String API_AUTHORITY_SUFFIX = ".FileProvider";

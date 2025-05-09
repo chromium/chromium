@@ -78,7 +78,6 @@ public class PrivacySandboxDialogController {
                                 ? PrivacyPolicyColorScheme.DARK_MODE
                                 : PrivacyPolicyColorScheme.LIGHT_MODE,
                         Locale.getDefault().toLanguageTag());
-        assumeNonNull(webContents.getNavigationController());
         assumeNonNull(activityWindowAndroid.getIntentRequestTracker());
         webContents.getNavigationController().loadUrl(new LoadUrlParams(privacyPolicyUrl));
         ThinWebView thinWebView =

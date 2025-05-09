@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.ai;
 
+
 import android.content.Context;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.AvailabilityRequest;
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.AvailabilityResponse;
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.LaunchRequest;
@@ -17,6 +19,7 @@ import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.LaunchRespon
  * Interface to interact with a system AI assistant, used to invoke a UI to ask questions or
  * summarize a web page.
  */
+@NullMarked
 public abstract class SystemAiProvider {
 
     /**

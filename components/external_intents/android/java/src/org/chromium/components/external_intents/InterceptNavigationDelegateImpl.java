@@ -568,7 +568,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     public void maybeUpdateNavigationHistory() {
         WebContents webContents = mClient.getWebContents();
         NavigationController navigationController = webContents.getNavigationController();
-        assumeNonNull(navigationController);
         if (mClearAllForwardHistoryRequired && webContents != null) {
             navigationController.pruneForwardEntries();
         } else if (mShouldClearRedirectHistoryForTabClobbering && webContents != null) {
@@ -589,14 +588,12 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
 
     private int getLastCommittedEntryIndex() {
         if (mClient.getWebContents() == null) return -1;
-        return assumeNonNull(mClient.getWebContents().getNavigationController())
-                .getLastCommittedEntryIndex();
+        return mClient.getWebContents().getNavigationController().getLastCommittedEntryIndex();
     }
 
     private boolean isInitialNavigation() {
         if (mClient.getWebContents() == null) return true;
-        return assumeNonNull(mClient.getWebContents().getNavigationController())
-                .isInitialNavigation();
+        return mClient.getWebContents().getNavigationController().isInitialNavigation();
     }
 
     private boolean isTabOnInitialNavigationChain() {
@@ -719,7 +716,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         // index which was saved before this navigation, and remove the empty
                         // entries from the navigation history.
                         mClearAllForwardHistoryRequired = true;
-                        assumeNonNull(mClient.getWebContents().getNavigationController())
+                        mClient.getWebContents()
+                                .getNavigationController()
                                 .goToNavigationIndex(lastCommittedEntryIndexBeforeNavigation);
                     }
                 });

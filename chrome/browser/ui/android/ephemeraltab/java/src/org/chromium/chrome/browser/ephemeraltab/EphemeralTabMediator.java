@@ -130,8 +130,7 @@ public class EphemeralTabMediator {
 
     private void loadUrl(GURL url) {
         assumeNonNull(mWebContents);
-        assumeNonNull(mWebContents.getNavigationController())
-                .loadUrl(new LoadUrlParams(url.getSpec()));
+        mWebContents.getNavigationController().loadUrl(new LoadUrlParams(url.getSpec()));
     }
 
     @EnsuresNonNull("mWebContentsObserver")

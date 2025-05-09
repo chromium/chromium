@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.app.appmenu;
 
+
 import android.content.Context;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuUtil;
@@ -15,6 +17,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** A custom binder used to bind the divider line in app menu. */
+@NullMarked
 public class DividerLineMenuItemViewBinder implements CustomViewBinder {
     private static final int DIVIDER_LINE_ITEM_VIEW_TYPE = 0;
 

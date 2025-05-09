@@ -45,12 +45,12 @@ public class OptionalNewTabButtonController extends BaseButtonDataProvider
      */
     @VisibleForTesting
     /* package */ static class Delegate {
-        private final Supplier<TabCreatorManager> mTabCreatorManagerSupplier;
-        private final Supplier<Tab> mActiveTabSupplier;
+        private final Supplier<@Nullable TabCreatorManager> mTabCreatorManagerSupplier;
+        private final Supplier<@Nullable Tab> mActiveTabSupplier;
 
         public Delegate(
-                Supplier<TabCreatorManager> tabCreatorManagerSupplier,
-                Supplier<Tab> activeTabSupplier) {
+                Supplier<@Nullable TabCreatorManager> tabCreatorManagerSupplier,
+                Supplier<@Nullable Tab> activeTabSupplier) {
             mTabCreatorManagerSupplier = tabCreatorManagerSupplier;
             mActiveTabSupplier = activeTabSupplier;
         }
@@ -69,7 +69,7 @@ public class OptionalNewTabButtonController extends BaseButtonDataProvider
          *
          * <p>TODO(crbug.com/40753461): Make IncognitoStateProvider available in RootUiCooridnator.
          */
-        @Nullable Supplier<Tab> getActiveTabSupplier() {
+        Supplier<@Nullable Tab> getActiveTabSupplier() {
             return mActiveTabSupplier;
         }
     }
@@ -98,8 +98,8 @@ public class OptionalNewTabButtonController extends BaseButtonDataProvider
             Context context,
             Drawable buttonDrawable,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            Supplier<TabCreatorManager> tabCreatorManagerSupplier,
-            Supplier<Tab> activeTabSupplier,
+            Supplier<@Nullable TabCreatorManager> tabCreatorManagerSupplier,
+            Supplier<@Nullable Tab> activeTabSupplier,
             Supplier<Tracker> trackerSupplier) {
         super(
                 activeTabSupplier,
@@ -124,7 +124,7 @@ public class OptionalNewTabButtonController extends BaseButtonDataProvider
 
     @Override
     public void onClick(View view) {
-        Supplier<Tab> activeTabSupplier = mDelegate.getActiveTabSupplier();
+        Supplier<@Nullable Tab> activeTabSupplier = mDelegate.getActiveTabSupplier();
         if (activeTabSupplier == null || activeTabSupplier.get() == null) return;
 
         TabCreatorManager tabCreatorManager = mDelegate.getTabCreatorManager();

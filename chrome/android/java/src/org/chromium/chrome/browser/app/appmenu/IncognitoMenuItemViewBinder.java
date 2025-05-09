@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.app.appmenu;
 
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuUtil;
@@ -21,6 +23,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ChromeImageView;
 
 /** A custom binder used to bind the incognito menu item. */
+@NullMarked
 class IncognitoMenuItemViewBinder implements CustomViewBinder {
     private static final int INCOGNITO_ITEM_VIEW_TYPE = 0;
 

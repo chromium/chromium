@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser;
 
+
 import android.os.Build;
 import android.os.Looper;
 import android.os.StrictMode;
@@ -18,6 +19,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.components.strictmode.StrictModePolicyViolation;
 import org.chromium.components.strictmode.Violation;
@@ -30,6 +32,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Initialize application-level StrictMode reporting. */
+@NullMarked
 public class ChromeStrictMode {
     private static final String TAG = "ChromeStrictMode";
     private static final double UPLOAD_PROBABILITY = 0.01;

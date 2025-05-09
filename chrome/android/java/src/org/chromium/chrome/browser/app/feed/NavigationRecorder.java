@@ -4,11 +4,12 @@
 
 package org.chromium.chrome.browser.app.feed;
 
+
 import android.os.SystemClock;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
@@ -26,10 +27,11 @@ import org.chromium.url.GURL;
  * Records stats related to a page visit, such as the time spent on the website, or if the user
  * comes back to the starting point. Use through {@link #record(Tab, Callback)}.
  */
+@NullMarked
 public class NavigationRecorder extends EmptyTabObserver {
     private final Callback<VisitData> mVisitEndCallback;
 
-    @Nullable private final WebContentsObserver mWebContentsObserver;
+    private final @Nullable WebContentsObserver mWebContentsObserver;
 
     private long mStartTimeMs;
 
@@ -119,9 +121,9 @@ public class NavigationRecorder extends EmptyTabObserver {
     /** Plain holder for the data of a recorded visit. */
     public static class VisitData {
         public final long duration;
-        public final GURL endUrl;
+        public final @Nullable GURL endUrl;
 
-        public VisitData(long duration, GURL endUrl) {
+        public VisitData(long duration, @Nullable GURL endUrl) {
             this.duration = duration;
             this.endUrl = endUrl;
         }

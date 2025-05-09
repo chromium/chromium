@@ -40,6 +40,7 @@ import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -901,7 +902,8 @@ public class ReadAloudController
     }
 
     /** Returns true if the web contents within current Tab is readable. */
-    public boolean isReadable(Tab tab) {
+    @Contract("null -> false")
+    public boolean isReadable(@Nullable Tab tab) {
         // If we don't have a valid Profile, playback won't work.
         // TODO(crbug.com/41491180): Remove when valid profile is guaranteed.
         if (tab == null

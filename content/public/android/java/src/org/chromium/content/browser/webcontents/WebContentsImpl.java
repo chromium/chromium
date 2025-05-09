@@ -151,7 +151,7 @@ public class WebContentsImpl
     private final List<RenderFrameHostImpl> mFrames = new ArrayList<>();
 
     private long mNativeWebContentsAndroid;
-    private @Nullable NavigationController mNavigationController;
+    private NavigationController mNavigationController;
 
     // Lazily created proxy observer for handling all Java-based WebContentsObservers.
     private @Nullable WebContentsObserverProxy mObserverProxy;
@@ -287,7 +287,6 @@ public class WebContentsImpl
     void clearNativePtr() {
         mNativeDestroyThrowable = new RuntimeException("clearNativePtr");
         mNativeWebContentsAndroid = 0;
-        mNavigationController = null;
         if (mObserverProxy != null) {
             mObserverProxy.webContentsDestroyed();
             mObserverProxy = null;
@@ -396,7 +395,7 @@ public class WebContentsImpl
     }
 
     @Override
-    public @Nullable NavigationController getNavigationController() {
+    public NavigationController getNavigationController() {
         return mNavigationController;
     }
 

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser;
 
+
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -15,6 +16,9 @@ import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -26,17 +30,19 @@ import java.util.concurrent.ExecutionException;
  * A utility class for querying information about the default browser setting.\
  * TODO(crbug.com/40709747): Consolidate this with DefaultBrowserInfo in c/b/util.
  */
+@NullMarked
 public final class DefaultBrowserInfo {
 
     /** A lock to synchronize background tasks to retrieve browser information. */
     private static final Object sDirCreationLock = new Object();
 
-    private static AsyncTask<ArrayList<String>> sDefaultBrowserFetcher;
+    private static @Nullable AsyncTask<ArrayList<String>> sDefaultBrowserFetcher;
 
     /** Don't instantiate me. */
     private DefaultBrowserInfo() {}
 
     /** Initialize an AsyncTask for getting menu title of opening a link in default browser. */
+    @EnsuresNonNull("sDefaultBrowserFetcher")
     public static void initBrowserFetcher() {
         synchronized (sDirCreationLock) {
             if (sDefaultBrowserFetcher == null) {
@@ -83,7 +89,7 @@ public final class DefaultBrowserInfo {
         }
     }
 
-    private static String getTitleFromPackageLabel(Context context, String packageLabel) {
+    private static String getTitleFromPackageLabel(Context context, @Nullable String packageLabel) {
         return packageLabel == null
                 ? context.getString(R.string.menu_open_in_product_default)
                 : context.getString(R.string.menu_open_in_product, packageLabel);

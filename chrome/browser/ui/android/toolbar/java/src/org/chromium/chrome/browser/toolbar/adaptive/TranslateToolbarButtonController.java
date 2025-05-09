@@ -25,7 +25,7 @@ import org.chromium.components.feature_engagement.Tracker;
 /** Handles the translate button on the toolbar. */
 @NullMarked
 public class TranslateToolbarButtonController extends BaseButtonDataProvider {
-    private final Supplier<Tracker> mTrackerSupplier;
+    private final Supplier<@Nullable Tracker> mTrackerSupplier;
 
     /**
      * Creates a new instance of {@code TranslateButtonController}.
@@ -36,10 +36,10 @@ public class TranslateToolbarButtonController extends BaseButtonDataProvider {
      * @param trackerSupplier  Supplier for the current profile tracker, used for IPH.
      */
     public TranslateToolbarButtonController(
-            Supplier<Tab> activeTabSupplier,
+            Supplier<@Nullable Tab> activeTabSupplier,
             Drawable buttonDrawable,
             String contentDescription,
-            Supplier<Tracker> trackerSupplier) {
+            Supplier<@Nullable Tracker> trackerSupplier) {
         super(
                 activeTabSupplier,
                 /* modalDialogManager= */ null,
@@ -64,16 +64,16 @@ public class TranslateToolbarButtonController extends BaseButtonDataProvider {
 
     @Override
     public void onClick(View view) {
-        if (!mActiveTabSupplier.hasValue()) return;
+        Tab tab = mActiveTabSupplier.get();
+        if (tab == null) return;
 
         RecordUserAction.record("MobileTopToolbarTranslateButton");
-        if (mTrackerSupplier.hasValue()) {
-            mTrackerSupplier
-                    .get()
-                    .notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_TRANSLATE_OPENED);
+        Tracker tracker = mTrackerSupplier.get();
+        if (tracker != null) {
+            tracker.notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_TRANSLATE_OPENED);
         }
 
-        TranslateBridge.translateTabWhenReady(mActiveTabSupplier.get());
+        TranslateBridge.translateTabWhenReady(tab);
     }
 
     @Override

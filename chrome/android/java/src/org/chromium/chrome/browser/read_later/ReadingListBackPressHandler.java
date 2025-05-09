@@ -58,7 +58,7 @@ public class ReadingListBackPressHandler implements BackPressHandler, Destroyabl
         mActivityTabTabObserver =
                 new ActivityTabTabObserver(mActivityTabProvider, true) {
                     @Override
-                    protected void onObservingDifferentTab(Tab tab, boolean hint) {
+                    protected void onObservingDifferentTab(@Nullable Tab tab, boolean hint) {
                         onBackPressStateChanged();
 
                         // If this tab should intercept back press, start the process of tracking

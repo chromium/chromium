@@ -64,7 +64,7 @@ public class VoiceToolbarButtonController extends BaseButtonDataProvider {
     public VoiceToolbarButtonController(
             Context context,
             Drawable buttonDrawable,
-            Supplier<Tab> activeTabSupplier,
+            Supplier<@Nullable Tab> activeTabSupplier,
             Supplier<Tracker> trackerSupplier,
             ModalDialogManager modalDialogManager,
             VoiceSearchDelegate voiceSearchDelegate) {

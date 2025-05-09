@@ -46,7 +46,7 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
     private final BottomSheetObserver mBottomSheetObserver;
     private final Supplier<ShoppingService> mShoppingServiceSupplier;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
-    private final Supplier<Tab> mTabSupplier;
+    private final Supplier<@Nullable Tab> mTabSupplier;
     private final PriceInsightsDelegate mPriceInsightsDelegate;
     private @Nullable PriceInsightsBottomSheetCoordinator mBottomSheetCoordinator;
     private @Nullable PriceInsightsBottomSheetCoordinator mBottomSheetCoordinatorForTesting;
@@ -55,7 +55,7 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
 
     public PriceInsightsButtonController(
             Context context,
-            Supplier<Tab> tabSupplier,
+            Supplier<@Nullable Tab> tabSupplier,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<ShoppingService> shoppingServiceSupplier,
             ModalDialogManager modalDialogManager,

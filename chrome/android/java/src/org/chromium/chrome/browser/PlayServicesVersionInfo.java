@@ -4,17 +4,20 @@
 
 package org.chromium.chrome.browser;
 
+
 import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
 import org.chromium.base.PackageUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 
 import java.util.Locale;
 
 /** A utility class for querying information about Play Services Version. */
+@NullMarked
 public class PlayServicesVersionInfo {
     /**
      * Returns info about the Google Play services setup for Chrome and the device.

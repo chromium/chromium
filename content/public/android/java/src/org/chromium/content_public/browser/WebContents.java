@@ -58,8 +58,7 @@ public interface WebContents extends Parcelable {
         void set(@Nullable WebContentsInternals internals);
 
         /** Returns {@link WebContentsInternals} object. Can be {@code null}. */
-        @Nullable
-        WebContentsInternals get();
+        @Nullable WebContentsInternals get();
     }
 
     /**
@@ -116,8 +115,7 @@ public interface WebContents extends Parcelable {
     /**
      * @return The top level WindowAndroid associated with this WebContents. This can be null.
      */
-    @Nullable
-    WindowAndroid getTopLevelNativeWindow();
+    @Nullable WindowAndroid getTopLevelNativeWindow();
 
     /*
      * Updates the native {@link WebContents} with a new window. This moves the NativeView and
@@ -135,8 +133,7 @@ public interface WebContents extends Parcelable {
      * @return The {@link ViewAndroidDelegate} from which to get the container view. This can be
      *     null.
      */
-    @Nullable
-    ViewAndroidDelegate getViewAndroidDelegate();
+    @Nullable ViewAndroidDelegate getViewAndroidDelegate();
 
     /** Deletes the Web Contents object. */
     void destroy();
@@ -156,7 +153,6 @@ public interface WebContents extends Parcelable {
     /**
      * @return The navigation controller associated with this WebContents.
      */
-    @Nullable
     NavigationController getNavigationController();
 
     /**
@@ -168,8 +164,7 @@ public interface WebContents extends Parcelable {
      * @return The focused frame associated with this WebContents. Will be null if the WebContents
      * does not have focus.
      */
-    @Nullable
-    RenderFrameHost getFocusedFrame();
+    @Nullable RenderFrameHost getFocusedFrame();
 
     /**
      * @return Whether the focused frame element in this WebContents is editable. Will be false if
@@ -181,15 +176,13 @@ public interface WebContents extends Parcelable {
      * @return The frame associated with the id. Will be null if the ID does not correspond to a
      *         live RenderFrameHost.
      */
-    @Nullable
-    RenderFrameHost getRenderFrameHostFromId(GlobalRenderFrameHostId id);
+    @Nullable RenderFrameHost getRenderFrameHostFromId(GlobalRenderFrameHostId id);
 
     /**
      * @return The root level view from the renderer, or {@code null} in some cases where there is
      *     none.
      */
-    @Nullable
-    RenderWidgetHostView getRenderWidgetHostView();
+    @Nullable RenderWidgetHostView getRenderWidgetHostView();
 
     /**
      * @return The WebContents Visibility. See native WebContents::GetVisibility.

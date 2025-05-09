@@ -11,6 +11,7 @@ import android.view.View;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
@@ -43,7 +44,7 @@ public class OpenInBrowserButtonController extends BaseButtonDataProvider {
     public OpenInBrowserButtonController(
             Context context,
             Drawable buttonDrawable,
-            Supplier<Tab> activeTabSupplier,
+            Supplier<@Nullable Tab> activeTabSupplier,
             Runnable openInBrowserRunnable,
             Supplier<Tracker> trackerSupplier) {
         super(
