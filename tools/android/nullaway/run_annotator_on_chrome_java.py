@@ -22,6 +22,8 @@ import action_helpers
 _ANNOTATOR_JAR = ('../NullAwayAnnotator/annotator-core/build/libs/'
                   'annotator-core-1.3.16-SNAPSHOT.jar')
 _CHROME_JAVA_TURBINE_JAR = 'obj/chrome/android/chrome_java.turbine.jar'
+_NULLAWAY_JAR = (
+    '../../third_party/android_build_tools/nullaway/cipd/nullaway.jar')
 
 
 def _read_file(path):
@@ -70,9 +72,9 @@ def prep_errorprone_run(enable_annotator, parser):
         'gen/chrome/android/chrome_java.build_config.json',
         'javac_full_interface_classpath')
 
-    processor_path = _read_build_config_value(
+    processor_path = [_NULLAWAY_JAR] + _read_build_config_value(
         'gen/tools/android/errorprone_plugin/errorprone_plugin.build_config.json',
-        'classpath')
+        'host_classpath')
     if enable_annotator:
         processor_path.append(_ANNOTATOR_JAR)
 
