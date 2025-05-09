@@ -148,6 +148,25 @@ public class HubColorMixerImplUnitTest {
     }
 
     @Test
+    public void testProcessStateChange_tablet_setColorForBlendBeforeAnimation() {
+        initialize(/* isTablet= */ true);
+
+        mHubColorMixer.registerBlend(mColorBlend);
+        verify(mColorBlend, never()).createAnimationForTransition(anyInt(), anyInt());
+
+        doNothing().when(mAnimationHandler).startAnimation(any());
+        mFocusedPaneSupplier.set(mPane1);
+        reset(mColorBlend);
+        ShadowLooper.runUiThreadTasks();
+
+        assertFalse(mHubColorMixer.getOverviewMode());
+        mHubColorMixer.processStateChange(HUB_SHOWN);
+        assertFalse(mHubColorMixer.getOverviewMode());
+
+        verify(mColorBlend).createAnimationForTransition(anyInt(), anyInt());
+    }
+
+    @Test
     public void testProcessStateChange_tablet_close() {
         initialize(/* isTablet= */ true);
 

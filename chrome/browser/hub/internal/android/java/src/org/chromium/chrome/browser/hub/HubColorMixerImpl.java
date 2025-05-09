@@ -107,7 +107,9 @@ public class HubColorMixerImpl implements HubColorMixer {
     public void processStateChange(@StateChange int colorChangeReason) {
         switch (colorChangeReason) {
             case HUB_SHOWN -> {
-                if (!mIsTablet) {
+                if (mIsTablet) {
+                    onFocusedPaneChange(mFocusedPaneSupplier.get());
+                } else {
                     enableOverviewMode();
                 }
             }
