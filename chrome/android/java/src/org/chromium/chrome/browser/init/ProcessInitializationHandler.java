@@ -112,7 +112,6 @@ import org.chromium.components.browser_ui.photo_picker.PhotoPickerDialog;
 import org.chromium.components.browser_ui.share.ClipboardImageFileProvider;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.content_capture.PlatformContentCaptureController;
-import org.chromium.components.crash.anr.AnrCollector;
 import org.chromium.components.crash.browser.ChildProcessCrashObserver;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.minidump_uploader.CrashFileManager;
@@ -219,7 +218,7 @@ public class ProcessInitializationHandler {
     @CallSuper
     protected void handlePreNativeInitialization() {
         ChromeCachedFlags.getInstance().setFullListOfFlags();
-        setProcessStateSummaryForAnrs(false);
+        setProcessStateSummaryForAnrs();
     }
 
     /**
@@ -433,7 +432,6 @@ public class ProcessInitializationHandler {
         QuickActionSearchWidgetProvider.initialize();
 
         PrivacyPreferencesManagerImpl.getInstance().onNativeInitialized();
-        setProcessStateSummaryForAnrs(true);
 
         // Give BookmarkModel a provider of PartnerBookmark.BookmarkIterator so that
         // PartnerBookmarksShim can be loaded lazily when BookmarkModel is needed.
@@ -537,28 +535,26 @@ public class ProcessInitializationHandler {
 
     /**
      * We use the Android API to store key information which we can't afford to have wrong on our
-     * ANR reports. So, we set the version number, and the main .so file's Build ID once native has
-     * been loaded. Then, when we query Android for any ANRs that have happened, we can also pull
-     * these key fields.
+     * ANR reports. So, in this function, we store the version number before the native is loaded.
+     * Once native starts to load, AnrCollector.java will store the main .so file's Build ID and the
+     * list of Finch experiments in addition to the version number. Then, when we query Android for
+     * any ANRs that have happened, we can also pull these key fields.
      *
      * <p>We are limited to 128 bytes in ProcessStateSummary, so we only store the most important
      * things that can change between the ANR happening and an upload (when the rest of the metadata
      * is gathered). Some fields we ignore because they won't change (eg. which channel or what the
-     * .so filename is) and some we ignore because they aren't as critical (eg. experiments). In the
-     * future, we could make this point to a file where we would write out all our crash keys, and
-     * thus get full fidelity.
+     * .so filename is) and some we ignore because they aren't as critical. In the future, we could
+     * make this point to a file where we would write out all our crash keys, and thus get full
+     * fidelity.
      */
-    protected void setProcessStateSummaryForAnrs(boolean includeNative) {
+    protected void setProcessStateSummaryForAnrs() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             ActivityManager am =
                     (ActivityManager)
                             ContextUtils.getApplicationContext()
                                     .getSystemService(Context.ACTIVITY_SERVICE);
-            String summary = VersionInfo.getProductVersion();
-            if (includeNative) {
-                summary += "," + AnrCollector.getSharedLibraryBuildId();
-            }
-            am.setProcessStateSummary(summary.getBytes(StandardCharsets.UTF_8));
+            byte[] version = VersionInfo.getProductVersion().getBytes(StandardCharsets.UTF_8);
+            am.setProcessStateSummary(version);
         }
     }
 

@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "components/crash/android/anr_build_id_provider.h"
@@ -222,6 +223,7 @@ void WriteAnrAsMime(crashpad::FileReader* anr_reader,
                     crashpad::FileWriterInterface* writer,
                     const std::string& version_number,
                     const std::string& build_id,
+                    const std::string& variations_string,
                     const std::string& anr_file_name) {
   crashpad::HTTPMultipartBuilder builder;
   builder.SetFormData("version", version_number);
@@ -260,6 +262,19 @@ void WriteAnrAsMime(crashpad::FileReader* anr_reader,
   builder.SetFormData("resources_version", info->resources_version());
   builder.SetFormData("gms_core_version", info->gms_version_code());
 
+  if (!variations_string.empty()) {
+    size_t delimiter_pos = variations_string.find('\n');
+    if (delimiter_pos != std::string::npos) {
+      std::string num_experiments = variations_string.substr(0, delimiter_pos);
+      std::string experiment_list = variations_string.substr(delimiter_pos + 1);
+      builder.SetFormData("num-experiments", num_experiments);
+      builder.SetFormData("variations", experiment_list);
+    } else {
+      LOG(ERROR) << "Found a malformed variations string: "
+                 << variations_string;
+    }
+  }
+
   // The package name and version are used for deobfuscation, but will
   // only be accurate for the same version of chrome.
   if (version_number == version_info::GetVersionNumber()) {
@@ -286,10 +301,11 @@ static void JNI_CrashReportMimeWriter_RewriteAnrsAsMIMEs(
   std::string dest_dir;
   base::android::ConvertJavaStringToUTF8(env, j_dest_dir, &dest_dir);
 
-  for (size_t i = 0; i < anr_strings.size(); i += 3) {
+  for (size_t i = 0; i < anr_strings.size(); i += 4) {
     std::string anr_proto_file_path = anr_strings.at(i);
     std::string chrome_version = anr_strings.at(i + 1);
     std::string build_id = anr_strings.at(i + 2);
+    std::string variations_string = anr_strings.at(i + 3);
     crashpad::FileWriter writer;
     crashpad::FileReader reader;
     crashpad::UUID uuid;
@@ -306,7 +322,8 @@ static void JNI_CrashReportMimeWriter_RewriteAnrsAsMIMEs(
       continue;
     }
 
-    WriteAnrAsMime(&reader, &writer, chrome_version, build_id, anr_file_name);
+    WriteAnrAsMime(&reader, &writer, chrome_version, build_id,
+                   variations_string, anr_file_name);
   }
 }
 
