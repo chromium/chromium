@@ -33,11 +33,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -69,7 +67,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 /** Unit tests for the TabSwitcherMessageManager. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabSwitcherMessageManagerUnitTest {
-    private static final int BASE_TAB_COUNT = 1;
     private static final int TAB1_ID = 456;
     private static final int TAB2_ID = 789;
 
@@ -103,8 +100,6 @@ public class TabSwitcherMessageManagerUnitTest {
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private Supplier<PaneManager> mPaneManagerSupplier;
     @Mock private Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
-    @Mock private ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
-    @Mock private ObservableSupplier<Integer> mTabCountSupplier;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
     @Captor
@@ -126,7 +121,6 @@ public class TabSwitcherMessageManagerUnitTest {
 
         TrackerFactory.setTrackerForTests(mTracker);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
-        ArchivedTabModelOrchestrator.setInstanceForTesting(mArchivedTabModelOrchestrator);
 
         mTab1 = MockTab.createAndInitialize(TAB1_ID, mProfile);
         mTab2 = MockTab.createAndInitialize(TAB2_ID, mProfile);
@@ -142,9 +136,6 @@ public class TabSwitcherMessageManagerUnitTest {
 
         when(mPriceMessageService.preparePriceMessage(anyInt(), eq(mPriceTabData)))
                 .thenReturn(true);
-
-        when(mArchivedTabModelOrchestrator.getTabCountSupplier()).thenReturn(mTabCountSupplier);
-        when(mTabCountSupplier.get()).thenReturn(BASE_TAB_COUNT);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivityReady);
     }
