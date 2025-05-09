@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tab;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -197,14 +196,5 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
         assertEquals(
                 BrowserControlsState.BOTH,
                 controlsVisibilityDelegate.calculateVisibilityConstraints());
-    }
-
-    @Test
-    public void testDestroy() {
-        TabStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate =
-                new TabStateBrowserControlsVisibilityDelegate(mTabImpl);
-        verify(mTabImpl).addObserver(any());
-        controlsVisibilityDelegate.destroy();
-        verify(mTabImpl).removeObserver(any());
     }
 }

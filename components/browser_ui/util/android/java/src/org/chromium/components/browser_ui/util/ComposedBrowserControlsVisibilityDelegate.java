@@ -90,13 +90,6 @@ public class ComposedBrowserControlsVisibilityDelegate extends BrowserControlsVi
         super.set(value);
     }
 
-    @Override
-    public void destroy() {
-        for (BrowserControlsVisibilityDelegate delegate : mDelegates) {
-            delegate.destroy();
-        }
-    }
-
     private @BrowserControlsState int calculateVisibilityConstraints() {
         boolean shouldBeShown = false;
         for (BrowserControlsVisibilityDelegate delegate : mDelegates) {

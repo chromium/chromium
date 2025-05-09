@@ -10,6 +10,7 @@ import android.os.SystemClock;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
@@ -24,8 +25,8 @@ import org.chromium.ui.util.TokenHolder;
  * running activity.
  */
 @NullMarked
-public class BrowserStateBrowserControlsVisibilityDelegate
-        extends BrowserControlsVisibilityDelegate {
+public class BrowserStateBrowserControlsVisibilityDelegate extends BrowserControlsVisibilityDelegate
+        implements Destroyable {
     /** Minimum duration (in milliseconds) that the controls are shown when requested. */
     @VisibleForTesting public static final long MINIMUM_SHOW_DURATION_MS = 3000;
 
@@ -129,6 +130,7 @@ public class BrowserStateBrowserControlsVisibilityDelegate
         sDisableOverridesForTesting = true;
     }
 
+    /** Performs clean-up. */
     @Override
     public void destroy() {
         mHandler.removeCallbacksAndMessages(null);
