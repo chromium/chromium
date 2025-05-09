@@ -90,6 +90,10 @@ webview:not([hidden]) {
   cursor: grab;
 }
 
+#loadingPanel .header {
+  padding-bottom: 8px;
+}
+
 .panel .logo {
   padding: 0 0 0 2px;
 }

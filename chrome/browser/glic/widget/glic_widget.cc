@@ -135,7 +135,7 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
 
   auto widget = base::WrapUnique(new GlicWidget(
       ThemeServiceFactory::GetForProfile(profile), std::move(params)));
-
+  widget->SetMinimumSize(GetInitialSize());
   widget->SetContentsView(std::make_unique<GlicView>(
       profile, initial_bounds.size(), accelerator_delegate));
 
