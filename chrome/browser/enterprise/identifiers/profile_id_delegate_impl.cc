@@ -4,6 +4,8 @@
 
 #include "chrome/browser/enterprise/identifiers/profile_id_delegate_impl.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/hash/sha1.h"
 #include "base/uuid.h"
@@ -13,11 +15,11 @@
 #include "components/enterprise/browser/identifiers/identifiers_prefs.h"
 #include "components/prefs/pref_service.h"
 
-#if !BUILDFLAG(IS_CHROMEOS)
-#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
-#else
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+#else
+#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
@@ -28,6 +30,8 @@ namespace enterprise {
 
 namespace {
 
+const void* const kPresetProfileManagementData = &kPresetProfileManagementData;
+
 // Creates and persists the profile GUID if one does not already exist
 void CreateProfileGUID(Profile* profile, const base::FilePath& profile_path) {
   auto* prefs = profile->GetPrefs();
@@ -37,14 +41,12 @@ void CreateProfileGUID(Profile* profile, const base::FilePath& profile_path) {
 
   auto* preset_profile_management_data =
       PresetProfileManagmentData::Get(profile);
-  std::string preset_profile_guid = preset_profile_management_data->GetGuid();
+  std::string profile_guid = preset_profile_management_data->guid();
+  if (profile_guid.empty()) {
+    profile_guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  }
 
-  std::string new_profile_guid =
-      (preset_profile_guid.empty())
-          ? base::Uuid::GenerateRandomV4().AsLowercaseString()
-          : std::move(preset_profile_guid);
-
-  prefs->SetString(kProfileGUIDPref, new_profile_guid);
+  prefs->SetString(kProfileGUIDPref, std::move(profile_guid));
   preset_profile_management_data->ClearGuid();
 }
 
@@ -67,19 +69,17 @@ void PresetProfileManagmentData::SetGuid(std::string guid) {
   CHECK(!guid.empty());
   CHECK(guid_.empty());
 
-  guid_ = guid;
-}
-
-std::string PresetProfileManagmentData::GetGuid() {
-  return guid_;
+  guid_ = std::move(guid);
 }
 
 void PresetProfileManagmentData::ClearGuid() {
-  guid_ = std::string();
+  guid_.clear();
 }
 
 PresetProfileManagmentData::PresetProfileManagmentData(std::string preset_guid)
-    : guid_(preset_guid) {}
+    : guid_(std::move(preset_guid)) {}
+
+PresetProfileManagmentData::~PresetProfileManagmentData() = default;
 
 ProfileIdDelegateImpl::ProfileIdDelegateImpl(Profile* profile)
     : profile_(profile) {
@@ -93,15 +93,20 @@ std::string ProfileIdDelegateImpl::GetDeviceId() {
   return ProfileIdDelegateImpl::GetId();
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
-// Gets the device ID from the BrowserDMTokenStorage.
+// static
 std::string ProfileIdDelegateImpl::GetId() {
+#if BUILDFLAG(IS_CHROMEOS)
+  // Gets the device ID from cloud policy.
+  return policy::GetDeviceName();
+#else
+  // Gets the device ID from the BrowserDMTokenStorage.
   std::string device_id =
       policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
 
-// On Windows, the combination of the client ID and device serial
-// number are used to form the device ID.
 #if BUILDFLAG(IS_WIN)
+  // On Windows, the combination of the client ID and device serial
+  // number are used to form the device ID.
+  //
   // Serial number could be empty for various reasons. However, we should still
   // generate a profile ID with whatever we have. Devices without serial number
   // will have higher chance of twin issue but it is still better than no ID at
@@ -113,14 +118,7 @@ std::string ProfileIdDelegateImpl::GetId() {
 #endif  // BUILDFLAG(IS_WIN)
 
   return device_id;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
-#else
-// Gets the device ID from cloud policy.
-std::string ProfileIdDelegateImpl::GetId() {
-  std::string device_id = policy::GetDeviceName();
-
-  return device_id;
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace enterprise
