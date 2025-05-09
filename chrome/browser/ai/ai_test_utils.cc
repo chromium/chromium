@@ -48,6 +48,38 @@ AITestUtils::MockLanguageModelAppendClient::BindNewPipeAndPassRemote() {
   return receiver_.BindNewPipeAndPassRemote();
 }
 
+mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
+AITestUtils::FakeMonitor::BindNewPipeAndPassRemote() {
+  return mock_monitor_.BindNewPipeAndPassRemote();
+}
+
+void AITestUtils::FakeMonitor::ExpectReceivedUpdate(
+    uint64_t expected_downloaded_bytes,
+    uint64_t expected_total_bytes) {
+  base::RunLoop download_progress_run_loop;
+  EXPECT_CALL(mock_monitor_, OnDownloadProgressUpdate(testing::_, testing::_))
+      .WillOnce(
+          testing::Invoke([&](uint64_t downloaded_bytes, uint64_t total_bytes) {
+            EXPECT_EQ(downloaded_bytes, expected_downloaded_bytes);
+            EXPECT_EQ(total_bytes, expected_total_bytes);
+            download_progress_run_loop.Quit();
+          }));
+  download_progress_run_loop.Run();
+}
+
+void AITestUtils::FakeMonitor::ExpectReceivedNormalizedUpdate(
+    uint64_t expected_downloaded_bytes,
+    uint64_t expected_total_bytes) {
+  ExpectReceivedUpdate(AIUtils::NormalizeModelDownloadProgress(
+                           expected_downloaded_bytes, expected_total_bytes),
+                       AIUtils::kNormalizedDownloadProgressMax);
+}
+
+void AITestUtils::FakeMonitor::ExpectNoUpdate() {
+  EXPECT_CALL(mock_monitor_, OnDownloadProgressUpdate(testing::_, testing::_))
+      .Times(0);
+}
+
 AITestUtils::FakeComponent::FakeComponent(std::string id, uint64_t total_bytes)
     : id_(std::move(id)), total_bytes_(total_bytes) {}
 

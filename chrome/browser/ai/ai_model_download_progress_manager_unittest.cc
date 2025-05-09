@@ -21,66 +21,25 @@ using component_updater::CrxUpdateItem;
 using testing::_;
 using update_client::ComponentState;
 
-namespace {
-
-class FakeMonitor {
- public:
-  mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
-  BindNewPipeAndPassRemote() {
-    return mock_monitor_.BindNewPipeAndPassRemote();
-  }
-
-  void ExpectReceivedUpdate(uint64_t expected_downloaded_bytes,
-                            uint64_t expected_total_bytes) {
-    base::RunLoop download_progress_run_loop;
-    EXPECT_CALL(mock_monitor_, OnDownloadProgressUpdate(_, _))
-        .WillOnce(testing::Invoke(
-            [&](uint64_t downloaded_bytes, uint64_t total_bytes) {
-              EXPECT_EQ(downloaded_bytes, expected_downloaded_bytes);
-              EXPECT_EQ(total_bytes, expected_total_bytes);
-              download_progress_run_loop.Quit();
-            }));
-    download_progress_run_loop.Run();
-  }
-
-  // Same as `ExpectReceivedUpdate` except it normalizes
-  // `expected_downloaded_bytes` and `expected_total_bytes`.
-  void ExpectReceivedNormalizedUpdate(uint64_t expected_downloaded_bytes,
-                                      uint64_t expected_total_bytes) {
-    ExpectReceivedUpdate(AIUtils::NormalizeModelDownloadProgress(
-                             expected_downloaded_bytes, expected_total_bytes),
-                         AIUtils::kNormalizedDownloadProgressMax);
-  }
-
-  void ExpectNoUpdate() {
-    EXPECT_CALL(mock_monitor_, OnDownloadProgressUpdate(_, _)).Times(0);
-  }
-
- private:
-  AITestUtils::MockModelDownloadProgressMonitor mock_monitor_;
-};
-
-}  // namespace
-
 class AIModelDownloadProgressManagerTest : public testing::Test {
  public:
   AIModelDownloadProgressManagerTest() = default;
   ~AIModelDownloadProgressManagerTest() override = default;
 
  protected:
-  AITestUtils::MockComponentUpdateService component_update_service_;
-
   // Send a download update.
-  void SendUpdate(const AITestUtils::FakeComponent& monitor,
+  void SendUpdate(const AITestUtils::FakeComponent& component,
                   ComponentState state,
                   uint64_t downloaded_bytes) {
     component_update_service_.SendUpdate(
-        monitor.CreateUpdateItem(state, downloaded_bytes));
+        component.CreateUpdateItem(state, downloaded_bytes));
   }
 
   void FastForwardBy(base::TimeDelta delta) {
     task_environment_.FastForwardBy(delta);
   }
+
+  AITestUtils::MockComponentUpdateService component_update_service_;
 
  private:
   void SetUp() override {
@@ -95,16 +54,16 @@ TEST_F(AIModelDownloadProgressManagerTest,
   AIModelDownloadProgressManager manager;
 
   // Should start with no reporters.
-  EXPECT_EQ(manager.GetNumberOfReportersForTesting(), 0);
+  EXPECT_EQ(manager.GetNumberOfReporters(), 0);
 
   AITestUtils::FakeComponent component("component_id", 100);
 
   {
     // Adding an Observer, should create a reporter.
-    FakeMonitor monitor1;
+    AITestUtils::FakeMonitor monitor1;
     manager.AddObserver(&component_update_service_,
                         monitor1.BindNewPipeAndPassRemote(), {component.id()});
-    EXPECT_EQ(manager.GetNumberOfReportersForTesting(), 1);
+    EXPECT_EQ(manager.GetNumberOfReporters(), 1);
 
     {
       // Adding a second observer we'll result in component ids being called
@@ -112,26 +71,24 @@ TEST_F(AIModelDownloadProgressManagerTest,
       EXPECT_CALL(component_update_service_, GetComponentIDs()).Times(1);
 
       // Adding an Observer, should create a reporter.
-      FakeMonitor monitor2;
+      AITestUtils::FakeMonitor monitor2;
       manager.AddObserver(&component_update_service_,
                           monitor2.BindNewPipeAndPassRemote(),
                           {component.id()});
-      EXPECT_EQ(manager.GetNumberOfReportersForTesting(), 2);
+      EXPECT_EQ(manager.GetNumberOfReporters(), 2);
     }
     // `manager` should have destroyed the `Reporter` associated with
     // `monitor2`.
-    base::test::RunUntil(
-        [&]() { return manager.GetNumberOfReportersForTesting() == 1; });
+    base::test::RunUntil([&]() { return manager.GetNumberOfReporters() == 1; });
   }
   // `manager` should have destroyed the `Reporter` associated with
   // `monitor1`.
-  base::test::RunUntil(
-      [&]() { return manager.GetNumberOfReportersForTesting() == 0; });
+  base::test::RunUntil([&]() { return manager.GetNumberOfReporters() == 0; });
 }
 
 TEST_F(AIModelDownloadProgressManagerTest, FirstUpdateIsReportedAsZero) {
   AIModelDownloadProgressManager manager;
-  FakeMonitor monitor;
+  AITestUtils::FakeMonitor monitor;
   AITestUtils::FakeComponent component("component_id", 100);
 
   manager.AddObserver(&component_update_service_,
@@ -152,7 +109,7 @@ TEST_F(AIModelDownloadProgressManagerTest, FirstUpdateIsReportedAsZero) {
 
 TEST_F(AIModelDownloadProgressManagerTest, ProgressIsNormalized) {
   AIModelDownloadProgressManager manager;
-  FakeMonitor monitor;
+  AITestUtils::FakeMonitor monitor;
   AITestUtils::FakeComponent component("component_id", 100);
 
   manager.AddObserver(&component_update_service_,
@@ -179,7 +136,7 @@ TEST_F(AIModelDownloadProgressManagerTest, ProgressIsNormalized) {
 TEST_F(AIModelDownloadProgressManagerTest,
        AlreadyDownloadedBytesArentIncludedInProgress) {
   AIModelDownloadProgressManager manager;
-  FakeMonitor monitor;
+  AITestUtils::FakeMonitor monitor;
   AITestUtils::FakeComponent component("component_id", 100);
 
   int64_t already_downloaded_bytes = 10;
@@ -209,7 +166,7 @@ TEST_F(AIModelDownloadProgressManagerTest,
 TEST_F(AIModelDownloadProgressManagerTest,
        MaxIsSentWhenDownloadedBytesEqualsTotalBytes) {
   AIModelDownloadProgressManager manager;
-  FakeMonitor monitor;
+  AITestUtils::FakeMonitor monitor;
   AITestUtils::FakeComponent component(
       "component_id", AIUtils::kNormalizedDownloadProgressMax * 5);
 
@@ -239,7 +196,7 @@ TEST_F(AIModelDownloadProgressManagerTest,
 TEST_F(AIModelDownloadProgressManagerTest,
        MaxIsSentWhenDownloadedBytesEqualsTotalBytesForFirstUpdate) {
   AIModelDownloadProgressManager manager;
-  FakeMonitor monitor;
+  AITestUtils::FakeMonitor monitor;
   AITestUtils::FakeComponent component(
       "component_id", AIUtils::kNormalizedDownloadProgressMax * 5);
 
@@ -257,7 +214,7 @@ TEST_F(AIModelDownloadProgressManagerTest,
 TEST_F(AIModelDownloadProgressManagerTest,
        DoesntReceiveUpdatesForNonDownloadEvents) {
   AIModelDownloadProgressManager manager;
-  FakeMonitor monitor;
+  AITestUtils::FakeMonitor monitor;
   AITestUtils::FakeComponent component("component_id", 100);
 
   manager.AddObserver(&component_update_service_,
@@ -282,7 +239,7 @@ TEST_F(AIModelDownloadProgressManagerTest,
 TEST_F(AIModelDownloadProgressManagerTest,
        DoesntReceiveUpdatesForEventsWithNegativeDownloadedBytes) {
   AIModelDownloadProgressManager manager;
-  FakeMonitor monitor;
+  AITestUtils::FakeMonitor monitor;
   AITestUtils::FakeComponent component("component_id", 100);
 
   manager.AddObserver(&component_update_service_,
@@ -297,7 +254,7 @@ TEST_F(AIModelDownloadProgressManagerTest,
 TEST_F(AIModelDownloadProgressManagerTest,
        DoesntReceiveUpdatesForEventsWithNegativeTotalBytes) {
   AIModelDownloadProgressManager manager;
-  FakeMonitor monitor;
+  AITestUtils::FakeMonitor monitor;
   AITestUtils::FakeComponent component("component_id", -1);
 
   manager.AddObserver(&component_update_service_,
@@ -312,7 +269,7 @@ TEST_F(AIModelDownloadProgressManagerTest,
 TEST_F(AIModelDownloadProgressManagerTest,
        DoesntReceiveUpdatesForComponentsNotObserving) {
   AIModelDownloadProgressManager manager;
-  FakeMonitor monitor;
+  AITestUtils::FakeMonitor monitor;
   AITestUtils::FakeComponent component_observed("component_id1", 100);
   AITestUtils::FakeComponent component_not_observed("component_id2", 100);
 
@@ -329,7 +286,7 @@ TEST_F(AIModelDownloadProgressManagerTest,
 TEST_F(AIModelDownloadProgressManagerTest,
        ReceiveZeroAndHundredPercentForNoComponents) {
   AIModelDownloadProgressManager manager;
-  FakeMonitor monitor;
+  AITestUtils::FakeMonitor monitor;
 
   manager.AddObserver(&component_update_service_,
                       monitor.BindNewPipeAndPassRemote(), {});
@@ -340,7 +297,7 @@ TEST_F(AIModelDownloadProgressManagerTest,
 
 TEST_F(AIModelDownloadProgressManagerTest, OnlyReceivesUpdatesEvery50ms) {
   AIModelDownloadProgressManager manager;
-  FakeMonitor monitor;
+  AITestUtils::FakeMonitor monitor;
   AITestUtils::FakeComponent component("component_id", 100);
 
   manager.AddObserver(&component_update_service_,
@@ -368,7 +325,7 @@ TEST_F(AIModelDownloadProgressManagerTest, OnlyReceivesUpdatesEvery50ms) {
 
 TEST_F(AIModelDownloadProgressManagerTest, OnlyReceivesUpdatesForNewProgress) {
   AIModelDownloadProgressManager manager;
-  FakeMonitor monitor;
+  AITestUtils::FakeMonitor monitor;
   // Set its total to twice kNormalizedProgressMax so that there are two raw
   // download progresses that map to every normalized download progress.
   AITestUtils::FakeComponent component(
@@ -409,7 +366,7 @@ TEST_F(AIModelDownloadProgressManagerTest, OnlyReceivesUpdatesForNewProgress) {
 
 TEST_F(AIModelDownloadProgressManagerTest, ShouldReceive100percent) {
   AIModelDownloadProgressManager manager;
-  FakeMonitor monitor;
+  AITestUtils::FakeMonitor monitor;
   AITestUtils::FakeComponent component("component_id", 100);
 
   manager.AddObserver(&component_update_service_,
@@ -432,7 +389,7 @@ TEST_F(AIModelDownloadProgressManagerTest, ShouldReceive100percent) {
 TEST_F(AIModelDownloadProgressManagerTest,
        AllComponentsMustBeObservedBeforeSendingEvents) {
   AIModelDownloadProgressManager manager;
-  FakeMonitor monitor;
+  AITestUtils::FakeMonitor monitor;
   AITestUtils::FakeComponent component1("component_id1", 100);
   AITestUtils::FakeComponent component2("component_id2", 1000);
 
@@ -454,7 +411,7 @@ TEST_F(AIModelDownloadProgressManagerTest,
 TEST_F(AIModelDownloadProgressManagerTest,
        ProgressIsNormalizedAgainstTheSumOfTheComponentsTotalBytes) {
   AIModelDownloadProgressManager manager;
-  FakeMonitor monitor;
+  AITestUtils::FakeMonitor monitor;
   AITestUtils::FakeComponent component1("component_id1", 100);
   AITestUtils::FakeComponent component2("component_id2", 1000);
 
@@ -494,7 +451,7 @@ TEST_F(AIModelDownloadProgressManagerTest,
 TEST_F(AIModelDownloadProgressManagerTest,
        AlreadyDownloadedBytesArentIncludedInProgressForMultipleComponents) {
   AIModelDownloadProgressManager manager;
-  FakeMonitor monitor;
+  AITestUtils::FakeMonitor monitor;
   AITestUtils::FakeComponent component1("component_id1", 100);
   AITestUtils::FakeComponent component2("component_id2", 1000);
   int64_t already_downloaded_bytes = 0;
@@ -559,7 +516,7 @@ class AIModelDownloadProgressManagerHasPreviousDownloadsTest
 TEST_F(AIModelDownloadProgressManagerHasPreviousDownloadsTest,
        AlreadyInstalledComponentsAreNotObserved) {
   AIModelDownloadProgressManager manager;
-  FakeMonitor monitor;
+  AITestUtils::FakeMonitor monitor;
   AITestUtils::FakeComponent component1("component_id1", 100);
   AITestUtils::FakeComponent component2("component_id2", 1000);
 
@@ -579,7 +536,7 @@ TEST_F(AIModelDownloadProgressManagerHasPreviousDownloadsTest,
 TEST_F(AIModelDownloadProgressManagerHasPreviousDownloadsTest,
        ProgressIsNormalizedAgainstOnlyUninstalledComponents) {
   AIModelDownloadProgressManager manager;
-  FakeMonitor monitor;
+  AITestUtils::FakeMonitor monitor;
   AITestUtils::FakeComponent component1("component_id1", 100);
   AITestUtils::FakeComponent component2("component_id2", 1000);
   AITestUtils::FakeComponent component3("component_id3", 500);
@@ -609,7 +566,7 @@ TEST_F(AIModelDownloadProgressManagerHasPreviousDownloadsTest,
 TEST_F(AIModelDownloadProgressManagerHasPreviousDownloadsTest,
        ReceiveZeroAndHundredPercentWhenEverythingIsInstalled) {
   AIModelDownloadProgressManager manager;
-  FakeMonitor monitor;
+  AITestUtils::FakeMonitor monitor;
   AITestUtils::FakeComponent component1("component_id1", 100);
   AITestUtils::FakeComponent component2("component_id2", 1000);
 

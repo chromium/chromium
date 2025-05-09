@@ -22,7 +22,6 @@ source_set("ai") {
     "ai_on_device_session.h",
     "ai_rewriter.h",
     "ai_summarizer.h",
-    "ai_utils.h",
     "ai_writer.h",
     "built_in_ai_logger.cc",
     "built_in_ai_logger.h",
@@ -37,6 +36,7 @@ source_set("ai") {
   public_deps = [
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ai:ai_utils",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
     "//components/component_updater:component_updater",
@@ -50,6 +50,15 @@ source_set("ai") {
       "//chrome/browser/glic:glic",
     ]
   }
+}
+
+source_set("ai_utils") {
+  sources = [ "ai_utils.h" ]
+
+  deps = [
+    "//components/optimization_guide/core",
+    "//content/public/browser",
+  ]
 }
 
 source_set("impl") {
@@ -112,9 +121,9 @@ source_set("ai_model_download_progress_manager") {
     "ai_model_download_progress_manager.h",
   ]
   public_deps = [
-    ":ai",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ai:ai_utils",
     "//components/component_updater",
     "//components/update_client",
     "//content/public/browser",

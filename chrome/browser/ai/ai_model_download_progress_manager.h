@@ -38,7 +38,7 @@ class AIModelDownloadProgressManager {
           observer_remote,
       base::flat_set<std::string> component_ids);
 
-  int GetNumberOfReportersForTesting();
+  int GetNumberOfReporters();
 
  private:
   // Observes progress updates from the `component_update_service`, filters and

@@ -53,7 +53,7 @@ void AIModelDownloadProgressManager::RemoveReporter(Reporter* reporter) {
   reporters_.erase(reporter);
 }
 
-int AIModelDownloadProgressManager::GetNumberOfReportersForTesting() {
+int AIModelDownloadProgressManager::GetNumberOfReporters() {
   return reporters_.size();
 }
 
