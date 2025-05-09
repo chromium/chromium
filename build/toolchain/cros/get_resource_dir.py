@@ -5,6 +5,7 @@
 """Script to get Clang's resource dir from `cros_target_cc`."""
 
 import argparse
+import os
 import subprocess
 import sys
 from typing import List
@@ -18,6 +19,9 @@ def main(argv: List[str]) -> None:
   parser.add_argument("cros_target_cc", help="The value of 'cros_target_cc'.")
   opts = parser.parse_args(argv)
 
+  # crbug.com/397463803: Add these so the compiler wrapper doesn't error
+  # out. Should be removable around Q4 2025.
+  os.environ["CROSTC_IS_AWARE_OF_THIS_USECASE"] = "1"
   sys.exit(
       subprocess.run(
           (opts.cros_target_cc, "--print-resource-dir"),
