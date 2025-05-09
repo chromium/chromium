@@ -61,7 +61,7 @@ scoped_refptr<FontPalette> RetrieveFontPaletteFromStyleEngine(
         FontPalette::Create(requested_palette_values);
     new_request_palette->SetMatchFamilyName(family_name);
     new_request_palette->SetBasePalette(
-        font_palette_values->GetBasePaletteIndex());
+        font_palette_values->GetBasePaletteIndex(document));
     Vector<FontPalette::FontPaletteOverride> override_colors =
         font_palette_values->GetOverrideColorsAsVector(document);
     if (override_colors.size()) {

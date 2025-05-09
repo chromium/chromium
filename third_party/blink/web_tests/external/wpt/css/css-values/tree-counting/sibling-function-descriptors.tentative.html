@@ -4,7 +4,7 @@
 <link rel="help" href="https://github.com/w3c/csswg-drafts/issues/10982">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<style id="test_sheet">
+<style id="page_sheet">
   @page {
     margin: 100px;
     margin: calc(0px * sibling-index());
@@ -13,6 +13,8 @@
     margin: 100px;
     margin: calc(0px * sibling-count());
   }
+</style>
+<style id="font_face_sheet">
   @font-face {
     font-family: my-font;
     font-weight: 300;
@@ -28,24 +30,54 @@
     font-feature-settings: "vert" calc(max(sibling-count(), 1));
   }
 </style>
+<style id="font_palette_sheet">
+  @font-palette-values --foo {
+    font-family: my-font;
+    base-palette: 1;
+    base-palette: calc(max(sibling-index(), 2));
+    override-colors: 1 green;
+    override-colors: sibling-index() red;
+  }
+  @font-palette-values --foo {
+    font-family: my-font;
+    base-palette: 1;
+    base-palette: calc(max(sibling-count(), 2));
+    override-colors: 1 green;
+    override-colors: sibling-count() red;
+  }
+</style>
 <script>
-  const rules = test_sheet.sheet.cssRules;
+  const page_rules = page_sheet.sheet.cssRules;
 
   test(() => {
-    assert_equals(rules[0].style.margin, "100px");
+    assert_equals(page_rules[0].style.margin, "100px");
   }, "sibling-index() should not be allowed in @page properties");
 
   test(() => {
-    assert_equals(rules[1].style.margin, "100px");
+    assert_equals(page_rules[1].style.margin, "100px");
   }, "sibling-count() should not be allowed in @page properties");
 
+  const font_face_rules = font_face_sheet.sheet.cssRules;
+
   test(() => {
-    assert_equals(rules[2].style.fontWeight, "300");
-    assert_equals(rules[2].style.fontFeatureSettings, "\"vert\" 2");
+    assert_equals(font_face_rules[0].style.fontWeight, "300");
+    assert_equals(font_face_rules[0].style.fontFeatureSettings, "\"vert\" 2");
   }, "sibling-index() should not be allowed in @font-face descriptors");
 
   test(() => {
-    assert_equals(rules[3].style.fontWeight, "300");
-    assert_equals(rules[3].style.fontFeatureSettings, "\"vert\" 2");
+    assert_equals(font_face_rules[1].style.fontWeight, "300");
+    assert_equals(font_face_rules[1].style.fontFeatureSettings, "\"vert\" 2");
   }, "sibling-count() should not be allowed in @font-face descriptors");
+
+  const font_palette_rules = font_palette_sheet.sheet.cssRules;
+
+  test(() => {
+    assert_equals(font_palette_rules[0].basePalette, "1");
+    assert_equals(font_palette_rules[0].overrideColors, "1 green");
+  }, "sibling-index() should not be allowed in @font-palette-values descriptors");
+
+  test(() => {
+    assert_equals(font_palette_rules[1].basePalette, "1");
+    assert_equals(font_palette_rules[1].overrideColors, "1 green");
+  }, "sibling-count() should not be allowed in @font-palette-values descriptors");
 </script>

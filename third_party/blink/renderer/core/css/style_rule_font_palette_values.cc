@@ -39,8 +39,8 @@ const CSSValue* StyleRuleFontPaletteValues::GetBasePalette() const {
 const CSSValue* StyleRuleFontPaletteValues::GetOverrideColors() const {
   return properties_->GetPropertyCSSValue(CSSPropertyID::kOverrideColors);
 }
-FontPalette::BasePaletteValue StyleRuleFontPaletteValues::GetBasePaletteIndex()
-    const {
+FontPalette::BasePaletteValue StyleRuleFontPaletteValues::GetBasePaletteIndex(
+    const Document& document) const {
   constexpr FontPalette::BasePaletteValue kNoBasePaletteValue = {
       FontPalette::kNoBasePalette, 0};
   const CSSValue* base_palette = GetBasePalette();
@@ -62,12 +62,11 @@ FontPalette::BasePaletteValue StyleRuleFontPaletteValues::GetBasePaletteIndex()
     }
   }
 
-  std::optional<double> index =
-      To<CSSPrimitiveValue>(*base_palette).GetValueIfKnown();
-  CHECK(index.has_value())
-      << "Non-simplified calc() expressions should be dropped at parse time";
-  return FontPalette::BasePaletteValue(
-      {FontPalette::kIndexBasePalette, ClampTo<int>(index.value())});
+  MediaValues* media_values =
+      MediaValues::CreateDynamicIfFrameExists(document.GetFrame());
+  int index =
+      To<CSSPrimitiveValue>(*base_palette).ComputeInteger(*media_values);
+  return FontPalette::BasePaletteValue({FontPalette::kIndexBasePalette, index});
 }
 
 Vector<FontPalette::FontPaletteOverride>

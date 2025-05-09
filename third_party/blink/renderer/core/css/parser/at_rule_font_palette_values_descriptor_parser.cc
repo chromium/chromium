@@ -30,9 +30,9 @@ CSSValue* ConsumeBasePalette(CSSParserTokenStream& stream,
 
   CSSPrimitiveValue* palette_index =
       css_parsing_utils::ConsumeInteger(stream, context, 0);
-  if (palette_index && palette_index->GetValueIfKnown().has_value()) {
+  if (palette_index && !palette_index->IsElementDependent()) {
     // Only calc() expressions that can be fully simplified at parse time are
-    // valid. If not, the rely on an element context, and @font-palette-values
+    // valid. If not, they rely on an element context, and @font-palette-values
     // descriptors are not in an element context.
     return palette_index;
   }
@@ -43,9 +43,12 @@ CSSValue* ConsumeColorOverride(CSSParserTokenStream& stream,
                                const CSSParserContext& context) {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
   do {
-    CSSValue* color_index =
+    CSSPrimitiveValue* color_index =
         css_parsing_utils::ConsumeInteger(stream, context, 0);
-    if (!color_index) {
+    if (!color_index || color_index->IsElementDependent()) {
+      // Only calc() expressions that can be fully simplified at parse time are
+      // valid. If not, they rely on an element context, and
+      // @font-palette-values descriptors are not in an element context.
       return nullptr;
     }
     stream.ConsumeWhitespace();
@@ -75,6 +78,8 @@ CSSValue* AtRuleDescriptorParser::ParseAtFontPaletteValuesDescriptor(
     CSSParserTokenStream& stream,
     const CSSParserContext& context) {
   CSSValue* parsed_value = nullptr;
+  CSSParserContext::ParserModeOverridingScope scope(
+      context, kCSSFontPaletteValuesRuleMode);
 
   switch (id) {
     case AtRuleDescriptorID::FontFamily:
