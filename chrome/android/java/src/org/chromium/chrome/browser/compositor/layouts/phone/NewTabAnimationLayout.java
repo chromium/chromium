@@ -69,6 +69,7 @@ import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.resources.ResourceManager;
+import org.chromium.ui.util.TokenHolder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -90,9 +91,9 @@ public class NewTabAnimationLayout extends Layout {
     private final BlackHoleEventFilter mBlackHoleEventFilter;
     private final Handler mHandler;
     private final ToolbarManager mToolbarManager;
-    private final BrowserControlsManager mBrowserControlsManager;
     private final ObservableSupplier<Boolean> mScrimVisibilitySupplier;
     private final CustomTabCount mCustomTabCount;
+    private final BrowserStateBrowserControlsVisibilityDelegate mBrowserVisibilityDelegate;
 
     private @Nullable StaticTabSceneLayer mSceneLayer;
     private AnimatorSet mTabCreatedForegroundAnimation;
@@ -104,6 +105,7 @@ public class NewTabAnimationLayout extends Layout {
     private Runnable mTimeoutRunnable;
     private Callback<Boolean> mVisibilityObserver;
     private @TabId int mNextTabId = Tab.INVALID_TAB_ID;
+    private int mToken = TokenHolder.INVALID_TOKEN;
     private boolean mSkipForceAnimationToFinish;
 
     /**
@@ -138,9 +140,9 @@ public class NewTabAnimationLayout extends Layout {
         mAnimationHostView = animationHostView;
         mHandler = new Handler();
         mToolbarManager = toolbarManager;
-        mBrowserControlsManager = browserControlsManager;
         mScrimVisibilitySupplier = scrimVisibilitySupplier;
         mCustomTabCount = mToolbarManager.getCustomTabCount();
+        mBrowserVisibilityDelegate = browserControlsManager.getBrowserVisibilityDelegate();
     }
 
     @Override
@@ -644,9 +646,9 @@ public class NewTabAnimationLayout extends Layout {
         mSkipForceAnimationToFinish = true;
         startHiding();
 
-        BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate =
-                mBrowserControlsManager.getBrowserVisibilityDelegate();
-        int token = browserControlsVisibilityDelegate.showControlsPersistent();
+        if (!isRegularNtp && mToken == TokenHolder.INVALID_TOKEN) {
+            mToken = mBrowserVisibilityDelegate.showControlsPersistent();
+        }
 
         ToggleTabStackButton tabSwitcherButton =
                 mAnimationHostView.findViewById(R.id.tab_switcher_button);
@@ -719,10 +721,7 @@ public class NewTabAnimationLayout extends Layout {
                                 @Override
                                 public void onAnimationEnd(Animator animation) {
                                     interruptor.destroy();
-                                    mTabCreatedBackgroundAnimation = null;
-                                    mAnimationHostView.removeView(mBackgroundHostView);
-                                    browserControlsVisibilityDelegate.releasePersistentShowingToken(
-                                            token);
+                                    cleanUpAnimation();
                                 }
                             });
                     mBackgroundHostView.setVisibility(View.VISIBLE);
@@ -735,10 +734,8 @@ public class NewTabAnimationLayout extends Layout {
                     mTimeoutRunnable = null;
                     mHandler.removeCallbacks(mAnimationRunnable);
                     mAnimationRunnable = null;
-                    mTabCreatedBackgroundAnimation = null;
+                    cleanUpAnimation();
                     mCustomTabCount.release();
-                    browserControlsVisibilityDelegate.releasePersistentShowingToken(token);
-                    mAnimationHostView.removeView(mBackgroundHostView);
                     if (mVisibilityObserver != null) {
                         visibilitySupplier.removeObserver(mVisibilityObserver);
                         mVisibilityObserver = null;
@@ -763,6 +760,15 @@ public class NewTabAnimationLayout extends Layout {
             mHandler.postDelayed(mTimeoutRunnable, ANIMATION_TIMEOUT_MS);
         } else {
             mHandler.post(mAnimationRunnable);
+        }
+    }
+
+    private void cleanUpAnimation() {
+        mTabCreatedBackgroundAnimation = null;
+        mAnimationHostView.removeView(mBackgroundHostView);
+        if (mToken != TokenHolder.INVALID_TOKEN) {
+            mBrowserVisibilityDelegate.releasePersistentShowingToken(mToken);
+            mToken = TokenHolder.INVALID_TOKEN;
         }
     }
 
