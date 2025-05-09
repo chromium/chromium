@@ -3350,10 +3350,6 @@ public class AwContents implements SmartClipProvider {
         // The difference is important when the user enters full screen and the AwContents is
         // instead attached to a FullScreenView.
         mAwViewMethods.onAttachedToWindow();
-
-        mAwFrameMetricsListener =
-                AwFrameMetricsListener.maybeCreate(
-                        mContainerView, mWindowAndroid.getWindowAndroid());
     }
 
     private static void recordIfAttachedToPopupWindow(View view) {
@@ -3379,10 +3375,6 @@ public class AwContents implements SmartClipProvider {
     @SuppressLint("MissingSuperCall")
     public void onDetachedFromWindow() {
         mAwViewMethods.onDetachedFromWindow();
-
-        mAwFrameMetricsListener = AwFrameMetricsListener
-                .maybeClear(mAwFrameMetricsListener, mContainerView,
-                        mWindowAndroid.getWindowAndroid());
     }
 
     /** @see android.view.View#onWindowFocusChanged() */
@@ -4648,6 +4640,10 @@ public class AwContents implements SmartClipProvider {
                 StylusWritingSettingsState.getInstance().registerObserver(mStylusWritingController);
             }
 
+            mAwFrameMetricsListener =
+                    AwFrameMetricsListener.maybeCreate(
+                            mContainerView, mWindowAndroid.getWindowAndroid());
+
             if (mDisplayCutoutController != null) mDisplayCutoutController.onAttachedToWindow();
 
             mAwWindowCoverageTracker =
@@ -4693,6 +4689,12 @@ public class AwContents implements SmartClipProvider {
 
             mScrollAccessibilityHelper.removePostedCallbacks();
             mZoomControls.dismissZoomPicker();
+
+            mAwFrameMetricsListener =
+                    AwFrameMetricsListener.maybeClear(
+                            mAwFrameMetricsListener,
+                            mContainerView,
+                            mWindowAndroid.getWindowAndroid());
         }
 
         private void detachWindowCoverageTracker() {
