@@ -5,8 +5,6 @@
 #ifndef UI_ANDROID_EVENT_FORWARDER_H_
 #define UI_ANDROID_EVENT_FORWARDER_H_
 
-#include <optional>
-
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -78,8 +76,7 @@ class UI_ANDROID_EXPORT EventForwarder {
       jint android_gesture_classification,
       jint android_button_state,
       jint android_meta_state,
-      jboolean is_touch_handle_event,
-      std::optional<bool> verified_event);
+      jboolean is_touch_handle_event);
 
   void OnMouseEvent(JNIEnv* env,
                     const base::android::JavaParamRef<jobject>& obj,

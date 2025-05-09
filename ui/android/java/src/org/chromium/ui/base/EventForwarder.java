@@ -6,7 +6,6 @@ package org.chromium.ui.base;
 
 import android.content.ClipData;
 import android.content.ClipDescription;
-import android.hardware.input.InputManager;
 import android.net.Uri;
 import android.os.Build;
 import android.view.DragEvent;
@@ -20,11 +19,9 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
-import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContentUriUtils;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.TraceEvent;
@@ -252,17 +249,6 @@ public class EventForwarder {
 
             eventAction = SPenSupport.convertSPenEventAction(eventAction);
 
-            // TODO(crbug.com/406485568): Cleanup after investigating if the events where down time
-            // is later than the event time came from system or not.
-            Boolean verifiedEvent = null;
-            if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.VANILLA_ICE_CREAM
-                    && eventAction == MotionEvent.ACTION_DOWN
-                    && event.getDownTime() > event.getEventTime()) {
-                InputManager input_manager =
-                        ContextUtils.getApplicationContext().getSystemService(InputManager.class);
-                verifiedEvent = (input_manager.verifyInputEvent(event) != null);
-            }
-
             if (!isValidTouchEventActionForNative(eventAction)) return false;
 
             // A zero offset is quite common, in which case the unnecessary copy should be avoided.
@@ -335,8 +321,7 @@ public class EventForwarder {
                                     gestureClassification,
                                     event.getButtonState(),
                                     event.getMetaState(),
-                                    isTouchHandleEvent,
-                                    verifiedEvent);
+                                    isTouchHandleEvent);
 
             if (didOffsetEvent) event.recycle();
             return consumed;
@@ -1067,8 +1052,7 @@ public class EventForwarder {
                 int gestureClassification,
                 int androidButtonState,
                 int androidMetaState,
-                boolean isTouchHandleEvent,
-                @JniType("std::optional<bool>") @Nullable Boolean verifiedEvent);
+                boolean isTouchHandleEvent);
 
         void onMouseEvent(
                 long nativeEventForwarder,
