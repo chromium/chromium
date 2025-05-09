@@ -852,9 +852,7 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwareFrame(
 
 viz::SharedImageFormat VideoResourceUpdater::GetSoftwareOutputFormat(
     VideoPixelFormat input_frame_format,
-    int bits_per_channel,
-    const gfx::ColorSpace& input_frame_color_space,
-    bool& texture_needs_rgb_conversion_out) {
+    int bits_per_channel) {
   if (software_compositor()) {
     return viz::SinglePlaneFormat::kBGRA_8888;
   }
@@ -864,14 +862,12 @@ viz::SharedImageFormat VideoResourceUpdater::GetSoftwareOutputFormat(
 
   if (input_frame_format == PIXEL_FORMAT_Y16) {
     // Unable to display directly as yuv planes so convert it to RGB.
-    texture_needs_rgb_conversion_out = true;
     return PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
   }
   const auto& caps = context_provider_->ContextCapabilities();
   if (caps.disable_one_component_textures) {
     // If GPU compositing is enabled, we need to convert texture to RGB if one
     // component textures are disabled.
-    texture_needs_rgb_conversion_out = true;
     return PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
   }
 
@@ -887,7 +883,6 @@ viz::SharedImageFormat VideoResourceUpdater::GetSoftwareOutputFormat(
              viz::SharedImageFormat::ChannelFormat::k8);
     // Two channel formats are supported only with texture_rg.
     if (!caps.texture_rg || shared_image_caps.disable_r8_shared_images) {
-      texture_needs_rgb_conversion_out = true;
       return PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
     }
   }
@@ -1167,19 +1162,16 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwareFrame(
          input_frame_format == PIXEL_FORMAT_Y16 ||
          IsFrameFormat32BitRGB(input_frame_format));
 
-  bool texture_needs_rgb_conversion = false;
-  viz::SharedImageFormat output_si_format = GetSoftwareOutputFormat(
-      input_frame_format, bits_per_channel, video_frame->ColorSpace(),
-      texture_needs_rgb_conversion);
+  viz::SharedImageFormat output_si_format =
+      GetSoftwareOutputFormat(input_frame_format, bits_per_channel);
   gfx::ColorSpace output_color_space = video_frame->ColorSpace();
 
-  // TODO(skaslev): If we're in software compositing mode, we do the YUV -> RGB
-  // conversion here. That involves an extra copy of each frame to a bitmap.
-  // Obviously, this is suboptimal and should be addressed once ubercompositor
-  // starts shaping up.
-  if (software_compositor() || texture_needs_rgb_conversion) {
-    bits_per_channel = 8;
-
+  // `output_si_format` can be single plane if we're using software compositor
+  // or frame format is 32 bit RGB or we are unable to display frame format as
+  // YUV planes directly and needs RGB conversion.
+  if (output_si_format.is_single_plane()) {
+    DCHECK(output_si_format == viz::SinglePlaneFormat::kBGRA_8888 ||
+           output_si_format == viz::SinglePlaneFormat::kRGBA_8888);
     // The YUV to RGB conversion will be performed when we convert
     // from single-channel textures to an RGBA texture via
     // ConvertVideoFrameToRGBPixels below.
@@ -1226,10 +1218,10 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwareFrame(
   CHECK_EQ(output_si_format, frame_resource->format());
   CHECK_EQ(output_color_space, frame_resource->shared_image()->color_space());
   VideoFrameExternalResource external_resource;
-  if (software_compositor() || texture_needs_rgb_conversion ||
-      IsFrameFormat32BitRGB(input_frame_format)) {
-    CHECK(output_si_format.is_single_plane());
-
+  // `output_si_format` is single plane if we're using software compositor or
+  // frame format is 32 bit RGB or we are unable to display frame format as YUV
+  // planes directly and needs RGB conversion.
+  if (output_si_format.is_single_plane()) {
     if (!frame_resource->Matches(video_frame->unique_id())) {
       // We need to transfer data from |video_frame| to the frame_resource.
       if (software_compositor()) {

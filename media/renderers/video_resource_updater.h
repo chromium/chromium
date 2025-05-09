@@ -165,9 +165,7 @@ class MEDIA_EXPORT VideoResourceUpdater
   // (pixel upload).
   viz::SharedImageFormat GetSoftwareOutputFormat(
       VideoPixelFormat input_frame_format,
-      int bits_per_channel,
-      const gfx::ColorSpace& input_frame_color_space,
-      bool& texture_needs_rgb_conversion_out);
+      int bits_per_channel);
 
   // Transfer RGB pixels from the video frame to software resource through
   // canvas via PaintCanvasVideoRenderer.
