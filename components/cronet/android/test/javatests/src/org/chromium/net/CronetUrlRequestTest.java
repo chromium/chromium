@@ -776,6 +776,35 @@ public class CronetUrlRequestTest {
 
     @Test
     @SmallTest
+    // Regression test for https://crbug.com/415825189.
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason = "Emulators do not contain an up-to-date version of HttpEngine")
+    public void testHttpsRefererToHttpDestitation_notDropped() throws Exception {
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        String refererName = "Referer";
+        String refererValue = "https://example.com/";
+        String url = NativeTestServer.getEchoHeaderURL(refererName);
+        // This tests is explicitly testing referrer to HTTPS while destination is HTTP. Make sure
+        // that changes to NativeTestServer don't break this assumption.
+        assertThat(url).startsWith("http://");
+        UrlRequest.Builder builder =
+                mTestRule
+                        .getTestFramework()
+                        .getEngine()
+                        .newUrlRequestBuilder(
+                                NativeTestServer.getEchoHeaderURL(refererName),
+                                callback,
+                                callback.getExecutor());
+        builder.addHeader(refererName, refererValue);
+        builder.build().start();
+        callback.blockForDone();
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback.mResponseAsString).isEqualTo(refererValue);
+    }
+
+    @Test
+    @SmallTest
     @IgnoreFor(
             implementations = {CronetImplementation.FALLBACK},
             reason = "This is not the case for the fallback implementation")
