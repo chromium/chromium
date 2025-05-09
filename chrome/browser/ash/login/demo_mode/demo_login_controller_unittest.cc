@@ -75,7 +75,7 @@ constexpr char kServerError[] =
 
 constexpr char kSetupDemoAccountFailedRetriableResponse[] =
     R"({
-      "retry_details":{},
+      "retryDetails":{},
       "status":{
         "code":8
       }
