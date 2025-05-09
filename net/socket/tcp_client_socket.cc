@@ -18,6 +18,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/base/port_util.h"
 #include "net/nqe/network_quality_estimator.h"
 #include "net/socket/socket_performance_watcher.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -239,6 +240,10 @@ int TCPClientSocket::DoConnect() {
   }
 
   next_connect_state_ = CONNECT_STATE_CONNECT_COMPLETE;
+
+  if (!IsPortAllowedForIpEndpoint(endpoint)) {
+    return ERR_UNSAFE_PORT;
+  }
 
   if (!socket_->IsValid()) {
     int result = OpenSocket(endpoint.GetFamily());

@@ -791,6 +791,9 @@ NET_EXPORT extern const base::FeatureParam<std::string>
 NET_EXPORT extern const base::FeatureParam<std::string>
     kPortsToRestrictForAbuseMonitorOnly;
 
+// Finch-controlled list of ports that should be blocked on localhost.
+NET_EXPORT BASE_DECLARE_FEATURE(kRestrictAbusePortsOnLocalhost);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

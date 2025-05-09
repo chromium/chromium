@@ -19727,6 +19727,25 @@
             ]
         }
     ],
+    "RestrictAbusePortsOnLocalhost": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "RestrictAbusePortsOnLocalhost",
+                    "params": {
+                        "localhost_restrict_ports": "30987,30988,30989"
+                    },
+                    "enable_features": [
+                        "RestrictAbusePortsOnLocalhost"
+                    ]
+                }
+            ]
+        }
+    ],
     "RetryGetVideoCaptureDeviceInfos": [
         {
             "platforms": [
