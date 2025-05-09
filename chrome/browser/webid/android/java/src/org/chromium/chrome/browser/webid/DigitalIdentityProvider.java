@@ -126,13 +126,13 @@ public class DigitalIdentityProvider {
         sCredentials
                 .create(assumeNonNull(window.getActivity().get()), origin, request)
                 .then(
-                        data -> {
+                        response -> {
                             if (mDigitalIdentityProvider != 0) {
                                 DigitalIdentityProviderJni.get()
                                         .onReceive(
                                                 mDigitalIdentityProvider,
-                                                null,
-                                                data,
+                                                response.mProtocol,
+                                                response.mData,
                                                 DigitalIdentityRequestStatusForMetrics.SUCCESS);
                             }
                         },

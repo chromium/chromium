@@ -104,7 +104,11 @@ public class DigitalCredentialProviderTest {
                 .thenAnswer(
                         input ->
                                 Promise.fulfilled(
-                                        ("{\"token\": \"" + EXPECTED_CREATION_RESPONSE + "\"}")));
+                                        new DigitalCredential(
+                                                "protocol",
+                                                ("{\"token\": \""
+                                                        + EXPECTED_CREATION_RESPONSE
+                                                        + "\"}"))));
 
         mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
         DOMUtils.clickNode(mActivityTestRule.getWebContents(), "create_button");

@@ -40,7 +40,7 @@ public class IdentityCredentialsDelegate {
         return presentationDelegate.get(window, origin, request);
     }
 
-    public Promise<String> create(Activity window, String origin, String request) {
+    public Promise<DigitalCredential> create(Activity window, String origin, String request) {
         DigitalCredentialsCreationDelegate creationDelegate =
                 new DigitalCredentialsCreationDelegate();
         return creationDelegate.create(window, origin, request);

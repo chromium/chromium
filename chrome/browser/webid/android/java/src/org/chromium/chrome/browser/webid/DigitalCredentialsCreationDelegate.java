@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.webid;
 
 import static androidx.core.app.ActivityCompat.startIntentSenderForResult;
+import static androidx.credentials.DigitalCredential.TYPE_DIGITAL_CREDENTIAL;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -16,7 +17,6 @@ import android.os.Looper;
 import android.os.ResultReceiver;
 
 import androidx.annotation.OptIn;
-import androidx.credentials.DigitalCredential;
 import androidx.credentials.exceptions.CreateCredentialException;
 import androidx.credentials.exceptions.CreateCredentialUnknownException;
 import androidx.credentials.provider.PendingIntentHandler;
@@ -25,9 +25,14 @@ import com.google.android.gms.identitycredentials.CreateCredentialRequest;
 import com.google.android.gms.identitycredentials.IdentityCredentialClient;
 import com.google.android.gms.identitycredentials.IdentityCredentialManager;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.webid.IdentityCredentialsDelegate.DigitalCredential;
 
 @NullMarked
 public class DigitalCredentialsCreationDelegate {
@@ -36,14 +41,18 @@ public class DigitalCredentialsCreationDelegate {
     // Arbitrary request code that is used when invoking the GMSCore API.
     private static final int REQUEST_CODE_DIGITAL_CREDENTIALS_CREATION = 777;
 
-    private static final String BUNDLE_KEY_PROVIDER_DATA = "androidx.identitycredentials.BUNDLE_KEY_PROVIDER_DATA";
+    private static final String DC_API_RESPONSE_PROTOCOL_KEY = "protocol";
+    private static final String DC_API_RESPONSE_DATA_KEY = "data";
+
+    private static final String BUNDLE_KEY_PROVIDER_DATA =
+            "androidx.identitycredentials.BUNDLE_KEY_PROVIDER_DATA";
 
     @OptIn(markerClass = androidx.credentials.ExperimentalDigitalCredentialApi.class)
-    public Promise<String> create(Activity window, String origin, String request) {
+    public Promise<DigitalCredential> create(Activity window, String origin, String request) {
         final IdentityCredentialClient client =
                 IdentityCredentialManager.Companion.getClient(window);
 
-        final Promise<String> result = new Promise<String>();
+        final Promise<DigitalCredential> result = new Promise<DigitalCredential>();
 
         ResultReceiver resultReceiver =
                 new ResultReceiver(new Handler(Looper.getMainLooper())) {
@@ -58,8 +67,7 @@ public class DigitalCredentialsCreationDelegate {
                         Log.d(TAG, "Received a response");
                         Intent providerData =
                                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-                                        ? data.getParcelable(
-                                                BUNDLE_KEY_PROVIDER_DATA, Intent.class)
+                                        ? data.getParcelable(BUNDLE_KEY_PROVIDER_DATA, Intent.class)
                                         : data.getParcelable(BUNDLE_KEY_PROVIDER_DATA);
 
                         if (providerData == null) {
@@ -72,7 +80,7 @@ public class DigitalCredentialsCreationDelegate {
 
                         var response =
                                 PendingIntentHandler.retrieveCreateCredentialResponse(
-                                        DigitalCredential.TYPE_DIGITAL_CREDENTIAL, providerData);
+                                        TYPE_DIGITAL_CREDENTIAL, providerData);
                         if (response == null) {
                             CreateCredentialException exception =
                                     PendingIntentHandler.retrieveCreateCredentialException(
@@ -93,7 +101,15 @@ public class DigitalCredentialsCreationDelegate {
                             return;
                         }
                         Log.d(TAG, "Response JSON: " + responseJson);
-                        result.fulfill(responseJson);
+
+                        DigitalCredential digitalCredential = parseResponse(responseJson);
+                        if (digitalCredential == null) {
+                            result.reject(
+                                    new CreateCredentialUnknownException(
+                                            "Failed to parse response"));
+                            return;
+                        }
+                        result.fulfill(digitalCredential);
                     }
                 };
 
@@ -101,7 +117,7 @@ public class DigitalCredentialsCreationDelegate {
         requestBundle.putString("androidx.credentials.BUNDLE_KEY_REQUEST_JSON", request);
         CreateCredentialRequest createRequest =
                 new CreateCredentialRequest(
-                        DigitalCredential.TYPE_DIGITAL_CREDENTIAL,
+                        TYPE_DIGITAL_CREDENTIAL,
                         /* credentialData= */ requestBundle,
                         /* candidateQueryData= */ new Bundle(),
                         origin,
@@ -143,5 +159,17 @@ public class DigitalCredentialsCreationDelegate {
                         });
 
         return result;
+    }
+
+    private static @Nullable DigitalCredential parseResponse(String responseJson) {
+        try {
+            JSONObject credentialJson = new JSONObject(responseJson);
+            String protocol = credentialJson.getString(DC_API_RESPONSE_PROTOCOL_KEY);
+            String data = credentialJson.getString(DC_API_RESPONSE_DATA_KEY);
+            return new DigitalCredential(protocol, data);
+        } catch (JSONException e) {
+            Log.e(TAG, "Failed to parse response JSON: " + e);
+            return null;
+        }
     }
 }
