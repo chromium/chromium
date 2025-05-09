@@ -31,7 +31,7 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     private Integer mLastPromptAction;
     private Integer mLastSurfaceType;
     private boolean mLastTopicsToggleValue;
-    private final String mGoogleEmbeddedPrivacyPolicyURL =
+    private static final String GOOGLE_EMBEDDED_PRIVACY_POLICY_U_R_L =
             "https://policies.google.com/privacy/embedded";
 
     public void setCurrentTopTopics(String... topics) {
@@ -254,6 +254,6 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
             @PrivacyPolicyDomainType int domainType,
             @PrivacyPolicyColorScheme int colorScheme,
             String locale) {
-        return mGoogleEmbeddedPrivacyPolicyURL;
+        return GOOGLE_EMBEDDED_PRIVACY_POLICY_U_R_L;
     }
 }

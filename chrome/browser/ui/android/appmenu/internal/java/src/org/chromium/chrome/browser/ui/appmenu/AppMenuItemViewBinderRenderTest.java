@@ -48,7 +48,7 @@ import java.util.List;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 public class AppMenuItemViewBinderRenderTest {
     @ParameterAnnotations.ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             Arrays.asList(
                     new ParameterSet().value(false, true).name("LiteMode_MenuItemEnabled"),
                     new ParameterSet().value(false, false).name("LiteMode_MenuItemDisabled"),
@@ -83,7 +83,7 @@ public class AppMenuItemViewBinderRenderTest {
 
     private ModelListAdapter.ModelList mMenuList;
     private ModelListAdapter mModelListAdapter;
-    private boolean mMenuItemEnabled;
+    private final boolean mMenuItemEnabled;
 
     public AppMenuItemViewBinderRenderTest(boolean nightMode, boolean menuItemEnabled) {
         mMenuItemEnabled = menuItemEnabled;

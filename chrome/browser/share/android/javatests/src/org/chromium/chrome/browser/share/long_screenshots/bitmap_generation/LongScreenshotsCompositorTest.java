@@ -35,8 +35,8 @@ import org.chromium.url.GURL;
 public class LongScreenshotsCompositorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private TestPlayerCompositorDelegate mCompositorDelegate;
-    private Bitmap mTestBitmap = Bitmap.createBitmap(512, 1024, Bitmap.Config.ARGB_8888);
-    private Rect mRect = new Rect(0, 100, 200, 1100);
+    private final Bitmap mTestBitmap = Bitmap.createBitmap(512, 1024, Bitmap.Config.ARGB_8888);
+    private final Rect mRect = new Rect(0, 100, 200, 1100);
     private boolean mErrorThrown;
 
     @Mock private GURL mTestGurl;

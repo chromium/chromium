@@ -18,13 +18,12 @@ import org.chromium.ui.widget.ButtonCompat;
 public class SadTabView extends ScrollView {
     // Dimension (dp) at which reload button is dynamically sized and content centers
     private static final int MAX_BUTTON_WIDTH_DP = 620;
-    private int mThresholdPx;
-    private float mDensity;
+    private final int mThresholdPx;
 
     public SadTabView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mDensity = context.getResources().getDisplayMetrics().density;
-        mThresholdPx = (int) (mDensity * MAX_BUTTON_WIDTH_DP);
+        float density = context.getResources().getDisplayMetrics().density;
+        mThresholdPx = (int) (density * MAX_BUTTON_WIDTH_DP);
     }
 
     @Override

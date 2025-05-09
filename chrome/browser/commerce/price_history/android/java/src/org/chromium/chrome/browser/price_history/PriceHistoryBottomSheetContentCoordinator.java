@@ -24,9 +24,9 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 @NullMarked
 public class PriceHistoryBottomSheetContentCoordinator
         implements CommerceBottomSheetContentProvider {
-    private Context mContext;
-    private View mPriceHistoryContentContainer;
-    private PriceHistoryBottomSheetContentMediator mMediator;
+    private final Context mContext;
+    private final View mPriceHistoryContentContainer;
+    private final PriceHistoryBottomSheetContentMediator mMediator;
 
     public PriceHistoryBottomSheetContentCoordinator(
             Context context,

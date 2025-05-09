@@ -38,7 +38,7 @@ public class UnsyncedSuggestionsListAnimationDriverTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private UnsyncedSuggestionsListAnimationDriver mDriver;
-    private PropertyModel mListModel = new PropertyModel(SuggestionListProperties.ALL_KEYS);
+    private final PropertyModel mListModel = new PropertyModel(SuggestionListProperties.ALL_KEYS);
     @Mock Runnable mShowRunnable;
     @Mock private ValueAnimator mValueAnimator;
     private Context mContext;

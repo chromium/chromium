@@ -40,7 +40,7 @@ public class PasswordSettingsUpdaterMetricsRecorderTest {
 
     private static final String HISTOGRAM_NAME_BASE = "PasswordManager.PasswordSettings";
 
-    private String mStoreType;
+    private final String mStoreType;
 
     public PasswordSettingsUpdaterMetricsRecorderTest(String account) {
         mStoreType = getStoreType(account);

@@ -63,10 +63,10 @@ public class SingleTabSwitcherOnNtpMediator {
     private @Nullable Tab mMostRecentTab;
     private @Nullable Callback<Integer> mSingleTabCardClickedCallback;
     private @Nullable Runnable mSeeMoreLinkClickedCallback;
-    private @Nullable ThumbnailProvider mThumbnailProvider;
+    private final @Nullable ThumbnailProvider mThumbnailProvider;
     private @Nullable Size mThumbnailSize;
     private @Nullable DisplayStyleObserver mDisplayStyleObserver;
-    private @Nullable ModuleDelegate mModuleDelegate;
+    private final @Nullable ModuleDelegate mModuleDelegate;
 
     SingleTabSwitcherOnNtpMediator(
             Context context,

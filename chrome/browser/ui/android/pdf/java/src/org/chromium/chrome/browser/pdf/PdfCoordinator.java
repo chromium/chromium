@@ -46,7 +46,7 @@ public class PdfCoordinator {
     private final View mView;
     private final FragmentManager mFragmentManager;
     private final Activity mActivity;
-    private String mTabId;
+    private final String mTabId;
 
     /** A unique id to identity the FragmentContainerView in the current PdfPage. */
     private final int mFragmentContainerViewId;
@@ -68,7 +68,7 @@ public class PdfCoordinator {
     private int mFindInPageCount;
 
     /** ProgressBar to be shown during PDF download. */
-    private ProgressBar mProgressBar;
+    private final ProgressBar mProgressBar;
 
     /**
      * Creates a PdfCoordinator for the PdfPage.

@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 /** Java implementation of UnusedSitePermissionsBridge for testing. */
 class FakeUnusedSitePermissionsBridge implements UnusedSitePermissionsBridge.Natives {
-    private HashMap<String, PermissionsData> mUnusedPermissionsDataMap = new HashMap<>();
+    private final HashMap<String, PermissionsData> mUnusedPermissionsDataMap = new HashMap<>();
 
     public void setPermissionsDataForReview(PermissionsData[] permissionsDataList) {
         for (PermissionsData permissionsData : permissionsDataList) {

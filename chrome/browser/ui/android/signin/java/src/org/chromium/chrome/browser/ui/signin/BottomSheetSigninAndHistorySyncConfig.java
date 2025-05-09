@@ -65,12 +65,12 @@ public final class BottomSheetSigninAndHistorySyncConfig {
 
     /** Builder for {@link BottomSheetSigninAndHistorySyncConfig}. */
     public static class Builder {
-        private AccountPickerBottomSheetStrings mBottomSheetStrings;
+        private final AccountPickerBottomSheetStrings mBottomSheetStrings;
         private @StringRes int mHistorySyncTitleId;
         private @StringRes int mHistorySyncSubtitleId;
-        private @NoAccountSigninMode int mNoAccountSigninMode;
-        private @WithAccountSigninMode int mWithAccountSigninMode;
-        private @HistorySyncConfig.OptInMode int mHistoryOptInMode;
+        private final @NoAccountSigninMode int mNoAccountSigninMode;
+        private final @WithAccountSigninMode int mWithAccountSigninMode;
+        private final @HistorySyncConfig.OptInMode int mHistoryOptInMode;
         private @Nullable CoreAccountId mSelectedCoreAccountId;
 
         /**

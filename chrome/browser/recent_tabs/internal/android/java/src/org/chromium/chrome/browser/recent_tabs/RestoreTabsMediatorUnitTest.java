@@ -77,7 +77,7 @@ public class RestoreTabsMediatorUnitTest {
     @Mock private BottomSheetContent mBottomSheetContent;
 
     private PropertyModel mModel = RestoreTabsProperties.createDefaultModel();
-    private RestoreTabsMediator mMediator = new RestoreTabsMediator();
+    private final RestoreTabsMediator mMediator = new RestoreTabsMediator();
 
     @Before
     public void setUp() {

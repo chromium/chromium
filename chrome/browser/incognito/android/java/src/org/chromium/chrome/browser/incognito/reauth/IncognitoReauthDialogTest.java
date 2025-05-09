@@ -43,7 +43,7 @@ public class IncognitoReauthDialogTest {
     @Mock private ModalDialogManager mModalDialogManagerMock;
     @Mock private View mIncognitoReauthViewMock;
 
-    private OnBackPressedCallback mOnBackPressedCallbackMock =
+    private final OnBackPressedCallback mOnBackPressedCallbackMock =
             new OnBackPressedCallback(false) {
                 @Override
                 public void handleOnBackPressed() {}

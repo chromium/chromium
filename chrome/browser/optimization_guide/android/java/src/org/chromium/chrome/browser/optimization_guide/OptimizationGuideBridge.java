@@ -33,7 +33,7 @@ import java.util.List;
 @JNINamespace("optimization_guide::android")
 @NullMarked
 public class OptimizationGuideBridge {
-    private long mNativeOptimizationGuideBridge;
+    private final long mNativeOptimizationGuideBridge;
 
     /** Interface to implement to receive decisions from the optimization guide. */
     public interface OptimizationGuideCallback {

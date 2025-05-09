@@ -63,13 +63,13 @@ public class IncognitoReauthCoordinatorFactory {
      * This allows to show the regular overview mode.
      * Non-null for {@link FullScreenIncognitoReauthCoordinator}.
      */
-    private @Nullable LayoutManager mLayoutManager;
+    private final @Nullable LayoutManager mLayoutManager;
 
     /** Supplier for the HubManager. Non-null for tabbed mode. */
     private final @Nullable OneshotSupplier<HubManager> mHubManagerSupplier;
 
     /** An {@link Intent} which allows to opens regular overview mode from a non-tabbed Activity. */
-    private @Nullable Intent mShowRegularOverviewIntent;
+    private final @Nullable Intent mShowRegularOverviewIntent;
 
     /** A test-only variable used to mock the menu delegate instead of creating one. */
     @VisibleForTesting @Nullable IncognitoReauthMenuDelegate mIncognitoReauthMenuDelegateForTesting;

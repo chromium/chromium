@@ -37,7 +37,7 @@ public class UsbNotificationManagerTest {
             UrlFormatter.formatUrlForSecurityDisplay(TEST_URL, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
 
     private MockNotificationManagerProxy mMockNotificationManager;
-    private UsbNotificationManagerDelegate mDelegate =
+    private final UsbNotificationManagerDelegate mDelegate =
             new UsbNotificationManagerDelegate() {
                 @Override
                 public Intent createTrustedBringTabToFrontIntent(int tabId) {

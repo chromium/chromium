@@ -26,7 +26,7 @@ import org.chromium.url.Origin;
 @NullMarked
 public class DigitalIdentitySafetyInterstitialController {
     private PropertyModel mDialogModel;
-    private Origin mOrigin;
+    private final Origin mOrigin;
 
     public DigitalIdentitySafetyInterstitialController(Origin origin) {
         mOrigin = origin;

@@ -21,7 +21,7 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 public class LevelDBPersistedDataStorage implements PersistedDataStorage {
     private static boolean sSkipNativeAssertionsForTesting;
     private long mNativePersistedStateDB;
-    private String mNamespace;
+    private final String mNamespace;
 
     /**
      * @param profile corresponding to LevelDBPersistedDataStorage instance

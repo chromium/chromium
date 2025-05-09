@@ -44,24 +44,24 @@ import org.chromium.url.GURL;
 public class PrivacySandboxDialogNoticeEeaV2 extends ChromeDialog
         implements DialogInterface.OnShowListener {
     private final PrivacySandboxBridge mPrivacySandboxBridge;
-    private View mContentView;
+    private final View mContentView;
 
-    private LinearLayout mNoticeViewContainer;
-    private ButtonCompat mMoreButton;
-    private LinearLayout mActionButtons;
-    private ScrollView mScrollView;
-    private LinearLayout mSiteSuggestedAdsDropdownElement;
-    private LinearLayout mAdMeasurementDropdownElement;
+    private final LinearLayout mNoticeViewContainer;
+    private final ButtonCompat mMoreButton;
+    private final LinearLayout mActionButtons;
+    private final ScrollView mScrollView;
+    private final LinearLayout mSiteSuggestedAdsDropdownElement;
+    private final LinearLayout mAdMeasurementDropdownElement;
 
     private final CheckableImageView mSiteSuggestedAdsExpandArrowView;
     private final CheckableImageView mAdMeasurementExpandArrowView;
-    private LinearLayout mSiteSuggestedAdsDropdownContainer;
-    private LinearLayout mAdMeasurementDropdownContainer;
-    private @SurfaceType int mSurfaceType;
+    private final LinearLayout mSiteSuggestedAdsDropdownContainer;
+    private final LinearLayout mAdMeasurementDropdownContainer;
+    private final @SurfaceType int mSurfaceType;
 
-    private LinearLayout mPrivacyPolicyView;
-    private FrameLayout mPrivacyPolicyContent;
-    private ChromeImageButton mPrivacyPolicyBackButton;
+    private final LinearLayout mPrivacyPolicyView;
+    private final FrameLayout mPrivacyPolicyContent;
+    private final ChromeImageButton mPrivacyPolicyBackButton;
     private @Nullable TextViewWithLeading mLearnMoreBullet1Description;
     private @Nullable ThinWebView mThinWebView;
     private @Nullable WebContents mWebContents;
@@ -70,7 +70,7 @@ public class PrivacySandboxDialogNoticeEeaV2 extends ChromeDialog
     private long mPrivacyPolicyClickedTimestamp;
     private final ActivityWindowAndroid mActivityWindowAndroid;
     private boolean mIsPrivacyPageLoaded;
-    private View.OnClickListener mOnClickListener;
+    private final View.OnClickListener mOnClickListener;
 
     public PrivacySandboxDialogNoticeEeaV2(
             Activity activity,

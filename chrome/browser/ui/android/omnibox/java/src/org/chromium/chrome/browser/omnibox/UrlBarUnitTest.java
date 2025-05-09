@@ -90,7 +90,7 @@ public class UrlBarUnitTest {
     private static final int MIN_LENGTH_FOR_TRUNCATION = 100;
 
     private UrlBar mUrlBar;
-    private Paint.FontMetrics mFontMetrics = new Paint.FontMetrics();
+    private final Paint.FontMetrics mFontMetrics = new Paint.FontMetrics();
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
     private @Mock UrlBarDelegate mUrlBarDelegate;
     private @Mock ViewStructure mViewStructure;

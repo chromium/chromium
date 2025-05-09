@@ -67,10 +67,10 @@ class TextFieldView extends FrameLayout implements FieldView {
                 return true;
             };
 
-    private PropertyModel mEditorFieldModel;
-    private TextInputLayout mInputLayout;
-    private AutoCompleteTextView mInput;
-    private View mIconsLayer;
+    private final PropertyModel mEditorFieldModel;
+    private final TextInputLayout mInputLayout;
+    private final AutoCompleteTextView mInput;
+    private final View mIconsLayer;
     private @Nullable EditorFieldValidator mValidator;
     private @Nullable TextWatcher mTextFormatter;
     private boolean mInFocusChange;

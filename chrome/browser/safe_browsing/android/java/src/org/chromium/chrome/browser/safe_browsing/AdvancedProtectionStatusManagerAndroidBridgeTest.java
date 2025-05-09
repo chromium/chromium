@@ -27,7 +27,7 @@ import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 @Config(manifest = Config.NONE)
 public class AdvancedProtectionStatusManagerAndroidBridgeTest {
     private static class TestPermissionProvider extends OsAdditionalSecurityPermissionProvider {
-        private boolean mIsAdvancedProtectionRequestedByOs;
+        private final boolean mIsAdvancedProtectionRequestedByOs;
 
         public TestPermissionProvider(boolean isAdvancedProtectionRequestedByOs) {
             mIsAdvancedProtectionRequestedByOs = isAdvancedProtectionRequestedByOs;

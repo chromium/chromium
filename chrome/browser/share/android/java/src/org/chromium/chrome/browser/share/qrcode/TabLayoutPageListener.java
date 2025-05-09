@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * the camera on and off.
  */
 public class TabLayoutPageListener extends TabLayout.TabLayoutOnPageChangeListener {
-    private ArrayList<QrCodeDialogTab> mTabs;
+    private final ArrayList<QrCodeDialogTab> mTabs;
     private int mVisibleTab;
 
     /**

@@ -30,10 +30,10 @@ import org.chromium.ui.util.ColorUtils;
  */
 @NullMarked
 public class DialogWhenLargeContentLayout extends FrameLayout {
-    private TypedValue mFixedWidthMajor = new TypedValue();
-    private TypedValue mFixedWidthMinor = new TypedValue();
-    private TypedValue mFixedHeightMajor = new TypedValue();
-    private TypedValue mFixedHeightMinor = new TypedValue();
+    private final TypedValue mFixedWidthMajor = new TypedValue();
+    private final TypedValue mFixedWidthMinor = new TypedValue();
+    private final TypedValue mFixedHeightMajor = new TypedValue();
+    private final TypedValue mFixedHeightMinor = new TypedValue();
 
     private static boolean sShouldShowAsDialogForTesting;
 

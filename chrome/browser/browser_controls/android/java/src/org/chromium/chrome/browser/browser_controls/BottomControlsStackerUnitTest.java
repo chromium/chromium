@@ -57,7 +57,7 @@ public class BottomControlsStackerUnitTest {
     @Mock private DisplayAndroid mDisplayAndroid;
 
     private BottomControlsStacker mBottomControlsStacker;
-    private Configuration mConfig = new Configuration();
+    private final Configuration mConfig = new Configuration();
 
     @Before
     public void setup() {

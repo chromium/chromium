@@ -25,7 +25,7 @@ public class AuxiliarySearchConfigManager {
 
     /** Static class that implements the initialization-on-demand holder idiom. */
     private static class LazyHolder {
-        static AuxiliarySearchConfigManager sInstance = new AuxiliarySearchConfigManager();
+        static final AuxiliarySearchConfigManager sInstance = new AuxiliarySearchConfigManager();
     }
 
     /** Returns the singleton instance of AuxiliarySearchConfigManager. */

@@ -66,7 +66,7 @@ public class BookmarkModel extends BookmarkBridge {
         void onDeleteBookmarks(String[] titles, boolean isUndoable);
     }
 
-    private ObserverList<BookmarkDeleteObserver> mDeleteObservers = new ObserverList<>();
+    private final ObserverList<BookmarkDeleteObserver> mDeleteObservers = new ObserverList<>();
 
     /**
      * Provides an instance of the bookmark model for the provided profile.

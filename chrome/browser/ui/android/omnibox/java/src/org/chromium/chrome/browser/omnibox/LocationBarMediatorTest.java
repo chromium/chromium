@@ -216,7 +216,7 @@ public class LocationBarMediatorTest {
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
     private Context mContext;
-    private ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
     private LocationBarMediator mMediator;
     private LocationBarMediator mTabletMediator;
     private UrlBarData mUrlBarData;

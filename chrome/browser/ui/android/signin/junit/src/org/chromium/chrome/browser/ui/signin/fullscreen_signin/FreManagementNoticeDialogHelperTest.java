@@ -53,7 +53,7 @@ public class FreManagementNoticeDialogHelperTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Context mContext;
 
-    private CoreAccountInfo mCoreAccountInfo =
+    private final CoreAccountInfo mCoreAccountInfo =
             CoreAccountInfo.createFromEmailAndGaiaId("email@domain.com", new GaiaId("gaia-id"));
     private SignInCallback mCallback;
     private boolean mSignInCompleted;

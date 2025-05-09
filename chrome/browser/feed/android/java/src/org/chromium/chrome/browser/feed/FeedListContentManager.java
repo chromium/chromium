@@ -102,7 +102,7 @@ public class FeedListContentManager implements ListContentManager {
         // An unique ID for this NativeViewContent. This is initially 0, and assigned by
         // FeedListContentManager when needed.
         private int mViewType;
-        @Px private int mLateralPaddingsPx;
+        @Px private final int mLateralPaddingsPx;
 
         /** Holds an inflated native view. */
         public NativeViewContent(@Px int lateralPaddingsPx, String key, View nativeView) {

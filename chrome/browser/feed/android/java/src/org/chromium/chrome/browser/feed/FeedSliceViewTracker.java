@@ -55,15 +55,15 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
     private @Nullable ListLayoutHelper mLayoutHelper;
     // The set of content keys already reported as mostly visible (66% threshold), which is used to
     // determine if a slice has been viewed by the user.
-    private HashSet<String> mContentKeysMostlyVisible = new HashSet<String>();
+    private final HashSet<String> mContentKeysMostlyVisible = new HashSet<String>();
     // The set of content keys already reported as barely visible (5% threshold), which is used to
     // determine if a slice has entered the view port.
-    private HashSet<String> mContentKeysBarelyVisible = new HashSet<>();
+    private final HashSet<String> mContentKeysBarelyVisible = new HashSet<>();
     // The set of content keys for load-more indicators already reported as visible (5% threshold).
-    private HashSet<String> mLoadMoreIndicatorContentKeys = new HashSet<>();
+    private final HashSet<String> mLoadMoreIndicatorContentKeys = new HashSet<>();
     // The set of content keys for load-more indicators already reported as that the user scrolled
     // away from the indicator.
-    private HashSet<String> mLoadMoreAwayFromIndicatorContentKeys = new HashSet<>();
+    private final HashSet<String> mLoadMoreAwayFromIndicatorContentKeys = new HashSet<>();
     private boolean mFeedContentVisible;
     private Observer mObserver;
     // Map from content key to a list of watchers that will get notified for the first-time visible

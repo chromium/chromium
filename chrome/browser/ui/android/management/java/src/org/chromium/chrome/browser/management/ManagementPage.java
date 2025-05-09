@@ -14,7 +14,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 @NullMarked
 public class ManagementPage extends BasicNativePage {
     private final ManagementCoordinator mManagementCoordinator;
-    private String mTitle;
+    private final String mTitle;
 
     /**
      * Create a new instance of the management page.

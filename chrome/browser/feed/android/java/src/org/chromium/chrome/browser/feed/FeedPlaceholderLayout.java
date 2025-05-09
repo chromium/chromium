@@ -68,7 +68,7 @@ public class FeedPlaceholderLayout extends LinearLayout {
     private final Context mContext;
     private final Resources mResources;
     private long mLayoutInflationCompleteMs;
-    private int mScreenWidthDp;
+    private final int mScreenWidthDp;
     private boolean mIsFirstCardDense;
     private UiConfig mUiConfig;
 

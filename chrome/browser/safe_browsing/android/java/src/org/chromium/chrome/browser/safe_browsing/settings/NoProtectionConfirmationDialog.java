@@ -24,12 +24,12 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Dialog to confirm if the user is sure to disable Safe Browsing. */
 @NullMarked
 public class NoProtectionConfirmationDialog {
-    private Context mContext;
+    private final Context mContext;
 
     @MonotonicNonNull private ModalDialogManager mManager;
 
     private @Nullable PropertyModel mModel;
-    private Callback<Boolean> mDidConfirmCallback;
+    private final Callback<Boolean> mDidConfirmCallback;
 
     public static NoProtectionConfirmationDialog create(
             Context context, Callback<Boolean> didConfirmCallback) {

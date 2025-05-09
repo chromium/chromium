@@ -189,10 +189,10 @@ public final class SafetyHubTest {
 
     @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
-    private FakeUnusedSitePermissionsBridge mUnusedPermissionsBridge =
+    private final FakeUnusedSitePermissionsBridge mUnusedPermissionsBridge =
             new FakeUnusedSitePermissionsBridge();
 
-    private FakeNotificationPermissionReviewBridge mNotificationPermissionReviewBridge =
+    private final FakeNotificationPermissionReviewBridge mNotificationPermissionReviewBridge =
             new FakeNotificationPermissionReviewBridge();
 
     private Profile mProfile;

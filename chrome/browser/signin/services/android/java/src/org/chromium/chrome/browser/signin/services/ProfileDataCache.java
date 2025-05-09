@@ -123,7 +123,7 @@ public class ProfileDataCache implements AccountInfoService.Observer {
     // * Else if there is a default config, use that
     // * Else do not display a badge.
     private @Nullable BadgeConfig mDefaultBadgeConfig;
-    private Map<String, BadgeConfig> mPerAccountBadgeConfig = new HashMap<>();
+    private final Map<String, BadgeConfig> mPerAccountBadgeConfig = new HashMap<>();
     private final Drawable mPlaceholderImage;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final Map<String, DisplayableProfileData> mCachedProfileData = new HashMap<>();

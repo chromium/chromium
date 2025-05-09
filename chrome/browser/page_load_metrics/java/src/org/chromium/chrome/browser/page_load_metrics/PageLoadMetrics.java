@@ -207,8 +207,8 @@ public class PageLoadMetrics {
                 float layoutShiftScoreOverall) {}
     }
 
-    private static ObserverList<Observer> sObservers = new ObserverList<>();
-    private static ObserverList<Observer> sPrerenderObservers = new ObserverList<>();
+    private static final ObserverList<Observer> sObservers = new ObserverList<>();
+    private static final ObserverList<Observer> sPrerenderObservers = new ObserverList<>();
     private static boolean sIsPrerendering;
 
     /** Checks if the current observer handles an event for prerendered pages. */

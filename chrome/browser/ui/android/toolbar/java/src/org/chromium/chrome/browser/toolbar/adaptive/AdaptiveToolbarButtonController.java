@@ -65,11 +65,11 @@ public class AdaptiveToolbarButtonController
                 ConfigurationChangedObserver {
 
     private final Context mContext;
-    private ObserverList<ButtonDataObserver> mObservers = new ObserverList<>();
+    private final ObserverList<ButtonDataObserver> mObservers = new ObserverList<>();
     private @Nullable ButtonDataProvider mSingleProvider;
 
     // Maps from {@link AdaptiveToolbarButtonVariant} to {@link ButtonDataProvider}.
-    private Map<Integer, ButtonDataProvider> mButtonDataProviderMap = new HashMap<>();
+    private final Map<Integer, ButtonDataProvider> mButtonDataProviderMap = new HashMap<>();
 
     /**
      * {@link ButtonData} instance returned by {@link AdaptiveToolbarButtonController#get(Tab)}

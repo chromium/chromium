@@ -60,7 +60,7 @@ class TouchToFillPaymentMethodViewBinder {
      */
     private static class TextViewCollectionInfoAccessibilityDelegate
             extends View.AccessibilityDelegate {
-        private FillableItemCollectionInfo mCollectionInfo;
+        private final FillableItemCollectionInfo mCollectionInfo;
 
         public TextViewCollectionInfoAccessibilityDelegate(
                 @NonNull FillableItemCollectionInfo collectionInfo) {

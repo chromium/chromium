@@ -56,7 +56,7 @@ import java.util.List;
 @Batch(Batch.PER_CLASS)
 public class MerchantTrustMessageViewTest {
     @ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
 
     @ClassRule
@@ -84,7 +84,7 @@ public class MerchantTrustMessageViewTest {
     private MessageBannerView mMessageBannerView;
     private View mMessageBannerContent;
     private LayoutParams mParams;
-    private MerchantInfo mMerchantInfo =
+    private final MerchantInfo mMerchantInfo =
             new MerchantInfo(3.51234f, 1640, new GURL("http://dummy/url"), false, 0f, false, false);
 
     @BeforeClass

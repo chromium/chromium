@@ -60,20 +60,20 @@ import java.util.Map;
  */
 public class AccountSelectionCoordinator
         implements AccountSelectionComponent, ActivityStateObserver {
-    private static Map<Integer, WeakReference<AccountSelectionComponent.Delegate>>
+    private static final Map<Integer, WeakReference<AccountSelectionComponent.Delegate>>
             sFedCMDelegateMap = new HashMap<>();
 
     // A counter used to generate a unique ID every time a new showModalDialog()
     // call occurs.
     private static int sCurrentFedcmId;
 
-    private Tab mTab;
-    private WindowAndroid mWindowAndroid;
-    private BottomSheetController mBottomSheetController;
-    private AccountSelectionBottomSheetContent mBottomSheetContent;
-    private AccountSelectionComponent.Delegate mDelegate;
-    private AccountSelectionMediator mMediator;
-    private RecyclerView mSheetItemListView;
+    private final Tab mTab;
+    private final WindowAndroid mWindowAndroid;
+    private final BottomSheetController mBottomSheetController;
+    private final AccountSelectionBottomSheetContent mBottomSheetContent;
+    private final AccountSelectionComponent.Delegate mDelegate;
+    private final AccountSelectionMediator mMediator;
+    private final RecyclerView mSheetItemListView;
     private WeakReference<AccountSelectionComponent> mPopupComponent;
     private WeakReference<AccountSelectionComponent.Delegate> mOpenerDelegate;
 

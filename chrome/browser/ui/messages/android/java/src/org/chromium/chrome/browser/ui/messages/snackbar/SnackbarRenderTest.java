@@ -48,7 +48,7 @@ public class SnackbarRenderTest {
     private static final int SNACKBAR_MAX_TIMEOUT_MS = 10000;
 
     @ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
 
     @Rule

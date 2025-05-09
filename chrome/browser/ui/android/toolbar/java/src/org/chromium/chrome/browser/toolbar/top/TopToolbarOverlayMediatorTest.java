@@ -72,9 +72,9 @@ public class TopToolbarOverlayMediatorTest {
     @Mock private ObservableSupplier<Tab> mTabSupplier;
 
     @Captor private ArgumentCaptor<Callback<Tab>> mActivityTabObserverCaptor;
-    private ObservableSupplierImpl<Integer> mBottomControlsOffsetSupplier =
+    private final ObservableSupplierImpl<Integer> mBottomControlsOffsetSupplier =
             new ObservableSupplierImpl<>(0);
-    private ObservableSupplierImpl<Boolean> mSuppressToolbarSceneLayerSupplier =
+    private final ObservableSupplierImpl<Boolean> mSuppressToolbarSceneLayerSupplier =
             new ObservableSupplierImpl<>(false);
 
     @Before

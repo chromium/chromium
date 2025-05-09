@@ -136,7 +136,7 @@ public class TouchToFillControllerTest {
     private static final WebauthnCredential DINO =
             new WebauthnCredential("dinos.com", new byte[] {1}, new byte[] {2}, "dino@example.com");
     private static final @Px int DESIRED_FAVICON_SIZE = 64;
-    private Bitmap mBitmapFromImageFetcher =
+    private final Bitmap mBitmapFromImageFetcher =
             Bitmap.createBitmap(/* width= */ 1, /* height= */ 1, Bitmap.Config.ARGB_8888);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -147,7 +147,7 @@ public class TouchToFillControllerTest {
     // Can't be local, as it has to be initialized by initMocks.
     @Captor private ArgumentCaptor<LargeIconBridge.LargeIconCallback> mCallbackArgumentCaptor;
 
-    private TestImageFetcher mImageFetcher = spy(new TestImageFetcher());
+    private final TestImageFetcher mImageFetcher = spy(new TestImageFetcher());
     private final Context mContext = ContextUtils.getApplicationContext();
     private final TouchToFillMediator mMediator = new TouchToFillMediator();
     private final PropertyModel mModel =

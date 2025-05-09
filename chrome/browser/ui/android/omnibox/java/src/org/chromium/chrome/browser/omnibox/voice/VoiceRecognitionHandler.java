@@ -63,7 +63,7 @@ public class VoiceRecognitionHandler {
     private @Nullable Long mQueryStartTimeMs;
     private @Nullable WebContentsObserver mVoiceSearchWebContentsObserver;
     private CallbackController mCallbackController = new CallbackController();
-    private ObservableSupplier<Profile> mProfileSupplier;
+    private final ObservableSupplier<Profile> mProfileSupplier;
     private @Nullable Boolean mIsVoiceSearchEnabledCached;
     private boolean mRegisteredActivityStateListener;
 

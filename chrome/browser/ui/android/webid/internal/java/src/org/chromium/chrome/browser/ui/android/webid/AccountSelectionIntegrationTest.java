@@ -78,12 +78,12 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AccountSelectionIntegrationTest extends AccountSelectionIntegrationTestBase {
     @ParameterAnnotations.ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             Arrays.asList(
                     new ParameterSet().value(RpMode.PASSIVE).name("passive"),
                     new ParameterSet().value(RpMode.ACTIVE).name("active"));
 
-    private @BottomSheetController.SheetState int mExpectedSheetState;
+    private final @BottomSheetController.SheetState int mExpectedSheetState;
 
     @Mock AccountSelectionComponent.Delegate mCustomTabMockBridge;
 

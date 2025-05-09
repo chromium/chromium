@@ -45,7 +45,7 @@ public class AuxiliarySearchMultiDataControllerImpl extends AuxiliarySearchContr
     private boolean mExpectDonating;
 
     // A set of ActivityLifecycleDispatcher that this controller tracks.
-    private Set<ActivityLifecycleDispatcher> mActivityLifecycleDispatcherSet;
+    private final Set<ActivityLifecycleDispatcher> mActivityLifecycleDispatcherSet;
 
     // It is null when the controller doesn't observe top sites changes.
     private @Nullable AuxiliarySearchTopSiteProviderBridge mAuxiliarySearchTopSiteProviderBridge;

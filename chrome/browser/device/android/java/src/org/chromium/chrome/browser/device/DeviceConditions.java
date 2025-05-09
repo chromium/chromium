@@ -30,12 +30,12 @@ public class DeviceConditions {
     // Battery and power related variables.
     private boolean mPowerConnected;
     private int mBatteryPercentage;
-    private boolean mPowerSaveOn;
-    private boolean mScreenOnAndUnlocked;
+    private final boolean mPowerSaveOn;
+    private final boolean mScreenOnAndUnlocked;
 
     // Network related variables.
     private @ConnectionType int mNetConnectionType = ConnectionType.CONNECTION_UNKNOWN;
-    private boolean mActiveNetworkMetered;
+    private final boolean mActiveNetworkMetered;
 
     // If true, getCurrentNetConnectionType() will always return CONNECTION_NONE.
     @VisibleForTesting public static boolean sForceConnectionTypeForTesting;

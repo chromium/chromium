@@ -52,7 +52,7 @@ public class AuthenticatorSelectionDialogBridgeTest {
 
     private static final long NATIVE_AUTHENTICATOR_SELECTION_DIALOG_VIEW = 100L;
 
-    private List<AuthenticatorOption> mOptions = new ArrayList<>();
+    private final List<AuthenticatorOption> mOptions = new ArrayList<>();
 
     private FakeModalDialogManager mModalDialogManager;
     private AuthenticatorSelectionDialogBridge mAuthenticatorSelectionDialogBridge;

@@ -44,22 +44,22 @@ import org.chromium.url.GURL;
 public class PrivacySandboxDialogNoticeROW extends ChromeDialog
         implements DialogInterface.OnShowListener {
     private final PrivacySandboxBridge mPrivacySandboxBridge;
-    private View mContentView;
+    private final View mContentView;
 
-    private LinearLayout mNoticeViewContainer;
+    private final LinearLayout mNoticeViewContainer;
     private final CheckableImageView mExpandArrowView;
-    private LinearLayout mDropdownContainer;
-    private LinearLayout mDropdownElement;
-    private ButtonCompat mMoreButton;
-    private LinearLayout mActionButtons;
-    private ScrollView mScrollView;
-    private @SurfaceType int mSurfaceType;
+    private final LinearLayout mDropdownContainer;
+    private final LinearLayout mDropdownElement;
+    private final ButtonCompat mMoreButton;
+    private final LinearLayout mActionButtons;
+    private final ScrollView mScrollView;
+    private final @SurfaceType int mSurfaceType;
     private @StringRes int mLearnMoreBullet2StringRes =
             R.string.privacy_sandbox_m1_notice_row_learn_more_bullet_2;
 
-    private LinearLayout mPrivacyPolicyView;
-    private FrameLayout mPrivacyPolicyContent;
-    private ChromeImageButton mPrivacyPolicyBackButton;
+    private final LinearLayout mPrivacyPolicyView;
+    private final FrameLayout mPrivacyPolicyContent;
+    private final ChromeImageButton mPrivacyPolicyBackButton;
     private @Nullable TextViewWithLeading mLearnMoreDescription5V2;
     private @Nullable ThinWebView mThinWebView;
     private @Nullable WebContents mWebContents;
@@ -68,7 +68,7 @@ public class PrivacySandboxDialogNoticeROW extends ChromeDialog
     private long mPrivacyPolicyClickedTimestamp;
     private final ActivityWindowAndroid mActivityWindowAndroid;
     private boolean mIsPrivacyPageLoaded;
-    private View.OnClickListener mOnClickListener;
+    private final View.OnClickListener mOnClickListener;
 
     public PrivacySandboxDialogNoticeROW(
             Activity activity,

@@ -52,7 +52,7 @@ import org.chromium.url.GURL;
 public class ToggleTabStackButtonCoordinator {
     private final CallbackController mCallbackController = new CallbackController();
     private final Context mContext;
-    private ToggleTabStackButton mToggleTabStackButton;
+    private final ToggleTabStackButton mToggleTabStackButton;
     private final UserEducationHelper mUserEducationHelper;
     private final Supplier<Boolean> mIsIncognitoSupplier;
     private final OneshotSupplier<Boolean> mPromoShownOneshotSupplier;
@@ -66,7 +66,7 @@ public class ToggleTabStackButtonCoordinator {
     private @Nullable ObservableSupplier<Integer> mArchivedTabCountSupplier;
     private @Nullable Runnable mArchivedTabsIphShownCallback;
     private @Nullable Runnable mArchivedTabsIphDismissedCallback;
-    private Callback<Integer> mArchivedTabCountObserver = this::maybeShowDeclutterIph;
+    private final Callback<Integer> mArchivedTabCountObserver = this::maybeShowDeclutterIph;
     private boolean mAlreadyRequestedDeclutterIph;
 
     /**

@@ -77,10 +77,9 @@ public class AuxiliarySearchProvider {
 
     private final Context mContext;
     private final Profile mProfile;
-    private final @AuxiliarySearchHostType int mHostType;
     private final @Nullable TabModelSelector mTabModelSelector;
 
-    private Long mTabMaxAgeMillis;
+    private final Long mTabMaxAgeMillis;
     @Nullable private AuxiliarySearchBridge mAuxiliarySearchBridge;
 
     public AuxiliarySearchProvider(
@@ -90,8 +89,7 @@ public class AuxiliarySearchProvider {
             @AuxiliarySearchHostType int hostType) {
         mContext = context;
         mProfile = profile;
-        mHostType = hostType;
-        if (mHostType == AuxiliarySearchHostType.CTA) {
+        if (hostType == AuxiliarySearchHostType.CTA) {
             mAuxiliarySearchBridge = new AuxiliarySearchBridge(mProfile);
         }
         mTabModelSelector = tabModelSelector;

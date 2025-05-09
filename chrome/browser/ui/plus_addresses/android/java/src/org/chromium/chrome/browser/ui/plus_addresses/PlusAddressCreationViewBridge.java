@@ -31,12 +31,12 @@ import org.chromium.ui.base.WindowAndroid;
 @JNINamespace("plus_addresses")
 public class PlusAddressCreationViewBridge {
     private long mNativePlusAddressCreationPromptAndroid;
-    private Context mContext;
-    private BottomSheetController mBottomSheetController;
-    private LayoutStateProvider mLayoutStateProvider;
+    private final Context mContext;
+    private final BottomSheetController mBottomSheetController;
+    private final LayoutStateProvider mLayoutStateProvider;
     private final TabModel mTabModel;
     private final TabModelSelector mTabModelSelector;
-    private CoordinatorFactory mCoordinatorFactory;
+    private final CoordinatorFactory mCoordinatorFactory;
     @Nullable private PlusAddressCreationCoordinator mCoordinator;
 
     @VisibleForTesting

@@ -49,7 +49,7 @@ class DropdownItemViewInfoListBuilder {
     private HeaderProcessor mHeaderProcessor;
     private @Nullable Supplier<ShareDelegate> mShareDelegateSupplier;
     private Optional<OmniboxImageSupplier> mImageSupplier;
-    private BookmarkState mBookmarkState;
+    private final BookmarkState mBookmarkState;
 
     DropdownItemViewInfoListBuilder(
             Supplier<@Nullable Tab> tabSupplier, BookmarkState bookmarkState) {

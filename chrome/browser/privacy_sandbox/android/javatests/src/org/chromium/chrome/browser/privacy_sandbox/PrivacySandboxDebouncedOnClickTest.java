@@ -41,7 +41,7 @@ import java.util.List;
 @Batch(Batch.PER_CLASS)
 public final class PrivacySandboxDebouncedOnClickTest {
     @ParameterAnnotations.ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             Arrays.asList(
                     new ParameterSet()
                             .value(R.id.ack_button, PrivacySandboxDebouncedOnClick.ClickEvent.ACK)
@@ -68,11 +68,11 @@ public final class PrivacySandboxDebouncedOnClickTest {
                                     PrivacySandboxDebouncedOnClick.ClickEvent.PRIVACY_POLICY_BACK)
                             .name("PrivacyPolicyBack"));
 
-    private View mMockView;
+    private final View mMockView;
     private int mNumClicks;
-    private int mButtonRid;
-    private int mExpectedClickEvent;
-    private PrivacySandboxDebouncedOnClickImpl mFakeDialog;
+    private final int mButtonRid;
+    private final int mExpectedClickEvent;
+    private final PrivacySandboxDebouncedOnClickImpl mFakeDialog;
 
     public PrivacySandboxDebouncedOnClickTest(int rid, int clickEvent) {
         mMockView = mock(View.class);

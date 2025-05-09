@@ -24,8 +24,8 @@ import org.chromium.ui.base.WindowAndroid;
  */
 @NullMarked
 public class BottomSheetFocusHelper extends EmptyBottomSheetObserver {
-    private WindowAndroid mWindowAndroid;
-    private BottomSheetController mBottomSheetController;
+    private final WindowAndroid mWindowAndroid;
+    private final BottomSheetController mBottomSheetController;
     private @Nullable WebContentsAccessibility mWebContentsAccessibility;
 
     public BottomSheetFocusHelper(

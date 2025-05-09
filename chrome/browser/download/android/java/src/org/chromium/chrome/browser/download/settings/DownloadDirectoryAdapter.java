@@ -58,13 +58,13 @@ public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
 
     protected int mSelectedPosition = SELECTED_ITEM_NOT_INITIALIZED;
 
-    private Context mContext;
-    private LayoutInflater mLayoutInflater;
+    private final Context mContext;
+    private final LayoutInflater mLayoutInflater;
     protected Delegate mDelegate;
 
-    private List<DirectoryOption> mCanonicalOptions = new ArrayList<>();
-    private List<DirectoryOption> mAdditionalOptions = new ArrayList<>();
-    private List<DirectoryOption> mErrorOptions = new ArrayList<>();
+    private final List<DirectoryOption> mCanonicalOptions = new ArrayList<>();
+    private final List<DirectoryOption> mAdditionalOptions = new ArrayList<>();
+    private final List<DirectoryOption> mErrorOptions = new ArrayList<>();
 
     public DownloadDirectoryAdapter(Context context, Delegate delegate) {
         super(context, android.R.layout.simple_spinner_item);

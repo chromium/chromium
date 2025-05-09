@@ -103,7 +103,7 @@ public class TaskManagerServiceBridge {
     }
 
     public static class ObserverHandle {
-        private long mPointer;
+        private final long mPointer;
 
         ObserverHandle(long pointer) {
             mPointer = pointer;

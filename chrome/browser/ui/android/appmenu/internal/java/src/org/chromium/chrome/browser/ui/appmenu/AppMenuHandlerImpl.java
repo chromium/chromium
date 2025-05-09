@@ -71,7 +71,7 @@ class AppMenuHandlerImpl
     private final WindowAndroid mWindowAndroid;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private @Nullable ModelList mModelList;
-    private ListObserver<Void> mListObserver;
+    private final ListObserver<Void> mListObserver;
     private @Nullable Callback<Integer> mTestOptionsItemSelectedListener;
     private @MonotonicNonNull KeyboardVisibilityDelegate.KeyboardVisibilityListener
             mKeyboardVisibilityListener;

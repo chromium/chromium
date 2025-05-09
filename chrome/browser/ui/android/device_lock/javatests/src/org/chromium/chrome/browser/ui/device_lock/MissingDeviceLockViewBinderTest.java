@@ -48,9 +48,9 @@ public class MissingDeviceLockViewBinderTest {
 
     private static Activity sActivity;
 
-    private AtomicBoolean mCreateDeviceLockButtonClicked = new AtomicBoolean();
-    private AtomicBoolean mContinueClicked = new AtomicBoolean();
-    private AtomicBoolean mCheckboxToggled = new AtomicBoolean();
+    private final AtomicBoolean mCreateDeviceLockButtonClicked = new AtomicBoolean();
+    private final AtomicBoolean mContinueClicked = new AtomicBoolean();
+    private final AtomicBoolean mCheckboxToggled = new AtomicBoolean();
 
     private MissingDeviceLockView mView;
     private PropertyModel mViewModel;

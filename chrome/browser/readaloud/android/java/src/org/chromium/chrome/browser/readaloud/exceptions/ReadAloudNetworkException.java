@@ -11,7 +11,7 @@ import org.chromium.chrome.browser.readaloud.exceptions.ReadAloudException.ReadA
 @NullMarked
 public class ReadAloudNetworkException extends ReadAloudException {
 
-    private int mChromeErrorCode;
+    private final int mChromeErrorCode;
 
     public ReadAloudNetworkException(int chromeErrorCode, @ReadAloudErrorCode int canonicalCode) {
         super("Chrome network error code: " + chromeErrorCode, null, canonicalCode);

@@ -134,7 +134,7 @@ public class MerchantTrustSignalsCoordinatorTest {
     private static final String DIFFERENT_HOST = "different_host";
     private static final String FAKE_URL = "fake_url";
 
-    private MerchantInfo mDummyMerchantTrustSignals =
+    private final MerchantInfo mDummyMerchantTrustSignals =
             new MerchantInfo(4.5f, 100, null, false, 0f, false, false);
     private MerchantTrustSignalsCoordinator mCoordinator;
     private String mSerializedTimestamps;

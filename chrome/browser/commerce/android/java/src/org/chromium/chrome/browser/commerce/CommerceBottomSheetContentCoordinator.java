@@ -40,11 +40,11 @@ import java.util.List;
 public class CommerceBottomSheetContentCoordinator implements CommerceBottomSheetContentController {
     private static final long CONTENT_PROVIDER_TIMEOUT_MS = 200;
 
-    private List<CommerceBottomSheetContentProvider> mContentProviders = new ArrayList<>();
+    private final List<CommerceBottomSheetContentProvider> mContentProviders = new ArrayList<>();
     private final CommerceBottomSheetContentMediator mMediator;
-    private RecyclerView mContentRecyclerView;
-    private View mCommerceBottomSheetContentContainer;
-    private ModelList mModelList;
+    private final RecyclerView mContentRecyclerView;
+    private final View mCommerceBottomSheetContentContainer;
+    private final ModelList mModelList;
     private @Nullable Long mSheetOpenTimeMs;
 
     @MonotonicNonNull private CallbackController mCallbackController;

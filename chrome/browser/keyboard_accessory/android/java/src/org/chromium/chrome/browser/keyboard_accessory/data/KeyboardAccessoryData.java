@@ -140,7 +140,7 @@ public class KeyboardAccessoryData {
     public static final class Action {
         private final Callback<Action> mActionCallback;
         private final @Nullable Callback<Action> mLongPressCallback;
-        private @AccessoryAction int mType;
+        private final @AccessoryAction int mType;
 
         public Action(@AccessoryAction int type, Callback<Action> actionCallback) {
             this(type, actionCallback, null);
@@ -415,9 +415,9 @@ public class KeyboardAccessoryData {
 
     /** Represents a Google Wallet loyalty card to be shown on the manual fallback UI. */
     public static final class LoyaltyCardInfo {
-        private String mMerchantName;
-        private GURL mProgramLogoUrl;
-        private UserInfoField mLoyaltyCardNumber;
+        private final String mMerchantName;
+        private final GURL mProgramLogoUrl;
+        private final UserInfoField mLoyaltyCardNumber;
 
         public LoyaltyCardInfo(
                 String merchantName, GURL programLogoUrl, UserInfoField loyaltyCardNumber) {

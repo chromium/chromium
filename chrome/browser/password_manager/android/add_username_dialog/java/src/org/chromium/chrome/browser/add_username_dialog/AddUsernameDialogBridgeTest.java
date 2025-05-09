@@ -43,7 +43,7 @@ public class AddUsernameDialogBridgeTest {
 
     private static final long sTestNativePointer = 1;
 
-    private FakeModalDialogManager mModalDialogManager = new FakeModalDialogManager(0);
+    private final FakeModalDialogManager mModalDialogManager = new FakeModalDialogManager(0);
     private AddUsernameDialogBridge mBridge;
 
     @Before

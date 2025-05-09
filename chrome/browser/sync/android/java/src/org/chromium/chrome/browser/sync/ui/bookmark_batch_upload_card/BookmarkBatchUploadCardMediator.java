@@ -64,7 +64,7 @@ class BookmarkBatchUploadCardMediator
     private final ReauthenticatorBridge mReauthenticatorBridge;
     private final Runnable mBatchUploadCardChangeAction;
 
-    private @Nullable SyncService mSyncService;
+    private final @Nullable SyncService mSyncService;
     private @MonotonicNonNull HashMap<Integer, LocalDataDescription> mLocalDataDescriptionsMap;
     private boolean mShouldBeVisible;
 

@@ -23,7 +23,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 @NullMarked
 public class IncognitoReauthManager {
     private static @Nullable Boolean sIsIncognitoReauthFeatureAvailableForTesting;
-    private ReauthenticatorBridge mReauthenticatorBridge;
+    private final ReauthenticatorBridge mReauthenticatorBridge;
 
     /**
      * A callback interface which is used for re-authentication in {@link

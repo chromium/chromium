@@ -99,7 +99,7 @@ public class ReadAloudMetrics {
         int COUNT = 7;
     }
 
-    private static float[] sPlaybackSpeeds = {0.5f, 0.8f, 1.0f, 1.2f, 1.5f, 2.0f, 3.0f, 4.0f};
+    private static final float[] sPlaybackSpeeds = {0.5f, 0.8f, 1.0f, 1.2f, 1.5f, 2.0f, 3.0f, 4.0f};
 
     /**
      * Reasons for stopping a playback defined in readaloud/enums.xml.

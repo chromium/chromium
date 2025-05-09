@@ -74,7 +74,7 @@ public class LocaleManagerDelegate {
     private @Nullable LocaleTemplateUrlLoader mLocaleTemplateUrlLoader;
     private DefaultSearchEngineDialogHelper.Delegate mSearchEngineHelperDelegate;
 
-    private SnackbarController mSnackbarController =
+    private final SnackbarController mSnackbarController =
             new SnackbarController() {
                 @Override
                 public void onDismissNoAction(@Nullable Object actionData) {}

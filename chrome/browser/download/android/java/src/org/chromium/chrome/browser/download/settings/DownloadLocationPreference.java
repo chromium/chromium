@@ -28,7 +28,7 @@ public class DownloadLocationPreference extends DialogPreference
      * Provides data for the list of available download directories options. Uses an asynchronous
      * operation to query the directory options.
      */
-    private DownloadLocationPreferenceAdapter mAdapter;
+    private final DownloadLocationPreferenceAdapter mAdapter;
 
     private DownloadLocationHelper mLocationHelper;
 

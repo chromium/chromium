@@ -44,11 +44,11 @@ public class MultiInstanceStateUnitTest {
         }
     }
 
-    private static Map<AppTask, RecentTaskInfo> sTasks = new HashMap<>();
+    private static final Map<AppTask, RecentTaskInfo> sTasks = new HashMap<>();
 
     private MultiInstanceState mMultiInstanceState;
 
-    private String mBaseActivityClassName = BrowserActivity.class.getName();
+    private final String mBaseActivityClassName = BrowserActivity.class.getName();
 
     private static class BaseActivity extends Activity {
         private int mTaskId;

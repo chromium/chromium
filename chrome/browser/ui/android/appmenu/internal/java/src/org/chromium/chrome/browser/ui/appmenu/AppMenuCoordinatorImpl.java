@@ -27,8 +27,8 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
     private final MenuButtonDelegate mButtonDelegate;
     private final AppMenuDelegate mAppMenuDelegate;
 
-    private AppMenuPropertiesDelegate mAppMenuPropertiesDelegate;
-    private AppMenuHandlerImpl mAppMenuHandler;
+    private final AppMenuPropertiesDelegate mAppMenuPropertiesDelegate;
+    private final AppMenuHandlerImpl mAppMenuHandler;
 
     /**
      * Construct a new AppMenuCoordinatorImpl.

@@ -132,7 +132,7 @@ public class PriceInsightsBottomSheetMediatorTest {
                     true);
 
     private PriceInsightsBottomSheetMediator mPriceInsightsMediator;
-    private PropertyModel mPropertyModel = new PropertyModel(ALL_KEYS);
+    private final PropertyModel mPropertyModel = new PropertyModel(ALL_KEYS);
     private Activity mActivity;
 
     @Before

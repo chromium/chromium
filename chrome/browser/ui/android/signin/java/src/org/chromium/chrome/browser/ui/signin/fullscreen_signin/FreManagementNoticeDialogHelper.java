@@ -55,7 +55,7 @@ final class FreManagementNoticeDialogHelper {
     private FreManagementNoticeDialogHelper() {}
 
     private static class WrappedSigninCallback implements SignInCallback {
-        private @Nullable SignInCallback mWrappedCallback;
+        private final @Nullable SignInCallback mWrappedCallback;
 
         public WrappedSigninCallback(@Nullable SignInCallback callback) {
             mWrappedCallback = callback;

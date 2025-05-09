@@ -203,7 +203,7 @@ public class ShareSheetTest {
      * returns a configurable list of packages as available for ACTION_SEND type intents.
      */
     private class PackageManagerReplacingContext extends ContextWrapper {
-        private ShareSheetTest mTest;
+        private final ShareSheetTest mTest;
 
         public PackageManagerReplacingContext(Context baseContext, ShareSheetTest test) {
             super(baseContext);

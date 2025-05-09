@@ -12,7 +12,7 @@ import org.chromium.build.annotations.Nullable;
 /** Utility class for native to request AppUpdateInfo */
 @NullMarked
 public class AppUpdateInfoUtils {
-    private static @Nullable AppUpdateInfoDelegate sDelegate =
+    private static final @Nullable AppUpdateInfoDelegate sDelegate =
             ServiceLoaderUtil.maybeCreate(AppUpdateInfoDelegate.class);
 
     @CalledByNative

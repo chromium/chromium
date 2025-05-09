@@ -67,7 +67,7 @@ public class EdgeToEdgeBottomChinMediatorTest {
     private PropertyModel mModel;
     private EdgeToEdgeBottomChinMediator mMediator;
 
-    private final int mDefaultHeight = 60;
+    private static final int DEFAULT_HEIGHT = 60;
 
     @Before
     public void setUp() {
@@ -130,7 +130,7 @@ public class EdgeToEdgeBottomChinMediatorTest {
         enableDispatchYOffset();
 
         // make view visible
-        mModel.set(HEIGHT, mDefaultHeight);
+        mModel.set(HEIGHT, DEFAULT_HEIGHT);
         mMediator.onBrowserControlsOffsetUpdate(0);
 
         mMediator.changeBottomChinColor(Color.BLUE);
@@ -165,7 +165,7 @@ public class EdgeToEdgeBottomChinMediatorTest {
         enableDispatchYOffset();
         OffsetTag offsetTag = OffsetTag.createRandom();
         mModel.set(OFFSET_TAG, offsetTag);
-        mModel.set(HEIGHT, mDefaultHeight);
+        mModel.set(HEIGHT, DEFAULT_HEIGHT);
         assertEquals("The color should default to 0.", 0, mModel.get(COLOR));
 
         // make view visible
@@ -176,12 +176,12 @@ public class EdgeToEdgeBottomChinMediatorTest {
         assertEquals("The color should have been updated to blue.", Color.BLUE, mModel.get(COLOR));
 
         // scroll view but keep it visible
-        doReturn(mDefaultHeight / 2).when(mBrowserControlsStateProvider).getBottomControlOffset();
+        doReturn(DEFAULT_HEIGHT / 2).when(mBrowserControlsStateProvider).getBottomControlOffset();
         mMediator.changeBottomChinColor(Color.RED);
         assertEquals("The color should have been updated to red.", Color.RED, mModel.get(COLOR));
 
         // scroll view offscreen
-        doReturn(mDefaultHeight).when(mBrowserControlsStateProvider).getBottomControlOffset();
+        doReturn(DEFAULT_HEIGHT).when(mBrowserControlsStateProvider).getBottomControlOffset();
         mMediator.changeBottomChinColor(Color.WHITE);
         assertEquals("The color should have not been updated.", Color.RED, mModel.get(COLOR));
 
@@ -196,7 +196,7 @@ public class EdgeToEdgeBottomChinMediatorTest {
         enableDispatchYOffset();
 
         // make view visible
-        mModel.set(HEIGHT, mDefaultHeight);
+        mModel.set(HEIGHT, DEFAULT_HEIGHT);
         mMediator.onBrowserControlsOffsetUpdate(0);
 
         mMediator.changeBottomChinDividerColor(Color.WHITE);

@@ -80,7 +80,7 @@ public class RecentActivityListMediatorUnitTest {
     private PropertyModel mPropertyModel;
     private ModelList mModelList;
     private RecentActivityListMediator mMediator;
-    private List<ActivityLogItem> mTestItems = new ArrayList<>();
+    private final List<ActivityLogItem> mTestItems = new ArrayList<>();
 
     @Before
     public void setup() {

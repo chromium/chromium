@@ -38,7 +38,7 @@ import java.lang.annotation.RetentionPolicy;
 @NullMarked
 public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserver {
     private static final String TAG = "DSEUtils";
-    private static ProfileKeyedMap<SearchEngineUtils> sProfileKeyedUtils =
+    private static final ProfileKeyedMap<SearchEngineUtils> sProfileKeyedUtils =
             ProfileKeyedMap.createMapOfDestroyables();
     private static @Nullable SearchEngineUtils sInstanceForTesting;
 

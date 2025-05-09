@@ -52,7 +52,7 @@ import java.util.concurrent.TimeUnit;
 public class AdvancedProtectionMediatorTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private Context mContext;
-    private WeakReference<Context> mWeakContext = new WeakReference<Context>(mContext);
+    private final WeakReference<Context> mWeakContext = new WeakReference<Context>(mContext);
     private final UnownedUserDataHost mWindowUserDataHost = new UnownedUserDataHost();
 
     @Mock private ManagedMessageDispatcher mMessageDispatcher;

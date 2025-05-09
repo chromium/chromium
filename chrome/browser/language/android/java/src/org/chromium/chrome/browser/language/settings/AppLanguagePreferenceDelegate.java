@@ -167,7 +167,7 @@ public class AppLanguagePreferenceDelegate {
 
     // Inner class for successfully downloaded language split SnackbarController.
     private static class SuccessSnackbarControllerImpl implements SnackbarController {
-        private RestartAction mRestartAction;
+        private final RestartAction mRestartAction;
 
         SuccessSnackbarControllerImpl(RestartAction action) {
             mRestartAction = action;

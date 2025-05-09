@@ -70,7 +70,7 @@ class PasswordEditDialogCoordinator {
     private PropertyModel mDialogModel;
     private PropertyModel mDialogViewModel;
 
-    private PasswordEditDialogMediator mMediator;
+    private final PasswordEditDialogMediator mMediator;
 
     /**
      * Creates the {@link PasswordEditDialogCoordinator}.

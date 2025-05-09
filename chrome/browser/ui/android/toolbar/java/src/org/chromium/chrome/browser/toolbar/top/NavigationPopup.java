@@ -79,7 +79,7 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
     private final Context mContext;
     private final ListPopupWindow mPopup;
     private final NavigationController mNavigationController;
-    private NavigationHistory mHistory;
+    private final NavigationHistory mHistory;
     private final NavigationAdapter mAdapter;
     private final @Type int mType;
     private final int mFaviconSize;
@@ -409,8 +409,8 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
             mTextView = textView;
         }
 
-        View mContainer;
-        ImageView mImageView;
-        TextView mTextView;
+        final View mContainer;
+        final ImageView mImageView;
+        final TextView mTextView;
     }
 }

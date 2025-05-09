@@ -63,24 +63,24 @@ public class ImageDescriptionsDialog
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:AccessibilityImageLabelModeAndroid)
 
-    private ImageDescriptionsControllerDelegate mControllerDelegate;
+    private final ImageDescriptionsControllerDelegate mControllerDelegate;
 
-    private ModalDialogManager mModalDialogManager;
-    private PropertyModel mPropertyModel;
-    private WebContentsObserver mWebContentsObserver;
+    private final ModalDialogManager mModalDialogManager;
+    private final PropertyModel mPropertyModel;
+    private final WebContentsObserver mWebContentsObserver;
 
-    private RadioButtonWithDescriptionLayout mRadioGroup;
-    private RadioButtonWithDescription mOptionJustOnceRadioButton;
-    private RadioButtonWithDescription mOptionAlwaysRadioButton;
-    private CheckBox mOptionalCheckbox;
+    private final RadioButtonWithDescriptionLayout mRadioGroup;
+    private final RadioButtonWithDescription mOptionJustOnceRadioButton;
+    private final RadioButtonWithDescription mOptionAlwaysRadioButton;
+    private final CheckBox mOptionalCheckbox;
 
-    private boolean mShouldShowDontAskAgainOption;
+    private final boolean mShouldShowDontAskAgainOption;
     private boolean mOnlyOnWifiState;
     private boolean mDontAskAgainState;
     private @DialogDismissalCause int mDismissalCause;
-    private WebContents mWebContents;
-    private Profile mProfile;
-    private Context mContext;
+    private final WebContents mWebContents;
+    private final Profile mProfile;
+    private final Context mContext;
 
     protected ImageDescriptionsDialog(
             Context context,

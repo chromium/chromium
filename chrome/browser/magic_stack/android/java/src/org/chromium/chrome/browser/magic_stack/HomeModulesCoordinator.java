@@ -54,7 +54,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     private boolean mIsSnapHelperAttached;
     private int mItemPerScreen;
     private HomeModulesConfigManager mHomeModulesConfigManager;
-    private HomeModulesConfigManager.HomeModulesStateListener mHomeModulesStateListener;
+    private final HomeModulesConfigManager.HomeModulesStateListener mHomeModulesStateListener;
 
     /** It is non-null for tablets. */
     private @Nullable UiConfig mUiConfig;
@@ -64,7 +64,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
 
     private @Nullable Callback<Profile> mOnProfileAvailableObserver;
     private boolean mHasHomeModulesBeenScrolled;
-    private RecyclerView.OnScrollListener mOnScrollListener;
+    private final RecyclerView.OnScrollListener mOnScrollListener;
     private CallbackController mCallbackController;
 
     /**

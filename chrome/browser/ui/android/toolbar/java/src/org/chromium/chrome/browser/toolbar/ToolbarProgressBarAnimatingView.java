@@ -79,7 +79,7 @@ public class ToolbarProgressBarAnimatingView extends ImageView {
     private final boolean mIsRtl;
 
     /** The update listener for the animation. */
-    private ProgressBarUpdateListener mListener;
+    private final ProgressBarUpdateListener mListener;
 
     /** The last fraction of the animation that was drawn. */
     private float mLastAnimatedFraction;

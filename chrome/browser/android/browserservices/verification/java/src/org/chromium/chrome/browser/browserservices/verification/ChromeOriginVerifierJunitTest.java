@@ -44,8 +44,8 @@ public class ChromeOriginVerifierJunitTest {
     public static final String TEST_BATCH_NAME = "chrome_origin_verifier";
 
     private static final String PACKAGE_NAME = "org.chromium.com";
-    private int mUid = Process.myUid();
-    private Origin mHttpsOrigin = Origin.create("https://www.example.com");
+    private final int mUid = Process.myUid();
+    private final Origin mHttpsOrigin = Origin.create("https://www.example.com");
 
     private ChromeOriginVerifier mChromeVerifier;
 
@@ -57,10 +57,10 @@ public class ChromeOriginVerifierJunitTest {
 
     @Mock private ChromeOriginVerifier.Natives mMockChromeOriginVerifierJni;
 
-    private CountDownLatch mVerificationResultLatch = new CountDownLatch(1);
+    private final CountDownLatch mVerificationResultLatch = new CountDownLatch(1);
 
     private static class TestOriginVerificationListener implements OriginVerificationListener {
-        private CountDownLatch mLatch;
+        private final CountDownLatch mLatch;
         private boolean mVerified;
 
         TestOriginVerificationListener(CountDownLatch latch) {

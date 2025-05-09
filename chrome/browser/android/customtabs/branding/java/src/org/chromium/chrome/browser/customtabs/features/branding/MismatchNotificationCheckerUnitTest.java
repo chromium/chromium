@@ -117,7 +117,7 @@ public class MismatchNotificationCheckerUnitTest {
         private CoreAccountInfo mCoreAccountInfo;
         private Callback<MismatchNotificationData> mOnClose;
 
-        private MismatchNotificationData.AppUiData mAppData =
+        private final MismatchNotificationData.AppUiData mAppData =
                 new MismatchNotificationData.AppUiData();
 
         public MismatchNotificationCheckerTester newChecker() {

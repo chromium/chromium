@@ -26,7 +26,7 @@ import org.chromium.chrome.browser.password_manager.settings.ReauthenticationMan
 /** Shows the dialog that allows the user to see the compromised credential. */
 @NullMarked
 public class PasswordCheckViewDialogFragment extends PasswordCheckDialogFragment {
-    private CompromisedCredential mCredential;
+    private final CompromisedCredential mCredential;
 
     PasswordCheckViewDialogFragment(Handler handler, CompromisedCredential credential) {
         super(handler);

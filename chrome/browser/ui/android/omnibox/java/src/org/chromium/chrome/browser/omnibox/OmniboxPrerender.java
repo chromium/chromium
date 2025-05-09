@@ -22,7 +22,7 @@ import org.chromium.chrome.browser.tab.Tab;
  */
 @NullMarked
 public class OmniboxPrerender {
-    private long mNativeOmniboxPrerender;
+    private final long mNativeOmniboxPrerender;
 
     /** Constructor for creating a OmniboxPrerender instanace. */
     public OmniboxPrerender() {

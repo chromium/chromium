@@ -94,7 +94,7 @@ public class BookmarkToolbarMediatorTest {
 
     @Spy private Context mContext;
 
-    private BookmarkManagerOpener mBookmarkManagerOpener = new BookmarkManagerOpenerImpl();
+    private final BookmarkManagerOpener mBookmarkManagerOpener = new BookmarkManagerOpenerImpl();
     private FakeBookmarkModel mBookmarkModel;
     private BookmarkToolbarMediator mMediator;
     private PropertyModel mModel;

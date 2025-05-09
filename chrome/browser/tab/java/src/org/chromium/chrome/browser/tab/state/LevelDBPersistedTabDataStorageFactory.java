@@ -13,8 +13,8 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 @NullMarked
 public class LevelDBPersistedTabDataStorageFactory
         implements PersistedTabDataStorageFactory<LevelDBPersistedTabDataStorage> {
-    private static ProfileKeyedMap<LevelDBPersistedTabDataStorage> sProfileToLevelDBStorageMap =
-            ProfileKeyedMap.createMapOfDestroyables();
+    private static final ProfileKeyedMap<LevelDBPersistedTabDataStorage>
+            sProfileToLevelDBStorageMap = ProfileKeyedMap.createMapOfDestroyables();
 
     @Override
     public LevelDBPersistedTabDataStorage create() {

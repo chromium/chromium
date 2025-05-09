@@ -27,7 +27,7 @@ import org.chromium.ui.widget.Toast;
  */
 @NullMarked
 public class FollowManagementCoordinator {
-    private AppCompatActivity mActivity;
+    private final AppCompatActivity mActivity;
     private final View mView;
 
     public FollowManagementCoordinator(Activity activity) {

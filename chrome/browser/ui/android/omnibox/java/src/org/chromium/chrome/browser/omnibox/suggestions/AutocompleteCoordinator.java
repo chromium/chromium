@@ -67,7 +67,7 @@ public class AutocompleteCoordinator
     private final OmniboxSuggestionsDropdownAdapter mAdapter;
     private final Optional<PreWarmingRecycledViewPool> mRecycledViewPool;
     private @Nullable OmniboxSuggestionsDropdown mDropdown;
-    private ObserverList<OmniboxSuggestionsDropdownScrollListener> mScrollListenerList =
+    private final ObserverList<OmniboxSuggestionsDropdownScrollListener> mScrollListenerList =
             new ObserverList<>();
 
     /** An observer watching for changes to the visual state of the omnibox suggestions. */
@@ -204,7 +204,7 @@ public class AutocompleteCoordinator
             boolean forcePhoneStyleOmnibox) {
         return new ViewProvider<SuggestionListViewHolder>() {
             private AsyncViewProvider<ViewGroup> mAsyncProvider;
-            private List<Callback<SuggestionListViewHolder>> mCallbacks = new ArrayList<>();
+            private final List<Callback<SuggestionListViewHolder>> mCallbacks = new ArrayList<>();
             private @Nullable SuggestionListViewHolder mHolder;
 
             @Override

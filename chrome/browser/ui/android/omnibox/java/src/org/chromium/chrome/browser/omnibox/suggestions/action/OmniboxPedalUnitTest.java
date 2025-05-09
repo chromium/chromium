@@ -35,7 +35,7 @@ import java.util.List;
 public class OmniboxPedalUnitTest {
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
     private @Mock OmniboxActionDelegate mDelegate;
-    private static List<Integer> sPedalsWithCustomIcons =
+    private static final List<Integer> sPedalsWithCustomIcons =
             List.of(OmniboxPedalId.PLAY_CHROME_DINO_GAME);
 
     @Test

@@ -40,7 +40,7 @@ public class EnterpriseInfoImpl extends EnterpriseInfo {
 
     // Only ever read/written on the UI thread.
     private @Nullable OwnedState mOwnedState;
-    private Queue<Callback<@Nullable OwnedState>> mCallbackList;
+    private final Queue<Callback<@Nullable OwnedState>> mCallbackList;
 
     private boolean mSkipAsyncCheckForTesting;
 

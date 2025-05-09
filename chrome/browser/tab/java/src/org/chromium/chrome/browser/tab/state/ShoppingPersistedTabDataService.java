@@ -47,8 +47,8 @@ public class ShoppingPersistedTabDataService {
      * service.
      */
     public static class PriceChangeItem {
-        private Tab mTab;
-        private ShoppingPersistedTabData mData;
+        private final Tab mTab;
+        private final ShoppingPersistedTabData mData;
 
         public PriceChangeItem(Tab tab, ShoppingPersistedTabData data) {
             mTab = tab;

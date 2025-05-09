@@ -79,11 +79,11 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
     private static final String LINK_TAG_REGEX = "<[^>]*>";
 
     private class TokenError {
-        public String mCode;
-        public GURL mUrl;
-        public String mExpectedSummary;
-        public String mExpectedDescription;
-        public boolean mClickableText;
+        public final String mCode;
+        public final GURL mUrl;
+        public final String mExpectedSummary;
+        public final String mExpectedDescription;
+        public final boolean mClickableText;
 
         TokenError(String code, GURL url, boolean clickableText) {
             mCode = code;

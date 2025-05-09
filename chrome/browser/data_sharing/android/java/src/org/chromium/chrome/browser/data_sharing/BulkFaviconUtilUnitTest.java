@@ -59,9 +59,9 @@ public class BulkFaviconUtilUnitTest {
 
     private Context mContext;
     private BulkFaviconUtil mBulkFaviconUtil;
-    private GURL mGurl1 = new GURL("https://www.google.com");
-    private GURL mGurl2 = new GURL("https://www.chromium.org");
-    private List<GURL> mGurlList = Arrays.asList(mGurl1, mGurl2);
+    private final GURL mGurl1 = new GURL("https://www.google.com");
+    private final GURL mGurl2 = new GURL("https://www.chromium.org");
+    private final List<GURL> mGurlList = Arrays.asList(mGurl1, mGurl2);
 
     @Before
     public void setUp() {

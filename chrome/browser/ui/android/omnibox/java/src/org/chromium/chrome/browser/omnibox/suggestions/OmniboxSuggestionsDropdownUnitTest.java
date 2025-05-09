@@ -65,11 +65,11 @@ public class OmniboxSuggestionsDropdownUnitTest {
     private TestOmniboxSuggestionsDropdown mDropdown;
     private OmniboxSuggestionsDropdown.SuggestionLayoutScrollListener mListener;
     private OmniboxAlignment mOmniboxAlignment;
-    private ObservableSupplierImpl<OmniboxAlignment> mOmniboxAlignmentSupplier =
+    private final ObservableSupplierImpl<OmniboxAlignment> mOmniboxAlignmentSupplier =
             new ObservableSupplierImpl<>();
     private boolean mIsTablet;
     private boolean mAttachedToWindow;
-    private OmniboxSuggestionsDropdownEmbedder mEmbedder =
+    private final OmniboxSuggestionsDropdownEmbedder mEmbedder =
             new OmniboxSuggestionsDropdownEmbedder() {
                 @Override
                 public boolean isTablet() {

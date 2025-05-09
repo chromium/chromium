@@ -31,8 +31,8 @@ import org.chromium.url.GURL;
  */
 @NullMarked
 public class WebFeedFaviconFetcher {
-    private LargeIconBridge mLargeIconBridge;
-    private ImageFetcher mImageFetcher;
+    private final LargeIconBridge mLargeIconBridge;
+    private final ImageFetcher mImageFetcher;
 
     public static WebFeedFaviconFetcher createDefault() {
         Profile profile = ProfileManager.getLastUsedRegularProfile();

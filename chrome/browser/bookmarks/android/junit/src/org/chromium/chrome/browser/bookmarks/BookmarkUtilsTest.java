@@ -85,7 +85,7 @@ public class BookmarkUtilsTest {
 
     private Activity mActivity;
     private FakeBookmarkModel mBookmarkModel;
-    private CoreAccountInfo mAccountInfo =
+    private final CoreAccountInfo mAccountInfo =
             CoreAccountInfo.createFromEmailAndGaiaId("test@gmail.com", new GaiaId("testGaiaId"));
 
     @Before

@@ -274,9 +274,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    private TouchToFillPaymentMethodCoordinator mCoordinator;
+    private final TouchToFillPaymentMethodCoordinator mCoordinator;
     private PropertyModel mTouchToFillPaymentMethodModel;
-    private FakeClock mClock = new FakeClock();
+    private final FakeClock mClock = new FakeClock();
     Context mContext;
 
     @Mock private BottomSheetController mBottomSheetController;

@@ -28,7 +28,7 @@ public class FastCheckoutAutofillProfile {
     private final String mPhoneNumber;
     private final String mEmailAddress;
     private final String mLanguageCode;
-    private @RecordType int mRecordType;
+    private final @RecordType int mRecordType;
 
     @CalledByNative
     public FastCheckoutAutofillProfile(

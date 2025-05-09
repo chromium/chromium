@@ -23,7 +23,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 @NullMarked
 class OtpVerificationDialogBridge implements OtpVerificationDialogCoordinator.Delegate {
     private final long mNativeOtpVerificationDialogView;
-    private OtpVerificationDialogCoordinator mDialogCoordinator;
+    private final OtpVerificationDialogCoordinator mDialogCoordinator;
 
     OtpVerificationDialogBridge(
             long nativeOtpVerificationDialogView,

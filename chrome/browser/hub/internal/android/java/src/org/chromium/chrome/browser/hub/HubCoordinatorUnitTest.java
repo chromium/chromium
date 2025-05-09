@@ -90,23 +90,24 @@ public class HubCoordinatorUnitTest {
     @Mock private Tracker mTracker;
     @Mock private SearchActivityClient mSearchActivityClient;
     @Mock private HubColorMixer mHubColorMixer;
-    private ObservableSupplierImpl<Boolean> mHubVisibilitySupplier = new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<Boolean> mTabSwitcherBackPressSupplier =
+    private final ObservableSupplierImpl<Boolean> mHubVisibilitySupplier =
             new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<Boolean> mIncognitoTabSwitcherBackPressSupplier =
+    private final ObservableSupplierImpl<Boolean> mTabSwitcherBackPressSupplier =
             new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<Tab> mTabSupplier = new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<Integer> mPreviousLayoutTypeSupplier =
+    private final ObservableSupplierImpl<Boolean> mIncognitoTabSwitcherBackPressSupplier =
             new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<DisplayButtonData> mReferenceButtonDataSupplier =
+    private final ObservableSupplierImpl<Tab> mTabSupplier = new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Integer> mPreviousLayoutTypeSupplier =
             new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<Boolean> mRegularHubSearchEnabledStateSupplier =
+    private final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonDataSupplier =
             new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<Boolean> mIncognitoHubSearchEnabledStateSupplier =
+    private final ObservableSupplierImpl<Boolean> mRegularHubSearchEnabledStateSupplier =
             new ObservableSupplierImpl<>();
-    private OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
+    private final ObservableSupplierImpl<Boolean> mIncognitoHubSearchEnabledStateSupplier =
+            new ObservableSupplierImpl<>();
+    private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
-    private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
+    private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
             new ObservableSupplierImpl<>();
     private PaneManager mPaneManager;
     private FrameLayout mRootView;

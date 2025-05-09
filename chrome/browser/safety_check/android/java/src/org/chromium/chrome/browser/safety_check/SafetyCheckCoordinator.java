@@ -39,8 +39,8 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
     private SafetyCheckSettingsFragment mSettingsFragment;
     private SafetyCheckUpdatesDelegate mUpdatesClient;
     private @MonotonicNonNull SafetyCheckMediator mMediator;
-    private @Nullable SyncService mSyncService;
-    private PrefService mPrefService;
+    private final @Nullable SyncService mSyncService;
+    private final PrefService mPrefService;
     private @Nullable PasswordStoreBridge mPasswordStoreBridge;
     private @Nullable PropertyModel mPasswordCheckLocalModel;
     private @Nullable PropertyModel mPasswordCheckAccountModel;

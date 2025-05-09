@@ -52,8 +52,8 @@ public class QrCodeDialogTest {
     }
 
     public static class CustomQrCodeDialogTab implements QrCodeDialogTab {
-        private View mView;
-        private boolean mEnabled;
+        private final View mView;
+        private final boolean mEnabled;
 
         CustomQrCodeDialogTab(View view, boolean enabled) {
             mView = view;

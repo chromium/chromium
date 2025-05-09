@@ -159,7 +159,7 @@ public class ReadAloudController
     // Information tied to a playback. When playback is reset it should be set to null together
     //  with mActivePlaybackTabSupplier's value and mGlobalRenderFrameId
     @Nullable private Playback mPlayback;
-    private ObservableSupplierImpl<@Nullable Tab> mActivePlaybackTabSupplier;
+    private final ObservableSupplierImpl<@Nullable Tab> mActivePlaybackTabSupplier;
     @Nullable private GURL mCurrentlyPlayingGurl;
     @Nullable private GlobalRenderFrameHostId mGlobalRenderFrameId;
     // Current tab playback data, or null if there is no playback.
@@ -1521,7 +1521,8 @@ public class ReadAloudController
 
     @Override
     public void setPlaybackModeAndApplyToPlayback(PlaybackMode mode) {
-        TrackerFactory.getTrackerForProfile(getProfile()).notifyEvent("read_aloud_playback_mode_clicked");
+        TrackerFactory.getTrackerForProfile(getProfile())
+                .notifyEvent("read_aloud_playback_mode_clicked");
         ReadAloudPrefs.setPlaybackMode(getPrefService(), mode);
 
         if (mActivePlaybackTabSupplier.get() != null && mPlayback != null) {

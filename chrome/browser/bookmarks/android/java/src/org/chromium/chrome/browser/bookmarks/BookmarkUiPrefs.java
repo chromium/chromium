@@ -75,7 +75,7 @@ public class BookmarkUiPrefs {
         default void onBookmarkRowSortOrderChanged(@BookmarkRowSortOrder int sortOrder) {}
     }
 
-    private SharedPreferences.OnSharedPreferenceChangeListener mPrefsListener =
+    private final SharedPreferences.OnSharedPreferenceChangeListener mPrefsListener =
             new SharedPreferences.OnSharedPreferenceChangeListener() {
                 @Override
                 public void onSharedPreferenceChanged(

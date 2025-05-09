@@ -36,10 +36,10 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
     private long mNativePtr;
 
     /** The resource ID used to reference the view bitmap in native. */
-    private int mResourceId;
+    private final int mResourceId;
 
     /** The height of the view's top shadow. */
-    private int mTopShadowHeightPx;
+    private final int mTopShadowHeightPx;
 
     /** The current Y offset of the bottom view in px. */
     private int mCurrentYOffsetPx;
@@ -54,7 +54,7 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
     private @Nullable OffsetTag mOffsetTag;
 
     /** The {@link ViewResourceFrameLayout} that this scene layer represents. */
-    private ViewResourceFrameLayout mBottomView;
+    private final ViewResourceFrameLayout mBottomView;
 
     /**
      * Build a composited bottom view layer.

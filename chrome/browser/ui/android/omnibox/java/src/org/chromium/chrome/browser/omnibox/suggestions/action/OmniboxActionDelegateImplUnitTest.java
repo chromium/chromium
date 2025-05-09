@@ -49,7 +49,7 @@ public class OmniboxActionDelegateImplUnitTest {
     private @Mock SettingsNavigation mMockSettingsNavigation;
     private @Mock Tab mTab;
     private @Mock Runnable mMockOpenQuickDeleteDialog;
-    private AtomicReference<Tab> mTabReference = new AtomicReference<>();
+    private final AtomicReference<Tab> mTabReference = new AtomicReference<>();
     private Context mContext;
     private OmniboxActionDelegateImpl mDelegate;
 

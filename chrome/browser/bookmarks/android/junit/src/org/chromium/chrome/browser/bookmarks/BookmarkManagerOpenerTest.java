@@ -47,7 +47,7 @@ public class BookmarkManagerOpenerTest {
     @Mock private Runnable mRunnable;
 
     private Activity mActivity;
-    private BookmarkManagerOpener mBookmarkManagerOpener = new BookmarkManagerOpenerImpl();
+    private final BookmarkManagerOpener mBookmarkManagerOpener = new BookmarkManagerOpenerImpl();
 
     @Before
     public void setUp() {

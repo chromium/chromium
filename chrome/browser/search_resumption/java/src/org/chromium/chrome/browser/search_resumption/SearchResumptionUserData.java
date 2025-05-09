@@ -22,10 +22,10 @@ import java.util.concurrent.TimeUnit;
 public class SearchResumptionUserData implements UserData {
     // The cached search suggestion results.
     static class SuggestionResult {
-        private GURL mLastUrlToTrack;
-        private String @Nullable [] mSuggestionTexts;
-        private GURL @Nullable [] mSuggestionUrls;
-        private @Nullable List<AutocompleteMatch> mSuggestions;
+        private final GURL mLastUrlToTrack;
+        private final String @Nullable [] mSuggestionTexts;
+        private final GURL @Nullable [] mSuggestionUrls;
+        private final @Nullable List<AutocompleteMatch> mSuggestions;
 
         SuggestionResult(
                 GURL gurl, String @Nullable [] suggestionTexts, GURL @Nullable [] suggestionUrls) {

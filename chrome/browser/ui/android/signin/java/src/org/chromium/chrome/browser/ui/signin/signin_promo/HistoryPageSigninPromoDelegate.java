@@ -59,7 +59,7 @@ public class HistoryPageSigninPromoDelegate extends SigninPromoDelegate {
 
     @VisibleForTesting static final int MAX_IMPRESSIONS = 10;
 
-    private boolean mIsCreatedInCct;
+    private final boolean mIsCreatedInCct;
     private final String mPromoShowCountPreferenceName;
     private @PromoState int mPromoState = PromoState.NONE;
 

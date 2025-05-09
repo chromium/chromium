@@ -37,11 +37,12 @@ public class PaneBackStackHandlerUnitTest {
     @Mock private Pane mBookmarksPane;
     @Mock private DisplayButtonData mReferenceButtonData;
 
-    private ObservableSupplierImpl<DisplayButtonData> mEmptyReferenceButtonDataSupplier =
+    private final ObservableSupplierImpl<DisplayButtonData> mEmptyReferenceButtonDataSupplier =
             new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<DisplayButtonData> mReferenceButtonDataSupplier =
+    private final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonDataSupplier =
             new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<Boolean> mHubVisibilitySupplier = new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mHubVisibilitySupplier =
+            new ObservableSupplierImpl<>();
 
     private PaneManager mPaneManager;
     private PaneBackStackHandler mBackStackHandler;

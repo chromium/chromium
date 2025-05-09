@@ -48,7 +48,7 @@ class LoadingModalDialogMediator
     private boolean mSkipDelay;
     private boolean mDisableTimeout;
 
-    private Runnable mShowingTask = this::onShowDelayPassed;
+    private final Runnable mShowingTask = this::onShowDelayPassed;
 
     /** ModalDialogProperties.Controller implementation */
     @Override

@@ -19,8 +19,8 @@ import org.chromium.components.permissions.OsAdditionalSecurityPermissionUtil;
 @NullMarked
 public class AdvancedProtectionStatusManagerAndroidBridge
         implements OsAdditionalSecurityPermissionProvider.Observer {
-    private long mNative;
-    private @Nullable OsAdditionalSecurityPermissionProvider mProvider;
+    private final long mNative;
+    private final @Nullable OsAdditionalSecurityPermissionProvider mProvider;
 
     @CalledByNative
     private static AdvancedProtectionStatusManagerAndroidBridge create(

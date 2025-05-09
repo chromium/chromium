@@ -31,7 +31,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 class TouchToFillPasswordGenerationView implements BottomSheetContent {
     private final View mContent;
     private final Context mContext;
-    private TextView mPasswordView;
+    private final TextView mPasswordView;
 
     // Minimum password length that allows to label the password as strong in
     // the UI. Must stay in sync with kLengthSufficientForStrongLabel in

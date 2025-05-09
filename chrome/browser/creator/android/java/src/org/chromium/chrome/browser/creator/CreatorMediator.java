@@ -19,9 +19,9 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 @NullMarked
 public class CreatorMediator {
-    private PropertyModel mCreatorModel;
+    private final PropertyModel mCreatorModel;
     private final CreatorSnackbarController mCreatorSnackbarController;
-    private SignInInterstitialInitiator mSignInInterstitialInitiator;
+    private final SignInInterstitialInitiator mSignInInterstitialInitiator;
 
     CreatorMediator(
             Context context,

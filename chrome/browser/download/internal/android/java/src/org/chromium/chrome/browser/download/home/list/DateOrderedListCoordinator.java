@@ -96,8 +96,8 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
     private ViewGroup mMainView;
     private View mEmptyView;
     private int mWindowHeight;
-    private int mDownloadStorageSummaryHeightPx;
-    private int mSelectableListToolbarHeightPx;
+    private final int mDownloadStorageSummaryHeightPx;
+    private final int mSelectableListToolbarHeightPx;
 
     /**
      * Creates an instance of a DateOrderedListCoordinator, which will visually represent

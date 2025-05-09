@@ -24,8 +24,8 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 /** The coordinator of the simple notice sheet. */
 @NullMarked
 public class SimpleNoticeSheetCoordinator {
-    private Context mContext;
-    private BottomSheetController mSheetController;
+    private final Context mContext;
+    private final BottomSheetController mSheetController;
     private @Nullable SimpleNoticeSheetView mView;
 
     private final BottomSheetObserver mBottomSheetObserver =

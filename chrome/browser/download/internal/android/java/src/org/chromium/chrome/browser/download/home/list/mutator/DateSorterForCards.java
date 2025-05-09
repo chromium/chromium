@@ -24,7 +24,7 @@ import java.util.Map;
 @NullMarked
 public class DateSorterForCards implements ListConsumer {
     private @Nullable ListConsumer mListConsumer;
-    private Map<String, Long> mTimestampForCard = new HashMap<>();
+    private final Map<String, Long> mTimestampForCard = new HashMap<>();
 
     @Override
     public ListConsumer setListConsumer(ListConsumer consumer) {

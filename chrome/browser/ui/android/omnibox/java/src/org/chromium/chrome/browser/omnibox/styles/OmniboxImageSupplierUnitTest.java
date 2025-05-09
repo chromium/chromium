@@ -53,7 +53,7 @@ public final class OmniboxImageSupplierUnitTest {
 
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
 
-    private ArgumentCaptor<LargeIconCallback> mIconCallbackCaptor =
+    private final ArgumentCaptor<LargeIconCallback> mIconCallbackCaptor =
             ArgumentCaptor.forClass(LargeIconCallback.class);
 
     private OmniboxImageSupplier mSupplier;

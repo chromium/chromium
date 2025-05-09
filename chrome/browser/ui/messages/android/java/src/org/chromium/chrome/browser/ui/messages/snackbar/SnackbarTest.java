@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
 @Batch(Batch.UNIT_TESTS)
 public class SnackbarTest {
     private SnackbarManager mManager;
-    private SnackbarController mDefaultController =
+    private final SnackbarController mDefaultController =
             new SnackbarController() {
                 @Override
                 public void onDismissNoAction(Object actionData) {}
@@ -51,7 +51,7 @@ public class SnackbarTest {
                 public void onAction(Object actionData) {}
             };
 
-    private SnackbarController mDismissController =
+    private final SnackbarController mDismissController =
             new SnackbarController() {
                 @Override
                 public void onDismissNoAction(Object actionData) {

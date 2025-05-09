@@ -34,7 +34,7 @@ public class LanguageItem {
 
     private final boolean mSupportTranslate;
 
-    private boolean mSupportAppUi;
+    private final boolean mSupportAppUi;
 
     /**
      * Creates a new LanguageItem getting UI availability from ResourceBundle.

@@ -97,7 +97,7 @@ public class HubManagerImplUnitTest {
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mIncognitoHubSearchEnabledStateSupplier =
             new ObservableSupplierImpl<>();
-    private final int mSnackbarOverrideToken = 1;
+    private static final int SNACKBAR_OVERRIDE_TOKEN = 1;
 
     private Activity mActivity;
     private FrameLayout mRootView;
@@ -139,7 +139,7 @@ public class HubManagerImplUnitTest {
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
 
         when(mSnackbarManager.pushParentViewToOverrideStack(any()))
-                .thenReturn(mSnackbarOverrideToken);
+                .thenReturn(SNACKBAR_OVERRIDE_TOKEN);
 
         mActivityScenarioRule
                 .getScenario()
@@ -231,7 +231,7 @@ public class HubManagerImplUnitTest {
 
         hubManager.getPaneManager().focusPane(PaneId.INCOGNITO_TAB_SWITCHER);
         verify(mTabSwitcherPane).setPaneHubController(null);
-        verify(mSnackbarManager).popParentViewFromOverrideStack(mSnackbarOverrideToken);
+        verify(mSnackbarManager).popParentViewFromOverrideStack(SNACKBAR_OVERRIDE_TOKEN);
         verify(mMenuOrKeyboardActionController)
                 .unregisterMenuOrKeyboardActionHandler(mTabSwitcherMenuOrKeyboardActionHandler);
         verify(mIncognitoTabSwitcherPane).setPaneHubController(coordinator);
@@ -244,7 +244,7 @@ public class HubManagerImplUnitTest {
         assertNull(hubManager.getHubCoordinatorForTesting());
         verify(mBackPressManager).removeHandler(eq(coordinator));
         verify(mIncognitoTabSwitcherPane).setPaneHubController(null);
-        verify(mSnackbarManager, times(2)).popParentViewFromOverrideStack(mSnackbarOverrideToken);
+        verify(mSnackbarManager, times(2)).popParentViewFromOverrideStack(SNACKBAR_OVERRIDE_TOKEN);
         verify(mMenuOrKeyboardActionController)
                 .unregisterMenuOrKeyboardActionHandler(
                         mIncognitoTabSwitcherMenuOrKeyboardActionHandler);

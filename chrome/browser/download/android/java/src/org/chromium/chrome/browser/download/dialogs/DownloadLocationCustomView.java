@@ -41,7 +41,7 @@ import org.chromium.components.browser_ui.widget.text.AlertDialogEditText;
 @NullMarked
 public class DownloadLocationCustomView extends ScrollView
         implements OnCheckedChangeListener, DownloadDirectoryAdapter.Delegate {
-    private DownloadDirectoryAdapter mDirectoryAdapter;
+    private final DownloadDirectoryAdapter mDirectoryAdapter;
 
     private TextView mTitle;
     private TextView mSubtitleView;

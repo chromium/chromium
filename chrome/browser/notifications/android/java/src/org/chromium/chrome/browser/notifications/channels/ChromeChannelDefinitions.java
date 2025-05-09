@@ -46,7 +46,7 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
     static final int CHANNELS_VERSION = 4;
 
     private static class LazyHolder {
-        private static ChromeChannelDefinitions sInstance = new ChromeChannelDefinitions();
+        private static final ChromeChannelDefinitions sInstance = new ChromeChannelDefinitions();
     }
 
     public static ChromeChannelDefinitions getInstance() {

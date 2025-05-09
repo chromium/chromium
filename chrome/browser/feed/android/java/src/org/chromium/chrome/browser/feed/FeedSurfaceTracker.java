@@ -31,7 +31,7 @@ public class FeedSurfaceTracker implements SurfaceCoordinator.Observer {
     // the correct sign-in state is used if attaching the surface triggers a fetch.
     private boolean mStartupCalled;
 
-    private ObserverList<Observer> mObservers = new ObserverList<>();
+    private final ObserverList<Observer> mObservers = new ObserverList<>();
 
     // Tracks all the instances of FeedSurfaceCoordinator.
     @VisibleForTesting @Nullable HashSet<SurfaceCoordinator> mCoordinators;

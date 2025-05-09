@@ -45,7 +45,7 @@ public class BookmarkPromoHeader
     private final AccountManagerFacade mAccountManagerFacade;
     private final Runnable mPromoHeaderChangeAction;
 
-    private @Nullable ProfileDataCache mProfileDataCache;
+    private final @Nullable ProfileDataCache mProfileDataCache;
     private final @Nullable SyncPromoController mSyncPromoController;
     private boolean mShouldShowPromo;
     private final @Nullable SyncService mSyncService;

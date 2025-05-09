@@ -45,7 +45,8 @@ public class PageInfoIphControllerUnitTest {
     private @Mock Tracker mTracker;
     private View mView;
     private PageInfoIphController mController;
-    private ArgumentCaptor<IphCommand> mIphCmdCaptor = ArgumentCaptor.forClass(IphCommand.class);
+    private final ArgumentCaptor<IphCommand> mIphCmdCaptor =
+            ArgumentCaptor.forClass(IphCommand.class);
 
     @Before
     public void setUp() {

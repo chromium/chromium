@@ -63,7 +63,7 @@ public class BrandingController {
     private long mToolbarInitializedTime;
     private boolean mIsDestroyed;
 
-    private Supplier<MismatchNotificationChecker> mMismatchNotificationChecker;
+    private final Supplier<MismatchNotificationChecker> mMismatchNotificationChecker;
 
     /**
      * Branding controller responsible for showing branding.

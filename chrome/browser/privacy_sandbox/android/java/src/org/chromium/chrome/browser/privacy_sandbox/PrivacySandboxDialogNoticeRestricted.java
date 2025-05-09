@@ -23,13 +23,13 @@ import org.chromium.ui.widget.ButtonCompat;
 public class PrivacySandboxDialogNoticeRestricted extends ChromeDialog
         implements DialogInterface.OnShowListener {
     private final PrivacySandboxBridge mPrivacySandboxBridge;
-    private View mContentView;
+    private final View mContentView;
 
-    private ButtonCompat mMoreButton;
-    private LinearLayout mActionButtons;
-    private ScrollView mScrollView;
-    private @SurfaceType int mSurfaceType;
-    private View.OnClickListener mOnClickListener;
+    private final ButtonCompat mMoreButton;
+    private final LinearLayout mActionButtons;
+    private final ScrollView mScrollView;
+    private final @SurfaceType int mSurfaceType;
+    private final View.OnClickListener mOnClickListener;
     private boolean mShowMoreButtonForTesting;
 
     public PrivacySandboxDialogNoticeRestricted(

@@ -17,7 +17,7 @@ import org.chromium.build.annotations.Nullable;
 @NullMarked
 public class PasswordManagerLifecycleHelper {
     private static @Nullable PasswordManagerLifecycleHelper sInstance;
-    private ObserverList<Long> mNativeObservers = new ObserverList<>();
+    private final ObserverList<Long> mNativeObservers = new ObserverList<>();
 
     /**
      * Returns the singleton instance of this class and lazily creates it if that hasn't happened.

@@ -29,8 +29,8 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage, 
     // LevelDBPersitsedDataStorage is a generalization of the original
     // LevelDBPersistedTabDataStorage which introduced namespaces to avoid collisions between
     // clients.
-    private static String sNamespace = "";
-    private LevelDBPersistedDataStorage mPersistedDataStorage;
+    private static final String NAMESPACE = "";
+    private final LevelDBPersistedDataStorage mPersistedDataStorage;
     // Callback is only used for synchronization of save and delete in testing.
     // Otherwise it is a no-op.
     // TODO(crbug.com/40156389) Apply tricks like @CheckDiscard or proguard rules to improve
@@ -40,7 +40,7 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage, 
     LevelDBPersistedTabDataStorage(Profile profile) {
         assert !profile.isOffTheRecord()
                 : "LevelDBPersistedTabDataStorage is not supported for incognito profiles";
-        mPersistedDataStorage = new LevelDBPersistedDataStorage(profile, sNamespace);
+        mPersistedDataStorage = new LevelDBPersistedDataStorage(profile, NAMESPACE);
     }
 
     @MainThread

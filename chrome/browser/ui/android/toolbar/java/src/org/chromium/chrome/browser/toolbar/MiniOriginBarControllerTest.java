@@ -51,16 +51,16 @@ public class MiniOriginBarControllerTest {
     @Captor ArgumentCaptor<TouchEventObserver> mTouchEventObserverCaptor;
 
     private Context mContext;
-    private CoordinatorLayout.LayoutParams mControlContainerLayoutParams =
+    private final CoordinatorLayout.LayoutParams mControlContainerLayoutParams =
             new LayoutParams(400, 800);
-    private FrameLayout.LayoutParams mLocationBarLayoutParams =
+    private final FrameLayout.LayoutParams mLocationBarLayoutParams =
             new FrameLayout.LayoutParams(400, 800, Gravity.TOP);
-    private FormFieldFocusedSupplier mIsFormFieldFocused = new FormFieldFocusedSupplier();
-    private ToolbarPositionControllerTest.FakeKeyboardVisibilityDelegate
+    private final FormFieldFocusedSupplier mIsFormFieldFocused = new FormFieldFocusedSupplier();
+    private final ToolbarPositionControllerTest.FakeKeyboardVisibilityDelegate
             mKeyboardVisibilityDelegate =
                     new ToolbarPositionControllerTest.FakeKeyboardVisibilityDelegate();
     private MiniOriginBarController mMiniOriginBarController;
-    private ObservableSupplierImpl<Boolean> mSuppressToolbarSceneLayerSupplier =
+    private final ObservableSupplierImpl<Boolean> mSuppressToolbarSceneLayerSupplier =
             new ObservableSupplierImpl<>(false);
 
     @Before

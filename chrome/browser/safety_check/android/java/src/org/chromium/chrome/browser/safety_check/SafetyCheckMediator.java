@@ -82,7 +82,7 @@ class SafetyCheckMediator {
     private static final String SAFETY_CHECK_INTERACTIONS = "Settings.SafetyCheck.Interactions";
 
     /** Profile to launch SigninActivity. */
-    private Profile mProfile;
+    private final Profile mProfile;
 
     /** Model representing the current state of the update and safe browsing checks. */
     private PropertyModel mSafetyCheckModel;
@@ -103,26 +103,26 @@ class SafetyCheckMediator {
     private SafetyCheckUpdatesDelegate mUpdatesClient;
 
     /** Provides access to C++ APIs. */
-    private SafetyCheckBridge mBridge;
+    private final SafetyCheckBridge mBridge;
 
     /** Client to launch a SigninActivity. */
-    private SigninAndHistorySyncActivityLauncher mSigninLauncher;
+    private final SigninAndHistorySyncActivityLauncher mSigninLauncher;
 
     /** Async logic for password check. */
     private boolean mShowSafePasswordState;
 
     /** Handles the password check. Contains the logic for both UPM and non-UPM password check. */
-    private PasswordCheckController mPasswordCheckController;
+    private final PasswordCheckController mPasswordCheckController;
 
-    private PasswordManagerHelper mPasswordManagerHelper;
+    private final PasswordManagerHelper mPasswordManagerHelper;
 
     /**
      * Used to open a p-link help center article in a custom tab. Needed by the password manager
      * settings.
      */
-    private SettingsCustomTabLauncher mSettingsCustomTabLauncher;
+    private final SettingsCustomTabLauncher mSettingsCustomTabLauncher;
 
-    private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     /** Callbacks and related objects to show the checking state for at least 1 second. */
     private Handler mHandler;

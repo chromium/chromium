@@ -87,7 +87,7 @@ public final class WebFeedSnackbarControllerTest {
     @Mock public FeedServiceBridge.Natives mFeedServideBridgeJniMock;
     private Context mContext;
     @Mock private Profile mProfile;
-    private ModalDialogManager mDialogManager =
+    private final ModalDialogManager mDialogManager =
             new ModalDialogManager(Mockito.mock(ModalDialogManager.Presenter.class), 0);
     @Mock private SnackbarManager mSnackbarManager;
     private WebFeedSnackbarController mWebFeedSnackbarController;

@@ -75,9 +75,9 @@ public final class MostVisitedTilesProcessorUnitTest {
     private MostVisitedTilesProcessor mProcessor;
     private List<AutocompleteMatch> mMatches;
 
-    private ArgumentCaptor<Callback<Bitmap>> mFavIconCallbackCaptor =
+    private final ArgumentCaptor<Callback<Bitmap>> mFavIconCallbackCaptor =
             ArgumentCaptor.forClass(Callback.class);
-    private ArgumentCaptor<Callback<Bitmap>> mGenIconCallbackCaptor =
+    private final ArgumentCaptor<Callback<Bitmap>> mGenIconCallbackCaptor =
             ArgumentCaptor.forClass(Callback.class);
     private @Mock Bitmap mFaviconBitmap;
     private @Mock SuggestionHost mSuggestionHost;

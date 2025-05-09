@@ -35,13 +35,13 @@ import java.util.Locale;
 class AutoTranslateSnackbarController implements SnackbarManager.SnackbarController {
     private static final int AUTO_TRANSLATE_SNACKBAR_DURATION_MS = 4000;
 
-    private WeakReference<Activity> mActivity;
-    private long mNativeAutoTranslateSnackbarController;
-    private SnackbarManager mSnackbarManager;
+    private final WeakReference<Activity> mActivity;
+    private final long mNativeAutoTranslateSnackbarController;
+    private final SnackbarManager mSnackbarManager;
 
     @VisibleForTesting
     static class TargetLanguageData {
-        private String mTargetLanguage;
+        private final String mTargetLanguage;
 
         TargetLanguageData(String targetLanguage) {
             mTargetLanguage = targetLanguage;

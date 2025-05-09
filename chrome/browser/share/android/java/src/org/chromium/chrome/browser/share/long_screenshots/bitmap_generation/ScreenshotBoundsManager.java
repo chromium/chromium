@@ -22,7 +22,7 @@ public class ScreenshotBoundsManager {
     private static final int NUM_VIEWPORTS_CAPTURE_ABOVE_FOR_FULL_CAPTURE = 2;
     private static final int NUM_VIEWPORTS_CAPTURE_BELOW_FOR_FULL_CAPTURE = 4;
 
-    private Tab mTab;
+    private final Tab mTab;
     private Rect mCaptureRect;
     private Size mContentSize;
     private Point mScrollOffset;

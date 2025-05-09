@@ -91,8 +91,8 @@ public class BottomControlsMediatorTest {
     @Mock EdgeToEdgeManager mEdgeToEdgeManager;
 
     private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
-    private ObservableSupplierImpl<Tab> mTabObservableSupplier = new ObservableSupplierImpl();
-    private ObservableSupplierImpl<Boolean> mOverlayPanelVisibilitySupplier =
+    private final ObservableSupplierImpl<Tab> mTabObservableSupplier = new ObservableSupplierImpl();
+    private final ObservableSupplierImpl<Boolean> mOverlayPanelVisibilitySupplier =
             new ObservableSupplierImpl();
 
     private PropertyModel mModel;

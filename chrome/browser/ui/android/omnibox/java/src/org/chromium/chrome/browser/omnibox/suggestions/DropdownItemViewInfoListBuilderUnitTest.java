@@ -55,7 +55,7 @@ import java.util.List;
 /** Tests for {@link DropdownItemViewInfoListBuilder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class DropdownItemViewInfoListBuilderUnitTest {
-    private Context mContext = ContextUtils.getApplicationContext();
+    private final Context mContext = ContextUtils.getApplicationContext();
 
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
     private @Spy HeaderProcessor mMockHeaderProcessor = new HeaderProcessor(mContext);
@@ -64,7 +64,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     private @Mock SuggestionProcessor mMockSuggestionProcessor;
     private @Mock AutocompleteInput mInput;
 
-    private GroupSeparatorProcessor mGroupSeparatorProcessor =
+    private final GroupSeparatorProcessor mGroupSeparatorProcessor =
             new GroupSeparatorProcessor(mContext);
     DropdownItemViewInfoListBuilder mBuilder;
 

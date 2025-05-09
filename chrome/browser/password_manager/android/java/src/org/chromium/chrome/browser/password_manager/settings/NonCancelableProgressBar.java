@@ -23,7 +23,7 @@ import org.chromium.components.browser_ui.widget.MaterialProgressBar;
  */
 @NullMarked
 public class NonCancelableProgressBar extends DialogFragment {
-    private int mTitleStringId;
+    private final int mTitleStringId;
 
     public NonCancelableProgressBar() {
         mTitleStringId = R.string.please_wait_progress_message;

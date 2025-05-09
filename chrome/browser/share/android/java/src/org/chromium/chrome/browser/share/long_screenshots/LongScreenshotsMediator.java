@@ -61,7 +61,7 @@ public class LongScreenshotsMediator
     private final Activity mActivity;
     private final EntryManager mEntryManager;
     private Bitmap mFullBitmap;
-    private float mDisplayDensity;
+    private final float mDisplayDensity;
 
     // Variables for tracking drag action.
     private int mDragStartEventY;

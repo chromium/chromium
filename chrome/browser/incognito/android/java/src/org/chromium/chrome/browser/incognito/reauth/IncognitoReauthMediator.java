@@ -13,7 +13,7 @@ class IncognitoReauthMediator {
     // The entity responsible for actually calling the underlying system re-authentication.
     private final IncognitoReauthManager mIncognitoReauthManager;
     // The callback that would be fired after an authentication attempt.
-    private IncognitoReauthCallback mIncognitoReauthCallback;
+    private final IncognitoReauthCallback mIncognitoReauthCallback;
 
     /**
      * @param incognitoReauthCallback incognitoReauthCallback The {@link IncognitoReauthCallback}

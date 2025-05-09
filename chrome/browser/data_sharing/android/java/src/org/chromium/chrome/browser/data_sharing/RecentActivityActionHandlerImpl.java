@@ -24,7 +24,6 @@ public class RecentActivityActionHandlerImpl implements RecentActivityActionHand
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
     private final TabModelSelector mTabModelSelector;
     private final DataSharingTabGroupsDelegate mDataSharingTabGroupsDelegate;
-    private final String mCollaborationId;
     private final @Nullable String mSyncTabGroupId;
     private final Runnable mManageSharingCallback;
 
@@ -49,10 +48,8 @@ public class RecentActivityActionHandlerImpl implements RecentActivityActionHand
         mTabGroupSyncService = tabGroupSyncService;
         mTabModelSelector = tabModelSelector;
         mDataSharingTabGroupsDelegate = dataSharingTabGroupsDelegate;
-        mCollaborationId = collaborationId;
         mSyncTabGroupId = syncTabGroupId;
         mManageSharingCallback = manageSharingCallback;
-        assert mCollaborationId != null;
     }
 
     @Override

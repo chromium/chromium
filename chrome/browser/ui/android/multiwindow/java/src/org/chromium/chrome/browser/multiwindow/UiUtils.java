@@ -34,7 +34,7 @@ class UiUtils {
     private final int mDisplayedIconSize;
     private final Drawable mIncognitoFavicon;
     private final Drawable mGlobeFavicon;
-    private LargeIconBridge mLargeIconBridge;
+    private final LargeIconBridge mLargeIconBridge;
     private final RoundedIconGenerator mIconGenerator;
 
     UiUtils(Context context, LargeIconBridge iconBridge) {

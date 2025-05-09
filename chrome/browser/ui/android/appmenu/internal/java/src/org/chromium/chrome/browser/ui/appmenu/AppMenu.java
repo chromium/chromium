@@ -88,7 +88,7 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
     private @Nullable PopupWindow mPopup;
     private @Nullable ListView mListView;
     private @Nullable ModelListAdapter mAdapter;
-    private AppMenuHandlerImpl mHandler;
+    private final AppMenuHandlerImpl mHandler;
     private @Nullable View mFooterView;
     private int mCurrentScreenRotation = -1;
     private boolean mIsByPermanentButton;

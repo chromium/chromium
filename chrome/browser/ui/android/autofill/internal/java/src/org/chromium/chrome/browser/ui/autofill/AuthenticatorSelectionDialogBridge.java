@@ -26,7 +26,7 @@ import java.util.List;
 @NullMarked
 public class AuthenticatorSelectionDialogBridge implements AuthenticatorSelectionDialog.Listener {
     private final long mNativeCardUnmaskAuthenticationSelectionDialogView;
-    private AuthenticatorSelectionDialog mAuthenticatorSelectionDialog;
+    private final AuthenticatorSelectionDialog mAuthenticatorSelectionDialog;
 
     public AuthenticatorSelectionDialogBridge(
             long nativeAuthenticatorSelectionDialogView,

@@ -77,14 +77,14 @@ public class WebApkInfoTest {
 
     /** Fakes the Resources object, allowing lookup of String value. */
     private static class FakeResources extends Resources {
-        private static AssetManager sAssetManager = createAssetManager();
+        private static final AssetManager sAssetManager = createAssetManager();
         private final Map<String, Integer> mStringIdMap;
         private final Map<Integer, String> mIdValueMap;
         private String mShortcutsXmlContents;
         private String mPrimaryIconXmlContents;
 
         private class MockXmlResourceParserImpl extends XmlResourceParserImpl {
-            String mPackageName;
+            final String mPackageName;
 
             public MockXmlResourceParserImpl(
                     Document document,

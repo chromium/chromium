@@ -19,8 +19,8 @@ import java.util.LinkedList;
 /** A data structure that holds all the {@link Snackbar}s managed by {@link SnackbarManager}. */
 @NullMarked
 class SnackbarCollection {
-    private Deque<Snackbar> mSnackbars = new LinkedList<>();
-    private Deque<Snackbar> mPersistentSnackbars = new LinkedList<>();
+    private final Deque<Snackbar> mSnackbars = new LinkedList<>();
+    private final Deque<Snackbar> mPersistentSnackbars = new LinkedList<>();
 
     /**
      * Adds a new snackbar to the collection. If the new snackbar is of

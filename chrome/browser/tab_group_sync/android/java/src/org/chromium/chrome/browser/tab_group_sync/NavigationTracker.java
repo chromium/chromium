@@ -59,7 +59,7 @@ public class NavigationTracker {
      */
     private static class SyncNavigationUserData implements UserData {
         /** An ID that can be used to track the navigation. */
-        private int mRequestID;
+        private final int mRequestID;
 
         /** Constructor. */
         public SyncNavigationUserData(int requestID) {

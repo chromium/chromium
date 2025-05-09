@@ -31,7 +31,7 @@ public class ToolbarBrandingOverlayCoordinator {
     @VisibleForTesting static final int HIDING_DURATION_MS = 300;
 
     private @Nullable View mView;
-    private PropertyModel mModel;
+    private final PropertyModel mModel;
     private @Nullable ValueAnimator mHidingAnimator;
 
     /**

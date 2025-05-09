@@ -17,7 +17,7 @@ public class ChromeUrlConstants {
     private static class Holder {
         private static final String SERIALIZED_NATIVE_NTP_URL =
                 "82,1,true,0,13,0,-1,0,-1,16,6,0,-1,22,1,0,-1,0,-1,false,false,chrome-native://newtab/";
-        private static GURL sNativeNtpGurl =
+        private static final GURL sNativeNtpGurl =
                 GURL.deserializeLatestVersionOnly(SERIALIZED_NATIVE_NTP_URL.replace(',', '\0'));
     }
 

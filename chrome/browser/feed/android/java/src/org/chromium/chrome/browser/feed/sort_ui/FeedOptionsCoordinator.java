@@ -46,8 +46,8 @@ public class FeedOptionsCoordinator {
 
     private final FeedOptionsView mView;
     private final Context mContext;
-    private List<PropertyModel> mChipModels;
-    private PropertyModel mModel;
+    private final List<PropertyModel> mChipModels;
+    private final PropertyModel mModel;
     private @Nullable OptionChangedListener mOptionsListener;
 
     public FeedOptionsCoordinator(Context context) {

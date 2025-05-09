@@ -241,8 +241,8 @@ public class BookmarkFolderPickerMediatorUnitTest {
 
     private Activity mActivity;
     private BookmarkFolderPickerMediator mMediator;
-    private PropertyModel mModel = new PropertyModel(BookmarkFolderPickerProperties.ALL_KEYS);
-    private ModelList mModelList = new ModelList();
+    private final PropertyModel mModel = new PropertyModel(BookmarkFolderPickerProperties.ALL_KEYS);
+    private final ModelList mModelList = new ModelList();
 
     @Before
     public void setUp() throws Exception {

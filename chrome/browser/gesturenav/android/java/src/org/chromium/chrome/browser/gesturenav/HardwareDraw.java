@@ -75,7 +75,7 @@ public class HardwareDraw {
         private static @Nullable Executor sHardwareRequestThreadExecutor;
 
         // Only ever recreated in the UI thread.
-        private ImageReader mImageReader;
+        private final ImageReader mImageReader;
 
         // Set in the UI thread before enqueuing a request.
         // Cleared in the hardware thread after posting the task back to the UI thread.

@@ -52,7 +52,7 @@ public class ShoppingAccessoryViewRenderTest {
     private static final long MICRO_CURRENCY_QUOTIENT_WITH_CENTS = 10000;
 
     @ClassParameter
-    private static List<ParameterSet> sClassParams = new NightModeParams().getParameters();
+    private static final List<ParameterSet> sClassParams = new NightModeParams().getParameters();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

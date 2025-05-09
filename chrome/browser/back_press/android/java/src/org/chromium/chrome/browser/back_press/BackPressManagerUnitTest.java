@@ -33,8 +33,8 @@ import java.util.concurrent.TimeoutException;
 public class BackPressManagerUnitTest {
 
     private static class EmptyBackPressHandler implements BackPressHandler {
-        private ObservableSupplierImpl<Boolean> mSupplier = new ObservableSupplierImpl<>();
-        protected CallbackHelper mCallbackHelper = new CallbackHelper();
+        private final ObservableSupplierImpl<Boolean> mSupplier = new ObservableSupplierImpl<>();
+        protected final CallbackHelper mCallbackHelper = new CallbackHelper();
 
         @Override
         public @BackPressResult int handleBackPress() {

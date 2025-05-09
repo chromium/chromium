@@ -19,7 +19,7 @@ import java.util.List;
 public class TabModelSelectorTabObserver extends EmptyTabObserver {
     private final TabModelSelectorTabRegistrationObserver mTabRegistrationObserver;
     private boolean mShouldDeferTabRegisterNotifications;
-    private List<Tab> mDeferredTabs = new ArrayList<>();
+    private final List<Tab> mDeferredTabs = new ArrayList<>();
     private boolean mIsDestroyed;
     private boolean mIsDeferredInitializationFinished;
 

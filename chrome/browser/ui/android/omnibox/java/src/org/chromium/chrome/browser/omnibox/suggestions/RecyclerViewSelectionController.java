@@ -19,7 +19,7 @@ public class RecyclerViewSelectionController
         implements RecyclerView.OnChildAttachStateChangeListener {
     private static final int ADVANCE_EXPOSE_VIEWS = 2;
     private int mSelectedItemIndex = RecyclerView.NO_POSITION;
-    private LayoutManager mLayoutManager;
+    private final LayoutManager mLayoutManager;
 
     /** When true, cycling to next/previous item will go through null selection. */
     private boolean mCycleThroughNoSelection;

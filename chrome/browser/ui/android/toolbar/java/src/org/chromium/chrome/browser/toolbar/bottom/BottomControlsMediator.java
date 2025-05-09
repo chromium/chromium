@@ -63,10 +63,10 @@ class BottomControlsMediator
     private final Supplier<Boolean> mReadAloudRestoringSupplier;
 
     /** The height of the bottom bar in pixels, not including the top shadow. */
-    private int mBottomControlsHeight;
+    private final int mBottomControlsHeight;
 
     /** The height of the top shadow. */
-    private int mBottomControlsShadowHeight;
+    private final int mBottomControlsShadowHeight;
 
     /** A {@link WindowAndroid} for watching keyboard visibility events. */
     private final WindowAndroid mWindowAndroid;

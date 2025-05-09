@@ -82,7 +82,7 @@ public class MissingDeviceLockLauncherTest {
 
     private MissingDeviceLockLauncher mMissingDeviceLockLauncher;
     private SharedPreferencesManager mSharedPreferencesManager;
-    private AtomicBoolean mWipeDataCallbackCalled = new AtomicBoolean();
+    private final AtomicBoolean mWipeDataCallbackCalled = new AtomicBoolean();
 
     @Before
     public void setUp() {

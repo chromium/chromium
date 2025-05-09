@@ -29,7 +29,7 @@ class AcknowledgeGroupedCredentialSheetView implements BottomSheetContent {
     private static final float URL_IN_TITLE_MAX_LINES = 1.5f;
     private final View mContent;
     private final String mCurrentHostname;
-    private String mCredentialHostname;
+    private final String mCredentialHostname;
     private final Callback<Integer> mInterationCallback;
 
     public AcknowledgeGroupedCredentialSheetView(

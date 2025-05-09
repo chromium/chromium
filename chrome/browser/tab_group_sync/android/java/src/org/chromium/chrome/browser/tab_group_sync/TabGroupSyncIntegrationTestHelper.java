@@ -62,7 +62,7 @@ public class TabGroupSyncIntegrationTestHelper {
                     GUID_10);
 
     private Iterator<String> mGuidIterator;
-    private SyncTestRule mSyncTestRule;
+    private final SyncTestRule mSyncTestRule;
 
     /**
      * Helper for handling or asserting on changes to the fake sync server.

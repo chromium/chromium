@@ -92,7 +92,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
      * The set of tab group IDs that are currently hiding. This cannot be stored on {@link TabGroup}
      * as for undoable closures that object will already be gone before tab closures are finished.
      */
-    private Set<Token> mHidingTabGroups = new HashSet<>();
+    private final Set<Token> mHidingTabGroups = new HashSet<>();
 
     private int mCurrentGroupIndex = TabList.INVALID_TAB_INDEX;
     private boolean mShouldRecordUma = true;

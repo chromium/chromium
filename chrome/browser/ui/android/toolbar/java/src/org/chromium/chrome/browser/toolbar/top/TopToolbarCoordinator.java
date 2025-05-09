@@ -86,7 +86,7 @@ public class TopToolbarCoordinator implements Toolbar {
 
     private OptionalBrowsingModeButtonController mOptionalButtonController;
 
-    private MenuButtonCoordinator mMenuButtonCoordinator;
+    private final MenuButtonCoordinator mMenuButtonCoordinator;
     private @Nullable ReloadButtonCoordinator mReloadButtonCoordinator;
     private @Nullable final BackButtonCoordinator mBackButtonCoordinator;
     private @Nullable ObservableSupplier<AppMenuButtonHelper> mAppMenuButtonHelperSupplier;
@@ -95,29 +95,29 @@ public class TopToolbarCoordinator implements Toolbar {
     private @Nullable TabStripTransitionCoordinator mTabStripTransitionCoordinator;
 
     private ToolbarControlContainer mControlContainer;
-    private Supplier<ResourceManager> mResourceManagerSupplier;
+    private final Supplier<ResourceManager> mResourceManagerSupplier;
     private @Nullable TopToolbarOverlayCoordinator mOverlayCoordinator;
 
     /**
      * The observer manager will receive all types of toolbar color change updates from toolbar
      * components and send the rendering toolbar color to the ToolbarColorObserver.
      */
-    private ToolbarColorObserverManager mToolbarColorObserverManager;
+    private final ToolbarColorObserverManager mToolbarColorObserverManager;
 
     private @Nullable IncognitoStateProvider mIncognitoStateProvider;
     private @Nullable IncognitoStateObserver mIncognitoStateObserver;
 
-    private TabObscuringHandler mTabObscuringHandler;
-    private @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
-    private OneshotSupplier<TabStripTransitionDelegate> mTabStripTransitionDelegateSupplier;
-    private ObservableSupplierImpl<Boolean> mNtpLoadingSupplier;
+    private final TabObscuringHandler mTabObscuringHandler;
+    private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
+    private final OneshotSupplier<TabStripTransitionDelegate> mTabStripTransitionDelegateSupplier;
+    private final ObservableSupplierImpl<Boolean> mNtpLoadingSupplier;
 
     private ObservableSupplier<Integer> mTabCountSupplier;
 
     /** Token used to block the tab strip transition when find in page toolbar is showing. */
     private int mFindToolbarToken = TokenHolder.INVALID_TOKEN;
 
-    private int mIndexOfLocationBarInToolbar;
+    private final int mIndexOfLocationBarInToolbar;
 
     /**
      * Creates a new {@link TopToolbarCoordinator}.

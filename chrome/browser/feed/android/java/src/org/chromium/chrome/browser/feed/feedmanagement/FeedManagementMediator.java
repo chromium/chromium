@@ -36,7 +36,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 @NullMarked
 public class FeedManagementMediator {
     private static final String TAG = "FeedManagementMdtr";
-    private ModelList mModelList;
+    private final ModelList mModelList;
     private final Context mContext;
     private final @StreamKind int mInitiatingStreamKind;
 

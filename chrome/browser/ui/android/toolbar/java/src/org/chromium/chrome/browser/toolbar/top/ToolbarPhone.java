@@ -238,8 +238,8 @@ public class ToolbarPhone extends ToolbarLayout
     private @Nullable PhoneCaptureStateToken mPhoneCaptureStateToken;
     private @Nullable ButtonData mButtonData;
 
-    private @ColorInt int mToolbarBackgroundColorForNtp;
-    private @ColorInt int mLocationBarBackgroundColorForNtp;
+    private final @ColorInt int mToolbarBackgroundColorForNtp;
+    private final @ColorInt int mLocationBarBackgroundColorForNtp;
 
     /** Used to specify the visual state of the toolbar. */
     @IntDef({

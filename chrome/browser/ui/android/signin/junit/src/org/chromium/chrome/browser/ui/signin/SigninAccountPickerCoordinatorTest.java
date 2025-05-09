@@ -67,7 +67,8 @@ public class SigninAccountPickerCoordinatorTest {
     @Mock private SigninAccountPickerCoordinator.Delegate mDelegateMock;
     @Mock private AccountPickerBottomSheetMediator mMediator;
 
-    private final @SigninAccessPoint int mAccessPoint = SigninAccessPoint.NTP_SIGNED_OUT_ICON;
+    private static final @SigninAccessPoint int ACCESS_POINT =
+            SigninAccessPoint.NTP_SIGNED_OUT_ICON;
     private ComponentActivity mActivity;
     private ViewGroup mContainerView;
     private SigninAccountPickerCoordinator mCoordinator;
@@ -100,7 +101,7 @@ public class SigninAccountPickerCoordinatorTest {
                         mSigninManagerMock,
                         bottomSheetStrings,
                         AccountPickerLaunchMode.DEFAULT,
-                        mAccessPoint,
+                        ACCESS_POINT,
                         /* selectedAccountId= */ null);
     }
 
@@ -119,7 +120,7 @@ public class SigninAccountPickerCoordinatorTest {
 
         // Verify that the SigninManager starts sign-in then a dialog is shown for history opt-in.
         verify(mSigninManagerMock, times(1))
-                .signin(eq(mCoreAccountInfoMock), eq(mAccessPoint), any());
+                .signin(eq(mCoreAccountInfoMock), eq(ACCESS_POINT), any());
         verify(mDelegateMock, times(1)).onSignInComplete();
         verify(mDelegateMock, never()).onSignInCancel();
     }
@@ -156,7 +157,7 @@ public class SigninAccountPickerCoordinatorTest {
         // be implemented, and add test to ensure that the delegate is called only once in the
         // coordinator's lifetime.
         verify(mSigninManagerMock, times(1))
-                .signin(eq(mCoreAccountInfoMock), eq(mAccessPoint), any());
+                .signin(eq(mCoreAccountInfoMock), eq(ACCESS_POINT), any());
         verify(mDelegateMock, never()).onSignInComplete();
         verify(mDelegateMock, never()).onSignInCancel();
     }

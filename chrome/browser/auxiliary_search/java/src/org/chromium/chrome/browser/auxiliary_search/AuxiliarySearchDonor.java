@@ -113,12 +113,12 @@ public class AuxiliarySearchDonor {
     private @Nullable Callback<Boolean> mPendingCallback;
     private boolean mSharedTabsWithOsState;
     private @Nullable Boolean mIsDeviceCompatible;
-    private boolean mSupportMultiDataSource;
+    private final boolean mSupportMultiDataSource;
     private boolean mIsCreatedSessionAndInitForTesting;
 
     /** Static class that implements the initialization-on-demand holder idiom. */
     private static class LazyHolder {
-        static AuxiliarySearchDonor sInstance = new AuxiliarySearchDonor();
+        static final AuxiliarySearchDonor sInstance = new AuxiliarySearchDonor();
     }
 
     /** Returns the singleton instance of AuxiliarySearchDonor. */

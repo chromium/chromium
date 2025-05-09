@@ -140,7 +140,7 @@ public class EdgeToEdgeControllerTest {
     private final ObservableSupplierImpl<LayoutManager> mLayoutManagerSupplier =
             new ObservableSupplierImpl<>();
 
-    private UserDataHost mTabDataHost = new UserDataHost();
+    private final UserDataHost mTabDataHost = new UserDataHost();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

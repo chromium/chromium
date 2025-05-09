@@ -205,8 +205,8 @@ public class ThumbnailProviderImplTest {
         private final String mTestFilePath;
         private final int mRequiredSize;
         private Bitmap mRetrievedThumbnail;
-        private CallbackHelper mThumbnailRetrievedCallbackHelper;
-        private String mContentId;
+        private final CallbackHelper mThumbnailRetrievedCallbackHelper;
+        private final String mContentId;
 
         TestThumbnailRequest(
                 String filepath,

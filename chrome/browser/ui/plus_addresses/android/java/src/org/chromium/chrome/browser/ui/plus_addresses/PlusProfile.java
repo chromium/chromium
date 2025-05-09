@@ -18,11 +18,11 @@ import java.util.Objects;
 @JNINamespace("plus_addresses")
 class PlusProfile {
     // Plus address email address.
-    private String mPlusAddress;
+    private final String mPlusAddress;
     // The string used to display the origin of the plus profile.
-    private String mDisplayName;
+    private final String mDisplayName;
     // The domain where the plus address was created.
-    private String mOrigin;
+    private final String mOrigin;
 
     @CalledByNative
     public PlusProfile(

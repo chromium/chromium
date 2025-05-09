@@ -61,8 +61,8 @@ public class PersonalDataManager implements Destroyable {
         // marshaled and compared as strings. To save conversions, we sometimes use strings.
         private String mGUID;
         private String mOrigin;
-        private boolean mIsLocal;
-        private boolean mIsVirtual;
+        private final boolean mIsLocal;
+        private final boolean mIsVirtual;
         private String mName;
         private String mNumber;
         private String mNetworkAndLastFourDigits;
@@ -80,8 +80,8 @@ public class PersonalDataManager implements Destroyable {
         private String mNickname;
         private @Nullable GURL mCardArtUrl;
         private String mCvc;
-        private String mIssuerId;
-        private @Nullable GURL mProductTermsUrl;
+        private final String mIssuerId;
+        private final @Nullable GURL mProductTermsUrl;
         private final @VirtualCardEnrollmentState int mVirtualCardEnrollmentState;
         private final String mProductDescription;
         private final String mCardNameForAutofillDisplay;
@@ -448,14 +448,14 @@ public class PersonalDataManager implements Destroyable {
 
     /** Autofill IBAN information. */
     public static class Iban {
-        private @Nullable String mGuid;
-        private @Nullable Long mInstrumentId;
+        private final @Nullable String mGuid;
+        private final @Nullable Long mInstrumentId;
 
         // Obfuscated IBAN value. This is used for displaying the IBAN in the Payment methods page.
-        private String mLabel;
+        private final String mLabel;
 
         private String mNickname;
-        private @IbanRecordType int mRecordType;
+        private final @IbanRecordType int mRecordType;
         // Value is empty for server IBAN.
         private @Nullable String mValue;
 

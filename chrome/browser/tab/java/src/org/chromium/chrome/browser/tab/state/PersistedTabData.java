@@ -47,7 +47,7 @@ public abstract class PersistedTabData implements UserData {
     private static final Map<String, List<Callback>> sCachedCallbacks = new HashMap<>();
     private static final long NEEDS_UPDATE_DISABLED = Long.MAX_VALUE;
     private static final long LAST_UPDATE_UNKNOWN = 0;
-    private static Set<Class<? extends PersistedTabData>> sSupportedMaintenanceClasses =
+    private static final Set<Class<? extends PersistedTabData>> sSupportedMaintenanceClasses =
             new HashSet<>();
     protected final Tab mTab;
     private final PersistedTabDataStorage mPersistedTabDataStorage;

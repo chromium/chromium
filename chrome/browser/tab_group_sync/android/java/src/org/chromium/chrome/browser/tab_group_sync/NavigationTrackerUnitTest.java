@@ -16,7 +16,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class NavigationTrackerUnitTest {
-    private NavigationTracker mNavigationTracker = new NavigationTracker();
+    private final NavigationTracker mNavigationTracker = new NavigationTracker();
 
     @Test
     public void testSyncInitiatedNavigation() {

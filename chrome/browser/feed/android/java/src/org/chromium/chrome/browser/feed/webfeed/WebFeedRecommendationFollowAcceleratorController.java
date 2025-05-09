@@ -42,7 +42,7 @@ public class WebFeedRecommendationFollowAcceleratorController {
     /** We use UserData to put the web feed name into the tab and the NavigationHandle. */
     @VisibleForTesting
     private static class AssociatedWebFeedData implements UserData {
-        byte[] mWebFeedName;
+        final byte[] mWebFeedName;
 
         public AssociatedWebFeedData(byte[] webFeedName) {
             mWebFeedName = webFeedName;

@@ -101,7 +101,7 @@ public class SingleWebFeedStreamTest {
     @Mock private FeedSurfaceScope mSurfaceScope;
     @Mock private FeedReliabilityLogger mReliabilityLogger;
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
-    private StubSnackbarController mSnackbarController = new StubSnackbarController();
+    private final StubSnackbarController mSnackbarController = new StubSnackbarController();
     @Mock private Runnable mMockRunnable;
     @Mock private Callback<Boolean> mMockRefreshCallback;
     @Mock private FeedStream.ShareHelperWrapper mShareHelper;

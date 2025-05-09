@@ -29,8 +29,8 @@ import java.util.Optional;
 class OtpVerificationDialogMediator
         implements ModalDialogProperties.Controller, OtpVerificationDialogProperties.ViewDelegate {
     private final ModalDialogManager mModalDialogManager;
-    private PropertyModel mModalDialogModel;
-    private Delegate mDelegate;
+    private final PropertyModel mModalDialogModel;
+    private final Delegate mDelegate;
     private @Nullable PropertyModel mOtpVerificationDialogModel;
 
     OtpVerificationDialogMediator(

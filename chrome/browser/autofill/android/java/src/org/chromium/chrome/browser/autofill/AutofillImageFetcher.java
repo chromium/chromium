@@ -46,7 +46,7 @@ public class AutofillImageFetcher {
 
     private final Map<String, Integer> mFetchAttemptCounter = new HashMap<>();
     private final Map<String, Bitmap> mImagesCache = new HashMap<>();
-    private ImageFetcher mImageFetcher;
+    private final ImageFetcher mImageFetcher;
 
     @CalledByNative
     private static AutofillImageFetcher create(SimpleFactoryKeyHandle key) {

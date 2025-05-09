@@ -85,7 +85,7 @@ public class TopToolbarOverlayMediator {
     /** Whether a layout that this overlay can be displayed on is showing. */
     private boolean mIsOnValidLayout;
 
-    private ObservableSupplier<@Nullable Tab> mTabSupplier;
+    private final ObservableSupplier<@Nullable Tab> mTabSupplier;
     private float mViewportHeight;
 
     private @Nullable OffsetTag mTopControlsOffsetTag;

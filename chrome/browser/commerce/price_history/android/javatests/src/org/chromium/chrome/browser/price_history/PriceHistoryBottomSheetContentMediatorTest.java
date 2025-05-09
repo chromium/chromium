@@ -106,7 +106,7 @@ public class PriceHistoryBottomSheetContentMediatorTest {
                     true);
 
     private PriceHistoryBottomSheetContentMediator mMediator;
-    private PropertyModel mPropertyModel = new PropertyModel(ALL_KEYS);
+    private final PropertyModel mPropertyModel = new PropertyModel(ALL_KEYS);
     private Activity mActivity;
 
     @Before

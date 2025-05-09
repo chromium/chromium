@@ -49,7 +49,7 @@ public class DateOrderedListMutator implements OfflineItemFilterObserver {
     private final JustNowProvider mJustNowProvider;
     private final ListItemModel mModel;
     private @Nullable ListConsumer mListConsumer;
-    private ArrayList<ListItem> mSortedItems = new ArrayList<>();
+    private final ArrayList<ListItem> mSortedItems = new ArrayList<>();
 
     /**
      * Creates an DateOrderedList instance that will reflect {@code source}.

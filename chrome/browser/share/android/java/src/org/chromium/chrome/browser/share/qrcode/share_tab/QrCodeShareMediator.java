@@ -47,8 +47,8 @@ class QrCodeShareMediator {
     private int mNumDownloads;
 
     private boolean mIsDownloadInProgress;
-    private String mUrl;
-    private Runnable mCloseDialog;
+    private final String mUrl;
+    private final Runnable mCloseDialog;
 
     /**
      * The QrCodeScanMediator constructor.

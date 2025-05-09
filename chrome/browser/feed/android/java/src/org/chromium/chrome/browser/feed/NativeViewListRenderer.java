@@ -158,7 +158,7 @@ public class NativeViewListRenderer extends RecyclerView.Adapter<NativeViewListR
     }
 
     static class NativeViewListLayoutHelper implements ListLayoutHelper {
-        private LinearLayoutManager mLayoutManager;
+        private final LinearLayoutManager mLayoutManager;
 
         public NativeViewListLayoutHelper(LinearLayoutManager layoutManager) {
             mLayoutManager = layoutManager;

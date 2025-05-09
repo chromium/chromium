@@ -1269,7 +1269,7 @@ public class AppMenuTest {
     }
 
     private static class TestActivityLifecycleDispatcher implements ActivityLifecycleDispatcher {
-        public CallbackHelper observerRegisteredCallbackHelper = new CallbackHelper();
+        public final CallbackHelper observerRegisteredCallbackHelper = new CallbackHelper();
 
         @Override
         public void register(LifecycleObserver observer) {

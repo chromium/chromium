@@ -36,7 +36,7 @@ class RichAnswerText implements AnswerText {
     private String mAccessibilityDescription;
     private int mMaxLines = 1;
     private final AnswerType mAnswerType;
-    private boolean mUseRichAnswerCard;
+    private final boolean mUseRichAnswerCard;
 
     @Override
     public SpannableStringBuilder getText() {

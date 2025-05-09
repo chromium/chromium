@@ -75,13 +75,13 @@ public class AppMenuItemViewBinderTest {
         public static final int VIEW_TYPE_2 = 1;
         public static final int VIEW_TYPE_COUNT = 2;
 
-        public int supportedId1;
-        public int supportedId2;
-        public int supportedId3;
+        public final int supportedId1;
+        public final int supportedId2;
+        public final int supportedId3;
 
         public int lastBindId;
 
-        public CallbackHelper getViewItemCallbackHelper = new CallbackHelper();
+        public final CallbackHelper getViewItemCallbackHelper = new CallbackHelper();
 
         public CustomViewBinderOne() {
             supportedId1 = View.generateViewId();
@@ -133,11 +133,11 @@ public class AppMenuItemViewBinderTest {
         public static final int VIEW_TYPE_1 = 0;
         public static final int VIEW_TYPE_COUNT = 1;
 
-        public int supportedId1;
+        public final int supportedId1;
 
         public int lastBindId;
 
-        public CallbackHelper getViewItemCallbackHelper = new CallbackHelper();
+        public final CallbackHelper getViewItemCallbackHelper = new CallbackHelper();
 
         public CustomViewBinderTwo() {
             supportedId1 = View.generateViewId();

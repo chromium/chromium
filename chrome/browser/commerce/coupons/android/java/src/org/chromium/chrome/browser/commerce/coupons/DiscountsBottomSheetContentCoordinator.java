@@ -35,11 +35,11 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 @NullMarked
 public class DiscountsBottomSheetContentCoordinator implements CommerceBottomSheetContentProvider {
 
-    private Context mContext;
-    private ModelList mModelList;
-    private View mDiscountsContentContainer;
-    private RecyclerView mContentRecyclerView;
-    private DiscountsBottomSheetContentMediator mMediator;
+    private final Context mContext;
+    private final ModelList mModelList;
+    private final View mDiscountsContentContainer;
+    private final RecyclerView mContentRecyclerView;
+    private final DiscountsBottomSheetContentMediator mMediator;
 
     public DiscountsBottomSheetContentCoordinator(Context context, Supplier<Tab> tabSupplier) {
         mContext = context;

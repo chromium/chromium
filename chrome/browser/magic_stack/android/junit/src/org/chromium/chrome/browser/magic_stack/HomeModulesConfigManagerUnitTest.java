@@ -47,7 +47,7 @@ import java.util.Set;
 public class HomeModulesConfigManagerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private List<ModuleConfigChecker> mModuleConfigCheckerList = new ArrayList<>();
+    private final List<ModuleConfigChecker> mModuleConfigCheckerList = new ArrayList<>();
     private HomeModulesConfigManager mHomeModulesConfigManager;
     private ModuleRegistry mModuleRegistry;
 

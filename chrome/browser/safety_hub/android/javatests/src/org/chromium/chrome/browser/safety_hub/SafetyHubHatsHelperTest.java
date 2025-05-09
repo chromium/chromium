@@ -64,10 +64,10 @@ public class SafetyHubHatsHelperTest {
     @Mock private SafetyHubFetchService mSafetyHubFetchService;
     @Mock private SafeBrowsingBridge.Natives mSafeBrowsingBridgeNativeMock;
 
-    private FakeUnusedSitePermissionsBridge mUnusedPermissionsBridge =
+    private final FakeUnusedSitePermissionsBridge mUnusedPermissionsBridge =
             new FakeUnusedSitePermissionsBridge();
 
-    private FakeNotificationPermissionReviewBridge mNotificationPermissionReviewBridge =
+    private final FakeNotificationPermissionReviewBridge mNotificationPermissionReviewBridge =
             new FakeNotificationPermissionReviewBridge();
 
     private TabModelSelector mTabModelSelector;

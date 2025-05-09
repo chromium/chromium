@@ -36,7 +36,7 @@ public class EditorFieldValidator {
 
     /** Builder for the {@link EditorFieldValidator}. */
     public static class Builder {
-        private EditorFieldValidator mValidator;
+        private final EditorFieldValidator mValidator;
 
         public Builder() {
             mValidator = new EditorFieldValidator();

@@ -83,8 +83,8 @@ public class SectionHeaderView extends LinearLayout {
     }
 
     private class UnreadIndicator implements ViewTreeObserver.OnGlobalLayoutListener {
-        private View mAnchor;
-        private SectionHeaderBadgeDrawable mNewBadge;
+        private final View mAnchor;
+        private final SectionHeaderBadgeDrawable mNewBadge;
 
         UnreadIndicator(View anchor) {
             mAnchor = anchor;
@@ -132,8 +132,8 @@ public class SectionHeaderView extends LinearLayout {
 
     private boolean mTextsEnabled;
     private @Px int mToolbarHeight;
-    private @Px int mTouchSize;
-    private boolean mIsTablet;
+    private final @Px int mTouchSize;
+    private final boolean mIsTablet;
     private final boolean mIsNewTabPageCustomizationEnabled;
 
     public SectionHeaderView(Context context, @Nullable AttributeSet attrs) {

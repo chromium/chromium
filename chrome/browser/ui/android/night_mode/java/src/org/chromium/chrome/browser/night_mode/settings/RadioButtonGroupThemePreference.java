@@ -42,7 +42,7 @@ public class RadioButtonGroupThemePreference extends Preference
     private @ThemeType int mSetting;
     private @MonotonicNonNull RadioButtonWithDescription mSettingRadioButton;
     private @MonotonicNonNull RadioButtonWithDescriptionLayout mGroup;
-    private ArrayList<RadioButtonWithDescription> mButtons;
+    private final ArrayList<RadioButtonWithDescription> mButtons;
 
     // Additional view that darkens website contents.
     private @MonotonicNonNull LinearLayout mCheckboxContainer;

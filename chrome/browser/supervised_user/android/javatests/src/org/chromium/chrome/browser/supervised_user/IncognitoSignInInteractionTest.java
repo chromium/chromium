@@ -38,7 +38,7 @@ public class IncognitoSignInInteractionTest {
 
     /** Waits until the Incognito Tab is closed. */
     private static class TabClosedWaiter extends EmptyTabObserver {
-        private CallbackHelper mCallbackHelper;
+        private final CallbackHelper mCallbackHelper;
 
         public TabClosedWaiter() {
             mCallbackHelper = new CallbackHelper();

@@ -63,7 +63,7 @@ import java.util.List;
 @Batch(Batch.PER_CLASS)
 public class ImprovedBookmarkFolderViewRenderTest {
     @ParameterAnnotations.ClassParameter
-    private static List<ParameterSet> sClassParams = new NightModeParams().getParameters();
+    private static final List<ParameterSet> sClassParams = new NightModeParams().getParameters();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

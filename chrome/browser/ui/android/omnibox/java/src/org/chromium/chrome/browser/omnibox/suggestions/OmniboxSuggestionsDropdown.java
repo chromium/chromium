@@ -86,7 +86,8 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
     private int mListViewMaxHeight;
     private int mLastBroadcastedListViewMaxHeight;
-    private Callback<OmniboxAlignment> mOmniboxAlignmentObserver = this::onOmniboxAlignmentChanged;
+    private final Callback<OmniboxAlignment> mOmniboxAlignmentObserver =
+            this::onOmniboxAlignmentChanged;
     private float mChildVerticalTranslation;
     private float mChildAlpha = 1.0f;
 

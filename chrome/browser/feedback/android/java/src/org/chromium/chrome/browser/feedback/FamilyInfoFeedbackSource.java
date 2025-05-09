@@ -26,7 +26,7 @@ public class FamilyInfoFeedbackSource implements AsyncFeedbackSource {
     private static final String PARENTAL_CONTROL_SITES_CHILD = "Parental_Control_Sites_Child";
 
     private final Profile mProfile;
-    private Map<String, String> mFeedbackMap = new HashMap<>();
+    private final Map<String, String> mFeedbackMap = new HashMap<>();
     private boolean mIsReady;
     private @Nullable Runnable mCallback;
 

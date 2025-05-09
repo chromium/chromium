@@ -63,7 +63,7 @@ public class SafetyHubLocalPasswordsModuleMediator
     private final SafetyHubModuleDelegate mModuleDelegate;
     private final PropertyModel mModel;
 
-    private SafetyHubLocalPasswordsDataSource mLocalPasswordsDataSource;
+    private final SafetyHubLocalPasswordsDataSource mLocalPasswordsDataSource;
     private @Nullable SafetyHubModuleHelper mModuleHelper;
 
     private @IndicatorState int mIndicatorState = IndicatorState.IDLE;

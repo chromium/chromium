@@ -62,10 +62,10 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
      * ModalDialogProperties.MESSAGE_PARAGRAPH1} matches the parameter passed to the constructor.
      */
     private static class ModalDialogButtonPresser implements ModalDialogManagerObserver {
-        private String mSearchParagraph1;
+        private final String mSearchParagraph1;
         private boolean mWasDialogShown;
         private boolean mWasAnyDialogShown;
-        private boolean mPressButtonOnShow;
+        private final boolean mPressButtonOnShow;
         private PropertyModel mDialogPropertyModel;
 
         public ModalDialogButtonPresser(String searchParagraph1, boolean pressButtonOnShow) {

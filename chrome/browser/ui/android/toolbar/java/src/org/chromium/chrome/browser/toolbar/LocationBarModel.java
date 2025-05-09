@@ -157,9 +157,10 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     private boolean mIsUsingBrandColor;
 
     private long mNativeLocationBarModelAndroid;
-    private ObserverList<LocationBarDataProvider.Observer> mLocationBarDataObservers =
+    private final ObserverList<LocationBarDataProvider.Observer> mLocationBarDataObservers =
             new ObserverList<>();
-    private ObserverList<ToolbarDataProvider.Observer> mToolbarDataObservers = new ObserverList<>();
+    private final ObserverList<ToolbarDataProvider.Observer> mToolbarDataObservers =
+            new ObserverList<>();
     protected GURL mVisibleGurl = GURL.emptyGURL();
     protected String mFormattedFullUrl;
     protected String mUrlForDisplay;

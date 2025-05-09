@@ -87,14 +87,14 @@ public class TabContentManager {
     private static final String UMA_THUMBNAIL_CAPTURE_DURATION_FORMAT =
             "Android.TabContentManager.CaptureThumbnail.%s.Duration";
 
-    private float mThumbnailScale;
+    private final float mThumbnailScale;
 
     /**
      * The limit on the number of fullsized or ETC1 compressed thumbnails in the in-memory cache.
      * If in future there is a need for more bitmaps to be visible on the screen at once this value
      * can be increased.
      */
-    private int mFullResThumbnailsMaxSize;
+    private final int mFullResThumbnailsMaxSize;
 
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private long mNativeTabContentManager;

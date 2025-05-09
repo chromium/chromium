@@ -34,7 +34,7 @@ public class OmniboxImageSupplier {
     private static final int MAX_IMAGE_CACHE_SIZE = 500 * ConversionUtils.BYTES_PER_KILOBYTE;
 
     private final Map<GURL, List<Callback<Bitmap>>> mPendingImageRequests;
-    private int mDesiredFaviconWidthPx;
+    private final int mDesiredFaviconWidthPx;
     private RoundedIconGenerator mIconGenerator;
     private @Nullable LargeIconBridge mIconBridge;
     private @Nullable ImageFetcher mImageFetcher;

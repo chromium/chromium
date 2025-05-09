@@ -25,9 +25,9 @@ import java.util.List;
 @NullMarked
 public class RestoreTabsCoordinator {
     private RestoreTabsMediator mMediator;
-    private PropertyModel mModel = RestoreTabsProperties.createDefaultModel();
-    private RestoreTabsPromoSheetContent mContent;
-    private ViewFlipper mViewFlipperView;
+    private final PropertyModel mModel = RestoreTabsProperties.createDefaultModel();
+    private final RestoreTabsPromoSheetContent mContent;
+    private final ViewFlipper mViewFlipperView;
     private RestoreTabsDetailScreenCoordinator mRestoreTabsDetailScreenCoordinator;
 
     public RestoreTabsCoordinator(

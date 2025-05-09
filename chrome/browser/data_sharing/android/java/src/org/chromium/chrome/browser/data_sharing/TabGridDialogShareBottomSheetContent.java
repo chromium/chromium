@@ -16,7 +16,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 /** Bottom sheet content to provide data sharing service to TabGridDialog. */
 @NullMarked
 public class TabGridDialogShareBottomSheetContent implements BottomSheetContent {
-    private View mContentView;
+    private final View mContentView;
 
     public TabGridDialogShareBottomSheetContent(View view) {
         mContentView = view;

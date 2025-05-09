@@ -51,7 +51,7 @@ public class SuggestionListViewBinderUnitTest {
     private ViewGroup mContainer;
     private OmniboxSuggestionsDropdown mDropdown;
     private ModelList mSuggestionModels;
-    private Activity mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+    private final Activity mActivity = Robolectric.buildActivity(Activity.class).setup().get();
 
     @Before
     public void setUp() {

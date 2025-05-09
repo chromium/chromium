@@ -16,8 +16,8 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 /** Shows the snackbar for Privacy Sandbox settings, allowing the user to quickly navigate there. */
 @NullMarked
 public class PrivacySandboxSnackbarController implements SnackbarManager.SnackbarController {
-    private Context mContext;
-    private SnackbarManager mSnackbarManager;
+    private final Context mContext;
+    private final SnackbarManager mSnackbarManager;
 
     /** Creates an instance of the controller given a SnackbarManager. */
     public PrivacySandboxSnackbarController(Context context, SnackbarManager manager) {

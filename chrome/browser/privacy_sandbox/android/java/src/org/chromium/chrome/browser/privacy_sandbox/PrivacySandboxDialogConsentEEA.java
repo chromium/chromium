@@ -51,23 +51,23 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
 
     private final PrivacySandboxBridge mPrivacySandboxBridge;
 
-    private Activity mActivity;
-    private View mContentView;
+    private final Activity mActivity;
+    private final View mContentView;
 
     private final CheckableImageView mExpandArrowView;
-    private LinearLayout mDropdownContainer;
-    private LinearLayout mDropdownElement;
-    private LinearLayout mProgressBarContainer;
-    private LinearLayout mConsentViewContainer;
-    private ButtonCompat mMoreButton;
-    private LinearLayout mActionButtons;
-    private ScrollView mScrollView;
+    private final LinearLayout mDropdownContainer;
+    private final LinearLayout mDropdownElement;
+    private final LinearLayout mProgressBarContainer;
+    private final LinearLayout mConsentViewContainer;
+    private final ButtonCompat mMoreButton;
+    private final LinearLayout mActionButtons;
+    private final ScrollView mScrollView;
     private @Nullable TextViewWithLeading mLearnMoreText;
-    private int mSurfaceType;
-    private LinearLayout mPrivacyPolicyView;
-    private FrameLayout mPrivacyPolicyContent;
-    private ChromeImageButton mPrivacyPolicyBackButton;
-    private View.OnClickListener mOnClickListener;
+    private final int mSurfaceType;
+    private final LinearLayout mPrivacyPolicyView;
+    private final FrameLayout mPrivacyPolicyContent;
+    private final ChromeImageButton mPrivacyPolicyBackButton;
+    private final View.OnClickListener mOnClickListener;
 
     private @Nullable ThinWebView mThinWebView;
     private @Nullable WebContents mWebContents;
@@ -77,7 +77,7 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
     private final ActivityWindowAndroid mActivityWindowAndroid;
     private boolean mIsPrivacyPageLoaded;
 
-    private boolean mAreAnimationsDisabled;
+    private final boolean mAreAnimationsDisabled;
 
     private @StringRes int mLearnMoreBullet1StringRes =
             R.string.privacy_sandbox_m1_consent_learn_more_bullet_1;

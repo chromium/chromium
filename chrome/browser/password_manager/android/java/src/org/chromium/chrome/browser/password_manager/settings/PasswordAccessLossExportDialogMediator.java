@@ -47,7 +47,7 @@ class PasswordAccessLossExportDialogMediator
     private final int mDialogViewId;
     private final PasswordAccessLossExportDialogFragment mExportDialogFragment;
     private @Nullable ExportFlow mExportFlow;
-    private PasswordStoreBridge mPasswordStoreBridge;
+    private final PasswordStoreBridge mPasswordStoreBridge;
     private @Nullable DialogManager mProgressBarManager;
     private final PasswordAccessLossExportDialogCoordinator.Observer mExportDialogObserver;
 

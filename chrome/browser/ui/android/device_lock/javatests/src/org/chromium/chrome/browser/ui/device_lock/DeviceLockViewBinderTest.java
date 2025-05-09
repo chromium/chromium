@@ -59,10 +59,10 @@ public class DeviceLockViewBinderTest {
 
     private static Activity sActivity;
 
-    private AtomicBoolean mCreateDeviceLockButtonClicked = new AtomicBoolean();
-    private AtomicBoolean mGoToOSSettingsButtonClicked = new AtomicBoolean();
-    private AtomicBoolean mUserUnderstandsButtonClicked = new AtomicBoolean();
-    private AtomicBoolean mDismissButtonClicked = new AtomicBoolean();
+    private final AtomicBoolean mCreateDeviceLockButtonClicked = new AtomicBoolean();
+    private final AtomicBoolean mGoToOSSettingsButtonClicked = new AtomicBoolean();
+    private final AtomicBoolean mUserUnderstandsButtonClicked = new AtomicBoolean();
+    private final AtomicBoolean mDismissButtonClicked = new AtomicBoolean();
 
     private DeviceLockView mView;
     private PropertyModel mViewModel;

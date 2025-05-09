@@ -32,7 +32,7 @@ public final class ConstraintsCheckerTest {
 
     @Mock private ViewResourceAdapter mViewResourceAdapter;
 
-    private ObservableSupplierImpl mConstraintsSupplier = new ObservableSupplierImpl();
+    private final ObservableSupplierImpl mConstraintsSupplier = new ObservableSupplierImpl();
 
     @Test
     public void testScheduleRequestResourceOnUnlock() {

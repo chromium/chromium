@@ -24,7 +24,7 @@ import org.chromium.url.GURL;
  */
 @NullMarked
 public class AndroidPrerenderManager {
-    private long mNativeAndroidPrerenderManager;
+    private final long mNativeAndroidPrerenderManager;
     private @Nullable WebContents mWebContents;
     private static @Nullable AndroidPrerenderManager sAndroidPrerenderManager;
 

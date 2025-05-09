@@ -44,11 +44,11 @@ public class LanguageListBaseAdapter extends DragReorderableListAdapter<Language
     }
 
     static class LanguageRowViewHolder extends ViewHolder {
-        private TextView mTitle;
-        private TextView mDescription;
+        private final TextView mTitle;
+        private final TextView mDescription;
 
-        private ImageView mStartIcon;
-        private ListMenuButton mMoreButton;
+        private final ImageView mStartIcon;
+        private final ListMenuButton mMoreButton;
 
         LanguageRowViewHolder(View view) {
             super(view);

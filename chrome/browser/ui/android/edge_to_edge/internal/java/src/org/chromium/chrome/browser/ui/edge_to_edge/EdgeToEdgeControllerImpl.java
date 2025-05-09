@@ -116,7 +116,7 @@ public class EdgeToEdgeControllerImpl
     private Insets mSystemInsets = Insets.NONE;
     private Insets mAppliedContentViewPadding = Insets.NONE;
     private @Nullable Insets mKeyboardInsets;
-    private @Nullable WindowInsetsConsumer mWindowInsetsConsumer;
+    private final @Nullable WindowInsetsConsumer mWindowInsetsConsumer;
     private boolean mBottomControlsAreVisible;
     private int mBottomControlsHeight;
 

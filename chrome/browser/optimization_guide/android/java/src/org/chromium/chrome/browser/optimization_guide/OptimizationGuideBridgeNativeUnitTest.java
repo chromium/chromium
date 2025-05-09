@@ -30,8 +30,8 @@ public class OptimizationGuideBridgeNativeUnitTest {
     private static final String TEST_URL2 = "https://example2.com/";
 
     private static class OptimizationGuideDecisionWithMetadata {
-        private @OptimizationGuideDecision int mDecision;
-        private Any mMetadata;
+        private final @OptimizationGuideDecision int mDecision;
+        private final Any mMetadata;
 
         public OptimizationGuideDecisionWithMetadata(
                 @OptimizationGuideDecision int decision, Any metadata) {
@@ -71,8 +71,8 @@ public class OptimizationGuideBridgeNativeUnitTest {
 
     private static class OnDemandOptimizationGuideCallback
             implements OptimizationGuideBridge.OnDemandOptimizationGuideCallback {
-        private Map<GURL, Map<OptimizationType, OptimizationGuideDecisionWithMetadata>> mDecisions =
-                new HashMap<>();
+        private final Map<GURL, Map<OptimizationType, OptimizationGuideDecisionWithMetadata>>
+                mDecisions = new HashMap<>();
 
         @Override
         public void onOnDemandOptimizationGuideDecision(

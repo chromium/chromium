@@ -50,7 +50,7 @@ public class CompositorModelChangeProcessorUnitTest {
     private CompositorModelChangeProcessor.FrameRequestSupplier mFrameSupplier;
     private CompositorModelChangeProcessor mCompositorMCP;
     private PropertyModel mModel;
-    private AtomicBoolean mPropertyChangedValue = new AtomicBoolean(false);
+    private final AtomicBoolean mPropertyChangedValue = new AtomicBoolean(false);
 
     @Before
     public void setUp() {

@@ -92,8 +92,8 @@ public final class WebFeedMainMenuItemTest {
     private Activity mActivity;
     private Class<?> mCreatorActivityClass;
     private WebFeedMainMenuItem mWebFeedMainMenuItem;
-    private TestWebFeedFaviconFetcher mFaviconFetcher = new TestWebFeedFaviconFetcher();
-    private ArrayList<Callback<WebFeedBridge.WebFeedMetadata>> mWaitingMetadataCallbacks =
+    private final TestWebFeedFaviconFetcher mFaviconFetcher = new TestWebFeedFaviconFetcher();
+    private final ArrayList<Callback<WebFeedBridge.WebFeedMetadata>> mWaitingMetadataCallbacks =
             new ArrayList();
 
     @Before

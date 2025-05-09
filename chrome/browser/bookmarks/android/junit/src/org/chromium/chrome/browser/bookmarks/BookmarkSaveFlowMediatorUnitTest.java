@@ -54,7 +54,7 @@ public class BookmarkSaveFlowMediatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private BookmarkSaveFlowMediator mMediator;
-    private PropertyModel mPropertyModel =
+    private final PropertyModel mPropertyModel =
             new PropertyModel(ImprovedBookmarkSaveFlowProperties.ALL_KEYS);
 
     private Context mContext;

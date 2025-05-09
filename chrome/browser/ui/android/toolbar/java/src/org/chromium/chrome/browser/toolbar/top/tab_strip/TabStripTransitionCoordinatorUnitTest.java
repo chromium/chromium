@@ -98,7 +98,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     private TestControlContainerView mSpyControlContainer;
     private TabStripTransitionCoordinator mCoordinator;
     private TestActivity mActivity;
-    private TabObscuringHandler mTabObscuringHandler = new TabObscuringHandler();
+    private final TabObscuringHandler mTabObscuringHandler = new TabObscuringHandler();
     private TestObserver mObserver;
     private TestDelegate mDelegate;
     private OneshotSupplierImpl<TabStripTransitionDelegate> mDelegateSupplier;

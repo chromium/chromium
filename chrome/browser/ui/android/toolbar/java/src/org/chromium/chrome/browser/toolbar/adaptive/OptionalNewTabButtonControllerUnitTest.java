@@ -62,7 +62,7 @@ public final class OptionalNewTabButtonControllerUnitTest {
     @Mock private Supplier<Tab> mTabSupplier;
     @Mock private Tracker mTracker;
 
-    private Configuration mConfiguration = new Configuration();
+    private final Configuration mConfiguration = new Configuration();
     private OptionalNewTabButtonController mOptionalNewTabButtonController;
 
     @Before

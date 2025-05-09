@@ -16,8 +16,8 @@ import java.util.List;
 public class TimePeriodUtils {
     /** An option to be shown in the time period spiner. */
     public static class TimePeriodSpinnerOption {
-        private @TimePeriod int mTimePeriod;
-        private String mTitle;
+        private final @TimePeriod int mTimePeriod;
+        private final String mTitle;
 
         /**
          * Constructs this time period spinner option.

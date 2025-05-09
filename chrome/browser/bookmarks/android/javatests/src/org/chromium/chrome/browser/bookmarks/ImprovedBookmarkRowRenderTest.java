@@ -66,7 +66,7 @@ public class ImprovedBookmarkRowRenderTest {
     private static final long MICRO_CURRENCY_QUOTIENT = 1000000;
 
     @ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             Arrays.asList(
                     new ParameterSet().value(true, true).name("VisualRow_NightModeEnabled"),
                     new ParameterSet().value(true, false).name("VisualRow_NightModeDisabled"),

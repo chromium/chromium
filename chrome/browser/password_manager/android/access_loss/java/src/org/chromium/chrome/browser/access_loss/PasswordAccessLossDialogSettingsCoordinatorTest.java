@@ -48,9 +48,9 @@ import org.chromium.ui.widget.ChromeImageButton;
 @Batch(Batch.PER_CLASS)
 public class PasswordAccessLossDialogSettingsCoordinatorTest {
 
-    private PasswordAccessLossDialogSettingsCoordinator mCoordinator =
+    private final PasswordAccessLossDialogSettingsCoordinator mCoordinator =
             new PasswordAccessLossDialogSettingsCoordinator();
-    private FakeModalDialogManager mModalDialogManager =
+    private final FakeModalDialogManager mModalDialogManager =
             new FakeModalDialogManager(ModalDialogManager.ModalDialogType.APP);
     private Activity mActivity;
 

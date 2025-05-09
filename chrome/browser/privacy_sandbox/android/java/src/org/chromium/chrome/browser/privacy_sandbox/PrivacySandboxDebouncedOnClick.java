@@ -27,7 +27,7 @@ public abstract class PrivacySandboxDebouncedOnClick implements View.OnClickList
                     "debouncing-delay-ms",
                     DEFAULT_MIN_ACTION_DISTANCE_MS);
 
-    private String mNoticeName;
+    private final String mNoticeName;
 
     public PrivacySandboxDebouncedOnClick(String noticeName) {
         mNoticeName = noticeName;

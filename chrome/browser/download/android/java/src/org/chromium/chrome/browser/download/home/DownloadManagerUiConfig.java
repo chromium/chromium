@@ -81,7 +81,7 @@ public class DownloadManagerUiConfig {
         private boolean mSupportFullWidthImages;
         private int mInMemoryThumbnailCacheSizeBytes = IN_MEMORY_THUMBNAIL_CACHE_SIZE_BYTES;
         private float mMaxThumbnailScaleFactor = MAX_THUMBNAIL_SCALE_FACTOR;
-        private long mJustNowThresholdSeconds = JUST_NOW_THRESHOLD_SECONDS;
+        private final long mJustNowThresholdSeconds = JUST_NOW_THRESHOLD_SECONDS;
         private boolean mSupportsGrouping;
         private boolean mShowPaginationHeaders;
         private boolean mStartWithPrefetchedContent;

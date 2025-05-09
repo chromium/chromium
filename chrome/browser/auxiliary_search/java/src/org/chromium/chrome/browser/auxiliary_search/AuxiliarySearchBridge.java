@@ -25,7 +25,7 @@ import java.util.List;
 /** Java bridge to provide information for the auxiliary search. */
 @NullMarked
 public class AuxiliarySearchBridge {
-    private long mNativeBridge;
+    private final long mNativeBridge;
 
     /**
      * Constructs a bridge for the auxiliary search provider.

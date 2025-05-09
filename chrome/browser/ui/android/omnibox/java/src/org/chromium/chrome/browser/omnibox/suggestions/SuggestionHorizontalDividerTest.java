@@ -44,11 +44,11 @@ public class SuggestionHorizontalDividerTest {
     @Mock private SimpleRecyclerViewAdapter.ViewHolder mNoDividerViewHolder;
     @Mock private Canvas mCanvas;
 
-    private PropertyModel mShowDividerModel =
+    private final PropertyModel mShowDividerModel =
             new PropertyModel.Builder(DropdownCommonProperties.ALL_KEYS)
                     .with(DropdownCommonProperties.SHOW_DIVIDER, true)
                     .build();
-    private PropertyModel mNoDividerModel =
+    private final PropertyModel mNoDividerModel =
             new PropertyModel.Builder(DropdownCommonProperties.ALL_KEYS)
                     .with(DropdownCommonProperties.SHOW_DIVIDER, false)
                     .build();

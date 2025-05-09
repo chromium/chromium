@@ -605,7 +605,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
     /** One-shot reporter that records the first time the user scrolls a {@link RecyclerView}. */
     private static class ScrollEventReporter extends RecyclerView.OnScrollListener {
         private boolean mFired;
-        private String mActionName;
+        private final String mActionName;
 
         public ScrollEventReporter(String actionName) {
             mActionName = actionName;

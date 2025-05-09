@@ -23,7 +23,7 @@ public class PdfPage extends BasicNativePage {
     @VisibleForTesting final PdfCoordinator mPdfCoordinator;
     private String mTitle;
     private final String mUrl;
-    private boolean mIsIncognito;
+    private final boolean mIsIncognito;
     private boolean mIsDownloadSafe;
     private long mTransientDownloadStartTimestamp;
 

@@ -101,7 +101,7 @@ public class TapToSeekHandler {
         }
     }
 
-    private static Comparator<PlaybackTextPart> sComparator =
+    private static final Comparator<PlaybackTextPart> sComparator =
             new Comparator<>() {
                 @Override
                 public int compare(PlaybackTextPart a, PlaybackTextPart b) {

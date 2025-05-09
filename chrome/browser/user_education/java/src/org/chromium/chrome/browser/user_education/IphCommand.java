@@ -17,7 +17,7 @@ import org.chromium.ui.widget.ViewRectProvider;
 /** Class encapsulating the data needed to show in-product help (IPH). */
 @NullMarked
 public class IphCommand {
-    private Resources mResources;
+    private final Resources mResources;
     public final String featureName;
     public final int stringId;
     public Object @Nullable [] stringArgs;

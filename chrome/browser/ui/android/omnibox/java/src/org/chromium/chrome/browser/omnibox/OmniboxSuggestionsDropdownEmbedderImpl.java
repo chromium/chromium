@@ -56,7 +56,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
     private int mWindowWidthDp;
     private int mWindowHeightDp;
     private @Nullable WindowInsetsCompat mWindowInsetsCompat;
-    private @Nullable View mBaseChromeLayout;
+    private final @Nullable View mBaseChromeLayout;
 
     /**
      * @param windowAndroid Window object in which the dropdown will be displayed.

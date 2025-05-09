@@ -18,8 +18,8 @@ import org.chromium.chrome.browser.xsurface.ImageFetchClient;
 @NullMarked
 public class FeedImageFetchClient implements ImageFetchClient {
     private static class HttpResponseImpl implements ImageFetchClient.HttpResponse {
-        private int mStatus;
-        private byte[] mBody;
+        private final int mStatus;
+        private final byte[] mBody;
 
         public HttpResponseImpl(int status, byte[] body) {
             mStatus = status;

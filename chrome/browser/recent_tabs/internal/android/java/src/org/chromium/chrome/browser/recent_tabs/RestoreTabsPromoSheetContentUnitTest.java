@@ -44,7 +44,7 @@ public class RestoreTabsPromoSheetContentUnitTest {
     @Mock private ScrollView mScrollView;
 
     private RestoreTabsPromoSheetContent mSheetContent;
-    private PropertyModel mModel = RestoreTabsProperties.createDefaultModel();
+    private final PropertyModel mModel = RestoreTabsProperties.createDefaultModel();
 
     @Before
     public void setUp() {

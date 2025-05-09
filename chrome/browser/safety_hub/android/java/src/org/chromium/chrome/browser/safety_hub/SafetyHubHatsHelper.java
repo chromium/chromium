@@ -53,7 +53,8 @@ class SafetyHubHatsHelper extends EmptyTabObserver implements Destroyable {
     private boolean mHasTappedCard;
     private boolean mHasVisited;
 
-    private SafetyHubSurveyUiDelegate mSafetyHubSurveyUiDelegate = new SafetyHubSurveyUiDelegate();
+    private final SafetyHubSurveyUiDelegate mSafetyHubSurveyUiDelegate =
+            new SafetyHubSurveyUiDelegate();
 
     private static class SafetyHubSurveyUiDelegate implements SurveyUiDelegate {
         @Override

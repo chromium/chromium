@@ -12,7 +12,7 @@ import org.chromium.ui.base.WindowAndroid;
 /** A class for showing UI whenever the Android-OS-supplied advanced-protection state changes. */
 @NullMarked
 public class AdvancedProtectionCoordinator {
-    private AdvancedProtectionMediator mMediator;
+    private final AdvancedProtectionMediator mMediator;
 
     public AdvancedProtectionCoordinator(
             WindowAndroid windowAndroid, Class<? extends Fragment> privacySettingsFragmentClass) {

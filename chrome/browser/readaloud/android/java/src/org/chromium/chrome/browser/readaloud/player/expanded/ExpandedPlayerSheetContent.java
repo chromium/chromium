@@ -51,14 +51,14 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     private final SeekBar mSeekBar;
     private final ScrollView mScrollView;
     private final LinearLayout mPlayerControls;
-    private ImageView mModeSelectorButton;
+    private final ImageView mModeSelectorButton;
     private boolean mIsModeActive;
-    private View mContentView;
+    private final View mContentView;
     // Effectively final and non null, can be null only in tests
     private OptionsMenuSheetContent mOptionsMenu;
-    private NegativeFeedbackMenuSheetContent mNegativeFeedbackMenu;
+    private final NegativeFeedbackMenuSheetContent mNegativeFeedbackMenu;
     private SpeedMenuSheetContent mSpeedMenu;
-    private TextView mSpeedButton;
+    private final TextView mSpeedButton;
 
     private final TextView mLoadingTextView;
 

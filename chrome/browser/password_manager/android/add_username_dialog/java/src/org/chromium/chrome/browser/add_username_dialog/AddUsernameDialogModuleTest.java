@@ -39,7 +39,7 @@ import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 @Batch(Batch.PER_CLASS)
 public class AddUsernameDialogModuleTest {
     private AddUsernameDialogController mController;
-    private FakeModalDialogManager mModalDialogManager = new FakeModalDialogManager(0);
+    private final FakeModalDialogManager mModalDialogManager = new FakeModalDialogManager(0);
     private AppCompatActivity mActivity;
     private static final String TEST_PASSWORD = "password";
     private static final String TEST_USERNAME = "username";

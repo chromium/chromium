@@ -29,7 +29,7 @@ public class OptionalBrowsingModeButtonController {
     private final UserEducationHelper mUserEducationHelper;
     private final Map<ButtonDataProvider, ButtonDataProvider.ButtonDataObserver> mObserverMap;
     private @Nullable ButtonDataProvider mCurrentProvider;
-    private List<ButtonDataProvider> mButtonDataProviders;
+    private final List<ButtonDataProvider> mButtonDataProviders;
     private final ToolbarLayout mToolbarLayout;
     private final Supplier<@Nullable Tab> mTabSupplier;
 

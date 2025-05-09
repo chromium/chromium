@@ -30,8 +30,8 @@ public class EducationalTipModuleMediator {
     private final CallbackController mCallbackController;
 
     private @Nullable EducationalTipCardProvider mEducationalTipCardProvider;
-    private DefaultBrowserPromoTriggerStateListener mDefaultBrowserPromoTriggerStateListener;
-    private Tracker mTracker;
+    private final DefaultBrowserPromoTriggerStateListener mDefaultBrowserPromoTriggerStateListener;
+    private final Tracker mTracker;
 
     EducationalTipModuleMediator(
             @ModuleType int moduleType,

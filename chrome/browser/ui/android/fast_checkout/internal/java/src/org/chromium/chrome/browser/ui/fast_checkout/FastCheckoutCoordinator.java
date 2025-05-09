@@ -24,8 +24,8 @@ import java.util.List;
 
 @NullMarked
 class FastCheckoutCoordinator implements FastCheckoutComponent {
-    private FastCheckoutMediator mMediator = new FastCheckoutMediator();
-    private PropertyModel mModel = FastCheckoutProperties.createDefaultModel();
+    private final FastCheckoutMediator mMediator = new FastCheckoutMediator();
+    private final PropertyModel mModel = FastCheckoutProperties.createDefaultModel();
     private FastCheckoutSheetContent mContent;
     private BottomSheetController mBottomSheetController;
 

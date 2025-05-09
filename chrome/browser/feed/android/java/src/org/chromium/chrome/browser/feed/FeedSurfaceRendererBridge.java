@@ -23,7 +23,7 @@ import org.chromium.url.GURL;
 @NullMarked
 public class FeedSurfaceRendererBridge {
     private final Profile mProfile;
-    private int mSurfaceId;
+    private final int mSurfaceId;
     private long mNativeSurfaceRenderer;
     private @Nullable Renderer mRenderer;
 

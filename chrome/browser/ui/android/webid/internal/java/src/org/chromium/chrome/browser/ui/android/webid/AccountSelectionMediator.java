@@ -274,7 +274,7 @@ class AccountSelectionMediator {
     // could mean that the user successfully completed the login to IDP flow.
     private boolean mIsLoadingDialogLoginToIdpClosed;
 
-    private KeyboardVisibilityListener mKeyboardVisibilityListener =
+    private final KeyboardVisibilityListener mKeyboardVisibilityListener =
             new KeyboardVisibilityListener() {
                 @Override
                 public void keyboardVisibilityChanged(boolean isShowing) {

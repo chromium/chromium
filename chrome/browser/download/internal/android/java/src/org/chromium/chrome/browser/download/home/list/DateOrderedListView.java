@@ -53,7 +53,7 @@ class DateOrderedListView {
     private final RecyclerView mView;
     private final GridLayoutManager mGridLayoutManager;
     private final UiConfig mUiConfig;
-    private Runnable mOnConfigurationChangedCallback;
+    private final Runnable mOnConfigurationChangedCallback;
 
     /** Creates an instance of a {@link DateOrderedListView} representing {@code model}. */
     public DateOrderedListView(

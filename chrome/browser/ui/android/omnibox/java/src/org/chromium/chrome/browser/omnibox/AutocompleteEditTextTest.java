@@ -172,9 +172,9 @@ public class AutocompleteEditTextTest {
     private class TestAutocompleteEditText extends AutocompleteEditText {
         private static final String JAVASCRIPT_SCHEME = "javascript:";
 
-        private AtomicInteger mVerifierCallCount = new AtomicInteger();
-        private AtomicInteger mAccessibilityVerifierCallCount = new AtomicInteger();
-        private AtomicReference<String> mKeyboardPackageName =
+        private final AtomicInteger mVerifierCallCount = new AtomicInteger();
+        private final AtomicInteger mAccessibilityVerifierCallCount = new AtomicInteger();
+        private final AtomicReference<String> mKeyboardPackageName =
                 new AtomicReference<>("placeholder.ime");
 
         public TestAutocompleteEditText(Context context, AttributeSet attrs) {

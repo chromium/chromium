@@ -347,7 +347,7 @@ public class BookmarkManagerMediatorTest {
     private final ModelList mModelList = new ModelList();
     private final Bitmap mBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
 
-    private BookmarkUiPrefs mBookmarkUiPrefs =
+    private final BookmarkUiPrefs mBookmarkUiPrefs =
             new BookmarkUiPrefs(ChromeSharedPreferences.getInstance());
     private Activity mActivity;
     private BookmarkManagerMediator mMediator;

@@ -96,9 +96,9 @@ public class ExpandedPlayerCoordinator implements ConfigurationChangedObserver {
                                     || content instanceof NegativeFeedbackMenuSheetContent));
                 }
             };
-    private PropertyModel mModel;
+    private final PropertyModel mModel;
     private ExpandedPlayerSheetContent mSheetContent;
-    private ExpandedPlayerMediator mMediator;
+    private final ExpandedPlayerMediator mMediator;
 
     public ExpandedPlayerCoordinator(Context context, Delegate delegate, PropertyModel model) {
         this(

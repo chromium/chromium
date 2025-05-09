@@ -215,9 +215,9 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelega
     private static class BitmapResizer implements AsyncImageView.ImageResizer {
         private static final float IMAGE_VIEW_MAX_SCALE_FACTOR = 4.f;
 
-        private ImageView mImageView;
+        private final ImageView mImageView;
 
-        private @Filters.FilterType int mFilter;
+        private final @Filters.FilterType int mFilter;
 
         /** Constructor. */
         public BitmapResizer(ImageView imageView, @Filters.FilterType int filter) {

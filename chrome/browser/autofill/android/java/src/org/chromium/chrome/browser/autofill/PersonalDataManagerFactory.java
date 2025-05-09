@@ -14,7 +14,7 @@ import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 /** Provides access to {@link PersonalDataManager}s for a given {@link Profile}. */
 @NullMarked
 public class PersonalDataManagerFactory {
-    private static ProfileKeyedMap<PersonalDataManager> sProfileMap =
+    private static final ProfileKeyedMap<PersonalDataManager> sProfileMap =
             ProfileKeyedMap.createMapOfDestroyables(
                     ProfileKeyedMap.ProfileSelection.REDIRECTED_TO_ORIGINAL);
     private static @Nullable PersonalDataManager sManagerForTesting;

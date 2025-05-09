@@ -90,18 +90,18 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
         int MAX_VALUE = 5;
     }
 
-    private @PrivacySandboxDialogType int mDialogType;
+    private final @PrivacySandboxDialogType int mDialogType;
 
-    private int mSurfaceType;
+    private final int mSurfaceType;
     private View mContentView;
-    private View.OnClickListener mOnClickListener;
+    private final View.OnClickListener mOnClickListener;
 
     private LinearLayout mViewContainer;
     private ButtonCompat mMoreButton;
     // Determines if we've shown the action button before, and if so we should always show it.
     private boolean mShouldShowActionButtons;
     private LinearLayout mActionButtons;
-    private ScrollView mScrollView;
+    private final ScrollView mScrollView;
     private View mBottomFade;
 
     // Dropdown elements
@@ -116,10 +116,10 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
     private @Nullable ThinWebView mThinWebView;
     private @Nullable WebContents mWebContents;
     private @Nullable WebContentsObserver mWebContentsObserver;
-    private @IdRes int mPrivacyPolicyTextIdRes = R.id.privacy_policy_text;
+    private final @IdRes int mPrivacyPolicyTextIdRes = R.id.privacy_policy_text;
 
-    private ActivityWindowAndroid mActivityWindowAndroid;
-    private Profile mProfile;
+    private final ActivityWindowAndroid mActivityWindowAndroid;
+    private final Profile mProfile;
 
     // TODO(crbug.com/392943234): Update the constructor to accept a layoutRes required for the
     // dialog.

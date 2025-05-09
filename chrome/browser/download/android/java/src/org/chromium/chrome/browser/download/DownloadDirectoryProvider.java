@@ -86,7 +86,7 @@ public class DownloadDirectoryProvider {
      * can exist at the same time.
      */
     private class AllDirectoriesTask extends AsyncTask<ArrayList<DirectoryOption>> {
-        private DownloadDirectoryProvider.Delegate mDelegate;
+        private final DownloadDirectoryProvider.Delegate mDelegate;
 
         AllDirectoriesTask(DownloadDirectoryProvider.Delegate delegate) {
             mDelegate = delegate;
@@ -208,7 +208,7 @@ public class DownloadDirectoryProvider {
     private @Nullable AllDirectoriesTask mAllDirectoriesTask;
     private @Nullable ArrayList<DirectoryOption> mDirectoryOptions;
     private @Nullable String mExternalStorageDirectory;
-    private ArrayList<Callback<ArrayList<DirectoryOption>>> mCallbacks = new ArrayList<>();
+    private final ArrayList<Callback<ArrayList<DirectoryOption>>> mCallbacks = new ArrayList<>();
 
     protected DownloadDirectoryProvider() {
         registerSDCardReceiver();

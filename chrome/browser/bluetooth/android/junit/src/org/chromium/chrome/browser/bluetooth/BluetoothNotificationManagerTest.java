@@ -39,7 +39,7 @@ public class BluetoothNotificationManagerTest {
             UrlFormatter.formatUrlForSecurityDisplay(TEST_URL, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
 
     private MockNotificationManagerProxy mMockNotificationManager;
-    private BluetoothNotificationManagerDelegate mDelegate =
+    private final BluetoothNotificationManagerDelegate mDelegate =
             new BluetoothNotificationManagerDelegate() {
                 @Override
                 public Intent createTrustedBringTabToFrontIntent(int tabId) {

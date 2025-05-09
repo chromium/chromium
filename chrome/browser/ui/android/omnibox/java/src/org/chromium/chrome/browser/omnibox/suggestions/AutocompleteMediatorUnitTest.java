@@ -149,7 +149,7 @@ public class AutocompleteMediatorUnitTest {
     private AutocompleteResult mAutocompleteResult;
     private ModelList mSuggestionModels;
     private ObservableSupplierImpl<TabWindowManager> mTabWindowManagerSupplier;
-    private Activity mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+    private final Activity mActivity = Robolectric.buildActivity(Activity.class).setup().get();
 
     // Interface abstracting calls to CachedZeroSuggestionsManager, making interactions with that
     // more idiomatic.

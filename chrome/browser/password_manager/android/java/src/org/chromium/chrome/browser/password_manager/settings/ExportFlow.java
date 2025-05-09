@@ -86,7 +86,7 @@ public class ExportFlow implements ExportFlowInterface {
     /** Describes at which state the password export flow is. */
     @ExportState private int mExportState;
 
-    private @PasswordAccessLossWarningType int mWarningType;
+    private final @PasswordAccessLossWarningType int mWarningType;
 
     /** Name of the subdirectory in cache which stores the exported passwords file. */
     private static final String PASSWORDS_CACHE_DIR = "/passwords";

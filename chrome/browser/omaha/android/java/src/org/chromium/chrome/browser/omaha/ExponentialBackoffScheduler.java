@@ -42,7 +42,7 @@ public class ExponentialBackoffScheduler {
     private static final String PREFERENCE_DELAY = "delay";
     private static final String PREFERENCE_FAILED_ATTEMPTS = "backoffFailedAttempts";
 
-    private static Random sRandom = new Random();
+    private static final Random sRandom = new Random();
 
     private static final int MAX_EXPONENT = 10;
 

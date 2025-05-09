@@ -644,7 +644,7 @@ public class FeedStream implements Stream {
         }
     }
 
-    private FeedSurfaceRendererBridge mBridge;
+    private final FeedSurfaceRendererBridge mBridge;
 
     // How far the user has to scroll down in DP before attempting to load more content.
     private final int mLoadMoreTriggerScrollDistanceDp;
@@ -657,11 +657,11 @@ public class FeedStream implements Stream {
     private @ClosedReason int mClosedReason = ClosedReason.LEAVE_FEED;
     // Various helpers/controllers.
     private ShareHelperWrapper mShareHelper;
-    private SnackbarManager mSnackManager;
-    private WindowAndroid mWindowAndroid;
+    private final SnackbarManager mSnackManager;
+    private final WindowAndroid mWindowAndroid;
     private @Nullable UnreadContentObserver mUnreadContentObserver;
     @Nullable FeedContentFirstLoadWatcher mFeedContentFirstLoadWatcher;
-    private Stream.StreamsMediator mStreamsMediator;
+    private final Stream.StreamsMediator mStreamsMediator;
     // Snackbar (and post-Follow dialog) controller used exclusively for handling in-feed
     // post-Follow and post-Unfollow UX.
     WebFeedSnackbarController mWebFeedSnackbarController;
@@ -669,17 +669,17 @@ public class FeedStream implements Stream {
 
     // For loading more content.
     private int mAccumulatedDySinceLastLoadMore;
-    private int mLoadMoreTriggerLookahead;
+    private final int mLoadMoreTriggerLookahead;
     private boolean mIsLoadingMoreContent;
 
     // Things attached on bind.
-    private RestoreScrollObserver mRestoreScrollObserver = new RestoreScrollObserver();
-    private RecyclerView.OnScrollListener mMainScrollListener;
+    private final RestoreScrollObserver mRestoreScrollObserver = new RestoreScrollObserver();
+    private final RecyclerView.OnScrollListener mMainScrollListener;
     private @Nullable FeedSliceViewTracker mSliceViewTracker;
-    private ScrollReporter mScrollReporter;
+    private final ScrollReporter mScrollReporter;
     private final Map<String, Object> mHandlersMap;
-    private RotationObserver mRotationObserver;
-    private FeedReliabilityLoggingBridge mReliabilityLoggingBridge;
+    private final RotationObserver mRotationObserver;
+    private final FeedReliabilityLoggingBridge mReliabilityLoggingBridge;
     private @Nullable FeedReliabilityLogger mReliabilityLogger;
 
     // Things valid only when bound.
@@ -690,7 +690,8 @@ public class FeedStream implements Stream {
     private @Nullable FeedScrollState mScrollStateToRestore;
     private int mHeaderCount;
     private long mLastFetchTimeMs;
-    private ArrayList<SnackbarManager.SnackbarController> mSnackbarControllers = new ArrayList<>();
+    private final ArrayList<SnackbarManager.SnackbarController> mSnackbarControllers =
+            new ArrayList<>();
 
     // Placeholder view that simply takes up space.
     private FeedListContentManager.@Nullable NativeViewContent mSpacerViewContent;
@@ -1478,8 +1479,8 @@ public class FeedStream implements Stream {
      */
     @VisibleForTesting
     static class ShareHelperWrapper {
-        private WindowAndroid mWindowAndroid;
-        private Supplier<ShareDelegate> mShareDelegateSupplier;
+        private final WindowAndroid mWindowAndroid;
+        private final Supplier<ShareDelegate> mShareDelegateSupplier;
 
         public ShareHelperWrapper(
                 WindowAndroid windowAndroid, Supplier<ShareDelegate> shareDelegateSupplier) {

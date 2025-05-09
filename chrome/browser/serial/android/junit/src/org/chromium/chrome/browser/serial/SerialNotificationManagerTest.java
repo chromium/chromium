@@ -37,7 +37,7 @@ public class SerialNotificationManagerTest {
             UrlFormatter.formatUrlForSecurityDisplay(TEST_URL, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
 
     private MockNotificationManagerProxy mMockNotificationManager;
-    private SerialNotificationManagerDelegate mDelegate =
+    private final SerialNotificationManagerDelegate mDelegate =
             new SerialNotificationManagerDelegate() {
                 @Override
                 public Intent createTrustedBringTabToFrontIntent(int tabId) {

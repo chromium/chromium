@@ -16,7 +16,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 /** Provide data that the bottom sheet manager needs to show a bottom sheet. */
 @NullMarked
 public class CardMenuBottomSheetContent implements BottomSheetContent {
-    private View mContentView;
+    private final View mContentView;
 
     public CardMenuBottomSheetContent(View view) {
         mContentView = view;

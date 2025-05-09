@@ -21,8 +21,8 @@ import org.chromium.ui.base.WindowAndroid;
 @NullMarked
 class TouchToFillPasswordGenerationBridge
         implements TouchToFillPasswordGenerationCoordinator.Delegate {
-    private WindowAndroid mWindowAndroid;
-    private TouchToFillPasswordGenerationCoordinator mCoordinator;
+    private final WindowAndroid mWindowAndroid;
+    private final TouchToFillPasswordGenerationCoordinator mCoordinator;
     private long mNativeTouchToFillPasswordGenerationBridge;
 
     @CalledByNative

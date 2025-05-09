@@ -156,7 +156,7 @@ public class SafetyCheckMediatorTest {
 
     private SafetyCheckMediator mMediator;
 
-    private boolean mUseGmsApi;
+    private final boolean mUseGmsApi;
 
     private ModalDialogManager mModalDialogManager;
 

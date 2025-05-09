@@ -150,7 +150,7 @@ public class PrivacyGuideFragmentTest {
         onViewWaiting(withText(R.string.privacy_guide_fragment_title));
     }
 
-    private Map<Integer, Integer> mTitleNames =
+    private final Map<Integer, Integer> mTitleNames =
             Map.of(
                     FragmentType.MSBB,
                     R.string.url_keyed_anonymized_data_title,

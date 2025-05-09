@@ -173,7 +173,7 @@ public class StatusProperties {
         public static final int OMNIBOX_ICON_DP = 24;
         public static final int INNER_ICON_DP = 20;
 
-        private boolean mIsIncognito;
+        private final boolean mIsIncognito;
 
         PermissionIconResource(@Nullable Drawable drawable, boolean isIncognito) {
             super(drawable);

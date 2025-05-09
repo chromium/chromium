@@ -18,7 +18,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 /** Bottom sheet content of the default browser promo card. */
 @NullMarked
 public class DefaultBrowserPromoBottomSheetContent implements BottomSheetContent {
-    private View mContentView;
+    private final View mContentView;
 
     public DefaultBrowserPromoBottomSheetContent(View view) {
         mContentView = view;

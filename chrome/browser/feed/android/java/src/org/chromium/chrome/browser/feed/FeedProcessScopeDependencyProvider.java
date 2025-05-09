@@ -25,7 +25,7 @@ import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
 public class FeedProcessScopeDependencyProvider implements ProcessScopeDependencyProvider {
     private static final String FEED_SPLIT_NAME = "google3";
 
-    private ImageFetchClient mImageFetchClient;
+    private final ImageFetchClient mImageFetchClient;
 
     public FeedProcessScopeDependencyProvider() {
         mImageFetchClient = new FeedImageFetchClient();

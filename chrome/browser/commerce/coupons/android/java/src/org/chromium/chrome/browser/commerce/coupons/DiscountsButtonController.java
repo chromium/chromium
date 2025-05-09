@@ -29,7 +29,8 @@ public class DiscountsButtonController extends BaseButtonDataProvider {
 
     private final BottomSheetController mBottomSheetController;
     private final BottomSheetObserver mBottomSheetObserver;
-    private Supplier<CommerceBottomSheetContentController> mCommerceBottomSheetContentController;
+    private final Supplier<CommerceBottomSheetContentController>
+            mCommerceBottomSheetContentController;
 
     public DiscountsButtonController(
             Context context,

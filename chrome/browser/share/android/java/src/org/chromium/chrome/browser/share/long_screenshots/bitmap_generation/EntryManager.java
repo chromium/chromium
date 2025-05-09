@@ -26,14 +26,14 @@ import java.util.List;
  */
 public class EntryManager {
     // List of all entries in correspondence of the webpage.
-    private List<LongScreenshotsEntry> mEntries;
+    private final List<LongScreenshotsEntry> mEntries;
     // List of entries that are queued to generate the bitmap. Entries should only be queued
     // while the capture is in progress.
-    private List<LongScreenshotsEntry> mQueuedEntries;
+    private final List<LongScreenshotsEntry> mQueuedEntries;
     private BitmapGenerator mGenerator;
-    private ObserverList<BitmapGeneratorObserver> mGeneratorObservers;
+    private final ObserverList<BitmapGeneratorObserver> mGeneratorObservers;
     private @EntryStatus int mGeneratorStatus;
-    private ScreenshotBoundsManager mBoundsManager;
+    private final ScreenshotBoundsManager mBoundsManager;
 
     /**
      * Users of the {@link EntryManager} can implement this interface to be notified of changes to

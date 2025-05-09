@@ -29,10 +29,10 @@ import java.util.TreeMap;
 public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     private String mTargetLanguage;
     private ArrayList<String> mUserAcceptLanguages;
-    private LinkedHashSet<String> mDefaultUserAcceptLanguages;
-    private HashSet<String> mNeverLanguages;
-    private HashSet<String> mAlwaysLanguages;
-    private TreeMap<String, LanguageItem> mChromeLanguages;
+    private final LinkedHashSet<String> mDefaultUserAcceptLanguages;
+    private final HashSet<String> mNeverLanguages;
+    private final HashSet<String> mAlwaysLanguages;
+    private final TreeMap<String, LanguageItem> mChromeLanguages;
     private boolean mAppLanguagePromptShown;
     private String mCurrentLanguage;
     private boolean mIsPageTranslated;

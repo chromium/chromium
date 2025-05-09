@@ -61,7 +61,7 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
      */
     private final SafetyHubPasswordsFetchService mAccountPasswordsFetchService;
 
-    private SafetyHubPasswordsFetchService mLocalPasswordsFetchService;
+    private final SafetyHubPasswordsFetchService mLocalPasswordsFetchService;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     SafetyHubFetchService(Profile profile) {

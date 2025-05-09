@@ -21,8 +21,8 @@ import java.util.List;
  */
 @NullMarked
 class NoFilterArrayAdapter<T> extends ArrayAdapter<T> {
-    private List<T> mItems;
-    private NoFilter mFilter;
+    private final List<T> mItems;
+    private final NoFilter mFilter;
 
     public NoFilterArrayAdapter(Context context, int resource, List<T> objects) {
         super(context, resource, objects);

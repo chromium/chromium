@@ -30,7 +30,7 @@ public class GroupCardLabelAdder implements ListConsumer {
     private static final long CARD_DIVIDER_MIDDLE_HASH_CODE_OFFSET = 200000;
 
     private @Nullable ListConsumer mListConsumer;
-    private CardPaginator mCardPaginator;
+    private final CardPaginator mCardPaginator;
     private long mDividerIndexId;
 
     /** Constructor. */

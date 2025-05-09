@@ -72,7 +72,7 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
     // Will become null once used in the prepareFlowUI().
     private @Nullable Callback<Runnable> mSwitchToTabSwitcherCallback;
 
-    private Callback<Callback<Boolean>> mStartAccountRefreshCallback;
+    private final Callback<Callback<Boolean>> mStartAccountRefreshCallback;
 
     // Stores the runnable to close the current showing UI. Is null when there's no UI showing.
     private @Nullable Runnable mCloseScreenRunnable;

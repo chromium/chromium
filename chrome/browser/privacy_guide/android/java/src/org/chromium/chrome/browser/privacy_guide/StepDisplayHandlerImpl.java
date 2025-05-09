@@ -19,7 +19,7 @@ import org.chromium.components.content_settings.CookieControlsMode;
 @NullMarked
 class StepDisplayHandlerImpl implements StepDisplayHandler {
     private final Profile mProfile;
-    private PrivacySandboxBridge mPrivacySandboxBridge;
+    private final PrivacySandboxBridge mPrivacySandboxBridge;
 
     StepDisplayHandlerImpl(Profile profile) {
         mProfile = profile;

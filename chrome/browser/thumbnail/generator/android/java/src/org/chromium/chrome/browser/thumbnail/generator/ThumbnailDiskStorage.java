@@ -78,7 +78,7 @@ public class ThumbnailDiskStorage implements ThumbnailGeneratorCallback {
     // This should be initialized once.
     private @Nullable File mDirectory;
 
-    private ThumbnailStorageDelegate mDelegate;
+    private final ThumbnailStorageDelegate mDelegate;
 
     // Maximum size in bytes for the disk cache.
     private final int mMaxCacheBytes;

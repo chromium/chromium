@@ -34,7 +34,7 @@ public class ImageServiceBridge {
     private final CallbackController mCallbackController = new CallbackController();
     private final ImageFetcher mImageFetcher;
 
-    private long mNativeImageServiceBridge;
+    private final long mNativeImageServiceBridge;
 
     /**
      * @param clientId The ImageService client the salient image url is being fetched for.

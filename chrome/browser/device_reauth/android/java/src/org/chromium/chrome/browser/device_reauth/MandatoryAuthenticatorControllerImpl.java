@@ -49,7 +49,7 @@ class MandatoryAuthenticatorControllerImpl extends DeviceAuthenticatorController
      */
     public static final int BIOMETRIC_ERROR_LOCKOUT_PERMANENT = 9;
 
-    private Context mContext;
+    private final Context mContext;
     private @Nullable BiometricPrompt mBiometricPrompt;
 
     public MandatoryAuthenticatorControllerImpl(Context context, Delegate delegate) {

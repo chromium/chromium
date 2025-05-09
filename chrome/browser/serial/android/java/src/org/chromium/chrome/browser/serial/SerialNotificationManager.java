@@ -48,9 +48,9 @@ public class SerialNotificationManager {
     public static final String NOTIFICATION_IS_INCOGNITO = "NotificationIsIncognito";
     public static final String NOTIFICATION_URL_EXTRA = "NotificationUrl";
 
-    private SerialNotificationManagerDelegate mDelegate;
-    private BaseNotificationManagerProxy mNotificationManager;
-    private SharedPreferencesManager mSharedPreferences;
+    private final SerialNotificationManagerDelegate mDelegate;
+    private final BaseNotificationManagerProxy mNotificationManager;
+    private final SharedPreferencesManager mSharedPreferences;
     private final List<Integer> mNotificationIds = new ArrayList<Integer>();
 
     public SerialNotificationManager(

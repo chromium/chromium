@@ -61,7 +61,7 @@ public class SearchResumptionModuleMediator
     private boolean mIsDefaultSearchEngineGoogle = true;
     private boolean mIsSignedIn = true;
     private boolean mHasKeepEverythingSynced = true;
-    private boolean mUseNewServiceEnabled;
+    private final boolean mUseNewServiceEnabled;
 
     private @Nullable SearchResumptionModuleView mModuleLayoutView;
     private @Nullable SearchResumptionModuleBridge mSearchResumptionModuleBridge;

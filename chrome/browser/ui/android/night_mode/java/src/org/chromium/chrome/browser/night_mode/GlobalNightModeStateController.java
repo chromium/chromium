@@ -34,7 +34,7 @@ class GlobalNightModeStateController
      */
     private Boolean mNightModeOn;
 
-    private SharedPreferences.OnSharedPreferenceChangeListener mPreferenceListener;
+    private final SharedPreferences.OnSharedPreferenceChangeListener mPreferenceListener;
 
     /** Whether this class has started listening to relevant states for night mode. */
     private boolean mIsStarted;

@@ -87,18 +87,18 @@ import java.util.List;
 public class CreatorCoordinator
         implements FeedContentFirstLoadWatcher, View.OnLayoutChangeListener {
     private final ViewGroup mCreatorViewGroup;
-    private CreatorMediator mMediator;
+    private final CreatorMediator mMediator;
     private @MonotonicNonNull CreatorTabMediator mTabMediator;
-    private Activity mActivity;
-    private FeedListContentManager mContentManager;
-    private UiConfig mUiConfig;
-    private RecyclerView mRecyclerView;
-    private View mProfileView;
-    private ViewGroup mLayoutView;
+    private final Activity mActivity;
+    private final FeedListContentManager mContentManager;
+    private final UiConfig mUiConfig;
+    private final RecyclerView mRecyclerView;
+    private final View mProfileView;
+    private final ViewGroup mLayoutView;
     private @Nullable HybridListRenderer mHybridListRenderer;
     private @Nullable FeedSurfaceScope mSurfaceScope;
     private @Nullable FeedSurfaceScopeDependencyProviderImpl mDependencyProvider;
-    private PropertyModel mCreatorModel;
+    private final PropertyModel mCreatorModel;
 
     private final SnackbarManager mSnackbarManager;
     private final CreatorSnackbarController mCreatorSnackbarController;
@@ -106,7 +106,7 @@ public class CreatorCoordinator
     private BottomSheetController mBottomSheetController;
     private ScrimManager mScrimManager;
     private ViewGroup mBottomSheetContainer;
-    private Profile mProfile;
+    private final Profile mProfile;
     private @MonotonicNonNull Stream mStream;
     private int mHeaderCount;
 
@@ -117,11 +117,11 @@ public class CreatorCoordinator
     private @Nullable CreatorTabSheetContent mSheetContent;
     private boolean mPeeked;
     private boolean mFullyOpened;
-    private WebContentsCreator mCreatorWebContents;
-    private NewTabCreator mCreatorOpenTab;
+    private final WebContentsCreator mCreatorWebContents;
+    private final NewTabCreator mCreatorOpenTab;
     private final UnownedUserDataSupplier<ShareDelegate> mBottomsheetShareDelegateSupplier;
     private @MonotonicNonNull GURL mBottomSheetUrl;
-    private int mEntryPoint;
+    private final int mEntryPoint;
 
     private static final String CREATOR_PROFILE_ID = "CreatorProfileView";
     private static final String CREATOR_PRIVACY_ID = "CreatorPrivacyId";

@@ -253,9 +253,9 @@ public class TestSurveyUtils {
         }
 
         private static class SurveyEntry {
-            public String triggerId;
-            public Runnable onSuccessRunnable;
-            public Runnable onFailureRunnable;
+            public final String triggerId;
+            public final Runnable onSuccessRunnable;
+            public final Runnable onFailureRunnable;
 
             public boolean isShown;
             public boolean isExpired;

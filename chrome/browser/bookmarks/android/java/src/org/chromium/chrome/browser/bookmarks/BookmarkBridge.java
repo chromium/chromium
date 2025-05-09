@@ -42,7 +42,7 @@ import java.util.List;
  */
 @NullMarked
 class BookmarkBridge {
-    private static OneshotSupplierImpl<BookmarkModel.PartnerBookmarkIteratorProvider>
+    private static final OneshotSupplierImpl<BookmarkModel.PartnerBookmarkIteratorProvider>
             sPartnerBookmarkIteratorSupplier = new OneshotSupplierImpl<>();
 
     private final ObserverList<BookmarkModelObserver> mObservers = new ObserverList<>();

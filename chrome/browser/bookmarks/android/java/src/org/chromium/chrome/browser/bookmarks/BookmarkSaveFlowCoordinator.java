@@ -52,12 +52,12 @@ public class BookmarkSaveFlowCoordinator {
     private final DestroyChecker mDestroyChecker;
     private final Profile mProfile;
 
-    private BottomSheetController mBottomSheetController;
+    private final BottomSheetController mBottomSheetController;
     private @Nullable BookmarkSaveFlowBottomSheetContent mBottomSheetContent;
     private BookmarkSaveFlowMediator mMediator;
     private View mBookmarkSaveFlowView;
-    private BookmarkModel mBookmarkModel;
-    private UserEducationHelper mUserEducationHelper;
+    private final BookmarkModel mBookmarkModel;
+    private final UserEducationHelper mUserEducationHelper;
     private boolean mClosedViaRunnable;
 
     /**

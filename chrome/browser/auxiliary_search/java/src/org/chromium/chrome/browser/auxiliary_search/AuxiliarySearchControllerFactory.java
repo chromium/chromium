@@ -36,7 +36,8 @@ public class AuxiliarySearchControllerFactory {
 
     /** Static class that implements the initialization-on-demand holder idiom. */
     private static class LazyHolder {
-        static AuxiliarySearchControllerFactory sInstance = new AuxiliarySearchControllerFactory();
+        static final AuxiliarySearchControllerFactory sInstance =
+                new AuxiliarySearchControllerFactory();
     }
 
     /** Returns the singleton instance of AuxiliarySearchControllerFactory. */

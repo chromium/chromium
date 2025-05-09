@@ -67,7 +67,7 @@ public class ToolbarPositionControllerTest {
     private static final int TOOLBAR_HEIGHT = 56;
     private static final int CONTROL_CONTAINER_ID = 12356;
 
-    private BrowserControlsSizer mBrowserControlsSizer =
+    private final BrowserControlsSizer mBrowserControlsSizer =
             new BrowserControlsSizer() {
                 @ControlsPosition private int mControlsPosition = ControlsPosition.TOP;
                 private int mTopControlsHeight;
@@ -218,26 +218,29 @@ public class ToolbarPositionControllerTest {
                 }
             };
 
-    private CoordinatorLayout.LayoutParams mControlContainerLayoutParams =
+    private final CoordinatorLayout.LayoutParams mControlContainerLayoutParams =
             new CoordinatorLayout.LayoutParams(400, TOOLBAR_HEIGHT);
-    private CoordinatorLayout.LayoutParams mProgressBarLayoutParams =
+    private final CoordinatorLayout.LayoutParams mProgressBarLayoutParams =
             new CoordinatorLayout.LayoutParams(400, 5);
-    private FrameLayout.LayoutParams mToolbarLayoutPrams = new LayoutParams(400, 80);
-    private FrameLayout.LayoutParams mHairlineLayoutParams = new LayoutParams(400, 5);
+    private final FrameLayout.LayoutParams mToolbarLayoutPrams = new LayoutParams(400, 80);
+    private final FrameLayout.LayoutParams mHairlineLayoutParams = new LayoutParams(400, 5);
     @Mock private ControlContainer mControlContainer;
     @Mock private View mControlContainerView;
     @Mock private View mProgressBarContainer;
 
     private Context mContext;
-    private ObservableSupplierImpl<Boolean> mIsNtpShowing = new ObservableSupplierImpl<>(false);
-    private ObservableSupplierImpl<Boolean> mIsTabSwitcherShowing = new ObservableSupplierImpl<>(false);
-    private ObservableSupplierImpl<Boolean> mIsOmniboxFocused = new ObservableSupplierImpl<>(false);
-    private ObservableSupplierImpl<Boolean> mIsFindInPageShowing =
+    private final ObservableSupplierImpl<Boolean> mIsNtpShowing =
             new ObservableSupplierImpl<>(false);
-    private FormFieldFocusedSupplier mIsFormFieldFocused = new FormFieldFocusedSupplier();
+    private final ObservableSupplierImpl<Boolean> mIsTabSwitcherShowing =
+            new ObservableSupplierImpl<>(false);
+    private final ObservableSupplierImpl<Boolean> mIsOmniboxFocused =
+            new ObservableSupplierImpl<>(false);
+    private final ObservableSupplierImpl<Boolean> mIsFindInPageShowing =
+            new ObservableSupplierImpl<>(false);
+    private final FormFieldFocusedSupplier mIsFormFieldFocused = new FormFieldFocusedSupplier();
     private BottomControlsStacker mBottomControlsStacker;
     private ToolbarPositionController mController;
-    private ObservableSupplierImpl<Integer> mBottomToolbarOffsetSupplier =
+    private final ObservableSupplierImpl<Integer> mBottomToolbarOffsetSupplier =
             new ObservableSupplierImpl<>();
     private HistogramWatcher mStartupExpectation;
     private WindowAndroid mWindowAndroid;
@@ -256,7 +259,7 @@ public class ToolbarPositionControllerTest {
         }
     }
 
-    private FakeKeyboardVisibilityDelegate mKeyboardVisibilityDelegate =
+    private final FakeKeyboardVisibilityDelegate mKeyboardVisibilityDelegate =
             new FakeKeyboardVisibilityDelegate();
 
     @Before

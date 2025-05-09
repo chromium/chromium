@@ -164,8 +164,8 @@ public class AppLanguagePromoDialog {
      */
     protected static class LanguageItemAdapter
             extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-        private ArrayList<LanguageItem> mTopLanguages;
-        private ArrayList<LanguageItem> mOtherLanguages;
+        private final ArrayList<LanguageItem> mTopLanguages;
+        private final ArrayList<LanguageItem> mOtherLanguages;
         private LanguageItem mCurrentLanguage;
         private boolean mShowOtherLanguages;
 
@@ -309,9 +309,9 @@ public class AppLanguagePromoDialog {
     /** Internal class representing an individual language row. */
     private static class AppLanguagePromptRowViewHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener {
-        private TextView mPrimaryNameTextView;
-        private TextView mSecondaryNameTextView;
-        private RadioButton mRadioButton;
+        private final TextView mPrimaryNameTextView;
+        private final TextView mSecondaryNameTextView;
+        private final RadioButton mRadioButton;
 
         AppLanguagePromptRowViewHolder(View view) {
             super(view);

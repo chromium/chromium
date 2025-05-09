@@ -60,9 +60,9 @@ public class BluetoothNotificationManager {
         int IS_SCANNING = 2;
     }
 
-    private BluetoothNotificationManagerDelegate mDelegate;
-    private BaseNotificationManagerProxy mNotificationManager;
-    private SharedPreferencesManager mSharedPreferences;
+    private final BluetoothNotificationManagerDelegate mDelegate;
+    private final BaseNotificationManagerProxy mNotificationManager;
+    private final SharedPreferencesManager mSharedPreferences;
     private final SparseIntArray mNotifications = new SparseIntArray();
 
     public BluetoothNotificationManager(BluetoothNotificationManagerDelegate delegate) {

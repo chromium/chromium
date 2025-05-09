@@ -86,7 +86,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final BottomControlsLayer mProgressBarLayer;
 
     @ControlsPosition private int mCurrentPosition;
-    private int mHairlineHeight;
+    private final int mHairlineHeight;
 
     /**
      * @param browserControlsSizer {@link BrowserControlsSizer}, used to manipulate position of the

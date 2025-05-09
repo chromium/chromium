@@ -19,9 +19,9 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 public class CreatorSnackbarController {
     static final int SNACKBAR_DURATION_MS = 8000;
 
-    private Context mContext;
-    private SnackbarManager mSnackbarManager;
-    private SnackbarManager.SnackbarController mSnackbarController;
+    private final Context mContext;
+    private final SnackbarManager mSnackbarManager;
+    private final SnackbarManager.SnackbarController mSnackbarController;
 
     /**
      * Constructs an instance of {@link CreatorSnackbarController}.

@@ -43,7 +43,7 @@ public class LongScreenshotsEntryTest {
 
     @Mock private ScreenshotBoundsManager mBoundsManager;
 
-    private Bitmap mTestBitmap = Bitmap.createBitmap(512, 1024, Bitmap.Config.ARGB_8888);
+    private final Bitmap mTestBitmap = Bitmap.createBitmap(512, 1024, Bitmap.Config.ARGB_8888);
 
     static class TestEntryListener implements LongScreenshotsEntry.EntryListener {
         @EntryStatus int mReturnedStatus;

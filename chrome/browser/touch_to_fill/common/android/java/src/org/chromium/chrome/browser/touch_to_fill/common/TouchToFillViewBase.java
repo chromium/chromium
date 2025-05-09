@@ -41,7 +41,7 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
     private final RelativeLayout mContentView;
     private final DetailScreenScrollListener mScrollListener;
     private @Nullable Callback<Integer> mDismissHandler;
-    private RecyclerView mSheetItemListView;
+    private final RecyclerView mSheetItemListView;
 
     private final BottomSheetObserver mBottomSheetObserver =
             new EmptyBottomSheetObserver() {

@@ -58,7 +58,7 @@ public final class VoiceToolbarButtonControllerUnitTest {
     @Mock private Drawable mDrawable;
     @Mock private Tracker mTracker;
 
-    private Configuration mConfiguration = new Configuration();
+    private final Configuration mConfiguration = new Configuration();
     private VoiceToolbarButtonController mVoiceToolbarButtonController;
 
     @Before

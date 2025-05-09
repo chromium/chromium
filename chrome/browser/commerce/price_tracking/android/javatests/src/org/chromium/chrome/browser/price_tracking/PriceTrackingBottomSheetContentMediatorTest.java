@@ -112,7 +112,7 @@ public class PriceTrackingBottomSheetContentMediatorTest {
                     Optional.empty());
 
     private PriceTrackingBottomSheetContentMediator mMediator;
-    private PropertyModel mPropertyModel = new PropertyModel(ALL_KEYS);
+    private final PropertyModel mPropertyModel = new PropertyModel(ALL_KEYS);
     private Activity mActivity;
     private HistogramWatcher mHistogramWatcher;
 

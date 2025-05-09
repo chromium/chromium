@@ -22,8 +22,8 @@ import org.chromium.chrome.browser.ui.native_page.NativePage.SmoothTransitionDel
 public class BasicSmoothTransitionDelegate implements SmoothTransitionDelegate {
     private static final int SMOOTH_TRANSITION_DURATION_MS = 100;
 
-    private View mView;
-    private Animator mAnimator;
+    private final View mView;
+    private final Animator mAnimator;
 
     public BasicSmoothTransitionDelegate(View view) {
         mView = view;

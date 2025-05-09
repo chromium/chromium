@@ -71,7 +71,7 @@ public class LanguageSplitInstaller {
 
     private final SplitInstallStateUpdatedListener mStateUpdateListener = getStatusUpdateListener();
     private @Nullable InstallListener mInstallListener;
-    private SplitInstallManager mSplitInstallManager;
+    private final SplitInstallManager mSplitInstallManager;
     private int mInstallSessionId;
     private boolean mIsLanguageSplitInstalled;
 

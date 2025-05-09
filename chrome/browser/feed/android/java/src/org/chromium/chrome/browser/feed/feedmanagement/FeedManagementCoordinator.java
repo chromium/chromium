@@ -24,7 +24,7 @@ import org.chromium.ui.modelutil.ModelListAdapter;
  */
 @NullMarked
 public class FeedManagementCoordinator {
-    private AppCompatActivity mActivity;
+    private final AppCompatActivity mActivity;
     private final View mView;
 
     public FeedManagementCoordinator(Activity activity, @StreamKind int feedType) {

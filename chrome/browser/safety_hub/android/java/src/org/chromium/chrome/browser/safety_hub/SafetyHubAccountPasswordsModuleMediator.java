@@ -29,7 +29,7 @@ public class SafetyHubAccountPasswordsModuleMediator
     private final SafetyHubModuleDelegate mModuleDelegate;
     private final PropertyModel mModel;
 
-    private SafetyHubAccountPasswordsDataSource mAccountPasswordsDataSource;
+    private final SafetyHubAccountPasswordsDataSource mAccountPasswordsDataSource;
     private @Nullable SafetyHubModuleHelper mModuleHelper;
 
     SafetyHubAccountPasswordsModuleMediator(

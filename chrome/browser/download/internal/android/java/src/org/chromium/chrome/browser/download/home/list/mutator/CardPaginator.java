@@ -18,7 +18,7 @@ public class CardPaginator {
     private static final int ITEM_COUNT_PER_PAGE = 3;
 
     // Maintains the current page count for each card. The cards are keyed by date and domain.
-    private Map<Pair<Date, String>, Integer> mPageCountForCard = new HashMap<>();
+    private final Map<Pair<Date, String>, Integer> mPageCountForCard = new HashMap<>();
 
     /**
      * Called to load one more page for the given card.

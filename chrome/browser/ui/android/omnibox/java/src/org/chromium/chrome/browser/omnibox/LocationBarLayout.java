@@ -67,7 +67,7 @@ public class LocationBarLayout extends FrameLayout {
     protected @Nullable SearchEngineUtils mSearchEngineUtils;
     private float mUrlFocusPercentage;
     private boolean mUrlBarLaidOutAtFocusedWidth;
-    private int mStatusIconAndUrlBarOffset;
+    private final int mStatusIconAndUrlBarOffset;
     private int mUrlActionContainerEndMargin;
     private boolean mIsUrlFocusChangeInProgress;
 

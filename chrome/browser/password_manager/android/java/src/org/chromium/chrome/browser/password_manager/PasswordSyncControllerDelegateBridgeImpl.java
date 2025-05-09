@@ -19,7 +19,7 @@ import org.chromium.build.annotations.Nullable;
 @NullMarked
 class PasswordSyncControllerDelegateBridgeImpl {
     private final PasswordSyncControllerDelegate mPasswordSyncControllerDelegate;
-    private long mNativeDelegateBridgeImpl;
+    private final long mNativeDelegateBridgeImpl;
 
     PasswordSyncControllerDelegateBridgeImpl(
             long nativePasswordSyncControllerDelegateBridgeImpl,

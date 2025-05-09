@@ -28,8 +28,8 @@ public class SafetyHubPasswordsModuleMediator
     private final SafetyHubModuleDelegate mModuleDelegate;
     private final PropertyModel mModel;
 
-    private SafetyHubAccountPasswordsDataSource mAccountPasswordsDataSource;
-    private SafetyHubLocalPasswordsDataSource mLocalPasswordsDataSource;
+    private final SafetyHubAccountPasswordsDataSource mAccountPasswordsDataSource;
+    private final SafetyHubLocalPasswordsDataSource mLocalPasswordsDataSource;
     private @Nullable SafetyHubModuleHelper mModuleHelper;
 
     private boolean mAccountPasswordsReturned;

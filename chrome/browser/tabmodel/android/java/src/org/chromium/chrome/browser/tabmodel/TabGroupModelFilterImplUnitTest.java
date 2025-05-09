@@ -160,7 +160,7 @@ public class TabGroupModelFilterImplUnitTest {
     private Tab mTab4;
     private Tab mTab5;
     private Tab mTab6;
-    private List<Tab> mTabs = new ArrayList<>();
+    private final List<Tab> mTabs = new ArrayList<>();
 
     private TabGroupModelFilterImpl mTabGroupModelFilter;
     private InOrder mTabModelInOrder;

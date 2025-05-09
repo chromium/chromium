@@ -35,10 +35,10 @@ import java.util.List;
 @NullMarked
 class FollowManagementMediator {
     private static final String TAG = "FollowManagementMdtr";
-    private ModelList mModelList;
-    private Observer mObserver;
-    private Context mContext;
-    private WebFeedFaviconFetcher mFaviconFetcher;
+    private final ModelList mModelList;
+    private final Observer mObserver;
+    private final Context mContext;
+    private final WebFeedFaviconFetcher mFaviconFetcher;
 
     public interface Observer {
         /** An operation failed because there is no network connection. */

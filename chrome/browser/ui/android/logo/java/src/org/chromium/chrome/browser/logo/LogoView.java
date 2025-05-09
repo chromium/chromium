@@ -53,7 +53,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
     private @Nullable BaseGifDrawable mAnimatedLogoDrawable;
 
     private @Nullable ObjectAnimator mFadeAnimation;
-    private Paint mPaint;
+    private final Paint mPaint;
     private @Nullable Matrix mLogoMatrix;
     private @Nullable Matrix mNewLogoMatrix;
     private @Nullable Matrix mAnimatedLogoMatrix;
@@ -61,7 +61,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
     private boolean mNewLogoIsDefault;
     private boolean mAnimationEnabled = true;
 
-    private LoadingView mLoadingView;
+    private final LoadingView mLoadingView;
 
     /**
      * A measure from 0 to 1 of how much the new logo has faded in. 0 shows the old logo, 1 shows

@@ -31,7 +31,7 @@ import org.chromium.ui.text.SpanApplier;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BiometricErrorDialogUnitTest {
-    private FakeModalDialogManager mModalDialogManager =
+    private final FakeModalDialogManager mModalDialogManager =
             new FakeModalDialogManager(ModalDialogManager.ModalDialogType.APP);
     private Activity mActivity;
 

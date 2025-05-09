@@ -27,10 +27,10 @@ import org.chromium.chrome.browser.toolbar.R;
 public class ActionModeController {
     private static final int SLIDE_DURATION_MS = 200;
 
-    private ToolbarActionModeCallback mToolbarActionModeCallback;
+    private final ToolbarActionModeCallback mToolbarActionModeCallback;
     private @Nullable ObjectAnimator mCurrentAnimation;
     private boolean mShowingActionMode;
-    private ObservableSupplier<Integer> mTabStripHeightSupplier;
+    private final ObservableSupplier<Integer> mTabStripHeightSupplier;
     private final Context mContext;
     private final ActionBarDelegate mActionBarDelegate;
 

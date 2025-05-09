@@ -47,7 +47,7 @@ import org.chromium.chrome.browser.readaloud.player.expanded.MenuItem.Action;
 public class MenuUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private final Activity mActivity;
-    private Menu mMenu;
+    private final Menu mMenu;
     @Mock Callback<Integer> mHandler;
     @Mock Callback<Boolean> mToggleHandler;
 

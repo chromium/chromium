@@ -112,7 +112,7 @@ public class FastCheckoutMediatorTest {
     @Mock private BottomSheetContent mMockBottomSheetContent;
     @Mock private BottomSheetController mMockBottomSheetController;
 
-    private FastCheckoutMediator mMediator = new FastCheckoutMediator();
+    private final FastCheckoutMediator mMediator = new FastCheckoutMediator();
     private UserActionTester mActionTester;
 
     private final PropertyModel mModel = FastCheckoutProperties.createDefaultModel();

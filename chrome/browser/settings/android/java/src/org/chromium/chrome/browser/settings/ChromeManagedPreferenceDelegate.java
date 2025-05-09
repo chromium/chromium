@@ -16,7 +16,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 /** A ManagedPreferenceDelegate with Chrome-specific default behavior. */
 @NullMarked
 public abstract class ChromeManagedPreferenceDelegate implements ManagedPreferenceDelegate {
-    private Profile mProfile;
+    private final Profile mProfile;
 
     /** Builds a ChromeManagedPreferenceDelegate for the given Profile. */
     public ChromeManagedPreferenceDelegate(Profile profile) {

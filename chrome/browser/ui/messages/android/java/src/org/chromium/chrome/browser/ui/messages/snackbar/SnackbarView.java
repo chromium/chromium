@@ -60,17 +60,17 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
     private final boolean mIsTablet;
     private final @Nullable EdgeToEdgeController mEdgeToEdgeSupplier;
     private final @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
-    private ViewGroup mOriginalParent;
+    private final ViewGroup mOriginalParent;
     protected ViewGroup mParent;
     protected Snackbar mSnackbar;
-    private View mRootContentView;
+    private final View mRootContentView;
     private @ColorInt int mBackgroundColor;
 
     // Variables used to adjust view position and size when visible frame is changed.
-    private Rect mCurrentVisibleRect = new Rect();
-    private Rect mPreviousVisibleRect = new Rect();
+    private final Rect mCurrentVisibleRect = new Rect();
+    private final Rect mPreviousVisibleRect = new Rect();
 
-    private OnLayoutChangeListener mLayoutListener =
+    private final OnLayoutChangeListener mLayoutListener =
             new OnLayoutChangeListener() {
                 @Override
                 public void onLayoutChange(

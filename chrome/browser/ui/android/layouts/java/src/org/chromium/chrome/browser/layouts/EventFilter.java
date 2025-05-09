@@ -30,7 +30,7 @@ public abstract class EventFilter {
     protected final float mPxToDp;
     private boolean mSimulateIntercepting;
 
-    private boolean mAutoOffset;
+    private final boolean mAutoOffset;
     protected float mCurrentMotionOffsetX;
     protected float mCurrentMotionOffsetY;
 

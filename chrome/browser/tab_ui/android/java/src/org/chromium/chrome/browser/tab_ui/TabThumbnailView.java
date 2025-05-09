@@ -52,7 +52,7 @@ public class TabThumbnailView extends ImageView {
     private static @MonotonicNonNull Integer sVerticalOffsetPx;
 
     /** To prevent {@link TabThumbnailView#updateImage()} from running during inflation. */
-    private boolean mInitialized;
+    private final boolean mInitialized;
 
     /**
      * Placeholder icon drawable to use if there is no thumbnail. This is drawn on-top of the {@link
@@ -63,7 +63,7 @@ public class TabThumbnailView extends ImageView {
      */
     private @Nullable VectorDrawable mIconDrawable;
 
-    private Matrix mIconMatrix;
+    private final Matrix mIconMatrix;
     private int mIconColor;
 
     /**

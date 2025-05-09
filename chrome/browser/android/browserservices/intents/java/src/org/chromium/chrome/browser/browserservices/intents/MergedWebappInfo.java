@@ -21,7 +21,7 @@ import java.util.Map;
 @NullMarked
 public class MergedWebappInfo extends WebappInfo {
     // The old WebappInfo values (typically the current values for a webapp being upgraded).
-    private WebappInfo mOldWebappInfo;
+    private final WebappInfo mOldWebappInfo;
 
     // Whether to override the name and shortName information returned to callers.
     private boolean mUseOldName;

@@ -40,7 +40,7 @@ public class CommerceSubscriptionsService implements Destroyable {
     private final PriceDropNotificationManager mPriceDropNotificationManager;
     private @Nullable ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private @Nullable PauseResumeWithNativeObserver mPauseResumeWithNativeObserver;
-    private ShoppingService mShoppingService;
+    private final ShoppingService mShoppingService;
 
     /** Creates a new instance. */
     CommerceSubscriptionsService(

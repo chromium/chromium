@@ -239,11 +239,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     /** Once per second, asks the framework for the process importance, and logs any change. */
-    private Runnable mLogImportance =
+    private final Runnable mLogImportance =
             new Runnable() {
                 private int mPreviousImportance = -1;
                 private boolean mPreviousServiceInUse;
-                private Handler mHandler = new Handler(Looper.getMainLooper());
+                private final Handler mHandler = new Handler(Looper.getMainLooper());
 
                 @Override
                 public void run() {

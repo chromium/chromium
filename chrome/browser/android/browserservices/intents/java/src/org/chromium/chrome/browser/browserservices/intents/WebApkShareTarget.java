@@ -15,11 +15,11 @@ public class WebApkShareTarget {
     private static final int ACTION_INDEX = 0;
     private static final int PARAM_TITLE_INDEX = 1;
     private static final int PARAM_TEXT_INDEX = 2;
-    private String[] mData;
-    private boolean mIsShareMethodPost;
-    private boolean mIsShareEncTypeMultipart;
-    private String[] mFileNames;
-    private String[][] mFileAccepts;
+    private final String[] mData;
+    private final boolean mIsShareMethodPost;
+    private final boolean mIsShareEncTypeMultipart;
+    private final String[] mFileNames;
+    private final String[][] mFileAccepts;
 
     public WebApkShareTarget(
             String action,

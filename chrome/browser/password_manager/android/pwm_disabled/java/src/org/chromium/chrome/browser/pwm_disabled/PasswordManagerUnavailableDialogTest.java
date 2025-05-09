@@ -39,9 +39,9 @@ import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 @Batch(Batch.PER_CLASS)
 public class PasswordManagerUnavailableDialogTest {
 
-    private PasswordManagerUnavailableDialogCoordinator mCoordinator =
+    private final PasswordManagerUnavailableDialogCoordinator mCoordinator =
             new PasswordManagerUnavailableDialogCoordinator();
-    private FakeModalDialogManager mModalDialogManager =
+    private final FakeModalDialogManager mModalDialogManager =
             new FakeModalDialogManager(ModalDialogManager.ModalDialogType.APP);
     private Activity mActivity;
 

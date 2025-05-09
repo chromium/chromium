@@ -25,7 +25,7 @@ public class IphCommandBuilder {
 
     private @Nullable String mContentString;
     private @Nullable String mAccessibilityText;
-    private Resources mResources;
+    private final Resources mResources;
     private final String mFeatureName;
     private boolean mDismissOnTouch = true;
     private long mDismissOnTouchTimeout = TextBubble.NO_TIMEOUT;

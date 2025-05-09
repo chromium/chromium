@@ -31,7 +31,7 @@ class CalculatorAnswerTextLayout implements AnswerText {
     private final SpannableStringBuilder mText = new SpannableStringBuilder();
 
     private @Nullable String mAccessibilityDescription;
-    private int mMaxLines = 1;
+    private final int mMaxLines = 1;
 
     // AnswerText implementation.
     @Override

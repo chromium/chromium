@@ -27,8 +27,8 @@ import org.chromium.ui.base.WindowAndroid;
 /** A class for showing UI whenever the Android-OS-supplied advanced-protection state changes. */
 @NullMarked
 public class AdvancedProtectionMediator implements OsAdditionalSecurityPermissionProvider.Observer {
-    private WindowAndroid mWindowAndroid;
-    private Class<? extends Fragment> mPrivacySettingsFragmentClass;
+    private final WindowAndroid mWindowAndroid;
+    private final Class<? extends Fragment> mPrivacySettingsFragmentClass;
     private boolean mShouldShowMessageOnStartup;
 
     public AdvancedProtectionMediator(

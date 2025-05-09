@@ -83,11 +83,11 @@ public class ShareSheetCoordinator
     private ChromeShareExtras mChromeShareExtras;
     private LinkToTextCoordinator mLinkToTextCoordinator;
     private ShareSheetLinkToggleCoordinator mShareSheetLinkToggleCoordinator;
-    private ShareSheetUsageRankingHelper mShareSheetUsageRankingHelper;
+    private final ShareSheetUsageRankingHelper mShareSheetUsageRankingHelper;
     private @LinkGeneration int mLinkGenerationStatusForMetrics = LinkGeneration.MAX;
     private LinkToggleMetricsDetails mLinkToggleMetricsDetails =
             new LinkToggleMetricsDetails(LinkToggleState.COUNT, DetailedContentType.NOT_SPECIFIED);
-    private DeviceLockActivityLauncher mDeviceLockActivityLauncher;
+    private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
 
     /**
      * Constructs a new ShareSheetCoordinator.

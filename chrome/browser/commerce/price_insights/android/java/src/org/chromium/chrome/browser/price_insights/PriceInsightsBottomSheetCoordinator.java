@@ -67,9 +67,9 @@ public class PriceInsightsBottomSheetCoordinator {
     private final BottomSheetController mBottomSheetController;
 
     private @Nullable PriceInsightsBottomSheetContent mBottomSheetContent;
-    private PriceInsightsBottomSheetMediator mBottomSheetMediator;
-    private BottomSheetObserver mBottomSheetObserver;
-    private View mPriceInsightsView;
+    private final PriceInsightsBottomSheetMediator mBottomSheetMediator;
+    private final BottomSheetObserver mBottomSheetObserver;
+    private final View mPriceInsightsView;
     private @Nullable Long mSheetOpenTimeMs;
 
     /**

@@ -31,9 +31,9 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 
 @NullMarked
 public class MissingDeviceLockLauncher {
-    private Context mContext;
-    private Profile mProfile;
-    private ModalDialogManager mModalDialogManager;
+    private final Context mContext;
+    private final Profile mProfile;
+    private final ModalDialogManager mModalDialogManager;
     private @Nullable MissingDeviceLockCoordinator mMissingDeviceLockCoordinator;
     private @Nullable PasswordStoreBridge mPasswordStoreBridge;
 

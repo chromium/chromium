@@ -26,7 +26,7 @@ class TestTabGroupSyncService implements TabGroupSyncService {
     public static final String SYNC_ID_1 = "SYNC_ID_1";
     public static final String LOCAL_DEVICE_CACHE_GUID = "LocalDevice";
 
-    private List<SavedTabGroup> mTabGroups = new ArrayList<>();
+    private final List<SavedTabGroup> mTabGroups = new ArrayList<>();
 
     @Override
     public void addObserver(Observer observer) {}

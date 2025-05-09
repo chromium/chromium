@@ -19,10 +19,10 @@ public class DeviceClassManager {
     private static @Nullable DeviceClassManager sInstance;
 
     // Set of features that can be enabled/disabled
-    private boolean mEnableLayerDecorationCache;
-    private boolean mEnableAnimations;
-    private boolean mEnablePrerendering;
-    private boolean mEnableToolbarSwipe;
+    private final boolean mEnableLayerDecorationCache;
+    private final boolean mEnableAnimations;
+    private final boolean mEnablePrerendering;
+    private final boolean mEnableToolbarSwipe;
 
     private final boolean mEnableFullscreen;
 

@@ -367,7 +367,7 @@ public class WebContentsDarkModeMessageController {
 
     @VisibleForTesting
     static class AutoDarkClickableSpan extends ClickableSpan {
-        private Context mContext;
+        private final Context mContext;
 
         AutoDarkClickableSpan(Context context) {
             mContext = context;
