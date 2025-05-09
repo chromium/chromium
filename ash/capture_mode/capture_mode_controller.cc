@@ -711,8 +711,6 @@ SearchResultsPanel* CaptureModeController::GetSearchResultsPanel() const {
              : nullptr;
 }
 
-// TODO(hewer): If the search results panel was already created before a search
-// request, show the loading animation again.
 void CaptureModeController::ShowSearchResultsPanel(
     const gfx::ImageSkia& image) {
   // We should not use `CanShowSunfishUi` here, as that could change between
@@ -747,6 +745,9 @@ void CaptureModeController::ShowSearchResultsPanel(
   // If the panel was not visible beforehand (either the panel was not created
   // yet or the panel was hidden from making a new selection), emit a metric.
   if (!search_results_panel_widget_->IsVisible()) {
+    // Each time we make a new request, we should show the loading animation.
+    GetSearchResultsPanel()->ShowLoadingAnimation();
+
     search_results_panel_widget_->Show();
     RecordSearchResultsPanelShown();
     // Setting or updating the bounds here only accounts for newly selected

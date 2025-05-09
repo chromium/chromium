@@ -229,24 +229,6 @@ SearchResultsPanel::SearchResultsPanel() {
     search_box_view_->SetProperty(views::kMarginsKey, kSearchBoxViewSpacing);
   }
 
-  auto* animation_view = AddChildView(
-      views::Builder<views::AnimatedImageView>()
-          // Use an ID instead of saving a `raw_ptr` to avoid a dangling pointer
-          // when we remove this child later.
-          .SetID(capture_mode::kLoadingAnimationViewId)
-          .SetAccessibleName(l10n_util::GetStringUTF16(
-              IDS_ASH_SUNFISH_RESULTS_LOADING_ACCESSIBLE_NAME))
-          .SetAnimatedImage(mahi_animation_utils::GetLottieAnimationData(
-              IDR_MAHI_LOADING_SUMMARY_ANIMATION))
-          .Build());
-  animation_view->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                               views::MaximumFlexSizeRule::kUnbounded));
-  animation_view->Play(mahi_animation_utils::GetLottiePlaybackConfig(
-      *animation_view->animated_image()->skottie(),
-      IDR_MAHI_LOADING_SUMMARY_ANIMATION));
-
   SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevated, kPanelCornerRadius));
   SetPaintToLayer();
@@ -255,6 +237,8 @@ SearchResultsPanel::SearchResultsPanel() {
   layer()->SetIsFastRoundedCorner(true);
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+
+  ShowLoadingAnimation();
 
   // Install highlightable views for when a Sunfish session is active and the
   // `CaptureModeSessionFocusCycler` is handling focus. Set up the focus
@@ -265,6 +249,8 @@ SearchResultsPanel::SearchResultsPanel() {
   CaptureModeSessionFocusCycler::HighlightHelper::Get(close_button_)
       ->SetUpFocusPredicate();
 
+  auto* animation_view = GetViewByID(capture_mode::kLoadingAnimationViewId);
+  CHECK(animation_view);
   CaptureModeSessionFocusCycler::HighlightHelper::Install(animation_view);
   CaptureModeSessionFocusCycler::HighlightHelper::Get(animation_view)
       ->SetUpFocusPredicate();
@@ -379,6 +365,40 @@ bool SearchResultsPanel::IsTextfieldPseudoFocused() const {
   return CaptureModeSessionFocusCycler::HighlightHelper::Get(
              search_box_view_->textfield_)
       ->has_focus();
+}
+
+void SearchResultsPanel::ShowLoadingAnimation() {
+  if (GetViewByID(capture_mode::kLoadingAnimationViewId)) {
+    return;
+  }
+
+  // Remove the search results view if present.
+  if (search_results_view_) {
+    auto* search_results_view = search_results_view_.get();
+    search_results_view_ = nullptr;
+    RemoveChildViewT(search_results_view);
+  }
+
+  CHECK(!search_results_view_);
+
+  // Add the animation view and play it.
+  auto* animation_view = AddChildView(
+      views::Builder<views::AnimatedImageView>()
+          // Use an ID instead of saving a `raw_ptr` to avoid a dangling pointer
+          // when we remove this child later.
+          .SetID(capture_mode::kLoadingAnimationViewId)
+          .SetAccessibleName(l10n_util::GetStringUTF16(
+              IDS_ASH_SUNFISH_RESULTS_LOADING_ACCESSIBLE_NAME))
+          .SetAnimatedImage(mahi_animation_utils::GetLottieAnimationData(
+              IDR_MAHI_LOADING_SUMMARY_ANIMATION))
+          .Build());
+  animation_view->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kUnbounded));
+  animation_view->Play(mahi_animation_utils::GetLottiePlaybackConfig(
+      *animation_view->animated_image()->skottie(),
+      IDR_MAHI_LOADING_SUMMARY_ANIMATION));
 }
 
 void SearchResultsPanel::AddedToWidget() {

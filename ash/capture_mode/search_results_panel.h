@@ -80,6 +80,9 @@ class ASH_EXPORT SearchResultsPanel : public SystemPanelView,
   // this view has focus, otherwise returns false.
   bool IsTextfieldPseudoFocused() const;
 
+  // Shows and plays a loading animation in place of the web contents.
+  void ShowLoadingAnimation();
+
   // views::View:
   void AddedToWidget() override;
   void RemovedFromWidget() override;
