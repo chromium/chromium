@@ -14584,6 +14584,21 @@
             ]
         }
     ],
+    "NimbleCollisionAvoidanceV1": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NotificationCollisionManagement"
+                    ]
+                }
+            ]
+        }
+    ],
     "NoPasswordSuggestionFiltering": [
         {
             "platforms": [
