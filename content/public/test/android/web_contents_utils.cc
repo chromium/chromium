@@ -120,4 +120,11 @@ void JNI_WebContentsUtils_NotifyCopyableViewInWebContents(
                         ScopedJavaGlobalRef<jobject>(done_callback)));
 }
 
+void JNI_WebContentsUtils_SimulateEndOfPaintHolding(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jweb_contents) {
+  WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
+}
+
 }  // namespace content

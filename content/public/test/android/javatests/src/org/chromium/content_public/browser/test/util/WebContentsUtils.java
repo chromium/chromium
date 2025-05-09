@@ -160,6 +160,15 @@ public class WebContentsUtils {
                 });
     }
 
+    /**
+     * Simulate the end of paint-holding on primary main frame of `webContents`.
+     *
+     * <p>See the corresponding method in content/public/test/browser_test_utils.h.
+     */
+    public static void simulateEndOfPaintHolding(final WebContents webContents) {
+        WebContentsUtilsJni.get().simulateEndOfPaintHolding(webContents);
+    }
+
     @CalledByNative
     private static void onEvaluateJavaScriptResult(String jsonResult, JavaScriptCallback callback) {
         callback.handleJavaScriptResult(jsonResult);
@@ -200,5 +209,7 @@ public class WebContentsUtils {
         void crashTab(WebContents webContents);
 
         void notifyCopyableViewInWebContents(WebContents webContents, Runnable doneCallback);
+
+        void simulateEndOfPaintHolding(WebContents webContents);
     }
 }
