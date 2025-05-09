@@ -93,4 +93,10 @@ public class FakeDataSharingUIDelegateImpl implements DataSharingUIDelegate {
                             assert success;
                         });
     }
+
+    /* Calls onCancelClicked when showCreateFlow() is called. */
+    public void forceCreateFlowCancellation() {
+        if (mCreateUiConfig == null || mCreateUiConfig.getCreateCallback() == null) return;
+        mCreateUiConfig.getCreateCallback().onCancelClicked();
+    }
 }

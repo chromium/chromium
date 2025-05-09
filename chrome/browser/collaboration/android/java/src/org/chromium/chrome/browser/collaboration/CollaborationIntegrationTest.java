@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
+import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingSDKDelegateBridge;
 import org.chromium.components.data_sharing.DataSharingSDKDelegateTestImpl;
 import org.chromium.components.data_sharing.DataSharingServiceImpl;
@@ -297,24 +298,10 @@ public class CollaborationIntegrationTest {
     @Test
     @MediumTest
     public void testDataSharingShowShare() {
-        // Sign in and sets selected types for tab groups.
-        mActivityTestRule.setUpAccountAndSignInForTesting();
-        mActivityTestRule.setSelectedTypes(
-                true,
-                new HashSet<>(
-                        Arrays.asList(
-                                UserSelectableType.TABS, UserSelectableType.SAVED_TAB_GROUPS)));
+        setUpSyncAndSignIn();
 
-        // Create a tab group and open tab grid dialog.
         final ChromeTabbedActivity cta = (ChromeTabbedActivity) mActivityTestRule.getActivity();
-        addBlankTabs(cta, false, 2);
-        enterTabSwitcher(cta);
-        mergeAllNormalTabsToAGroup(cta);
-        LocalTabGroupId localTabGroupId =
-                new LocalTabGroupId(
-                        cta.getTabModelSelector().getModel(false).getTabAt(0).getTabGroupId());
-        clickFirstCardFromTabSwitcher(cta);
-        CriteriaHelper.pollUiThread(() -> isDialogFullyVisible(cta));
+        createTabGroupAndOpenTabGridDialog(cta);
 
         // Setting create flow callback to show share sheet with share link.
         Callback<Boolean> callback =
@@ -326,10 +313,31 @@ public class CollaborationIntegrationTest {
         setupShareDelegateSupplier();
 
         onView(withId(R.id.share_button)).perform(relaxedClick());
-        prepareToShareTabGroup(/* owner= */ true, localTabGroupId, TEST_COLLABORATION_ID);
+        prepareToShareTabGroup(/* owner= */ true, getLocalTabGroupId(cta), TEST_COLLABORATION_ID);
 
         // Check share button changes to manage.
         onViewWaiting(withText(R.string.tab_grid_manage_button_text)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testDataSharingShowShareCancelled() {
+        setUpSyncAndSignIn();
+
+        final ChromeTabbedActivity cta = (ChromeTabbedActivity) mActivityTestRule.getActivity();
+        createTabGroupAndOpenTabGridDialog(cta);
+
+        // Setting create flow callback to cancel create flow.
+        Callback<Boolean> callback =
+                (success) -> {
+                    mDataSharingUIDelegate.forceCreateFlowCancellation();
+                };
+        mDataSharingUIDelegate.setShowCreateFlowCallback(callback);
+
+        onView(withId(R.id.share_button)).perform(relaxedClick());
+
+        // Check share button doesn't change.
+        onViewWaiting(withText(R.string.tab_grid_share_button_text)).check(matches(isDisplayed()));
     }
 
     private static ViewAction relaxedClick() {
@@ -382,8 +390,33 @@ public class CollaborationIntegrationTest {
                 });
     }
 
+    // Sign in and sets selected types for tab groups.
+    private void setUpSyncAndSignIn() {
+        mActivityTestRule.setUpAccountAndSignInForTesting();
+        mActivityTestRule.setSelectedTypes(
+                true,
+                new HashSet<>(
+                        Arrays.asList(
+                                UserSelectableType.TABS, UserSelectableType.SAVED_TAB_GROUPS)));
+    }
+
+    // Returns the local tab group id.
+    private LocalTabGroupId getLocalTabGroupId(ChromeTabbedActivity cta) {
+        return new LocalTabGroupId(
+                cta.getTabModelSelector().getModel(false).getTabAt(0).getTabGroupId());
+    }
+
+    // Create a tab group and open tab grid dialog.
+    private void createTabGroupAndOpenTabGridDialog(ChromeTabbedActivity cta) {
+        addBlankTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        mergeAllNormalTabsToAGroup(cta);
+        clickFirstCardFromTabSwitcher(cta);
+        CriteriaHelper.pollUiThread(() -> isDialogFullyVisible(cta));
+    }
+
     // Mock share delegate and return success for opening the share sheet.
-    private void setupShareDelegateSupplier(){
+    private void setupShareDelegateSupplier() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     doReturn(mShareDelegate).when(mShareDelegateSupplier).get();
