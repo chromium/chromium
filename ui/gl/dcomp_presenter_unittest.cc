@@ -53,6 +53,30 @@
 #include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/win/win_window.h"
 
+namespace gfx {
+// Used by gtest to print expectation values.
+void PrintTo(const SwapResult& swap_result, ::std::ostream* os) {
+  switch (swap_result) {
+    case SwapResult::SWAP_ACK:
+      *os << "SWAP_ACK";
+      return;
+    case SwapResult::SWAP_FAILED:
+      *os << "SWAP_FAILED";
+      return;
+    case SwapResult::SWAP_SKIPPED:
+      *os << "SWAP_SKIPPED";
+      return;
+    case SwapResult::SWAP_NAK_RECREATE_BUFFERS:
+      *os << "SWAP_NAK_RECREATE_BUFFERS";
+      return;
+    case SwapResult::SWAP_NON_SIMPLE_OVERLAYS_FAILED:
+      *os << "SWAP_NON_SIMPLE_OVERLAYS_FAILED";
+      return;
+  }
+  NOTREACHED();
+}
+}  // namespace gfx
+
 namespace gl {
 namespace {
 
@@ -317,22 +341,26 @@ class DCompPresenterTestBase : public testing::Test {
     ScheduleOverlay(std::move(params));
   }
 
-  // Wait for |presenter_| to present asynchronously check the swap result.
-  void PresentAndCheckSwapResult(gfx::SwapResult expected_swap_result) {
+  // Wait for `presenter_` to present asynchronously and return the swap result.
+  gfx::SwapResult PresentAndGetSwapResult() {
     presenter_->ScheduleDCLayers(std::move(pending_overlays_));
+
+    std::optional<gfx::SwapResult> result;
 
     base::RunLoop wait_for_present;
     presenter_->Present(
         base::BindOnce(
             [](base::RepeatingClosure quit_closure,
-               gfx::SwapResult expected_swap_result,
+               std::optional<gfx::SwapResult>* out_result,
                gfx::SwapCompletionResult result) {
-              EXPECT_EQ(expected_swap_result, result.swap_result);
+              *out_result = result.swap_result;
               quit_closure.Run();
             },
-            wait_for_present.QuitClosure(), expected_swap_result),
+            wait_for_present.QuitClosure(), base::Unretained(&result)),
         base::DoNothing(), gfx::FrameData());
     wait_for_present.Run();
+
+    return result.value();
   }
 
   void EnableFeature(const base::test::FeatureRef& feature) {
@@ -395,7 +423,7 @@ TEST_P(DCompPresenterTest, NoPresentTwice) {
           gfx::OverlayLayerId::MakeForTesting(0));
   ASSERT_FALSE(swap_chain);
 
-  PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+  ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
 
   swap_chain = presenter_->GetLayerSwapChainForTesting(
       gfx::OverlayLayerId::MakeForTesting(0));
@@ -418,7 +446,7 @@ TEST_P(DCompPresenterTest, NoPresentTwice) {
     ScheduleOverlay(std::move(params));
   }
 
-  PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+  ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain2 =
       presenter_->GetLayerSwapChainForTesting(
@@ -443,7 +471,7 @@ TEST_P(DCompPresenterTest, NoPresentTwice) {
     ScheduleOverlay(std::move(params));
   }
 
-  PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+  ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain3 =
       presenter_->GetLayerSwapChainForTesting(
@@ -481,7 +509,7 @@ TEST_P(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
     ScheduleOverlay(std::move(params));
   }
 
-  PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+  ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
       presenter_->GetLayerSwapChainForTesting(
           gfx::OverlayLayerId::MakeForTesting(0));
@@ -496,7 +524,7 @@ TEST_P(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
   // Clear SwapChainPresenters
   // Must do Clear first because the swap chain won't resize immediately if
   // a new size is given unless this is the very first time after Clear.
-  PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+  ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
 
   // The input texture size is bigger than the window size.
   quad_rect = gfx::Rect(32, 48);
@@ -510,7 +538,7 @@ TEST_P(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
     ScheduleOverlay(std::move(params));
   }
 
-  PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+  ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain2 =
       presenter_->GetLayerSwapChainForTesting(
@@ -545,7 +573,7 @@ TEST_P(DCompPresenterTest, SwapchainSizeWithoutScaledOverlays) {
     ScheduleOverlay(std::move(params));
   }
 
-  PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+  ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
       presenter_->GetLayerSwapChainForTesting(
           gfx::OverlayLayerId::MakeForTesting(0));
@@ -569,7 +597,7 @@ TEST_P(DCompPresenterTest, SwapchainSizeWithoutScaledOverlays) {
     ScheduleOverlay(std::move(params));
   }
 
-  PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+  ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain2 =
       presenter_->GetLayerSwapChainForTesting(
@@ -604,7 +632,7 @@ TEST_P(DCompPresenterTest, ProtectedVideos) {
     params.video_params.protected_video_type = gfx::ProtectedVideoType::kClear;
 
     ScheduleOverlay(std::move(params));
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
         presenter_->GetLayerSwapChainForTesting(
             gfx::OverlayLayerId::MakeForTesting(0));
@@ -629,7 +657,7 @@ TEST_P(DCompPresenterTest, ProtectedVideos) {
         gfx::ProtectedVideoType::kSoftwareProtected;
 
     ScheduleOverlay(std::move(params));
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
         presenter_->GetLayerSwapChainForTesting(
             gfx::OverlayLayerId::MakeForTesting(0));
@@ -658,7 +686,7 @@ TEST_P(DCompPresenterTest, NoBackgroundColorSurfaceForNonColorOverlays) {
   root_surface.layer_id = gfx::OverlayLayerId::MakeForTesting(1);
   ScheduleOverlay(std::move(root_surface));
 
-  PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+  ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
 
   const DCLayerTree* layer_tree = presenter_->GetLayerTreeForTesting();
   EXPECT_EQ(1u, layer_tree->GetDcompLayerCountForTesting());
@@ -691,14 +719,14 @@ TEST_P(DCompPresenterTest, BackgroundColorSurfaceTrim) {
         params.layer_id = gfx::OverlayLayerId::MakeForTesting(i);
         ScheduleOverlay(std::move(params));
       }
-      PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+      ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
       EXPECT_EQ(num_buffers, layer_tree->GetNumSurfacesInPoolForTesting());
     }
 
     // We expect retained surfaces even after we present a frame with no solid
     // color overlays.
     {
-      PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+      ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
       EXPECT_EQ(std::min(num_buffers, kMaxSolidColorBuffers),
                 layer_tree->GetNumSurfacesInPoolForTesting());
     }
@@ -727,7 +755,7 @@ TEST_P(DCompPresenterTest, BackgroundColorSurfaceMultipleReused) {
       ScheduleOverlay(std::move(params));
     }
 
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
     EXPECT_EQ(2u, layer_tree->GetNumSurfacesInPoolForTesting());
 
     surfaces_frame1[0] = layer_tree->GetBackgroundColorSurfaceForTesting(
@@ -753,7 +781,7 @@ TEST_P(DCompPresenterTest, BackgroundColorSurfaceMultipleReused) {
       ScheduleOverlay(std::move(params));
     }
 
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
     EXPECT_EQ(2u, layer_tree->GetNumSurfacesInPoolForTesting());
 
     surfaces_frame2[0] = layer_tree->GetBackgroundColorSurfaceForTesting(
@@ -826,7 +854,7 @@ TEST_P(DCompPresenterTest, VisualsReused) {
     ScheduleOverlay(std::move(params));
   }
 
-  PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+  ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
 
   DCLayerTree* dcLayerTree = presenter_->GetLayerTreeForTesting();
 
@@ -860,7 +888,7 @@ TEST_P(DCompPresenterTest, VisualsReused) {
     ScheduleOverlay(std::move(params));
   }
 
-  PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+  ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   EXPECT_EQ(2u, dcLayerTree->GetDcompLayerCountForTesting());
   // Verify that the visuals are reused from the previous frame but attached
   // to the root visual in a reversed order.
@@ -971,7 +999,7 @@ TEST_P(DCompPresenterTest, MatchedAndUnmatchedVisualsReused) {
   ScheduleOverlay(CreateOverlayWithSwapChain(swap_chainE, swap_chain_size, 5));
   ScheduleOverlay(CreateOverlayWithSwapChain(swap_chainF, swap_chain_size, 6));
 
-  PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+  ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
 
   DCLayerTree* dc_layer_tree = presenter_->GetLayerTreeForTesting();
 
@@ -1022,7 +1050,7 @@ TEST_P(DCompPresenterTest, MatchedAndUnmatchedVisualsReused) {
   ScheduleOverlay(CreateOverlayWithSwapChain(swap_chainC, swap_chain_size, 4));
   ScheduleOverlay(CreateOverlayWithSwapChain(swap_chainM, swap_chain_size, 5));
 
-  PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+  ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
 
   EXPECT_EQ(6u, dc_layer_tree->GetDcompLayerCountForTesting());
 
@@ -1115,7 +1143,7 @@ TEST_P(DCompPresenterTest, VeryLargeOnscreenSize) {
   EXPECT_FALSE(presenter_->GetLayerSwapChainForTesting(
       gfx::OverlayLayerId::MakeForTesting(1)));
 
-  PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+  ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
 
   auto ExpectSwapChainAndMaintainsAspectRatio = [&](gfx::OverlayLayerId id,
                                                     gfx::SizeF expected_size) {
@@ -1197,7 +1225,7 @@ class DCompPresenterPixelTestBase : public DCompPresenterTestBase {
     params.video_params.is_p010_content = is_p010;
     ScheduleOverlay(std::move(params));
 
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
 
     Sleep(1000);
   }
@@ -1235,7 +1263,7 @@ class DCompPresenterPixelTestBase : public DCompPresenterTestBase {
     }
 
     ScheduleOverlay(std::move(dc_layer_params));
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
 
     SkBitmap pixels = GLTestHelper::ReadBackWindow(window_.hwnd(), window_size);
 
@@ -1295,7 +1323,7 @@ class DCompPresenterPixelTestBase : public DCompPresenterTestBase {
 
     ScheduleOverlay(std::move(fit_in_hole_overlay));
 
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
 
     auto pixels = GLTestHelper::ReadBackWindow(window_.hwnd(), window_size);
 
@@ -1447,7 +1475,7 @@ class DCompPresenterVideoPixelTest : public DCompPresenterPixelTestBase,
       ScheduleOverlay(std::move(params));
     }
 
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
 
     // Scaling up the swapchain with the same image should cause it to be
     // transformed again, but not presented again.
@@ -1460,7 +1488,7 @@ class DCompPresenterVideoPixelTest : public DCompPresenterPixelTestBase,
       ScheduleOverlay(std::move(params));
     }
 
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
     Sleep(1000);
 
     if (check_color) {
@@ -1524,7 +1552,7 @@ TEST_P(DCompPresenterPixelTest, SoftwareVideoSwapchain) {
   params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
   ScheduleOverlay(std::move(params));
 
-  PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+  ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   Sleep(1000);
 
   SkColor expected_color = SkColorSetRGB(0xff, 0xb7, 0xff);
@@ -1593,7 +1621,7 @@ TEST_P(DCompPresenterPixelTest, SkipVideoLayerEmptyContentsRect) {
   params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
   ScheduleOverlay(std::move(params));
 
-  PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+  ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
 
   Sleep(1000);
 
@@ -1821,7 +1849,7 @@ TEST_P(DCompPresenterPixelTest, ResizeVideoLayer) {
     params.video_params.color_space = gfx::ColorSpace::CreateREC709();
     ScheduleOverlay(std::move(params));
 
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
@@ -1845,7 +1873,7 @@ TEST_P(DCompPresenterPixelTest, ResizeVideoLayer) {
     params.video_params.color_space = gfx::ColorSpace::CreateREC709();
     ScheduleOverlay(std::move(params));
 
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
   swap_chain = presenter_->GetLayerSwapChainForTesting(
       gfx::OverlayLayerId::MakeForTesting(0));
@@ -1871,7 +1899,7 @@ TEST_P(DCompPresenterPixelTest, ResizeVideoLayer) {
     params.video_params.color_space = gfx::ColorSpace::CreateREC709();
     ScheduleOverlay(std::move(params));
 
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
   // Swap chain is set to monitor/onscreen size.
@@ -1903,7 +1931,7 @@ TEST_P(DCompPresenterPixelTest, ResizeVideoLayer) {
     params.video_params.color_space = gfx::ColorSpace::CreateREC709();
     ScheduleOverlay(std::move(params));
 
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
   // Swap chain is set to monitor size (100, 100).
@@ -1951,7 +1979,7 @@ TEST_P(DCompPresenterPixelTest, SwapChainImage) {
     dc_layer_params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
 
     ScheduleOverlay(std::move(dc_layer_params));
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
 
     SkColor expected_color = SK_ColorRED;
     EXPECT_SKCOLOR_CLOSE(
@@ -1971,7 +1999,7 @@ TEST_P(DCompPresenterPixelTest, SwapChainImage) {
     dc_layer_params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
 
     ScheduleOverlay(std::move(dc_layer_params));
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
 
     SkColor expected_color = SK_ColorGREEN;
     EXPECT_SKCOLOR_CLOSE(
@@ -1994,7 +2022,7 @@ TEST_P(DCompPresenterPixelTest, SwapChainImage) {
     dc_layer_params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
 
     ScheduleOverlay(std::move(dc_layer_params));
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
 
     SkColor expected_color = SK_ColorRED;
     EXPECT_SKCOLOR_CLOSE(
@@ -2014,7 +2042,7 @@ TEST_P(DCompPresenterPixelTest, SwapChainImage) {
     dc_layer_params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
 
     ScheduleOverlay(std::move(dc_layer_params));
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
 
     SkColor expected_color = SK_ColorRED;
     EXPECT_SKCOLOR_CLOSE(
@@ -2046,7 +2074,7 @@ TEST_P(DCompPresenterPixelTest, QuadOffsetAppliedAfterTransform) {
   dc_layer_params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
 
   ScheduleOverlay(std::move(dc_layer_params));
-  PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+  ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
 
   // We expect DComp to display the overlay with the same bounds as if viz were
   // to composite it.
@@ -2197,7 +2225,7 @@ TEST_P(DCompPresenterPixelTest, BackgroundColorSurfaceReuse) {
     params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
     ScheduleOverlay(std::move(params));
 
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
 
     EXPECT_SKCOLOR_EQ(color.toSkColor(), GLTestHelper::ReadBackWindowPixel(
                                              window_.hwnd(), gfx::Point(0, 0)));
@@ -2316,7 +2344,7 @@ class DCompPresenterSkiaGoldTest : public DCompPresenterPixelTest {
     }
     capture_names_in_test_.insert(capture_name);
 
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
 
     SkBitmap window_readback =
         GLTestHelper::ReadBackWindow(window_.hwnd(), window_size_);
@@ -3259,7 +3287,7 @@ TEST_P(DCompPresenterBufferCountTest, VideoSwapChainBufferCount) {
   params.video_params.color_space = gfx::ColorSpace::CreateREC709();
   ScheduleOverlay(std::move(params));
 
-  PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+  ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
 
   auto swap_chain = presenter_->GetLayerSwapChainForTesting(
       gfx::OverlayLayerId::MakeForTesting(0));
@@ -3484,7 +3512,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
     dc_layer_params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
     dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
     ScheduleOverlay(std::move(dc_layer_params));
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
   if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
@@ -3513,7 +3541,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
     dc_layer_params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
     dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
     ScheduleOverlay(std::move(dc_layer_params));
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
   if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
@@ -3542,7 +3570,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
     dc_layer_params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
     dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
     ScheduleOverlay(std::move(dc_layer_params));
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
   if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
@@ -3588,7 +3616,7 @@ TEST_P(DCompPresenterLetterboxingTest,
     dc_layer_params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
     dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
     ScheduleOverlay(std::move(dc_layer_params));
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
   if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
@@ -3637,7 +3665,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingKeepVisualInfo) {
     dc_layer_params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
     dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
     ScheduleOverlay(std::move(dc_layer_params));
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain;
@@ -3684,7 +3712,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingKeepVisualInfo) {
     dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
     ScheduleOverlay(std::move(dc_layer_params));
 
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
   // It's the same image, so it should have the same swapchain.
@@ -3731,7 +3759,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingKeepVisualInfo) {
     dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
     ScheduleOverlay(std::move(dc_layer_params));
 
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain3 =
       presenter_->GetLayerSwapChainForTesting(
@@ -3786,7 +3814,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenPillarboxingResizeVideoLayer) {
     dc_layer_params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
     dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
     ScheduleOverlay(std::move(dc_layer_params));
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
   if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
@@ -3816,7 +3844,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenPillarboxingResizeVideoLayer) {
     dc_layer_params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
     dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
     ScheduleOverlay(std::move(dc_layer_params));
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
   if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
@@ -3846,7 +3874,7 @@ TEST_P(DCompPresenterLetterboxingTest, FullScreenPillarboxingResizeVideoLayer) {
     dc_layer_params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
     dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
     ScheduleOverlay(std::move(dc_layer_params));
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
   if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
@@ -3892,7 +3920,7 @@ TEST_P(DCompPresenterLetterboxingTest,
     dc_layer_params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
     dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
     ScheduleOverlay(std::move(dc_layer_params));
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
   if (std::get<0>(GetParam()).use_letterbox_video_optimization) {
@@ -3989,7 +4017,7 @@ TEST_P(DCompPresenterLetterboxingTest,
     dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
     ScheduleOverlay(std::move(dc_layer_params));
 
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
   // DComp visual is clipped to the whole monitor size.
@@ -4079,7 +4107,7 @@ TEST_P(DCompPresenterLetterboxingTest,
     dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
     ScheduleOverlay(std::move(dc_layer_params));
 
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
   // DComp visual is clipped to the whole monitor size.
@@ -4164,7 +4192,7 @@ TEST_P(DCompPresenterLetterboxingTest,
     dc_layer_params.video_params.possible_video_fullscreen_letterboxing = true;
     ScheduleOverlay(std::move(dc_layer_params));
 
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
   gfx::Transform visual_transform;
@@ -4222,7 +4250,7 @@ TEST_F(DCompPresenterFullscreenRoundingTest,
     dc_layer_params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
     ScheduleOverlay(std::move(dc_layer_params));
 
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
   // Swap chain size is set to onscreen content size.
@@ -4305,7 +4333,7 @@ TEST_F(DCompPresenterFullscreenRoundingTest, FullScreenContentWithClipping) {
     dc_layer_params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
     ScheduleOverlay(std::move(dc_layer_params));
 
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   }
 
   // Swap chain size is set to onscreen content size.
