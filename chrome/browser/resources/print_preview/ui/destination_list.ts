@@ -41,7 +41,10 @@ export class PrintPreviewDestinationListElement extends
 
   static get properties() {
     return {
-      destinations: Array,
+      destinations: {
+        type: Array,
+        value: () => [],
+      },
 
       searchQuery: Object,
 
