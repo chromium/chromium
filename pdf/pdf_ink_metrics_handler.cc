@@ -62,7 +62,7 @@ constexpr auto kPenColors =
         {SkColorSetRGB(0x19, 0x67, 0xD2), StrokeMetricPenColor::kBlue3},
         {SkColorSetRGB(0x88, 0x59, 0x45), StrokeMetricPenColor::kTan3},
     });
-// LINT.ThenChange(//chrome/browser/resources/pdf/elements/ink_color_selector.ts:PenColors)
+// LINT.ThenChange(//chrome/browser/resources/pdf/elements//ink_annotation_brush_mixin.ts:PenColors)
 
 // LINT.IfChange(HighlighterColors)
 constexpr auto kHighlighterColors =
@@ -85,7 +85,7 @@ constexpr auto kHighlighterColors =
         {SkColorSetRGB(0xFF, 0x63, 0x0C),
          StrokeMetricHighlighterColor::kOrange},
     });
-// LINT.ThenChange(//chrome/browser/resources/pdf/elements/ink_color_selector.ts:HighlighterColors)
+// LINT.ThenChange(//chrome/browser/resources/pdf/elements//ink_annotation_brush_mixin.ts:HighlighterColors)
 
 void ReportStrokeTypeAndMaybeSize(StrokeMetricBrushType type,
                                   std::optional<StrokeMetricBrushSize> size) {
