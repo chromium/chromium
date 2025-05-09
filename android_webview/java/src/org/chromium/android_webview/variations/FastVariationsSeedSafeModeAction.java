@@ -220,7 +220,7 @@ public class FastVariationsSeedSafeModeAction implements SafeModeAction {
     }
 
     private static class SeedWriterTask implements Runnable {
-        private byte[] mProtoAsByteArray;
+        private final byte[] mProtoAsByteArray;
 
         public SeedWriterTask(byte[] protoAsByteArray) {
             mProtoAsByteArray = protoAsByteArray;

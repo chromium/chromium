@@ -105,7 +105,7 @@ public class AwContentsTest extends AwParameterizedTest {
 
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
-    private TestAwContentsClient mContentsClient = new TestAwContentsClient();
+    private final TestAwContentsClient mContentsClient = new TestAwContentsClient();
 
     @Test
     @SmallTest
@@ -571,7 +571,7 @@ public class AwContentsTest extends AwParameterizedTest {
 
     static class JavaScriptObject {
 
-        private CallbackHelper mCallbackHelper;
+        private final CallbackHelper mCallbackHelper;
 
         public JavaScriptObject(CallbackHelper callbackHelper) {
             mCallbackHelper = callbackHelper;
@@ -1660,7 +1660,7 @@ public class AwContentsTest extends AwParameterizedTest {
             return mTasks.size();
         }
 
-        private List<Pair<Runnable, Long>> mTasks = new ArrayList<Pair<Runnable, Long>>();
+        private final List<Pair<Runnable, Long>> mTasks = new ArrayList<Pair<Runnable, Long>>();
     }
 
     @Test

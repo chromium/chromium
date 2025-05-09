@@ -307,7 +307,7 @@ public class AwVariationsSeedFetcher extends JobService {
     }
 
     private class FetchTask extends BackgroundOnlyAsyncTask<Void> {
-        private JobParameters mParams;
+        private final JobParameters mParams;
 
         FetchTask(JobParameters params) {
             mParams = params;
@@ -420,9 +420,9 @@ public class AwVariationsSeedFetcher extends JobService {
         }
 
         private static class FetchSeedOutput {
-            private boolean mShouldFinish;
-            private boolean mNeedsReschedule;
-            private boolean mCancelled;
+            private final boolean mShouldFinish;
+            private final boolean mNeedsReschedule;
+            private final boolean mCancelled;
 
             public boolean getShouldFinish() {
                 return mShouldFinish;

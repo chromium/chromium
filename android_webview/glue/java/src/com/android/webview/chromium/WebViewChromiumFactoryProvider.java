@@ -200,11 +200,11 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         public long mTotalFactoryInitDuration;
     }
 
-    private InitInfo mInitInfo = new InitInfo();
+    private final InitInfo mInitInfo = new InitInfo();
 
     @GuardedBy("mAwInit.getLazyInitLock()")
     @RequiresApi(Build.VERSION_CODES.P)
-    private ObjectHolderForP mObjectHolderForP =
+    private final ObjectHolderForP mObjectHolderForP =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.P ? new ObjectHolderForP() : null;
 
     /** Thread-safe way to set the one and only WebViewChromiumFactoryProvider. */

@@ -26,7 +26,7 @@ import java.lang.reflect.InvocationHandler;
 @Lifetime.Temporary
 class SupportLibWebViewNavigationAdapter extends IsomorphicAdapter
         implements WebViewNavigationBoundaryInterface {
-    private AwNavigation mNavigation;
+    private final AwNavigation mNavigation;
 
     SupportLibWebViewNavigationAdapter(AwNavigation navigation) {
         mNavigation = navigation;

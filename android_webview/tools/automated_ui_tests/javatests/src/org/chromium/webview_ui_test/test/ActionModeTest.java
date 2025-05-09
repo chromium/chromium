@@ -216,7 +216,7 @@ public class ActionModeTest {
 
     /** Matches an item on the Action Mode popup by the title */
     private static class MenuItemMatcher extends TypeSafeMatcher<MenuItem> {
-        private Matcher<String> mTitleMatcher;
+        private final Matcher<String> mTitleMatcher;
 
         public MenuItemMatcher(Matcher<String> titleMatcher) {
             mTitleMatcher = titleMatcher;

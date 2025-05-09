@@ -37,9 +37,9 @@ public class AwContentsClientGetDefaultVideoPosterTest extends AwParameterizedTe
     private static final String TAG = "AwContentsClientGetDefaultVideoPosterTest";
 
     private static class DefaultVideoPosterClient extends TestAwContentsClient {
-        private CallbackHelper mVideoPosterCallbackHelper = new CallbackHelper();
+        private final CallbackHelper mVideoPosterCallbackHelper = new CallbackHelper();
         private Bitmap mPoster;
-        private Context mContext;
+        private final Context mContext;
 
         public DefaultVideoPosterClient(Context context) {
             mContext = context;

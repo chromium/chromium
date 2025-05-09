@@ -36,7 +36,7 @@ public class AwDisplayModeController {
         int getDisplayHeight();
     }
 
-    private Delegate mDelegate;
+    private final Delegate mDelegate;
     private View mContainerView;
 
     // Reuse these structures to minimize memory impact.

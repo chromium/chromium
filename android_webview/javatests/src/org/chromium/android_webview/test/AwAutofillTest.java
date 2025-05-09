@@ -244,8 +244,8 @@ public class AwAutofillTest extends AwParameterizedTest {
         private static final int TOTAL_CONTROLS = 1; // text1
 
         private int mCnt;
-        private AwAutofillTest mTest;
-        private TestWebServer mWebServer;
+        private final AwAutofillTest mTest;
+        private final TestWebServer mWebServer;
 
         public AwAutofillSessionUMATestHelper(AwAutofillTest test, TestWebServer webServer) {
             mTest = test;
@@ -368,10 +368,10 @@ public class AwAutofillTest extends AwParameterizedTest {
     private EmbeddedTestServer mEmbeddedServer;
     private AwTestContainerView mTestContainerView;
     private AwAutofillTestClient mContentsClient;
-    private CallbackHelper mCallbackHelper = new CallbackHelper();
+    private final CallbackHelper mCallbackHelper = new CallbackHelper();
     private AwContents mAwContents;
-    private ConcurrentLinkedQueue<Integer> mEventQueue = new ConcurrentLinkedQueue<>();
-    private TestValues mTestValues = new TestValues();
+    private final ConcurrentLinkedQueue<Integer> mEventQueue = new ConcurrentLinkedQueue<>();
+    private final TestValues mTestValues = new TestValues();
     private int mSubmissionSource;
     private TestAutofillManagerWrapper mTestAutofillManagerWrapper;
     private AwAutofillSessionUMATestHelper mUMATestHelper;

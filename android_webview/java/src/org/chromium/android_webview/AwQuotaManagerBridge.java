@@ -43,7 +43,7 @@ public class AwQuotaManagerBridge {
     }
 
     // This is not owning. The native object is owned by the native AwBrowserContext.
-    private long mNativeAwQuotaManagerBridge;
+    private final long mNativeAwQuotaManagerBridge;
 
     public AwQuotaManagerBridge(long nativeAwQuotaManagerBridge) {
         mNativeAwQuotaManagerBridge = nativeAwQuotaManagerBridge;

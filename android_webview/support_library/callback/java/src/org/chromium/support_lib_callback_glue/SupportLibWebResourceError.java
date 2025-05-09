@@ -9,7 +9,7 @@ import org.chromium.support_lib_boundary.WebResourceErrorBoundaryInterface;
 
 /** Adapter between {@link AwWebResourceError} and {@link WebResourceErrorBoundaryInterface}. */
 public class SupportLibWebResourceError implements WebResourceErrorBoundaryInterface {
-    private AwWebResourceError mError;
+    private final AwWebResourceError mError;
 
     public SupportLibWebResourceError(AwWebResourceError error) {
         mError = error;

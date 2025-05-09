@@ -14,12 +14,12 @@ import org.chromium.build.annotations.NullMarked;
 /** This class manages the edge glow effect when a WebView is flung or pulled beyond the edges. */
 @NullMarked
 class OverScrollGlow {
-    private View mHostView;
+    private final View mHostView;
 
-    private EdgeEffect mEdgeGlowTop;
-    private EdgeEffect mEdgeGlowBottom;
-    private EdgeEffect mEdgeGlowLeft;
-    private EdgeEffect mEdgeGlowRight;
+    private final EdgeEffect mEdgeGlowTop;
+    private final EdgeEffect mEdgeGlowBottom;
+    private final EdgeEffect mEdgeGlowLeft;
+    private final EdgeEffect mEdgeGlowRight;
 
     private int mOverScrollDeltaX;
     private int mOverScrollDeltaY;

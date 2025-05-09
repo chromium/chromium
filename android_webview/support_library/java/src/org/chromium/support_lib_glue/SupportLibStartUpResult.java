@@ -12,7 +12,7 @@ import java.util.List;
 class SupportLibStartUpResult implements WebViewStartUpResultBoundaryInterface {
     private Long mTotalTimeInUiThreadMillis;
     private Long mMaxTimePerTaskTimeInUiThreadMillis;
-    private List<Throwable> mBlockingStartUpLocations = new ArrayList<Throwable>();
+    private final List<Throwable> mBlockingStartUpLocations = new ArrayList<Throwable>();
 
     SupportLibStartUpResult() {}
 

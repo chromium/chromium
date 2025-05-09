@@ -105,7 +105,8 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
      */
     private static AwBrowserContext sBrowserContext;
 
-    private List<WeakReference<AwContents>> mAwContentsDestroyedInTearDown = new ArrayList<>();
+    private final List<WeakReference<AwContents>> mAwContentsDestroyedInTearDown =
+            new ArrayList<>();
 
     private Consumer<AwSettings> mMaybeMutateAwSettings;
 
@@ -316,7 +317,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     /** Loads url on the UI thread but does not block. */
     public void postUrlAsync(final AwContents awContents, final String url, byte[] postData) {
         class PostUrl implements Runnable {
-            byte[] mPostData;
+            final byte[] mPostData;
 
             public PostUrl(byte[] postData) {
                 mPostData = postData;

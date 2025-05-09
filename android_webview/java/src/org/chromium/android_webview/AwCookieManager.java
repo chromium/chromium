@@ -271,8 +271,8 @@ public final class AwCookieManager {
 
     /** A tuple to hold a URL and Value when setting a cookie. */
     private static class UrlValue {
-        public String mUrl;
-        public String mValue;
+        public final String mUrl;
+        public final String mValue;
 
         public UrlValue(String url, String value) {
             mUrl = url;

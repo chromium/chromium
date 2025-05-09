@@ -47,7 +47,7 @@ public class KeySystemTest extends AwParameterizedTest {
         }
     }
 
-    private TestAwContentsClient mContentsClient = new EmeAllowingAwContentsClient();
+    private final TestAwContentsClient mContentsClient = new EmeAllowingAwContentsClient();
     private AwContents mAwContents;
 
     public KeySystemTest(AwSettingsMutation param) {

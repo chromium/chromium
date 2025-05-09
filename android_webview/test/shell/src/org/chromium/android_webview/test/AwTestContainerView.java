@@ -41,7 +41,7 @@ public class AwTestContainerView extends FrameLayout {
     private static Handler sRenderThreadHandler;
 
     private AwContents mAwContents;
-    private AwContents.InternalAccessDelegate mInternalAccessDelegate;
+    private final AwContents.InternalAccessDelegate mInternalAccessDelegate;
 
     private HardwareView mHardwareView;
     private boolean mAttachedContents;
@@ -84,7 +84,7 @@ public class AwTestContainerView extends FrameLayout {
         private int mLastScrollX;
         private int mLastScrollY;
         private boolean mHaveSurface;
-        private SurfaceView mOverlaysSurfaceView;
+        private final SurfaceView mOverlaysSurfaceView;
 
         // Only accessed on render thread.
         private final ContextManager mContextManager;

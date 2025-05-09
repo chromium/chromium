@@ -94,7 +94,7 @@ public class VariationsSeedLoaderTest extends AwParameterizedTest {
      * service Intent to match the test environment.
      */
     public static class TestLoader extends VariationsSeedLoader {
-        private TestLoaderResult mResult;
+        private final TestLoaderResult mResult;
 
         public TestLoader(TestLoaderResult result) {
             mResult = result;

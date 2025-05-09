@@ -492,7 +492,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
     }
 
     private static class StaticsAdapter implements StaticsBoundaryInterface {
-        private SharedStatics mSharedStatics;
+        private final SharedStatics mSharedStatics;
 
         public StaticsAdapter(SharedStatics sharedStatics) {
             mSharedStatics = sharedStatics;

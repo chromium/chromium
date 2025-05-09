@@ -33,7 +33,7 @@ import java.util.List;
 public class AwJavaBridgeTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 
-    private TestAwContentsClient mContentsClient = new TestAwContentsClient();
+    private final TestAwContentsClient mContentsClient = new TestAwContentsClient();
     private AwTestContainerView mTestContainerView;
 
     // The system retains a strong ref to the last focused view (in InputMethodManager)
@@ -77,7 +77,7 @@ public class AwJavaBridgeTest extends AwParameterizedTest {
                 return mValue;
             }
 
-            private int mValue;
+            private final int mValue;
         }
 
         // addJavascriptInterfaceOnUiThread returns any bad rules when adding an interface.
@@ -223,7 +223,7 @@ public class AwJavaBridgeTest extends AwParameterizedTest {
                 return mValue;
             }
 
-            private int mValue;
+            private final int mValue;
         }
 
         AwActivityTestRule.addJavascriptInterfaceOnUiThread(awContents1, new Test(1), "test");
@@ -261,7 +261,7 @@ public class AwJavaBridgeTest extends AwParameterizedTest {
                 return mValue;
             }
 
-            private int mValue;
+            private final int mValue;
         }
 
         AwActivityTestRule.addJavascriptInterfaceOnUiThread(awContents1, new Test(1), "test");

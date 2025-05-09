@@ -54,7 +54,7 @@ public class AwDisplayModeControllerTest {
     @Mock private ViewGroup mRootView;
 
     private View.OnApplyWindowInsetsListener mListener;
-    private int[] mLocationOnScreen = {0, 0};
+    private final int[] mLocationOnScreen = {0, 0};
     private int mViewWidth;
     private int mViewHeight;
 

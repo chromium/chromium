@@ -15,7 +15,7 @@ public class RenderProcessGoneHelper implements RenderProcessGoneObserver {
     private static final int AW_CONTENTS_DESTROYED = 2;
 
     private int mState;
-    private CallbackHelper mCallbackHelper;
+    private final CallbackHelper mCallbackHelper;
     private Runnable mOnRenderProcessGoneTask;
 
     public RenderProcessGoneHelper() {

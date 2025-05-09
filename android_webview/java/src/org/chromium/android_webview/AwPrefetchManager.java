@@ -29,7 +29,7 @@ import java.util.concurrent.Executor;
 @JNINamespace("android_webview")
 @Lifetime.Profile
 public class AwPrefetchManager {
-    private long mNativePrefetchManager;
+    private final long mNativePrefetchManager;
 
     public AwPrefetchManager(long nativePrefetchManager) {
         mNativePrefetchManager = nativePrefetchManager;

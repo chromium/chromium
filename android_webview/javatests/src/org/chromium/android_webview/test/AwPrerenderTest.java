@@ -81,7 +81,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         mActivityTestRule = new AwActivityTestRule(param.getMutation());
     }
 
-    private TestAwContentsClient mContentsClient = new TestAwContentsClient();
+    private final TestAwContentsClient mContentsClient = new TestAwContentsClient();
 
     private static final String INITIAL_URL = "/android_webview/test/data/hello_world.html";
     private static final String PRERENDER_URL = "/android_webview/test/data/prerender.html";

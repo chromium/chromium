@@ -112,7 +112,7 @@ public class AwDisplayCutoutController {
 
     private final Delegate mDelegate;
     private View mContainerView;
-    private boolean mIncludeSystemBars;
+    private final boolean mIncludeSystemBars;
 
     /**
      * Creates the {@link AwDisplayCutoutController} if required.

@@ -11,7 +11,6 @@ import android.webkit.JavascriptInterface;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
-import org.chromium.base.test.util.DisabledTest;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
@@ -34,6 +33,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
@@ -490,12 +490,12 @@ public class PopupWindowTest extends AwParameterizedTest {
     }
 
     private static class TestWebMessageListener implements WebMessageListener {
-        private LinkedBlockingQueue<Data> mQueue = new LinkedBlockingQueue<>();
+        private final LinkedBlockingQueue<Data> mQueue = new LinkedBlockingQueue<>();
 
         public static class Data {
-            public String mMessage;
-            public boolean mIsMainFrame;
-            public JsReplyProxy mReplyProxy;
+            public final String mMessage;
+            public final boolean mIsMainFrame;
+            public final JsReplyProxy mReplyProxy;
 
             public Data(String message, boolean isMainFrame, JsReplyProxy replyProxy) {
                 mMessage = message;

@@ -11,7 +11,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Coordinator for creating the context menu header */
 @NullMarked
 public class AwContextMenuHeaderCoordinator {
-    private PropertyModel mModel;
+    private final PropertyModel mModel;
 
     public AwContextMenuHeaderCoordinator(ContextMenuParams params) {
         mModel = buildModel(params.getUnfilteredLinkUrl().getSpec());

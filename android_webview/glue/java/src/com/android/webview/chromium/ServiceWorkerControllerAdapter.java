@@ -17,7 +17,7 @@ import org.chromium.android_webview.AwServiceWorkerController;
  * the chromium internal implementation.
  */
 public class ServiceWorkerControllerAdapter extends ServiceWorkerController {
-    private AwServiceWorkerController mAwServiceWorkerController;
+    private final AwServiceWorkerController mAwServiceWorkerController;
 
     public ServiceWorkerControllerAdapter(AwServiceWorkerController controller) {
         mAwServiceWorkerController = controller;

@@ -67,7 +67,7 @@ public class VisualStateCallbackTest extends AwParameterizedTest {
     }
 
     private static class VisualStateCallbackTestAwContents extends TestAwContents {
-        private VisualStateCallbackHelper mVisualStateCallbackHelper;
+        private final VisualStateCallbackHelper mVisualStateCallbackHelper;
 
         public VisualStateCallbackTestAwContents(
                 AwBrowserContext browserContext,

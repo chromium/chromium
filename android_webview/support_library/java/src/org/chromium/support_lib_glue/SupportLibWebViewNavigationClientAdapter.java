@@ -22,8 +22,8 @@ import java.lang.reflect.Proxy;
  */
 @Lifetime.Temporary
 class SupportLibWebViewNavigationClientAdapter implements AwNavigationClient {
-    private WebViewNavigationClientBoundaryInterface mImpl;
-    private String[] mSupportedFeatures;
+    private final WebViewNavigationClientBoundaryInterface mImpl;
+    private final String[] mSupportedFeatures;
 
     public SupportLibWebViewNavigationClientAdapter(
             /* WebViewNavigationClient */ InvocationHandler invocationHandler) {

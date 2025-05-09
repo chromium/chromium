@@ -45,7 +45,8 @@ import java.util.concurrent.TimeoutException;
 @Config(sdk = 30, manifest = Config.NONE)
 public class TrackExitReasonsTest {
     private static final String TAG = "ExitReasonsTest";
-    private MockAwContentsLifecycleNotifier mMockNotifier = new MockAwContentsLifecycleNotifier();
+    private final MockAwContentsLifecycleNotifier mMockNotifier =
+            new MockAwContentsLifecycleNotifier();
 
     @Before
     public void setUp() {

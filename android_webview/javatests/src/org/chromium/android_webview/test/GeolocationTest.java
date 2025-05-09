@@ -147,7 +147,7 @@ public class GeolocationTest extends AwParameterizedTest {
 
     private static class GeolocationOnInsecureOriginsTestDependencyFactory
             extends TestDependencyFactory {
-        private boolean mAllow;
+        private final boolean mAllow;
 
         public GeolocationOnInsecureOriginsTestDependencyFactory(boolean allow) {
             mAllow = allow;

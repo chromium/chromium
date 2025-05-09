@@ -503,7 +503,7 @@ public class TestAwContentsClient extends NullContentsClient {
 
     /** Callback helper for AddMessageToConsole. */
     public static class AddMessageToConsoleHelper extends CallbackHelper {
-        private List<AwConsoleMessage> mMessages = new ArrayList<AwConsoleMessage>();
+        private final List<AwConsoleMessage> mMessages = new ArrayList<AwConsoleMessage>();
 
         public void clearMessages() {
             mMessages.clear();
@@ -1026,7 +1026,7 @@ public class TestAwContentsClient extends NullContentsClient {
 
     /** CallbackHelper for onReceivedTouchIconUrl. */
     public static class TouchIconHelper extends CallbackHelper {
-        private HashMap<String, Boolean> mTouchIcons = new HashMap<String, Boolean>();
+        private final HashMap<String, Boolean> mTouchIcons = new HashMap<String, Boolean>();
 
         public void notifyTouchIcon(String url, boolean precomposed) {
             mTouchIcons.put(url, precomposed);

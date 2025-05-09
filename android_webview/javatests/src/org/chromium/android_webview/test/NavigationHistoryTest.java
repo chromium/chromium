@@ -54,7 +54,7 @@ public class NavigationHistoryTest extends AwParameterizedTest {
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
     private TestPageLoadedNotifier mLoadedNotifier;
-    private String mLoadedFutureName = "awFullyLoadedFuture";
+    private final String mLoadedFutureName = "awFullyLoadedFuture";
 
     public NavigationHistoryTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());

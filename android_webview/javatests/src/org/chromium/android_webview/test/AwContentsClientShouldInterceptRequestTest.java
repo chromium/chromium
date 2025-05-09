@@ -473,8 +473,8 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
     }
 
     private static class SlowWebResourceResponseInfo extends WebResourceResponseInfo {
-        private CallbackHelper mReadStartedCallbackHelper = new CallbackHelper();
-        private CountDownLatch mLatch = new CountDownLatch(1);
+        private final CallbackHelper mReadStartedCallbackHelper = new CallbackHelper();
+        private final CountDownLatch mLatch = new CountDownLatch(1);
 
         public SlowWebResourceResponseInfo(String mimeType, String encoding, InputStream data) {
             super(mimeType, encoding, data);
@@ -1068,8 +1068,8 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
             return null;
         }
 
-        private CountDownLatch mReady;
-        private CountDownLatch mWait;
+        private final CountDownLatch mReady;
+        private final CountDownLatch mWait;
     }
 
     @Test

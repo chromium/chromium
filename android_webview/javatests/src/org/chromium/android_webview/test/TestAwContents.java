@@ -31,8 +31,8 @@ public class TestAwContents extends AwContents {
         void onAwContentsDestroyed();
     }
 
-    private ArrayList<RenderProcessGoneObserver> mRenderProcessGoneObservers;
-    private RenderProcessGoneHelper mRenderProcessGoneHelper;
+    private final ArrayList<RenderProcessGoneObserver> mRenderProcessGoneObservers;
+    private final RenderProcessGoneHelper mRenderProcessGoneHelper;
 
     public TestAwContents(
             AwBrowserContext browserContext,

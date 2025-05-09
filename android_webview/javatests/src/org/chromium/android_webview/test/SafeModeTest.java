@@ -161,8 +161,8 @@ public class SafeModeTest extends AwParameterizedTest {
 
     private AtomicInteger mTestSafeModeActionExecutionCounter;
 
-    private TestJobScheduler mScheduler = new TestJobScheduler();
-    private TestVariationsSeedFetcher mDownloader = new TestVariationsSeedFetcher();
+    private final TestJobScheduler mScheduler = new TestJobScheduler();
+    private final TestVariationsSeedFetcher mDownloader = new TestVariationsSeedFetcher();
     private static final int HTTP_NOT_FOUND = 404;
     private static final int HTTP_NOT_MODIFIED = 304;
     private static final int JOB_ID = TaskIds.WEBVIEW_VARIATIONS_SEED_FETCH_JOB_ID;
@@ -170,7 +170,7 @@ public class SafeModeTest extends AwParameterizedTest {
     // A test JobScheduler which only holds one job, and never does anything with it.
     private static class TestJobScheduler extends JobScheduler {
         public JobInfo mJob;
-        public QueueContainer mQueueContainer = new QueueContainer();
+        public final QueueContainer mQueueContainer = new QueueContainer();
 
         public void assertNotScheduled() {
             Assert.assertNull("Job should not have been scheduled", mJob);
@@ -223,7 +223,7 @@ public class SafeModeTest extends AwParameterizedTest {
     }
 
     private static class QueueContainer {
-        private LinkedBlockingQueue<JobInfo> mQueue = new LinkedBlockingQueue<>();
+        private final LinkedBlockingQueue<JobInfo> mQueue = new LinkedBlockingQueue<>();
 
         public void notifyCalled(JobInfo job) {
             try {

@@ -194,7 +194,7 @@ public class WebViewModalDialogOverrideTest extends AwParameterizedTest {
     }
 
     private static class TapGestureStateListener extends GestureStateListener {
-        private CallbackHelper mCallbackHelper = new CallbackHelper();
+        private final CallbackHelper mCallbackHelper = new CallbackHelper();
 
         public int getCallCount() {
             return mCallbackHelper.getCallCount();

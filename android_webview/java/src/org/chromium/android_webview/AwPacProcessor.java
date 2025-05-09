@@ -33,7 +33,7 @@ import java.util.List;
 // TODO(amalova): remove UsedByReflection
 @UsedByReflection("Android")
 public class AwPacProcessor {
-    private long mNativePacProcessor;
+    private final long mNativePacProcessor;
     private Network mNetwork;
     private ConnectivityManager.NetworkCallback mNetworkCallback;
 

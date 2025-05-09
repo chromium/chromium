@@ -22,12 +22,12 @@ import java.io.OutputStream;
 @JNINamespace("android_webview")
 @NullMarked
 public class AwPicture extends Picture {
-    private long mNativeAwPicture;
+    private final long mNativeAwPicture;
 
     // There is no explicit destroy method on Picture base-class, so cleanup is always
     // handled via the CleanupReference.
     private static final class DestroyRunnable implements Runnable {
-        private long mNativeAwPicture;
+        private final long mNativeAwPicture;
 
         private DestroyRunnable(long nativeAwPicture) {
             mNativeAwPicture = nativeAwPicture;

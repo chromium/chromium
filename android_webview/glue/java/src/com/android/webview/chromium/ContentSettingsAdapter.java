@@ -25,7 +25,7 @@ import org.chromium.base.TraceEvent;
 @SuppressWarnings({"deprecation", "NoSynchronizedMethodCheck"})
 public class ContentSettingsAdapter extends android.webkit.WebSettings {
     private static final String TAG = "WebSettings";
-    private AwSettings mAwSettings;
+    private final AwSettings mAwSettings;
     private PluginState mPluginState = PluginState.OFF;
 
     public ContentSettingsAdapter(AwSettings awSettings) {

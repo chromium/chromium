@@ -78,8 +78,8 @@ public class ClientHintsTest extends AwParameterizedTest {
                     + " Chrome/(\\d+)\\.0\\.0\\.0( Mobile)? Safari/537\\.36";
 
     private static class ClientHintsTestResult {
-        public Map<String, String> mHttpHeaderClientHints;
-        public JSONObject mJsClientHints;
+        public final Map<String, String> mHttpHeaderClientHints;
+        public final JSONObject mJsClientHints;
 
         public ClientHintsTestResult(
                 Map<String, String> httpHeaderClientHints, JSONObject jsClientHints) {

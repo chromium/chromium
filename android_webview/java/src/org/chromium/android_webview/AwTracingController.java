@@ -172,7 +172,7 @@ public class AwTracingController {
         }
     }
 
-    private long mNativeAwTracingController;
+    private final long mNativeAwTracingController;
 
     @NativeMethods
     interface Natives {

@@ -60,12 +60,12 @@ public class PostMessageTest extends AwParameterizedTest {
 
     // Inject to the page to verify received messages.
     private static class MessageObject {
-        private LinkedBlockingQueue<Data> mQueue = new LinkedBlockingQueue<>();
+        private final LinkedBlockingQueue<Data> mQueue = new LinkedBlockingQueue<>();
 
         public static class Data {
-            public String mMessage;
-            public String mOrigin;
-            public int[] mPorts;
+            public final String mMessage;
+            public final String mOrigin;
+            public final int[] mPorts;
 
             public Data(String message, String origin, int[] ports) {
                 mMessage = message;
@@ -86,11 +86,11 @@ public class PostMessageTest extends AwParameterizedTest {
 
     private static class ChannelContainer {
         private MessagePort[] mChannel;
-        private LinkedBlockingQueue<Data> mQueue = new LinkedBlockingQueue<>();
+        private final LinkedBlockingQueue<Data> mQueue = new LinkedBlockingQueue<>();
 
         public static class Data {
-            public MessagePayload mMessagePayload;
-            public Looper mLastLooper;
+            public final MessagePayload mMessagePayload;
+            public final Looper mLastLooper;
 
             public Data(MessagePayload messagePayload, Looper looper) {
                 mMessagePayload = messagePayload;

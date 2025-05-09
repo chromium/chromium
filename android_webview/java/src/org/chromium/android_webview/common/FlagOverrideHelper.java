@@ -26,7 +26,7 @@ import java.util.Set;
  */
 @NullMarked
 public class FlagOverrideHelper {
-    private Map<String, Flag> mFlagMap = new HashMap<>();
+    private final Map<String, Flag> mFlagMap = new HashMap<>();
 
     public FlagOverrideHelper(Flag[] flagList) {
         for (Flag flag : flagList) {

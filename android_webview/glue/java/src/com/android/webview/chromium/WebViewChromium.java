@@ -115,7 +115,7 @@ class WebViewChromium
     // The client adapter class.
     private WebViewContentsClientAdapter mContentsClientAdapter;
     // The wrapped Context.
-    private Context mContext;
+    private final Context mContext;
 
     // Variables for functionality provided by this adapter ---------------------------------------
     private ContentSettingsAdapter mWebSettings;

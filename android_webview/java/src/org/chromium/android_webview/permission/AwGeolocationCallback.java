@@ -26,7 +26,7 @@ public class AwGeolocationCallback implements AwGeolocationPermissions.Callback 
     private @Nullable CleanupReference mCleanupReference;
 
     private static class CleanupRunable implements Runnable {
-        private WeakReference<AwContents> mAwContents;
+        private final WeakReference<AwContents> mAwContents;
         private boolean mAllow;
         private boolean mRetain;
         private String mOrigin;

@@ -15,7 +15,7 @@ import java.util.Set;
 
 /** Adapter between AwServiceWorkerSettings and ServiceWorkerWebSettingsBoundaryInterface. */
 class SupportLibServiceWorkerSettingsAdapter implements ServiceWorkerWebSettingsBoundaryInterface {
-    private AwServiceWorkerSettings mAwServiceWorkerSettings;
+    private final AwServiceWorkerSettings mAwServiceWorkerSettings;
 
     SupportLibServiceWorkerSettingsAdapter(AwServiceWorkerSettings settings) {
         mAwServiceWorkerSettings = settings;

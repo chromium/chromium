@@ -53,8 +53,8 @@ import java.util.concurrent.TimeUnit;
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @JNINamespace("component_updater")
 public class EmbeddedComponentLoaderTest extends AwParameterizedTest {
-    private static CallbackHelper sOnComponentLoadedHelper = new CallbackHelper();
-    private static CallbackHelper sOnComponentLoadFailedHelper = new CallbackHelper();
+    private static final CallbackHelper sOnComponentLoadedHelper = new CallbackHelper();
+    private static final CallbackHelper sOnComponentLoadFailedHelper = new CallbackHelper();
     private static List<String> sNativeErrors;
 
     private static final String TEST_COMPONENT_ID = "jebgalgnebhfojomionfpkfelancnnkf";

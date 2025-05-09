@@ -33,8 +33,8 @@ class AwFrameMetricsListener {
             new WeakHashMap<>();
 
     private boolean mAttached;
-    private JankTrackerStateController mController;
-    private JankTracker mJankTracker;
+    private final JankTrackerStateController mController;
+    private final JankTracker mJankTracker;
     private WeakReference<Window> mWindow;
     private int mAttachedWebviews;
     private int mVisibleWebviews;

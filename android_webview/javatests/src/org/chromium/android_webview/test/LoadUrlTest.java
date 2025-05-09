@@ -199,7 +199,7 @@ public class LoadUrlTest extends AwParameterizedTest {
     }
 
     private static class OnProgressChangedClient extends TestAwContentsClient {
-        List<Integer> mProgresses = new ArrayList<Integer>();
+        final List<Integer> mProgresses = new ArrayList<Integer>();
 
         @Override
         public void onProgressChanged(int progress) {
@@ -214,7 +214,7 @@ public class LoadUrlTest extends AwParameterizedTest {
             mCallbackHelper.waitForOnly();
         }
 
-        private CallbackHelper mCallbackHelper = new CallbackHelper();
+        private final CallbackHelper mCallbackHelper = new CallbackHelper();
     }
 
     @Test

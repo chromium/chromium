@@ -26,7 +26,7 @@ class ScrollAccessibilityHelper {
     private class HandlerCallback implements Handler.Callback {
         public static final int MSG_VIEW_SCROLLED = 1;
 
-        private View mEventSender;
+        private final View mEventSender;
 
         public HandlerCallback(View eventSender) {
             mEventSender = eventSender;
@@ -47,7 +47,7 @@ class ScrollAccessibilityHelper {
         }
     }
 
-    private Handler mHandler;
+    private final Handler mHandler;
     private boolean mMsgViewScrolledQueued;
     private boolean mIsInAScroll;
     private boolean mEventSentByViewBaseClass;

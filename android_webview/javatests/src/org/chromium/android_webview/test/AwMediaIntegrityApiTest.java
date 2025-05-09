@@ -1069,8 +1069,8 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
         private static class CallKey {
 
-            long mCloudProjectNumber;
-            int mApiStatus;
+            final long mCloudProjectNumber;
+            final int mApiStatus;
 
             public CallKey(long cloudProjectNumber, int apiStatus) {
                 mCloudProjectNumber = cloudProjectNumber;

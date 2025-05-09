@@ -108,12 +108,12 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
 
     @Rule public AwActivityTestRule mActivityTestRule;
 
-    private OnProgressChangedClient mContentsClient = new OnProgressChangedClient();
-    private TestAwSupervisedUserUrlClassifierDelegate mDelegate =
+    private final OnProgressChangedClient mContentsClient = new OnProgressChangedClient();
+    private final TestAwSupervisedUserUrlClassifierDelegate mDelegate =
             new TestAwSupervisedUserUrlClassifierDelegate();
     private AwContents mAwContents;
     private TestWebServer mWebServer;
-    private IframeLoadedListener mIframeLoadedListener = new IframeLoadedListener();
+    private final IframeLoadedListener mIframeLoadedListener = new IframeLoadedListener();
 
     public AwSupervisedUserTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
@@ -377,7 +377,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     }
 
     private static class TestPlatformServiceBridge extends PlatformServiceBridge {
-        AwSupervisedUserUrlClassifierDelegate mDelegate;
+        final AwSupervisedUserUrlClassifierDelegate mDelegate;
 
         public TestPlatformServiceBridge(AwSupervisedUserUrlClassifierDelegate delegate) {
             mDelegate = delegate;

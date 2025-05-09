@@ -121,7 +121,7 @@ public class AwSettings {
 
     private Set<String> mRequestedWithHeaderAllowedOriginRules;
 
-    private Context mContext;
+    private final Context mContext;
     private WebContents mWebContents;
 
     // This class must be created on the UI thread. Afterwards, it can be

@@ -17,7 +17,7 @@ public class TestAwServiceWorkerClient extends AwServiceWorkerClient {
 
     /** Helper class to wait for callbacks on the TestAwServiceWorkerClient. */
     public static class ShouldInterceptRequestHelper extends CallbackHelper {
-        private List<AwWebResourceRequest> mInterceptedRequests =
+        private final List<AwWebResourceRequest> mInterceptedRequests =
                 new ArrayList<AwWebResourceRequest>();
 
         public void notifyCalled(AwWebResourceRequest request) {
@@ -30,7 +30,7 @@ public class TestAwServiceWorkerClient extends AwServiceWorkerClient {
         }
     }
 
-    private ShouldInterceptRequestHelper mShouldInterceptRequestHelper;
+    private final ShouldInterceptRequestHelper mShouldInterceptRequestHelper;
 
     public ShouldInterceptRequestHelper getShouldInterceptRequestHelper() {
         return mShouldInterceptRequestHelper;

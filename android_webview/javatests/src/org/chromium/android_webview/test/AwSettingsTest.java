@@ -353,7 +353,7 @@ public class AwSettingsTest {
     }
 
     class AwSettingsLoadImagesAutomaticallyTestHelper extends AwSettingsTestHelper<Boolean> {
-        private ImagePageGenerator mGenerator;
+        private final ImagePageGenerator mGenerator;
 
         AwSettingsLoadImagesAutomaticallyTestHelper(
                 AwTestContainerView containerView,
@@ -440,8 +440,8 @@ public class AwSettingsTest {
                     getTitleOnUiThread());
         }
 
-        private TestWebServer mWebServer;
-        private ImagePageGenerator mGenerator;
+        private final TestWebServer mWebServer;
+        private final ImagePageGenerator mGenerator;
     }
 
     class AwSettingsDefaultTextEncodingTestHelper extends AwSettingsTestHelper<String> {
@@ -908,7 +908,7 @@ public class AwSettingsTest {
         }
 
         private int mIndex;
-        private String mTempDir;
+        private final String mTempDir;
     }
 
     // This class provides helper methods for testing of settings related to
@@ -1236,7 +1236,7 @@ public class AwSettingsTest {
                     + "<body onload='tryOpenWindow()'></body></html>";
         }
 
-        private boolean mOpenTwice;
+        private final boolean mOpenTwice;
     }
 
     class AwSettingsCacheModeTestHelper extends AwSettingsTestHelper<Integer> {
@@ -1289,7 +1289,7 @@ public class AwSettingsTest {
         }
 
         private int mIndex;
-        private TestWebServer mWebServer;
+        private final TestWebServer mWebServer;
     }
 
     // To verify whether UseWideViewport works, we check, if the page width specified
@@ -2738,7 +2738,7 @@ public class AwSettingsTest {
     }
 
     private static class AudioEvent {
-        private CallbackHelper mCallback;
+        private final CallbackHelper mCallback;
 
         public AudioEvent(CallbackHelper callback) {
             mCallback = callback;
@@ -3671,7 +3671,7 @@ public class AwSettingsTest {
 
     private static class EmptyDocumentPersistenceTestDependencyFactory
             extends TestDependencyFactory {
-        private boolean mAllow;
+        private final boolean mAllow;
 
         public EmptyDocumentPersistenceTestDependencyFactory(boolean allow) {
             mAllow = allow;
@@ -3755,7 +3755,7 @@ public class AwSettingsTest {
     }
 
     private static class SelectionRangeTestDependencyFactory extends TestDependencyFactory {
-        private boolean mDoNotUpdate;
+        private final boolean mDoNotUpdate;
 
         public SelectionRangeTestDependencyFactory(boolean doNotUpdate) {
             mDoNotUpdate = doNotUpdate;

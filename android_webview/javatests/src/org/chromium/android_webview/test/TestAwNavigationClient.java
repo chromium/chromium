@@ -17,13 +17,13 @@ import java.util.List;
 
 /** AwNavigationClient subclass used for testing. */
 public class TestAwNavigationClient implements AwNavigationClient {
-    private List<AwNavigation> mStartedNavigations = new ArrayList<AwNavigation>();
-    private List<AwNavigation> mRedirectedNavigations = new ArrayList<AwNavigation>();
-    private List<AwNavigation> mCompletedNavigations = new ArrayList<AwNavigation>();
-    private List<AwPage> mDeletedPages = new ArrayList<AwPage>();
-    private List<AwPage> mPagesWithLoadEventFired = new ArrayList<AwPage>();
-    private List<AwPage> mPagesWithDOMContentLoadEventFired = new ArrayList<AwPage>();
-    private List<AwPage> mPagesWithFirstContentfulPaint = new ArrayList<AwPage>();
+    private final List<AwNavigation> mStartedNavigations = new ArrayList<AwNavigation>();
+    private final List<AwNavigation> mRedirectedNavigations = new ArrayList<AwNavigation>();
+    private final List<AwNavigation> mCompletedNavigations = new ArrayList<AwNavigation>();
+    private final List<AwPage> mDeletedPages = new ArrayList<AwPage>();
+    private final List<AwPage> mPagesWithLoadEventFired = new ArrayList<AwPage>();
+    private final List<AwPage> mPagesWithDOMContentLoadEventFired = new ArrayList<AwPage>();
+    private final List<AwPage> mPagesWithFirstContentfulPaint = new ArrayList<AwPage>();
 
     public TestAwNavigationClient() {}
 

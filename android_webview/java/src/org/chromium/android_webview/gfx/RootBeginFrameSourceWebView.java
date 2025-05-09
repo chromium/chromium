@@ -19,7 +19,7 @@ import org.chromium.ui.display.DisplayAndroid.DisplayAndroidObserver;
 @Lifetime.Singleton
 @NullMarked
 public class RootBeginFrameSourceWebView implements DisplayAndroidObserver {
-    private long mNativeRootBeginFrameSourceWebView;
+    private final long mNativeRootBeginFrameSourceWebView;
     private final DisplayAndroid mDisplayAndroid;
 
     @CalledByNative

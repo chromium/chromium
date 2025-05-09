@@ -1412,7 +1412,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
 
     // AwContentsClient handling an invalid network scheme
     private static class BadSchemeClient extends ShouldOverrideUrlLoadingClient {
-        CountDownLatch mLatch = new CountDownLatch(1);
+        final CountDownLatch mLatch = new CountDownLatch(1);
 
         @Override
         public boolean shouldOverrideUrlLoading(AwWebResourceRequest request) {

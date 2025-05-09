@@ -17,7 +17,7 @@ import org.chromium.support_lib_boundary.WebViewPageBoundaryInterface;
 @Lifetime.Temporary
 class SupportLibWebViewPageAdapter extends IsomorphicAdapter
         implements WebViewPageBoundaryInterface {
-    private AwPage mPage;
+    private final AwPage mPage;
 
     SupportLibWebViewPageAdapter(AwPage page) {
         mPage = page;

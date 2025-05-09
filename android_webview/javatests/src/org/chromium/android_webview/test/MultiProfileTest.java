@@ -48,7 +48,7 @@ import java.util.Set;
 public class MultiProfileTest extends AwParameterizedTest {
     @Rule public MultiProfileTestRule mRule;
 
-    private TestAwContentsClient mContentsClient;
+    private final TestAwContentsClient mContentsClient;
 
     public MultiProfileTest(AwSettingsMutation param) {
         this.mRule = new MultiProfileTestRule(param.getMutation());

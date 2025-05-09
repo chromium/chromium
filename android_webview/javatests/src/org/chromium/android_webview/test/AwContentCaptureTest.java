@@ -220,7 +220,7 @@ public class AwContentCaptureTest extends AwParameterizedTest {
         private volatile ContentCaptureFrame mFaviconUpdatedFrame;
         private volatile ArrayList<Integer> mCallbacks = new ArrayList<Integer>();
 
-        private CallbackHelper mCallbackHelper = new CallbackHelper();
+        private final CallbackHelper mCallbackHelper = new CallbackHelper();
         private volatile UrlAllowlist mUrlAllowlist;
     }
 

@@ -16,7 +16,7 @@ import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
  * to the corresponding {@link ServiceWorkerClient}.
  */
 public class ServiceWorkerClientAdapter extends AwServiceWorkerClient {
-    private ServiceWorkerClient mServiceWorkerClient;
+    private final ServiceWorkerClient mServiceWorkerClient;
 
     public ServiceWorkerClientAdapter(ServiceWorkerClient client) {
         mServiceWorkerClient = client;

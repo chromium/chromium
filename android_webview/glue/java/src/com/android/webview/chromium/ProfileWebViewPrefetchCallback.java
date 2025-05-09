@@ -16,8 +16,8 @@ import java.util.concurrent.Executor;
 @Lifetime.Temporary
 public class ProfileWebViewPrefetchCallback implements AwPrefetchCallback {
 
-    @NonNull private Executor mCallbackExecutor;
-    @NonNull private PrefetchOperationCallback mCallback;
+    @NonNull private final Executor mCallbackExecutor;
+    @NonNull private final PrefetchOperationCallback mCallback;
 
     public ProfileWebViewPrefetchCallback(
             @NonNull Executor callbackExecutor, @NonNull PrefetchOperationCallback callback) {

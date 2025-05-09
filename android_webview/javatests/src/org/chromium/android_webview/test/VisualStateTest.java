@@ -66,11 +66,11 @@ public class VisualStateTest extends AwParameterizedTest {
     private static final String UPDATE_COLOR_CONTROL_ID = "updateColorControl";
     private static final String ENTER_FULLSCREEN_CONTROL_ID = "enterFullscreenControl";
 
-    private TestAwContentsClient mContentsClient = new TestAwContentsClient();
+    private final TestAwContentsClient mContentsClient = new TestAwContentsClient();
     private AwTestContainerView mTestView;
 
     private static class DelayedInputStream extends FilterInputStream {
-        private CountDownLatch mLatch = new CountDownLatch(1);
+        private final CountDownLatch mLatch = new CountDownLatch(1);
 
         DelayedInputStream(InputStream in) {
             super(in);

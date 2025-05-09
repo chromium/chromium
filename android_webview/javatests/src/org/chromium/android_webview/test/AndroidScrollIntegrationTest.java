@@ -101,8 +101,8 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
         private int mMaxScrollXPix = -1;
         private int mMaxScrollYPix = -1;
 
-        private CallbackHelper mOnScrollToCallbackHelper = new CallbackHelper();
-        private OverScrollByCallbackHelper mOverScrollByCallbackHelper =
+        private final CallbackHelper mOnScrollToCallbackHelper = new CallbackHelper();
+        private final OverScrollByCallbackHelper mOverScrollByCallbackHelper =
                 new OverScrollByCallbackHelper();
 
         public ScrollTestContainerView(Context context, boolean allowHardwareAcceleration) {
@@ -796,7 +796,7 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
     }
 
     private static class TestGestureStateListener extends GestureStateListener {
-        private CallbackHelper mOnScrollUpdateGestureConsumedHelper = new CallbackHelper();
+        private final CallbackHelper mOnScrollUpdateGestureConsumedHelper = new CallbackHelper();
 
         public CallbackHelper getOnScrollUpdateGestureConsumedHelper() {
             return mOnScrollUpdateGestureConsumedHelper;

@@ -294,12 +294,12 @@ public abstract class AwContentsClient {
 
     /** Type adaptation class for {@link android.webkit.FileChooserParams}. */
     public static class FileChooserParamsImpl {
-        private int mMode;
-        private boolean mOpenWritable;
-        private String mAcceptTypes;
-        private String mTitle;
-        private String mDefaultFilename;
-        private boolean mCapture;
+        private final int mMode;
+        private final boolean mOpenWritable;
+        private final String mAcceptTypes;
+        private final String mTitle;
+        private final String mDefaultFilename;
+        private final boolean mCapture;
         private static final Map<String, String> sAcceptTypesMapping;
 
         // TODO(crbug.com/40101963): Use WebChromeClient.FileChooserParams.MODE_* when available.

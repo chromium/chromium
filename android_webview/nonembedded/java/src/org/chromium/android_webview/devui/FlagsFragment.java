@@ -278,7 +278,7 @@ public class FlagsFragment extends DevUiBaseFragment {
     }
 
     private class FlagStateSpinnerSelectedListener implements AdapterView.OnItemSelectedListener {
-        private Flag mFlag;
+        private final Flag mFlag;
 
         FlagStateSpinnerSelectedListener(Flag flag) {
             mFlag = flag;
@@ -349,7 +349,7 @@ public class FlagsFragment extends DevUiBaseFragment {
 
     private static class FlagQuery {
         // Lower-case words from the query. Never contains empty strings.
-        String[] mLowerCaseWords;
+        final String[] mLowerCaseWords;
 
         public FlagQuery(CharSequence chars) {
             String lowerCaseTrimmed = chars.toString().toLowerCase(Locale.getDefault()).trim();

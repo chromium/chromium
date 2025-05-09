@@ -33,8 +33,8 @@ import java.util.concurrent.TimeUnit;
 
 /** Helper functions returning {@link ViewAction}s that can be performed on a {@link WebView}. */
 public class PerformActions {
-    private UiDevice mDevice;
-    private CapturedSitesTestRule mWebViewActivityRule;
+    private final UiDevice mDevice;
+    private final CapturedSitesTestRule mWebViewActivityRule;
     private static final String TAG = "PerformActions";
     private static final int TIME_BETWEEN_ACTIONS_SECONDS = 2;
     private static final double TIMEOUT_SECONDS = 10;

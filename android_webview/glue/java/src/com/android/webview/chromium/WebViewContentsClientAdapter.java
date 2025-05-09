@@ -99,7 +99,7 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
 
     private DownloadListener mDownloadListener;
 
-    private Handler mUiThreadHandler;
+    private final Handler mUiThreadHandler;
 
     private static final int NEW_WEBVIEW_CREATED = 100;
 
@@ -1084,7 +1084,7 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
     }
 
     private static class AwHttpAuthHandlerAdapter extends android.webkit.HttpAuthHandler {
-        private AwHttpAuthHandler mAwHandler;
+        private final AwHttpAuthHandler mAwHandler;
 
         public AwHttpAuthHandlerAdapter(AwHttpAuthHandler awHandler) {
             mAwHandler = awHandler;
@@ -1150,7 +1150,7 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
             return result.toArray(resource_array);
         }
 
-        private AwPermissionRequest mAwPermissionRequest;
+        private final AwPermissionRequest mAwPermissionRequest;
         private final String[] mResources;
 
         private final long mCreationTime;

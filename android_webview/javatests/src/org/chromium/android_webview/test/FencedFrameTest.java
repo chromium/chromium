@@ -138,7 +138,7 @@ public class FencedFrameTest extends AwParameterizedTest {
 
         class TestObserver {
             private String mValue = "UNSET";
-            private CallbackHelper mCallbackHelper = new CallbackHelper();
+            private final CallbackHelper mCallbackHelper = new CallbackHelper();
 
             @JavascriptInterface
             public String getValue() {

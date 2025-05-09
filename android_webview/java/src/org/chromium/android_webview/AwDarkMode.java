@@ -20,7 +20,7 @@ import org.chromium.content_public.browser.WebContents;
 @JNINamespace("android_webview")
 @NullMarked
 public class AwDarkMode {
-    private Context mContext;
+    private final Context mContext;
     private long mNativeAwDarkMode;
 
     private static boolean sEnableSimplifiedDarkMode;

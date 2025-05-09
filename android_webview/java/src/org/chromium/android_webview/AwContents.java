@@ -441,7 +441,7 @@ public class AwContents implements SmartClipProvider {
     // Visibility state of |mWebContents|.
     private boolean mIsContentVisible;
     private boolean mIsUpdateVisibilityTaskPending;
-    private Runnable mUpdateVisibilityRunnable;
+    private final Runnable mUpdateVisibilityRunnable;
 
     private final SparseArray<WindowAndroid.IntentCallback> mOutstandingIntents =
             new SparseArray<>();
@@ -552,7 +552,7 @@ public class AwContents implements SmartClipProvider {
     private AwDarkMode mAwDarkMode;
     private AwWebContentsMetricsRecorder mAwWebContentsMetricsRecorder;
 
-    private StylusWritingController mStylusWritingController;
+    private final StylusWritingController mStylusWritingController;
 
     // Permissions are requested on a drop event, and are released when another drag starts
     // (drag-started event) or when the current page navigates to a new URL.
@@ -4327,7 +4327,7 @@ public class AwContents implements SmartClipProvider {
         private final Rect mClipBoundsTemporary = new Rect();
 
         // Variables that track the state as of the previous onDraw call.
-        private Rect mPreviousGlobalVisibleRect = new Rect();
+        private final Rect mPreviousGlobalVisibleRect = new Rect();
         private boolean mPreviouslyVisible;
         private String mPreviousScheme = "";
 
