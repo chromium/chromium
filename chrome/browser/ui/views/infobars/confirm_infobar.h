@@ -36,6 +36,7 @@ class ConfirmInfoBar : public InfoBarView {
   void Layout(PassKey) override;
 
   ConfirmInfoBarDelegate* GetDelegate();
+  const ConfirmInfoBarDelegate* GetDelegate() const;
 
   views::MdTextButton* ok_button_for_testing() { return ok_button_; }
 
