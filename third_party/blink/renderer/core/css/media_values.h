@@ -182,10 +182,8 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
   }
   // For boolean context evaluation
   bool ScrollDirection() const {
-    return ScrollDirectionHorizontal() != static_cast<ContainerScrollDirection>(
-                                              ContainerScrollable::kNone) ||
-           ScrollDirectionVertical() != static_cast<ContainerScrollDirection>(
-                                            ContainerScrollable::kNone);
+    return ScrollDirectionHorizontal() != ContainerScrollDirection::kNone ||
+           ScrollDirectionVertical() != ContainerScrollDirection::kNone;
   }
   // Returns the container element used to retrieve base style and parent style
   // when computing the computed value of a style() container query.

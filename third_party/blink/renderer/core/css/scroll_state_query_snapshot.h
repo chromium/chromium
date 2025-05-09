@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/css/container_state.h"
 #include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
+#include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
@@ -36,6 +37,12 @@ class ScrollStateQuerySnapshot
   ContainerScrollableFlags ScrollableVertical() const {
     return scrollable_vertical_;
   }
+  ContainerScrollDirection ScrollDirectionHorizontal() const {
+    return scroll_direction_horizontal_;
+  }
+  ContainerScrollDirection ScrollDirectionVertical() const {
+    return scroll_direction_vertical_;
+  }
 
   // ScrollSnapshotClient:
   void UpdateSnapshot() override;
@@ -54,6 +61,11 @@ class ScrollStateQuerySnapshot
       static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone);
   ContainerScrollableFlags scrollable_vertical_ =
       static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone);
+  ContainerScrollDirection scroll_direction_horizontal_ =
+      ContainerScrollDirection::kNone;
+  ContainerScrollDirection scroll_direction_vertical_ =
+      ContainerScrollDirection::kNone;
+  ScrollOffset previous_scroll_position_;
 };
 
 }  // namespace blink

@@ -1589,10 +1589,10 @@ static bool ScrollDirectionMediaFeatureEval(const MediaQueryExpValue& value,
       return media_values.ScrollDirectionBlock() ==
              ContainerScrollDirection::kEnd;
     case CSSValueID::kInlineStart:
-      return media_values.ScrollDirectionInline() !=
+      return media_values.ScrollDirectionInline() ==
              ContainerScrollDirection::kStart;
     case CSSValueID::kInlineEnd:
-      return media_values.ScrollDirectionInline() !=
+      return media_values.ScrollDirectionInline() ==
              ContainerScrollDirection::kEnd;
     case CSSValueID::kX:
       return media_values.ScrollDirectionHorizontal() !=

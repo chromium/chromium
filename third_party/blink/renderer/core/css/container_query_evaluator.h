@@ -63,10 +63,11 @@ class CORE_EXPORT ContainerQueryEvaluator final
   bool DependsOnStuck() const { return depends_on_stuck_; }
   bool DependsOnSnapped() const { return depends_on_snapped_; }
   bool DependsOnScrollable() const { return depends_on_scrollable_; }
+  bool DependsOnScrollDirection() const { return depends_on_scroll_direction_; }
   bool DependsOnSize() const { return depends_on_size_; }
   bool MayDependOnWritingDirection() const {
     return DependsOnSize() || DependsOnStuck() || DependsOnSnapped() ||
-           DependsOnScrollable();
+           DependsOnScrollable() || DependsOnScrollDirection();
   }
 
   enum class Change : uint8_t {
@@ -166,6 +167,11 @@ class CORE_EXPORT ContainerQueryEvaluator final
   void UpdateContainerScrollable(ContainerScrollableFlags scrollable_horizontal,
                                  ContainerScrollableFlags scrollable_vertical);
 
+  // Update the CSSContainerValues with the new scroll-direction state.
+  void UpdateContainerScrollDirection(
+      ContainerScrollDirection scroll_direction_horizontal,
+      ContainerScrollDirection scroll_direction_vertical);
+
   // Re-evaluate the cached results and clear any results which are affected by
   // the ContainerStuckPhysical changes.
   Change StickyContainerChanged(ContainerStuckPhysical stuck_horizontal,
@@ -181,12 +187,19 @@ class CORE_EXPORT ContainerQueryEvaluator final
       ContainerScrollableFlags scrollable_horizontal,
       ContainerScrollableFlags scrollable_vertical);
 
+  // Re-evaluate the cached results and clear any results which are affected by
+  // the snapped target changes.
+  Change ScrollDirectionContainerChanged(
+      ContainerScrollDirection scroll_direction_horizontal,
+      ContainerScrollDirection scroll_direction_vertical);
+
   enum ContainerType {
     kSizeContainer,
     kStyleContainer,
     kStickyContainer,
     kSnapContainer,
     kScrollableContainer,
+    kScrollDirectionContainer,
   };
   void ClearResults(Change change, ContainerType container_type);
 
@@ -209,6 +222,10 @@ class CORE_EXPORT ContainerQueryEvaluator final
   // Re-evaluate cached query results after a overflowing state change and
   // return which elements need to be invalidated if necessary.
   Change ComputeOverflowChange() const;
+
+  // Re-evaluate cached query results after a scroll-direction state change and
+  // return which elements need to be invalidated if necessary.
+  Change ComputeScrollDirectionChange() const;
 
   struct Result {
     // Main evaluation result.
@@ -249,6 +266,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
   bool depends_on_stuck_ = false;
   bool depends_on_snapped_ = false;
   bool depends_on_scrollable_ = false;
+  bool depends_on_scroll_direction_ = false;
   bool depends_on_size_ = false;
 };
 

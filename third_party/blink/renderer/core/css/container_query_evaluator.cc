@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/container_query.h"
+#include "third_party/blink/renderer/core/css/container_state.h"
 #include "third_party/blink/renderer/core/css/css_container_values.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
 #include "third_party/blink/renderer/core/css/resolver/match_result.h"
@@ -335,6 +336,18 @@ bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
           MakeGarbageCollected<ScrollStateQuerySnapshot>(*container_element);
     }
   }
+  if (RuntimeEnabledFeatures::CSSScrollDirectionContainerQueriesEnabled() &&
+      !depends_on_scroll_direction_) {
+    depends_on_scroll_direction_ =
+        query.Selector().SelectsScrollDirectionContainers();
+    if (depends_on_scroll_direction_ && !scroll_state_snapshot_) {
+      CHECK(media_query_evaluator_);
+      Element* container_element = ContainerElement();
+      CHECK(container_element);
+      scroll_state_snapshot_ =
+          MakeGarbageCollected<ScrollStateQuerySnapshot>(*container_element);
+    }
+  }
   unit_flags_ |= result.unit_flags;
 
   return result.value;
@@ -390,6 +403,12 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::ApplyScrollState() {
         scroll_state_snapshot_->ScrollableHorizontal(),
         scroll_state_snapshot_->ScrollableVertical());
     change = std::max(change, overflow_change);
+    if (RuntimeEnabledFeatures::CSSScrollDirectionContainerQueriesEnabled()) {
+      Change scroll_direction_change = ScrollDirectionContainerChanged(
+          scroll_state_snapshot_->ScrollDirectionHorizontal(),
+          scroll_state_snapshot_->ScrollDirectionVertical());
+      change = std::max(change, scroll_direction_change);
+    }
   }
   Change snap_change = SnapContainerChanged(pending_snapped_);
   change = std::max(change, snap_change);
@@ -447,6 +466,25 @@ ContainerQueryEvaluator::ScrollableContainerChanged(
 }
 
 ContainerQueryEvaluator::Change
+ContainerQueryEvaluator::ScrollDirectionContainerChanged(
+    ContainerScrollDirection scroll_direction_horizontal,
+    ContainerScrollDirection scroll_direction_vertical) {
+  if (scroll_direction_horizontal_ == scroll_direction_horizontal &&
+      scroll_direction_vertical_ == scroll_direction_vertical) {
+    return Change::kNone;
+  }
+
+  UpdateContainerScrollDirection(scroll_direction_horizontal,
+                                 scroll_direction_vertical);
+  Change change = ComputeScrollDirectionChange();
+  if (change != Change::kNone) {
+    ClearResults(change, kScrollDirectionContainer);
+  }
+
+  return change;
+}
+
+ContainerQueryEvaluator::Change
 ContainerQueryEvaluator::StyleContainerChanged() {
   if (!depends_on_style_) {
     return Change::kNone;
@@ -472,19 +510,34 @@ ContainerQueryEvaluator::StyleAffectingSizeChanged() {
 
 ContainerQueryEvaluator::Change
 ContainerQueryEvaluator::StyleAffectingScrollStateChanged() {
+  Change change = Change::kNone;
+
   Change snap_change = ComputeSnapChange();
   if (snap_change != Change::kNone) {
     ClearResults(snap_change, kSnapContainer);
   }
+  change = std::max(change, snap_change);
+
   Change sticky_change = ComputeStickyChange();
   if (sticky_change != Change::kNone) {
     ClearResults(sticky_change, kStickyContainer);
   }
+  change = std::max(change, sticky_change);
+
   Change overflow_change = ComputeOverflowChange();
   if (overflow_change != Change::kNone) {
     ClearResults(overflow_change, kScrollableContainer);
   }
-  return std::max(std::max(snap_change, sticky_change), overflow_change);
+  change = std::max(change, overflow_change);
+
+  if (RuntimeEnabledFeatures::CSSScrollDirectionContainerQueriesEnabled()) {
+    Change scroll_direction_change = ComputeScrollDirectionChange();
+    if (scroll_direction_change != Change::kNone) {
+      ClearResults(scroll_direction_change, kScrollDirectionContainer);
+    }
+    change = std::max(change, scroll_direction_change);
+  }
+  return change;
 }
 
 void ContainerQueryEvaluator::UpdateContainerValues() {
@@ -606,6 +659,26 @@ void ContainerQueryEvaluator::UpdateContainerScrollable(
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
 
+void ContainerQueryEvaluator::UpdateContainerScrollDirection(
+    ContainerScrollDirection scroll_direction_horizontal,
+    ContainerScrollDirection scroll_direction_vertical) {
+  scroll_direction_horizontal_ = scroll_direction_horizontal;
+  scroll_direction_vertical_ = scroll_direction_vertical;
+
+  const MediaValues& existing_values = media_query_evaluator_->GetMediaValues();
+  Element* container = existing_values.ContainerElement();
+
+  auto* query_values = MakeGarbageCollected<CSSContainerValues>(
+      container->GetDocument(), *container, existing_values.Width(),
+      existing_values.Height(), existing_values.StuckHorizontal(),
+      existing_values.StuckVertical(), existing_values.Snapped(),
+      existing_values.ScrollableHorizontal(),
+      existing_values.ScrollableVertical(), scroll_direction_horizontal,
+      scroll_direction_vertical);
+  media_query_evaluator_ =
+      MakeGarbageCollected<MediaQueryEvaluator>(query_values);
+}
+
 void ContainerQueryEvaluator::ClearResults(Change change,
                                            ContainerType container_type) {
   if (change == Change::kNone) {
@@ -631,6 +704,9 @@ void ContainerQueryEvaluator::ClearResults(Change change,
           pair.key->Selector().SelectsSnapContainers()) ||
          (container_type == kScrollableContainer &&
           pair.key->Selector().SelectsScrollableContainers()) ||
+         (RuntimeEnabledFeatures::CSSScrollDirectionContainerQueriesEnabled() &&
+          container_type == kScrollDirectionContainer &&
+          pair.key->Selector().SelectsScrollDirectionContainers()) ||
          (container_type == kStyleContainer &&
           pair.key->Selector().SelectsStyleContainers()))) {
       continue;
@@ -731,6 +807,24 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeOverflowChange()
   return change;
 }
 
+ContainerQueryEvaluator::Change
+ContainerQueryEvaluator::ComputeScrollDirectionChange() const {
+  Change change = Change::kNone;
+
+  for (const auto& result : results_) {
+    const ContainerQuery& query = *result.key;
+    if (!query.Selector().SelectsScrollDirectionContainers()) {
+      continue;
+    }
+    if (Eval(query).value == result.value.value) {
+      continue;
+    }
+    change = std::max(result.value.change, change);
+  }
+
+  return change;
+}
+
 void ContainerQueryEvaluator::UpdateContainerValuesFromUnitChanges(
     StyleRecalcChange change) {
   CHECK(media_query_evaluator_);
@@ -758,7 +852,8 @@ StyleRecalcChange ContainerQueryEvaluator::ApplyScrollStateAndStyleChanges(
   StyleRecalcChange recalc_change = child_change;
   if (RuntimeEnabledFeatures::CSSStickyContainerQueriesEnabled() ||
       RuntimeEnabledFeatures::CSSSnapContainerQueriesEnabled() ||
-      RuntimeEnabledFeatures::CSSScrollableContainerQueriesEnabled()) {
+      RuntimeEnabledFeatures::CSSScrollableContainerQueriesEnabled() ||
+      RuntimeEnabledFeatures::CSSScrollDirectionContainerQueriesEnabled()) {
     switch (ApplyScrollState()) {
       case ContainerQueryEvaluator::Change::kNone:
         break;
@@ -813,7 +908,8 @@ StyleRecalcChange ContainerQueryEvaluator::ApplyScrollStateAndStyleChanges(
   if (invalidate_for_writing_direction) {
     if (RuntimeEnabledFeatures::CSSStickyContainerQueriesEnabled() ||
         RuntimeEnabledFeatures::CSSSnapContainerQueriesEnabled() ||
-        RuntimeEnabledFeatures::CSSScrollableContainerQueriesEnabled()) {
+        RuntimeEnabledFeatures::CSSScrollableContainerQueriesEnabled() ||
+        RuntimeEnabledFeatures::CSSScrollDirectionContainerQueriesEnabled()) {
       switch (StyleAffectingScrollStateChanged()) {
         case ContainerQueryEvaluator::Change::kNone:
           break;
