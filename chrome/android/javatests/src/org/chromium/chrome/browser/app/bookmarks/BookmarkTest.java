@@ -109,6 +109,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -1242,8 +1243,10 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/413079613")
     public void testTopLevelFolders() throws Exception {
+        // NOTE: Hide promos to ensure top level-folders will fit the viewport.
+        SigninPromoCoordinator.disablePromoForTesting();
+        BookmarkPromoHeader.forcePromoVisibilityForTesting(false);
         openBookmarkManager();
         onViewWaiting(allOf(withText("Mobile bookmarks"), isDisplayed()));
         onViewWaiting(allOf(withText("Reading list"), isDisplayed()));
