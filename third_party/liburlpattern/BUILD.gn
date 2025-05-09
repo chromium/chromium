@@ -26,6 +26,8 @@ component("liburlpattern") {
     "options.h",
     "parse.cc",
     "parse.h",
+    "part.cc",
+    "part.h",
     "pattern.cc",
     "pattern.h",
     "tokenize.cc",
