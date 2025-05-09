@@ -65,6 +65,7 @@
 #include "chrome/browser/child_process_host_flags.h"
 #include "chrome/browser/chrome_browser_main_extra_parts_nacl_deprecation.h"
 #include "chrome/browser/chrome_content_browser_client_binder_policies.h"
+#include "chrome/browser/chrome_content_browser_client_navigation_throttles.h"
 #include "chrome/browser/chrome_content_browser_client_parts.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -277,7 +278,6 @@
 #include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_url_loader_throttle.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/page_load_metrics/browser/metrics_navigation_throttle.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/payments/content/payment_handler_navigation_throttle.h"
 #include "components/payments/content/payment_request_display_manager.h"
@@ -5399,18 +5399,11 @@ void ChromeContentBrowserClient::RemovePresentationObserver(
 
 void ChromeContentBrowserClient::CreateThrottlesForNavigation(
     content::NavigationThrottleRegistry& registry) {
+  CreateAndAddChromeThrottlesForNavigation(registry);
+
   content::NavigationHandle& handle = registry.GetNavigationHandle();
-  if (handle.IsInMainFrame()) {
-    // MetricsNavigationThrottle requires that it runs before
-    // NavigationThrottles that may delay or cancel navigations, so only
-    // NavigationThrottles that don't delay or cancel navigations (e.g.
-    // throttles that are only observing callbacks without affecting navigation
-    // behavior) should be added before MetricsNavigationThrottle.
-    // TODO(https://crbug.com/412524375): This assumption is fragile. This
-    // should be cared by adding an attribute flag to
-    // NavigationThrottleRegistry::AddThrottle().
-    page_load_metrics::MetricsNavigationThrottle::CreateAndAdd(registry);
-  }
+  // TODO(https://crbug.com/412524375): Move the following code to
+  // CreateAndAddChromeThrottlesForNavigation().
 
 #if BUILDFLAG(IS_ANDROID)
   // TODO(davidben): This is insufficient to integrate with prerender properly.
@@ -5766,6 +5759,9 @@ void ChromeContentBrowserClient::CreateThrottlesForNavigation(
   registry.MaybeAddThrottle(
       web_app::IsolatedWebAppThrottle::MaybeCreateThrottleFor(&handle));
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Add new throttles in CreateAndAddChromeThrottlesForNavigation() rather than
+  // here.
 }
 
 std::vector<std::unique_ptr<content::CommitDeferringCondition>>
