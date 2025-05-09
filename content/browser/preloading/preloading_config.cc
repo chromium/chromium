@@ -32,31 +32,31 @@ constexpr base::FeatureParam<std::string> kPreloadingConfigParam{
 [{
   "preloading_type": "NoStatePrefetch",
   "preloading_predictor": "LinkRel",
-  "sampling_likelihood": 0.006667
+  "sampling_likelihood": 0.005689
 }, {
   "preloading_type": "Preconnect",
   "preloading_predictor": "PointerDownOnAnchor",
-  "sampling_likelihood": 0.000113
+  "sampling_likelihood": 0.000100
 }, {
   "preloading_type": "Prefetch",
   "preloading_predictor": "DefaultSearchEngine",
-  "sampling_likelihood": 0.006505
+  "sampling_likelihood": 0.005785
 }, {
   "preloading_type": "Prefetch",
   "preloading_predictor": "OmniboxMousePredictor",
-  "sampling_likelihood": 1.000000
+  "sampling_likelihood": 0.357184
 }, {
   "preloading_type": "Prefetch",
   "preloading_predictor": "OmniboxSearchPredictor",
-  "sampling_likelihood": 1.000000
+  "sampling_likelihood": 0.670228
 }, {
   "preloading_type": "Prefetch",
   "preloading_predictor": "OmniboxTouchDownPredirector",
-  "sampling_likelihood": 0.011505
+  "sampling_likelihood": 0.010079
 }, {
   "preloading_type": "Prefetch",
   "preloading_predictor": "SpeculationRules",
-  "sampling_likelihood": 0.001356
+  "sampling_likelihood": 0.000892
 }, {
   "preloading_type": "Prefetch",
   "preloading_predictor": "SpeculationRulesFromIsolatedWorld",
@@ -64,43 +64,47 @@ constexpr base::FeatureParam<std::string> kPreloadingConfigParam{
 }, {
   "preloading_type": "Prefetch",
   "preloading_predictor": "UrlPointerDownOnAnchor",
-  "sampling_likelihood": 0.027996
+  "sampling_likelihood": 0.002821
 }, {
   "preloading_type": "Prefetch",
   "preloading_predictor": "UrlPointerHoverOnAnchor",
-  "sampling_likelihood": 0.029942
+  "sampling_likelihood": 0.033897
+}, {
+  "preloading_type": "Prefetch",
+  "preloading_predictor": "ViewportHeuristic",
+  "sampling_likelihood": 1.000000
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "BackButtonHover",
-  "sampling_likelihood": 0.007192
+  "sampling_likelihood": 0.006551
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "BackGestureNavigation",
-  "sampling_likelihood": 0.232383
+  "sampling_likelihood": 0.209279
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "DefaultSearchEngine",
-  "sampling_likelihood": 0.006344
+  "sampling_likelihood": 0.005771
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "MouseBackButton",
-  "sampling_likelihood": 0.076308
+  "sampling_likelihood": 0.070962
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "MouseHoverOrMouseDownOnBookmarkBar",
-  "sampling_likelihood": 0.023874
+  "sampling_likelihood": 0.022187
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "MouseHoverOrMouseDownOnNewTabPage",
-  "sampling_likelihood": 0.033195
+  "sampling_likelihood": 0.030196
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "OmniboxDirectURLInput",
-  "sampling_likelihood": 0.005746
+  "sampling_likelihood": 0.005348
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "SpeculationRules",
-  "sampling_likelihood": 0.067464
+  "sampling_likelihood": 0.046348
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "SpeculationRulesFromIsolatedWorld",
@@ -108,15 +112,19 @@ constexpr base::FeatureParam<std::string> kPreloadingConfigParam{
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "TouchOnNewTabPage",
-  "sampling_likelihood": 0.034646
+  "sampling_likelihood": 0.028625
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "UrlPointerDownOnAnchor",
-  "sampling_likelihood": 0.194379
+  "sampling_likelihood": 0.132505
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "UrlPointerHoverOnAnchor",
-  "sampling_likelihood": 0.788890
+  "sampling_likelihood": 0.525988
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "ViewportHeuristic",
+  "sampling_likelihood": 1.000000
 }]
 )"};
 
