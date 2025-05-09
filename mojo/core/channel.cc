@@ -18,6 +18,8 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/overloaded.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -117,7 +119,7 @@ struct IpczMessage : public Channel::Message {
     header.num_bytes = static_cast<uint32_t>(size_);
     header.v2.creation_timeticks_us =
         (base::TimeTicks::Now() - base::TimeTicks()).InMicroseconds();
-    memcpy(&header + 1, data.data(), data.size());
+    data_.subspan(sizeof(IpczHeader)).copy_prefix_from(base::as_chars(data));
 
     handles_.reserve(handles.size());
     for (PlatformHandle& handle : handles) {
@@ -136,8 +138,8 @@ struct IpczMessage : public Channel::Message {
   }
   size_t NumHandlesForTransit() const override { return handles_.size(); }
 
-  const void* data() const override { return data_.data(); }
-  void* mutable_data() override { NOTREACHED(); }
+  base::span<const char> data_span() const override { return data_; }
+  base::span<char> mutable_data_span() override { NOTREACHED(); }
   size_t capacity() const override { return size_; }
 
   bool ExtendPayload(size_t) override { NOTREACHED(); }
@@ -166,8 +168,8 @@ struct ComplexMessage : public Channel::Message {
   std::vector<PlatformHandleInTransit> TakeHandles() override;
   size_t NumHandlesForTransit() const override;
 
-  const void* data() const override { return data_.data(); }
-  void* mutable_data() override { return data_.data(); }
+  base::span<const char> data_span() const override { return data_; }
+  base::span<char> mutable_data_span() override { return data_.as_span(); }
   size_t capacity() const override;
 
   bool ExtendPayload(size_t new_payload_size) override;
@@ -208,8 +210,12 @@ struct TrivialMessage : public Channel::Message {
                                           MessageType message_type);
 
   // Message impl:
-  const void* data() const override { return &data_[0]; }
-  void* mutable_data() override { return data_; }
+  base::span<const char> data_span() const override {
+    return base::as_chars(base::span(data_));
+  }
+  base::span<char> mutable_data_span() override {
+    return base::as_writable_chars(base::span(data_));
+  }
 
   size_t capacity() const override;
 
@@ -329,11 +335,12 @@ Channel::MessagePtr Channel::Message::Deserialize(
     header = reinterpret_cast<const Header*>(data);
 
   uint32_t extra_header_size = 0;
-  size_t payload_size = 0;
-  const char* payload = nullptr;
+  auto data_span = UNSAFE_TODO(
+      base::span<const char>(static_cast<const char*>(data), data_num_bytes));
+  base::span<const char> payload_span{};
   if (!header) {
-    payload_size = data_num_bytes - sizeof(LegacyHeader);
-    payload = static_cast<const char*>(data) + sizeof(LegacyHeader);
+    payload_span = data_span.subspan(sizeof(LegacyHeader),
+                                     data_num_bytes - sizeof(LegacyHeader));
   } else {
     if (header->num_bytes < header->num_header_bytes ||
         header->num_header_bytes < sizeof(Header)) {
@@ -342,8 +349,8 @@ Channel::MessagePtr Channel::Message::Deserialize(
       return nullptr;
     }
     extra_header_size = header->num_header_bytes - sizeof(Header);
-    payload_size = data_num_bytes - header->num_header_bytes;
-    payload = static_cast<const char*>(data) + header->num_header_bytes;
+    payload_span = data_span.subspan(header->num_header_bytes,
+                                     data_num_bytes - header->num_header_bytes);
   }
 
   if (!IsAlignedForChannelMessage(extra_header_size)) {
@@ -391,13 +398,14 @@ Channel::MessagePtr Channel::Message::Deserialize(
     return nullptr;
   }
 
-  MessagePtr message =
-      CreateMessage(payload_size, max_handles, legacy_header->message_type);
+  MessagePtr message = CreateMessage(payload_span.size(), max_handles,
+                                     legacy_header->message_type);
   DCHECK_EQ(message->data_num_bytes(), data_num_bytes);
 
   // Copy all payload bytes.
-  if (payload_size)
-    memcpy(message->mutable_payload(), payload, payload_size);
+  if (!payload_span.empty()) {
+    message->mutable_payload_span().copy_prefix_from(payload_span);
+  }
 
   if (header) {
     DCHECK_EQ(message->extra_header_size(), extra_header_size);
@@ -405,9 +413,8 @@ Channel::MessagePtr Channel::Message::Deserialize(
 
     if (message->extra_header_size()) {
       // Copy extra header bytes.
-      memcpy(message->mutable_extra_header(),
-             static_cast<const char*>(data) + sizeof(Header),
-             message->extra_header_size());
+      message->mutable_extra_header_span().copy_prefix_from(
+          data_span.subspan(sizeof(Header), message->extra_header_size()));
     }
     message->header()->num_handles = header->num_handles;
   } else {
@@ -450,7 +457,8 @@ void Channel::Message::ExtendPayload(MessagePtr& message,
   auto m = base::WrapUnique<Channel::Message>(
       new ComplexMessage(new_payload_size, new_payload_size, 0,
                          message->legacy_header()->message_type));
-  memcpy(m->mutable_payload(), message->payload(), capacity_without_header);
+  m->mutable_payload_span().copy_prefix_from(
+      message->payload_span().first(capacity_without_header));
   message.swap(m);
 }
 
@@ -460,8 +468,12 @@ const void* Channel::Message::extra_header() const {
 }
 
 void* Channel::Message::mutable_extra_header() {
+  return mutable_extra_header_span().data();
+}
+
+base::span<char> Channel::Message::mutable_extra_header_span() {
   DCHECK(!is_legacy_message());
-  return reinterpret_cast<uint8_t*>(mutable_data()) + sizeof(Header);
+  return mutable_data_span().subspan(sizeof(Header));
 }
 
 size_t Channel::Message::extra_header_size() const {
@@ -469,16 +481,25 @@ size_t Channel::Message::extra_header_size() const {
 }
 
 void* Channel::Message::mutable_payload() {
-  if (is_legacy_message())
-    return static_cast<void*>(legacy_header() + 1);
-  return reinterpret_cast<uint8_t*>(mutable_data()) +
-         header()->num_header_bytes;
+  return mutable_payload_span().data();
+}
+
+base::span<char> Channel::Message::mutable_payload_span() {
+  if (is_legacy_message()) {
+    return mutable_data_span().subspan(sizeof(LegacyHeader));
+  }
+  return mutable_data_span().subspan(header()->num_header_bytes);
 }
 
 const void* Channel::Message::payload() const {
-  if (is_legacy_message())
-    return static_cast<const void*>(legacy_header() + 1);
-  return reinterpret_cast<const uint8_t*>(data()) + header()->num_header_bytes;
+  return payload_span().data();
+}
+
+base::span<const char> Channel::Message::payload_span() const {
+  if (is_legacy_message()) {
+    return data_span().subspan(sizeof(LegacyHeader));
+  }
+  return data_span().subspan(header()->num_header_bytes);
 }
 
 size_t Channel::Message::payload_size() const {

@@ -239,8 +239,10 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
         HandlePolicy handle_policy,
         base::ProcessHandle from_process = base::kNullProcessHandle);
 
-    virtual const void* data() const = 0;
-    virtual void* mutable_data() = 0;
+    const void* data() const { return data_span().data(); }
+    void* mutable_data() { return mutable_data_span().data(); }
+    virtual base::span<const char> data_span() const = 0;
+    virtual base::span<char> mutable_data_span() = 0;
 
     size_t data_num_bytes() const { return size_; }
 
@@ -250,10 +252,13 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
 
     const void* extra_header() const;
     void* mutable_extra_header();
+    base::span<char> mutable_extra_header_span();
     size_t extra_header_size() const;
 
     void* mutable_payload();
+    base::span<char> mutable_payload_span();
     const void* payload() const;
+    base::span<const char> payload_span() const;
     size_t payload_size() const;
 
     size_t num_handles() const;
