@@ -355,9 +355,9 @@ void LocalFrameClientImpl::Detached(FrameDetachType type) {
   // place at this point since we are no longer associated with the Page.
   web_frame_->SetClient(nullptr);
 
-  DetachReason detach_reason = (type == FrameDetachType::kSwap)
-                                   ? DetachReason::kNavigation
-                                   : DetachReason::kFrameDeletion;
+  DetachReason detach_reason = (type == FrameDetachType::kRemove)
+                                   ? DetachReason::kFrameDeletion
+                                   : DetachReason::kNavigation;
   client->WillDetach(detach_reason);
 
   // We only notify the browser process when the frame is being detached for

@@ -46,9 +46,9 @@ void RemoteFrameClientImpl::Detached(FrameDetachType type) {
       web_frame_->GetFrame()->IsRemoteFrameHostRemoteBound()) {
     web_frame_->GetFrame()->GetRemoteFrameHostRemote().Detach();
   }
-  web_frame_->Close((type == FrameDetachType::kSwap)
-                        ? DetachReason::kNavigation
-                        : DetachReason::kFrameDeletion);
+  web_frame_->Close((type == FrameDetachType::kRemove)
+                        ? DetachReason::kFrameDeletion
+                        : DetachReason::kNavigation);
 
   if (web_frame_->Parent()) {
     if (type == FrameDetachType::kRemove)

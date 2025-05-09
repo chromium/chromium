@@ -160,8 +160,11 @@ String FrameDetachTypeToProtocol(FrameDetachType type) {
   switch (type) {
     case FrameDetachType::kRemove:
       return ReasonEnum::Remove;
-    case FrameDetachType::kSwap:
+    case FrameDetachType::kSwapForRemote:
       return ReasonEnum::Swap;
+    case FrameDetachType::kSwapForLocal:
+      // These are not supposed to be reported to client.
+      NOTREACHED();
   }
 }
 
@@ -1182,7 +1185,11 @@ void InspectorPageAgent::FrameDetachedFromParent(LocalFrame* frame,
   if (type == FrameDetachType::kRemove) {
     frame_ad_script_ancestry_.erase(IdentifiersFactory::FrameId(frame));
   }
-
+  // Skip reporting local swaps as nothing changes for the client and the
+  // frame remains in current frame tree.
+  if (type == FrameDetachType::kSwapForLocal) {
+    return;
+  }
   GetFrontend()->frameDetached(IdentifiersFactory::FrameId(frame),
                                FrameDetachTypeToProtocol(type));
 }

@@ -155,7 +155,8 @@ bool Frame::Detach(FrameDetachType type) {
     // In the case of a swap, detach is carefully coordinated with `Swap()`.
     // Intentionally avoid clearing the opener with `SetOpener(nullptr)` here,
     // since `Swap()` needs the original value to clone to the new frame.
-    DCHECK_EQ(FrameDetachType::kSwap, type);
+    DCHECK(type == FrameDetachType::kSwapForLocal ||
+           type == FrameDetachType::kSwapForRemote);
 
     // Clearing the window proxies can call back into `LocalFrameClient`, so
     // this must be done before nulling out `client_` below.
@@ -785,10 +786,13 @@ bool Frame::SwapImpl(
                                *parent_local_frame->GetDocument())
                          : nullptr;
 
+  const FrameDetachType swap_type = new_web_frame->IsWebLocalFrame()
+                                        ? FrameDetachType::kSwapForLocal
+                                        : FrameDetachType::kSwapForRemote;
   // Unload the current Document in this frame: this calls unload handlers,
   // detaches child frames, etc. Since this runs script, make sure this frame
   // wasn't detached before continuing with the swap.
-  if (!Detach(FrameDetachType::kSwap)) {
+  if (!Detach(swap_type)) {
     // If the Swap() fails, it should be because the frame has been detached
     // already. Otherwise the caller will not detach the frame when we return
     // false, and the browser and renderer will disagree about the destruction
@@ -924,11 +928,11 @@ bool Frame::SwapImpl(
         CHECK(!DynamicTo<RemoteFrame>(new_page->MainFrame())
                    ->IsRemoteFrameHostRemoteBound());
         // Trigger the detachment of the new page's placeholder main
-        // RemoteFrame. Note that we also use `FrameDetachType::kSwap` here
-        // instead of kRemove to avoid triggering destructive action on the new
-        // Page and the provisional LocalFrame that will be swapped in (e.g.
+        // RemoteFrame. Note that we also use `FrameDetachType::kSwapForLocal`
+        // here instead of kRemove to avoid triggering destructive action on the
+        // new Page and the provisional LocalFrame that will be swapped in (e.g.
         // clearing the opener, or detaching the provisional frame).
-        new_page->MainFrame()->Detach(FrameDetachType::kSwap);
+        new_page->MainFrame()->Detach(FrameDetachType::kSwapForLocal);
       }
 
       // Set the provisioanl LocalFrame to become the new page's main frame.

@@ -92,7 +92,7 @@ class WebFrame;
 class WebLocalFrame;
 class WebRemoteFrame;
 
-enum class FrameDetachType { kRemove, kSwap };
+enum class FrameDetachType { kRemove, kSwapForLocal, kSwapForRemote };
 
 // kInsertLater will create a provisional frame, i.e. it will have a parent
 // frame but not be inserted into the frame tree.
