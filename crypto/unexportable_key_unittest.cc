@@ -8,7 +8,9 @@
 #include <tuple>
 
 #include "base/logging.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "crypto/features.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -52,7 +54,9 @@ std::string ToString(Provider provider) {
 
 class UnexportableKeySigningTest
     : public testing::TestWithParam<
-          std::tuple<crypto::SignatureVerifier::SignatureAlgorithm, Provider>> {
+          std::tuple<crypto::SignatureVerifier::SignatureAlgorithm,
+                     Provider,
+                     bool>> {
  private:
 #if BUILDFLAG(IS_MAC)
   crypto::ScopedFakeAppleKeychainV2 scoped_fake_apple_keychain_{
@@ -63,12 +67,23 @@ class UnexportableKeySigningTest
 INSTANTIATE_TEST_SUITE_P(All,
                          UnexportableKeySigningTest,
                          testing::Combine(testing::ValuesIn(kAllAlgorithms),
-                                          testing::ValuesIn(kAllProviders)));
+                                          testing::ValuesIn(kAllProviders),
+                                          testing::Bool()));
 
 TEST_P(UnexportableKeySigningTest, RoundTrip) {
   const crypto::SignatureVerifier::SignatureAlgorithm algo =
       std::get<0>(GetParam());
   const Provider provider_type = std::get<1>(GetParam());
+  const bool is_hardware_backed_fix_enabled = std::get<2>(GetParam());
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureState(
+      crypto::features::kIsHardwareBackedFixEnabled,
+      is_hardware_backed_fix_enabled);
+  const bool expected_is_hardware_backed =
+      provider_type == Provider::kFake ? false
+      : is_hardware_backed_fix_enabled ? (provider_type == Provider::kTPM)
+                                       : true;
 
   switch (algo) {
     case crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
@@ -123,6 +138,7 @@ TEST_P(UnexportableKeySigningTest, RoundTrip) {
   }
 
   ASSERT_TRUE(key);
+  EXPECT_EQ(key->IsHardwareBacked(), expected_is_hardware_backed);
   LOG(INFO) << "Generation took " << (base::TimeTicks::Now() - generate_start);
 
   ASSERT_EQ(key->Algorithm(), algo);

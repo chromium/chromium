@@ -15,6 +15,7 @@
 
 #include "base/base64.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
@@ -28,6 +29,7 @@
 #include "base/threading/scoped_thread_priority.h"
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
+#include "crypto/features.h"
 #include "crypto/hash.h"
 #include "crypto/random.h"
 #include "crypto/unexportable_key.h"
@@ -390,13 +392,15 @@ bool LoadWrappedKey(base::span<const uint8_t> wrapped,
   return true;
 }
 
-// ECDSAKey wraps a TPM-stored P-256 ECDSA key.
+// ECDSAKey wraps a P-256 ECDSA key stored in the given provider.
 class ECDSAKey : public UnexportableSigningKey {
  public:
-  ECDSAKey(ScopedNCryptKey key,
+  ECDSAKey(ProviderType provider_type,
+           ScopedNCryptKey key,
            std::vector<uint8_t> key_id,
            std::vector<uint8_t> spki)
-      : key_(std::move(key)),
+      : provider_type_(provider_type),
+        key_(std::move(key)),
         key_id_(std::move(key_id)),
         spki_(std::move(spki)) {}
 
@@ -422,21 +426,28 @@ class ECDSAKey : public UnexportableSigningKey {
     return base::OptionalFromExpected(signature);
   }
 
-  bool IsHardwareBacked() const override { return true; }
+  bool IsHardwareBacked() const override {
+    return base::FeatureList::IsEnabled(features::kIsHardwareBackedFixEnabled)
+               ? provider_type_ == ProviderType::kTPM
+               : true;
+  }
 
  private:
+  const ProviderType provider_type_;
   ScopedNCryptKey key_;
   const std::vector<uint8_t> key_id_;
   const std::vector<uint8_t> spki_;
 };
 
-// RSAKey wraps a TPM-stored RSA key.
+// RSAKey wraps a RSA key stored in the given provider.
 class RSAKey : public UnexportableSigningKey {
  public:
-  RSAKey(ScopedNCryptKey key,
+  RSAKey(ProviderType provider_type,
+         ScopedNCryptKey key,
          std::vector<uint8_t> wrapped,
          std::vector<uint8_t> spki)
-      : key_(std::move(key)),
+      : provider_type_(provider_type),
+        key_(std::move(key)),
         wrapped_(std::move(wrapped)),
         spki_(std::move(spki)) {}
 
@@ -462,9 +473,14 @@ class RSAKey : public UnexportableSigningKey {
     return base::OptionalFromExpected(signature);
   }
 
-  bool IsHardwareBacked() const override { return true; }
+  bool IsHardwareBacked() const override {
+    return base::FeatureList::IsEnabled(features::kIsHardwareBackedFixEnabled)
+               ? provider_type_ == ProviderType::kTPM
+               : true;
+  }
 
  private:
+  const ProviderType provider_type_;
   ScopedNCryptKey key_;
   const std::vector<uint8_t> wrapped_;
   const std::vector<uint8_t> spki_;
@@ -570,14 +586,16 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
         if (!spki) {
           return nullptr;
         }
-        return std::make_unique<ECDSAKey>(std::move(key), std::move(key_id),
+        return std::make_unique<ECDSAKey>(provider_type_, std::move(key),
+                                          std::move(key_id),
                                           std::move(spki.value()));
       case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
         spki = GetRSASPKI(key.get());
         if (!spki) {
           return nullptr;
         }
-        return std::make_unique<RSAKey>(std::move(key), std::move(key_id),
+        return std::make_unique<RSAKey>(provider_type_, std::move(key),
+                                        std::move(key_id),
                                         std::move(spki.value()));
       default:
         return nullptr;
@@ -622,7 +640,8 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
         return nullptr;
       }
       return std::make_unique<ECDSAKey>(
-          std::move(key), std::vector<uint8_t>(wrapped.begin(), wrapped.end()),
+          provider_type_, std::move(key),
+          std::vector<uint8_t>(wrapped.begin(), wrapped.end()),
           std::move(spki.value()));
     } else if (algo_bytes == kRSA) {
       spki = GetRSASPKI(key.get());
@@ -630,7 +649,8 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
         return nullptr;
       }
       return std::make_unique<RSAKey>(
-          std::move(key), std::vector<uint8_t>(wrapped.begin(), wrapped.end()),
+          provider_type_, std::move(key),
+          std::vector<uint8_t>(wrapped.begin(), wrapped.end()),
           std::move(spki.value()));
     }
 
