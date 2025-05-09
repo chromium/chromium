@@ -57,6 +57,8 @@
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                    kToastAnimation);
 
 class OmniboxInputWaiter : public OmniboxTabHelper::Observer {
  public:
@@ -144,11 +146,20 @@ class ToastControllerInteractiveTest : public InteractiveBrowserTest {
 
 
   auto ShowToast(ToastParams params) {
-    return Do(base::BindOnce(
-        [](ToastController* toast_controller, ToastParams toast_params) {
-          toast_controller->MaybeShowToast(std::move(toast_params));
-        },
-        GetToastController(), std::move(params)));
+    return Steps(
+        Do(base::BindOnce(
+            [](ToastController* toast_controller, ToastParams toast_params) {
+              toast_controller->MaybeShowToast(std::move(toast_params));
+            },
+            GetToastController(), std::move(params))),
+        PollState(kToastAnimation,
+                  [this]() {
+                    toasts::ToastView* toast_view =
+                        GetToastController()->GetToastViewForTesting();
+                    return toast_view && toast_view->is_animating_for_testing();
+                  }),
+        WaitForState(kToastAnimation, false),
+        StopObservingState(kToastAnimation));
   }
 
   auto FireToastCloseTimer() {

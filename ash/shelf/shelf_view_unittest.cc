@@ -2803,7 +2803,9 @@ TEST_P(LockedFullscreenShelfViewTest, ContextMenuVisibilityWithPinnedWindow) {
 
   // Pin the window and verify context menu visibility.
   PinWindow(window.get(), IsLocked());
-  EXPECT_EQ(shelf_view_->IsShowingMenu(), !IsLocked());
+  // Context menus dismiss when the window moves. Pinning the window
+  // moves the window, so the context menu should always be dismissed.
+  EXPECT_FALSE(shelf_view_->IsShowingMenu());
 }
 
 INSTANTIATE_TEST_SUITE_P(LockedFullscreenShelfViewTests,
