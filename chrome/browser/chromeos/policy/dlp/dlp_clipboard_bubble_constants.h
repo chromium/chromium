@@ -30,10 +30,10 @@ inline constexpr char kClipboardWarnPluginVmToastId[] =
     "clipboard_dlp_warn_plugin_vm";
 
 // The duration of the clipboard bubble shown on blocked paste.
-constexpr int kClipboardDlpBlockDurationMs = 6000;
+inline constexpr int kClipboardDlpBlockDurationMs = 6000;
 
 // The duration of the clipboard warning shown before paste.
-constexpr int kClipboardDlpWarnDurationMs = 16000;
+inline constexpr int kClipboardDlpWarnDurationMs = 16000;
 
 }  // namespace policy
 

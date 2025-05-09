@@ -89,14 +89,15 @@ constexpr base::TimeDelta kMinimumAppUsageTime = base::Milliseconds(1);
 constexpr base::TimeDelta kMinimumWebsiteUsageTime = base::Milliseconds(1);
 
 // App event reporting rate limiter configuration.
-constexpr size_t kAppEventsTotalSize = 4u * 1024u * 1024u;  // 4 MiB
+inline constexpr size_t kAppEventsTotalSize = 4u * 1024u * 1024u;  // 4 MiB
 constexpr base::TimeDelta kAppEventsWindow = base::Seconds(10);
-constexpr size_t kAppEventsBucketCount = 10u;
+inline constexpr size_t kAppEventsBucketCount = 10u;
 
 // Website event reporting rate limiter configuration.
-constexpr size_t kWebsiteEventsTotalSize = 10u * 1024u * 1024u;  // 10 MiB
+inline constexpr size_t kWebsiteEventsTotalSize =
+    10u * 1024u * 1024u;  // 10 MiB
 constexpr base::TimeDelta kWebsiteEventsWindow = base::Seconds(10);
-constexpr size_t kWebsiteEventsBucketCount = 10u;
+inline constexpr size_t kWebsiteEventsBucketCount = 10u;
 
 // Default value that controls app inventory reporting. Set to false even though
 // the corresponding user policy is a list type to signify reporting is

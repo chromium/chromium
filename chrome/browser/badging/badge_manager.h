@@ -53,7 +53,7 @@ enum UpdateBadgeType {
 };
 
 // The maximum value of badge contents before saturation occurs.
-constexpr uint64_t kMaxBadgeContent = 99u;
+inline constexpr uint64_t kMaxBadgeContent = 99u;
 
 // We don't show a badge in response to notifications if the
 // Badging API has been used recently.

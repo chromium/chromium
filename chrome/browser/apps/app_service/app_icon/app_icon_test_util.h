@@ -26,7 +26,7 @@ class ImageSkia;
 
 namespace apps {
 
-constexpr int kSizeInDip = 64;
+inline constexpr int kSizeInDip = 64;
 
 void EnsureRepresentationsLoaded(gfx::ImageSkia& output_image_skia);
 

@@ -51,8 +51,8 @@ struct PlaceholderAvatarIconParams {
 // the Windows taskbar icon is 32x32 and the avatar icon overlay is 16x16. So to
 // get the shortcut avatar badge and the avatar icon overlay to match up, we
 // need to preserve those ratios when creating the shortcut icon.
-const int kShortcutIconSizeWin = 48;
-const int kProfileAvatarBadgeSizeWin = kShortcutIconSizeWin / 2;
+inline constexpr int kShortcutIconSizeWin = 48;
+inline constexpr int kProfileAvatarBadgeSizeWin = kShortcutIconSizeWin / 2;
 #endif  // BUILDFLAG(IS_WIN)
 
 // Avatar access.

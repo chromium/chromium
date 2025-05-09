@@ -41,11 +41,11 @@ extern "C" {
 
 // The minimum number of days an installation can be dormant before reactivation
 // may be offered.
-const int kReactivationMinDaysDormant = 50;
+inline constexpr int kReactivationMinDaysDormant = 50;
 
 // The minimum number of days an installation can be dormant before a relaunch
 // may be offered.
-const int kRelaunchMinDaysDormant = 30;
+inline constexpr int kRelaunchMinDaysDormant = 30;
 
 // This function returns TRUE if Google Chrome should be offered.
 // If the return is FALSE, the |reasons| DWORD explains why.  If you don't care

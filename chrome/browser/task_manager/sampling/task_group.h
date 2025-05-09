@@ -35,7 +35,7 @@ struct VideoMemoryUsageStats;
 namespace task_manager {
 
 // A mask for refresh flags that are not supported by VM tasks.
-constexpr int kUnsupportedVMRefreshFlags =
+inline constexpr int kUnsupportedVMRefreshFlags =
     REFRESH_TYPE_CPU | REFRESH_TYPE_SWAPPED_MEM | REFRESH_TYPE_GPU_MEMORY |
     REFRESH_TYPE_V8_MEMORY | REFRESH_TYPE_SQLITE_MEMORY |
     REFRESH_TYPE_WEBCACHE_STATS | REFRESH_TYPE_NETWORK_USAGE |

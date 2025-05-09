@@ -9,7 +9,7 @@
 // will be 0xfc128e along with 2 additional bytes of metadata at the end. These
 // are used by Nearby Share when broadcasting or scanning for Fast Initiation
 // advertisements.
-constexpr uint8_t kFastInitiationServiceId[] = {0xfe, 0x2c};
-constexpr uint8_t kFastInitiationModelId[] = {0xfc, 0x12, 0x8e};
+inline constexpr uint8_t kFastInitiationServiceId[] = {0xfe, 0x2c};
+inline constexpr uint8_t kFastInitiationModelId[] = {0xfc, 0x12, 0x8e};
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_FAST_INITIATION_CONSTANTS_H_

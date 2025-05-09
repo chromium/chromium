@@ -11,7 +11,7 @@
 
 struct ImportedBookmarkEntry;
 
-const int kMaxPathSize = 5;
+inline constexpr int kMaxPathSize = 5;
 
 struct BookmarkInfo {
   const bool in_toolbar;

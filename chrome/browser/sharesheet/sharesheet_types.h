@@ -16,7 +16,7 @@
 namespace sharesheet {
 
 // In DIP (Density Independent Pixel).
-constexpr int kIconSize = 40;
+inline constexpr int kIconSize = 40;
 
 // The type of a target.
 enum class TargetType {

@@ -71,7 +71,7 @@ enum class LCPPPredictResult {
 
 // Since histogram counts only positive numbers but the indexes origin 0,
 // add 1 for offset.
-const int kLCPIndexHistogramOffset = 1;
+inline constexpr int kLCPIndexHistogramOffset = 1;
 
 void MaybeReportConfidenceUMAsForTesting(
     const GURL& commit_url,

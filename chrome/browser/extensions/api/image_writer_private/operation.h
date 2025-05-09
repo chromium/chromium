@@ -35,7 +35,7 @@ class FilePath;
 namespace extensions {
 namespace image_writer {
 
-const int kProgressComplete = 100;
+inline constexpr int kProgressComplete = 100;
 
 class OperationManager;
 

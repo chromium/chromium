@@ -33,7 +33,7 @@ class PrefRegistrySyncable;
 }
 
 typedef uint64_t MediaGalleryPrefId;
-const MediaGalleryPrefId kInvalidMediaGalleryPrefId = 0;
+inline constexpr MediaGalleryPrefId kInvalidMediaGalleryPrefId = 0;
 
 inline constexpr char kMediaGalleriesPrefsVersionKey[] = "preferencesVersion";
 inline constexpr char kMediaGalleriesDefaultGalleryTypeKey[] =

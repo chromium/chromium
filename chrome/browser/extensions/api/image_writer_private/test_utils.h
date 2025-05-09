@@ -38,11 +38,11 @@ class ImageWriterFakeImageBurnerClient;
 inline constexpr char kDummyExtensionId[] = "DummyExtension";
 
 // Default file size to use in tests.  Currently 32kB.
-const size_t kTestFileSize = 32 * 1024;
+inline constexpr size_t kTestFileSize = 32 * 1024;
 // Pattern to use in the image file.
-const uint8_t kImagePattern = 0x55;  // 01010101
+inline constexpr uint8_t kImagePattern = 0x55;  // 01010101
 // Pattern to use in the device file.
-const uint8_t kDevicePattern = 0xAA;  // 10101010
+inline constexpr uint8_t kDevicePattern = 0xAA;  // 10101010
 // Disk file system type
 inline constexpr char kTestFileSystemType[] = "vfat";
 
