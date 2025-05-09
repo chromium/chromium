@@ -1014,6 +1014,14 @@ void ChromeAuthenticatorRequestDelegate::MaybeShowUI(
   }
 
   dialog_controller_->SetCredentialTypes(credential_types_);
+  UpdateModelForTransportAvailability(tai);
+
+  // Precalculate the UV method for immediate mode requests.
+  dialog_model_->gpm_uv_method.reset();
+  if (enclave_controller_) {
+    dialog_model_->gpm_uv_method =
+        enclave_controller_->GetEnclaveUserVerificationMethod();
+  }
 
   dialog_controller_->StartFlow(std::move(tai), std::move(passwords));
 
@@ -1280,4 +1288,19 @@ void ChromeAuthenticatorRequestDelegate::OnPasswordCredentialsReceived(
   pending_password_credentials_ =
       std::make_unique<PasswordCredentials>(std::move(credentials));
   TryToShowUI();
+}
+
+void ChromeAuthenticatorRequestDelegate::UpdateModelForTransportAvailability(
+    const TransportAvailabilityInfo& tai) {
+  dialog_model_->request_type = tai.request_type;
+  dialog_model_->resident_key_requirement = tai.resident_key_requirement;
+  dialog_model_->attestation_conveyance_preference =
+      tai.attestation_conveyance_preference;
+  dialog_model_->ble_adapter_is_powered =
+      tai.ble_status == device::FidoRequestHandlerBase::BleStatus::kOn;
+  dialog_model_->show_security_key_on_qr_sheet =
+      base::Contains(tai.available_transports,
+                     device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
+  dialog_model_->is_off_the_record = tai.is_off_the_record_context;
+  dialog_model_->platform_has_biometrics = tai.platform_has_biometrics;
 }

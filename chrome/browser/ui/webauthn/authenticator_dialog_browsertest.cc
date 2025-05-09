@@ -67,6 +67,22 @@ namespace {
 constexpr char kPhoneName[] = "Elisa's Pixel 6 Pro";
 using BleStatus = device::FidoRequestHandlerBase::BleStatus;
 
+void UpdateModelBeforeStartFlow(
+    AuthenticatorRequestDialogModel* model,
+    device::FidoRequestHandlerBase::TransportAvailabilityInfo tai) {
+  model->request_type = tai.request_type;
+  model->resident_key_requirement = tai.resident_key_requirement;
+  model->attestation_conveyance_preference =
+      tai.attestation_conveyance_preference;
+  model->ble_adapter_is_powered =
+      tai.ble_status == device::FidoRequestHandlerBase::BleStatus::kOn;
+  model->show_security_key_on_qr_sheet =
+      base::Contains(tai.available_transports,
+                     device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
+  model->is_off_the_record = tai.is_off_the_record_context;
+  model->platform_has_biometrics = tai.platform_has_biometrics;
+}
+
 }  // namespace
 
 // Run with:
@@ -393,6 +409,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     }
 #endif
 
+    UpdateModelBeforeStartFlow(model_.get(), transport_availability);
     controller_->StartFlow(std::move(transport_availability), {});
     if (name.ends_with("_disabled")) {
       model_->ui_disabled_ = true;
@@ -847,6 +864,7 @@ class GPMPasskeysAuthenticatorDialogTest : public DialogBrowserTest {
     } else {
       NOTREACHED();
     }
+    UpdateModelBeforeStartFlow(model_.get(), transport_availability);
     controller_->StartFlow(std::move(transport_availability), {});
     if (name.ends_with("_disabled")) {
       model_->ui_disabled_ = true;
