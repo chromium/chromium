@@ -1764,7 +1764,9 @@ void ExpectCleanProcesses() {
 #if !BUILDFLAG(IS_WIN)
 void RunOfflineInstall(UpdaterScope scope,
                        bool is_legacy_install,
-                       bool is_silent_install) {
+                       bool is_silent_install,
+                       int installer_result,
+                       int installer_error) {
   ADD_FAILURE();
 }
 

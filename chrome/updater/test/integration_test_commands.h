@@ -217,7 +217,9 @@ class IntegrationTestCommands
   virtual void ExpectLastStarted() const = 0;
   virtual void UninstallApp(const std::string& app_id) const = 0;
   virtual void RunOfflineInstall(bool is_legacy_install,
-                                 bool is_silent_install) = 0;
+                                 bool is_silent_install,
+                                 int installer_result,
+                                 int installer_error) = 0;
   virtual void RunOfflineInstallOsNotSupported(bool is_legacy_install,
                                                bool is_silent_install,
                                                const std::string& language) = 0;

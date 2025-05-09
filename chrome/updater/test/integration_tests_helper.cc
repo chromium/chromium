@@ -490,9 +490,13 @@ void AppTestHelper::FirstTaskRun() {
           {"expect_last_checked", WithSystemScope(Wrap(&ExpectLastChecked))},
           {"expect_last_started", WithSystemScope(Wrap(&ExpectLastStarted))},
           {"run_offline_install",
-           WithSwitch("silent",
-                      WithSwitch("legacy_install",
-                                 WithSystemScope(Wrap(&RunOfflineInstall))))},
+           WithSwitch(
+               "installer_error",
+               WithSwitch("installer_result",
+                          WithSwitch("silent",
+                                     WithSwitch("legacy_install",
+                                                WithSystemScope(Wrap(
+                                                    &RunOfflineInstall))))))},
           {"run_offline_install_os_not_supported",
            WithSwitch(
                "language",

@@ -594,10 +594,14 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   }
 
   void RunOfflineInstall(bool is_legacy_install,
-                         bool is_silent_install) override {
+                         bool is_silent_install,
+                         int installer_result,
+                         int installer_error) override {
     RunCommand("run_offline_install",
                {Param("legacy_install", BoolToString(is_legacy_install)),
-                Param("silent", BoolToString(is_silent_install))});
+                Param("silent", BoolToString(is_silent_install)),
+                Param("installer_result", base::ToString(installer_result)),
+                Param("installer_error", base::ToString(installer_error))});
   }
 
   void RunOfflineInstallOsNotSupported(bool is_legacy_install,

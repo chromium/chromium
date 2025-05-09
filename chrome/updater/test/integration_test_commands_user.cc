@@ -488,9 +488,12 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   }
 
   void RunOfflineInstall(bool is_legacy_install,
-                         bool is_silent_install) override {
+                         bool is_silent_install,
+                         int installer_result,
+                         int installer_error) override {
     updater::test::RunOfflineInstall(updater_scope_, is_legacy_install,
-                                     is_silent_install);
+                                     is_silent_install, installer_result,
+                                     installer_error);
   }
 
   void RunOfflineInstallOsNotSupported(bool is_legacy_install,

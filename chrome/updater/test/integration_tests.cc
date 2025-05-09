@@ -200,6 +200,20 @@ void ExpectInstallEvent(ScopedServer& test_server, const std::string& app_id) {
 }
 
 #if BUILDFLAG(IS_WIN)
+void ExpectAppErrorEvent(ScopedServer& test_server,
+                         const std::string& app_id,
+                         const int error_code,
+                         const int event_type) {
+  test_server.ExpectOnce({request::GetPathMatcher(test_server.update_path()),
+                          request::GetUpdaterUserAgentMatcher(),
+                          request::GetContentMatcher({base::StringPrintf(
+                              R"(.*"appid":"%s",.*)"
+                              R"(.*"errorcode":%d,)"
+                              R"("eventresult":0,"eventtype":%d,.*)",
+                              app_id, error_code, event_type)})},
+                         ")]}'\n");
+}
+
 void ExpectUninstallPingPreviousVersion(ScopedServer& test_server,
                                         const base::Version& previous_version) {
   test_server.ExpectOnce(
@@ -820,8 +834,12 @@ class IntegrationTest : public ::testing::Test {
 
   void ExpectLastStarted() { test_commands_->ExpectLastStarted(); }
 
-  void RunOfflineInstall(bool is_legacy_install, bool is_silent_install) {
-    test_commands_->RunOfflineInstall(is_legacy_install, is_silent_install);
+  void RunOfflineInstall(bool is_legacy_install,
+                         bool is_silent_install,
+                         int installer_result = 0,
+                         int installer_error = 0) {
+    test_commands_->RunOfflineInstall(is_legacy_install, is_silent_install,
+                                      installer_result, installer_error);
   }
 
   void RunOfflineInstallOsNotSupported(bool is_legacy_install,
@@ -5121,6 +5139,26 @@ TEST_F(IntegrationTest, OfflineInstallOsNotSupported) {
   ASSERT_NO_FATAL_FAILURE(
       RunOfflineInstallOsNotSupported(/*is_legacy_install=*/false,
                                       /*is_silent_install=*/false));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, OfflineInstallerError) {
+  ScopedServer test_server(test_commands_);
+  ExpectInstallEvent(test_server, kUpdaterAppId);
+  ASSERT_NO_FATAL_FAILURE(Install({kEnableCecaExperimentSwitch}));
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+
+  // The install fails, and an error ping is sent.
+  ExpectAppErrorEvent(test_server,
+                      /*app_id=*/"{CDABE316-39CD-43BA-8440-6D1E0547AEE6}",
+                      /*error_code=*/99,
+                      /*event_type=*/2);
+  ASSERT_NO_FATAL_FAILURE(RunOfflineInstall(/*is_legacy_install=*/false,
+                                            /*is_silent_install=*/true,
+                                            /*installer_result=*/1,
+                                            /*installer_error=*/99));
 
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());

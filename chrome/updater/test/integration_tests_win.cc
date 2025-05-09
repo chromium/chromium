@@ -41,6 +41,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/task_traits.h"
@@ -532,6 +533,8 @@ bool BuildTestAppInstaller(const base::FilePath& installer_script,
 void RunOfflineInstallWithManifest(UpdaterScope scope,
                                    bool is_legacy_install,
                                    bool is_silent_install,
+                                   int installer_result,
+                                   int installer_error,
                                    base::cstring_view platform,
                                    int string_resource_id_to_find,
                                    const std::string& language,
@@ -586,23 +589,30 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
         IsElevatedWithUACOn() ? kTestEventToSignalIfMediumIntegrity
                               : kTestEventToSignal,
         event_holder.name);
-    std::vector<std::string> commands;
-    const struct {
+
+    struct RegItems {
       const std::string subkey;
       const char* value_name;
       const char* type;
       const std::string value;
-    } reg_items[] = {
-        {base::WideToUTF8(app_clients_key), "pv", "REG_SZ",
-         kTestPV.GetString()},
-        {app_client_state_key_utf8, "InstallerResult", "REG_DWORD", "0"},
-        {app_client_state_key_utf8, "InstallerError", "REG_DWORD", "0"},
+    };
+    std::vector<RegItems> reg_items = {
+        {app_client_state_key_utf8, "InstallerResult", "REG_DWORD",
+         base::ToString(installer_result)},
+        {app_client_state_key_utf8, "InstallerError", "REG_DWORD",
+         base::ToString(installer_error)},
         {app_client_state_key_utf8, "InstallerExtraCode1", "REG_DWORD", "0"},
         {app_client_state_key_utf8, "InstallerResultUIString", "REG_SZ",
          "CoolApp"},
         {app_client_state_key_utf8, "InstallerSuccessLaunchCmdLine", "REG_SZ",
          base::WideToUTF8(post_install_cmd.GetCommandLineString())},
     };
+    if (expect_success) {
+      reg_items.push_back({base::WideToUTF8(app_clients_key), "pv", "REG_SZ",
+                           kTestPV.GetString()});
+    }
+
+    std::vector<std::string> commands;
     for (const auto& reg_item : reg_items) {
       commands.push_back(base::StringPrintf(
           "REG.exe ADD \"%s\\%s\" /v %s /t %s /d %s /f /reg:32",
@@ -675,21 +685,18 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
                                           nullptr)
           ->GetProductVersion(base::WideToUTF8(kTestAppID));
 
-  base::win::RegKey key;
-  LONG registry_result =
-      key.Open(root, app_client_state_key.c_str(), Wow6432(KEY_QUERY_VALUE));
-
+  EXPECT_EQ(expect_success, pv.IsValid() && pv > base::Version(kNullVersion));
   if (!expect_success) {
-    EXPECT_EQ(registry_result, ERROR_FILE_NOT_FOUND);
-    EXPECT_FALSE(pv.IsValid());
     return;
   }
 
-  EXPECT_EQ(registry_result, ERROR_SUCCESS);
-
   // Updater should have written "pv".
-  ASSERT_TRUE(pv.IsValid());
   EXPECT_EQ(pv, kTestPV);
+
+  base::win::RegKey key;
+  EXPECT_EQ(
+      key.Open(root, app_client_state_key.c_str(), Wow6432(KEY_QUERY_VALUE)),
+      ERROR_SUCCESS);
 
   // Check for expected installer result API reg values.
   base::win::RegKey updater_key(root, UPDATER_KEY, Wow6432(KEY_QUERY_VALUE));
@@ -2065,10 +2072,13 @@ void UninstallApp(UpdaterScope scope, const std::string& app_id) {
 
 void RunOfflineInstall(UpdaterScope scope,
                        bool is_legacy_install,
-                       bool is_silent_install) {
+                       bool is_silent_install,
+                       int installer_result,
+                       int installer_error) {
   RunOfflineInstallWithManifest(scope, is_legacy_install, is_silent_install,
-                                "win", IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE,
-                                "en", true);
+                                installer_result, installer_error, "win",
+                                IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE, "en",
+                                !installer_result);
 }
 
 void RunOfflineInstallOsNotSupported(UpdaterScope scope,
@@ -2076,6 +2086,7 @@ void RunOfflineInstallOsNotSupported(UpdaterScope scope,
                                      bool is_silent_install,
                                      const std::string& language) {
   RunOfflineInstallWithManifest(scope, is_legacy_install, is_silent_install,
+                                /*installer_result=*/0, /*installer_error=*/0,
                                 "minix", IDS_UPDATER_OS_NOT_SUPPORTED_BASE,
                                 language, false);
 }
