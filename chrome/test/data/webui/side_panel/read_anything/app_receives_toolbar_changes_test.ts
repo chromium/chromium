@@ -5,7 +5,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {BrowserProxy, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceClientSideStatusCode, VoicePackController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoicePackController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {hasStyle, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -196,51 +196,6 @@ suite('AppReceivesToolbarChanges', () => {
       assertFalse(voicePackController.isLangEnabled(firstLanguage));
       assertFalse(chrome.readingMode.getLanguagesEnabledInPref().includes(
           firstLanguage));
-    });
-
-    suite('with language downloading enabled', () => {
-      let sentInstallRequestFor: string;
-
-      setup(() => {
-        sentInstallRequestFor = '';
-        // Monkey patch sendInstallVoicePackRequest() to spy on the method
-        chrome.readingMode.sendInstallVoicePackRequest = (language) => {
-          sentInstallRequestFor = language;
-        };
-      });
-
-      test(
-          'when previous language install failed, directly installs lang ' +
-              'without usual protocol of sending status request first',
-          () => {
-            const lang = 'en-us';
-            app.updateVoicePackStatus(lang, 'kOther');
-            emitLanguageToggle(lang);
-
-            assertEquals(lang, sentInstallRequestFor);
-            assertEquals(
-                voicePackController.getLocalStatus(lang),
-                VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY);
-          });
-
-      test(
-          'when there is no status for lang, directly sends install request',
-          () => {
-            emitLanguageToggle('en-us');
-
-            assertEquals('en-us', sentInstallRequestFor);
-          });
-
-
-      test(
-          'when language status is uninstalled, does not directly install lang',
-          () => {
-            const lang = 'en-us';
-            app.updateVoicePackStatus(lang, 'kNotInstalled');
-            emitLanguageToggle(lang);
-
-            assertEquals('', sentInstallRequestFor);
-          });
     });
   });
 

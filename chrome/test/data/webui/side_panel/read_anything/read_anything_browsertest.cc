@@ -195,10 +195,12 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Prefs) {
   RunSidePanelTest("side_panel/read_anything/prefs_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, UpdateVoicePack) {
-  RunSidePanelTest("side_panel/read_anything/update_voice_pack_test.js",
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, DownloadNotification) {
+  RunSidePanelTest("side_panel/read_anything/download_notification_test.js",
                    "mocha.run()");
 }
+#endif
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ToolbarOverflow) {
   RunSidePanelTest("side_panel/read_anything/toolbar_overflow_test.js",

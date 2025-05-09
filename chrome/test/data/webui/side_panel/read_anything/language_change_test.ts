@@ -59,14 +59,8 @@ suite('LanguageChanged', () => {
   let speech: TestSpeechBrowserProxy;
   let voicePackController: VoicePackController;
 
-  function enableLangs(...langs: string[]) {
-    for (const l of langs) {
-      voicePackController.enableLang(l);
-    }
-  }
-
   function setInstalled(lang: string) {
-    app.updateVoicePackStatus(lang, 'kInstalled');
+    voicePackController.updateVoicePackStatus(lang, 'kInstalled');
   }
 
   setup(async () => {
@@ -85,7 +79,7 @@ suite('LanguageChanged', () => {
     app = await createApp();
     for (const v of voices) {
       setInstalled(v.lang);
-      enableLangs(v.lang);
+      voicePackController.enableLang(v.lang);
     }
     return microtasksFinished();
   });
@@ -273,7 +267,7 @@ suite('LanguageChanged', () => {
       test('to null if no enabled languages', () => {
         chrome.readingMode.baseLanguageForSpeech = lang2;
         for (const lang of voicePackController.getEnabledLangs()) {
-          voicePackController.disableLang(lang);
+          voicePackController.onLanguageToggle(lang);
         }
 
         app.languageChanged();
@@ -324,7 +318,7 @@ suite('LanguageChanged', () => {
       const voicePackLang = convertLangOrLocaleForVoicePackManager(lang);
       assertTrue(!!voicePackLang);
 
-      app.updateVoicePackStatus(lang, 'kInstalling');
+      voicePackController.updateVoicePackStatus(lang, 'kInstalling');
       app.languageChanged();
 
       assertFalse(sentRequest);

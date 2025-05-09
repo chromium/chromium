@@ -4,12 +4,12 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy, EXTENSION_RESPONSE_TIMEOUT_MS, mojoVoicePackStatusToVoicePackStatusEnum, NotificationType, SpeechBrowserProxyImpl, VoiceClientSideStatusCode, VoiceNotificationManager, VoicePackController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, EXTENSION_RESPONSE_TIMEOUT_MS, mojoVoicePackStatusToVoicePackStatusEnum, NotificationType, SpeechBrowserProxyImpl, VoiceClientSideStatusCode, VoiceNotificationManager, VoicePackController, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {VoiceLanguageListener, VoiceNotificationListener} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
-import {createSpeechSynthesisVoice} from './common.js';
+import {createAndSetVoices, createSpeechSynthesisVoice, setVoices} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
@@ -21,6 +21,10 @@ suite('VoicePackController', () => {
   let onEnabledLangsChange: boolean;
   let onAvailableVoicesChange: boolean;
   let onCurrentVoiceChange: boolean;
+  let installedLangs: string[];
+  let uninstalledLangs: string[];
+  let requestInfoLangs: string[];
+  let notificationType: NotificationType|null;
 
   setup(() => {
     // Clearing the DOM should always be done first.
@@ -46,6 +50,24 @@ suite('VoicePackController', () => {
       },
     };
     voicePackController.addListener(listener);
+    installedLangs = [];
+    uninstalledLangs = [];
+    requestInfoLangs = [];
+    chrome.readingMode.sendGetVoicePackInfoRequest = (lang) => {
+      requestInfoLangs.push(lang);
+    };
+    chrome.readingMode.sendInstallVoicePackRequest = (lang) => {
+      installedLangs.push(lang);
+    };
+    chrome.readingMode.sendUninstallVoiceRequest = (lang) => {
+      uninstalledLangs.push(lang);
+    };
+    const notificationListener = {
+      notify(type: NotificationType, _lang?: string): void {
+        notificationType = type;
+      },
+    };
+    VoiceNotificationManager.getInstance().addListener(notificationListener);
   });
 
   suite('setLocalStatus', () => {
@@ -115,21 +137,6 @@ suite('VoicePackController', () => {
     assertEquals(status2, voicePackController.getServerStatus('yue-hk'));
     assertEquals(status1, voicePackController.getServerStatus('de'));
     assertEquals(status2, voicePackController.getServerStatus('yue'));
-  });
-
-  test('disableLang', () => {
-    voicePackController.enableLang('vi');
-    onEnabledLangsChange = false;
-
-    voicePackController.disableLang('');
-    assertFalse(onEnabledLangsChange);
-    voicePackController.disableLang('no');
-    assertFalse(onEnabledLangsChange);
-
-    voicePackController.disableLang('vi');
-    assertTrue(onEnabledLangsChange);
-    assertFalse(voicePackController.isLangEnabled('vi'));
-    assertFalse(voicePackController.isLangEnabled('VI'));
   });
 
   test('enableLang', () => {
@@ -315,6 +322,91 @@ suite('VoicePackController', () => {
     });
   });
 
+  test('onLanguageToggle enabled languages are added', () => {
+    const firstLanguage = 'en-us';
+    voicePackController.onLanguageToggle(firstLanguage);
+    assertTrue(voicePackController.isLangEnabled(firstLanguage));
+    assertTrue(
+        chrome.readingMode.getLanguagesEnabledInPref().includes(firstLanguage));
+
+    const secondLanguage = 'fr';
+    voicePackController.onLanguageToggle(secondLanguage);
+    assertTrue(voicePackController.isLangEnabled(secondLanguage));
+    assertTrue(chrome.readingMode.getLanguagesEnabledInPref().includes(
+        secondLanguage));
+  });
+
+  test('onLanguageToggle disabled languages are removed', () => {
+    const firstLanguage = 'en-us';
+    voicePackController.onLanguageToggle(firstLanguage);
+    assertTrue(voicePackController.isLangEnabled(firstLanguage));
+    assertTrue(
+        chrome.readingMode.getLanguagesEnabledInPref().includes(firstLanguage));
+
+    voicePackController.onLanguageToggle(firstLanguage);
+    assertFalse(voicePackController.isLangEnabled(firstLanguage));
+    assertFalse(
+        chrome.readingMode.getLanguagesEnabledInPref().includes(firstLanguage));
+  });
+
+  test('onLanguageToggle with voice pack lang uninstalls it', () => {
+    const lang = 'km';
+    voicePackController.onLanguageToggle(lang);
+    VoiceNotificationManager.getInstance().onVoiceStatusChange(
+        lang, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, []);
+
+    voicePackController.onLanguageToggle(lang);
+    assertEquals(NotificationType.NONE, notificationType);
+    assertArrayEquals([lang], uninstalledLangs);
+  });
+
+  test('onLanguageToggle with non voice pack lang does not uninstall', () => {
+    const lang = 'zh';
+    voicePackController.onLanguageToggle(lang);
+    notificationType = null;
+
+    voicePackController.onLanguageToggle(lang);
+
+    assertFalse(!!notificationType);
+    assertArrayEquals([], requestInfoLangs);
+    assertArrayEquals([], uninstalledLangs);
+    assertArrayEquals([], installedLangs);
+  });
+
+  test(
+      'onLanguageToggle when previous language install failed, directly ' +
+          'installs lang without sending status request first',
+      () => {
+        const lang = 'en-us';
+        voicePackController.updateVoicePackStatus(lang, 'kOther');
+
+        voicePackController.onLanguageToggle(lang);
+
+        assertArrayEquals([lang], installedLangs);
+        assertEquals(
+            voicePackController.getLocalStatus(lang),
+            VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY);
+      });
+
+  test(
+      'onLanguageToggle when there is no status for lang, installs lang',
+      () => {
+        voicePackController.onLanguageToggle('en-us');
+        assertArrayEquals(['en-us'], installedLangs);
+      });
+
+
+  test(
+      'onLanguageToggle when language status is uninstalled, does not install',
+      () => {
+        const lang = 'en-us';
+        voicePackController.updateVoicePackStatus(lang, 'kNotInstalled');
+
+        voicePackController.onLanguageToggle(lang);
+
+        assertArrayEquals([], installedLangs);
+      });
+
   test(
       'onVoicesChanged with auto selected voice, switches to a Natural voice',
       () => {
@@ -381,80 +473,7 @@ suite('VoicePackController', () => {
     assertArrayEquals(newVoices, voicePackController.getAvailableVoices());
   });
 
-  // <if expr="is_chromeos">
-  test(
-      'disableLangIfNoVoices chromeOS should disable if no google voices',
-      () => {
-        const lang1 = 'en-US';
-        const lang2 = 'fr';
-        const lang3 = 'yue';
-        voicePackController.enableLang(lang1);
-        chrome.readingMode.onLanguagePrefChange(lang1.toLowerCase(), true);
-        voicePackController.enableLang(lang2);
-        chrome.readingMode.onLanguagePrefChange(lang2, true);
-        voicePackController.enableLang(lang3);
-        chrome.readingMode.onLanguagePrefChange(lang3, true);
-        speech.setVoices([
-          createSpeechSynthesisVoice({lang: lang1, name: 'Henry'}),
-          createSpeechSynthesisVoice({lang: lang2, name: 'Google Thomas'}),
-        ]);
-        onEnabledLangsChange = false;
-
-        voicePackController.disableLangIfNoVoices(lang1);
-        assertTrue(onEnabledLangsChange);
-
-        onEnabledLangsChange = false;
-        voicePackController.disableLangIfNoVoices(lang2);
-        assertFalse(onEnabledLangsChange);
-
-        voicePackController.disableLangIfNoVoices(lang3);
-        assertTrue(onEnabledLangsChange);
-
-        const langsInPrefs = chrome.readingMode.getLanguagesEnabledInPref();
-        assertFalse(langsInPrefs.includes(lang1.toLowerCase()));
-        assertTrue(langsInPrefs.includes(lang2));
-        assertFalse(langsInPrefs.includes(lang3));
-        assertFalse(voicePackController.isLangEnabled(lang1));
-        assertTrue(voicePackController.isLangEnabled(lang2));
-        assertFalse(voicePackController.isLangEnabled(lang3));
-      });
-  // </if>
-
   // <if expr="not is_chromeos">
-  test(
-      'disableLangIfNoVoices desktop should only disable if no voices at all',
-      () => {
-        const lang1 = 'en-US';
-        const lang2 = 'fr';
-        const lang3 = 'yue';
-        voicePackController.enableLang(lang1);
-        chrome.readingMode.onLanguagePrefChange(lang1.toLowerCase(), true);
-        voicePackController.enableLang(lang2);
-        chrome.readingMode.onLanguagePrefChange(lang2, true);
-        voicePackController.enableLang(lang3);
-        chrome.readingMode.onLanguagePrefChange(lang3, true);
-        speech.setVoices([
-          createSpeechSynthesisVoice({lang: lang1, name: 'Henry'}),
-          createSpeechSynthesisVoice({lang: lang2, name: 'Google Thomas'}),
-        ]);
-        onEnabledLangsChange = false;
-
-        voicePackController.disableLangIfNoVoices(lang1);
-        assertFalse(onEnabledLangsChange);
-        voicePackController.disableLangIfNoVoices(lang2);
-        assertFalse(onEnabledLangsChange);
-        voicePackController.disableLangIfNoVoices(lang3);
-        assertTrue(onEnabledLangsChange);
-
-        const langsInPrefs = chrome.readingMode.getLanguagesEnabledInPref();
-        assertTrue(langsInPrefs.includes(lang1.toLowerCase()));
-        assertTrue(langsInPrefs.includes(lang2));
-        assertFalse(langsInPrefs.includes(lang3));
-        assertTrue(voicePackController.isLangEnabled(lang1));
-        assertTrue(voicePackController.isLangEnabled(lang2));
-        assertFalse(voicePackController.isLangEnabled(lang3));
-      });
-
   test('onVoicesChanged enables newly available langs', () => {
     const lang1 = 'en-gb';
     const lang2 = 'fr';
@@ -492,287 +511,508 @@ suite('VoicePackController', () => {
   });
   // </if>
 
-  suite('installation', () => {
-    let installedLangs: string[];
-    let uninstalledLangs: string[];
-    let requestInfoLangs: string[];
-    let notificationType: NotificationType|null;
+  test('onVoicesChanged after new tts engine installs google locales', () => {
+    const lang1 = 'bn-bd';
+    const lang2 = 'hu-hu';
+    const lang3 = 'en';
+    voicePackController.enableLang(lang1);
+    voicePackController.enableLang(lang2);
+    voicePackController.enableLang(lang3);
+
+    voicePackController.onTtsEngineInstalled();
+    voicePackController.onVoicesChanged();
+
+    assertArrayEquals(['bn', 'hu'], installedLangs);
+    assertFalse(voicePackController.hasAvailableVoices());
+  });
+
+  test('onVoicesChanged restores from prefs on first voices received', () => {
+    const lang = 'uk';
+    const name = 'Google Lemur';
+    const voice = createSpeechSynthesisVoice({lang, name});
+    speech.setVoices([voice]);
+    chrome.readingMode.getStoredVoice = () => name;
+
+    voicePackController.onVoicesChanged();
+
+    assertTrue(voicePackController.isLangEnabled(lang));
+    assertArrayEquals([voice], voicePackController.getAvailableVoices());
+  });
+
+  test('onVoicesChanged requests info', () => {
+    const lang1 = 'fi';
+    const lang2 = 'id';
+    const lang3 = 'da';
+    voicePackController.setServerStatus(
+        lang1, mojoVoicePackStatusToVoicePackStatusEnum('kInstalled'));
+    voicePackController.setServerStatus(
+        lang2, mojoVoicePackStatusToVoicePackStatusEnum('kAllocation'));
+    voicePackController.setServerStatus(
+        lang3, mojoVoicePackStatusToVoicePackStatusEnum('kNotInstalled'));
+
+    voicePackController.onVoicesChanged();
+
+    assertArrayEquals([lang1, lang2, lang3], requestInfoLangs);
+  });
+
+  test('onVoicesChanged waits for engine timeout', () => {
+    const lang = 'fi';
+    voicePackController.setServerStatus(
+        lang, mojoVoicePackStatusToVoicePackStatusEnum('kInstalled'));
+    const mockTimer = new MockTimer();
+    mockTimer.install();
+
+    voicePackController.onVoicesChanged();
+    mockTimer.tick(EXTENSION_RESPONSE_TIMEOUT_MS);
+    mockTimer.uninstall();
+
+    assertEquals(NotificationType.GOOGLE_VOICES_UNAVAILABLE, notificationType);
+  });
+
+  test(
+      'onVoicesChanged does nothing when current voice' +
+          ' still available',
+      () => {
+        const voice = createSpeechSynthesisVoice({lang: 'id', name: 'Dog'});
+        speech.setVoices([voice]);
+        voicePackController.enableLang(voice.lang);
+        voicePackController.setCurrentVoice(voice);
+        onCurrentVoiceChange = false;
+
+        voicePackController.onVoicesChanged();
+
+        assertFalse(onCurrentVoiceChange);
+        assertEquals(voice, voicePackController.getCurrentVoice());
+      });
+
+  test(
+      'onVoicesChanged gets default voice when current' +
+          ' voice unavailable',
+      () => {
+        const voice =
+            createSpeechSynthesisVoice({lang: 'id', name: 'Google Cat'});
+        const defaultVoice =
+            createSpeechSynthesisVoice({lang: 'id', name: 'Google Komodo'});
+        speech.setVoices([defaultVoice]);
+        voicePackController.enableLang(voice.lang);
+        voicePackController.setCurrentVoice(voice);
+        onCurrentVoiceChange = false;
+
+        voicePackController.onVoicesChanged();
+
+        assertTrue(onCurrentVoiceChange);
+        assertEquals(defaultVoice, voicePackController.getCurrentVoice());
+      });
+
+  test('stopWaitingForSpeechExtension stops waiting for engine timeout', () => {
+    const lang = 'fi';
+    voicePackController.setServerStatus(
+        lang, mojoVoicePackStatusToVoicePackStatusEnum('kInstalled'));
+    let notificationType = null;
+    const notificationListener = {
+      notify(type: NotificationType, _lang?: string): void {
+        notificationType = type;
+      },
+    };
+    VoiceNotificationManager.getInstance().addListener(notificationListener);
+    const mockTimer = new MockTimer();
+    mockTimer.install();
+
+    voicePackController.onVoicesChanged();
+    voicePackController.stopWaitingForSpeechExtension();
+    mockTimer.tick(EXTENSION_RESPONSE_TIMEOUT_MS);
+    mockTimer.uninstall();
+
+    // Now download the voice since the speech engine responded.
+    assertEquals(NotificationType.DOWNLOADING, notificationType);
+  });
+
+  test('onPageLanguageChanged updates current language', () => {
+    const lang = 'el';
+    chrome.readingMode.baseLanguageForSpeech = lang;
+
+    voicePackController.onPageLanguageChanged();
+
+    assertEquals(lang, voicePackController.getCurrentLanguage());
+  });
+
+  test('onPageLanguageChanged when not installed, requests info', () => {
+    const lang = 'ja';
+    chrome.readingMode.baseLanguageForSpeech = lang;
+    voicePackController.setServerStatus(
+        lang, mojoVoicePackStatusToVoicePackStatusEnum('kNotInstalled'));
+
+
+    voicePackController.onPageLanguageChanged();
+    assertArrayEquals([lang], requestInfoLangs);
+
+    voicePackController.updateVoicePackStatus(lang, 'kNotInstalled');
+    assertEquals(
+        VoiceClientSideStatusCode.SENT_INSTALL_REQUEST,
+        voicePackController.getLocalStatus(lang));
+    assertArrayEquals([lang], installedLangs);
+  });
+
+  test('onPageLanguageChanged when previously failed does not install', () => {
+    const lang = 'ja';
+    chrome.readingMode.baseLanguageForSpeech = lang;
+    voicePackController.setServerStatus(
+        lang, mojoVoicePackStatusToVoicePackStatusEnum('kOther'));
+
+    voicePackController.onPageLanguageChanged();
+
+    assertFalse(!!voicePackController.getLocalStatus(lang));
+    assertArrayEquals([], requestInfoLangs);
+    assertArrayEquals([], installedLangs);
+  });
+
+  test('onPageLanguageChanged and already installing does not install', () => {
+    const lang = 'ja';
+    chrome.readingMode.baseLanguageForSpeech = lang;
+    voicePackController.setServerStatus(
+        lang, mojoVoicePackStatusToVoicePackStatusEnum('kInstalling'));
+
+    voicePackController.onPageLanguageChanged();
+
+    assertFalse(!!voicePackController.getLocalStatus(lang));
+    assertArrayEquals([], requestInfoLangs);
+    assertArrayEquals([], installedLangs);
+  });
+
+  test('onPageLanguageChanged and already installed does not install', () => {
+    const lang = 'ja';
+    chrome.readingMode.baseLanguageForSpeech = lang;
+    voicePackController.setServerStatus(
+        lang, mojoVoicePackStatusToVoicePackStatusEnum('kInstalled'));
+
+    voicePackController.onPageLanguageChanged();
+
+    assertFalse(!!voicePackController.getLocalStatus(lang));
+    assertArrayEquals([], requestInfoLangs);
+    assertArrayEquals([], installedLangs);
+  });
+
+  suite('updateVoicePackStatus', () => {
+    const lang = 'pt-br';
 
     setup(() => {
-      installedLangs = [];
-      uninstalledLangs = [];
-      requestInfoLangs = [];
-      chrome.readingMode.sendGetVoicePackInfoRequest = (lang) => {
-        requestInfoLangs.push(lang);
-      };
-      chrome.readingMode.sendInstallVoicePackRequest = (lang) => {
-        installedLangs.push(lang);
-      };
-      chrome.readingMode.sendUninstallVoiceRequest = (lang) => {
-        uninstalledLangs.push(lang);
-      };
-      const notificationListener = {
-        notify(type: NotificationType, _lang?: string): void {
-          notificationType = type;
-        },
-      };
-      VoiceNotificationManager.getInstance().addListener(notificationListener);
+      voicePackController.enableLang(lang);
+      chrome.readingMode.onLanguagePrefChange(lang, true);
     });
 
-    test('onVoicesChanged after new tts engine installs google locales', () => {
-      const lang1 = 'bn-bd';
-      const lang2 = 'hu-hu';
-      const lang3 = 'en';
-      voicePackController.enableLang(lang1);
-      voicePackController.enableLang(lang2);
-      voicePackController.enableLang(lang3);
+    test('with lang not marked for download does not install', () => {
+      voicePackController.updateVoicePackStatus(lang, 'kNotInstalled');
 
-      voicePackController.onTtsEngineInstalled();
-      voicePackController.onVoicesChanged();
-
-      assertArrayEquals(['bn', 'hu'], installedLangs);
-      assertFalse(voicePackController.hasAvailableVoices());
-    });
-
-    test('onVoicesChanged restores from prefs on first voices received', () => {
-      const lang = 'uk';
-      const name = 'Google Lemur';
-      const voice = createSpeechSynthesisVoice({lang, name});
-      speech.setVoices([voice]);
-      chrome.readingMode.getStoredVoice = () => name;
-
-      voicePackController.onVoicesChanged();
-
-      assertTrue(voicePackController.isLangEnabled(lang));
-      assertArrayEquals([voice], voicePackController.getAvailableVoices());
-    });
-
-    test('onVoicesChanged requests info', () => {
-      const lang1 = 'fi';
-      const lang2 = 'id';
-      const lang3 = 'da';
-      voicePackController.setServerStatus(
-          lang1, mojoVoicePackStatusToVoicePackStatusEnum('kInstalled'));
-      voicePackController.setServerStatus(
-          lang2, mojoVoicePackStatusToVoicePackStatusEnum('kAllocation'));
-      voicePackController.setServerStatus(
-          lang3, mojoVoicePackStatusToVoicePackStatusEnum('kNotInstalled'));
-
-      voicePackController.onVoicesChanged();
-
-      assertArrayEquals([lang1, lang2, lang3], requestInfoLangs);
-    });
-
-    test('onVoicesChanged waits for engine timeout', () => {
-      const lang = 'fi';
-      voicePackController.setServerStatus(
-          lang, mojoVoicePackStatusToVoicePackStatusEnum('kInstalled'));
-      const mockTimer = new MockTimer();
-      mockTimer.install();
-
-      voicePackController.onVoicesChanged();
-      mockTimer.tick(EXTENSION_RESPONSE_TIMEOUT_MS);
-      mockTimer.uninstall();
-
-      assertEquals(
-          NotificationType.GOOGLE_VOICES_UNAVAILABLE, notificationType);
-    });
-
-    test(
-        'onVoicesChanged does nothing when current voice' +
-            ' still available',
-        () => {
-          const voice = createSpeechSynthesisVoice({lang: 'id', name: 'Dog'});
-          speech.setVoices([voice]);
-          voicePackController.enableLang(voice.lang);
-          voicePackController.setCurrentVoice(voice);
-          onCurrentVoiceChange = false;
-
-          voicePackController.onVoicesChanged();
-
-          assertFalse(onCurrentVoiceChange);
-          assertEquals(voice, voicePackController.getCurrentVoice());
-        });
-
-    test(
-        'onVoicesChanged gets default voice when current' +
-            ' voice unavailable',
-        () => {
-          const voice =
-              createSpeechSynthesisVoice({lang: 'id', name: 'Google Cat'});
-          const defaultVoice =
-              createSpeechSynthesisVoice({lang: 'id', name: 'Google Komodo'});
-          speech.setVoices([defaultVoice]);
-          voicePackController.enableLang(voice.lang);
-          voicePackController.setCurrentVoice(voice);
-          onCurrentVoiceChange = false;
-
-          voicePackController.onVoicesChanged();
-
-          assertTrue(onCurrentVoiceChange);
-          assertEquals(defaultVoice, voicePackController.getCurrentVoice());
-        });
-
-    test(
-        'stopWaitingForSpeechExtension stops waiting for engine timeout',
-        () => {
-          const lang = 'fi';
-          voicePackController.setServerStatus(
-              lang, mojoVoicePackStatusToVoicePackStatusEnum('kInstalled'));
-          let notificationType = null;
-          const notificationListener = {
-            notify(type: NotificationType, _lang?: string): void {
-              notificationType = type;
-            },
-          };
-          VoiceNotificationManager.getInstance().addListener(
-              notificationListener);
-          const mockTimer = new MockTimer();
-          mockTimer.install();
-
-          voicePackController.onVoicesChanged();
-          voicePackController.stopWaitingForSpeechExtension();
-          mockTimer.tick(EXTENSION_RESPONSE_TIMEOUT_MS);
-          mockTimer.uninstall();
-
-          // Now download the voice since the speech engine responded.
-          assertEquals(NotificationType.DOWNLOADING, notificationType);
-        });
-
-    test(
-        'triggerInstall with lang not marked for download does nothing', () => {
-          const lang = 'es-es';
-
-          voicePackController.triggerInstall(lang);
-
-          assertEquals(
-              VoiceClientSideStatusCode.NOT_INSTALLED,
-              voicePackController.getLocalStatus(lang));
-          assertArrayEquals([], installedLangs);
-        });
-
-    test(
-        'triggerInstall with lang marked for download requests install', () => {
-          const lang = 'fil';
-
-          assertTrue(voicePackController.requestInstall(lang, false));
-          voicePackController.triggerInstall(lang);
-
-          assertEquals(
-              VoiceClientSideStatusCode.SENT_INSTALL_REQUEST,
-              voicePackController.getLocalStatus(lang));
-          assertArrayEquals([lang], installedLangs);
-        });
-
-    test('requestInstall with no status, requests install on retry', () => {
-      const lang = 'ja';
-
-      assertTrue(voicePackController.requestInstall(lang, true));
-
-      assertEquals(
-          VoiceClientSideStatusCode.SENT_INSTALL_REQUEST,
-          voicePackController.getLocalStatus(lang));
-      assertArrayEquals([lang], installedLangs);
-    });
-
-    test('requestInstall when not installed, requests info', () => {
-      const lang = 'ja';
-      voicePackController.setServerStatus(
-          lang, mojoVoicePackStatusToVoicePackStatusEnum('kNotInstalled'));
-
-      assertTrue(voicePackController.requestInstall(lang, true));
-      assertArrayEquals([lang], requestInfoLangs);
-
-      voicePackController.triggerInstall(lang);
-      assertEquals(
-          VoiceClientSideStatusCode.SENT_INSTALL_REQUEST,
-          voicePackController.getLocalStatus(lang));
-      assertArrayEquals([lang], installedLangs);
-    });
-
-    test(
-        'requestInstall when previously failed and should retry, retries',
-        () => {
-          const lang = 'ja';
-          voicePackController.setServerStatus(
-              lang, mojoVoicePackStatusToVoicePackStatusEnum('kOther'));
-
-          assertTrue(voicePackController.requestInstall(lang, true));
-
-          assertEquals(
-              VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY,
-              voicePackController.getLocalStatus(lang));
-          assertArrayEquals([lang], installedLangs);
-        });
-
-    test(
-        'requestInstall when previously failed and should not retry does' +
-            'nothing',
-        () => {
-          const lang = 'ja';
-          voicePackController.setServerStatus(
-              lang, mojoVoicePackStatusToVoicePackStatusEnum('kOther'));
-
-          assertFalse(voicePackController.requestInstall(lang, false));
-
-          assertFalse(!!voicePackController.getLocalStatus(lang));
-          assertArrayEquals([], requestInfoLangs);
-          assertArrayEquals([], installedLangs);
-        });
-
-    test('requestInstall and already installing does nothing', () => {
-      const lang = 'ja';
-      voicePackController.setServerStatus(
-          lang, mojoVoicePackStatusToVoicePackStatusEnum('kInstalling'));
-
-      assertFalse(voicePackController.requestInstall(lang, false));
-
-      assertFalse(!!voicePackController.getLocalStatus(lang));
-      assertArrayEquals([], requestInfoLangs);
-      assertArrayEquals([], installedLangs);
-    });
-
-    test('requestInstall and already installed does nothing', () => {
-      const lang = 'ja';
-      voicePackController.setServerStatus(
-          lang, mojoVoicePackStatusToVoicePackStatusEnum('kInstalled'));
-
-      assertFalse(voicePackController.requestInstall(lang, false));
-
-      assertFalse(!!voicePackController.getLocalStatus(lang));
-      assertArrayEquals([], requestInfoLangs);
-      assertArrayEquals([], installedLangs);
-    });
-
-    test('uninstall with voice pack lang uninstalls', () => {
-      const lang = 'km';
-      voicePackController.requestInstall(lang, false);
-      VoiceNotificationManager.getInstance().onVoiceStatusChange(
-          lang, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, []);
-
-      voicePackController.uninstall(lang);
-      assertEquals(NotificationType.NONE, notificationType);
-      assertArrayEquals([lang], requestInfoLangs);
-      assertArrayEquals([lang], uninstalledLangs);
-
-      voicePackController.triggerInstall(lang);
       assertEquals(
           VoiceClientSideStatusCode.NOT_INSTALLED,
           voicePackController.getLocalStatus(lang));
       assertArrayEquals([], installedLangs);
     });
 
-    test('uninstall with non voice pack lang does nothing', () => {
-      const lang = 'zh';
-      voicePackController.requestInstall(lang, false);
-      notificationType = null;
+    test('with lang marked for download requests install', () => {
+      chrome.readingMode.baseLanguageForSpeech = lang;
+      voicePackController.onPageLanguageChanged();
 
-      voicePackController.uninstall(lang);
+      voicePackController.updateVoicePackStatus(lang, 'kNotInstalled');
 
-      assertFalse(!!notificationType);
-      assertArrayEquals([], requestInfoLangs);
-      assertArrayEquals([], uninstalledLangs);
-      assertArrayEquals([], installedLangs);
+      assertEquals(
+          VoiceClientSideStatusCode.SENT_INSTALL_REQUEST,
+          voicePackController.getLocalStatus(lang));
+      const serverStatus = voicePackController.getServerStatus(lang);
+      assertTrue(!!serverStatus);
+      assertEquals(
+          VoicePackServerStatusSuccessCode.NOT_INSTALLED, serverStatus.code);
+      assertEquals('Successful response', serverStatus.id);
+      assertArrayEquals([lang], installedLangs);
+    });
+
+    test('with no other voices for language, disables language', () => {
+      setVoices(speech, []);
+
+      voicePackController.updateVoicePackStatus(lang, 'kOther');
+
+      assertFalse(voicePackController.isLangEnabled(lang));
+      assertFalse(
+          chrome.readingMode.getLanguagesEnabledInPref().includes(lang));
+    });
+
+    // <if expr="is_chromeos">
+    test('chromeOS should disable if no google voices', () => {
+      const lang1 = 'en-US';
+      const lang2 = 'fr';
+      const lang3 = 'yue';
+      voicePackController.enableLang(lang1);
+      chrome.readingMode.onLanguagePrefChange(lang1.toLowerCase(), true);
+      voicePackController.enableLang(lang2);
+      chrome.readingMode.onLanguagePrefChange(lang2, true);
+      voicePackController.enableLang(lang3);
+      chrome.readingMode.onLanguagePrefChange(lang3, true);
+      createAndSetVoices(speech, [
+        {lang: lang1, name: 'Henry'},
+        {lang: lang2, name: 'Google Thomas'},
+      ]);
+
+      voicePackController.updateVoicePackStatus(lang1, 'kOther');
+      voicePackController.updateVoicePackStatus(lang2, 'kOther');
+      voicePackController.updateVoicePackStatus(lang3, 'kOther');
+
+      const langsInPrefs = chrome.readingMode.getLanguagesEnabledInPref();
+      assertFalse(langsInPrefs.includes(lang1.toLowerCase()));
+      assertTrue(langsInPrefs.includes(lang2));
+      assertFalse(langsInPrefs.includes(lang3));
+      assertFalse(voicePackController.isLangEnabled(lang1));
+      assertTrue(voicePackController.isLangEnabled(lang2));
+      assertFalse(voicePackController.isLangEnabled(lang3));
+    });
+    // </if>
+
+    // <if expr="not is_chromeos">
+    test('desktop should only disable if no voices at all', () => {
+      const lang1 = 'en-US';
+      const lang2 = 'fr';
+      const lang3 = 'yue';
+      voicePackController.enableLang(lang1);
+      chrome.readingMode.onLanguagePrefChange(lang1.toLowerCase(), true);
+      voicePackController.enableLang(lang2);
+      chrome.readingMode.onLanguagePrefChange(lang2, true);
+      voicePackController.enableLang(lang3);
+      chrome.readingMode.onLanguagePrefChange(lang3, true);
+      createAndSetVoices(speech, [
+        {lang: lang1, name: 'Henry'},
+        {lang: lang2, name: 'Google Thomas'},
+      ]);
+      onEnabledLangsChange = false;
+
+      voicePackController.updateVoicePackStatus(lang1, 'kOther');
+      voicePackController.updateVoicePackStatus(lang2, 'kOther');
+      voicePackController.updateVoicePackStatus(lang3, 'kOther');
+
+      const langsInPrefs = chrome.readingMode.getLanguagesEnabledInPref();
+      assertTrue(langsInPrefs.includes(lang1.toLowerCase()));
+      assertTrue(langsInPrefs.includes(lang2));
+      assertFalse(langsInPrefs.includes(lang3), 'lang3 prefs');
+      assertTrue(voicePackController.isLangEnabled(lang1));
+      assertTrue(voicePackController.isLangEnabled(lang2));
+      assertFalse(voicePackController.isLangEnabled(lang3), 'lang3');
+    });
+    // </if>
+
+    test(
+        'when language-pack lang does not match voice lang, still disables it',
+        () => {
+          voicePackController.enableLang('it-it');
+          setVoices(speech, []);
+
+          voicePackController.updateVoicePackStatus('it', 'kOther');
+
+          assertFalse(voicePackController.isLangEnabled('it-it'), 'controller');
+          assertFalse(
+              chrome.readingMode.getLanguagesEnabledInPref().includes('it-it'),
+              'prefs');
+        });
+
+    test(
+        'when language-pack lang does not match voice lang, with ' +
+            'e-speak voices, still disables language',
+        () => {
+          voicePackController.enableLang('it-it');
+          createAndSetVoices(speech, [
+            {lang: 'it', name: 'eSpeak Italian '},
+          ]);
+
+          voicePackController.updateVoicePackStatus('it', 'kOther');
+
+          assertFalse(voicePackController.isLangEnabled('it-it'));
+          assertFalse(
+              chrome.readingMode.getLanguagesEnabledInPref().includes('it-it'));
+        });
+
+    test(
+        'and has other Google voices for language, keeps language enabled',
+        () => {
+          createAndSetVoices(speech, [
+            {lang: lang, name: 'Google Portuguese 1'},
+            {lang: lang, name: 'Google Portuguese 2'},
+          ]);
+          voicePackController.updateVoicePackStatus(lang, 'kOther');
+
+          assertTrue(voicePackController.isLangEnabled(lang), 'controller');
+          assertTrue(
+              chrome.readingMode.getLanguagesEnabledInPref().includes(lang),
+              'prefs');
+        });
+
+    test(
+        'unavailable if natural voices are in the list for a different lang',
+        () => {
+          const lang = 'fr';
+          createAndSetVoices(speech, [
+            {lang: 'it', name: 'Google Chicken (Natural)'},
+          ]);
+
+          voicePackController.updateVoicePackStatus(lang, 'kInstalled');
+
+          const serverStatus = voicePackController.getServerStatus(lang);
+          assertTrue(!!serverStatus, 'status is: ' + serverStatus?.id);
+          assertEquals(
+              VoicePackServerStatusSuccessCode.INSTALLED, serverStatus.code);
+          assertEquals('Successful response', serverStatus.id);
+          assertEquals(
+              VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE,
+              voicePackController.getLocalStatus(lang));
+        });
+
+    test(
+        'unavailable if system voices are in the list for a different lang',
+        () => {
+          const lang = 'de';
+
+          // Installed 'de' language pack, but the fake available voice list
+          // only has english voices.
+          voicePackController.updateVoicePackStatus(lang, 'kInstalled');
+
+          const serverStatus = voicePackController.getServerStatus(lang);
+          assertTrue(!!serverStatus);
+          assertEquals(
+              VoicePackServerStatusSuccessCode.INSTALLED, serverStatus.code);
+          assertEquals('Successful response', serverStatus.id);
+          assertEquals(
+              VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE,
+              voicePackController.getLocalStatus(lang));
+        });
+
+    test(
+        'unavailable if only system voices are in the list for this lang',
+        () => {
+          const lang = 'en';
+
+          voicePackController.updateVoicePackStatus(lang, 'kInstalled');
+
+          const serverStatus = voicePackController.getServerStatus(lang);
+          assertTrue(!!serverStatus);
+          assertEquals(
+              VoicePackServerStatusSuccessCode.INSTALLED, serverStatus.code);
+          assertEquals('Successful response', serverStatus.id);
+          assertEquals(
+              VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE,
+              voicePackController.getLocalStatus(lang));
+        });
+
+    test(
+        'available if natural voices are unsupported for this lang and voices' +
+            ' are available',
+        () => {
+          const lang = 'yue';
+          createAndSetVoices(speech, [
+            {lang: 'yue-hk', name: 'Cantonese'},
+          ]);
+
+          voicePackController.updateVoicePackStatus(lang, 'kInstalled');
+
+          const serverStatus = voicePackController.getServerStatus(lang);
+          assertTrue(!!serverStatus);
+          assertEquals(
+              VoicePackServerStatusSuccessCode.INSTALLED, serverStatus.code);
+          assertEquals('Successful response', serverStatus.id);
+          assertEquals(
+              VoiceClientSideStatusCode.AVAILABLE,
+              voicePackController.getLocalStatus(lang));
+        });
+
+    test(
+        'unavailable if natural voices are unsupported for this lang and ' +
+            'voices unavailable',
+        () => {
+          const lang = 'yue';
+
+          voicePackController.updateVoicePackStatus(lang, 'kInstalled');
+
+          const serverStatus = voicePackController.getServerStatus(lang);
+          assertTrue(!!serverStatus);
+          assertEquals(
+              VoicePackServerStatusSuccessCode.INSTALLED, serverStatus.code);
+          assertEquals('Successful response', serverStatus.id);
+          assertEquals(
+              VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE,
+              voicePackController.getLocalStatus(lang));
+        });
+
+    test('available if natural voices are installed for this lang', () => {
+      const lang = 'en-us';
+      // set installing status so that the old status is not empty.
+      voicePackController.updateVoicePackStatus(lang, 'kInstalling');
+      // set the voices on speech synthesis without triggering on voices
+      // changed, so we can verify that updateVoicePackStatus calls it.
+      createAndSetVoices(speech, [
+        {lang: lang, name: 'Wall-e (Natural)'},
+        {lang: lang, name: 'Andy (Natural)'},
+      ]);
+      voicePackController.updateVoicePackStatus(lang, 'kInstalled');
+
+      const serverStatus = voicePackController.getServerStatus(lang);
+      assertTrue(!!serverStatus);
+      assertEquals(
+          VoicePackServerStatusSuccessCode.INSTALLED, serverStatus.code);
+      assertEquals('Successful response', serverStatus.id);
+      // This would be INSTALLED_AND_UNAVIALABLE if the voice list wasn't
+      // refreshed.
+      assertEquals(
+          VoiceClientSideStatusCode.AVAILABLE,
+          voicePackController.getLocalStatus(lang));
+    });
+
+    test(
+        'switches to newly available voices if it\'s for the current language',
+        () => {
+          const lang = 'en-us';
+          chrome.readingMode.baseLanguageForSpeech = lang;
+          voicePackController.enableLang(lang);
+          chrome.readingMode.getStoredVoice = () => '';
+          createAndSetVoices(
+              speech, [{lang: lang, name: 'Google Cow (Natural)'}]);
+          voicePackController.updateVoicePackStatus(lang, 'kInstalled');
+
+          const selectedVoice = voicePackController.getCurrentVoice();
+          assertTrue(!!selectedVoice);
+          assertEquals(lang, selectedVoice.lang);
+          assertTrue(selectedVoice.name.includes('Natural'));
+        });
+
+    test(
+        'does not switch to newly available voices if it\'s not for the ' +
+            'current language',
+        () => {
+          const installedLang = 'en-us';
+          chrome.readingMode.baseLanguageForSpeech = 'pt-br';
+          voicePackController.enableLang(
+              chrome.readingMode.baseLanguageForSpeech);
+          const currentVoice = createSpeechSynthesisVoice({
+            name: 'Portuguese voice 1',
+            lang: chrome.readingMode.baseLanguageForSpeech,
+          });
+          voicePackController.setCurrentVoice(currentVoice);
+          chrome.readingMode.getStoredVoice = () => '';
+          setVoices(speech, [currentVoice]);
+
+          voicePackController.updateVoicePackStatus(
+              installedLang, 'kInstalled');
+
+          // The selected voice should stay the same as it was.
+          assertEquals(currentVoice, voicePackController.getCurrentVoice());
+        });
+
+    test('with error code marks the status', () => {
+      const lang = 'en-us';
+
+      voicePackController.updateVoicePackStatus(lang, 'kOther');
+
+      const serverStatus = voicePackController.getServerStatus(lang);
+      assertTrue(!!serverStatus);
+      assertEquals(serverStatus.code, VoicePackServerStatusErrorCode.OTHER);
+      assertEquals('Unsuccessful response', serverStatus.id);
+      assertEquals(
+          voicePackController.getLocalStatus(lang),
+          VoiceClientSideStatusCode.ERROR_INSTALLING);
     });
   });
 
