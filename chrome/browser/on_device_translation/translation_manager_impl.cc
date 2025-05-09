@@ -11,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/translate_kit_component_installer.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/on_device_translation/component_manager.h"
 #include "chrome/browser/on_device_translation/pref_names.h"
 #include "chrome/browser/on_device_translation/service_controller.h"
@@ -18,6 +19,9 @@
 #include "chrome/browser/on_device_translation/translation_manager_util.h"
 #include "chrome/browser/on_device_translation/translation_metrics.h"
 #include "chrome/browser/on_device_translation/translator.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/crx_file/id_util.h"
 #include "components/services/on_device_translation/public/cpp/features.h"
 #include "content/public/browser/render_frame_host.h"
@@ -26,7 +30,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom.h"
-#include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace on_device_translation {
@@ -103,6 +106,56 @@ TranslationManagerImpl* TranslationManagerImpl::GetOrCreate(
   return manager_ptr;
 }
 
+base::Value TranslationManagerImpl::GetInitializedTranslationsValue() {
+  return HostContentSettingsMapFactory::GetForProfile(browser_context())
+      ->GetWebsiteSetting(origin_.GetURL(), origin_.GetURL(),
+                          ContentSettingsType::INITIALIZED_TRANSLATIONS,
+                          /*info=*/nullptr);
+}
+
+bool TranslationManagerImpl::HasInitializedTranslator(
+    const std::string& source_language,
+    const std::string& target_language) {
+  base::Value initialized_translations_value =
+      GetInitializedTranslationsValue();
+  if (initialized_translations_value.is_dict()) {
+    return initialized_translations_value.GetDict()
+        .EnsureList(source_language)
+        ->contains(target_language);
+  }
+  return false;
+}
+
+void TranslationManagerImpl::SetTranslatorInitializedContentSetting(
+    base::Value initialized_translations) {
+  HostContentSettingsMapFactory::GetForProfile(browser_context())
+      ->SetWebsiteSettingDefaultScope(
+          origin_.GetURL(), origin_.GetURL(),
+          ContentSettingsType::INITIALIZED_TRANSLATIONS,
+          std::move(initialized_translations));
+}
+
+void TranslationManagerImpl::SetInitializedTranslation(
+    const std::string& source_language,
+    const std::string& target_language) {
+  base::Value initialized_translations_value =
+      GetInitializedTranslationsValue();
+
+  // Initialize a dictionary to store data, if none exists.
+  if (!initialized_translations_value.is_dict()) {
+    initialized_translations_value = base::Value(base::Value::Dict());
+  }
+
+  // Update or initialize the list of targets for the source language.
+  base::Value::List* target_languages_list =
+      initialized_translations_value.GetDict().EnsureList(source_language);
+  if (!target_languages_list->contains(target_language)) {
+    target_languages_list->Append(target_language);
+  }
+  SetTranslatorInitializedContentSetting(
+      std::move(initialized_translations_value));
+}
+
 void TranslationManagerImpl::CanCreateTranslator(
     TranslatorLanguageCodePtr source_lang,
     TranslatorLanguageCodePtr target_lang,
@@ -129,12 +182,6 @@ void TranslationManagerImpl::CanCreateTranslator(
                                       std::move(callback));
 }
 
-// Returns a delay upon initial translator creation to safeguard against
-// fingerprinting resulting from timing translator creation duration.
-//
-// The delay is triggered when the `availability()` of the translation
-// evaluates to "downloadable", even though all required resources for
-// translation have already been downloaded and available.
 base::TimeDelta TranslationManagerImpl::GetTranslatorDownloadDelay() {
   return base::RandTimeDelta(base::Seconds(2), base::Seconds(3));
 }
@@ -181,6 +228,16 @@ void TranslationManagerImpl::CreateTranslatorImpl(
                 std::move(client))
                 ->OnResult(CreateTranslatorResult::NewTranslator(
                     std::move(blink_remote)));
+
+            // TODO(crbug.com/414393698): Ensure stored WebsiteSetting is not
+            // updated when create is aborted prior to download completion.
+            //
+            // Update the corresponding website setting if a translator has
+            // been initialized as a result of translator creation.
+            if (!self->HasInitializedTranslator(source_language,
+                                                target_language)) {
+              self->SetInitializedTranslation(source_language, target_language);
+            }
           },
           weak_ptr_factory_.GetWeakPtr(), std::move(client), source_language,
           target_language));
@@ -295,12 +352,16 @@ void TranslationManagerImpl::TranslationAvailable(
     return;
   }
 
+  bool are_source_and_target_accept_or_english =
+      (IsInAcceptLanguage(accept_languages, source_language) ||
+       l10n_util::GetLanguage(source_language) == "en") &&
+      (IsInAcceptLanguage(accept_languages, target_language) ||
+       l10n_util::GetLanguage(target_language) == "en");
+
   bool mask_readily_result =
       base::FeatureList::IsEnabled(blink::features::kTranslationAPIV1) &&
-      ((!IsInAcceptLanguage(accept_languages, source_language) &&
-        l10n_util::GetLanguage(source_language) != "en") ||
-       (!IsInAcceptLanguage(accept_languages, target_language) &&
-        l10n_util::GetLanguage(target_language) != "en"));
+      !HasInitializedTranslator(source_language, target_language) &&
+      !are_source_and_target_accept_or_english;
 
   GetServiceController().CanTranslate(
       std::move(source_language), std::move(target_language),
@@ -309,12 +370,6 @@ void TranslationManagerImpl::TranslationAvailable(
              CanCreateTranslatorResult result) {
             if (result == CanCreateTranslatorResult::kReadily &&
                 mask_readily_result) {
-              // TODO(crbug.com/392073246): For translations containing a
-              // language outside of English + the user's preferred (accept)
-              // languages, check if a translator exists for the given origin
-              // before returning the "readily" availability value for the
-              // translation, instead of always returning an "after-download"
-              // result.
               std::move(callback).Run(
                   CanCreateTranslatorResult::
                       kAfterDownloadTranslatorCreationRequired);

@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/component_updater/translate_kit_component_installer.h"
 #include "chrome/browser/on_device_translation/component_manager.h"
 #include "chrome/browser/on_device_translation/constants.h"
@@ -47,6 +48,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1084,6 +1086,18 @@ class OnDeviceTranslationV1BrowserTest : public OnDeviceTranslationBrowserTest {
   }
   ~OnDeviceTranslationV1BrowserTest() override = default;
 
+ protected:
+  void ClearSiteContentSettings() {
+    content::BrowsingDataRemover* remover =
+        browser()->profile()->GetBrowsingDataRemover();
+    content::BrowsingDataRemoverCompletionObserver observer(remover);
+    remover->RemoveAndReply(
+        base::Time(), base::Time::Max(),
+        chrome_browsing_data_remover::DATA_TYPE_CONTENT_SETTINGS,
+        chrome_browsing_data_remover::ALL_ORIGIN_TYPES, &observer);
+    observer.BlockUntilCompletion();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -1124,10 +1138,29 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationV1BrowserTest,
                            "available");
 }
 
+// Confirms that `Translator.availability()` is not masked for a translation
+// containing only English or the user's preferred languages.
+IN_PROC_BROWSER_TEST_F(
+    OnDeviceTranslationV1BrowserTest,
+    TranslatorAvailabilityNotMasked_EnglishAndPreferredLanguages) {
+  SetSelectedLanguages("fr");
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.InstallMockTranslateKitComponent();
+  NavigateToEmptyPage();
+
+  // The language pack for the preferred language is installed already.
+  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Fr);
+
+  // When the required language packs are installed for translation
+  // between English and a preferred language, `availability()` is not masked
+  // prior to initial translator creation.
+  TestTranslationAvailable(browser(), "en", "fr", "available");
+}
+
 // Tests that `Translator.availability()` for a translation
 // containing a language outside of English + the user's preferred languages.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationV1BrowserTest,
-                       TranslatorAvailabilityMaskedForNonPreferredLanguages) {
+                       TranslatorAvailabilityMasked_ForNonPreferredLanguages) {
   SetSelectedLanguages("fr");
   MockComponentManager mock_component_manager(GetTempDir());
   mock_component_manager.InstallMockTranslateKitComponent();
@@ -1138,15 +1171,25 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationV1BrowserTest,
   TestTranslationAvailable(browser(), "fr", "abcxyz", "unavailable");
 
   // The Japanese language pack needs to be downloaded in order for
-  // translation between Japanese and French to be available.
-  TestTranslationAvailable(browser(), "ja", "fr", "downloadable");
+  // translation between English and Japanese to become "available".
+  TestTranslationAvailable(browser(), "en", "ja", "downloadable");
 
-  // Even if all required language packs are installed, the
-  // Japanese <-> French translation availability status remains
-  // "downloadable" because Japanese is not included in English +
-  // preferred languages.
+  // After installing the en-ja language pack, `availability()` is still masked
+  // as "downloadable", because Japanese is not one of the preferred languages,
+  // and the site has not yet initialized a translator for that specific pair.
   mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
-  TestTranslationAvailable(browser(), "ja", "fr", "downloadable");
+  TestTranslationAvailable(browser(), "en", "ja", "downloadable");
+
+  // `availability()` is no longer masked as "downloadable" after creating an
+  // initial translator for the given translation.
+  TestSimpleTranslationWorks(browser(), "en", "ja");
+  TestTranslationAvailable(browser(), "en", "ja", "available");
+
+  // When site data is cleared (the stored values for
+  // `ContentSettingsType::INTIALIZED_TRANSLATIONS` are cleared), the
+  // translation `availability()` becomes masked once again.
+  ClearSiteContentSettings();
+  TestTranslationAvailable(browser(), "en", "ja", "downloadable");
 }
 
 // A delay is triggered for a "downloadable" translation containing a language
@@ -1171,6 +1214,51 @@ IN_PROC_BROWSER_TEST_F(
   // given that it is not a preferred language.
   EXPECT_CALL(manager, GetTranslatorDownloadDelay()).Times(1);
   TestSimpleTranslationWorks(browser(), "en", "ja");
+
+  // The delay does not occur on subsequent uses of the same language pair.
+  EXPECT_CALL(manager, GetTranslatorDownloadDelay()).Times(0);
+  TestSimpleTranslationWorks(browser(), "en", "ja");
+}
+
+// A delay is triggered when a second translator for a given translation is
+// created during the delay time window of an initial translator's creation
+// (which is also expected to trigger a delay).
+IN_PROC_BROWSER_TEST_F(
+    OnDeviceTranslationV1BrowserTest,
+    CreateTranslator_Delay_ForTranslatorCreatedDuringInitialTranslatorCreationWithDelay) {
+  SetSelectedLanguages("es");
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.InstallMockTranslateKitComponent();
+  NavigateToEmptyPage();
+
+  auto manager =
+      MockTranslationManagerImpl(GetBrowserContext(), GetLastCommittedOrigin());
+
+  // Simulate the download of an additional language pack (Japanese) by another
+  // site.
+  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
+
+  // The added delay should be triggered twice, once for each translator
+  // creation.
+  EXPECT_CALL(manager, GetTranslatorDownloadDelay()).Times(2);
+  ASSERT_EQ(EvalJs(base::StringPrintf(R"(
+  (async () => {
+    const sourceLanguage = '%s';
+    const targetLanguage = '%s';
+    try {
+      await Promise.all([
+        Translator.create({sourceLanguage, targetLanguage}),
+        Translator.create({sourceLanguage, targetLanguage}),
+      ]);
+      return 'OK';
+    } catch (e) {
+      return e.toString();
+    }
+  })();
+  )",
+                                      "en", "ja"))
+                .ExtractString(),
+            "OK");
 }
 
 // No delay is triggered for a "downloadable" translation between English +
