@@ -460,7 +460,7 @@ void HeadlessContentBrowserClient::CreateThrottlesForNavigation(
   content::NavigationHandle& handle = registry.GetNavigationHandle();
   if (browser_->GetPrefs()) {
     registry.AddThrottle(std::make_unique<PolicyBlocklistNavigationThrottle>(
-        &handle, handle.GetWebContents()->GetBrowserContext()));
+        registry, handle.GetWebContents()->GetBrowserContext()));
   }
 }
 #endif  // defined(HEADLESS_USE_POLICY)

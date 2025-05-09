@@ -1130,6 +1130,11 @@ NavigationRequest* NavigationSimulatorImpl::GetNavigationHandle() {
   return request_;
 }
 
+NavigationThrottleRegistry&
+NavigationSimulatorImpl::GetNavigationThrottleRegistry() {
+  return *GetNavigationHandle()->GetNavigationThrottleRunnerForTesting();
+}
+
 content::GlobalRequestID NavigationSimulatorImpl::GetGlobalRequestID() {
   CHECK_GT(state_, STARTED) << "The GlobalRequestID is not available until "
                                "after the navigation has completed "

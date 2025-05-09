@@ -326,7 +326,7 @@ void WebEngineContentBrowserClient::CreateThrottlesForNavigation(
 
   if (explicit_sites_filter_error_page) {
     registry.AddThrottle(std::make_unique<SafeSitesNavigationThrottle>(
-        &navigation_handle,
+        registry,
         navigation_handle.GetWebContents()->GetBrowserContext(),
         *explicit_sites_filter_error_page));
   }

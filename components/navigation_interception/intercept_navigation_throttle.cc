@@ -19,11 +19,11 @@ BASE_FEATURE(kAsyncCheck,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 InterceptNavigationThrottle::InterceptNavigationThrottle(
-    content::NavigationHandle* navigation_handle,
+    content::NavigationThrottleRegistry& registry,
     CheckCallback should_ignore_callback,
     SynchronyMode async_mode,
     std::optional<base::RepeatingClosure> request_finish_async_work_callback)
-    : content::NavigationThrottle(navigation_handle),
+    : content::NavigationThrottle(registry),
       should_ignore_callback_(should_ignore_callback),
       request_finish_async_work_callback_(request_finish_async_work_callback),
       ui_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),

@@ -83,16 +83,17 @@ class InterceptNavigationThrottleTest
     }
   }
 
-  std::unique_ptr<content::NavigationThrottle> CreateThrottle(
+  void CreateAndAddThrottle(
       InterceptNavigationThrottle::CheckCallback callback,
       base::RepeatingClosure request_finish_closure,
-      content::NavigationHandle* handle) {
+      content::NavigationThrottleRegistry& registry) {
     std::unique_ptr<InterceptNavigationThrottle> throttle =
         std::make_unique<InterceptNavigationThrottle>(
-            handle, callback, navigation_interception::SynchronyMode::kAsync,
+            registry, callback,
+            navigation_interception::SynchronyMode::kAsync,
             request_finish_closure);
     throttle_ = throttle.get()->GetWeakPtrForTesting();
-    return throttle;
+    registry.AddThrottle(std::move(throttle));
   }
 
   std::unique_ptr<content::TestNavigationThrottleInserter>
@@ -100,7 +101,7 @@ class InterceptNavigationThrottleTest
     return std::make_unique<content::TestNavigationThrottleInserter>(
         web_contents(),
         base::BindRepeating(
-            &InterceptNavigationThrottleTest::CreateThrottle,
+            &InterceptNavigationThrottleTest::CreateAndAddThrottle,
             base::Unretained(this),
             base::BindRepeating(
                 &MockInterceptCallbackReceiver::ShouldIgnoreNavigation,
@@ -120,16 +121,19 @@ class InterceptNavigationThrottleTest
              NavigationThrottle::PROCEED;
     };
 
-    if (is_post)
+    if (is_post) {
       simulator->SetMethod("POST");
+    }
 
     simulator->Start();
-    if (failed(simulator.get()))
+    if (failed(simulator.get())) {
       return simulator->GetLastThrottleCheckResult();
+    }
     for (const GURL& redirect_url : redirect_chain) {
       simulator->Redirect(redirect_url);
-      if (failed(simulator.get()))
+      if (failed(simulator.get())) {
         return simulator->GetLastThrottleCheckResult();
+      }
     }
     simulator->Commit();
     return simulator->GetLastThrottleCheckResult();

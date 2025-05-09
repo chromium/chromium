@@ -115,6 +115,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
 
   NavigationThrottle::ThrottleCheckResult GetLastThrottleCheckResult() override;
   NavigationRequest* GetNavigationHandle() override;
+  NavigationThrottleRegistry& GetNavigationThrottleRegistry() override;
   content::GlobalRequestID GetGlobalRequestID() override;
 
   void SetKeepLoading(bool keep_loading) override;

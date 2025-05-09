@@ -137,9 +137,8 @@ InterceptNavigationDelegate* InterceptNavigationDelegate::Get(
 }
 
 // static
-std::unique_ptr<content::NavigationThrottle>
-InterceptNavigationDelegate::MaybeCreateThrottleFor(
-    content::NavigationHandle* handle,
+void InterceptNavigationDelegate::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry,
     navigation_interception::SynchronyMode mode) {
   // Navigations in a subframe or non-primary frame tree should not be
   // intercepted. As examples of a non-primary frame tree, a navigation
@@ -153,26 +152,28 @@ InterceptNavigationDelegate::MaybeCreateThrottleFor(
   // have been launched (without launching the intent). It's also not clear
   // what the right behavior for <portal> elements is.
   // https://crbug.com/1227659.
-  if (!handle->IsInPrimaryMainFrame())
-    return nullptr;
-
-  InterceptNavigationDelegate* intercept_navigation_delegate =
-      InterceptNavigationDelegate::Get(handle->GetWebContents());
-
-  if (!intercept_navigation_delegate) {
-    return std::make_unique<InterceptNavigationThrottle>(
-        handle, base::BindRepeating(&AllowNavigationToProceed), mode,
-        base::DoNothing());
+  if (!registry.GetNavigationHandle().IsInPrimaryMainFrame()) {
+    return;
   }
 
-  return std::make_unique<InterceptNavigationThrottle>(
-      handle,
+  InterceptNavigationDelegate* intercept_navigation_delegate =
+      InterceptNavigationDelegate::Get(
+          registry.GetNavigationHandle().GetWebContents());
+
+  if (!intercept_navigation_delegate) {
+    registry.AddThrottle(std::make_unique<InterceptNavigationThrottle>(
+        registry, base::BindRepeating(&AllowNavigationToProceed), mode,
+        base::DoNothing()));
+  } else {
+  registry.AddThrottle(std::make_unique<InterceptNavigationThrottle>(
+      registry,
       base::BindRepeating(&InterceptNavigationDelegate::ShouldIgnoreNavigation,
                           base::Unretained(intercept_navigation_delegate)),
       mode,
       base::BindRepeating(
           &InterceptNavigationDelegate::RequestFinishPendingShouldIgnoreCheck,
-          base::Unretained(intercept_navigation_delegate)));
+          base::Unretained(intercept_navigation_delegate))));
+  }
 }
 
 InterceptNavigationDelegate::InterceptNavigationDelegate(
@@ -278,21 +279,24 @@ void InterceptNavigationDelegate::HandleSubframeExternalProtocol(
   GURL escaped_url = escape_external_handler_value_
                          ? GURL(base::EscapeExternalHandlerValue(url.spec()))
                          : url;
-  if (!escaped_url.is_valid())
+  if (!escaped_url.is_valid()) {
     return;
+  }
 
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jdelegate = weak_jdelegate_.get(env);
 
-  if (jdelegate.is_null())
+  if (jdelegate.is_null()) {
     return;
+  }
   ScopedJavaLocalRef<jobject> j_gurl =
       Java_InterceptNavigationDelegate_handleSubframeExternalProtocol(
           env, jdelegate, url::GURLAndroid::FromNativeGURL(env, escaped_url),
           page_transition, has_user_gesture,
           initiating_origin ? initiating_origin->ToJavaObject(env) : nullptr);
-  if (j_gurl.is_null())
+  if (j_gurl.is_null()) {
     return;
+  }
   subframe_redirect_url_ =
       std::make_unique<GURL>(url::GURLAndroid::ToNativeGURL(env, j_gurl));
 
@@ -335,8 +339,9 @@ void InterceptNavigationDelegate::MaybeHandleSubframeAction() {
 void InterceptNavigationDelegate::OnResourceRequestWithGesture() {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jdelegate = weak_jdelegate_.get(env);
-  if (jdelegate.is_null())
+  if (jdelegate.is_null()) {
     return;
+  }
   Java_InterceptNavigationDelegate_onResourceRequestWithGesture(env, jdelegate);
 }
 

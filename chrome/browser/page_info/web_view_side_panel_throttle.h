@@ -12,25 +12,27 @@ class GURL;
 
 namespace content {
 struct OpenURLParams;
-class NavigationHandle;
 class NavigationThrottle;
+class NavigationThrottleRegistry;
 }  // namespace content
 
 extern const char kWebViewSidePanelWebContentsUserDataKey[];
 
 // Holds a handler to open a URL in a new tab in the browser that the sidepanel
 // of this webcontents is associated with. The NavigationThrottle from
-// |MaybeCreateWebViewSidePanelThrottleFor| will check if this UserData is present
-// and if it is present, intercepts navigations if |IsNavigationAllowed|
-// and opens them using |OpenUrlInBrowser| instead.
-class WebViewSidePanelWebContentsUserData : public base::SupportsUserData::Data {
+// `MaybeCreateAndAddWebViewSidePanelThrottle` will check if this UserData is
+// present and if it is present, intercepts navigations if `IsNavigationAllowed`
+// and opens them using `OpenUrlInBrowser` instead.
+class WebViewSidePanelWebContentsUserData
+    : public base::SupportsUserData::Data {
  public:
   class Delegate {
    public:
     virtual void OpenUrlInBrowser(const content::OpenURLParams& params) = 0;
   };
 
-  explicit WebViewSidePanelWebContentsUserData(base::WeakPtr<Delegate> delegate);
+  explicit WebViewSidePanelWebContentsUserData(
+      base::WeakPtr<Delegate> delegate);
   ~WebViewSidePanelWebContentsUserData() override;
 
   Delegate* delegate() { return delegate_.get(); }
@@ -41,7 +43,7 @@ class WebViewSidePanelWebContentsUserData : public base::SupportsUserData::Data 
 
 // Installs a NavigationThrottle if an WebViewSidePanelWebContentsUserData is
 // associated with the WebContents of this navigation.
-std::unique_ptr<content::NavigationThrottle>
-MaybeCreateWebViewSidePanelThrottleFor(content::NavigationHandle* handle);
+void MaybeCreateAndAddWebViewSidePanelThrottle(
+    content::NavigationThrottleRegistry& registry);
 
 #endif  // CHROME_BROWSER_PAGE_INFO_WEB_VIEW_SIDE_PANEL_THROTTLE_H_

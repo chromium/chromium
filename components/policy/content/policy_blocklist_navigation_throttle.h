@@ -15,6 +15,7 @@ class PrefService;
 
 namespace content {
 class BrowserContext;
+class NavigationThrottleRegistry;
 }  // namespace content
 
 // PolicyBlocklistNavigationThrottle provides a simple way to block a navigation
@@ -26,7 +27,7 @@ class BrowserContext;
 class PolicyBlocklistNavigationThrottle : public content::NavigationThrottle {
  public:
   PolicyBlocklistNavigationThrottle(
-      content::NavigationHandle* navigation_handle,
+      content::NavigationThrottleRegistry& registry,
       content::BrowserContext* context);
   PolicyBlocklistNavigationThrottle(const PolicyBlocklistNavigationThrottle&) =
       delete;

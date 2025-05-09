@@ -5,13 +5,8 @@
 #ifndef CHROME_BROWSER_APPS_PLATFORM_APPS_PLATFORM_APP_NAVIGATION_REDIRECTOR_H_
 #define CHROME_BROWSER_APPS_PLATFORM_APPS_PLATFORM_APP_NAVIGATION_REDIRECTOR_H_
 
-#include <memory>
-
-#include "content/public/browser/navigation_throttle.h"
-
 namespace content {
-class NavigationHandle;
-class NavigationThrottle;
+class NavigationThrottleRegistry;
 }  // namespace content
 
 // This class creates navigation throttles that redirect navigations to URLs for
@@ -19,8 +14,7 @@ class NavigationThrottle;
 // manifest key. Note that this is a UI thread class.
 class PlatformAppNavigationRedirector {
  public:
-  static std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottleFor(
-      content::NavigationHandle* handle);
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
   PlatformAppNavigationRedirector(const PlatformAppNavigationRedirector&) =
       delete;
   PlatformAppNavigationRedirector& operator=(

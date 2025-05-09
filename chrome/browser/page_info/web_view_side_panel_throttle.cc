@@ -8,6 +8,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
@@ -45,47 +46,50 @@ WebViewSidePanelWebContentsUserData::WebViewSidePanelWebContentsUserData(
 WebViewSidePanelWebContentsUserData::~WebViewSidePanelWebContentsUserData() =
     default;
 
-std::unique_ptr<content::NavigationThrottle>
-MaybeCreateWebViewSidePanelThrottleFor(content::NavigationHandle* handle) {
+void MaybeCreateAndAddWebViewSidePanelThrottle(
+    content::NavigationThrottleRegistry& registry) {
   // Only install throttle for WebContents that are in the WebViewSidePanel.
-  if (!handle || !handle->IsInPrimaryMainFrame() || !handle->GetWebContents() ||
-      !handle->GetWebContents()->GetUserData(
+  auto& handle = registry.GetNavigationHandle();
+  if (!handle.IsInPrimaryMainFrame() || !handle.GetWebContents() ||
+      !handle.GetWebContents()->GetUserData(
           kWebViewSidePanelWebContentsUserDataKey)) {
-    return nullptr;
+    return;
   }
-  const GURL& observed_url = handle->GetURL();
-  return std::make_unique<navigation_interception::InterceptNavigationThrottle>(
-      handle,
-      base::BindRepeating(
-          [](const GURL& observed_url, content::NavigationHandle* handle,
-             bool should_run_async,
-             navigation_interception::InterceptNavigationThrottle::
-                 ResultCallback result_callback) {
-            DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-            CHECK(!should_run_async);
-            auto* data = static_cast<WebViewSidePanelWebContentsUserData*>(
-                handle->GetWebContents()->GetUserData(
-                    kWebViewSidePanelWebContentsUserDataKey));
-            // The delegate is stored in a WeakPtr. Check if it is still there.
-            if (!data->delegate()) {
-              std::move(result_callback).Run(true);
-              return;
-            }
-            const GURL& next_url = handle->GetURL();
-            if (CanNavigateInPanel(handle, observed_url, next_url)) {
-              std::move(result_callback).Run(false);
-              return;
-            }
+  const GURL& observed_url = handle.GetURL();
+  registry.AddThrottle(
+      std::make_unique<navigation_interception::InterceptNavigationThrottle>(
+          registry,
+          base::BindRepeating(
+              [](const GURL& observed_url, content::NavigationHandle* handle,
+                 bool should_run_async,
+                 navigation_interception::InterceptNavigationThrottle::
+                     ResultCallback result_callback) {
+                DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+                CHECK(!should_run_async);
+                auto* data = static_cast<WebViewSidePanelWebContentsUserData*>(
+                    handle->GetWebContents()->GetUserData(
+                        kWebViewSidePanelWebContentsUserDataKey));
+                // The delegate is stored in a WeakPtr. Check if it is still
+                // there.
+                if (!data->delegate()) {
+                  std::move(result_callback).Run(true);
+                  return;
+                }
+                const GURL& next_url = handle->GetURL();
+                if (CanNavigateInPanel(handle, observed_url, next_url)) {
+                  std::move(result_callback).Run(false);
+                  return;
+                }
 
-            content::OpenURLParams params(
-                next_url, content::Referrer(handle->GetReferrer()),
-                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                handle->GetPageTransition(), handle->IsRendererInitiated());
-            params.initiator_origin = handle->GetInitiatorOrigin();
-            params.initiator_base_url = handle->GetInitiatorBaseUrl();
-            data->delegate()->OpenUrlInBrowser(params);
-            std::move(result_callback).Run(true);
-          },
-          observed_url),
-      navigation_interception::SynchronyMode::kSync, std::nullopt);
+                content::OpenURLParams params(
+                    next_url, content::Referrer(handle->GetReferrer()),
+                    WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                    handle->GetPageTransition(), handle->IsRendererInitiated());
+                params.initiator_origin = handle->GetInitiatorOrigin();
+                params.initiator_base_url = handle->GetInitiatorBaseUrl();
+                data->delegate()->OpenUrlInBrowser(params);
+                std::move(result_callback).Run(true);
+              },
+              observed_url),
+          navigation_interception::SynchronyMode::kSync, std::nullopt));
 }

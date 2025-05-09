@@ -84,30 +84,30 @@ void LaunchAppWithUrl(
 }  // namespace
 
 // static
-std::unique_ptr<content::NavigationThrottle>
-PlatformAppNavigationRedirector::MaybeCreateThrottleFor(
-    content::NavigationHandle* handle) {
+void PlatformAppNavigationRedirector::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DVLOG(1) << "Considering URL for redirection: " << handle->GetURL().spec();
+  content::NavigationHandle& handle = registry.GetNavigationHandle();
+  DVLOG(1) << "Considering URL for redirection: " << handle.GetURL().spec();
 
   content::BrowserContext* browser_context =
-      handle->GetWebContents()->GetBrowserContext();
+      handle.GetWebContents()->GetBrowserContext();
   DCHECK(browser_context);
 
-  if (!handle->IsInOutermostMainFrame()) {
+  if (!handle.IsInOutermostMainFrame()) {
     DVLOG(1) << "Skip redirection: navigation is from an iframe or inner page";
-    return nullptr;
+    return;
   }
 
   // Support only GET for now.
-  if (handle->IsPost()) {
+  if (handle.IsPost()) {
     DVLOG(1) << "Skip redirection: method is not GET";
-    return nullptr;
+    return;
   }
 
-  if (!handle->GetURL().SchemeIsHTTPOrHTTPS()) {
+  if (!handle.GetURL().SchemeIsHTTPOrHTTPS()) {
     DVLOG(1) << "Skip redirection: scheme is not HTTP or HTTPS";
-    return nullptr;
+    return;
   }
 
   // Redirect URLs to apps only in regular mode. Technically, apps are not
@@ -116,7 +116,7 @@ PlatformAppNavigationRedirector::MaybeCreateThrottleFor(
   Profile* profile = Profile::FromBrowserContext(browser_context);
   if (profile->IsOffTheRecord()) {
     DVLOG(1) << "Skip redirection: unsupported in incognito and guest modes";
-    return nullptr;
+    return;
   }
 
   for (const auto& extension_ref :
@@ -129,19 +129,20 @@ PlatformAppNavigationRedirector::MaybeCreateThrottleFor(
 
     const UrlHandlerInfo* handler =
         UrlHandlers::GetMatchingPlatformAppUrlHandler(extension_ref.get(),
-                                                      handle->GetURL());
+                                                      handle.GetURL());
     if (handler) {
       DVLOG(1) << "Found matching app handler for redirection: "
                << extension_ref->name() << "(" << extension_ref->id()
                << "):" << handler->id;
-      return std::make_unique<
-          navigation_interception::InterceptNavigationThrottle>(
-          handle,
-          base::BindRepeating(&LaunchAppWithUrl, extension_ref, handler->id),
-          navigation_interception::SynchronyMode::kSync, std::nullopt);
+      registry.AddThrottle(
+          std::make_unique<
+              navigation_interception::InterceptNavigationThrottle>(
+              registry,
+              base::BindRepeating(&LaunchAppWithUrl, extension_ref,
+                                  handler->id),
+              navigation_interception::SynchronyMode::kSync, std::nullopt));
     }
   }
 
   DVLOG(1) << "Skipping redirection: no matching app handler found";
-  return nullptr;
 }

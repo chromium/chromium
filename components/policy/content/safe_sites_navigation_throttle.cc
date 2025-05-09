@@ -13,10 +13,10 @@
 // Use of Unretained for is safe because it is called synchronously from this
 // object.
 SafeSitesNavigationThrottle::SafeSitesNavigationThrottle(
-    content::NavigationHandle* navigation_handle,
+    content::NavigationThrottleRegistry& registry,
     content::BrowserContext* context,
     std::optional<std::string_view> safe_sites_error_page_content)
-    : Client(navigation_handle),
+    : Client(registry),
       safe_search_service_(SafeSearchFactory::GetForBrowserContext(context)),
       safe_sites_error_page_content_(std::move(safe_sites_error_page_content)) {
   SetDeferredResultCallback(base::BindRepeating(

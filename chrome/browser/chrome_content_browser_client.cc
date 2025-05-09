@@ -5419,10 +5419,8 @@ void ChromeContentBrowserClient::CreateThrottlesForNavigation(
       prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
           handle.GetWebContents());
   if (!no_state_prefetch_contents) {
-    registry.MaybeAddThrottle(
-        navigation_interception::InterceptNavigationDelegate::
-            MaybeCreateThrottleFor(
-                &handle, navigation_interception::SynchronyMode::kAsync));
+    navigation_interception::InterceptNavigationDelegate::MaybeCreateAndAdd(
+        registry, navigation_interception::SynchronyMode::kAsync);
   }
   registry.AddThrottle(InterceptOMADownloadNavigationThrottle::Create(&handle));
 
@@ -5436,8 +5434,7 @@ void ChromeContentBrowserClient::CreateThrottlesForNavigation(
 #elif BUILDFLAG(ENABLE_PLATFORM_APPS)
   // Redirect some navigations to apps that have registered matching URL
   // handlers ('url_handlers' in the manifest).
-  registry.MaybeAddThrottle(
-      PlatformAppNavigationRedirector::MaybeCreateThrottleFor(&handle));
+  PlatformAppNavigationRedirector::MaybeCreateAndAdd(registry);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -5556,7 +5553,7 @@ void ChromeContentBrowserClient::CreateThrottlesForNavigation(
       PasswordManagerNavigationThrottle::MaybeCreateThrottleFor(&handle));
 
   registry.AddThrottle(std::make_unique<PolicyBlocklistNavigationThrottle>(
-      &handle, handle.GetWebContents()->GetBrowserContext()));
+      registry, handle.GetWebContents()->GetBrowserContext()));
 
   // Before setting up SSL error detection, configure SSLErrorHandler to invoke
   // the relevant extension API whenever an SSL interstitial is shown.
@@ -5636,9 +5633,8 @@ void ChromeContentBrowserClient::CreateThrottlesForNavigation(
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  registry.MaybeAddThrottle(
-      browser_switcher::BrowserSwitcherNavigationThrottle::
-          MaybeCreateThrottleFor(&handle));
+  browser_switcher::BrowserSwitcherNavigationThrottle::MaybeCreateAndAdd(
+      registry);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -5712,7 +5708,7 @@ void ChromeContentBrowserClient::CreateThrottlesForNavigation(
   registry.MaybeAddThrottle(MaybeCreateNavigationAblationThrottle(&handle));
 
 #if !BUILDFLAG(IS_ANDROID)
-  registry.MaybeAddThrottle(MaybeCreateWebViewSidePanelThrottleFor(&handle));
+  MaybeCreateAndAddWebViewSidePanelThrottle(registry);
 #endif
 
   auto* privacy_sandbox_settings =

@@ -14,6 +14,7 @@
 
 namespace content {
 class NavigationHandle;
+class NavigationThrottleRegistry;
 }
 
 namespace navigation_interception {
@@ -39,7 +40,7 @@ class InterceptNavigationThrottle : public content::NavigationThrottle {
       CheckCallback;
 
   InterceptNavigationThrottle(
-      content::NavigationHandle* navigation_handle,
+      content::NavigationThrottleRegistry& registry,
       CheckCallback should_ignore_callback,
       SynchronyMode async_mode,
       std::optional<base::RepeatingClosure> request_finish_async_work_callback);

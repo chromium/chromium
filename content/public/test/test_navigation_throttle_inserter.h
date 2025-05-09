@@ -13,11 +13,16 @@
 namespace content {
 
 class NavigationThrottle;
+class NavigationThrottleRegistry;
 class WebContents;
 
+// TODO(https://crbug.com/412524375): Remove old callback type.
 using ThrottleInsertionCallback =
     base::RepeatingCallback<std::unique_ptr<NavigationThrottle>(
         NavigationHandle*)>;
+
+using NewThrottleInsertionCallback =
+    base::RepeatingCallback<void(NavigationThrottleRegistry& registry)>;
 
 // This class is instantiated with a NavigationThrottle factory callback, and
 //  - Calls the callback in every DidStartNavigation.
@@ -25,8 +30,12 @@ using ThrottleInsertionCallback =
 //    navigation.
 class TestNavigationThrottleInserter : public WebContentsObserver {
  public:
+  // TODO(https://crbug.com/412524375): Remove old constructor with a legacy
+  // callback type.
   TestNavigationThrottleInserter(WebContents* web_contents,
                                  ThrottleInsertionCallback callback);
+  TestNavigationThrottleInserter(WebContents* web_contents,
+                                 NewThrottleInsertionCallback callback);
 
   TestNavigationThrottleInserter(const TestNavigationThrottleInserter&) =
       delete;
@@ -40,6 +49,7 @@ class TestNavigationThrottleInserter : public WebContentsObserver {
 
  private:
   ThrottleInsertionCallback callback_;
+  NewThrottleInsertionCallback new_callback_;
 };
 
 }  // namespace content

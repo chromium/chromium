@@ -10,6 +10,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_navigation_throttle_inserter.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -97,9 +98,9 @@ class EventMonitorNavigationThrottleClient final
     : public ProceedUntilResponseNavigationThrottle::Client {
  public:
   EventMonitorNavigationThrottleClient(
-      content::NavigationHandle* navigation_handle,
+      content::NavigationThrottleRegistry& registry,
       raw_ptr<EventExpectation> event_expectation)
-      : ProceedUntilResponseNavigationThrottle::Client(navigation_handle),
+      : ProceedUntilResponseNavigationThrottle::Client(registry),
         event_expectation_(event_expectation) {}
 
  private:
@@ -130,8 +131,7 @@ class EventMonitorNavigationThrottleClient final
 }  // namespace
 
 class ProceedUntilResponseNavigationThrottleTest
-    : public content::RenderViewHostTestHarness,
-      public content::WebContentsObserver {
+    : public content::RenderViewHostTestHarness {
  public:
   ProceedUntilResponseNavigationThrottleTest() = default;
   ProceedUntilResponseNavigationThrottleTest(
@@ -145,6 +145,12 @@ class ProceedUntilResponseNavigationThrottleTest
       const GURL& url) {
     auto navigation_simulator =
         content::NavigationSimulator::CreateRendererInitiated(url, main_rfh());
+    auto throttle_inserter = std::make_unique<
+        content::TestNavigationThrottleInserter>(
+        web_contents(),
+        base::BindRepeating(
+            &ProceedUntilResponseNavigationThrottleTest::CreateAndAddThrottle,
+            base::Unretained(this)));
     navigation_simulator->SetAutoAdvance(false);
     navigation_simulator->Start();
     return navigation_simulator;
@@ -156,20 +162,16 @@ class ProceedUntilResponseNavigationThrottleTest
   // content::RenderViewHostTestHarness implementation:
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
-    Observe(content::RenderViewHostTestHarness::web_contents());
   }
 
-  // content::WebContentsObserver implementation:
-  void DidStartNavigation(
-      content::NavigationHandle* navigation_handle) override {
+  void CreateAndAddThrottle(content::NavigationThrottleRegistry& registry) {
     std::unique_ptr<ProceedUntilResponseNavigationThrottle::Client>
         monitor_throttle =
             std::make_unique<EventMonitorNavigationThrottleClient>(
-                navigation_handle, &event_expectation_);
-    auto throttle = std::make_unique<ProceedUntilResponseNavigationThrottle>(
-        navigation_handle, std::move(monitor_throttle), std::nullopt);
-
-    navigation_handle->RegisterThrottleForTesting(std::move(throttle));
+                registry, &event_expectation_);
+    registry.AddThrottle(
+        std::make_unique<ProceedUntilResponseNavigationThrottle>(
+            registry, std::move(monitor_throttle), std::nullopt));
   }
 
   EventExpectation event_expectation_;

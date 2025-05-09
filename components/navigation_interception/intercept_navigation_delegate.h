@@ -79,9 +79,8 @@ class InterceptNavigationDelegate : public base::SupportsUserData::Data {
 
   // Creates a InterceptNavigationThrottle that will direct all callbacks to
   // the InterceptNavigationDelegate.
-  static std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottleFor(
-      content::NavigationHandle* handle,
-      navigation_interception::SynchronyMode mode);
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry,
+                                navigation_interception::SynchronyMode mode);
 
   void ShouldIgnoreNavigation(
       content::NavigationHandle* navigation_handle,

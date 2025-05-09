@@ -176,8 +176,8 @@ BASE_FEATURE(kWebViewOptimizeXrwNavigationFlow,
 // navigation, and forwards it to the proxying loader factory.
 class XrwNavigationThrottle : public content::NavigationThrottle {
  public:
-  explicit XrwNavigationThrottle(content::NavigationHandle* handle)
-      : NavigationThrottle(handle) {}
+  explicit XrwNavigationThrottle(content::NavigationThrottleRegistry& registry)
+      : NavigationThrottle(registry) {}
   ~XrwNavigationThrottle() override {
     AwProxyingURLLoaderFactory::ClearXrwResultForNavigation(
         navigation_handle()->GetNavigationId());
@@ -683,22 +683,16 @@ void AwContentBrowserClient::CreateThrottlesForNavigation(
   // doesn't actually call into an arbitrary client, it just posts a task to
   // call onPageStarted. shouldOverrideUrlLoading happens earlier (see
   // ContentBrowserClient::ShouldOverrideUrlLoading).
-  registry.MaybeAddThrottle(
-      navigation_interception::InterceptNavigationDelegate::
-          MaybeCreateThrottleFor(
-              &navigation_handle,
-              navigation_interception::SynchronyMode::kSync));
+  navigation_interception::InterceptNavigationDelegate::MaybeCreateAndAdd(
+      registry, navigation_interception::SynchronyMode::kSync);
 
   registry.AddThrottle(std::make_unique<PolicyBlocklistNavigationThrottle>(
-      &navigation_handle,
+      registry,
       AwBrowserContext::FromWebContents(navigation_handle.GetWebContents())));
 
-  registry.MaybeAddThrottle(
-      AwSafeBrowsingNavigationThrottle::MaybeCreateThrottleFor(
-          &navigation_handle));
+  AwSafeBrowsingNavigationThrottle::MaybeCreateAndAdd(registry);
   if (base::FeatureList::IsEnabled(kWebViewOptimizeXrwNavigationFlow)) {
-    registry.AddThrottle(
-        std::make_unique<XrwNavigationThrottle>(&navigation_handle));
+    registry.AddThrottle(std::make_unique<XrwNavigationThrottle>(registry));
   }
 
   if ((navigation_handle.GetNavigatingFrameType() ==
@@ -708,8 +702,8 @@ void AwContentBrowserClient::CreateThrottlesForNavigation(
     AwSupervisedUserUrlClassifier* urlClassifier =
         AwSupervisedUserUrlClassifier::GetInstance();
     if (urlClassifier->ShouldCreateThrottle()) {
-      registry.AddThrottle(std::make_unique<AwSupervisedUserThrottle>(
-          &navigation_handle, urlClassifier));
+      registry.AddThrottle(
+          std::make_unique<AwSupervisedUserThrottle>(registry, urlClassifier));
     }
   }
 }

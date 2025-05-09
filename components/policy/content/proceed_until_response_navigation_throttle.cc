@@ -8,14 +8,14 @@
 #include "base/strings/strcat.h"
 
 ProceedUntilResponseNavigationThrottle::Client::Client(
-    content::NavigationHandle* navigation_handle)
-    : NavigationThrottle(navigation_handle) {}
+    content::NavigationThrottleRegistry& registry)
+    : NavigationThrottle(registry) {}
 
 ProceedUntilResponseNavigationThrottle::ProceedUntilResponseNavigationThrottle(
-    content::NavigationHandle* navigation_handle,
+    content::NavigationThrottleRegistry& registry,
     std::unique_ptr<Client> client,
     std::optional<DeferredResultCallback> deferred_result_callback)
-    : NavigationThrottle(navigation_handle),
+    : NavigationThrottle(registry),
       name_(base::StrCat({"ProceedUntilResponseNavigationThrottle::",
                           client ? client->GetNameForLogging() : ""})),
       client_(std::move(client)),
