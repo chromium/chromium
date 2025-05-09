@@ -92,6 +92,7 @@ IN_PROC_BROWSER_TEST_P(DefaultNotificationsSettingBrowserTest, Policy) {
       "  querySelector('settings-main').shadowRoot."
       "  querySelector('settings-basic-page').shadowRoot."
       "  querySelector('settings-privacy-page').shadowRoot."
+      "  querySelector('settings-notifications-page').shadowRoot."
       "  querySelectorAll('cr-radio-button');";
   std::string kGetRadiosChecked = kGetRadios +
                                   "let radiosChecked = [];"

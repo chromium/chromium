@@ -1234,11 +1234,6 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, PrivacyGuideRow) {
   RunTest("settings/privacy_page_test.js", "runMochaSuite('PrivacyGuideRow')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, NotificationPermissionReview) {
-  RunTest("settings/privacy_page_test.js",
-          "runMochaSuite('NotificationPermissionReview')");
-}
-
 // TODO(crbug.com/40669164): flaky crash on Linux Tests (dbg).
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, DISABLED_PrivacyPageSound) {
   RunTest("settings/privacy_page_test.js", "runMochaSuite('PrivacyPageSound')");
@@ -1286,6 +1281,12 @@ IN_PROC_BROWSER_TEST_F(SettingsNotificationsPageTest,
                        NotificationsPageWithNestedRadioButton) {
   RunTest("settings/notifications_page_test.js",
           "runMochaSuite('NotificationsPageWithNestedRadioButton')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsNotificationsPageTest,
+                       NotificationPermissionReview) {
+  RunTest("settings/notifications_page_test.js",
+          "runMochaSuite('NotificationPermissionReview')");
 }
 
 class SettingsGeolocationPageTest : public SettingsBrowserTest {

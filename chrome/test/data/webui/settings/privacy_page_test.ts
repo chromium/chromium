@@ -7,9 +7,9 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ClearBrowsingDataBrowserProxyImpl, ContentSetting, ContentSettingsTypes, CookieControlsMode, SafetyHubBrowserProxyImpl, SafetyHubEvent, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ClearBrowsingDataBrowserProxyImpl, ContentSetting, ContentSettingsTypes, CookieControlsMode, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {CrLinkRowElement, Route, SettingsPrefsElement, SettingsPrivacyPageElement, SyncStatus} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, HatsBrowserProxyImpl, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyPageBrowserProxyImpl, resetPageVisibilityForTesting, resetRouterForTesting, Router, routes, StatusAction, TrustSafetyInteraction} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, HatsBrowserProxyImpl, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyPageBrowserProxyImpl, resetRouterForTesting, Router, routes, StatusAction, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue, assertThrows} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -18,7 +18,6 @@ import {TestClearBrowsingDataBrowserProxy} from './test_clear_browsing_data_brow
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
-import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 
 const redesignedPages: Route[] = [
@@ -189,40 +188,30 @@ suite('PrivacyPage', function() {
     // All redesigned pages, except protocol handlers, pdf documents and
     // protected content (except chromeos and win), will use a
     // settings-category-default-radio-group.
+    // Exclude notifications page which is in its own element.
     // <if expr="is_chromeos or is_win">
-    assertEquals(
-        page.shadowRoot!
-            .querySelectorAll('settings-category-default-radio-group')
-            .length,
-        redesignedPages.length - 2);
-    // </if>
-    // <if expr="not is_chromeos and not is_win">
     assertEquals(
         page.shadowRoot!
             .querySelectorAll('settings-category-default-radio-group')
             .length,
         redesignedPages.length - 3);
     // </if>
+    // <if expr="not is_chromeos and not is_win">
+    assertEquals(
+        page.shadowRoot!
+            .querySelectorAll('settings-category-default-radio-group')
+            .length,
+        redesignedPages.length - 4);
+    // </if>
   });
 
-  // TODO(crbug.com/340743074): Clean up tests after
-  // `PermissionSiteSettingsRadioButton` launched.
   test('NotificationPage', async function() {
-    loadTimeData.overrideValues({
-      enablePermissionSiteSettingsRadioButton: false,
-    });
     await createPage();
 
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_NOTIFICATIONS);
     await flushTasks();
 
-    assertTrue(isChildVisible(page, '#notificationRadioGroup'));
-    const categorySettingExceptions =
-        page.shadowRoot!.querySelector('category-setting-exceptions');
-    assertTrue(!!categorySettingExceptions);
-    assertTrue(isVisible(categorySettingExceptions));
-    assertEquals(
-        ContentSettingsTypes.NOTIFICATIONS, categorySettingExceptions.category);
+    assertTrue(isChildVisible(page, 'settings-notifications-page'));
   });
 
   test('LocationPage', async function() {
@@ -241,24 +230,6 @@ suite('PrivacyPage', function() {
     assertTrue(isVisible(categorySettingExceptions));
     assertEquals(
         ContentSettingsTypes.GEOLOCATION, categorySettingExceptions.category);
-  });
-
-  test('NotificationPage2', async function() {
-    loadTimeData.overrideValues({
-      enablePermissionSiteSettingsRadioButton: true,
-    });
-    await createPage();
-
-    Router.getInstance().navigateTo(routes.SITE_SETTINGS_NOTIFICATIONS);
-    await flushTasks();
-
-    assertTrue(isChildVisible(page, '#notificationDefaultRadioGroup'));
-    const categorySettingExceptions =
-        page.shadowRoot!.querySelector('category-setting-exceptions');
-    assertTrue(!!categorySettingExceptions);
-    assertTrue(isVisible(categorySettingExceptions));
-    assertEquals(
-        ContentSettingsTypes.NOTIFICATIONS, categorySettingExceptions.category);
   });
 
   test('LocationPage2', async function() {
@@ -984,79 +955,6 @@ suite('HappinessTrackingSurveys', function() {
     const interaction =
         await testHatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
     assertEquals(TrustSafetyInteraction.USED_PRIVACY_CARD, interaction);
-  });
-});
-
-suite('NotificationPermissionReview', function() {
-  let page: SettingsPrivacyPageElement;
-  let siteSettingsBrowserProxy: TestSafetyHubBrowserProxy;
-
-  const oneElementMockData = [{
-    origin: 'www.example.com',
-    notificationInfoString: 'About 4 notifications a day',
-  }];
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    Router.getInstance().navigateTo(routes.SITE_SETTINGS_NOTIFICATIONS);
-    siteSettingsBrowserProxy = new TestSafetyHubBrowserProxy();
-    SafetyHubBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
-  });
-
-  teardown(function() {
-    page.remove();
-  });
-
-  function createPage() {
-    page = document.createElement('settings-privacy-page');
-    document.body.appendChild(page);
-    return flushTasks();
-  }
-
-  test('InvisibleWhenGuestMode', async function() {
-    loadTimeData.overrideValues({isGuest: true});
-    resetPageVisibilityForTesting();
-    resetRouterForTesting();
-    await createPage();
-
-    // The UI should remain invisible even when there's an event that the
-    // notification permissions may have changed.
-    webUIListenerCallback(
-        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
-        oneElementMockData);
-    await flushTasks();
-    assertFalse(isChildVisible(page, '#safetyHubEntryPoint'));
-
-    // Set guest mode back to false.
-    loadTimeData.overrideValues({isGuest: false});
-    resetPageVisibilityForTesting();
-    resetRouterForTesting();
-  });
-
-  test('VisibilityWithChangingPermissionList', async function() {
-    // The element is not visible when there is nothing to review.
-    await createPage();
-    assertFalse(isChildVisible(page, '#safetyHubEntryPoint'));
-
-    // The element becomes visible if the list of permissions is no longer
-    // empty.
-    webUIListenerCallback(
-        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
-        oneElementMockData);
-    await flushTasks();
-    assertTrue(isChildVisible(page, '#safetyHubEntryPoint'));
-
-    // Once visible, it remains visible regardless of list length.
-    webUIListenerCallback(
-        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED, []);
-    await flushTasks();
-    assertTrue(isChildVisible(page, '#safetyHubEntryPoint'));
-    webUIListenerCallback(
-        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
-        oneElementMockData);
-    await flushTasks();
-    assertTrue(isChildVisible(page, '#safetyHubEntryPoint'));
   });
 });
 

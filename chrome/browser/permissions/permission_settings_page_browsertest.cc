@@ -30,24 +30,44 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(
     kWebContentsInteractionTestUtilCustomEventId);
 
 const WebContentsInteractionTestUtil::DeepQuery kAskButton{
-    "settings-ui", "settings-main", "settings-basic-page",
-    "settings-privacy-page", "#notification-ask-radio-button"};
+    "settings-ui",
+    "settings-main",
+    "settings-basic-page",
+    "settings-privacy-page",
+    "settings-notifications-page",
+    "#notification-ask-radio-button"};
 
 const WebContentsInteractionTestUtil::DeepQuery kQuietButton{
-    "settings-ui", "settings-main", "settings-basic-page",
-    "settings-privacy-page", "#notification-ask-quiet"};
+    "settings-ui",
+    "settings-main",
+    "settings-basic-page",
+    "settings-privacy-page",
+    "settings-notifications-page",
+    "#notification-ask-quiet"};
 
 const WebContentsInteractionTestUtil::DeepQuery kCpssButton{
-    "settings-ui", "settings-main", "settings-basic-page",
-    "settings-privacy-page", "#notification-ask-cpss"};
+    "settings-ui",
+    "settings-main",
+    "settings-basic-page",
+    "settings-privacy-page",
+    "settings-notifications-page",
+    "#notification-ask-cpss"};
 
 const WebContentsInteractionTestUtil::DeepQuery kLoudButton{
-    "settings-ui", "settings-main", "settings-basic-page",
-    "settings-privacy-page", "#notification-ask-loud"};
+    "settings-ui",
+    "settings-main",
+    "settings-basic-page",
+    "settings-privacy-page",
+    "settings-notifications-page",
+    "#notification-ask-loud"};
 
 const WebContentsInteractionTestUtil::DeepQuery kBlockButton{
-    "settings-ui", "settings-main", "settings-basic-page",
-    "settings-privacy-page", "#notification-block"};
+    "settings-ui",
+    "settings-main",
+    "settings-basic-page",
+    "settings-privacy-page",
+    "settings-notifications-page",
+    "#notification-block"};
 
 }  // namespace
 
@@ -187,8 +207,12 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
                   pref_service->GetBoolean(prefs::kEnableNotificationCPSS));
 
               const WebContentsInteractionTestUtil::DeepQuery kAskQuiet{
-                  "settings-ui", "settings-main", "settings-basic-page",
-                  "settings-privacy-page", "#notification-ask-quiet"};
+                  "settings-ui",
+                  "settings-main",
+                  "settings-basic-page",
+                  "settings-privacy-page",
+                  "settings-notifications-page",
+                  "#notification-ask-quiet"};
               util->EvaluateAt(kAskQuiet, "kAskQuiet => kAskQuiet.click()");
               EXPECT_EQ(CONTENT_SETTING_ASK,
                         settings_map->GetDefaultContentSetting(
@@ -208,8 +232,12 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
                   pref_service->GetBoolean(prefs::kEnableNotificationCPSS));
 
               const WebContentsInteractionTestUtil::DeepQuery kAskCpss{
-                  "settings-ui", "settings-main", "settings-basic-page",
-                  "settings-privacy-page", "#notification-ask-cpss"};
+                  "settings-ui",
+                  "settings-main",
+                  "settings-basic-page",
+                  "settings-privacy-page",
+                  "settings-notifications-page",
+                  "#notification-ask-cpss"};
               util->EvaluateAt(kAskCpss, "kAskCpss => kAskCpss.click()");
               EXPECT_EQ(CONTENT_SETTING_ASK,
                         settings_map->GetDefaultContentSetting(
@@ -279,8 +307,12 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
                   prefs::kEnableQuietNotificationPermissionUi));
 
               const WebContentsInteractionTestUtil::DeepQuery kAskQuiet{
-                  "settings-ui", "settings-main", "settings-basic-page",
-                  "settings-privacy-page", "#notification-ask-quiet"};
+                  "settings-ui",
+                  "settings-main",
+                  "settings-basic-page",
+                  "settings-privacy-page",
+                  "settings-notifications-page",
+                  "#notification-ask-quiet"};
               util->EvaluateAt(kAskQuiet, "kAskQuiet => kAskQuiet.click()");
               EXPECT_EQ(CONTENT_SETTING_ASK,
                         settings_map->GetDefaultContentSetting(
@@ -316,8 +348,12 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
                   prefs::kEnableQuietNotificationPermissionUi));
 
               const WebContentsInteractionTestUtil::DeepQuery kAskCpss{
-                  "settings-ui", "settings-main", "settings-basic-page",
-                  "settings-privacy-page", "#notification-ask-cpss"};
+                  "settings-ui",
+                  "settings-main",
+                  "settings-basic-page",
+                  "settings-privacy-page",
+                  "settings-notifications-page",
+                  "#notification-ask-cpss"};
               util->EvaluateAt(kAskCpss, "kAskCpss => kAskCpss.click()");
               EXPECT_EQ(CONTENT_SETTING_ASK,
                         settings_map->GetDefaultContentSetting(
