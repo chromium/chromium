@@ -135,6 +135,8 @@ class LinkerDriver(object):
         # may not need to reexport unless LC_REEXPORT_DYLIB is used.
         self._reexport_in_old_module = False
 
+        # temp directory for lto cache.
+        self._object_path_lto = None
 
     def run(self):
         """Runs the linker driver, separating out the main compiler driver's
@@ -274,9 +276,9 @@ class LinkerDriver(object):
         # through the clang driver. See https://crbug.com/1324104
         # The temporary directory for intermediate LTO object files. If it
         # exists, it will clean itself up on script exit.
-        object_path_lto = tempfile.TemporaryDirectory(dir=os.getcwd())
+        self._object_path_lto = tempfile.TemporaryDirectory(dir=os.getcwd())
         self._compiler_driver_args.append('-Wl,-object_path_lto,{}'.format(
-            os.path.relpath(object_path_lto.name)))
+            os.path.relpath(self._object_path_lto.name)))
 
     def check_reexport_in_old_module(self, tocname):
         """Linker driver pre-action for -Wcrl,tocname,<path>.
