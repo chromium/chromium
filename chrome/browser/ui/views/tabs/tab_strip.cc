@@ -509,7 +509,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     constexpr int kHorizontalMoveThreshold = 16;  // DIPs.
 
     double ratio = static_cast<double>(tab_strip_->GetInactiveTabWidth()) /
-                   TabStyle::Get()->GetStandardWidth();
+                   TabStyle::Get()->GetStandardWidth(/*is_split=*/false);
     return base::ClampRound(ratio * kHorizontalMoveThreshold);
   }
 

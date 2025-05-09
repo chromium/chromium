@@ -411,7 +411,8 @@ TEST_F(CompoundTabContainerTest, ExitsClosingModeAtStandardWidth) {
   AddTab(0, TabPinned::kUnpinned, std::nullopt, TabActive::kActive);
 
   // Create just enough tabs so tabs are not full size.
-  const int standard_width = TabStyle::Get()->GetStandardWidth();
+  const int standard_width =
+      TabStyle::Get()->GetStandardWidth(/*is_split*/ false);
   while (tab_container_->GetActiveTabWidth() == standard_width) {
     AddTab(0, TabPinned::kUnpinned);
     tab_container_->CompleteAnimationAndLayout();
@@ -446,7 +447,8 @@ TEST_F(CompoundTabContainerTest, ClosingPinnedTabsEngagesClosingMode) {
   AddTab(1, TabPinned::kUnpinned, std::nullopt, TabActive::kInactive);
 
   // Create just enough (pinned) tabs so the active tab is not full size.
-  const int standard_width = TabStyle::Get()->GetStandardWidth();
+  const int standard_width =
+      TabStyle::Get()->GetStandardWidth(/*is_split*/ false);
   while (tab_container_->GetActiveTabWidth() == standard_width) {
     AddTab(0, TabPinned::kPinned, std::nullopt, TabActive::kInactive);
     tab_container_->CompleteAnimationAndLayout();
@@ -478,7 +480,8 @@ TEST_F(CompoundTabContainerTest, ExitsClosingModeWhenClosingLastUnpinnedTab) {
   AddTab(1, TabPinned::kUnpinned, std::nullopt, TabActive::kActive);
 
   // Create just enough (pinned) tabs so the active tab is not full size.
-  const int standard_width = TabStyle::Get()->GetStandardWidth();
+  const int standard_width =
+      TabStyle::Get()->GetStandardWidth(/*is_split*/ false);
   while (tab_container_->GetActiveTabWidth() == standard_width) {
     AddTab(0, TabPinned::kPinned);
     tab_container_->CompleteAnimationAndLayout();

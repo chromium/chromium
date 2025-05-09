@@ -431,12 +431,14 @@ TEST_F(TabTest, LayoutAndVisibilityOfElements) {
         // Test layout for every width from standard to minimum.
         int width, min_width;
         if (is_pinned_tab) {
-          width = min_width = tab->tab_style()->GetPinnedWidth();
+          width = min_width =
+              tab->tab_style()->GetPinnedWidth(/*is_split=*/false);
         } else {
-          width = tab->tab_style()->GetStandardWidth();
-          min_width = is_active_tab
-                          ? TabStyle::Get()->GetMinimumActiveWidth()
-                          : TabStyle::Get()->GetMinimumInactiveWidth();
+          width = tab->tab_style()->GetStandardWidth(/*is_split=*/false);
+          min_width =
+              is_active_tab
+                  ? TabStyle::Get()->GetMinimumActiveWidth(/*is_split=*/false)
+                  : TabStyle::Get()->GetMinimumInactiveWidth();
         }
         const int height = GetLayoutConstant(TAB_HEIGHT);
         for (; width >= min_width; --width) {

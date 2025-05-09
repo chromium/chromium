@@ -846,7 +846,8 @@ float TabStyleViewsImpl::GetHoverOpacity() const {
   // Opacity boost varies on tab width.  The interpolation is nonlinear so
   // that most tabs will fall on the low end of the opacity range, but very
   // narrow tabs will still stand out on the high end.
-  const float range_start = static_cast<float>(tab_style()->GetStandardWidth());
+  const float range_start =
+      static_cast<float>(tab_style()->GetStandardWidth(/*is_split*/ false));
   constexpr float kWidthForMaxHoverOpacity = 32.0f;
   const float value_in_range = static_cast<float>(tab_->width());
   const float t = std::clamp(

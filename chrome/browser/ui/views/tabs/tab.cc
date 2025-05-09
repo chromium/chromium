@@ -818,12 +818,10 @@ TabSlotView::ViewType Tab::GetTabSlotViewType() const {
 }
 
 TabSizeInfo Tab::GetTabSizeInfo() const {
-  return {tab_style()->GetPinnedWidth(),
-          split().has_value() ? tab_style()->GetMinimumActiveSplitWidth()
-                              : tab_style()->GetMinimumActiveWidth(),
+  return {tab_style()->GetPinnedWidth(split().has_value()),
+          tab_style()->GetMinimumActiveWidth(split().has_value()),
           tab_style()->GetMinimumInactiveWidth(),
-          split().has_value() ? tab_style()->GetStandardSplitWidth()
-                              : tab_style()->GetStandardWidth()};
+          tab_style()->GetStandardWidth(split().has_value())};
 }
 
 void Tab::SetClosing(bool closing) {
@@ -1093,11 +1091,9 @@ void Tab::MaybeAdjustLeftForPinnedTab(gfx::Rect* bounds,
   if (ShouldRenderAsNormalTab()) {
     return;
   }
-  const int pinned_width = tab_style()->GetPinnedWidth();
+  const int pinned_width = GetTabSizeInfo().pinned_tab_width;
   const int ideal_delta = width() - pinned_width;
   const int ideal_x = (pinned_width - visual_width) / 2;
-  // TODO(crbug.com/40436434): This code is broken when the current width is
-  // less than the pinned width.
   bounds->set_x(
       bounds->x() +
       base::ClampRound(
@@ -1223,7 +1219,7 @@ void Tab::UpdateIconVisibility() {
 }
 
 bool Tab::ShouldRenderAsNormalTab() const {
-  return !data().pinned || (width() >= (tab_style()->GetPinnedWidth() +
+  return !data().pinned || (width() >= (GetTabSizeInfo().pinned_tab_width +
                                         kPinnedTabExtraWidthToRenderAsNormal));
 }
 

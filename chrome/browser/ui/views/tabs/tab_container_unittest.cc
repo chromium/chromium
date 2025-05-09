@@ -388,7 +388,8 @@ TEST_F(TabContainerTest, ExitsClosingModeAtStandardWidth) {
   AddTab(0, std::nullopt, TabActive::kActive);
 
   // Create just enough tabs so tabs are not full size.
-  const int standard_width = TabStyle::Get()->GetStandardWidth();
+  const int standard_width =
+      TabStyle::Get()->GetStandardWidth(/*is_split*/ false);
   while (tab_container_->GetActiveTabWidth() == standard_width) {
     AddTab(0);
     tab_container_->CompleteAnimationAndLayout();
@@ -418,7 +419,8 @@ TEST_F(TabContainerTest, StaysInClosingModeBelowStandardWidth) {
   AddTab(0, std::nullopt, TabActive::kActive);
 
   // Create just enough tabs so tabs are not full size.
-  const int standard_width = TabStyle::Get()->GetStandardWidth();
+  const int standard_width =
+      TabStyle::Get()->GetStandardWidth(/*is_split*/ false);
   while (tab_container_->GetActiveTabWidth() == standard_width) {
     AddTab(0);
     tab_container_->CompleteAnimationAndLayout();
@@ -452,7 +454,8 @@ TEST_F(TabContainerTest, ClosingModeAffectsMinWidth) {
   AddTab(0, std::nullopt, TabActive::kActive);
 
   // Create just enough tabs so tabs are not full size.
-  const int standard_width = TabStyle::Get()->GetStandardWidth();
+  const int standard_width =
+      TabStyle::Get()->GetStandardWidth(/*is_split*/ false);
   while (tab_container_->GetActiveTabWidth() == standard_width) {
     AddTab(0);
     tab_container_->CompleteAnimationAndLayout();
@@ -482,7 +485,8 @@ TEST_F(TabContainerTest, RemoveTabInGroupWithTabClosingMode) {
   AddTab(0, std::nullopt, TabActive::kActive);
 
   // Create enough tabs so tabs are not full size.
-  const int standard_width = TabStyle::Get()->GetStandardWidth();
+  const int standard_width =
+      TabStyle::Get()->GetStandardWidth(/*is_split*/ false);
 
   // Set a tab_counter to avoid infinite loop
   int tab_counter = 0;

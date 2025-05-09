@@ -3564,17 +3564,18 @@ IN_PROC_BROWSER_TEST_P(
   const TabStyle* tab_style = TabStyle::Get();
   // We must ensure that we set the bounds of the browser window such that it is
   // wide enough to allow the tab strip to expand to accommodate this tab.
-  browser()->window()->SetBounds(
-      gfx::Rect(0, 0, tab_style->GetStandardWidth() * 5, 400));
+  browser()->window()->SetBounds(gfx::Rect(
+      0, 0, tab_style->GetStandardWidth(/*is_split*/ false) * 5, 400));
 
   const int tab_strip_width = tab_strip->width();
   ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(1)));
   ASSERT_TRUE(DragInputToCenter(
-      tab_strip->tab_at(1), gfx::Vector2d(tab_style->GetStandardWidth(), 0)));
+      tab_strip->tab_at(1),
+      gfx::Vector2d(tab_style->GetStandardWidth(/*is_split*/ false), 0)));
   BrowserView::GetBrowserViewForBrowser(browser())
       ->GetWidget()
       ->LayoutRootViewIfNecessary();
-  EXPECT_EQ(tab_strip_width + tab_style->GetStandardWidth(),
+  EXPECT_EQ(tab_strip_width + tab_style->GetStandardWidth(/*is_split*/ false),
             tab_strip->width());
   ASSERT_TRUE(ReleaseInput());
 }

@@ -61,6 +61,7 @@ constexpr int kMinActiveWidth = 56;
 constexpr int kMinActiveSplitWidth = 37;
 constexpr int kMinInactiveWidth = 32;
 constexpr int kPinnedWidth = 64;
+constexpr int kPinnedSplitWidth = 55;
 constexpr int kTabOverlap = 18;
 
 std::vector<gfx::Rect> CalculateTabBounds(TestCase test_case) {
@@ -71,7 +72,7 @@ std::vector<gfx::Rect> CalculateTabBounds(TestCase test_case) {
   size_info.standard_width = kStandardWidth;
 
   TabSizeInfo split_size_info;
-  split_size_info.pinned_tab_width = kPinnedWidth;
+  split_size_info.pinned_tab_width = kPinnedSplitWidth;
   split_size_info.min_active_width = kMinActiveSplitWidth;
   split_size_info.min_inactive_width = kMinInactiveWidth;
   split_size_info.standard_width = kStandardSplitWidth;
@@ -158,6 +159,19 @@ TEST(TabStripLayoutTest, MixedPinnedAndNormalTabs) {
   auto bounds = CalculateTabBounds(test_case);
   EXPECT_EQ("64 256 256", TabWidthsAsString(bounds));
   EXPECT_EQ("0 46 284", TabXPositionsAsString(bounds));
+  ExpectTabsNarrowerThanTabStrip(bounds, test_case.tabstrip_width);
+}
+
+TEST(TabStripLayoutTest, SplitPinnedTabs) {
+  TestCase test_case;
+  test_case.tabstrip_width = 1000;
+  test_case.num_tabs = 2;
+  test_case.num_pinned_tabs = 2;
+  test_case.split_tabs = {0, 1};
+
+  auto bounds = CalculateTabBounds(test_case);
+  EXPECT_EQ("55 55", TabWidthsAsString(bounds));
+  EXPECT_EQ("0 37", TabXPositionsAsString(bounds));
   ExpectTabsNarrowerThanTabStrip(bounds, test_case.tabstrip_width);
 }
 

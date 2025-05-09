@@ -471,7 +471,8 @@ TEST_P(TabStripTest, CachedWidthsReportCorrectSize) {
   controller_->AddTab(1, TabActive::kActive);
   controller_->AddTab(2, TabActive::kInactive);
 
-  const int standard_width = TabStyle::Get()->GetStandardWidth();
+  const int standard_width =
+      TabStyle::Get()->GetStandardWidth(/*is_split*/ false);
 
   SetMaxTabStripWidth(1000);
 
@@ -485,7 +486,8 @@ TEST_P(TabStripTest, CachedWidthsReportCorrectSize) {
 
   SetMaxTabStripWidth(50);
 
-  EXPECT_EQ(TabStyle::Get()->GetMinimumActiveWidth(), GetActiveTabWidth());
+  EXPECT_EQ(TabStyle::Get()->GetMinimumActiveWidth(/*is_split*/ false),
+            GetActiveTabWidth());
   EXPECT_EQ(TabStyle::Get()->GetMinimumInactiveWidth(), GetInactiveTabWidth());
 }
 
@@ -517,7 +519,7 @@ TEST_P(TabStripTest, ActiveTabWidthWhenTabsAreTiny) {
   while (tab_strip_->GetTabCount() > 0) {
     active_index = tab_strip_->GetActiveIndex().value();
     EXPECT_GE(tab_strip_->tab_at(active_index)->bounds().width(),
-              TabStyle::Get()->GetMinimumActiveWidth());
+              TabStyle::Get()->GetMinimumActiveWidth(/*is_split*/ false));
     tab_strip_->CloseTab(tab_strip_->tab_at(active_index),
                          CloseTabSource::kFromMouse);
     CompleteAnimationAndLayout();
@@ -532,7 +534,8 @@ TEST_P(TabStripTest, InactiveTabWidthWhenTabsAreTiny) {
   // Create a lot of tabs in order to make inactive tabs smaller than active
   // tab but not the minimum.
   const int min_inactive_width = TabStyle::Get()->GetMinimumInactiveWidth();
-  const int min_active_width = TabStyle::Get()->GetMinimumActiveWidth();
+  const int min_active_width =
+      TabStyle::Get()->GetMinimumActiveWidth(/*is_split*/ false);
   while (GetInactiveTabWidth() >= (min_inactive_width + min_active_width) / 2) {
     controller_->CreateNewTab();
     CompleteAnimationAndLayout();
@@ -566,7 +569,8 @@ TEST_P(TabStripTest, ResetBoundsForDraggedTabs) {
     CompleteAnimationAndLayout();
   }
 
-  const int min_active_width = TabStyle::Get()->GetMinimumActiveWidth();
+  const int min_active_width =
+      TabStyle::Get()->GetMinimumActiveWidth(/*is_split*/ false);
 
   int dragged_tab_index = tab_strip_->GetActiveIndex().value();
   ASSERT_GE(tab_strip_->tab_at(dragged_tab_index)->bounds().width(),

@@ -104,17 +104,20 @@ base::TimeDelta GetShowDelay(int tab_width) {
   //               |                                |
   //       pinned tab width               standard tab width
   constexpr base::TimeDelta kMinimumTriggerDelay = base::Milliseconds(300);
-  if (tab_width < tab_style->GetPinnedWidth()) {
+  const int tab_pinned_width = tab_style->GetPinnedWidth(/*is_split=*/false);
+  const int tab_standard_width =
+      tab_style->GetStandardWidth(/*is_split=*/false);
+  if (tab_width < tab_pinned_width) {
     return kMinimumTriggerDelay;
   }
   constexpr base::TimeDelta kMaximumTriggerDelay = base::Milliseconds(800);
   double logarithmic_fraction =
-      std::log(tab_width - tab_style->GetPinnedWidth() + 1) /
-      std::log(tab_style->GetStandardWidth() - tab_style->GetPinnedWidth() + 1);
+      std::log(tab_width - tab_pinned_width + 1) /
+      std::log(tab_standard_width - tab_pinned_width + 1);
   base::TimeDelta scaling_factor = kMaximumTriggerDelay - kMinimumTriggerDelay;
   base::TimeDelta delay =
       logarithmic_fraction * scaling_factor + kMinimumTriggerDelay;
-  if (tab_width >= tab_style->GetStandardWidth()) {
+  if (tab_width >= tab_standard_width) {
     delay += base::Milliseconds(max_width_additional_delay);
   }
   return delay;

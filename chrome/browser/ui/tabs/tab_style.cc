@@ -38,24 +38,31 @@ int TabStyle::GetStandardHeight() const {
   return GetLayoutConstant(TAB_STRIP_HEIGHT);
 }
 
-int TabStyle::GetStandardWidth() const {
-  // The full width includes two extensions with the bottom corner radius.
-  return kTabWidth + 2 * GetBottomCornerRadius();
+int TabStyle::GetStandardWidth(const bool is_split) const {
+  if (is_split) {
+    // Split tabs appear as half width with one bottom extension. They also must
+    // include half the tab overlap as the tabs fill the space between them.
+    return kTabWidth / 2 + GetBottomCornerRadius() + GetTabOverlap() / 2;
+  } else {
+    // The full width includes two extensions with the bottom corner radius.
+    return kTabWidth + 2 * GetBottomCornerRadius();
+  }
 }
 
-int TabStyle::GetStandardSplitWidth() const {
-  // Split tabs appear as half width with one bottom extension. They also must
-  // include half the tab overlap as the tabs fill the space between them.
-  return kTabWidth / 2 + GetBottomCornerRadius() + GetTabOverlap() / 2;
-}
-
-int TabStyle::GetPinnedWidth() const {
+int TabStyle::GetPinnedWidth(const bool is_split) const {
   constexpr int kTabPinnedContentWidth = 24;
-  return kTabPinnedContentWidth + GetContentsInsets().left() +
-         GetContentsInsets().right();
+  const int standard_pinned_width = kTabPinnedContentWidth +
+                                    GetContentsInsets().left() +
+                                    GetContentsInsets().right();
+  if (is_split) {
+    // Split tabs will recoup half of the tab overlap to reduce extra
+    // whitespace.
+    return standard_pinned_width - GetTabOverlap() / 2;
+  }
+  return standard_pinned_width;
 }
 
-int TabStyle::GetMinimumActiveWidth() const {
+int TabStyle::GetMinimumActiveWidth(const bool is_split) const {
   const int close_button_size = GetLayoutConstant(TAB_CLOSE_BUTTON_SIZE);
   const gfx::Insets insets = GetContentsInsets();
   const int min_active_width =
@@ -67,13 +74,13 @@ int TabStyle::GetMinimumActiveWidth() const {
             tabs::kScrollableTabStrip,
             tabs::kMinimumTabWidthFeatureParameterName, min_active_width));
   }
-  return min_active_width;
-}
 
-int TabStyle::GetMinimumActiveSplitWidth() const {
-  // Split tabs take over half of the overlap space between them so they can
-  // appear larger.
-  return GetMinimumActiveWidth() / 2 + GetTabOverlap() / 2;
+  if (is_split) {
+    // Split tabs take over half of the overlap space between them so they can
+    // appear larger.
+    return min_active_width / 2 + GetTabOverlap() / 2;
+  }
+  return min_active_width;
 }
 
 int TabStyle::GetMinimumInactiveWidth() const {
@@ -114,7 +121,7 @@ int TabStyle::GetTabOverlap() const {
 
 gfx::Size TabStyle::GetPreviewImageSize() const {
   constexpr float kTabHoverCardPreviewImageAspectRatio = 16.0f / 9.0f;
-  const int width = GetStandardWidth();
+  const int width = GetStandardWidth(/*is_split*/ false);
   return gfx::Size(width, width / kTabHoverCardPreviewImageAspectRatio);
 }
 

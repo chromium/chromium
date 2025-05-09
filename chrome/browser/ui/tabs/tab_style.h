@@ -118,24 +118,15 @@ class TabStyle {
 
   // Returns the preferred width of a single Tab, assuming space is
   // available.
-  int GetStandardWidth() const;
-
-  // Returns the preferred width of half of a split Tab, assuming space is
-  // available.
-  int GetStandardSplitWidth() const;
+  int GetStandardWidth(const bool is_split) const;
 
   // Returns the width for pinned tabs. Pinned tabs always have this width.
-  int GetPinnedWidth() const;
+  int GetPinnedWidth(const bool is_split) const;
 
   // Returns the minimum possible width of an active Tab. Active tabs must
   // always show a close button, and thus have a larger minimum size than
   // inactive tabs.
-  int GetMinimumActiveWidth() const;
-
-  // Returns the minimum possible width of an active split Tab. Active tabs must
-  // always show a close button, and thus have a larger minimum size than
-  // inactive tabs.
-  int GetMinimumActiveSplitWidth() const;
+  int GetMinimumActiveWidth(const bool is_split) const;
 
   // Returns the minimum possible width of a single inactive Tab.
   int GetMinimumInactiveWidth() const;

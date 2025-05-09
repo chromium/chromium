@@ -47,8 +47,9 @@ TabStripLayoutHelper::TabStripLayoutHelper(
     GetTabsCallback get_tabs_callback)
     : controller_(controller),
       get_tabs_callback_(get_tabs_callback),
-      active_tab_width_(TabStyle::Get()->GetStandardWidth()),
-      inactive_tab_width_(TabStyle::Get()->GetStandardWidth()) {}
+      active_tab_width_(TabStyle::Get()->GetStandardWidth(/*is_split=*/false)),
+      inactive_tab_width_(
+          TabStyle::Get()->GetStandardWidth(/*is_split=*/false)) {}
 
 TabStripLayoutHelper::~TabStripLayoutHelper() = default;
 

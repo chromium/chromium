@@ -646,9 +646,10 @@ void TabGroupHeader::CreateHeaderWithTitle() {
 
   // The max width of the content should be half the standard tab width (not
   // counting overlap).
-  const int text_max_width =
-      (tab_style_->GetStandardWidth() - tab_style_->GetTabOverlap()) / 2 -
-      sync_icon_width - padding_between_label_sync_icon;
+  const int text_max_width = (tab_style_->GetStandardWidth(/*is_split*/ false) -
+                              tab_style_->GetTabOverlap()) /
+                                 2 -
+                             sync_icon_width - padding_between_label_sync_icon;
   const int text_width = std::min(
       title_->GetPreferredSize(views::SizeBounds(title_->width(), {})).width(),
       text_max_width);
