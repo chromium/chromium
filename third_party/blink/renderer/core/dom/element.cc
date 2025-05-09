@@ -11022,7 +11022,9 @@ void Element::HandleInterestTargetHoverOrFocus(InterestTargetSource source) {
       auto* target_popover = DynamicTo<HTMLElement>(target);
       bool might_need_partial_interest =
           source == InterestTargetSource::kFocusElementChain &&
-          target_popover && target_popover->HasPopoverAttribute();
+          target_popover && target_popover->HasPopoverAttribute() &&
+          !RuntimeEnabledFeatures::HTMLInterestTargetNoPartialInterestEnabled(
+              GetExecutionContext());
       ScheduleInterestGainedTask(might_need_partial_interest
                                      ? InterestState::kPotentialPartialInterest
                                      : InterestState::kFullInterest);

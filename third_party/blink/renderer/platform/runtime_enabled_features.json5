@@ -2522,6 +2522,15 @@
       status: "stable",
       depends_on: ["HTMLInterestTargetAttribute"],
     },
+    // If this flag is enabled, the "partial interest" concept for the
+    // `interesttarget` API is not used. When an interest invoker is focused,
+    // the target immediately gets full interest, regardless of whether it
+    // contains focusable content. This is primarily to test the behavior with
+    // users, to see which is the best.
+    {
+      name: "HTMLInterestTargetNoPartialInterest",
+      depends_on: ["HTMLInterestTargetAttribute"],
+    },
     {
       // A flag, just for local testing to make the
       // HTML parser yield more often and take longer to resume.

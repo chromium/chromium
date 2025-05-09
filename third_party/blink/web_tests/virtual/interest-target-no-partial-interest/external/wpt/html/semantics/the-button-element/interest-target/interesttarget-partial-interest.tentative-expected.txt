@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Partial interest timing should not be observable
+  assert_equals: Interest should be partial (before hot key) expected true but got false
+Harness: the test ran to completion.
+
