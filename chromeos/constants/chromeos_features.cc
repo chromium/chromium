@@ -313,7 +313,13 @@ const base::FeatureParam<std::string> kMicrosoft365ScopeExtensionsDomains{
 
     // The OneDrive Business domain (for the extension to match
     // https://<customer>-my.sharepoint.com).
-    "https://sharepoint.com"};
+    "https://sharepoint.com,"
+
+    // The new branding for Microsoft 365 web apps. Word, PowerPoint and Excel
+    // can be accessed under https://word.cloud.microsoft/,
+    // https://powerpoint.cloud.microsoft/ and https://excel.cloud.microsoft/
+    // respectively.
+    "https://cloud.microsoft"};
 
 // Controls whether the PWA manifest on Microsoft 365 Urls should be overridden
 // with a static PWA manifest id.
