@@ -28,7 +28,6 @@
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/storage_access/storage_access_handle.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -307,7 +306,7 @@ bool DOMStorageContextWrapper::IsRequestValid(
     // third_party/blink/renderer/modules/storage_access/README.md
     host_storage_key_matched_or_missing =
         host->GetStorageKey() == storage_key ||
-        (StorageAccessHandle::DoesDocumentHaveStorageAccess(host) &&
+        (host->DoesDocumentHaveStorageAccess() &&
          blink::StorageKey::CreateFirstParty(host->GetStorageKey().origin()) ==
              storage_key);
   }

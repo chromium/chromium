@@ -18,6 +18,7 @@
 #include "net/cookies/cookie_util.h"
 #include "net/http/http_connection_info.h"
 #include "net/http/http_response_info.h"
+#include "net/storage_access_api/status.h"
 #include "net/url_request/url_request.h"
 #include "services/network/ad_heuristic_cookie_overrides.h"
 #include "services/network/attribution/attribution_request_helper.h"
@@ -384,10 +385,15 @@ net::CookieSettingOverrides CalculateCookieSettingOverrides(
     overrides = base::Union(overrides, devtools_overrides);
   }
 
-  // The `kStorageAccessGrantEligible` override should not be present in
-  // factory_overrides.
-  CHECK(
-      !overrides.Has(net::CookieSettingOverride::kStorageAccessGrantEligible));
+  // If `factory_overrides` contains
+  // `net::CookieSettingOverride::kStorageAccessGrantEligible`, then
+  // well-behaved clients ensure that `request.storage_access_api_status` is
+  // `net::StorageAccessApiStatus::kAccessViaAPI`. But since clients may be
+  // compromised, we do not CHECK that this holds.
+  //
+  // Note: `kStorageAccessGrantEligible` and `request.storage_access_api_status`
+  // are not trusted for security or privacy decisions.
+
   // Add the Storage Access override enum based on whether the request's url and
   // initiator are same-site, to prevent cross-site sibling iframes benefit from
   // each other's storage access API grants. This must be updated on redirects.

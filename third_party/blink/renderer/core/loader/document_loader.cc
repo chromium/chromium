@@ -2688,7 +2688,11 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
       agent->ForceOriginKeyedBecauseOfInheritance();
     }
 
-    frame_->DomWindow()->SetStorageAccessApiStatus(storage_access_api_status_);
+    // No need to sync this back to the browser, since it just came from the
+    // browser.
+    frame_->DomWindow()->SetStorageAccessApiStatus(
+        storage_access_api_status_,
+        LocalDOMWindow::StorageAccessApiNotifyEmbedder::kNone);
     inherited_has_storage_access = [this]() -> bool {
       switch (storage_access_api_status_) {
         case net::StorageAccessApiStatus::kNone:

@@ -19,6 +19,7 @@ import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/load_timing_info.mojom";
 import "services/network/public/mojom/network_types.mojom";
 import "services/network/public/mojom/source_location.mojom";
+import "services/network/public/mojom/storage_access_api.mojom";
 import "services/network/public/mojom/url_loader_completion_status.mojom";
 import "services/network/public/mojom/attribution.mojom";
 import "services/viz/public/mojom/compositing/offset_tag.mojom";
@@ -805,6 +806,9 @@ interface LocalFrameHost {
   // Notify the browser the document readystate has changed to 'interactive'.
   // Sent for top-level frames.
   NotifyDocumentInteractive();
+
+  // Sets the StorageAccessApiStatus for the given frame.
+  SetStorageAccessApiStatus(network.mojom.StorageAccessApiStatus status);
 };
 
 // Implemented in Browser, this interface defines frame-specific methods

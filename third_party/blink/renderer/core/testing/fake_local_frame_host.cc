@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/testing/fake_local_frame_host.h"
 
+#include "net/storage_access_api/status.h"
 #include "skia/public/mojom/skcolor.mojom-blink.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
@@ -322,5 +323,8 @@ void FakeLocalFrameHost::RecordWindowProxyUsageMetrics(
     blink::mojom::WindowProxyAccessType access_type) {}
 
 void FakeLocalFrameHost::NotifyDocumentInteractive() {}
+
+void FakeLocalFrameHost::SetStorageAccessApiStatus(
+    net::StorageAccessApiStatus status) {}
 
 }  // namespace blink

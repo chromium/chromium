@@ -7,6 +7,7 @@
 
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "net/storage_access_api/status.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-blink.h"
@@ -221,6 +222,7 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
       const blink::FrameToken& target_frame_token,
       blink::mojom::WindowProxyAccessType access_type) override;
   void NotifyDocumentInteractive() override;
+  void SetStorageAccessApiStatus(net::StorageAccessApiStatus status) override;
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

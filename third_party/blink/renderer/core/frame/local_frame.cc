@@ -2814,6 +2814,10 @@ void LocalFrame::SetHadUserInteraction(bool had_user_interaction) {
   GetFrameScheduler()->SetHadUserActivation(had_user_interaction);
 }
 
+void LocalFrame::SetStorageAccessApiStatus(net::StorageAccessApiStatus status) {
+  GetLocalFrameHostRemote().SetStorageAccessApiStatus(status);
+}
+
 namespace {
 
 class FrameColorOverlay final : public FrameOverlay::Delegate {

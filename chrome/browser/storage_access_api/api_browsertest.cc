@@ -1921,6 +1921,13 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   EXPECT_EQ(0, prompt_factory()->TotalRequestCount());
   EXPECT_EQ(ReadCookies(GetNestedFrame(), kHostASubdomain),
             CookieBundle("cross-site=a.test"));
+
+  // Subsequent permission requests are no-ops.
+  EXPECT_TRUE(
+      storage::test::RequestAndCheckStorageAccessForFrame(GetNestedFrame()));
+  EXPECT_EQ(0, prompt_factory()->TotalRequestCount());
+  EXPECT_EQ(ReadCookies(GetNestedFrame(), kHostASubdomain),
+            CookieBundle("cross-site=a.test"));
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
@@ -1945,6 +1952,59 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   EXPECT_EQ(
       content::EvalJs(GetFrame(), "fetch_from_worker('/echoheader?cookie');"),
       "cross-site=b.test");
+}
+
+// Regression test for https://crbug.com/409838513.
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
+                       DedicatedWorker_ABA_InheritsStorageAccessFromDocument) {
+  SetBlockThirdPartyCookies(true);
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::DENY_ALL);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/iframe.html");
+  NavigateNestedFrameTo(EchoCookiesURL(kHostA));
+  ASSERT_TRUE(
+      storage::test::RequestAndCheckStorageAccessForFrame(GetNestedFrame()));
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(
+      GetNestedFrame(),
+      https_server().GetURL(kHostA, "/workers/fetch_from_worker.html")));
+  ASSERT_TRUE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
+
+  // When the worker's parent document has storage access at the time the worker
+  // is created, the worker should inherit that access and be able to use it.
+  //
+  // This should work despite the fact that this is an ABA context, and
+  // therefore there is no explicit permission grant.
+  EXPECT_EQ(content::EvalJs(GetNestedFrame(),
+                            "fetch_from_worker('/echoheader?cookie');"),
+            "cross-site=a.test");
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, DedicatedWorker_ABA) {
+  SetBlockThirdPartyCookies(true);
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::DENY_ALL);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/iframe.html");
+  NavigateNestedFrameTo(https_server().GetURL(
+      kHostA, "/workers/fetch_from_worker.html?start_worker_manually"));
+
+  ASSERT_FALSE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
+  ASSERT_TRUE(
+      storage::test::RequestAndCheckStorageAccessForFrame(GetNestedFrame()));
+
+  // When the worker's parent document has storage access at the time the
+  // worker is created, the worker should inherit that access and be able to
+  // use it.
+  //
+  // This should work despite the fact that this is an ABA context, and
+  // therefore there is no explicit permission grant.
+  EXPECT_TRUE(content::ExecJs(GetNestedFrame(), "start_worker()"));
+  EXPECT_EQ(content::EvalJs(GetNestedFrame(),
+                            "fetch_from_worker('/echoheader?cookie');"),
+            "cross-site=a.test");
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
@@ -2181,7 +2241,8 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIStorageBrowserTest,
 
 // Test third-party cookie blocking of features that allow to communicate
 // between tabs such as SharedWorkers.
-IN_PROC_BROWSER_TEST_P(StorageAccessAPIStorageBrowserTest, MultiTabTest) {
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIStorageBrowserTest,
+                       MultiTabTest_Storage) {
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(kHostB, "/browsing_data/site_data.html");
   CookieSettingsFactory::GetForProfile(browser()->profile())
@@ -2223,6 +2284,28 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIStorageBrowserTest, MultiTabTest) {
   storage::test::ExpectCrossTabInfoForFrame(GetFrame(),
                                             DoesPermissionGrantStorage());
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+}
+
+// Verifies that one tab can reuse the permission granted to another tab.
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIStorageBrowserTest, MultiTabTest) {
+  SetBlockThirdPartyCookies(true);
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/empty.html");
+
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+
+  NavigateToNewTabWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/empty.html");
+
+  permissions::PermissionRequestManager::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents())
+      ->set_auto_response_for_test(
+          permissions::PermissionRequestManager::DENY_ALL);
+
+  EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
 }
 
 INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
@@ -3861,15 +3944,9 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIWindowOpenMainFrameTest,
   ExpectNoStorageAccessGrants();
 }
 
-// TODO(crbug.com/414635387): Fix test failures.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_PopinRSAMainFrameTest DISABLED_PopinRSAMainFrameTest
-#else
-#define MAYBE_PopinRSAMainFrameTest PopinRSAMainFrameTest
-#endif
 // Opens a popin and checks that the RSA call within the main frame can succeed.
 IN_PROC_BROWSER_TEST_P(StorageAccessAPIWindowOpenMainFrameTest,
-                       MAYBE_PopinRSAMainFrameTest) {
+                       PopinRSAMainFrameTest) {
   // Navigate to site a and open popin of site b.
   NavigateToPage(kHostA, "/empty.html");
   content::WebContentsAddedObserver new_tab_observer;
@@ -3978,15 +4055,9 @@ class StorageAccessAPIWindowOpenSubFrameTest
   }
 };
 
-// TODO(crbug.com/414635387): Fix test failures.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_PopinRSASubFrameTest DISABLED_PopinRSASubFrameTest
-#else
-#define MAYBE_PopinRSASubFrameTest PopinRSASubFrameTest
-#endif
 // Opens a popin and checks that the RSA call within the sub frame can succeed.
 IN_PROC_BROWSER_TEST_P(StorageAccessAPIWindowOpenSubFrameTest,
-                       MAYBE_PopinRSASubFrameTest) {
+                       PopinRSASubFrameTest) {
   // Navigate to site a and open popin.
   NavigateToPage(kHostA, "/empty.html");
   content::WebContentsAddedObserver new_tab_observer;

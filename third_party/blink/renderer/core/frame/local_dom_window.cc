@@ -2640,9 +2640,20 @@ net::StorageAccessApiStatus LocalDOMWindow::GetStorageAccessApiStatus() const {
 }
 
 void LocalDOMWindow::SetStorageAccessApiStatus(
-    net::StorageAccessApiStatus status) {
+    net::StorageAccessApiStatus status,
+    StorageAccessApiNotifyEmbedder notify) {
   CHECK_GE(status, storage_access_api_status_);
   storage_access_api_status_ = status;
+  switch (notify) {
+    case StorageAccessApiNotifyEmbedder::kNone:
+      break;
+    case StorageAccessApiNotifyEmbedder::kBrowserProcess: {
+      LocalFrame* frame = GetFrame();
+      CHECK(frame);
+      frame->SetStorageAccessApiStatus(status);
+      break;
+    }
+  }
 }
 
 void LocalDOMWindow::GenerateNewNavigationId() {

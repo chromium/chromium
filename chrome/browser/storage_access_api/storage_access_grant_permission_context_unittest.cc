@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/barrier_callback.h"
 #include "base/check_deref.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -46,6 +45,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/global_first_party_sets.h"
+#include "net/storage_access_api/status.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -202,7 +202,7 @@ class StorageAccessGrantPermissionContextTest
 
   ContentSetting RequestPermissionSync() {
     base::test::TestFuture<ContentSetting> future;
-    permission_context()->RequestPermission(
+    permission_context()->RequestPermissionForTesting(
         std::make_unique<permissions::PermissionRequestData>(
             permission_context(), CreateFakeID(),
             /*user_gesture=*/true, GetRequesterURL()),
@@ -527,18 +527,18 @@ class StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest
 
     const int implicit_grant_limit =
         StorageAccessGrantPermissionContext::GetImplicitGrantLimitForTesting();
-    base::test::TestFuture<const std::vector<ContentSetting>> future;
-    auto barrier = base::BarrierCallback<ContentSetting>(implicit_grant_limit,
-                                                         future.GetCallback());
     for (int grant_id = 0; grant_id < implicit_grant_limit; grant_id++) {
+      base::test::TestFuture<ContentSetting> future;
       permission_context()->DecidePermissionForTesting(
           std::make_unique<permissions::PermissionRequestData>(
               permission_context(), fake_id,
               /*user_gesture=*/true, requesting_origin,
               GetDummyEmbeddingUrl(grant_id)),
-          barrier);
+          future.GetCallback());
+      ASSERT_TRUE(future.Wait());
+      web_contents()->GetPrimaryMainFrame()->SetStorageAccessApiStatus(
+          net::StorageAccessApiStatus::kNone);
     }
-    ASSERT_TRUE(future.Wait());
     EXPECT_FALSE(request_manager()->IsRequestInProgress());
   }
 

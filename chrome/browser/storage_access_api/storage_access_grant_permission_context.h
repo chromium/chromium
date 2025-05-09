@@ -77,6 +77,11 @@ class StorageAccessGrantPermissionContext
 
   ~StorageAccessGrantPermissionContext() override;
 
+  // Exposes `RequestPermission` for tests.
+  void RequestPermissionForTesting(
+      std::unique_ptr<permissions::PermissionRequestData> request_data,
+      permissions::BrowserPermissionCallback callback);
+
   // Exposes `DecidePermission` for tests.
   void DecidePermissionForTesting(
       std::unique_ptr<permissions::PermissionRequestData> request_data,
@@ -87,6 +92,9 @@ class StorageAccessGrantPermissionContext
 
  private:
   // PermissionContextBase:
+  void RequestPermission(
+      std::unique_ptr<permissions::PermissionRequestData> request_data,
+      permissions::BrowserPermissionCallback callback) override;
   void DecidePermission(
       std::unique_ptr<permissions::PermissionRequestData> request_data,
       permissions::BrowserPermissionCallback callback) override;

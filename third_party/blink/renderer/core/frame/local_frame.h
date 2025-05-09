@@ -39,6 +39,7 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
@@ -367,6 +368,9 @@ class CORE_EXPORT LocalFrame final
   // Activates or clears history user activation state and also notifies frame
   // scheduler of the state change.
   void SetHadUserInteraction(bool had_user_interaction);
+
+  // Sets the Storage Access API status in the browser process..
+  void SetStorageAccessApiStatus(net::StorageAccessApiStatus status);
 
   // Registers an observer that will be notified if a VK occludes
   // the content when it raises/dismisses. The observer is a HeapHashSet

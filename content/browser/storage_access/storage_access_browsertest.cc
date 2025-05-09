@@ -139,14 +139,6 @@ class StorageAccessBrowserTest : public ContentBrowserTest {
     client_->set_is_full_cookie_access_allowed(is_full_cookie_access_allowed);
   }
 
-  void set_storage_access_permission_status(
-      const blink::mojom::PermissionStatus& status) {
-    static_cast<PermissionControllerImpl*>(
-        host()->GetBrowserContext()->GetPermissionController())
-        ->SetPermissionOverride(
-            std::nullopt, blink::PermissionType::STORAGE_ACCESS_GRANT, status);
-  }
-
   RenderFrameHostImpl* host() {
     return static_cast<RenderFrameHostImpl*>(
         static_cast<WebContentsImpl*>(shell()->web_contents())
@@ -159,39 +151,22 @@ class StorageAccessBrowserTest : public ContentBrowserTest {
   std::unique_ptr<MockContentBrowserClient> client_;
 };
 
-IN_PROC_BROWSER_TEST_F(StorageAccessBrowserTest, WithCookiesWithPermission) {
+IN_PROC_BROWSER_TEST_F(StorageAccessBrowserTest, WithCookieAccess) {
   set_is_full_cookie_access_allowed(true);
-  set_storage_access_permission_status(blink::mojom::PermissionStatus::GRANTED);
   BindStorageAccessHandleAndExpect(/*is_connected=*/true, "");
   BindDomStorageAndExpect(/*is_connected=*/true);
 }
 
-IN_PROC_BROWSER_TEST_F(StorageAccessBrowserTest, WithCookiesWithoutPermission) {
-  set_is_full_cookie_access_allowed(true);
-  set_storage_access_permission_status(blink::mojom::PermissionStatus::DENIED);
-  BindStorageAccessHandleAndExpect(/*is_connected=*/true, "");
-  BindDomStorageAndExpect(/*is_connected=*/true);
-}
-
-IN_PROC_BROWSER_TEST_F(StorageAccessBrowserTest, WithoutCookiesWithPermission) {
+IN_PROC_BROWSER_TEST_F(StorageAccessBrowserTest, WithoutCookieAccess) {
   set_is_full_cookie_access_allowed(false);
-  set_storage_access_permission_status(blink::mojom::PermissionStatus::GRANTED);
-  BindStorageAccessHandleAndExpect(/*is_connected=*/true, "");
-  BindDomStorageAndExpect(/*is_connected=*/true);
-}
-
-IN_PROC_BROWSER_TEST_F(StorageAccessBrowserTest,
-                       WithoutCookiesWithoutPermission) {
-  set_is_full_cookie_access_allowed(false);
-  set_storage_access_permission_status(blink::mojom::PermissionStatus::DENIED);
+  BindStorageAccessHandleAndExpect(/*is_connected=*/false,
 #if DCHECK_IS_ON()
-  BindStorageAccessHandleAndExpect(
-      /*is_connected=*/false,
-      "Binding a StorageAccessHandle requires third-party cookie access or "
-      "permission access.");
+                                   "Binding a StorageAccessHandle requires "
+                                   "third-party cookie access."
 #else
-  BindStorageAccessHandleAndExpect(/*is_connected=*/false, "");
+                                   ""
 #endif
+  );
   BindDomStorageAndExpect(/*is_connected=*/false);
 }
 

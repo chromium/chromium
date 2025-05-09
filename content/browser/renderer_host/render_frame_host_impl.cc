@@ -1813,6 +1813,9 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
             ? ukm::kInvalidSourceId
             : frame.GetPageUkmSourceId());
 
+    result.cookie_setting_overrides_ =
+        frame.document_associated_data_->cookie_setting_overrides();
+
     // Determine if the frame's sandboxing policy contains the
     // `allow-same-site-none-cookies` value and a CookieSettingOverride should
     // be applied so SameSite=None cookies are included in requests from this
@@ -7974,6 +7977,21 @@ void RenderFrameHostImpl::OnFirstContentfulPaint() {
   }
 }
 
+void RenderFrameHostImpl::SetStorageAccessApiStatus(
+    net::StorageAccessApiStatus status) {
+  switch (status) {
+    case net::StorageAccessApiStatus::kNone:
+      document_associated_data_->RemoveCookieSettingOverride(
+          net::CookieSettingOverride::kStorageAccessGrantEligible);
+      return;
+    case net::StorageAccessApiStatus::kAccessViaAPI:
+      document_associated_data_->PutCookieSettingOverride(
+          net::CookieSettingOverride::kStorageAccessGrantEligible);
+      return;
+  }
+  NOTREACHED();
+}
+
 void RenderFrameHostImpl::UpdateEncoding(const std::string& encoding_name) {
   if (!is_main_frame()) {
     mojo::ReportBadMessage("Renderer sent updated encoding for a subframe.");
@@ -12351,6 +12369,11 @@ void RenderFrameHostImpl::CommitNavigation(
   commit_params->should_skip_screenshot =
       NavigationTransitionUtils::ShouldSkipScreenshot(*navigation_request);
 
+  if (commit_params->load_with_storage_access !=
+      net::StorageAccessApiStatus::kNone) {
+    SetStorageAccessApiStatus(commit_params->load_with_storage_access);
+  }
+
   RenderFrameHostImpl* previous_rfh =
       navigation_request->frame_tree_node()->current_frame_host();
   if (is_same_document) {
@@ -12735,7 +12758,9 @@ void RenderFrameHostImpl::ReportBlockingCrossPartitionBlobURL(
 }
 
 bool RenderFrameHostImpl::DoesDocumentHaveStorageAccess() {
-  return StorageAccessHandle::DoesDocumentHaveStorageAccess(this);
+  return GetContentClient()->browser()->IsFullCookieAccessAllowed(
+      GetBrowserContext(), WebContents::FromRenderFrameHost(this),
+      GetLastCommittedURL(), GetStorageKey(), GetCookieSettingOverrides());
 }
 
 void RenderFrameHostImpl::BindBlobUrlStoreAssociatedReceiver(

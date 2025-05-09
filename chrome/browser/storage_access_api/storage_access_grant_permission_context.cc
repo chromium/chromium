@@ -35,11 +35,13 @@
 #include "components/metrics/dwa/dwa_recorder.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/btm_service.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/public/browser/storage_partition.h"
@@ -273,6 +275,41 @@ StorageAccessGrantPermissionContext::StorageAccessGrantPermissionContext(
 StorageAccessGrantPermissionContext::~StorageAccessGrantPermissionContext() =
     default;
 
+void StorageAccessGrantPermissionContext::RequestPermissionForTesting(
+    std::unique_ptr<permissions::PermissionRequestData> request_data,
+    permissions::BrowserPermissionCallback callback) {
+  RequestPermission(std::move(request_data), std::move(callback));
+}
+
+void StorageAccessGrantPermissionContext::RequestPermission(
+    std::unique_ptr<permissions::PermissionRequestData> request_data,
+    permissions::BrowserPermissionCallback callback) {
+  // When a document requests this permission (and the request is allowed -
+  // either via a pre-existing permission grant, or a new one, or an implicit
+  // one), we need to track that state in both the browser and the renderer.
+  // This callback (synchronously) handles the browser side of that.
+  content::GlobalRenderFrameHostId frame_host_id =
+      request_data->id.global_render_frame_host_id();
+  PermissionContextBase::RequestPermission(
+      std::move(request_data),
+      base::BindOnce(
+          [](content::GlobalRenderFrameHostId frame_host_id,
+             ContentSetting content_setting) {
+            if (content_setting == CONTENT_SETTING_ALLOW) {
+              content::RenderFrameHost* rfh =
+                  content::RenderFrameHost::FromID(frame_host_id);
+              if (rfh) {
+                rfh->SetStorageAccessApiStatus(
+                    net::StorageAccessApiStatus::kAccessViaAPI);
+              }
+            }
+
+            return content_setting;
+          },
+          frame_host_id)
+          .Then(std::move(callback)));
+}
+
 void StorageAccessGrantPermissionContext::DecidePermissionForTesting(
     std::unique_ptr<permissions::PermissionRequestData> request_data,
     permissions::BrowserPermissionCallback callback) {
@@ -336,15 +373,15 @@ void StorageAccessGrantPermissionContext::DecidePermission(
   if (overrides.Has(net::CookieSettingOverride::kStorageAccessGrantEligible) ||
       overrides.Has(
           net::CookieSettingOverride::kStorageAccessGrantEligibleViaHeader)) {
-    RecordOutcomeSample(RequestOutcome::kDeniedAborted, requesting_site);
+    RecordOutcomeSample(RequestOutcome::kReusedPreviousDecision,
+                        requesting_site);
     // The caller already has the `kStorageAccessGrantEligible` or
-    // `kStorageAccessGrantEligibleViaHeader` override, which is impossible
-    // since those overrides should be used solely by the network service. This
-    // suggests the renderer is misbehaving.
-    mojo::ReportBadMessage(
-        "requestStorageAccess: inconsistent state. Requested permission for a "
-        "frame that already claims to have permission.");
-    std::move(callback).Run(CONTENT_SETTING_BLOCK);
+    // `kStorageAccessGrantEligibleViaHeader` override, which suggests they've
+    // already requested permission. This code is reachable in same-site or
+    // A(B(A)) contexts, for example, which do not create explicit permission
+    // grants.  Since the caller has already requested permission previously, we
+    // treat this call as a no-op.
+    std::move(callback).Run(CONTENT_SETTING_ALLOW);
     return;
   }
 
