@@ -16,6 +16,7 @@ import pathlib
 import re
 import shutil
 import sys
+import tempfile
 
 from grit import grd_reader
 from grit import shortcuts
@@ -394,6 +395,9 @@ are exported to translation interchange files (e.g. XMB files), etc.
     if self.allowlist_names:
       self.AddAllowlistTags(self.res, self.allowlist_names)
 
+    if self.android_output_zip_path is not None:
+      self.android_output_tmp_dir = tempfile.TemporaryDirectory(
+          ignore_cleanup_errors=True)
     zippable_android_xml_outputs = []
     for output in self.res.GetOutputFiles():
       self.VerboseOut('Creating %s...' % output.GetOutputFilename())
@@ -408,16 +412,28 @@ are exported to translation interchange files (e.g. XMB files), etc.
       if self.res.GetIdMap() is None:
         self.res.InitializeIds()
 
-      # Make the output directory if it doesn't exist.
-      self.MakeDirectoriesTo(output.GetOutputFilename())
-
       # Write the results to a temporary file and only overwrite the original
       # if the file changed.  This avoids unnecessary rebuilds.
+      #
+      # TODO(hartmanng): Android xml strings currently bypass this behaviour
+      # when self.android_output_zip_path is set. We should take another look to
+      # make sure we avoid unnecessary rebuilds.
       out_filename = output.GetOutputFilename()
       tmp_filename = out_filename + '.tmp'
-      tmpfile = self.fo_create(tmp_filename, 'wb')
 
       output_type = output.GetType()
+      if output_type == 'android' and self.android_output_zip_path is not None:
+        # if these files are just going to be zipped and then deleted, they
+        # shouldn't be in the normal `out/...` directory - we'll just store them
+        # in the system tmp dir instead.
+        tmp_filename = self.GetTempAndroidOutputPath(tmp_filename)
+        out_filename = self.GetTempAndroidOutputPath(out_filename)
+        zippable_android_xml_outputs.append(out_filename)
+
+      # Make the output directory if it doesn't exist.
+      self.MakeDirectoriesTo(out_filename)
+      tmpfile = self.fo_create(tmp_filename, 'wb')
+
       if output_type != 'data_package':
         encoding = self._EncodingForOutputType(output_type)
         tmpfile = util.WrapOutputStream(tmpfile, encoding)
@@ -434,9 +450,6 @@ are exported to translation interchange files (e.g. XMB files), etc.
             shutil.copyfileobj(tmpfile, fgz)
         os.remove(tmp_filename)
         tmp_filename = gz_filename
-
-      if output_type == 'android':
-        zippable_android_xml_outputs.append(out_filename)
 
       # Now copy from the temp file back to the real output, but on Windows,
       # only if the real output doesn't exist or the contents of the file
@@ -485,6 +498,28 @@ are exported to translation interchange files (e.g. XMB files), etc.
           f'missing translations: {self.res.UberClique().missing_translations_}'
       )
       sys.exit(-1)
+
+
+  # Gets a temporary output path that mirrors the given reference path.
+  # |out_filename| can be either absolute or relative.
+  # |self.android_output_tmp_dir| must be set to a tempfile.TemporaryDirectory
+  # object before calling this function.
+  #
+  # Examples (assuming |self.android_output_tmp_dir.name| =
+  # '/tmp/android_output', and current working directory is
+  # '/chromium/src/out/Debug'):
+  #
+  #   GetTempAndroidOutputPath('relative/path') =
+  #     '/tmp/android_output/chromium/src/out/Debug/relative/path'
+  #
+  #   GetTempAndroidOutputPath('../../relative/path') =
+  #     '/tmp/android_output/chromium/src/relative/path'
+  #
+  #   GetTempAndroidOutputPath('/absolute/path') =
+  #     '/tmp/android_output/absolute/path'
+  def GetTempAndroidOutputPath(self, out_filename):
+    return os.path.join(self.android_output_tmp_dir.name,
+                        os.path.relpath(os.path.abspath(out_filename), '/'))
 
 
   # zip_helpers.add_files_to_zip takes in a list of tuples (zip_filename,
@@ -631,4 +666,4 @@ Duplicate actual output files:
     '''Creates directories necessary to contain |file|.'''
     dir = os.path.split(file)[0]
     if not os.path.exists(dir):
-      os.makedirs(dir)
+      os.makedirs(dir, exist_ok=True)
