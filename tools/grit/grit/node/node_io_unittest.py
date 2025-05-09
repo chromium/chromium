@@ -229,7 +229,7 @@ class FileNodeUnittest(unittest.TestCase):
             'gender': 'NEUTER'
         },
         {
-            'filename': 'java/res/values-en-OTHER/translation.xml',
+            'filename': 'java/res/values-en/translation.xml',
             'gender': 'OTHER'
         },
         {
