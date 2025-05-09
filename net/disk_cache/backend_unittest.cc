@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdint.h>
 
 #include <algorithm>
@@ -503,19 +498,15 @@ void DiskCacheBackendTest::BackendKeying() {
   EXPECT_TRUE(entry1 != entry2) << "Case sensitive";
   entry2->Close();
 
-  char buffer[30];
-  base::strlcpy(buffer, kName1, std::size(buffer));
-  ASSERT_THAT(OpenEntry(buffer, &entry2), IsOk());
+  ASSERT_THAT(OpenEntry(kName1, &entry2), IsOk());
   EXPECT_TRUE(entry1 == entry2);
   entry2->Close();
 
-  base::strlcpy(buffer + 1, kName1, std::size(buffer) - 1);
-  ASSERT_THAT(OpenEntry(buffer + 1, &entry2), IsOk());
+  ASSERT_THAT(OpenEntry(kName1, &entry2), IsOk());
   EXPECT_TRUE(entry1 == entry2);
   entry2->Close();
 
-  base::strlcpy(buffer + 3, kName1, std::size(buffer) - 3);
-  ASSERT_THAT(OpenEntry(buffer + 3, &entry2), IsOk());
+  ASSERT_THAT(OpenEntry(kName1, &entry2), IsOk());
   EXPECT_TRUE(entry1 == entry2);
   entry2->Close();
 
@@ -1194,7 +1185,7 @@ void DiskCacheBackendTest::BackendLoad() {
   int seed = static_cast<int>(Time::Now().ToInternalValue());
   srand(seed);
 
-  disk_cache::Entry* entries[kLargeNumEntries];
+  std::array<disk_cache::Entry*, kLargeNumEntries> entries;
   for (auto*& entry : entries) {
     std::string key = GenerateKey(true);
     ASSERT_THAT(CreateEntry(key, &entry), IsOk());
@@ -1331,7 +1322,8 @@ void DiskCacheBackendTest::BackendValidEntry() {
   const int kSize = 50;
   auto buffer1 = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
   std::ranges::fill(buffer1->span(), 0);
-  base::strlcpy(buffer1->data(), "And the data to save", kSize);
+  buffer1->span().copy_prefix_from(
+      base::byte_span_with_nul_from_cstring("And the data to save"));
   EXPECT_EQ(kSize, WriteData(entry, 0, 0, buffer1.get(), kSize, false));
   entry->Close();
   SimulateCrash();
@@ -1367,7 +1359,8 @@ void DiskCacheBackendTest::BackendInvalidEntry() {
   const int kSize = 50;
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
   std::ranges::fill(buffer->span(), 0);
-  base::strlcpy(buffer->data(), "And the data to save", kSize);
+  buffer->span().copy_prefix_from(
+      base::byte_span_with_nul_from_cstring("And the data to save"));
   EXPECT_EQ(kSize, WriteData(entry, 0, 0, buffer.get(), kSize, false));
   SimulateCrash();
 
@@ -1411,7 +1404,8 @@ void DiskCacheBackendTest::BackendInvalidEntryRead() {
   const int kSize = 50;
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
   std::ranges::fill(buffer->span(), 0);
-  base::strlcpy(buffer->data(), "And the data to save", kSize);
+  buffer->span().copy_prefix_from(
+      base::byte_span_with_nul_from_cstring("And the data to save"));
   EXPECT_EQ(kSize, WriteData(entry, 0, 0, buffer.get(), kSize, false));
   entry->Close();
   ASSERT_THAT(OpenEntry(key, &entry), IsOk());
@@ -1464,7 +1458,7 @@ void DiskCacheBackendTest::BackendInvalidEntryWithLoad() {
   srand(seed);
 
   const int kNumEntries = 100;
-  disk_cache::Entry* entries[kNumEntries];
+  std::array<disk_cache::Entry*, kNumEntries> entries;
   for (auto*& entry : entries) {
     std::string key = GenerateKey(true);
     ASSERT_THAT(CreateEntry(key, &entry), IsOk());
@@ -1479,7 +1473,7 @@ void DiskCacheBackendTest::BackendInvalidEntryWithLoad() {
     entries[source2] = temp;
   }
 
-  std::string keys[kNumEntries];
+  std::array<std::string, kNumEntries> keys;
   for (int i = 0; i < kNumEntries; i++) {
     keys[i] = entries[i]->GetKey();
     if (i < kNumEntries / 2)
@@ -1661,7 +1655,7 @@ void DiskCacheBackendTest::BackendEnumerations() {
   disk_cache::Entry* entry;
   std::unique_ptr<TestIterator> iter = CreateIterator();
   int count = 0;
-  Time last_used[kNumEntries];
+  std::array<Time, kNumEntries> last_used;
   while (iter->OpenNextEntry(&entry) == net::OK) {
     ASSERT_TRUE(nullptr != entry);
     if (count < kNumEntries) {
@@ -1851,7 +1845,8 @@ TEST_F(DiskCacheBackendTest, ShaderCacheEnumerationReadData) {
 
   ASSERT_THAT(CreateEntry(first, &entry1), IsOk());
   std::ranges::fill(buffer1->span(), 0);
-  base::strlcpy(buffer1->data(), "And the data to save", kSize);
+  buffer1->span().copy_prefix_from(
+      base::byte_span_with_nul_from_cstring("And the data to save"));
   EXPECT_EQ(kSize, WriteData(entry1, 0, 0, buffer1.get(), kSize, false));
 
   ASSERT_THAT(CreateEntry(second, &entry2), IsOk());
@@ -1885,7 +1880,8 @@ void DiskCacheBackendTest::BackendInvalidEntryEnumeration() {
   const int kSize = 50;
   auto buffer1 = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
   std::ranges::fill(buffer1->span(), 0);
-  base::strlcpy(buffer1->data(), "And the data to save", kSize);
+  buffer1->span().copy_prefix_from(
+      base::byte_span_with_nul_from_cstring("And the data to save"));
   EXPECT_EQ(kSize, WriteData(entry1, 0, 0, buffer1.get(), kSize, false));
   entry1->Close();
   ASSERT_THAT(OpenEntry(key, &entry1), IsOk());
@@ -4443,8 +4439,8 @@ TEST_F(DiskCacheBackendTest, SimpleFdLimit) {
   SetCacheType(net::APP_CACHE);
   InitCache();
 
-  disk_cache::Entry* entries[kLargeNumEntries];
-  std::string keys[kLargeNumEntries];
+  std::array<disk_cache::Entry*, kLargeNumEntries> entries;
+  std::array<std::string, kLargeNumEntries> keys;
   for (int i = 0; i < kLargeNumEntries; ++i) {
     keys[i] = GenerateKey(true);
     ASSERT_THAT(CreateEntry(keys[i], &entries[i]), IsOk());
