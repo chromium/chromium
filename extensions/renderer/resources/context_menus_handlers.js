@@ -189,7 +189,7 @@ function createContextMenusHandlers(webViewNamespace) {
     };
     if (isWebview) {
       bindingUtil.sendRequest(
-          'chromeWebViewInternal.contextMenusUpdate',
+          webViewNamespace + '.contextMenusUpdate',
           [instanceId, id, updateProperties, successCallback], optArgs);
     } else {
       bindingUtil.sendRequest(

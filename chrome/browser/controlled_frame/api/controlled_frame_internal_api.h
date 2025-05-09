@@ -33,6 +33,26 @@ class ControlledFrameInternalContextMenusCreateFunction
   ResponseAction Run() override;
 };
 
+// Handles the <controlledframe> contextMenus.update() API.
+class ControlledFrameInternalContextMenusUpdateFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("controlledFrameInternal.contextMenusUpdate",
+                             CONTROLLEDFRAMEINTERNAL_CONTEXTMENUSUPDATE)
+  ControlledFrameInternalContextMenusUpdateFunction() = default;
+
+  ControlledFrameInternalContextMenusUpdateFunction(
+      const ControlledFrameInternalContextMenusUpdateFunction&) = delete;
+  ControlledFrameInternalContextMenusUpdateFunction& operator=(
+      const ControlledFrameInternalContextMenusUpdateFunction&) = delete;
+
+ protected:
+  ~ControlledFrameInternalContextMenusUpdateFunction() override = default;
+
+  // ExtensionFunction implementation.
+  ResponseAction Run() override;
+};
+
 // Handles the <controlledframe> setClientHintsUABrandEnabled() API.
 class ControlledFrameInternalSetClientHintsEnabledFunction
     : public extensions::WebViewInternalExtensionFunction {

@@ -113,6 +113,91 @@
         }
       },
       {
+        "name": "contextMenusUpdate",
+        "type": "function",
+        "description": "Updates a previously created context menu item.",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "instanceId",
+            "nodoc": true
+          },
+          {
+            "choices": [
+              { "type": "integer" },
+              { "type": "string" }
+            ],
+            "name": "id",
+            "description": "The ID of the item to update."
+          },
+          { "type": "object",
+            "name": "updateProperties",
+            "description": "The properties to update. Accepts the same values as the create function.",
+            "properties": {
+              "type": {
+                "$ref": "contextMenus.ItemType",
+                "optional": true
+              },
+              "title": {
+                "type": "string",
+                "optional": true
+              },
+              "checked": {
+                "type": "boolean",
+                "optional": true
+              },
+              "contexts": {
+                "type": "array",
+                "items": {
+                  // |launcher| isn't actually supported, this is listed here so that we can build |contexts| using the same code from chrome.contextMenus API.
+                  "$ref": "contextMenus.ContextType"
+                },
+                "minItems": 1,
+                "optional": true,
+                "description": "List of contexts this menu item will appear in. Defaults to ['page'] if not specified."
+              },
+              "visible": {
+                "type": "boolean",
+                "optional": true,
+                "description": "Whether the item is visible in the menu."
+              },
+              "onclick": {
+                "type": "function",
+                "optional": true
+              },
+              "parentId": {
+                "choices": [
+                  { "type": "integer" },
+                  { "type": "string" }
+                ],
+                "optional": true,
+                "description": "Note: You cannot change an item to be a child of one of its own descendants."
+              },
+              "documentUrlPatterns": {
+                "type": "array",
+                "items": {"type": "string"},
+                "optional": true
+              },
+              "targetUrlPatterns": {
+                "type": "array",
+                "items": {"type": "string"},
+                "optional": true
+              },
+              "enabled": {
+                "type": "boolean",
+                "optional": true
+              }
+            }
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [],
+          "description": "Called when the context menu has been updated."
+        }
+      },
+      {
         "name": "setClientHintsEnabled",
         "type": "function",
         "parameters": [

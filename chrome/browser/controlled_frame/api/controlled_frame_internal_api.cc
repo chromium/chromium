@@ -50,6 +50,33 @@ ControlledFrameInternalContextMenusCreateFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction
+ControlledFrameInternalContextMenusUpdateFunction::Run() {
+  std::optional<webview::ContextMenusUpdate::Params> params =
+      webview::ContextMenusUpdate::Params::Create(args());
+
+  extensions::MenuItem::Id id(
+      browser_context()->IsOffTheRecord(),
+      extensions::MenuItem::ExtensionKey(
+          /*extension_id=*/std::string(),
+          render_frame_host()->GetProcess()->GetDeprecatedID(),
+          render_frame_host()->GetRoutingID(), params->instance_id));
+
+  if (params->id.as_string) {
+    id.string_uid = *params->id.as_string;
+  } else if (params->id.as_integer) {
+    id.uid = *params->id.as_integer;
+  } else {
+    NOTREACHED();
+  }
+
+  std::string error;
+  bool success = extensions::context_menu_helpers::UpdateMenuItem(
+      params->update_properties, Profile::FromBrowserContext(browser_context()),
+      /*extension=*/nullptr, id, &error);
+  return RespondNow(success ? NoArguments() : Error(error));
+}
+
+ExtensionFunction::ResponseAction
 ControlledFrameInternalSetClientHintsEnabledFunction::Run() {
   std::optional<controlled_frame_internal::SetClientHintsEnabled::Params>
       params = controlled_frame_internal::SetClientHintsEnabled::Params::Create(

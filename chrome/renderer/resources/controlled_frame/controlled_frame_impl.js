@@ -53,6 +53,13 @@ ControlledFrameContextMenusImpl.prototype.createImpl = function() {
       ControlledFrameInternal.contextMenusCreate, null, args);
 }
 
+// Controlled Frame has its own internal definition of Context Menus update().
+ControlledFrameContextMenusImpl.prototype.updateImpl = function() {
+  var args = $Array.concat([this.viewInstanceId_], $Array.slice(arguments));
+  return $Function.apply(
+    ControlledFrameInternal.contextMenusUpdate, null, args);
+}
+
 ControlledFrameContextMenusImpl.prototype.create =
     ControlledFrameContextMenusImpl.prototype.convertMethodToPromiseBased(
         ControlledFrameContextMenusImpl.prototype.createImpl, "create");
@@ -68,7 +75,7 @@ ControlledFrameContextMenusImpl.prototype.removeAll =
 
 ControlledFrameContextMenusImpl.prototype.update =
     ControlledFrameContextMenusImpl.prototype.convertMethodToPromiseBased(
-        WebViewContextMenusImpl.prototype.update, "update");
+      ControlledFrameContextMenusImpl.prototype.updateImpl, "update");
 
 function ControlledFrameContextMenus() {
   privates(ControlledFrameContextMenus).constructPrivate(this, arguments);
