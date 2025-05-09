@@ -173,6 +173,7 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
   // force_blocking ensures that the image will block the load event.
   void DoUpdateFromElement(const DOMWrapperWorld* world,
                            UpdateFromElementBehavior,
+                           const KURL* source_url = nullptr,
                            UpdateType = UpdateType::kAsync,
                            bool force_blocking = false);
 
