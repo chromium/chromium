@@ -30,6 +30,7 @@
 #include "components/sync/model/syncable_service.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/pref_model_associator.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/pref_service_syncable_factory.h"
@@ -74,6 +75,7 @@ const char kNonDefaultCharsetValue[] = "foo";
 const char kDefaultCharsetValue[] = "utf-8";
 const char kBrowserPrefName[] = "browser_pref";
 const char kBrowserPriorityPrefName[] = "browser_priority_pref";
+const char kAlwaysSyncingPriorityPrefName[] = "always_syncing_priority_pref";
 #if BUILDFLAG(IS_CHROMEOS)
 const char kOsPrefName[] = "os_pref";
 const char kOsPriorityPrefName[] = "os_priority_pref";
@@ -108,6 +110,9 @@ const TestSyncablePrefsDatabase::PrefsMap kSyncablePrefsDatabase = {
      {10, syncer::OS_PRIORITY_PREFERENCES, PrefSensitivity::kNone,
       MergeBehavior::kNone}},
 #endif
+    {kAlwaysSyncingPriorityPrefName,
+     {11, syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,
+      MergeBehavior::kNone}},
 };
 
 // Searches for a preference matching `name` and, if specified,`change_type`,
@@ -401,7 +406,10 @@ TEST_F(PrefServiceSyncableTest, ModelAssociationWithDataTypeMismatch) {
 class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
  public:
   TestPrefModelAssociatorClient()
-      : syncable_prefs_database_(kSyncablePrefsDatabase) {}
+      : syncable_prefs_database_(kSyncablePrefsDatabase) {
+    syncable_prefs_database_.SetAlwaysSyncingPrefs(
+        {kAlwaysSyncingPriorityPrefName});
+  }
 
   TestPrefModelAssociatorClient(const TestPrefModelAssociatorClient&) = delete;
   TestPrefModelAssociatorClient& operator=(
@@ -1402,6 +1410,98 @@ TEST_F(PrefServiceSyncableFactoryTest,
           pref_service->GetSyncableService(syncer::OS_PRIORITY_PREFERENCES))
           ->IsUsingDualLayerUserPrefStoreForTesting());
 #endif
+}
+
+class PrefServiceSyncableFactoryTestWithAlwaysSyncingPrefs
+    : public PrefServiceSyncableFactoryTest {
+ public:
+  PrefServiceSyncableFactoryTestWithAlwaysSyncingPrefs() {
+    feature_list_.InitWithFeatures(
+        {switches::kEnablePreferencesAccountStorage,
+         syncer::kSyncSupportAlwaysSyncingPriorityPreferences},
+        /*disabled_features=*/{});
+    pref_service_syncable_factory_.SetPrefModelAssociatorClient(client_);
+
+    // Register test prefs.
+    prefs_.registry()->RegisterStringPref(
+        kBrowserPrefName, std::string(),
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+    prefs_.registry()->RegisterStringPref(
+        kBrowserPriorityPrefName, std::string(),
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
+    prefs_.registry()->RegisterStringPref(
+        kAlwaysSyncingPriorityPrefName, std::string(),
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  scoped_refptr<TestPrefModelAssociatorClient> client_ =
+      base::MakeRefCounted<TestPrefModelAssociatorClient>();
+};
+
+TEST_F(PrefServiceSyncableFactoryTestWithAlwaysSyncingPrefs,
+       ShouldReadPriorityPrefsFromAccountStoreRightAway) {
+  account_prefs_->SetValue(kBrowserPrefName, base::Value("pref"),
+                           /*flags=*/0);
+  account_prefs_->SetValue(kBrowserPriorityPrefName,
+                           base::Value("priority_pref"),
+                           /*flags=*/0);
+  account_prefs_->SetValue(kAlwaysSyncingPriorityPrefName,
+                           base::Value("always_syncing_priority_pref"),
+                           /*flags=*/0);
+  // Simulate sync enabled in previous run.
+  {
+    std::unique_ptr<PrefServiceSyncable> pref_service =
+        pref_service_syncable_factory_.CreateSyncable(prefs_.registry());
+    syncer::TestSyncService sync_service;
+    sync_service.GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/false, {syncer::UserSelectableType::kPreferences});
+    pref_service->OnSyncServiceInitialized(&sync_service);
+    sync_service.Shutdown();
+  }
+
+  // New browser run.
+  std::unique_ptr<PrefServiceSyncable> pref_service =
+      pref_service_syncable_factory_.CreateSyncable(prefs_.registry());
+
+  // No OnSyncServiceInitialized() has been called yet. However, all the account
+  // pref values should be available immediately, even though the user selected
+  // types can't be queried from the SyncService yet.
+  EXPECT_THAT(pref_service->GetUserPrefValue(kBrowserPrefName),
+              testing::Pointee(testing::Eq("pref")));
+  EXPECT_THAT(pref_service->GetUserPrefValue(kBrowserPriorityPrefName),
+              testing::Pointee(testing::Eq("priority_pref")));
+  EXPECT_THAT(pref_service->GetUserPrefValue(kAlwaysSyncingPriorityPrefName),
+              testing::Pointee(testing::Eq("always_syncing_priority_pref")));
+}
+
+// This is not a real-life scenario since account values cannot exist prior to
+// sync being enabled before.
+TEST_F(PrefServiceSyncableFactoryTestWithAlwaysSyncingPrefs,
+       ShouldReadPrefsAndAlwaysSyncingPriorityPrefsFromAccountStoreRightAway) {
+  // Fresh browser run.
+  account_prefs_->SetValue(kBrowserPrefName, base::Value("pref"),
+                           /*flags=*/0);
+  account_prefs_->SetValue(kBrowserPriorityPrefName,
+                           base::Value("priority_pref"),
+                           /*flags=*/0);
+  account_prefs_->SetValue(kAlwaysSyncingPriorityPrefName,
+                           base::Value("always_syncing_priority_pref"),
+                           /*flags=*/0);
+  std::unique_ptr<PrefServiceSyncable> pref_service =
+      pref_service_syncable_factory_.CreateSyncable(prefs_.registry());
+
+  // No OnSyncServiceInitialized() has been called yet. Given that this is a
+  // fresh run, user selected types are not available till it can be queried
+  // from the SyncService. In such case, only regular priority prefs account
+  // values are not returned. Account values of non-priority prefs and the
+  // always syncing priority prefs are available right away.
+  EXPECT_THAT(pref_service->GetUserPrefValue(kBrowserPrefName),
+              testing::Pointee(testing::Eq("pref")));
+  EXPECT_THAT(pref_service->GetUserPrefValue(kAlwaysSyncingPriorityPrefName),
+              testing::Pointee(testing::Eq("always_syncing_priority_pref")));
+  EXPECT_FALSE(pref_service->GetUserPrefValue(kBrowserPriorityPrefName));
 }
 
 }  // namespace
