@@ -10013,6 +10013,22 @@
             ]
         }
     ],
+    "GlicTieredRollout": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicTieredRollout"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlobalVaapiLock": [
         {
             "platforms": [
