@@ -66,10 +66,7 @@ public class LoadingFullscreenCoordinator {
                         .with(ScrimProperties.BACKGROUND_COLOR, backgroundColor)
                         .build();
 
-        mScrimManager.showScrim(mPropertyModel);
-        if (!animate) {
-            mScrimManager.forceAnimationToFinish(mPropertyModel);
-        }
+        mScrimManager.showScrim(mPropertyModel, animate);
         mContainer.setVisibility(View.VISIBLE);
     }
 

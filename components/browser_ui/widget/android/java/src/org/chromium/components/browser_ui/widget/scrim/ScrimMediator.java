@@ -120,7 +120,7 @@ class ScrimMediator implements TouchEventDelegate {
     }
 
     /** Triggers a fade in of the scrim creating a new animation if necessary. */
-    void showScrim(PropertyModel model, int animDurationMs) {
+    void showScrim(PropertyModel model, boolean animate, int animDurationMs) {
         // ALPHA is a protected property for this component that will only get added to the model
         // if ScrimProperties is used to build it.
         assert model.getAllProperties().contains(ScrimProperties.ALPHA)
@@ -173,6 +173,7 @@ class ScrimMediator implements TouchEventDelegate {
         mIsNewEventFilter = model.get(ScrimProperties.GESTURE_DETECTOR) != null;
         mOverlayFadeInAnimator.setFloatValues(mModel.get(ScrimProperties.ALPHA), 1f);
         runFadeAnimation(mOverlayFadeInAnimator);
+        if (!animate) mOverlayFadeInAnimator.end();
     }
 
     private int getAnimationDuration(int animDurationMs) {

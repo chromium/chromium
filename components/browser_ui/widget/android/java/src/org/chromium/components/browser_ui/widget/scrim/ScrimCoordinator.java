@@ -119,8 +119,18 @@ public class ScrimCoordinator {
      * Show the scrim.
      *
      * @param model The property model of {@link ScrimProperties} that define the scrim behavior.
+     * @param animate Whether the scrim should animate.
      */
     public void showScrim(PropertyModel model) {
+        showScrim(model, true);
+    }
+
+    /**
+     * Show the scrim.
+     *
+     * @param model The property model of {@link ScrimProperties} that define the scrim behavior.
+     */
+    public void showScrim(PropertyModel model, boolean animate) {
         assert model != null : "Showing the scrim requires a model.";
         boolean isShowingScrim = isShowingScrim();
 
@@ -133,7 +143,7 @@ public class ScrimCoordinator {
 
         mView = mScrimViewBuilder.get();
         mChangeProcessor = PropertyModelChangeProcessor.create(model, mView, ScrimViewBinder::bind);
-        mMediator.showScrim(model, ANIM_DURATION_MS);
+        mMediator.showScrim(model, animate, ANIM_DURATION_MS);
         if (isShowingScrim != isShowingScrim()) {
             notifyVisibilityObservers();
         }

@@ -5,7 +5,6 @@
 package org.chromium.components.browser_ui.widget.loading;
 
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
@@ -58,13 +57,13 @@ public class LoadingFullscreenCoordinatorUnitTest {
         LoadingFullscreenCoordinator loadingCoordinator =
                 new LoadingFullscreenCoordinator(mActivity, mScrimManager, layout);
 
+        boolean animate = false;
         loadingCoordinator.startLoading(
                 () -> {
                     loadingCoordinator.closeLoadingScreen();
                 },
-                /* animate= */ false);
-        verify(mScrimManager).showScrim(mPropertyModelArgumentCaptor.capture());
-        verify(mScrimManager).forceAnimationToFinish(any());
+                animate);
+        verify(mScrimManager).showScrim(mPropertyModelArgumentCaptor.capture(), eq(animate));
 
         PropertyModel propertyModel = mPropertyModelArgumentCaptor.getValue();
         cancelButton.performClick();
