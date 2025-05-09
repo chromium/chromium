@@ -234,10 +234,12 @@ bool OpenFileWithAppOrBrowser(Profile* profile,
         integration_service->GetRelativeDrivePath(file_path, &path)) {
       integration_service->GetDriveFsInterface()->GetMetadata(
           path, base::BindOnce(&OpenEncryptedDriveFsFile, file_path));
+      std::move(callback).Run({apps::LaunchResult::State::kSuccess});
       return true;
     }
     LOG(WARNING) << "Failed to open file (extension): " << file_path.Extension()
                  << ": no connection to integration service";
+    std::move(callback).Run({apps::LaunchResult::State::kFailed});
     return false;
   }
 
@@ -272,6 +274,7 @@ bool OpenFileWithAppOrBrowser(Profile* profile,
     // Failed to open the file of unknown type.
     LOG(WARNING) << "Unknown file type (extension): " << file_path.Extension()
                  << " action: " << action_id;
+    std::move(callback).Run({apps::LaunchResult::State::kFailed});
     return false;
   }
 
@@ -297,10 +300,12 @@ bool OpenFileWithAppOrBrowser(Profile* profile,
             page_url = net::FilePathToFileURL(file_path);
           }
           OpenNewTab(page_url);
+          std::move(callback).Run({apps::LaunchResult::State::kSuccess});
           return;
         }
         LOG(WARNING) << "Not viewable in browser: MIME: " << mime
                      << " action: " << action_id;
+        std::move(callback).Run({apps::LaunchResult::State::kFailed});
       },
       std::move(callback), file_path, file_system_url, action_id,
       base::Owned(mime_type_collector));

@@ -19,6 +19,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/webui/file_manager/url_constants.h"
+#include "base/barrier_callback.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
@@ -38,6 +39,7 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -349,17 +351,41 @@ bool ShouldBeOpenedWithBrowser(const std::string& extension_id,
 
 // Opens the files specified by |file_urls| with the browser for |profile|.
 // Returns true on success. It's a failure if no files are opened.
-bool OpenFilesWithBrowser(Profile* profile,
+void OpenFilesWithBrowser(Profile* profile,
                           const std::vector<FileSystemURL>& file_urls,
-                          const std::string& action_id) {
-  int num_opened = 0;
+                          const std::string& action_id,
+                          FileTaskFinishedCallback done) {
+  const auto track_opens = base::BarrierCallback<
+      std::optional<apps::LaunchResult::State>>(
+      file_urls.size(),
+      base::BindOnce(
+          [](FileTaskFinishedCallback done,
+             const std::vector<std::optional<apps::LaunchResult::State>>&
+                 opens) {
+            const int num_opened =
+                std::count_if(opens.begin(), opens.end(), [](auto& o) {
+                  return o.has_value() &&
+                         o.value() == apps::LaunchResult::State::kSuccess;
+                });
+
+            if (num_opened > 0) {
+              std::move(done).Run(
+                  extensions::api::file_manager_private::TaskResult::kOpened,
+                  "");
+            } else {
+              std::move(done).Run(
+                  extensions::api::file_manager_private::TaskResult::kFailed,
+                  "");
+            }
+          },
+          std::move(done)));
   for (const FileSystemURL& file_url : file_urls) {
     if (ash::FileSystemBackend::CanHandleURL(file_url)) {
-      num_opened +=
-          util::OpenFileWithAppOrBrowser(profile, file_url, action_id) ? 1 : 0;
+      util::OpenFileWithAppOrBrowser(profile, file_url, action_id, track_opens);
+    } else {
+      track_opens.Run({apps::LaunchResult::State::kFailed});
     }
   }
-  return num_opened > 0;
 }
 
 void RecordDriveOfflineUMAsGotDocsOfflineStats(
@@ -803,13 +829,8 @@ bool ExecuteFileTask(Profile* profile,
   // this will always open on the current desktop, regardless of which profile
   // owns the files, so return TASK_RESULT_OPENED.
   if (ShouldBeOpenedWithBrowser(task.app_id, parsed_action_id)) {
-    const bool result =
-        OpenFilesWithBrowser(profile, file_urls, parsed_action_id);
-    if (result && done) {
-      std::move(done).Run(
-          extensions::api::file_manager_private::TaskResult::kOpened, "");
-    }
-    return result;
+    OpenFilesWithBrowser(profile, file_urls, parsed_action_id, std::move(done));
+    return true;
   }
 
   for (const FileSystemURL& file_url : file_urls) {
