@@ -10,6 +10,9 @@
 #import "ios/chrome/browser/intelligence/glic/coordinator/glic_consent_coordinator.h"
 #import "ios/chrome/browser/intelligence/glic/model/glic_service.h"
 #import "ios/chrome/browser/intelligence/glic/model/glic_service_factory.h"
+#import "ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_mediator.h"
+#import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_mutator.h"
+#import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_view_controller.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -19,14 +22,24 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 @implementation PageActionMenuCoordinator {
+  PageActionMenuViewController* _viewController;
+  PageActionMenuMediator* _mediator;
+
   // The PageContext wrapper used to provide context about a page.
   PageContextWrapper* _pageContextWrapper;
+
+  // The coordinator for the glic consent flow.
   GLICConsentCoordinator* _glicConsentCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  _viewController = [[PageActionMenuViewController alloc] init];
+  _mediator = [[PageActionMenuMediator alloc] init];
+
+  _viewController.mutator = _mediator;
+
   // TODO(crbug.com/408006823): Have the view controller call this when its
   // button is pressed.
   [self handleEntryPointPressed];
@@ -34,6 +47,9 @@
 }
 
 - (void)stop {
+  _viewController = nil;
+  _mediator = nil;
+
   [super stop];
 }
 
