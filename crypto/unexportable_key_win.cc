@@ -28,8 +28,8 @@
 #include "base/threading/scoped_thread_priority.h"
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
+#include "crypto/hash.h"
 #include "crypto/random.h"
-#include "crypto/sha2.h"
 #include "crypto/unexportable_key.h"
 #include "crypto/unexportable_key_metrics.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
@@ -293,7 +293,7 @@ base::expected<std::vector<uint8_t>, SECURITY_STATUS> SignECDSA(
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 
-  std::array<uint8_t, kSHA256Length> digest = SHA256Hash(data);
+  std::array<uint8_t, hash::kSha256Size> digest = hash::Sha256(data);
   // The signature is written as a pair of big-endian field elements for P-256
   // ECDSA.
   std::vector<uint8_t> sig(64);
@@ -327,7 +327,7 @@ base::expected<std::vector<uint8_t>, SECURITY_STATUS> SignRSA(
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 
-  std::array<uint8_t, kSHA256Length> digest = SHA256Hash(data);
+  std::array<uint8_t, hash::kSha256Size> digest = hash::Sha256(data);
   BCRYPT_PKCS1_PADDING_INFO padding_info = {0};
   padding_info.pszAlgId = NCRYPT_SHA256_ALGORITHM;
 

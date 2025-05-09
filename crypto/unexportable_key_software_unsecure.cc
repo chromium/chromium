@@ -9,7 +9,7 @@
 
 #include "base/check.h"
 #include "build/build_config.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
@@ -64,7 +64,7 @@ class SoftwareECDSA : public UnexportableSigningKey {
   std::optional<std::vector<uint8_t>> SignSlowly(
       base::span<const uint8_t> data) override {
     std::vector<uint8_t> ret(ECDSA_size(key_.get()));
-    std::array<uint8_t, kSHA256Length> digest = SHA256Hash(data);
+    std::array<uint8_t, hash::kSha256Size> digest = hash::Sha256(data);
     unsigned int ret_size;
     CHECK(ECDSA_sign(0, digest.data(), digest.size(), ret.data(), &ret_size,
                      key_.get()));
@@ -109,7 +109,7 @@ class SoftwareRSA : public UnexportableSigningKey {
   std::optional<std::vector<uint8_t>> SignSlowly(
       base::span<const uint8_t> data) override {
     std::vector<uint8_t> ret(RSA_size(key_.get()));
-    std::array<uint8_t, kSHA256Length> digest = SHA256Hash(data);
+    std::array<uint8_t, hash::kSha256Size> digest = hash::Sha256(data);
     unsigned int ret_size;
     CHECK(RSA_sign(NID_sha256, digest.data(), digest.size(), ret.data(),
                    &ret_size, key_.get()));
