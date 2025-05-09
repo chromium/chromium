@@ -1356,21 +1356,37 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
       "Omnibox.SearchPrefetch.DuplicateSearchTermsAge", 1);
 }
 
+enum class NVSDiskCacheEnabled {
+  kDisableAll = 0,
+  kEnableHttpCacheNoVarySearchOnly = 1,
+  kEnableSearchPrefetchWithNoVarySearchDiskCache = 2,
+};
 // Tests used for integrating to No-Vary-Search Disk Cache.
 class SearchPrefetchServiceEnabledWithNVSBrowserTest
-    : public testing::WithParamInterface<bool>,
+    : public testing::WithParamInterface<NVSDiskCacheEnabled>,
       public SearchPrefetchServiceEnabledBrowserTest {
  public:
   SearchPrefetchServiceEnabledWithNVSBrowserTest() {
-    if (GetParam()) {
-      feature_list_.InitWithFeaturesAndParameters(
-          {{net::features::kHttpCacheNoVarySearch, {{"max_entries", "1"}}},
-           {kSearchPrefetchWithNoVarySearchDiskCache, {}}},
-          /*disabled_features=*/{});
-    } else {
-      feature_list_.InitWithFeatures(
-          {}, {net::features::kHttpCacheNoVarySearch,
-               kSearchPrefetchWithNoVarySearchDiskCache});
+    switch (GetParam()) {
+      case NVSDiskCacheEnabled::kDisableAll:
+        feature_list_.InitWithFeatures(
+            /*enabled_features=*/{},
+            {net::features::kHttpCacheNoVarySearch,
+             kSearchPrefetchWithNoVarySearchDiskCache});
+        break;
+      case NVSDiskCacheEnabled::kEnableHttpCacheNoVarySearchOnly:
+        feature_list_.InitWithFeaturesAndParameters(
+            {
+                {net::features::kHttpCacheNoVarySearch, {{"max_entries", "1"}}},
+            },
+            {kSearchPrefetchWithNoVarySearchDiskCache});
+        break;
+      case NVSDiskCacheEnabled::kEnableSearchPrefetchWithNoVarySearchDiskCache:
+        feature_list_.InitWithFeaturesAndParameters(
+            {{net::features::kHttpCacheNoVarySearch, {{"max_entries", "1"}}},
+             {kSearchPrefetchWithNoVarySearchDiskCache, {}}},
+            /*disabled_features=*/{});
+        break;
     }
   }
   void SetUpOnMainThread() override {
@@ -1386,9 +1402,13 @@ class SearchPrefetchServiceEnabledWithNVSBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         SearchPrefetchServiceEnabledWithNVSBrowserTest,
-                         testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SearchPrefetchServiceEnabledWithNVSBrowserTest,
+    testing::ValuesIn(
+        {NVSDiskCacheEnabled::kDisableAll,
+         NVSDiskCacheEnabled::kEnableHttpCacheNoVarySearchOnly,
+         NVSDiskCacheEnabled::kEnableSearchPrefetchWithNoVarySearchDiskCache}));
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
                        BackPrefetchServed) {
