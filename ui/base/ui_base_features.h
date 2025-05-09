@@ -170,7 +170,11 @@ extern const char kPredictionTypeFramesBased[];
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const char kPredictionTypeDefaultTime[];
 COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const char kPredictionTypeDefaultFramesRatio[];
+extern const char kPredictionTypeDefaultFramesVariation1[];
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const char kPredictionTypeDefaultFramesVariation2[];
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const char kPredictionTypeDefaultFramesVariation3[];
 
 // The type of filter to use for filtering events. These values are used as the
 // 'filter' feature param for |blink::features::kFilteringScrollPrediction|.

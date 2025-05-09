@@ -2480,18 +2480,32 @@ const FeatureEntry::FeatureParam
         {"mode", features::kPredictionTypeTimeBased},
         {"latency", features::kPredictionTypeDefaultTime}};
 const FeatureEntry::FeatureParam
-    kResamplingScrollEventsPredictionFramesBasedEnabled[] = {
+    kResamplingScrollEventsPredictionFramesBasedEnabledV1[] = {
         {"mode", features::kPredictionTypeFramesBased},
-        {"latency", features::kPredictionTypeDefaultFramesRatio}};
+        {"latency", features::kPredictionTypeDefaultFramesVariation1}};
+const FeatureEntry::FeatureParam
+    kResamplingScrollEventsPredictionFramesBasedEnabledV2[] = {
+        {"mode", features::kPredictionTypeFramesBased},
+        {"latency", features::kPredictionTypeDefaultFramesVariation2}};
+const FeatureEntry::FeatureParam
+    kResamplingScrollEventsPredictionFramesBasedEnabledV3[] = {
+        {"mode", features::kPredictionTypeFramesBased},
+        {"latency", features::kPredictionTypeDefaultFramesVariation3}};
 const FeatureEntry::FeatureVariation
     kResamplingScrollEventsExperimentalPredictionVariations[] = {
         {features::kPredictionTypeTimeBased,
          kResamplingScrollEventsPredictionTimeBasedEnabled,
          std::size(kResamplingScrollEventsPredictionTimeBasedEnabled), nullptr},
-        {features::kPredictionTypeFramesBased,
-         kResamplingScrollEventsPredictionFramesBasedEnabled,
-         std::size(kResamplingScrollEventsPredictionFramesBasedEnabled),
-         nullptr}};
+        {"frames 0.25", kResamplingScrollEventsPredictionFramesBasedEnabledV1,
+         std::size(kResamplingScrollEventsPredictionFramesBasedEnabledV1),
+         nullptr},
+        {"frames 0.375", kResamplingScrollEventsPredictionFramesBasedEnabledV2,
+         std::size(kResamplingScrollEventsPredictionFramesBasedEnabledV2),
+         nullptr},
+        {"frames 0.5", kResamplingScrollEventsPredictionFramesBasedEnabledV3,
+         std::size(kResamplingScrollEventsPredictionFramesBasedEnabledV3),
+         nullptr},
+};
 
 const FeatureEntry::FeatureParam
     kShowWarningsForSuspiciousNotificationsScoreThreshold70[] = {
