@@ -174,4 +174,18 @@ public class SurfaceColorUpdateUtils {
                         context, R.color.gm3_baseline_surface_container_highest_dark)
                 : defaultBackground;
     }
+
+    /**
+     * Returns the background color for the grid tab switcher message card based on the enabled flag
+     * and incognito.
+     *
+     * @param context {@link Context} used to retrieve colors.
+     * @return The background color.
+     */
+    public static @ColorInt int getMessageCardBackgroundColor(Context context) {
+        // TODO(crbug.com/414404094): Add semantic color for incognito.
+        return useNewGtsSurfaceColor()
+                ? SemanticColorUtils.getColorSurfaceContainerLow(context)
+                : SemanticColorUtils.getCardBackgroundColor(context);
+    }
 }

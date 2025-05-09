@@ -102,6 +102,12 @@ public class SurfaceColorUpdateUtilsUnitTest {
         assertEquals(
                 ContextCompat.getColor(mContext, R.color.gm3_baseline_surface_dim_dark),
                 tabCardViewBackgroundColorIncognito);
+
+        int messageCardBackgroundColor =
+                SurfaceColorUpdateUtils.getMessageCardBackgroundColor(mContext);
+        assertEquals(
+                SemanticColorUtils.getColorSurfaceContainerLow(mContext),
+                messageCardBackgroundColor);
     }
 
     @Test
@@ -133,6 +139,11 @@ public class SurfaceColorUpdateUtilsUnitTest {
                 ContextCompat.getColor(
                         mContext, R.color.gm3_baseline_surface_container_highest_dark),
                 tabCardViewBackgroundColorIncognito);
+
+        int messageCardBackgroundColor =
+                SurfaceColorUpdateUtils.getMessageCardBackgroundColor(mContext);
+        assertEquals(
+                SemanticColorUtils.getCardBackgroundColor(mContext), messageCardBackgroundColor);
     }
 
     @Test
