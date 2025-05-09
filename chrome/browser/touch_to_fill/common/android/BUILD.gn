@@ -41,9 +41,11 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/touch_to_fill/common/BottomSheetFocusHelper.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/common/FillableItemCollectionInfo.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/common/ItemDividerBase.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/common/TouchToFillResourceProvider.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/common/TouchToFillUtil.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/common/TouchToFillViewBase.java",
   ]
+
   resources_package = "org.chromium.chrome.browser.touch_to_fill.common"
 }
 
