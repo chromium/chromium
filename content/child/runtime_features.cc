@@ -411,7 +411,9 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"WebAppLaunchQueue", raw_ref(features::kAndroidWebAppLaunchHandler)},
 #endif
           {"WebAuthenticationNewBfCacheHandlingBlink",
-           raw_ref(device::kWebAuthnNewBfCacheHandling)}};
+           raw_ref(device::kWebAuthnNewBfCacheHandling)},
+          {"LocalNetworkAccessPermissionPolicy",
+           raw_ref(network::features::kLocalNetworkAccessChecks)}};
   for (const auto& mapping : runtimeFeatureNameToChromiumFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(
         *mapping.chromium_feature, mapping.option, [&mapping](bool enabled) {

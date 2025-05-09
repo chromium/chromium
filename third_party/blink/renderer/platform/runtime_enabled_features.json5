@@ -2820,12 +2820,13 @@
       name: "ListOwnerMustHaveCSSBox",
       status: "stable",
     },
-    // Enables Local Network Access Permission Policy. Does nothing without
-    // also enabling network::features::kLocalNetworkAccessChecks. See
-    // https://crbug.com/394009026.
     {
       name: "LocalNetworkAccessPermissionPolicy",
-      status: "experimental",
+      base_feature: "none",
+      // No status because this blink runtime feature doesn't work by itself.
+      // It's controlled by network::features::kLocalNetworkAccessChecks which
+      // needs to be enabled to make the whole feature work (see
+      // crbug.com/394009026).
     },
     {
       name: "LockedMode",
