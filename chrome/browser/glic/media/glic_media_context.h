@@ -32,11 +32,12 @@ class GlicMediaContext : public base::SupportsUserData::Data,
   ~GlicMediaContext() override;
 
   void OnResult(const media::SpeechRecognitionResult&);
-  const std::string& GetContext() const;
+  std::string GetContext() const;
 
  private:
   raw_ptr<content::Page> page_ = nullptr;
   std::string text_context_;
+  std::string most_recent_nonfinal_;
 };
 
 }  // namespace glic

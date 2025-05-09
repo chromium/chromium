@@ -28,20 +28,16 @@ TEST_F(GlicMediaContextTest, InitialContextIsEmpty) {
 TEST_F(GlicMediaContextTest, ContextContainsTranscript) {
   auto* context = GlicMediaContext::GetOrCreateFor(web_contents());
 
-  // Send the string in pieces, mixing final and non-final ones.
+  // Send the string in pieces.
   const std::string test_cap_1("ABC");
   const std::string test_cap_2("DEF");
-  const std::string test_cap_3("XYZ");  // Should be ignored.
-  const std::string test_cap_4("GHIJ");
+  const std::string test_cap_3("GHIJ");
   context->OnResult(
       media::SpeechRecognitionResult(test_cap_1, /*is_final=*/true));
   context->OnResult(
       media::SpeechRecognitionResult(test_cap_2, /*is_final=*/true));
-  // Non-final captions should be ignored.
   context->OnResult(
-      media::SpeechRecognitionResult(test_cap_3, /*is_final=*/false));
-  context->OnResult(
-      media::SpeechRecognitionResult(test_cap_4, /*is_final=*/true));
+      media::SpeechRecognitionResult(test_cap_3, /*is_final=*/true));
 
   EXPECT_EQ(context->GetContext(), "ABCDEFGHIJ");
 }
@@ -60,6 +56,27 @@ TEST_F(GlicMediaContextTest, ContextShouldTruncate) {
   const std::string actual_cap = context->GetContext();
   EXPECT_LT(actual_cap.length(), long_cap.length());
   EXPECT_EQ(actual_cap.back(), long_cap.back());
+}
+
+TEST_F(GlicMediaContextTest, ContextContainsButReplacesNonFinal) {
+  auto* context = GlicMediaContext::GetOrCreateFor(web_contents());
+
+  // Send the string in pieces, mixing final and non-final ones.
+  const std::string test_cap_1("ABC");
+  context->OnResult(
+      media::SpeechRecognitionResult(test_cap_1, /*is_final=*/true));
+  EXPECT_EQ(context->GetContext(), test_cap_1);
+
+  const std::string test_cap_2("DEF");
+  context->OnResult(
+      media::SpeechRecognitionResult(test_cap_2, /*is_final=*/false));
+  EXPECT_EQ(context->GetContext(), test_cap_1 + test_cap_2);
+
+  // Should replace cap_2.
+  const std::string test_cap_3("GHI");
+  context->OnResult(
+      media::SpeechRecognitionResult(test_cap_3, /*is_final=*/true));
+  EXPECT_EQ(context->GetContext(), test_cap_1 + test_cap_3);
 }
 
 }  // namespace glic

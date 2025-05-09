@@ -41,9 +41,11 @@ GlicMediaContext* GlicMediaContext::GetOrCreateFor(
 
 void GlicMediaContext::OnResult(const media::SpeechRecognitionResult& result) {
   if (!result.is_final) {
+    most_recent_nonfinal_ = result.transcription;
     return;
   }
   text_context_ += result.transcription;
+  most_recent_nonfinal_.clear();
 
   // Trim to `max_size`.  Note that we should utf8-trim, but this is easier.
   constexpr size_t max_size = 20000;
@@ -55,8 +57,8 @@ void GlicMediaContext::OnResult(const media::SpeechRecognitionResult& result) {
   }
 }
 
-const std::string& GlicMediaContext::GetContext() const {
-  return text_context_;
+std::string GlicMediaContext::GetContext() const {
+  return text_context_ + most_recent_nonfinal_;
 }
 
 }  // namespace glic
