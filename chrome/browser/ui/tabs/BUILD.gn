@@ -519,6 +519,7 @@ if (!is_android) {
       "tab_group_deletion_dialog_controller_unittest.cc",
       "tab_iterator_unittest.cc",
       "tab_model_unittest.cc",
+      "tab_renderer_data_unittest.cc",
       "tab_strip_model_stats_recorder_unittest.cc",
       "tab_strip_model_unittest.cc",
     ]

@@ -171,6 +171,9 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
     data.tab_resource_usage = resource_tab_helper->resource_usage();
   }
 
+  // Attach the weak pointer to the TabInterface
+  data.tab_interface = tab->GetWeakPtr();
+
   return data;
 }
 
@@ -199,7 +202,9 @@ bool TabRendererData::operator==(const TabRendererData& other) const {
          should_show_discard_status == other.should_show_discard_status &&
          discarded_memory_savings_in_bytes ==
              other.discarded_memory_savings_in_bytes &&
-         tab_resource_usage == other.tab_resource_usage;
+         tab_resource_usage == other.tab_resource_usage &&
+         is_monochrome_favicon == other.is_monochrome_favicon &&
+         tab_interface.get() == other.tab_interface.get();
 }
 
 bool TabRendererData::IsCrashed() const {
