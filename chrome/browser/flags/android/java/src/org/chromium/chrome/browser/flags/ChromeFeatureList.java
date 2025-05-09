@@ -185,7 +185,8 @@ public abstract class ChromeFeatureList {
             "AndroidOmniboxFocusedNewTabPage";
     public static final String ANDROID_OPEN_PDF_INLINE_BACKPORT = "AndroidOpenPdfInlineBackport";
     public static final String ANDROID_PDF_ASSIST_CONTENT = "AndroidPdfAssistContent";
-    public static final String ANDROID_PROGRESS_BAR_VISUAL_UPDATE = "AndroidProgressBarVisualUpdate";
+    public static final String ANDROID_PROGRESS_BAR_VISUAL_UPDATE =
+            "AndroidProgressBarVisualUpdate";
     public static final String ANDROID_SURFACE_COLOR_UPDATE = "AndroidSurfaceColorUpdate";
     public static final String ANDROID_TAB_DECLUTTER_ARCHIVE_ALL_BUT_ACTIVE =
             "AndroidTabDeclutterArchiveAllButActiveTab";
@@ -491,7 +492,8 @@ public abstract class ChromeFeatureList {
     public static final String QUIET_NOTIFICATION_PROMPTS = "QuietNotificationPrompts";
     public static final String READALOUD = "ReadAloud";
     public static final String READALOUD_AUDIO_OVERVIEWS = "ReadAloudAudioOverviews";
-    public static final String READALOUD_AUDIO_OVERVIEWS_FEEDBACK = "ReadAloudAudioOverviewsFeedback";
+    public static final String READALOUD_AUDIO_OVERVIEWS_FEEDBACK =
+            "ReadAloudAudioOverviewsFeedback";
     public static final String READALOUD_BACKGROUND_PLAYBACK = "ReadAloudBackgroundPlayback";
     public static final String READALOUD_IN_MULTI_WINDOW = "ReadAloudInMultiWindow";
     public static final String READALOUD_IN_OVERFLOW_MENU_IN_CCT = "ReadAloudInOverflowMenuInCCT";
@@ -1494,9 +1496,6 @@ public abstract class ChromeFeatureList {
             sAndroidNativePagesInNewTabRecentTabsEnabled =
                     sAndroidNativePagesInNewTab.newBooleanParam(
                             "android_native_pages_in_new_tab_recent_tabs_enabled", true);
-    public static final MutableBooleanParamWithSafeDefault sAndroidTabDeclutterAutoDeleteEnabled =
-            sAndroidTabDeclutterAutoDelete.newBooleanParam(
-                    "android_tab_declutter_auto_delete_enabled", false);
     public static final MutableIntParamWithSafeDefault
             sAndroidTabDeclutterAutoDeleteTimeDeltaHours =
                     sAndroidTabDeclutterAutoDelete.newIntParam(
