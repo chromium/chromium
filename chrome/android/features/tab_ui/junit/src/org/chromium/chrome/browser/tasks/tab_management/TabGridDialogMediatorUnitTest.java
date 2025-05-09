@@ -326,11 +326,11 @@ public class TabGridDialogMediatorUnitTest {
 
         mModel.get(TabGridDialogProperties.SHARE_BUTTON_CLICK_LISTENER).onClick(null);
         verify(mDataSharingTabManager)
-                .createOrManageFlow(eq(mActivity), eq(EITHER_LOCAL_TAB_GROUP_ID), anyInt(), any());
+                .createOrManageFlow(eq(EITHER_LOCAL_TAB_GROUP_ID), anyInt(), any());
 
         mModel.get(TabGridDialogProperties.SHARE_IMAGE_TILES_CLICK_LISTENER).onClick(null);
         verify(mDataSharingTabManager, times(2))
-                .createOrManageFlow(eq(mActivity), eq(EITHER_LOCAL_TAB_GROUP_ID), anyInt(), any());
+                .createOrManageFlow(eq(EITHER_LOCAL_TAB_GROUP_ID), anyInt(), any());
 
         mModel.get(TabGridDialogProperties.SEND_FEEDBACK_RUNNABLE).run();
         ArgumentCaptor<String> categoryCaptor = ArgumentCaptor.forClass(String.class);
@@ -1526,7 +1526,7 @@ public class TabGridDialogMediatorUnitTest {
         mMediator.onToolbarMenuItemClick(R.id.manage_sharing, TAB_GROUP_ID, COLLABORATION_ID1);
         assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.ManageSharing"));
         verify(mDataSharingTabManager)
-                .createOrManageFlow(any(), eq(EITHER_LOCAL_TAB_GROUP_ID), anyInt(), eq(null));
+                .createOrManageFlow(eq(EITHER_LOCAL_TAB_GROUP_ID), anyInt(), eq(null));
     }
 
     @Test
@@ -1551,8 +1551,7 @@ public class TabGridDialogMediatorUnitTest {
                 .thenReturn(MemberRole.OWNER);
 
         mMediator.onToolbarMenuItemClick(R.id.delete_shared_group, TAB_GROUP_ID, COLLABORATION_ID1);
-        verify(mActionConfirmationManager).processDeleteSharedGroupAttempt(eq(GROUP_TITLE), any());
-        assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.DeleteShared"));
+        verify(mDataSharingTabManager).leaveOrDeleteFlow(eq(EITHER_LOCAL_TAB_GROUP_ID), anyInt());
     }
 
     @Test
@@ -1567,8 +1566,7 @@ public class TabGridDialogMediatorUnitTest {
                 .thenReturn(MemberRole.MEMBER);
 
         mMediator.onToolbarMenuItemClick(R.id.leave_group, TAB_GROUP_ID, COLLABORATION_ID1);
-        verify(mActionConfirmationManager).processLeaveGroupAttempt(eq(GROUP_TITLE), any());
-        assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.LeaveShared"));
+        verify(mDataSharingTabManager).leaveOrDeleteFlow(eq(EITHER_LOCAL_TAB_GROUP_ID), anyInt());
     }
 
     @Test
@@ -1944,7 +1942,6 @@ public class TabGridDialogMediatorUnitTest {
                         mDataSharingTabManager,
                         /* componentName= */ "",
                         mShowColorPickerPopupRunnable,
-                        mActionConfirmationManager,
                         mModalDialogManager,
                         mDesktopWindowStateManager,
                         mTabBookmarkerSupplier,

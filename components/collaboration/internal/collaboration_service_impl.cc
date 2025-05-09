@@ -134,6 +134,8 @@ void CollaborationServiceImpl::StartLeaveOrDeleteFlow(
     std::unique_ptr<CollaborationControllerDelegate> delegate,
     const tab_groups::EitherGroupID& either_id,
     CollaborationServiceLeaveOrDeleteEntryPoint entry) {
+  metrics::RecordLeaveOrDeleteEntryPoint(data_sharing_service_->GetLogger(),
+                                         entry);
   auto it = collaboration_controllers_.find(either_id);
   if (it != collaboration_controllers_.end()) {
     it->second->delegate()->PromoteCurrentScreen();

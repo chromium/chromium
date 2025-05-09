@@ -84,6 +84,13 @@ chromium-metrics-reviews@google.com.
 
 <enum name="CollaborationServiceLeaveOrDeleteEntryPoint">
   <int value="0" label="Unknown"/>
+  <int value="1" label="AndroidTabGroupContextMenuLeave"/>
+  <int value="2" label="AndroidTabGroupContextMenuDelete"/>
+  <int value="3" label="AndroidTabGroupItemMenuLeave"/>
+  <int value="4" label="AndroidTabGroupItemMenuDelete"/>
+  <int value="5" label="AndroidTabGroupRow"/>
+  <int value="6" label="AndroidTabGridDialogLeave"/>
+  <int value="7" label="AndroidTabGridDialogDelete"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/collaboration/public/collaboration_flow_entry_point.h:CollaborationServiceLeaveOrDeleteEntryPoint) -->

@@ -114,6 +114,9 @@ void RecordJoinEvent(data_sharing::Logger* logger,
                      CollaborationServiceJoinEvent event);
 void RecordShareOrManageEvent(data_sharing::Logger* logger,
                               CollaborationServiceShareOrManageEvent event);
+void RecordLeaveOrDeleteEntryPoint(
+    data_sharing::Logger* logger,
+    CollaborationServiceLeaveOrDeleteEntryPoint event);
 void RecordJoinOrShareOrManageEvent(
     data_sharing::Logger* logger,
     FlowType type,

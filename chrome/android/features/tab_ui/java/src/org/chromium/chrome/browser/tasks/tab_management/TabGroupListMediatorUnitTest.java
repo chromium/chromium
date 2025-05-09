@@ -57,6 +57,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.PaneManager;
@@ -94,8 +95,6 @@ import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.tab_group_sync.TriggerSource;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modaldialog.ModalDialogProperties;
-import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.MockitoHelper;
@@ -143,6 +142,7 @@ public class TabGroupListMediatorUnitTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private MessagingBackendService mMessagingBackendService;
     @Mock private Runnable mFinishBlocking;
+    @Mock private DataSharingTabManager mDataSharingTabManager;
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserver;
     @Captor private ArgumentCaptor<TabGroupSyncService.Observer> mTabGroupSyncObserverCaptor;
@@ -206,8 +206,8 @@ public class TabGroupListMediatorUnitTest {
                         mTabGroupUiActionHandler,
                         mActionConfirmationManager,
                         mSyncService,
-                        mModalDialogManager,
-                        /* enableContainment= */ true);
+                        /* enableContainment= */ true,
+                        mDataSharingTabManager);
         verify(mSyncService).addSyncStateChangedListener(mSyncStateChangedListenerCaptor.capture());
         return mediator;
     }
@@ -650,21 +650,7 @@ public class TabGroupListMediatorUnitTest {
         assertNotNull(model.get(DELETE_RUNNABLE));
         model.get(DELETE_RUNNABLE).run();
 
-        verify(mActionConfirmationManager)
-                .processDeleteSharedGroupAttempt(
-                        any(), mMaybeBlockingResultCallbackCaptor.capture());
-        mMaybeBlockingResultCallbackCaptor
-                .getValue()
-                .onResult(
-                        new MaybeBlockingResult(
-                                ActionConfirmationResult.CONFIRMATION_POSITIVE, mFinishBlocking));
-
-        verify(mCollaborationService)
-                .deleteGroup(eq(COLLABORATION_ID1), mDeleteGroupResultCallbackCaptor.capture());
-        mDeleteGroupResultCallbackCaptor.getValue().onResult(true);
-        verify(mFinishBlocking).run();
-        verify(mModalDialogManager, never())
-                .showDialog(mModalPropertyModelCaptor.capture(), anyInt());
+        verify(mDataSharingTabManager).leaveOrDeleteFlow(any(), anyInt());
     }
 
     @Test
@@ -692,25 +678,7 @@ public class TabGroupListMediatorUnitTest {
         assertNotNull(model.get(LEAVE_RUNNABLE));
         model.get(LEAVE_RUNNABLE).run();
 
-        verify(mActionConfirmationManager)
-                .processLeaveGroupAttempt(any(), mMaybeBlockingResultCallbackCaptor.capture());
-        mMaybeBlockingResultCallbackCaptor
-                .getValue()
-                .onResult(
-                        new MaybeBlockingResult(
-                                ActionConfirmationResult.CONFIRMATION_POSITIVE, mFinishBlocking));
-
-        verify(mCollaborationService)
-                .leaveGroup(eq(COLLABORATION_ID1), mDeleteGroupResultCallbackCaptor.capture());
-        mDeleteGroupResultCallbackCaptor.getValue().onResult(false);
-        verify(mFinishBlocking).run();
-
-        verify(mModalDialogManager).showDialog(mModalPropertyModelCaptor.capture(), anyInt());
-
-        ModalDialogProperties.Controller controller =
-                mModalPropertyModelCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
-        controller.onClick(mModalPropertyModelCaptor.getValue(), ButtonType.POSITIVE);
-        verify(mModalDialogManager).dismissDialog(any(), anyInt());
+        verify(mDataSharingTabManager).leaveOrDeleteFlow(any(), anyInt());
     }
 
     @Test

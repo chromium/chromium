@@ -4,8 +4,11 @@
 
 #include "components/collaboration/internal/metrics.h"
 
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "components/collaboration/public/collaboration_flow_entry_point.h"
 #include "components/data_sharing/public/logger.h"
 #include "components/data_sharing/public/logger_common.mojom.h"
 #include "components/data_sharing/public/logger_utils.h"
@@ -233,6 +236,34 @@ std::string_view CollaborationServiceShareOrManageEntryPointToString(
   }
 }
 
+std::string_view CollaborationServiceLeaveOrDeleteEntryPointToString(
+    CollaborationServiceLeaveOrDeleteEntryPoint entry) {
+  switch (entry) {
+    case CollaborationServiceLeaveOrDeleteEntryPoint::kUnknown:
+      return "Unknown";
+    case CollaborationServiceLeaveOrDeleteEntryPoint::
+        kAndroidTabGridDialogLeave:
+      return "AndroidTabGridDialogLeave";
+    case CollaborationServiceLeaveOrDeleteEntryPoint::
+        kAndroidTabGridDialogDelete:
+      return "AndroidTabGridDialogDelete";
+    case CollaborationServiceLeaveOrDeleteEntryPoint::
+        kAndroidTabGroupContextMenuLeave:
+      return "AndroidTabGroupContextMenuLeave";
+    case CollaborationServiceLeaveOrDeleteEntryPoint::
+        kAndroidTabGroupContextMenuDelete:
+      return "AndroidTabGroupContextMenuDelete";
+    case CollaborationServiceLeaveOrDeleteEntryPoint::
+        kAndroidTabGroupItemMenuLeave:
+      return "AndroidTabGroupItemMenuLeave";
+    case CollaborationServiceLeaveOrDeleteEntryPoint::
+        kAndroidTabGroupItemMenuDelete:
+      return "AndroidTabGroupItemMenuDelete";
+    case CollaborationServiceLeaveOrDeleteEntryPoint::kAndroidTabGroupRow:
+      return "AndroidTabGroupRow";
+  }
+}
+
 std::string_view CollaborationServiceStepToString(
     CollaborationServiceStep step) {
   switch (step) {
@@ -274,6 +305,12 @@ std::string CreateShareOrManageEntryLogToString(
       CollaborationServiceShareOrManageEntryPointToString(entry));
 }
 
+std::string CreateLeaveOrDeleteEntryLogToString(
+    CollaborationServiceLeaveOrDeleteEntryPoint entry) {
+  return base::StringPrintf(
+      "Leave or Delete Flow Started\n  From: %s\n",
+      CollaborationServiceLeaveOrDeleteEntryPointToString(entry));
+}
 std::string CreateLatencyLogToString(CollaborationServiceStep step,
                                      base::TimeDelta duration) {
   return base::StringPrintf("Step %s took %dms to complete.",
@@ -328,6 +365,15 @@ void RecordShareOrManageEntryPoint(
       "CollaborationService.ShareOrManageFlow.EntryPoint", entry);
   DATA_SHARING_LOG(logger_common::mojom::LogSource::CollaborationService,
                    logger, CreateShareOrManageEntryLogToString(entry));
+}
+
+void RecordLeaveOrDeleteEntryPoint(
+    data_sharing::Logger* logger,
+    CollaborationServiceLeaveOrDeleteEntryPoint entry) {
+  base::UmaHistogramEnumeration(
+      "CollaborationService.LeaveOrDeleteFlow.EntryPoint", entry);
+  DATA_SHARING_LOG(logger_common::mojom::LogSource::CollaborationService,
+                   logger, CreateLeaveOrDeleteEntryLogToString(entry));
 }
 
 void RecordLatency(data_sharing::Logger* logger,

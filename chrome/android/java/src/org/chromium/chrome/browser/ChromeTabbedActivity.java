@@ -1060,7 +1060,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
                                 ((TabbedRootUiCoordinator) mRootUiCoordinator)
                                         .getTabGroupSyncController(),
                         getModalDialogManagerSupplier(),
-                        mEdgeToEdgeControllerSupplier);
+                        mEdgeToEdgeControllerSupplier,
+                        mRootUiCoordinator.getDataSharingTabManager());
     }
 
     private Pane createHistoryPane() {

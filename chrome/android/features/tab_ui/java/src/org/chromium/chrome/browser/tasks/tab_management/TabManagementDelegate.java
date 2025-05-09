@@ -171,6 +171,7 @@ public interface TabManagementDelegate {
      *     groups.
      * @param modalDialogManagerSupplier Used to show confirmation dialogs.
      * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
+     * @param dataSharingTabManager The {@link} DataSharingTabManager to start collaboration flows.
      * @return The pane implementation that displays and allows interactions with tab groups.
      */
     Pane createTabGroupsPane(
@@ -181,7 +182,8 @@ public interface TabManagementDelegate {
             @NonNull LazyOneshotSupplier<HubManager> hubManagerSupplier,
             @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier);
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            @NonNull DataSharingTabManager dataSharingTabManager);
 
     /**
      * Create a {@link TabGroupCreationUiDelegate} for tab group creation UI flows.

@@ -369,7 +369,6 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                     if (mTabGroupSyncService.getGroup(syncId) == null) return;
 
                     dataSharingTabManager.createOrManageFlow(
-                            activity,
                             EitherGroupId.createSyncId(syncId),
                             CollaborationServiceShareOrManageEntryPoint.ANDROID_MESSAGE,
                             /* createGroupFinishedCallback= */ null);

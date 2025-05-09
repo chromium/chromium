@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.CollaborationServiceLeaveOrDeleteEntryPoint;
 import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -180,6 +181,8 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
             DataSharingTabManager dataSharingTabManager) {
         return (menuId, tabGroupId, collaborationId) -> {
             int tabId = tabGroupModelFilter.getGroupLastShownTabId(tabGroupId);
+            EitherGroupId eitherId = EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId));
+
             if (tabId == Tab.INVALID_TAB_ID) return;
 
             if (menuId == org.chromium.chrome.R.id.ungroup_tab) {
@@ -209,26 +212,16 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         TabLaunchType.FROM_TAB_GROUP_UI);
                 recordUserAction("NewTabInGroup");
             } else if (menuId == org.chromium.chrome.R.id.share_group) {
-                // Get user assigned group title or the default title "N tabs" if no title is
-                // assigned.
-                String tabGroupDisplayName =
-                        TabGroupTitleUtils.getDisplayableTitle(
-                                activity, tabGroupModelFilter, tabGroupId);
-
                 // Create the group share flow and display the share bottom sheet.
-                TabUiUtils.startShareTabGroupFlow(
-                        activity,
-                        tabGroupModelFilter,
-                        dataSharingTabManager,
-                        tabId,
-                        tabGroupDisplayName,
+                dataSharingTabManager.createOrManageFlow(
+                        eitherId,
                         CollaborationServiceShareOrManageEntryPoint
-                                .ANDROID_TAB_GROUP_CONTEXT_MENU_SHARE);
+                                .ANDROID_TAB_GROUP_CONTEXT_MENU_SHARE,
+                        /* createGroupFinishedCallback= */ null);
                 recordUserAction("ShareGroup");
             } else if (menuId == R.id.manage_sharing) {
                 dataSharingTabManager.createOrManageFlow(
-                        activity,
-                        EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId)),
+                        eitherId,
                         CollaborationServiceShareOrManageEntryPoint
                                 .ANDROID_TAB_GROUP_CONTEXT_MENU_MANAGE,
                         /* createGroupFinishedCallback= */ null);
@@ -237,20 +230,16 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 dataSharingTabManager.showRecentActivity(activity, collaborationId);
                 recordUserAction("RecentActivity");
             } else if (menuId == R.id.delete_shared_group) {
-                TabUiUtils.exitSharedTabGroupWithDialog(
-                        activity,
-                        tabGroupModelFilter,
-                        actionConfirmationManager,
-                        modalDialogManager,
-                        tabId);
+                dataSharingTabManager.leaveOrDeleteFlow(
+                        eitherId,
+                        CollaborationServiceLeaveOrDeleteEntryPoint
+                                .ANDROID_TAB_GROUP_CONTEXT_MENU_DELETE);
                 recordUserAction("DeleteSharedGroup");
             } else if (menuId == R.id.leave_group) {
-                TabUiUtils.exitSharedTabGroupWithDialog(
-                        activity,
-                        tabGroupModelFilter,
-                        actionConfirmationManager,
-                        modalDialogManager,
-                        tabId);
+                dataSharingTabManager.leaveOrDeleteFlow(
+                        eitherId,
+                        CollaborationServiceLeaveOrDeleteEntryPoint
+                                .ANDROID_TAB_GROUP_CONTEXT_MENU_LEAVE);
                 recordUserAction("LeaveSharedGroup");
             }
         };

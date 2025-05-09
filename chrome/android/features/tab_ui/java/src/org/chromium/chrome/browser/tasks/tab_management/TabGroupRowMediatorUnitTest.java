@@ -51,6 +51,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.PaneManager;
@@ -69,6 +70,7 @@ import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.SharedGroupTestHelper;
 import org.chromium.components.data_sharing.member_role.MemberRole;
+import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
@@ -107,6 +109,7 @@ public class TabGroupRowMediatorUnitTest {
     @Mock private FaviconResolver mFaviconResolver;
     @Mock private Supplier<@GroupWindowState Integer> mFetchGroupState;
     @Mock private TabSwitcherPaneBase mTabSwitcherPaneBase;
+    @Mock private DataSharingTabManager mDataSharingTabManager;
 
     @Captor private ArgumentCaptor<Callback<@ActionConfirmationResult Integer>> mConfirmationCaptor;
 
@@ -179,11 +182,11 @@ public class TabGroupRowMediatorUnitTest {
                         mCollaborationService,
                         mPaneManager,
                         mTabGroupUiActionHandler,
-                        mModalDialogManager,
                         mActionConfirmationManager,
                         mFaviconResolver,
                         mFetchGroupState,
-                        /* enableContainment= */ true);
+                        /* enableContainment= */ true,
+                        mDataSharingTabManager);
         return mediator.getModel();
     }
 
@@ -434,7 +437,8 @@ public class TabGroupRowMediatorUnitTest {
         assertNotNull(propertyModel.get(DELETE_RUNNABLE));
         assertNull(propertyModel.get(LEAVE_RUNNABLE));
         propertyModel.get(DELETE_RUNNABLE).run();
-        verify(mActionConfirmationManager).processDeleteSharedGroupAttempt(eq(TITLE), any());
+        EitherGroupId eitherId = EitherGroupId.createSyncId(SYNC_GROUP_ID1);
+        verify(mDataSharingTabManager).leaveOrDeleteFlow(eq(eitherId), anyInt());
     }
 
     @Test
@@ -454,6 +458,7 @@ public class TabGroupRowMediatorUnitTest {
         assertNull(propertyModel.get(DELETE_RUNNABLE));
         assertNotNull(propertyModel.get(LEAVE_RUNNABLE));
         propertyModel.get(LEAVE_RUNNABLE).run();
-        verify(mActionConfirmationManager).processLeaveGroupAttempt(eq("2 tabs"), any());
+        EitherGroupId eitherId = EitherGroupId.createSyncId(SYNC_GROUP_ID1);
+        verify(mDataSharingTabManager).leaveOrDeleteFlow(eq(eitherId), anyInt());
     }
 }

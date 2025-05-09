@@ -21,6 +21,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -79,6 +80,7 @@ public class TabGroupListCoordinator {
      * @param modalDialogManager Used to show confirmation dialogs.
      * @param onIsScrolledChanged To be invoked whenever the scrolled state changes.
      * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
+     * @param dataSharingTabManager The {@link} DataSharingTabManager to start collaboration flows.
      */
     public TabGroupListCoordinator(
             Context context,
@@ -88,7 +90,8 @@ public class TabGroupListCoordinator {
             TabGroupUiActionHandler tabGroupUiActionHandler,
             ModalDialogManager modalDialogManager,
             Consumer<Boolean> onIsScrolledChanged,
-            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            @NonNull DataSharingTabManager dataSharingTabManager) {
         ModelList modelList = new ModelList();
         mSimpleRecyclerViewAdapter =
                 new SimpleRecyclerViewAdapter(modelList) {
@@ -178,8 +181,8 @@ public class TabGroupListCoordinator {
                         tabGroupUiActionHandler,
                         actionConfirmationManager,
                         syncService,
-                        modalDialogManager,
-                        enableContainment());
+                        enableContainment(),
+                        dataSharingTabManager);
 
         if (EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled()) {
             mEdgeToEdgePadAdjuster =

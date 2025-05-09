@@ -39,6 +39,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.FullButtonData;
 import org.chromium.chrome.browser.hub.LoadHint;
@@ -88,6 +89,7 @@ public class TabGroupsPaneUnitTest {
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManager;
     @Mock private Supplier<PaneManager> mPaneManagerSupplier;
+    @Mock private DataSharingTabManager mDataSharingTabManager;
     @Mock Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     @Mock FaviconHelper.Natives mFaviconHelperJniMock;
     @Mock SyncService mSyncService;
@@ -135,7 +137,8 @@ public class TabGroupsPaneUnitTest {
                         mPaneManagerSupplier,
                         mTabGroupUiActionHandlerSupplier,
                         mModalDialogManagerSupplier,
-                        mEdgeToEdgeSupplier);
+                        mEdgeToEdgeSupplier,
+                        mDataSharingTabManager);
     }
 
     @Test

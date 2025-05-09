@@ -241,7 +241,7 @@ public class DataSharingTabManagerUnitTest {
         doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(LOCAL_ID);
         EitherGroupId either_id = EitherGroupId.createLocalId(LOCAL_ID);
         mDataSharingTabManager.createOrManageFlow(
-                mActivity, either_id, CollaborationServiceShareOrManageEntryPoint.UNKNOWN, null);
+                either_id, CollaborationServiceShareOrManageEntryPoint.UNKNOWN, null);
 
         verify(mCollaborationService).startShareOrManageFlow(any(), eq(either_id), anyInt());
     }

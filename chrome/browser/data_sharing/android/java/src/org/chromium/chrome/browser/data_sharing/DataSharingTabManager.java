@@ -45,6 +45,7 @@ import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.collaboration.CollaborationControllerDelegate;
 import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.CollaborationServiceLeaveOrDeleteEntryPoint;
 import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
 import org.chromium.components.collaboration.FlowType;
 import org.chromium.components.collaboration.Outcome;
@@ -537,7 +538,6 @@ public class DataSharingTabManager {
             getTabGroupModelFilter().createSingleTabGroup(tab);
         }
         createOrManageFlow(
-                activity,
                 EitherGroupId.createLocalId(
                         new LocalTabGroupId(assumeNonNull(tab.getTabGroupId()))),
                 entryPoint,
@@ -547,13 +547,11 @@ public class DataSharingTabManager {
     /**
      * Creates or manage a collaboration group.
      *
-     * @param activity The activity in which the group is to be created.
      * @param eitherId The sync ID or local tab group ID of the tab group.
      * @param entry The entry point of the flow.
      * @param createGroupFinishedCallback Callback invoked when the creation flow is finished.
      */
     public void createOrManageFlow(
-            Activity activity,
             EitherGroupId eitherId,
             @CollaborationServiceShareOrManageEntryPoint int entry,
             @Nullable Callback<Boolean> createGroupFinishedCallback) {
@@ -567,6 +565,21 @@ public class DataSharingTabManager {
                         FlowType.SHARE_OR_MANAGE, /* switchToTabSwitcherCallback= */ null);
         assumeNonNull(mCollaborationService);
         mCollaborationService.startShareOrManageFlow(mCurrentDelegate, eitherId, entry);
+    }
+
+    /**
+     * Leave or delete a collaboration group.
+     *
+     * @param eitherId The sync ID or local tab group ID of the tab group.
+     * @param entry The entry point of the flow.
+     */
+    public void leaveOrDeleteFlow(
+            EitherGroupId eitherId, @CollaborationServiceLeaveOrDeleteEntryPoint int entry) {
+        mCurrentDelegate =
+                mCollaborationControllerDelegateFactory.create(
+                        FlowType.LEAVE_OR_DELETE, /* switchToTabSwitcherCallback= */ null);
+        assumeNonNull(mCollaborationService);
+        mCollaborationService.startLeaveOrDeleteFlow(mCurrentDelegate, eitherId, entry);
     }
 
     /**
@@ -895,7 +908,6 @@ public class DataSharingTabManager {
         Runnable manageSharingCallback =
                 () ->
                         createOrManageFlow(
-                                activity,
                                 EitherGroupId.createSyncId(assumeNonNull(existingGroup.syncId)),
                                 CollaborationServiceShareOrManageEntryPoint.RECENT_ACTIVITY,
                                 /* createGroupFinishedCallback= */ null);

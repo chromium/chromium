@@ -330,7 +330,6 @@ public class TabListCoordinator
                         priceWelcomeMessageControllerSupplier,
                         componentName,
                         initialTabActionState,
-                        actionConfirmationManager,
                         dataSharingTabManager,
                         onTabGroupCreation);
 

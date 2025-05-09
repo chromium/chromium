@@ -218,7 +218,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             dataSharingTabManager,
                             mComponentName,
                             showColorPickerPopupRunnable,
-                            actionConfirmationManager,
                             modalDialogManager,
                             desktopWindowStateManager,
                             tabBookmarkerSupplier,

@@ -72,7 +72,6 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
-import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
@@ -96,6 +95,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabLi
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.CollaborationServiceLeaveOrDeleteEntryPoint;
 import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -375,7 +375,6 @@ class TabListMediator implements TabListNotificationHandler {
     private final GridCardOnClickListenerProvider mGridCardOnClickListenerProvider;
     private final TabGridDialogHandler mTabGridDialogHandler;
     private final Supplier<PriceWelcomeMessageController> mPriceWelcomeMessageControllerSupplier;
-    private final @Nullable ActionConfirmationManager mActionConfirmationManager;
     private final @Nullable DataSharingTabManager mDataSharingTabManager;
     private final Runnable mOnTabGroupCreation;
     private final TabModelObserver mTabModelObserver;
@@ -945,7 +944,6 @@ class TabListMediator implements TabListNotificationHandler {
      * @param componentName This is a unique string to identify different components.
      * @param initialTabActionState The initial {@link TabActionState} to use for the shown tabs.
      *     Must always be CLOSABLE for TabListMode.STRIP.
-     * @param actionConfirmationManager Used for showing confirmation dialogs.
      * @param dataSharingTabManager The service used to initiate data sharing.
      * @param onTabGroupCreation Should be run when the UI is used to create a tab group.
      */
@@ -964,7 +962,6 @@ class TabListMediator implements TabListNotificationHandler {
             @NonNull Supplier<PriceWelcomeMessageController> priceWelcomeMessageControllerSupplier,
             String componentName,
             @TabActionState int initialTabActionState,
-            @Nullable ActionConfirmationManager actionConfirmationManager,
             @Nullable DataSharingTabManager dataSharingTabManager,
             @Nullable Runnable onTabGroupCreation) {
         mActivity = activity;
@@ -981,7 +978,6 @@ class TabListMediator implements TabListNotificationHandler {
         mPriceWelcomeMessageControllerSupplier = priceWelcomeMessageControllerSupplier;
         mComponentName = componentName;
         mTabActionState = initialTabActionState;
-        mActionConfirmationManager = actionConfirmationManager;
         mDataSharingTabManager = dataSharingTabManager;
         mOnTabGroupCreation = onTabGroupCreation;
 
@@ -2819,6 +2815,7 @@ class TabListMediator implements TabListNotificationHandler {
     void onMenuItemClicked(@IdRes int menuId, Token tabGroupId, @Nullable String collaborationId) {
         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
         int tabId = filter.getGroupLastShownTabId(tabGroupId);
+        EitherGroupId eitherId = EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId));
         if (tabId == Tab.INVALID_TAB_ID) return;
 
         if (menuId == R.id.close_tab_group || menuId == R.id.delete_tab_group) {
@@ -2844,25 +2841,21 @@ class TabListMediator implements TabListNotificationHandler {
             TabUiUtils.ungroupTabGroup(filter, tabGroupId);
         } else if (menuId == R.id.delete_shared_group) {
             RecordUserAction.record("TabGroupItemMenu.DeleteShared");
-            TabUiUtils.exitSharedTabGroupWithDialog(
-                    mActivity, filter, mActionConfirmationManager, mModalDialogManager, tabId);
+            mDataSharingTabManager.leaveOrDeleteFlow(
+                    eitherId,
+                    CollaborationServiceLeaveOrDeleteEntryPoint.ANDROID_TAB_GROUP_ITEM_MENU_DELETE);
         } else if (menuId == R.id.leave_group) {
             RecordUserAction.record("TabGroupItemMenu.LeaveShared");
-            TabUiUtils.exitSharedTabGroupWithDialog(
-                    mActivity, filter, mActionConfirmationManager, mModalDialogManager, tabId);
+            mDataSharingTabManager.leaveOrDeleteFlow(
+                    eitherId,
+                    CollaborationServiceLeaveOrDeleteEntryPoint.ANDROID_TAB_GROUP_ITEM_MENU_LEAVE);
         } else if (menuId == R.id.share_group) {
             assert mDataSharingTabManager != null;
             RecordUserAction.record("TabGroupItemMenu.ShareGroup");
-            @Nullable PropertyModel model = mModelList.getModelFromTabId(tabId);
-            if (model == null) return;
-
-            TabUiUtils.startShareTabGroupFlow(
-                    mActivity,
-                    filter,
-                    mDataSharingTabManager,
-                    tabId,
-                    model.get(TabProperties.TITLE),
-                    CollaborationServiceShareOrManageEntryPoint.TAB_GROUP_ITEM_MENU_SHARE);
+            mDataSharingTabManager.createOrManageFlow(
+                    eitherId,
+                    CollaborationServiceShareOrManageEntryPoint.TAB_GROUP_ITEM_MENU_SHARE,
+                    /* createGroupFinishedCallback= */ null);
         }
     }
 

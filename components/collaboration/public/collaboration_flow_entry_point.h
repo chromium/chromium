@@ -34,16 +34,20 @@ enum class CollaborationServiceJoinEntryPoint {
 //   org.chromium.components.collaboration)
 enum class CollaborationServiceShareOrManageEntryPoint {
   kUnknown = 0,
+  kDialogToolbarButton = 10,
+  kRecentActivity = 3,
+  kNotification = 6,
+  kTabGroupItemMenuShare = 8,
+
+  // Android specific entry points.
   kAndroidTabGridDialogShare = 1,
   kAndroidTabGridDialogManage = 2,
-  kRecentActivity = 3,
   kAndroidTabGroupContextMenuShare = 4,
   kAndroidTabGroupContextMenuManage = 5,
-  kNotification = 6,
   kAndroidMessage = 7,
-  kTabGroupItemMenuShare = 8,
   kAndroidShareSheetExtra = 9,
-  kDialogToolbarButton = 10,
+
+  // IOS specific entry points.
   kiOSTabGroupIndicatorShare = 11,
   kiOSTabGroupIndicatorManage = 12,
   kiOSTabGridShare = 13,
@@ -52,10 +56,13 @@ enum class CollaborationServiceShareOrManageEntryPoint {
   kiOSTabStripManage = 16,
   kiOSTabGroupViewShare = 17,
   kiOSTabGroupViewManage = 18,
+  kiOSMessage = 22,
+
+  // Desktop specific entry points.
   kDesktopGroupEditorShareOrManageButton = 19,
   kDesktopNotification = 20,
   kDesktopRecentActivity = 21,
-  kiOSMessage = 22,
+
   kMaxValue = kiOSMessage,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceShareOrManageEntryPoint)
@@ -68,7 +75,16 @@ enum class CollaborationServiceShareOrManageEntryPoint {
 //   org.chromium.components.collaboration)
 enum class CollaborationServiceLeaveOrDeleteEntryPoint {
   kUnknown = 0,
-  kMaxValue = kUnknown,
+
+  // Android specific entry points.
+  kAndroidTabGridDialogLeave = 1,
+  kAndroidTabGridDialogDelete = 2,
+  kAndroidTabGroupContextMenuLeave = 3,
+  kAndroidTabGroupContextMenuDelete = 4,
+  kAndroidTabGroupItemMenuLeave = 5,
+  kAndroidTabGroupItemMenuDelete = 6,
+  kAndroidTabGroupRow = 7,
+  kMaxValue = kAndroidTabGroupRow,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceLeaveOrDeleteEntryPoint)
 

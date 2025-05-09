@@ -18,6 +18,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.DelegateButtonData;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
@@ -61,6 +62,7 @@ public class TabGroupsPane implements Pane {
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mHubSearchEnabledStateSupplier =
             new ObservableSupplierImpl<>();
+    private final DataSharingTabManager mDataSharingTabManager;
 
     private TabGroupListCoordinator mTabGroupListCoordinator;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
@@ -74,6 +76,7 @@ public class TabGroupsPane implements Pane {
      * @param tabGroupUiActionHandlerSupplier Used to open hidden tab groups.
      * @param modalDialogManagerSupplier Used to create confirmation dialogs.
      * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
+     * @param dataSharingTabManager The {@link} DataSharingTabManager to start collaboration flows.
      */
     TabGroupsPane(
             @NonNull Context context,
@@ -83,7 +86,8 @@ public class TabGroupsPane implements Pane {
             @NonNull Supplier<PaneManager> paneManagerSupplier,
             @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            @NonNull DataSharingTabManager dataSharingTabManager) {
         mContext = context;
         mTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;
         mOnToolbarAlphaChange = onToolbarAlphaChange;
@@ -92,6 +96,7 @@ public class TabGroupsPane implements Pane {
         mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mEdgeToEdgeSupplier = edgeToEdgeSupplier;
+        mDataSharingTabManager = dataSharingTabManager;
         if (ChromeFeatureList.sTabGroupEntryPointsAndroid.isEnabled()) {
             TabGroupCreationUiDelegate flow =
                     new TabGroupCreationUiDelegate(
@@ -168,7 +173,8 @@ public class TabGroupsPane implements Pane {
                             mTabGroupUiActionHandlerSupplier.get(),
                             mModalDialogManagerSupplier.get(),
                             mHairlineVisibilitySupplier::set,
-                            mEdgeToEdgeSupplier);
+                            mEdgeToEdgeSupplier,
+                            mDataSharingTabManager);
             mRootView.addView(mTabGroupListCoordinator.getView());
         } else if (loadHint == LoadHint.COLD && mTabGroupListCoordinator != null) {
             destroy();
