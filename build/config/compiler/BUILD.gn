@@ -1221,14 +1221,23 @@ config("compiler_cpu_abi") {
     # CPU architecture. We may or may not be doing a cross compile now, so for
     # simplicity we always explicitly set the architecture.
     if (current_cpu == "x64") {
-      cflags += [
-        "-m64",
-        "-msse3",
-      ]
-      ldflags += [ "-m64" ]
+      if (is_clang && !is_android && !is_nacl && !is_fuchsia &&
+          !is_chromeos_device) {
+        cflags += [ "--target=x86_64-unknown-linux-gnu" ]
+        ldflags += [ "--target=x86_64-unknown-linux-gnu" ]
+      } else {
+        cflags += [ "-m64" ]
+        ldflags += [ "-m64" ]
+      }
+      cflags += [ "-msse3" ]
     } else if (current_cpu == "x86") {
-      cflags += [ "-m32" ]
-      ldflags += [ "-m32" ]
+      if (is_clang && !is_android && !is_nacl && !is_chromeos_device) {
+        cflags += [ "--target=i386-unknown-linux-gnu" ]
+        ldflags += [ "--target=i386-unknown-linux-gnu" ]
+      } else {
+        cflags += [ "-m32" ]
+        ldflags += [ "-m32" ]
+      }
       if (!is_nacl) {
         cflags += [
           "-mfpmath=sse",
@@ -1489,8 +1498,16 @@ config("compiler_cpu_abi") {
       }
     } else if (current_cpu == "ppc64") {
       if (current_os == "aix") {
-        cflags += [ "-maix64" ]
-        ldflags += [ "-maix64" ]
+        if (is_clang) {
+          cflags += [ "--target=powerpc64-ibm-aix" ]
+          ldflags += [ "--target=powerpc64-ibm-aix" ]
+        } else {
+          cflags += [ "-maix64" ]
+          ldflags += [ "-maix64" ]
+        }
+      } else if (is_clang) {
+        cflags += [ "--target=powerpc64le-unknown-linux-gnu" ]
+        ldflags += [ "--target=powerpc64le-unknown-linux-gnu" ]
       } else {
         cflags += [ "-m64" ]
         ldflags += [ "-m64" ]
@@ -1511,6 +1528,10 @@ config("compiler_cpu_abi") {
         "-mcmodel=medium",
       ]
     } else if (current_cpu == "s390x") {
+      if (is_clang) {
+        cflags += [ "--target=s390x-unknown-linux-gnu" ]
+        ldflags += [ "--target=s390x-unknown-linux-gnu" ]
+      }
       cflags += [ "-m64" ]
       ldflags += [ "-m64" ]
     }
