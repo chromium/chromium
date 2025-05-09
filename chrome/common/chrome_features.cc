@@ -514,9 +514,7 @@ BASE_FEATURE(kGlicWarmMultiple,
 
 BASE_FEATURE(kGlicTieredRollout,
              "GlicTieredRollout",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<std::string> kGlicTieredRolloutAllowedGroup{
-    &kGlicTieredRollout, "glic-tiered-rollout-allowed-group", ""};
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicRollout, "GlicRollout", base::FEATURE_DISABLED_BY_DEFAULT);
 
