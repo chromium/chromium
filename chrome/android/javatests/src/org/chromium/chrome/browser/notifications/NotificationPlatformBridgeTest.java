@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.notifications;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
-import static org.chromium.chrome.browser.notifications.SuspiciousNotificationWarningUtils.SUSPICIOUS_NOTIFICATION_WARNING_INTERACTIONS_HISTOGRAM_NAME;
+import static org.chromium.chrome.browser.notifications.NotificationContentDetectionManager.SUSPICIOUS_NOTIFICATION_WARNING_INTERACTIONS_HISTOGRAM_NAME;
 import static org.chromium.components.content_settings.PrefNames.NOTIFICATIONS_VIBRATE_ENABLED;
 
 import android.app.Notification;
@@ -46,7 +46,7 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.notifications.SuspiciousNotificationWarningUtils.SuspiciousNotificationWarningInteractions;
+import org.chromium.chrome.browser.notifications.NotificationContentDetectionManager.SuspiciousNotificationWarningInteractions;
 import org.chromium.chrome.browser.permissions.PermissionTestRule;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -1111,7 +1111,7 @@ public class NotificationPlatformBridgeTest {
         // Verify that the two suspicious notification interactions will be logged.
         Assert.assertEquals(
                 2,
-                NotificationPlatformBridge.sSuspiciousNotificationsMap
+                NotificationContentDetectionManager.sSuspiciousNotificationsMap
                         .get(mPermissionTestRule.getOrigin())
                         .size());
 
@@ -1142,7 +1142,7 @@ public class NotificationPlatformBridgeTest {
         // Verify that warning notification1 will no longer be logged.
         Assert.assertEquals(
                 1,
-                NotificationPlatformBridge.sSuspiciousNotificationsMap
+                NotificationContentDetectionManager.sSuspiciousNotificationsMap
                         .get(mPermissionTestRule.getOrigin())
                         .size());
 
@@ -1158,7 +1158,8 @@ public class NotificationPlatformBridgeTest {
         histogramWatcher.assertExpected();
 
         // Verify interactions will no longer be logged.
-        Assert.assertTrue(NotificationPlatformBridge.sSuspiciousNotificationsMap.isEmpty());
+        Assert.assertTrue(
+                NotificationContentDetectionManager.sSuspiciousNotificationsMap.isEmpty());
     }
 
     /**
@@ -1269,7 +1270,8 @@ public class NotificationPlatformBridgeTest {
         histogramWatcher.assertExpected();
 
         // Verify interactions will no longer be logged.
-        Assert.assertTrue(NotificationPlatformBridge.sSuspiciousNotificationsMap.isEmpty());
+        Assert.assertTrue(
+                NotificationContentDetectionManager.sSuspiciousNotificationsMap.isEmpty());
     }
 
     /**
@@ -1337,7 +1339,8 @@ public class NotificationPlatformBridgeTest {
         mNotificationTestRule.waitForNotificationCount(0);
 
         // Validate nothing is logged.
-        Assert.assertTrue(NotificationPlatformBridge.sSuspiciousNotificationsMap.isEmpty());
+        Assert.assertTrue(
+                NotificationContentDetectionManager.sSuspiciousNotificationsMap.isEmpty());
         histogramWatcher.assertExpected();
     }
 
@@ -1357,7 +1360,7 @@ public class NotificationPlatformBridgeTest {
     public void testShowWarningFeatureSwitchButtons() throws Exception {
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS,
-                NotificationPlatformBridge
+                NotificationContentDetectionManager
                         .SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS_SHOULD_SWAP_BUTTONS_PARAM_NAME,
                 true);
         mNotificationTestRule.setNotificationContentSettingForOrigin(
@@ -1548,7 +1551,7 @@ public class NotificationPlatformBridgeTest {
         // origin.
         Assert.assertEquals(
                 1,
-                NotificationPlatformBridge.sSuspiciousNotificationsMap
+                NotificationContentDetectionManager.sSuspiciousNotificationsMap
                         .get(mPermissionTestRule.getOrigin())
                         .size());
 
@@ -1625,7 +1628,8 @@ public class NotificationPlatformBridgeTest {
         mNotificationTestRule.waitForNotificationCount(1);
 
         // Before unsubscribing, check that the suspicious notification map contains 0 entries.
-        Assert.assertEquals(0, NotificationPlatformBridge.sSuspiciousNotificationsMap.size());
+        Assert.assertEquals(
+                0, NotificationContentDetectionManager.sSuspiciousNotificationsMap.size());
 
         // Tap the "Unsubscribe" button.
         List<NotificationEntry> notifications = mNotificationTestRule.getNotificationEntries();
