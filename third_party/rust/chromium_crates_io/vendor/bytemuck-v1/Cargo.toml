@@ -12,7 +12,7 @@
 [package]
 edition = "2018"
 name = "bytemuck"
-version = "1.22.0"
+version = "1.23.0"
 authors = ["Lokathor <zefria@gmail.com>"]
 build = false
 exclude = ["/pedantic.bat"]
@@ -59,6 +59,7 @@ const_zeroed = []
 derive = ["bytemuck_derive"]
 extern_crate_alloc = []
 extern_crate_std = ["extern_crate_alloc"]
+impl_core_error = []
 latest_stable_rust = [
     "aarch64_simd",
     "avx512_simd",
@@ -66,6 +67,7 @@ latest_stable_rust = [
     "alloc_uninit",
     "const_zeroed",
     "derive",
+    "impl_core_error",
     "min_const_generics",
     "must_cast",
     "must_cast_extra",
@@ -75,6 +77,7 @@ latest_stable_rust = [
     "wasm_simd",
     "zeroable_atomics",
     "zeroable_maybe_uninit",
+    "zeroable_unwind_fn",
 ]
 min_const_generics = []
 must_cast = []
@@ -90,6 +93,7 @@ unsound_ptr_pod_impl = []
 wasm_simd = []
 zeroable_atomics = []
 zeroable_maybe_uninit = []
+zeroable_unwind_fn = []
 
 [lib]
 name = "bytemuck"

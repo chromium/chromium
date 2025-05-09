@@ -1,5 +1,10 @@
 # `bytemuck` changelog
 
+## 1.23
+
+* `impl_core_error` crate feature adds `core::error::Error` impl.
+* More `ZeroableInOption` impls.
+
 ## 1.22
 
 * Add the `pod_saturating` feature, which adds `Pod` impls for `Saturating<T>`

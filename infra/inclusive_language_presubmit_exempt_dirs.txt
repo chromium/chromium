@@ -5,6 +5,7 @@ ash/system/input_device_settings 18 1
 ash/webui/camera_app_ui/resources/js/lib 8 1
 base 1 1
 base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base 1 1
+base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/containers 1 1
 base/android 1 1
 base/android/java/src/org/chromium/base 2 2
 base/containers 1 1
@@ -189,7 +190,7 @@ docs/linux 6 4
 docs/mac 1 1
 docs/media/capture 1 1
 docs/memory-infra 1 1
-docs/security 8 6
+docs/security 12 8
 docs/security/research/graphics 2 1
 docs/security/url_display_guidelines 1 1
 docs/speed 6 5
@@ -291,7 +292,7 @@ third_party/abseil-cpp/absl/base/internal 1 1
 third_party/abseil-cpp/absl/random 3 1
 third_party/abseil-cpp/absl/random/internal 1 1
 third_party/abseil-cpp/absl/status 2 1
-third_party/abseil-cpp/ci 12 10
+third_party/abseil-cpp/ci 5 4
 third_party/abseil-cpp/CMake 2 1
 third_party/abseil-cpp/CMake/Googletest 2 1
 third_party/abseil-cpp/.github 1 1
@@ -484,15 +485,13 @@ third_party/dav1d 2 2
 third_party/expat 2 2
 third_party/fdlibm 1 1
 third_party/fusejs/dist 3 1
-third_party/google-closure-library 5 3
-third_party/google-closure-library/closure/bin/generate_closure_unit_tests 1 1
-third_party/google-closure-library/closure-deps 4 1
+third_party/google-closure-library 1 1
+third_party/google-closure-library/closure-deps 3 1
 third_party/google-closure-library/closure-deps/lib 1 1
-third_party/google-closure-library/closure/goog 1 1
 third_party/google-closure-library/closure/goog/crypt 1 1
 third_party/google-closure-library/closure/goog/editor/plugins 6 2
 third_party/google-closure-library/closure/goog/html 1 1
-third_party/google-closure-library/closure/goog/html/sanitizer 39 8
+third_party/google-closure-library/closure/goog/html/sanitizer 37 7
 third_party/google-closure-library/closure/goog/labs/net 4 1
 third_party/google-closure-library/closure/goog/locale 2 2
 third_party/google-closure-library/closure/goog/messaging 7 1
@@ -500,7 +499,7 @@ third_party/google-closure-library/closure/goog/url 2 1
 third_party/google-closure-library/doc/develop 1 1
 third_party/google-closure-library/doc/js 1 1
 third_party/google-closure-library/scripts 1 1
-third_party/google-closure-library/scripts/ci 9 6
+third_party/google-closure-library/scripts/ci 4 3
 third_party/google_input_tools/src/chrome/os/sounds 1 1
 third_party/google_input_tools/third_party/closure_library/closure/goog/html 1 1
 third_party/google-java-format 2 1
@@ -623,7 +622,7 @@ third_party/polymer/v3_0/components-chromium/polymer 7 1
 third_party/polymer/v3_0/components-chromium/polymer/lib/elements 4 1
 third_party/private-join-and-compute 1 1
 third_party/private_membership 1 1
-third_party/protobuf 2 1
+third_party/protobuf 4 2
 third_party/protobuf/bazel/toolchains 1 1
 third_party/protobuf/build_defs 1 1
 third_party/protobuf/docs 3 2
@@ -645,8 +644,6 @@ third_party/rust/chromium_crates_io/vendor/android_system_properties-v0_1 2 1
 third_party/rust/chromium_crates_io/vendor/anstyle-v1 1 1
 third_party/rust/chromium_crates_io/vendor/anyhow-v1 2 1
 third_party/rust/chromium_crates_io/vendor/anyhow-v1/.github/workflows 3 1
-third_party/rust/chromium_crates_io/vendor/arrayvec-v0_7 1 1
-third_party/rust/chromium_crates_io/vendor/arrayvec-v0_7/.github/workflows 3 1
 third_party/rust/chromium_crates_io/vendor/autocfg-v1 1 1
 third_party/rust/chromium_crates_io/vendor/base64-v0_22 1 1
 third_party/rust/chromium_crates_io/vendor/bytes-v1/.github/workflows 3 1
@@ -694,10 +691,6 @@ third_party/rust/chromium_crates_io/vendor/prost-v0_13 2 1
 third_party/rust/chromium_crates_io/vendor/qr_code-v2 1 1
 third_party/rust/chromium_crates_io/vendor/quote-v1 1 1
 third_party/rust/chromium_crates_io/vendor/quote-v1/.github/workflows 2 1
-third_party/rust/chromium_crates_io/vendor/rand_core-v0_6 4 1
-third_party/rust/chromium_crates_io/vendor/rand_core-v0_6/src 3 1
-third_party/rust/chromium_crates_io/vendor/rand_core-v0_9 4 1
-third_party/rust/chromium_crates_io/vendor/rand_core-v0_9/src 3 1
 third_party/rust/chromium_crates_io/vendor/read-fonts-v0_27/src/tables 3 2
 third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4 2 2
 third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/src/util 1 1
@@ -706,8 +699,6 @@ third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/tests/hybrid 7 1
 third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/tests/meta 6 1
 third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4/tests/nfa/thompson/backtrack 2 1
 third_party/rust/chromium_crates_io/vendor/regex-syntax-v0_8 2 2
-third_party/rust/chromium_crates_io/vendor/rust_decimal-v1 3 2
-third_party/rust/chromium_crates_io/vendor/rust_decimal-v1/.github/workflows 1 1
 third_party/rust/chromium_crates_io/vendor/rustversion-v1 2 1
 third_party/rust/chromium_crates_io/vendor/rustversion-v1/.github/workflows 2 1
 third_party/rust/chromium_crates_io/vendor/rustversion-v1/src 1 1
@@ -744,7 +735,7 @@ third_party/rust/chromium_crates_io/vendor/windows-strings-v0_4 1 1
 third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52 1 1
 third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52/src/Windows/Wdk/System/SystemServices 1 1
 third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52/src/Windows/Win32/Networking/Clustering 2 1
-third_party/screen-ai 2 1
+third_party/screen-ai 1 1
 third_party/sentencepiece/src 2 2
 third_party/sentencepiece/src/doc 3 1
 third_party/sentencepiece/src/src 1 1
@@ -845,7 +836,6 @@ tools/vim 1 1
 tools/web_bluetooth 1 1
 tools/win/RetrieveSymbols 1 1
 ui/base/cocoa/constrained_window 1 1
-ui/base/linux 2 1
 ui/base/prediction 1 1
 ui/base/x 3 3
 ui/events/devices/x11 18 4

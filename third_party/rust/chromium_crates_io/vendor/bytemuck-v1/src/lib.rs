@@ -267,6 +267,10 @@ impl core::fmt::Display for PodCastError {
 #[cfg_attr(feature = "nightly_docs", doc(cfg(feature = "extern_crate_std")))]
 impl std::error::Error for PodCastError {}
 
+// Rust 1.81+
+#[cfg(all(feature = "impl_core_error", not(feature = "extern_crate_std")))]
+impl core::error::Error for PodCastError {}
+
 /// Re-interprets `&T` as `&[u8]`.
 ///
 /// Any ZST becomes an empty slice, and in that case the pointer value of that

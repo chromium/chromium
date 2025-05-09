@@ -228,6 +228,10 @@ impl core::fmt::Display for CheckedCastError {
 #[cfg_attr(feature = "nightly_docs", doc(cfg(feature = "extern_crate_std")))]
 impl std::error::Error for CheckedCastError {}
 
+// Rust 1.81+
+#[cfg(all(feature = "impl_core_error", not(feature = "extern_crate_std")))]
+impl core::error::Error for CheckedCastError {}
+
 impl From<crate::PodCastError> for CheckedCastError {
   fn from(err: crate::PodCastError) -> CheckedCastError {
     CheckedCastError::PodCastError(err)

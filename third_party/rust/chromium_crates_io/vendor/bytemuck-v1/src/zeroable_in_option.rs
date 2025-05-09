@@ -33,3 +33,43 @@ unsafe impl<T: ?Sized> ZeroableInOption for &'_ mut T {}
 #[cfg(feature = "extern_crate_alloc")]
 #[cfg_attr(feature = "nightly_docs", doc(cfg(feature = "extern_crate_alloc")))]
 unsafe impl<T: ?Sized> ZeroableInOption for alloc::boxed::Box<T> {}
+
+#[cfg(feature = "zeroable_unwind_fn")]
+macro_rules! impl_for_unwind_fn {
+    ($($ArgTy:ident),* $(,)?) => {
+        unsafe impl<$($ArgTy,)* R> ZeroableInOption for extern "C-unwind" fn($($ArgTy,)*) -> R {}
+        unsafe impl<$($ArgTy,)* R> ZeroableInOption for unsafe extern "C-unwind" fn($($ArgTy,)*) -> R {}
+        unsafe impl<$($ArgTy,)* R> ZeroableInOption for extern "system-unwind" fn($($ArgTy,)*) -> R {}
+        unsafe impl<$($ArgTy,)* R> ZeroableInOption for unsafe extern "system-unwind" fn($($ArgTy,)*) -> R {}
+    };
+}
+
+macro_rules! impl_for_fn {
+    ($($ArgTy:ident),* $(,)?) => {
+        unsafe impl<$($ArgTy,)* R> ZeroableInOption for fn($($ArgTy,)*) -> R {}
+        unsafe impl<$($ArgTy,)* R> ZeroableInOption for unsafe fn($($ArgTy,)*) -> R {}
+        unsafe impl<$($ArgTy,)* R> ZeroableInOption for extern "C" fn($($ArgTy,)*) -> R {}
+        unsafe impl<$($ArgTy,)* R> ZeroableInOption for unsafe extern "C" fn($($ArgTy,)*) -> R {}
+        unsafe impl<$($ArgTy,)* R> ZeroableInOption for extern "system" fn($($ArgTy,)*) -> R {}
+        unsafe impl<$($ArgTy,)* R> ZeroableInOption for unsafe extern "system" fn($($ArgTy,)*) -> R {}
+        #[cfg(feature = "zeroable_unwind_fn")]
+        impl_for_unwind_fn!($($ArgTy),*);
+    };
+}
+
+
+
+impl_for_fn!();
+impl_for_fn!(A);
+impl_for_fn!(A, B);
+impl_for_fn!(A, B, C);
+impl_for_fn!(A, B, C, D);
+impl_for_fn!(A, B, C, D, E);
+impl_for_fn!(A, B, C, D, E, F);
+impl_for_fn!(A, B, C, D, E, F, G);
+impl_for_fn!(A, B, C, D, E, F, G, H);
+impl_for_fn!(A, B, C, D, E, F, G, H, I);
+impl_for_fn!(A, B, C, D, E, F, G, H, I, J);
+impl_for_fn!(A, B, C, D, E, F, G, H, I, J, K);
+impl_for_fn!(A, B, C, D, E, F, G, H, I, J, K, L);
+impl_for_fn!(A, B, C, D, E, F, G, H, I, J, K, L, M);
