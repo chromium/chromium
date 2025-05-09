@@ -792,9 +792,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
      * <p>This is only used when CCTToolbarRefactor is enabled.
      */
     private void prepareMinimizeButton() {
-        if (!mMinimizeButtonEnabled) return;
-
-        if (isInMultiWindowMode()) {
+        if (isInMultiWindowMode() || !mMinimizeButtonEnabled) {
             if (mMinimizeButton != null) {
                 mMinimizeButton.setVisibility(GONE);
             }
