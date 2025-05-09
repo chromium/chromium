@@ -245,7 +245,7 @@ class ClankCompiler:
 
     if self._options.ninja_j:
       if options.use_siso:
-        self._ninja_command = ['-remote_jobs', options.ninja_j]
+        self._ninja_command += ['-remote_jobs', options.ninja_j]
       else:
         self._ninja_command += ['-j', options.ninja_j]
 
