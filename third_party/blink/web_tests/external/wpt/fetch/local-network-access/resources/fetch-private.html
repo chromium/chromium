@@ -8,11 +8,26 @@
 <script>
 "use strict";
 
-// Grant 'local-network-access' permission then attempt to fetch a resource in the private
-// address space.
+// Set the 'local-network-access' permission then attempt to fetch a resource
+// in the private address space.
+//
+// By default, 'local-network-access' permission is set to 'granted'. This can
+// be changed by passing in a different value via the 'permission' URL parameter.
+// Valid values:
+//
+//    * granted
+//    * denied
+//    * prompt
 Promise.resolve().then(async () => {
+
+  const window_url = new URL(window.location.href);
+  let permission_value = 'granted';
+  if (window_url.searchParams.has('permission')) {
+     permission_value = window_url.searchParams.get('permission');
+  }
+
   test_driver.set_test_context(opener);
-  await test_driver.set_permission({ name: 'local-network-access' }, 'granted');
+  await test_driver.set_permission({ name: 'local-network-access' }, permission_value);
 
   const target = {
     server: Server.HTTPS_PRIVATE,

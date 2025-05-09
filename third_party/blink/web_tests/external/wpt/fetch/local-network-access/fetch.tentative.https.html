@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>LNA Fetch tests: HTTPS and Public source </title>
+<title>LNA Fetch tests: HTTPS </title>
 <body>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -11,9 +11,8 @@
   "use strict";
 
   promise_test(t => {
-    const source = { server: Server.HTTPS_PUBLIC };
-    const sourceUrl =
-        resolveUrl("resources/fetch-private.html", sourceResolveOptions(source));
+    const sourceUrl = resolveUrl("resources/fetch-private.html",
+        sourceResolveOptions({ server: Server.HTTPS_PUBLIC }));
 
     function checkResult(evt) {
       checkTestResult(evt.data, FetchTestResult.SUCCESS);
@@ -30,9 +29,10 @@
   }, 'LNA Public to private with permission');
 
   promise_test(t => {
-    const source = { server: Server.HTTPS_PUBLIC };
-    const sourceUrl = resolveUrl("resources/fetch-private-permission-denied.html",
-        sourceResolveOptions(source));
+    // TODO(crbug.com/406991278): consider moving permission url param into
+    // options
+    const sourceUrl = resolveUrl("resources/fetch-private.html?permission=denied",
+        sourceResolveOptions({ server: Server.HTTPS_PUBLIC }));
 
     function checkResult(evt) {
       checkTestResult(evt.data, FetchTestResult.FAILURE);
