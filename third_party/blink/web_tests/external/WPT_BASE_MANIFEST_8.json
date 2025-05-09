@@ -26480,6 +26480,19 @@
       {}
      ]
     ],
+    "webkit-box-ignores-flex-wrap.tentative.html": [
+     "98086f83570d4c5b4c6251f31093744442a907ca",
+     [
+      null,
+      [
+       [
+        "/compat/green-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
     "webkit-box-rtl-flex.html": [
      "d20b3a0a9dbab237a799f62504b9b1ea7b90a564",
      [
@@ -387638,16 +387651,12 @@
       []
      ],
      "resources": {
-      "fetch-private-permission-denied.html": [
-       "7368cf5fcb0b854d4f0eaaed95fa5c3169d572c7",
-       []
-      ],
       "fetch-private.html": [
-       "ede16badf338dc50defad0251f83f8b02f1d3fec",
+       "b96a207ec33a13e5dd4c53083ac3d73123b23cbb",
        []
       ],
       "support.sub.js": [
-       "ef343b956fe2007089acccc4c6bffe5876ad364a",
+       "774e34d0a6fe59bab19aca14cb71b6e520acb798",
        []
       ],
       "target.py": [
@@ -411353,7 +411362,7 @@
      []
     ],
     "largest-contentful-paint.idl": [
-     "872ba552b0d3b0398be533beb578fdedd260baea",
+     "d1630cc7daae802bf27107ce0ab07185d0746d7f",
      []
     ],
     "layout-instability.idl": [
@@ -411677,7 +411686,7 @@
      []
     ],
     "service-workers.idl": [
-     "d9ff2f651f8235968dd29bd6d7f86e9e8fdcb4cf",
+     "34af3372401eed53328b8bc5e7ea42b87ddd9b20",
      []
     ],
     "shape-detection-api.idl": [
@@ -411829,7 +411838,7 @@
      []
     ],
     "webauthn.idl": [
-     "a33c85e7bad86753211fa7aa9270abac18b1e54e",
+     "7fbe55e67652b3fd35079d1a06423bb441657bd5",
      []
     ],
     "webcodecs-aac-codec-registration.idl": [
@@ -487480,6 +487489,13 @@
        {}
       ]
      ],
+     "style-src-inline-style-with-csstext.html": [
+      "5e812b4aee9d0d081673a0f333f8b29187619c3d",
+      [
+       null,
+       {}
+      ]
+     ],
      "style-src-multiple-policies-multiple-hashing-algorithms.html": [
       "027c61d8c632f2387408b8fb6869dee69bb8913d",
       [
@@ -529096,7 +529112,7 @@
        ]
       ],
       "sibling-function-descriptors.tentative.html": [
-       "4987eff9b8d4ce6b662cabd0b7729499d7b3e704",
+       "76d2ff8ee4db660e41ede9b188465a6c31843e3b",
        [
         null,
         {}
@@ -578355,7 +578371,7 @@
     },
     "local-network-access": {
      "fetch.tentative.https.html": [
-      "649dd2309596fe38e650aa9dbaf661c845dc7f9c",
+      "9c591f309b75af6731c6d6be9c0907d3b8c22618",
       [
        null,
        {
@@ -665515,7 +665531,7 @@
      ]
     ],
     "idlharness.html": [
-     "5f5d286b356cf5dcffd76f2ed6f689804e8426ba",
+     "0dd006e711c6d7b02fcbcd4d31a5c11381fe8d69",
      [
       null,
       {}
@@ -711863,6 +711879,19 @@
       }
      ]
     ],
+    "smoke": {
+     "tentative": {
+      "basic.html": [
+       "9bfedf09b1934e00a85cd030388ed470f575f7b0",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ]
+     }
+    },
     "soft-navigation-detection-main-descendent.tentative.html": [
      "96ff55260c3b9553ac5735cc5fe209ee7cfd5f37",
      [
@@ -714828,10 +714857,12 @@
      ]
     ],
     "SpeechRecognition-installOnDevice.https.html": [
-     "1d1dd35edc26d75419a49120d8a76c4ea7c84233",
+     "2f5b359c571d6d9cc97815ae6ba46e4249ec569e",
      [
       null,
-      {}
+      {
+       "testdriver": true
+      }
      ]
     ],
     "SpeechRecognition-onerror.https.html": [
@@ -773239,7 +773270,7 @@
       ]
      ],
      "qdq_subgraph.https.any.js": [
-      "5ec9ff80a22ce74bb9492b5bca747ce717c1ba46",
+      "aa816cce7fb2cd3d0a3f81d0453c8c199bf052fe",
       [
        "webnn/conformance_tests/qdq_subgraph.https.any.html?cpu",
        {
