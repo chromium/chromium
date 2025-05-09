@@ -144,6 +144,10 @@ extern const base::FeatureParam<bool> kGroupSuggestionEnableTabSwitcherOnly;
 // page loads.
 extern const base::FeatureParam<bool>
     kGroupSuggestionTriggerCalculationOnPageLoad;
+
+// Parameter determining the age threshold for suggestion throttling.
+extern const base::FeatureParam<base::TimeDelta>
+    kGroupSuggestionThrottleAgeLimit;
 }  // namespace visited_url_ranking::features
 
 #endif  // COMPONENTS_VISITED_URL_RANKING_PUBLIC_FEATURES_H_

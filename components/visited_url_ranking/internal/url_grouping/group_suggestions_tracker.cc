@@ -16,6 +16,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions.h"
 #include "components/visited_url_ranking/public/url_visit_schema.h"
 
@@ -24,8 +25,6 @@ namespace visited_url_ranking {
 namespace {
 
 using segmentation_platform::processing::ProcessedValue;
-
-constexpr base::TimeDelta kSuggestionAgeLimit = base::Hours(24);
 
 constexpr auto kReasonToMaxOverlappingTabs =
     base::MakeFixedFlatMap<GroupSuggestion::SuggestionReason, float>({
@@ -94,7 +93,8 @@ GroupSuggestionsTracker::GroupSuggestionsTracker(PrefService* pref_service)
         GroupSuggestionsTracker::ShownSuggestion::FromDict(
             old_suggestion.GetDict());
     if (suggestion_optional.has_value() &&
-        (now - suggestion_optional->time_shown <= kSuggestionAgeLimit)) {
+        (now - suggestion_optional->time_shown <=
+         features::kGroupSuggestionThrottleAgeLimit.Get())) {
       suggestions_.push_back(std::move(suggestion_optional.value()));
       new_suggestion_list.Append(old_suggestion.Clone());
     }
@@ -209,7 +209,8 @@ void GroupSuggestionsTracker::AddSuggestion(
   // Append latest suggestion and remove old suggestions in storage.
   base::Time now = base::Time::Now();
   std::erase_if(suggestions_, [&](const ShownSuggestion& item) {
-    return now - item.time_shown > kSuggestionAgeLimit;
+    return now - item.time_shown >
+           features::kGroupSuggestionThrottleAgeLimit.Get();
   });
   base::Value::List new_suggestion_list;
   for (const ShownSuggestion& shown_suggestion : suggestions_) {
@@ -233,7 +234,8 @@ bool GroupSuggestionsTracker::ShouldShowSuggestion(
 
   // Remove any old suggestions:
   std::erase_if(suggestions_, [&](const ShownSuggestion& item) {
-    return now - item.time_shown > kSuggestionAgeLimit;
+    return now - item.time_shown >
+           features::kGroupSuggestionThrottleAgeLimit.Get();
   });
 
   base::flat_set<int> all_shown;

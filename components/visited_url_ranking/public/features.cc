@@ -181,4 +181,8 @@ constexpr base::FeatureParam<bool> kGroupSuggestionTriggerCalculationOnPageLoad{
     /*name=*/"group_suggestion_trigger_calculation_on_page_load",
     /*default_value=*/true};
 
+constexpr base::FeatureParam<base::TimeDelta> kGroupSuggestionThrottleAgeLimit{
+    &kGroupSuggestionService,
+    /*name=*/"group_suggestion_throttle_age_limit",
+    /*default_value=*/base::Days(1)};
 }  // namespace visited_url_ranking::features
