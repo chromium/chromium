@@ -31,6 +31,7 @@
 #include "chrome/browser/ai/ai_utils.h"
 #include "chrome/browser/ai/ai_writer.h"
 #include "chrome/browser/ai/features.h"
+#include "chrome/browser/component_updater/optimization_guide_on_device_model_installer.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -305,10 +306,11 @@ on_device_model::mojom::Priority GetPriorityFromVisibility(
 
 }  // namespace
 
-AIManager::AIManager(content::BrowserContext* browser_context,
-                     content::RenderFrameHost* rfh)
-    : component_observer_(
-          std::make_unique<AIOnDeviceModelComponentObserver>(this)),
+AIManager::AIManager(
+    content::BrowserContext* browser_context,
+    component_updater::ComponentUpdateService* component_update_service,
+    content::RenderFrameHost* rfh)
+    : component_update_service_(*component_update_service),
       context_bound_object_set_(GetPriorityFromVisibility(rfh)),
       browser_context_(browser_context) {
   if (rfh && rfh->GetRenderWidgetHost()) {
@@ -758,9 +760,8 @@ void AIManager::CanCreateSession(
 
   // If the `OptimizationGuideKeyedService` cannot be retrieved, return false.
   if (!service) {
-    std::move(callback).Run(
-        blink::mojom::ModelAvailabilityCheckResult::
-            kUnavailableServiceNotRunning);
+    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableServiceNotRunning);
     return;
   }
 
@@ -783,9 +784,11 @@ void AIManager::FinishCanCreateSession(
   // the reason.
   if (eligibility !=
       optimization_guide::OnDeviceModelEligibilityReason::kSuccess) {
+    bool is_downloading =
+        model_download_progress_manager_.GetNumberOfReporters() >= 1;
     std::move(callback).Run(
         ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
-            eligibility, component_observer_->is_downloading()));
+            eligibility, is_downloading));
     return;
   }
 
@@ -866,8 +869,9 @@ float AIManager::GetLanguageModelMaxTemperature() {
           features::kAILanguageModelOverrideConfiguration)) {
     return std::min(
         kDefaultMaxTemperature,
-        float(features::kAILanguageModelOverrideConfigurationMaxTemperature
-                  .Get()));
+        static_cast<float>(
+            features::kAILanguageModelOverrideConfigurationMaxTemperature
+                .Get()));
   }
 
   return kDefaultMaxTemperature;
@@ -876,28 +880,10 @@ float AIManager::GetLanguageModelMaxTemperature() {
 void AIManager::AddModelDownloadProgressObserver(
     mojo::PendingRemote<blink ::mojom::ModelDownloadProgressObserver>
         observer_remote) {
-  download_progress_observers_.Add(std::move(observer_remote));
-}
-
-void AIManager::SendDownloadProgressUpdate(uint64_t downloaded_bytes,
-                                           uint64_t total_bytes) {
-  for (auto& observer : download_progress_observers_) {
-    observer->OnDownloadProgressUpdate(
-        AIUtils::NormalizeModelDownloadProgress(downloaded_bytes, total_bytes),
-        AIUtils::kNormalizedDownloadProgressMax);
-  }
-}
-
-void AIManager::SendDownloadProgressUpdateForTesting(uint64_t downloaded_bytes,
-                                                     uint64_t total_bytes) {
-  SendDownloadProgressUpdate(downloaded_bytes, total_bytes);
-}
-
-void AIManager::OnTextModelDownloadProgressChange(
-    base::PassKey<AIOnDeviceModelComponentObserver> observer_key,
-    uint64_t downloaded_bytes,
-    uint64_t total_bytes) {
-  SendDownloadProgressUpdate(downloaded_bytes, total_bytes);
+  model_download_progress_manager_.AddObserver(
+      &component_update_service_.get(), std::move(observer_remote),
+      {component_updater::OptimizationGuideOnDeviceModelInstallerPolicy::
+           GetOnDeviceModelExtensionId()});
 }
 
 void AIManager::RenderWidgetHostVisibilityChanged(

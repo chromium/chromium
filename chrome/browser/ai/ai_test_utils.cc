@@ -119,8 +119,8 @@ AITestUtils::AITestBase::~AITestBase() = default;
 
 void AITestUtils::AITestBase::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
-  ai_manager_ =
-      std::make_unique<AIManager>(main_rfh()->GetBrowserContext(), main_rfh());
+  ai_manager_ = std::make_unique<AIManager>(
+      main_rfh()->GetBrowserContext(), &component_update_service_, main_rfh());
 }
 
 void AITestUtils::AITestBase::TearDown() {
@@ -189,13 +189,6 @@ size_t AITestUtils::AITestBase::GetAIManagerDownloadProgressObserversSize() {
 
 size_t AITestUtils::AITestBase::GetAIManagerContextBoundObjectSetSize() {
   return ai_manager_->GetContextBoundObjectSetSizeForTesting();
-}
-
-void AITestUtils::AITestBase::MockDownloadProgressUpdate(
-    uint64_t downloaded_bytes,
-    uint64_t total_bytes) {
-  ai_manager_->SendDownloadProgressUpdateForTesting(downloaded_bytes,
-                                                    total_bytes);
 }
 
 // static

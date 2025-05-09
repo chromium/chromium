@@ -205,12 +205,11 @@ class AITestUtils {
     mojo::Remote<blink::mojom::AIManager> GetAIManagerRemote();
     size_t GetAIManagerContextBoundObjectSetSize();
     size_t GetAIManagerDownloadProgressObserversSize();
-    void MockDownloadProgressUpdate(uint64_t downloaded_bytes,
-                                    uint64_t total_bytes);
 
     raw_ptr<MockOptimizationGuideKeyedService>
         mock_optimization_guide_keyed_service_;
     testing::NiceMock<optimization_guide::MockSession> session_;
+    AITestUtils::MockComponentUpdateService component_update_service_;
 
    private:
     std::unique_ptr<AIManager> ai_manager_;

@@ -13,7 +13,7 @@
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
 #include "chrome/browser/ai/ai_create_on_device_session_task.h"
 #include "chrome/browser/ai/ai_language_model.h"
-#include "chrome/browser/ai/ai_on_device_model_component_observer.h"
+#include "chrome/browser/ai/ai_model_download_progress_manager.h"
 #include "chrome/browser/ai/ai_summarizer.h"
 #include "chrome/browser/ai/ai_utils.h"
 #include "content/public/browser/browser_context.h"
@@ -48,6 +48,7 @@ class AIManager : public base::SupportsUserData::Data,
       base::expected<std::unique_ptr<AILanguageModel>,
                      blink::mojom::AIManagerCreateClientError>;
   AIManager(content::BrowserContext* browser_context,
+            component_updater::ComponentUpdateService* component_update_service,
             content::RenderFrameHost* rfh);
   AIManager(const AIManager&) = delete;
   AIManager& operator=(const AIManager&) = delete;
@@ -69,15 +70,8 @@ class AIManager : public base::SupportsUserData::Data,
   }
 
   size_t GetDownloadProgressObserversSizeForTesting() {
-    return download_progress_observers_.size();
+    return model_download_progress_manager_.GetNumberOfReporters();
   }
-  void SendDownloadProgressUpdateForTesting(uint64_t downloaded_bytes,
-                                            uint64_t total_bytes);
-
-  void OnTextModelDownloadProgressChange(
-      base::PassKey<AIOnDeviceModelComponentObserver> observer_key,
-      uint64_t downloaded_bytes,
-      uint64_t total_bytes);
 
   // Return the max top k value for the LanguageModel API. Note that this value
   // won't exceed the max top k defined by the underlying on-device model.
@@ -155,9 +149,6 @@ class AIManager : public base::SupportsUserData::Data,
       const std::optional<const AILanguageModel::Context>& context =
           std::nullopt);
 
-  void SendDownloadProgressUpdate(uint64_t downloaded_bytes,
-                                  uint64_t total_bytes);
-
   // content::RenderWidgetHostObserver:
   void RenderWidgetHostVisibilityChanged(content::RenderWidgetHost* widget_host,
                                          bool became_visible) override;
@@ -171,10 +162,10 @@ class AIManager : public base::SupportsUserData::Data,
       optimization_guide::OnDeviceModelEligibilityReason eligibility);
 
   mojo::ReceiverSet<blink::mojom::AIManager> receivers_;
-  mojo::RemoteSet<blink::mojom::ModelDownloadProgressObserver>
-      download_progress_observers_;
-  std::unique_ptr<AIOnDeviceModelComponentObserver> component_observer_;
 
+  on_device_ai::AIModelDownloadProgressManager model_download_progress_manager_;
+
+  raw_ref<component_updater::ComponentUpdateService> component_update_service_;
   AIContextBoundObjectSet context_bound_object_set_;
   raw_ptr<content::BrowserContext> browser_context_;
 

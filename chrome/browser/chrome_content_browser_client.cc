@@ -8732,7 +8732,8 @@ void ChromeContentBrowserClient::BindAIManager(
   if (!context_user_data->GetUserData(kAIManagerUserDataKey)) {
     context_user_data->SetUserData(
         kAIManagerUserDataKey,
-        std::make_unique<AIManager>(browser_context, rfh));
+        std::make_unique<AIManager>(
+            browser_context, g_browser_process->component_updater(), rfh));
   }
 
   AIManager* ai_manager = static_cast<AIManager*>(

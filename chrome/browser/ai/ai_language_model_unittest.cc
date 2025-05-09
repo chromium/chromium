@@ -24,6 +24,7 @@
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/ai/ai_utils.h"
 #include "chrome/browser/ai/features.h"
+#include "chrome/browser/component_updater/optimization_guide_on_device_model_installer.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -34,6 +35,7 @@
 #include "components/optimization_guide/proto/features/prompt_api.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
+#include "components/update_client/update_client.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "services/on_device_model/public/cpp/capabilities.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
@@ -326,19 +328,19 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
                           : 1);
                 });
             ON_CALL(*session, SetInput(_, _))
-                .WillByDefault([&, initial = true](
-                                   MultimodalMessage request_metadata,
-                                   SetInputCallback callback) mutable {
-                  if (initial && !options.expected_context.empty()) {
-                    initial = false;
-                    EXPECT_THAT(ToString(request_metadata),
-                                options.expected_context);
-                  } else {
-                    EXPECT_THAT(
-                        ToString(request_metadata),
-                        options.expected_context + options.expected_prompt);
-                  }
-                });
+                .WillByDefault(
+                    [&, initial = true](MultimodalMessage request_metadata,
+                                        SetInputCallback callback) mutable {
+                      if (initial && !options.expected_context.empty()) {
+                        initial = false;
+                        EXPECT_THAT(ToString(request_metadata),
+                                    options.expected_context);
+                      } else {
+                        EXPECT_THAT(
+                            ToString(request_metadata),
+                            options.expected_context + options.expected_prompt);
+                      }
+                    });
 
             EXPECT_CALL(*session, ExecuteModelWithResponseConstraint(_, _, _))
                 .WillOnce(
@@ -417,29 +419,30 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
 
     if (options.should_use_supported_language) {
       EXPECT_EQ(GetAIManagerDownloadProgressObserversSize(), 0u);
-      AITestUtils::MockModelDownloadProgressMonitor mock_monitor;
-      base::RunLoop download_progress_run_loop;
-      EXPECT_CALL(mock_monitor, OnDownloadProgressUpdate(_, _))
-          .WillOnce(testing::Invoke([&](uint64_t downloaded_bytes,
-                                        uint64_t total_bytes) {
-            EXPECT_EQ(
-                downloaded_bytes,
-                static_cast<uint64_t>(AIUtils::kNormalizedDownloadProgressMax));
-            EXPECT_EQ(
-                total_bytes,
-                static_cast<uint64_t>(AIUtils::kNormalizedDownloadProgressMax));
-            download_progress_run_loop.Quit();
-          }));
+      AITestUtils::FakeMonitor mock_monitor;
 
+      EXPECT_CALL(component_update_service_, GetComponentIDs()).Times(1);
       mock_remote->AddModelDownloadProgressObserver(
           mock_monitor.BindNewPipeAndPassRemote());
+
       ASSERT_TRUE(base::test::RunUntil([this] {
         return GetAIManagerDownloadProgressObserversSize() == 1u;
       }));
 
-      MockDownloadProgressUpdate(kTestModelDownloadSize,
-                                 kTestModelDownloadSize);
-      download_progress_run_loop.Run();
+      // This is the component id of the on device model. The `AIManager` sends
+      // updates for it to the `CreateMonitor`s.
+      std::string model_component_id =
+          component_updater::OptimizationGuideOnDeviceModelInstallerPolicy::
+              GetOnDeviceModelExtensionId();
+      AITestUtils::FakeComponent model_component(model_component_id,
+                                                 kTestModelDownloadSize);
+
+      component_update_service_.SendUpdate(model_component.CreateUpdateItem(
+          update_client::ComponentState::kDownloading, kTestModelDownloadSize));
+
+      mock_monitor.ExpectReceivedNormalizedUpdate(0, kTestModelDownloadSize);
+      mock_monitor.ExpectReceivedNormalizedUpdate(kTestModelDownloadSize,
+                                                  kTestModelDownloadSize);
     }
 
     std::vector<blink::mojom::AILanguageModelExpectedInputPtr> expected_inputs;
