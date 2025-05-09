@@ -168,6 +168,7 @@ HttpsUpgradesNavigationThrottle::WillStartRequest() {
           blocking_page =
               blocking_page_factory_->CreateHttpsOnlyModeBlockingPage(
                   contents, handle->GetURL(), interstitial_state_,
+                  /*url_type_param=*/std::nullopt,
                   base::BindRepeating(&RecordHttpsFirstModeUKM, source_id));
       std::string interstitial_html = blocking_page->GetHTMLContents();
       security_interstitials::SecurityInterstitialTabHelper::
@@ -229,6 +230,7 @@ HttpsUpgradesNavigationThrottle::WillRedirectRequest() {
     std::unique_ptr<security_interstitials::HttpsOnlyModeBlockingPage>
         blocking_page = blocking_page_factory_->CreateHttpsOnlyModeBlockingPage(
             contents, handle->GetURL(), interstitial_state_,
+            /*url_type_param=*/std::nullopt,
             base::BindRepeating(&RecordHttpsFirstModeUKM, source_id));
     std::string interstitial_html = blocking_page->GetHTMLContents();
     security_interstitials::SecurityInterstitialTabHelper::

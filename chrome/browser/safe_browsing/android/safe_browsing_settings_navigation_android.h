@@ -14,6 +14,9 @@ namespace safe_browsing {
 void ShowSafeBrowsingSettings(ui::WindowAndroid* window,
                               SettingsAccessPoint access_point);
 
+// Opens the advanced-protection settings.
+void ShowAdvancedProtectionSettings(ui::WindowAndroid* window);
+
 }  // namespace safe_browsing
 
 #endif  // CHROME_BROWSER_SAFE_BROWSING_ANDROID_SAFE_BROWSING_SETTINGS_NAVIGATION_ANDROID_H_

@@ -13095,6 +13095,15 @@ should be able to be added at any place in this file.
   <description>User triggered the hotword by saying 'Ok Google'.</description>
 </action>
 
+<action name="HttpsOnlyModeInterstitial.OpenAdvancedProtectionSettings">
+  <owner>pkotwicz@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <description>
+    User exits HTTPS-only-mode-interstitial by clicking open-advanced-protection
+    link on the interstitial.
+  </description>
+</action>
+
 <action name="HubSearch.KeyboardEnterPressed">
   <owner>wylieb@google.com</owner>
   <owner>bjfong@google.com</owner>

@@ -291,23 +291,13 @@ CreateHttpsOnlyModePage(content::WebContents* web_contents) {
   GURL request_url("http://example.com");
   std::string type_param;
   security_interstitials::https_only_mode::HttpInterstitialState state;
-  if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "type",
-                                 &type_param)) {
-    if (type_param == "advanced_protection") {
-      state.enabled_by_advanced_protection = true;
-    } else if (type_param == "site_engagement") {
-      state.enabled_by_engagement_heuristic = true;
-    } else if (type_param == "typically_secure") {
-      state.enabled_by_typically_secure_browsing = true;
-    } else if (type_param == "incognito") {
-      state.enabled_by_incognito = true;
-    }
-  }
-  return std::make_unique<security_interstitials::HttpsOnlyModeBlockingPage>(
-      web_contents, request_url,
-      std::make_unique<HttpsOnlyModeControllerClient>(web_contents,
-                                                      request_url),
-      state,
+  net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "type",
+                             &type_param);
+  ChromeSecurityBlockingPageFactory blocking_page_factory;
+  return blocking_page_factory.CreateHttpsOnlyModeBlockingPage(
+      web_contents, request_url, state,
+      type_param.empty() ? std::nullopt
+                         : std::make_optional<std::string>(type_param),
       /*metrics_callback=*/base::DoNothing());
 }
 

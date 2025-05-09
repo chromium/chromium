@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SETTINGS_PAGE_HELPER_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SETTINGS_PAGE_HELPER_H_
 
+#include "build/build_config.h"
 #include "components/safe_browsing/core/common/safebrowsing_referral_methods.h"
 
 namespace content {
@@ -32,6 +33,11 @@ class SettingsPageHelper {
       content::WebContents* web_contents,
       safe_browsing::SafeBrowsingSettingReferralMethod referral_method)
       const = 0;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Opens Android-OS advanced protection settings page.
+  virtual void OpenAdvancedProtectionSettings(content::WebContents&) = 0;
+#endif  // BUILDFLAG_IS_ANDROID)
 };
 
 }  // namespace security_interstitials

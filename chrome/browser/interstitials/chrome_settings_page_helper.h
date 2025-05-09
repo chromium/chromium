@@ -38,6 +38,9 @@ class ChromeSettingsPageHelper : public SettingsPageHelper {
       content::WebContents* web_contents,
       safe_browsing::SafeBrowsingSettingReferralMethod referral_method)
       const override;
+#if BUILDFLAG(IS_ANDROID)
+  void OpenAdvancedProtectionSettings(content::WebContents&) override;
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace security_interstitials

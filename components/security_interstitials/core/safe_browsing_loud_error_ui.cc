@@ -244,6 +244,7 @@ void SafeBrowsingLoudErrorUI::HandleCommand(
     case CMD_TEXT_NOT_FOUND:
     case CMD_CLOSE_INTERSTITIAL_WITHOUT_UI:
     case CMD_REQUEST_SITE_ACCESS_PERMISSION:
+    case CMD_OPEN_ANDROID_ADVANCED_PROTECTION_SETTINGS:
       break;
   }
 }

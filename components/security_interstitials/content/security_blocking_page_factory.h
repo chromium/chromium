@@ -43,12 +43,11 @@ class SecurityBlockingPageFactory {
 
   // Creates a captive portal blocking page.
   virtual std::unique_ptr<CaptivePortalBlockingPage>
-  CreateCaptivePortalBlockingPage(
-      content::WebContents* web_contents,
-      const GURL& request_url,
-      const GURL& login_url,
-      const net::SSLInfo& ssl_info,
-      int cert_error) = 0;
+  CreateCaptivePortalBlockingPage(content::WebContents* web_contents,
+                                  const GURL& request_url,
+                                  const GURL& login_url,
+                                  const net::SSLInfo& ssl_info,
+                                  int cert_error) = 0;
 
   // Creates a bad clock blocking page.
   virtual std::unique_ptr<BadClockBlockingPage> CreateBadClockBlockingPage(
@@ -61,20 +60,18 @@ class SecurityBlockingPageFactory {
 
   // Creates a man-in-the-middle software blocking page.
   virtual std::unique_ptr<MITMSoftwareBlockingPage>
-  CreateMITMSoftwareBlockingPage(
-      content::WebContents* web_contents,
-      int cert_error,
-      const GURL& request_url,
-      const net::SSLInfo& ssl_info,
-      const std::string& mitm_software_name) = 0;
+  CreateMITMSoftwareBlockingPage(content::WebContents* web_contents,
+                                 int cert_error,
+                                 const GURL& request_url,
+                                 const net::SSLInfo& ssl_info,
+                                 const std::string& mitm_software_name) = 0;
 
   // Creates a blocked interception blocking page.
   virtual std::unique_ptr<BlockedInterceptionBlockingPage>
-  CreateBlockedInterceptionBlockingPage(
-      content::WebContents* web_contents,
-      int cert_error,
-      const GURL& request_url,
-      const net::SSLInfo& ssl_info) = 0;
+  CreateBlockedInterceptionBlockingPage(content::WebContents* web_contents,
+                                        int cert_error,
+                                        const GURL& request_url,
+                                        const net::SSLInfo& ssl_info) = 0;
 
   virtual std::unique_ptr<security_interstitials::InsecureFormBlockingPage>
   CreateInsecureFormBlockingPage(content::WebContents* web_contents,
@@ -86,6 +83,7 @@ class SecurityBlockingPageFactory {
       const GURL& request_url,
       security_interstitials::https_only_mode::HttpInterstitialState
           interstitial_state,
+      std::optional<std::string> url_type_param,
       security_interstitials::HttpsOnlyModeBlockingPage::MetricsCallback
           metrics_callback) = 0;
 };

@@ -38,51 +38,63 @@ void RecordSingleInteractionToMetrics(MetricsHelper::Interaction interaction,
 void MaybeRecordDecisionAsAction(MetricsHelper::Decision decision,
                                  const std::string& metric_name) {
   if (decision == MetricsHelper::PROCEED) {
-    if (metric_name == "malware" || metric_name == "malware_subresource")
+    if (metric_name == "malware" || metric_name == "malware_subresource") {
       RecordAction(UserMetricsAction("MalwareInterstitial.Proceed"));
-    else if (metric_name == "harmful" || metric_name == "harmful_subresource")
+    } else if (metric_name == "harmful" ||
+               metric_name == "harmful_subresource") {
       RecordAction(UserMetricsAction("HarmfulInterstitial.Proceed"));
-    else if (metric_name == "ssl_overridable")
+    } else if (metric_name == "ssl_overridable") {
       RecordAction(UserMetricsAction("SSLOverridableInterstitial.Proceed"));
-    else if (metric_name == "phishing" || metric_name == "phishing_subresource")
+    } else if (metric_name == "phishing" ||
+               metric_name == "phishing_subresource") {
       RecordAction(UserMetricsAction("PhishingInterstitial.Proceed"));
-    else if (metric_name == "billing" || metric_name == "billing_subresource")
+    } else if (metric_name == "billing" ||
+               metric_name == "billing_subresource") {
       RecordAction(UserMetricsAction("BillingInterstitial.Proceed"));
+    }
   } else if (decision == MetricsHelper::DONT_PROCEED) {
-    if (metric_name == "malware" || metric_name == "malware_subresource")
+    if (metric_name == "malware" || metric_name == "malware_subresource") {
       RecordAction(UserMetricsAction("MalwareInterstitial.Back"));
-    else if (metric_name == "harmful" || metric_name == "harmful_subresource")
+    } else if (metric_name == "harmful" ||
+               metric_name == "harmful_subresource") {
       RecordAction(UserMetricsAction("HarmfulInterstitial.Back"));
-    else if (metric_name == "ssl_overridable")
+    } else if (metric_name == "ssl_overridable") {
       RecordAction(UserMetricsAction("SSLOverridableInterstitial.Back"));
-    else if (metric_name == "ssl_nonoverridable")
+    } else if (metric_name == "ssl_nonoverridable") {
       RecordAction(UserMetricsAction("SSLNonOverridableInsterstitial.Back"));
-    else if (metric_name == "bad_clock")
+    } else if (metric_name == "bad_clock") {
       RecordAction(UserMetricsAction("BadClockInterstitial.Back"));
-    else if (metric_name == "phishing" || metric_name == "phishing_subresource")
+    } else if (metric_name == "phishing" ||
+               metric_name == "phishing_subresource") {
       RecordAction(UserMetricsAction("PhishingInterstitial.Back"));
-    else if (metric_name == "billing" || metric_name == "billing_subresource")
+    } else if (metric_name == "billing" ||
+               metric_name == "billing_subresource") {
       RecordAction(UserMetricsAction("BillingInterstitial.Back"));
+    }
   }
 }
 
 void MaybeRecordInteractionAsAction(MetricsHelper::Interaction interaction,
                                     const std::string& metric_name) {
   if (interaction == MetricsHelper::TOTAL_VISITS) {
-    if (metric_name == "malware" || metric_name == "malware_subresource")
+    if (metric_name == "malware" || metric_name == "malware_subresource") {
       RecordAction(UserMetricsAction("MalwareInterstitial.Show"));
-    else if (metric_name == "harmful" || metric_name == "harmful_subresource")
+    } else if (metric_name == "harmful" ||
+               metric_name == "harmful_subresource") {
       RecordAction(UserMetricsAction("HarmfulInterstitial.Show"));
-    else if (metric_name == "ssl_overridable")
+    } else if (metric_name == "ssl_overridable") {
       RecordAction(UserMetricsAction("SSLOverridableInterstitial.Show"));
-    else if (metric_name == "ssl_nonoverridable")
+    } else if (metric_name == "ssl_nonoverridable") {
       RecordAction(UserMetricsAction("SSLNonOverridableInterstitial.Show"));
-    else if (metric_name == "bad_clock")
+    } else if (metric_name == "bad_clock") {
       RecordAction(UserMetricsAction("BadClockInterstitial.Show"));
-    else if (metric_name == "phishing" || metric_name == "phishing_subresource")
+    } else if (metric_name == "phishing" ||
+               metric_name == "phishing_subresource") {
       RecordAction(UserMetricsAction("PhishingInterstitial.Show"));
-    else if (metric_name == "billing" || metric_name == "billing_subresource")
+    } else if (metric_name == "billing" ||
+               metric_name == "billing_subresource") {
       RecordAction(UserMetricsAction("BillingInterstitial.Show"));
+    }
   } else if (interaction == MetricsHelper::SHOW_ADVANCED) {
     if (metric_name == "malware" || metric_name == "malware_subresource") {
       RecordAction(UserMetricsAction("MalwareInterstitial.Advanced"));
@@ -93,16 +105,20 @@ void MaybeRecordInteractionAsAction(MetricsHelper::Interaction interaction,
                metric_name == "ssl_nonoverridable") {
       RecordAction(UserMetricsAction("SSLInterstitial.Advanced"));
     } else if (metric_name == "phishing" ||
-               metric_name == "phishing_subresource")
+               metric_name == "phishing_subresource") {
       RecordAction(UserMetricsAction("PhishingInterstitial.Advanced"));
-    else if (metric_name == "billing" || metric_name == "billing_subresource")
+    } else if (metric_name == "billing" ||
+               metric_name == "billing_subresource") {
       RecordAction(UserMetricsAction("BillingInterstitial.Advanced"));
+    }
   } else if (interaction == MetricsHelper::RELOAD) {
-    if (metric_name == "ssl_nonoverridable")
+    if (metric_name == "ssl_nonoverridable") {
       RecordAction(UserMetricsAction("SSLInterstitial.Reload"));
+    }
   } else if (interaction == MetricsHelper::OPEN_TIME_SETTINGS) {
-    if (metric_name == "bad_clock")
+    if (metric_name == "bad_clock") {
       RecordAction(UserMetricsAction("BadClockInterstitial.Settings"));
+    }
   } else if (metric_name == "phishing" ||
              metric_name == "phishing_subresource") {
     if (interaction == MetricsHelper::SHOW_PRIVACY_POLICY) {
@@ -132,6 +148,9 @@ void MaybeRecordInteractionAsAction(MetricsHelper::Interaction interaction,
       RecordAction(
           UserMetricsAction("PhishingInterstitial.CloseInterstitialWithoutUI"));
     }
+  } else if (interaction == MetricsHelper::OPEN_ADVANCED_PROTECTION_SETTINGS) {
+    RecordAction(UserMetricsAction(
+        "HttpsOnlyModeInterstitial.OpenAdvancedProtectionSettings"));
   }
 }
 
@@ -161,8 +180,8 @@ MetricsHelper::MetricsHelper(const GURL& request_url,
 }
 
 void MetricsHelper::RecordUserDecision(Decision decision) {
-  const std::string histogram_name(
-      "interstitial." + settings_.metric_prefix + ".decision");
+  const std::string histogram_name("interstitial." + settings_.metric_prefix +
+                                   ".decision");
   RecordUserDecisionToMetrics(decision, histogram_name);
   // Record additional information about sites that users have visited before.
   // Report |decision| and SHOW together, filtered by the same history state
@@ -199,8 +218,8 @@ void MetricsHelper::RecordUserDecisionToMetrics(
 }
 
 void MetricsHelper::RecordUserInteraction(Interaction interaction) {
-  const std::string histogram_name(
-      "interstitial." + settings_.metric_prefix + ".interaction");
+  const std::string histogram_name("interstitial." + settings_.metric_prefix +
+                                   ".interaction");
   RecordSingleInteractionToMetrics(interaction, histogram_name);
   if (!settings_.extra_suffix.empty()) {
     RecordSingleInteractionToMetrics(
@@ -266,8 +285,9 @@ void MetricsHelper::RecordExtraShutdownMetrics() {}
 
 void MetricsHelper::OnGotHistoryCount(
     history::VisibleVisitCountToHostResult result) {
-  if (result.success)
+  if (result.success) {
     num_visits_ = result.count;
+  }
 }
 
 }  // namespace security_interstitials

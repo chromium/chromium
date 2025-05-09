@@ -274,23 +274,39 @@ ChromeSecurityBlockingPageFactory::CreateHttpsOnlyModeBlockingPage(
     const GURL& request_url,
     security_interstitials::https_only_mode::HttpInterstitialState
         interstitial_state,
+    std::optional<std::string> url_type_param,
     security_interstitials::HttpsOnlyModeBlockingPage::MetricsCallback
         metrics_callback) {
   std::unique_ptr<HttpsOnlyModeControllerClient> client =
-      std::make_unique<HttpsOnlyModeControllerClient>(web_contents,
-                                                      request_url);
+      std::make_unique<HttpsOnlyModeControllerClient>(
+          web_contents, request_url, CreateSettingsPageHelper());
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  interstitial_state.enabled_by_advanced_protection =
-      profile &&
-      safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
-          profile)
-          ->IsUnderAdvancedProtection();
-  // HFM interstitial with Site Engagement heuristic is only shown if the
-  // feature flag is enabled, so update the relevant flag here.
-  interstitial_state.enabled_by_engagement_heuristic =
-      interstitial_state.enabled_by_engagement_heuristic &&
-      base::FeatureList::IsEnabled(features::kHttpsFirstModeV2ForEngagedSites);
+
+  if (url_type_param) {
+    if (*url_type_param == "advanced_protection") {
+      interstitial_state.enabled_by_advanced_protection = true;
+    } else if (*url_type_param == "site_engagement") {
+      interstitial_state.enabled_by_engagement_heuristic = true;
+    } else if (*url_type_param == "typically_secure") {
+      interstitial_state.enabled_by_typically_secure_browsing = true;
+    } else if (*url_type_param == "incognito") {
+      interstitial_state.enabled_by_incognito = true;
+    }
+  } else {
+    interstitial_state.enabled_by_advanced_protection =
+        profile &&
+        safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
+            profile)
+            ->IsUnderAdvancedProtection();
+    // HFM interstitial with Site Engagement heuristic is only shown if the
+    // feature flag is enabled, so update the relevant flag here.
+    interstitial_state.enabled_by_engagement_heuristic =
+        interstitial_state.enabled_by_engagement_heuristic &&
+        base::FeatureList::IsEnabled(
+            features::kHttpsFirstModeV2ForEngagedSites);
+  }
+
   auto page =
       std::make_unique<security_interstitials::HttpsOnlyModeBlockingPage>(
           web_contents, request_url, std::move(client), interstitial_state,

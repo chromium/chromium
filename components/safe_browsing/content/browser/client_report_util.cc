@@ -160,6 +160,7 @@ GetSecurityInterstitialInteractionFromCommand(
     case security_interstitials::CMD_TEXT_NOT_FOUND:
     case security_interstitials::CMD_ERROR:
     case security_interstitials::CMD_REQUEST_SITE_ACCESS_PERMISSION:
+    case security_interstitials::CMD_OPEN_ANDROID_ADVANCED_PROTECTION_SETTINGS:
       break;
   }
   return CSBRR::InterstitialInteraction::UNSPECIFIED;

@@ -26,7 +26,9 @@ HttpsOnlyModeControllerClient::GetMetricsHelper(const GURL& url) {
 
 HttpsOnlyModeControllerClient::HttpsOnlyModeControllerClient(
     content::WebContents* web_contents,
-    const GURL& request_url)
+    const GURL& request_url,
+    std::unique_ptr<security_interstitials::SettingsPageHelper>
+        settings_page_helper)
     : SecurityInterstitialControllerClient(
           web_contents,
           GetMetricsHelper(request_url),
@@ -34,7 +36,7 @@ HttpsOnlyModeControllerClient::HttpsOnlyModeControllerClient(
               ->GetPrefs(),
           g_browser_process->GetApplicationLocale(),
           GURL(chrome::kChromeUINewTabURL),
-          /*settings_page_helper=*/nullptr),
+          std::move(settings_page_helper)),
       web_contents_(web_contents),
       request_url_(request_url) {}
 

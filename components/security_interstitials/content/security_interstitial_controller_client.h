@@ -13,7 +13,7 @@
 namespace content {
 class RenderFrameHost;
 class WebContents;
-}
+}  // namespace content
 
 namespace security_interstitials {
 
@@ -49,6 +49,9 @@ class SecurityInterstitialControllerClient
   void OpenUrlInCurrentTab(const GURL& url) override;
   void OpenUrlInNewForegroundTab(const GURL& url) override;
   void OpenEnhancedProtectionSettings() override;
+#if BUILDFLAG(IS_ANDROID)
+  void OpenAdvancedProtectionSettings() override;
+#endif
   PrefService* GetPrefService() override;
   const std::string& GetApplicationLocale() const override;
   bool CanLaunchDateAndTimeSettings() override;

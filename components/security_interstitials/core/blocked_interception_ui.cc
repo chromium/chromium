@@ -108,6 +108,7 @@ void BlockedInterceptionUI::HandleCommand(SecurityInterstitialCommand command) {
           security_interstitials::MetricsHelper::OPEN_ENHANCED_PROTECTION);
       controller_->OpenEnhancedProtectionSettings();
       break;
+    case CMD_OPEN_ANDROID_ADVANCED_PROTECTION_SETTINGS:
     case CMD_OPEN_HELP_CENTER:
     case CMD_DONT_PROCEED:
     case CMD_RELOAD:

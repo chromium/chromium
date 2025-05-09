@@ -3,6 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/interstitials/chrome_settings_page_helper.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#endif
+
 #include "build/build_config.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/web_contents.h"
@@ -58,5 +63,13 @@ void ChromeSettingsPageHelper::OpenEnhancedProtectionSettingsWithIph(
       chrome::FindBrowserWithTab(web_contents), referral_method);
 #endif
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void ChromeSettingsPageHelper::OpenAdvancedProtectionSettings(
+    content::WebContents& web_contents) {
+  safe_browsing::ShowAdvancedProtectionSettings(
+      web_contents.GetTopLevelNativeWindow());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace security_interstitials

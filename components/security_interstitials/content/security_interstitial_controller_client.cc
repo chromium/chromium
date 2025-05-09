@@ -147,13 +147,18 @@ void SecurityInterstitialControllerClient::OpenEnhancedProtectionSettings() {
 #endif
 }
 
-const std::string&
-SecurityInterstitialControllerClient::GetApplicationLocale() const {
+#if BUILDFLAG(IS_ANDROID)
+void SecurityInterstitialControllerClient::OpenAdvancedProtectionSettings() {
+  settings_page_helper_->OpenAdvancedProtectionSettings(*web_contents_);
+}
+#endif
+
+const std::string& SecurityInterstitialControllerClient::GetApplicationLocale()
+    const {
   return app_locale_;
 }
 
-PrefService*
-SecurityInterstitialControllerClient::GetPrefService() {
+PrefService* SecurityInterstitialControllerClient::GetPrefService() {
   return prefs_;
 }
 

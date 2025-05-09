@@ -119,6 +119,7 @@ void BadClockUI::HandleCommand(SecurityInterstitialCommand command) {
     case CMD_REPORT_PHISHING_ERROR:
     case CMD_CLOSE_INTERSTITIAL_WITHOUT_UI:
     case CMD_REQUEST_SITE_ACCESS_PERMISSION:
+    case CMD_OPEN_ANDROID_ADVANCED_PROTECTION_SETTINGS:
       // Not supported by the bad clock error page.
       NOTREACHED() << "Unsupported command: " << command;
     case CMD_ERROR:
@@ -129,4 +130,4 @@ void BadClockUI::HandleCommand(SecurityInterstitialCommand command) {
   }
 }
 
-}  // security_interstitials
+}  // namespace security_interstitials

@@ -15,7 +15,7 @@
 namespace history {
 class HistoryService;
 struct VisibleVisitCountToHostResult;
-}
+}  // namespace history
 
 namespace security_interstitials {
 
@@ -58,6 +58,7 @@ class MetricsHelper {
     SHOW_ENHANCED_PROTECTION,
     OPEN_ENHANCED_PROTECTION,
     CLOSE_INTERSTITIAL_WITHOUT_UI,
+    OPEN_ADVANCED_PROTECTION_SETTINGS,
     MAX_INTERACTION
   };
 

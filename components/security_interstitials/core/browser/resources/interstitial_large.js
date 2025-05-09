@@ -236,6 +236,15 @@ function setupEvents() {
     });
   }
 
+  const androidAdvancedProtectionLink =
+      document.querySelector('#android-advanced-protection-settings-link');
+  if (androidAdvancedProtectionLink) {
+    androidAdvancedProtectionLink.addEventListener('click', function(event) {
+      sendCommand(SecurityInterstitialCommandId
+                      .CMD_OPEN_ANDROID_ADVANCED_PROTECTION_SETTINGS);
+    });
+  }
+
   const detailsButton = document.querySelector('#details-button');
   if (captivePortal || billing || lookalike || insecureForm || httpsOnly ||
       enterpriseWarn || enterpriseBlock || supervisedUserVerify ||

@@ -56,6 +56,7 @@ enum SecurityInterstitialCommand {
   CMD_CLOSE_INTERSTITIAL_WITHOUT_UI = 14,
   // Request permission to blocked website.
   CMD_REQUEST_SITE_ACCESS_PERMISSION = 15,
+  CMD_OPEN_ANDROID_ADVANCED_PROTECTION_SETTINGS = 16,
 };
 
 // Provides methods for handling commands from the user, which requires some
@@ -112,6 +113,10 @@ class ControllerClient {
   virtual void OpenUrlInNewForegroundTab(const GURL& url) = 0;
 
   virtual void OpenEnhancedProtectionSettings() = 0;
+
+#if BUILDFLAG(IS_ANDROID)
+  virtual void OpenAdvancedProtectionSettings() = 0;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   virtual PrefService* GetPrefService() = 0;
 
