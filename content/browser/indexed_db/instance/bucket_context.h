@@ -382,11 +382,7 @@ class CONTENT_EXPORT BucketContext
 
   std::string SanitizeErrorMessage(const std::string& message);
 
-  // This only exists to ease the transition to a swappable backing store. It
-  // should be removed.
-  level_db::BackingStore* leveldb_backing_store() {
-    return reinterpret_cast<level_db::BackingStore*>(backing_store_.get());
-  }
+  bool ShouldUseSqliteBackingStore();
 
   SEQUENCE_CHECKER(sequence_checker_);
 

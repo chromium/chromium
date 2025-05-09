@@ -26,6 +26,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/map_util.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -67,6 +68,7 @@
 #include "content/browser/indexed_db/instance/database_callbacks.h"
 #include "content/browser/indexed_db/instance/leveldb/backing_store.h"
 #include "content/browser/indexed_db/instance/pending_connection.h"
+#include "content/browser/indexed_db/instance/sqlite/backing_store_impl.h"
 #include "content/browser/indexed_db/status.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -193,6 +195,11 @@ std::
 }
 
 }  // namespace
+
+// TODO(crbug.com/40253999): Move to blink when needed there.
+BASE_FEATURE(kSqliteBackingStore,
+             "IdbSqliteBackingStore",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BucketContext::Delegate::Delegate()
     : on_ready_for_destruction(base::DoNothing()),
@@ -876,6 +883,11 @@ std::string BucketContext::SanitizeErrorMessage(const std::string& message) {
   return sanitized_message;
 }
 
+bool BucketContext::ShouldUseSqliteBackingStore() {
+  // Additional checks may be added subsequently.
+  return base::FeatureList::IsEnabled(kSqliteBackingStore);
+}
+
 void BucketContext::HandleBackingStoreCorruption(
     const std::string& error_message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -962,9 +974,11 @@ BucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
   for (int i = 0; i < kNumOpenTries; ++i) {
     const bool is_first_attempt = i == 0;
     std::tie(backing_store, status, data_loss_info, disk_full) =
-        level_db::BackingStore::OpenAndVerify(
-            *this, data_path_, database_path, blob_path, lock_manager.get(),
-            is_first_attempt, create_if_missing);
+        ShouldUseSqliteBackingStore()
+            ? sqlite::BackingStoreImpl::OpenAndVerify(data_path_)
+            : level_db::BackingStore::OpenAndVerify(
+                  *this, data_path_, database_path, blob_path,
+                  lock_manager.get(), is_first_attempt, create_if_missing);
     if (is_first_attempt) [[likely]] {
       first_try_status = status;
     }
