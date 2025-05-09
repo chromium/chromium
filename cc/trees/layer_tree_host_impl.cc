@@ -3206,7 +3206,6 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   metadata.frame_interval_inputs.has_only_content_frame_interval_updates =
       frame->damage_reasons.empty();
 
-  base::TimeDelta preferred_frame_interval;
   constexpr auto kFudgeDelta = base::Milliseconds(1);
   constexpr auto kTwiceOfDefaultInterval =
       viz::BeginFrameArgs::DefaultInterval() * 2;
@@ -3228,12 +3227,13 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
     // reduction optimization is only applied when a webpage has two or more
     // videos, i.e., very likely a video conferencing scene. It doesn't apply
     // to general webpages.
-    preferred_frame_interval = kTwiceOfDefaultInterval;
+    metadata.preferred_frame_interval = kTwiceOfDefaultInterval;
   } else {
     // There are main-thread, high frequency impl-thread animations, or input
     // events.
     frame_rate_estimator_.WillDraw(CurrentBeginFrameArgs().frame_time);
-    preferred_frame_interval = frame_rate_estimator_.GetPreferredInterval();
+    metadata.preferred_frame_interval =
+        frame_rate_estimator_.GetPreferredInterval();
   }
 
   metadata.activation_dependencies = std::move(frame->activation_dependencies);
@@ -3294,7 +3294,6 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
 
   DCHECK(frame->begin_frame_ack.frame_id.IsSequenceValid());
   metadata.begin_frame_ack = frame->begin_frame_ack;
-  metadata.begin_frame_ack.preferred_frame_interval = preferred_frame_interval;
 
   viz::CompositorFrame compositor_frame;
   compositor_frame.metadata = std::move(metadata);

@@ -67,17 +67,6 @@ cc::FrameInfo CreateFrameInfo(cc::FrameInfo::FrameFinalState final_state) {
   return frame_info;
 }
 
-// Helper method for creating manual ack with damage and prefered frame
-// interval.
-viz::BeginFrameAck CreateManualAckWithDamageAndPreferredFrameInterval(
-    cc::VideoFrameProvider* video_frame_provider) {
-  auto begin_frame_ack = viz::BeginFrameAck::CreateManualAckWithDamage();
-  begin_frame_ack.preferred_frame_interval =
-      video_frame_provider ? video_frame_provider->GetPreferredRenderInterval()
-                           : viz::BeginFrameArgs::MinInterval();
-  return begin_frame_ack;
-}
-
 void RecordUmaPreSubmitBufferingDelay(bool is_media_stream,
                                       base::TimeDelta delay) {
   if (is_media_stream) {
@@ -506,10 +495,6 @@ void VideoFrameSubmitter::OnBeginFrame(
   // Don't call UpdateCurrentFrame() for MISSED BeginFrames. Also don't call it
   // after StopRendering() has been called (forbidden by API contract).
   viz::BeginFrameAck current_begin_frame_ack(args, false);
-  current_begin_frame_ack.preferred_frame_interval =
-      video_frame_provider_
-          ? video_frame_provider_->GetPreferredRenderInterval()
-          : viz::BeginFrameArgs::MinInterval();
   if (args.type == viz::BeginFrameArgs::MISSED || !is_rendering_) {
     compositor_frame_sink_->DidNotProduceFrame(current_begin_frame_ack);
     frame_sorter_.AddFrameResult(
@@ -852,8 +837,7 @@ void VideoFrameSubmitter::SubmitEmptyFrame() {
     return;
 
   last_frame_id_.reset();
-  auto begin_frame_ack =
-      CreateManualAckWithDamageAndPreferredFrameInterval(video_frame_provider_);
+  auto begin_frame_ack = viz::BeginFrameAck::CreateManualAckWithDamage();
   auto frame_token = ++next_frame_token_;
   auto compositor_frame = CreateCompositorFrame(
       frame_token, begin_frame_ack, nullptr, media::kNoTransformation);
@@ -883,8 +867,7 @@ void VideoFrameSubmitter::SubmitSingleFrame() {
   if (!video_frame)
     return;
 
-  if (SubmitFrame(CreateManualAckWithDamageAndPreferredFrameInterval(
-                      video_frame_provider_),
+  if (SubmitFrame(viz::BeginFrameAck::CreateManualAckWithDamage(),
                   std::move(video_frame))) {
     video_frame_provider_->PutCurrentFrame();
   }
@@ -905,6 +888,10 @@ viz::CompositorFrame VideoFrameSubmitter::CreateCompositorFrame(
   viz::CompositorFrame compositor_frame;
   compositor_frame.metadata.begin_frame_ack = begin_frame_ack;
   compositor_frame.metadata.frame_token = frame_token;
+  compositor_frame.metadata.preferred_frame_interval =
+      video_frame_provider_
+          ? video_frame_provider_->GetPreferredRenderInterval()
+          : viz::BeginFrameArgs::MinInterval();
   if (video_frame_provider_) {
     compositor_frame.metadata.frame_interval_inputs.frame_time =
         last_begin_frame_args_.frame_time;

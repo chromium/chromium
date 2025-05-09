@@ -1029,7 +1029,7 @@ TEST_F(VideoFrameSubmitterTest, PreferredInterval) {
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(sink_->last_submitted_compositor_frame()
-                .metadata.begin_frame_ack.preferred_frame_interval,
+                .metadata.preferred_frame_interval,
             video_frame_provider_->preferred_interval);
   const auto& frame_interval_inputs =
       sink_->last_submitted_compositor_frame().metadata.frame_interval_inputs;

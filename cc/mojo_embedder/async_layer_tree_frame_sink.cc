@@ -317,15 +317,6 @@ void AsyncLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
   ExportFrameTiming();
 
   if (use_internal_begin_frame_source_) {
-    if (ack.preferred_frame_interval) {
-      const viz::BeginFrameArgs last_args =
-          begin_frame_source_->last_begin_frame_args();
-      auto preferred_interval = ack.preferred_frame_interval > base::TimeDelta()
-                                    ? *ack.preferred_frame_interval
-                                    : last_args.interval;
-      internal_begin_frame_source_->OnUpdateVSyncParameters(
-          last_args.frame_time, preferred_interval);
-    }
     return;
   }
   compositor_frame_sink_ptr_->DidNotProduceFrame(ack);
