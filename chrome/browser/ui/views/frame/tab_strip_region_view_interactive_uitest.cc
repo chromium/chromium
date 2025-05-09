@@ -122,14 +122,19 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestForwardFocus) {
   press_right();
   if (features::HasTabstripComboButtonWithReverseButtonOrder()) {
     EXPECT_TRUE(new_tab_button()->HasFocus());
-  } else {
+  } else if (!features::HasTabSearchToolbarButton()) {
     EXPECT_TRUE(tab_search_button()->HasFocus());
+  } else {
+    EXPECT_TRUE(tab_0->HasFocus());
+    EXPECT_TRUE(tab_strip_region_view()->pane_has_focus());
   }
 
-  // Focus should cycle back around to tab_0.
-  press_right();
-  EXPECT_TRUE(tab_0->HasFocus());
-  EXPECT_TRUE(tab_strip_region_view()->pane_has_focus());
+  if (!features::HasTabSearchToolbarButton()) {
+    // Focus should cycle back around to tab_0.
+    press_right();
+    EXPECT_TRUE(tab_0->HasFocus());
+    EXPECT_TRUE(tab_strip_region_view()->pane_has_focus());
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestReverseFocus) {
@@ -161,7 +166,8 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestReverseFocus) {
 
   // Pressing left should immediately cycle back around to the last button.
   press_left();
-  if (features::HasTabstripComboButtonWithReverseButtonOrder()) {
+  if (features::HasTabstripComboButtonWithReverseButtonOrder() ||
+      features::HasTabSearchToolbarButton()) {
     EXPECT_TRUE(new_tab_button()->HasFocus());
   } else {
     EXPECT_TRUE(tab_search_button()->HasFocus());
@@ -170,12 +176,16 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestReverseFocus) {
   press_left();
   if (features::HasTabstripComboButtonWithReverseButtonOrder()) {
     EXPECT_TRUE(tab_search_button()->HasFocus());
-  } else {
+  } else if (!features::HasTabSearchToolbarButton()) {
     EXPECT_TRUE(new_tab_button()->HasFocus());
+  } else {
+    EXPECT_TRUE(tab_2->HasFocus());
   }
 
-  move_back_to_tab(tab_2);
-  EXPECT_TRUE(tab_2->HasFocus());
+  if (!features::HasTabSearchToolbarButton()) {
+    move_back_to_tab(tab_2);
+    EXPECT_TRUE(tab_2->HasFocus());
+  }
 
   move_back_to_tab(tab_1);
   EXPECT_TRUE(tab_1->HasFocus());
@@ -211,7 +221,8 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
 
     EXPECT_TRUE(tab_strip_region_view()->AcceleratorPressed(
         tab_strip_region_view()->home_key()));
-    if (features::HasTabstripComboButtonWithReverseButtonOrder()) {
+    if (features::HasTabstripComboButtonWithReverseButtonOrder() ||
+        features::HasTabSearchToolbarButton()) {
       EXPECT_TRUE(new_tab_button()->HasFocus());
     } else {
       EXPECT_TRUE(tab_search_button()->HasFocus());
@@ -224,7 +235,8 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
 #if !BUILDFLAG(IS_WIN)
     EXPECT_TRUE(tab_strip_region_view()->AcceleratorPressed(
         tab_strip_region_view()->end_key()));
-    if (features::HasTabstripComboButtonWithReverseButtonOrder()) {
+    if (features::HasTabstripComboButtonWithReverseButtonOrder() ||
+        features::HasTabSearchToolbarButton()) {
       EXPECT_TRUE(new_tab_button()->HasFocus());
     } else {
       EXPECT_TRUE(tab_search_button()->HasFocus());

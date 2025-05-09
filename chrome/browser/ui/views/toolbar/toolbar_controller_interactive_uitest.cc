@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -55,7 +56,7 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
  public:
   ToolbarControllerUiTest()
       : InteractiveFeaturePromoTest(UseDefaultTrackerAllowingPromos(
-            {feature_engagement::kIPHTabSearchFeature})) {
+            {feature_engagement::kIPHMemorySaverModeFeature})) {
     ToolbarControllerUtil::SetPreventOverflowForTesting(false);
   }
 
@@ -67,6 +68,9 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
     PinnedToolbarActionsModel* const actions_model =
         PinnedToolbarActionsModel::Get(browser()->profile());
     actions_model->UpdatePinnedState(kActionShowChromeLabs, false);
+    if (features::HasTabSearchToolbarButton()) {
+      actions_model->UpdatePinnedState(kActionTabSearch, false);
+    }
     views::test::WaitForAnimatingLayoutManager(
         browser_view_->toolbar()->pinned_toolbar_actions_container());
     toolbar_controller_ = const_cast<ToolbarController*>(
@@ -680,9 +684,9 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                        MAYBE_DoNotShowIphWhenOverflowed) {
   RunTestSequence(
       ResizeRelativeToOverflow(-1),
-      MaybeShowPromo(feature_engagement::kIPHTabSearchFeature,
+      MaybeShowPromo(feature_engagement::kIPHMemorySaverModeFeature,
                      user_education::FeaturePromoResult::kWindowTooSmall),
       ResizeRelativeToOverflow(1),
-      MaybeShowPromo(feature_engagement::kIPHTabSearchFeature),
+      MaybeShowPromo(feature_engagement::kIPHMemorySaverModeFeature),
       PressClosePromoButton());
 }

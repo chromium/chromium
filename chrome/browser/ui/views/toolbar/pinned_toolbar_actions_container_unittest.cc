@@ -51,6 +51,9 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
     ASSERT_TRUE(model_);
 
     model_->UpdatePinnedState(kActionShowChromeLabs, false);
+    if (features::HasTabSearchToolbarButton()) {
+      model_->UpdatePinnedState(kActionTabSearch, false);
+    }
     WaitForAnimations();
   }
 

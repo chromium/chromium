@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -63,7 +64,11 @@ IN_PROC_BROWSER_TEST_F(AppearanceHandlerTest, ResetPinnedToolbarActions) {
 
   EXPECT_TRUE(prefs->GetBoolean(prefs::kShowHomeButton));
   EXPECT_FALSE(prefs->GetBoolean(prefs::kShowForwardButton));
-  EXPECT_EQ(2u, actions_model->PinnedActionIds().size());
+  if (features::HasTabSearchToolbarButton()) {
+    EXPECT_EQ(3u, actions_model->PinnedActionIds().size());
+  } else {
+    EXPECT_EQ(2u, actions_model->PinnedActionIds().size());
+  }
 
   base::Value::List args;
   browser()
@@ -75,8 +80,14 @@ IN_PROC_BROWSER_TEST_F(AppearanceHandlerTest, ResetPinnedToolbarActions) {
 
   EXPECT_FALSE(prefs->GetBoolean(prefs::kShowHomeButton));
   EXPECT_TRUE(prefs->GetBoolean(prefs::kShowForwardButton));
-  ASSERT_EQ(1u, actions_model->PinnedActionIds().size());
-  EXPECT_EQ(kActionShowChromeLabs, actions_model->PinnedActionIds()[0]);
+  if (features::HasTabSearchToolbarButton()) {
+    ASSERT_EQ(2u, actions_model->PinnedActionIds().size());
+    EXPECT_EQ(kActionShowChromeLabs, actions_model->PinnedActionIds()[0]);
+    EXPECT_EQ(kActionTabSearch, actions_model->PinnedActionIds()[1]);
+  } else {
+    ASSERT_EQ(1u, actions_model->PinnedActionIds().size());
+    EXPECT_EQ(kActionShowChromeLabs, actions_model->PinnedActionIds()[0]);
+  }
 }
 
 }  // namespace settings

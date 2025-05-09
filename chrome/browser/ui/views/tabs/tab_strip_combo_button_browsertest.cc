@@ -16,7 +16,10 @@
 class TabStripComboButtonBrowserTest : public InProcessBrowserTest {
  public:
   TabStripComboButtonBrowserTest() {
-    feature_list_.InitWithFeatures({features::kTabstripComboButton}, {});
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kTabstripComboButton,
+          {{"tab_search_toolbar_button", "false"}}}},
+        {});
   }
 
   BrowserView* browser_view() {
