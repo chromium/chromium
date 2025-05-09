@@ -38,7 +38,14 @@
 #![warn(missing_docs)]
 #![warn(rust_2018_idioms)]
 #![cfg_attr(feature = "nightly", warn(fuzzy_provenance_casts))]
-#![cfg_attr(feature = "nightly", allow(internal_features))]
+#![cfg_attr(
+    feature = "nightly",
+    allow(clippy::incompatible_msrv, internal_features)
+)]
+#![cfg_attr(
+    all(feature = "nightly", target_arch = "loongarch64"),
+    feature(stdarch_loongarch)
+)]
 
 /// Default hasher for [`HashMap`] and [`HashSet`].
 #[cfg(feature = "default-hasher")]

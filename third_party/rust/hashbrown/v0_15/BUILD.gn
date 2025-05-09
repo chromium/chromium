@@ -17,6 +17,7 @@ cargo_crate("lib") {
   sources = [
     "//third_party/rust/chromium_crates_io/vendor/hashbrown-v0_15/src/control/bitmask.rs",
     "//third_party/rust/chromium_crates_io/vendor/hashbrown-v0_15/src/control/group/generic.rs",
+    "//third_party/rust/chromium_crates_io/vendor/hashbrown-v0_15/src/control/group/lsx.rs",
     "//third_party/rust/chromium_crates_io/vendor/hashbrown-v0_15/src/control/group/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/hashbrown-v0_15/src/control/group/neon.rs",
     "//third_party/rust/chromium_crates_io/vendor/hashbrown-v0_15/src/control/group/sse2.rs",
@@ -46,7 +47,7 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.15.2"
+  cargo_pkg_version = "0.15.3"
   cargo_pkg_authors = "Amanieu d'Antras <amanieu@gmail.com>"
   cargo_pkg_name = "hashbrown"
   cargo_pkg_description = "A Rust port of Google's SwissTable hash map"

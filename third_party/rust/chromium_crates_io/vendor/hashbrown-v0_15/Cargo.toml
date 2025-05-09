@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.65.0"
 name = "hashbrown"
-version = "0.15.2"
+version = "0.15.3"
 authors = ["Amanieu d'Antras <amanieu@gmail.com>"]
 build = false
 exclude = [
@@ -48,6 +48,27 @@ features = [
     "raw-entry",
 ]
 rustdoc-args = ["--generate-link-to-definition"]
+
+[features]
+default = [
+    "default-hasher",
+    "inline-more",
+    "allocator-api2",
+    "equivalent",
+    "raw-entry",
+]
+default-hasher = ["dep:foldhash"]
+inline-more = []
+nightly = ["bumpalo/allocator_api"]
+raw-entry = []
+rustc-dep-of-std = [
+    "nightly",
+    "core",
+    "compiler_builtins",
+    "alloc",
+    "rustc-internal-api",
+]
+rustc-internal-api = []
 
 [lib]
 name = "hashbrown"
@@ -138,7 +159,7 @@ version = "1.0.7"
 version = "1.4"
 
 [dev-dependencies.rand]
-version = "0.8.3"
+version = "0.9.0"
 features = ["small_rng"]
 
 [dev-dependencies.rayon]
@@ -146,28 +167,3 @@ version = "1.2"
 
 [dev-dependencies.serde_test]
 version = "1.0"
-
-[features]
-default = [
-    "default-hasher",
-    "inline-more",
-    "allocator-api2",
-    "equivalent",
-    "raw-entry",
-]
-default-hasher = ["dep:foldhash"]
-inline-more = []
-nightly = [
-    "allocator-api2?/nightly",
-    "bumpalo/allocator_api",
-]
-raw-entry = []
-rustc-dep-of-std = [
-    "nightly",
-    "core",
-    "compiler_builtins",
-    "alloc",
-    "rustc-internal-api",
-    "raw-entry",
-]
-rustc-internal-api = []
