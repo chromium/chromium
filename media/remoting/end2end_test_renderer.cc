@@ -445,18 +445,12 @@ void End2EndTestRenderer::OnMessageFromSink(
   controller_->OnMessageFromSink(*message);
 }
 
-void End2EndTestRenderer::OnSelectedVideoTracksChanged(
-    const std::vector<DemuxerStream*>& enabled_tracks,
+void End2EndTestRenderer::OnTracksChanged(
+    DemuxerStream::Type track_type,
+    std::vector<DemuxerStream*> enabled_tracks,
     base::OnceClosure change_completed_cb) {
-  courier_renderer_->OnSelectedVideoTracksChanged(
-      enabled_tracks, std::move(change_completed_cb));
-}
-
-void End2EndTestRenderer::OnEnabledAudioTracksChanged(
-    const std::vector<DemuxerStream*>& enabled_tracks,
-    base::OnceClosure change_completed_cb) {
-  courier_renderer_->OnEnabledAudioTracksChanged(
-      enabled_tracks, std::move(change_completed_cb));
+  courier_renderer_->OnTracksChanged(track_type, std::move(enabled_tracks),
+                                     std::move(change_completed_cb));
 }
 
 }  // namespace remoting

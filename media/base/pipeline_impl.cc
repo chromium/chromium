@@ -829,18 +829,8 @@ void PipelineImpl::RendererWrapper::OnDemuxerCompletedTrackChange(
     return;
   }
 
-  switch (stream_type) {
-    case DemuxerStream::AUDIO:
-      shared_state_.renderer->OnEnabledAudioTracksChanged(
-          streams, std::move(change_completed_cb));
-      break;
-    case DemuxerStream::VIDEO:
-      shared_state_.renderer->OnSelectedVideoTracksChanged(
-          streams, std::move(change_completed_cb));
-      break;
-    case DemuxerStream::UNKNOWN:  // Fail on unknown type.
-      NOTREACHED();
-  }
+  shared_state_.renderer->OnTracksChanged(stream_type, std::move(streams),
+                                          std::move(change_completed_cb));
 }
 
 void PipelineImpl::OnExternalVideoFrameRequest() {

@@ -67,12 +67,9 @@ class MEDIA_EXPORT RendererImpl final : public Renderer {
   void SetPlaybackRate(double playback_rate) final;
   void SetVolume(float volume) final;
   base::TimeDelta GetMediaTime() final;
-  void OnSelectedVideoTracksChanged(
-      const std::vector<DemuxerStream*>& enabled_tracks,
-      base::OnceClosure change_completed_cb) final;
-  void OnEnabledAudioTracksChanged(
-      const std::vector<DemuxerStream*>& enabled_tracks,
-      base::OnceClosure change_completed_cb) final;
+  void OnTracksChanged(DemuxerStream::Type track_type,
+                       std::vector<DemuxerStream*> enabled_tracks,
+                       base::OnceClosure change_completed_cb) final;
   RendererType GetRendererType() final;
 
   // Helper functions for testing purposes. Must be called before Initialize().

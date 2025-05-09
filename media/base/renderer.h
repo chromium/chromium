@@ -114,12 +114,9 @@ class MEDIA_EXPORT Renderer {
   // type should be flushed and disabled. Any provided Streams should be played
   // by whatever mechanism the subclass of Renderer choses for managing it's AV
   // playback.
-  virtual void OnSelectedVideoTracksChanged(
-      const std::vector<DemuxerStream*>& enabled_tracks,
-      base::OnceClosure change_completed_cb);
-  virtual void OnEnabledAudioTracksChanged(
-      const std::vector<DemuxerStream*>& enabled_tracks,
-      base::OnceClosure change_completed_cb);
+  virtual void OnTracksChanged(DemuxerStream::Type track_type,
+                               std::vector<DemuxerStream*> enabled_tracks,
+                               base::OnceClosure change_completed_cb);
 
   // Signal to the renderer that there has been a client request to access a
   // VideoFrame. This signal may be used by the renderer to ensure it is

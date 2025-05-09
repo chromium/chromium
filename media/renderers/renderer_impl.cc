@@ -996,79 +996,68 @@ void RendererImpl::CleanUpTrackChange(base::OnceClosure on_finished,
   std::move(on_finished).Run();
 }
 
-void RendererImpl::OnSelectedVideoTracksChanged(
-    const std::vector<DemuxerStream*>& enabled_tracks,
-    base::OnceClosure change_completed_cb) {
+void RendererImpl::OnTracksChanged(DemuxerStream::Type track_type,
+                                   std::vector<DemuxerStream*> tracks,
+                                   base::OnceClosure change_completed_cb) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0("media", "RendererImpl::OnSelectedVideoTracksChanged");
+  TRACE_EVENT1("media", "RendererImpl::OnTracksChanged", "track_type",
+               track_type);
 
-  DCHECK_LT(enabled_tracks.size(), 2u);
-  DemuxerStream* stream = enabled_tracks.empty() ? nullptr : enabled_tracks[0];
-
-  if (!stream && !video_playing_) {
-    std::move(change_completed_cb).Run();
-    return;
-  }
+  DCHECK_LT(tracks.size(), 2u);
+  DemuxerStream* stream = tracks.empty() ? nullptr : tracks[0];
 
   // 'fixing' the stream -> restarting if its the same stream,
   //                        reinitializing if it is different.
   base::OnceClosure fix_stream_cb;
-  if (stream && stream != current_video_stream_) {
-    fix_stream_cb =
-        base::BindOnce(&RendererImpl::ReinitializeVideoRenderer, weak_this_,
-                       stream, GetMediaTime(), std::move(change_completed_cb));
-  } else {
-    fix_stream_cb = base::BindOnce(
-        &RendererImpl::RestartVideoRenderer, weak_this_, current_video_stream_,
-        GetMediaTime(), std::move(change_completed_cb));
+  switch (track_type) {
+    case DemuxerStream::AUDIO: {
+      if (stream && stream != current_audio_stream_) {
+        fix_stream_cb = base::BindOnce(&RendererImpl::ReinitializeAudioRenderer,
+                                       weak_this_, stream, GetMediaTime(),
+                                       std::move(change_completed_cb));
+      } else {
+        fix_stream_cb =
+            base::BindOnce(&RendererImpl::RestartAudioRenderer, weak_this_,
+                           current_audio_stream_, GetMediaTime(),
+                           std::move(change_completed_cb));
+      }
+
+      {
+        base::AutoLock lock(restarting_audio_lock_);
+        pending_audio_track_change_ = true;
+        restarting_audio_time_ = time_source_->CurrentMediaTime();
+      }
+
+      if (audio_playing_) {
+        PausePlayback();
+      }
+
+      audio_renderer_->Flush(base::BindOnce(
+          &RendererImpl::CleanUpTrackChange, weak_this_,
+          std::move(fix_stream_cb), &audio_ended_, &audio_playing_));
+      return;
+    }
+    case DemuxerStream::VIDEO: {
+      if (stream && stream != current_video_stream_) {
+        fix_stream_cb = base::BindOnce(&RendererImpl::ReinitializeVideoRenderer,
+                                       weak_this_, stream, GetMediaTime(),
+                                       std::move(change_completed_cb));
+      } else {
+        fix_stream_cb =
+            base::BindOnce(&RendererImpl::RestartVideoRenderer, weak_this_,
+                           current_video_stream_, GetMediaTime(),
+                           std::move(change_completed_cb));
+      }
+
+      pending_video_track_change_ = true;
+      video_renderer_->Flush(base::BindOnce(
+          &RendererImpl::CleanUpTrackChange, weak_this_,
+          std::move(fix_stream_cb), &video_ended_, &video_playing_));
+      return;
+    }
+    default:
+      NOTREACHED();
   }
-
-  pending_video_track_change_ = true;
-  video_renderer_->Flush(base::BindOnce(&RendererImpl::CleanUpTrackChange,
-                                        weak_this_, std::move(fix_stream_cb),
-                                        &video_ended_, &video_playing_));
-}
-
-void RendererImpl::OnEnabledAudioTracksChanged(
-    const std::vector<DemuxerStream*>& enabled_tracks,
-    base::OnceClosure change_completed_cb) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0("media", "RendererImpl::OnEnabledAudioTracksChanged");
-
-  DCHECK_LT(enabled_tracks.size(), 2u);
-  DemuxerStream* stream = enabled_tracks.empty() ? nullptr : enabled_tracks[0];
-
-  if (!stream && !audio_playing_) {
-    std::move(change_completed_cb).Run();
-    return;
-  }
-
-  // 'fixing' the stream -> restarting if its the same stream,
-  //                        reinitializing if it is different.
-  base::OnceClosure fix_stream_cb;
-
-  if (stream && stream != current_audio_stream_) {
-    fix_stream_cb =
-        base::BindOnce(&RendererImpl::ReinitializeAudioRenderer, weak_this_,
-                       stream, GetMediaTime(), std::move(change_completed_cb));
-  } else {
-    fix_stream_cb = base::BindOnce(
-        &RendererImpl::RestartAudioRenderer, weak_this_, current_audio_stream_,
-        GetMediaTime(), std::move(change_completed_cb));
-  }
-
-  {
-    base::AutoLock lock(restarting_audio_lock_);
-    pending_audio_track_change_ = true;
-    restarting_audio_time_ = time_source_->CurrentMediaTime();
-  }
-
-  if (audio_playing_)
-    PausePlayback();
-
-  audio_renderer_->Flush(base::BindOnce(&RendererImpl::CleanUpTrackChange,
-                                        weak_this_, std::move(fix_stream_cb),
-                                        &audio_ended_, &audio_playing_));
 }
 
 RendererType RendererImpl::GetRendererType() {

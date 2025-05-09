@@ -139,18 +139,12 @@ base::TimeDelta DecryptingRenderer::GetMediaTime() {
   return renderer_->GetMediaTime();
 }
 
-void DecryptingRenderer::OnSelectedVideoTracksChanged(
-    const std::vector<DemuxerStream*>& enabled_tracks,
+void DecryptingRenderer::OnTracksChanged(
+    DemuxerStream::Type track_type,
+    std::vector<DemuxerStream*> enabled_tracks,
     base::OnceClosure change_completed_cb) {
-  renderer_->OnSelectedVideoTracksChanged(enabled_tracks,
-                                          std::move(change_completed_cb));
-}
-
-void DecryptingRenderer::OnEnabledAudioTracksChanged(
-    const std::vector<DemuxerStream*>& enabled_tracks,
-    base::OnceClosure change_completed_cb) {
-  renderer_->OnEnabledAudioTracksChanged(enabled_tracks,
-                                         std::move(change_completed_cb));
+  renderer_->OnTracksChanged(track_type, std::move(enabled_tracks),
+                             std::move(change_completed_cb));
 }
 
 RendererType DecryptingRenderer::GetRendererType() {
