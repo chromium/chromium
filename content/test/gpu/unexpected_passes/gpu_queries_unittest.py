@@ -7,7 +7,7 @@
 
 import subprocess
 import unittest
-import unittest.mock as mock
+from unittest import mock
 
 from unexpected_passes import gpu_unittest_utils as gpu_uu
 from unexpected_passes_common import builders

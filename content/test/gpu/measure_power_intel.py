@@ -62,7 +62,7 @@ except ImportError as error:
       'This script needs selenium and appropriate web drivers to be installed.')
   raise
 
-import gpu_tests.ipg_utils as ipg_utils
+from gpu_tests import ipg_utils
 
 CHROME_STABLE_PATH_WIN = (
     r'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe')

@@ -8,7 +8,7 @@ from email.message import EmailMessage
 import os
 from typing import Any
 import unittest
-import unittest.mock as mock
+from unittest import mock
 import urllib.error
 
 from flake_suppressor import gpu_expectations

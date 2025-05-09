@@ -6,7 +6,7 @@
 # pylint: disable=protected-access
 
 import unittest
-import unittest.mock as mock
+from unittest import mock
 
 from flake_suppressor import gpu_expectations
 from flake_suppressor import gpu_results

@@ -393,13 +393,16 @@ class GpuOverlayConfig:
     return codec in self._zero_copy_config.supported_codecs
 
 
-BasicDirectCompositionConfig = lambda: (GpuOverlayConfig().
-                                        WithDirectComposition())
-AllHardwareSupportDirectCompositionConfig = lambda: (
-    BasicDirectCompositionConfig()\
-    .WithHardwareNV12Support()\
-    .WithHardwareYUY2Support()\
-    .WithHardwareBGRA8Support())
+def BasicDirectCompositionConfig() -> GpuOverlayConfig:
+  return GpuOverlayConfig().WithDirectComposition()
+
+
+def AllHardwareSupportDirectCompositionConfig() -> GpuOverlayConfig:
+  return BasicDirectCompositionConfig()\
+            .WithHardwareNV12Support()\
+            .WithHardwareYUY2Support()\
+            .WithHardwareBGRA8Support()
+
 
 OVERLAY_CONFIGS = {
     constants.GpuVendor.AMD: {

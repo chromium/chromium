@@ -47,6 +47,10 @@ if host_information.IsMac():
     </signatures>"""
   objc.parseBridgeSupport(color_sync_bridge_string, globals(),
                           color_sync_framework)
+else:
+  Foundation = None
+  Quartz = None
+  objc = None
 
 
 # Set |display_id| to use the color profile specified in |profile_url|. If

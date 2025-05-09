@@ -32,8 +32,15 @@ Tab = tab.Tab
 Browser = browser.Browser
 
 # Struct-like classes defined using dataclasses can't use [] or other mutable
-# for default values. The use of lambdas is required since re-using the same
+# for default values. The use of callables is required since reusing the same
 # object is also problematic.
-EmptyDict = lambda: dataclasses.field(default_factory=dict)
-EmptyList = lambda: dataclasses.field(default_factory=list)
-EmptySet = lambda: dataclasses.field(default_factory=set)
+def EmptyDict():
+  return dataclasses.field(default_factory=dict)
+
+
+def EmptyList():
+  return dataclasses.field(default_factory=list)
+
+
+def EmptySet():
+  return dataclasses.field(default_factory=set)

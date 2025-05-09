@@ -26,10 +26,15 @@ from gpu_tests import constants
 
 if sys.platform == 'win32':
   # pylint: disable=import-error
-  import win32com.client  # type: ignore
+  from win32com import client  # type: ignore
   # pylint: enable=import-error
-elif sys.platform == 'darwin':
+else:
+  client = None
+
+if sys.platform == 'darwin':
   import plistlib
+else:
+  plistlib = None
 
 _WMI_DEFAULT_NAMESPACE = 'root\\cimv2'
 
@@ -141,7 +146,7 @@ def _GetAvailableGpus() -> list[_Gpu]:
 @functools.lru_cache(maxsize=1)
 def _GetWmiWbem() -> Any:
   # pytype: disable=name-error
-  wmi_service = win32com.client.Dispatch('WbemScripting.SWbemLocator')
+  wmi_service = client.Dispatch('WbemScripting.SWbemLocator')
   # pytype: enable=name-error
   return wmi_service.ConnectServer('.', _WMI_DEFAULT_NAMESPACE)
 

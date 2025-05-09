@@ -170,6 +170,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
     is_present = workaround_name in gpu_driver_bug_workarounds
     failure = False
+    error_message = None
     if is_expected and not is_present:
       failure = True
       error_message = 'is missing'
@@ -492,7 +493,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     self._Navigate(test_path)
     self.tab.WaitForJavaScriptCondition('window.gpuPagePopulated',
                                         timeout=_GPU_PAGE_TIMEOUT)
-    workarounds, _ = (self._CompareAndCaptureDriverBugWorkarounds())
+    workarounds, _ = self._CompareAndCaptureDriverBugWorkarounds()
     if 'use_gpu_driver_workaround_for_testing' in workarounds:
       self.fail('use_gpu_driver_workaround_for_testing erroneously present')
 

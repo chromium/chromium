@@ -66,8 +66,7 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
     tests = itertools.chain(cls.GenerateFrameTests(), cls.GenerateVideoTests(),
                             cls.GenerateAudioTests(), cls.BitrateTests())
-    for test in tests:
-      yield test
+    yield from tests
 
   @classmethod
   def GenerateFrameTests(cls) -> ct.TestGenerator:

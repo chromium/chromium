@@ -206,8 +206,7 @@ class RunTestsWithExpectationsFiles(_BaseSampleIntegrationTest):
              ('a/b/expected-fail.html', 'failure.html', ()),
              ('a/b/expected-flaky.html', 'flaky.html', ()),
              ('should_skip', 'skip.html', ())]
-    for test in tests:
-      yield test
+    yield from tests
 
   def RunActualGpuTest(self, test_path, *args):
     if test_path == 'failure.html' or self._flaky_test_run < 3:
@@ -275,8 +274,7 @@ class TestAlsoRunDisabledTests(_BaseSampleIntegrationTest):
   def GenerateGpuTests(cls, options):
     tests = [('skip', 'skip.html', ()), ('expected_failure', 'fail.html', ()),
              ('flaky', 'flaky.html', ())]
-    for test in tests:
-      yield test
+    yield from tests
 
   def RunActualGpuTest(self, test_path, *args):
     self._test_state['num_test_runs'] += 1

@@ -13,7 +13,7 @@ import tempfile
 import typing
 from typing import Any, Type
 import unittest
-import unittest.mock as mock
+from unittest import mock
 
 import dataclasses  # Built-in, but pylint gives an ordering false positive.
 
@@ -600,7 +600,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
       pass
 
     def SetBrowserAndRaiseTestException() -> None:
-      gpu_integration_test.GpuIntegrationTest.browser = (mock.MagicMock())
+      gpu_integration_test.GpuIntegrationTest.browser = mock.MagicMock()
       raise TestException
 
     gpu_integration_test.GpuIntegrationTest.browser = None

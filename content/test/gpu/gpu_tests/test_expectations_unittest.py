@@ -7,7 +7,7 @@ import os
 import re
 from typing import Type
 import unittest
-import unittest.mock as mock
+from unittest import mock
 
 import gpu_project_config
 
@@ -148,7 +148,7 @@ class GpuTestExpectationsValidation(unittest.TestCase):
           webgl_version = 2
         _ = list(
             test_case.GenerateTestCases__RunGpuTest(
-                gpu_helper.GetMockArgs(webgl_version=(f'{webgl_version}.0.0'))))
+                gpu_helper.GetMockArgs(webgl_version=f'{webgl_version}.0.0')))
         if test_case.ExpectationsFiles():
           with open(test_case.ExpectationsFiles()[0], encoding='utf-8') as f:
             errors += CheckTestExpectationPatternsForConflicts(
@@ -164,7 +164,7 @@ class GpuTestExpectationsValidation(unittest.TestCase):
           webgl_version = 2
         _ = list(
             test_case.GenerateTestCases__RunGpuTest(
-                gpu_helper.GetMockArgs(webgl_version=(f'{webgl_version}.0.0'))))
+                gpu_helper.GetMockArgs(webgl_version=f'{webgl_version}.0.0')))
         if test_case.ExpectationsFiles():
           with open(test_case.ExpectationsFiles()[0], encoding='utf-8') as f:
             test_expectations = expectations_parser.TestExpectations()
@@ -283,7 +283,7 @@ class GpuTestExpectationsValidation(unittest.TestCase):
       webgl_conformance_test_class = webgl_test_classes[webgl_version - 1]
       _ = list(
           webgl_conformance_test_class.GenerateTestCases__RunGpuTest(
-              gpu_helper.GetMockArgs(webgl_version=(f'{webgl_version}.0.0'))))
+              gpu_helper.GetMockArgs(webgl_version=f'{webgl_version}.0.0')))
       with open(webgl_conformance_test_class.ExpectationsFiles()[0],
                 'r',
                 encoding='utf-8') as f:

@@ -45,6 +45,10 @@ class ExpectedColorExpectation():
     self.tolerance = tolerance
 
 
+def DoNotCaptureFullScreenshot(_) -> bool:
+  return False
+
+
 class ExpectedColorTestCase(sghitb.SkiaGoldHeartbeatTestCase):
   """Defines a single expected color test."""
   def __init__(  # pylint: disable=too-many-arguments
@@ -91,7 +95,7 @@ class ExpectedColorTestCase(sghitb.SkiaGoldHeartbeatTestCase):
 
     extra_browser_args = extra_browser_args or []
     if should_capture_full_screenshot_func is None:
-      should_capture_full_screenshot_func = lambda _: False
+      should_capture_full_screenshot_func = DoNotCaptureFullScreenshot
 
     self.url = url
     self.base_tolerance = base_tolerance

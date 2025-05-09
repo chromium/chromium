@@ -777,6 +777,7 @@ WHERE
   AND args.arg_set_id = slices.arg_set_id
 """
     for row in trace_processor.query(swap_event_query):
+      value = None
       if row.key == pixel_format_key:
         value = row.string_value
       elif row.key == zero_copy_key:

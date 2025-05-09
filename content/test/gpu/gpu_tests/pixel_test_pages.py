@@ -57,6 +57,14 @@ ROUNDING_ERROR_ALGO = algo.FuzzyMatchingAlgorithm(
 BrowserArgType = list[str]
 
 
+def DoNotCaptureFullScreenshot(_) -> bool:
+  return False
+
+
+def DoNotRequireFullscreenOsScreenshot() -> bool:
+  return False
+
+
 class PixelTestPage(sghitb.SkiaGoldHeartbeatTestCase):
   """A wrapper class mimicking the functionality of the PixelTestsStorySet
   from the old-style GPU tests.
@@ -103,14 +111,15 @@ class PixelTestPage(sghitb.SkiaGoldHeartbeatTestCase):
     # that is more representative of what is shown to a user, but some tests
     # require capturing the entire web contents for some reason.
     if should_capture_full_screenshot_func is None:
-      should_capture_full_screenshot_func = lambda _: False
+      should_capture_full_screenshot_func = DoNotCaptureFullScreenshot
     self.ShouldCaptureFullScreenshot = should_capture_full_screenshot_func
     # Some tests may require to capture a full OS screenshot to exercise
     # end-to-end integration. That is, such browsers as LaCros do delegated
     # compositing and they are interested in comparing the result produced
     # by the OS compositor rather than Chromium's one.
     if requires_fullscreen_os_screenshot_func is None:
-      requires_fullscreen_os_screenshot_func = lambda: False
+      requires_fullscreen_os_screenshot_func = (
+          DoNotRequireFullscreenOsScreenshot)
     self.RequiresFullScreenOSScreenshot = requires_fullscreen_os_screenshot_func
 
 # pytype: disable=signature-mismatch

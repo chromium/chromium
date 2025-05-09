@@ -5,7 +5,7 @@
 import json
 import subprocess
 import unittest
-import unittest.mock as mock
+from unittest import mock
 
 from machine_times import get_machine_times
 

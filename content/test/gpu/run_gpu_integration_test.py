@@ -64,7 +64,7 @@ def ProcessArgs(args, parser=None):
   parser.add_argument(
       '--write-run-test-arguments',
       action='store_true',
-      help=('Write the test script arguments to the results file.'))
+      help='Write the test script arguments to the results file.')
   option, rest_args_filtered = parser.parse_known_args(args)
 
   parser.add_argument('test', nargs='*', type=str, help=argparse.SUPPRESS)
@@ -113,7 +113,7 @@ def main():
       '--write-full-results-to',
       metavar='FILENAME',
       action='store',
-      help=('If specified, writes the full results to that path.'))
+      help='If specified, writes the full results to that path.')
 
   option, _ = parser.parse_known_args(rest_args)
 
