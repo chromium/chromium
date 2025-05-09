@@ -99,6 +99,7 @@ target(link_target_type, "gpu_sources") {
     deps += [
       "//components/tracing:graphics_provider",
       "//media",
+      "//sandbox/linux:sandbox_services",
     ]
   }
 

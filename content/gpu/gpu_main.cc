@@ -12,6 +12,7 @@
 #include "base/allocator/partition_alloc_support.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/files/scoped_file.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -85,8 +86,13 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/meminfo_dump_provider.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "components/tracing/common/graphics_memory_dump_provider_android.h"
+#include "sandbox/linux/services/thread_helpers.h" // nogncheck
+#include "sandbox/policy/features.h"
+#include "sandbox/policy/linux/landlock_gpu_policy_android.h"
+#include "sandbox/policy/sandbox_type.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -123,6 +129,8 @@ namespace {
 bool StartSandboxLinux(gpu::GpuWatchdogThread*,
                        const gpu::GPUInfo*,
                        const gpu::GpuPreferences&);
+#elif BUILDFLAG(IS_ANDROID)
+bool StartSandboxAndroid(gpu::GpuWatchdogThread*);
 #elif BUILDFLAG(IS_WIN)
 bool StartSandboxWindows(const sandbox::SandboxInterfaceInfo*);
 #endif
@@ -185,6 +193,12 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
     return StartSandboxWindows(sandbox_info_);
 #elif BUILDFLAG(IS_MAC)
     return sandbox::Seatbelt::IsSandboxed();
+#elif BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(
+            sandbox::policy::features::kAndroidGpuSandbox)) {
+      return StartSandboxAndroid(watchdog_thread);
+    }
+    return false;
 #else
     return false;
 #endif
@@ -522,6 +536,29 @@ bool StartSandboxLinux(gpu::GpuWatchdogThread* watchdog_thread,
   return res;
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_ANDROID)
+bool StartSandboxAndroid(gpu::GpuWatchdogThread* watchdog_thread) {
+  if (watchdog_thread) {
+    // Stop the watchdog thread temporarily.
+    base::ScopedFD proc_fd(
+        HANDLE_EINTR(open("/proc", O_DIRECTORY | O_RDONLY | O_CLOEXEC)));
+
+    sandbox::ThreadHelpers::StopThreadAndWatchProcFS(proc_fd.get(),
+                                                     watchdog_thread);
+  }
+
+  bool res = sandbox::landlock::ApplyLandlock(
+      sandbox::policy::SandboxTypeFromCommandLine(
+          *base::CommandLine::ForCurrentProcess()));
+
+  if (watchdog_thread) {
+    watchdog_thread->Start();
+  }
+
+  return res;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
 bool StartSandboxWindows(const sandbox::SandboxInterfaceInfo* sandbox_info) {

@@ -156,6 +156,10 @@ BASE_FEATURE(kCacheMacSandboxProfiles,
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_ANDROID)
+// Enables the experimental Android GPU sandbox using Landlock.
+BASE_FEATURE(kAndroidGpuSandbox,
+             "AndroidGpuSandbox",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables the renderer on Android to use a separate seccomp policy.
 BASE_FEATURE(kUseRendererProcessPolicy,
              "UseRendererProcessPolicy",

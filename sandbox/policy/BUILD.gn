@@ -36,6 +36,8 @@ component("policy") {
       "linux/bpf_base_policy_linux.h",
       "linux/bpf_renderer_policy_linux.cc",
       "linux/bpf_renderer_policy_linux.h",
+      "linux/landlock_gpu_policy_android.cc",
+      "linux/landlock_gpu_policy_android.h",
     ]
     deps += [
       "//sandbox:sandbox_buildflags",

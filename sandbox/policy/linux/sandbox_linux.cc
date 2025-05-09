@@ -47,7 +47,7 @@
 #include "sandbox/linux/syscall_broker/broker_client.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_process.h"
-#include "sandbox/linux/system_headers/landlock.h"
+#include "sandbox/linux/system_headers/linux_landlock.h"
 #include "sandbox/linux/system_headers/linux_stat.h"
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/linux/bpf_broker_policy_linux.h"
