@@ -13,25 +13,13 @@ reporting_proto_js_dir = "$proto_js_root/components/reporting/proto/synced"
 # purposes
 js_library("reporting_protos") {
   extra_deps = [
+    "//components/reporting/proto:health_proto_gen",
     "//components/reporting/proto:metric_data_proto_gen",
+    "//components/reporting/proto:record_constants_gen",
+    "//components/reporting/proto:record_proto_gen",
     "//components/reporting/proto:session_affiliated_user_proto_gen",
+    "//components/reporting/proto:status_proto_gen",
   ]
-  foreach(extra_dep,
-          [
-            "//components/reporting/proto:health_proto_gen",
-            "//components/reporting/proto:record_constants_gen",
-            "//components/reporting/proto:record_proto_gen",
-            "//components/reporting/proto:status_proto_gen",
-          ]) {
-    if (use_fuzzing_engine_with_lpm &&
-        current_toolchain != "//build/toolchain/cros:target") {
-      # In fuzzing build, code generator targets have "proto_library_" prefix in
-      # fuzzable_proto_library template.
-      extra_deps += [ string_replace(extra_dep, ":", ":proto_library_") ]
-    } else {
-      extra_deps += [ extra_dep ]
-    }
-  }
 
   deps = [ "//third_party/protobuf:js_proto" ]
 
