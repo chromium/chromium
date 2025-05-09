@@ -365,7 +365,7 @@ OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
             on_task_blocklist->one_level_deep_original_url()[original_tab_id];
       }
       if (source_url.is_valid()) {
-        if (url.DomainIs(source_url.host())) {
+        if (OnTaskBlocklist::IsURLInDomain(url, source_url)) {
           // Same domain navigation.
           on_task_blocklist->MaybeSetURLRestrictionLevel(
               navigation_handle()->GetWebContents(), url,

@@ -54,12 +54,12 @@ using ::testing::NotNull;
 namespace ash {
 namespace {
 
-constexpr char kTabUrl1Host[] = "example.com";
+constexpr char kTabUrl1Host[] = "www.example.com";
 constexpr char kTabUrl1SubDomainHost[] = "example.child.com";
 constexpr char kTabUrl1FrontSubDomainHost[] = "sub.example.com";
-constexpr char kTabUrl2Host[] = "company.org";
+constexpr char kTabUrl2Host[] = "www.company.org";
 constexpr char kTabUrlRedirectHost[] = "redirect-url.com";
-constexpr char kTabGoogleHost[] = "google.com";
+constexpr char kTabGoogleHost[] = "www.google.com";
 constexpr char kTabGoogleDocsHost[] = "docs.google.com";
 
 // Fake delegate implementation for the `OnTaskNotificationsManager` to minimize

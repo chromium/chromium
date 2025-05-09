@@ -37,6 +37,7 @@ static_library("on_task") {
     "//components/pref_registry",
     "//components/sessions",
     "//components/sessions:session_id",
+    "//components/url_matcher",
     "//content/public/browser",
     "//ui/message_center",
   ]

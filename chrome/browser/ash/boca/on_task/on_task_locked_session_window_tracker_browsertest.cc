@@ -66,11 +66,11 @@ using ::testing::Sequence;
 namespace ash::boca {
 namespace {
 
-constexpr char kTabUrl1Host[] = "example.com";
+constexpr char kTabUrl1Host[] = "www.example.com";
 constexpr char kTabUrl1SubDomainHost[] = "example.child.com";
 constexpr char kTabUrl1FrontSubDomainHost[] = "sub.example.com";
-constexpr char kTabUrl2Host[] = "company.org";
-constexpr char kTabGoogleHost[] = "google.com";
+constexpr char kTabUrl2Host[] = "www.company.org";
+constexpr char kTabGoogleHost[] = "www.google.com";
 constexpr char kTabGoogleDocsHost[] = "docs.google.com";
 constexpr char kChromeBocaAppQueryUrl[] =
     "chrome-untrusted://boca-app/q?queryForm";
