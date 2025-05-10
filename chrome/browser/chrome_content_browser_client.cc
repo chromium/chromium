@@ -70,7 +70,6 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/data_saver/data_saver.h"
-#include "chrome/browser/data_sharing/data_sharing_navigation_throttle.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/device_api/device_service_impl.h"
 #include "chrome/browser/device_api/managed_configuration_service.h"
@@ -82,7 +81,6 @@
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/favicon/favicon_utils.h"
-#include "chrome/browser/first_party_sets/first_party_sets_navigation_throttle.h"
 #include "chrome/browser/font_family_cache.h"
 #include "chrome/browser/gpu/chrome_browser_main_extra_parts_gpu.h"
 #include "chrome/browser/headless/headless_mode_util.h"
@@ -120,7 +118,6 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
-#include "chrome/browser/preloading/navigation_ablation_throttle.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_speculation_host_delegate.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
@@ -159,7 +156,6 @@
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
 #include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/ssl/https_upgrades_interceptor.h"
-#include "chrome/browser/ssl/https_upgrades_navigation_throttle.h"
 #include "chrome/browser/ssl/sct_reporting_service.h"
 #include "chrome/browser/ssl/ssl_client_certificate_selector.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_utils.h"
@@ -175,7 +171,6 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/lens/lens_overlay_side_panel_navigation_throttle.h"
 #include "chrome/browser/ui/login/http_auth_coordinator.h"
 #include "chrome/browser/ui/prefs/pref_watcher.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_delegate.h"
@@ -242,7 +237,6 @@
 #include "components/error_page/common/localized_error.h"
 #include "components/google/core/common/google_switches.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
-#include "components/history/content/browser/visited_link_navigation_throttle.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/language/core/browser/pref_names.h"
@@ -321,8 +315,6 @@
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/legacy_tech_cookie_issue_details.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/navigation_throttle.h"
-#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/permission_controller.h"
@@ -409,9 +401,6 @@
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_constants.h"
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#include "chrome/browser/enterprise/platform_auth/platform_auth_navigation_throttle.h"
-#endif
 #if BUILDFLAG(IS_WIN)
 #include "base/files/file_util.h"
 #include "base/strings/string_tokenizer.h"
@@ -514,10 +503,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/digital_credentials/digital_identity_provider_desktop.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
-#include "chrome/browser/preloading/preview/preview_navigation_throttle.h"
-#include "chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_response_capture_navigation_throttle.h"
 #include "chrome/browser/web_applications/isolated_web_apps/chrome_content_browser_client_isolated_web_apps_part.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_throttle.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -530,7 +516,6 @@
 #include "ash/multi_capture/multi_capture_service.h"
 #include "ash/shell.h"
 #include "base/debug/leak_annotations.h"
-#include "chrome/browser/apps/app_service/app_install/app_install_navigation_throttle.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
 #include "chrome/browser/chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part.h"
 #include "chrome/browser/file_system_access/cloud_identifier/cloud_identifier_util_cros.h"
@@ -553,14 +538,12 @@
 #include "chrome/browser/media/unified_autoplay_config.h"
 #include "chrome/browser/metrics/usage_scenario/chrome_responsiveness_calculator_delegate.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
-#include "chrome/browser/page_info/web_view_side_panel_throttle.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_navigation_throttle.h"
 #include "chrome/browser/ui/webui/chrome_content_browser_client_webui_part.h"
 #include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_error_page.h"
@@ -574,7 +557,6 @@
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/grit/chrome_unscaled_resources.h"  // nogncheck crbug.com/1125897
 #include "components/commerce/core/commerce_feature_list.h"
-#include "components/lens/lens_features.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
@@ -592,10 +574,6 @@
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/enterprise/chrome_browser_main_extra_parts_enterprise.h"
 #endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-#include "chrome/browser/enterprise/incognito/incognito_navigation_throttle.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h"
@@ -691,7 +669,6 @@
 #endif
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
-#include "chrome/browser/offline_pages/offline_page_navigation_throttle.h"
 #include "chrome/browser/offline_pages/offline_page_tab_helper.h"
 #include "chrome/browser/offline_pages/offline_page_url_loader_request_interceptor.h"
 #endif
@@ -1295,35 +1272,6 @@ bool SubAppsAPIsRequireUserGestureAndAuthorization(
 std::unique_ptr<blocked_content::PopupNavigationDelegate>
 CreatePopupNavigationDelegate(NavigateParams params) {
   return std::make_unique<ChromePopupNavigationDelegate>(std::move(params));
-}
-
-// NOTE: MaybeCreateVisitedLinkNavigationThrottleFor is defined here due to
-// usage of Profile code which lives in chrome/. The rest of the
-// VisitedLinkNavigationThrottle class lives in components/, which cannot access
-// chrome/ code due to layering.
-std::unique_ptr<VisitedLinkNavigationThrottle>
-MaybeCreateVisitedLinkNavigationThrottleFor(
-    content::NavigationHandle* navigation_handle) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kPartitionVisitedLinkDatabase) &&
-      !base::FeatureList::IsEnabled(
-          blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks)) {
-    return nullptr;
-  }
-  Profile* profile = Profile::FromBrowserContext(
-      navigation_handle->GetWebContents()->GetBrowserContext());
-  // Off-the-record profiles do not record history or visited links.
-  if (profile->IsOffTheRecord()) {
-    return nullptr;
-  }
-  history::HistoryService* history_service =
-      HistoryServiceFactory::GetForProfile(profile,
-                                           ServiceAccessType::IMPLICIT_ACCESS);
-  if (!history_service) {
-    return nullptr;
-  }
-  return std::make_unique<VisitedLinkNavigationThrottle>(
-      std::move(navigation_handle), history_service);
 }
 
 ChromeContentBrowserClient::PopupNavigationDelegateFactory
@@ -5275,110 +5223,6 @@ void ChromeContentBrowserClient::RemovePresentationObserver(
 void ChromeContentBrowserClient::CreateThrottlesForNavigation(
     content::NavigationThrottleRegistry& registry) {
   CreateAndAddChromeThrottlesForNavigation(registry);
-
-  content::NavigationHandle& handle = registry.GetNavigationHandle();
-  Profile* profile =
-      Profile::FromBrowserContext(handle.GetWebContents()->GetBrowserContext());
-  // TODO(https://crbug.com/412524375): Move the following code to
-  // CreateAndAddChromeThrottlesForNavigation().
-
-#if !BUILDFLAG(IS_ANDROID)
-  registry.MaybeAddThrottle(
-      ReadAnythingSidePanelNavigationThrottle::CreateFor(&handle));
-
-  if (lens::features::IsLensOverlayEnabled()) {
-    if (profile) {
-      if (ThemeService* theme_service =
-              ThemeServiceFactory::GetForProfile(profile)) {
-        registry.MaybeAddThrottle(
-            lens::LensOverlaySidePanelNavigationThrottle::MaybeCreateFor(
-                &handle, theme_service));
-      }
-    }
-  }
-
-  registry.MaybeAddThrottle(
-      NtpMicrosoftAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
-          &handle));
-#endif
-
-#if BUILDFLAG(ENABLE_OFFLINE_PAGES)
-  registry.MaybeAddThrottle(
-      offline_pages::OfflinePageNavigationThrottle::MaybeCreateThrottleFor(
-          &handle));
-#endif
-
-  if (profile) {
-    registry.MaybeAddThrottle(
-        HttpsUpgradesNavigationThrottle::MaybeCreateThrottleFor(
-            &handle, std::make_unique<ChromeSecurityBlockingPageFactory>(),
-            profile));
-  }
-
-  registry.MaybeAddThrottle(MaybeCreateNavigationAblationThrottle(&handle));
-
-#if !BUILDFLAG(IS_ANDROID)
-  MaybeCreateAndAddWebViewSidePanelThrottle(registry);
-#endif
-
-  auto* privacy_sandbox_settings =
-      PrivacySandboxSettingsFactory::GetForProfile(profile);
-  if (privacy_sandbox_settings &&
-      privacy_sandbox_settings->AreRelatedWebsiteSetsEnabled()) {
-    registry.MaybeAddThrottle(
-        first_party_sets::FirstPartySetsNavigationThrottle::
-            MaybeCreateNavigationThrottle(&handle));
-  }
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  // Don't perform platform authentication in incognito and guest profiles.
-  if (profile && !profile->IsOffTheRecord()) {
-    registry.MaybeAddThrottle(
-        enterprise_auth::PlatformAuthNavigationThrottle::MaybeCreateThrottleFor(
-            &handle));
-  }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // TODO(b:296844164) Handle captive portal signin properly.
-  if (profile && profile->IsIncognitoProfile() && profile->IsOffTheRecord() &&
-      !profile->GetOTRProfileID().IsCaptivePortal()) {
-    registry.MaybeAddThrottle(
-        enterprise_incognito::IncognitoNavigationThrottle::
-            MaybeCreateThrottleFor(&handle));
-  }
-
-  registry.MaybeAddThrottle(
-      apps::AppInstallNavigationThrottle::MaybeCreate(&handle));
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  if (profile && profile->IsIncognitoProfile() && profile->IsOffTheRecord()) {
-    registry.MaybeAddThrottle(
-        enterprise_incognito::IncognitoNavigationThrottle::
-            MaybeCreateThrottleFor(&handle));
-  }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-
-#if !BUILDFLAG(IS_ANDROID)
-  registry.MaybeAddThrottle(
-      PreviewNavigationThrottle::MaybeCreateThrottleFor(&handle));
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-  registry.MaybeAddThrottle(
-      MaybeCreateVisitedLinkNavigationThrottleFor(&handle));
-
-  registry.MaybeAddThrottle(
-      data_sharing::DataSharingNavigationThrottle::MaybeCreateThrottleFor(
-          &handle));
-
-#if !BUILDFLAG(IS_ANDROID)
-  registry.MaybeAddThrottle(
-      web_app::IsolatedWebAppThrottle::MaybeCreateThrottleFor(&handle));
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-  // Add new throttles in CreateAndAddChromeThrottlesForNavigation() rather than
-  // here.
 }
 
 std::vector<std::unique_ptr<content::CommitDeferringCondition>>
