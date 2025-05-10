@@ -281,6 +281,7 @@ public class SelectableListToolbar<E> extends Toolbar
                         getContext(),
                         R.drawable.ic_arrow_back_white_24dp,
                         R.color.default_icon_color_tint_list);
+        mNavigationIconDrawable.setAutoMirrored(true);
 
         mShowInfoIcon = true;
         mShowInfoStringId = R.string.show_info;
