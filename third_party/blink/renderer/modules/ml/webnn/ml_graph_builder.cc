@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_constant_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_error.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_transform/pipeline.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_type_converter.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
@@ -72,7 +73,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -1075,6 +1075,81 @@ MLOperand* BuildPool2d(MLGraphBuilder* builder,
   return output;
 }
 
+// Determines the input and output resources required for this computational
+// graph by traversing the graph from `named_outputs` to its inputs.
+// This may fail if the graph is not valid.
+base::expected<std::pair<MLGraph::NamedOperandDescriptors,
+                         MLGraph::NamedOperandDescriptors>,
+               String>
+DetermineGraphConstraintsFromOutputs(const MLNamedOperands& named_outputs) {
+  // The outputs should not be empty.
+  if (named_outputs.empty()) {
+    return base::unexpected("At least one output needs to be provided.");
+  }
+
+  // The queue and visited set of operators that help implement the
+  // breadth-first graph traversal:
+  // https://en.wikipedia.org/wiki/Breadth-first_search
+  HeapDeque<Member<const MLOperator>> operators_queue;
+  HeapHashSet<Member<const MLOperator>> visited_operators;
+
+  MLGraph::NamedOperandDescriptors input_constraints;
+  MLGraph::NamedOperandDescriptors output_constraints;
+
+  // Validate the named outputs, setup corresponding output resource info and
+  // initialize the queue and visited set with their dependent operators.
+  for (const auto& output : named_outputs) {
+    const auto& name = output.first;
+    const auto& operand = output.second;
+    if (operand->Kind() != blink_mojom::Operand::Kind::kOutput) {
+      return base::unexpected(String::Format(
+          "The operand with name \"%s\" is not an output operand.",
+          name.Utf8().c_str()));
+    }
+    // Setup resource info for this output operand.
+    output_constraints.insert(name, operand->Descriptor());
+    visited_operators.insert(operand->Operator());
+    operators_queue.push_back(operand->Operator());
+  }
+
+  // An input MLOperand may be used by more than one MLOperators. This set
+  // ensures an input MLOperand won't be validated multiple times.
+  HeapHashSet<Member<const MLOperand>> visited_input_operands;
+  while (operators_queue.size() > 0) {
+    const auto current_operator = operators_queue.TakeFirst();
+    for (const auto& operand : current_operator->Inputs()) {
+      switch (operand->Kind()) {
+        case blink_mojom::Operand::Kind::kOutput:
+          if (!visited_operators.Contains(operand->Operator())) {
+            visited_operators.insert(operand->Operator());
+            operators_queue.push_back(operand->Operator());
+          }
+          break;
+        case blink_mojom::Operand::Kind::kInput:
+          if (visited_input_operands.Contains(operand)) {
+            continue;
+          }
+          visited_input_operands.insert(operand);
+          if (input_constraints.Contains(operand->Name())) {
+            return base::unexpected(
+                String::Format("The input name \"%s\" is duplicated.",
+                               operand->Name().Utf8().c_str()));
+          }
+          input_constraints.insert(operand->Name(), operand->Descriptor());
+          break;
+        case blink_mojom::Operand::Kind::kConstant:
+          if (visited_input_operands.Contains(operand)) {
+            continue;
+          }
+          visited_input_operands.insert(operand);
+          break;
+      }
+    }
+  }
+  return std::make_pair(std::move(input_constraints),
+                        std::move(output_constraints));
+}
+
 Vector<webnn::OperandId> GetInputs(const blink_mojom::Operation& operation) {
   switch (operation.which()) {
     case blink_mojom::Operation::Tag::kArgMinMax:
@@ -1348,120 +1423,8 @@ Vector<webnn::OperandId> GetInputs(const blink_mojom::Operation& operation) {
   }
 }
 
-// Validate the graph and topologically sort operators by traversing the graph
-// backwards from `named_outputs` to the inputs they depend on. If the graph is
-// valid, the function returns a sorted list of operators and input/output
-// constraints for the computational graph. Otherwise, it returns an error
-// message.
-base::expected<void, String> ValidateAndSortGraph(
-    const MLNamedOperands& named_outputs,
-    HeapVector<Member<const MLOperator>>& topo_sorted_operators,
-    MLGraph::NamedOperandDescriptors& input_constraints,
-    MLGraph::NamedOperandDescriptors& output_constraints) {
-  // A WebNN graph is represented by a directed acyclic graph (DAG) that has
-  // operators as vertices and operands as edges. The topological sorting is
-  // implemented by depth-first search (DFS) and visiting vertices in
-  // post-order. It means a vertex (operator) is visited (pushed to the back of
-  // the sorted list) after all its dependent vertices (operators) are visited.
-  // With that, it ensures operator 'j' appears before operator 'i' in the
-  // result, if 'i' depends on 'j'. The DFS algorithm is based on the
-  // non-recursive implementation of:
-  // https://en.wikipedia.org/wiki/Depth-first_search
-
-  // An input MLOperand may be used by more than one MLOperators. This set
-  // ensures an input MLOperand won't be validated multiple times.
-  HeapHashSet<Member<const MLOperand>> visited_input_operands;
-
-  // The to-visit stack and visited set for DFS graph traversal.
-  HeapDeque<Member<const MLOperator>> operators_to_visit;
-  HeapHashSet<Member<const MLOperator>> visited_operators;
-  // Enumerate output operands and initialize the to-visit stack with their
-  // dependent operators.
-  // The outputs should not be empty.
-  if (named_outputs.empty()) {
-    return base::unexpected("At least one output must be provided.");
-  }
-  for (const auto& output : named_outputs) {
-    const String& name = output.first;
-    const MLOperand* operand = output.second.Get();
-    // Validate whether it is an output operand.
-    if (operand->Kind() != blink_mojom::Operand::Kind::kOutput) {
-      return base::unexpected(String::Format(
-          "The operand with name \"%s\" is not an output operand.",
-          name.Utf8().c_str()));
-    }
-    // Setup resource info for this output operand.
-    output_constraints.insert(name, operand->Descriptor());
-    operators_to_visit.push_back(operand->Operator());
-  }
-  while (operators_to_visit.size() > 0) {
-    // Get the current operator from the top of the to-visit stack.
-    const MLOperator* current_operator = operators_to_visit.back().Get();
-    if (!visited_operators.Contains(current_operator)) {
-      // The current operator is not visited, check whether its dependent
-      // operators are visited or not.
-      bool skip_visit = false;
-      for (const auto& operand : current_operator->Inputs()) {
-        switch (operand->Kind()) {
-          case blink_mojom::Operand::Kind::kOutput: {
-            const MLOperator* dependent_operator = operand->Operator();
-            CHECK(dependent_operator);
-            if (!visited_operators.Contains(dependent_operator)) {
-              // As there is an dependent operator is not visited, skip visiting
-              // this operator and push the dependent operator into the to-visit
-              // stack.
-              skip_visit = true;
-              operators_to_visit.push_back(dependent_operator);
-            }
-            break;
-          }
-          case blink_mojom::Operand::Kind::kInput: {
-            // If the operand has been validated, it doesn't need to be verified
-            // again.
-            if (visited_input_operands.Contains(operand)) {
-              continue;
-            }
-            visited_input_operands.insert(operand);
-            // If the operand is an input operand, validate its name is unique.
-            if (input_constraints.Contains(operand->Name())) {
-              return base::unexpected(
-                  String::Format("The input name \"%s\" is duplicated.",
-                                 operand->Name().Utf8().c_str()));
-            }
-            // Setup resource info for this input operand.
-            input_constraints.insert(operand->Name(), operand->Descriptor());
-            break;
-          }
-          case blink_mojom::Operand::Kind::kConstant: {
-            // If the operand has been validated, it doesn't need to be verified
-            // again.
-            if (visited_input_operands.Contains(operand)) {
-              continue;
-            }
-            visited_input_operands.insert(operand);
-            break;
-          }
-        }
-      }
-      if (!skip_visit) {
-        // When all dependent operators have been visited, visit the current
-        // operator and add it into the visited set.
-        topo_sorted_operators.push_back(current_operator);
-        visited_operators.insert(current_operator);
-        operators_to_visit.pop_back();
-      }
-    } else {
-      // The current operator has already been visited.
-      operators_to_visit.pop_back();
-    }
-  }
-
-  return base::ok();
-}
-
 base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
     const MLNamedOperands& named_outputs,
-    const HeapVector<Member<const MLOperator>>& topo_sorted_operators,
     const webnn::ContextProperties& context_properties) {
   // The `GraphInfo` represents an entire information of WebNN graph.
   auto graph_info = blink_mojom::GraphInfo::New();
@@ -1478,10 +1441,13 @@ base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
     operand_to_id_map.insert(operand, operand_id);
   }
 
+  HeapVector<Member<MLOperator>> topologically_sorted_operators =
+      GetOperatorsInTopologicalOrder(named_outputs);
+
   // Visit the operators in topological order. For each operator,
   // 1, Create `mojo::Operand` for its input and output operands if needed.
   // 2, Create `mojo::Operator` with the id of input and output operands.
-  for (const auto& current_operator : topo_sorted_operators) {
+  for (const auto& current_operator : topologically_sorted_operators) {
     for (const auto& operand : current_operator->Inputs()) {
       if (operand_to_id_map.Contains(operand.Get())) {
         // The `mojo::Operand` is already converted with the MLOperand, skip it.
@@ -1651,7 +1617,9 @@ MLGraphBuilder::MLGraphBuilder(
     MLContext* context,
     mojo::PendingAssociatedRemote<blink_mojom::WebNNGraphBuilder>
         pending_remote)
-    : ml_context_(context), remote_(execution_context) {
+    : execution_context_(execution_context),
+      ml_context_(context),
+      remote_(execution_context) {
   CHECK(base::FeatureList::IsEnabled(
       webnn::mojom::features::kWebMachineLearningNeuralNetwork));
 
@@ -1664,10 +1632,15 @@ MLGraphBuilder::MLGraphBuilder(
 MLGraphBuilder::~MLGraphBuilder() = default;
 
 void MLGraphBuilder::Trace(Visitor* visitor) const {
+  visitor->Trace(execution_context_);
   visitor->Trace(ml_context_);
   visitor->Trace(remote_);
   visitor->Trace(pending_resolver_);
   ScriptWrappable::Trace(visitor);
+}
+
+ExecutionContext* MLGraphBuilder::GetExecutionContext() const {
+  return execution_context_.Get();
 }
 
 MLContext* MLGraphBuilder::GetContext() const {
@@ -1791,8 +1764,8 @@ MLOperand* MLGraphBuilder::batchNormalization(
 
   HeapVector<Member<MLOperand>> inputs = {input, mean, variance};
   // Adding the optional operands into inputs ensures the graph traversal
-  // algorithm ValidateAndSortGraph() works. For backends, the optional operands
-  // should be retrieved from the options instead of inputs.
+  // algorithm GetOperatorsInTopologicalOrder() works. For backends, the
+  // optional operands should be retrieved from the options instead of inputs.
   if (options->hasScale()) {
     inputs.push_back(options->scale());
   }
@@ -2372,8 +2345,8 @@ MLOperand* MLGraphBuilder::instanceNormalization(
 
   HeapVector<Member<MLOperand>> inputs = {input};
   // Adding the optional operands into inputs ensures the graph traversal
-  // algorithm ValidateAndSortGraph() works. For backends, the optional operands
-  // should be retrieved from the options instead of inputs.
+  // algorithm GetOperatorsInTopologicalOrder() works. For backends, the
+  // optional operands should be retrieved from the options instead of inputs.
   if (options->hasScale()) {
     inputs.push_back(options->scale());
   }
@@ -2406,7 +2379,7 @@ MLOperand* MLGraphBuilder::layerNormalization(
 
   HeapVector<Member<MLOperand>> inputs = {input};
   // Adding the optional operands into inputs ensures the graph traversal
-  // algorithm ValidateAndSortGraph() works. For backends, the
+  // algorithm GetOperatorsInTopologicalOrder() works. For backends, the
   // optional operands should be retrieved from the options instead of inputs.
   if (options->hasScale()) {
     inputs.push_back(options->scale());
@@ -3225,10 +3198,9 @@ MLOperand* MLGraphBuilder::where(MLOperand* condition,
   return output;
 }
 
-ScriptPromise<MLGraph> MLGraphBuilder::build(
-    ScriptState* script_state,
-    const MLNamedOperands& named_outputs,
-    ExceptionState& exception_state) {
+ScriptPromise<MLGraph> MLGraphBuilder::build(ScriptState* script_state,
+                                             MLNamedOperands& named_outputs,
+                                             ExceptionState& exception_state) {
   webnn::ScopedTrace scoped_trace("MLGraphBuilder::build");
   base::expected<void, String> validation_result = ValidateGraphBuilderState();
   if (!validation_result.has_value()) {
@@ -3260,20 +3232,34 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
     return EmptyPromise();
   }
 
-  scoped_trace.AddStep("ValidateAndSortGraph");
-  // The topologically sorted operators.
-  HeapVector<Member<const MLOperator>> topo_sorted_operators;
-  // The input and output constraints for the computational graph.
-  MLGraph::NamedOperandDescriptors input_constraints;
-  MLGraph::NamedOperandDescriptors output_constraints;
-  THROW_AND_RETURN_TYPE_IF_ERROR(
-      ValidateAndSortGraph(named_outputs, topo_sorted_operators,
-                           input_constraints, output_constraints),
-      ScriptPromise<MLGraph>());
+  scoped_trace.AddStep("DetermineGraphConstraintsFromOutputs");
+  auto graph_constraints = DetermineGraphConstraintsFromOutputs(named_outputs);
+  if (!graph_constraints.has_value()) {
+    exception_state.ThrowTypeError(graph_constraints.error());
+    return EmptyPromise();
+  }
+
+  // MLGraphTransformPipeline may change the operators topological order and
+  // alter named outputs. BuildWebNNGraphInfo should sort the operators by
+  // itself again before serialization.
+  scoped_trace.AddStep("MLGraphTransformPipeline");
+  auto* pipeline = MakeGarbageCollected<MLGraphTransformPipeline>(this);
+  pipeline->Run(named_outputs);
+
+  // Check the named_outputs descriptors are equal to the original's
+  // descriptors.
+  const auto& output_constraints = graph_constraints->second;
+  CHECK_EQ(named_outputs.size(), output_constraints.size());
+  for (const auto& [name, operand] : named_outputs) {
+    const auto& constraint = output_constraints.at(name);
+    // TODO(crbug.com/406666712): Change to `CHECK_EQ(operand->Descriptor(),
+    // *constraint)` once we fix the `webnn::OperandDescriptor`.
+    CHECK(operand->Descriptor() == *constraint);
+  }
 
   scoped_trace.AddStep("BuildWebNNGraphInfo");
-  auto graph_info = BuildWebNNGraphInfo(named_outputs, topo_sorted_operators,
-                                        ml_context_->GetProperties());
+  auto graph_info =
+      BuildWebNNGraphInfo(named_outputs, ml_context_->GetProperties());
   if (!graph_info.has_value()) {
     // TODO(crbug.com/345271830): Move the platform-specific checks into the
     // respective synchronous operator builder methods, such that
@@ -3301,8 +3287,7 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
       *std::move(graph_info),
       WTF::BindOnce(&MLGraphBuilder::DidCreateWebNNGraph, WrapPersistent(this),
                     WrapPersistent(pending_resolver_.Get()),
-                    std::make_pair(std::move(input_constraints),
-                                   std::move(output_constraints))));
+                    *std::move(graph_constraints)));
   return pending_resolver_->Promise();
 }
 

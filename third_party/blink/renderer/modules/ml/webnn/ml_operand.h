@@ -40,7 +40,7 @@ class MODULES_EXPORT MLOperand : public ScriptWrappable {
   // skip the validation.
   static MLOperand* CreateOutput(MLGraphBuilder* builder,
                                  webnn::OperandDescriptor descriptor,
-                                 const MLOperator* ml_operator);
+                                 MLOperator* ml_operator);
 
   // The constructor shouldn't be called directly. The callers should use
   // Create* methods instead.
@@ -58,8 +58,8 @@ class MODULES_EXPORT MLOperand : public ScriptWrappable {
   MLGraphBuilder* Builder() const;
   webnn::mojom::blink::Operand::Kind Kind() const;
   const String& Name() const;
-  const MLOperator* Operator() const;
-  const HeapHashSet<Member<const MLOperator>>& DependentOperators() const;
+  MLOperator* Operator() const;
+  HeapHashSet<Member<MLOperator>>& DependentOperators();
 
   // Convenience methods for accessing native types, which avoid a copy
   // compared to using the corresponding methods which return blink types.
@@ -83,7 +83,7 @@ class MODULES_EXPORT MLOperand : public ScriptWrappable {
 
   MLConstantOperand const* AsConstantOperand() const;
 
-  void AddDependentOperator(const MLOperator* ml_operator);
+  void AddDependentOperator(MLOperator* ml_operator);
 
  protected:
   Member<MLGraphBuilder> builder_;
@@ -101,10 +101,11 @@ class MODULES_EXPORT MLOperand : public ScriptWrappable {
   // The operator that produces the output operand. Only output operand has an
   // operator that produces the operand by an operator build method of
   // MLGraphBuilder interface.
-  Member<const MLOperator> operator_;
+  Member<MLOperator> operator_;
 
   // Operators that use this operand as an input.
-  HeapHashSet<Member<const MLOperator>> dependent_operators_;
+  HeapHashSet<Member<MLOperator>> dependent_operators_;
+  friend class MLGraphTransformer;
 };
 
 }  // namespace blink

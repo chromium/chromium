@@ -52,7 +52,7 @@ base::expected<MLOperand*, String> MLOperand::ValidateAndCreateInput(
 // static
 MLOperand* MLOperand::CreateOutput(MLGraphBuilder* builder,
                                    webnn::OperandDescriptor descriptor,
-                                   const MLOperator* ml_operator) {
+                                   MLOperator* ml_operator) {
   CHECK(ml_operator);
 
   auto* output = MakeGarbageCollected<MLOperand>(
@@ -82,13 +82,12 @@ const String& MLOperand::Name() const {
   return name_;
 }
 
-const MLOperator* MLOperand::Operator() const {
+MLOperator* MLOperand::Operator() const {
   CHECK_EQ(kind_, webnn::mojom::blink::Operand::Kind::kOutput);
   return operator_.Get();
 }
 
-const HeapHashSet<Member<const MLOperator>>& MLOperand::DependentOperators()
-    const {
+HeapHashSet<Member<MLOperator>>& MLOperand::DependentOperators() {
   return dependent_operators_;
 }
 
@@ -130,7 +129,7 @@ MLConstantOperand const* MLOperand::AsConstantOperand() const {
   return static_cast<MLConstantOperand const*>(this);
 }
 
-void MLOperand::AddDependentOperator(const MLOperator* ml_operator) {
+void MLOperand::AddDependentOperator(MLOperator* ml_operator) {
   dependent_operators_.insert(ml_operator);
 }
 

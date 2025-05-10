@@ -101,6 +101,7 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
 
   HeapVector<Member<MLOperand>> inputs_;
   HeapVector<Member<MLOperand>> outputs_;
+  friend class MLGraphTransformer;
 };
 
 // TODO: crbug.com/325612086 - Remove all these subclasses. This information
