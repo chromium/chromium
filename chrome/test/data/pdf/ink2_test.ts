@@ -233,7 +233,7 @@ chrome.test.runTests([
     PluginController.getInstance().getEventTarget().dispatchEvent(
         new CustomEvent(
             PluginControllerEventType.PLUGIN_MESSAGE,
-            {detail: {type: 'sendClickEvent', x: 400, y: 300}}));
+            {detail: {type: 'sendClickEvent', x: 50, y: 50}}));
     await microtasksFinished();
     chrome.test.assertTrue(isVisible(textbox));
 

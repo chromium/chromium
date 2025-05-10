@@ -4,6 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
+import {isRTL} from 'chrome://resources/js/util.js';
 
 import type {AnnotationBrush, Color, Point, TextAnnotation, TextAttributes, TextBoxRect, TextStyles} from './constants.js';
 import {AnnotationBrushType, TextAlignment, TextStyle, TextTypeface} from './constants.js';
@@ -68,6 +69,22 @@ export class Ink2Manager extends EventTarget {
   // No-op if there is no PDF page at `location`.
   initializeTextAnnotation(location: Point) {
     assert(this.viewport_);
+    // First check if the click was on a scrollbar. If so, ignore it to avoid
+    // interfering with scroll.
+    const hasScrollbars = this.viewport_.documentHasScrollbars();
+    if (hasScrollbars.vertical &&
+            (isRTL() && location.x <= this.viewport_.scrollbarWidth) ||
+        (!isRTL() &&
+         location.x >=
+             (this.viewport_.size.width - this.viewport_.scrollbarWidth))) {
+      return;
+    }
+    if (hasScrollbars.horizontal &&
+        location.y >=
+            (this.viewport_.size.height - this.viewport_.scrollbarWidth)) {
+      return;
+    }
+
     const page = this.viewport_.getPageAtPoint(location);
     if (page === -1) {
       return;

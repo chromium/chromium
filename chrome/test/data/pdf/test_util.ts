@@ -549,7 +549,7 @@ export function setupTestViewportAndMockPluginForInk():
   const mockSizer = new MockSizer();
   const viewport = new Viewport(
       mockWindow as unknown as HTMLElement, mockSizer as unknown as HTMLElement,
-      dummyContent, /*scrollbarWidth=*/ 0, /*defaultZoom=*/ 1);
+      dummyContent, /*scrollbarWidth=*/ 5, /*defaultZoom=*/ 1);
   viewport.setZoomFactorRange([0.25, 0.4, 0.5, 1, 2]);
   const documentDimensions = new MockDocumentDimensions(0, 0);
   documentDimensions.addPage(90, 90);

@@ -175,6 +175,37 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  async function testNoInitializeOnScrollbar() {
+    let initEvents = 0;
+    manager.addEventListener('initialize-text-box', () => {
+      initEvents++;
+    });
+
+    // Zoom in to 2x so that there are scrollbars in both x and y.
+    let whenViewportChanged = eventToPromise('viewport-changed', manager);
+    viewport.setZoom(2.0);
+    await whenViewportChanged;
+
+    // Confirm both scrollbars and mock viewport dimensions.
+    chrome.test.assertTrue(viewport.documentHasScrollbars().vertical);
+    chrome.test.assertTrue(viewport.documentHasScrollbars().horizontal);
+    chrome.test.assertEq(100, viewport.size.width);
+    chrome.test.assertEq(100, viewport.size.height);
+    chrome.test.assertFalse(viewport.scrollbarWidth === 0);
+
+    const edge = 100 - viewport.scrollbarWidth;
+    Ink2Manager.getInstance().initializeTextAnnotation({x: edge, y: 20});
+    Ink2Manager.getInstance().initializeTextAnnotation({x: 20, y: edge});
+    chrome.test.assertEq(0, initEvents);
+
+    // Reset the zoom for the next test.
+    whenViewportChanged = eventToPromise('viewport-changed', manager);
+    viewport.setZoom(1.0);
+    await whenViewportChanged;
+
+    chrome.test.succeed();
+  },
+
   async function testInitializeTextBox() {
     // Add listeners for the expected events that fire in response to an
     // initializeTextAnnotation call.
