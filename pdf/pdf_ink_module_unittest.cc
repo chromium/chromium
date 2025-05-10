@@ -228,9 +228,9 @@ blink::WebMouseEvent CreateMouseMoveWithLeftButtonEventAtPoint(
 
 base::Value::Dict CreateGetAnnotationBrushMessageForTesting(
     const std::string& brush_type) {
-  base::Value::Dict message;
-  message.Set("type", "getAnnotationBrush");
-  message.Set("messageId", "foo");
+  auto message = base::Value::Dict()
+                     .Set("type", "getAnnotationBrush")
+                     .Set("messageId", "foo");
   if (!brush_type.empty()) {
     message.Set("brushType", brush_type);
   }
@@ -466,9 +466,8 @@ class PdfInkModuleTest : public testing::TestWithParam<InkTestVariation> {
 }  // namespace
 
 TEST_P(PdfInkModuleTest, UnknownMessage) {
-  base::Value::Dict message;
-  message.Set("type", "nonInkMessage");
-  EXPECT_FALSE(ink_module().OnMessage(message));
+  EXPECT_FALSE(
+      ink_module().OnMessage(base::Value::Dict().Set("type", "nonInkMessage")));
 }
 
 // Verify that a get eraser message gets the eraser parameters.

@@ -78,14 +78,13 @@ base::Value::Dict CreateUpdateThumbnailMessage(
     bool is_ink,
     std::vector<uint8_t> image_data,
     const gfx::Size& thumbnail_size) {
-  base::Value::Dict message;
-  message.Set("type", "updateInk2Thumbnail");
-  message.Set("pageNumber", page_index + 1);
-  message.Set("isInk", is_ink);
-  message.Set("imageData", std::move(image_data));
-  message.Set("width", thumbnail_size.width());
-  message.Set("height", thumbnail_size.height());
-  return message;
+  return base::Value::Dict()
+      .Set("type", "updateInk2Thumbnail")
+      .Set("pageNumber", page_index + 1)
+      .Set("isInk", is_ink)
+      .Set("imageData", std::move(image_data))
+      .Set("width", thumbnail_size.width())
+      .Set("height", thumbnail_size.height());
 }
 
 ink::StrokeInput::ToolType GetToolTypeFromTouchEvent(
@@ -304,9 +303,7 @@ void PdfInkModule::OnGotThumbnail(int page_index, Thumbnail thumbnail) {
 }
 
 void PdfInkModule::SendContentFocusedMessage() {
-  base::Value::Dict message;
-  message.Set("type", "contentFocused");
-  client_->PostMessage(std::move(message));
+  client_->PostMessage(base::Value::Dict().Set("type", "contentFocused"));
 }
 
 PdfInkModule::PageInkStrokeIterator PdfInkModule::GetVisibleStrokesIterator() {
@@ -1203,11 +1200,10 @@ void PdfInkModule::HandleGetAnnotationBrushMessage(
   data.Set("size", ink_brush.GetSize());
 
   SkColor color = GetSkColorFromInkBrush(ink_brush);
-  base::Value::Dict color_reply;
-  color_reply.Set("r", static_cast<int>(SkColorGetR(color)));
-  color_reply.Set("g", static_cast<int>(SkColorGetG(color)));
-  color_reply.Set("b", static_cast<int>(SkColorGetB(color)));
-  data.Set("color", std::move(color_reply));
+  data.Set("color", base::Value::Dict()
+                        .Set("r", static_cast<int>(SkColorGetR(color)))
+                        .Set("g", static_cast<int>(SkColorGetG(color)))
+                        .Set("b", static_cast<int>(SkColorGetB(color))));
 
   reply.Set("data", std::move(data));
   client_->PostMessage(std::move(reply));
