@@ -281,7 +281,7 @@ suite('WordHighlighting', () => {
 
     // Update the selection directly on the document.
     const spans = app.$.container.querySelectorAll('span');
-    assertEquals(spans.length, 3);
+    assertEquals(4, spans.length);
     const anchor = spans[anchorIndex]!;
     const focus = spans[focusIndex]!;
     const range = document.createRange();

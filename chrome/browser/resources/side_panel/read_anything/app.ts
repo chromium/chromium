@@ -774,16 +774,23 @@ export class AppElement extends AppElementBase implements
   }
 
   protected onPlayPauseClick_() {
-    if (this.speechController_.isSpeechActive()) {
-      this.speechController_.stopSpeech(PauseActionSource.BUTTON_CLICK);
-    } else {
-      this.playSpeech();
-      this.speechController_.onPlay();
-    }
+    this.speechController_.onPlayPauseToggle(
+        this.getSelection(), this.$.container.textContent);
   }
 
   onIsSpeechActiveChange(): void {
     this.isSpeechActive_ = this.speechController_.isSpeechActive();
+    if (!chrome.readingMode.linksEnabled) {
+      return;
+    }
+
+    // Restore links if they're enabled when speech pauses via button click or
+    // when it finishes the page.
+    const pauseSource = this.speechController_.getPauseSource();
+    if ((pauseSource === PauseActionSource.BUTTON_CLICK) ||
+        pauseSource === PauseActionSource.SPEECH_FINISHED) {
+      this.updateLinks_();
+    }
   }
 
   onIsAudioCurrentlyPlayingChange(): void {
@@ -801,20 +808,6 @@ export class AppElement extends AppElementBase implements
 
   onSpeechRateChange(): void {
     this.resetSpeechPostSettingChange_();
-  }
-
-  onStop() {
-    if (!chrome.readingMode.linksEnabled) {
-      return;
-    }
-
-    // Restore links if they're enabled when speech pauses via button click or
-    // when it finishes the page.
-    const pauseSource = this.speechController_.getPauseSource();
-    if ((pauseSource === PauseActionSource.BUTTON_CLICK) ||
-        pauseSource === PauseActionSource.SPEECH_FINISHED) {
-      this.updateLinks_();
-    }
   }
 
   onEnabledLangsChange(): void {
@@ -842,83 +835,8 @@ export class AppElement extends AppElementBase implements
 
   playSpeech() {
     const container = this.$.container;
-    const {anchorNode, anchorOffset, focusNode, focusOffset} =
-        this.getSelection();
-    const hasSelection =
-        anchorNode !== focusNode || anchorOffset !== focusOffset;
-    if (this.speechController_.hasSpeechBeenTriggered() &&
-        !this.speechController_.isSpeechActive()) {
-      const pausedFromButton = this.speechController_.isPausedFromButton();
-
-      let playedFromSelection = false;
-      if (hasSelection) {
-        this.speech_.cancel();
-        this.wordBoundaries_.resetToDefaultState();
-        playedFromSelection = this.playFromSelection();
-      }
-
-      if (!playedFromSelection) {
-        if (pausedFromButton && !this.wordBoundaries_.hasBoundaries()) {
-          // If word boundaries aren't supported for the given voice, we should
-          // still continue to use synth.resume, as this is preferable to
-          // restarting the current message.
-          this.speech_.resume();
-        } else {
-          this.speech_.cancel();
-          if (!this.speechController_.highlightAndPlayInterruptedMessage()) {
-            // Ensure we're updating Read Aloud state if there's no text to
-            // speak.
-            this.speechController_.onSpeechFinished();
-          }
-        }
-      }
-
-      this.speechController_.setIsSpeechActive(true);
-      this.speechController_.setIsSpeechBeingRepositioned(false);
-
-      // Hide links when speech resumes. We only hide links when the page was
-      // paused from the play/pause button.
-      if (chrome.readingMode.linksEnabled && pausedFromButton) {
-        // Toggle links and ensure that the new nodes are also highlighted.
-        this.updateLinks_(
-            /* shouldRehiglightCurrentNodes= */ !playedFromSelection);
-      }
-
-      // If the current read highlight has been cleared from a call to
-      // updateContent, such as via a preference change, rehighlight the nodes
-      // after a pause.
-      if (!playedFromSelection) {
-        this.speechController_.highlightCurrentGranularity(
-            chrome.readingMode.getCurrentText());
-      }
-
-      return;
-    }
-    if (container.textContent) {
-      // Log that we're playing speech on a new page, but not when resuming.
-      // This helps us compare how many reading mode pages are opened with
-      // speech played and without speech played. Counting resumes would
-      // inflate the speech played number.
-      this.logger_.logNewPage(/*speechPlayed=*/ true);
-      this.speechController_.setIsSpeechActive(true);
-      this.speechController_.setHasSpeechBeenTriggered(true);
-      this.speechController_.setIsSpeechBeingRepositioned(false);
-
-      // Hide links when speech begins playing.
-      if (chrome.readingMode.linksEnabled) {
-        this.updateLinks_();
-      }
-
-      const playedFromSelection = hasSelection && this.playFromSelection();
-      if (!playedFromSelection) {
-        this.speechController_.initializeSpeechTree();
-        if (this.speechController_.isSpeechTreeInitialized() &&
-            !this.speechController_.highlightAndPlayMessage()) {
-          // Ensure we're updating Read Aloud state if there's no text to speak.
-          this.speechController_.onSpeechFinished();
-        }
-      }
-    }
+    this.speechController_.playSpeech(
+        this.getSelection(), container.textContent);
   }
 
   private getSelectedIds(): {
@@ -947,45 +865,6 @@ export class AppElement extends AppElementBase implements
       focusNodeId: focusNodeId,
       focusOffset: adjustedFocusOffset,
     };
-  }
-
-  playFromSelection(): boolean {
-    const selection = this.getSelection();
-    if (!this.speechController_.isSpeechTreeInitialized() || !selection) {
-      return false;
-    }
-
-    const anchorNodeId = chrome.readingMode.startNodeId;
-    const anchorOffset = chrome.readingMode.startOffset;
-    const focusNodeId = chrome.readingMode.endNodeId;
-    const focusOffset = chrome.readingMode.endOffset;
-
-    // If only one of the ids is present, use that one.
-    let startingNodeId: number|undefined =
-        anchorNodeId ? anchorNodeId : focusNodeId;
-    let startingOffset = anchorNodeId ? anchorOffset : focusOffset;
-    // If both are present, start with the node that is sooner in the page.
-    if (anchorNodeId && focusNodeId) {
-      if (anchorNodeId === focusNodeId) {
-        startingOffset = Math.min(anchorOffset, focusOffset);
-      } else {
-        const pos =
-            selection.anchorNode.compareDocumentPosition(selection.focusNode);
-        const focusIsFirst = pos === Node.DOCUMENT_POSITION_PRECEDING;
-        startingNodeId = focusIsFirst ? focusNodeId : anchorNodeId;
-        startingOffset = focusIsFirst ? focusOffset : anchorOffset;
-      }
-    }
-
-    if (!startingNodeId) {
-      return false;
-    }
-
-    // Clear the selection so we don't keep trying to play from the same
-    // selection every time they press play.
-    selection.removeAllRanges();
-    this.speechController_.playFromSelection(startingNodeId, startingOffset);
-    return true;
   }
 
   protected onSelectVoice_(

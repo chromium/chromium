@@ -22,7 +22,6 @@ import type {WordBoundaryState} from './word_boundaries.js';
 export const MAX_SPEECH_LENGTH: number = 175;
 
 export interface SpeechListener {
-  onStop(): void;
   onIsSpeechActiveChange(): void;
   onIsAudioCurrentlyPlayingChange(): void;
   onEngineStateChange(): void;
@@ -196,8 +195,21 @@ export class SpeechController {
     this.logger_.logHighlightGranularity(newGranularity);
   }
 
-  onPlay() {
-    this.model_.setPlaySessionStartTime(Date.now());
+  onPlayPauseToggle(selection: Selection|null, textContent: string|null) {
+    if (this.isSpeechActive()) {
+      this.stopSpeech(PauseActionSource.BUTTON_CLICK);
+    } else {
+      this.playSpeech(selection, textContent);
+      this.model_.setPlaySessionStartTime(Date.now());
+    }
+  }
+
+  playSpeech(selection: Selection|null, textContent: string|null) {
+    if (this.hasSpeechBeenTriggered() && !this.isSpeechActive()) {
+      this.resumeSpeech_(selection);
+    } else {
+      this.playSpeechForTheFirstTime_(selection, textContent);
+    }
   }
 
   playNextGranularity() {
@@ -233,7 +245,108 @@ export class SpeechController {
     }
   }
 
-  playFromSelection(startingNodeId: number, startingOffset: number) {
+  private resumeSpeech_(selection: Selection|null) {
+    let playedFromSelection = false;
+    if (this.hasSelection_(selection)) {
+      this.speech_.cancel();
+      this.wordBoundaries_.resetToDefaultState();
+      playedFromSelection = this.playFromSelection_(selection);
+    }
+
+    if (!playedFromSelection) {
+      if (this.isPausedFromButton() && !this.wordBoundaries_.hasBoundaries()) {
+        // If word boundaries aren't supported for the given voice, we should
+        // still continue to use synth.resume, as this is preferable to
+        // restarting the current message.
+        this.speech_.resume();
+      } else {
+        this.speech_.cancel();
+        if (!this.highlightAndPlayInterruptedMessage_()) {
+          // Ensure we're updating Read Aloud state if there's no text to
+          // speak.
+          this.onSpeechFinished();
+        }
+      }
+    }
+
+    this.setIsSpeechActive(true);
+    this.setIsSpeechBeingRepositioned(false);
+
+    // If the current read highlight has been cleared from a call to
+    // updateContent, such as via a preference change, rehighlight the nodes
+    // after a pause.
+    if (!playedFromSelection) {
+      this.highlightCurrentGranularity(chrome.readingMode.getCurrentText());
+    }
+  }
+
+  private playSpeechForTheFirstTime_(
+      selection: Selection|null, textContent: string|null) {
+    if (!textContent) {
+      return;
+    }
+
+    // Log that we're playing speech on a new page, but not when resuming.
+    // This helps us compare how many reading mode pages are opened with
+    // speech played and without speech played. Counting resumes would
+    // inflate the speech played number.
+    this.logger_.logNewPage(/*speechPlayed=*/ true);
+    this.setIsSpeechActive(true);
+    this.setHasSpeechBeenTriggered(true);
+    this.setIsSpeechBeingRepositioned(false);
+
+    const playedFromSelection = this.playFromSelection_(selection);
+    if (playedFromSelection) {
+      return;
+    }
+
+    this.initializeSpeechTree();
+    if (this.isSpeechTreeInitialized() && !this.highlightAndPlayMessage()) {
+      // Ensure we're updating Read Aloud state if there's no text to speak.
+      this.onSpeechFinished();
+    }
+  }
+
+  private hasSelection_(selection: Selection|null): boolean {
+    return !selection || selection.anchorNode !== selection.focusNode ||
+        selection.anchorOffset !== selection.focusOffset;
+  }
+
+  private playFromSelection_(selection: Selection|null): boolean {
+    if (!this.isSpeechTreeInitialized() || !selection ||
+        !this.hasSelection_(selection)) {
+      return false;
+    }
+
+    const anchorNodeId = chrome.readingMode.startNodeId;
+    const anchorOffset = chrome.readingMode.startOffset;
+    const focusNodeId = chrome.readingMode.endNodeId;
+    const focusOffset = chrome.readingMode.endOffset;
+
+    // If only one of the ids is present, use that one.
+    let startingNodeId: number|undefined =
+        anchorNodeId ? anchorNodeId : focusNodeId;
+    let startingOffset = anchorNodeId ? anchorOffset : focusOffset;
+    // If both are present, start with the node that is sooner in the page.
+    if (anchorNodeId && focusNodeId) {
+      if (anchorNodeId === focusNodeId) {
+        startingOffset = Math.min(anchorOffset, focusOffset);
+      } else if (selection.anchorNode && selection.focusNode) {
+        const pos =
+            selection.anchorNode.compareDocumentPosition(selection.focusNode);
+        const focusIsFirst = pos === Node.DOCUMENT_POSITION_PRECEDING;
+        startingNodeId = focusIsFirst ? focusNodeId : anchorNodeId;
+        startingOffset = focusIsFirst ? focusOffset : anchorOffset;
+      }
+    }
+
+    if (!startingNodeId) {
+      return false;
+    }
+
+    // Clear the selection so we don't keep trying to play from the same
+    // selection every time they press play.
+    selection.removeAllRanges();
     // Iterate through the page from the beginning until we get to the
     // selection. This is so clicking previous works before the selection and
     // so the previous highlights are properly set.
@@ -249,9 +362,10 @@ export class SpeechController {
         this.onSpeechFinished();
       }
     }, playFromSelectionTimeout);
+    return true;
   }
 
-  highlightAndPlayInterruptedMessage(): boolean {
+  private highlightAndPlayInterruptedMessage_(): boolean {
     return this.highlightAndPlayMessage(/* isInterrupted = */ true);
   }
 
@@ -469,8 +583,6 @@ export class SpeechController {
       // Canceling clears all the Utterances that are queued up via synth.play()
       this.speech_.cancel();
     }
-
-    this.listeners_.forEach(l => l.onStop());
   }
 
   setOnSpeechSynthesisUtteranceStart(message: SpeechSynthesisUtterance) {
@@ -587,7 +699,6 @@ export class SpeechController {
   onSpeechFinished() {
     this.clearReadAloudState();
     this.model_.setPauseSource(PauseActionSource.SPEECH_FINISHED);
-    this.listeners_.forEach(l => l.onStop());
     this.logger_.logSpeechStopSource(
         chrome.readingMode.contentFinishedStopSource);
     this.logSpeechPlaySession_();
