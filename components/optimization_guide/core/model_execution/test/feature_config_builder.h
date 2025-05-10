@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "components/optimization_guide/core/model_execution/test/substitution_builder.h"
 #include "components/optimization_guide/proto/descriptors.pb.h"
 #include "components/optimization_guide/proto/features/example_for_testing.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
@@ -26,9 +27,6 @@ proto::SafetyCategoryThreshold ForbidUnsafe();
 // FakeOnDeviceModel::ClassifyTextSafety.
 proto::SafetyCategoryThreshold RequireReasonable();
 
-// Construct a ProtoField with the given tags.
-proto::ProtoField ProtoField(std::initializer_list<int32_t> tags);
-
 // Reference ComposeRequest::page_metadata.page_url
 proto::ProtoField PageUrlField();
 
@@ -43,18 +41,6 @@ proto::ProtoField OutputField();
 
 // Reference StringValue::value
 proto::ProtoField StringValueField();
-
-// Construct a RangeExpr.
-proto::RangeExpr RangeExpr(proto::ProtoField repeated_field,
-                           proto::SubstitutedString expr);
-
-// Make Substitution putting 'field' in 'tmpl'.
-proto::SubstitutedString FieldSubstitution(const std::string& tmpl,
-                                           proto::ProtoField field);
-
-// Make a Substitution that formats a repeated field.
-proto::SubstitutedString ForEachSubstitution(proto::ProtoField repeated_field,
-                                             proto::SubstitutedString expr);
 
 // Make a template for "url: {page_url}".
 proto::SubstitutedString PageUrlSubstitution();
@@ -108,18 +94,6 @@ inline proto::OnDeviceModelExecutionConfig ExecutionConfigWithCapabilities(
     cfg.add_capabilities(c);
   }
   return cfg;
-}
-
-inline auto Int32Proto(int32_t value) {
-  proto::Value v;
-  v.set_int32_value(value);
-  return v;
-}
-
-inline auto Int64Proto(int64_t value) {
-  proto::Value v;
-  v.set_int64_value(value);
-  return v;
 }
 
 // Construct an InputConfig that formats a proto::ExampleForTestingRequest.

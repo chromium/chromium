@@ -8,6 +8,7 @@
 
 #include "base/strings/string_util.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/test/substitution_builder.h"
 #include "components/optimization_guide/proto/descriptors.pb.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/features/example_for_testing.pb.h"
@@ -32,14 +33,6 @@ proto::SafetyCategoryThreshold RequireReasonable() {
   return result;
 }
 
-proto::ProtoField ProtoField(std::initializer_list<int32_t> tags) {
-  proto::ProtoField f;
-  for (int32_t tag : tags) {
-    f.add_proto_descriptors()->set_tag_number(tag);
-  }
-  return f;
-}
-
 proto::ProtoField PageUrlField() {
   return ProtoField({3, 1});
 }
@@ -58,32 +51,6 @@ proto::ProtoField OutputField() {
 
 proto::ProtoField StringValueField() {
   return ProtoField({1});
-}
-
-proto::RangeExpr RangeExpr(proto::ProtoField repeated_field,
-                           proto::SubstitutedString expr) {
-  proto::RangeExpr result;
-  *result.mutable_proto_field() = std::move(repeated_field);
-  *result.mutable_expr() = std::move(expr);
-  return result;
-}
-
-proto::SubstitutedString FieldSubstitution(const std::string& tmpl,
-                                           proto::ProtoField field) {
-  proto::SubstitutedString result;
-  result.set_string_template(tmpl);
-  *result.add_substitutions()->add_candidates()->mutable_proto_field() =
-      std::move(field);
-  return result;
-}
-
-proto::SubstitutedString ForEachSubstitution(proto::ProtoField repeated_field,
-                                             proto::SubstitutedString expr) {
-  proto::SubstitutedString result;
-  result.set_string_template("%s");
-  *result.add_substitutions()->add_candidates()->mutable_range_expr() =
-      RangeExpr(std::move(repeated_field), std::move(expr));
-  return result;
 }
 
 proto::SubstitutedString PageUrlSubstitution() {

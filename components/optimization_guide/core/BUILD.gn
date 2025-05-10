@@ -473,6 +473,8 @@ static_library("test_support") {
       "model_execution/test/request_builder.h",
       "model_execution/test/response_holder.cc",
       "model_execution/test/response_holder.h",
+      "model_execution/test/substitution_builder.cc",
+      "model_execution/test/substitution_builder.h",
       "model_execution/test/test_on_device_model_component_state_manager.cc",
       "model_execution/test/test_on_device_model_component_state_manager.h",
     ]

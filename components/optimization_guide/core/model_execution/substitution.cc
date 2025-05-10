@@ -45,51 +45,64 @@ struct ResolutionContext {
   int offset = 0;
 };
 
+enum class ConditionResult { kFalse, kTrue, kStop };
+
+ConditionResult AsResult(bool value) {
+  return value ? ConditionResult::kTrue : ConditionResult::kFalse;
+}
+
 // Returns whether `condition` applies based on `message`.
-bool EvaluateCondition(const ResolutionContext& ctx,
-                       const proto::Condition& condition) {
+ConditionResult EvaluateCondition(const ResolutionContext& ctx,
+                                  const proto::Condition& condition) {
+  if (ctx.view.IsPending(condition.proto_field())) {
+    return ConditionResult::kStop;
+  }
   std::optional<proto::Value> proto_value =
       ctx.view.GetValue(condition.proto_field());
   if (!proto_value) {
-    return false;
+    return AsResult(false);
   }
 
   switch (condition.operator_type()) {
     case proto::OPERATOR_TYPE_EQUAL_TO:
-      return AreValuesEqual(*proto_value, condition.value());
+      return AsResult(AreValuesEqual(*proto_value, condition.value()));
     case proto::OPERATOR_TYPE_NOT_EQUAL_TO:
-      return !AreValuesEqual(*proto_value, condition.value());
+      return AsResult(!AreValuesEqual(*proto_value, condition.value()));
     default:
       base::debug::DumpWithoutCrashing();
-      return false;
+      return AsResult(false);
   }
 }
 
-bool AndConditions(const ResolutionContext& ctx,
-                   const RepeatedPtrField<proto::Condition>& conditions) {
+ConditionResult AndConditions(
+    const ResolutionContext& ctx,
+    const RepeatedPtrField<proto::Condition>& conditions) {
   for (const auto& condition : conditions) {
-    if (!EvaluateCondition(ctx, condition)) {
-      return false;
+    ConditionResult result = EvaluateCondition(ctx, condition);
+    if (result != ConditionResult::kTrue) {
+      return result;
     }
   }
-  return true;
+  return ConditionResult::kTrue;
 }
 
-bool OrConditions(const ResolutionContext& ctx,
-                  const RepeatedPtrField<proto::Condition>& conditions) {
+ConditionResult OrConditions(
+    const ResolutionContext& ctx,
+    const RepeatedPtrField<proto::Condition>& conditions) {
   for (const auto& condition : conditions) {
-    if (EvaluateCondition(ctx, condition)) {
-      return true;
+    ConditionResult result = EvaluateCondition(ctx, condition);
+    if (result != ConditionResult::kFalse) {
+      return result;
     }
   }
-  return false;
+  return ConditionResult::kFalse;
 }
 
 // Returns whether `conditions` apply based on `message`.
-bool DoConditionsApply(const ResolutionContext& ctx,
-                       const proto::ConditionList& conditions) {
+ConditionResult DoConditionsApply(const ResolutionContext& ctx,
+                                  const proto::ConditionList& conditions) {
   if (conditions.conditions_size() == 0) {
-    return true;
+    return ConditionResult::kTrue;
   }
 
   switch (conditions.condition_evaluation_type()) {
@@ -99,7 +112,7 @@ bool DoConditionsApply(const ResolutionContext& ctx,
       return AndConditions(ctx, conditions.conditions());
     default:
       base::debug::DumpWithoutCrashing();
-      return false;
+      return ConditionResult::kFalse;
   }
 }
 
@@ -109,8 +122,9 @@ bool DoConditionsApply(const ResolutionContext& ctx,
 class InputBuilder final {
  public:
   enum class Error {
-    OK = 0,
-    FAILED = 1,
+    kOk = 0,
+    kFailed = 1,  // The config is not valid over this input.
+    kStop = 2,    // Terminate early due to a pending field.
   };
   InputBuilder() : out_(Input::New()) {}
   Error ResolveSubstitutedString(const ResolutionContext& ctx,
@@ -155,40 +169,49 @@ class InputBuilder final {
 InputBuilder::Error InputBuilder::ResolveProtoField(
     const ResolutionContext& ctx,
     const proto::ProtoField& field) {
+  if (ctx.view.IsPending(field)) {
+    return Error::kStop;
+  }
   std::optional<proto::Value> value = ctx.view.GetValue(field);
   if (!value) {
     DVLOG(1) << "Invalid proto field of " << ctx.view.GetTypeName();
-    return Error::FAILED;
+    return Error::kFailed;
   }
   AddString(GetStringFromValue(*value));
-  return Error::OK;
+  return Error::kOk;
 }
 
 InputBuilder::Error InputBuilder::ResolveRangeExpr(
     const ResolutionContext& ctx,
     const proto::RangeExpr& expr) {
+  if (ctx.view.IsPending(expr.proto_field())) {
+    return Error::kStop;
+  }
   auto repeated = ctx.view.GetRepeated(expr.proto_field());
   if (!repeated) {
     DVLOG(1) << "Invalid proto field for RangeExpr over "
              << ctx.view.GetTypeName();
-    return Error::FAILED;
+    return Error::kFailed;
   }
   int repeated_size = repeated->Size();
   for (int i = 0; i < repeated_size; i++) {
     Error error = ResolveSubstitutedString(
         ResolutionContext{repeated->Get(i), i}, expr.expr());
-    if (error != Error::OK) {
+    if (error != Error::kOk) {
       return error;
     }
   }
-  return Error::OK;
+  if (repeated->IsIncomplete()) {
+    return Error::kStop;
+  }
+  return Error::kOk;
 }
 
 InputBuilder::Error InputBuilder::ResolveIndexExpr(
     const ResolutionContext& ctx,
     const proto::IndexExpr& expr) {
   AddString(base::NumberToString(ctx.offset + expr.one_based()));
-  return Error::OK;
+  return Error::kOk;
 }
 
 InputBuilder::Error InputBuilder::ResolveControlToken(
@@ -208,24 +231,27 @@ InputBuilder::Error InputBuilder::ResolveControlToken(
       AddToken(ml::Token::kEnd);
       break;
     default:
-      return Error::FAILED;
+      return Error::kFailed;
   }
-  return Error::OK;
+  return Error::kOk;
 }
 
 InputBuilder::Error InputBuilder::ResolveMediaField(
     const ResolutionContext& ctx,
     proto::MediaField field) {
+  if (ctx.view.IsPending(field.proto_field())) {
+    return Error::kStop;
+  }
   MultimodalType mtype = ctx.view.GetMultimodalType(field.proto_field());
   switch (mtype) {
     case MultimodalType::kAudio:
       out_->pieces.emplace_back(*ctx.view.GetAudio(field.proto_field()));
-      return Error::OK;
+      return Error::kOk;
     case MultimodalType::kImage:
       out_->pieces.emplace_back(*ctx.view.GetImage(field.proto_field()));
-      return Error::OK;
+      return Error::kOk;
     case MultimodalType::kNone:
-      return Error::OK;
+      return Error::kOk;
   }
 }
 
@@ -235,7 +261,7 @@ InputBuilder::Error InputBuilder::ResolveStringArg(
   switch (candidate.arg_case()) {
     case proto::StringArg::kRawString:
       AddString(candidate.raw_string());
-      return Error::OK;
+      return Error::kOk;
     case proto::StringArg::kProtoField:
       return ResolveProtoField(ctx, candidate.proto_field());
     case proto::StringArg::kRangeExpr:
@@ -248,7 +274,7 @@ InputBuilder::Error InputBuilder::ResolveStringArg(
       return ResolveMediaField(ctx, candidate.media_field());
     case proto::StringArg::ARG_NOT_SET:
       DVLOG(1) << "StringArg is incomplete.";
-      return Error::FAILED;
+      return Error::kFailed;
   }
 }
 
@@ -256,18 +282,28 @@ InputBuilder::Error InputBuilder::ResolveSubstitution(
     const ResolutionContext& ctx,
     const proto::StringSubstitution& arg) {
   for (const auto& candidate : arg.candidates()) {
-    if (DoConditionsApply(ctx, candidate.conditions())) {
-      return ResolveStringArg(ctx, candidate);
+    switch (DoConditionsApply(ctx, candidate.conditions())) {
+      case ConditionResult::kFalse:
+        continue;
+      case ConditionResult::kStop:
+        return Error::kStop;
+      case ConditionResult::kTrue:
+        return ResolveStringArg(ctx, candidate);
     }
   }
-  return Error::OK;
+  return Error::kOk;
 }
 
 InputBuilder::Error InputBuilder::ResolveSubstitutedString(
     const ResolutionContext& ctx,
     const proto::SubstitutedString& substitution) {
-  if (!DoConditionsApply(ctx, substitution.conditions())) {
-    return Error::OK;
+  switch (DoConditionsApply(ctx, substitution.conditions())) {
+    case ConditionResult::kFalse:
+      return Error::kOk;
+    case ConditionResult::kStop:
+      return Error::kStop;
+    case ConditionResult::kTrue:
+      break;
   }
   if (substitution.should_ignore_input_context()) {
     should_ignore_input_context_ = true;
@@ -286,15 +322,15 @@ InputBuilder::Error InputBuilder::ResolveSubstitutedString(
     }
     if (token != "%s") {
       DVLOG(1) << "Invalid Token";
-      return Error::FAILED;  // Invalid token
+      return Error::kFailed;  // Invalid token
     }
     if (substitution_idx >= substitution.substitutions_size()) {
       DVLOG(1) << "Too many substitutions";
-      return Error::FAILED;
+      return Error::kFailed;
     }
     Error error =
         ResolveSubstitution(ctx, substitution.substitutions(substitution_idx));
-    if (error != Error::OK) {
+    if (error != Error::kOk) {
       return error;
     }
     ++substitution_idx;
@@ -302,9 +338,9 @@ InputBuilder::Error InputBuilder::ResolveSubstitutedString(
   AddString(templ.substr(template_idx, std::string_view::npos));
   if (substitution_idx != substitution.substitutions_size()) {
     DVLOG(1) << "Missing substitutions";
-    return Error::FAILED;
+    return Error::kFailed;
   }
-  return Error::OK;
+  return Error::kOk;
 }
 
 // Placeholder strings for a control token in MQLS logs / display.
@@ -359,7 +395,10 @@ std::optional<SubstitutionResult> CreateSubstitutions(
   for (const auto& substitution : config_substitutions) {
     auto error = builder.ResolveSubstitutedString(ResolutionContext{request, 0},
                                                   substitution);
-    if (error != InputBuilder::Error::OK) {
+    if (error == InputBuilder::Error::kStop) {
+      break;
+    }
+    if (error != InputBuilder::Error::kOk) {
       return std::nullopt;
     }
   }

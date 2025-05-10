@@ -51,6 +51,14 @@ MultimodalMessageEditView::MultimodalMessageEditView(
 
 MultimodalMessageEditView::~MultimodalMessageEditView() = default;
 
+void MultimodalMessageEditView::MarkPending(int tag, bool pending) {
+  if (pending) {
+    overlay_->pending.insert(tag);
+  } else {
+    overlay_->pending.erase(tag);
+  }
+}
+
 void MultimodalMessageEditView::Set(int tag, const std::string& v) {
   ProtoStatus status = SetProtoField(&message_.get(), tag, v);
   CHECK_EQ(status, ProtoStatus::kOk);
@@ -96,6 +104,28 @@ MultimodalMessageReadView::MultimodalMessageReadView(const MessageLite& message)
     : message_(message), overlay_(nullptr) {}
 
 MultimodalMessageReadView::~MultimodalMessageReadView() = default;
+
+bool MultimodalMessageReadView::IsPending(
+    const proto::ProtoField& proto_field) const {
+  std::optional<MultimodalMessageReadView> parent = *this;
+  for (int i = 0; i < proto_field.proto_descriptors_size() - 1; i++) {
+    if (!parent->overlay_) {
+      return false;
+    }
+    int32_t tag = proto_field.proto_descriptors(i).tag_number();
+    if (parent->overlay_->pending.contains(tag)) {
+      return true;
+    }
+    parent = parent->GetNested(proto_field.proto_descriptors(i).tag_number());
+    if (!parent) {
+      return false;
+    }
+  }
+  int32_t tag =
+      proto_field.proto_descriptors(proto_field.proto_descriptors_size() - 1)
+          .tag_number();
+  return parent->overlay_ && parent->overlay_->pending.contains(tag);
+}
 
 // Get the type of multimodal content for a field.
 MultimodalType MultimodalMessageReadView::GetMultimodalType(
@@ -255,6 +285,10 @@ MultimodalMessageEditView RepeatedMultimodalMessageEditView::Get(int n) {
   return MultimodalMessageEditView(*message, overlay_->overlays[n]);
 }
 
+void RepeatedMultimodalMessageEditView::MarkIncomplete(bool incomplete) {
+  overlay_->incomplete = incomplete;
+}
+
 RepeatedMultimodalMessageReadView::RepeatedMultimodalMessageReadView(
     const MessageLite& parent,
     int32_t tag,
@@ -278,6 +312,10 @@ MultimodalMessageReadView RepeatedMultimodalMessageReadView::Get(int n) const {
     return MultimodalMessageReadView(*message, nullptr);
   }
   return MultimodalMessageReadView(*message, &overlay_->overlays[n]);
+}
+
+bool RepeatedMultimodalMessageReadView::IsIncomplete() const {
+  return overlay_ && overlay_->incomplete;
 }
 
 MultimodalMessage::MultimodalMessage() = default;

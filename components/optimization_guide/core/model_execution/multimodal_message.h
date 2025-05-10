@@ -27,6 +27,7 @@
 #include <cstddef>
 #include <map>
 #include <optional>
+#include <set>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -55,6 +56,9 @@ struct MultimodalMessageData final {
   MultimodalMessageData& operator=(const MultimodalMessageData&);
   MultimodalMessageData& operator=(MultimodalMessageData&&);
   ~MultimodalMessageData();
+
+  // Which fields are currently marked pending.
+  std::set<int> pending;
 
   // Images stored for fields of the message.
   std::map<int, SkBitmap> images;
@@ -89,6 +93,9 @@ struct RepeatedMultimodalMessageData final {
   // effectively have no overlay, and default initialized values can be created
   // for them lazily.
   std::vector<MultimodalMessageData> overlays;
+
+  // If this field is expected to have more data added later.
+  bool incomplete = false;
 };
 
 // A mutable view of a MultimodalMessage (or a submessage of it).
@@ -100,6 +107,10 @@ class MultimodalMessageEditView {
   MultimodalMessageEditView(google::protobuf::MessageLite& message,
                             MultimodalMessageData& overlay);
   ~MultimodalMessageEditView();
+
+  // Marks a field as pending (or clears it if pending = false).
+  // Substitutions will truncate where they would depend on this field.
+  void MarkPending(int tag, bool pending = true);
 
   // Sets a string field value.
   void Set(int tag, const std::string& v);
@@ -150,6 +161,9 @@ class MultimodalMessageReadView {
     return std::string(message_->GetTypeName());
   }
 
+  // Returns true iff the field or any parent has been marked pending.
+  bool IsPending(const proto::ProtoField& proto_field) const;
+
   // Get the type of multimodal content for a field.
   MultimodalType GetMultimodalType(const proto::ProtoField& proto_field) const;
 
@@ -199,6 +213,11 @@ class RepeatedMultimodalMessageEditView {
   // Get a previously added message.
   MultimodalMessageEditView Get(int n);
 
+  // Indicate that more content may be appended to this field later.
+  // Substitutions will truncate where they would depend on whether more
+  // messages are present.
+  void MarkIncomplete(bool incomplete = true);
+
  private:
   // The underlying message that owns the repeated field.
   const raw_ref<google::protobuf::MessageLite> parent_;
@@ -226,6 +245,9 @@ class RepeatedMultimodalMessageReadView {
   // Gets a view for the nth element of the field.
   // Will crash on out of bounds access.
   MultimodalMessageReadView Get(int n) const;
+
+  // Return whether this list was marked incomplete.
+  bool IsIncomplete() const;
 
  private:
   // The underlying message that owns the repeated field.

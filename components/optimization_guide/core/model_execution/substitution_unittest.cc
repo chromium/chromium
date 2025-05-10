@@ -14,6 +14,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/model_execution/test/request_builder.h"
+#include "components/optimization_guide/core/model_execution/test/substitution_builder.h"
 #include "components/optimization_guide/proto/descriptors.pb.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/features/example_for_testing.pb.h"
@@ -582,6 +583,140 @@ TEST_F(SubstitutionTest, ExcludesEmptyPieces) {
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->ToString(), "");
   EXPECT_EQ(result->input->pieces.size(), 0u);
+}
+
+Substitutions BlockCheck(proto::StringSubstitution sub) {
+  Substitutions result;
+  auto* expr1 = result.Add();
+  expr1->set_string_template("%s for...%s...%s");
+  expr1->add_substitutions()->add_candidates()->set_raw_string("waiting");
+  *expr1->add_substitutions() = std::move(sub);
+  expr1->add_substitutions()->add_candidates()->set_raw_string("complete");
+  return result;
+}
+
+TEST_F(SubstitutionTest, BlockOnPendingField) {
+  using RequestProto = ::optimization_guide::proto::ExampleForTestingRequest;
+
+  Substitutions substitutions = BlockCheck(
+      Always(StringArg(ProtoField({RequestProto::kStringValueFieldNumber}))));
+
+  MultimodalMessage request{proto::ExampleForTestingRequest()};
+  request.edit().MarkPending(RequestProto::kStringValueFieldNumber);
+
+  std::optional<SubstitutionResult> result =
+      CreateSubstitutions(request.read(), substitutions);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->ToString(), "waiting for...");
+}
+
+TEST_F(SubstitutionTest, BlockOnPendingMediaField) {
+  using RequestProto = ::optimization_guide::proto::ExampleForTestingRequest;
+  using Msg = ::optimization_guide::proto::ExampleForTestingMessage;
+
+  Substitutions substitutions = BlockCheck(Always(MediaFieldArg(
+      {RequestProto::kNested1FieldNumber, Msg::kMediaFieldNumber})));
+
+  MultimodalMessage request{proto::ExampleForTestingRequest()};
+  request.edit().MarkPending(RequestProto::kNested1FieldNumber);
+
+  std::optional<SubstitutionResult> result =
+      CreateSubstitutions(request.read(), substitutions);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->ToString(), "waiting for...");
+}
+
+TEST_F(SubstitutionTest, BlockOnPendingFieldInCondition) {
+  using RequestProto = ::optimization_guide::proto::ExampleForTestingRequest;
+  using Msg = ::optimization_guide::proto::ExampleForTestingMessage;
+
+  Substitutions substitutions = BlockCheck(
+      Candidates({EnumCase(ProtoField({RequestProto::kEnumValueFieldNumber}),
+                           Msg::VALUE0, StringArg("maybe_value")),
+                  StringArg("fallback_value")}));
+
+  MultimodalMessage request{proto::ExampleForTestingRequest()};
+  request.edit().MarkPending(RequestProto::kEnumValueFieldNumber);
+
+  std::optional<SubstitutionResult> result =
+      CreateSubstitutions(request.read(), substitutions);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->ToString(), "waiting for...");
+}
+
+Substitutions BlockCheckRepeatedSubstitution() {
+  using RequestProto = ::optimization_guide::proto::ExampleForTestingRequest;
+  using Msg = ::optimization_guide::proto::ExampleForTestingMessage;
+  return BlockCheck(Always(RangeExprArg(
+      ProtoField({RequestProto::kRepeatedFieldFieldNumber}),
+      Just(StringArg(ProtoField({Msg::kStringValueFieldNumber}))))));
+}
+
+MultimodalMessage RepeatedMessage() {
+  using RequestProto = ::optimization_guide::proto::ExampleForTestingRequest;
+  using Msg = ::optimization_guide::proto::ExampleForTestingMessage;
+  MultimodalMessage msg{proto::ExampleForTestingRequest()};
+  msg.edit()
+      .MutableRepeatedField(RequestProto::kRepeatedFieldFieldNumber)
+      .Add()
+      .Set(Msg::kStringValueFieldNumber, "A");
+  msg.edit()
+      .MutableRepeatedField(RequestProto::kRepeatedFieldFieldNumber)
+      .Add()
+      .Set(Msg::kStringValueFieldNumber, "B");
+  msg.edit()
+      .MutableRepeatedField(RequestProto::kRepeatedFieldFieldNumber)
+      .Add()
+      .Set(Msg::kStringValueFieldNumber, "C");
+  return msg;
+}
+
+TEST_F(SubstitutionTest, BlockOnPendingRepeated) {
+  using RequestProto = ::optimization_guide::proto::ExampleForTestingRequest;
+
+  Substitutions substitutions = BlockCheckRepeatedSubstitution();
+
+  MultimodalMessage request = RepeatedMessage();
+  request.edit().MarkPending(RequestProto::kRepeatedFieldFieldNumber);
+
+  std::optional<SubstitutionResult> result =
+      CreateSubstitutions(request.read(), substitutions);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->ToString(), "waiting for...");
+}
+
+TEST_F(SubstitutionTest, BlockOnPendingFieldInRepeated) {
+  using RequestProto = ::optimization_guide::proto::ExampleForTestingRequest;
+  using Msg = ::optimization_guide::proto::ExampleForTestingMessage;
+
+  Substitutions substitutions = BlockCheckRepeatedSubstitution();
+
+  MultimodalMessage request = RepeatedMessage();
+  request.edit()
+      .MutableRepeatedField(RequestProto::kRepeatedFieldFieldNumber)
+      .Get(1)
+      .MarkPending(Msg::kStringValueFieldNumber);
+
+  std::optional<SubstitutionResult> result =
+      CreateSubstitutions(request.read(), substitutions);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->ToString(), "waiting for...A");
+}
+
+TEST_F(SubstitutionTest, BlockOnIncompleteRepeated) {
+  using RequestProto = ::optimization_guide::proto::ExampleForTestingRequest;
+
+  Substitutions substitutions = BlockCheckRepeatedSubstitution();
+
+  MultimodalMessage request = RepeatedMessage();
+  request.edit()
+      .MutableRepeatedField(RequestProto::kRepeatedFieldFieldNumber)
+      .MarkIncomplete(true);
+
+  std::optional<SubstitutionResult> result =
+      CreateSubstitutions(request.read(), substitutions);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->ToString(), "waiting for...ABC");
 }
 
 }  // namespace
