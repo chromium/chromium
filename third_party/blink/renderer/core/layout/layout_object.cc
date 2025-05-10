@@ -4408,7 +4408,7 @@ bool LayoutObject::GetImageAnimationPolicy(
   return true;
 }
 
-InterpolationQuality LayoutObject::GetSpeculativeDecodeQuality() const {
+InterpolationQuality LayoutObject::ComputeSpeculativeDecodeQuality() const {
   NOT_DESTROYED();
   return StyleRef().GetInterpolationQuality();
 }

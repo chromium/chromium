@@ -82,14 +82,24 @@ class CORE_EXPORT ImageResourceObserver : public GarbageCollectedMixin {
     return false;
   }
 
-  // Return the observer's requested resource priority. An implementation of
-  // this method is not allowed to add or remove ImageResource observers.
+  // Compute and return the observer's requested resource priority. An
+  // implementation of this method is not allowed to add or remove ImageResource
+  // observers.
   virtual ResourcePriority ComputeResourcePriority() const {
     return ResourcePriority();
   }
+  // Return the last computed ResourcePriority, if available.
+  virtual ResourcePriority CachedResourcePriority() const {
+    return ResourcePriority();
+  }
+
   virtual bool CanBeSpeculativelyDecoded() const { return true; }
-  virtual gfx::Size GetSpeculativeDecodeSize() const { return gfx::Size(); }
-  virtual InterpolationQuality GetSpeculativeDecodeQuality() const {
+  virtual gfx::Size ComputeSpeculativeDecodeSize() const { return gfx::Size(); }
+  virtual gfx::Size CachedSpeculativeDecodeSize() const { return gfx::Size(); }
+  virtual InterpolationQuality ComputeSpeculativeDecodeQuality() const {
+    return kInterpolationNone;
+  }
+  virtual InterpolationQuality CachedSpeculativeDecodeQuality() const {
     return kInterpolationNone;
   }
 

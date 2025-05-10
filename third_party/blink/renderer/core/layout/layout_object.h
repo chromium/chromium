@@ -2665,7 +2665,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   void NotifyImageFullyRemoved(ImageResourceContent*) override;
   bool WillRenderImage() final;
   bool GetImageAnimationPolicy(mojom::blink::ImageAnimationPolicy&) final;
-  InterpolationQuality GetSpeculativeDecodeQuality() const final;
+  InterpolationQuality ComputeSpeculativeDecodeQuality() const override;
 
   void Remove() {
     NOT_DESTROYED();

@@ -261,6 +261,7 @@ class CORE_EXPORT HTMLImageElement
   void CreateMediaQueryListIfDoesNotExist();
 
   // LocalFrameView::LifecycleNotificationObserver
+  void DidFinishLayout() override;
   void DidFinishLifecycleUpdate(const LocalFrameView&) override;
 
   Member<HTMLImageLoader> image_loader_;

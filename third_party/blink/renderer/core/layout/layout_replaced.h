@@ -159,7 +159,7 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   }
 
   // ImageResourceObserver
-  gfx::Size GetSpeculativeDecodeSize() const override;
+  gfx::Size ComputeSpeculativeDecodeSize() const override;
 
  private:
   // Computes a rect, relative to the element's content's natural size, that

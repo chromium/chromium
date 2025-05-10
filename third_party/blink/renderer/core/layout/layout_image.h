@@ -101,6 +101,13 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
       ImageChanged(image_resource_->ImagePtr(), CanDeferInvalidation::kNo);
   }
 
+  ResourcePriority ComputeResourcePriority() const final;
+  ResourcePriority CachedResourcePriority() const final;
+  gfx::Size ComputeSpeculativeDecodeSize() const final;
+  gfx::Size CachedSpeculativeDecodeSize() const final;
+  InterpolationQuality ComputeSpeculativeDecodeQuality() const final;
+  InterpolationQuality CachedSpeculativeDecodeQuality() const final;
+
   const char* GetName() const override {
     NOT_DESTROYED();
     return "LayoutImage";
@@ -191,6 +198,12 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
 
   friend class MutableForPainting;
   PhysicalRect last_paint_rect_;
+
+  mutable struct {
+    ResourcePriority cached_resource_priority;
+    gfx::Size cached_speculative_decode_size;
+    InterpolationQuality cached_speculative_decode_quality;
+  } speculative_decode_parameters_;
 };
 
 template <>

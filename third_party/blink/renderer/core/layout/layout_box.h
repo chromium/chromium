@@ -854,7 +854,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   PhysicalRect ClippingRect(const PhysicalOffset& location) const;
 
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
-  ResourcePriority ComputeResourcePriority() const final;
+  ResourcePriority ComputeResourcePriority() const override;
 
   PositionWithAffinity PositionForPointInFragments(const PhysicalOffset&) const;
 

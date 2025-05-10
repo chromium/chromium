@@ -151,6 +151,10 @@ void ImageResourceContent::AddObserver(ImageResourceObserver* observer) {
     ProhibitAddRemoveObserverInScope prohibit_add_remove_observer_in_scope(
         this);
     observers_.insert(observer);
+    ApplyPriorityAndSpeculativeDecodeParams(
+        observer->CachedResourcePriority(),
+        observer->CachedSpeculativeDecodeSize(),
+        observer->CachedSpeculativeDecodeQuality());
   }
 
   if (info_->IsCacheValidator())
@@ -188,30 +192,6 @@ void ImageResourceContent::DidRemoveObserver() {
   info_->DidRemoveClientOrObserver();
 }
 
-static void PriorityFromObserver(
-    const ImageResourceObserver* observer,
-    ResourcePriority& priority,
-    ResourcePriority& priority_excluding_image_loader) {
-  ResourcePriority next_priority = observer->ComputeResourcePriority();
-  if (next_priority.is_lcp_resource) {
-    // Mark the resource as predicted LCP despite its visibility.
-    priority.is_lcp_resource = true;
-    priority_excluding_image_loader.is_lcp_resource = true;
-  }
-
-  if (next_priority.visibility == ResourcePriority::kNotVisible)
-    return;
-
-  priority.visibility = ResourcePriority::kVisible;
-  priority.intra_priority_value += next_priority.intra_priority_value;
-
-  if (next_priority.source != ResourcePriority::Source::kImageLoader) {
-    priority_excluding_image_loader.visibility = ResourcePriority::kVisible;
-    priority_excluding_image_loader.intra_priority_value +=
-        next_priority.intra_priority_value;
-  }
-}
-
 void ImageResourceContent::UpdateResourceInfoFromObservers() {
   ProhibitAddRemoveObserverInScope prohibit_add_remove_observer_in_scope(this);
 
@@ -221,12 +201,10 @@ void ImageResourceContent::UpdateResourceInfoFromObservers() {
   cached_info_.max_interpolation_quality_ = kInterpolationNone;
 
   auto update = [this](const ImageResourceObserver* observer) -> void {
-    PriorityFromObserver(observer, cached_info_.priority_,
-                         cached_info_.priority_excluding_image_loader_);
-    cached_info_.max_size_.SetToMax(observer->GetSpeculativeDecodeSize());
-    cached_info_.max_interpolation_quality_ =
-        std::max(cached_info_.max_interpolation_quality_,
-                 observer->GetSpeculativeDecodeQuality());
+    ApplyPriorityAndSpeculativeDecodeParams(
+        observer->ComputeResourcePriority(),
+        observer->ComputeSpeculativeDecodeSize(),
+        observer->ComputeSpeculativeDecodeQuality());
   };
 
   for (const auto& it : finished_observers_) {
@@ -235,6 +213,35 @@ void ImageResourceContent::UpdateResourceInfoFromObservers() {
   for (const auto& it : observers_) {
     update(it.key);
   }
+}
+
+void ImageResourceContent::ApplyPriorityAndSpeculativeDecodeParams(
+    const ResourcePriority& new_priority,
+    const gfx::Size& new_size,
+    InterpolationQuality new_quality) {
+  if (new_priority.is_lcp_resource) {
+    // Mark the resource as predicted LCP despite its visibility.
+    cached_info_.priority_.is_lcp_resource = true;
+    cached_info_.priority_excluding_image_loader_.is_lcp_resource = true;
+  }
+
+  if (new_priority.visibility == ResourcePriority::kNotVisible) {
+    return;
+  }
+
+  cached_info_.priority_.visibility = ResourcePriority::kVisible;
+  cached_info_.priority_.intra_priority_value +=
+      new_priority.intra_priority_value;
+
+  if (new_priority.source != ResourcePriority::Source::kImageLoader) {
+    cached_info_.priority_excluding_image_loader_.visibility =
+        ResourcePriority::kVisible;
+    cached_info_.priority_excluding_image_loader_.intra_priority_value +=
+        new_priority.intra_priority_value;
+  }
+  cached_info_.max_size_.SetToMax(new_size);
+  cached_info_.max_interpolation_quality_ =
+      std::max(cached_info_.max_interpolation_quality_, new_quality);
 }
 
 bool ImageResourceContent::CanBeSpeculativelyDecoded() const {

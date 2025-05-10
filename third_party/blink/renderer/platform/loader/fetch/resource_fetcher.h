@@ -379,6 +379,8 @@ class PLATFORM_EXPORT ResourceFetcher
   // changed such that the load should no longer be deferred.
   void ReloadImagesIfNotDeferred();
 
+  void MaybeStartSpeculativeImageDecode();
+
   // Populates the provided request's permissions policy.
   void PopulateResourceRequestPermissionsPolicy(
       network::ResourceRequest* request);
@@ -488,7 +490,6 @@ class PLATFORM_EXPORT ResourceFetcher
 
   void MaybeSaveResourceToStrongReference(Resource* resource);
 
-  void MaybeStartSpeculativeImageDecode();
   void SpeculativeImageDecodeFinished();
 
   enum class RevalidationPolicy {

@@ -217,6 +217,36 @@ bool LayoutImage::NeedsLayoutOnNaturalSizeChange() const {
   return !is_fixed_sized;
 }
 
+ResourcePriority LayoutImage::ComputeResourcePriority() const {
+  speculative_decode_parameters_.cached_resource_priority =
+      LayoutReplaced::ComputeResourcePriority();
+  return speculative_decode_parameters_.cached_resource_priority;
+}
+
+ResourcePriority LayoutImage::CachedResourcePriority() const {
+  return speculative_decode_parameters_.cached_resource_priority;
+}
+
+gfx::Size LayoutImage::ComputeSpeculativeDecodeSize() const {
+  speculative_decode_parameters_.cached_speculative_decode_size =
+      LayoutReplaced::ComputeSpeculativeDecodeSize();
+  return speculative_decode_parameters_.cached_speculative_decode_size;
+}
+
+gfx::Size LayoutImage::CachedSpeculativeDecodeSize() const {
+  return speculative_decode_parameters_.cached_speculative_decode_size;
+}
+
+InterpolationQuality LayoutImage::ComputeSpeculativeDecodeQuality() const {
+  speculative_decode_parameters_.cached_speculative_decode_quality =
+      LayoutReplaced::ComputeSpeculativeDecodeQuality();
+  return speculative_decode_parameters_.cached_speculative_decode_quality;
+}
+
+InterpolationQuality LayoutImage::CachedSpeculativeDecodeQuality() const {
+  return speculative_decode_parameters_.cached_speculative_decode_quality;
+}
+
 bool LayoutImage::InvalidateLayoutOnNaturalSizeChange() {
   SetIntrinsicLogicalWidthsDirty();
 

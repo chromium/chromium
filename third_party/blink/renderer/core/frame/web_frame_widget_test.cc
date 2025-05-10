@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -32,6 +33,7 @@
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -690,6 +692,41 @@ TEST_F(WebFrameWidgetImplSimTest, SpeculativeDecodeWithExtrinsicSize) {
         *test::ReadFromFile(test::CoreTestDataPath("background_image.png")));
     test::RunPendingTasks();
   }
+}
+
+TEST_F(WebFrameWidgetImplSimTest, SpeculativeImageDecodeBeforeLayout) {
+  // Check that a speculative decode can start as soon as an img element gets a
+  // src based on prior layout information, without waiting for a subsequent
+  // layout to happen.
+  base::test::ScopedFeatureList feature_list(
+      features::kSpeculativeImageDecodes);
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+      <!DOCTYPE html>
+      <html><body><img width=13 height=17/></body></html>
+  )HTML");
+  Compositor().BeginFrame();
+  HTMLImageElement* image =
+      To<HTMLImageElement>(GetDocument().QuerySelector(AtomicString("img")));
+  LayoutImage* layout_image = To<LayoutImage>(image->GetLayoutObject());
+  EXPECT_EQ(layout_image->CachedResourcePriority().visibility,
+            ResourcePriority::kVisible);
+  // Decode size should be based on layout size (note that this does not
+  // actually match the intrinsic size of the data URL below.
+  EXPECT_EQ(layout_image->CachedSpeculativeDecodeSize(), gfx::Size(13, 17));
+
+  image->setAttribute(
+      html_names::kSrcAttr,
+      AtomicString("data:image/"
+                   "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+"
+                   "9AAAAAXNSR0IArs4c6QAAABhJREFUKFNjbGj48J+BCMA4qhBfKFE/"
+                   "eACQKR1hvTllHQAAAABJRU5ErkJggg=="));
+  // The fetch is initiated synchronously from a microtask after src is set. For
+  // a data URL the load will also finish synchronously, and the speculative
+  // decode should have been triggered, based on pre-computed visibility.
+  EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _, true)).Times(1);
+  GetDocument().GetAgent().PerformMicrotaskCheckpoint();
 }
 
 #if BUILDFLAG(IS_WIN)

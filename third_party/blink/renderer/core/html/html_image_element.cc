@@ -520,6 +520,9 @@ LayoutObject* HTMLImageElement::CreateLayoutObject(const ComputedStyle& style) {
       LayoutImage* image = MakeGarbageCollected<LayoutImage>(this);
       image->SetImageResource(MakeGarbageCollected<LayoutImageResource>());
       image->SetImageDevicePixelRatio(image_device_pixel_ratio_);
+      if (base::FeatureList::IsEnabled(features::kSpeculativeImageDecodes)) {
+        GetDocument().View()->RegisterForLifecycleNotifications(this);
+      }
       return image;
     }
     case LayoutDisposition::kCollapsed:  // Falls through.
@@ -760,9 +763,27 @@ void HTMLImageElement::SetIsAdRelated() {
   is_ad_related_ = true;
 }
 
+void HTMLImageElement::DidFinishLayout() {
+  if (base::FeatureList::IsEnabled(features::kSpeculativeImageDecodes)) {
+    if (LayoutImage* layout_image = DynamicTo<LayoutImage>(GetLayoutObject())) {
+      // Populate cached values for load priority and speculative decode
+      // parameters.
+      layout_image->ComputeResourcePriority();
+      layout_image->ComputeSpeculativeDecodeSize();
+      layout_image->ComputeSpeculativeDecodeQuality();
+      // Once the image has a source ResourceFetcher will take over the updates.
+      if (!is_ad_related_ && GetImageLoader().GetContent()) {
+        GetDocument().View()->UnregisterFromLifecycleNotifications(this);
+      }
+    }
+  }
+}
+
 void HTMLImageElement::DidFinishLifecycleUpdate(
     const LocalFrameView& local_frame_view) {
-  DCHECK(is_ad_related_);
+  if (!is_ad_related_) {
+    return;
+  }
 
   // Scope to the outermost frame to avoid counting image ads that are (likely)
   // already in ad iframes.

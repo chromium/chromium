@@ -435,7 +435,7 @@ PositionWithAffinity LayoutReplaced::PositionForPoint(
   return LayoutBox::PositionForPoint(point);
 }
 
-gfx::Size LayoutReplaced::GetSpeculativeDecodeSize() const {
+gfx::Size LayoutReplaced::ComputeSpeculativeDecodeSize() const {
   NOT_DESTROYED();
   return ReplacedContentRect().PixelSnappedSize();
 }

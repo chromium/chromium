@@ -252,6 +252,10 @@ class CORE_EXPORT ImageResourceContent final
   void HandleObserverFinished(ImageResourceObserver*);
   void UpdateToLoadedContentStatus(ResourceStatus);
   void UpdateImageAnimationPolicy();
+  void ApplyPriorityAndSpeculativeDecodeParams(
+      const ResourcePriority& new_priority,
+      const gfx::Size& new_size,
+      InterpolationQuality new_quality);
 
   class ProhibitAddRemoveObserverInScope : public base::AutoReset<bool> {
    public:
