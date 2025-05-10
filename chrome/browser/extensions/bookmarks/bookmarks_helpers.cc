@@ -78,7 +78,8 @@ void PopulateBookmarkTreeNode(
   const BookmarkNode* parent = node->parent();
   if (parent) {
     out_bookmark_tree_node->parent_id = base::NumberToString(parent->id());
-    size_t index = visible_index.value_or(GetAPIIndexOf(*model, *node));
+    size_t index =
+        visible_index ? *visible_index : GetAPIIndexOf(*model, *node);
     out_bookmark_tree_node->index =
         base::FeatureList::IsEnabled(kEnforceBookmarkVisibilityOnExtensionsAPI)
             ? index
