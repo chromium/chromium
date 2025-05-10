@@ -399,7 +399,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1261380933454402672">Moderada</translation>
 <translation id="126156426083987769">Ocorreu um problema com as licenças do dispositivo no modo de demonstração.</translation>
 <translation id="1262564987698748643">Os sites podem pedir para substituir a entrada do teclado</translation>
-<translation id="1263231323834454256">Lista de leitura</translation>
+<translation id="1263231323834454256">Lista de Leitura</translation>
 <translation id="1263733306853729545">Usar as teclas <ph name="MINUS" /> e <ph name="EQUAL" /> para numerar uma lista de candidatos</translation>
 <translation id="126387934568812801">Incluir esta captura de tela e os títulos das guias abertas</translation>
 <translation id="1264083566674525434">Editar permissões do site</translation>
@@ -2493,7 +2493,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2701737434167469065">Faça login, <ph name="EMAIL" /></translation>
 <translation id="2701960282717219666">Endereço MAC da rede</translation>
 <translation id="2702720509009999256">Confira sua conexão de Internet e escolha "Tentar de novo" ou "Abrir no editor básico" para usar as opções limitadas de edição e visualização.</translation>
-<translation id="2702801445560668637">Lista de leitura</translation>
+<translation id="2702801445560668637">Lista de Leitura</translation>
 <translation id="270414148003105978">Redes móveis</translation>
 <translation id="2704184184447774363">Assinatura de documentos da Microsoft</translation>
 <translation id="2704606927547763573">Copiado</translation>
@@ -5789,7 +5789,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5032430150487044192">Não é possível criar o QR code</translation>
 <translation id="5033137252639132982">Bloquear o uso de sensores de movimento</translation>
 <translation id="5035846135112863536">Selecione "Mais detalhes" abaixo para saber mais informações sobre o <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
-<translation id="5037676449506322593">Selecionar tudo</translation>
+<translation id="5037676449506322593">Selecionar todas</translation>
 <translation id="5038621320029329200">Certificados confiáveis</translation>
 <translation id="5038818366306248416">Anteriormente, você escolheu não permitir nenhuma extensão em <ph name="ORIGIN" /></translation>
 <translation id="5039071832298038564">Informações da rede do dispositivo</translation>
@@ -6435,7 +6435,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5493792505296048976">tela ativada</translation>
 <translation id="5494016731375030300">Guias fechadas recentemente</translation>
 <translation id="5494362494988149300">Abrir quando estiver &amp;concluído</translation>
-<translation id="5494920125229734069">Selecionar tudo</translation>
+<translation id="5494920125229734069">Selecionar todas</translation>
 <translation id="5495466433285976480">Isto removerá todos os usuários locais, arquivos, dados e outras configurações após sua próxima reinicialização. Todos os usuários terão que fazer login novamente.</translation>
 <translation id="5495597166260341369">Manter a tela ligada</translation>
 <translation id="549602578321198708">Palavra</translation>

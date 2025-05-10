@@ -2213,7 +2213,7 @@
 <translation id="2492461744635776704">인증서 로그인 요청 준비 중</translation>
 <translation id="249330843868392562">TTS(텍스트 음성 변환) 설정 열기</translation>
 <translation id="2494555621641843783">Steam을 설치할 수 없음</translation>
-<translation id="2496180316473517155">인터넷 사용 기록</translation>
+<translation id="2496180316473517155">방문 기록</translation>
 <translation id="2496616243169085015">사진</translation>
 <translation id="2497229222757901769">마우스 속도</translation>
 <translation id="2497852260688568942">관리자가 동기화를 사용 중지했습니다.</translation>
@@ -8995,7 +8995,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7365995455115045224"><ph name="WINDOW_TITLE" /> - 고정됨</translation>
 <translation id="7366316827772164604">주변 기기 검색 중...</translation>
 <translation id="7366415735885268578">사이트 추가</translation>
-<translation id="7366909168761621528">인터넷 사용정보</translation>
+<translation id="7366909168761621528">인터넷 사용 기록</translation>
 <translation id="7367714965999718019">QR 코드 생성기</translation>
 <translation id="7368695150573390554">오프라인 데이터가 모두 삭제됩니다.</translation>
 <translation id="736877393389250337"><ph name="ALTERNATIVE_BROWSER_NAME" />에서 <ph name="URL" /> 페이지를 열 수 없습니다. 시스템 관리자에게 문의하세요.</translation>

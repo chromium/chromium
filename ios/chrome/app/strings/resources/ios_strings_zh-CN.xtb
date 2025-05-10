@@ -180,7 +180,7 @@
 <translation id="1709916727352927457">删除通行密钥</translation>
 <translation id="1712341189152602203">现有的浏览数据将关联到 <ph name="USER_EMAIL" />。您组织的成员或许可以查看这些数据。</translation>
 <translation id="1715515772563243997">如果您信任 <ph name="SITE" />，则可使用已保存的密码登录。</translation>
-<translation id="1718835860248848330">过去一小时</translation>
+<translation id="1718835860248848330">过去 1 小时</translation>
 <translation id="1728549374069268714">粘贴并前往</translation>
 <translation id="1732468323901456775">开启“<ph name="MODULE_NAME" />”的通知</translation>
 <translation id="1740468249224277719">点按两次即可安装。</translation>
@@ -1872,7 +1872,7 @@
 <translation id="8741995161408053644">您的 Google 账号在 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
 <translation id="874599634440689554">创建链接</translation>
 <translation id="8746155870861185046">分享突出显示的内容</translation>
-<translation id="8750037785291841318">您已打开的标签页会显示在此处</translation>
+<translation id="8750037785291841318">您打开的标签页会显示在此处</translation>
 <translation id="8756969031206844760">要更新密码吗？</translation>
 <translation id="8764015330924122850">取消关注“<ph name="DOMAIN_NAME" />”</translation>
 <translation id="8766790350274092814">用于登录 <ph name="WEBSITE" /> 和 <ph name="SECOND_WEBSITE" /> 的密码将被删除。您的相关账号不会被删除。</translation>

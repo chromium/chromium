@@ -3747,7 +3747,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3617062258679844578">Tıklamak için dokunmatik alana basmak yerine dokunun</translation>
 <translation id="3617891479562106823">Arka planlar kullanılamıyor. Daha sonra tekrar deneyin.</translation>
 <translation id="3618286417582819036">Maalesef, bir hata oluştu</translation>
-<translation id="3618647122592024084"><ph name="RECIPIENT_NAME" /> artık Google Şifre Yöneticisi'ni kullanırken kullanıcı adınızı ve şifrenizi kullanabilir. <ph name="WEBSITE" /> adresine giderek oturum açmasını söyleyin.</translation>
+<translation id="3618647122592024084"><ph name="RECIPIENT_NAME" />, artık Google Şifre Yöneticisi üzerinden sizin kullanıcı adınızı ve şifrenizi kullanabilir. <ph name="WEBSITE" /> adresine gidip oturum açmasını söyleyin.</translation>
 <translation id="3619115746895587757">Kapuçino</translation>
 <translation id="3619294456800709762">Siteler otomatik olarak pencere içinde pencere moduna girebilir</translation>
 <translation id="3620136223548713675">Coğrafi konum</translation>
@@ -8977,7 +8977,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7365995455115045224"><ph name="WINDOW_TITLE" /> - Sabitlendi</translation>
 <translation id="7366316827772164604">Yakındaki cihazlar taranıyor...</translation>
 <translation id="7366415735885268578">Site ekle</translation>
-<translation id="7366909168761621528">Göz atma verileri</translation>
+<translation id="7366909168761621528">Tarama verileri</translation>
 <translation id="7367714965999718019">QR Kodu Oluşturucu</translation>
 <translation id="7368695150573390554">Tüm çevrimdışı veriler silinecek</translation>
 <translation id="736877393389250337"><ph name="URL" /> <ph name="ALTERNATIVE_BROWSER_NAME" /> tarayıcıda açılamadı. Lütfen sistem yöneticinizle iletişim kurun.</translation>
@@ -9783,7 +9783,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7923564237306226146">Linux'u yeni sürüme geçirme işlemi tamamlandı</translation>
 <translation id="7924075559900107275">uzun süreli destek adayı</translation>
 <translation id="7924358170328001543">Bağlantı noktası yönlendirme hatası</translation>
-<translation id="7925108652071887026">Verileri otomatik doldur</translation>
+<translation id="7925108652071887026">Otomatik doldurma verileri</translation>
 <translation id="792514962475806987">Yerleştirilmişken yakınlaştırma düzeyi:</translation>
 <translation id="7925285046818567682"><ph name="HOST_NAME" /> bekleniyor...</translation>
 <translation id="7926423016278357561">Bu kişi ben değildim.</translation>

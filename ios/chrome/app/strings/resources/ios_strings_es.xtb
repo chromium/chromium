@@ -634,7 +634,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="372115889256123713">archivos en caché</translation>
 <translation id="3725081662140949903">Para impedir que otras personas usen tu contraseña, abre la aplicación <ph name="APP" /> y cambia tu contraseña</translation>
 <translation id="372676576864368480">Autocompletar el número de tarjeta que termina en <ph name="LAST_DIGITS" /></translation>
-<translation id="3738428049780661523">Creado: <ph name="DATE" /></translation>
+<translation id="3738428049780661523">Creado hace <ph name="DATE" /></translation>
 <translation id="3750225824417196283">Nueva página de pestaña de Incógnito</translation>
 <translation id="3753408171347588045">Seguimiento de precios</translation>
 <translation id="3762232513783804601">Diseñado para tu iPad</translation>
@@ -1259,7 +1259,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="629730747756840877">Cuenta</translation>
 <translation id="6301104306974789820">Recibe notificaciones de seguimiento de precios</translation>
 <translation id="6316141353357700666">Elige la contraseña que quieras usar de la lista que aparece.</translation>
-<translation id="6321526113093607004">Añadir a Marcadores</translation>
+<translation id="6321526113093607004">Añadir a marcadores</translation>
 <translation id="6331836477476466332">Un navegador más seguro y potente para ti</translation>
 <translation id="6335744088476213315">Esta tarjeta muestra los productos que has visto recientemente y que te podría interesar seguir para recibir alertas de bajadas de precio</translation>
 <translation id="6337234675334993532">Cifrado</translation>
@@ -1664,7 +1664,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="7975036700432177008">Probar</translation>
 <translation id="797588153137233716">Menú → Historial → Eliminar datos de navegación</translation>
 <translation id="7977451675950311423">Te avisa si usas una contraseña vulnerada en una brecha de seguridad de datos.</translation>
-<translation id="797824194429476746">Las pestañas seguirán abiertas en este dispositivo, pero el grupo se eliminará de forma permanente</translation>
+<translation id="797824194429476746">Las pestañas seguirán abiertas en este dispositivo, pero el grupo se eliminará de forma permanente.</translation>
 <translation id="797874245254030665">Accede a tus contraseñas y llaves de acceso desde cualquier aplicación</translation>
 <translation id="7982789257301363584">Red</translation>
 <translation id="7987685713885608670">Para una mayor seguridad, cifra las contraseñas en tu dispositivo antes de que se guarden en el Gestor de contraseñas de Google.</translation>

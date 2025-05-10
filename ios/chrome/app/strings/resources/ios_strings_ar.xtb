@@ -211,7 +211,7 @@
 <translation id="1832848789136765277">لضمان إمكانية الوصول دائمًا إلى البيانات التي تتم مزامنتها، عليك إثبات هويتك.</translation>
 <translation id="1836891464494477513">{count,plural, =1{‏تم حفظ الإشارة المرجعية في حسابك على Google‏ ({email}).}zero{‏تم حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}two{‏تم حفظ الإشارتين المرجعيتَين في حسابك على Google‏ ({email}).}few{‏تم حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}many{‏تم حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}other{‏تم حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}}</translation>
 <translation id="1838089197478136166">‏"هل المطلوب فتح الملف في تطبيق Apple Wallet؟" (Open in Wallet?‎)</translation>
-<translation id="183878838231635348">تعرض هذه البطاقة أي مشاكل تتعلّق بالخصوصية أو الأمان يتم رصدها تلقائيًا من خلال ميزة "تأكيد السلامة".</translation>
+<translation id="183878838231635348">تعرض هذه البطاقة أي مشاكل تتعلّق بالخصوصية أو الأمان يتم رصدها تلقائيًا من خلال ميزة "التحقّق من الأمان".</translation>
 <translation id="1845230888742614096">الاحتفاظ بمجموعة علامات التبويب</translation>
 <translation id="1854463785401910334">البحث في علامات التبويب المفتوحة</translation>
 <translation id="1861067954551502701">{count,plural, =1{‫{position} من إجمالي كلمة مرور واحدة ({count})}zero{‫{position} من إجمالي {count} كلمة مرور}two{‫{position} من إجمالي كلمتَي مرور ({count})}few{‫{position} من إجمالي {count} كلمات مرور}many{‫{position} من إجمالي {count} كلمة مرور}other{‫{position} من إجمالي {count} كلمة مرور}}</translation>
@@ -385,7 +385,7 @@
 <translation id="2538103551183528357">كلمة المرور مخفية</translation>
 <translation id="2539748786028143624">تفعيل مستوى "الحماية المحسَّنة"…</translation>
 <translation id="2540111494300686866">إيقاف مربعات الحوار</translation>
-<translation id="2542268842667970959">إخفاء ميزة "تأكيد السلامة"</translation>
+<translation id="2542268842667970959">إخفاء ميزة "التحقّق من الأمان"</translation>
 <translation id="2547458583188611426">المزامنة غير مفعَّلة. يجب إدخال عبارة المرور لبدء المزامنة.</translation>
 <translation id="2551153019974022505">خطأ في الحساب</translation>
 <translation id="2559843230610279254">مجموعة علامات تبويب تحمل اسم "<ph name="GROUP_TITLE" />"، وعدد علامات التبويب فيها <ph name="TABS_NUMBER" /></translation>
@@ -1907,7 +1907,7 @@
 <translation id="8877788021141246043">ضبط تذكير</translation>
 <translation id="8879604564928138696">انقر مرّتين للتجربة</translation>
 <translation id="8879952635974818770">محتوى مخصّص</translation>
-<translation id="8887595428614802520">إغلاق جميع علامات التبويب والمجموعات</translation>
+<translation id="8887595428614802520">إغلاق كل علامات التبويب والمجموعات</translation>
 <translation id="8888595487174963247">إزالة التذكير</translation>
 <translation id="8891031436559779793">سيتم إرسال إشعار إليك في حال انخفاض السعر على أي موقع إلكتروني.</translation>
 <translation id="8893208530912252670">الفيديوهات</translation>

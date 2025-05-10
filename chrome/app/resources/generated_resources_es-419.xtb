@@ -5111,7 +5111,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4561893854334016293">No se cambió ningún permiso recientemente</translation>
 <translation id="4562091353415772246">Instalar actualizaciones y apps. Si continúas, aceptas que este dispositivo también descargue e instale automáticamente actualizaciones y apps de Google, tu operador y el fabricante del dispositivo usando datos móviles. Algunas de esas apps podrían ofrecer compras directas. <ph name="BEGIN_LINK1" />Más información sobre la instalación automática de Play<ph name="BEGIN_LINK1_END" />Más información<ph name="END_LINK1" /></translation>
 <translation id="4562155214028662640">Agregar huella dactilar</translation>
-<translation id="4562155266774382038">Descartar la sugerencia</translation>
+<translation id="4562155266774382038">Descartar sugerencia</translation>
 <translation id="4562364000855074606">Bloquea las apps instaladas en tu <ph name="DEVICE_TYPE" />. Para restringir la descarga de apps o contenido, ve a la configuración de Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">El idioma inicial de entrada es chino</translation>
 <translation id="4563382028841851106">Quitar de la cuenta</translation>
@@ -10097,7 +10097,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8126355825906412872">Sonreir</translation>
 <translation id="8129265306888404830">Para usar la dirección de correo electrónico de tu organización (<ph name="EMAIL_DOMAIN" />), debes usar la inscripción empresarial. Si este dispositivo es para uso personal, accede con tu Cuenta de Google personal.</translation>
 <translation id="8130476996317833777">No permitir que los sitios usen el optimizador V8</translation>
-<translation id="813082847718468539">Consulta la información del sitio</translation>
+<translation id="813082847718468539">Ver la información del sitio</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8133297578569873332">Aceptable (FM)</translation>
 <translation id="8133676275609324831">Mo&amp;strar en carpeta</translation>
