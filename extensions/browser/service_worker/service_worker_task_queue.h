@@ -185,12 +185,16 @@ class ServiceWorkerTaskQueue
 
     void SetWorkerId(const WorkerId& worker_id,
                      ProcessManager* process_manager);
-    void ResetWorkerId() { worker_id_.reset(); }
     void SetBrowserState(BrowserState browser_state) {
       browser_state_ = browser_state;
     }
     void SetRendererState(RendererState renderer_state) {
       renderer_state_ = renderer_state;
+    }
+    void Reset() {
+      worker_id_.reset();
+      browser_state_ = BrowserState::kInitial;
+      renderer_state_ = RendererState::kNotActive;
     }
 
     bool ready() const;

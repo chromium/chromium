@@ -482,10 +482,10 @@ using ServiceWorkerStopTrackingBrowserTest = ServiceWorkerTrackingBrowserTest;
 
 // Test that if a browser stop notification is received before the render stop
 // notification (since these things can be triggered independently) the worker's
-// browser readiness remains not ready.
+// browser and renderer state are both set to not ready.
 IN_PROC_BROWSER_TEST_F(
     ServiceWorkerStopTrackingBrowserTest,
-    OnStoppedUpdatesBrowserState_BeforeRenderStopNotification) {
+    OnStoppedUpdatesBrowserAndRendererState_BeforeRenderStopNotification) {
   ASSERT_NO_FATAL_FAILURE(LoadServiceWorkerExtension());
 
   // Get information about worker for extension that will be stopped soon.
@@ -522,6 +522,8 @@ IN_PROC_BROWSER_TEST_F(
   // notification reset it to no longer ready.
   EXPECT_EQ(worker_state->browser_state(),
             ServiceWorkerTaskQueue::BrowserState::kInitial);
+  EXPECT_EQ(worker_state->renderer_state(),
+            ServiceWorkerTaskQueue::RendererState::kNotActive);
 
   // Simulate the render stop notification arriving afterwards.
   task_queue->DidStopServiceWorkerContext(
@@ -531,17 +533,19 @@ IN_PROC_BROWSER_TEST_F(
       stopped_service_worker_id->version_id,
       stopped_service_worker_id->thread_id);
 
-  // Confirm the worker state still exists and browser state remains the same.
+  // Confirm the worker state still exists and state remains the same.
   EXPECT_EQ(worker_state->browser_state(),
             ServiceWorkerTaskQueue::BrowserState::kInitial);
+  EXPECT_EQ(worker_state->renderer_state(),
+            ServiceWorkerTaskQueue::RendererState::kNotActive);
 }
 
 // Test that if a browser stop notification is received after the render stop
 // notification (since these things can be triggered independently)
-// it updates the worker's browser readiness information to not ready.
+// the worker's browser and renderer readiness information remains not ready.
 IN_PROC_BROWSER_TEST_F(
     ServiceWorkerStopTrackingBrowserTest,
-    OnStoppedUpdatesBrowserState_AfterRenderStopNotification) {
+    OnStoppedUpdatesBrowserAndRendererState_AfterRenderStopNotification) {
   ASSERT_NO_FATAL_FAILURE(LoadServiceWorkerExtension());
 
   // Get information about worker for extension that will be stopped soon.
@@ -575,17 +579,23 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(content::CheckServiceWorkerIsStopped(
       sw_context, stopped_service_worker_id->version_id));
 
-  // Confirm the worker state still exists and browser state is still ready.
+  // Confirm the worker state still exists and browser and renderer state are
+  // not ready.
   EXPECT_EQ(worker_state->browser_state(),
-            ServiceWorkerTaskQueue::BrowserState::kReady);
+            ServiceWorkerTaskQueue::BrowserState::kInitial);
+  EXPECT_EQ(worker_state->renderer_state(),
+            ServiceWorkerTaskQueue::RendererState::kNotActive);
 
   // Simulate browser stop notification after the render stop notification.
   ServiceWorkerTaskQueue::Get(profile())->OnStopped(
       stopped_service_worker_id->version_id, sw_info);
 
-  // Confirm the worker state still exists, but browser state is not ready.
+  // Confirm the worker state still exists, and browser and renderer state
+  // remain not ready.
   EXPECT_EQ(worker_state->browser_state(),
             ServiceWorkerTaskQueue::BrowserState::kInitial);
+  EXPECT_EQ(worker_state->renderer_state(),
+            ServiceWorkerTaskQueue::RendererState::kNotActive);
 }
 
 // Test that if a browser stop notification is received after a worker is
@@ -634,9 +644,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStopTrackingBrowserTest,
 // Test that if a renderer process exit notification is received before
 // a browser stop notification (since these things can be triggered
 // independently) and a context stop notification, it updates the worker's
-// renderer active state to inactive.
+// browser and renderer active state to inactive.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerStopTrackingBrowserTest,
-                       RenderProcessExitedUpdatesRendererState) {
+                       RenderProcessExitedUpdatesBrowserAndRendererState) {
   ASSERT_NO_FATAL_FAILURE(LoadServiceWorkerExtension());
 
   // Get information about worker for extension that will be stopped soon.
@@ -679,8 +689,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStopTrackingBrowserTest,
   ASSERT_TRUE(
       content::CheckServiceWorkerIsStopped(sw_context, worker_id->version_id));
 
-  // Confirm the worker state still exists and renderer state has been set to
-  // inactive by `ServiceWorkerHost::RenderProcessForWorkerExited`.
+  // Confirm the worker state still exists and browser and renderer states have
+  // been set to inactive by `ServiceWorkerHost::RenderProcessForWorkerExited`.
+  EXPECT_EQ(worker_state->browser_state(),
+            ServiceWorkerTaskQueue::BrowserState::kInitial);
   EXPECT_EQ(worker_state->renderer_state(),
             ServiceWorkerTaskQueue::RendererState::kNotActive);
 }
