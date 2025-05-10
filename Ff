@@ -1,0 +1,9 @@
+{
+  name: "NewFeature",
+  status: {
+    "Android": "test",
+    "ChromeOS": "experimental",
+    "Win": "stable",
+    "default": "",
+  }
+}
