@@ -8,8 +8,8 @@
 
 #include "base/numerics/byte_conversions.h"
 #include "base/rand_util.h"
+#include "crypto/hash.h"
 #include "crypto/hmac.h"
-#include "crypto/sha2.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace browsing_topics {
@@ -122,9 +122,9 @@ HashedDomain HashContextDomainForStorage(ReadOnlyHmacKey hmac_key,
 }
 
 HashedHost HashMainFrameHostForStorage(const std::string& main_frame_host) {
-  int64_t result;
-  crypto::SHA256HashString(kMainFrameHostStoragePrefix + main_frame_host,
-                           &result, sizeof(result));
+  auto hash =
+      crypto::hash::Sha256(kMainFrameHostStoragePrefix + main_frame_host);
+  int64_t result = base::I64FromNativeEndian(base::span(hash).first<8u>());
   return HashedHost(result);
 }
 
