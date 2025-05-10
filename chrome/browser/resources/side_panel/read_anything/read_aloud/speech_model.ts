@@ -71,6 +71,10 @@ export class SpeechModel {
   // Used for logging play time.
   private playSessionStartTime_: number|null = null;
 
+  // If the node id of the first text node that should be used by Read Aloud
+  // has been set. This is null if the id has not been set.
+  private firstTextNodeSetForReadAloud_: number|null = null;
+
   reset(): void {
     this.speechPlayingState_ = {
       isSpeechTreeInitialized: false,
@@ -82,6 +86,14 @@ export class SpeechModel {
     };
     this.speechEngineState_ = SpeechEngineState.NONE;
     this.previewVoicePlaying_ = null;
+  }
+
+  getFirstTextNode(): number|null {
+    return this.firstTextNodeSetForReadAloud_;
+  }
+
+  setFirstTextNode(node: number|null) {
+    this.firstTextNodeSetForReadAloud_ = node;
   }
 
   getPlaySessionStartTime(): number|null {

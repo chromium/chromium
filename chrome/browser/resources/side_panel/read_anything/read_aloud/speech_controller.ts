@@ -145,14 +145,19 @@ export class SpeechController {
     this.listeners_.forEach(l => l.onIsAudioCurrentlyPlayingChange());
   }
 
-  initializeSpeechTree(startingNodeId: number|null) {
-    if (!startingNodeId || this.isSpeechTreeInitialized()) {
+  initializeSpeechTree(startingNodeId?: number) {
+    if (startingNodeId && !this.model_.getFirstTextNode()) {
+      this.model_.setFirstTextNode(startingNodeId);
+    }
+
+    const firstTextNode = this.model_.getFirstTextNode();
+    if (!firstTextNode || this.isSpeechTreeInitialized()) {
       return;
     }
 
     // TODO: crbug.com/40927698 - There should be a way to use AXPosition so
     // that this step can be skipped.
-    chrome.readingMode.initAxPositionWithNode(startingNodeId);
+    chrome.readingMode.initAxPositionWithNode(firstTextNode);
     this.model_.setIsSpeechTreeInitialized(true);
     chrome.readingMode.preprocessTextForSpeech();
   }
@@ -590,6 +595,7 @@ export class SpeechController {
 
   clearReadAloudState() {
     this.reset();
+    this.model_.setFirstTextNode(null);
     this.highlighter_.clearHighlightFormatting();
     this.wordBoundaries_.resetToDefaultState();
   }

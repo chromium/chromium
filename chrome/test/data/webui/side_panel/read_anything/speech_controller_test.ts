@@ -267,7 +267,7 @@ suite('SpeechController', () => {
     });
 
     test('with no node id does nothing', () => {
-      speechController.initializeSpeechTree(null);
+      speechController.initializeSpeechTree();
 
       assertFalse(!!initAxPositionWithNode);
       assertFalse(startedPreprocess);

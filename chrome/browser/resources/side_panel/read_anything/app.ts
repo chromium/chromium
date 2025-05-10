@@ -150,10 +150,6 @@ export class AppElement extends AppElementBase implements
 
   private accessor imagesEnabled: boolean = false;
 
-  // If the node id of the first text node that should be used by Read Aloud
-  // has been set. This is null if the id has not been set.
-  firstTextNodeSetForReadAloud: number|null = null;
-
   constructor() {
     super();
     this.constructorTime = Date.now();
@@ -197,7 +193,6 @@ export class AppElement extends AppElementBase implements
       // not always reliabled called.
       this.speech_.cancel();
       this.hasContent_ = false;
-      this.firstTextNodeSetForReadAloud = null;
       this.nodeStore_.clearDomNodes();
     }
 
@@ -432,10 +427,7 @@ export class AppElement extends AppElementBase implements
     // node id to call InitAXPosition in playSpeech. If it's not saved here,
     // we have to retrieve it through a DOM search such as createTreeWalker,
     // which can be computationally expensive.
-    if (!this.firstTextNodeSetForReadAloud) {
-      this.firstTextNodeSetForReadAloud = nodeId;
-      this.speechController_.initializeSpeechTree(nodeId);
-    }
+    this.speechController_.initializeSpeechTree(nodeId);
 
     const textContent = chrome.readingMode.getTextContent(nodeId);
     const textNode = document.createTextNode(textContent);
@@ -485,10 +477,6 @@ export class AppElement extends AppElementBase implements
   // TODO: crbug.com/40927698 - Handle focus changes for speech, including
   // updating speech state.
   updateContent() {
-    // Each time we rebuild the subtree, we should clear the node id of the
-    // first text node.
-    this.firstTextNodeSetForReadAloud = null;
-
     // This shouldn't happen. If it does, there is likely a bug, so log it so
     // we can monitor it.
     if (this.speechController_.isSpeechActive()) {
@@ -922,10 +910,10 @@ export class AppElement extends AppElementBase implements
       }
 
       const playedFromSelection = hasSelection && this.playFromSelection();
-      if (!playedFromSelection && this.firstTextNodeSetForReadAloud) {
-        this.speechController_.initializeSpeechTree(
-            this.firstTextNodeSetForReadAloud);
-        if (!this.speechController_.highlightAndPlayMessage()) {
+      if (!playedFromSelection) {
+        this.speechController_.initializeSpeechTree();
+        if (this.speechController_.isSpeechTreeInitialized() &&
+            !this.speechController_.highlightAndPlayMessage()) {
           // Ensure we're updating Read Aloud state if there's no text to speak.
           this.speechController_.onSpeechFinished();
         }
@@ -963,7 +951,7 @@ export class AppElement extends AppElementBase implements
 
   playFromSelection(): boolean {
     const selection = this.getSelection();
-    if (!this.firstTextNodeSetForReadAloud || !selection) {
+    if (!this.speechController_.isSpeechTreeInitialized() || !selection) {
       return false;
     }
 
