@@ -124,7 +124,6 @@
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_speculation_host_delegate.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
-#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_navigation_throttle.h"
 #include "chrome/browser/preloading/prefetch/prefetch_service/chrome_prefetch_service_delegate.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_url_loader.h"
@@ -241,7 +240,6 @@
 #include "components/error_page/common/error.h"
 #include "components/error_page/common/error_page_switches.h"
 #include "components/error_page/common/localized_error.h"
-#include "components/error_page/content/browser/net_error_auto_reloader.h"
 #include "components/google/core/common/google_switches.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/history/content/browser/visited_link_navigation_throttle.h"
@@ -264,7 +262,6 @@
 #include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_url_loader_throttle.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
-#include "components/payments/content/payment_handler_navigation_throttle.h"
 #include "components/payments/content/payment_request_display_manager.h"
 #include "components/payments/content/secure_payment_confirmation_service_factory.h"
 #include "components/pdf/common/pdf_util.h"
@@ -283,7 +280,6 @@
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/browser_url_loader_throttle.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_commit_deferring_condition.h"
-#include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
@@ -293,7 +289,6 @@
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/security_interstitials/content/insecure_form_navigation_throttle.h"
 #include "components/security_state/core/security_state.h"
 #include "components/services/on_device_translation/buildflags/buildflags.h"
 #include "components/site_isolation/pref_names.h"
@@ -435,7 +430,6 @@
 #elif BUILDFLAG(IS_MAC)
 #include "chrome/browser/browser_process_platform_part_mac.h"
 #include "chrome/browser/chrome_browser_main_mac.h"
-#include "chrome/browser/mac/auth_session_request.h"
 #include "chrome/browser/mac/chrome_browser_main_extra_parts_mac.h"
 #include "components/soda/constants.h"
 #include "sandbox/mac/sandbox_serializer.h"
@@ -456,7 +450,6 @@
 #include "chrome/app/chrome_crash_reporter_client.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_backend_delegate.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_backend_delegate.h"
-#include "chrome/browser/ash/boca/on_task/on_task_locked_session_navigation_throttle.h"
 #include "chrome/browser/ash/drive/fileapi/drivefs_file_system_backend_delegate.h"
 #include "chrome/browser/ash/file_system_provider/fileapi/backend_delegate.h"
 #include "chrome/browser/ash/fileapi/external_file_url_loader_factory.h"
@@ -470,7 +463,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/smb_client/fileapi/smbfs_file_system_backend_delegate.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_settings_navigation_throttle.h"
 #include "chrome/browser/speech/tts_chromeos.h"
 #include "chrome/browser/speech/tts_controller_delegate_impl.h"
 #include "chrome/browser/ui/ash/main_extra_parts/chrome_browser_main_extra_parts_ash.h"
@@ -568,10 +560,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/search/new_tab_page_navigation_throttle.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_navigation_throttle.h"
-#include "chrome/browser/ui/web_applications/tabbed_web_app_navigation_throttle.h"
-#include "chrome/browser/ui/web_applications/webui_web_app_navigation_throttle.h"
 #include "chrome/browser/ui/webui/chrome_content_browser_client_webui_part.h"
 #include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_error_page.h"
@@ -591,10 +580,6 @@
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #endif  //  !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "chrome/browser/browser_switcher/browser_switcher_navigation_throttle.h"
-#endif
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "components/crash/core/app/crash_switches.h"
 #include "components/crash/core/app/crashpad.h"
@@ -606,18 +591,9 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/enterprise/chrome_browser_main_extra_parts_enterprise.h"
-#include "chrome/browser/enterprise/profile_management/oidc_auth_response_capture_navigation_throttle.h"
-#include "chrome/browser/enterprise/profile_management/profile_management_navigation_throttle.h"
-#include "chrome/browser/enterprise/signin/managed_profile_required_navigation_throttle.h"
-#include "chrome/browser/enterprise/webstore/chrome_web_store_navigation_throttle.h"
-#include "chrome/browser/enterprise/webstore/features.h"
-#include "chrome/browser/ui/webui/app_settings/web_app_settings_navigation_throttle.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/enterprise/connectors/device_trust/navigation_throttle.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/enterprise/incognito/incognito_navigation_throttle.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
@@ -709,10 +685,8 @@
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
-#include "chrome/browser/safe_browsing/delayed_warning_navigation_throttle.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/url_lookup_service_factory.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_throttle.h"
 #include "components/safe_browsing/core/browser/realtime/chrome_enterprise_url_lookup_service.h"
 #endif
 
@@ -1261,21 +1235,6 @@ void MaybeAddCondition(
   }
 }
 #endif
-
-bool IsErrorPageAutoReloadEnabled() {
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  if (command_line.HasSwitch(switches::kEnableAutomation)) {
-    return false;
-  }
-  if (command_line.HasSwitch(embedder_support::kEnableAutoReload)) {
-    return true;
-  }
-  if (command_line.HasSwitch(embedder_support::kDisableAutoReload)) {
-    return false;
-  }
-  return true;
-}
 
 #if BUILDFLAG(IS_CHROMEOS)
 void NotifyMultiCaptureStarted(const std::string& label,
@@ -5322,106 +5281,6 @@ void ChromeContentBrowserClient::CreateThrottlesForNavigation(
       Profile::FromBrowserContext(handle.GetWebContents()->GetBrowserContext());
   // TODO(https://crbug.com/412524375): Move the following code to
   // CreateAndAddChromeThrottlesForNavigation().
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  registry.MaybeAddThrottle(
-      WebAppSettingsNavigationThrottle::MaybeCreateThrottleFor(&handle));
-  registry.MaybeAddThrottle(
-      profile_management::ProfileManagementNavigationThrottle::
-          MaybeCreateThrottleFor(&handle));
-  registry.MaybeAddThrottle(
-      profile_management::OidcAuthResponseCaptureNavigationThrottle::
-          MaybeCreateThrottleFor(&handle));
-  registry.MaybeAddThrottle(
-      ManagedProfileRequiredNavigationThrottle::MaybeCreateThrottleFor(
-          &handle));
-
-  if (base::FeatureList::IsEnabled(
-          enterprise::webstore::kChromeWebStoreNavigationThrottle)) {
-    registry.AddThrottle(
-        std::make_unique<enterprise_webstore::ChromeWebStoreNavigationThrottle>(
-            &handle));
-  }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_CHROMEOS)
-  registry.MaybeAddThrottle(
-      enterprise_connectors::DeviceTrustNavigationThrottle::
-          MaybeCreateThrottleFor(&handle));
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_CHROMEOS)
-
-#if !BUILDFLAG(IS_ANDROID)
-  registry.MaybeAddThrottle(
-      DevToolsWindow::MaybeCreateNavigationThrottle(&handle));
-
-  registry.MaybeAddThrottle(
-      NewTabPageNavigationThrottle::MaybeCreateThrottleFor(&handle));
-
-  registry.MaybeAddThrottle(
-      web_app::TabbedWebAppNavigationThrottle::MaybeCreateThrottleFor(&handle));
-
-  registry.MaybeAddThrottle(
-      web_app::WebUIWebAppNavigationThrottle::MaybeCreateThrottleFor(&handle));
-#endif
-
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  // g_browser_process->safe_browsing_service() may be null in unittests.
-  safe_browsing::SafeBrowsingUIManager* ui_manager =
-      g_browser_process->safe_browsing_service()
-          ? g_browser_process->safe_browsing_service()->ui_manager().get()
-          : nullptr;
-  registry.MaybeAddThrottle(
-      safe_browsing::SafeBrowsingNavigationThrottle::MaybeCreateThrottleFor(
-          &handle, ui_manager));
-
-  if (base::FeatureList::IsEnabled(safe_browsing::kDelayedWarnings)) {
-    registry.AddThrottle(
-        std::make_unique<safe_browsing::DelayedWarningNavigationThrottle>(
-            &handle));
-  }
-#endif
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  browser_switcher::BrowserSwitcherNavigationThrottle::MaybeCreateAndAdd(
-      registry);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-  registry.MaybeAddThrottle(
-      chromeos::KioskSettingsNavigationThrottle::MaybeCreateThrottleFor(
-          &handle));
-
-  registry.MaybeAddThrottle(
-      ash::OnTaskLockedSessionNavigationThrottle::MaybeCreateThrottleFor(
-          &handle));
-#endif
-
-#if BUILDFLAG(IS_MAC)
-  registry.MaybeAddThrottle(MaybeCreateAuthSessionThrottleFor(&handle));
-#endif
-
-  if (profile && profile->GetPrefs()) {
-    registry.MaybeAddThrottle(
-        security_interstitials::InsecureFormNavigationThrottle::
-            MaybeCreateNavigationThrottle(
-                &handle, std::make_unique<ChromeSecurityBlockingPageFactory>(),
-                profile->GetPrefs()));
-  }
-
-  if (IsErrorPageAutoReloadEnabled()) {
-    registry.MaybeAddThrottle(
-        error_page::NetErrorAutoReloader::MaybeCreateThrottleFor(&handle));
-  }
-
-  registry.MaybeAddThrottle(
-      payments::PaymentHandlerNavigationThrottle::MaybeCreateThrottleFor(
-          &handle));
-
-  registry.MaybeAddThrottle(
-      prerender::NoStatePrefetchNavigationThrottle::MaybeCreateThrottleFor(
-          &handle));
 
 #if !BUILDFLAG(IS_ANDROID)
   registry.MaybeAddThrottle(

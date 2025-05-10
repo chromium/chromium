@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chrome_content_browser_client_navigation_throttles.h"
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/plugins/pdf_iframe_navigation_throttle.h"
 #include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_navigation_throttle.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
 #include "chrome/browser/ssl/https_defaulted_callbacks.h"
@@ -27,18 +29,24 @@
 #include "chrome/common/pref_names.h"
 #include "components/captive_portal/content/captive_portal_service.h"
 #include "components/captive_portal/core/buildflags.h"
+#include "components/embedder_support/switches.h"
+#include "components/error_page/content/browser/net_error_auto_reloader.h"
 #include "components/fingerprinting_protection_filter/browser/throttle_manager.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/page_load_metrics/browser/metrics_navigation_throttle.h"
+#include "components/payments/content/payment_handler_navigation_throttle.h"
 #include "components/policy/content/policy_blocklist_navigation_throttle.h"
+#include "components/safe_browsing/buildflags.h"
+#include "components/security_interstitials/content/insecure_form_navigation_throttle.h"
 #include "components/security_interstitials/content/ssl_error_handler.h"
 #include "components/security_interstitials/content/ssl_error_navigation_throttle.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_switches.h"
 #include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
 #include "pdf/buildflags.h"
@@ -55,14 +63,20 @@
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/apps/link_capturing/link_capturing_navigation_throttle.h"
 #include "chrome/browser/apps/link_capturing/web_app_link_capturing_delegate.h"
+#include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/ui/search/new_tab_page_navigation_throttle.h"
+#include "chrome/browser/ui/web_applications/tabbed_web_app_navigation_throttle.h"
+#include "chrome/browser/ui/web_applications/webui_web_app_navigation_throttle.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/intent_helper/chromeos_disabled_apps_throttle.h"
 #include "chrome/browser/apps/link_capturing/chromeos_link_capturing_delegate.h"
 #include "chrome/browser/apps/link_capturing/chromeos_reimpl_navigation_capturing_throttle.h"
+#include "chrome/browser/ash/boca/on_task/on_task_locked_session_navigation_throttle.h"
 #include "chrome/browser/ash/login/signin/merge_session_navigation_throttle.h"
 #include "chrome/browser/ash/login/signin/merge_session_throttling_utils.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_settings_navigation_throttle.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
@@ -90,6 +104,35 @@
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
 #endif  // BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#include "chrome/browser/browser_switcher/browser_switcher_navigation_throttle.h"
+#include "chrome/browser/enterprise/profile_management/oidc_auth_response_capture_navigation_throttle.h"
+#include "chrome/browser/enterprise/profile_management/profile_management_navigation_throttle.h"
+#include "chrome/browser/enterprise/signin/managed_profile_required_navigation_throttle.h"
+#include "chrome/browser/enterprise/webstore/chrome_web_store_navigation_throttle.h"
+#include "chrome/browser/enterprise/webstore/features.h"
+#include "chrome/browser/ui/webui/app_settings/web_app_settings_navigation_throttle.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/enterprise/connectors/device_trust/navigation_throttle.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/delayed_warning_navigation_throttle.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "components/safe_browsing/content/browser/safe_browsing_navigation_throttle.h"
+#include "components/safe_browsing/content/browser/ui_manager.h"
+#include "components/safe_browsing/core/common/features.h"
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/mac/auth_session_request.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace {
 
@@ -135,6 +178,21 @@ bool IsInHostedApp(content::WebContents* web_contents) {
 #else
   return false;
 #endif
+}
+
+bool IsErrorPageAutoReloadEnabled() {
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  if (command_line.HasSwitch(switches::kEnableAutomation)) {
+    return false;
+  }
+  if (command_line.HasSwitch(embedder_support::kEnableAutoReload)) {
+    return true;
+  }
+  if (command_line.HasSwitch(embedder_support::kDisableAutoReload)) {
+    return false;
+  }
+  return true;
 }
 
 }  // namespace
@@ -315,6 +373,106 @@ void CreateAndAddChromeThrottlesForNavigation(
     registry.MaybeAddThrottle(
         TypedNavigationUpgradeThrottle::MaybeCreateThrottleFor(&handle));
   }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  registry.MaybeAddThrottle(
+      WebAppSettingsNavigationThrottle::MaybeCreateThrottleFor(&handle));
+  registry.MaybeAddThrottle(
+      profile_management::ProfileManagementNavigationThrottle::
+          MaybeCreateThrottleFor(&handle));
+  registry.MaybeAddThrottle(
+      profile_management::OidcAuthResponseCaptureNavigationThrottle::
+          MaybeCreateThrottleFor(&handle));
+  registry.MaybeAddThrottle(
+      ManagedProfileRequiredNavigationThrottle::MaybeCreateThrottleFor(
+          &handle));
+
+  if (base::FeatureList::IsEnabled(
+          enterprise::webstore::kChromeWebStoreNavigationThrottle)) {
+    registry.AddThrottle(
+        std::make_unique<enterprise_webstore::ChromeWebStoreNavigationThrottle>(
+            &handle));
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_CHROMEOS)
+  registry.MaybeAddThrottle(
+      enterprise_connectors::DeviceTrustNavigationThrottle::
+          MaybeCreateThrottleFor(&handle));
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_ANDROID)
+  registry.MaybeAddThrottle(
+      DevToolsWindow::MaybeCreateNavigationThrottle(&handle));
+
+  registry.MaybeAddThrottle(
+      NewTabPageNavigationThrottle::MaybeCreateThrottleFor(&handle));
+
+  registry.MaybeAddThrottle(
+      web_app::TabbedWebAppNavigationThrottle::MaybeCreateThrottleFor(&handle));
+
+  registry.MaybeAddThrottle(
+      web_app::WebUIWebAppNavigationThrottle::MaybeCreateThrottleFor(&handle));
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  // g_browser_process->safe_browsing_service() may be null in unittests.
+  safe_browsing::SafeBrowsingUIManager* ui_manager =
+      g_browser_process->safe_browsing_service()
+          ? g_browser_process->safe_browsing_service()->ui_manager().get()
+          : nullptr;
+  registry.MaybeAddThrottle(
+      safe_browsing::SafeBrowsingNavigationThrottle::MaybeCreateThrottleFor(
+          &handle, ui_manager));
+
+  if (base::FeatureList::IsEnabled(safe_browsing::kDelayedWarnings)) {
+    registry.AddThrottle(
+        std::make_unique<safe_browsing::DelayedWarningNavigationThrottle>(
+            &handle));
+  }
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  browser_switcher::BrowserSwitcherNavigationThrottle::MaybeCreateAndAdd(
+      registry);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_CHROMEOS)
+  registry.MaybeAddThrottle(
+      chromeos::KioskSettingsNavigationThrottle::MaybeCreateThrottleFor(
+          &handle));
+
+  registry.MaybeAddThrottle(
+      ash::OnTaskLockedSessionNavigationThrottle::MaybeCreateThrottleFor(
+          &handle));
+#endif
+
+#if BUILDFLAG(IS_MAC)
+  registry.MaybeAddThrottle(MaybeCreateAuthSessionThrottleFor(&handle));
+#endif
+
+  if (profile && profile->GetPrefs()) {
+    registry.MaybeAddThrottle(
+        security_interstitials::InsecureFormNavigationThrottle::
+            MaybeCreateNavigationThrottle(
+                &handle, std::make_unique<ChromeSecurityBlockingPageFactory>(),
+                profile->GetPrefs()));
+  }
+
+  if (IsErrorPageAutoReloadEnabled()) {
+    registry.MaybeAddThrottle(
+        error_page::NetErrorAutoReloader::MaybeCreateThrottleFor(&handle));
+  }
+
+  registry.MaybeAddThrottle(
+      payments::PaymentHandlerNavigationThrottle::MaybeCreateThrottleFor(
+          &handle));
+
+  registry.MaybeAddThrottle(
+      prerender::NoStatePrefetchNavigationThrottle::MaybeCreateThrottleFor(
+          &handle));
 
   // Add new throttles here.
 }
