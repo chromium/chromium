@@ -117,6 +117,7 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
 
   bool IsHistorySyncEnabledForTest() const;
   void SetIsHistorySyncEnabledForTest(bool is_history_sync_enabled);
+  syncer::UserSelectableTypeSet GetUserSelectedTypesForTest() const;
   void SetUserSelectedTypesForTest(
       syncer::UserSelectableTypeSet user_selected_types);
 
@@ -191,6 +192,16 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
   // Returns whether the user has history sync turned on.
   bool IsHistorySyncEnabled() const;
 
+  // Returns the subset of user selected types that are of relevance in
+  // determining whether an account pref should be exposed. This is stored in
+  // the local pref store for early availability.
+  syncer::UserSelectableTypeSet GetInterestingUserSelectedTypes() const;
+  // Sets the subset of user selected types that are of relevance in determining
+  // whether an account pref should be exposed. These are set when the sync
+  // service is initialized and/or when sync service state changes.
+  void SetInterestingUserSelectedTypes(
+      syncer::UserSelectableTypeSet user_selected_types);
+
   // The two underlying pref stores, scoped to this device/profile and to the
   // user's signed-in account, respectively.
   const scoped_refptr<PersistentPrefStore> local_pref_store_;
@@ -215,9 +226,6 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
 
   // List of preference types currently syncing.
   base::flat_set<syncer::DataType> active_types_;
-  // Subset of user selected types that are of relevance in determining whether
-  // an account pref should be exposed.
-  syncer::UserSelectableTypeSet interesting_user_selected_types_;
 
   // Set to true while this store is setting prefs in the underlying stores.
   // Used to avoid self-notifications.
