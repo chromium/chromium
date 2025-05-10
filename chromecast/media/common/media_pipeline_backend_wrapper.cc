@@ -89,7 +89,7 @@ class ActiveMediaPipelineBackendWrapper : public DecoderCreatorCmaBackend {
   ActiveMediaPipelineBackendWrapper(
       const media::MediaPipelineDeviceParams& params,
       MediaPipelineBackendWrapper* wrapping_backend,
-      MediaPipelineBackendManager* backend_manager,
+      base::WeakPtr<MediaPipelineBackendManager> backend_manager,
       MediaResourceTracker* media_resource_tracker);
 
   ActiveMediaPipelineBackendWrapper(const ActiveMediaPipelineBackendWrapper&) =
@@ -129,7 +129,7 @@ class ActiveMediaPipelineBackendWrapper : public DecoderCreatorCmaBackend {
   bool video_decoder_created_;
   const std::unique_ptr<MediaPipelineBackend> backend_;
   MediaPipelineBackendWrapper* const wrapping_backend_;
-  MediaPipelineBackendManager* const backend_manager_;
+  const base::WeakPtr<MediaPipelineBackendManager> backend_manager_;
   const MediaPipelineDeviceParams::AudioStreamType audio_stream_type_;
   const AudioContentType content_type_;
 
@@ -143,7 +143,7 @@ class ActiveMediaPipelineBackendWrapper : public DecoderCreatorCmaBackend {
 ActiveMediaPipelineBackendWrapper::ActiveMediaPipelineBackendWrapper(
     const media::MediaPipelineDeviceParams& params,
     MediaPipelineBackendWrapper* wrapping_backend,
-    MediaPipelineBackendManager* backend_manager,
+    base::WeakPtr<MediaPipelineBackendManager> backend_manager,
     MediaResourceTracker* media_resource_tracker)
     : audio_decoder_ptr_(nullptr),
       video_decoder_created_(false),
@@ -162,14 +162,14 @@ ActiveMediaPipelineBackendWrapper::~ActiveMediaPipelineBackendWrapper() {
   // When the backend is revoked,  the video/audio_decoder should be considered
   // gone to |backend_manager_|. The reason is that the replacement of the
   // Audio/VideoDecoderWrapper are dummy ones that are not actually playing.
-  if (audio_decoder_ptr_) {
+  if (audio_decoder_ptr_ && backend_manager_) {
     backend_manager_->DecrementDecoderCount(
         IsSfx() ? DecoderType::SFX_DECODER : DecoderType::AUDIO_DECODER);
     if (playing_) {
       backend_manager_->UpdatePlayingAudioCount(IsSfx(), content_type_, -1);
     }
   }
-  if (video_decoder_created_) {
+  if (video_decoder_created_ && backend_manager_) {
     backend_manager_->DecrementDecoderCount(DecoderType::VIDEO_DECODER);
   }
 }
@@ -299,7 +299,7 @@ void ActiveMediaPipelineBackendWrapper::SetPlaying(bool playing) {
 
 MediaPipelineBackendWrapper::MediaPipelineBackendWrapper(
     const media::MediaPipelineDeviceParams& params,
-    MediaPipelineBackendManager* backend_manager,
+    base::WeakPtr<MediaPipelineBackendManager> backend_manager,
     MediaResourceTracker* media_resource_tracker)
     : revoked_(false),
       backend_manager_(backend_manager),
@@ -309,7 +309,9 @@ MediaPipelineBackendWrapper::MediaPipelineBackendWrapper(
 }
 
 MediaPipelineBackendWrapper::~MediaPipelineBackendWrapper() {
-  backend_manager_->BackendDestroyed(this);
+  if (backend_manager_) {
+    backend_manager_->BackendDestroyed(this);
+  }
 }
 
 void MediaPipelineBackendWrapper::Revoke() {

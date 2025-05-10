@@ -87,8 +87,8 @@ MediaPipelineBackendManager::~MediaPipelineBackendManager() {
 std::unique_ptr<CmaBackend> MediaPipelineBackendManager::CreateBackend(
     const media::MediaPipelineDeviceParams& params) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
-  return std::make_unique<MediaPipelineBackendWrapper>(params, this,
-                                                       media_resource_tracker_);
+  return std::make_unique<MediaPipelineBackendWrapper>(
+      params, weak_factory_.GetWeakPtr(), media_resource_tracker_);
 }
 
 scoped_refptr<base::SequencedTaskRunner>
