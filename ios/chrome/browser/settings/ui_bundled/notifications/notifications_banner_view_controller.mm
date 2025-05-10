@@ -79,6 +79,8 @@ bool TooNarrowForBanner(UIView* view) {
     TableViewHeaderFooterItem* tipsNotificationsFooterItem;
 // All the items for the send tab notifications section received by mediator.
 @property(nonatomic, strong) TableViewSwitchItem* sendTabNotificationsItem;
+// The item with this identifier will be visually highlighted.
+@property(nonatomic, assign) NotificationsItemIdentifier highlightedItem;
 
 @end
 
@@ -88,6 +90,7 @@ bool TooNarrowForBanner(UIView* view) {
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
   NSDiffableDataSourceSnapshot* _snapshot;
   ChromeTableViewStyler* _tableViewStyler;
+  ChromeTableViewStyler* _highlightTableViewStyler;
   // The `viewWillLayoutSubviews` is invoked on creation, dismissal, and
   // backward navigation of the NotificationsBannerViewController. To prevent
   // the view controller styling aspects of the view that will be carried over
@@ -190,7 +193,7 @@ bool TooNarrowForBanner(UIView* view) {
       if (cell) {
         TableViewCell* tableViewCell =
             base::apple::ObjCCastStrict<TableViewCell>(cell);
-        [item configureCell:tableViewCell withStyler:[self tableViewStyler]];
+        [self configureCell:tableViewCell item:item identifier:itemIdentifier];
       }
     }
   }
@@ -328,6 +331,7 @@ bool TooNarrowForBanner(UIView* view) {
       return self.safetyCheckItem;
     case ItemIdentifierSendTab:
       return self.sendTabNotificationsItem;
+    case ItemIdentifierNone:
     case ItemIdentifierTipsNotificationsFooter:
       NOTREACHED();
   }
@@ -368,7 +372,7 @@ bool TooNarrowForBanner(UIView* view) {
       DequeueTableViewCell<TableViewSwitchCell>(tableView);
   TableViewSwitchItem* switchItem =
       base::apple::ObjCCastStrict<TableViewSwitchItem>(item);
-  [switchItem configureCell:cell withStyler:[self tableViewStyler]];
+  [self configureCell:cell item:switchItem identifier:itemIdentifier];
   cell.switchView.tag = itemIdentifier;
   [cell.switchView addTarget:self
                       action:@selector(switchAction:)
@@ -419,6 +423,16 @@ bool TooNarrowForBanner(UIView* view) {
   return _tableViewStyler;
 }
 
+// Styler for highlighted cells.
+- (ChromeTableViewStyler*)highlightTableViewStyler {
+  if (!_highlightTableViewStyler) {
+    _highlightTableViewStyler = [[ChromeTableViewStyler alloc] init];
+    _highlightTableViewStyler.cellBackgroundColor =
+        [UIColor colorNamed:kBlueHaloColor];
+  }
+  return _highlightTableViewStyler;
+}
+
 // Configures the banner based on the view's size.
 - (void)configureBanner {
   if (IsCompactHeight(self.traitCollection) || TooNarrowForBanner(self.view)) {
@@ -436,6 +450,17 @@ bool TooNarrowForBanner(UIView* view) {
   }
   self.navigationController.navigationBar.tintColor =
       self.shouldHideBanner ? nil : UIColor.whiteColor;
+}
+
+// Configures the `cell` for the `item` with the given `identifier`. A styler
+// is chosed depending on whether the item should be highlighted or not.
+- (void)configureCell:(TableViewCell*)cell
+                 item:(TableViewItem*)item
+           identifier:(NotificationsItemIdentifier)identifier {
+  ChromeTableViewStyler* styler = identifier == self.highlightedItem
+                                      ? [self highlightTableViewStyler]
+                                      : [self tableViewStyler];
+  [item configureCell:cell withStyler:styler];
 }
 
 @end

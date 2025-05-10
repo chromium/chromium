@@ -2826,15 +2826,22 @@ using UserFeedbackDataCallback =
 }
 
 - (void)showNotificationsSettings {
+  [self showNotificationsSettingsAndHighlightClient:std::nullopt];
+}
+
+- (void)showNotificationsSettingsAndHighlightClient:
+    (std::optional<PushNotificationClientId>)clientID {
   UIViewController* baseViewController = self.currentInterface.viewController;
   if (self.settingsNavigationController) {
-    [self.settingsNavigationController showNotificationsSettings];
+    [self.settingsNavigationController
+        showNotificationsSettingsAndHighlightClient:clientID];
     return;
   }
 
   Browser* browser = self.mainInterface.browser;
   self.settingsNavigationController = [SettingsNavigationController
       notificationsSettingsControllerForBrowser:browser
+                                         client:clientID
                                        delegate:self];
   [baseViewController presentViewController:self.settingsNavigationController
                                    animated:YES

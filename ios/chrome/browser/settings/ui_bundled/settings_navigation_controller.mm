@@ -578,6 +578,9 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 + (instancetype)
     notificationsSettingsControllerForBrowser:(Browser*)browser
+                                       client:(std::optional<
+                                                  PushNotificationClientId>)
+                                                  clientID
                                      delegate:
                                          (id<SettingsNavigationControllerDelegate>)
                                              delegate {
@@ -586,7 +589,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
           initWithRootViewController:nil
                              browser:browser
                             delegate:delegate];
-  [navigationController showNotificationsSettings];
+  [navigationController showNotificationsSettingsAndHighlightClient:clientID];
   return navigationController;
 }
 
@@ -1252,6 +1255,14 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                                browser:_browser];
   self.notificationsCoordinator.delegate = self;
   [self.notificationsCoordinator start];
+}
+
+- (void)showNotificationsSettingsAndHighlightClient:
+    (std::optional<PushNotificationClientId>)clientID {
+  [self showNotificationsSettings];
+  if (clientID.has_value()) {
+    [self.notificationsCoordinator highlightClient:clientID.value()];
+  }
 }
 
 - (void)showPriceNotificationsSettings {

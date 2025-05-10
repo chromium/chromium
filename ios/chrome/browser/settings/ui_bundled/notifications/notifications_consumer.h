@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/settings/ui_bundled/notifications/notifications_item_identifier.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_consumer.h"
 
 @class TableViewItem;
@@ -33,6 +34,9 @@
 
 // Initializes the send tab notifications item.
 - (void)setSendTabNotificationsItem:(TableViewItem*)sendTabNotificationsItem;
+
+// Visually highlights the item with the given `identifier`.
+- (void)setHighlightedItem:(NotificationsItemIdentifier)identifier;
 
 // Called when an item is updated and needs to be reloaded.
 - (void)reloadData;

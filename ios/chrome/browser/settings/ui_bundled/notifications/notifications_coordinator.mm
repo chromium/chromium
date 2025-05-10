@@ -119,6 +119,30 @@
   [_optInAlertCoordinator stop];
 }
 
+- (void)highlightClient:(PushNotificationClientId)clientID {
+  self.viewController.highlightedItem = [self itemForClient:clientID];
+  [self.viewController reloadData];
+}
+
+// Returns the table view item identifier for the given `clientID`.
+- (NotificationsItemIdentifier)itemForClient:
+    (PushNotificationClientId)clientID {
+  switch (clientID) {
+    case PushNotificationClientId::kCommerce:
+      return ItemIdentifierPriceTracking;
+    case PushNotificationClientId::kContent:
+    case PushNotificationClientId::kSports:
+      return ItemIdentifierContent;
+    case PushNotificationClientId::kTips:
+      return ItemIdentifierTips;
+    case PushNotificationClientId::kSafetyCheck:
+      return ItemIdentifierSafetyCheck;
+    case PushNotificationClientId::kSendTab:
+    case PushNotificationClientId::kReminders:
+      return ItemIdentifierSendTab;
+  }
+}
+
 #pragma mark - NotificationsAlertPresenter
 
 - (void)presentPushNotificationPermissionAlert {

@@ -38,6 +38,9 @@
 // Show Price Trackinhg Notifications settings.
 - (void)showTrackingPrice;
 
+// Visually highlights the table view row for the given `clientID`.
+- (void)highlightClient:(PushNotificationClientId)clientID;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_NOTIFICATIONS_NOTIFICATIONS_COORDINATOR_H_

@@ -251,6 +251,9 @@ extern NSString* const kSettingsDoneButtonId;
 // `delegate` may be nil.
 + (instancetype)
     notificationsSettingsControllerForBrowser:(Browser*)browser
+                                       client:(std::optional<
+                                                  PushNotificationClientId>)
+                                                  clientID
                                      delegate:
                                          (id<SettingsNavigationControllerDelegate>)
                                              delegate;

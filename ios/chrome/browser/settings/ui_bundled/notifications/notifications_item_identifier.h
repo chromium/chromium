@@ -10,7 +10,8 @@
 // Enum representing the different types of notifications in the notifications
 // settings page.
 enum NotificationsItemIdentifier {
-  ItemIdentifierContent = kItemTypeEnumZero,
+  ItemIdentifierNone = kItemTypeEnumZero,
+  ItemIdentifierContent,
   ItemIdentifierTips,
   ItemIdentifierTipsNotificationsFooter,
   ItemIdentifierPriceTracking,

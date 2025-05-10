@@ -1160,6 +1160,14 @@ void ProcessIncomingNotification(
   CHECK(sceneState);
   Browser* browser =
       sceneState.browserProviderInterface.mainBrowserProvider.browser;
+  ProfileIOS* profile = browser->GetProfile();
+
+  // Get the clientID for the client that is associated with this notification.
+  PushNotificationClient* client = [self clientForNotification:notification
+                                                       profile:profile];
+  std::optional<PushNotificationClientId> clientID =
+      (client) ? std::make_optional(client->GetClientId()) : std::nullopt;
+
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
   id<ApplicationCommands> applicationHandler =
       HandlerForProtocol(dispatcher, ApplicationCommands);
@@ -1167,9 +1175,29 @@ void ProcessIncomingNotification(
       HandlerForProtocol(dispatcher, SettingsCommands);
   __block base::OnceClosure completion2 = std::move(completion);
   [applicationHandler prepareToPresentModal:^{
-    [settingsHandler showNotificationsSettings];
+    [settingsHandler showNotificationsSettingsAndHighlightClient:clientID];
     std::move(completion2).Run();
   }];
+}
+
+// Returns the client to handle the given `notification`. The client can be
+// either profile-scoped (and associated with the given `profile`), or
+// app-scoped.
+- (PushNotificationClient*)clientForNotification:(UNNotification*)notification
+                                         profile:(ProfileIOS*)profile {
+  if (notification == nil) {
+    return nullptr;
+  }
+  PushNotificationClient* client = nullptr;
+  if (IsMultiProfilePushNotificationHandlingEnabled()) {
+    PushNotificationClientManager* clientManager =
+        GetClientManagerForProfile(profile);
+    client = clientManager->GetClientForNotification(notification);
+  }
+  if (!client) {
+    client = self.appWideClientManager->GetClientForNotification(notification);
+  }
+  return client;
 }
 
 // Returns the `SceneState` matching the notification response's target scene,
