@@ -86,13 +86,6 @@ class AutocompleteControllerMetrics {
   // whether the provider completed or was interrupted.
   void LogProviderTimeMetrics(const AutocompleteProvider& provider) const;
 
-  // Helper for the above 2 logging methods. Logs
-  // 'Omnibox.AsyncAutocompletionTime.<name>'. Additionally logs either
-  // '*.Completed' or '*.Interrupted' depending on `completed`.
-  void LogAsyncAutocompletionTimeMetrics(const std::string& name,
-                                         bool completed,
-                                         const base::TimeTicks end_time) const;
-
   // Logs 'Omnibox.MatchStability.MatchChangeIndex'. Additionally logs
   // '*.CrossInput' or '*.Async' depending on `controller_.in_start()`.
   void LogSuggestionChangeIndexMetrics(size_t change_index) const;

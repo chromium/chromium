@@ -20,6 +20,16 @@ constexpr auto enabled_by_default_desktop_only =
     base::FEATURE_ENABLED_BY_DEFAULT;
 #endif
 
+BASE_FEATURE(AutocompleteControllerMetricsOptimization::
+                 kAutocompleteControllerMetricsOptimization,
+             "AutocompleteControlMetricsOptimization",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+AutocompleteControllerMetricsOptimization::
+    AutocompleteControllerMetricsOptimization() {
+  enabled =
+      base::FeatureList::IsEnabled(kAutocompleteControllerMetricsOptimization);
+}
+
 // TODO(manukh): Enabled by default in m120. Clean up 12/5 when after m121
 //   branch cut.
 // static
