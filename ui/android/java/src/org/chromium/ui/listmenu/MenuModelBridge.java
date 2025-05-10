@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.contextmenu;
+package org.chromium.ui.listmenu;
 
 import static org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType.MENU_ITEM;
 import static org.chromium.ui.listmenu.BasicListMenu.buildMenuDivider;
@@ -14,10 +14,11 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import android.graphics.Bitmap;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -30,26 +31,18 @@ import java.util.List;
  * MenuModel</a>) to a Java list of {@link ListItem} to be used in context menus.
  */
 @NullMarked
+@JNINamespace("ui")
 public class MenuModelBridge {
 
-    private final long mNativePtr;
-    private final boolean mIsIncognito;
     private final List<ListItem> mItems = new ArrayList<>();
 
     @CalledByNative
-    private static MenuModelBridge create(long nativePtr, boolean isIncognito) {
-        return new MenuModelBridge(nativePtr, isIncognito);
+    private static MenuModelBridge create() {
+        return new MenuModelBridge();
     }
 
-    /**
-     * {@return A {@link MenuModelBridge} instance.}
-     *
-     * @param nativePtr The {@link Long} address of the MenuModelBridge on the C++ side.
-     */
-    private MenuModelBridge(long nativePtr, boolean isIncognito) {
-        mNativePtr = nativePtr;
-        mIsIncognito = isIncognito;
-    }
+    /** {@return A {@link MenuModelBridge} instance.} */
+    private MenuModelBridge() {}
 
     /** {@return The list of {@link ListItem} held by this {@link MenuModelBridge}.} */
     public List<ListItem> getListItems() {
@@ -66,7 +59,10 @@ public class MenuModelBridge {
      */
     @CalledByNative
     private void addCommand(
-            String label, @Nullable Bitmap bitmap, boolean isEnabled, Runnable callback) {
+            @JniType("std::u16string") final String label,
+            @JniType("SkBitmap") final @Nullable Bitmap bitmap,
+            final boolean isEnabled,
+            final Runnable callback) {
         PropertyModel.Builder modelBuilder =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                         .with(TITLE, label)
@@ -79,6 +75,7 @@ public class MenuModelBridge {
     /** Adds a divider to the context menu. */
     @CalledByNative
     private void addDivider() {
-        mItems.add(buildMenuDivider(mIsIncognito));
+        // TODO(crbug.com/416222384): Update context menus to use incognito theming.
+        mItems.add(buildMenuDivider(/* isIncognito= */ false));
     }
 }

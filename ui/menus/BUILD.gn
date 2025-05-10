@@ -21,6 +21,13 @@ component("menus") {
     ]
   }
 
+  if (is_android) {
+    sources += [
+      "android/menu_model_bridge.cc",
+      "android/menu_model_bridge.h",
+    ]
+  }
+
   defines = [ "IS_UI_MENUS_IMPL" ]
 
   public_deps = [
@@ -43,6 +50,10 @@ component("menus") {
       "Foundation.framework",
       "QuartzCore.framework",
     ]
+  }
+
+  if (is_android) {
+    public_deps += [ "//ui/android:menu_model_bridge_jni_headers" ]
   }
 }
 

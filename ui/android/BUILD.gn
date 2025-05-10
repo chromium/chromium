@@ -164,11 +164,16 @@ generate_jni("ui_android_jni_headers") {
     "java/src/org/chromium/ui/dragdrop/DropDataAndroid.java",
     "java/src/org/chromium/ui/events/devices/InputDeviceObserver.java",
     "java/src/org/chromium/ui/gfx/ViewConfigurationHelper.java",
+    "java/src/org/chromium/ui/listmenu/MenuModelBridge.java",
     "java/src/org/chromium/ui/modaldialog/ModalDialogManagerBridge.java",
     "java/src/org/chromium/ui/resources/HandleViewResources.java",
     "java/src/org/chromium/ui/resources/ResourceFactory.java",
     "java/src/org/chromium/ui/resources/ResourceManager.java",
   ]
+}
+
+generate_jni("menu_model_bridge_jni_headers") {
+  sources = [ "java/src/org/chromium/ui/listmenu/MenuModelBridge.java" ]
 }
 
 java_cpp_enum("java_enums_srcjar") {
