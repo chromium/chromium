@@ -415,6 +415,21 @@ class FakeClient : public PdfInkModuleClient {
   std::vector<gfx::Rect> invalidations_;
 };
 
+class PdfInkModuleMetricsTestBase {
+ protected:
+  static constexpr char kHighlighterColorMetric[] =
+      "PDF.Ink2StrokeHighlighterColor";
+  static constexpr char kHighlighterSizeMetric[] =
+      "PDF.Ink2StrokeHighlighterSize";
+  static constexpr char kInputDeviceMetric[] = "PDF.Ink2StrokeInputDeviceType";
+  static constexpr char kTypeMetric[] = "PDF.Ink2StrokeBrushType";
+
+  base::HistogramTester& histograms() { return histograms_; }
+
+ private:
+  base::HistogramTester histograms_;
+};
+
 class PdfInkModuleTest : public testing::TestWithParam<InkTestVariation> {
  public:
   void SetUp() override {
@@ -2779,137 +2794,129 @@ TEST_P(PdfInkModuleGetVisibleStrokesTest, MultiplePageStrokes) {
                             {expected_page1_horz_line_input_batch.value()}))));
 }
 
-class PdfInkModuleMetricsTest : public PdfInkModuleUndoRedoTest {
+class PdfInkModuleMetricsTest : public PdfInkModuleMetricsTestBase,
+                                public PdfInkModuleUndoRedoTest {
  protected:
   static constexpr char kPenColorMetric[] = "PDF.Ink2StrokePenColor";
-  static constexpr char kHighlighterColorMetric[] =
-      "PDF.Ink2StrokeHighlighterColor";
-  static constexpr char kInputDeviceMetric[] = "PDF.Ink2StrokeInputDeviceType";
   static constexpr char kPenSizeMetric[] = "PDF.Ink2StrokePenSize";
-  static constexpr char kHighlighterSizeMetric[] =
-      "PDF.Ink2StrokeHighlighterSize";
-  static constexpr char kTypeMetric[] = "PDF.Ink2StrokeBrushType";
 };
 
 TEST_P(PdfInkModuleMetricsTest, StrokeUndoRedoDoesNotAffectMetrics) {
   InitializeSimpleSinglePageBasicLayout();
-  base::HistogramTester histograms;
 
   // Draw a pen stroke.
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
-  histograms.ExpectUniqueSample(kTypeMetric, StrokeMetricBrushType::kPen, 1);
-  histograms.ExpectUniqueSample(kInputDeviceMetric,
-                                StrokeMetricInputDeviceType::kMouse, 1);
-  histograms.ExpectUniqueSample(kPenSizeMetric, StrokeMetricBrushSize::kMedium,
-                                1);
-  histograms.ExpectUniqueSample(kPenColorMetric, StrokeMetricPenColor::kBlack,
-                                1);
+  histograms().ExpectUniqueSample(kTypeMetric, StrokeMetricBrushType::kPen, 1);
+  histograms().ExpectUniqueSample(kInputDeviceMetric,
+                                  StrokeMetricInputDeviceType::kMouse, 1);
+  histograms().ExpectUniqueSample(kPenSizeMetric,
+                                  StrokeMetricBrushSize::kMedium, 1);
+  histograms().ExpectUniqueSample(kPenColorMetric, StrokeMetricPenColor::kBlack,
+                                  1);
 
   // Undo and redo.
   PerformUndo();
   PerformRedo();
 
   // The metrics should stay the same.
-  histograms.ExpectUniqueSample(kTypeMetric, StrokeMetricBrushType::kPen, 1);
-  histograms.ExpectUniqueSample(kInputDeviceMetric,
-                                StrokeMetricInputDeviceType::kMouse, 1);
-  histograms.ExpectUniqueSample(kPenSizeMetric, StrokeMetricBrushSize::kMedium,
-                                1);
-  histograms.ExpectUniqueSample(kPenColorMetric, StrokeMetricPenColor::kBlack,
-                                1);
+  histograms().ExpectUniqueSample(kTypeMetric, StrokeMetricBrushType::kPen, 1);
+  histograms().ExpectUniqueSample(kInputDeviceMetric,
+                                  StrokeMetricInputDeviceType::kMouse, 1);
+  histograms().ExpectUniqueSample(kPenSizeMetric,
+                                  StrokeMetricBrushSize::kMedium, 1);
+  histograms().ExpectUniqueSample(kPenColorMetric, StrokeMetricPenColor::kBlack,
+                                  1);
 }
 
 TEST_P(PdfInkModuleMetricsTest, StrokeBrushColorPen) {
   InitializeSimpleSinglePageBasicLayout();
-  base::HistogramTester histograms;
 
   RunStrokeCheckTest(/*annotation_mode_enabled=*/false);
 
-  histograms.ExpectTotalCount(kPenColorMetric, 0);
+  histograms().ExpectTotalCount(kPenColorMetric, 0);
 
   // Draw a stroke with the default black color.
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
-  histograms.ExpectUniqueSample(kPenColorMetric, StrokeMetricPenColor::kBlack,
-                                1);
+  histograms().ExpectUniqueSample(kPenColorMetric, StrokeMetricPenColor::kBlack,
+                                  1);
 
   // Draw a stroke with "Red 1" color.
   TestAnnotationBrushMessageParams params = kRedBrushParams;
   SelectBrushTool(PdfInkBrush::Type::kPen, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
-  histograms.ExpectBucketCount(kPenColorMetric, StrokeMetricPenColor::kRed1, 1);
-  histograms.ExpectTotalCount(kPenColorMetric, 2);
+  histograms().ExpectBucketCount(kPenColorMetric, StrokeMetricPenColor::kRed1,
+                                 1);
+  histograms().ExpectTotalCount(kPenColorMetric, 2);
 
   // Draw a stroke with "Tan 3" color.
   params.color = SkColorSetRGB(0x88, 0x59, 0x45);
   SelectBrushTool(PdfInkBrush::Type::kPen, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
-  histograms.ExpectBucketCount(kPenColorMetric, StrokeMetricPenColor::kTan3, 1);
-  histograms.ExpectTotalCount(kPenColorMetric, 3);
-  histograms.ExpectTotalCount(kHighlighterColorMetric, 0);
+  histograms().ExpectBucketCount(kPenColorMetric, StrokeMetricPenColor::kTan3,
+                                 1);
+  histograms().ExpectTotalCount(kPenColorMetric, 3);
+  histograms().ExpectTotalCount(kHighlighterColorMetric, 0);
 }
 
 TEST_P(PdfInkModuleMetricsTest, StrokeBrushColorHighlighter) {
   EnableAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
-  base::HistogramTester histograms;
 
   // Draw a stroke with "Light Red" color.
   TestAnnotationBrushMessageParams params = kRedBrushParams;
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
-  histograms.ExpectBucketCount(kHighlighterColorMetric,
-                               StrokeMetricHighlighterColor::kLightRed, 1);
-  histograms.ExpectTotalCount(kHighlighterColorMetric, 1);
+  histograms().ExpectBucketCount(kHighlighterColorMetric,
+                                 StrokeMetricHighlighterColor::kLightRed, 1);
+  histograms().ExpectTotalCount(kHighlighterColorMetric, 1);
 
   // Draw a stroke with "Orange" color.
   params.color = SkColorSetRGB(0xFF, 0x63, 0x0C);
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
-  histograms.ExpectBucketCount(kHighlighterColorMetric,
-                               StrokeMetricHighlighterColor::kOrange, 1);
-  histograms.ExpectTotalCount(kHighlighterColorMetric, 2);
-  histograms.ExpectTotalCount(kPenColorMetric, 0);
+  histograms().ExpectBucketCount(kHighlighterColorMetric,
+                                 StrokeMetricHighlighterColor::kOrange, 1);
+  histograms().ExpectTotalCount(kHighlighterColorMetric, 2);
+  histograms().ExpectTotalCount(kPenColorMetric, 0);
 }
 
 TEST_P(PdfInkModuleMetricsTest, StrokeBrushSizePen) {
   InitializeSimpleSinglePageBasicLayout();
-  base::HistogramTester histograms;
 
   // Draw a stroke.
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
-  histograms.ExpectUniqueSample(kPenSizeMetric, StrokeMetricBrushSize::kMedium,
-                                1);
+  histograms().ExpectUniqueSample(kPenSizeMetric,
+                                  StrokeMetricBrushSize::kMedium, 1);
 
   TestAnnotationBrushMessageParams params = {SkColorSetRGB(0xF2, 0x8B, 0x82),
                                              /*size=*/1.0};
   SelectBrushTool(PdfInkBrush::Type::kPen, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
-  histograms.ExpectBucketCount(kPenSizeMetric,
-                               StrokeMetricBrushSize::kExtraThin, 1);
-  histograms.ExpectTotalCount(kPenSizeMetric, 2);
+  histograms().ExpectBucketCount(kPenSizeMetric,
+                                 StrokeMetricBrushSize::kExtraThin, 1);
+  histograms().ExpectTotalCount(kPenSizeMetric, 2);
 
   params.size = 8.0f;
   SelectBrushTool(PdfInkBrush::Type::kPen, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
-  histograms.ExpectBucketCount(kPenSizeMetric,
-                               StrokeMetricBrushSize::kExtraThick, 1);
-  histograms.ExpectTotalCount(kPenSizeMetric, 3);
-  histograms.ExpectTotalCount(kHighlighterSizeMetric, 0);
+  histograms().ExpectBucketCount(kPenSizeMetric,
+                                 StrokeMetricBrushSize::kExtraThick, 1);
+  histograms().ExpectTotalCount(kPenSizeMetric, 3);
+  histograms().ExpectTotalCount(kHighlighterSizeMetric, 0);
 }
 
 TEST_P(PdfInkModuleMetricsTest, StrokeBrushSizeHighlighter) {
   EnableAnnotationMode();
   InitializeSimpleSinglePageBasicLayout();
-  base::HistogramTester histograms;
 
   // Draw a stroke with medium size.
   TestAnnotationBrushMessageParams params = {SkColorSetRGB(0xF2, 0x8B, 0x82),
@@ -2917,116 +2924,115 @@ TEST_P(PdfInkModuleMetricsTest, StrokeBrushSizeHighlighter) {
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
-  histograms.ExpectUniqueSample(kHighlighterSizeMetric,
-                                StrokeMetricBrushSize::kMedium, 1);
+  histograms().ExpectUniqueSample(kHighlighterSizeMetric,
+                                  StrokeMetricBrushSize::kMedium, 1);
 
   // Draw a stroke with extra thin size.
   params.size = 4.0f;
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
-  histograms.ExpectBucketCount(kHighlighterSizeMetric,
-                               StrokeMetricBrushSize::kExtraThin, 1);
-  histograms.ExpectTotalCount(kHighlighterSizeMetric, 2);
+  histograms().ExpectBucketCount(kHighlighterSizeMetric,
+                                 StrokeMetricBrushSize::kExtraThin, 1);
+  histograms().ExpectTotalCount(kHighlighterSizeMetric, 2);
 
   // Draw a stroke with extra thick size.
   params.size = 16.0f;
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
-  histograms.ExpectBucketCount(kHighlighterSizeMetric,
-                               StrokeMetricBrushSize::kExtraThick, 1);
-  histograms.ExpectTotalCount(kPenSizeMetric, 0);
-  histograms.ExpectTotalCount(kHighlighterSizeMetric, 3);
+  histograms().ExpectBucketCount(kHighlighterSizeMetric,
+                                 StrokeMetricBrushSize::kExtraThick, 1);
+  histograms().ExpectTotalCount(kPenSizeMetric, 0);
+  histograms().ExpectTotalCount(kHighlighterSizeMetric, 3);
 }
 
 TEST_P(PdfInkModuleMetricsTest, StrokeBrushType) {
   InitializeSimpleSinglePageBasicLayout();
-  base::HistogramTester histograms;
 
   RunStrokeCheckTest(/*annotation_mode_enabled=*/false);
 
-  histograms.ExpectTotalCount(kTypeMetric, 0);
+  histograms().ExpectTotalCount(kTypeMetric, 0);
 
   // Draw a pen stroke.
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
-  histograms.ExpectUniqueSample(kTypeMetric, StrokeMetricBrushType::kPen, 1);
+  histograms().ExpectUniqueSample(kTypeMetric, StrokeMetricBrushType::kPen, 1);
 
   // Draw a highlighter stroke.
   TestAnnotationBrushMessageParams params = kRedBrushParams;
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
-  histograms.ExpectBucketCount(kTypeMetric, StrokeMetricBrushType::kHighlighter,
-                               1);
-  histograms.ExpectTotalCount(kTypeMetric, 2);
+  histograms().ExpectBucketCount(kTypeMetric,
+                                 StrokeMetricBrushType::kHighlighter, 1);
+  histograms().ExpectTotalCount(kTypeMetric, 2);
 
   // Draw an eraser stroke.
   SelectEraserTool();
   ApplyStrokeWithMouseAtMouseDownPoint();
 
-  histograms.ExpectBucketCount(kTypeMetric, StrokeMetricBrushType::kEraser, 1);
-  histograms.ExpectTotalCount(kTypeMetric, 3);
+  histograms().ExpectBucketCount(kTypeMetric, StrokeMetricBrushType::kEraser,
+                                 1);
+  histograms().ExpectTotalCount(kTypeMetric, 3);
 
   // Draw an eraser stroke at a different point that does not erase any other
   // strokes. The metric should stay the same.
   ApplyStrokeWithMouseAtPoints(
       kMouseUpPoint, base::span_from_ref(kMouseUpPoint), kMouseUpPoint);
 
-  histograms.ExpectBucketCount(kTypeMetric, StrokeMetricBrushType::kEraser, 1);
-  histograms.ExpectTotalCount(kTypeMetric, 3);
+  histograms().ExpectBucketCount(kTypeMetric, StrokeMetricBrushType::kEraser,
+                                 1);
+  histograms().ExpectTotalCount(kTypeMetric, 3);
 
   // Draw another pen stroke.
   params.size = 3.0f;
   SelectBrushTool(PdfInkBrush::Type::kPen, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
 
-  histograms.ExpectBucketCount(kTypeMetric, StrokeMetricBrushType::kPen, 2);
-  histograms.ExpectTotalCount(kTypeMetric, 4);
+  histograms().ExpectBucketCount(kTypeMetric, StrokeMetricBrushType::kPen, 2);
+  histograms().ExpectTotalCount(kTypeMetric, 4);
 }
 
 TEST_P(PdfInkModuleMetricsTest, StrokeInputDeviceMouse) {
   InitializeSimpleSinglePageBasicLayout();
-  base::HistogramTester histograms;
 
   RunStrokeCheckTest(/*annotation_mode_enabled=*/false);
 
-  histograms.ExpectTotalCount(kInputDeviceMetric, 0);
+  histograms().ExpectTotalCount(kInputDeviceMetric, 0);
 
   // Draw a stroke with a mouse.
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
-  histograms.ExpectUniqueSample(kInputDeviceMetric,
-                                StrokeMetricInputDeviceType::kMouse, 1);
+  histograms().ExpectUniqueSample(kInputDeviceMetric,
+                                  StrokeMetricInputDeviceType::kMouse, 1);
 
   // Draw an eraser stroke with a mouse that erases the first stroke.
   SelectEraserTool();
   ApplyStrokeWithMouseAtMouseDownPoint();
 
-  histograms.ExpectUniqueSample(kInputDeviceMetric,
-                                StrokeMetricInputDeviceType::kMouse, 2);
+  histograms().ExpectUniqueSample(kInputDeviceMetric,
+                                  StrokeMetricInputDeviceType::kMouse, 2);
 
   // Draw another eraser stroke with a mouse that erases nothing.
   ApplyStrokeWithMouseAtMouseDownPoint();
 
-  histograms.ExpectUniqueSample(kInputDeviceMetric,
-                                StrokeMetricInputDeviceType::kMouse, 2);
+  histograms().ExpectUniqueSample(kInputDeviceMetric,
+                                  StrokeMetricInputDeviceType::kMouse, 2);
 }
 
 TEST_P(PdfInkModuleMetricsTest, StrokeInputDeviceTouch) {
   InitializeSimpleSinglePageBasicLayout();
-  base::HistogramTester histograms;
 
   RunStrokeTouchCheckTest(/*annotation_mode_enabled=*/false);
 
-  histograms.ExpectTotalCount(kInputDeviceMetric, 0);
+  histograms().ExpectTotalCount(kInputDeviceMetric, 0);
 
   // Draw a stroke with touch.
   RunStrokeTouchCheckTest(/*annotation_mode_enabled=*/true);
 
-  histograms.ExpectUniqueSample(kInputDeviceMetric,
-                                StrokeMetricInputDeviceType::kTouch, 1);
+  histograms().ExpectUniqueSample(kInputDeviceMetric,
+                                  StrokeMetricInputDeviceType::kTouch, 1);
 
   // Draw an eraser stroke with touch that erases the first stroke.
   SelectEraserTool();
@@ -3036,30 +3042,29 @@ TEST_P(PdfInkModuleMetricsTest, StrokeInputDeviceTouch) {
   ApplyStrokeWithTouchAtPoints(base::span_from_ref(kMouseDownPoint), move_point,
                                base::span_from_ref(kMouseDownPoint));
 
-  histograms.ExpectUniqueSample(kInputDeviceMetric,
-                                StrokeMetricInputDeviceType::kTouch, 2);
+  histograms().ExpectUniqueSample(kInputDeviceMetric,
+                                  StrokeMetricInputDeviceType::kTouch, 2);
 
   // Draw another eraser stroke with touch that erases nothing.
   ApplyStrokeWithTouchAtPoints(base::span_from_ref(kMouseDownPoint), move_point,
                                base::span_from_ref(kMouseDownPoint));
 
-  histograms.ExpectUniqueSample(kInputDeviceMetric,
-                                StrokeMetricInputDeviceType::kTouch, 2);
+  histograms().ExpectUniqueSample(kInputDeviceMetric,
+                                  StrokeMetricInputDeviceType::kTouch, 2);
 }
 
 TEST_P(PdfInkModuleMetricsTest, StrokeInputDevicePen) {
   InitializeSimpleSinglePageBasicLayout();
-  base::HistogramTester histograms;
 
   RunStrokePenCheckTest(/*annotation_mode_enabled=*/false);
 
-  histograms.ExpectTotalCount(kInputDeviceMetric, 0);
+  histograms().ExpectTotalCount(kInputDeviceMetric, 0);
 
   // Draw a stroke with a pen.
   RunStrokePenCheckTest(/*annotation_mode_enabled=*/true);
 
-  histograms.ExpectUniqueSample(kInputDeviceMetric,
-                                StrokeMetricInputDeviceType::kPen, 1);
+  histograms().ExpectUniqueSample(kInputDeviceMetric,
+                                  StrokeMetricInputDeviceType::kPen, 1);
 
   // Draw an eraser stroke with a pen that erases the first stroke.
   SelectEraserTool();
@@ -3069,15 +3074,15 @@ TEST_P(PdfInkModuleMetricsTest, StrokeInputDevicePen) {
   ApplyStrokeWithPenAtPoints(base::span_from_ref(kMouseDownPoint), move_point,
                              base::span_from_ref(kMouseDownPoint));
 
-  histograms.ExpectUniqueSample(kInputDeviceMetric,
-                                StrokeMetricInputDeviceType::kPen, 2);
+  histograms().ExpectUniqueSample(kInputDeviceMetric,
+                                  StrokeMetricInputDeviceType::kPen, 2);
 
   // Draw another eraser stroke with a pen that erases nothing.
   ApplyStrokeWithPenAtPoints(base::span_from_ref(kMouseDownPoint), move_point,
                              base::span_from_ref(kMouseDownPoint));
 
-  histograms.ExpectUniqueSample(kInputDeviceMetric,
-                                StrokeMetricInputDeviceType::kPen, 2);
+  histograms().ExpectUniqueSample(kInputDeviceMetric,
+                                  StrokeMetricInputDeviceType::kPen, 2);
 }
 
 class PdfInkModuleTextHighlightTest : public PdfInkModuleStrokeTest {
