@@ -585,9 +585,22 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // column-rule-width
   GapDataList<int> ColumnRuleWidth() const {
-    if (!BorderStyleIsVisible(ColumnRuleStyle())) {
+    // The legacy version of 'column-rule-width' behaved such that if
+    // 'column-rule-style' was not visible, we'd treat the width as 0. We will
+    // continue to apply this rule for 'column-rule-width' if a single value is
+    // provided for 'column-rule-width' and 'column-rule-style' for backwards
+    // compat. However, if one of the properties is a list of values, we will
+    // return the true computed value of the width as specified by the author
+    // (per CSSWG resolution [1]).
+    //
+    // [1]: https://github.com/w3c/csswg-drafts/issues/11494
+    const GapDataList<EBorderStyle> rule_style = ColumnRuleStyle();
+    if (rule_style.HasSingleValue() &&
+        ColumnRuleWidthInternal().HasSingleValue() &&
+        !BorderStyleIsVisible(rule_style)) {
       return GapDataList<int>(0);
     }
+
     return ColumnRuleWidthInternal();
   }
 
