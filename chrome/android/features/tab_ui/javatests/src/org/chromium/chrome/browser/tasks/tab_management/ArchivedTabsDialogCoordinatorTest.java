@@ -45,7 +45,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -84,7 +83,6 @@ import org.chromium.url.GURL;
 @DoNotBatch(reason = "TODO(crbug.com/348068134): Batch this test suite.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableFeatures("IPH_AndroidTabDeclutter")
-@DisabledTest(message = "crbug.com/397759336")
 public class ArchivedTabsDialogCoordinatorTest {
     @Rule
     public FreshCtaTransitTestRule mCtaTestRule =
