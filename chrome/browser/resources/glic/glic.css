@@ -21,6 +21,7 @@ html, body {
 
 body {
   overflow: hidden;
+  user-select: none;
 }
 
 webview:not([hidden]) {
