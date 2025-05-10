@@ -61,7 +61,6 @@
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/btm/btm_browser_signin_detector.h"
 #include "chrome/browser/btm/stateful_bounce_counter.h"
-#include "chrome/browser/captive_portal/captive_portal_service_factory.h"
 #include "chrome/browser/child_process_host_flags.h"
 #include "chrome/browser/chrome_browser_main_extra_parts_nacl_deprecation.h"
 #include "chrome/browser/chrome_content_browser_client_binder_policies.h"
@@ -93,7 +92,6 @@
 #include "chrome/browser/language_detection/language_detection_model_service_factory.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/loader/keep_alive_request_tracker.h"
-#include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
 #include "chrome/browser/media/audio_service_util.h"
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -117,7 +115,6 @@
 #include "chrome/browser/performance_manager/public/chrome_browser_main_extra_parts_performance_manager.h"
 #include "chrome/browser/performance_manager/public/chrome_content_browser_client_performance_manager_part.h"
 #include "chrome/browser/performance_monitor/chrome_browser_main_extra_parts_performance_monitor.h"
-#include "chrome/browser/plugins/pdf_iframe_navigation_throttle.h"
 #include "chrome/browser/plugins/plugin_utils.h"
 #include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -162,14 +159,10 @@
 #include "chrome/browser/speech/chrome_speech_recognition_manager_delegate.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
 #include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
-#include "chrome/browser/ssl/https_defaulted_callbacks.h"
 #include "chrome/browser/ssl/https_upgrades_interceptor.h"
 #include "chrome/browser/ssl/https_upgrades_navigation_throttle.h"
 #include "chrome/browser/ssl/sct_reporting_service.h"
 #include "chrome/browser/ssl/ssl_client_certificate_selector.h"
-#include "chrome/browser/ssl/typed_navigation_upgrade_throttle.h"
-#include "chrome/browser/supervised_user/classify_url_navigation_throttle.h"
-#include "chrome/browser/supervised_user/supervised_user_google_auth_navigation_throttle.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_utils.h"
 #include "chrome/browser/task_manager/sampling/task_manager_impl.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
@@ -179,16 +172,12 @@
 #include "chrome/browser/translate/translate_service.h"
 #include "chrome/browser/ui/blocked_content/blocked_window_params.h"
 #include "chrome/browser/ui/blocked_content/chrome_popup_navigation_delegate.h"
-#include "chrome/browser/ui/blocked_content/tab_under_navigation_throttle.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_navigation_throttle.h"
 #include "chrome/browser/ui/login/http_auth_coordinator.h"
-#include "chrome/browser/ui/login/login_navigation_throttle.h"
-#include "chrome/browser/ui/passwords/password_manager_navigation_throttle.h"
-#include "chrome/browser/ui/passwords/well_known_change_password_navigation_throttle.h"
 #include "chrome/browser/ui/prefs/pref_watcher.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -253,8 +242,6 @@
 #include "components/error_page/common/error_page_switches.h"
 #include "components/error_page/common/localized_error.h"
 #include "components/error_page/content/browser/net_error_auto_reloader.h"
-#include "components/fingerprinting_protection_filter/browser/throttle_manager.h"
-#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/google/core/common/google_switches.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/history/content/browser/visited_link_navigation_throttle.h"
@@ -276,14 +263,12 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_url_loader_throttle.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/payments/content/payment_handler_navigation_throttle.h"
 #include "components/payments/content/payment_request_display_manager.h"
 #include "components/payments/content/secure_payment_confirmation_service_factory.h"
 #include "components/pdf/common/pdf_util.h"
 #include "components/permissions/permission_context_base.h"
-#include "components/policy/content/policy_blocklist_navigation_throttle.h"
 #include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -309,8 +294,6 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/security_interstitials/content/insecure_form_navigation_throttle.h"
-#include "components/security_interstitials/content/ssl_error_handler.h"
-#include "components/security_interstitials/content/ssl_error_navigation_throttle.h"
 #include "components/security_state/core/security_state.h"
 #include "components/services/on_device_translation/buildflags/buildflags.h"
 #include "components/site_isolation/pref_names.h"
@@ -701,7 +684,6 @@
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/pdf/chrome_pdf_stream_delegate.h"
-#include "components/pdf/browser/pdf_navigation_throttle.h"
 #include "components/pdf/browser/pdf_url_loader_request_interceptor.h"
 #include "components/pdf/common/constants.h"
 #include "pdf/pdf_features.h"
@@ -856,40 +838,6 @@ class ChromeBrowserMainExtraPartsThreadNotifier final
  private:
   base::OnceClosure threads_ready_closure_;
 };
-
-// Wrapper for SSLErrorHandler::HandleSSLError() that supplies //chrome-level
-// parameters.
-void HandleSSLErrorWrapper(
-    content::WebContents* web_contents,
-    int cert_error,
-    const net::SSLInfo& ssl_info,
-    const GURL& request_url,
-    SSLErrorHandler::BlockingPageReadyCallback blocking_page_ready_callback) {
-  DCHECK(request_url.SchemeIsCryptographic());
-
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  // Profile should always outlive a WebContents
-  DCHECK(profile);
-
-  captive_portal::CaptivePortalService* captive_portal_service = nullptr;
-
-#if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
-  captive_portal_service = CaptivePortalServiceFactory::GetForProfile(profile);
-#endif
-
-  const bool is_ssl_error_override_allowed_for_origin =
-      policy::IsOriginInAllowlist(request_url, profile->GetPrefs(),
-                                  prefs::kSSLErrorOverrideAllowedForOrigins,
-                                  prefs::kSSLErrorOverrideAllowed);
-
-  SSLErrorHandler::HandleSSLError(
-      web_contents, cert_error, ssl_info, request_url,
-      std::move(blocking_page_ready_callback),
-      g_browser_process->network_time_tracker(), captive_portal_service,
-      std::make_unique<ChromeSecurityBlockingPageFactory>(),
-      is_ssl_error_override_allowed_for_origin);
-}
 
 // Cached version of the locale so we can return the locale on the I/O
 // thread.
@@ -1313,16 +1261,6 @@ void MaybeAddCondition(
   }
 }
 #endif
-
-// Returns whether |web_contents| is within a hosted app.
-bool IsInHostedApp(WebContents* web_contents) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  return web_app::AppBrowserController::IsWebApp(browser);
-#else
-  return false;
-#endif
-}
 
 bool IsErrorPageAutoReloadEnabled() {
   const base::CommandLine& command_line =
@@ -5384,71 +5322,6 @@ void ChromeContentBrowserClient::CreateThrottlesForNavigation(
       Profile::FromBrowserContext(handle.GetWebContents()->GetBrowserContext());
   // TODO(https://crbug.com/412524375): Move the following code to
   // CreateAndAddChromeThrottlesForNavigation().
-
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
-  registry.MaybeAddThrottle(
-      extensions::WebViewGuest::MaybeCreateNavigationThrottle(&handle));
-#endif
-
-  registry.MaybeAddThrottle(
-      SupervisedUserGoogleAuthNavigationThrottle::MaybeCreate(&handle));
-
-  registry.MaybeAddThrottle(
-      supervised_user::MaybeCreateClassifyUrlNavigationThrottleFor(&handle));
-
-  if (auto* throttle_manager =
-          subresource_filter::ContentSubresourceFilterThrottleManager::
-              FromNavigationHandle(handle)) {
-    throttle_manager->MaybeAppendNavigationThrottles(registry);
-  }
-
-  if (fingerprinting_protection_filter::features::
-          IsFingerprintingProtectionEnabledForIncognitoState(
-              profile ? profile->IsIncognitoProfile() : false)) {
-    if (auto* throttle_manager = fingerprinting_protection_filter::
-            ThrottleManager::FromNavigationHandle(handle)) {
-      throttle_manager->MaybeAppendNavigationThrottles(registry);
-    }
-  }
-
-  registry.MaybeAddThrottle(
-      LookalikeUrlNavigationThrottle::MaybeCreateNavigationThrottle(&handle));
-
-  registry.MaybeAddThrottle(
-      PDFIFrameNavigationThrottle::MaybeCreateThrottleFor(&handle));
-#if BUILDFLAG(ENABLE_PDF)
-  registry.AddThrottle(std::make_unique<pdf::PdfNavigationThrottle>(
-      &handle, std::make_unique<ChromePdfStreamDelegate>()));
-#endif  // BUILDFLAG(ENABLE_PDF)
-
-  registry.MaybeAddThrottle(TabUnderNavigationThrottle::MaybeCreate(&handle));
-
-  registry.MaybeAddThrottle(
-      WellKnownChangePasswordNavigationThrottle::MaybeCreateThrottleFor(
-          &handle));
-
-  registry.MaybeAddThrottle(
-      PasswordManagerNavigationThrottle::MaybeCreateThrottleFor(&handle));
-
-  registry.AddThrottle(std::make_unique<PolicyBlocklistNavigationThrottle>(
-      registry, handle.GetWebContents()->GetBrowserContext()));
-
-  // Before setting up SSL error detection, configure SSLErrorHandler to invoke
-  // the relevant extension API whenever an SSL interstitial is shown.
-  SSLErrorHandler::SetClientCallbackOnInterstitialsShown(
-      base::BindRepeating(&MaybeTriggerSecurityInterstitialShownEvent));
-  registry.AddThrottle(std::make_unique<SSLErrorNavigationThrottle>(
-      &handle, base::BindOnce(&HandleSSLErrorWrapper),
-      base::BindOnce(&IsInHostedApp),
-      base::BindOnce(
-          &ShouldIgnoreSslInterstitialBecauseNavigationDefaultedToHttps)));
-
-  registry.AddThrottle(std::make_unique<LoginNavigationThrottle>(&handle));
-
-  if (base::FeatureList::IsEnabled(omnibox::kDefaultTypedNavigationsToHttps)) {
-    registry.MaybeAddThrottle(
-        TypedNavigationUpgradeThrottle::MaybeCreateThrottleFor(&handle));
-  }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   registry.MaybeAddThrottle(
