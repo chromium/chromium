@@ -663,6 +663,8 @@ HEADLESS_PROTOCOL_TEST_P(HeadlessProtocolBrowserTestSitePerProcess,
                          SitePerProcess,
                          "sanity/site-per-process.js")
 
+HEADLESS_PROTOCOL_TEST(DataURIIframe, "sanity/data-uri-iframe.js")
+
 // The test brlow requires beginFrameControl which is currently not supported
 // on Mac.
 #if BUILDFLAG(IS_MAC)
