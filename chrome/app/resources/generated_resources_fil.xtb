@@ -7196,7 +7196,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6061408389284235459">May ipinadalang notification sa <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Gumawa ng QR Code</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Tandaan:<ph name="END_BOLD" /> Posibleng ma-access din ng katulad na boses o recording ang mga personal na resulta ni <ph name="SUPERVISED_USER_NAME" />. Para makatipid ng baterya, puwede mong piliin sa mga setting ng Assistant ni <ph name="SUPERVISED_USER_NAME" /> na i-on lang ang “Hey Google” kapag nakakonekta ang device na ito sa isang power source.</translation>
-<translation id="6064217302520318294">Lock ng screen</translation>
+<translation id="6064217302520318294">Screen lock</translation>
 <translation id="606449270532897041">Pamahalaan ang data ng site</translation>
 <translation id="6064764629679333574">Pagandahin ang kalidad ng tunog ng Bluetooth na mikropono sa pamamagitan ng pag-upscale sa high-res mula sa low-res.</translation>
 <translation id="6065289257230303064">Mga Katangian ng Direktoryo ng Paksa ng Certificate</translation>
@@ -8459,7 +8459,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6966370001499648704">Kontrolin kung aling mga telepono ang ginagamit mo bilang mga security key</translation>
 <translation id="6967112302799758487">Aalisin sa device na ito ang anumang app at larong na-install gamit ang Steam para sa Chromebook (Beta). Aalisin din ang data na nauugnay sa mga app at larong ito. Tiyaking mag-back up ng mga naka-save na app at laro bago mag-uninstall.</translation>
 <translation id="6967430741871315905">Hindi nasuri kung pinapayagan ang device</translation>
-<translation id="6968288415730398122">Ilagay ang iyong password upang i-configure ang lock ng screen</translation>
+<translation id="6968288415730398122">Ilagay ang iyong password para i-configure ang screen lock</translation>
 <translation id="6969047215179982698">I-off ang Nearby Share</translation>
 <translation id="6969216690072714773">Maglagay ng bago o mag-update ng umiiral nang impormasyon na iuugnay sa device na ito.</translation>
 <translation id="696942486482903620">Kapag nag-save ka ng mga password sa iyong Google Account, puwede mong gamitin ang mga ito sa device na ito at sa anupamang device kung saan ka naka-sign in</translation>
@@ -11654,7 +11654,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="9200339982498053969">Mae-edit ng <ph name="ORIGIN" /> ang mga file sa <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Maghanap sa <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201117361710210082">Huling tiningnan</translation>
-<translation id="9201220332032049474">Mga opsyon sa lock ng screen</translation>
+<translation id="9201220332032049474">Mga opsyon sa screen lock</translation>
 <translation id="9201842707396338580">Nagkaproblema. Makipag-ugnayan sa may-ari o administrator ng iyong device. Code ng error: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203296457393252944">Pula-berde, hirap makakita ng berde (Deuteranomaly)</translation>
 <translation id="9203398526606335860">&amp;Pinagana ang pag-profile</translation>
