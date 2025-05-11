@@ -38,6 +38,7 @@ AutoclickE2ETest = class extends E2ETestBase {
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "ui/accessibility/accessibility_features.h"
     `);
   }
 
@@ -50,6 +51,11 @@ AutoclickE2ETest = class extends E2ETestBase {
           true);
     `);
     super.testGenPreambleCommon('kAccessibilityCommonExtensionId');
+  }
+
+  /** @override */
+  get featureList() {
+    return {enabled: ['features::kAccessibilityManifestV3AccessibilityCommon']};
   }
 
   /**
