@@ -52,6 +52,7 @@ MagnifierE2ETest = class extends E2ETestBase {
     return {
       enabled: [
         'features::kAccessibilityMagnifierFollowsChromeVox',
+        'features::kAccessibilityManifestV3AccessibilityCommon'
       ],
     };
   }
