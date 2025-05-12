@@ -23,7 +23,8 @@ enum class ChangeProfileReason {
   kAuthenticationError = 3,
   kProfileDeleted = 4,
   kHandlePushNotification = 5,
-  kMaxValue = kHandlePushNotification
+  kSwitchAccountsFromWidget = 6,
+  kMaxValue = kSwitchAccountsFromWidget
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:IOSChangeProfileReason)
 

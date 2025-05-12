@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
-#import "ios/chrome/browser/shared/coordinator/scene/widget_context.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -44,9 +43,6 @@
 - (void)performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
                    completionHandler:
                        (void (^)(BOOL succeeded))completionHandler;
-
-- (void)changeAccountForContext:(WidgetContext*)context
-                   openContexts:(NSSet<UIOpenURLContext*>*)contexts;
 
 // This method completely destroys all of the UI. It should be called when the
 // scene is disconnected.
