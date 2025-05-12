@@ -55,7 +55,8 @@ class TabStripActionContainer : public views::View,
     AnimationSessionType session_type() { return session_type_; }
 
     gfx::SlideAnimation* expansion_animation() { return &expansion_animation_; }
-    void ResetAnimationForTesting(double value);
+    void ResetExpansionAnimationForTesting(double value);
+    void ResetOpacityAnimationForTesting(double value);
 
     void Hide();
     TabStripNudgeButton* button() { return button_; }
