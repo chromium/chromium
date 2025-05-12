@@ -690,7 +690,7 @@ void OnConfigParsed(const GURL& provider,
         case blink::mojom::RpMode::kActive:
           selected_mode_dict = modes_dict->FindDict(kActiveModeKey);
           break;
-      };
+      }
     }
     if (selected_mode_dict) {
       supports_add_account =

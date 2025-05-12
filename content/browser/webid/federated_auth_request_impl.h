@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "content/browser/webid/fedcm_metrics.h"
+#include "content/browser/webid/fedcm_url_computations.h"
 #include "content/browser/webid/federated_provider_fetcher.h"
 #include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/identity_registry_delegate.h"
@@ -193,11 +194,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     // nullopt if the server did not send a value or if the FedCmIframeOrigin
     // flag is not enabled.
     std::optional<bool> client_matches_top_frame_origin;
-  };
-
-  struct IdentityProviderLoginUrlInfo {
-    std::string login_hint;
-    std::string domain_hint;
   };
 
   // For use by the devtools protocol for browser automation.
