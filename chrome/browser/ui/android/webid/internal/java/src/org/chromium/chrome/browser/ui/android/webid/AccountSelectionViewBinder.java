@@ -167,8 +167,6 @@ class AccountSelectionViewBinder {
                     view.getResources()
                             .getDimensionPixelSize(
                                     R.dimen.account_selection_account_avatar_monogram_text_size);
-            // TODO(crbug.com/40214151): Consult UI team to determine the background color we
-            // need to use here.
             RoundedIconGenerator roundedIconGenerator =
                     new RoundedIconGenerator(
                             resources,

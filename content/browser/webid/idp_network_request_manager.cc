@@ -64,9 +64,6 @@ using TokenError = IdentityCredentialTokenError;
 using TokenResponseType = IdpNetworkRequestManager::FedCmTokenResponseType;
 using TokenResult = IdpNetworkRequestManager::TokenResult;
 
-// TODO(kenrb): These need to be defined in the explainer or draft spec and
-// referenced here.
-
 // Path to find the well-known file on the eTLD+1 host.
 constexpr char kWellKnownPath[] = "/.well-known/web-identity";
 

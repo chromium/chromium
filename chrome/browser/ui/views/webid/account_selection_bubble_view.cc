@@ -187,11 +187,7 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
       idp_title.has_value() ||
       base::FeatureList::IsEnabled(features::kFedCmMultipleIdentityProviders));
   set_margins(gfx::Insets::VH(kTopBottomPadding + kVerticalSpacing, 0));
-  // TODO(crbug.com/40224637): we are currently using a custom header because
-  // the icon, title, and close buttons from a bubble are not customizable
-  // enough to satisfy the UI requirements. However, this adds complexity to the
-  // code and makes this bubble lose any improvements made to the base bubble,
-  // so we should revisit this.
+
   SetShowTitle(false);
   SetShowCloseButton(false);
   set_close_on_deactivate(false);

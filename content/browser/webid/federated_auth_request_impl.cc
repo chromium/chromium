@@ -680,9 +680,6 @@ void FederatedAuthRequestImpl::RequestToken(
     // The conditional mediation parameter can only be used when delegation
     // is enabled while it is under development.
     //
-    // TODO(crbug.com/380367784): create an independent flag for conditional
-    // mediation, so that it can be used without delegation.
-    //
     // TODO(crbug.com/380367784): handle all of the many cases in which a
     // conditional mediation may interact with other features.
     ReportBadMessageAndDeleteThis(

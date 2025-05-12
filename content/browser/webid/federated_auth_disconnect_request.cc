@@ -137,8 +137,6 @@ void FederatedAuthDisconnectRequest::OnAllConfigAndWellKnownFetched(
           *fetch_error.additional_console_error_message);
     }
 
-    // TODO (crbug.com/1473134): add devtools issues and console errors.
-
     FedCmDisconnectStatus status;
     switch (fetch_error.result) {
       case FederatedAuthRequestResult::kWellKnownHttpNotFound: {
