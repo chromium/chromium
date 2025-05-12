@@ -17,6 +17,7 @@ WebSchedulingTaskState::WebSchedulingTaskState(
       scheduler_task_context_(task_context) {}
 
 void WebSchedulingTaskState::Trace(Visitor* visitor) const {
+  WrappableTaskState::Trace(visitor);
   visitor->Trace(scheduler_task_context_);
   visitor->Trace(subtask_propagatable_task_state_);
 }

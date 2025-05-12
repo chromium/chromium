@@ -43,5 +43,6 @@ blink_core_tests_scheduler = [
   "dom_scheduler_test.cc",
   "dom_timer_test.cc",
   "idle_deadline_test.cc",
+  "script_wrappable_task_state_test.cc",
   "scripted_idle_task_controller_test.cc",
 ]

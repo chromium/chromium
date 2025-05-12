@@ -19,8 +19,7 @@ class SchedulerTaskContext;
 class SoftNavigationContext;
 
 class CORE_EXPORT TaskAttributionInfoImpl final
-    : public GarbageCollected<TaskAttributionInfoImpl>,
-      public WrappableTaskState,
+    : public WrappableTaskState,
       public scheduler::TaskAttributionInfo {
  public:
   TaskAttributionInfoImpl(scheduler::TaskAttributionId, SoftNavigationContext*);

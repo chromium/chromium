@@ -180,9 +180,7 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
   } else {
     auto* task_state = MakeGarbageCollected<WebSchedulingTaskState>(
         /*TaskAttributionInfo=*/nullptr, scheduler_task_context_);
-    ScriptWrappableTaskState::SetCurrent(
-        script_state,
-        MakeGarbageCollected<ScriptWrappableTaskState>(task_state));
+    ScriptWrappableTaskState::SetCurrent(script_state, task_state);
   }
 
   execution_state_ = ExecutionState::kRunningSync;

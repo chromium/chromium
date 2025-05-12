@@ -1240,7 +1240,9 @@ class IdlCompiler(object):
             assert next_tag == new_ir.max_subclass_tag + 1
             return next_tag
 
+        # LINT.IfChange(ScriptWrappableStartTag)
         next_tag = 256
+        # LINT.ThenChange(//third_party/blink/renderer/platform/bindings/wrapper_type_info.h:ScriptWrappableStartTag)
 
         old_irs = self._ir_map.irs_of_kinds(IRMap.IR.Kind.ASYNC_ITERATOR,
                                             IRMap.IR.Kind.INTERFACE,

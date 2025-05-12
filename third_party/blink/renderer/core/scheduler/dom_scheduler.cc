@@ -222,8 +222,7 @@ void DOMScheduler::setTaskId(ScriptState* script_state,
   auto* task_state = MakeGarbageCollected<TaskAttributionInfoImpl>(
       scheduler::TaskAttributionId(task_id),
       /*soft_navigation_context=*/nullptr);
-  ScriptWrappableTaskState::SetCurrent(
-      script_state, MakeGarbageCollected<ScriptWrappableTaskState>(task_state));
+  ScriptWrappableTaskState::SetCurrent(script_state, task_state);
   auto* scheduler = ThreadScheduler::Current()->ToMainThreadScheduler();
   // This test API is only available on the main thread.
   CHECK(scheduler);

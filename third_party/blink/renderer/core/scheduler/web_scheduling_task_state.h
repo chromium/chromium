@@ -18,9 +18,7 @@ namespace blink {
 class ExecutionContext;
 class SchedulerTaskContext;
 
-class CORE_EXPORT WebSchedulingTaskState final
-    : public GarbageCollected<WebSchedulingTaskState>,
-      public WrappableTaskState {
+class CORE_EXPORT WebSchedulingTaskState final : public WrappableTaskState {
  public:
   WebSchedulingTaskState(scheduler::TaskAttributionInfo*,
                          SchedulerTaskContext*);

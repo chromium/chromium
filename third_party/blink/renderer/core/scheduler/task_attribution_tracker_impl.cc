@@ -66,7 +66,7 @@ TaskAttributionTrackerImpl::TaskAttributionTrackerImpl(v8::Isolate* isolate)
 
 scheduler::TaskAttributionInfo* TaskAttributionTrackerImpl::RunningTask()
     const {
-  if (ScriptWrappableTaskState* task_state =
+  if (ScriptWrappableTaskStateBase* task_state =
           ScriptWrappableTaskState::GetCurrent(isolate_)) {
     return task_state->WrappedState()->GetTaskAttributionInfo();
   }
@@ -102,7 +102,7 @@ TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
   CHECK(script_state);
   CHECK_EQ(script_state->GetIsolate(), isolate_);
 
-  ScriptWrappableTaskState* previous_task_state =
+  ScriptWrappableTaskStateBase* previous_task_state =
       ScriptWrappableTaskState::GetCurrent(isolate_);
   WrappableTaskState* previous_unwrapped_task_state =
       previous_task_state ? previous_task_state->WrappedState() : nullptr;
@@ -118,11 +118,7 @@ TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
   }
 
   if (running_task_state != previous_unwrapped_task_state) {
-    ScriptWrappableTaskState::SetCurrent(
-        script_state,
-        running_task_state
-            ? MakeGarbageCollected<ScriptWrappableTaskState>(running_task_state)
-            : nullptr);
+    ScriptWrappableTaskState::SetCurrent(script_state, running_task_state);
   }
 
   TaskAttributionInfo* current =
