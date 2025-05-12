@@ -1829,6 +1829,28 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, GetImage) {
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
+       ReleaseLostTransferableResource) {
+  CreateContext(kNonOpaque);
+
+  ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider());
+
+  // Invoking PrepareTransferableResource() has a precondition that a CC layer
+  // is present.
+  ASSERT_TRUE(CanvasElement().GetOrCreateCcLayerIfNeeded());
+
+  Context2D()->fillRect(3, 3, 1, 1);
+
+  // Prepare a TransferableResource, then report the resource as lost.
+  // This test passes by not crashing and not triggering assertions.
+  viz::TransferableResource resource;
+  viz::ReleaseCallback release_callback;
+  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(&resource,
+                                                          &release_callback));
+  bool lost_resource = true;
+  std::move(release_callback).Run(gpu::SyncToken(), lost_resource);
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated,
        NoRegenerationOfTransferableResourceWhenAlreadyInCcLayer) {
   CreateContext(kNonOpaque);
 

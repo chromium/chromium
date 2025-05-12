@@ -29,29 +29,6 @@ class AcceleratedCompositingTestPlatform
   bool IsGpuCompositingDisabled() const override { return false; }
 };
 
-TEST(CanvasResourceHostTest, ReleaseLostTransferableResource) {
-  test::TaskEnvironment task_environment;
-  ScopedTestingPlatformSupport<AcceleratedCompositingTestPlatform>
-      accelerated_compositing_scope;
-  scoped_refptr<TestContextProvider> context = TestContextProvider::Create();
-  InitializeSharedGpuContextGLES2(context.get());
-
-  auto host = std::make_unique<FakeCanvasResourceHost>(gfx::Size(100, 100));
-  host->GetOrCreateCanvasResourceProvider();
-  host->GetOrCreateCcLayerIfNeeded();
-
-  // Prepare a TransferableResource, then report the resource as lost.
-  // This test passes by not crashing and not triggering assertions.
-  viz::TransferableResource resource;
-  viz::ReleaseCallback release_callback;
-  EXPECT_TRUE(host->PrepareTransferableResource(&resource, &release_callback));
-
-  bool lost_resource = true;
-  std::move(release_callback).Run(gpu::SyncToken(), lost_resource);
-
-  SharedGpuContext::Reset();
-}
-
 TEST(CanvasResourceHostTest, ReleaseLostTransferableResourceWithLostContext) {
   test::TaskEnvironment task_environment;
   ScopedTestingPlatformSupport<AcceleratedCompositingTestPlatform>
