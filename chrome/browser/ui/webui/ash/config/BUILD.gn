@@ -62,6 +62,7 @@ static_library("config") {
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/holding_space",
     "//chrome/browser/ui/views/borealis:borealis",
+    "//chrome/browser/ui/webui/about",
     "//chrome/browser/ui/webui/ash/account_manager",
     "//chrome/browser/ui/webui/ash/add_supervision",
     "//chrome/browser/ui/webui/ash/app_install",

@@ -138,8 +138,6 @@ static_library("ui") {
     "webid/identity_dialog_controller.h",
     "webid/identity_ui_utils.cc",
     "webid/identity_ui_utils.h",
-    "webui/about/about_ui.cc",
-    "webui/about/about_ui.h",
     "webui/accessibility/accessibility_ui.cc",
     "webui/accessibility/accessibility_ui.h",
     "webui/autofill_and_password_manager_internals/autofill_internals_ui.cc",
@@ -419,6 +417,7 @@ static_library("ui") {
     "//chrome/browser/ui/tab_contents",
     "//chrome/browser/ui/tab_contents:impl",
     "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui/about",
     "//chrome/browser/ui/webui/bluetooth_internals",
     "//chrome/browser/ui/zoom",
     "//chrome/browser/updates/announcement_notification",
@@ -750,6 +749,10 @@ static_library("ui") {
     "//chrome/browser/prefs:impl",
 
     "//chrome/browser/task_manager:impl",
+
+    # TODO(crbug.com/364667551): includes //c/b/about_flags.h and other sources
+    # from //chrome/browser/ui/webui, which are not modularized yet.
+    "//chrome/browser/ui/webui/about",
   ]
 
   if (enable_vr && is_win) {
