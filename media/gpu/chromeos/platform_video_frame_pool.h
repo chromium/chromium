@@ -136,7 +136,8 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
   bool use_protected_ GUARDED_BY(lock_) = false;
 
   // True if we need to allocate GPU buffers in a way that is accessible from
-  // the CPU with a linear layout. Can only be set once per instance.
+  // the CPU with a linear layout. Can not be changed during Initialize() unless
+  // |use_protected| also changes.
   std::optional<bool> use_linear_buffers_ GUARDED_BY(lock_);
 
   // Callback which is called when the pool is not exhausted.
