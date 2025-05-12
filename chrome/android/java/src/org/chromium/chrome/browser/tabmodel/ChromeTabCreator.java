@@ -288,7 +288,8 @@ public class ChromeTabCreator extends TabCreator
                 TimingMetric unused =
                         TimingMetric.mediumUptime(
                                 "Android.Tab.CreateNewTabDuration."
-                                        + tabLaunchTypeToHistogramKey(type))) {
+                                        + tabLaunchTypeToHistogramKey(type)
+                                        + "2")) {
             int parentId = parent != null ? parent.getId() : Tab.INVALID_TAB_ID;
 
             GURL url = UrlFormatter.fixupUrl(loadUrlParams.getUrl());
