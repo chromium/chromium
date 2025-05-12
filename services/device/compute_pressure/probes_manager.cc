@@ -68,11 +68,11 @@ base::TimeDelta ProbesManager::sampling_interval_for_testing() const {
 }
 
 void ProbesManager::UpdateClients(mojom::PressureSource source,
-                                  mojom::PressureState state) {
+                                  mojom::PressureDataPtr data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::TimeTicks timestamp = base::TimeTicks::Now();
 
-  mojom::PressureUpdate update(source, state, timestamp);
+  mojom::PressureUpdate update(source, std::move(data), timestamp);
   for (auto& client : associated_clients_[source]) {
     client->OnPressureUpdated(update.Clone());
   }
@@ -106,7 +106,7 @@ void ProbesManager::set_cpu_probe_manager(
   cpu_probe_manager_ = std::move(cpu_probe_manager);
 }
 
-const base::RepeatingCallback<void(mojom::PressureState)>&
+const base::RepeatingCallback<void(mojom::PressureDataPtr)>&
 ProbesManager::cpu_probe_sampling_callback() const {
   return cpu_probe_sampling_callback_;
 }

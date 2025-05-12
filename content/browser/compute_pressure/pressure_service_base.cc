@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -14,6 +15,7 @@
 #include "content/public/browser/video_picture_in_picture_window_controller.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/device/public/cpp/device_features.h"
 
 namespace {
 
@@ -34,7 +36,14 @@ constexpr char kVirtualPressureSourceStopConsoleMessage[] =
 namespace content {
 
 PressureServiceBase::PressureServiceBase()
-    : source_to_client_{PressureClientImpl(this)} {}
+    : source_to_client_{PressureClientImpl(this)} {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (base::FeatureList::IsEnabled(
+          features::kComputePressureBreakCalibrationMitigation)) {
+    converter_.EnableStateRandomizationMitigation();
+  }
+}
 
 PressureServiceBase::~PressureServiceBase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -112,6 +121,11 @@ bool PressureServiceBase::HasImplicitFocus(RenderFrameHost* render_frame_host) {
   // 9. Otherwise, return false.
   return current_origin.IsSameOriginWith(
       focused_frame->GetLastCommittedOrigin());
+}
+
+device::mojom::PressureState PressureServiceBase::CalculateState(
+    double pressure_value) {
+  return converter_.CalculateState(pressure_value);
 }
 
 bool PressureServiceBase::CanCallAddClient() const {

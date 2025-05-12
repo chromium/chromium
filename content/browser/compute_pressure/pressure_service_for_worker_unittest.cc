@@ -39,6 +39,7 @@
 namespace content {
 
 using blink::mojom::WebPressureUpdate;
+using device::mojom::PressureData;
 using device::mojom::PressureManagerAddClientResult;
 using device::mojom::PressureSource;
 using device::mojom::PressureState;
@@ -58,10 +59,10 @@ class FakePressureClient : public blink::mojom::WebPressureClient {
   FakePressureClient& operator=(const FakePressureClient&) = delete;
 
   // blink::mojom::WebPressureClient implementation.
-  void OnPressureUpdated(blink::mojom::WebPressureUpdatePtr state) override {
+  void OnPressureUpdated(blink::mojom::WebPressureUpdatePtr update) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    updates_.push_back(*state);
+    updates_.push_back(*update);
     if (update_callback_) {
       std::move(update_callback_).Run();
       update_callback_.Reset();
@@ -184,12 +185,13 @@ TEST_F(PressureServiceForDedicatedWorkerTest, AddClient) {
   ASSERT_EQ(future.Get(), device::mojom::PressureManagerAddClientResult::kOk);
 
   const base::TimeTicks time = base::TimeTicks::Now();
-  PressureUpdate update(PressureSource::kCpu, PressureState::kNominal, time);
+  auto data = PressureData::New(/*cpu_utilization=*/0.2);
+  PressureUpdate update(PressureSource::kCpu, std::move(data), time);
   pressure_manager_overrider_->UpdateClients(update);
   client.WaitForUpdate();
   ASSERT_EQ(client.updates().size(), 1u);
   EXPECT_EQ(client.updates()[0].source, update.source);
-  EXPECT_EQ(client.updates()[0].state, update.state);
+  EXPECT_EQ(client.updates()[0].state, device::mojom::PressureState::kNominal);
   EXPECT_EQ(client.updates()[0].timestamp, update.timestamp);
 }
 
@@ -327,12 +329,13 @@ TEST_F(PressureServiceForSharedWorkerTest, AddClient) {
   ASSERT_EQ(future.Get(), device::mojom::PressureManagerAddClientResult::kOk);
 
   const base::TimeTicks time = base::TimeTicks::Now();
-  PressureUpdate update(PressureSource::kCpu, PressureState::kNominal, time);
+  auto data = PressureData::New(/*cpu_utilization=*/0.4);
+  PressureUpdate update(PressureSource::kCpu, std::move(data), time);
   pressure_manager_overrider_->UpdateClients(update);
   client.WaitForUpdate();
   ASSERT_EQ(client.updates().size(), 1u);
   EXPECT_EQ(client.updates()[0].source, update.source);
-  EXPECT_EQ(client.updates()[0].state, update.state);
+  EXPECT_EQ(client.updates()[0].state, device::mojom::PressureState::kNominal);
   EXPECT_EQ(client.updates()[0].timestamp, update.timestamp);
 }
 

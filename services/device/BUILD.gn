@@ -193,6 +193,7 @@ source_set("tests") {
     sources += [
       "compute_pressure/cpu_probe_manager_unittest.cc",
       "compute_pressure/pressure_manager_impl_unittest.cc",
+      "public/cpp/compute_pressure/cpu_pressure_converter_unittest.cc",
     ]
     deps += [ "//services/device/compute_pressure" ]
   }

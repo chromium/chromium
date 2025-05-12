@@ -22,8 +22,16 @@ void PressureClientImpl::OnPressureUpdated(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (service_->ShouldDeliverUpdate()) {
+    device::mojom::PressureState state;
+    switch (update->source) {
+      case device::mojom::PressureSource::kCpu:
+        state = service_->CalculateState(update->data->cpu_utilization);
+        break;
+      default:
+        NOTREACHED();
+    }
     client_associated_remote_->OnPressureUpdated(
-        blink::mojom::WebPressureUpdate::New(update->source, update->state,
+        blink::mojom::WebPressureUpdate::New(update->source, state,
                                              update->timestamp));
   }
 }

@@ -22,7 +22,10 @@ source_set("compute_pressure") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  public_deps = [ "//services/device/public/mojom" ]
+  public_deps = [
+    "//services/device/public/cpp/compute_pressure",
+    "//services/device/public/mojom",
+  ]
 
   deps = [
     "//base",

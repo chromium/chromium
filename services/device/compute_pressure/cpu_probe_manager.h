@@ -14,7 +14,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/system_cpu/cpu_sample.h"
-#include "services/device/public/mojom/pressure_update.mojom-shared.h"
+#include "services/device/public/mojom/pressure_update.mojom.h"
 
 namespace system_cpu {
 class CpuProbe;
@@ -42,13 +42,13 @@ class CpuProbeManager {
   // Returns nullptr if no suitable implementation exists.
   static std::unique_ptr<CpuProbeManager> Create(
       base::TimeDelta sampling_interval,
-      base::RepeatingCallback<void(mojom::PressureState)> sampling_callback);
+      base::RepeatingCallback<void(mojom::PressureDataPtr)> sampling_callback);
 
   // Instantiates CpuProbeManager with a supplied CpuProbe.
   static std::unique_ptr<CpuProbeManager> CreateForTesting(
-      std::unique_ptr<system_cpu::CpuProbe> system_cpu_probe,
       base::TimeDelta sampling_interval,
-      base::RepeatingCallback<void(mojom::PressureState)> sampling_callback);
+      base::RepeatingCallback<void(mojom::PressureDataPtr)> sampling_callback,
+      std::unique_ptr<system_cpu::CpuProbe> system_cpu_probe);
 
   CpuProbeManager(const CpuProbeManager&) = delete;
   CpuProbeManager& operator=(const CpuProbeManager&) = delete;
@@ -64,28 +64,25 @@ class CpuProbeManager {
   // Stop the timer.
   void Stop();
 
-  base::TimeDelta GetRandomizationTimeForTesting() const {
-    return randomization_time_;
-  }
-
   void SetCpuProbeForTesting(std::unique_ptr<system_cpu::CpuProbe>);
 
  protected:
-  CpuProbeManager(std::unique_ptr<system_cpu::CpuProbe> system_cpu_probe,
-                  base::TimeDelta,
-                  base::RepeatingCallback<void(mojom::PressureState)>);
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  CpuProbeManager(base::TimeDelta,
+                  base::RepeatingCallback<void(mojom::PressureDataPtr)>,
+                  std::unique_ptr<system_cpu::CpuProbe> system_cpu_probe);
 
   system_cpu::CpuProbe* cpu_probe();
 
-  // Returns the current thresholds being used for each mojom::PressureState,
-  // taking state randomization into account.
-  const std::array<double,
-                   static_cast<size_t>(mojom::PressureState::kMaxValue) + 1>&
-  state_thresholds() const;
+  // Drive repeated sampling.
+  base::RepeatingTimer timer_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const base::TimeDelta sampling_interval_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Returns the hysteresis threshold delta value used
-  // to prevent state flip-flopping.
-  double hysteresis_threshold_delta() const;
+  // Called with each sample reading.
+  base::RepeatingCallback<void(mojom::PressureDataPtr)> sampling_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
  private:
   friend class CpuProbeManagerTest;
@@ -93,42 +90,10 @@ class CpuProbeManager {
                            CalculateStateValueTooLarge);
   FRIEND_TEST_ALL_PREFIXES(CpuProbeManagerTest, CreateCpuProbeExists);
 
-  // Implements the "break calibration" mitigation by toggling the
-  // |state_randomization_requested_| flag every |randomization_time_|
-  // interval.
-  void ToggleStateRandomization();
-
   // Called periodically while the CpuProbe is running.
-  void OnCpuSampleAvailable(std::optional<system_cpu::CpuSample>);
-
-  // Calculate PressureState based on optional CpuSample.
-  mojom::PressureState CalculateState(const system_cpu::CpuSample&);
-
-  SEQUENCE_CHECKER(sequence_checker_);
+  virtual void OnCpuSampleAvailable(std::optional<system_cpu::CpuSample>);
 
   std::unique_ptr<system_cpu::CpuProbe> system_cpu_probe_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Variable storing |randomization_timer_| time.
-  base::TimeDelta randomization_time_;
-
-  // Last state stored as index instead of value.
-  size_t last_state_index_ =
-      static_cast<size_t>(mojom::PressureState::kNominal);
-
-  // Drive repeated sampling.
-  base::RepeatingTimer timer_ GUARDED_BY_CONTEXT(sequence_checker_);
-  const base::TimeDelta sampling_interval_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Drive randomization interval by invoking `ToggleStateRandomization()`.
-  base::OneShotTimer randomization_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Flag to indicate that state randomization has been requested.
-  bool state_randomization_requested_ = false;
-
-  // Called with each sample reading.
-  base::RepeatingCallback<void(mojom::PressureState)> sampling_callback_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<CpuProbeManager> weak_factory_{this};

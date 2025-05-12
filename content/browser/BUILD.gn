@@ -2547,6 +2547,8 @@ source_set("browser") {
       "compute_pressure/web_contents_pressure_manager_proxy.cc",
       "compute_pressure/web_contents_pressure_manager_proxy.h",
     ]
+
+    deps += [ "//services/device/public/cpp/compute_pressure" ]
   }
 
   if (use_viz_debugger) {

@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "services/device/compute_pressure/cpu_probe_manager.h"
+#include "services/device/public/cpp/compute_pressure/cpu_pressure_converter.h"
 #include "services/device/public/mojom/pressure_update.mojom-shared.h"
 
 namespace device {
@@ -20,9 +21,11 @@ class VirtualCpuProbeManager final : public CpuProbeManager {
  public:
   static std::unique_ptr<VirtualCpuProbeManager> Create(
       base::TimeDelta sampling_interval,
-      base::RepeatingCallback<void(mojom::PressureState)> sampling_callback);
+      base::RepeatingCallback<void(mojom::PressureDataPtr)> sampling_callback);
 
   ~VirtualCpuProbeManager() final;
+
+  void OnCpuSampleAvailable(std::optional<system_cpu::CpuSample>) override;
 
   // Creates a system_cpu::CpuSample that corresponds to |desired_state| and
   // provides it to this class' custom CpuProbe. The CpuSample instance will
@@ -33,7 +36,11 @@ class VirtualCpuProbeManager final : public CpuProbeManager {
  private:
   VirtualCpuProbeManager(
       base::TimeDelta sampling_interval,
-      base::RepeatingCallback<void(mojom::PressureState)> sampling_callback);
+      base::RepeatingCallback<void(mojom::PressureDataPtr)> sampling_callback);
+
+  // Handles break calibration mitigation and conversion from PressureSample
+  // to PressureState.
+  device::CpuPressureConverter converter_;
 };
 
 }  // namespace device

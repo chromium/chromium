@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/process/process_metrics.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/unguessable_token.h"
@@ -19,6 +20,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/device/public/cpp/compute_pressure/cpu_pressure_converter.h"
 #include "services/device/public/mojom/pressure_manager.mojom.h"
 #include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager.mojom.h"
 
@@ -59,6 +61,7 @@ class CONTENT_EXPORT PressureServiceBase
 
   // Verifies if the data should be delivered according to focus status.
   virtual bool ShouldDeliverUpdate() const = 0;
+  device::mojom::PressureState CalculateState(double cpu_utilization);
 
   // Returns a token for use with automation calls when one is set.
   virtual std::optional<base::UnguessableToken> GetTokenFor(
@@ -97,6 +100,10 @@ class CONTENT_EXPORT PressureServiceBase
                     const std::optional<base::UnguessableToken>&,
                     AddClientCallback client_callback,
                     device::mojom::PressureManagerAddClientResult);
+
+  // Handles break calibration mitigation and conversion from
+  // cpu_utilization to PressureState.
+  device::CpuPressureConverter converter_;
 
   // Services side.
   mojo::Remote<device::mojom::PressureManager> manager_remote_

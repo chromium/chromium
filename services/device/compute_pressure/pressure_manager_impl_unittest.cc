@@ -47,15 +47,17 @@ class FakePressureClient : public mojom::PressureClient {
   FakePressureClient& operator=(const FakePressureClient&) = delete;
 
   // device::mojom::PressureClient implementation.
-  void OnPressureUpdated(device::mojom::PressureUpdatePtr update) override {
-    updates_.emplace_back(*update);
+  void OnPressureUpdated(mojom::PressureUpdatePtr update) override {
+    updates_.push_back(std::move(update));
     if (update_callback_) {
       std::move(update_callback_).Run();
       update_callback_.Reset();
     }
   }
 
-  const std::vector<mojom::PressureUpdate>& updates() const { return updates_; }
+  const std::vector<mojom::PressureUpdatePtr>& updates() const {
+    return updates_;
+  }
 
   void SetNextUpdateCallback(base::OnceClosure callback) {
     CHECK(!update_callback_) << " already called before update received";
@@ -85,8 +87,8 @@ class FakePressureClient : public mojom::PressureClient {
   bool is_bound() const { return client_.is_bound(); }
 
  private:
-  // Used to save PressureState.
-  std::vector<mojom::PressureUpdate> updates_;
+  // Used to save pressure updates.
+  std::vector<mojom::PressureUpdatePtr> updates_;
 
   // Used to implement WaitForUpdate().
   base::OnceClosure update_callback_;
@@ -109,13 +111,12 @@ class PressureManagerImplTest : public DeviceServiceTestBase {
 
     manager_impl_ = PressureManagerImpl::Create(TestTimeouts::tiny_timeout());
     auto fake_cpu_probe = std::make_unique<system_cpu::FakeCpuProbe>();
-    // CpuSample = 0.63 is converted to PressureState::kFair
     fake_cpu_probe->SetLastSample(system_cpu::CpuSample{0.63});
     auto* probes_manager = manager_impl_->GetProbesManagerForTesting();
     probes_manager->set_cpu_probe_manager(CpuProbeManager::CreateForTesting(
-        std::move(fake_cpu_probe),
         probes_manager->sampling_interval_for_testing(),
-        probes_manager->cpu_probe_sampling_callback()));
+        probes_manager->cpu_probe_sampling_callback(),
+        std::move(fake_cpu_probe)));
     manager_.reset();
     manager_impl_->Bind(manager_.BindNewPipeAndPassReceiver());
   }
@@ -176,9 +177,9 @@ TEST_F(PressureManagerImplTest, OneClient) {
 
   client.WaitForUpdate();
   ASSERT_EQ(client.updates().size(), 1u);
-  EXPECT_EQ(client.updates()[0].source, mojom::PressureSource::kCpu);
-  // In SetUp() CpuSample = 0.63, which is translated to PressureState::kFair.
-  EXPECT_EQ(client.updates()[0].state, mojom::PressureState::kFair);
+  EXPECT_EQ(client.updates()[0]->source, mojom::PressureSource::kCpu);
+  // In SetUp() CpuSample = 0.63.
+  EXPECT_EQ(client.updates()[0]->data->cpu_utilization, 0.63);
 }
 
 TEST_F(PressureManagerImplTest, ThreeClients) {
@@ -192,17 +193,17 @@ TEST_F(PressureManagerImplTest, ThreeClients) {
   ASSERT_EQ(AddPressureClient(&client3, mojom::PressureSource::kCpu),
             mojom::PressureManagerAddClientResult::kOk);
 
-  // In SetUp() CpuSample = 0.63, which is translated to PressureState::kFair.
+  // In SetUp() CpuSample = 0.63.
   FakePressureClient::WaitForUpdates({&client1, &client2, &client3});
   ASSERT_EQ(client1.updates().size(), 1u);
-  EXPECT_EQ(client1.updates()[0].source, mojom::PressureSource::kCpu);
-  EXPECT_EQ(client1.updates()[0].state, mojom::PressureState::kFair);
+  EXPECT_EQ(client1.updates()[0]->source, mojom::PressureSource::kCpu);
+  EXPECT_EQ(client1.updates()[0]->data->cpu_utilization, 0.63);
   ASSERT_EQ(client2.updates().size(), 1u);
-  EXPECT_EQ(client2.updates()[0].source, mojom::PressureSource::kCpu);
-  EXPECT_EQ(client2.updates()[0].state, mojom::PressureState::kFair);
+  EXPECT_EQ(client2.updates()[0]->source, mojom::PressureSource::kCpu);
+  EXPECT_EQ(client2.updates()[0]->data->cpu_utilization, 0.63);
   ASSERT_EQ(client3.updates().size(), 1u);
-  EXPECT_EQ(client3.updates()[0].source, mojom::PressureSource::kCpu);
-  EXPECT_EQ(client3.updates()[0].state, mojom::PressureState::kFair);
+  EXPECT_EQ(client3.updates()[0]->source, mojom::PressureSource::kCpu);
+  EXPECT_EQ(client3.updates()[0]->data->cpu_utilization, 0.63);
 }
 
 TEST_F(PressureManagerImplTest, AddClientNoProbe) {
@@ -284,19 +285,20 @@ TEST_F(PressureManagerImplTest, OneClientOneVirtual) {
   FakePressureClient::WaitForUpdates({&client, &virtual_client});
 
   ASSERT_EQ(client.updates().size(), 1u);
-  EXPECT_EQ(client.updates()[0].source, mojom::PressureSource::kCpu);
-  // In SetUp() system_cpu::CpuSample is set to 0.63, which will be converted to
-  // PressureState::kFair.
-  EXPECT_EQ(client.updates()[0].state, mojom::PressureState::kFair);
+  EXPECT_EQ(client.updates()[0]->source, mojom::PressureSource::kCpu);
+  // In SetUp() system_cpu::CpuSample is set to 0.63.
+  EXPECT_EQ(client.updates()[0]->data->cpu_utilization, 0.63);
 
   // Virtual probes run faster than real ones, so we might have more than one
   // update.
-  ASSERT_FALSE(virtual_client.updates().empty());
-  for (const auto& update : virtual_client.updates()) {
-    EXPECT_EQ(update.source, mojom::PressureSource::kCpu);
-    EXPECT_EQ(update.state, mojom::PressureState::kCritical);
 
-    EXPECT_NE(client.updates()[0].timestamp, update.timestamp);
+  ASSERT_FALSE(virtual_client.updates().empty());
+
+  for (const auto& update : virtual_client.updates()) {
+    EXPECT_EQ(update->source, mojom::PressureSource::kCpu);
+    // Critical = 1.0 - kThreshold.
+    EXPECT_EQ(update->data->cpu_utilization, 0.97);
+    EXPECT_NE(client.updates()[0]->timestamp, update->timestamp);
   }
 }
 
@@ -327,6 +329,14 @@ TEST_F(PressureManagerImplTest, OneVirtualClient) {
       AddPressureClient(&virtual_client, token, mojom::PressureSource::kCpu),
       mojom::PressureManagerAddClientResult::kOk);
 
+  // Values - hysteresis.
+  const std::array<double,
+                   static_cast<size_t>(mojom::PressureState::kMaxValue) + 1>
+      base_thresholds = {0.57,   // kNominal
+                         0.72,   // kFair
+                         0.87,   // kSerious
+                         0.97};  // kCritical
+
   // Test that all PressureState values are reported correctly.
   for (size_t i = 0; i < static_cast<size_t>(mojom::PressureState::kMaxValue);
        ++i) {
@@ -337,8 +347,9 @@ TEST_F(PressureManagerImplTest, OneVirtualClient) {
     virtual_client.WaitForUpdate();
 
     ASSERT_EQ(virtual_client.updates().size(), i + 1);
-    EXPECT_EQ(virtual_client.updates()[i].source, mojom::PressureSource::kCpu);
-    EXPECT_EQ(virtual_client.updates()[i].state, state);
+    EXPECT_EQ(virtual_client.updates()[i]->source, mojom::PressureSource::kCpu);
+    EXPECT_EQ(virtual_client.updates()[i]->data->cpu_utilization,
+              base_thresholds[i]);
   }
 
   const size_t update_count = virtual_client.updates().size();
@@ -372,10 +383,10 @@ TEST_F(PressureManagerImplTest, ContinuousUpdateReports) {
   virtual_client.WaitForUpdate();
   ASSERT_EQ(virtual_client.updates().size(), 2U);
 
-  EXPECT_EQ(virtual_client.updates()[1].state,
-            virtual_client.updates()[0].state);
-  EXPECT_GT(virtual_client.updates()[1].timestamp,
-            virtual_client.updates()[0].timestamp);
+  EXPECT_EQ(virtual_client.updates()[1]->data->cpu_utilization,
+            virtual_client.updates()[0]->data->cpu_utilization);
+  EXPECT_GT(virtual_client.updates()[1]->timestamp,
+            virtual_client.updates()[0]->timestamp);
 }
 
 TEST_F(PressureManagerImplTest, SameStateUpdatesAreNotDropped) {
@@ -403,10 +414,10 @@ TEST_F(PressureManagerImplTest, SameStateUpdatesAreNotDropped) {
   virtual_client.WaitForUpdate();
   ASSERT_EQ(virtual_client.updates().size(), 2U);
 
-  EXPECT_EQ(virtual_client.updates()[1].state,
-            virtual_client.updates()[0].state);
-  EXPECT_GT(virtual_client.updates()[1].timestamp,
-            virtual_client.updates()[0].timestamp);
+  EXPECT_EQ(virtual_client.updates()[1]->data->cpu_utilization,
+            virtual_client.updates()[0]->data->cpu_utilization);
+  EXPECT_GT(virtual_client.updates()[1]->timestamp,
+            virtual_client.updates()[0]->timestamp);
 }
 
 TEST_F(PressureManagerImplTest, VirtualPressureSourceNotAvailable) {

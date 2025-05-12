@@ -36,6 +36,7 @@
 namespace content {
 
 using blink::mojom::WebPressureUpdate;
+using device::mojom::PressureData;
 using device::mojom::PressureManagerAddClientResult;
 using device::mojom::PressureSource;
 using device::mojom::PressureState;
@@ -180,12 +181,14 @@ TEST_F(PressureServiceForFrameTest, AddClient) {
             device::mojom::PressureManagerAddClientResult::kOk);
 
   const base::TimeTicks time = base::TimeTicks::Now();
-  PressureUpdate update(PressureSource::kCpu, PressureState::kNominal, time);
+  auto data = PressureData::New(/*cpu_utilization=*/0.4);
+  PressureUpdate update(PressureSource::kCpu, std::move(data), time);
   pressure_manager_overrider_->UpdateClients(update);
   client.WaitForUpdate();
+
   ASSERT_EQ(client.updates().size(), 1u);
   EXPECT_EQ(client.updates()[0].source, update.source);
-  EXPECT_EQ(client.updates()[0].state, update.state);
+  EXPECT_EQ(client.updates()[0].state, device::mojom::PressureState::kNominal);
   EXPECT_EQ(client.updates()[0].timestamp, update.timestamp);
 }
 

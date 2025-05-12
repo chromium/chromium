@@ -14,7 +14,7 @@
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/device/public/mojom/pressure_manager.mojom-forward.h"
-#include "services/device/public/mojom/pressure_update.mojom-shared.h"
+#include "services/device/public/mojom/pressure_update.mojom.h"
 
 namespace device {
 
@@ -44,7 +44,7 @@ class ProbesManager {
   void set_cpu_probe_manager(
       std::unique_ptr<CpuProbeManager> cpu_probe_manager);
 
-  const base::RepeatingCallback<void(mojom::PressureState)>&
+  const base::RepeatingCallback<void(mojom::PressureDataPtr)>&
   cpu_probe_sampling_callback() const;
 
  private:
@@ -52,7 +52,7 @@ class ProbesManager {
   FRIEND_TEST_ALL_PREFIXES(PressureManagerImplTest, AddClientNoProbe);
 
   // Called periodically by probe for each PressureSource.
-  void UpdateClients(mojom::PressureSource source, mojom::PressureState state);
+  void UpdateClients(mojom::PressureSource source, mojom::PressureDataPtr);
 
   // Stop corresponding probe once there is no client.
   void OnClientRemoteDisconnected(mojom::PressureSource source,
@@ -62,7 +62,7 @@ class ProbesManager {
 
   const base::TimeDelta sampling_interval_;
 
-  const base::RepeatingCallback<void(mojom::PressureState)>
+  const base::RepeatingCallback<void(mojom::PressureDataPtr)>
       cpu_probe_sampling_callback_;
 
   // Probe for retrieving the compute pressure state for CPU.
