@@ -61,13 +61,16 @@ class OmniboxTextView : public views::View {
   // Used for search answers using `RichAnswerTemplate`.
   // Sets the styling for `FormattedString`'s `FormattedStringFragment`s.
   // `fragment_index` specifies where to start appending and styling text from.
-  void AppendTextWithStyling(const omnibox::FormattedString& formatted_string,
-                             size_t fragment_index,
-                             const omnibox::AnswerType& answer_type);
+  // Headlines should be styled differently than subheads.
+  void AppendAndStyleAnswerText(
+      const omnibox::FormattedString& formatted_string,
+      size_t fragment_index,
+      const omnibox::AnswerType& answer_type,
+      bool is_headline);
 
   // Used for suggestions using `RichAnswerTemplate`.
-  void SetMultilineText(const omnibox::FormattedString& formatted_string,
-                        const omnibox::AnswerType& answer_type);
+  void SetMultilineAnswerText(const omnibox::FormattedString& formatted_string,
+                              const omnibox::AnswerType& answer_type);
 
   // Used for history embedding answers.
   void SetMultilineText(const std::u16string& text);

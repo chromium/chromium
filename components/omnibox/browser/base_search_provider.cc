@@ -159,7 +159,7 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
   if (!suggestion.annotation().empty()) {
     match.description = suggestion.annotation();
     AutocompleteMatch::AddLastClassificationIfNecessary(
-        &match.description_class, 0, ACMatchClassification::NONE);
+        &match.description_class, 0, ACMatchClassification::DIM);
   }
 
   const std::u16string input_text = input.IsZeroSuggest() ? u"" : input.text();

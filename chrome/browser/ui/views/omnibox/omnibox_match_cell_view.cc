@@ -340,11 +340,11 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
   if (match.answer_template.has_value()) {
     content_view_->SetTextWithStyling(match.contents, match.contents_class);
     omnibox::AnswerData answer_data = match.answer_template->answers(0);
-    content_view_->AppendTextWithStyling(
+    content_view_->AppendAndStyleAnswerText(
         /*formatted_string=*/answer_data.headline(), /*fragment_index=*/1u,
-        /*answer_type=*/match.answer_type);
+        /*answer_type=*/match.answer_type, /*is_headline=*/true);
     // The subhead text may be multiline.
-    description_view_->SetMultilineText(
+    description_view_->SetMultilineAnswerText(
         /*formatted_string=*/answer_data.subhead(),
         /*answer_type=*/match.answer_type);
   } else if (layout_style_ == LayoutStyle::HISTORY_EMBEDDING_ANSWER) {
