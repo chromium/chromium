@@ -7,9 +7,6 @@ mych@chromium.org
 rakina@chromium.org
 stevebe@microsoft.com
 
-# Emeritus
-jsbell@chromium.org
-
 file://storage/OWNERS  #{LAST_RESORT_SUGGESTION}
 
 per-file *.mojom=set noparent
