@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -79,8 +80,8 @@ void HTMLFrameElementBase::OpenURL(bool replace_current_item) {
         MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kRendering,
             mojom::ConsoleMessageLevel::kWarning,
-            "Invalid relative frame source URL (" + url_ +
-                ") within data URL."));
+            WTF::StrCat({"Invalid relative frame source URL (", url_,
+                         ") within data URL."})));
   }
   LoadOrRedirectSubframe(url, frame_name_, replace_current_item);
 }

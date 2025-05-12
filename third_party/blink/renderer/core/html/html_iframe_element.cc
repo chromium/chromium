@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -260,7 +261,7 @@ void HTMLIFrameElement::ParseAttribute(
       GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kOther,
           mojom::blink::ConsoleMessageLevel::kError,
-          "'csp' attribute is invalid: " + value));
+          WTF::StrCat({"'csp' attribute is invalid: ", value})));
     } else if (value && value.length() > kMaxLengthCSPAttribute) {
       // TODO(antoniosartori): It would be safer to block loading iframes with
       // invalid 'csp' attribute.
@@ -557,9 +558,10 @@ HTMLIFrameElement::ConstructTrustTokenParams() const {
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kError,
-        "iframe trusttoken attribute was invalid JSON: " + parse_error.message +
-            String::Format(" (line %d, col %d)", parse_error.line,
-                           parse_error.column)));
+        WTF::StrCat({"iframe trusttoken attribute was invalid JSON: ",
+                     parse_error.message, " (line ",
+                     String::Number(parse_error.line), ", col ",
+                     String::Number(parse_error.column), ")"})));
     return nullptr;
   }
 

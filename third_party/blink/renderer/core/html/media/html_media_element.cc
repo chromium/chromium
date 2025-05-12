@@ -122,6 +122,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/display/screen_info.h"
@@ -205,8 +206,9 @@ String UrlForLoggingMedia(const KURL& url) {
 
   if (url.GetString().length() < kMaximumURLLengthForLogging)
     return url.GetString();
-  return url.GetString().GetString().Substring(0, kMaximumURLLengthForLogging) +
-         "...";
+  return WTF::StrCat(
+      {url.GetString().GetString().Substring(0, kMaximumURLLengthForLogging),
+       "..."});
 }
 
 DocumentElementSetMap& DocumentToElementSetMap() {
@@ -2785,8 +2787,8 @@ void HTMLMediaElement::setPlaybackRate(double rate,
     // DOMException and don't update the value.
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "The provided playback rate (" + String::Number(rate) +
-            ") is not in the " + "supported playback range.");
+        WTF::StrCat({"The provided playback rate (", String::Number(rate),
+                     ") is not in the supported playback range."}));
 
     // Do not update |playback_rate_|.
     return;

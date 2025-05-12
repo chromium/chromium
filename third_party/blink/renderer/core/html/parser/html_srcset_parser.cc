@@ -48,7 +48,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 namespace blink {
@@ -203,13 +203,12 @@ static void TokenizeDescriptors(base::span<const CharType> attribute_span,
 
 static void SrcsetError(Document* document, String message) {
   if (document && document->GetFrame()) {
-    StringBuilder warning_message;
-    warning_message.Append("Failed parsing 'srcset' attribute value since ");
-    warning_message.Append(message);
     document->GetFrame()->Console().AddMessage(
         MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kOther,
-            mojom::ConsoleMessageLevel::kWarning, warning_message.ToString()));
+            mojom::ConsoleMessageLevel::kWarning,
+            WTF::StrCat(
+                {"Failed parsing 'srcset' attribute value since ", message})));
   }
 }
 
@@ -341,10 +340,11 @@ static void ParseImageCandidatesFromSrcsetAttribute(
                 MakeGarbageCollected<ConsoleMessage>(
                     mojom::ConsoleMessageSource::kOther,
                     mojom::ConsoleMessageLevel::kWarning,
-                    String("Dropped srcset candidate ") +
-                        JSONValue::QuoteString(String(attribute_span.subspan(
-                            image_url_start,
-                            image_url_end - image_url_start)))));
+                    WTF::StrCat(
+                        {"Dropped srcset candidate ",
+                         JSONValue::QuoteString(String(attribute_span.subspan(
+                             image_url_start,
+                             image_url_end - image_url_start)))})));
           }
         }
         continue;

@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 
 namespace blink {
@@ -611,7 +612,8 @@ void AddNamesWithPrefix(PrefixedNameToQualifiedNameMap* map,
   for (size_t i = 0; i < names.size(); ++i) {
     const QualifiedName& name = *names[i];
     const AtomicString& local_name = name.LocalName();
-    AtomicString prefix_colon_local_name = prefix + ':' + local_name;
+    AtomicString prefix_colon_local_name =
+        AtomicString(WTF::StrCat({prefix, ":", local_name}));
     QualifiedName name_with_prefix(prefix, local_name, name.NamespaceURI());
     map->insert(prefix_colon_local_name, name_with_prefix);
   }
@@ -1599,11 +1601,13 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
             tree_.OpenElements()->TopNode()->AddConsoleMessage(
                 mojom::blink::ConsoleMessageSource::kJavaScript,
                 mojom::blink::ConsoleMessageLevel::kWarning,
-                "A " + token->GetName() +
-                    " tag was parsed inside of a <select> which caused a "
-                    "</select> to be inserted before this tag. "
-                    "This is not valid HTML and the behavior may be changed in "
-                    "future versions of chrome.");
+                WTF::StrCat(
+                    {"A ", token->GetName(),
+                     " tag was parsed inside of a <select> which caused a "
+                     "</select> to be inserted before this tag. "
+                     "This is not valid HTML and the behavior may be changed "
+                     "in "
+                     "future versions of chrome."}));
           }
           return;
         }
@@ -1646,11 +1650,12 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
             tree_.OpenElements()->TopNode()->AddConsoleMessage(
                 mojom::blink::ConsoleMessageSource::kJavaScript,
                 mojom::blink::ConsoleMessageLevel::kWarning,
-                "A " + token->GetName() +
-                    " tag was parsed inside of a <select> which was not "
-                    "inserted into the document. This is not valid HTML and "
-                    "the behavior may be changed in future versions of "
-                    "chrome.");
+                WTF::StrCat(
+                    {"A ", token->GetName(),
+                     " tag was parsed inside of a <select> which was not "
+                     "inserted into the document. This is not valid HTML and "
+                     "the behavior may be changed in future versions of "
+                     "chrome."}));
           }
           break;
       }

@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_selector_client.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -334,8 +335,8 @@ void InternalPopupMenu::WriteDocument(SegmentedBuffer& data) {
           owner_element, owner_element.GetComputedStyle(), temp_scrollbar,
           target.first);
       if (part_style) {
-        AppendOwnerElementPseudoStyles(target.second + ":hover", data,
-                                       *part_style);
+        AppendOwnerElementPseudoStyles(WTF::StrCat({target.second, ":hover"}),
+                                       data, *part_style);
       }
     }
   }

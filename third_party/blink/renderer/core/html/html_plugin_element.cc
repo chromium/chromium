@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -867,10 +868,9 @@ bool HTMLPlugInElement::AllowedToLoadPlugin(const KURL& url) {
         MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kSecurity,
             mojom::blink::ConsoleMessageLevel::kError,
-            "Failed to load '" + url.ElidedString() +
-                "' as a plugin, because the "
-                "frame into which the plugin "
-                "is loading is sandboxed."));
+            WTF::StrCat({"Failed to load '", url.ElidedString(),
+                         "' as a plugin, because the frame into which the "
+                         "plugin is loading is sandboxed."})));
     return false;
   }
   return true;

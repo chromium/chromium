@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -276,7 +277,7 @@ String FileInputType::ValueInFilenameValueMode() const {
   // decided to try to parse the value by looking for backslashes
   // (because that's what Windows file paths use). To be compatible
   // with that code, we make up a fake path for the file.
-  return "C:\\fakepath\\" + file_list_->item(0)->name();
+  return WTF::StrCat({"C:\\fakepath\\", file_list_->item(0)->name()});
 }
 
 void FileInputType::SetValue(const String&,

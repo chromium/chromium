@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -57,7 +58,7 @@ bool ThrowIfInvalidName(const AtomicString& name,
     return false;
   exception_state.ThrowDOMException(
       DOMExceptionCode::kSyntaxError,
-      "\"" + name + "\" is not a valid custom element name");
+      WTF::StrCat({"\"", name, "\" is not a valid custom element name"}));
   return true;
 }
 
@@ -68,7 +69,7 @@ bool ThrowIfValidName(const AtomicString& name,
     return false;
   exception_state.ThrowDOMException(
       DOMExceptionCode::kNotSupportedError,
-      "\"" + name + "\" is a valid custom element name");
+      WTF::StrCat({"\"", name, "\" is a valid custom element name"}));
   return true;
 }
 
@@ -136,7 +137,8 @@ CustomElementDefinition* CustomElementRegistry::DefineInternal(
   if (NameIsDefined(name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "the name \"" + name + "\" has already been used with this registry");
+        WTF::StrCat({"the name \"", name,
+                     "\" has already been used with this registry"}));
     return nullptr;
   }
 
@@ -163,7 +165,7 @@ CustomElementDefinition* CustomElementRegistry::DefineInternal(
         HTMLElementType::kHTMLUnknownElement) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotSupportedError,
-          "\"" + extends + "\" is an HTMLUnknownElement");
+          WTF::StrCat({"\"", extends, "\" is an HTMLUnknownElement"}));
       return nullptr;
     }
     // 7.3. Set localName to extends
