@@ -68,7 +68,7 @@ public class LifetimeAssert {
         final Class<?> mTargetClass;
         final CreationException mCreationException;
 
-        public WrappedReference(
+        private WrappedReference(
                 Object target, CreationException creationException, boolean safeToGc) {
             super(target, sReferenceQueue);
             mCreationException = PostTask.maybeAddTaskOrigin(creationException);
@@ -134,7 +134,8 @@ public class LifetimeAssert {
             return null;
         }
         return new LifetimeAssert(
-                new WrappedReference(target, new CreationException(), false), target);
+                new WrappedReference(target, new CreationException(), /* safeToGc= */ false),
+                target);
     }
 
     public static @Nullable LifetimeAssert create(Object target, boolean safeToGc) {
@@ -148,7 +149,7 @@ public class LifetimeAssert {
     public static void setSafeToGc(@Nullable LifetimeAssert asserter, boolean value) {
         if (BuildConfig.ENABLE_ASSERTS) {
             assert asserter != null;
-            // This guaratees that the target object is reachable until after mSafeToGc value
+            // This guarantees that the target object is reachable until after mSafeToGc value
             // is updated here. See comment on Reference.reachabilityFence and review comments
             // on https://chromium-review.googlesource.com/c/chromium/src/+/1887151 for a
             // problematic example. This synchronized is used instead of calling
@@ -166,7 +167,7 @@ public class LifetimeAssert {
      * can be garbage collected. Always clears the set of tracked object, so consecutive invocations
      * won't throw with the same cause.
      */
-    public static void assertAllInstancesDestroyedForTesting() throws LifetimeAssertException {
+    public static void assertAllInstancesDestroyedForTesting() {
         if (!BuildConfig.ENABLE_ASSERTS) {
             return;
         }
