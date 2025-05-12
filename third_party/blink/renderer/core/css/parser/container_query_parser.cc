@@ -91,12 +91,9 @@ class StateFeatureSet : public MediaQueryParser::FeatureSet {
 
  public:
   bool IsAllowed(const AtomicString& feature) const override {
-    return (RuntimeEnabledFeatures::CSSStickyContainerQueriesEnabled() &&
-            feature == media_feature_names::kStuckMediaFeature) ||
-           (RuntimeEnabledFeatures::CSSSnapContainerQueriesEnabled() &&
-            feature == media_feature_names::kSnappedMediaFeature) ||
-           (RuntimeEnabledFeatures::CSSScrollableContainerQueriesEnabled() &&
-            feature == media_feature_names::kScrollableMediaFeature) ||
+    return feature == media_feature_names::kStuckMediaFeature ||
+           feature == media_feature_names::kSnappedMediaFeature ||
+           feature == media_feature_names::kScrollableMediaFeature ||
            (RuntimeEnabledFeatures::
                 CSSScrollDirectionContainerQueriesEnabled() &&
             feature == media_feature_names::kScrollDirectionMediaFeature);
@@ -182,8 +179,7 @@ const MediaQueryExpNode* ContainerQueryParser::ConsumeQueryInParens(
       stream.ConsumeWhitespace();
       return MediaQueryExpNode::Function(query, AtomicString("style"));
     }
-  } else if (RuntimeEnabledFeatures::CSSScrollStateContainerQueriesEnabled() &&
-             stream.Peek().GetType() == kFunctionToken &&
+  } else if (stream.Peek().GetType() == kFunctionToken &&
              stream.Peek().FunctionId() == CSSValueID::kScrollState) {
     // scroll-state(stuck: [ none | top | right | bottom | left | block-start |
     // inline-start | block-end | inline-end ] )

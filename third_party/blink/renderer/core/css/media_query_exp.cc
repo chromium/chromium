@@ -170,22 +170,20 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
            ident == CSSValueID::kSlow;
   }
 
-  if (RuntimeEnabledFeatures::CSSStickyContainerQueriesEnabled()) {
-    if (media_feature == media_feature_names::kStuckMediaFeature) {
-      switch (ident) {
-        case CSSValueID::kNone:
-        case CSSValueID::kTop:
-        case CSSValueID::kLeft:
-        case CSSValueID::kBottom:
-        case CSSValueID::kRight:
-        case CSSValueID::kBlockStart:
-        case CSSValueID::kBlockEnd:
-        case CSSValueID::kInlineStart:
-        case CSSValueID::kInlineEnd:
-          return true;
-        default:
-          return false;
-      }
+  if (media_feature == media_feature_names::kStuckMediaFeature) {
+    switch (ident) {
+      case CSSValueID::kNone:
+      case CSSValueID::kTop:
+      case CSSValueID::kLeft:
+      case CSSValueID::kBottom:
+      case CSSValueID::kRight:
+      case CSSValueID::kBlockStart:
+      case CSSValueID::kBlockEnd:
+      case CSSValueID::kInlineStart:
+      case CSSValueID::kInlineEnd:
+        return true;
+      default:
+        return false;
     }
   }
 
@@ -194,42 +192,38 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
            ident == CSSValueID::kNone;
   }
 
-  if (RuntimeEnabledFeatures::CSSSnapContainerQueriesEnabled()) {
-    if (media_feature == media_feature_names::kSnappedMediaFeature) {
-      switch (ident) {
-        case CSSValueID::kNone:
-        case CSSValueID::kBlock:
-        case CSSValueID::kInline:
-        case CSSValueID::kX:
-        case CSSValueID::kY:
-        case CSSValueID::kBoth:
-          return true;
-        default:
-          return false;
-      }
+  if (media_feature == media_feature_names::kSnappedMediaFeature) {
+    switch (ident) {
+      case CSSValueID::kNone:
+      case CSSValueID::kBlock:
+      case CSSValueID::kInline:
+      case CSSValueID::kX:
+      case CSSValueID::kY:
+      case CSSValueID::kBoth:
+        return true;
+      default:
+        return false;
     }
   }
 
-  if (RuntimeEnabledFeatures::CSSScrollableContainerQueriesEnabled()) {
-    if (media_feature == media_feature_names::kScrollableMediaFeature) {
-      switch (ident) {
-        case CSSValueID::kNone:
-        case CSSValueID::kTop:
-        case CSSValueID::kLeft:
-        case CSSValueID::kBottom:
-        case CSSValueID::kRight:
-        case CSSValueID::kBlockStart:
-        case CSSValueID::kBlockEnd:
-        case CSSValueID::kInlineStart:
-        case CSSValueID::kInlineEnd:
-        case CSSValueID::kBlock:
-        case CSSValueID::kInline:
-        case CSSValueID::kX:
-        case CSSValueID::kY:
-          return true;
-        default:
-          return false;
-      }
+  if (media_feature == media_feature_names::kScrollableMediaFeature) {
+    switch (ident) {
+      case CSSValueID::kNone:
+      case CSSValueID::kTop:
+      case CSSValueID::kLeft:
+      case CSSValueID::kBottom:
+      case CSSValueID::kRight:
+      case CSSValueID::kBlockStart:
+      case CSSValueID::kBlockEnd:
+      case CSSValueID::kInlineStart:
+      case CSSValueID::kInlineEnd:
+      case CSSValueID::kBlock:
+      case CSSValueID::kInline:
+      case CSSValueID::kX:
+      case CSSValueID::kY:
+        return true;
+      default:
+        return false;
     }
   }
 

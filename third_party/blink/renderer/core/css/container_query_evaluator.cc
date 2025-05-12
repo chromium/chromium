@@ -850,21 +850,16 @@ StyleRecalcChange ContainerQueryEvaluator::ApplyScrollStateAndStyleChanges(
     const ComputedStyle& new_style,
     bool style_changed) {
   StyleRecalcChange recalc_change = child_change;
-  if (RuntimeEnabledFeatures::CSSStickyContainerQueriesEnabled() ||
-      RuntimeEnabledFeatures::CSSSnapContainerQueriesEnabled() ||
-      RuntimeEnabledFeatures::CSSScrollableContainerQueriesEnabled() ||
-      RuntimeEnabledFeatures::CSSScrollDirectionContainerQueriesEnabled()) {
-    switch (ApplyScrollState()) {
-      case ContainerQueryEvaluator::Change::kNone:
-        break;
-      case ContainerQueryEvaluator::Change::kNearestContainer:
-        recalc_change = recalc_change.ForceRecalcScrollStateContainer();
-        break;
-      case ContainerQueryEvaluator::Change::kDescendantContainers:
-        recalc_change =
-            recalc_change.ForceRecalcDescendantScrollStateContainers();
-        break;
-    }
+  switch (ApplyScrollState()) {
+    case ContainerQueryEvaluator::Change::kNone:
+      break;
+    case ContainerQueryEvaluator::Change::kNearestContainer:
+      recalc_change = recalc_change.ForceRecalcScrollStateContainer();
+      break;
+    case ContainerQueryEvaluator::Change::kDescendantContainers:
+      recalc_change =
+          recalc_change.ForceRecalcDescendantScrollStateContainers();
+      break;
   }
 
   if (!style_changed) {
@@ -906,21 +901,16 @@ StyleRecalcChange ContainerQueryEvaluator::ApplyScrollStateAndStyleChanges(
     }
   }
   if (invalidate_for_writing_direction) {
-    if (RuntimeEnabledFeatures::CSSStickyContainerQueriesEnabled() ||
-        RuntimeEnabledFeatures::CSSSnapContainerQueriesEnabled() ||
-        RuntimeEnabledFeatures::CSSScrollableContainerQueriesEnabled() ||
-        RuntimeEnabledFeatures::CSSScrollDirectionContainerQueriesEnabled()) {
-      switch (StyleAffectingScrollStateChanged()) {
-        case ContainerQueryEvaluator::Change::kNone:
-          break;
-        case ContainerQueryEvaluator::Change::kNearestContainer:
-          recalc_change = recalc_change.ForceRecalcScrollStateContainer();
-          break;
-        case ContainerQueryEvaluator::Change::kDescendantContainers:
-          recalc_change =
-              recalc_change.ForceRecalcDescendantScrollStateContainers();
-          break;
-      }
+    switch (StyleAffectingScrollStateChanged()) {
+      case ContainerQueryEvaluator::Change::kNone:
+        break;
+      case ContainerQueryEvaluator::Change::kNearestContainer:
+        recalc_change = recalc_change.ForceRecalcScrollStateContainer();
+        break;
+      case ContainerQueryEvaluator::Change::kDescendantContainers:
+        recalc_change =
+            recalc_change.ForceRecalcDescendantScrollStateContainers();
+        break;
     }
   }
   if (!base::ValuesEquivalent(old_style.InheritedVariables(),

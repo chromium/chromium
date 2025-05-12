@@ -8139,8 +8139,7 @@ CSSValue* ConsumeContainerType(CSSParserTokenStream& stream,
         continue;
       }
     }
-    if (!scroll_state_value &&
-        RuntimeEnabledFeatures::CSSScrollStateContainerQueriesEnabled()) {
+    if (!scroll_state_value) {
       scroll_state_value = ConsumeIdent<CSSValueID::kScrollState>(stream);
       if (scroll_state_value) {
         context.Count(WebDXFeature::kContainerScrollStateQueries);

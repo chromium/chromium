@@ -1384,10 +1384,6 @@
       status: "experimental",
     },
     {
-      name: "CSSScrollableContainerQueries",
-      status: "stable",
-    },
-    {
       name: "CSSScrollDirectionContainerQueries",
       status: "test",
     },
@@ -1424,13 +1420,6 @@
       status: "test",
     },
     {
-      // Flag for supporting scroll-state() and container-type: scroll-state
-      // Implied by supporting at least one of the scroll-state query features.
-      name: "CSSScrollStateContainerQueries",
-      implied_by: ["CSSStickyContainerQueries", "CSSSnapContainerQueries",
-                   "CSSScrollableContainerQueries", "CSSScrollDirectionContainerQueries"],
-    },
-    {
       name: "CSSSelectorFragmentAnchor",
       status: "experimental",
       base_feature: "CssSelectorFragmentAnchor",
@@ -1459,16 +1448,8 @@
       status: "experimental",
     },
     {
-      name: "CSSSnapContainerQueries",
-      status: "stable",
-    },
-    {
       // Explainer: https://drafts.csswg.org/css-values/#round-func
       name: "CSSSteppedValueFunctions",
-      status: "stable",
-    },
-    {
-      name: "CSSStickyContainerQueries",
       status: "stable",
     },
     {

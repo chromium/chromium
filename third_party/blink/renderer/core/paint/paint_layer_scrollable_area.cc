@@ -3243,10 +3243,6 @@ DOMNodeId PaintLayerScrollableArea::ScrollCornerDisplayItemClient::OwnerNodeId()
 
 void PaintLayerScrollableArea::
     UpdateSnappedTargetsAndEnqueueScrollSnapChange() {
-  if (!RuntimeEnabledFeatures::CSSScrollSnapChangeEventEnabled() &&
-      !RuntimeEnabledFeatures::CSSSnapContainerQueriesEnabled()) {
-    return;
-  }
   const cc::SnapContainerData* container_data = GetSnapContainerData();
   if (!container_data) {
     return;
@@ -3390,9 +3386,6 @@ PaintLayerScrollableArea::GetSnappedQueryScrollSnapshot() {
 
 void PaintLayerScrollableArea::CreateAndSetSnappedQueryScrollSnapshotIfNeeded(
     cc::TargetSnapAreaElementIds ids) {
-  if (!RuntimeEnabledFeatures::CSSSnapContainerQueriesEnabled()) {
-    return;
-  }
   Element* target_x = nullptr;
   if (ids.x) {
     target_x = DynamicTo<Element>(
