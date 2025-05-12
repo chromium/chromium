@@ -37,6 +37,7 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/trace_event/base_tracing.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -106,6 +107,7 @@ std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateProcessMetrics(
 
 base::expected<TimeDelta, ProcessCPUUsageError>
 ProcessMetrics::GetCumulativeCPUUsage() {
+  TRACE_EVENT("base", "GetCumulativeCPUUsage");
   std::string buffer;
   std::vector<std::string> proc_stats;
   if (!internal::ReadProcStats(process_, &buffer) ||

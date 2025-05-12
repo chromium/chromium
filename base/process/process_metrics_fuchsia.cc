@@ -9,6 +9,7 @@
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/trace_event/base_tracing.h"
 
 namespace base {
 
@@ -37,6 +38,7 @@ std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateProcessMetrics(
 
 base::expected<TimeDelta, ProcessCPUUsageError>
 ProcessMetrics::GetCumulativeCPUUsage() {
+  TRACE_EVENT("base", "GetCumulativeCPUUsage");
   zx_info_task_runtime_t stats;
 
   zx_status_t status = zx::unowned_process(process_)->get_info(

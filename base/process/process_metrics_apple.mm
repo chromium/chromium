@@ -24,6 +24,7 @@
 #include "base/numerics/safe_math.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "base/trace_event/base_tracing.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
 
@@ -156,6 +157,7 @@ ProcessMetrics::GetMemoryInfo() const {
 
 base::expected<TimeDelta, ProcessCPUUsageError>
 ProcessMetrics::GetCumulativeCPUUsage() {
+  TRACE_EVENT("base", "GetCumulativeCPUUsage");
   mach_port_t task = TaskForHandle(process_);
   if (task == MACH_PORT_NULL) {
     return base::unexpected(ProcessCPUUsageError::kProcessNotFound);
