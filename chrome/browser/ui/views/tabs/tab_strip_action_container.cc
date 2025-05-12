@@ -35,7 +35,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/mouse_watcher.h"
 #include "ui/views/mouse_watcher_view_host.h"
 #include "ui/views/view_class_properties.h"
@@ -295,13 +295,11 @@ TabStripActionContainer::TabStripActionContainer(
 #endif  // !BUILDFLAG(IS_MAC)
   }
 #endif  // BUILDFLAG(ENABLE_GLIC)
-
-  auto* const layout_manager =
-      SetLayoutManager(std::make_unique<views::BoxLayout>());
-  layout_manager->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kStart);
-  layout_manager->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetMainAxisAlignment(views::LayoutAlignment::kStart)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetCollapseMargins(false);
 }
 
 TabStripActionContainer::~TabStripActionContainer() {
