@@ -5,7 +5,10 @@ import traceback
 from http.client import HTTPConnection
 
 from abc import ABCMeta, abstractmethod
-from typing import Any, Awaitable, Callable, ClassVar, List, Mapping, Optional, Tuple, Type
+from typing import Any, Awaitable, Callable, ClassVar, List, Mapping, Optional, \
+    Tuple, Type, Union
+
+from webdriver.bidi.undefined import Undefined
 
 
 def merge_dicts(target, source):
@@ -442,6 +445,19 @@ class BidiPermissionsProtocolPart(ProtocolPart):
 
     @abstractmethod
     async def set_permission(self, descriptor, state, origin):
+        pass
+
+
+class BidiEmulationProtocolPart(ProtocolPart):
+    """Protocol part for emulation"""
+    __metaclass__ = ABCMeta
+    name = "bidi_emulation"
+
+    @abstractmethod
+    async def set_geolocation_override(self,
+            coordinates: Optional[Union[Mapping[str, Any], Undefined]],
+            error: Optional[Mapping[str, Any]],
+            contexts: List[str]) -> None:
         pass
 
 
