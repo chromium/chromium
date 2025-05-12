@@ -135,10 +135,9 @@ void ThemeServiceFactory::RegisterProfilePrefs(
       prefs::kNonSyncingBrowserColorSchemeDoNotUse,
       static_cast<int>(ThemeService::BrowserColorScheme::kSystem));
   registry->RegisterIntegerPref(
-      prefs::kUserColorDoNotUse, SK_ColorTRANSPARENT,
+      prefs::kDeprecatedUserColorDoNotUse, SK_ColorTRANSPARENT,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterIntegerPref(prefs::kNonSyncingUserColorDoNotUse,
-                                SK_ColorTRANSPARENT);
+  registry->RegisterIntegerPref(prefs::kUserColor, SK_ColorTRANSPARENT);
   registry->RegisterIntegerPref(
       prefs::kBrowserColorVariantDoNotUse,
       static_cast<int>(ui::mojom::BrowserColorVariant::kSystem),

@@ -1072,9 +1072,8 @@ TEST_F(RealThemeSyncableServiceTest, ShouldDownloadUserColorTheme) {
             ThemeService::BrowserColorScheme::kSystem);
 
   // Verify that the new prefs are used.
-  EXPECT_EQ(
-      profile()->GetPrefs()->GetInteger(prefs::kNonSyncingUserColorDoNotUse),
-      static_cast<int>(SK_ColorRED));
+  EXPECT_EQ(profile()->GetPrefs()->GetInteger(prefs::kUserColor),
+            static_cast<int>(SK_ColorRED));
   EXPECT_EQ(profile()->GetPrefs()->GetInteger(
                 prefs::kNonSyncingBrowserColorVariantDoNotUse),
             static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));
@@ -1108,8 +1107,9 @@ TEST_F(RealThemeSyncableServiceTest, ShouldUploadUserColorTheme) {
       ProtoEnumToBrowserColorScheme(change_specifics.browser_color_scheme()));
 
   // Verify that the old prefs are updated.
-  EXPECT_EQ(profile()->GetPrefs()->GetInteger(prefs::kUserColorDoNotUse),
-            static_cast<int>(SK_ColorRED));
+  EXPECT_EQ(
+      profile()->GetPrefs()->GetInteger(prefs::kDeprecatedUserColorDoNotUse),
+      static_cast<int>(SK_ColorRED));
   EXPECT_EQ(
       profile()->GetPrefs()->GetInteger(prefs::kBrowserColorVariantDoNotUse),
       static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));
@@ -1988,8 +1988,8 @@ TEST_F(RealThemeSyncableServiceTest, ShouldUpdateOldSyncingThemePrefs) {
       std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
           fake_change_processor())));
 
-  ASSERT_FALSE(
-      profile()->GetPrefs()->GetUserPrefValue(prefs::kUserColorDoNotUse));
+  ASSERT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kDeprecatedUserColorDoNotUse));
   ASSERT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
       prefs::kBrowserColorVariantDoNotUse));
   ASSERT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
@@ -2001,12 +2001,13 @@ TEST_F(RealThemeSyncableServiceTest, ShouldUpdateOldSyncingThemePrefs) {
   theme_service()->SetUserColorAndBrowserColorVariant(
       SK_ColorRED, ui::mojom::BrowserColorVariant::kTonalSpot);
 
-  ASSERT_TRUE(
-      profile()->GetPrefs()->GetUserPrefValue(prefs::kUserColorDoNotUse));
+  ASSERT_TRUE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kDeprecatedUserColorDoNotUse));
   ASSERT_TRUE(profile()->GetPrefs()->GetUserPrefValue(
       prefs::kBrowserColorVariantDoNotUse));
-  EXPECT_EQ(profile()->GetPrefs()->GetInteger(prefs::kUserColorDoNotUse),
-            static_cast<int>(SK_ColorRED));
+  EXPECT_EQ(
+      profile()->GetPrefs()->GetInteger(prefs::kDeprecatedUserColorDoNotUse),
+      static_cast<int>(SK_ColorRED));
   EXPECT_EQ(
       profile()->GetPrefs()->GetInteger(prefs::kBrowserColorVariantDoNotUse),
       static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));
@@ -2026,8 +2027,8 @@ TEST_F(RealThemeSyncableServiceTest, ShouldUpdateOldSyncingThemePrefs) {
       profile()->GetPrefs()->GetBoolean(prefs::kGrayscaleThemeEnabledDoNotUse));
 
   // Other prefs are cleared.
-  EXPECT_FALSE(
-      profile()->GetPrefs()->GetUserPrefValue(prefs::kUserColorDoNotUse));
+  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kDeprecatedUserColorDoNotUse));
   EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
       prefs::kBrowserColorVariantDoNotUse));
   EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
@@ -2047,8 +2048,8 @@ TEST_F(RealThemeSyncableServiceTest, ShouldUpdateOldSyncingThemePrefs) {
   // Other prefs are left as-is.
   EXPECT_TRUE(profile()->GetPrefs()->GetUserPrefValue(
       prefs::kGrayscaleThemeEnabledDoNotUse));
-  EXPECT_FALSE(
-      profile()->GetPrefs()->GetUserPrefValue(prefs::kUserColorDoNotUse));
+  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kDeprecatedUserColorDoNotUse));
   EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
       prefs::kBrowserColorVariantDoNotUse));
 
@@ -2056,8 +2057,8 @@ TEST_F(RealThemeSyncableServiceTest, ShouldUpdateOldSyncingThemePrefs) {
   theme_service()->UseDefaultTheme();
 
   // All prefs are cleared.
-  EXPECT_FALSE(
-      profile()->GetPrefs()->GetUserPrefValue(prefs::kUserColorDoNotUse));
+  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kDeprecatedUserColorDoNotUse));
   EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
       prefs::kBrowserColorVariantDoNotUse));
   EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
@@ -3603,10 +3604,9 @@ class ThemePrefsMigrationTest : public ::testing::Test {
         prefs::kNonSyncingBrowserColorSchemeDoNotUse,
         static_cast<int>(ThemeService::BrowserColorScheme::kSystem));
     registry->RegisterIntegerPref(
-        prefs::kUserColorDoNotUse, SK_ColorTRANSPARENT,
+        prefs::kDeprecatedUserColorDoNotUse, SK_ColorTRANSPARENT,
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-    registry->RegisterIntegerPref(prefs::kNonSyncingUserColorDoNotUse,
-                                  SK_ColorTRANSPARENT);
+    registry->RegisterIntegerPref(prefs::kUserColor, SK_ColorTRANSPARENT);
     registry->RegisterIntegerPref(
         prefs::kBrowserColorVariantDoNotUse,
         static_cast<int>(ui::mojom::BrowserColorVariant::kSystem),
@@ -3632,14 +3632,14 @@ TEST_F(ThemePrefsMigrationTest, MigrateSyncingThemePrefsToNonSyncing) {
   ASSERT_FALSE(
       pref_service_.GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing));
 
-  pref_service_.SetInteger(prefs::kUserColorDoNotUse, SK_ColorBLUE);
-  EXPECT_FALSE(pref_service_.HasPrefPath(prefs::kNonSyncingUserColorDoNotUse));
+  pref_service_.SetInteger(prefs::kDeprecatedUserColorDoNotUse, SK_ColorBLUE);
+  EXPECT_FALSE(pref_service_.HasPrefPath(prefs::kUserColor));
 
   base::HistogramTester histogram_tester;
   MigrateSyncingThemePrefsToNonSyncingIfNeeded(&pref_service_);
   EXPECT_TRUE(
       pref_service_.GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing));
-  EXPECT_EQ(pref_service_.GetInteger(prefs::kNonSyncingUserColorDoNotUse),
+  EXPECT_EQ(pref_service_.GetInteger(prefs::kUserColor),
             static_cast<int>(SK_ColorBLUE));
   histogram_tester.ExpectUniqueSample(
       kThemePrefMigrationAlreadyMigratedHistogram, false, 1);
@@ -3651,8 +3651,8 @@ TEST_F(ThemePrefsMigrationTest, MigrateSyncingNtpPrefToNonSyncing) {
   ASSERT_FALSE(
       pref_service_.GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing));
 
-  pref_service_.SetInteger(prefs::kUserColorDoNotUse, SK_ColorBLUE);
-  EXPECT_FALSE(pref_service_.HasPrefPath(prefs::kNonSyncingUserColorDoNotUse));
+  pref_service_.SetInteger(prefs::kDeprecatedUserColorDoNotUse, SK_ColorBLUE);
+  EXPECT_FALSE(pref_service_.HasPrefPath(prefs::kUserColor));
 
   pref_service_.SetDict(
       prefs::kNtpCustomBackgroundDictDoNotUse,
@@ -3672,7 +3672,7 @@ TEST_F(ThemePrefsMigrationTest, MigrateSyncingNtpPrefToNonSyncing) {
   MigrateSyncingThemePrefsToNonSyncingIfNeeded(&pref_service_);
   EXPECT_TRUE(
       pref_service_.GetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing));
-  EXPECT_EQ(pref_service_.GetInteger(prefs::kNonSyncingUserColorDoNotUse),
+  EXPECT_EQ(pref_service_.GetInteger(prefs::kUserColor),
             static_cast<int>(SK_ColorBLUE));
   histogram_tester.ExpectUniqueSample(
       kThemePrefMigrationAlreadyMigratedHistogram, false, 1);
@@ -3686,11 +3686,11 @@ TEST_F(ThemePrefsMigrationTest, MigrateSyncingNtpPrefToNonSyncing) {
 TEST_F(ThemePrefsMigrationTest,
        DoNotMigrateSyncingThemePrefsToNonSyncingIfAlreadyDone) {
   pref_service_.SetBoolean(prefs::kSyncingThemePrefsMigratedToNonSyncing, true);
-  pref_service_.SetInteger(prefs::kUserColorDoNotUse, SK_ColorBLUE);
+  pref_service_.SetInteger(prefs::kDeprecatedUserColorDoNotUse, SK_ColorBLUE);
 
   base::HistogramTester histogram_tester;
   MigrateSyncingThemePrefsToNonSyncingIfNeeded(&pref_service_);
-  EXPECT_FALSE(pref_service_.HasPrefPath(prefs::kNonSyncingUserColorDoNotUse));
+  EXPECT_FALSE(pref_service_.HasPrefPath(prefs::kUserColor));
   histogram_tester.ExpectUniqueSample(
       kThemePrefMigrationAlreadyMigratedHistogram, true, 1);
   histogram_tester.ExpectTotalCount(kThemePrefMigrationMigratedPrefHistogram,
@@ -3715,8 +3715,9 @@ class ThemePrefsMigrationShouldReadPrefsTest : public ::testing::Test {
         prefs::kBrowserColorSchemeDoNotUse,
         base::Value(
             static_cast<int>(ThemeService::BrowserColorScheme::kLight))));
-    initial_data.push_back(CreateRemotePrefsSyncData(
-        prefs::kUserColorDoNotUse, base::Value(static_cast<int>(SK_ColorRED))));
+    initial_data.push_back(
+        CreateRemotePrefsSyncData(prefs::kDeprecatedUserColorDoNotUse,
+                                  base::Value(static_cast<int>(SK_ColorRED))));
     initial_data.push_back(CreateRemotePrefsSyncData(
         prefs::kBrowserColorVariantDoNotUse,
         base::Value(
@@ -3779,7 +3780,7 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
       prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
   EXPECT_EQ(prefs()->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
             static_cast<int>(ThemeService::BrowserColorScheme::kLight));
-  EXPECT_EQ(prefs()->GetInteger(prefs::kNonSyncingUserColorDoNotUse),
+  EXPECT_EQ(prefs()->GetInteger(prefs::kUserColor),
             static_cast<int>(SK_ColorRED));
   EXPECT_EQ(prefs()->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
             static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));
@@ -3823,7 +3824,7 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
       prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
   EXPECT_EQ(prefs()->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
             static_cast<int>(ThemeService::BrowserColorScheme::kLight));
-  EXPECT_EQ(prefs()->GetInteger(prefs::kNonSyncingUserColorDoNotUse),
+  EXPECT_EQ(prefs()->GetInteger(prefs::kUserColor),
             static_cast<int>(SK_ColorRED));
   EXPECT_EQ(prefs()->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
             static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));
@@ -3864,7 +3865,7 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
       prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
   EXPECT_NE(prefs()->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
             static_cast<int>(ThemeService::BrowserColorScheme::kLight));
-  EXPECT_NE(prefs()->GetInteger(prefs::kNonSyncingUserColorDoNotUse),
+  EXPECT_NE(prefs()->GetInteger(prefs::kUserColor),
             static_cast<int>(SK_ColorRED));
   EXPECT_NE(prefs()->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
             static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));
@@ -3914,7 +3915,7 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
       prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
   EXPECT_NE(prefs()->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
             static_cast<int>(ThemeService::BrowserColorScheme::kLight));
-  EXPECT_NE(prefs()->GetInteger(prefs::kNonSyncingUserColorDoNotUse),
+  EXPECT_NE(prefs()->GetInteger(prefs::kUserColor),
             static_cast<int>(SK_ColorRED));
   EXPECT_NE(prefs()->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
             static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));
@@ -3953,7 +3954,7 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
       prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
   EXPECT_EQ(prefs()->GetInteger(prefs::kNonSyncingBrowserColorSchemeDoNotUse),
             static_cast<int>(ThemeService::BrowserColorScheme::kLight));
-  EXPECT_EQ(prefs()->GetInteger(prefs::kNonSyncingUserColorDoNotUse),
+  EXPECT_EQ(prefs()->GetInteger(prefs::kUserColor),
             static_cast<int>(SK_ColorRED));
   EXPECT_EQ(prefs()->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
             static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));
@@ -4020,7 +4021,7 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
                 : 1u);
   fake_change_processor_->changes().clear();
 
-  ASSERT_EQ(prefs()->GetInteger(prefs::kNonSyncingUserColorDoNotUse),
+  ASSERT_EQ(prefs()->GetInteger(prefs::kUserColor),
             static_cast<int>(SK_ColorBLUE));
   ASSERT_EQ(prefs()->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
             static_cast<int>(ui::mojom::BrowserColorVariant::kNeutral));
@@ -4038,7 +4039,7 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
                    fake_change_processor_->changes(), [](const auto& e) {
                      return e.sync_data().GetSpecifics().has_theme();
                    }));
-  EXPECT_EQ(prefs()->GetInteger(prefs::kNonSyncingUserColorDoNotUse),
+  EXPECT_EQ(prefs()->GetInteger(prefs::kUserColor),
             static_cast<int>(SK_ColorRED));
   EXPECT_EQ(prefs()->GetInteger(prefs::kNonSyncingBrowserColorVariantDoNotUse),
             static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));

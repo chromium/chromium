@@ -272,15 +272,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest,
     sync_pb::EntitySpecifics specifics;
     sync_pb::PreferenceSpecifics* preference_specifics =
         specifics.mutable_preference();
-    preference_specifics->set_name(prefs::kUserColorDoNotUse);
+    preference_specifics->set_name(prefs::kDeprecatedUserColorDoNotUse);
     preference_specifics->set_value(
         preferences_helper::ConvertPrefValueToValueInSpecifics(
             base::Value(static_cast<int>(SK_ColorRED))));
 
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-            /*non_unique_name=*/prefs::kUserColorDoNotUse,
-            /*client_tag=*/prefs::kUserColorDoNotUse, specifics,
+            /*non_unique_name=*/prefs::kDeprecatedUserColorDoNotUse,
+            /*client_tag=*/prefs::kDeprecatedUserColorDoNotUse, specifics,
             /*creation_time=*/0, /*last_modified_time=*/0));
   }
 
@@ -349,15 +349,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientThemesSyncTest,
     sync_pb::EntitySpecifics specifics;
     sync_pb::PreferenceSpecifics* preference_specifics =
         specifics.mutable_preference();
-    preference_specifics->set_name(prefs::kUserColorDoNotUse);
+    preference_specifics->set_name(prefs::kDeprecatedUserColorDoNotUse);
     preference_specifics->set_value(
         preferences_helper::ConvertPrefValueToValueInSpecifics(
             base::Value(static_cast<int>(SK_ColorBLUE))));
 
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-            /*non_unique_name=*/prefs::kUserColorDoNotUse,
-            /*client_tag=*/prefs::kUserColorDoNotUse, specifics,
+            /*non_unique_name=*/prefs::kDeprecatedUserColorDoNotUse,
+            /*client_tag=*/prefs::kDeprecatedUserColorDoNotUse, specifics,
             /*creation_time=*/0, /*last_modified_time=*/0));
   }
 
@@ -445,15 +445,15 @@ IN_PROC_BROWSER_TEST_F(
     sync_pb::EntitySpecifics specifics;
     sync_pb::PreferenceSpecifics* preference_specifics =
         specifics.mutable_preference();
-    preference_specifics->set_name(prefs::kUserColorDoNotUse);
+    preference_specifics->set_name(prefs::kDeprecatedUserColorDoNotUse);
     preference_specifics->set_value(
         preferences_helper::ConvertPrefValueToValueInSpecifics(
             base::Value(static_cast<int>(SK_ColorBLUE))));
 
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-            /*non_unique_name=*/prefs::kUserColorDoNotUse,
-            /*client_tag=*/prefs::kUserColorDoNotUse, specifics,
+            /*non_unique_name=*/prefs::kDeprecatedUserColorDoNotUse,
+            /*client_tag=*/prefs::kDeprecatedUserColorDoNotUse, specifics,
             /*creation_time=*/0, /*last_modified_time=*/0));
   }
   {

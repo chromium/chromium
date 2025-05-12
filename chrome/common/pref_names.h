@@ -1370,11 +1370,10 @@ inline constexpr char kNonSyncingBrowserColorSchemeDoNotUse[] =
 
 // SkColor used to theme the browser for Chrome Refresh. The value
 // SK_ColorTRANSPARENT means the user color has not been set.
-// Note: In the process of migration. Please use `GetThemePrefNameInMigration()`
-// instead. See crbug.com/356148174.
-inline constexpr char kUserColorDoNotUse[] = "browser.theme.user_color";
-inline constexpr char kNonSyncingUserColorDoNotUse[] =
-    "browser.theme.user_color2";
+// Use `kUserColor` only.
+inline constexpr char kDeprecatedUserColorDoNotUse[] =
+    "browser.theme.user_color";
+inline constexpr char kUserColor[] = "browser.theme.user_color2";
 
 // Enum tracking the color variant preference for the browser.
 // Note: In the process of migration. Please use `GetThemePrefNameInMigration()`

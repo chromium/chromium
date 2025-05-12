@@ -1419,7 +1419,7 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kURLsToRestoreOnStartup, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kSensitiveRequiresHistory,
       sync_preferences::MergeBehavior::kMergeableListWithRewriteOnUpdate}},
-    {prefs::kUserColorDoNotUse,
+    {prefs::kDeprecatedUserColorDoNotUse,
      {syncable_prefs_ids::kUserColor, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
@@ -1676,10 +1676,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
 #if BUILDFLAG(ENABLE_GLIC)
-      {glic::prefs::kGlicRolloutEligibility,
-       {syncable_prefs_ids::kGlicRolloutEligibility, syncer::PRIORITY_PREFERENCES,
-        sync_preferences::PrefSensitivity::kNone,
-        sync_preferences::MergeBehavior::kNone}},
+    {glic::prefs::kGlicRolloutEligibility,
+     {syncable_prefs_ids::kGlicRolloutEligibility, syncer::PRIORITY_PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
 #endif  // BUILDFLAG(ENABLE_GLIC)
 });
 

@@ -57,7 +57,7 @@ constexpr auto kThemePrefsInMigration =
          {prefs::kBrowserColorSchemeDoNotUse,
           prefs::kNonSyncingBrowserColorSchemeDoNotUse}},
         {ThemePrefInMigration::kUserColor,
-         {prefs::kUserColorDoNotUse, prefs::kNonSyncingUserColorDoNotUse}},
+         {prefs::kDeprecatedUserColorDoNotUse, prefs::kUserColor}},
         {ThemePrefInMigration::kBrowserColorVariant,
          {prefs::kBrowserColorVariantDoNotUse,
           prefs::kNonSyncingBrowserColorVariantDoNotUse}},
