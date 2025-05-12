@@ -176,6 +176,9 @@
       <message name="IDS_AUTOFILL_POPUP_CONTENT_DESCRIPTION" desc="The text announced by the screen reader when the Autofill popup is shown.">
         Showing Autofill popup
       </message>
+      <message name="IDS_AUTOFILL_LONG_PRESS_PASSKEY_OPTION" desc="The text of the fallback option triggering a passkey request when long-pressing on a Passkey-enabled text field.">
+        Use a passkey
+      </message>
     </messages>
   </release>
 </grit>

@@ -41,7 +41,7 @@ public class AutofillSelectionMenuItemHelper {
         List<SelectionMenuItem> autofillItems = new ArrayList<>();
         if (mAutofillProvider.shouldOfferPasskeyEntry()) {
             autofillItems.add(
-                    new SelectionMenuItem.Builder("Use Passkey")
+                    new SelectionMenuItem.Builder(R.string.autofill_long_press_passkey_option)
                             .setId(Menu.NONE)
                             .setOrderInCategory(Menu.FIRST)
                             .setShowAsActionFlags(
