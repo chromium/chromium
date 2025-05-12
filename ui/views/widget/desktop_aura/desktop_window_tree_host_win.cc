@@ -170,15 +170,15 @@ aura::Window* DesktopWindowTreeHostWin::GetContentWindowForHWND(HWND hwnd) {
 void DesktopWindowTreeHostWin::StartTouchDrag(gfx::Point screen_point) {
   // Send a mouse down and mouse move before do drag drop runs its own event
   // loop. This is required for ::DoDragDrop to start the drag.
-  ui::SendMouseEvent(screen_point, MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_ABSOLUTE);
-  ui::SendMouseEvent(screen_point, MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE);
+  ui::SendMouseEvent(screen_point, MOUSEEVENTF_LEFTDOWN);
+  ui::SendMouseEvent(screen_point, MOUSEEVENTF_MOVE);
   in_touch_drag_ = true;
 }
 
 void DesktopWindowTreeHostWin::FinishTouchDrag(gfx::Point screen_point) {
   if (in_touch_drag_) {
     in_touch_drag_ = false;
-    ui::SendMouseEvent(screen_point, MOUSEEVENTF_LEFTUP | MOUSEEVENTF_ABSOLUTE);
+    ui::SendMouseEvent(screen_point, MOUSEEVENTF_LEFTUP);
   }
 }
 
@@ -1279,7 +1279,7 @@ void DesktopWindowTreeHostWin::HandleTouchEvent(ui::TouchEvent* event) {
     // Send equivalent mouse events, because Ole32 drag drop doesn't seem to
     // handle pointer events.
     if (event->type() == ui::EventType::kTouchMoved) {
-      ui::SendMouseEvent(screen_point, MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE);
+      ui::SendMouseEvent(screen_point, MOUSEEVENTF_MOVE);
     } else if (event->type() == ui::EventType::kTouchReleased) {
       FinishTouchDrag(screen_point);
     }

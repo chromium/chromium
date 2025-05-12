@@ -213,10 +213,8 @@ class GlicWindowControllerImpl::WindowEventObserver : public ui::EventObserver {
         touch_down_in_draggable_area_ =
             glic_view_->IsPointWithinDraggableArea(touch_location);
         if (touch_down_in_draggable_area_) {
-          ui::SendMouseEvent(touch_screen_point,
-                             MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_ABSOLUTE);
-          ui::SendMouseEvent(touch_screen_point,
-                             MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE);
+          ui::SendMouseEvent(touch_screen_point, MOUSEEVENTF_LEFTDOWN);
+          ui::SendMouseEvent(touch_screen_point, MOUSEEVENTF_MOVE);
         }
       }
       if (!touch_down_in_draggable_area_) {
@@ -227,12 +225,10 @@ class GlicWindowControllerImpl::WindowEventObserver : public ui::EventObserver {
       if (event.type() == ui::EventType::kTouchCancelled ||
           event.type() == ui::EventType::kTouchReleased) {
         touch_down_in_draggable_area_ = false;
-        ui::SendMouseEvent(touch_screen_point,
-                           MOUSEEVENTF_LEFTUP | MOUSEEVENTF_ABSOLUTE);
+        ui::SendMouseEvent(touch_screen_point, MOUSEEVENTF_LEFTUP);
       }
       if (event.type() == ui::EventType::kTouchMoved) {
-        ui::SendMouseEvent(touch_screen_point,
-                           MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE);
+        ui::SendMouseEvent(touch_screen_point, MOUSEEVENTF_MOVE);
       }
       return;
     }
