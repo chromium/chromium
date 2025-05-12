@@ -123,6 +123,9 @@ class BookmarkEditorView : public BookmarkEditor,
       const gfx::Point& point,
       ui::mojom::MenuSourceType source_type) override;
 
+  // Returns true if the new folder button is enabled.
+  bool IsNewFolderButtonEnabledForTesting() const;
+
  private:
   friend class BookmarkEditorViewTest;
 

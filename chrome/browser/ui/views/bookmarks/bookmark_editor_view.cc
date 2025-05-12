@@ -277,6 +277,11 @@ void BookmarkEditorView::ShowContextMenuForViewImpl(
                                   source_type);
 }
 
+bool BookmarkEditorView::IsNewFolderButtonEnabledForTesting() const {
+  CHECK(new_folder_button_);
+  return new_folder_button_->GetEnabled();
+}
+
 void BookmarkEditorView::BookmarkNodeMoved(const BookmarkNode* old_parent,
                                            size_t old_index,
                                            const BookmarkNode* new_parent,
@@ -501,9 +506,16 @@ void BookmarkEditorView::ExpandAndSelect() {
   EditorNode* b_node =
       FindNodeWithID(tree_model_->GetRoot(), folder_id_to_select);
   if (!b_node) {
-    b_node = tree_model_->GetRoot()->children().front().get();  // Bookmark bar.
+    // Default to the bookmark bar folder.
+    bool has_title_node =
+        tree_model_->GetRoot()->children().front()->value.type ==
+        EditorNodeData::Type::kTitle;
+    b_node = FindNodeWithID(tree_model_->GetRoot(),
+                            has_title_node
+                                ? bb_model_->account_bookmark_bar_node()->id()
+                                : bb_model_->bookmark_bar_node()->id());
+    CHECK(b_node);
   }
-
   tree_view_->SetSelectedNode(b_node);
 }
 
