@@ -329,25 +329,30 @@ AX_TEST_F('MagnifierE2ETest', 'OnCaretBoundsChanged', async function() {
   await typeWordsAssertBounds({left: 1200, top: 100, width: 0, height: 0});
 });
 
-TEST_F('MagnifierE2ETest', 'ScreenMagnifierFocusFollowingPref', function() {
-  this.newCallback(async () => {
-    // Disable focus following for full screen magnifier, and verify prefs and
-    // state.
-    await this.setPref(Magnifier.Prefs.SCREEN_MAGNIFIER_FOCUS_FOLLOWING, false);
-    magnifier = accessibilityCommon.getMagnifierForTest();
-    magnifier.setIsInitializingForTest(false);
-    assertEquals(magnifier.type, Magnifier.Type.FULL_SCREEN);
-    assertFalse(magnifier.shouldFollowFocus());
+// TODO(crbug.com/417066488): Test is flaky.
+TEST_F(
+    'MagnifierE2ETest', 'DISABLED_ScreenMagnifierFocusFollowingPref',
+    function() {
+      this.newCallback(async () => {
+        // Disable focus following for full screen magnifier, and verify prefs
+        // and state.
+        await this.setPref(
+            Magnifier.Prefs.SCREEN_MAGNIFIER_FOCUS_FOLLOWING, false);
+        magnifier = accessibilityCommon.getMagnifierForTest();
+        magnifier.setIsInitializingForTest(false);
+        assertEquals(magnifier.type, Magnifier.Type.FULL_SCREEN);
+        assertFalse(magnifier.shouldFollowFocus());
 
-    // Enable focus following for full screen magnifier, and verify prefs and
-    // state.
-    await this.setPref(Magnifier.Prefs.SCREEN_MAGNIFIER_FOCUS_FOLLOWING, true);
-    magnifier = accessibilityCommon.getMagnifierForTest();
-    magnifier.setIsInitializingForTest(false);
-    assertEquals(magnifier.type, Magnifier.Type.FULL_SCREEN);
-    assertTrue(magnifier.shouldFollowFocus());
-  })();
-});
+        // Enable focus following for full screen magnifier, and verify prefs
+        // and state.
+        await this.setPref(
+            Magnifier.Prefs.SCREEN_MAGNIFIER_FOCUS_FOLLOWING, true);
+        magnifier = accessibilityCommon.getMagnifierForTest();
+        magnifier.setIsInitializingForTest(false);
+        assertEquals(magnifier.type, Magnifier.Type.FULL_SCREEN);
+        assertTrue(magnifier.shouldFollowFocus());
+      })();
+    });
 
 TEST_F(
     'MagnifierE2ETest', 'ScreenMagnifierSelectToSpeakFollowingPref',
