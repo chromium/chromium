@@ -974,10 +974,6 @@ select:disabled {
 select:-internal-list-box {
     appearance: auto;
     align-items: flex-start;
-    @supports not blink-feature(CSSLogicalOverflow) {
-      -internal-overflow-inline: hidden;
-      -internal-overflow-block: scroll;
-    }
     overflow-inline: hidden;
     overflow-block: scroll;
     vertical-align: text-bottom;

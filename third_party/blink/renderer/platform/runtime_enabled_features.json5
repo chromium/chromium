@@ -1248,10 +1248,6 @@
       depends_on: ["CSSLineClamp"],
     },
     {
-      name: "CSSLogicalOverflow",
-      status: "stable",
-    },
-    {
       name: "CSSMarkerNestedPseudoElement",
       status: "stable",
     },

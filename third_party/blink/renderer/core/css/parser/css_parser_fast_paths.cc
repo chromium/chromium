@@ -1303,8 +1303,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id == CSSValueID::kNormal ||
              value_id == CSSValueID::kBreakWord ||
              value_id == CSSValueID::kAnywhere;
-    case CSSPropertyID::kInternalOverflowBlock:
-    case CSSPropertyID::kInternalOverflowInline:
     case CSSPropertyID::kOverflowBlock:
     case CSSPropertyID::kOverflowInline:
     case CSSPropertyID::kOverflowX:
@@ -1752,8 +1750,6 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kGapRulePaintOrder,
     CSSPropertyID::kHyphens,
     CSSPropertyID::kImageRendering,
-    CSSPropertyID::kInternalOverflowBlock,
-    CSSPropertyID::kInternalOverflowInline,
     CSSPropertyID::kInterpolateSize,
     CSSPropertyID::kListStylePosition,
     CSSPropertyID::kMaskType,

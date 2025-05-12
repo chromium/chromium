@@ -1205,29 +1205,4 @@ TEST_F(HTMLSelectElementSimTest, DialogModeBaseSelectNestedButton) {
   ASSERT_FALSE(select->IsInDialogMode());
 }
 
-class HTMLSelectElementUATest : public HTMLSelectElementTest,
-                                public testing::WithParamInterface<bool>,
-                                public ScopedCSSLogicalOverflowForTest {
- public:
-  HTMLSelectElementUATest() : ScopedCSSLogicalOverflowForTest(GetParam()) {}
-};
-
-TEST_P(HTMLSelectElementUATest, OverflowStyle) {
-  CSSDefaultStyleSheets::Instance().PrepareForLeakDetection();
-  SetHtmlInnerHTML(R"HTML(
-    <select id="target" multiple></select>
-  )HTML");
-
-  HTMLSelectElement* select = To<HTMLSelectElement>(GetElementById("target"));
-  if (select->UsesMenuList()) {
-    // The UA styles won't apply when the menu list rendering is delegated.
-    return;
-  }
-  GetDocument().UpdateStyleAndLayoutTree();
-  EXPECT_EQ(select->ComputedStyleRef().OverflowX(), EOverflow::kHidden);
-  EXPECT_EQ(select->ComputedStyleRef().OverflowY(), EOverflow::kScroll);
-}
-
-INSTANTIATE_TEST_SUITE_P(All, HTMLSelectElementUATest, ::testing::Bool());
-
 }  // namespace blink

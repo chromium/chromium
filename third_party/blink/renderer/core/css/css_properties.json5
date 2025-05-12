@@ -4468,16 +4468,8 @@
         name: "overflow",
         resolver: "inline",
       },
-      runtime_flag: "CSSLogicalOverflow",
       // See comment on overflow-x.
       supports_incremental_style: false,
-    },
-    {
-      name: "-internal-overflow-inline",
-      logical_property_group: {
-        name: "overflow",
-        resolver: "inline",
-      },
     },
     {
       name: "overflow-block",
@@ -4485,16 +4477,8 @@
         name: "overflow",
         resolver: "block",
       },
-      runtime_flag: "CSSLogicalOverflow",
       // See comment on overflow-x.
       supports_incremental_style: false,
-    },
-    {
-      name: "-internal-overflow-block",
-      logical_property_group: {
-        name: "overflow",
-        resolver: "block",
-      },
     },
     {
       name: "overflow-clip-margin",
