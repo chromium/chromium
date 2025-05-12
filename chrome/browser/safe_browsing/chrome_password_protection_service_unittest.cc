@@ -16,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
@@ -39,6 +40,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/enterprise/connectors/core/reporting_test_utils.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -1873,8 +1875,13 @@ class PasswordCheckupWithPhishGuardTest
 };
 
 class PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest
-    : public PasswordCheckupWithPhishGuardTest {
+    : public base::test::WithFeatureOverride,
+      public PasswordCheckupWithPhishGuardTest {
  public:
+  PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest()
+      : base::test::WithFeatureOverride(
+            password_manager::features::kLoginDbDeprecationAndroid) {}
+
   void SetUp() override {
     // Override the GMS version to be big enough for local UPM support, so these
     // tests still pass in bots with an outdated version.
@@ -1884,7 +1891,7 @@ class PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest
   }
 };
 
-TEST_F(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
+TEST_P(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
        VerifyPhishGuardDialogOpensPasswordCheckupForAccountStoreSyncing) {
   service_->ConfigService(/*is_incognito=*/false,
                           /*is_extended_reporting=*/true);
@@ -1906,7 +1913,7 @@ TEST_F(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
   SimulateChangePasswordDialogAction(/*is_syncing=*/true);
 }
 
-TEST_F(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
+TEST_P(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
        VerifyPhishGuardDialogOpensPasswordCheckupForProfileStoreSyncing) {
   service_->ConfigService(/*is_incognito=*/false,
                           /*is_extended_reporting=*/true);
@@ -1929,7 +1936,7 @@ TEST_F(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
   SimulateChangePasswordDialogAction(/*is_syncing=*/true);
 }
 
-TEST_F(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
+TEST_P(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
        VerifyPhishGuardDialogOpensPasswordCheckupForProfileStoreNotSyncing) {
   service_->ConfigService(/*is_incognito=*/false,
                           /*is_extended_reporting=*/true);
@@ -1952,7 +1959,7 @@ TEST_F(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
   SimulateChangePasswordDialogAction(/*is_syncing=*/false);
 }
 
-TEST_F(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
+TEST_P(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
        VerifyPhishGuardDialogOpensSafetyCheckMenuForBothStoresSyncing) {
   feature_list_.InitWithFeatures(
       {}, {/*disabled_features=*/features::kSafetyHubLocalPasswordsModule});
@@ -1977,7 +1984,7 @@ TEST_F(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
   SimulateChangePasswordDialogAction(/*is_syncing=*/true);
 }
 
-TEST_F(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
+TEST_P(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
        VerifyPhishGuardDialogOpensSafetyHubMenuForBothStoresSyncing) {
   feature_list_.InitWithFeatures(
       /*enabled_features=*/{features::kSafetyHubLocalPasswordsModule}, {});
@@ -2002,6 +2009,9 @@ TEST_F(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
   SimulateChangePasswordDialogAction(/*is_syncing=*/true);
 }
 
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest);
+
 class PasswordCheckupWithPhishGuardUPMBeforeStoreSplitAndroidTest
     : public PasswordCheckupWithPhishGuardTest {
  public:
@@ -2009,7 +2019,12 @@ class PasswordCheckupWithPhishGuardUPMBeforeStoreSplitAndroidTest
     // Force split stores to be off by faking an outdated GmsCore version.
     base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test("0");
     PasswordCheckupWithPhishGuardTest::SetUp();
+    feature_list_.InitAndDisableFeature(
+        password_manager::features::kLoginDbDeprecationAndroid);
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(
@@ -2057,6 +2072,7 @@ TEST_F(PasswordCheckupWithPhishGuardUPMBeforeStoreSplitAndroidTest,
 
   SimulateChangePasswordDialogAction(/*is_syncing=*/true);
 }
+
 #endif
 
 }  // namespace

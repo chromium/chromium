@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -47,6 +48,7 @@
 #include "components/enterprise/connectors/core/reporting_event_router.h"
 #include "components/google/core/common/google_util.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/insecure_credentials_helper.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
@@ -1142,11 +1144,16 @@ void ChromePasswordProtectionService::OpenPasswordCheck(
       // checkup for that store will open.
 
       bool should_show_checkup_for_local = true;
+
+      // After login db deprecation, all users have split stores.
+      bool uses_split_password_stores =
+          base::FeatureList::IsEnabled(
+              password_manager::features::kLoginDbDeprecationAndroid) ||
+          password_manager::UsesSplitStoresAndUPMForLocal(profile_->GetPrefs());
       if (credentials_store.is_account_store) {
         should_show_checkup_for_local = false;
       } else if (credentials_store.is_profile_store && is_syncing_passwords &&
-                 !password_manager::UsesSplitStoresAndUPMForLocal(
-                     profile_->GetPrefs())) {
+                 !uses_split_password_stores) {
         should_show_checkup_for_local = false;
       }
       checkup_launcher_->LaunchCheckupOnDevice(

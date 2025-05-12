@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
@@ -440,6 +441,12 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithTrueResult) {
 }
 
 TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneForSyncingUser) {
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, syncing passwords from the profile store is only possible
+  // before login db deprecation.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kLoginDbDeprecationAndroid);
+#endif
   LeakDetectionDelegateInterface* delegate_interface = &delegate();
   const PasswordForm form = CreateTestForm();
 
@@ -553,7 +560,9 @@ TEST_F(LeakDetectionDelegateTest,
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(LeakDetectionDelegateTest,
-       LeakDetectionDoneForLocalStoreWithSplitStoresAndUPMForLocal) {
+       LeakDetectionDoneLocalStoreWithUPMSplitStoresBeforeDbDeprecation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kLoginDbDeprecationAndroid);
   LeakDetectionDelegateInterface* delegate_interface = &delegate();
   const PasswordForm form = CreateTestForm();
 
@@ -595,7 +604,55 @@ TEST_F(LeakDetectionDelegateTest,
 }
 
 TEST_F(LeakDetectionDelegateTest,
-       LeakDetectionDoneForAccountStoreWithSplitStoresAndUPMForLocal) {
+       LeakDetectionDoneLocalStoreWithUPMSplitStoresAfterDbDeprecation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kLoginDbDeprecationAndroid);
+  LeakDetectionDelegateInterface* delegate_interface = &delegate();
+  const PasswordForm form = CreateTestForm();
+
+  ON_CALL(client(), GetSyncService()).WillByDefault(Return(sync_service()));
+  ON_CALL(client(), GetAccountPasswordStore())
+      .WillByDefault(Return(account_store()));
+  ON_CALL(client(), GetProfilePasswordStore())
+      .WillByDefault(Return(profile_store()));
+
+  // The login db deprecation also stops automatic migration and deprecates
+  // the migration pref, so set it to off to verify that its value doesn't
+  // matter.
+  pref_service()->SetInteger(
+      prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOff));
+
+  ASSERT_EQ(sync_util::GetPasswordSyncState(sync_service()),
+            sync_util::SyncState::kActiveWithNormalEncryption);
+  ASSERT_TRUE(
+      sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service()));
+
+  ExpectPasswords({}, /*store=*/account_store());
+  ExpectPasswords({form}, /*store=*/profile_store());
+  EXPECT_CALL(factory(), TryCreateLeakCheck)
+      .WillOnce(
+          Return(ByMove(std::make_unique<NiceMock<MockLeakDetectionCheck>>())));
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
+
+  EXPECT_CALL(client(),
+              NotifyUserCredentialsWereLeaked(LeakedPasswordDetails(
+                  password_manager::CreateLeakType(
+                      IsSaved(true), IsReused(false), IsSyncing(false)),
+                  form.url, form.username_value, form.password_value,
+                  /* in_account_store = */ false)));
+  delegate_interface->OnLeakDetectionDone(
+      /*is_leaked=*/true, form.url, form.username_value, form.password_value);
+
+  EXPECT_CALL(*profile_store(), UpdateLogin);
+  WaitForPasswordStore();
+}
+
+TEST_F(LeakDetectionDelegateTest,
+       LeakDetectionDoneAccountStoreWithUPMSplitStoresBeforeDbDeprecation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kLoginDbDeprecationAndroid);
   LeakDetectionDelegateInterface* delegate_interface = &delegate();
   const PasswordForm form = CreateTestForm();
 
@@ -609,6 +666,52 @@ TEST_F(LeakDetectionDelegateTest,
   pref_service()->SetInteger(
       prefs::kPasswordsUseUPMLocalAndSeparateStores,
       static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOn));
+
+  ASSERT_EQ(sync_util::GetPasswordSyncState(sync_service()),
+            sync_util::SyncState::kActiveWithNormalEncryption);
+  ASSERT_TRUE(
+      sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service()));
+
+  ExpectPasswords({form}, /*store=*/account_store());
+  ExpectPasswords({}, /*store=*/profile_store());
+  EXPECT_CALL(factory(), TryCreateLeakCheck)
+      .WillOnce(
+          Return(ByMove(std::make_unique<NiceMock<MockLeakDetectionCheck>>())));
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
+
+  EXPECT_CALL(client(),
+              NotifyUserCredentialsWereLeaked(LeakedPasswordDetails(
+                  password_manager::CreateLeakType(
+                      IsSaved(true), IsReused(false), IsSyncing(true)),
+                  form.url, form.username_value, form.password_value,
+                  /* in_account_store = */ true)));
+  delegate_interface->OnLeakDetectionDone(
+      /*is_leaked=*/true, form.url, form.username_value, form.password_value);
+
+  EXPECT_CALL(*account_store(), UpdateLogin);
+  WaitForPasswordStore();
+}
+
+TEST_F(LeakDetectionDelegateTest,
+       LeakDetectionDoneAccountStoreWithUPMSplitStoresAfterDbDeprecation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kLoginDbDeprecationAndroid);
+  LeakDetectionDelegateInterface* delegate_interface = &delegate();
+  const PasswordForm form = CreateTestForm();
+
+  ON_CALL(client(), GetSyncService()).WillByDefault(Return(sync_service()));
+  ON_CALL(client(), GetAccountPasswordStore())
+      .WillByDefault(Return(account_store()));
+  ON_CALL(client(), GetProfilePasswordStore())
+      .WillByDefault(Return(profile_store()));
+
+  // The login db deprecation also stops automatic migration and deprecates
+  // the migration pref, so set it to off to verify that its value doesn't
+  // matter.
+  pref_service()->SetInteger(
+      prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOff));
 
   ASSERT_EQ(sync_util::GetPasswordSyncState(sync_service()),
             sync_util::SyncState::kActiveWithNormalEncryption);
