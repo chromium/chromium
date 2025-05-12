@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_set_description_observer.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"
 #include "third_party/blink/renderer/platform/mediastream/webrtc_uma_histograms.h"
@@ -66,6 +67,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/webrtc/api/data_channel_interface.h"
@@ -449,6 +451,20 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
   bool is_rollback_;
 };
 
+// Generally, output from a PeerConnection will go through the
+// `RTCPeerConnectionHandler::Observer`, which is a class declared in the
+// protected section of `RTCPeerConnectionHandler`. For this reason a plain
+// `Observer` can not be referenced by other classes, which is necessary since
+// an instance of the `DataChannelEventObserverInterface` interface needs to be
+// injected into the PeerConnection.
+class RtcDataChannelEventSink : public GarbageCollectedMixin {
+ public:
+  virtual ~RtcDataChannelEventSink() = default;
+
+  virtual void OnWebRtcDataChannelLogWrite(
+      const WTF::Vector<uint8_t>& output) = 0;
+};
+
 // Receives notifications from a PeerConnection object about state changes. The
 // callbacks we receive here come on the webrtc signaling thread, so this class
 // takes care of delivering them to an RTCPeerConnectionHandler instance on the
@@ -458,7 +474,8 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
 class RTCPeerConnectionHandler::Observer
     : public GarbageCollected<RTCPeerConnectionHandler::Observer>,
       public PeerConnectionObserver,
-      public RtcEventLogOutputSink {
+      public RtcEventLogOutputSink,
+      public RtcDataChannelEventSink {
  public:
   Observer(const base::WeakPtr<RTCPeerConnectionHandler>& handler,
            scoped_refptr<base::SingleThreadTaskRunner> task_runner)
@@ -501,6 +518,18 @@ class RTCPeerConnectionHandler::Observer
               WrapCrossThreadPersistent(this), output));
     } else if (handler_) {
       handler_->OnWebRtcEventLogWrite(output);
+    }
+  }
+
+  void OnWebRtcDataChannelLogWrite(const Vector<uint8_t>& output) override {
+    if (!main_thread_->BelongsToCurrentThread()) {
+      PostCrossThreadTask(
+          *main_thread_.get(), FROM_HERE,
+          CrossThreadBindOnce(
+              &RTCPeerConnectionHandler::Observer::OnWebRtcDataChannelLogWrite,
+              WrapCrossThreadPersistent(this), output));
+    } else if (handler_) {
+      handler_->OnWebRtcDataChannelLogWrite(output);
     }
   }
 
@@ -707,6 +736,46 @@ class RTCPeerConnectionHandler::Observer
   // signaling thread.
   webrtc::scoped_refptr<webrtc::PeerConnectionInterface>
       native_peer_connection_;
+};
+
+class RtcDataChannelLogOutputSinkProxy
+    : public webrtc::DataChannelEventObserverInterface {
+ public:
+  using webrtc::DataChannelEventObserverInterface::Message;
+
+  explicit RtcDataChannelLogOutputSinkProxy(RtcDataChannelEventSink* sink)
+      : sink_(sink) {}
+
+  void OnMessage(const Message& message) override {
+    auto json = std::make_unique<JSONObject>();
+    json->SetString("type", "message");
+    // Write a double since a unix timestamp may overflow an int.
+    json->SetDouble("unix_timestamp_ms", message.unix_timestamp_ms());
+    json->SetInteger("datachannel_id", message.datachannel_id());
+    json->SetString("label",
+                    WTF::String(base::span<const char>(message.label())));
+    json->SetString(
+        "direction",
+        message.direction() == Message::Direction::kSend ? "send" : "receive");
+    if (message.data_type() == Message::DataType::kString) {
+      json->SetString("data_type", "string");
+      json->SetString(
+          "data", WTF::String(base::span<const unsigned char>(message.data())));
+    } else {
+      json->SetString("data_type", "binary");
+      json->SetString("data", WTF::Base64Encode(message.data()));
+    }
+
+    StringBuilder string_builder;
+    json->WriteJSON(&string_builder);
+    string_builder.Append('\n');
+
+    sink_.Lock()->OnWebRtcDataChannelLogWrite(
+        Vector<uint8_t>(string_builder.Span8()));
+  }
+
+ private:
+  const CrossThreadWeakPersistent<RtcDataChannelEventSink> sink_;
 };
 
 RTCPeerConnectionHandler::RTCPeerConnectionHandler(
@@ -1671,6 +1740,26 @@ void RTCPeerConnectionHandler::OnWebRtcEventLogWrite(
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (peer_connection_tracker_) {
     peer_connection_tracker_->TrackRtcEventLogWrite(this, output);
+  }
+}
+
+void RTCPeerConnectionHandler::StartDataChannelLog() {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  native_peer_connection_->SetDataChannelEventObserver(
+      std::make_unique<RtcDataChannelLogOutputSinkProxy>(
+          peer_connection_observer_));
+}
+
+void RTCPeerConnectionHandler::StopDataChannelLog() {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  native_peer_connection_->SetDataChannelEventObserver(nullptr);
+}
+
+void RTCPeerConnectionHandler::OnWebRtcDataChannelLogWrite(
+    const Vector<uint8_t>& output) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  if (peer_connection_tracker_) {
+    peer_connection_tracker_->TrackRtcDataChannelLogWrite(this, output);
   }
 }
 

@@ -704,14 +704,22 @@ void PeerConnectionTracker::StopEventLog(int peer_connection_local_id) {
 
 void PeerConnectionTracker::StartDataChannelLog(int peer_connection_local_id) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
-  // TODO(chromium:407785197): Start the DataChannel log on the PeerConnection
-  // specified by `peer_connection_local_id`.
+  for (auto& it : peer_connection_local_id_map_) {
+    if (it.value == peer_connection_local_id) {
+      it.key->StartDataChannelLog();
+      return;
+    }
+  }
 }
 
 void PeerConnectionTracker::StopDataChannelLog(int peer_connection_local_id) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
-  // TODO(chromium:407785197): Stop the DataChannel log on the PeerConnection
-  // specified by `peer_connection_local_id`.
+  for (auto& it : peer_connection_local_id_map_) {
+    if (it.value == peer_connection_local_id) {
+      it.key->StopDataChannelLog();
+      return;
+    }
+  }
 }
 
 void PeerConnectionTracker::GetStandardStats() {

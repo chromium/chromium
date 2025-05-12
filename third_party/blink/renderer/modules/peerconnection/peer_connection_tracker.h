@@ -252,6 +252,16 @@ class MODULES_EXPORT PeerConnectionTracker
   FRIEND_TEST_ALL_PREFIXES(PeerConnectionTrackerTest, OnThermalStateChange);
   FRIEND_TEST_ALL_PREFIXES(PeerConnectionTrackerTest,
                            ReportInitialThermalState);
+  FRIEND_TEST_ALL_PREFIXES(PeerConnectionTrackerTest,
+                           StartDataChannelLogCalled);
+  FRIEND_TEST_ALL_PREFIXES(PeerConnectionTrackerTest, StopDataChannelLogCalled);
+  FRIEND_TEST_ALL_PREFIXES(
+      PeerConnectionTrackerTest,
+      StartDataChannelLogNotCalledIfMismatchBetweenLidAndPeerConnection);
+  FRIEND_TEST_ALL_PREFIXES(
+      PeerConnectionTrackerTest,
+      StopDataChannelLogNotCalledIfMismatchBetweenLidAndPeerConnection);
+  FRIEND_TEST_ALL_PREFIXES(PeerConnectionTrackerTest, DataChannelLoggingWrite);
 
   PeerConnectionTracker(
       mojo::PendingRemote<mojom::blink::PeerConnectionTrackerHost> host,
