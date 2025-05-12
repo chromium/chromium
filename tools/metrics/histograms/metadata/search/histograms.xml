@@ -301,15 +301,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceCompletedOnMonth.OnProfileLoad"
-    units="Year-Month" expires_after="2026-02-10">
+    enum="SearchEngineChoiceDate" expires_after="2026-05-01">
+<!-- When bumping expiry date, also update the enum (making the enumeration in sync with existing values). Escalate when data count
+exceeds 100 entries:
+https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/README.md#sustainability -->
+
   <owner>dgn@google.com</owner>
   <owner>tju@google.com</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
     Recorded on each profile load (tied to service construction), indicates the
-    last engine choice timestamp formatted as YYYYMM.
+    last engine choice timestamp formatted as YYYYMM integer. For convenience,
+    the enum maps these to user readable `YYYY-MM` labels.
 
-    The value is serialized as sparse histogram with integer values.
+    The value is serialized as a sparse histogram with integer values. Since
+    each client can record the same value multiple times, it might be more
+    interesting to look at unique clients.
   </summary>
 </histogram>
 
