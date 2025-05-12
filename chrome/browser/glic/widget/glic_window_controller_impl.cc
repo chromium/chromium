@@ -1045,6 +1045,7 @@ void GlicWindowControllerImpl::CloseFinish(
   scoped_glic_button_indicator_.reset();
   user_resizing_ = false;
   NotifyIfPanelStateChanged();
+  window_activation_callback_list_.Notify(false);
 
   host().PanelWasClosed();
 
