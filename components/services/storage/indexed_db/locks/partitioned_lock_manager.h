@@ -75,6 +75,12 @@ class PartitionedLockManager {
   // completely independent domains.
   struct PartitionedLockRequest {
     PartitionedLockRequest(PartitionedLockId lock_id, LockType type);
+
+    friend bool operator==(const PartitionedLockRequest&,
+                           const PartitionedLockRequest&) = default;
+    friend auto operator<=>(const PartitionedLockRequest&,
+                            const PartitionedLockRequest&) = default;
+
     PartitionedLockId lock_id;
     LockType type;
   };
@@ -193,13 +199,6 @@ class PartitionedLockManager {
 
   base::WeakPtrFactory<PartitionedLockManager> weak_factory_{this};
 };
-
-bool operator<(const PartitionedLockManager::PartitionedLockRequest& x,
-               const PartitionedLockManager::PartitionedLockRequest& y);
-bool operator==(const PartitionedLockManager::PartitionedLockRequest& x,
-                const PartitionedLockManager::PartitionedLockRequest& y);
-bool operator!=(const PartitionedLockManager::PartitionedLockRequest& x,
-                const PartitionedLockManager::PartitionedLockRequest& y);
 
 }  // namespace content::indexed_db
 

@@ -317,21 +317,4 @@ bool PartitionedLockManager::IsBlockingAnyRequest(
   return false;
 }
 
-bool operator<(const PartitionedLockManager::PartitionedLockRequest& x,
-               const PartitionedLockManager::PartitionedLockRequest& y) {
-  if (x.lock_id != y.lock_id)
-    return x.lock_id < y.lock_id;
-  return x.type < y.type;
-}
-
-bool operator==(const PartitionedLockManager::PartitionedLockRequest& x,
-                const PartitionedLockManager::PartitionedLockRequest& y) {
-  return x.lock_id == y.lock_id && x.type == y.type;
-}
-
-bool operator!=(const PartitionedLockManager::PartitionedLockRequest& x,
-                const PartitionedLockManager::PartitionedLockRequest& y) {
-  return !(x == y);
-}
-
 }  // namespace content::indexed_db
