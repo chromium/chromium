@@ -20883,10 +20883,10 @@ be describing additional metrics about the same event.
   <owner>olesiamarukhnno@google.com</owner>
   <owner>antoniosartori@chromium.org</owner>
   <summary>
-    Recorded when an interactation was detected for a site that was previously
-    put in a potential revocation list for disruptive notification permissions
-    or for a site for which notification permission was revoked. The metrics
-    will be recorded on either page visit or a notification click.
+    Recorded when an interaction was detected for a site that was previously put
+    in a potential revocation list for disruptive notification permissions or
+    for a site for which notification permission was revoked. The metrics will
+    be recorded on either page visit or a notification click.
   </summary>
   <metric name="DailyAverageVolume">
     <summary>
@@ -20912,7 +20912,7 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="Reason" enum="DisruptiveNotificationFalsePositiveReason">
     <summary>
-      The reason why the revocation was deamed a false positive: either a web
+      The reason why the revocation was deemed a false positive: either a web
       site visit or a notification click.
     </summary>
   </metric>
