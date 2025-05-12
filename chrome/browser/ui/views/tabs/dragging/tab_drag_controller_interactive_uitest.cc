@@ -5524,7 +5524,7 @@ IN_PROC_BROWSER_TEST_F(SideBySideTabDragControllerTest,
 }
 
 // Flaky. https://crbug.com/40748225
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_DragBetweenMultipleSplitTabs DISABLED_DragBetweenMultipleSplitTabs
 #else
 #define MAYBE_DragBetweenMultipleSplitTabs DragBetweenMultipleSplitTabs
