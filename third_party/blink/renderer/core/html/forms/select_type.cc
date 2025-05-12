@@ -613,8 +613,8 @@ void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
 
     popover_ = MakeGarbageCollected<PopoverElementForAppearanceBase>(doc);
     popover_->SetShadowPseudoId(shadow_element_names::kPickerSelect);
-    popover_->setAttribute(html_names::kPopoverAttr, AtomicString("auto"));
     root.appendChild(popover_);
+    popover_->setAttribute(html_names::kPopoverAttr, AtomicString("auto"));
 
     popover_options_slot_ = MakeGarbageCollected<HTMLSlotElement>(doc);
     popover_options_slot_->SetIdAttribute(
@@ -624,11 +624,11 @@ void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
     autofill_popover_ =
         MakeGarbageCollected<HTMLSelectElement::SelectAutofillPreviewElement>(
             doc, select_);
-    autofill_popover_->setAttribute(html_names::kPopoverAttr,
-                                    keywords::kManual);
     autofill_popover_->SetShadowPseudoId(
         shadow_element_names::kSelectAutofillPreview);
     root.appendChild(autofill_popover_);
+    autofill_popover_->setAttribute(html_names::kPopoverAttr,
+                                    keywords::kManual);
 
     autofill_popover_text_ = MakeGarbageCollected<HTMLDivElement>(doc);
     autofill_popover_text_->SetShadowPseudoId(

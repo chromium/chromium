@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<style>
+select, ::picker(select) {
+  appearance: base-select;
+}
+</style>
+<select>
+  <option>option</option>
+</select>
+
+<script>
+const kValidPopoverAttribute = 4191;
+const kPopoverTypeAuto = 4464;
+const kPopoverTypeManual = 4465;
+const kPopoverTypeInvalid = 4466;
+
+test(() => {
+  assert_false(
+    internals.isUseCounted(document, kValidPopoverAttribute),
+    'ValidPopoverAttribute');
+  assert_false(
+    internals.isUseCounted(document, kPopoverTypeAuto),
+    'PopoverTypeAuto');
+  assert_false(
+    internals.isUseCounted(document, kPopoverTypeManual),
+    'PopoverTypeManual');
+  assert_false(
+    internals.isUseCounted(document, kPopoverTypeInvalid),
+    'PopoverTypeInvalid');
+}, '<select> should not trigger popover UseCounters.');
+</script>

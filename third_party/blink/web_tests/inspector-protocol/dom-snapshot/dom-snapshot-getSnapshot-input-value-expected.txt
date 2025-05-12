@@ -342,12 +342,12 @@ Tests DOMSnapshot.getSnapshot method returning input values.
         [26] : {
             attributes : [
                 [0] : {
-                    name : popover
-                    value : manual
-                }
-                [1] : {
                     name : pseudo
                     value : -internal-select-autofill-preview
+                }
+                [1] : {
+                    name : popover
+                    value : manual
                 }
             ]
             backendNodeId : <number>
