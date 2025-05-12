@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "ui/events/event.h"
 #include "ui/events/events_export.h"
 
 namespace ui {
@@ -16,6 +17,7 @@ namespace ui {
 // This is used mainly as a conveyor of Java event object.
 class EVENTS_EXPORT KeyEventAndroid {
  public:
+  KeyEventAndroid(JNIEnv* env, jobject event);
   KeyEventAndroid(JNIEnv* env, jobject event, int key_code);
 
   KeyEventAndroid(const KeyEventAndroid&) = delete;
@@ -25,6 +27,11 @@ class EVENTS_EXPORT KeyEventAndroid {
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const;
   int key_code() const { return key_code_; }
+
+  // Converts the event to the cross-platform key event.
+  // TODO(crbug.com/417078839): Update PlatformEvent to be a union-ish type that
+  // can be a KeyEventAndroid and allow direct conversion of it to the KeyEvent.
+  KeyEvent ToKeyEvent() const;
 
  private:
   // The Java reference to the key event.

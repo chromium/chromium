@@ -123,13 +123,6 @@ component("events_base") {
     "pointer_details.h",
   ]
 
-  if (is_android) {
-    sources += [
-      "keycodes/keyboard_code_conversion_android.cc",
-      "keycodes/keyboard_code_conversion_android.h",
-    ]
-  }
-
   if (is_win) {
     sources += [
       "keycodes/keyboard_code_conversion_win.cc",
@@ -151,6 +144,16 @@ component("events_base") {
     "//ui/events/types:headers",
     "//ui/gfx/geometry",
   ]
+
+  if (is_android) {
+    sources += [
+      "android/event_flags_android.cc",
+      "android/event_flags_android.h",
+      "keycodes/keyboard_code_conversion_android.cc",
+      "keycodes/keyboard_code_conversion_android.h",
+    ]
+    deps += [ ":motionevent_jni_headers" ]
+  }
 
   if (is_mac) {
     sources += [

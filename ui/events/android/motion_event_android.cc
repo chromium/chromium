@@ -17,7 +17,9 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/numerics/angle_conversions.h"
+#include "event_flags_android.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/events/android/event_flags_android.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
@@ -115,35 +117,8 @@ int FromAndroidButtonState(int button_state) {
 }
 
 int ToEventFlags(int meta_state, int button_state) {
-  int flags = ui::EF_NONE;
-
-  if ((meta_state & AMETA_SHIFT_ON) != 0)
-    flags |= ui::EF_SHIFT_DOWN;
-  if ((meta_state & AMETA_CTRL_ON) != 0)
-    flags |= ui::EF_CONTROL_DOWN;
-  if ((meta_state & AMETA_ALT_ON) != 0)
-    flags |= ui::EF_ALT_DOWN;
-  if ((meta_state & AMETA_META_ON) != 0)
-    flags |= ui::EF_COMMAND_DOWN;
-  if ((meta_state & AMETA_CAPS_LOCK_ON) != 0)
-    flags |= ui::EF_CAPS_LOCK_ON;
-
-  if ((button_state & JNI_MotionEvent::BUTTON_BACK) != 0)
-    flags |= ui::EF_BACK_MOUSE_BUTTON;
-  if ((button_state & JNI_MotionEvent::BUTTON_FORWARD) != 0)
-    flags |= ui::EF_FORWARD_MOUSE_BUTTON;
-  if ((button_state & JNI_MotionEvent::BUTTON_PRIMARY) != 0)
-    flags |= ui::EF_LEFT_MOUSE_BUTTON;
-  if ((button_state & JNI_MotionEvent::BUTTON_SECONDARY) != 0)
-    flags |= ui::EF_RIGHT_MOUSE_BUTTON;
-  if ((button_state & JNI_MotionEvent::BUTTON_TERTIARY) != 0)
-    flags |= ui::EF_MIDDLE_MOUSE_BUTTON;
-  if ((button_state & JNI_MotionEvent::BUTTON_STYLUS_PRIMARY) != 0)
-    flags |= ui::EF_LEFT_MOUSE_BUTTON;
-  if ((button_state & JNI_MotionEvent::BUTTON_STYLUS_SECONDARY) != 0)
-    flags |= ui::EF_RIGHT_MOUSE_BUTTON;
-
-  return flags;
+  return EventFlagsFromAndroidMetaState(meta_state) |
+         EventFlagsFromAndroidButtonState(button_state);
 }
 
 size_t ToValidHistorySize(jint history_size, ui::MotionEvent::Action action) {
