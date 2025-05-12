@@ -6204,6 +6204,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5574" label="CredentialsGetImmediateMediationPasswordSuccess"/>
   <int value="5575" label="CredentialsGetImmediateMediationPublicKeySuccess"/>
   <int value="5576" label="CredentialsGetImmediateMediationFailure"/>
+  <int value="5577" label="ClearSiteData"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -8226,6 +8227,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="336" label="OverflowClip"/>
   <int value="337" label="LightDark"/>
   <int value="338" label="Requestidlecallback"/>
+  <int value="339" label="ClearSiteData"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

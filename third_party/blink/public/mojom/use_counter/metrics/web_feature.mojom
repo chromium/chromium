@@ -4878,6 +4878,7 @@ enum WebFeature {
   kCredentialsGetImmediateMediationPasswordSuccess = 5574,
   kCredentialsGetImmediateMediationPublicKeySuccess = 5575,
   kCredentialsGetImmediateMediationFailure = 5576,
+  kClearSiteData = 5577,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

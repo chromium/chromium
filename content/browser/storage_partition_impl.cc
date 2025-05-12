@@ -164,6 +164,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-shared.h"
 #include "third_party/blink/public/mojom/private_network_device/private_network_device.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "url/scheme_host_port.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -2624,6 +2625,9 @@ void StoragePartitionImpl::OnClearSiteData(
       url_loader_network_observers_.current_context().GetWebContents();
   if (web_contents) {
     weak_web_contents = web_contents->GetWeakPtr();
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        web_contents->GetPrimaryMainFrame(),
+        blink::mojom::WebFeature::kClearSiteData);
   }
 
   std::optional<blink::StorageKey> storage_key = CalculateStorageKey(
