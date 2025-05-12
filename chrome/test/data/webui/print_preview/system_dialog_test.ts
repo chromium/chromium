@@ -42,7 +42,7 @@ suite('SystemDialogTest', function() {
 
     const page = document.createElement('print-preview-app');
     document.body.appendChild(page);
-    sidebar = page.shadowRoot!.querySelector('print-preview-sidebar')!;
+    sidebar = page.shadowRoot.querySelector('print-preview-sidebar')!;
     return Promise
         .all([
           waitBeforeNextRender(page),

@@ -5,6 +5,7 @@
 import type {NativeInitialSettings, PreviewTicket, PrintPreviewAppElement, PrintPreviewDestinationSettingsElement, Range, Settings} from 'chrome://print/print_preview.js';
 import {ColorMode, CustomMarginsOrientation, Destination, DestinationOrigin, Margins, MarginsType, NativeLayerImpl, PluginProxyImpl, ScalingType} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getCddTemplate, getDefaultInitialSettings} from './print_preview_test_utils.js';
@@ -150,7 +151,7 @@ suite('PreviewGenerationTest', function() {
    */
   test('CustomMargins', function() {
     return initialize()
-        .then(function(args) {
+        .then(async function(args) {
           const originalTicket: PreviewTicket = JSON.parse(args.printTicket);
           assertEquals(MarginsType.DEFAULT, originalTicket.marginsType);
           // Custom margins should not be set in the ticket.
@@ -159,10 +160,13 @@ suite('PreviewGenerationTest', function() {
 
           // This should do nothing.
           page.setSetting('margins', MarginsType.CUSTOM);
+          await microtasksFinished();
           // Sets only 1 side, not valid.
           page.setSetting('customMargins', {marginTop: 25});
+          await microtasksFinished();
           // 2 sides, still not valid.
           page.setSetting('customMargins', {marginTop: 25, marginRight: 40});
+          await microtasksFinished();
           // This should trigger a preview.
           nativeLayer.resetResolver('getPreview');
           page.setSetting('customMargins', {
@@ -173,7 +177,7 @@ suite('PreviewGenerationTest', function() {
           });
           return nativeLayer.whenCalled('getPreview');
         })
-        .then(function(args) {
+        .then(async function(args) {
           const ticket: PreviewTicket = JSON.parse(args.printTicket);
           assertEquals(MarginsType.CUSTOM, ticket.marginsType);
           assertEquals(25, ticket.marginsCustom!.marginTop);
@@ -184,7 +188,9 @@ suite('PreviewGenerationTest', function() {
           page.setSetting('margins', MarginsType.DEFAULT);
           // Set setting to something invalid and then set margins to CUSTOM.
           page.setSetting('customMargins', {marginTop: 25, marginRight: 40});
+          await microtasksFinished();
           page.setSetting('margins', MarginsType.CUSTOM);
+          await microtasksFinished();
           nativeLayer.resetResolver('getPreview');
           page.setSetting('customMargins', {
             marginTop: 25,
@@ -561,9 +567,8 @@ suite('PreviewGenerationTest', function() {
         .then(function(args) {
           const originalTicket: PreviewTicket = JSON.parse(args.printTicket);
           destinationSettings =
-              page.shadowRoot!.querySelector('print-preview-sidebar')!
-                  .shadowRoot.querySelector(
-                      'print-preview-destination-settings')!;
+              page.shadowRoot.querySelector('print-preview-sidebar')!.shadowRoot
+                  .querySelector('print-preview-destination-settings')!;
           assertTrue(!!destinationSettings.destination);
           assertEquals('FooDevice', destinationSettings.destination.id);
           assertEquals('FooDevice', originalTicket.deviceName);
@@ -636,7 +641,9 @@ suite('PreviewGenerationTest', function() {
         assertMarginsFooter(ticket, 0, MarginsType.DEFAULT, true);
 
         // After getting the new layout, a second request should have been
-        // sent.
+        // sent. Need to wait for a cycle since the 2nd request is issued
+        // asynchronously in app.ts.
+        await microtasksFinished();
         assertEquals(2, nativeLayer.getCallCount('getPreview'));
         assertEquals(MarginsType.DEFAULT, page.getSettingValue('margins'));
         assertFalse(page.getSettingValue('headerFooter'));
@@ -645,7 +652,7 @@ suite('PreviewGenerationTest', function() {
         // have the same settings as the original (headers and footers
         // should have been turned off).
         const previewArea =
-            page.shadowRoot!.querySelector('print-preview-preview-area')!;
+            page.shadowRoot.querySelector('print-preview-preview-area')!;
         assertMarginsFooter(
             previewArea.getLastTicketForTest()!, 1, MarginsType.DEFAULT, false);
         nativeLayer.resetResolver('getPreview');

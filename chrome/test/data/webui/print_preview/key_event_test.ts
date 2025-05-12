@@ -70,7 +70,7 @@ suite('KeyEventTest', function() {
   test('EnterOnInputTriggersPrint', function() {
     const whenPrintCalled = nativeLayer.whenCalled('doPrint');
     keyEventOn(
-        page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot
+        page.shadowRoot.querySelector('print-preview-sidebar')!.shadowRoot
             .querySelector('print-preview-copies-settings')!.shadowRoot
             .querySelector('print-preview-number-settings-section')!.shadowRoot
             .querySelector('cr-input')!.inputElement,
@@ -84,7 +84,7 @@ suite('KeyEventTest', function() {
       'EnterOnDropdownDoesNotPrint', function() {
         const whenKeyEventFired = eventToPromise('keydown', page);
         keyEventOn(
-            page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot
+            page.shadowRoot.querySelector('print-preview-sidebar')!.shadowRoot
                 .querySelector('print-preview-layout-settings')!.shadowRoot
                 .querySelector<HTMLSelectElement>('.md-select')!,
             'keydown', 0, [], 'Enter');
@@ -96,11 +96,11 @@ suite('KeyEventTest', function() {
   // comes from a button.
   test('EnterOnButtonDoesNotPrint', async () => {
     const moreSettingsElement =
-        page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot
+        page.shadowRoot.querySelector('print-preview-sidebar')!.shadowRoot
             .querySelector('print-preview-more-settings')!;
     moreSettingsElement.$.label.click();
     const button =
-        page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot
+        page.shadowRoot.querySelector('print-preview-sidebar')!.shadowRoot
             .querySelector('print-preview-advanced-options-settings')!
             .shadowRoot!.querySelector('cr-button')!;
     const whenKeyEventFired = eventToPromise('keydown', button);
@@ -115,12 +115,12 @@ suite('KeyEventTest', function() {
   test(
       'EnterOnCheckboxDoesNotPrint', function() {
         const moreSettingsElement =
-            page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot
+            page.shadowRoot.querySelector('print-preview-sidebar')!.shadowRoot
                 .querySelector('print-preview-more-settings')!;
         moreSettingsElement.$.label.click();
         const whenKeyEventFired = eventToPromise('keydown', page);
         keyEventOn(
-            page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot
+            page.shadowRoot.querySelector('print-preview-sidebar')!.shadowRoot
                 .querySelector('print-preview-other-options-settings')!
                 .shadowRoot.querySelector('cr-checkbox')!,
             'keydown', 0, [], 'Enter');

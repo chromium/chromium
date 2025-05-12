@@ -4,9 +4,8 @@
 </print-preview-header>
 <div id="container" show-bottom-shadow>
   <print-preview-destination-settings id="destinationSettings"
-      ?dark="${this.inDarkMode}" .destination="${this.destination}"
+      ?dark="${this.inDarkMode}"
       @destination-changed="${this.onDestinationChanged_}"
-      destination-state="${this.destinationState}"
       @destination-state-changed="${this.onDestinationStateChanged_}"
       error="${this.error}" @error-changed="${this.onErrorChanged_}"
       ?first-load="${this.firstLoad_}"

@@ -29,23 +29,25 @@ suite('RestoreStateTest', function() {
   function verifyStickySettingsApplied(stickySettings: SerializedSettings) {
     assertEquals(
         stickySettings.dpi!.horizontal_dpi,
-        page.settings.dpi.value.horizontal_dpi);
+        page.getSetting('dpi').value.horizontal_dpi);
     assertEquals(
-        stickySettings.dpi!.vertical_dpi, page.settings.dpi.value.vertical_dpi);
+        stickySettings.dpi!.vertical_dpi,
+        page.getSetting('dpi').value.vertical_dpi);
     assertEquals(
-        stickySettings.mediaSize!.name, page.settings.mediaSize.value.name);
+        stickySettings.mediaSize!.name,
+        page.getSetting('mediaSize').value.name);
     assertEquals(
         stickySettings.mediaSize!.height_microns,
-        page.settings.mediaSize.value.height_microns);
+        page.getSetting('mediaSize').value.height_microns);
     assertEquals(
         stickySettings.mediaSize!.width_microns,
-        page.settings.mediaSize.value.width_microns);
+        page.getSetting('mediaSize').value.width_microns);
     assertEquals(
         (stickySettings.vendorOptions! as {[key: string]: any})['paperType'],
-        page.settings.vendorItems.value.paperType);
+        page.getSetting('vendorItems').value.paperType);
     assertEquals(
         (stickySettings.vendorOptions! as {[key: string]: any})['printArea'],
-        page.settings.vendorItems.value.printArea);
+        page.getSetting('vendorItems').value.printArea);
 
     ([
       ['margins', 'marginsType'],
@@ -61,7 +63,7 @@ suite('RestoreStateTest', function() {
         .forEach(keys => {
           assertEquals(
               (stickySettings as {[key: string]: any})[keys[1]],
-              page.settings[keys[0]].value);
+              page.getSetting(keys[0]).value);
         });
   }
 
@@ -302,7 +304,7 @@ suite('RestoreStateTest', function() {
       // production, just use the model instead of creating the dialog.
       const element = testValue.settingName === 'vendorItems' ?
           getInstance() :
-          page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot
+          page.shadowRoot.querySelector('print-preview-sidebar')!.shadowRoot
               .querySelector<SettingsMixinInterface&HTMLElement>(
                   testValue.section)!;
       element.setSetting(testValue.settingName, testValue.value);

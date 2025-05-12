@@ -99,13 +99,13 @@ suite('PolicyTest', function() {
 
   function toggleMoreSettings() {
     const moreSettingsElement =
-        page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot
+        page.shadowRoot.querySelector('print-preview-sidebar')!.shadowRoot
             .querySelector('print-preview-more-settings')!;
     moreSettingsElement.$.label.click();
   }
 
   function getCheckbox(settingName: string): CrCheckboxElement {
-    return page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot
+    return page.shadowRoot.querySelector('print-preview-sidebar')!.shadowRoot
         .querySelector('print-preview-other-options-settings')!.shadowRoot
         .querySelector<CrCheckboxElement>(`#${settingName}`)!;
   }
@@ -246,7 +246,7 @@ suite('PolicyTest', function() {
       }]);
       toggleMoreSettings();
       const mediaSettingsSelect =
-          page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot
+          page.shadowRoot.querySelector('print-preview-sidebar')!.shadowRoot
               .querySelector('print-preview-media-size-settings')!.shadowRoot
               .querySelector('print-preview-settings-select')!.shadowRoot
               .querySelector('select')!;

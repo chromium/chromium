@@ -85,7 +85,7 @@ suite('InvalidSettingsTest', function() {
         previewAreaEl.shadowRoot.querySelector('.preview-area-overlay-layer')!;
     const messageEl =
         previewAreaEl.shadowRoot.querySelector('.preview-area-message')!;
-    const sidebar = page.shadowRoot!.querySelector('print-preview-sidebar')!;
+    const sidebar = page.shadowRoot.querySelector('print-preview-sidebar')!;
     let printButton: CrButtonElement;
     const destinationSettings =
         sidebar.shadowRoot.querySelector('print-preview-destination-settings')!;

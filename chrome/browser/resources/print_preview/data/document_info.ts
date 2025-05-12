@@ -34,6 +34,19 @@ export interface PageLayoutInfo {
   printableAreaHeight: number;
 }
 
+export function createDocumentSettings(): DocumentSettings {
+  return {
+    allPagesHaveCustomSize: false,
+    allPagesHaveCustomOrientation: false,
+    hasSelection: false,
+    isModifiable: true,
+    isScalingDisabled: false,
+    fitToPageScaling: 100,
+    pageCount: 0,
+    title: '',
+  };
+}
+
 const PrintPreviewDocumentInfoElementBase = WebUiListenerMixin(PolymerElement);
 
 export class PrintPreviewDocumentInfoElement extends
@@ -47,18 +60,7 @@ export class PrintPreviewDocumentInfoElement extends
       documentSettings: {
         type: Object,
         notify: true,
-        value() {
-          return {
-            allPagesHaveCustomSize: false,
-            allPagesHaveCustomOrientation: false,
-            hasSelection: false,
-            isModifiable: true,
-            isScalingDisabled: false,
-            fitToPageScaling: 100,
-            pageCount: 0,
-            title: '',
-          };
-        },
+        value: () => createDocumentSettings(),
       },
 
       inFlightRequestId: {
@@ -120,14 +122,27 @@ export class PrintPreviewDocumentInfoElement extends
                 allPagesHaveCustomOrientation));
   }
 
+  // Whenever documentSettings needs to be modified need to use
+  // cloneAndModify_(), which implements the immutable data pattern, because
+  // modifying in-place will not trigger Lit observers.
+  private cloneAndModify_(
+      callback: (documentSettings: DocumentSettings) => void) {
+    const clone = structuredClone(this.documentSettings);
+    callback(clone);
+    this.documentSettings = clone;
+  }
+
   /**
    * Initializes the state of the data model.
    */
   init(isModifiable: boolean, title: string, hasSelection: boolean) {
     this.isInitialized_ = true;
-    this.set('documentSettings.isModifiable', isModifiable);
-    this.set('documentSettings.title', title);
-    this.set('documentSettings.hasSelection', hasSelection);
+
+    this.cloneAndModify_(documentSettings => {
+      documentSettings.isModifiable = isModifiable;
+      documentSettings.title = title;
+      documentSettings.hasSelection = hasSelection;
+    });
   }
 
   /**
@@ -135,7 +150,9 @@ export class PrintPreviewDocumentInfoElement extends
    */
   updateIsScalingDisabled(isScalingDisabled: boolean) {
     if (this.isInitialized_) {
-      this.set('documentSettings.isScalingDisabled', isScalingDisabled);
+      this.cloneAndModify_(documentSettings => {
+        documentSettings.isScalingDisabled = isScalingDisabled;
+      });
     }
   }
 
@@ -174,11 +191,11 @@ export class PrintPreviewDocumentInfoElement extends
     if (this.isInitialized_) {
       this.printableArea = new PrintableArea(origin, size);
       this.pageSize = pageSize;
-      this.set(
-          'documentSettings.allPagesHaveCustomSize', allPagesHaveCustomSize);
-      this.set(
-          'documentSettings.allPagesHaveCustomOrientation',
-          allPagesHaveCustomOrientation);
+      this.cloneAndModify_(documentSettings => {
+        documentSettings.allPagesHaveCustomSize = allPagesHaveCustomSize;
+        documentSettings.allPagesHaveCustomOrientation =
+            allPagesHaveCustomOrientation;
+      });
       this.margins = margins;
     }
   }
@@ -195,8 +212,11 @@ export class PrintPreviewDocumentInfoElement extends
     if (this.inFlightRequestId !== previewResponseId || !this.isInitialized_) {
       return;
     }
-    this.set('documentSettings.pageCount', pageCount);
-    this.set('documentSettings.fitToPageScaling', fitToPageScaling);
+
+    this.cloneAndModify_(documentSettings => {
+      documentSettings.pageCount = pageCount;
+      documentSettings.fitToPageScaling = fitToPageScaling;
+    });
   }
 }
 

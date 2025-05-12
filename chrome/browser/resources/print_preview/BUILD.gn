@@ -91,6 +91,7 @@ build_webui("build") {
     "ui/advanced_options_settings.css",
     "ui/advanced_settings_dialog.css",
     "ui/advanced_settings_item.css",
+    "ui/app.css",
     "ui/button_strip.css",
     "ui/copies_settings.css",
     "ui/destination_dialog.css",

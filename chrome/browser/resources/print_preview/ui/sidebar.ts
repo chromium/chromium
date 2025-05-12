@@ -120,7 +120,7 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
   }
 
   accessor controlsManaged: boolean;
-  accessor destination: Destination|null;
+  accessor destination: Destination|null = null;
   accessor destinationCapabilities_: Cdd|null;
   accessor destinationState: DestinationState;
   accessor error: Error;
