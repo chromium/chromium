@@ -32,29 +32,9 @@
 
 namespace web_app {
 
-namespace {
+using SessionType = IwaCacheClient::SessionType;
 
-using base::test::TestFuture;
-using Bundle = IwaCacheClient::CachedBundleData;
-using base::test::ErrorIs;
-using base::test::ValueIs;
-using testing::Field;
-using web_package::SignedWebBundleId;
-
-const SignedWebBundleId kBundleId = test::GetDefaultEd25519WebBundleId();
-const base::Version kVersion1 = base::Version("0.0.1");
-const base::Version kVersion2 = base::Version("0.0.2");
-const base::Version kVersion3 = base::Version("0.0.3");
-const base::Version kVersion4 = base::Version("1.0.0");
-
-}  // namespace
-
-enum SessionType {
-  kMgs = 0,
-  kKiosk = 1,
-  kUser = 2,
-};
-
+// TODO(crbug.com/416006853): refactor tests to cover static functions.
 class IwaCacheClientTest : public ::testing::TestWithParam<SessionType> {
  public:
   IwaCacheClientTest() = default;
@@ -67,66 +47,25 @@ class IwaCacheClientTest : public ::testing::TestWithParam<SessionType> {
         std::make_unique<user_manager::FakeUserManager>(local_state_.Get()));
 
     switch (GetSessionType()) {
-      case kMgs:
+      case SessionType::kKiosk:
+        chromeos::SetUpFakeKioskSession();
+        break;
+      case SessionType::kManagedGuestSession:
         test_managed_guest_session_ = std::make_unique<
             profiles::testing::ScopedTestManagedGuestSession>();
         break;
-      case kKiosk:
-        chromeos::SetUpFakeKioskSession();
-        break;
-      case kUser:
-        NOTREACHED();
     }
 
     ASSERT_TRUE(cache_root_dir_.CreateUniqueTempDir());
     cache_root_dir_override_ = std::make_unique<base::ScopedPathOverride>(
         ash::DIR_DEVICE_LOCAL_ACCOUNT_IWA_CACHE, cache_root_dir_.GetPath());
-
-    // `IwaCacheClient` should be created after kiosk or MGS setup.
-    cache_client_ = std::make_unique<IwaCacheClient>();
-  }
-
-  IwaCacheClient* cache_client() { return cache_client_.get(); }
-
-  base::FilePath CreateBundleInCacheDir(const SignedWebBundleId& bundle_id,
-                                        const base::Version& version) {
-    base::FilePath bundle_directory_path =
-        GetBundleDirWithVersion(bundle_id, version);
-    EXPECT_TRUE(base::CreateDirectory(bundle_directory_path));
-
-    base::FilePath temp_file;
-    EXPECT_TRUE(base::CreateTemporaryFileInDir(CacheRootPath(), &temp_file));
-
-    base::FilePath bundle_path =
-        bundle_directory_path.AppendASCII(kMainSwbnFileName);
-    EXPECT_TRUE(base::CopyFile(temp_file, bundle_path));
-    return bundle_path;
-  }
-
- private:
-  base::FilePath GetBundleDirWithVersion(const SignedWebBundleId& bundle_id,
-                                         const base::Version& version) {
-    base::FilePath bundle_directory_path = CacheRootPath();
-    switch (GetSessionType()) {
-      case SessionType::kMgs:
-        bundle_directory_path =
-            bundle_directory_path.AppendASCII(IwaCacheClient::kMgsDirName);
-        break;
-      case SessionType::kKiosk:
-        bundle_directory_path =
-            bundle_directory_path.AppendASCII(IwaCacheClient::kKioskDirName);
-        break;
-      case kUser:
-        NOTREACHED() << "Caching is not supported in user session";
-    }
-    return bundle_directory_path.AppendASCII(bundle_id.id())
-        .AppendASCII(version.GetString());
   }
 
   const base::FilePath& CacheRootPath() { return cache_root_dir_.GetPath(); }
 
   SessionType GetSessionType() { return GetParam(); }
 
+ private:
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kIsolatedWebAppBundleCache};
   ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
@@ -135,201 +74,10 @@ class IwaCacheClientTest : public ::testing::TestWithParam<SessionType> {
   user_manager::ScopedUserManager user_manager_;
   base::ScopedTempDir cache_root_dir_;
   std::unique_ptr<base::ScopedPathOverride> cache_root_dir_override_;
-  std::unique_ptr<IwaCacheClient> cache_client_;
 
   // This is set only for MGS session.
   std::unique_ptr<profiles::testing::ScopedTestManagedGuestSession>
       test_managed_guest_session_;
 };
-
-TEST_P(IwaCacheClientTest, NoCachedPathToFetch) {
-  TestFuture<std::optional<Bundle>> bundle_future;
-  cache_client()->GetCacheFilePath(kBundleId,
-                                   /*version=*/std::nullopt,
-                                   bundle_future.GetCallback());
-
-  EXPECT_FALSE(bundle_future.Get());
-}
-
-TEST_P(IwaCacheClientTest, GetCachedPathWithRequiredVersion) {
-  base::FilePath bundle_path = CreateBundleInCacheDir(kBundleId, kVersion1);
-
-  TestFuture<std::optional<Bundle>> bundle_future;
-  cache_client()->GetCacheFilePath(kBundleId, kVersion1,
-                                   bundle_future.GetCallback());
-
-  EXPECT_EQ(bundle_future.Get()->path, bundle_path);
-  EXPECT_EQ(bundle_future.Get()->version, kVersion1);
-}
-
-TEST_P(IwaCacheClientTest, NoCachedPathWhenVersionNotCached) {
-  base::FilePath bundle_path = CreateBundleInCacheDir(kBundleId, kVersion1);
-
-  TestFuture<std::optional<Bundle>> bundle_future;
-  cache_client()->GetCacheFilePath(kBundleId, kVersion2,
-                                   bundle_future.GetCallback());
-
-  EXPECT_FALSE(bundle_future.Get());
-}
-
-TEST_P(IwaCacheClientTest, GetCachedPathNoVersionProvided) {
-  base::FilePath bundle_path = CreateBundleInCacheDir(kBundleId, kVersion1);
-
-  TestFuture<std::optional<Bundle>> bundle_future;
-  cache_client()->GetCacheFilePath(kBundleId, /*version=*/std::nullopt,
-                                   bundle_future.GetCallback());
-
-  EXPECT_EQ(bundle_future.Get()->path, bundle_path);
-  EXPECT_EQ(bundle_future.Get()->version, kVersion1);
-}
-
-TEST_P(IwaCacheClientTest, GetNewestVersionWhenVersionNotProvided) {
-  base::FilePath bundle_path_v1 = CreateBundleInCacheDir(kBundleId, kVersion1);
-  base::FilePath bundle_path_v3 = CreateBundleInCacheDir(kBundleId, kVersion3);
-  base::FilePath bundle_path_v2 = CreateBundleInCacheDir(kBundleId, kVersion2);
-  base::FilePath bundle_path_v4 = CreateBundleInCacheDir(kBundleId, kVersion4);
-
-  TestFuture<std::optional<Bundle>> bundle_future;
-  cache_client()->GetCacheFilePath(kBundleId, /*version=*/std::nullopt,
-                                   bundle_future.GetCallback());
-
-  EXPECT_EQ(bundle_future.Get()->path, bundle_path_v4);
-  EXPECT_EQ(bundle_future.Get()->version, kVersion4);
-}
-
-TEST_P(IwaCacheClientTest, GetCorrectVersion) {
-  base::FilePath bundle_path_v2 = CreateBundleInCacheDir(kBundleId, kVersion2);
-  base::FilePath bundle_path_v1 = CreateBundleInCacheDir(kBundleId, kVersion1);
-  base::FilePath bundle_path_v3 = CreateBundleInCacheDir(kBundleId, kVersion3);
-
-  TestFuture<std::optional<Bundle>> bundle_future;
-  cache_client()->GetCacheFilePath(kBundleId, kVersion1,
-                                   bundle_future.GetCallback());
-
-  EXPECT_EQ(bundle_future.Get()->path, bundle_path_v1);
-  EXPECT_EQ(bundle_future.Get()->version, kVersion1);
-}
-
-TEST_P(IwaCacheClientTest, GetCorrectBundle) {
-  SignedWebBundleId web_bundle_id2 = test::GetDefaultEcdsaP256WebBundleId();
-
-  base::FilePath bundle_path1 = CreateBundleInCacheDir(kBundleId, kVersion1);
-  base::FilePath bundle_path2 =
-      CreateBundleInCacheDir(web_bundle_id2, kVersion1);
-
-  TestFuture<std::optional<Bundle>> bundle_future;
-  cache_client()->GetCacheFilePath(web_bundle_id2, kVersion1,
-                                   bundle_future.GetCallback());
-
-  EXPECT_EQ(bundle_future.Get()->path, bundle_path2);
-  EXPECT_EQ(bundle_future.Get()->version, kVersion1);
-}
-
-TEST_P(IwaCacheClientTest, IncorrectVersionParsed) {
-  base::FilePath bundle_path1 =
-      CreateBundleInCacheDir(kBundleId, base::Version("aaaaa"));
-
-  TestFuture<std::optional<Bundle>> bundle_future;
-  cache_client()->GetCacheFilePath(kBundleId, /*version=*/std::nullopt,
-                                   bundle_future.GetCallback());
-
-  EXPECT_FALSE(bundle_future.Get());
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    IwaCacheClientTest,
-    testing::Values(kMgs, kKiosk));
-
-struct IwaCacheClientDeathTestParam {
-  SessionType session_type;
-  bool feature_enabled;
-  bool should_crash;
-};
-
-class IwaCacheClientDeathTest
-    : public ::testing::TestWithParam<IwaCacheClientDeathTestParam> {
- public:
-  IwaCacheClientDeathTest() {
-    if (GetParam().feature_enabled) {
-      scoped_feature_list_.InitAndEnableFeature(
-          {features::kIsolatedWebAppBundleCache});
-    }
-  }
-  IwaCacheClientDeathTest(const IwaCacheClientDeathTest&) = delete;
-  IwaCacheClientDeathTest& operator=(const IwaCacheClientDeathTest&) = delete;
-  ~IwaCacheClientDeathTest() override = default;
-
-  void SetUp() override {
-    user_manager_.Reset(
-        std::make_unique<user_manager::FakeUserManager>(local_state_.Get()));
-
-    switch (GetParam().session_type) {
-      case kMgs:
-        test_managed_guest_session_ = std::make_unique<
-            profiles::testing::ScopedTestManagedGuestSession>();
-        break;
-      case kKiosk:
-        chromeos::SetUpFakeKioskSession();
-        break;
-      case kUser:
-        break;
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
-  user_manager::ScopedUserManager user_manager_;
-
-  // This is set only for MGS session.
-  std::unique_ptr<profiles::testing::ScopedTestManagedGuestSession>
-      test_managed_guest_session_;
-};
-
-TEST_P(IwaCacheClientDeathTest, CreateClient) {
-  if (GetParam().should_crash) {
-    EXPECT_DEATH(IwaCacheClient(), "");
-  } else {
-    IwaCacheClient();
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    IwaCacheClientDeathTest,
-    testing::ValuesIn(std::vector<IwaCacheClientDeathTestParam>{
-        {
-            .session_type = kMgs,
-            .feature_enabled = true,
-            .should_crash = false,
-        },
-        {
-            .session_type = kKiosk,
-            .feature_enabled = true,
-            .should_crash = false,
-        },
-        {
-            .session_type = kMgs,
-            .feature_enabled = false,
-            .should_crash = true,
-        },
-        {
-            .session_type = kKiosk,
-            .feature_enabled = false,
-            .should_crash = true,
-        },
-        {
-            .session_type = kUser,
-            .feature_enabled = true,
-            .should_crash = true,
-        },
-        {
-            .session_type = kUser,
-            .feature_enabled = false,
-            .should_crash = true,
-        },
-    }));
 
 }  // namespace web_app

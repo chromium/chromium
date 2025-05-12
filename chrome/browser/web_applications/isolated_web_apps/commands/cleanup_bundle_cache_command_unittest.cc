@@ -16,7 +16,6 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
-#include "chrome/common/chrome_features.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -114,8 +113,6 @@ class CleanupBundleCacheCommandTest
   SessionType GetSessionType() { return GetParam(); }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kIsolatedWebAppBundleCache};
   base::ScopedTempDir cache_root_dir_;
   std::unique_ptr<base::ScopedPathOverride> cache_root_dir_override_;
 };

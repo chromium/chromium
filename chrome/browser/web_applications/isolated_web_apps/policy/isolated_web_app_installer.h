@@ -21,6 +21,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/isolated_web_apps/commands/copy_bundle_to_cache_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/get_bundle_cache_path_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -124,8 +125,7 @@ class IwaInstaller {
 
  private:
 #if BUILDFLAG(IS_CHROMEOS)
-  void OnGetCacheFilePath(
-      std::optional<IwaCacheClient::CachedBundleData> cached_bundle);
+  void OnBundleCachePathReceived(GetBundleCachePathResult result);
 
   // Installing of the IWA using the cached bundle.
   void InstallFromCache(const base::FilePath& cache_file,

@@ -26,6 +26,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/isolated_web_apps/commands/copy_bundle_to_cache_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/get_bundle_cache_path_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -181,10 +182,17 @@ void IwaInstaller::Start() {
     // Install IWA from cache if possible, otherwise install it from the
     // Internet.
     log_->Append(base::Value(u"looking for cached bundle"));
-    cache_client_->GetCacheFilePath(
-        install_options_.web_bundle_id(), install_options_.pinned_version(),
-        base::BindOnce(&IwaInstaller::OnGetCacheFilePath,
-                       weak_factory_.GetWeakPtr()));
+
+    IsolatedWebAppUrlInfo url_info =
+        IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+            install_options_.web_bundle_id());
+    CHECK_DEREF(provider_.get())
+        .scheduler()
+        .GetIsolatedWebAppBundleCachePath(
+            url_info, install_options_.pinned_version(),
+            IwaCacheClient::GetCurrentSessionType(),
+            base::BindOnce(&IwaInstaller::OnBundleCachePathReceived,
+                           weak_factory_.GetWeakPtr()));
     return;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -193,13 +201,12 @@ void IwaInstaller::Start() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-void IwaInstaller::OnGetCacheFilePath(
-    std::optional<IwaCacheClient::CachedBundleData> cached_bundle) {
-  if (cached_bundle) {
+void IwaInstaller::OnBundleCachePathReceived(GetBundleCachePathResult result) {
+  if (result.has_value()) {
     log_->Append(base::Value("cached bundle is available, version: " +
-                             cached_bundle->version.GetString() +
-                             ", path: " + cached_bundle->path.MaybeAsASCII()));
-    InstallFromCache(cached_bundle->path, cached_bundle->version);
+                             result->cached_version().GetString() + ", path: " +
+                             result->cached_bundle_path().MaybeAsASCII()));
+    InstallFromCache(result->cached_bundle_path(), result->cached_version());
     return;
   }
 

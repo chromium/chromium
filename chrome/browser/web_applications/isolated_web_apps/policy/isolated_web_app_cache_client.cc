@@ -28,97 +28,7 @@
 
 namespace web_app {
 
-namespace {
-
 using SessionType = IwaCacheClient::SessionType;
-
-base::FilePath GetBundleFullName(
-    const base::FilePath& cache_dir,
-    const web_package::SignedWebBundleId& web_bundle_id,
-    const base::Version& version) {
-  return IwaCacheClient::GetBundleFullName(
-      IwaCacheClient::GetCacheDirectoryForBundleWithVersion(
-          cache_dir, web_bundle_id, version));
-}
-
-// Expects the following bundle path:
-// "/var/cache/device_local_account_iwa/<mgs|kiosk>/<bundle_id>/<version>/" +
-//   "main.swbn"
-// Returns `std::nullopt` if version cannot be parsed.
-std::optional<base::Version> ExtractVersionFromCacheBundlePath(
-    const base::FilePath& file) {
-  static constexpr int kVersionOffsetInPath = 2;
-
-  std::vector<base::FilePath::StringType> components = file.GetComponents();
-  if (components.size() >= kVersionOffsetInPath &&
-      file.Extension() == ".swbn") {
-    base::Version version =
-        base::Version(components[components.size() - kVersionOffsetInPath]);
-    if (version.IsValid()) {
-      return version;
-    }
-  }
-  return std::nullopt;
-}
-
-// This function is blocking. It should be called by
-// `GetCacheFilePath`.
-std::optional<IwaCacheClient::CachedBundleData> GetCacheFilePathImpl(
-    const web_package::SignedWebBundleId& web_bundle_id,
-    const std::optional<base::Version>& version,
-    const base::FilePath& cache_dir) {
-  if (version) {
-    base::FilePath expected_file_path =
-        GetBundleFullName(cache_dir, web_bundle_id, version.value());
-    if (base::PathIsReadable(expected_file_path)) {
-      return IwaCacheClient::CachedBundleData(std::move(expected_file_path),
-                                              std::move(version.value()));
-    } else {
-      return std::nullopt;
-    }
-  }
-  // When `version` is not provided, take the latest cached version.
-  base::FilePath bundle_dir =
-      IwaCacheClient::GetCacheDirectoryForBundle(cache_dir, web_bundle_id);
-  base::FileEnumerator bundle_files_iter(bundle_dir, /*recursive=*/true,
-                                         base::FileEnumerator::FILES);
-
-  std::optional<base::FilePath> newest_version_path = std::nullopt;
-  std::optional<base::Version> newest_version = std::nullopt;
-  bundle_files_iter.ForEach([&newest_version_path, &newest_version](
-                                const base::FilePath& current_path) {
-    std::optional<base::Version> current_version =
-        ExtractVersionFromCacheBundlePath(current_path);
-
-    if (newest_version < current_version) {
-      newest_version = current_version;
-      newest_version_path = current_path;
-    }
-  });
-
-  if (!newest_version_path) {
-    return std::nullopt;
-  }
-
-  return IwaCacheClient::CachedBundleData(
-      std::move(newest_version_path.value()),
-      std::move(newest_version.value()));
-}
-
-base::FilePath GetIwaCacheDirectoryForCurrentSession(
-    const base::FilePath& base = base::PathService::CheckedGet(
-        ash::DIR_DEVICE_LOCAL_ACCOUNT_IWA_CACHE)) {
-  if (chromeos::IsKioskSession()) {
-    return IwaCacheClient::GetCacheBaseDirectoryForSessionType(
-        SessionType::kKiosk, base);
-  } else if (chromeos::IsManagedGuestSession()) {
-    return IwaCacheClient::GetCacheBaseDirectoryForSessionType(
-        SessionType::kManagedGuestSession, base);
-  }
-  NOTREACHED() << "Unsupported session type for IWA caching";
-}
-
-}  // namespace
 
 bool IsIwaBundleCacheEnabled() {
   return base::FeatureList::IsEnabled(features::kIsolatedWebAppBundleCache) &&
@@ -135,27 +45,6 @@ SessionType IwaCacheClient::GetCurrentSessionType() {
   }
   NOTREACHED()
       << "IwaCacheClient supports only kiosk and Managed Guest Session.";
-}
-
-IwaCacheClient::IwaCacheClient()
-    : cache_dir_(GetIwaCacheDirectoryForCurrentSession()) {
-  CHECK(IsIwaBundleCacheEnabled())
-      << "IwaCacheClient should only be created "
-         "inside mgs or kiosk sessions and when the feature is enabled";
-}
-
-void IwaCacheClient::GetCacheFilePath(
-    const web_package::SignedWebBundleId& web_bundle_id,
-    const std::optional<base::Version>& version,
-    base::OnceCallback<void(std::optional<CachedBundleData>)> callback) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&GetCacheFilePathImpl, web_bundle_id, version, cache_dir_),
-      std::move(callback));
-}
-
-void IwaCacheClient::SetCacheDirForTesting(const base::FilePath& cache_dir) {
-  cache_dir_ = GetIwaCacheDirectoryForCurrentSession(cache_dir);
 }
 
 // static

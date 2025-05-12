@@ -82,6 +82,8 @@ class CleanupBundleCacheSuccess;
 class CleanupBundleCacheError;
 class CopyBundleToCacheSuccess;
 enum class CopyBundleToCacheError;
+class GetBundleCachePathSuccess;
+enum class GetBundleCachePathError;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
@@ -303,7 +305,20 @@ class WebAppCommandScheduler {
       const base::Location& call_location = FROM_HERE);
 
 #if BUILDFLAG(IS_CHROMEOS)
-  //  Copies IWA bundle file to the cache for `session_type`.
+  // Schedules a command that gets IWA bundle path from cache for
+  // `session_type`. If `version` is not provided, returns the newest cached
+  // version.
+  void GetIsolatedWebAppBundleCachePath(
+      const IsolatedWebAppUrlInfo& url_info,
+      const std::optional<base::Version>& version,
+      IwaCacheClient::SessionType session_type,
+      base::OnceCallback<void(
+          base::expected<GetBundleCachePathSuccess, GetBundleCachePathError>)>
+          callback,
+      const base::Location& call_location = FROM_HERE);
+
+  //  Schedules a command that copies IWA bundle file to the cache for
+  //  `session_type`.
   void CopyIsolatedWebAppBundleToCache(
       const IsolatedWebAppUrlInfo& url_info,
       IwaCacheClient::SessionType session_type,
@@ -311,8 +326,8 @@ class WebAppCommandScheduler {
                                              CopyBundleToCacheError>)> callback,
       const base::Location& call_location = FROM_HERE);
 
-  // Cleans all IWA cached bundles for `session_type` which are not in the
-  // `iwas_to_keep_in_cache`.
+  //  Schedules a command that cleans all IWA cached bundles for `session_type`
+  //  which are not in the `iwas_to_keep_in_cache`.
   void CleanupIsolatedWebAppBundleCache(
       const std::vector<web_package::SignedWebBundleId>& iwas_to_keep_in_cache,
       IwaCacheClient::SessionType session_type,
@@ -337,7 +352,7 @@ class WebAppCommandScheduler {
           callback,
       const base::Location& location = FROM_HERE);
 
-  // Scheduler a command that installs a web app from sync.
+  // Schedules a command that installs a web app from sync.
   void InstallFromSync(const WebApp& web_app,
                        OnceInstallCallback callback,
                        const base::Location& location = FROM_HERE);

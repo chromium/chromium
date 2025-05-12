@@ -25,6 +25,8 @@ bool IsIwaBundleCacheEnabled();
 // This class should be used only when `IsIwaBundleCacheEnabled()` returns
 // true. This is checked in the constructor. This class can be created
 // multiple times even for the same IWA.
+// TODO(crbug.com/416006853): refactor this class, probably delete it and make
+// iwa_bundle_cache namespace instead.
 class IwaCacheClient {
  public:
   enum class SessionType {
@@ -34,30 +36,10 @@ class IwaCacheClient {
 
   static SessionType GetCurrentSessionType();
 
-  struct CachedBundleData {
-    base::FilePath path;
-    base::Version version;
-  };
-
-  IwaCacheClient();
+  IwaCacheClient() = default;
   IwaCacheClient(const IwaCacheClient&) = delete;
   IwaCacheClient& operator=(const IwaCacheClient&) = delete;
   ~IwaCacheClient() = default;
-
-  // Calls `callback` with the path of the cached bundle and it's version.
-  // If the IWA is not cached, returns `std::nullopt`.
-  // `version` may be empty, which means the function returns the bundle path
-  // with the newest cached version.
-  // If `version` is provided, return the bundle with specified version. If this
-  // version is not cached, returns `std::nullopt`.
-  void GetCacheFilePath(
-      const web_package::SignedWebBundleId& web_bundle_id,
-      const std::optional<base::Version>& version,
-      base::OnceCallback<void(std::optional<CachedBundleData>)> callback);
-
-  // TODO(crbug.com/392069400): clean cache for old IWA versions.
-
-  void SetCacheDirForTesting(const base::FilePath& cache_dir);
 
   static base::FilePath GetCacheBaseDirectoryForSessionType(
       IwaCacheClient::SessionType session_type,
@@ -80,9 +62,6 @@ class IwaCacheClient {
 
   static constexpr base::FilePath::CharType kMgsDirName[] = "mgs";
   static constexpr base::FilePath::CharType kKioskDirName[] = "kiosk";
-
- private:
-  base::FilePath cache_dir_;
 };
 
 }  // namespace web_app
