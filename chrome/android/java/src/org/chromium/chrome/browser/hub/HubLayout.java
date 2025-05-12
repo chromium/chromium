@@ -502,8 +502,11 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         // Immediately start any pending animations.
         mHubController.getContainerView().runOnNextLayoutRunnables();
 
-        // Force the animation to run to completion.
-        mCurrentAnimationRunner.forceAnimationToFinish();
+        // #runOnNextLayoutRunnables() may have set this to null.
+        if (mCurrentAnimationRunner != null) {
+            // Force the animation to run to completion.
+            mCurrentAnimationRunner.forceAnimationToFinish();
+        }
         mCurrentAnimationRunner = null;
 
         if (mScrimController != null) {
