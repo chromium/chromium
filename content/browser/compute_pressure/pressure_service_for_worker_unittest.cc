@@ -33,10 +33,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager.mojom.h"
+#include "third_party/blink/public/mojom/compute_pressure/web_pressure_update.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
 
+using blink::mojom::WebPressureUpdate;
 using device::mojom::PressureManagerAddClientResult;
 using device::mojom::PressureSource;
 using device::mojom::PressureState;
@@ -45,7 +47,7 @@ using device::mojom::PressureUpdate;
 namespace {
 
 // Test double for PressureClient that records all updates.
-class FakePressureClient : public device::mojom::PressureClient {
+class FakePressureClient : public blink::mojom::WebPressureClient {
  public:
   FakePressureClient() : associated_receiver_(this) {}
   ~FakePressureClient() override {
@@ -55,8 +57,8 @@ class FakePressureClient : public device::mojom::PressureClient {
   FakePressureClient(const FakePressureClient&) = delete;
   FakePressureClient& operator=(const FakePressureClient&) = delete;
 
-  // device::mojom::PressureClient implementation.
-  void OnPressureUpdated(device::mojom::PressureUpdatePtr state) override {
+  // blink::mojom::WebPressureClient implementation.
+  void OnPressureUpdated(blink::mojom::WebPressureUpdatePtr state) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     updates_.push_back(*state);
@@ -66,7 +68,7 @@ class FakePressureClient : public device::mojom::PressureClient {
     }
   }
 
-  std::vector<PressureUpdate>& updates() {
+  std::vector<WebPressureUpdate>& updates() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return updates_;
   }
@@ -97,19 +99,19 @@ class FakePressureClient : public device::mojom::PressureClient {
     run_loop.Run();
   }
 
-  mojo::AssociatedReceiver<device::mojom::PressureClient>& receiver() {
+  mojo::AssociatedReceiver<blink::mojom::WebPressureClient>& receiver() {
     return associated_receiver_;
   }
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  std::vector<PressureUpdate> updates_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::vector<WebPressureUpdate> updates_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Used to implement WaitForUpdate().
   base::OnceClosure update_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  mojo::AssociatedReceiver<device::mojom::PressureClient> associated_receiver_
+  mojo::AssociatedReceiver<blink::mojom::WebPressureClient> associated_receiver_
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
@@ -186,7 +188,9 @@ TEST_F(PressureServiceForDedicatedWorkerTest, AddClient) {
   pressure_manager_overrider_->UpdateClients(update);
   client.WaitForUpdate();
   ASSERT_EQ(client.updates().size(), 1u);
-  EXPECT_EQ(client.updates()[0], update);
+  EXPECT_EQ(client.updates()[0].source, update.source);
+  EXPECT_EQ(client.updates()[0].state, update.state);
+  EXPECT_EQ(client.updates()[0].timestamp, update.timestamp);
 }
 
 TEST_F(PressureServiceForDedicatedWorkerTest,
@@ -327,7 +331,9 @@ TEST_F(PressureServiceForSharedWorkerTest, AddClient) {
   pressure_manager_overrider_->UpdateClients(update);
   client.WaitForUpdate();
   ASSERT_EQ(client.updates().size(), 1u);
-  EXPECT_EQ(client.updates()[0], update);
+  EXPECT_EQ(client.updates()[0].source, update.source);
+  EXPECT_EQ(client.updates()[0].state, update.state);
+  EXPECT_EQ(client.updates()[0].timestamp, update.timestamp);
 }
 
 TEST_F(PressureServiceForSharedWorkerTest, WebContentPressureManagerProxyTest) {

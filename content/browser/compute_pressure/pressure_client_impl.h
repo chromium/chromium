@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/device/public/mojom/pressure_manager.mojom.h"
 #include "services/device/public/mojom/pressure_update.mojom-forward.h"
+#include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager.mojom.h"
 
 namespace content {
 
@@ -47,7 +48,7 @@ class CONTENT_EXPORT PressureClientImpl : public device::mojom::PressureClient {
 
   // Binds the associated remote from the Blink-side.
   void BindPendingAssociatedRemote(
-      mojo::PendingAssociatedRemote<device::mojom::PressureClient>);
+      mojo::PendingAssociatedRemote<blink::mojom::WebPressureClient>);
 
   // Create pending remote endpoint to //services.
   mojo::PendingAssociatedRemote<device::mojom::PressureClient>
@@ -87,7 +88,7 @@ class CONTENT_EXPORT PressureClientImpl : public device::mojom::PressureClient {
       sequence_checker_) client_associated_receiver_{this};
 
   // Blink side.
-  mojo::AssociatedRemote<device::mojom::PressureClient>
+  mojo::AssociatedRemote<blink::mojom::WebPressureClient>
       client_associated_remote_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 

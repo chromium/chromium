@@ -1,0 +1,17 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "services/device/public/mojom/pressure_update.mojom";
+
+// This version of device.mojom.PressureUpdate Mojo interface only provides
+// values required by Blink that can be exposed to a potentially compromised
+// renderer process.
+struct WebPressureUpdate {
+  device.mojom.PressureSource source;
+  device.mojom.PressureState state;
+  mojo_base.mojom.TimeTicks timestamp;
+};

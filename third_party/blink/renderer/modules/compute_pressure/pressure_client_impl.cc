@@ -9,8 +9,9 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "services/device/public/mojom/pressure_manager.mojom-blink.h"
 #include "services/device/public/mojom/pressure_update.mojom-blink.h"
+#include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager.mojom-blink.h"
+#include "third_party/blink/public/mojom/compute_pressure/web_pressure_update.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
@@ -62,7 +63,7 @@ PressureClientImpl::PressureClientImpl(ExecutionContext* context,
 PressureClientImpl::~PressureClientImpl() = default;
 
 void PressureClientImpl::OnPressureUpdated(
-    device::mojom::blink::PressureUpdatePtr update) {
+    mojom::blink::WebPressureUpdatePtr update) {
   auto source = PressureSourceToV8PressureSource(update->source);
   // New observers may be created and added. Take a snapshot so as
   // to safely iterate.
@@ -85,7 +86,7 @@ void PressureClientImpl::RemoveObserver(PressureObserver* observer) {
   }
 }
 
-mojo::PendingAssociatedRemote<device::mojom::blink::PressureClient>
+mojo::PendingAssociatedRemote<mojom::blink::WebPressureClient>
 PressureClientImpl::BindNewEndpointAndPassRemote(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   auto associated_pending_remote =

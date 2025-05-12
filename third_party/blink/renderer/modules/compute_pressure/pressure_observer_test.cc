@@ -179,7 +179,7 @@ TEST(PressureObserverTest, RateObfuscationMitigation) {
       // they are all dispatched immediately even if we do not advance time.
       EXPECT_EQ(pressure_records.size(), i);
       const auto& state = kPressureStates[i];
-      pressure_service.SendUpdate(device::mojom::blink::PressureUpdate::New(
+      pressure_service.SendUpdate(mojom::blink::WebPressureUpdate::New(
           device::mojom::blink::PressureSource::kCpu, state,
           base::TimeTicks::Now()));
       task_environment.FastForwardBy(base::Milliseconds(0));
@@ -209,7 +209,7 @@ TEST(PressureObserverTest, RateObfuscationMitigation) {
 
     // This update will not be sent immediately and will be queued by the rate
     // obfuscation code instead.
-    pressure_service.SendUpdate(device::mojom::blink::PressureUpdate::New(
+    pressure_service.SendUpdate(mojom::blink::WebPressureUpdate::New(
         device::mojom::blink::PressureSource::kCpu, PressureState::kNominal,
         base::TimeTicks::Now()));
     task_environment.FastForwardBy(base::Milliseconds(0));
@@ -222,7 +222,7 @@ TEST(PressureObserverTest, RateObfuscationMitigation) {
 
     // Test the what happens when an update is sent while we are already under
     // penalty: the new update must replace the previously queued one.
-    pressure_service.SendUpdate(device::mojom::blink::PressureUpdate::New(
+    pressure_service.SendUpdate(mojom::blink::WebPressureUpdate::New(
         device::mojom::blink::PressureSource::kCpu, PressureState::kFair,
         base::TimeTicks::Now()));
     // If we advance another 200ms, we are still 3600s short of the penalty
@@ -252,7 +252,7 @@ TEST(PressureObserverTest, RateObfuscationMitigation) {
     const wtf_size_t original_callback_count = pressure_records.size();
 
     // Send an update and verify it has been delivered with no delay again.
-    pressure_service.SendUpdate(device::mojom::blink::PressureUpdate::New(
+    pressure_service.SendUpdate(mojom::blink::WebPressureUpdate::New(
         device::mojom::blink::PressureSource::kCpu, PressureState::kSerious,
         base::TimeTicks::Now()));
     task_environment.FastForwardBy(base::Milliseconds(0));
@@ -293,7 +293,7 @@ TEST(PressureObserverTest, PressureObserverDisconnectBeforePenaltyEnd) {
 
   // First update.
   task_environment.FastForwardBy(kDelayTime);
-  pressure_service.SendUpdate(device::mojom::blink::PressureUpdate::New(
+  pressure_service.SendUpdate(mojom::blink::WebPressureUpdate::New(
       device::mojom::blink::PressureSource::kCpu, PressureState::kCritical,
       base::TimeTicks::Now()));
 
@@ -301,7 +301,7 @@ TEST(PressureObserverTest, PressureObserverDisconnectBeforePenaltyEnd) {
 
   // Second update triggering the penalty.
   task_environment.FastForwardBy(kDelayTime);
-  pressure_service.SendUpdate(device::mojom::blink::PressureUpdate::New(
+  pressure_service.SendUpdate(mojom::blink::WebPressureUpdate::New(
       device::mojom::blink::PressureSource::kCpu, PressureState::kNominal,
       base::TimeTicks::Now()));
   // The number of seconds here should not exceed the penalty time, we just
@@ -345,7 +345,7 @@ TEST(PressureObserverTest, PressureObserverUnobserveBeforePenaltyEnd) {
 
   // First update.
   task_environment.FastForwardBy(kDelayTime);
-  pressure_service.SendUpdate(device::mojom::blink::PressureUpdate::New(
+  pressure_service.SendUpdate(mojom::blink::WebPressureUpdate::New(
       device::mojom::blink::PressureSource::kCpu, PressureState::kNominal,
       base::TimeTicks::Now()));
 
@@ -353,7 +353,7 @@ TEST(PressureObserverTest, PressureObserverUnobserveBeforePenaltyEnd) {
 
   // Second update triggering the penalty.
   task_environment.FastForwardBy(kDelayTime);
-  pressure_service.SendUpdate(device::mojom::blink::PressureUpdate::New(
+  pressure_service.SendUpdate(mojom::blink::WebPressureUpdate::New(
       device::mojom::blink::PressureSource::kCpu, PressureState::kCritical,
       base::TimeTicks::Now()));
   // The number of seconds here should not exceed the penalty time, we just

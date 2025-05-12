@@ -6,13 +6,27 @@ module blink.mojom;
 
 import "services/device/public/mojom/pressure_manager.mojom";
 import "services/device/public/mojom/pressure_update.mojom";
+import "third_party/blink/public/mojom/compute_pressure/web_pressure_update.mojom";
 
-// Partial view into the device.mojom.PressureManager Mojo interface.
+// PressureObserverManager in Blink uses this interface to make a
+// PressureClient subscribe to notification about OnPressureUpdated.
+// It is a partial view into the device.mojom.PressureManager Mojo interface.
 // This interface does not expose the privileged automation-related methods
 // that the device.mojom version does.
 interface WebPressureManager {
   // See PressureManager.AddClient()'s documentation for more details.
   AddClient(device.mojom.PressureSource source,
-            pending_associated_remote<device.mojom.PressureClient> client) =>
+            pending_associated_remote<blink.mojom.WebPressureClient> client) =>
       (device.mojom.PressureManagerAddClientResult result);
+};
+
+// Interface that client of the PressureManager interface must
+// implement to receive PressureUpdate.
+//
+// This interface is implemented by PressureObserverManager in Blink.
+// PressureManagerImpl uses this interface to deliver PressureUpdate to
+// its client.
+interface WebPressureClient {
+  // Interface used to deliver PressureUpdate.
+  OnPressureUpdated(WebPressureUpdate update);
 };

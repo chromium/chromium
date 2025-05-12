@@ -10,6 +10,7 @@
 #include "services/device/public/mojom/pressure_manager.mojom-blink.h"
 #include "services/device/public/mojom/pressure_update.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager.mojom-blink.h"
+#include "third_party/blink/public/mojom/compute_pressure/web_pressure_update.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 
 namespace blink {
@@ -25,13 +26,12 @@ class FakePressureService final : public mojom::blink::WebPressureManager {
 
   void BindRequest(mojo::ScopedMessagePipeHandle handle);
 
-  void SendUpdate(device::mojom::blink::PressureUpdatePtr update);
+  void SendUpdate(mojom::blink::WebPressureUpdatePtr update);
 
   // mojom::blink::WebPressureManager implementation.
   void AddClient(
       device::mojom::blink::PressureSource source,
-      mojo::PendingAssociatedRemote<device::mojom::blink::PressureClient>
-          client,
+      mojo::PendingAssociatedRemote<mojom::blink::WebPressureClient> client,
       AddClientCallback callback) override;
 
   void Reset() { manager_receiver_.reset(); }
@@ -39,7 +39,7 @@ class FakePressureService final : public mojom::blink::WebPressureManager {
  private:
   void OnConnectionError();
 
-  mojo::AssociatedRemote<device::mojom::blink::PressureClient> client_remote_;
+  mojo::AssociatedRemote<mojom::blink::WebPressureClient> client_remote_;
   mojo::Receiver<mojom::blink::WebPressureManager> manager_receiver_{this};
 };
 

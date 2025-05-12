@@ -50,7 +50,7 @@ class CONTENT_EXPORT PressureServiceBase
   // blink::mojom::WebPressureManager implementation.
   void AddClient(
       device::mojom::PressureSource source,
-      mojo::PendingAssociatedRemote<device::mojom::PressureClient> client,
+      mojo::PendingAssociatedRemote<blink::mojom::WebPressureClient> client,
       AddClientCallback callback) override;
 
   // WebContentsPressureManagerProxy::Observer implementation.

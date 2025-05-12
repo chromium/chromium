@@ -57,6 +57,7 @@ mojom("mojom_platform") {
     "close_watcher/close_listener.mojom",
     "commit_result/commit_result.mojom",
     "compute_pressure/web_pressure_manager.mojom",
+    "compute_pressure/web_pressure_update.mojom",
     "confidence_level.mojom",
     "content_extraction/ai_page_content.mojom",
     "content_extraction/inner_html.mojom",

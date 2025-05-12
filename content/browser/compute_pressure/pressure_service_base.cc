@@ -144,7 +144,7 @@ void PressureServiceBase::BindReceiver(
 
 void PressureServiceBase::AddClient(
     device::mojom::PressureSource source,
-    mojo::PendingAssociatedRemote<device::mojom::PressureClient> client,
+    mojo::PendingAssociatedRemote<blink::mojom::WebPressureClient> client,
     AddClientCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

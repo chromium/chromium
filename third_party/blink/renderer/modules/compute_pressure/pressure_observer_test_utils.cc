@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/pressure_update.mojom-blink.h"
+#include "third_party/blink/public/mojom/compute_pressure/web_pressure_update.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -29,7 +30,7 @@ void FakePressureService::BindRequest(mojo::ScopedMessagePipeHandle handle) {
 
 void FakePressureService::AddClient(
     device::mojom::blink::PressureSource source,
-    mojo::PendingAssociatedRemote<device::mojom::blink::PressureClient> client,
+    mojo::PendingAssociatedRemote<mojom::blink::WebPressureClient> client,
     AddClientCallback callback) {
   client_remote_.Bind(std::move(client));
 
@@ -38,7 +39,7 @@ void FakePressureService::AddClient(
 }
 
 void FakePressureService::SendUpdate(
-    device::mojom::blink::PressureUpdatePtr update) {
+    mojom::blink::WebPressureUpdatePtr update) {
   client_remote_->OnPressureUpdated(std::move(update));
 }
 

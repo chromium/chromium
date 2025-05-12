@@ -7,8 +7,8 @@
 
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "services/device/public/mojom/pressure_manager.mojom-blink-forward.h"
-#include "services/device/public/mojom/pressure_update.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager.mojom-blink.h"
+#include "third_party/blink/public/mojom/compute_pressure/web_pressure_update.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/compute_pressure/pressure_observer.h"
@@ -31,7 +31,7 @@ class PressureObserverManager;
 class MODULES_EXPORT PressureClientImpl final
     : public GarbageCollected<PressureClientImpl>,
       public ExecutionContextClient,
-      public device::mojom::blink::PressureClient {
+      public mojom::blink::WebPressureClient {
  public:
   // kUninitialized: receiver_ is not bound.
   // kInitializing: receiver_ is bound but the remote side is not bound.
@@ -44,8 +44,8 @@ class MODULES_EXPORT PressureClientImpl final
   PressureClientImpl(const PressureClientImpl&) = delete;
   PressureClientImpl& operator=(const PressureClientImpl&) = delete;
 
-  // device::mojom::blink::PressureClient implementation.
-  void OnPressureUpdated(device::mojom::blink::PressureUpdatePtr) override;
+  // mojom::WebPressureClient implementation.
+  void OnPressureUpdated(mojom::blink::WebPressureUpdatePtr) override;
 
   State state() const { return state_; }
   void set_state(State state) { state_ = state; }
@@ -56,7 +56,7 @@ class MODULES_EXPORT PressureClientImpl final
     return observers_;
   }
 
-  mojo::PendingAssociatedRemote<device::mojom::blink::PressureClient>
+  mojo::PendingAssociatedRemote<mojom::blink::WebPressureClient>
       BindNewEndpointAndPassRemote(scoped_refptr<base::SequencedTaskRunner>);
 
   void Reset();
@@ -68,7 +68,7 @@ class MODULES_EXPORT PressureClientImpl final
 
   WeakMember<PressureObserverManager> manager_;
 
-  HeapMojoAssociatedReceiver<device::mojom::blink::PressureClient,
+  HeapMojoAssociatedReceiver<mojom::blink::WebPressureClient,
                              PressureClientImpl>
       associated_receiver_;
 
