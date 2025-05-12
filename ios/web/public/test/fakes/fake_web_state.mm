@@ -56,6 +56,7 @@ FakeWebState::~FakeWebState() {
   for (auto& observer : policy_deciders_) {
     observer.ResetWebState();
   }
+  ClearAllUserData();
 }
 
 void FakeWebState::SerializeToProto(proto::WebStateStorage& storage) const {}
