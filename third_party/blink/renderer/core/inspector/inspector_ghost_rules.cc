@@ -122,18 +122,20 @@ void QuietlyInsertDummyRule(const ExecutionContext& execution_context,
                             CSSRule& rule,
                             wtf_size_t index) {
   if (IsA<CSSStyleRule>(rule)) {
-    return To<CSSStyleRule>(rule).QuietlyInsertRule(&execution_context,
-                                                    "--dummy:1", index);
+    To<CSSStyleRule>(rule).QuietlyInsertRule(&execution_context, "--dummy:1",
+                                             index);
+  } else {
+    To<CSSGroupingRule>(rule).QuietlyInsertRule(&execution_context, "--dummy:1",
+                                                index);
   }
-  return To<CSSGroupingRule>(rule).QuietlyInsertRule(&execution_context,
-                                                     "--dummy:1", index);
 }
 
 void QuietlyDeleteRule(CSSRule& rule, wtf_size_t index) {
   if (IsA<CSSStyleRule>(rule)) {
-    return To<CSSStyleRule>(rule).QuietlyDeleteRule(index);
+    To<CSSStyleRule>(rule).QuietlyDeleteRule(index);
+  } else {
+    To<CSSGroupingRule>(rule).QuietlyDeleteRule(index);
   }
-  return To<CSSGroupingRule>(rule).QuietlyDeleteRule(index);
 }
 
 wtf_size_t NumItems(CSSRule& rule) {
