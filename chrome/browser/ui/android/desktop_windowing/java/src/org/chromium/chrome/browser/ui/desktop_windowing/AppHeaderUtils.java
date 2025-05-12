@@ -119,7 +119,7 @@ public class AppHeaderUtils {
             @DesktopWindowHeuristicResult int result) {
         assert result != DesktopWindowHeuristicResult.UNKNOWN;
         RecordHistogram.recordEnumeratedHistogram(
-                "Android.DesktopWindowHeuristicResult",
+                "Android.DesktopWindowHeuristicResult2",
                 result,
                 DesktopWindowHeuristicResult.NUM_ENTRIES);
     }
