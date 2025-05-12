@@ -24,10 +24,11 @@ bool TabCollectionStorage::ContainsTab(const TabInterface* tab) const {
 
 TabInterface* TabCollectionStorage::GetTabAtIndex(size_t index) const {
   CHECK(index < GetChildrenCount() && index >= 0);
-  const std::unique_ptr<tabs::TabInterface>* tab =
-      std::get_if<std::unique_ptr<tabs::TabInterface>>(&children_[index]);
-  CHECK(tab);
-  return tab->get();
+  CHECK(std::holds_alternative<std::unique_ptr<tabs::TabInterface>>(
+      children_[index]));
+  const std::unique_ptr<tabs::TabInterface>& tab =
+      std::get<std::unique_ptr<tabs::TabInterface>>(children_[index]);
+  return tab.get();
 }
 
 bool TabCollectionStorage::ContainsCollection(
