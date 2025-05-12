@@ -84,17 +84,30 @@ suite('ExtensionDetailViewTest', function() {
 
     assertTrue(isChildVisible(item, '#allow-incognito'));
     assertFalse(isChecked('#allow-incognito'), '#allow-incognito');
-    await updateItemData(
-        {incognitoAccess: {isEnabled: false, isActive: false}});
+    assertFalse(isChildVisible(item, '#allow-incognito-warning'));
+    await updateItemData({incognitoAccessPendingChange: true});
+    assertTrue(isChildVisible(item, '#allow-incognito-warning'));
+    await updateItemData({
+      incognitoAccess: {isEnabled: false, isActive: false},
+      incognitoAccessPendingChange: false,
+    });
     assertFalse(isChildVisible(item, '#allow-incognito'));
+    assertFalse(isChildVisible(item, '#allow-incognito-warning'));
     await updateItemData({incognitoAccess: {isEnabled: true, isActive: true}});
     assertTrue(isChildVisible(item, '#allow-incognito'));
     assertTrue(isChecked('#allow-incognito'));
 
     assertTrue(isChildVisible(item, '#allow-on-file-urls'));
     assertFalse(isChecked('#allow-on-file-urls'), '#allow-on-file-urls');
-    await updateItemData({fileAccess: {isEnabled: false, isActive: false}});
+    assertFalse(isChildVisible(item, '#allow-on-file-urls-warning'));
+    await updateItemData({fileAccessPendingChange: true});
+    assertTrue(isChildVisible(item, '#allow-on-file-urls-warning'));
+    await updateItemData({
+      fileAccess: {isEnabled: false, isActive: false},
+      fileAccessPendingChange: false,
+    });
     assertFalse(isChildVisible(item, '#allow-on-file-urls'));
+    assertFalse(isChildVisible(item, '#allow-on-file-urls-warning'));
     await updateItemData({fileAccess: {isEnabled: true, isActive: true}});
     assertTrue(isChildVisible(item, '#allow-on-file-urls'));
     assertTrue(isChecked('#allow-on-file-urls'));

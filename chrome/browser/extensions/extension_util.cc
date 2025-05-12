@@ -124,6 +124,18 @@ bool IsLoginScreenExtension(
 #endif
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+bool IsPolicyInstalled(const ExtensionId& extension_id,
+                       content::BrowserContext* context) {
+  const Extension* extension =
+      ExtensionRegistry::Get(context)->GetInstalledExtension(extension_id);
+  if (!extension) {
+    return false;
+  }
+
+  return Manifest::IsPolicyLocation(extension->location());
+}
+#endif
 }  // namespace
 
 bool HasIsolatedStorage(const ExtensionId& extension_id,
@@ -182,6 +194,14 @@ void SetIsIncognitoEnabled(const std::string& extension_id,
   }
 
   ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(context);
+#if BUILDFLAG(IS_CHROMEOS)
+  // Admin installed extensions should not be restartable, so we will apply the
+  // change when Chrome restarts.
+  if (IsPolicyInstalled(extension_id, context)) {
+    extension_prefs->SetIsIncognitoEnabledDelayed(extension_id, enabled);
+    return;
+  }
+#endif
   // Broadcast unloaded and loaded events to update browser state. Only bother
   // if the value changed and the extension is actually enabled, since there is
   // no UI otherwise.
@@ -204,6 +224,15 @@ void SetIsIncognitoEnabled(const std::string& extension_id,
 void SetAllowFileAccess(const std::string& extension_id,
                         content::BrowserContext* context,
                         bool allow) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // Admin installed extensions should not be restartable, so we will apply the
+  // change when Chrome restarts.
+  if (IsPolicyInstalled(extension_id, context)) {
+    ExtensionPrefs::Get(context)->SetAllowFileAccessDelayed(extension_id,
+                                                            allow);
+    return;
+  }
+#endif
   // Reload to update browser state if the value changed. We need to reload even
   // if the extension is disabled, in order to make sure file access is
   // reinitialized correctly.
