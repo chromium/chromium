@@ -551,15 +551,13 @@ void LayoutObject::SetIsInsideMulticolIncludingDescendants(
   NOT_DESTROYED();
   LayoutObject* next;
   for (LayoutObject* object = this; object; object = next) {
-    // If object is a fragmentation context it already updated the descendants
-    // flag accordingly.
-    if (object->IsLayoutFlowThread()) {
+    if (inside_multicol == object->IsInsideMulticol()) {
+      // No change needed. Skip the subtree.
       next = object->NextInPreOrderAfterChildren(this);
-      continue;
+    } else {
+      object->SetIsInsideMulticol(inside_multicol);
+      next = object->NextInPreOrder(this);
     }
-    next = object->NextInPreOrder(this);
-    DCHECK_NE(inside_multicol, object->IsInsideMulticol());
-    object->SetIsInsideMulticol(inside_multicol);
   }
 }
 
