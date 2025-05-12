@@ -4542,6 +4542,7 @@ enum WebFeature {
   kCanvasTextDirectionSet = 5238,
   kCanvasTextDirectionSetInherit = 5239,
   kTopicsAPIImg = 5240,
+  // The items above roughly this point are available in the M133 branch.
   kMediaSessionEnterPictureInPicture = 5241,
   kOBSOLETE_V8AILanguageDetector_Detect_Method = 5242,
   kCharsetAutoDetection = 5243,
@@ -4603,6 +4604,7 @@ enum WebFeature {
   kHTMLImageElementNaturalSizeDiffersForSvgImage = 5299,
   kWindowProxyIndexedGetter = 5300,
   kWindowProxyNamedGetter = 5301,
+  // The items above roughly this point are available in the M134 branch.
   kOBSOLETE_V8AILanguageModelFactory_Availability_Method = 5302,
   kOBSOLETE_V8AILanguageModelFactory_Params_Method = 5303,
   kOBSOLETE_V8AISummarizerFactory_Availability_Method = 5304,
@@ -4637,6 +4639,7 @@ enum WebFeature {
   kButtonTypeAttrInvalidWithCommandOrCommandfor = 5333,
   kCSSVarFallbackCycle = 5334,
   kCSSAttrFallbackCycle = 5335,
+  // The items above roughly this point are available in the M135 branch.
   kCSSRainbowGradientPattern = 5336,
   kWebAppManifestStartUrl = 5337,
   kWebAppManifestDisplay = 5338,
@@ -4765,6 +4768,7 @@ enum WebFeature {
   kLanguageDetector_ExpectedInputLanguages = 5461,
   kServiceWorkerPushEventListener = 5462,
   kServiceWorkerPushSubscriptionChangeEventListener = 5463,
+  // The items above roughly this point are available in the M136 branch.
   kMediaPlaybackWhileNotVisiblePermissionPolicy = 5464,
   kFirstLinePseudoElement = 5465,
   kFirstLetterPseudoElement = 5466,
@@ -4853,6 +4857,7 @@ enum WebFeature {
   kSelectMultipleShowPopup = 5549,
   kSharedWorkerExtendedLifetimeFeatureEnabled = 5550,
   kSharedWorkerExtendedLifetimeIsTrue = 5551,
+  // The items above roughly this point are available in the M137 branch.
   kEditContextTextFormatUpdateAddListener = 5552,
   kEditContextTextFormatUpdateFireEvent = 5553,
   kEditContextTextFormatUpdateTextFormatThicknessOrStyleNotNone = 5554,
@@ -4880,6 +4885,7 @@ enum WebFeature {
   kCredentialsGetImmediateMediationFailure = 5576,
   kClearSiteData = 5577,
   kScrollIntoViewContainerNearest = 5578,
+  kPopoverShown = 5579,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
