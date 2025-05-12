@@ -1202,6 +1202,9 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Omnibox Position"/>
   <int value="7" label="Lens"/>
   <int value="8" label="Enhanced Safe Browsing"/>
+  <int value="9" label="Lens Overlay"/>
+  <int value="10" label="CPE"/>
+  <int value="11" label="Incognito Lock"/>
 </enum>
 
 <enum name="IOSTipsNotificationUserType">
@@ -1340,6 +1343,9 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Update Chrome [SafetyCheck]"/>
   <int value="9" label="Passwords [SafetyCheck]"/>
   <int value="10" label="Safe Browsing [SafetyCheck]"/>
+  <int value="11" label="Lens Overlay [Tip]"/>
+  <int value="12" label="CPE [Tip]"/>
+  <int value="13" label="Incognito Lock [Tip]"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/push_notification/model/constants.h:NotificationType) -->

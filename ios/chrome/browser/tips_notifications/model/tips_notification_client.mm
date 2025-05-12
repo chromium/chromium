@@ -458,6 +458,9 @@ bool TipsNotificationClient::ShouldSendNotification(TipsNotificationType type) {
       return ShouldSendLens();
     case TipsNotificationType::kEnhancedSafeBrowsing:
       return ShouldSendEnhancedSafeBrowsing();
+    case TipsNotificationType::kLensOverlay:
+    case TipsNotificationType::kCPE:
+    case TipsNotificationType::kIncognitoLock:
     case TipsNotificationType::kError:
       NOTREACHED();
   }
@@ -604,6 +607,9 @@ void TipsNotificationClient::ShowUIForNotificationType(
     case TipsNotificationType::kEnhancedSafeBrowsing:
       ShowEnhancedSafeBrowsingPromo(browser);
       break;
+    case TipsNotificationType::kLensOverlay:
+    case TipsNotificationType::kCPE:
+    case TipsNotificationType::kIncognitoLock:
     case TipsNotificationType::kError:
       NOTREACHED();
   }

@@ -26,7 +26,10 @@ enum class NotificationType {
   kSafetyCheckUpdateChrome = 8,
   kSafetyCheckPasswords = 9,
   kSafetyCheckSafeBrowsing = 10,
-  kMaxValue = kSafetyCheckSafeBrowsing,
+  kTipsLensOverlay = 11,
+  kTipsCPE = 12,
+  kTipsIncognitoLock = 13,
+  kMaxValue = kTipsIncognitoLock,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 

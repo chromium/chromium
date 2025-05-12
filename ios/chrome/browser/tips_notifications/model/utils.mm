@@ -56,6 +56,9 @@ ContentIDs ContentIDsForType(TipsNotificationType type) {
     case TipsNotificationType::kEnhancedSafeBrowsing:
       return {IDS_IOS_NOTIFICATIONS_TIPS_ENHANCED_SAFE_BROWSING_TITLE,
               IDS_IOS_NOTIFICATIONS_TIPS_ENHANCED_SAFE_BROWSING_BODY};
+    case TipsNotificationType::kLensOverlay:
+    case TipsNotificationType::kCPE:
+    case TipsNotificationType::kIncognitoLock:
     case TipsNotificationType::kError:
       NOTREACHED();
   }

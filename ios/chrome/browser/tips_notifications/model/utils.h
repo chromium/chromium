@@ -58,7 +58,10 @@ enum class TipsNotificationType {
   kOmniboxPosition = 6,
   kLens = 7,
   kEnhancedSafeBrowsing = 8,
-  kMaxValue = kEnhancedSafeBrowsing,
+  kLensOverlay = 9,
+  kCPE = 10,
+  kIncognitoLock = 11,
+  kMaxValue = kIncognitoLock,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 
