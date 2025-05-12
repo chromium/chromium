@@ -57,6 +57,7 @@ source_set("tab_strip_api") {
 
   public_deps = [
     ":mojom",
+    "adapters",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
   ]
 }
@@ -69,6 +70,8 @@ source_set("impl") {
   deps = [
     ":tab_strip_api",
     ":types",
+    "adapters:impl",
+    "converters",
     "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window:browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
@@ -94,6 +97,7 @@ source_set("unit_tests") {
   deps = [
     ":impl",
     ":tab_strip_api",
+    "converters:unit_tests",
     "//base/test:test_support",
     "//chrome/browser/ui/browser_window:browser_window",
     "//chrome/browser/ui/tabs:tab_strip",

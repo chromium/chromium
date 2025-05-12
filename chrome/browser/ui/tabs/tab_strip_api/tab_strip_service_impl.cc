@@ -3,34 +3,99 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_impl.h"
 
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_renderer_data.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/adapters/browser_adapter_impl.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter_impl.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/converters/tab_converters.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
-#include "chrome/browser/ui/tabs/tab_utils.h"
 #include "mojo/public/mojom/base/error.mojom.h"
 #include "url/gurl.h"
 
 TabStripServiceImpl::TabStripServiceImpl(BrowserWindowInterface* browser,
                                          TabStripModel* tab_strip_model)
-    : browser_(browser), model_(tab_strip_model) {
-  model_->AddObserver(this);
+    : TabStripServiceImpl(
+          std::make_unique<tabs_api::BrowserAdapterImpl>(browser),
+          std::make_unique<tabs_api::TabStripModelAdapterImpl>(
+              tab_strip_model)) {}
+
+TabStripServiceImpl::TabStripServiceImpl(
+    std::unique_ptr<tabs_api::BrowserAdapter> browser_adapter,
+    std::unique_ptr<tabs_api::TabStripModelAdapter> tab_strip_model_adapter)
+    : browser_adapter_(std::move(browser_adapter)),
+      tab_strip_model_adapter_(std::move(tab_strip_model_adapter)) {
+  tab_strip_model_adapter_->AddObserver(this);
 }
 
 TabStripServiceImpl::~TabStripServiceImpl() {
-  if (model_) {
-    model_->RemoveObserver(this);
-  }
+  tab_strip_model_adapter_->RemoveObserver(this);
 
   // Clear all observers
   // TODO (crbug.com/412955607): Implement a removal mechanism similar to
   // TabStripModelObserver where on shutdown of the TabStripService, it notifies
   // to all clients that service is shutting down.
   observers_.Clear();
+}
+
+void TabStripServiceImpl::GetTabs(GetTabsCallback callback) {
+  auto snapshot = tabs_api::mojom::TabsSnapshot::New();
+
+  std::vector<tabs_api::mojom::TabPtr> result;
+  auto tabs = tab_strip_model_adapter_->GetTabs();
+  for (unsigned int i = 0; i < tabs.size(); ++i) {
+    auto& handle = tabs.at(i);
+    auto renderer_data = tab_strip_model_adapter_->GetTabRendererData(i);
+    auto entry = tabs_api::converters::BuildMojoTab(handle, renderer_data);
+    result.push_back(std::move(entry));
+  }
+  snapshot->tabs = std::move(result);
+
+  // Now that we have a snapshot, create a event stream that will capture all
+  // subsequent updates.
+  mojo::Remote<tabs_api::mojom::TabsObserver> stream;
+  auto pending_receiver = stream.BindNewPipeAndPassReceiver();
+  observers_.Add(std::move(stream));
+  snapshot->stream = std::move(pending_receiver);
+
+  std::move(callback).Run(std::move(snapshot));
+}
+
+void TabStripServiceImpl::GetTab(const tabs_api::TabId& tab_mojom_id,
+                                 GetTabCallback callback) {
+  if (tab_mojom_id.Type() != tabs_api::TabId::Type::kContent) {
+    std::move(callback).Run(base::unexpected(
+        mojo_base::mojom::Error::New(mojo_base::mojom::Code::kInvalidArgument,
+                                     "only tab content ids accepted")));
+    return;
+  }
+
+  int32_t tab_id;
+  if (!base::StringToInt(tab_mojom_id.Id(), &tab_id)) {
+    std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kInvalidArgument, "invalid tab id provided")));
+    return;
+  }
+
+  tabs_api::mojom::TabPtr tab_result;
+  // TODO (crbug.com/412709270) TabStripModel or TabCollections should have an
+  // api that can fetch id without of relying on indexes.
+  auto tabs = tab_strip_model_adapter_->GetTabs();
+  for (unsigned int i = 0; i < tabs.size(); ++i) {
+    auto& handle = tabs.at(i);
+    if (tab_id == handle.raw_value()) {
+      auto renderer_data = tab_strip_model_adapter_->GetTabRendererData(i);
+      tab_result = tabs_api::converters::BuildMojoTab(handle, renderer_data);
+    }
+  }
+
+  if (tab_result) {
+    std::move(callback).Run(std::move(tab_result));
+  } else {
+    std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kNotFound, "Tab not found")));
+  }
 }
 
 void TabStripServiceImpl::CreateTabAt(tabs_api::mojom::PositionPtr pos,
@@ -45,7 +110,7 @@ void TabStripServiceImpl::CreateTabAt(tabs_api::mojom::PositionPtr pos,
     index = pos->index;
   }
 
-  content::WebContents* content = AddTabAt(target_url, index);
+  content::WebContents* content = browser_adapter_->AddTabAt(target_url, index);
   if (!content) {
     // Missing content can happen for a number of reasons. i.e. If the profile
     // is shutting down or if navigation requests are blocked due to some
@@ -56,57 +121,6 @@ void TabStripServiceImpl::CreateTabAt(tabs_api::mojom::PositionPtr pos,
         "Failed to create WebContents")));
   } else {
     std::move(callback).Run(base::ok(true));
-  }
-}
-
-content::WebContents* TabStripServiceImpl::AddTabAt(const GURL& url,
-                                                    int index) {
-  // TODO (crbug.com/411134070) chrome::AddAndReturnTabAt does not support
-  // BrowserWindowInterface. Navigation should handle BrowserWindowInterface
-  // instead of Browser.
-  return chrome::AddAndReturnTabAt(browser_->GetBrowserForMigrationOnly(), url,
-                                   index, true);
-}
-
-tabs_api::mojom::TabPtr TabStripServiceImpl::ConvertTabToData(
-    tabs::TabInterface* tab_interface,
-    int index) {
-  auto result = tabs_api::mojom::Tab::New();
-
-  auto tab_renderer_data = TabRendererData::FromTabInModel(model_, index);
-  result->title = base::UTF16ToUTF8(tab_renderer_data.title);
-  // TODO(crbug.com/414630734). Integrate the favicon_url after it is
-  // typemapped.
-  result->url = tab_renderer_data.visible_url;
-  result->network_state = tab_renderer_data.network_state;
-  for (const auto alert_state :
-       GetTabAlertStatesForContents(tab_interface->GetContents())) {
-    result->alert_states.push_back(alert_state);
-  }
-
-  return result;
-}
-
-void TabStripServiceImpl::GetTab(const tabs_api::TabId& tab_mojom_id,
-                                 GetTabCallback callback) {
-  int32_t tab_id;
-  tabs_api::mojom::TabPtr tab_result;
-  if (base::StringToInt(tab_mojom_id.Id(), &tab_id)) {
-    // TODO (crbug.com/412709270) TabStripModel or TabCollections should have an
-    // api that can fetch id without of relying on indexes.
-    for (int index = 0; index < model_->count(); index++) {
-      tabs::TabInterface* tab = model_->GetTabAtIndex(index);
-      if (tab_id == tab->GetHandle().raw_value()) {
-        tab_result = ConvertTabToData(tab, index);
-      }
-    }
-  }
-
-  if (tab_result) {
-    std::move(callback).Run(std::move(tab_result));
-  } else {
-    std::move(callback).Run(base::unexpected(mojo_base::mojom::Error::New(
-        mojo_base::mojom::Code::kNotFound, "Tab not found")));
   }
 }
 
@@ -139,17 +153,8 @@ void TabStripServiceImpl::OnTabStripModelChangeAdded(
       pos->index = content.index;
       positions.emplace_back(std::move(pos));
     }
-    observer.OnTabsCreated(std::move(positions));
+    observer->OnTabsCreated(std::move(positions));
   }
-}
-
-void TabStripServiceImpl::AddObserver(tabs_api::mojom::TabsObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void TabStripServiceImpl::RemoveObserver(
-    tabs_api::mojom::TabsObserver* observer) {
-  observers_.RemoveObserver(observer);
 }
 
 void TabStripServiceImpl::Accept(
