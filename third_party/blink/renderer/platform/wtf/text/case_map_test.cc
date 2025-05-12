@@ -30,44 +30,63 @@ static struct CaseMapTestData {
   const char* locale;
   const char16_t* lower_expected;
   const char16_t* upper_expected;
+  const char16_t* title_expected;
   std::vector<TextOffsetMap::Entry> lower_map = {};
   std::vector<TextOffsetMap::Entry> upper_map = {};
+  std::vector<TextOffsetMap::Entry> title_map = {};
 } case_map_test_data[] = {
     // Empty string.
-    {nullptr, "", nullptr, nullptr},
-    {u"", "", u"", u""},
+    {nullptr, "", nullptr, nullptr, nullptr},
+    {u"", "", u"", u"", u""},
     // Non-letters
-    {u"123", "", u"123", u"123"},
+    {u"123", "", u"123", u"123", u"123"},
     // ASCII lower/uppercases.
-    {u"xyz", "", u"xyz", u"XYZ"},
-    {u"XYZ", "", u"xyz", u"XYZ"},
-    {u"Xyz", "", u"xyz", u"XYZ"},
-    {u"xYz", "", u"xyz", u"XYZ"},
-    // German eszett. Uppercasing makes the string longer.
-    {u"\u00DF", "", u"\u00DF", u"SS", {}, {{1, 2}}},
-    {u"\u00DFz", "", u"\u00DFz", u"SSZ", {}, {{1, 2}}},
-    {u"x\u00DF", "", u"x\u00DF", u"XSS", {}, {{2, 3}}},
-    {u"x\u00DFz", "", u"x\u00DFz", u"XSSZ", {}, {{2, 3}}},
+    {u"xyz", "", u"xyz", u"XYZ", u"Xyz"},
+    {u"XYZ", "", u"xyz", u"XYZ", u"XYZ"},
+    {u"Xyz", "", u"xyz", u"XYZ", u"Xyz"},
+    {u"xYz", "", u"xyz", u"XYZ", u"XYz"},
+    // No break space character.
+    {u"abc\u00A0def", "", u"abc\u00A0def", u"ABC\u00A0DEF", u"Abc\u00A0Def"},
+    // German eszett. Uppercasing and Titlecasing make the string longer.
+    {u"\u00DF", "", u"\u00DF", u"SS", u"Ss", {}, {{1, 2}}, {{1, 2}}},
+    {u"\u00DFz", "", u"\u00DFz", u"SSZ", u"Ssz", {}, {{1, 2}}, {{1, 2}}},
+    {u"x\u00DF", "", u"x\u00DF", u"XSS", u"X\u00DF", {}, {{2, 3}}},
+    {u"x\u00DFz", "", u"x\u00DFz", u"XSSZ", u"X\u00DFz", {}, {{2, 3}}},
     // Turkish/Azeri.
-    {u"\u0130", "tr", u"\u0069", u"\u0130"},
+    {u"\u0130", "tr", u"\u0069", u"\u0130", u"\u0130"},
     // Turkish/Azeri. Lowercasing can make the string shorter.
-    {u"I\u0307", "tr", u"i", u"I\u0307", {{2, 1}}},
-    // Lithuanian. Uppercasing can make the string shorter.
-    {u"i\u0307", "lt", u"i\u0307", u"I", {}, {{2, 1}}},
-    {u"i\u0307z", "lt", u"i\u0307z", u"IZ", {}, {{2, 1}}},
-    {u"xi\u0307", "lt", u"xi\u0307", u"XI", {}, {{3, 2}}},
-    {u"xi\u0307z", "lt", u"xi\u0307z", u"XIZ", {}, {{3, 2}}},
+    {u"I\u0307", "tr", u"i", u"I\u0307", u"I\u0307", {{2, 1}}},
+    // Lithuanian. Uppercasing and Titlecasing can make the string shorter.
+    {u"i\u0307", "lt", u"i\u0307", u"I", u"I\u0307", {}, {{2, 1}}},
+    {u"i\u0307z", "lt", u"i\u0307z", u"IZ", u"I\u0307z", {}, {{2, 1}}},
+    {u"xi\u0307", "lt", u"xi\u0307", u"XI", u"Xi\u0307", {}, {{3, 2}}},
+    {u"xi\u0307z", "lt", u"xi\u0307z", u"XIZ", u"Xi\u0307z", {}, {{3, 2}}},
     // Lithuanian. Lowercasing can make the string longer.
-    {u"\u00CC", "lt", u"\u0069\u0307\u0300", u"\u00CC", {{1, 3}}},
+    {u"\u00CC", "lt", u"\u0069\u0307\u0300", u"\u00CC", u"\u00CC", {{1, 3}}},
     // Mix of longer ones and shorter ones.
-    {u"\u00DFi\u0307", "lt", u"\u00DFi\u0307", u"SSI", {}, {{1, 2}, {3, 3}}},
+    {u"\u00DFi\u0307",
+     "lt",
+     u"\u00DFi\u0307",
+     u"SSI",
+     u"Ssi\u0307",
+     {},
+     {{1, 2}, {3, 3}},
+     {{1, 2}}},
     {u"\u00DFyi\u0307z",
      "lt",
      u"\u00DFyi\u0307z",
      u"SSYIZ",
+     u"Ssyi\u0307z",
      {},
-     {{1, 2}, {4, 4}}},
-    {u"i\u0307\u00DF", "lt", u"i\u0307\u00DF", u"ISS", {}, {{2, 1}, {3, 3}}},
+     {{1, 2}, {4, 4}},
+     {{1, 2}}},
+    {u"i\u0307\u00DF",
+     "lt",
+     u"i\u0307\u00DF",
+     u"ISS",
+     u"I\u0307\u00DF",
+     {},
+     {{2, 1}, {3, 3}}},
 };
 
 std::ostream& operator<<(std::ostream& os, const CaseMapTestData& data) {
@@ -97,6 +116,14 @@ TEST_P(CaseMapTest, ToUpperWithoutOffset) {
   EXPECT_EQ(upper, String(data.upper_expected));
 }
 
+TEST_P(CaseMapTest, ToTitleWithoutOffset) {
+  const auto data = GetParam();
+  CaseMap case_map(AtomicString(data.locale));
+  String source(data.source);
+  String title = case_map.ToTitle(source);
+  EXPECT_EQ(title, String(data.title_expected));
+}
+
 TEST_P(CaseMapTest, ToLower) {
   const auto data = GetParam();
   CaseMap case_map(AtomicString(data.locale));
@@ -115,6 +142,16 @@ TEST_P(CaseMapTest, ToUpper) {
   String upper = case_map.ToUpper(source, &offset_map);
   EXPECT_EQ(upper, String(data.upper_expected));
   EXPECT_THAT(offset_map.Entries(), ElementsAreArray(data.upper_map));
+}
+
+TEST_P(CaseMapTest, ToTitle) {
+  const auto data = GetParam();
+  CaseMap case_map(AtomicString(data.locale));
+  String source(data.source);
+  TextOffsetMap offset_map;
+  String title = case_map.ToTitle(source, &offset_map);
+  EXPECT_EQ(title, String(data.title_expected));
+  EXPECT_THAT(offset_map.Entries(), ElementsAreArray(data.title_map));
 }
 
 TEST_P(CaseMapTest, ToLower8Bit) {
@@ -143,6 +180,20 @@ TEST_P(CaseMapTest, ToUpper8Bit) {
   EXPECT_THAT(offset_map.Entries(), ElementsAreArray(data.upper_map));
 }
 
+TEST_P(CaseMapTest, ToTitle8Bit) {
+  const auto data = GetParam();
+  String source(data.source);
+  source = To8BitOrNull(source);
+  if (!source) {
+    return;
+  }
+  CaseMap case_map(AtomicString(data.locale));
+  TextOffsetMap offset_map;
+  String title = case_map.ToTitle(source, &offset_map);
+  EXPECT_EQ(title, String(data.title_expected));
+  EXPECT_THAT(offset_map.Entries(), ElementsAreArray(data.title_map));
+}
+
 struct CaseFoldingTestData {
   const char* source_description;
   const char* source;
@@ -152,7 +203,7 @@ struct CaseFoldingTestData {
 
 // \xC4\xB0 = U+0130 (capital dotted I)
 // \xC4\xB1 = U+0131 (lowercase dotless I)
-const char* g_turkic_input = "Isi\xC4\xB0 \xC4\xB0s\xC4\xB1I";
+const char* g_turkic_input = "isI\xC4\xB0 \xC4\xB1s\xC4\xB0I";
 const char* g_greek_input =
     "\xCE\x9F\xCE\x94\xCE\x8C\xCE\xA3 \xCE\x9F\xCE\xB4\xCF\x8C\xCF\x82 "
     "\xCE\xA3\xCE\xBF \xCE\xA3\xCE\x9F o\xCE\xA3 \xCE\x9F\xCE\xA3 \xCF\x83 "
@@ -193,13 +244,13 @@ TEST(CaseMapTest, ToUpperLocale) {
           "Turkic input",
           g_turkic_input,
           g_turkic_locales,
-          "IS\xC4\xB0\xC4\xB0 \xC4\xB0SII",
+          "\xC4\xB0SI\xC4\xB0 IS\xC4\xB0I",
       },
       {
           "Turkic input",
           g_turkic_input,
           g_non_turkic_locales,
-          "ISI\xC4\xB0 \xC4\xB0SII",
+          "ISI\xC4\xB0 IS\xC4\xB0I",
       },
       {
           "Greek input",
@@ -255,14 +306,14 @@ TEST(CaseMapTest, ToLowerLocale) {
           "Turkic input",
           g_turkic_input,
           g_turkic_locales,
-          "\xC4\xB1sii is\xC4\xB1\xC4\xB1",
+          "is\xC4\xB1i \xC4\xB1si\xC4\xB1",
       },
       {
           "Turkic input",
           g_turkic_input,
           g_non_turkic_locales,
           // U+0130 is lowercased to U+0069 followed by U+0307
-          "isii\xCC\x87 i\xCC\x87s\xC4\xB1i",
+          "isii\xCC\x87 \xC4\xB1si\xCC\x87i",
       },
       {
           "Greek input",
@@ -312,6 +363,96 @@ TEST(CaseMapTest, ToLowerLocale) {
           << test_data.source_description << "; locale=" << locale;
     }
   }
+}
+
+TEST(CaseMapTest, ToTitleLocale) {
+  const auto test_data_list = std::to_array<CaseFoldingTestData>({
+      {
+          "Turkic input",
+          g_turkic_input,
+          g_turkic_locales,
+          "\xC4\xB0sI\xC4\xB0 Is\xC4\xB0I",
+      },
+      {
+          "Turkic input",
+          g_turkic_input,
+          g_non_turkic_locales,
+          "IsI\xC4\xB0 Is\xC4\xB0I",
+      },
+      {
+          "Greek input",
+          g_greek_input,
+          g_greek_locales,
+          "\xCE\x9F\xCE\x94\xCE\x8C\xCE\xA3 \xCE\x9F\xCE\xB4\xCF\x8C\xCF\x82 "
+          "\xCE\xA3\xCE\xBF \xCE\xA3\xCE\x9F O\xCE\xA3 \xCE\x9F\xCE\xA3 "
+          "\xCE\xA3 \xE1\xBC\x9D\xCE\xBE",
+      },
+      {
+          "Greek input",
+          g_greek_input,
+          g_non_greek_locales,
+          "\xCE\x9F\xCE\x94\xCE\x8C\xCE\xA3 \xCE\x9F\xCE\xB4\xCF\x8C\xCF\x82 "
+          "\xCE\xA3\xCE\xBF \xCE\xA3\xCE\x9F O\xCE\xA3 \xCE\x9F\xCE\xA3 "
+          "\xCE\xA3 \xE1\xBC\x9D\xCE\xBE",
+      },
+      {
+          "Lithuanian input",
+          g_lithuanian_input,
+          g_lithuanian_locales,
+          "I \xC3\x8F J J\xCC\x88 \xC4\xAE \xC4\xAE\xCC\x88 \xC3\x8C \xC3\x8D "
+          "\xC4\xA8 Xi\xCC\x87\xCC\x88 Xj\xCC\x87\xCC\x88 "
+          "X\xC4\xAF\xCC\x87\xCC\x88 Xi\xCC\x87\xCC\x80 Xi\xCC\x87\xCC\x81 "
+          "Xi\xCC\x87\xCC\x83 XI X\xC3\x8F XJ XJ\xCC\x88 X\xC4\xAE "
+          "X\xC4\xAE\xCC\x88",
+      },
+      {
+          "Lithuanian input",
+          g_lithuanian_input,
+          g_non_lithuanian_locales,
+          "I \xC3\x8F J J\xCC\x88 \xC4\xAE \xC4\xAE\xCC\x88 \xC3\x8C \xC3\x8D "
+          "\xC4\xA8 Xi\xCC\x87\xCC\x88 Xj\xCC\x87\xCC\x88 "
+          "X\xC4\xAF\xCC\x87\xCC\x88 Xi\xCC\x87\xCC\x80 Xi\xCC\x87\xCC\x81 "
+          "Xi\xCC\x87\xCC\x83 XI X\xC3\x8F XJ XJ\xCC\x88 X\xC4\xAE "
+          "X\xC4\xAE\xCC\x88",
+      },
+  });
+
+  for (const auto& test_data : test_data_list) {
+    const char* expected = test_data.expected;
+    String source = String::FromUTF8(test_data.source);
+    for (const auto& locale : test_data.locale_list) {
+      CaseMap case_map{AtomicString(locale)};
+      EXPECT_EQ(expected, case_map.ToTitle(source).Utf8())
+          << test_data.source_description << "; locale=" << locale;
+    }
+  }
+}
+
+TEST(CaseMapTest, ToTitleWithPreviousCharacter) {
+  CaseMap en_case_map(AtomicString("en"));
+
+  String input1 = String::FromUTF8("bc def");
+  String result1 = en_case_map.ToTitle(input1, nullptr, u'a');
+  EXPECT_EQ(result1, String::FromUTF8("bc Def"));
+
+  String input2 = String::FromUTF8("bc");
+  String result2 = en_case_map.ToTitle(input2, nullptr, u'a');
+  EXPECT_EQ(result2, String::FromUTF8("bc"));
+
+  String input3 = String::FromUTF8("abc");
+  String result3 = en_case_map.ToTitle(input3, nullptr, u'@');
+  EXPECT_EQ(result3, String::FromUTF8("Abc"));
+
+  CaseMap de_case_map(AtomicString("de"));
+
+  // \xC3\x9F = U+00DF (Latin Small Letter Sharp S)
+  String input4 = String::FromUTF8("\xC3\x9F");
+  String result4 = de_case_map.ToTitle(input4, nullptr, u'a');
+  EXPECT_EQ(result4, String::FromUTF8("\xC3\x9F"));
+
+  String input5 = String::FromUTF8("abc");
+  String result5 = de_case_map.ToTitle(input5, nullptr, u'\u00DF');
+  EXPECT_EQ(result5, String::FromUTF8("abc"));
 }
 
 }  // namespace WTF

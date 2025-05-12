@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_offset_map.h"
@@ -36,12 +37,35 @@ inline bool LocaleIdMatchesLang(const AtomicString& locale_id,
          maybe_delimiter == '@';
 }
 
-enum class CaseMapType { kLower, kUpper };
+enum class CaseMapType { kLower, kUpper, kTitle };
+
+icu::Edits DecreaseFirstEditLength(const icu::Edits& edits) {
+  icu::Edits new_edits;
+  UErrorCode error = U_ZERO_ERROR;
+  auto edit = edits.getFineIterator();
+
+  edit.next(error);
+  int32_t new_length = edit.oldLength() - 1;
+  if (new_length > 0) {
+    new_edits.addUnchanged(new_length);
+  }
+
+  while (edit.next(error)) {
+    if (edit.hasChange()) {
+      new_edits.addReplace(edit.oldLength(), edit.newLength());
+    } else {
+      new_edits.addUnchanged(edit.oldLength());
+    }
+  }
+  DCHECK(U_SUCCESS(error));
+  return new_edits;
+}
 
 scoped_refptr<StringImpl> CaseConvert(CaseMapType type,
                                       StringImpl* source,
                                       const char* locale,
-                                      TextOffsetMap* offset_map = nullptr) {
+                                      TextOffsetMap* offset_map = nullptr,
+                                      UChar previous_character = 0) {
   DCHECK(source);
   CHECK_LE(source->length(),
            static_cast<wtf_size_t>(std::numeric_limits<int32_t>::max()));
@@ -52,10 +76,10 @@ scoped_refptr<StringImpl> CaseConvert(CaseMapType type,
   base::span<UChar> data16;
   scoped_refptr<StringImpl> output =
       StringImpl::CreateUninitialized(source16.size(), data16);
+  wtf_size_t target_length = 0;
   while (true) {
     UErrorCode status = U_ZERO_ERROR;
     icu::Edits edits;
-    wtf_size_t target_length;
     switch (type) {
       case CaseMapType::kLower:
         target_length = icu::CaseMap::toLower(
@@ -71,6 +95,42 @@ scoped_refptr<StringImpl> CaseConvert(CaseMapType type,
             reinterpret_cast<char16_t*>(data16.data()), data16.size(), &edits,
             status);
         break;
+      case CaseMapType::kTitle: {
+        unsigned source_length = source16.size();
+        StringBuffer<UChar> string_buffer(source_length + 1);
+        base::span<UChar> string_with_previous = string_buffer.Span();
+        bool is_previous_alpha = u_isalpha(previous_character);
+        // Use an 'A' as a previous character which is already capitalized to
+        // make sure the titlecasing with previous character.
+        string_with_previous[0] = is_previous_alpha ? u'A' : kSpaceCharacter;
+        string_with_previous.subspan(1u).copy_from(source16);
+
+        // Add a space of the previous character at the start.
+        unsigned data_with_previous_length =
+            (target_length ? target_length : source_length) + 1;
+        StringBuffer<UChar> data_buffer(data_with_previous_length);
+        base::span<UChar> data_with_previous = data_buffer.Span();
+
+        target_length = icu::CaseMap::toTitle(
+            locale, U_TITLECASE_NO_LOWERCASE, /* iter */ nullptr,
+            reinterpret_cast<const char16_t*>(string_with_previous.data()),
+            string_with_previous.size(),
+            reinterpret_cast<char16_t*>(data_with_previous.data()),
+            data_with_previous.size(), &edits, status);
+
+        if (U_FAILURE(status)) {
+          break;
+        }
+
+        // Remove the space of the previous character at the start.
+        --target_length;
+        // Copy the result without the previous character.
+        data16.copy_from(data_with_previous.subspan(1u));
+        // Since the text included the previous character, decrease length of
+        // the first edit entry.
+        edits = DecreaseFirstEditLength(edits);
+        break;
+      }
     }
     if (U_SUCCESS(status)) {
       if (!edits.hasChanges())
@@ -353,6 +413,18 @@ String CaseMap::ToUpper(const String& source, TextOffsetMap* offset_map) const {
 
   if (StringImpl* impl = source.Impl())
     return ToUpper(impl, offset_map);
+  return String();
+}
+
+String CaseMap::ToTitle(const String& source,
+                        TextOffsetMap* offset_map,
+                        UChar previous_character) const {
+  DCHECK(!offset_map || offset_map->IsEmpty());
+
+  if (StringImpl* impl = source.Impl()) {
+    return CaseConvert(CaseMapType::kTitle, impl, case_map_locale_, offset_map,
+                       previous_character);
+  }
   return String();
 }
 

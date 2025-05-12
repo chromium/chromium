@@ -2548,6 +2548,10 @@
       status: "stable",
     },
     {
+      name: "ICUCapitalization",
+      status: "experimental",
+    },
+    {
       name: "IgnoreLetterSpacingInCursiveScripts",
       status: "stable",
     },

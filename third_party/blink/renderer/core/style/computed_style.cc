@@ -90,6 +90,7 @@
 #include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/capitalize.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/text/quotes_data.h"
@@ -1947,8 +1948,14 @@ String ComputedStyle::ApplyTextTransform(const String& text,
   switch (TextTransform()) {
     case ETextTransform::kNone:
       return text;
-    case ETextTransform::kCapitalize:
+    case ETextTransform::kCapitalize: {
+      if (RuntimeEnabledFeatures::ICUCapitalizationEnabled()) {
+        const LayoutLocale* locale = GetFontDescription().Locale();
+        CaseMap case_map(locale ? locale->CaseMapLocale() : CaseMap::Locale());
+        return case_map.ToTitle(text, offset_map, previous_character);
+      }
       return Capitalize(text, previous_character);
+    }
     case ETextTransform::kUppercase: {
       const LayoutLocale* locale = GetFontDescription().Locale();
       CaseMap case_map(locale ? locale->CaseMapLocale() : CaseMap::Locale());
