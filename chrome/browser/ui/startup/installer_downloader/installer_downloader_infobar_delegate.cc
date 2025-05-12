@@ -9,7 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/infobars/confirm_infobar_creator.h"
+#include "chrome/browser/ui/views/infobars/confirm_infobar.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -38,7 +38,8 @@ void InstallerDownloaderInfoBarDelegate::Show(
   std::unique_ptr<InstallerDownloaderInfoBarDelegate> delegate =
       std::make_unique<InstallerDownloaderInfoBarDelegate>(
           std::move(accept_cb));
-  infobar_manager->AddInfoBar(CreateConfirmInfoBar(std::move(delegate)));
+  infobar_manager->AddInfoBar(
+      std::make_unique<ConfirmInfoBar>(std::move(delegate)));
 }
 
 InstallerDownloaderInfoBarDelegate::InstallerDownloaderInfoBarDelegate(
