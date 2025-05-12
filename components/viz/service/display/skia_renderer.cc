@@ -127,10 +127,6 @@ BASE_FEATURE(kDumpWithoutCrashingOnMissingRenderPassBacking,
 BASE_FEATURE(kBufferQueue, "BufferQueue", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kFixAndroidToneMapping,
-             "FixAndroidToneMapping",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Smallest unit that impacts anti-aliasing output. We use this to determine
 // when an exterior edge (with AA) has been clipped (no AA). The specific value
 // was chosen to match that used by gl_renderer.
@@ -2677,21 +2673,9 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   // compositing.
   std::optional<gfx::ColorSpace> overlay_color_space;
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(kFixAndroidToneMapping)) {
-    // If overlay processor would override color space, override it here to to
-    // avoid color changes during promotion.
-    if (resource_provider()->IsOverlayCandidate(quad->resource_id)) {
-      overlay_color_space =
-          OverlayProcessorSurfaceControl::GetOverrideColorSpace();
-    }
-  } else {
-    // If overlay processor would override color space, override it here to to
-    // avoid color changes during promotion. Historically this was done only for
-    // stream_video.
-    if (quad->is_stream_video) {
-      overlay_color_space =
-          OverlayProcessorSurfaceControl::GetOverrideColorSpace();
-    }
+  if (resource_provider()->IsOverlayCandidate(quad->resource_id)) {
+    overlay_color_space =
+        OverlayProcessorSurfaceControl::GetOverrideColorSpace();
   }
 #endif
 
@@ -2705,12 +2689,6 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
       resource_provider()->GetHDRMetadata(quad->resource_id);
 
   const bool needs_tone_map = [&]() {
-    // Don't do tone mapping for stream video unless FixAndroidToneMapping is
-    // enabled.
-    if (quad->is_stream_video &&
-        !base::FeatureList::IsEnabled(kFixAndroidToneMapping)) {
-      return false;
-    }
     if (quad->is_video_frame && src_color_space.IsHDR()) {
       return true;
     }
