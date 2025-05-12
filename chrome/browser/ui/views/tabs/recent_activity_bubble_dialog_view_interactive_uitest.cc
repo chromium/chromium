@@ -291,6 +291,13 @@ IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewInteractiveUiTest,
       GURL("");
   activity_log.emplace_back(activity_without_avatar);
 
+  auto activity_with_long_description = CreateActivityForTab(group_id, tab2);
+  activity_with_long_description.activity_metadata.triggering_user->avatar_url =
+      GURL("");
+  activity_with_long_description.description_text =
+      u"long long long long long long long long long long long long long long ";
+  activity_log.emplace_back(activity_with_long_description);
+
   RunTestSequence(
       WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
       TriggerCurrentTabDialog(activity_log),
