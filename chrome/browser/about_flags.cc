@@ -1397,8 +1397,8 @@ const FeatureEntry::FeatureParam kOmniboxSearchAggregatorAlternateParams[] = {
      "locations/global/collections/default_collection/engines/"
      "neuravibeblendedsearch_1727383849310/completionConfig:completeQuery"}};
 const FeatureEntry::FeatureParam kOmniboxSearchAggregatorDemoParams[] = {
-    {"name", "NeuraVibe"},
-    {"shortcut", "nv"},
+    {"name", "Neuravibe"},
+    {"shortcut", "neura"},
     {"icon_url", "https://gstatic.com/vertexaisearch/favicon.png"},
     {"search_url",
      "https://vertexaisearch.cloud.google.com/home/cid/"
