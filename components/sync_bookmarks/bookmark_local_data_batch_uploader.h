@@ -17,10 +17,9 @@ class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
-namespace sync_bookmarks {
+class PrefService;
 
-constexpr char kBatchUploadDurationHistogramName[] =
-    "Bookmarks.BatchUploadDuration";
+namespace sync_bookmarks {
 
 class BookmarkModelViewUsingLocalOrSyncableNodes;
 
@@ -28,8 +27,9 @@ class BookmarkLocalDataBatchUploader
     : public syncer::DataTypeLocalDataBatchUploader {
  public:
   // `bookmark_model` must either be null or non-null and outlive this object.
-  explicit BookmarkLocalDataBatchUploader(
-      bookmarks::BookmarkModel* bookmark_model);
+  // `pref_service` mut not be null and must outlive this object.
+  BookmarkLocalDataBatchUploader(bookmarks::BookmarkModel* bookmark_model,
+                                 PrefService* pref_service);
 
   BookmarkLocalDataBatchUploader(const BookmarkLocalDataBatchUploader&) =
       delete;
@@ -70,6 +70,7 @@ class BookmarkLocalDataBatchUploader
       int bookmarked_urls_count) const;
 
   const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  const raw_ptr<PrefService> pref_service_;
 };
 
 }  // namespace sync_bookmarks

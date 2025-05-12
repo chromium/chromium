@@ -594,7 +594,7 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
           std::make_unique<sync_bookmarks::BookmarkDataTypeController>(
               std::move(full_mode_delegate), std::move(transport_mode_delegate),
               std::make_unique<sync_bookmarks::BookmarkLocalDataBatchUploader>(
-                  bookmark_model_.value())));
+                  bookmark_model_.value(), pref_service_.value())));
     }
 
     if (!disabled_types.Has(syncer::POWER_BOOKMARK) &&

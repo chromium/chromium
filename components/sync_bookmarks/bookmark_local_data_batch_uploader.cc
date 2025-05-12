@@ -16,6 +16,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync_bookmarks/bookmark_model_view.h"
@@ -28,8 +30,9 @@
 namespace sync_bookmarks {
 
 BookmarkLocalDataBatchUploader::BookmarkLocalDataBatchUploader(
-    bookmarks::BookmarkModel* bookmark_model)
-    : bookmark_model_(bookmark_model) {}
+    bookmarks::BookmarkModel* bookmark_model,
+    PrefService* pref_service)
+    : bookmark_model_(bookmark_model), pref_service_(pref_service) {}
 
 BookmarkLocalDataBatchUploader::~BookmarkLocalDataBatchUploader() = default;
 
@@ -103,7 +106,8 @@ void BookmarkLocalDataBatchUploader::TriggerLocalDataMigrationForItems(
 
 bool BookmarkLocalDataBatchUploader::CanUpload() const {
   return bookmark_model_ && bookmark_model_->loaded() &&
-         bookmark_model_->account_bookmark_bar_node();
+         bookmark_model_->account_bookmark_bar_node() &&
+         pref_service_->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled);
 }
 
 std::vector<GURL> BookmarkLocalDataBatchUploader::GetBookmarkedUrlsInSubtree(
