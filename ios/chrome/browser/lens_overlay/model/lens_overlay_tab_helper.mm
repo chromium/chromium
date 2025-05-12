@@ -130,6 +130,7 @@ void LensOverlayTabHelper::DidFinishNavigation(
 void LensOverlayTabHelper::WasShown(web::WebState* web_state) {
   CHECK_EQ(web_state, web_state_, kLensOverlayNotFatalUntil);
 
+  BOOL showAnimated = NO;
   if (IsLensOverlaySameTabNavigationEnabled(GetProfilePrefs())) {
     if (web_state_->GetNavigationManager()) {
       web::NavigationItem* visibleItem =
@@ -137,11 +138,11 @@ void LensOverlayTabHelper::WasShown(web::WebState* web_state) {
 
       if (is_ui_attached_and_alive_ && visibleItem &&
           invokation_navigation_id_ == visibleItem->GetUniqueID()) {
-        [commands_handler_ showLensUI:YES];
+        [commands_handler_ showLensUI:showAnimated];
       }
     }
   } else if (is_ui_attached_and_alive_) {
-    [commands_handler_ showLensUI:YES];
+    [commands_handler_ showLensUI:showAnimated];
   }
 }
 
@@ -153,7 +154,7 @@ void LensOverlayTabHelper::WasHidden(web::WebState* web_state) {
   }
 
   if (is_ui_attached_and_alive_) {
-    [commands_handler_ hideLensUI:YES completion:nil];
+    [commands_handler_ hideLensUI:NO completion:nil];
   }
 }
 

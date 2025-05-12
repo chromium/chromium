@@ -436,13 +436,15 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
                       if (completion) {
                         completion(YES);
                       }
-                      [weakSelf onContainerViewControllerPresented];
+                      [weakSelf
+                          onContainerViewControllerPresentedAnimated:animated];
                     }];
 }
 
-- (void)onContainerViewControllerPresented {
-  // In some situations this coordinator shouldn't do anything because it's
-  // already being torn down. Just do minimal clean up and return.
+- (void)onContainerViewControllerPresentedAnimated:(BOOL)animated {
+  // In some situations this coordinator shouldn't do
+  // anything because it's already being torn down. Just do minimal clean up and
+  // return.
   if (_isStopped || _isExiting) {
     if (_associatedTabHelper) {
       _associatedTabHelper->ReleaseSnapshotAuxiliaryWindows();
@@ -462,7 +464,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
     if (self.isResultsBottomSheetCreated) {
       [self buildResultsBottomSheetPresentation];
-      [self showResultsBottomSheet];
+      [self showResultsPageAnimated:animated];
     } else if (_selectionViewController.translateFilterActive) {
       [self startResultPage];
       [_resultsPagePresenter
@@ -1169,7 +1171,14 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   _resultMediator.contextMenuProvider = _resultContextMenuProvider;
 
   [self buildResultsBottomSheetPresentation];
-  [self showResultsBottomSheet];
+
+  BOOL isStateRestoration = NO;
+  if (_associatedTabHelper) {
+    SheetDimensionState restoredSheetState =
+        _associatedTabHelper->GetRecordedSheetDimensionState();
+    isStateRestoration = restoredSheetState != SheetDimensionState::kHidden;
+  }
+  [self showResultsPageAnimated:!isStateRestoration];
 
   // TODO(crbug.com/355179986): Implement omnibox navigation with
   // omnibox_delegate.
@@ -1382,7 +1391,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 }
 
 // Presents the result botom sheet.
-- (void)showResultsBottomSheet {
+- (void)showResultsPageAnimated:(BOOL)animated {
   if (!_associatedTabHelper) {
     return;
   }
@@ -1391,10 +1400,9 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
   SheetDimensionState restoredSheetState =
       _associatedTabHelper->GetRecordedSheetDimensionState();
-  BOOL isStateRestoration = restoredSheetState != SheetDimensionState::kHidden;
   BOOL maximizeSheet = restoredSheetState == SheetDimensionState::kLarge;
   [_resultsPagePresenter
-      presentResultsPageAnimated:!isStateRestoration
+      presentResultsPageAnimated:animated
                    maximizeSheet:maximizeSheet
                 startInTranslate:_selectionViewController.translateFilterActive
                       completion:^{

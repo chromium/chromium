@@ -55,6 +55,10 @@
 /// The delegate of the lens overlay container.
 @protocol LensOverlayContainerDelegate <NSObject>
 
+/// Called after the container was added to a view hierarchy
+- (void)lensOverlayContainerDidAppear:
+    (LensOverlayContainerViewController*)lensOverlayContainerViewController;
+
 /// Called when the container changes the current horizontal size class
 - (void)lensOverlayContainerDidChangeSizeClass:
     (LensOverlayContainerViewController*)lensOverlayContainerViewController;

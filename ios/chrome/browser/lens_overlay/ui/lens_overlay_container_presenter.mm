@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_container_presenter.h"
 
+#import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"
@@ -38,6 +39,9 @@ const CGFloat kSelectionViewAnimationDuration = 0.2f;
 
   // The top constraint for the controller.
   NSLayoutConstraint* _topConstraint;
+
+  // Block to be called when the container is added to a view hierarchy.
+  ProceduralBlock _callWhenContainerAppear;
 }
 
 - (BOOL)isLensOverlayVisible {
@@ -98,7 +102,14 @@ const CGFloat kSelectionViewAnimationDuration = 0.2f;
 
   if (!animated) {
     if (completion) {
-      completion();
+      // The base view controller might not be in the view hierarchy yet.
+      // Call the completion only after the container has been added to the
+      // hierarchy.
+      if (self.isLensOverlayVisible) {
+        completion();
+      } else {
+        _callWhenContainerAppear = completion;
+      }
     }
     return;
   }
@@ -161,6 +172,14 @@ const CGFloat kSelectionViewAnimationDuration = 0.2f;
 }
 
 #pragma mark - LensOverlayContainerDelegate
+
+- (void)lensOverlayContainerDidAppear:
+    (LensOverlayContainerViewController*)lensOverlayContainerViewController {
+  if (_callWhenContainerAppear) {
+    _callWhenContainerAppear();
+    _callWhenContainerAppear = nil;
+  }
+}
 
 - (void)lensOverlayContainerDidChangeSizeClass:
     (LensOverlayContainerViewController*)lensOverlayContainerViewController {
