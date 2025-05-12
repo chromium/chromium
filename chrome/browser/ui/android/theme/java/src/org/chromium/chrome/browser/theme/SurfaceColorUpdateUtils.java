@@ -188,4 +188,31 @@ public class SurfaceColorUpdateUtils {
                 ? SemanticColorUtils.getColorSurfaceContainerLow(context)
                 : SemanticColorUtils.getCardBackgroundColor(context);
     }
+
+    /**
+     * Returns the background color for the grid tab switcher search box based on the enabled flag
+     * and incognito.
+     *
+     * @param context {@link Context} used to retrieve colors.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @return The background color.
+     */
+    public static @ColorInt int getGtsSearchBoxBackgroundColor(
+            Context context, boolean isIncognito) {
+        // TODO(crbug.com/414404094): Add semantic color for incognito.
+        if (useNewGtsSurfaceColor()) {
+            return isIncognito
+                    ? ContextCompat.getColor(context, R.color.gm3_baseline_surface_dark)
+                    : SemanticColorUtils.getColorSurface(context);
+        }
+        @ColorInt
+        int defaultBackground =
+                ColorUtils.inNightMode(context)
+                        ? SemanticColorUtils.getColorSurfaceContainerHighest(context)
+                        : SemanticColorUtils.getColorSurfaceContainerHigh(context);
+        return isIncognito
+                ? ContextCompat.getColor(
+                        context, R.color.gm3_baseline_surface_container_highest_dark)
+                : defaultBackground;
+    }
 }

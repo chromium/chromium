@@ -65,6 +65,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -326,7 +327,8 @@ public class HubToolbarViewUnitTest {
         GradientDrawable backgroundDrawable = (GradientDrawable) mSearchBox.getBackground();
         assertEquals(
                 ColorStateList.valueOf(
-                        ContextCompat.getColor(mActivity, R.color.baseline_neutral_20)),
+                        ContextCompat.getColor(
+                                mActivity, R.color.gm3_baseline_surface_container_highest_dark)),
                 backgroundDrawable.getColor());
 
         forceSetColorScheme(HubColorScheme.DEFAULT);
@@ -334,8 +336,7 @@ public class HubToolbarViewUnitTest {
                 MaterialColors.getColor(mActivity, R.attr.colorOnSurfaceVariant, "Test"),
                 mSearchBoxText.getCurrentHintTextColor());
         assertEquals(
-                ColorStateList.valueOf(
-                        ContextCompat.getColor(mActivity, R.color.color_primary_with_alpha_10)),
+                ColorStateList.valueOf(SemanticColorUtils.getColorSurfaceContainerHigh(mActivity)),
                 backgroundDrawable.getColor());
     }
 

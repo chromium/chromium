@@ -108,6 +108,18 @@ public class SurfaceColorUpdateUtilsUnitTest {
         assertEquals(
                 SemanticColorUtils.getColorSurfaceContainerLow(mContext),
                 messageCardBackgroundColor);
+
+        int searchBoxBgColor =
+                SurfaceColorUpdateUtils.getGtsSearchBoxBackgroundColor(
+                        mContext, /* isIncognito= */ false);
+        assertEquals(SemanticColorUtils.getColorSurface(mContext), searchBoxBgColor);
+
+        int searchBoxBgColorIncognito =
+                SurfaceColorUpdateUtils.getGtsSearchBoxBackgroundColor(
+                        mContext, /* isIncognito= */ true);
+        assertEquals(
+                ContextCompat.getColor(mContext, R.color.gm3_baseline_surface_dark),
+                searchBoxBgColorIncognito);
     }
 
     @Test
@@ -144,6 +156,19 @@ public class SurfaceColorUpdateUtilsUnitTest {
                 SurfaceColorUpdateUtils.getMessageCardBackgroundColor(mContext);
         assertEquals(
                 SemanticColorUtils.getCardBackgroundColor(mContext), messageCardBackgroundColor);
+
+        int searchBoxBgColor =
+                SurfaceColorUpdateUtils.getGtsSearchBoxBackgroundColor(
+                        mContext, /* isIncognito= */ false);
+        assertEquals(SemanticColorUtils.getColorSurfaceContainerHigh(mContext), searchBoxBgColor);
+
+        int searchBoxBgColorIncognito =
+                SurfaceColorUpdateUtils.getGtsSearchBoxBackgroundColor(
+                        mContext, /* isIncognito= */ true);
+        assertEquals(
+                ContextCompat.getColor(
+                        mContext, R.color.gm3_baseline_surface_container_highest_dark),
+                searchBoxBgColorIncognito);
     }
 
     @Test

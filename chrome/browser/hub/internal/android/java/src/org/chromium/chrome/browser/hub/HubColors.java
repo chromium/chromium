@@ -10,7 +10,6 @@ import android.content.res.Resources;
 import android.graphics.Color;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
 import androidx.core.content.ContextCompat;
 
@@ -162,19 +161,17 @@ public final class HubColors {
     /** Returns the color of the background for the search box. */
     public static @ColorInt int getSearchBoxBgColor(
             Context context, @HubColorScheme int colorScheme) {
-        @ColorRes int backgroundColorRes;
         switch (colorScheme) {
             case HubColorScheme.DEFAULT:
-                backgroundColorRes = R.color.color_primary_with_alpha_10;
-                break;
+                return SurfaceColorUpdateUtils.getGtsSearchBoxBackgroundColor(
+                        context, /* isIncognito= */ false);
             case HubColorScheme.INCOGNITO:
-                backgroundColorRes = R.color.baseline_neutral_20;
-                break;
+                return SurfaceColorUpdateUtils.getGtsSearchBoxBackgroundColor(
+                        context, /* isIncognito= */ true);
             default:
                 assert false;
-                backgroundColorRes = Resources.ID_NULL;
+                return ContextCompat.getColor(context, Resources.ID_NULL);
         }
-        return ContextCompat.getColor(context, backgroundColorRes);
     }
 
     /** Returns the hub tool bar action button background color as per the given color scheme. */
