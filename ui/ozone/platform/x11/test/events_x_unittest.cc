@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,6 +20,7 @@
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/features.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/test/events_test_utils.h"
@@ -689,6 +691,10 @@ void AdvanceKeyEventTimestamp(x11::Event* event) {
 }  // namespace
 
 TEST_F(EventsXTest, AutoRepeat) {
+  // Ensure legacy key repeat synthesis is enabled.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kLegacyKeyRepeatSynthesis);
+
   const uint16_t kNativeCodeA =
       ui::KeycodeConverter::DomCodeToNativeKeycode(DomCode::US_A);
   const uint16_t kNativeCodeB =

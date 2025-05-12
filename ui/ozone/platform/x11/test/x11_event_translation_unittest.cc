@@ -6,12 +6,14 @@
 
 #include <xcb/xcb.h>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/features.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -254,6 +256,10 @@ TEST(XEventTranslationTest, ChangedMouseButtonFlags) {
 // their counterparts are mixed. Ensures regressions like crbug.com/1069690
 // are not reintroduced in the future.
 TEST(XEventTranslationTest, KeyModifiersCounterpartRepeat) {
+  // Ensure legacy key repeat synthesis is enabled.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kLegacyKeyRepeatSynthesis);
+
   // Use a TestTickClock so we have the power to control the time :)
   test::ScopedEventTestTickClock test_clock;
 

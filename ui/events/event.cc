@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram.h"
@@ -26,6 +27,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/features.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -886,8 +888,11 @@ void KeyEvent::InitializeNative() {
 
   // Check if this is a key repeat. This must be called before initial flags
   // processing, e.g: NormalizeFlags(), to avoid issues like crbug.com/1069690.
-  if (synthesize_key_repeat_enabled_ && IsRepeated(GetLastKeyEvent()))
+  if (synthesize_key_repeat_enabled_ &&
+      base::FeatureList::IsEnabled(kLegacyKeyRepeatSynthesis) &&
+      IsRepeated(GetLastKeyEvent())) {
     SetFlags(flags() | EF_IS_REPEAT);
+  }
 
 #if BUILDFLAG(IS_LINUX)
   NormalizeFlags();
