@@ -4,8 +4,6 @@
 
 package org.chromium.ui.base;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyFloat;
@@ -59,12 +57,12 @@ public class EventForwarderTest {
         EventForwarder eventForwarder = new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true);
 
         // Left click
-        MotionEvent leftClickEvent = getTrackpadLeftClickEvent();
+        MotionEvent leftClickEvent = MotionEventTestUtils.getTrackpadLeftClickEvent();
         eventForwarder.onTouchEvent(leftClickEvent);
         verifyNativeMouseEventSent(NATIVE_EVENT_FORWARDER_ID, leftClickEvent, eventForwarder, 1);
 
         // Right click
-        MotionEvent rightClickEvent = getTrackRightClickEvent();
+        MotionEvent rightClickEvent = MotionEventTestUtils.getTrackRightClickEvent();
         eventForwarder.onTouchEvent(rightClickEvent);
         verifyNativeMouseEventSent(NATIVE_EVENT_FORWARDER_ID, rightClickEvent, eventForwarder, 1);
     }
@@ -75,14 +73,16 @@ public class EventForwarderTest {
 
         // Left click
         MotionEvent leftClickReleaseEvent =
-                getTrackpadEvent(MotionEvent.ACTION_BUTTON_RELEASE, MotionEvent.BUTTON_PRIMARY);
+                MotionEventTestUtils.getTrackpadEvent(
+                        MotionEvent.ACTION_BUTTON_RELEASE, MotionEvent.BUTTON_PRIMARY);
         eventForwarder.onTouchEvent(leftClickReleaseEvent);
         verifyNativeMouseEventSent(
                 NATIVE_EVENT_FORWARDER_ID, leftClickReleaseEvent, eventForwarder, 1);
 
         // Right click
         MotionEvent rightClickReleaseEvent =
-                getTrackpadEvent(MotionEvent.ACTION_BUTTON_RELEASE, MotionEvent.BUTTON_SECONDARY);
+                MotionEventTestUtils.getTrackpadEvent(
+                        MotionEvent.ACTION_BUTTON_RELEASE, MotionEvent.BUTTON_SECONDARY);
         eventForwarder.onTouchEvent(rightClickReleaseEvent);
         verifyNativeMouseEventSent(
                 NATIVE_EVENT_FORWARDER_ID, rightClickReleaseEvent, eventForwarder, 1);
@@ -92,7 +92,8 @@ public class EventForwarderTest {
     public void testSendTrackpadClickAndDragAsMouseEventToNative() {
         EventForwarder eventForwarder = new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true);
         MotionEvent clickAndDragEvent =
-                getTrackpadEvent(MotionEvent.ACTION_MOVE, MotionEvent.BUTTON_PRIMARY);
+                MotionEventTestUtils.getTrackpadEvent(
+                        MotionEvent.ACTION_MOVE, MotionEvent.BUTTON_PRIMARY);
         eventForwarder.onTouchEvent(clickAndDragEvent);
         verifyNativeMouseEventSent(NATIVE_EVENT_FORWARDER_ID, clickAndDragEvent, eventForwarder, 1);
     }
@@ -100,7 +101,8 @@ public class EventForwarderTest {
     @Test
     public void testSendTrackpadHoverAsMouseEventToNative() {
         EventForwarder eventForwarder = new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true);
-        MotionEvent hoverEvent = getTrackpadEvent(MotionEvent.ACTION_HOVER_MOVE, 0);
+        MotionEvent hoverEvent =
+                MotionEventTestUtils.getTrackpadEvent(MotionEvent.ACTION_HOVER_MOVE, 0);
         eventForwarder.onHoverEvent(hoverEvent);
         verifyNativeMouseEventSent(NATIVE_EVENT_FORWARDER_ID, hoverEvent, eventForwarder, 1);
     }
@@ -167,7 +169,8 @@ public class EventForwarderTest {
     @Test
     public void testSendTrackEventAsTouchEventWhenButtonIsNotClicked() {
         EventForwarder eventForwarder = new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true);
-        MotionEvent trackpadTouchDownEventNoClick = getTrackpadTouchDownEventNoClick();
+        MotionEvent trackpadTouchDownEventNoClick =
+                MotionEventTestUtils.getTrackpadTouchDownEventNoClick();
         eventForwarder.onTouchEvent(trackpadTouchDownEventNoClick);
         verify(mNativeMock, times(1))
                 .onTouchEvent(
@@ -224,7 +227,7 @@ public class EventForwarderTest {
     @Test
     public void testNotSendTrackpadClickAsMouseEventWhenFeatureDisabled() {
         EventForwarder eventForwarder = new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, false);
-        MotionEvent trackpadClickDownEvent = getTrackpadLeftClickEvent();
+        MotionEvent trackpadClickDownEvent = MotionEventTestUtils.getTrackpadLeftClickEvent();
         eventForwarder.onTouchEvent(trackpadClickDownEvent);
         verify(mNativeMock, never())
                 .onMouseEvent(
@@ -385,8 +388,8 @@ public class EventForwarderTest {
                         0,
                         MotionEvent.ACTION_BUTTON_PRESS,
                         pointersCnt,
-                        getToolTypeFingerProperties(pointersCnt),
-                        getPointerCoords(pointersCnt),
+                        MotionEventTestUtils.getToolTypeFingerProperties(pointersCnt),
+                        MotionEventTestUtils.getPointerCoords(pointersCnt),
                         0,
                         MotionEvent.BUTTON_PRIMARY,
                         0,
@@ -413,16 +416,6 @@ public class EventForwarderTest {
                         buttonState,
                         moveEvent.getMetaState(),
                         MotionEvent.TOOL_TYPE_MOUSE);
-    }
-
-    @Test
-    public void testCapturedPointerTrackpadScrollEvent() {
-        MotionEvent event = getTrackpadEvent(MotionEvent.ACTION_MOVE, 0, 2);
-        MotionEvent updatedEvent = EventForwarder.updateTrackpadCapturedScrollEvent(event, 10, -10);
-
-        assertEquals(MotionEvent.ACTION_SCROLL, updatedEvent.getAction());
-        assertTrue(updatedEvent.getAxisValue(MotionEvent.AXIS_HSCROLL) > 0);
-        assertTrue(updatedEvent.getAxisValue(MotionEvent.AXIS_VSCROLL) < 0);
     }
 
     @Test
@@ -525,67 +518,6 @@ public class EventForwarderTest {
                         event.getButtonState(),
                         event.getMetaState(),
                         MotionEvent.TOOL_TYPE_MOUSE);
-    }
-
-    private static MotionEvent getTrackpadTouchDownEventNoClick() {
-        return getTrackpadEvent(MotionEvent.ACTION_DOWN, 0);
-    }
-
-    private static MotionEvent getTrackpadLeftClickEvent() {
-        return getTrackpadEvent(MotionEvent.ACTION_BUTTON_PRESS, MotionEvent.BUTTON_PRIMARY);
-    }
-
-    private static MotionEvent getTrackRightClickEvent() {
-        return getTrackpadEvent(MotionEvent.ACTION_BUTTON_PRESS, MotionEvent.BUTTON_SECONDARY);
-    }
-
-    private static MotionEvent getTrackpadEvent(int action, int buttonState) {
-        return getTrackpadEvent(action, buttonState, 1);
-    }
-
-    private static MotionEvent getTrackpadEvent(int action, int buttonState, int pointersCnt) {
-        return MotionEvent.obtain(
-                0,
-                0,
-                action,
-                pointersCnt,
-                getToolTypeFingerProperties(pointersCnt),
-                getPointerCoords(pointersCnt),
-                0,
-                buttonState,
-                0,
-                0,
-                0,
-                0,
-                getTrackpadSource(),
-                0);
-    }
-
-    private static MotionEvent.PointerProperties[] getToolTypeFingerProperties(int pointersCnt) {
-        MotionEvent.PointerProperties[] pointerPropertiesArray =
-                new MotionEvent.PointerProperties[pointersCnt];
-        for (int i = 0; i < pointersCnt; i++) {
-            MotionEvent.PointerProperties trackpadProperties = new MotionEvent.PointerProperties();
-            trackpadProperties.id = 7 + i;
-            trackpadProperties.toolType = MotionEvent.TOOL_TYPE_FINGER;
-            pointerPropertiesArray[i] = trackpadProperties;
-        }
-        return pointerPropertiesArray;
-    }
-
-    private static MotionEvent.PointerCoords[] getPointerCoords(int pointersCnt) {
-        MotionEvent.PointerCoords[] pointerCoordsArray = new MotionEvent.PointerCoords[pointersCnt];
-        for (int i = 0; i < pointersCnt; i++) {
-            MotionEvent.PointerCoords coords = new MotionEvent.PointerCoords();
-            coords.x = 14 + i;
-            coords.y = 21 + i;
-            pointerCoordsArray[i] = coords;
-        }
-        return pointerCoordsArray;
-    }
-
-    private static int getTrackpadSource() {
-        return InputDevice.SOURCE_MOUSE;
     }
 
     private void validateDragDropEvent(
