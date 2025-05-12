@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {isRTL} from 'chrome://resources/js/util.js';
 
 import type {AnnotationBrush, Color, Point, TextAnnotation, TextAttributes, TextBoxRect, TextStyles} from './constants.js';
 import {AnnotationBrushType, TextAlignment, TextStyle, TextTypeface} from './constants.js';
 import {PluginController, PluginControllerEventType} from './controller.js';
-import type {Viewport} from './viewport.js';
+import type {Viewport, ViewportRect} from './viewport.js';
 
 export interface ViewportParams {
-  pageX: number;
-  pageY: number;
+  clockwiseRotations: number;
+  pageDimensions: ViewportRect;
   zoom: number;
 }
 
@@ -32,6 +32,74 @@ export function colorsEqual(color1: Color, color2: Color): boolean {
 
 export function stylesEqual(style1: TextStyles, style2: TextStyles): boolean {
   return style1.bold === style2.bold && style1.italic === style2.italic;
+}
+
+/**
+ * Converts `rect` from `oldRotations` clockwise rotations to `newRotations`
+ * clockwise rotations. `newPageWidth` should be the page width in
+ * `newRotations` coordinates, and `newPageHeight` should be the page height in
+ * `newRotations` coordinates.
+ */
+export function convertRotatedCoordinates(
+    rect: TextBoxRect, oldRotations: number, newRotations: number,
+    newPageWidth: number, newPageHeight: number): TextBoxRect {
+  const pageWidthNR = newRotations % 2 === 0 ? newPageWidth : newPageHeight;
+  const pageHeightNR = newRotations % 2 === 0 ? newPageHeight : newPageWidth;
+  const nonRotated: TextBoxRect = {
+    locationX: rect.locationX,
+    locationY: rect.locationY,
+    width: oldRotations % 2 === 0 ? rect.width : rect.height,
+    height: oldRotations % 2 === 0 ? rect.height : rect.width,
+  };
+  switch (oldRotations % 4) {
+    case 0:
+      // Already populated correctly.
+      break;
+    case 1:
+      nonRotated.locationX = rect.locationY;
+      nonRotated.locationY = pageHeightNR - rect.locationX - rect.width;
+      break;
+    case 2:
+      nonRotated.locationX = pageWidthNR - rect.locationX - rect.width;
+      nonRotated.locationY = pageHeightNR - rect.locationY - rect.height;
+      break;
+    case 3:
+      nonRotated.locationX = pageWidthNR - rect.locationY - rect.height;
+      nonRotated.locationY = rect.locationX;
+      break;
+    default:
+      assertNotReached();
+  }
+
+  const newRotated = {
+    locationX: nonRotated.locationX,
+    locationY: nonRotated.locationY,
+    width: newRotations % 2 === 0 ? nonRotated.width : nonRotated.height,
+    height: newRotations % 2 === 0 ? nonRotated.height : nonRotated.width,
+  };
+  switch (newRotations % 4) {
+    case 0:
+      break;
+    case 1:
+      newRotated.locationX =
+          pageHeightNR - nonRotated.locationY - nonRotated.height;
+      newRotated.locationY = nonRotated.locationX;
+      break;
+    case 2:
+      newRotated.locationX =
+          pageWidthNR - nonRotated.locationX - nonRotated.width;
+      newRotated.locationY =
+          pageHeightNR - nonRotated.locationY - nonRotated.height;
+      break;
+    case 3:
+      newRotated.locationX = nonRotated.locationY;
+      newRotated.locationY =
+          pageWidthNR - nonRotated.locationX - nonRotated.width;
+      break;
+    default:
+      assertNotReached();
+  }
+  return newRotated;
 }
 
 export class Ink2Manager extends EventTarget {
@@ -58,7 +126,11 @@ export class Ink2Manager extends EventTarget {
   private pageNumber_: number = -1;
   private pluginController_: PluginController = PluginController.getInstance();
   private viewport_: Viewport|null = null;
-  private viewportParams_: ViewportParams = {pageX: 0, pageY: 0, zoom: 1.0};
+  private viewportParams_: ViewportParams = {
+    clockwiseRotations: 0,
+    pageDimensions: {x: 0, y: 0, width: 0, height: 0},
+    zoom: 1.0,
+  };
   private nextAnnotationId_: number = 0;
 
   setViewport(viewport: Viewport) {
@@ -90,7 +162,6 @@ export class Ink2Manager extends EventTarget {
       return;
     }
 
-    const zoom = this.viewport_.getZoom();
     const pageDimensions = this.viewport_.getPageScreenRect(page);
     // Is the click in an existing box?
     let existing = null;
@@ -100,16 +171,16 @@ export class Ink2Manager extends EventTarget {
         annotationsMap ? Array.from(annotationsMap.values()) : [];
     for (const annotation of annotations) {
       // Convert box to screen coordinates.
-      const x = annotation.textBoxRect.locationX * zoom + pageDimensions.x;
-      const width = annotation.textBoxRect.width * zoom;
-      const y = annotation.textBoxRect.locationY * zoom + pageDimensions.y;
-      const height = annotation.textBoxRect.height * zoom;
-      if (location.x >= x && location.x <= (x + width) && location.y >= y &&
-          location.y <= (y + height)) {
+      const screenBox =
+          this.pageToScreenCoordinates_(page, annotation.textBoxRect);
+      if (location.x >= screenBox.locationX &&
+          location.x <= (screenBox.locationX + screenBox.width) &&
+          location.y >= screenBox.locationY &&
+          location.y <= (screenBox.locationY + screenBox.height)) {
         // Don't update the original. Create a new object and update its
         // rectangle to use the computed screen coordinates.
         existing = structuredClone(annotation);
-        existing.textBoxRect = {height, locationX: x, locationY: y, width};
+        existing.textBoxRect = screenBox;
         break;
       }
     }
@@ -126,6 +197,7 @@ export class Ink2Manager extends EventTarget {
         locationY: location.y,
         width: DEFAULT_TEXTBOX_WIDTH,
       },
+      textOrientation: (4 - this.viewport_.getClockwiseRotations()) % 4,
     };
 
     if (existing) {
@@ -158,17 +230,21 @@ export class Ink2Manager extends EventTarget {
     const zoom = this.viewport_.getZoom();
     const page = this.pageNumber_ !== -1 ? this.pageNumber_ :
                                            this.viewport_.getMostVisiblePage();
-    const visiblePageDimensions = this.viewport_.getPageScreenRect(page);
-    if (visiblePageDimensions.x === this.viewportParams_.pageX &&
-        visiblePageDimensions.y === this.viewportParams_.pageY &&
+    const pageDimensions = this.viewport_.getPageScreenRect(page);
+    const rotations = this.viewport_.getClockwiseRotations();
+    if (rotations === this.viewportParams_.clockwiseRotations &&
+        pageDimensions.x === this.viewportParams_.pageDimensions.x &&
+        pageDimensions.y === this.viewportParams_.pageDimensions.y &&
+        pageDimensions.width === this.viewportParams_.pageDimensions.width &&
+        pageDimensions.height === this.viewportParams_.pageDimensions.height &&
         zoom === this.viewportParams_.zoom) {
       // Early return to avoid firing unnecessary events.
       return;
     }
 
     this.viewportParams_ = {
-      pageX: visiblePageDimensions.x,
-      pageY: visiblePageDimensions.y,
+      clockwiseRotations: rotations,
+      pageDimensions: pageDimensions,
       zoom,
     };
     this.dispatchEvent(
@@ -286,16 +362,65 @@ export class Ink2Manager extends EventTarget {
     this.fireAttributesChanged_();
   }
 
-  private screenToPageCoordinates_(pageNumber: number, screenRect: TextBoxRect):
+  private pageToScreenCoordinates_(pageNumber: number, pageRect: TextBoxRect):
       TextBoxRect {
     assert(this.viewport_);
     const pageDimensions = this.viewport_.getPageScreenRect(pageNumber);
     const zoom = this.viewport_.getZoom();
+
+    // Apply zoom.
+    const zoomed = {
+      locationX: pageRect.locationX * zoom,
+      locationY: pageRect.locationY * zoom,
+      width: pageRect.width * zoom,
+      height: pageRect.height * zoom,
+    };
+
+    // Apply rotation
+    const rotated = convertRotatedCoordinates(
+        zoomed, 0, this.viewport_.getClockwiseRotations(), pageDimensions.width,
+        pageDimensions.height);
+
+    // Apply offsets.
     return {
-      height: screenRect.height / zoom,
-      locationX: (screenRect.locationX - pageDimensions.x) / zoom,
-      locationY: (screenRect.locationY - pageDimensions.y) / zoom,
-      width: screenRect.width / zoom,
+      locationX: rotated.locationX + pageDimensions.x,
+      locationY: rotated.locationY + pageDimensions.y,
+      height: rotated.height,
+      width: rotated.width,
+    };
+  }
+
+  private screenToPageCoordinates_(pageNumber: number, screenRect: TextBoxRect):
+      TextBoxRect {
+    assert(this.viewport_);
+    const zoom = this.viewport_.getZoom();
+    const pageDimensions = this.viewport_.getPageScreenRect(pageNumber);
+
+    // Undo offset
+    const noOffset = {
+      locationX: screenRect.locationX - pageDimensions.x,
+      locationY: screenRect.locationY - pageDimensions.y,
+      width: screenRect.width,
+      height: screenRect.height,
+    };
+
+    // Undo rotation
+    const rotations = this.viewport_.getClockwiseRotations();
+    // Need to pass the width and height for the new number of desired rotations
+    // (0 in this case) to convertRotatedCoordinates().
+    const pageWidth =
+        rotations % 2 === 0 ? pageDimensions.width : pageDimensions.height;
+    const pageHeight =
+        rotations % 2 === 0 ? pageDimensions.height : pageDimensions.width;
+    const noRotation = convertRotatedCoordinates(
+        noOffset, rotations, 0, pageWidth, pageHeight);
+
+    // Undo zoom.
+    return {
+      height: noRotation.height / zoom,
+      locationX: noRotation.locationX / zoom,
+      locationY: noRotation.locationY / zoom,
+      width: noRotation.width / zoom,
     };
   }
 

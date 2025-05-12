@@ -93,3 +93,15 @@ textarea {
   padding: calc(var(--handle-size) / 2 + 2px);
   resize: none;
 }
+
+:host([text-rotations_="1"]) textarea {
+  writing-mode: vertical-rl;
+}
+
+:host([text-rotations_="2"]) textarea {
+  transform: rotate(180deg);
+}
+
+:host([text-rotations_="3"]) textarea {
+  writing-mode: sideways-lr;
+}

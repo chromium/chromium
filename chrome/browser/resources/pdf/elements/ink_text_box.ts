@@ -8,7 +8,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {TextAttributes, TextBoxRect} from '../constants.js';
-import {colorsEqual, Ink2Manager, stylesEqual} from '../ink2_manager.js';
+import {colorsEqual, convertRotatedCoordinates, Ink2Manager, stylesEqual} from '../ink2_manager.js';
 import type {TextBoxInit, ViewportParams} from '../ink2_manager.js';
 import {colorToHex} from '../pdf_viewer_utils.js';
 
@@ -57,7 +57,13 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
       locationY_: {type: Number},
       minHeight_: {type: Number},
       state_: {type: Number},
+      textOrientation_: {type: Number},
+      textRotations_: {
+        type: Number,
+        reflect: true,
+      },
       textValue_: {type: String},
+      viewportRotations_: {type: Number},
       width_: {type: Number},
       zoom_: {type: Number},
     };
@@ -69,8 +75,11 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
   private accessor locationY_: number = 0;
   private accessor minHeight_: number = 0;
   private accessor height_: number = 0;
-  protected accessor textValue_: string = '';
   private accessor state_: TextBoxState = TextBoxState.INACTIVE;
+  private accessor textOrientation_: number = 0;
+  protected accessor textRotations_: number = 0;
+  protected accessor textValue_: string = '';
+  private accessor viewportRotations_: number = 0;
   private accessor width_: number = 0;
   private accessor zoom_: number = 1.0;
 
@@ -132,6 +141,12 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     if (changedPrivateProperties.has('state_')) {
       this.hidden = this.state_ === TextBoxState.INACTIVE;
       this.fire('state-changed', this.state_);
+    }
+
+    if (changedPrivateProperties.has('viewportRotations_') ||
+        changedPrivateProperties.has('textOrientation_')) {
+      this.textRotations_ =
+          (this.viewportRotations_ + this.textOrientation_) % 4;
     }
   }
 
@@ -212,6 +227,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
             locationY: this.locationY_,
             width: this.width_,
           },
+          textOrientation: this.textOrientation_,
         },
         this.state_ === TextBoxState.EDITED);
 
@@ -239,34 +255,35 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
         data.annotation.text === '' ? 'Sample Text' : data.annotation.text;
     this.id_ = data.annotation.id;
     this.pageNumber_ = data.annotation.pageNumber;
+    this.textOrientation_ = data.annotation.textOrientation;
     this.updateTextAttributes_(data.annotation.textAttributes);
   }
 
   private onViewportChanged_(update: ViewportParams) {
     // Convert width, height, locationX, locationY to the new screen
     // coordinates.
-    if (update.zoom !== this.zoom_) {
-      this.width_ =
-          Math.max(this.width_ * update.zoom / this.zoom_, MIN_WIDTH_PX);
-      this.height_ = this.height_ * update.zoom / this.zoom_;
-    }
 
-    if (update.zoom !== this.zoom_ || update.pageX !== this.pageX_ ||
-        update.pageY !== this.pageY_) {
-      // Note that this.pageX_ and this.pageY_ are in the old screen
-      // coordinates, i.e. they were using the old zoom value.
-      this.locationX_ =
-          (this.locationX_ - this.pageX_) * update.zoom / this.zoom_ +
-          update.pageX;
-      this.locationY_ =
-          (this.locationY_ - this.pageY_) * update.zoom / this.zoom_ +
-          update.pageY;
-    }
+    // Note that this.pageX_ and this.pageY_ are in the old screen
+    // coordinates, i.e. they were using the old zoom value.
+    const adjusted = {
+      locationX: (this.locationX_ - this.pageX_) * update.zoom / this.zoom_,
+      locationY: (this.locationY_ - this.pageY_) * update.zoom / this.zoom_,
+      width: Math.max(this.width_ * update.zoom / this.zoom_, MIN_WIDTH_PX),
+      height: this.height_ * update.zoom / this.zoom_,
+    };
+    const rotated = convertRotatedCoordinates(
+        adjusted, this.viewportRotations_, update.clockwiseRotations,
+        update.pageDimensions.width, update.pageDimensions.height);
+    this.locationX_ = rotated.locationX + update.pageDimensions.x;
+    this.locationY_ = rotated.locationY + update.pageDimensions.y;
+    this.width_ = rotated.width;
+    this.height_ = rotated.height;
 
     // Update properties to the new values.
+    this.viewportRotations_ = update.clockwiseRotations;
     this.zoom_ = update.zoom;
-    this.pageX_ = update.pageX;
-    this.pageY_ = update.pageY;
+    this.pageX_ = update.pageDimensions.x;
+    this.pageY_ = update.pageDimensions.y;
   }
 
   protected onPointerDown_(e: PointerEvent) {

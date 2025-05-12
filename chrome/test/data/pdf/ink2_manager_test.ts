@@ -7,12 +7,12 @@ import {AnnotationBrushType, DEFAULT_TEXTBOX_HEIGHT, DEFAULT_TEXTBOX_WIDTH, Ink2
 import {assert} from 'chrome://resources/js/assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {assertAnnotationBrush, assertDeepEquals, setGetAnnotationBrushReply, setupTestViewportAndMockPluginForInk} from './test_util.js';
+import {assertAnnotationBrush, assertDeepEquals, MockDocumentDimensions, setGetAnnotationBrushReply, setupTestViewportAndMockPluginForInk} from './test_util.js';
 
 const {viewport, mockPlugin} = setupTestViewportAndMockPluginForInk();
 const manager = Ink2Manager.getInstance();
 
-function getTestAnnotation(): TextAnnotation {
+function getTestAnnotation(id: number): TextAnnotation {
   return {
     textAttributes: {
       typeface: TextTypeface.SANS_SERIF,
@@ -25,15 +25,49 @@ function getTestAnnotation(): TextAnnotation {
       },
     },
     text: 'Hello World',
-    id: 0,
+    id: id,
     pageNumber: 0,
     textBoxRect: {
-      height: 50,
-      locationX: 15,
+      height: 35,
+      locationX: 20,
       locationY: 25,
       width: 50,
     },
+    textOrientation: 0,
   };
+}
+
+// Verifies that the plugin received a startTextAnnotation message for
+// annotation with id 0.
+function verifyStartTextAnnotationMessage(expected: boolean) {
+  const startTextAnnotationMessage =
+      mockPlugin.findMessage('startTextAnnotation');
+  chrome.test.assertEq(expected, startTextAnnotationMessage !== undefined);
+  if (expected) {
+    chrome.test.assertEq(
+        'startTextAnnotation', startTextAnnotationMessage.type);
+    chrome.test.assertEq(0, startTextAnnotationMessage.data);
+  }
+}
+
+// Simulates the way the viewport is rotated from the plugin by setting updated
+// DocumentDimensions. Assumes a non-rotated pageWidth of 80 and pageHeight of
+// 100.
+function rotateViewport(orientation: number) {
+  const rotatedDocumentDimensions = new MockDocumentDimensions(0, 0);
+  // When the plugin notifies the viewport of new dimensions for a rotation,
+  // it swaps the width and height if the page is oriented sideways.
+  if (orientation === 0 || orientation === 2) {
+    rotatedDocumentDimensions.addPage(80, 100);
+  } else {
+    rotatedDocumentDimensions.addPage(100, 80);
+  }
+  rotatedDocumentDimensions.layoutOptions = {
+    defaultPageOrientation: orientation,  // 90 degree CCW rotation
+    direction: 2,                         // LTR
+    twoUpViewEnabled: false,
+  };
+  viewport.setDocumentDimensions(rotatedDocumentDimensions);
 }
 
 chrome.test.runTests([
@@ -207,9 +241,15 @@ chrome.test.runTests([
   },
 
   async function testInitializeTextBox() {
+    // Create a new mock document dimensions that has different width from
+    // height. This is relevant for testing different rotations.
+    const documentDimensions = new MockDocumentDimensions(0, 0);
+    documentDimensions.addPage(80, 100);
+    viewport.setDocumentDimensions(documentDimensions);
+
     // Add listeners for the expected events that fire in response to an
     // initializeTextAnnotation call.
-    const eventsDispatched: Array<{name: string, detail: any}> = [];
+    let eventsDispatched: Array<{name: string, detail: any}> = [];
     ['initialize-text-box', 'attributes-changed'].forEach(eventName => {
       manager.addEventListener(eventName, e => {
         eventsDispatched.push(
@@ -218,52 +258,65 @@ chrome.test.runTests([
     });
 
     const attributes = manager.getCurrentTextAttributes();
-    const whenUpdateEvent = eventToPromise('initialize-text-box', manager);
-    Ink2Manager.getInstance().initializeTextAnnotation({x: 20, y: 23});
-    await whenUpdateEvent;
-    chrome.test.assertEq(2, eventsDispatched.length);
-    chrome.test.assertEq('initialize-text-box', eventsDispatched[0]!.name);
-    const initData = eventsDispatched[0]!.detail as TextBoxInit;
-    chrome.test.assertEq('', initData.annotation.text);
-    assertDeepEquals(attributes, initData.annotation.textAttributes);
-    chrome.test.assertEq(
-        DEFAULT_TEXTBOX_HEIGHT, initData.annotation.textBoxRect.height);
-    chrome.test.assertEq(20, initData.annotation.textBoxRect.locationX);
-    chrome.test.assertEq(23, initData.annotation.textBoxRect.locationY);
-    chrome.test.assertEq(
-        DEFAULT_TEXTBOX_WIDTH, initData.annotation.textBoxRect.width);
-    chrome.test.assertEq(0, initData.annotation.pageNumber);
-    chrome.test.assertEq(0, initData.annotation.id);
-    // Placeholder viewport has a 90x90 page and 100x100 window. This creates
-    // pageX and pageY offsets of 10px = (100 - 90)/2 + 5px and 3px
-    // respectively.
-    chrome.test.assertEq(10, initData.pageCoordinates.x);
-    chrome.test.assertEq(3, initData.pageCoordinates.y);
-    chrome.test.assertEq('attributes-changed', eventsDispatched[1]!.name);
-    assertDeepEquals(attributes, eventsDispatched[1]!.detail);
+    async function verifyTextboxInit(
+        x: number, y: number, rotation: number, id: number) {
+      const whenUpdateEvent = eventToPromise('initialize-text-box', manager);
+      Ink2Manager.getInstance().initializeTextAnnotation({x, y});
+      await whenUpdateEvent;
+      chrome.test.assertEq(2, eventsDispatched.length);
+      chrome.test.assertEq('initialize-text-box', eventsDispatched[0]!.name);
+      const initData = eventsDispatched[0]!.detail as TextBoxInit;
+      chrome.test.assertEq('', initData.annotation.text);
+      assertDeepEquals(attributes, initData.annotation.textAttributes);
+      chrome.test.assertEq(
+          DEFAULT_TEXTBOX_HEIGHT, initData.annotation.textBoxRect.height);
+      chrome.test.assertEq(x, initData.annotation.textBoxRect.locationX);
+      chrome.test.assertEq(y, initData.annotation.textBoxRect.locationY);
+      chrome.test.assertEq(
+          DEFAULT_TEXTBOX_WIDTH, initData.annotation.textBoxRect.width);
+      chrome.test.assertEq(0, initData.annotation.pageNumber);
+      chrome.test.assertEq(id, initData.annotation.id);
+      chrome.test.assertEq(rotation, initData.annotation.textOrientation);
+      // Placeholder viewport has a 80x100 page and 100x100 window.
+      // The y offset is always 3px, because the page is always positioned
+      // 3px from the top. When the page is oriented vertically, it is centered
+      // in the viewport with an additional 5px margin in x, creating pageX =
+      // (100 - 80)/2 + 5 = 15px offset. When the page is oriented horizontally,
+      // it is as wide as the viewport, so it uses the minimum 5px margin for
+      // pageX.
+      chrome.test.assertEq(
+          rotation % 2 === 0 ? 15 : 5, initData.pageCoordinates.x);
+      chrome.test.assertEq(3, initData.pageCoordinates.y);
+      chrome.test.assertEq('attributes-changed', eventsDispatched[1]!.name);
+      assertDeepEquals(attributes, eventsDispatched[1]!.detail);
+      eventsDispatched = [];
 
-    // Since this is a new annotation, it shouldn't have sent a message to the
-    // plugin.
-    const startTextAnnotationMessage =
-        mockPlugin.findMessage('startTextAnnotation');
-    chrome.test.assertEq(undefined, startTextAnnotationMessage);
+      // Since this is a new annotation, it shouldn't have sent a message to the
+      // plugin.
+      verifyStartTextAnnotationMessage(false);
+    }
+
+    // Test initialization in different positions and different viewport
+    // rotations. id should increment with each new textbox.
+    rotateViewport(/* clockwiseRotations= */ 3);
+    await verifyTextboxInit(/* x= */ 15, /* y= */ 10, /* rotations= */ 1,
+                            /* id= */ 0);
+    rotateViewport(/* clockwiseRotations= */ 2);
+    await verifyTextboxInit(/* x= */ 50, /* y= */ 60, /* rotations= */ 2,
+                            /* id= */ 1);
+    rotateViewport(/* clockwiseRotations= */ 1);
+    await verifyTextboxInit(/* x= */ 80, /* y = */ 20, /* rotations= */ 3,
+                            /* id= */ 2);
+    rotateViewport(/* clockwiseRotations= */ 0);
+    await verifyTextboxInit(/* x= */ 20, /* y= */ 23, /* rotations= */ 0,
+                            /* id= */ 3);
+
     chrome.test.succeed();
   },
 
   function testCommitTextAnnotation() {
-    // Listen for PluginControllerEventType.FINISH_INK_STROKE events. The
-    // manager dispatches these on PluginController's eventTarget.
-    let finishInkStrokeEvents = 0;
-    PluginController.getInstance().getEventTarget().addEventListener(
-        PluginControllerEventType.FINISH_INK_STROKE, () => {
-          finishInkStrokeEvents++;
-        });
-
-    const annotationPageCoords = getTestAnnotation();
-    // Adjust by the x and y offsets to get to page coordinates.
-    annotationPageCoords.textBoxRect.locationX = 5;
-    annotationPageCoords.textBoxRect.locationY = 22;
-    function verifyFinishTextAnnotationMessage() {
+    function verifyFinishTextAnnotationMessage(
+        annotationPageCoords: TextAnnotation) {
       const finishTextAnnotationMessage =
           mockPlugin.findMessage('finishTextAnnotation');
       chrome.test.assertTrue(finishTextAnnotationMessage !== undefined);
@@ -272,17 +325,103 @@ chrome.test.runTests([
       assertDeepEquals(annotationPageCoords, finishTextAnnotationMessage.data);
     }
 
-    // Committing with edited = true should fire an event.
-    manager.commitTextAnnotation(getTestAnnotation(), true);
-    chrome.test.assertEq(1, finishInkStrokeEvents);
-    verifyFinishTextAnnotationMessage();
+    function testCommitAnnotation(
+        annotationScreenCoords: TextAnnotation,
+        annotationPageCoords: TextAnnotation) {
+      // Listen for PluginControllerEventType.FINISH_INK_STROKE events. The
+      // manager dispatches these on PluginController's eventTarget.
+      let finishInkStrokeEvents = 0;
+      PluginController.getInstance().getEventTarget().addEventListener(
+          PluginControllerEventType.FINISH_INK_STROKE, () => {
+            finishInkStrokeEvents++;
+          });
+
+      // Committing with edited = true should fire an event.
+      // Use structuredClone since the manager edits the object in place,
+      // and we want to reuse this below.
+      manager.commitTextAnnotation(
+          structuredClone(annotationScreenCoords), true);
+      chrome.test.assertEq(1, finishInkStrokeEvents);
+      verifyFinishTextAnnotationMessage(annotationPageCoords);
+      mockPlugin.clearMessages();
+
+      // Committing with edited = false should not fire an event.
+      manager.commitTextAnnotation(
+          structuredClone(annotationScreenCoords), false);
+      chrome.test.assertEq(1, finishInkStrokeEvents);
+      verifyFinishTextAnnotationMessage(annotationPageCoords);
+      mockPlugin.clearMessages();
+    }
+
+    // Test committing annotations at different rotations to ensure the
+    // conversion back to page coordinates works correctly. Note that the
+    // page screen rectangle will be 70x90 since there are 10px of page
+    // shadow.
+
+    // 90 degrees CCW
+    rotateViewport(/* clockwiseRotations= */ 3);
+    let annotationScreenCoords = getTestAnnotation(3);
+    let annotationPageCoords = getTestAnnotation(3);
+    annotationPageCoords.textBoxRect = {
+      height: 50,
+      width: 35,
+      locationX: 13,
+      locationY: 15,
+    };
+    testCommitAnnotation(annotationScreenCoords, annotationPageCoords);
+    // Delete to clear state.
+    annotationScreenCoords.text = '';
+    manager.commitTextAnnotation(annotationScreenCoords, true);
     mockPlugin.clearMessages();
 
-    // Committing with edited = false should not fire an event.
-    manager.commitTextAnnotation(getTestAnnotation(), false);
-    chrome.test.assertEq(1, finishInkStrokeEvents);
-    verifyFinishTextAnnotationMessage();
+    // 180 degrees
+    rotateViewport(/* clockwiseRotations= */ 2);
+    annotationScreenCoords = getTestAnnotation(2);
+    annotationPageCoords = getTestAnnotation(2);
+    // Adjust by the x and y offsets to get to page coordinates.
+    annotationPageCoords.textBoxRect = {
+      height: 35,
+      width: 50,
+      locationX: 15,
+      locationY: 33,
+    };
+    testCommitAnnotation(annotationScreenCoords, annotationPageCoords);
+    // Delete to clear state.
+    annotationScreenCoords.text = '';
+    manager.commitTextAnnotation(annotationScreenCoords, true);
+    mockPlugin.clearMessages();
 
+    // 90 degrees CW
+    rotateViewport(/* clockwiseRotations= */ 1);
+    annotationScreenCoords = getTestAnnotation(1);
+    annotationPageCoords = getTestAnnotation(1);
+    // Adjust by the x and y offsets to get to page coordinates.
+    annotationPageCoords.textBoxRect = {
+      height: 50,
+      width: 35,
+      locationX: 22,
+      locationY: 25,
+    };
+    testCommitAnnotation(annotationScreenCoords, annotationPageCoords);
+    // Delete to clear state.
+    annotationScreenCoords.text = '';
+    manager.commitTextAnnotation(annotationScreenCoords, true);
+    mockPlugin.clearMessages();
+
+    // Normal orientation (0 degrees).
+    rotateViewport(/* clockwiseRotations= */ 0);
+    annotationScreenCoords = getTestAnnotation(0);
+    annotationPageCoords = getTestAnnotation(0);
+    // Adjust by the x and y offsets to get to page coordinates.
+    annotationPageCoords.textBoxRect = {
+      height: 35,
+      width: 50,
+      locationX: 5,
+      locationY: 22,
+    };
+    testCommitAnnotation(annotationScreenCoords, annotationPageCoords);
+    // Note: not deleting since we re-activate this annotation in the next
+    // test.
     chrome.test.succeed();
   },
 
@@ -304,9 +443,10 @@ chrome.test.runTests([
     chrome.test.assertEq(2, eventsDispatched.length);
     chrome.test.assertEq('initialize-text-box', eventsDispatched[0]!.name);
     const initData = eventsDispatched[0]!.detail as TextBoxInit;
-    const testAnnotation = getTestAnnotation();
+    const testAnnotation = getTestAnnotation(0);
     assertDeepEquals(testAnnotation, initData.annotation);
-    chrome.test.assertEq(10, initData.pageCoordinates.x);
+    // Still using the 80x100 page from the previous test.
+    chrome.test.assertEq(15, initData.pageCoordinates.x);
     chrome.test.assertEq(3, initData.pageCoordinates.y);
     chrome.test.assertEq('attributes-changed', eventsDispatched[1]!.name);
     assertDeepEquals(
@@ -314,12 +454,7 @@ chrome.test.runTests([
 
     // Since this is an existing annotation, it should send a start message to
     // the plugin.
-    const startTextAnnotationMessage =
-        mockPlugin.findMessage('startTextAnnotation');
-    chrome.test.assertTrue(startTextAnnotationMessage !== undefined);
-    chrome.test.assertEq(
-        'startTextAnnotation', startTextAnnotationMessage.type);
-    chrome.test.assertEq(0, startTextAnnotationMessage.data);
+    verifyStartTextAnnotationMessage(true);
     chrome.test.succeed();
   },
 
@@ -327,10 +462,26 @@ chrome.test.runTests([
     const initialParams = manager.getViewportParams();
     chrome.test.assertEq(1.0, initialParams.zoom);
     // pageMarginY * zoom = 3 * 1
-    chrome.test.assertEq(3, initialParams.pageY);
+    chrome.test.assertEq(3, initialParams.pageDimensions.y);
     // (windowWidth - docWidth * zoom)/2 + pageMarginX * zoom =
-    // (100 - 90 * 1)/2 + 5 * 1
-    chrome.test.assertEq(10, initialParams.pageX);
+    // (100 - 80 * 1)/2 + 5 * 1
+    chrome.test.assertEq(15, initialParams.pageDimensions.x);
+    // 10px of width are taken up by PAGE_SHADOW.
+    chrome.test.assertEq(70, initialParams.pageDimensions.width);
+    // 20px of height are also taken up by PAGE_SHADOW.
+    chrome.test.assertEq(90, initialParams.pageDimensions.height);
+    chrome.test.assertEq(0, initialParams.clockwiseRotations);
+
+    // In this new layout, the existing 50x35 annotation at page coordinate
+    // 5, 22 has its top left corner at 20, 25 in screen coordinates. Make
+    // sure clicking there creates the box, and clicking just outside of this
+    // does not.
+    mockPlugin.clearMessages();
+    Ink2Manager.getInstance().initializeTextAnnotation({x: 20, y: 25});
+    verifyStartTextAnnotationMessage(true);
+    mockPlugin.clearMessages();
+    Ink2Manager.getInstance().initializeTextAnnotation({x: 19, y: 24});
+    verifyStartTextAnnotationMessage(false);
 
     // Zoom out should fire an event.
     let whenViewportChanged = eventToPromise('viewport-changed', manager);
@@ -338,10 +489,22 @@ chrome.test.runTests([
     let changedEvent = await whenViewportChanged;
     chrome.test.assertEq(0.5, changedEvent.detail.zoom);
     // pageMarginY * zoom = 3 * .5
-    chrome.test.assertEq(1.5, changedEvent.detail.pageY);
+    chrome.test.assertEq(1.5, changedEvent.detail.pageDimensions.y);
     // (windowWidth - docWidth * zoom)/2 + pageMarginX * zoom =
-    // (100 - 90 * .5)/2 + 5 * .5
-    chrome.test.assertEq(30, changedEvent.detail.pageX);
+    // (100 - 80 * .5)/2 + 5 * .5
+    chrome.test.assertEq(32.5, changedEvent.detail.pageDimensions.x);
+    chrome.test.assertEq(35, changedEvent.detail.pageDimensions.width);
+    chrome.test.assertEq(45, changedEvent.detail.pageDimensions.height);
+    chrome.test.assertEq(0, changedEvent.detail.clockwiseRotations);
+
+    // In this new layout, the existing 50x35 annotation at page coordinate
+    // 5, 22 has its top left corner at 35, 12.5 in screen coordinates.
+    mockPlugin.clearMessages();
+    Ink2Manager.getInstance().initializeTextAnnotation({x: 35, y: 13});
+    verifyStartTextAnnotationMessage(true);
+    mockPlugin.clearMessages();
+    Ink2Manager.getInstance().initializeTextAnnotation({x: 34, y: 12});
+    verifyStartTextAnnotationMessage(false);
 
     // Zoom in should fire an event.
     whenViewportChanged = eventToPromise('viewport-changed', manager);
@@ -349,9 +512,21 @@ chrome.test.runTests([
     changedEvent = await whenViewportChanged;
     chrome.test.assertEq(2, changedEvent.detail.zoom);
     // pageMarginY * zoom = 3 * 2
-    chrome.test.assertEq(6, changedEvent.detail.pageY);
+    chrome.test.assertEq(6, changedEvent.detail.pageDimensions.y);
     // docWidth * zoom > windowWidth, so this is now pageMarginX * zoom = 5 * 2
-    chrome.test.assertEq(10, changedEvent.detail.pageX);
+    chrome.test.assertEq(10, changedEvent.detail.pageDimensions.x);
+    chrome.test.assertEq(140, changedEvent.detail.pageDimensions.width);
+    chrome.test.assertEq(180, changedEvent.detail.pageDimensions.height);
+    chrome.test.assertEq(0, changedEvent.detail.clockwiseRotations);
+
+    // In this new layout, the existing 50x35 annotation at page coordinate
+    // 5, 22 has its top left corner at 25, 50 in screen coordinates.
+    mockPlugin.clearMessages();
+    Ink2Manager.getInstance().initializeTextAnnotation({x: 25, y: 50});
+    verifyStartTextAnnotationMessage(true);
+    mockPlugin.clearMessages();
+    Ink2Manager.getInstance().initializeTextAnnotation({x: 24, y: 49});
+    verifyStartTextAnnotationMessage(false);
 
     // Translation.
     whenViewportChanged = eventToPromise('viewport-changed', manager);
@@ -359,9 +534,48 @@ chrome.test.runTests([
     changedEvent = await whenViewportChanged;
     chrome.test.assertEq(2, changedEvent.detail.zoom);
     // Shifts by -20 * zoom = -40 from previous position.
-    chrome.test.assertEq(-34, changedEvent.detail.pageY);
+    chrome.test.assertEq(-34, changedEvent.detail.pageDimensions.y);
     // Shifts by -20 * zoom = -40 from previous position.
-    chrome.test.assertEq(-30, changedEvent.detail.pageX);
+    chrome.test.assertEq(-30, changedEvent.detail.pageDimensions.x);
+    chrome.test.assertEq(140, changedEvent.detail.pageDimensions.width);
+    chrome.test.assertEq(180, changedEvent.detail.pageDimensions.height);
+    chrome.test.assertEq(0, changedEvent.detail.clockwiseRotations);
+
+    // In this new layout, the existing 50x35 annotation at page coordinate
+    // 5, 22 has its top left corner at -15, 10 in screen coordinates.
+    // It has width 100 and height 70 so (0, 81) should be just outside the box
+    // and (0, 80) just inside.
+    mockPlugin.clearMessages();
+    Ink2Manager.getInstance().initializeTextAnnotation({x: 0, y: 80});
+    verifyStartTextAnnotationMessage(true);
+    mockPlugin.clearMessages();
+    Ink2Manager.getInstance().initializeTextAnnotation({x: 0, y: 81});
+    verifyStartTextAnnotationMessage(false);
+
+    // Rotation
+    whenViewportChanged = eventToPromise('viewport-changed', manager);
+    rotateViewport(/* clockwiseRotations= */ 3);  // 90 degree CCW rotation.
+    changedEvent = await whenViewportChanged;
+    chrome.test.assertEq(2, changedEvent.detail.zoom);
+    chrome.test.assertEq(-34, changedEvent.detail.pageDimensions.y);
+    chrome.test.assertEq(-30, changedEvent.detail.pageDimensions.x);
+    // Width and height are switched.
+    chrome.test.assertEq(180, changedEvent.detail.pageDimensions.width);
+    chrome.test.assertEq(140, changedEvent.detail.pageDimensions.height);
+    // Rotations now non-zero.
+    chrome.test.assertEq(3, changedEvent.detail.clockwiseRotations);
+
+    // In this new layout, the existing 50x35 annotation at page coordinate
+    // 5, 22 has its top left corner at 14, -4 in screen coordinates.
+    // It has width 70 and height 100 so (85, 0) should be just outside the box
+    // and (84, 0) just inside.
+    mockPlugin.clearMessages();
+    Ink2Manager.getInstance().initializeTextAnnotation({x: 84, y: 0});
+    verifyStartTextAnnotationMessage(true);
+    mockPlugin.clearMessages();
+    Ink2Manager.getInstance().initializeTextAnnotation({x: 85, y: 0});
+    verifyStartTextAnnotationMessage(false);
+
     chrome.test.succeed();
   },
 ]);

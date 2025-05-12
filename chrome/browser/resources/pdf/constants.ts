@@ -44,6 +44,9 @@ export interface TextAnnotation {
   // and is in page coordinates when this annotation is sent or received in
   // a message to/from the plugin.
   textBoxRect: TextBoxRect;
+  // Orientation of the text in the box relative to the PDF page, in number of
+  // clockwise rotations from 0 to 3.
+  textOrientation: number;
 }
 
 export enum TextAlignment {

@@ -15,7 +15,8 @@ const textbox = document.createElement('ink-text-box');
 document.body.appendChild(textbox);
 
 function initializeBox(
-    width: number, height: number, x: number, y: number, existing?: boolean) {
+    width: number, height: number, x: number, y: number, existing?: boolean,
+    orientation?: number) {
   manager.dispatchEvent(new CustomEvent('initialize-text-box', {
     detail: {
       annotation: {
@@ -31,6 +32,7 @@ function initializeBox(
           color: hexToColor(TEXT_COLORS[0]!.color),
         },
         textBoxRect: {height, locationX: x, locationY: y, width},
+        textOrientation: orientation ? orientation : 0,
         id: 0,
         pageNumber: 0,
       },
@@ -325,8 +327,13 @@ chrome.test.runTests([
 
     // Simulate a zoom change to 0.5. This also comes with x and y changes
     // simulating production.
-    manager.dispatchEvent(new CustomEvent(
-        'viewport-changed', {detail: {pageX: 30, pageY: 1.5, zoom: 0.5}}));
+    manager.dispatchEvent(new CustomEvent('viewport-changed', {
+      detail: {
+        clockwiseRotations: 0,
+        pageDimensions: {x: 30, y: 1.5, width: 45, height: 45},
+        zoom: 0.5,
+      },
+    }));
     await microtasksFinished();
     assertPositionAndSize(textbox, '50px', '50px', '230px', '151.5px');
     chrome.test.assertEq(
@@ -335,8 +342,13 @@ chrome.test.runTests([
 
     // Simulate a zoom change to 2.0. This also comes with x and y changes
     // simulating production.
-    manager.dispatchEvent(new CustomEvent(
-        'viewport-changed', {detail: {pageX: 10, pageY: 6, zoom: 2.0}}));
+    manager.dispatchEvent(new CustomEvent('viewport-changed', {
+      detail: {
+        clockwiseRotations: 0,
+        pageDimensions: {x: 10, y: 6, width: 180, height: 180},
+        zoom: 2.0,
+      },
+    }));
     await microtasksFinished();
     assertPositionAndSize(textbox, '200px', '200px', '810px', '606px');
     chrome.test.assertEq(
@@ -344,8 +356,13 @@ chrome.test.runTests([
         getComputedStyle(textbox.$.textbox).getPropertyValue('font-size'));
 
     // Simulate a scroll + resetting zoom to 1.0.
-    manager.dispatchEvent(new CustomEvent(
-        'viewport-changed', {detail: {pageX: 100, pageY: 100, zoom: 1.0}}));
+    manager.dispatchEvent(new CustomEvent('viewport-changed', {
+      detail: {
+        clockwiseRotations: 0,
+        pageDimensions: {x: 100, y: 100, width: 90, height: 90},
+        zoom: 1.0,
+      },
+    }));
     await microtasksFinished();
     assertPositionAndSize(textbox, '100px', '100px', '500px', '400px');
     chrome.test.assertEq(
@@ -353,8 +370,13 @@ chrome.test.runTests([
         getComputedStyle(textbox.$.textbox).getPropertyValue('font-size'));
 
     // Scroll where start of page is no longer in the viewport.
-    manager.dispatchEvent(new CustomEvent(
-        'viewport-changed', {detail: {pageX: -100, pageY: -100, zoom: 1.0}}));
+    manager.dispatchEvent(new CustomEvent('viewport-changed', {
+      detail: {
+        clockwiseRotations: 0,
+        pageDimensions: {x: -100, y: -100, width: 90, height: 90},
+        zoom: 1.0,
+      },
+    }));
     await microtasksFinished();
     assertPositionAndSize(textbox, '100px', '100px', '300px', '200px');
     chrome.test.assertEq(
@@ -362,13 +384,146 @@ chrome.test.runTests([
         getComputedStyle(textbox.$.textbox).getPropertyValue('font-size'));
 
     // Scroll where textbox ends up off screen.
-    manager.dispatchEvent(new CustomEvent(
-        'viewport-changed', {detail: {pageX: -500, pageY: -500, zoom: 1.0}}));
+    manager.dispatchEvent(new CustomEvent('viewport-changed', {
+      detail: {
+        clockwiseRotations: 0,
+        pageDimensions: {x: -500, y: -500, width: 90, height: 90},
+        zoom: 1.0,
+      },
+    }));
     await microtasksFinished();
     assertPositionAndSize(textbox, '100px', '100px', '-100px', '-200px');
     chrome.test.assertEq(
         '12px',
         getComputedStyle(textbox.$.textbox).getPropertyValue('font-size'));
+    chrome.test.succeed();
+  },
+
+  async function testViewportRotationChanges() {
+    // Custom init with different x offsets to simulate a rectangular page with
+    // rotations.
+    function initializeBoxWithOrientation(
+        width: number, height: number, x: number, y: number,
+        orientation: number) {
+      manager.dispatchEvent(new CustomEvent('initialize-text-box', {
+        detail: {
+          annotation: {
+            text: '',
+            textAttributes: {
+              size: 12,
+              typeface: TextTypeface.SANS_SERIF,
+              styles: {
+                [TextStyle.BOLD]: false,
+                [TextStyle.ITALIC]: false,
+              },
+              alignment: TextAlignment.LEFT,
+              color: hexToColor(TEXT_COLORS[0]!.color),
+            },
+            textBoxRect: {height, locationX: x, locationY: y, width},
+            textOrientation: orientation,
+            id: 0,
+            pageNumber: 0,
+          },
+          pageCoordinates: orientation % 2 === 0 ? {x: 15, y: 3} : {x: 5, y: 3},
+        },
+      }));
+    }
+
+    // Helper to update the viewport to the specified number of clockwise
+    // rotations.
+    function updateViewportWithClockwiseRotations(rotations: number):
+        Promise<void> {
+      // Simulating real viewport changes. The x offset reduces when the
+      // page is flipped horizontally, since it takes the whole window.
+      // width and height flip when the page is horizontal.
+      const x = rotations % 2 === 0 ? 15 : 5;
+      const width = rotations % 2 === 0 ? 80 : 100;
+      const height = rotations % 2 === 0 ? 100 : 80;
+      manager.dispatchEvent(new CustomEvent('viewport-changed', {
+        detail: {
+          clockwiseRotations: rotations,
+          pageDimensions: {x, y: 3, width, height},
+          zoom: 1.0,
+        },
+      }));
+      return microtasksFinished();
+    }
+
+    // Helper to check that the textbox styles match the expected rotation of
+    // the text (in number of 90 degree clockwise rotations).
+    function assertTextboxStyles(expectedTextRotation: number) {
+      const expectedTransform =
+          expectedTextRotation === 2 ? 'matrix(-1, 0, 0, -1, 0, 0)' : 'none';
+      let expectedWritingMode = 'horizontal-tb';
+      if (expectedTextRotation === 1) {
+        expectedWritingMode = 'vertical-rl';
+      } else if (expectedTextRotation === 3) {
+        expectedWritingMode = 'sideways-lr';
+      }
+      const styles = getComputedStyle(textbox.$.textbox);
+      chrome.test.assertEq(
+          expectedTransform, styles.getPropertyValue('transform'));
+      chrome.test.assertEq(
+          expectedWritingMode, styles.getPropertyValue('writing-mode'));
+    }
+
+    // Initialize to a 50x48 box at 20, 30 + page offsets. Make box rotated
+    // by 90 degrees clockwise compared to the PDF. This happens when the
+    // viewport is rotated by 90 degrees CCW and the user creates a new
+    // annotation, so simulate that scenario here.
+    await updateViewportWithClockwiseRotations(3);
+    initializeBoxWithOrientation(50, 48, 25, 33, 1);
+    await microtasksFinished();
+    // Position and size are in viewport coordinates, so the box is 50x48 in
+    // the rotated viewport.
+    assertPositionAndSize(textbox, '50px', '48px', '25px', '33px');
+    // Textbox is non-rotated relative to the current viewport orientation.
+    assertTextboxStyles(0);
+
+    await updateViewportWithClockwiseRotations(0);
+    assertPositionAndSize(textbox, '48px', '50px', '17px', '23px');
+    assertTextboxStyles(1);
+
+    await updateViewportWithClockwiseRotations(1);
+    assertPositionAndSize(textbox, '50px', '48px', '35px', '5px');
+    assertTextboxStyles(2);
+
+    await updateViewportWithClockwiseRotations(2);
+    assertPositionAndSize(textbox, '48px', '50px', '45px', '33px');
+    assertTextboxStyles(3);
+
+    // Back to the original position, size and style since we've now rotated
+    // all the way around.
+    await updateViewportWithClockwiseRotations(3);
+    assertPositionAndSize(textbox, '50px', '48px', '25px', '33px');
+    assertTextboxStyles(0);
+
+    // Now initialize a box with no rotation relative to the PDF, at the same
+    // location. This happens when the viewport has no rotation when the box is
+    // created.
+    await updateViewportWithClockwiseRotations(0);
+    initializeBoxWithOrientation(50, 48, 35, 33, 0);
+    await microtasksFinished();
+    assertPositionAndSize(textbox, '50px', '48px', '35px', '33px');
+    assertTextboxStyles(0);
+
+    await updateViewportWithClockwiseRotations(1);
+    assertPositionAndSize(textbox, '48px', '50px', '27px', '23px');
+    assertTextboxStyles(1);
+
+    await updateViewportWithClockwiseRotations(2);
+    assertPositionAndSize(textbox, '50px', '48px', '25px', '25px');
+    assertTextboxStyles(2);
+
+    await updateViewportWithClockwiseRotations(3);
+    assertPositionAndSize(textbox, '48px', '50px', '35px', '13px');
+    assertTextboxStyles(3);
+
+    // Back to 0 rotation should get us back to the original location and style.
+    await updateViewportWithClockwiseRotations(0);
+    assertPositionAndSize(textbox, '50px', '48px', '35px', '33px');
+    assertTextboxStyles(0);
+
     chrome.test.succeed();
   },
 
@@ -411,6 +566,7 @@ chrome.test.runTests([
       },
       // Messages to the backend are in page coordinates.
       textBoxRect: {locationX: 195, locationY: 147, height: 50, width: 50},
+      textOrientation: 0,
     };
 
     function startNewAnnotationAndVerifyMessage(existing: boolean = false) {
