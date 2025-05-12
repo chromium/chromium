@@ -101,7 +101,6 @@ struct CollectionImage {
 };
 
 bool operator==(const CollectionImage& lhs, const CollectionImage& rhs);
-bool operator!=(const CollectionImage& lhs, const CollectionImage& rhs);
 
 // Represents errors that occur when communicating with the Backdrop service and
 // Google Photos.

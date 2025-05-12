@@ -65,10 +65,6 @@ bool operator==(const CollectionInfo& lhs, const CollectionInfo& rhs) {
          lhs.preview_image_url == rhs.preview_image_url;
 }
 
-bool operator!=(const CollectionInfo& lhs, const CollectionInfo& rhs) {
-  return !(lhs == rhs);
-}
-
 CollectionInfo CollectionInfo::CreateFromProto(
     const ntp::background::Collection& collection,
     std::optional<GURL> preview_image_url) {
@@ -96,10 +92,6 @@ bool operator==(const CollectionImage& lhs, const CollectionImage& rhs) {
          lhs.thumbnail_image_url == rhs.thumbnail_image_url &&
          lhs.image_url == rhs.image_url && lhs.attribution == rhs.attribution &&
          lhs.attribution_action_url == rhs.attribution_action_url;
-}
-
-bool operator!=(const CollectionImage& lhs, const CollectionImage& rhs) {
-  return !(lhs == rhs);
 }
 
 CollectionImage CollectionImage::CreateFromProto(
