@@ -496,7 +496,11 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
                           const std::optional<PasswordSuggestionRequest>&
                               password_request) override {
     DeferMsg(&mojom::AutofillDriver::AskForValuesToFill, form, field_id,
-             caret_bounds, trigger_source, std::nullopt);
+             caret_bounds, trigger_source,
+             base::FeatureList::IsEnabled(
+                 features::kAutofillAndPasswordsInSameSurface)
+                 ? password_request
+                 : std::nullopt);
   }
   void HidePopup() override { DeferMsg(&mojom::AutofillDriver::HidePopup); }
   void FocusOnNonFormField() override {
@@ -876,11 +880,14 @@ bool AutofillAgent::TryShowPasswordSuggestions(
   // Show suggestions empty password fields or for username fields with
   // matching suggestions - even if non-empty.
   if (is_password_field && !is_field_empty) {
-    if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->HidePopup();
-      is_popup_possibly_visible_ = false;
-      return false;
-    }
+    HidePopup();
+    return false;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAndPasswordsInSameSurface)) {
+    // No update to `is_popup_possibly_visible_` yet: it could still be open.
+    return false;
   }
 
   if (password_request) {

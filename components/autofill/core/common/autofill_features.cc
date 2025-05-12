@@ -142,6 +142,12 @@ BASE_FEATURE(kAutofillAiWithDataSchema,
 const base::FeatureParam<int> kAutofillAiWithDataSchemaServerExperimentId{
     &kAutofillAiWithDataSchema, "autofill_ai_server_experiment_id", 0};
 
+// Guards the refactoring to allow showing Autofill and Password suggestions in
+// the same surface instead of being mutually exclusive.
+BASE_FEATURE(kAutofillAndPasswordsInSameSurface,
+             "AutofillAndPasswordsInSameSurface",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Same as `kAutofillAddressUserPerceptionSurvey` but for credit card forms.
 BASE_FEATURE(kAutofillCreditCardUserPerceptionSurvey,
              "AutofillCreditCardUserPerceptionSurvey",
