@@ -87,7 +87,7 @@ public class ArchivedTabsMessageService extends MessageService
                     assert mTabArchiveSettings != null;
 
                     mArchivedTabModel = archivedTabModel;
-                    mArchivedTabModel.getTabCountSupplier().addObserver(mTabCountObserver);
+                    mTabCountSupplier.addObserver(mTabCountObserver);
 
                     mCustomCardView =
                             LayoutInflater.from(mActivity)
@@ -120,10 +120,10 @@ public class ArchivedTabsMessageService extends MessageService
             };
 
     private final Callback<Integer> mTabCountObserver =
-            (count) -> {
-                updateModelProperties();
-                if (count > 0) {
-                    maybeSendMessageToQueue();
+            (tabCount) -> {
+                updateModelProperties(tabCount);
+                if (tabCount > 0) {
+                    maybeSendMessageToQueue(tabCount);
                 } else {
                     maybeInvalidatePreviouslySentMessage();
                 }
@@ -134,7 +134,7 @@ public class ArchivedTabsMessageService extends MessageService
             new TabArchiveSettings.Observer() {
                 @Override
                 public void onSettingChanged() {
-                    updateModelProperties();
+                    updateModelProperties(mTabCountSupplier.get());
                 }
             };
 
@@ -161,6 +161,7 @@ public class ArchivedTabsMessageService extends MessageService
     private final @NonNull Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     private final @NonNull ObservableSupplier<TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
+    private final @NonNull ObservableSupplier<Integer> mTabCountSupplier;
 
     private TabArchiveSettings mTabArchiveSettings;
     private ArchivedTabsDialogCoordinator mArchivedTabsDialogCoordinator;
@@ -225,6 +226,8 @@ public class ArchivedTabsMessageService extends MessageService
         // of the 2-step IPH.
         mShowTwoStepIph = TabArchiveSettings.getIphShownThisSession();
 
+        mTabCountSupplier = mArchivedTabModelOrchestrator.getTabCountSupplier();
+
         if (mArchivedTabModelOrchestrator.isTabModelInitialized()) {
             mArchivedTabModelOrchestratorObserver.onTabModelCreated(
                     mArchivedTabModelOrchestrator
@@ -258,8 +261,8 @@ public class ArchivedTabsMessageService extends MessageService
                     .removeTabListItemSizeChangedObserver(mTabListItemSizeChangedObserver);
         }
 
-        if (mArchivedTabModel != null) {
-            mArchivedTabModel.getTabCountSupplier().removeObserver(mTabCountObserver);
+        if (mTabCountSupplier != null) {
+            mTabCountSupplier.removeObserver(mTabCountObserver);
         }
     }
 
@@ -318,7 +321,7 @@ public class ArchivedTabsMessageService extends MessageService
     @Override
     public void addObserver(MessageService.MessageObserver obs) {
         super.addObserver(obs);
-        maybeSendMessageToQueue();
+        maybeSendMessageToQueue(mTabCountSupplier.get());
     }
 
     public void setOnTabSelectingListener(OnTabSelectingListener onTabSelectingListener) {
@@ -328,11 +331,12 @@ public class ArchivedTabsMessageService extends MessageService
     // Private methods.
 
     @VisibleForTesting
-    void maybeSendMessageToQueue() {
+    void maybeSendMessageToQueue(int tabCount) {
         if (mMessageSentToQueue) return;
         if (mArchivedTabModel == null) return;
-        if (mArchivedTabModel.getCount() <= 0) return;
-        updateModelProperties();
+        if (mTabGroupSyncService == null) return;
+        if (tabCount <= 0) return;
+        updateModelProperties(tabCount);
         sendAvailabilityNotification(new ArchivedTabsMessageData(this));
         mMessageSentToQueue = true;
         mAppendMessageRunnable.run();
@@ -377,8 +381,8 @@ public class ArchivedTabsMessageService extends MessageService
                         mCurrentTabGroupModelFilterSupplier);
     }
 
-    private void updateModelProperties() {
-        mCustomCardModel.set(NUMBER_OF_ARCHIVED_TABS, mArchivedTabModel.getCount());
+    private void updateModelProperties(int tabCount) {
+        mCustomCardModel.set(NUMBER_OF_ARCHIVED_TABS, tabCount);
         mCustomCardModel.set(
                 ARCHIVE_TIME_DELTA_DAYS, mTabArchiveSettings.getArchiveTimeDeltaDays());
     }

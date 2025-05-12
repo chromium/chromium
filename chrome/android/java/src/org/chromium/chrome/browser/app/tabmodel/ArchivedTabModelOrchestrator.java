@@ -150,7 +150,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     private @Nullable HistoricalTabModelObserver mHistoricalTabModelObserver;
     private boolean mTriggerAutodeleteAfterDataCreated;
     private @Nullable TabGroupSyncService mTabGroupSyncService;
-    private ArchivedTabCountSupplier mArchivedTabCountSupplier;
+    private ArchivedTabCountSupplier mArchivedTabCountSupplier = new ArchivedTabCountSupplier();
 
     /**
      * Returns the ArchivedTabModelOrchestrator that corresponds to the given profile. Must be
@@ -387,7 +387,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
             observer.onTabModelCreated(model);
         }
 
-        mArchivedTabCountSupplier = new ArchivedTabCountSupplier(model, mTabGroupSyncService);
+        mArchivedTabCountSupplier.setupInternalObservers(model, mTabGroupSyncService);
 
         mHistoricalTabModelObserver =
                 new HistoricalTabModelObserver(

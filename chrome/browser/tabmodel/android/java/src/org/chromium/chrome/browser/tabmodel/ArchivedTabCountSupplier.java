@@ -24,13 +24,15 @@ import org.chromium.components.tab_group_sync.TriggerSource;
 @NullMarked
 public class ArchivedTabCountSupplier extends ObservableSupplierImpl<Integer>
         implements Destroyable {
-    private final TabModel mArchivedTabModel;
-    private final ObservableSupplier<Integer> mArchivedTabModelTabCountSupplier;
+    private static final int INITIAL_TAB_COUNT = 0;
+
     private final Callback<Integer> mArchivedTabModelTabCountObserver =
             (tabModelTabCount) -> {
                 updateArchivedTabCount();
             };
-    private final @Nullable TabGroupSyncService mTabGroupSyncService;
+    private @Nullable TabModel mArchivedTabModel;
+    private @Nullable ObservableSupplier<Integer> mArchivedTabModelTabCountSupplier;
+    private @Nullable TabGroupSyncService mTabGroupSyncService;
 
     private final Observer mTabGroupSyncObserver =
             new Observer() {
@@ -63,11 +65,20 @@ public class ArchivedTabCountSupplier extends ObservableSupplierImpl<Integer>
     /**
      * Creates an instance of {@link ArchivedTabCountSupplier}.
      *
-     * @param archivedTabModel The {@link TabModel} representing archived tabs.
-     * @param tabGroupSyncService The {@link TabGroupSyncService} governing synced tab groups.
      * @return The supplier that manages tab count updates from both the tab model and sync service.
      */
-    public ArchivedTabCountSupplier(
+    public ArchivedTabCountSupplier() {
+        // Set this supplier once so there is a base value at minimum.
+        super.set(INITIAL_TAB_COUNT);
+    }
+
+    /**
+     * Setup the observers for tab counts when the tab model and sync service are available.
+     *
+     * @param archivedTabModel The {@link TabModel} representing archived tabs.
+     * @param tabGroupSyncService The {@link TabGroupSyncService} governing synced tab groups.
+     */
+    public void setupInternalObservers(
             TabModel archivedTabModel, @Nullable TabGroupSyncService tabGroupSyncService) {
         mArchivedTabModel = archivedTabModel;
         mArchivedTabModelTabCountSupplier = mArchivedTabModel.getTabCountSupplier();
@@ -77,14 +88,13 @@ public class ArchivedTabCountSupplier extends ObservableSupplierImpl<Integer>
         if (mTabGroupSyncService != null) {
             mTabGroupSyncService.addObserver(mTabGroupSyncObserver);
         }
-
-        // Set this supplier once so there is a base value at minimum.
-        super.set(mArchivedTabModelTabCountSupplier.get());
     }
 
     private void updateArchivedTabCount() {
         int totalTabCount = getArchivedTabGroupTabCount();
-        totalTabCount += mArchivedTabModel.getCount();
+        if (mArchivedTabModel != null) {
+            totalTabCount += mArchivedTabModel.getCount();
+        }
         super.set(totalTabCount);
     }
 
