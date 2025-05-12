@@ -24797,6 +24797,29 @@
             ]
         }
     ],
+    "WaitForLateScrollEvents": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "DeadlineRatio0_5",
+                    "params": {
+                        "deadline_ratio": "0.5"
+                    },
+                    "enable_features": [
+                        "WaitForLateScrollEvents"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebApkBackupAndRestore": [
         {
             "platforms": [
