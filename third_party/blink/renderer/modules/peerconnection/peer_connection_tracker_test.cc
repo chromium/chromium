@@ -116,6 +116,8 @@ class MockPeerConnectionHandler : public RTCPeerConnectionHandler {
   MOCK_METHOD1(OnThermalStateChange, void(mojom::blink::DeviceThermalState));
   MOCK_METHOD0(StartDataChannelLog, void());
   MOCK_METHOD0(StopDataChannelLog, void());
+  MOCK_METHOD1(StartEventLog, void(int));
+  MOCK_METHOD0(StopEventLog, void());
 
  private:
   explicit MockPeerConnectionHandler(
@@ -272,6 +274,54 @@ TEST_F(PeerConnectionTrackerTest, DataChannelLoggingWrite) {
   EXPECT_CALL(*mock_host_,
               WebRtcDataChannelLogWrite(info->lid, ElementsAre(1, 2, 3)));
   tracker_->TrackRtcDataChannelLogWrite(mock_handler_.get(), {1, 2, 3});
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PeerConnectionTrackerTest, StartEventLogCalled) {
+  CreateTrackerWithMocks();
+  PeerConnectionInfoPtr info = CreateAndRegisterPeerConnectionHandler();
+
+  EXPECT_CALL(*mock_handler_, StartEventLog(123));
+  tracker_->StartEventLog(info->lid, 123);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PeerConnectionTrackerTest,
+       StartEventLogNotCalledIfMismatchBetweenLidAndPeerConnection) {
+  CreateTrackerWithMocks();
+  PeerConnectionInfoPtr info = CreateAndRegisterPeerConnectionHandler();
+
+  EXPECT_CALL(*mock_handler_, StartEventLog).Times(0);
+  tracker_->StartEventLog(info->lid + 1, 321);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PeerConnectionTrackerTest, StopEventLogCalled) {
+  CreateTrackerWithMocks();
+  PeerConnectionInfoPtr info = CreateAndRegisterPeerConnectionHandler();
+
+  EXPECT_CALL(*mock_handler_, StopEventLog);
+  tracker_->StopEventLog(info->lid);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PeerConnectionTrackerTest,
+       StopEventLogNotCalledIfMismatchBetweenLidAndPeerConnection) {
+  CreateTrackerWithMocks();
+  PeerConnectionInfoPtr info = CreateAndRegisterPeerConnectionHandler();
+
+  EXPECT_CALL(*mock_handler_, StopEventLog).Times(0);
+  tracker_->StopEventLog(info->lid + 1);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PeerConnectionTrackerTest, EventLoggingWrite) {
+  CreateTrackerWithMocks();
+  PeerConnectionInfoPtr info = CreateAndRegisterPeerConnectionHandler();
+
+  EXPECT_CALL(*mock_host_,
+              WebRtcEventLogWrite(info->lid, ElementsAre(1, 2, 3)));
+  tracker_->TrackRtcEventLogWrite(mock_handler_.get(), {1, 2, 3});
   base::RunLoop().RunUntilIdle();
 }
 

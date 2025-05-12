@@ -262,6 +262,15 @@ class MODULES_EXPORT PeerConnectionTracker
       PeerConnectionTrackerTest,
       StopDataChannelLogNotCalledIfMismatchBetweenLidAndPeerConnection);
   FRIEND_TEST_ALL_PREFIXES(PeerConnectionTrackerTest, DataChannelLoggingWrite);
+  FRIEND_TEST_ALL_PREFIXES(PeerConnectionTrackerTest, StartEventLogCalled);
+  FRIEND_TEST_ALL_PREFIXES(PeerConnectionTrackerTest, StopEventLogCalled);
+  FRIEND_TEST_ALL_PREFIXES(
+      PeerConnectionTrackerTest,
+      StartEventLogNotCalledIfMismatchBetweenLidAndPeerConnection);
+  FRIEND_TEST_ALL_PREFIXES(
+      PeerConnectionTrackerTest,
+      StopEventLogNotCalledIfMismatchBetweenLidAndPeerConnection);
+  FRIEND_TEST_ALL_PREFIXES(PeerConnectionTrackerTest, EventLoggingWrite);
 
   PeerConnectionTracker(
       mojo::PendingRemote<mojom::blink::PeerConnectionTrackerHost> host,
