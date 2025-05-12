@@ -113,6 +113,9 @@ TEST(AppBoundEncryptionProvider, TestEncryptDecrypt) {
 }
 
 TEST(AppBoundEncryptionProvider, Basic) {
+  base::test::ScopedFeatureList feature(
+      os_crypt_async::features::kRegenerateKeyForCatastrophicFailures);
+
   base::test::TaskEnvironment env;
   ::testing::StrictMock<MockAppBoundEncryptionOverrides> mock_app_bound;
 

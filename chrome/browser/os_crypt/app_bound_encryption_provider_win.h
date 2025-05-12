@@ -42,9 +42,8 @@ BASE_DECLARE_FEATURE(kAppBoundUserDataDirProtection);
 // for data encryption by the elevated service.
 BASE_DECLARE_FEATURE(kAppBoundEncryptionKeyV3);
 
-// An emergency kill switch feature to prevent key regeneration for catastrophic
-// failures, in case the numbers in https://crbug.com/382059244#comment2 prove
-// incorrect for some reason.
+// If enabled, will re-generate a new key for catastrophic failures. See
+// `DetermineErrorType` in the cc file for the two current cases.
 BASE_DECLARE_FEATURE(kRegenerateKeyForCatastrophicFailures);
 
 }  // namespace features
