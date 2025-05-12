@@ -122,7 +122,7 @@ bool DownloadProtectionDelegateAndroid::ShouldCheckDownloadUrl(
   return IsAndroidDownloadProtectionEnabledForDownloadProfile(item);
 }
 
-bool DownloadProtectionDelegateAndroid::ShouldCheckClientDownload(
+bool DownloadProtectionDelegateAndroid::MayCheckClientDownload(
     download::DownloadItem* item) const {
   bool is_enabled = IsAndroidDownloadProtectionEnabledForDownloadProfile(item);
   if (is_enabled && !IsDownloadRequestUrlValid(download_request_url_)) {
@@ -133,19 +133,34 @@ bool DownloadProtectionDelegateAndroid::ShouldCheckClientDownload(
     return false;
   }
 
-  if (!IsSupportedDownload(*item, item->GetFileNameToReportUser())) {
+  MayCheckDownloadResult may_check_download_result =
+      IsSupportedDownload(*item, item->GetFileNameToReportUser());
+  if (may_check_download_result ==
+      MayCheckDownloadResult::kMayNotCheckDownload) {
     return false;
   }
 
-  bool should_sample = should_sample_override_.value_or(ShouldSample());
-  if (!should_sample) {
-    DownloadProtectionMetricsData::SetOutcome(item, Outcome::kNotSampled);
+  // Apply random sampling only to eligible files (APK files).
+  // Note: this sampling performed by DownloadProtectionDelegateAndroid is
+  // distinct from sampling for "light" pings for unsupported filetypes.
+  if (may_check_download_result == MayCheckDownloadResult::kMayCheckDownload) {
+    bool should_sample = should_sample_override_.value_or(ShouldSample());
+    if (!should_sample) {
+      DownloadProtectionMetricsData::SetOutcome(item, Outcome::kNotSampled);
+    }
+    should_sample_override_ = std::nullopt;
+    return should_sample;
   }
-  should_sample_override_ = std::nullopt;
-  return should_sample;
+
+  // "Light" sampled pings for unsupported filetypes are not supported on
+  // Android. GetUnsupportedFileSampleRate() enforces that later, so return true
+  // here to be consistent with the semantics of MayCheckDownloadResult.
+  CHECK_EQ(may_check_download_result,
+           MayCheckDownloadResult::kMaySendSampledPingOnly);
+  return true;
 }
 
-bool DownloadProtectionDelegateAndroid::IsSupportedDownload(
+MayCheckDownloadResult DownloadProtectionDelegateAndroid::IsSupportedDownload(
     download::DownloadItem& item,
     const base::FilePath& target_path) const {
   // On Android, the target path is likely a content-URI. Therefore, use the
@@ -156,14 +171,14 @@ bool DownloadProtectionDelegateAndroid::IsSupportedDownload(
   base::FilePath file_name = item.GetFileNameToReportUser();
 
   DownloadCheckResultReason reason = REASON_MAX;
-  if (!CheckClientDownloadRequest::IsSupportedDownload(item, file_name,
-                                                       &reason)) {
+  MayCheckDownloadResult may_check_download_result =
+      CheckClientDownloadRequest::IsSupportedDownload(item, file_name, &reason);
+  if (may_check_download_result != MayCheckDownloadResult::kMayCheckDownload) {
     DownloadProtectionMetricsData::SetOutcome(
         &item, DownloadProtectionMetricsData::ConvertDownloadCheckResultReason(
                    reason));
-    return false;
   }
-  return true;
+  return may_check_download_result;
 }
 
 void DownloadProtectionDelegateAndroid::PreSerializeRequest(

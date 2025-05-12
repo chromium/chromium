@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 class GURL;
@@ -41,22 +42,26 @@ class DownloadProtectionDelegate {
   // preferences.
   virtual bool ShouldCheckDownloadUrl(download::DownloadItem* item) const = 0;
 
-  // Returns whether the download item should be checked by
-  // CheckClientDownload() based on user preferences, properties of the file,
-  // and potentially random sampling.
+  // Returns whether the download item may be checked by CheckClientDownload().
+  // This is based on user preferences, properties of the file, and potentially
+  // random sampling.
+  // A return value of false indicates that the delegate does not permit the
+  // download to be checked.
+  // A return value of true indicates that checking the download is permitted,
+  // but caller may apply further logic to determine whether a check occurs.
   // TODO(chlily): Implementations of this method currently rely on the checks
   // in IsSupportedDownload. This is redundant. Refactor this logic to eliminate
   // IsSupportedDownload().
-  virtual bool ShouldCheckClientDownload(
-      download::DownloadItem* item) const = 0;
+  virtual bool MayCheckClientDownload(download::DownloadItem* item) const = 0;
 
-  // Returns whether the download item should be checked by
+  // Returns enum value indicating whether the download item may be checked by
   // CheckClientDownload() based on whether the file supports the check.
   // TODO(chlily): Remove this method. The only place where it is called seems
   // to be vestigial, and does not affect whether CheckClientDownload ultimately
   // happens.
-  virtual bool IsSupportedDownload(download::DownloadItem& item,
-                                   const base::FilePath& target_path) const = 0;
+  virtual MayCheckDownloadResult IsSupportedDownload(
+      download::DownloadItem& item,
+      const base::FilePath& target_path) const = 0;
 
   // Called immediately prior to serializing the ClientDownloadRequest into the
   // string to send in the POST request body, which is followed by sending out

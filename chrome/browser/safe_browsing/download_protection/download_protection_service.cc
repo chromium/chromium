@@ -242,7 +242,7 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
   CHECK(!settings.has_value());
 #endif
 
-  if (delegate_->ShouldCheckClientDownload(item)) {
+  if (delegate_->MayCheckClientDownload(item)) {
     CheckClientDownload(item, std::move(callback), /*password=*/std::nullopt);
     return true;
   }
@@ -315,7 +315,8 @@ void DownloadProtectionService::CheckDownloadUrl(
 bool DownloadProtectionService::IsSupportedDownload(
     download::DownloadItem& item,
     const base::FilePath& target_path) const {
-  return delegate_->IsSupportedDownload(item, target_path);
+  return delegate_->IsSupportedDownload(item, target_path) !=
+         MayCheckDownloadResult::kMayNotCheckDownload;
 }
 
 void DownloadProtectionService::CheckPPAPIDownloadRequest(

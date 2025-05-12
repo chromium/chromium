@@ -45,7 +45,8 @@ class CheckFileSystemAccessWriteRequest
 
  private:
   // CheckClientDownloadRequestBase overrides:
-  bool IsSupportedDownload(DownloadCheckResultReason* reason) override;
+  MayCheckDownloadResult IsSupportedDownload(
+      DownloadCheckResultReason* reason) override;
   content::BrowserContext* GetBrowserContext() const override;
   bool IsCancelled() override;
   base::WeakPtr<CheckClientDownloadRequestBase> GetWeakPtr() override;

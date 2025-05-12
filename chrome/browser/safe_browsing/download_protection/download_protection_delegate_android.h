@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "chrome/browser/safe_browsing/download_protection/download_protection_delegate.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
@@ -34,9 +35,10 @@ class DownloadProtectionDelegateAndroid : public DownloadProtectionDelegate {
 
   // DownloadProtectionDelegate:
   bool ShouldCheckDownloadUrl(download::DownloadItem* item) const override;
-  bool ShouldCheckClientDownload(download::DownloadItem* item) const override;
-  bool IsSupportedDownload(download::DownloadItem& item,
-                           const base::FilePath& target_path) const override;
+  bool MayCheckClientDownload(download::DownloadItem* item) const override;
+  MayCheckDownloadResult IsSupportedDownload(
+      download::DownloadItem& item,
+      const base::FilePath& target_path) const override;
   void PreSerializeRequest(const download::DownloadItem* item,
                            ClientDownloadRequest& request_proto) override;
   void FinalizeResourceRequest(

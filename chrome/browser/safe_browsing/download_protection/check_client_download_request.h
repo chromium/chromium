@@ -50,17 +50,22 @@ class CheckClientDownloadRequest : public CheckClientDownloadRequestBase,
   void OnDownloadDestroyed(download::DownloadItem* download) override;
   void OnDownloadUpdated(download::DownloadItem* download) override;
 
-  // Returns whether `item` is eligible for CheckClientDownloadRequest.
+  // Returns enum value indicating whether `item` is eligible for
+  // CheckClientDownloadRequest. If return value is not kMayCheckDownload, then
+  // `reason` will be populated with the reason why.
   // Note: Behavior is platform-specific.
-  static bool IsSupportedDownload(const download::DownloadItem& item,
-                                  const base::FilePath& file_name,
-                                  DownloadCheckResultReason* reason);
+  // TODO(chlily): Rename this method since it does not return a bool.
+  static MayCheckDownloadResult IsSupportedDownload(
+      const download::DownloadItem& item,
+      const base::FilePath& file_name,
+      DownloadCheckResultReason* reason);
 
   download::DownloadItem* item() const override;
 
  private:
   // CheckClientDownloadRequestBase overrides:
-  bool IsSupportedDownload(DownloadCheckResultReason* reason) override;
+  MayCheckDownloadResult IsSupportedDownload(
+      DownloadCheckResultReason* reason) override;
   content::BrowserContext* GetBrowserContext() const override;
   bool IsCancelled() override;
   base::WeakPtr<CheckClientDownloadRequestBase> GetWeakPtr() override;

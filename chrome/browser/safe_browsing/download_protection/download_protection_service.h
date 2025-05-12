@@ -110,7 +110,11 @@ class DownloadProtectionService {
       base::optional_ref<const std::string> password = std::nullopt);
 
   // Checks the user permissions, then calls |CheckClientDownload| if
-  // appropriate. Returns whether we began scanning.
+  // appropriate. Returns whether we may do more asynchronous work to check the
+  // download, such as sending a ping (potentially subject to sampling or other
+  // eligibility checks). If this returns true, the `callback` will be invoked
+  // with the result of a check. If this returns false, the `callback` will not
+  // be run.
   virtual bool MaybeCheckClientDownload(
       download::DownloadItem* item,
       CheckDownloadRepeatingCallback callback);
@@ -134,8 +138,9 @@ class DownloadProtectionService {
   virtual void CheckDownloadUrl(download::DownloadItem* item,
                                 CheckDownloadCallback callback);
 
-  // Returns true iff the download specified by |info| should be scanned by
-  // CheckClientDownload() for malicious content.
+  // Returns true if the download specified by |info| may be scanned by
+  // CheckClientDownload() for malicious content. (Caller may apply further
+  // logic to determine if a scan occurs, such as sampling or other checks.)
   // May modify the DownloadItem with a SupportsUserData::Data.
   virtual bool IsSupportedDownload(download::DownloadItem& item,
                                    const base::FilePath& target_path) const;

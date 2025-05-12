@@ -111,6 +111,21 @@ enum class DeepScanEvent {
   kIncorrectPassword = 8,
   kMaxValue = kIncorrectPassword,
 };
+
+// Describes whether a given download may send a download ping.
+enum class MayCheckDownloadResult {
+  // The download may not send a ping. This may be due to properties of the
+  // download/file itself (see DownloadCheckResultReason) or due to other logic
+  // applied by DownloadProtection{Service,Delegate}.
+  kMayNotCheckDownload,
+  // The download may send a ping, but only a "light" ping may be sent if the
+  // download is sampled.
+  kMaySendSampledPingOnly,
+  // The download is fully supported for CheckClientDownload and may send a full
+  // download ping.
+  kMayCheckDownload,
+};
+
 void LogDeepScanEvent(download::DownloadItem* item, DeepScanEvent event);
 void LogDeepScanEvent(const DeepScanningMetadata& metadata,
                       DeepScanEvent event);

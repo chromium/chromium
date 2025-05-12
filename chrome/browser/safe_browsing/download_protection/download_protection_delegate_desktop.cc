@@ -64,22 +64,27 @@ bool DownloadProtectionDelegateDesktop::ShouldCheckDownloadUrl(
   return IsSafeBrowsingEnabledForDownloadProfile(item);
 }
 
-bool DownloadProtectionDelegateDesktop::ShouldCheckClientDownload(
+bool DownloadProtectionDelegateDesktop::MayCheckClientDownload(
     download::DownloadItem* item) const {
-  return IsSafeBrowsingEnabledForDownloadProfile(item) &&
-         IsSupportedDownload(*item, item->GetTargetFilePath());
+  if (!IsSafeBrowsingEnabledForDownloadProfile(item)) {
+    return false;
+  }
+  return IsSupportedDownload(*item, item->GetTargetFilePath()) !=
+         MayCheckDownloadResult::kMayNotCheckDownload;
 }
 
-bool DownloadProtectionDelegateDesktop::IsSupportedDownload(
+MayCheckDownloadResult DownloadProtectionDelegateDesktop::IsSupportedDownload(
     download::DownloadItem& item,
     const base::FilePath& target_path) const {
-  DownloadCheckResultReason ignored_reason = REASON_MAX;
   // TODO(nparker): Remove the CRX check here once can support
   // UNKNOWN types properly.  http://crbug.com/581044
+  if (download_type_util::GetDownloadType(target_path) ==
+      ClientDownloadRequest::CHROME_EXTENSION) {
+    return MayCheckDownloadResult::kMayNotCheckDownload;
+  }
+  DownloadCheckResultReason ignored_reason = REASON_MAX;
   return CheckClientDownloadRequest::IsSupportedDownload(item, target_path,
-                                                         &ignored_reason) &&
-         download_type_util::GetDownloadType(target_path) !=
-             ClientDownloadRequest::CHROME_EXTENSION;
+                                                         &ignored_reason);
 }
 
 void DownloadProtectionDelegateDesktop::FinalizeResourceRequest(

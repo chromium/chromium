@@ -201,33 +201,35 @@ void CheckClientDownloadRequestBase::OnUrlAllowlistCheckDone(
   }
 
   DownloadCheckResultReason reason = REASON_MAX;
-  if (!IsSupportedDownload(&reason)) {
-    switch (reason) {
-      case REASON_EMPTY_URL_CHAIN:
-      case REASON_INVALID_URL:
-      case REASON_LOCAL_FILE:
-      case REASON_REMOTE_FILE:
-        FinishRequest(DownloadCheckResult::UNKNOWN, reason);
-        return;
-      case REASON_UNSUPPORTED_URL_SCHEME:
-        FinishRequest(DownloadCheckResult::UNKNOWN, reason);
-        return;
-      case REASON_NOT_BINARY_FILE:
-        if (ShouldSampleUnsupportedFile(target_file_path_)) {
-          // Send a "light ping" and don't use the verdict.
-          sampled_unsupported_file_ = true;
-          break;
-        }
-        RecordFileExtensionType(kDownloadExtensionUmaName, target_file_path_);
-        FinishRequest(DownloadCheckResult::UNKNOWN, reason);
-        return;
+  MayCheckDownloadResult may_check_download_result =
+      IsSupportedDownload(&reason);
 
-      default:
-        // We only expect the reasons explicitly handled above.
-        NOTREACHED();
+  if (may_check_download_result ==
+      MayCheckDownloadResult::kMayNotCheckDownload) {
+    CHECK(reason == REASON_EMPTY_URL_CHAIN || reason == REASON_INVALID_URL ||
+          reason == REASON_LOCAL_FILE || reason == REASON_REMOTE_FILE ||
+          reason == REASON_UNSUPPORTED_URL_SCHEME ||
+          reason == REASON_DOWNLOAD_DESTROYED);
+    FinishRequest(DownloadCheckResult::UNKNOWN, reason);
+    return;
+  }
+
+  RecordFileExtensionType(kDownloadExtensionUmaName, target_file_path_);
+
+  if (may_check_download_result ==
+      MayCheckDownloadResult::kMaySendSampledPingOnly) {
+    CHECK(reason == REASON_NOT_BINARY_FILE);
+    // Send a "light ping" and don't use the verdict.
+    sampled_unsupported_file_ = ShouldSampleUnsupportedFile(target_file_path_);
+    if (!sampled_unsupported_file_) {
+      FinishRequest(DownloadCheckResult::UNKNOWN, reason);
+      return;
     }
   }
-  RecordFileExtensionType(kDownloadExtensionUmaName, target_file_path_);
+
+  CHECK(may_check_download_result ==
+            MayCheckDownloadResult::kMayCheckDownload ||
+        sampled_unsupported_file_);
   download_request_maker_->Start(base::BindOnce(
       &CheckClientDownloadRequestBase::OnRequestBuilt, GetWeakPtr()));
 }

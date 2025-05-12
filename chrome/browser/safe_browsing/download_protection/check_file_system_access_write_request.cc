@@ -61,18 +61,20 @@ download::DownloadItem* CheckFileSystemAccessWriteRequest::item() const {
   return nullptr;
 }
 
-bool CheckFileSystemAccessWriteRequest::IsSupportedDownload(
+MayCheckDownloadResult CheckFileSystemAccessWriteRequest::IsSupportedDownload(
     DownloadCheckResultReason* reason) {
   if (!weak_metadata_) {
-    return false;
+    *reason = REASON_DOWNLOAD_DESTROYED;
+    return MayCheckDownloadResult::kMayNotCheckDownload;
   }
 
+  // TODO(crbug.com/416080485): This should only check for APK files on Android.
   if (!FileTypePolicies::GetInstance()->IsCheckedBinaryFile(
           weak_metadata_->GetTargetFilePath())) {
     *reason = REASON_NOT_BINARY_FILE;
-    return false;
+    return MayCheckDownloadResult::kMaySendSampledPingOnly;
   }
-  return true;
+  return MayCheckDownloadResult::kMayCheckDownload;
 }
 
 content::BrowserContext* CheckFileSystemAccessWriteRequest::GetBrowserContext()

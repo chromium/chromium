@@ -384,7 +384,11 @@ class DownloadProtectionServiceTestBase
       : ChromeRenderViewHostTestHarness(time_source),
         in_process_utility_thread_helper_(
             std::make_unique<content::InProcessUtilityThreadHelper>()),
-        testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+        testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
+#if BUILDFLAG(IS_ANDROID)
+    EnableFeatures({kMaliciousApkDownloadCheck});
+#endif
+  }
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -945,7 +949,12 @@ class DownloadProtectionServiceMockTimeTest
 class EnhancedProtectionDownloadTest : public DownloadProtectionServiceTest {
  public:
   EnhancedProtectionDownloadTest() {
-    EnableFeatures({kSafeBrowsingRemoveCookiesInAuthRequests});
+    EnableFeatures({
+        kSafeBrowsingRemoveCookiesInAuthRequests,
+#if BUILDFLAG(IS_ANDROID)
+        kMaliciousApkDownloadCheck,
+#endif
+    });
   }
 };
 
@@ -1005,6 +1014,10 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadInvalidUrl) {
                              "http://www.google.com/",     // referrer
                              FILE_PATH_LITERAL("a.tmp"),   // tmp_path
                              FILE_PATH_LITERAL("a.exe"));  // final_path
+
+    // Though MayCheckClientDownload returns false, if CheckClientDownload()
+    // were in fact called anyway, test that we do not ultimately send a ping.
+    EXPECT_FALSE(download_service_->delegate()->MayCheckClientDownload(&item));
     RunLoop run_loop;
     download_service_->CheckClientDownload(
         &item,
@@ -1021,6 +1034,10 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadInvalidUrl) {
                              "http://www.google.com/",           // referrer
                              FILE_PATH_LITERAL("a.tmp"),         // tmp_path
                              FILE_PATH_LITERAL("a.exe"));        // final_path
+
+    // Though MayCheckClientDownload returns false, if CheckClientDownload()
+    // were in fact called anyway, test that we do not ultimately send a ping.
+    EXPECT_FALSE(download_service_->delegate()->MayCheckClientDownload(&item));
     RunLoop run_loop;
     download_service_->CheckClientDownload(
         &item,
@@ -1034,18 +1051,30 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadInvalidUrl) {
 
 TEST_F(DownloadProtectionServiceTest, CheckClientDownloadNotABinary) {
   NiceMockDownloadItem item;
-  PrepareBasicDownloadItem(&item,
-                           std::vector<std::string>(),   // empty url_chain
-                           "http://www.google.com/",     // referrer
-                           FILE_PATH_LITERAL("a.tmp"),   // tmp_path
-                           FILE_PATH_LITERAL("a.txt"));  // final_path
+  PrepareBasicDownloadItem(
+      &item, {"http://www.evil.com/a.txt"},  // url_chain
+      "http://www.google.com/",              // referrer
+      FILE_PATH_LITERAL("a.tmp"),            // tmp_path
+      FILE_PATH_LITERAL("a.txt"),            // final_path
+      // Do not use the default APK filename override for Android in
+      // PrepareBasicDownloadItem.
+      base::FilePath(FILE_PATH_LITERAL("a.txt")));  // display_name
+  content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
+
+  EXPECT_EQ(
+      download_service_->delegate()->IsSupportedDownload(item, final_path_),
+      MayCheckDownloadResult::kMaySendSampledPingOnly);
+
+  // This returns true because of the possibility of sampling an unsupported
+  // file type.
   RunLoop run_loop;
-  download_service_->CheckClientDownload(
+  EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
       &item,
       base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
-                          base::Unretained(this), run_loop.QuitClosure()));
+                          base::Unretained(this), run_loop.QuitClosure())));
   run_loop.Run();
   EXPECT_TRUE(IsResult(DownloadCheckResult::UNKNOWN));
+  // But the ping is not ultimately sent because binary sampling is off.
   EXPECT_FALSE(HasClientDownloadRequest());
 }
 
@@ -1069,7 +1098,7 @@ TEST_F(DownloadProtectionServiceTest,
                   tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _))
       .Times(3);
 
-  // We should not get whilelist checks for other URLs than specified below.
+  // We should not get allowlist checks for other URLs than specified below.
   EXPECT_CALL(*sb_service_->mock_database_manager(),
               MatchDownloadAllowlistUrl(_, _))
       .Times(0);
@@ -1092,10 +1121,10 @@ TEST_F(DownloadProtectionServiceTest,
     // With no referrer and just the bad url, should be marked DANGEROUS.
     url_chain_.emplace_back("http://www.evil.com/bla.exe");
     RunLoop run_loop;
-    download_service_->CheckClientDownload(
+    EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
         &item,
         base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
-                            base::Unretained(this), run_loop.QuitClosure()));
+                            base::Unretained(this), run_loop.QuitClosure())));
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::DANGEROUS));
     ASSERT_TRUE(HasClientDownloadRequest());
@@ -1107,10 +1136,10 @@ TEST_F(DownloadProtectionServiceTest,
     // Check that the referrer is not matched against the allowlist.
     referrer_ = GURL("http://www.google.com/");
     RunLoop run_loop;
-    download_service_->CheckClientDownload(
+    EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
         &item,
         base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
-                            base::Unretained(this), run_loop.QuitClosure()));
+                            base::Unretained(this), run_loop.QuitClosure())));
     run_loop.Run();
 
     EXPECT_TRUE(IsResult(DownloadCheckResult::DANGEROUS));
@@ -1124,10 +1153,10 @@ TEST_F(DownloadProtectionServiceTest,
     // Redirect from a site shouldn't be checked either.
     url_chain_.emplace(url_chain_.begin(), "http://www.google.com/redirect");
     RunLoop run_loop;
-    download_service_->CheckClientDownload(
+    EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
         &item,
         base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
-                            base::Unretained(this), run_loop.QuitClosure()));
+                            base::Unretained(this), run_loop.QuitClosure())));
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::DANGEROUS));
     ASSERT_TRUE(HasClientDownloadRequest());
@@ -1139,10 +1168,10 @@ TEST_F(DownloadProtectionServiceTest,
     // Only if the final url is allowlisted should it be SAFE.
     url_chain_.emplace_back("http://www.google.com/a.exe");
     RunLoop run_loop;
-    download_service_->CheckClientDownload(
+    EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
         &item,
         base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
-                            base::Unretained(this), run_loop.QuitClosure()));
+                            base::Unretained(this), run_loop.QuitClosure())));
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
     // TODO(grt): Make the service produce the request even when the URL is
@@ -1193,10 +1222,10 @@ TEST_F(DownloadProtectionServiceTest,
         &item, profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
         nullptr);
     RunLoop run_loop;
-    download_service_->CheckClientDownload(
+    EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
         &item,
         base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
-                            base::Unretained(this), run_loop.QuitClosure()));
+                            base::Unretained(this), run_loop.QuitClosure())));
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
     EXPECT_FALSE(HasClientDownloadRequest());
@@ -1209,10 +1238,10 @@ TEST_F(DownloadProtectionServiceTest,
         &item, profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
         nullptr);
     RunLoop run_loop;
-    download_service_->CheckClientDownload(
+    EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
         &item,
         base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
-                            base::Unretained(this), run_loop.QuitClosure()));
+                            base::Unretained(this), run_loop.QuitClosure())));
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
     EXPECT_FALSE(HasClientDownloadRequest());
@@ -1222,10 +1251,10 @@ TEST_F(DownloadProtectionServiceTest,
     //           ClientDownloadRequest should NOT be sent.
     content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
     RunLoop run_loop;
-    download_service_->CheckClientDownload(
+    EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
         &item,
         base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
-                            base::Unretained(this), run_loop.QuitClosure()));
+                            base::Unretained(this), run_loop.QuitClosure())));
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
     EXPECT_FALSE(HasClientDownloadRequest());
@@ -1237,10 +1266,10 @@ TEST_F(DownloadProtectionServiceTest,
     SetExtendedReportingPreference(true);
     content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
     RunLoop run_loop;
-    download_service_->CheckClientDownload(
+    EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
         &item,
         base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
-                            base::Unretained(this), run_loop.QuitClosure()));
+                            base::Unretained(this), run_loop.QuitClosure())));
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
     ASSERT_TRUE(HasClientDownloadRequest());
@@ -1284,10 +1313,12 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSampledFile) {
         &item, profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
         nullptr);
     RunLoop run_loop;
-    download_service_->CheckClientDownload(
+    // This returns true because of the possibility of sampling an unsupported
+    // file type.
+    EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
         &item,
         base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
-                            base::Unretained(this), run_loop.QuitClosure()));
+                            base::Unretained(this), run_loop.QuitClosure())));
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::UNKNOWN));
     EXPECT_FALSE(HasClientDownloadRequest());
@@ -1297,10 +1328,10 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSampledFile) {
     //           A "light" ClientDownloadRequest should be sent.
     content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
     RunLoop run_loop;
-    download_service_->CheckClientDownload(
+    EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
         &item,
         base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
-                            base::Unretained(this), run_loop.QuitClosure()));
+                            base::Unretained(this), run_loop.QuitClosure())));
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::UNKNOWN));
     ASSERT_TRUE(HasClientDownloadRequest());
@@ -1326,10 +1357,10 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSampledFile) {
         &item, profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
         nullptr);
     RunLoop run_loop;
-    download_service_->CheckClientDownload(
+    EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
         &item,
         base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
-                            base::Unretained(this), run_loop.QuitClosure()));
+                            base::Unretained(this), run_loop.QuitClosure())));
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::UNKNOWN));
     EXPECT_FALSE(HasClientDownloadRequest());
@@ -1339,10 +1370,10 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSampledFile) {
     //           ClientDownloadRequest should NOT be sent.
     content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
     RunLoop run_loop;
-    download_service_->CheckClientDownload(
+    EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
         &item,
         base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
-                            base::Unretained(this), run_loop.QuitClosure()));
+                            base::Unretained(this), run_loop.QuitClosure())));
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::UNKNOWN));
     EXPECT_FALSE(HasClientDownloadRequest());
@@ -5636,6 +5667,8 @@ class AndroidDownloadProtectionTest
         ->SetNextShouldSampleForTesting(should_sample);
   }
 
+  // Expects MaybeCheckClientDownload to return false, and therefore no ping to
+  // be sent.
   void ExpectNoCheckClientDownload(download::DownloadItem* item) {
     EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(_, _))
         .Times(0);
@@ -5650,9 +5683,11 @@ class AndroidDownloadProtectionTest
     Mock::VerifyAndClearExpectations(binary_feature_extractor_.get());
   }
 
+  // Expects MaybeCheckClientDownload to return true, and to send a ping over
+  // the network.
   void ExpectCheckClientDownload(
       download::DownloadItem* item,
-      base::optional_ref<GURL> download_request_url) {
+      base::optional_ref<GURL> download_request_url = std::nullopt) {
     EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
         .Times(1);
     EXPECT_CALL(*binary_feature_extractor_.get(),
@@ -5831,6 +5866,10 @@ TEST_P(AndroidDownloadProtectionTestWithOverrideUrl, CheckClientDownload) {
 
 TEST_P(AndroidDownloadProtectionTest,
        NoCheckClientDownloadForNonSupportedType) {
+  if (!ShouldAndroidDownloadProtectionBeActive()) {
+    return;
+  }
+
   // Response to any requests will be DANGEROUS.
   PrepareResponse(ClientDownloadResponse::DANGEROUS, net::HTTP_OK, net::OK);
   // Override the random sampling.
@@ -5846,15 +5885,43 @@ TEST_P(AndroidDownloadProtectionTest,
         /*display_name=*/
         base::FilePath(FILE_PATH_LITERAL("not_supported_filetype.dex")));
 
-    ExpectNoCheckClientDownload(&item);
+    EXPECT_EQ(
+        download_service_->delegate()->IsSupportedDownload(item, display_name_),
+        MayCheckDownloadResult::kMaySendSampledPingOnly);
+
+    EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(_, _))
+        .Times(0);
+    EXPECT_CALL(*binary_feature_extractor_.get(),
+                ExtractImageFeatures(_, _, _, _))
+        .Times(0);
+
+    // This returns true because there may be a ping sent, as far as
+    // DownloadProtectionService knows at this point...
+    RunLoop run_loop;
+    EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
+        &item,
+        base::BindRepeating(&AndroidDownloadProtectionTest::CheckDoneCallback,
+                            base::Unretained(this), run_loop.QuitClosure())));
+    run_loop.Run();
+
+    // ... except that we are guaranteed not to send a ping because the sample
+    // rate for unsupported file types is 0.
+    EXPECT_EQ(download_service_->delegate()->GetUnsupportedFileSampleRate(
+                  display_name_),
+              0.0);
+    EXPECT_FALSE(HasClientDownloadRequest());
+
+    Mock::VerifyAndClearExpectations(binary_feature_extractor_.get());
   }
   // The histogram is logged when the item goes out of scope.
-  ExpectHistogramUniqueSample(ShouldAndroidDownloadProtectionBeActive()
-                                  ? Outcome::kDownloadNotSupportedType
-                                  : Outcome::kDownloadProtectionDisabled);
+  ExpectHistogramUniqueSample(Outcome::kDownloadNotSupportedType);
 }
 
 TEST_P(AndroidDownloadProtectionTest, NoCheckClientDownloadNotSampled) {
+  if (!ShouldAndroidDownloadProtectionBeActive()) {
+    return;
+  }
+
   // Response to any requests will be DANGEROUS.
   PrepareResponse(ClientDownloadResponse::DANGEROUS, net::HTTP_OK, net::OK);
   // Override the random sampling to guarantee we won't sample.
@@ -5870,12 +5937,12 @@ TEST_P(AndroidDownloadProtectionTest, NoCheckClientDownloadNotSampled) {
         /*display_name=*/
         base::FilePath(kApkFilename));
 
+    // The sampling from the delegate results in MaybeCheckClientDownload
+    // returning false.
     ExpectNoCheckClientDownload(&item);
   }
   // The histogram is logged when the item goes out of scope.
-  ExpectHistogramUniqueSample(ShouldAndroidDownloadProtectionBeActive()
-                                  ? Outcome::kNotSampled
-                                  : Outcome::kDownloadProtectionDisabled);
+  ExpectHistogramUniqueSample(Outcome::kNotSampled);
 }
 
 // Tests the various false outcomes of IsSupportedDownload().
@@ -5893,8 +5960,9 @@ TEST_P(AndroidDownloadProtectionTest, IsSupportedDownloadFalse) {
     EXPECT_CALL(item_empty_url_chain, GetUrlChain())
         .WillRepeatedly(ReturnRef(empty_url_chain));
 
-    EXPECT_FALSE(download_service_->IsSupportedDownload(item_empty_url_chain,
-                                                        final_path_));
+    EXPECT_EQ(download_service_->delegate()->IsSupportedDownload(
+                  item_empty_url_chain, final_path_),
+              MayCheckDownloadResult::kMayNotCheckDownload);
   }
   ExpectHistogramUniqueSample(Outcome::kEmptyUrlChain);
 
@@ -5908,8 +5976,9 @@ TEST_P(AndroidDownloadProtectionTest, IsSupportedDownloadFalse) {
         /*referrer_url=*/"",
         /*display_name=*/base::FilePath(kApkFilename));
 
-    EXPECT_FALSE(
-        download_service_->IsSupportedDownload(item_invalid_url, final_path_));
+    EXPECT_EQ(download_service_->delegate()->IsSupportedDownload(
+                  item_invalid_url, final_path_),
+              MayCheckDownloadResult::kMayNotCheckDownload);
   }
   ExpectHistogramUniqueSample(Outcome::kInvalidUrl);
 
@@ -5924,8 +5993,9 @@ TEST_P(AndroidDownloadProtectionTest, IsSupportedDownloadFalse) {
         /*referrer_url=*/"",
         /*display_name=*/base::FilePath(kApkFilename));
 
-    EXPECT_FALSE(download_service_->IsSupportedDownload(
-        item_unsupported_url_scheme, final_path_));
+    EXPECT_EQ(download_service_->delegate()->IsSupportedDownload(
+                  item_unsupported_url_scheme, final_path_),
+              MayCheckDownloadResult::kMayNotCheckDownload);
   }
   ExpectHistogramUniqueSample(Outcome::kUnsupportedUrlScheme);
 
@@ -5940,8 +6010,9 @@ TEST_P(AndroidDownloadProtectionTest, IsSupportedDownloadFalse) {
         /*referrer_url=*/"",
         /*display_name=*/base::FilePath(kApkFilename));
 
-    EXPECT_FALSE(download_service_->IsSupportedDownload(item_remote_file_url,
-                                                        final_path_));
+    EXPECT_EQ(download_service_->delegate()->IsSupportedDownload(
+                  item_remote_file_url, final_path_),
+              MayCheckDownloadResult::kMayNotCheckDownload);
   }
   ExpectHistogramUniqueSample(Outcome::kRemoteFile);
 
@@ -5955,8 +6026,9 @@ TEST_P(AndroidDownloadProtectionTest, IsSupportedDownloadFalse) {
         /*referrer_url=*/"",
         /*display_name=*/base::FilePath(kApkFilename));
 
-    EXPECT_FALSE(download_service_->IsSupportedDownload(item_local_file_url,
-                                                        final_path_));
+    EXPECT_EQ(download_service_->delegate()->IsSupportedDownload(
+                  item_local_file_url, final_path_),
+              MayCheckDownloadResult::kMayNotCheckDownload);
   }
   ExpectHistogramUniqueSample(Outcome::kLocalFile);
 
@@ -5971,8 +6043,9 @@ TEST_P(AndroidDownloadProtectionTest, IsSupportedDownloadFalse) {
         /*referrer_url=*/"",
         /*display_name=*/base::FilePath(FILE_PATH_LITERAL("a.dex")));
 
-    EXPECT_FALSE(download_service_->IsSupportedDownload(
-        item_display_name_not_apk, final_path_));
+    EXPECT_EQ(download_service_->delegate()->IsSupportedDownload(
+                  item_display_name_not_apk, final_path_),
+              MayCheckDownloadResult::kMaySendSampledPingOnly);
   }
   ExpectHistogramUniqueSample(Outcome::kDownloadNotSupportedType);
 }

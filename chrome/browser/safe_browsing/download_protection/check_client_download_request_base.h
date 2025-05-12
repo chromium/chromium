@@ -101,7 +101,13 @@ class CheckClientDownloadRequestBase {
                                  DownloadCheckResultReason* reason,
                                  std::string* token) const;
 
-  virtual bool IsSupportedDownload(DownloadCheckResultReason* reason) = 0;
+  // Returns enum value indicating whether `item` is eligible for
+  // CheckClientDownloadRequest. If return value is not kMayCheckDownload, then
+  // `reason` will be populated with the reason why.
+  // TODO(chlily): Rename this method since it does not return a bool.
+  virtual MayCheckDownloadResult IsSupportedDownload(
+      DownloadCheckResultReason* reason) = 0;
+
   virtual content::BrowserContext* GetBrowserContext() const = 0;
   virtual bool IsCancelled() = 0;
   virtual base::WeakPtr<CheckClientDownloadRequestBase> GetWeakPtr() = 0;
