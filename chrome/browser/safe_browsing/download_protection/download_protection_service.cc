@@ -249,14 +249,9 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
 
 #if !BUILDFLAG(IS_ANDROID)
   if (settings.has_value()) {
-    Profile* profile = Profile::FromBrowserContext(
-        content::DownloadItemUtils::GetBrowserContext(item));
-    bool safe_browsing_enabled =
-        profile && IsSafeBrowsingEnabled(*profile->GetPrefs());
     DCHECK(report_only_scan);
-    DCHECK(!safe_browsing_enabled);
-    // Since this branch implies that Safe Browsing is disabled, the pre-deep
-    // scanning DownloadCheckResult is considered UNKNOWN.
+    // Since this branch implies that CheckClientDownload was not called, the
+    // pre-deep scanning DownloadCheckResult is considered UNKNOWN.
     UploadForDeepScanning(
         std::make_unique<DownloadItemMetadata>(item), std::move(callback),
         DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
