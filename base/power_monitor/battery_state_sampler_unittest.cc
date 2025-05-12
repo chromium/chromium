@@ -117,11 +117,6 @@ bool operator==(const BatteryLevelProvider::BatteryState& lhs,
                   rhs.charge_unit);
 }
 
-bool operator!=(const BatteryLevelProvider::BatteryState& lhs,
-                const BatteryLevelProvider::BatteryState& rhs) {
-  return !(lhs == rhs);
-}
-
 TEST(BatteryStateSamplerTest, GlobalInstance) {
 #if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL) || BUILDFLAG(IS_CHROMEOS)
   // Get() DCHECKs on platforms with a battery level provider if it's called

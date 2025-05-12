@@ -41,12 +41,12 @@ class ScopedPropVariant {
   const PROPVARIANT& get() const { return pv_; }
   const PROPVARIANT* ptr() const { return &pv_; }
 
+  // Comparison operators for ScopedPropVariant are not supported at this point.
+  bool operator==(const ScopedPropVariant&) const = delete;
+  bool operator!=(const ScopedPropVariant&) const = delete;
+
  private:
   PROPVARIANT pv_;
-
-  // Comparison operators for ScopedPropVariant are not supported at this point.
-  bool operator==(const ScopedPropVariant&) const;
-  bool operator!=(const ScopedPropVariant&) const;
 };
 
 }  // namespace win

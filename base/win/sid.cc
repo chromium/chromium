@@ -311,8 +311,4 @@ bool Sid::operator==(const Sid& sid) const {
   return Equal(sid.GetPSID());
 }
 
-bool Sid::operator!=(const Sid& sid) const {
-  return !(operator==(sid));
-}
-
 }  // namespace base::win

@@ -35,8 +35,8 @@ struct BASE_EXPORT FileDescriptor {
   explicit FileDescriptor(File file);
   explicit FileDescriptor(ScopedFD fd);
 
-  bool operator==(const FileDescriptor& other) const;
-  bool operator!=(const FileDescriptor& other) const;
+  friend bool operator==(const FileDescriptor&,
+                         const FileDescriptor&) = default;
 
   // A comparison operator so that we can use these as keys in a std::map.
   bool operator<(const FileDescriptor& other) const;
