@@ -733,7 +733,7 @@ std::set<std::string> ExtensionUserScriptLoader::GetDynamicScriptIDs(
     UserScript::Source source) const {
   std::set<std::string> dynamic_script_ids;
 
-  for (std::string pending_id : pending_dynamic_script_ids_) {
+  for (const std::string& pending_id : pending_dynamic_script_ids_) {
     if (UserScript::GetSourceForScriptID(pending_id) == source) {
       dynamic_script_ids.insert(pending_id);
     }

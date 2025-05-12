@@ -299,7 +299,7 @@ bool UpdateAndIndexDynamicRules(const FileBackedRulesetSource& source,
 
   // Treat rules which exceed the regex memory limit as errors if these are new
   // rules. Just surface an error for the first such rule.
-  for (auto warning : info.rule_ignored_warnings()) {
+  for (const auto& warning : info.rule_ignored_warnings()) {
     if (!base::Contains(rule_ids_to_add, warning.rule_id)) {
       // Any rule added earlier which is ignored now (say due to exceeding the
       // regex memory limit), will be silently ignored.

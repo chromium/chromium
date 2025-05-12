@@ -170,7 +170,7 @@ content::RenderFrameHost* ExtensionApiFrameIdMap::GetRenderFrameHostByFrameId(
   CHECK_GE(frame_id, 1);
 
   content::RenderFrameHost* render_frame_host = nullptr;
-  for (auto iter : document_id_map_) {
+  for (const auto& iter : document_id_map_) {
     if (frame_id ==
         ExtensionApiFrameIdMap::GetFrameId(&iter.second->render_frame_host())) {
       render_frame_host = &iter.second->render_frame_host();

@@ -167,7 +167,7 @@ std::string RulesRegistry::RemoveRules(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Check if any of the rules are non-removable.
-  for (RuleId rule_id : rule_identifiers) {
+  for (const RuleId& rule_id : rule_identifiers) {
     RulesDictionaryKey lookup_key(extension_id, rule_id);
     auto itr = manifest_rules_.find(lookup_key);
     if (itr != manifest_rules_.end())
