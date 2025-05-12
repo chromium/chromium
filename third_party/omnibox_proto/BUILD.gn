@@ -18,6 +18,7 @@ _proto_files = [
   "rich_answer_template.proto",
   "rich_suggest_template.proto",
   "search_context.proto",
+  "suggest_template_info.proto",
   "types.proto",
 ]
 
