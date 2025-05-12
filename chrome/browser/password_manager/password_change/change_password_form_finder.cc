@@ -8,6 +8,19 @@
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "content/public/browser/web_contents.h"
 
+namespace {
+
+blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
+  auto options = blink::mojom::AIPageContentOptions::New();
+  // WebContents where password change is happening is hidden, and renderer
+  // won't capture a snapshot unless it becomes visible again or
+  // on_critical_path is set to true.
+  options->on_critical_path = true;
+  return options;
+}
+
+}  // namespace
+
 ChangePasswordFormFinder::ChangePasswordFormFinder(
     content::WebContents* web_contents,
     ChangePasswordFormWaiter::PasswordFormFoundCallback callback)
@@ -15,7 +28,7 @@ ChangePasswordFormFinder::ChangePasswordFormFinder(
       callback_(std::move(callback)) {
   capture_annotated_page_content_ =
       base::BindOnce(&optimization_guide::GetAIPageContent, web_contents,
-                     optimization_guide::DefaultAIPageContentOptions());
+                     GetAIPageContentOptions());
   form_waiter_ = std::make_unique<ChangePasswordFormWaiter>(
       web_contents,
       base::BindOnce(&ChangePasswordFormFinder::OnInitialFormWaitingResult,
