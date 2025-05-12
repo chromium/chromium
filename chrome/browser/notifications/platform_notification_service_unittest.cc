@@ -887,9 +887,10 @@ TEST_F(PlatformNotificationServiceTest_ReportNotificationContentDetectionData,
       notification_database_data, base::DoNothing());
   base::RunLoop().RunUntilIdle();
   // Update `NotificationDatabase` entry with metadata.
+  std::string full_notification_id_str =
+      "p#" + origin.spec() + "#0" + base::NumberToString(notification_id);
   Notification notification = message_center::Notification(
-      message_center::NOTIFICATION_TYPE_SIMPLE,
-      "p#" + origin.spec() + "#0" + base::NumberToString(notification_id),
+      message_center::NOTIFICATION_TYPE_SIMPLE, full_notification_id_str,
       /*title=*/std::u16string(),
       /*message=*/std::u16string(), /*icon=*/ui::ImageModel(),
       /*display_source=*/std::u16string(), origin, message_center::NotifierId(),
@@ -913,4 +914,18 @@ TEST_F(PlatformNotificationServiceTest_ReportNotificationContentDetectionData,
       safe_browsing::NotificationContentDetectionModel::GetSerializedMetadata(
           is_on_global_cache_list, is_allowlisted_by_user, suspicious_score),
       data.serialized_metadata.at(safe_browsing::kMetadataDictionaryKey));
+  HostContentSettingsMap* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(profile_.get());
+  base::Value cur_value(hcsm->GetWebsiteSetting(
+      origin, origin, ContentSettingsType::SUSPICIOUS_NOTIFICATION_IDS));
+#if BUILDFLAG(IS_ANDROID)
+  const base::Value::List* suspicious_notification_ids =
+      cur_value.GetDict().FindList(
+          safe_browsing::kSuspiciousNotificationIdsKey);
+  ASSERT_EQ(1u, suspicious_notification_ids->size());
+  ASSERT_EQ(full_notification_id_str,
+            suspicious_notification_ids->front().GetString());
+#else
+  ASSERT_TRUE(cur_value.is_none());
+#endif
 }

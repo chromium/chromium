@@ -17,6 +17,9 @@ extern const char kSuspiciousScoreHistogram[];
 // Website setting value key for user's allowlist.
 extern const char kIsAllowlistedByUserKey[];
 
+// Website setting value key for suspicious notification ids.
+extern const char kSuspiciousNotificationIdsKey[];
+
 // MQLS metadata dictionary.
 extern const char kMetadataDictionaryKey[];
 extern const char kMetadataSuspiciousKey[];

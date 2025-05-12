@@ -15,6 +15,8 @@ const char kSuspiciousScoreHistogram[] =
 
 const char kIsAllowlistedByUserKey[] = "is-allowlisted-by-user";
 
+const char kSuspiciousNotificationIdsKey[] = "suspicious-notification-ids";
+
 const char kMetadataDictionaryKey[] = "content-detection";
 const char kMetadataSuspiciousKey[] = "suspicious-score";
 const char kMetadataIsOriginOnGlobalCacheListKey[] =

@@ -68,6 +68,8 @@
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#else
+#include "chrome/browser/safe_browsing/android/notification_content_detection_manager_android.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -774,25 +776,37 @@ void PlatformNotificationServiceImpl::UpdatePersistentMetadataThenDisplay(
     bool should_show_warning,
     std::optional<std::string> serialized_content_detection_metadata) {
   if (base::FeatureList::IsEnabled(
-          safe_browsing::kReportNotificationContentDetectionData) &&
-      serialized_content_detection_metadata.has_value()) {
-    scoped_refptr<content::PlatformNotificationContext> notification_context =
-        profile_->GetStoragePartitionForUrl(notification.origin_url())
-            ->GetPlatformNotificationContext();
-    if (notification_context) {
-      notification_context->WriteNotificationMetadata(
-          notification.id(), notification.origin_url(),
-          safe_browsing::kMetadataDictionaryKey,
-          serialized_content_detection_metadata.value(),
-          base::BindOnce(
-              &PlatformNotificationServiceImpl::DidUpdatePersistentMetadata,
-              weak_ptr_factory_.GetWeakPtr(), std::move(persistent_metadata),
-              notification, should_show_warning));
-      return;
+          safe_browsing::kReportNotificationContentDetectionData)) {
+    content::PlatformNotificationContext::WriteResourcesResultCallback
+        callback = base::BindOnce(
+            &PlatformNotificationServiceImpl::DidUpdatePersistentMetadata,
+            weak_ptr_factory_.GetWeakPtr(), std::move(persistent_metadata),
+            notification, should_show_warning);
+#if BUILDFLAG(IS_ANDROID)
+    if (should_show_warning) {
+      // Keep track of suspicious notification ids.
+      safe_browsing::UpdateSuspiciousNotificationIds(
+          HostContentSettingsMapFactory::GetForProfile(profile_),
+          notification.origin_url(), notification.id());
     }
+#endif
+    if (serialized_content_detection_metadata.has_value()) {
+      scoped_refptr<content::PlatformNotificationContext> notification_context =
+          profile_->GetStoragePartitionForUrl(notification.origin_url())
+              ->GetPlatformNotificationContext();
+      if (notification_context) {
+        notification_context->WriteNotificationMetadata(
+            notification.id(), notification.origin_url(),
+            safe_browsing::kMetadataDictionaryKey,
+            serialized_content_detection_metadata.value(), std::move(callback));
+        return;
+      }
+    }
+    std::move(callback).Run(/*success=*/false);
+  } else {
+    DoUpdatePersistentMetadataThenDisplay(std::move(persistent_metadata),
+                                          notification, should_show_warning);
   }
-  DoUpdatePersistentMetadataThenDisplay(std::move(persistent_metadata),
-                                        notification, should_show_warning);
 }
 
 void PlatformNotificationServiceImpl::LogPersistentNotificationShownMetrics(
