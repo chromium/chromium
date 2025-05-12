@@ -978,8 +978,12 @@
     },
     'core_web_vitals_wpt': {
       'filepath': 'third_party/blink/web_tests/external/wpt/event-timing/|' \
+                  'third_party/blink/web_tests/wpt_internal/event-timing/|' \
                   'third_party/blink/web_tests/external/wpt/largest-contentful-paint/|' \
-                  'third_party/blink/web_tests/external/wpt/layout-instability/',
+                  'third_party/blink/web_tests/external/wpt/layout-instability/|' \
+                  'third_party/blink/web_tests/wpt_internal/layout-instability/|' \
+		  'third_party/blink/web_tests/external/wpt/soft-navigation-heuristics/|' \
+		  'third_party/blink/web_tests/wpt_internal/soft-navigation-heuristics/',
     },
     'courgette': {
       'filepath': 'courgette/',
@@ -2874,8 +2878,10 @@
     'contextual_search': ['donnd+watch@chromium.org',
                           'twellington+watch@chromium.org',
                           'gangwu+watch@chromium.org'],
-    'core_timing': ['core-timing-reviews@chromium.org'],
-    'core_web_vitals_plm': ['core-web-vitals-plm-reviews@chromium.org'],
+    'core_timing': ['chrome-speed-metrics-core+watchlist@google.com',
+                    'core-timing-reviews@chromium.org'],
+    'core_web_vitals_plm': ['chrome-speed-metrics-core+watchlist@google.com',
+                            'core-web-vitals-plm-reviews@chromium.org'],
     'core_web_vitals_wpt': ['chrome-speed-metrics-core+watchlist@google.com',
                             'lighthouse-eng-external+watch-speed-metrics@google.com'],
     'courgette': ['huangs+watch@chromium.org',
@@ -3272,7 +3278,8 @@
                   'jasonrhee+watch-smartlock@google.com'],
     'smb': ['cros-enterprise-lax+smbwatch@chromium.org'],
     'source_idls': ['jmedley+watch@chromium.org'],
-    'speed_metrics_changelog': ['igrigorik@chromium.org',
+    'speed_metrics_changelog': ['chrome-speed-metrics-core+watchlist@google.com',
+                                'igrigorik@chromium.org',
                                 'kayce@chromium.org',
                                 'lighthouse-eng-external+watch-speed-metrics@google.com',
                                 'lighthouse-eng+watch-speed-metrics@google.com',
