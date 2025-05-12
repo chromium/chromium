@@ -187,6 +187,7 @@ mojom("mojom_platform") {
     "permissions_policy/document_policy_feature.mojom",
     "permissions_policy/policy_disposition.mojom",
     "permissions_policy/policy_value.mojom",
+    "persistent_renderer_prefs.mojom",
     "picture_in_picture/picture_in_picture.mojom",
     "picture_in_picture_window_options/picture_in_picture_window_options.mojom",
     "plugins/plugin_registry.mojom",

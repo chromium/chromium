@@ -267,6 +267,7 @@ source_set("common") {
     "use_counter/use_counter_feature.cc",
     "use_counter/use_counter_feature_tracker.cc",
     "user_agent/user_agent_metadata.cc",
+    "view_source/rendering_preferences.cc",
     "web_package/signed_exchange_consts.cc",
     "web_package/web_package_request_matcher.cc",
     "web_preferences/web_preferences.cc",

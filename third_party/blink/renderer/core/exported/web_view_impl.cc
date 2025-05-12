@@ -56,6 +56,7 @@
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/public/common/view_source/rendering_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
@@ -3566,6 +3567,8 @@ void WebViewImpl::UpdateRendererPreferences(
 #endif
 
   CanvasNoiseToken::Set(renderer_preferences_.canvas_noise_token);
+  ViewSourceLineWrappingPreference::Set(
+      renderer_preferences_.view_source_line_wrap_enabled);
 
   MaybePreloadSystemFonts(GetPage());
 }

@@ -130,6 +130,8 @@ bool StructTraits<blink::mojom::RendererPreferencesDataView,
 
   out->canvas_noise_token = data.canvas_noise_token();
 
+  out->view_source_line_wrap_enabled = data.view_source_line_wrap_enabled();
+
   return true;
 }
 

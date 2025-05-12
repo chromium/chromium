@@ -69,6 +69,7 @@
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "third_party/blink/public/mojom/payments/secure_payment_confirmation_service.mojom.h"
+#include "third_party/blink/public/mojom/persistent_renderer_prefs.mojom.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "third_party/blink/public/public_buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -97,6 +98,7 @@
 #else
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/payments/payment_request_factory.h"
+#include "chrome/browser/prefs/persistent_renderer_prefs_manager.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/web_applications/web_install_service_impl.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -475,6 +477,8 @@ void PopulateChromeFrameBinders(
 #else
   map->Add<blink::mojom::BadgeService>(
       base::BindRepeating(&badging::BadgeManager::BindFrameReceiverIfAllowed));
+  map->Add<blink::mojom::PersistentRendererPrefsService>(
+      base::BindRepeating(&PersistentRendererPrefsManager::BindFrameReceiver));
   if (base::FeatureList::IsEnabled(features::kWebPayments)) {
     map->Add<payments::mojom::PaymentRequest>(
         base::BindRepeating(&payments::CreatePaymentRequest));

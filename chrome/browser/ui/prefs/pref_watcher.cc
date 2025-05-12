@@ -125,6 +125,9 @@ PrefWatcher::PrefWatcher(Profile* profile)
                                      renderer_callback);
 #endif
 
+  profile_pref_change_registrar_.Add(prefs::kViewSourceLineWrappingEnabled,
+                                     renderer_callback);
+
   PrefChangeRegistrar::NamedChangeCallback webkit_callback =
       base::BindRepeating(&PrefWatcher::OnWebPrefChanged,
                           base::Unretained(this));

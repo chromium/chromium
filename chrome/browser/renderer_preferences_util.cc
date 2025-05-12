@@ -226,6 +226,9 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
 #else
   prefs->focus_ring_color = SkColorSetRGB(0x10, 0x10, 0x10);
 #endif
+
+  prefs->view_source_line_wrap_enabled =
+      pref_service->GetBoolean(prefs::kViewSourceLineWrappingEnabled);
 }
 
 }  // namespace renderer_preferences_util

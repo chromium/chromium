@@ -31,8 +31,16 @@ source_set("prefs") {
     "//components/sync_preferences",
     "//mojo/public/cpp/bindings",
     "//services/preferences/public/mojom",
+    "//third_party/blink/public/mojom:mojom_platform_headers",
     "//url",
   ]
+
+  if (!is_android) {
+    sources += [
+      "persistent_renderer_prefs_manager.h",
+      "persistent_renderer_prefs_manager_factory.h",
+    ]
+  }
 }
 
 source_set("impl") {
@@ -288,6 +296,10 @@ source_set("impl") {
       "//components/live_caption",
       "//components/live_caption:live_translate",
     ]
+    sources += [
+      "persistent_renderer_prefs_manager.cc",
+      "persistent_renderer_prefs_manager_factory.cc",
+    ]
   }
 
   if (enable_extensions) {
@@ -433,6 +445,10 @@ source_set("unit_tests") {
     "//ui/base",
     "//url",
   ]
+
+  if (!is_android) {
+    sources += [ "persistent_renderer_prefs_unittest.cc" ]
+  }
 }
 
 if (!is_android) {
