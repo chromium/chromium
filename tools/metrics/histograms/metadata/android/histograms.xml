@@ -5987,6 +5987,172 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Android.WebView.AwBrowserContext.Default.Duration.CreateOrLoadFromDisk"
+    units="ms" expires_after="2025-11-09">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the UI thread blocking time taken to instantiate the default
+    profile, which may or may not already reside on disk.
+
+    Emitted once per session at Chromium startup after the immediate UI thread
+    blocking work for instantiating the default profile is completed. Note that
+    profile instantiation may trigger additional tasks, threads, or processes to
+    be started, which may not be measured by this histogram. This non-measured
+    work may still block practical usage of a profile.
+
+    Only emitted for AndroidWebView.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.AwBrowserContext.Instantiations"
+    units="profiles" expires_after="2025-11-09">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    After a (default or non-default) profile is instantiated (freshly created or
+    loaded from disk), records the new total count of instantiated profiles for
+    the current session. Profiles cannot currently be unloaded, so this reflects
+    the number of profiles actively loaded in memory.
+
+    For example, if 3 profiles are started during a session, this histogram will
+    emit 1, then 2, then 3. Note that this means direct modal or percentile
+    based analysis of this histogram is not meaningful.
+
+    Only emitted for AndroidWebView.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.AwBrowserContext.NonDefault.CountAtStartup"
+    units="profiles" expires_after="2025-11-09">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    The number of non-default profiles listed on disk at WebView startup. This
+    is counted before any profiles are loaded, created, deleted, or otherwise
+    manipulated.
+
+    The default profile is not explicitly tracked in the pref_store and as such
+    is not included in the count.
+
+    Emitted once per session at Chromium startup.
+
+    Only emitted for AndroidWebView.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.AwBrowserContext.NonDefault.Duration.Create"
+    units="ms" expires_after="2025-11-09">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    When a non-default profile is requested and needs to be newly created (it
+    does not previously exist on disk), records the UI thread blocking time
+    taken to create and instantiate the profile.
+
+    Emitted once per non-default profile after it is created and sufficiently
+    instantiated to be returned to the getter caller. Note that profile
+    instantiation may trigger additional tasks, threads, or processes to be
+    started, which may not be measured by this histogram. This non-measured work
+    may still block practical usage of a profile.
+
+    A single session will never emit both .Create and .LoadFromDisk for the same
+    profile. Only emitted for AndroidWebView.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.AwBrowserContext.NonDefault.Duration.Delete"
+    units="ms" expires_after="2025-11-09">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the time taken to delete an on-disk but uninstantiated non-default
+    profile. Requests to delete instantiated or non-existant profiles will not
+    emit to this histogram.
+
+    Emitted once per deleted non-default profile after its deletion is
+    completed.
+
+    Only emitted for AndroidWebView.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.WebView.AwBrowserContext.NonDefault.Duration.LoadFromDisk"
+    units="ms" expires_after="2025-11-09">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    When an existing non-default profile is requested and needs to be loaded
+    from disk, records the UI thread blocking time taken to load and instantiate
+    the profile.
+
+    Emitted once per non-default profile after it is loaded and sufficiently
+    instantiated to be returned to the getter caller. Note that profile
+    instantiation may trigger additional tasks, threads, or processes to be
+    started, which may not be measured by this histogram. This non-measured work
+    may still block practical usage of a profile.
+
+    A single session will never emit both .Create and .LoadFromDisk for the same
+    profile. Only emitted for AndroidWebView.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.WebView.AwBrowserContext.NonDefault.TimeSinceStartup.Create"
+    units="ms" expires_after="2025-11-09">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    When a non-default profile is requested and needs to be newly created (it
+    does not previously exist on disk), records the time between
+    AwBrowserContextStore initialization and this first request for the profile.
+
+    Emitted once per non-default profile creation, just before its registration
+    to the pref_store.
+
+    A single session will never emit both .Create and .LoadFromDisk for the same
+    profile. Only emitted for AndroidWebView.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.WebView.AwBrowserContext.NonDefault.TimeSinceStartup.Delete"
+    units="ms" expires_after="2025-11-09">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    When a request to delete an on-disk but uninstantiated non-default profile
+    is made, records the time between AwBrowserContextStore initialization and
+    the deletion request. Requests to delete instantiated or non-existant
+    profiles will not emit to this histogram.
+
+    Emitted once per deleted non-default profile just before its deletion is
+    started.
+
+    Only emitted for AndroidWebView.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.WebView.AwBrowserContext.NonDefault.TimeSinceStartup.LoadFromDisk"
+    units="ms" expires_after="2025-11-09">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    When an existing non-default profile is requested and needs to be loaded
+    from disk, records the time between AwBrowserContextStore initialization and
+    this session's first request for the profile.
+
+    Emitted once per requested existing non-default profile per session just
+    before the time of its load from disk.
+
+    A single session will never emit both .Create and .LoadFromDisk for the same
+    profile. Only emitted for AndroidWebView.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.AwContentsConstructorTime{IsFirst}" units="ms"
     expires_after="2025-09-07">
   <owner>cduvall@chromium.org</owner>
