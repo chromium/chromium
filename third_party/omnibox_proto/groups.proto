@@ -91,6 +91,11 @@ enum GroupId {
   // Produced by LocalHistoryZeroSuggestProvider and maybe ZeroSuggestProvider.
   GROUP_PERSONALIZED_ZERO_SUGGEST = 40000;
 
+  // Reserved for MIA zero-prefix suggestions and personalized zero-prefix
+  // suggestions with MIA.
+  GROUP_MIA_RECOMMENDATIONS = 45000;
+  GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA = 45001;
+
   // Cross platform suggestions with vanilla visual representation (i.e.
   // vertical, primary column, and no header), but useful for sorting.
   GROUP_STARTER_PACK = 50000;

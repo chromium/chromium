@@ -35,6 +35,18 @@ void VerifyMatches(const ACMatches& matches,
   EXPECT_THAT(relevances, testing::ElementsAreArray(expected_relevances));
 }
 
+void VerifyMatches(
+    const ACMatches& matches,
+    const std::vector<std::pair<int, omnibox::GroupId>>& expected) {
+  std::vector<std::pair<int, omnibox::GroupId>> actual;
+  std::ranges::transform(
+      matches, std::back_inserter(actual), [](const auto& match) {
+        return std::make_pair(match.relevance,
+                              match.suggestion_group_id.value());
+      });
+  EXPECT_THAT(actual, testing::ElementsAreArray(expected));
+}
+
 }  // namespace
 
 // Tests rules for Section.
@@ -260,6 +272,229 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNTPZpsSection) {
             90,
             89,
             88,
+        });
+  }
+}
+
+// Tests the groups, limits, and rules for the Desktop NTP ZPS section.
+TEST(AutocompleteGrouperSectionsTest, DesktopNTPZpsSectionWithMIA) {
+  auto test = [](std::vector<std::pair<int, omnibox::GroupId>> input,
+                 std::vector<std::pair<int, omnibox::GroupId>> output) {
+    ACMatches in_matches;
+    for (const auto& [relevance, group_id] : input) {
+      in_matches.push_back(CreateMatch(relevance, group_id));
+    }
+    PSections sections;
+    omnibox::GroupConfigMap group_configs;
+    sections.push_back(
+        std::make_unique<DesktopNTPZpsSection>(group_configs, 8u));
+    auto out_matches = Section::GroupMatches(std::move(sections), in_matches);
+    VerifyMatches(out_matches, output);
+  };
+
+  {
+    SCOPED_TRACE(
+        "MIA above pSuggest - local history zps takes precedence over Trends.");
+    omnibox_feature_configs::ScopedConfigForTesting<
+        omnibox_feature_configs::MiaZPS>
+        scoped_config;
+    scoped_config.Get().enabled = true;
+    test(
+        {
+            // `GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA` and
+            // `GROUP_MIA_RECOMMENDATIONS` matches should all be added and
+            // appear first due to their higher relevance scores.
+            {90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
+            {89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
+            {88, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            {87, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            // remote `GROUP_PERSONALIZED_ZERO_SUGGEST` should all be added.
+            {86, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            {85, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            // `GROUP_TRENDS` matches should not be added.
+            {84, omnibox::GROUP_TRENDS},
+            {83, omnibox::GROUP_TRENDS},
+            {82, omnibox::GROUP_TRENDS},
+            {81, omnibox::GROUP_TRENDS},
+            // local `GROUP_PERSONALIZED_ZERO_SUGGEST` should be added up to the
+            // remaining section limit (2) despite having lower relevance than
+            // `GROUP_TRENDS`.
+            {50, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            {49, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            {48, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            {47, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+        },
+        {
+            {90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
+            {89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
+            {88, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            {87, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            {86, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            {85, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            {50, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            {49, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+        });
+  }
+  {
+    // TODO(crbug.com/416482046): Ensure local history zps is grouped with
+    // remote personalized zps. This test verifies this is currently not WAI.
+    SCOPED_TRACE(
+        "MIA below pSuggest - Local history zps is grouped with pSuggest but "
+        "doesn't take precedence over non-Trends.");
+    omnibox_feature_configs::ScopedConfigForTesting<
+        omnibox_feature_configs::MiaZPS>
+        scoped_config;
+    scoped_config.Get().enabled = true;
+    test(
+        {
+            // remote `GROUP_PERSONALIZED_ZERO_SUGGEST` should all be added.
+            {90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            {89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            // `GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA` and
+            // `GROUP_MIA_RECOMMENDATIONS` matches should should all be added
+            // and appear last due to their lower relevance scores.
+            {88, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
+            {87, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
+            {86, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            {85, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            // `GROUP_TRENDS` matches should not be added.
+            {84, omnibox::GROUP_TRENDS},
+            {83, omnibox::GROUP_TRENDS},
+            {82, omnibox::GROUP_TRENDS},
+            {81, omnibox::GROUP_TRENDS},
+            // local `GROUP_PERSONALIZED_ZERO_SUGGEST` should be added up to the
+            // remaining section limit (2).
+            {50, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            {49, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            {48, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            {47, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+        },
+        {
+            {90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            {89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            {88, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
+            {87, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
+            {86, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            {85, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            {50, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            {49, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+        });
+  }
+  {
+    SCOPED_TRACE(
+        "MIA and no pSuggest - Local history zps doesn't take precedence over "
+        "non-Trends.");
+    omnibox_feature_configs::ScopedConfigForTesting<
+        omnibox_feature_configs::MiaZPS>
+        scoped_config;
+    scoped_config.Get().enabled = true;
+    test(
+        {
+            // `GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA` and
+            // `GROUP_MIA_RECOMMENDATIONS` matches should all be added and
+            // appear first due to their higher relevance scores.
+            {90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
+            {89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
+            {88, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            {87, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            {86, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            {85, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            {84, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            {83, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            // `GROUP_TRENDS` matches should not be added.
+            {82, omnibox::GROUP_TRENDS},
+            {81, omnibox::GROUP_TRENDS},
+            // local `GROUP_PERSONALIZED_ZERO_SUGGEST` should not be added.
+            {50, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            {49, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            {48, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            {47, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+        },
+        {
+            {90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
+            {89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
+            {88, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            {87, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            {86, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            {85, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            {84, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            {83, omnibox::GROUP_MIA_RECOMMENDATIONS},
+        });
+  }
+  {
+    SCOPED_TRACE(
+        "MIA and no pSuggest - Local history zps added but doesn't take "
+        "precedence over non-Trends.");
+    omnibox_feature_configs::ScopedConfigForTesting<
+        omnibox_feature_configs::MiaZPS>
+        scoped_config;
+    scoped_config.Get().enabled = true;
+    test(
+        {
+            // `GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA` and
+            // `GROUP_MIA_RECOMMENDATIONS` matches should all be added and
+            // appear first due to their higher relevance scores.
+            {90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
+            {89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
+            {88, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            {87, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            {86, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            {85, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            // `GROUP_TRENDS` matches should not be added.
+            {84, omnibox::GROUP_TRENDS},
+            {83, omnibox::GROUP_TRENDS},
+            {82, omnibox::GROUP_TRENDS},
+            {81, omnibox::GROUP_TRENDS},
+            // local `GROUP_PERSONALIZED_ZERO_SUGGEST` should not be added.
+            {50, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            {49, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            {48, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            {47, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+        },
+        {
+            {90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
+            {89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
+            {88, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            {87, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            {86, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            {85, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            {50, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            {49, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+        });
+  }
+  {
+    SCOPED_TRACE("MIA is not added if feature is disabled.");
+    omnibox_feature_configs::ScopedConfigForTesting<
+        omnibox_feature_configs::MiaZPS>
+        scoped_config;
+    scoped_config.Get().enabled = false;
+    test(
+        {
+            // remote `GROUP_PERSONALIZED_ZERO_SUGGEST` should all be added.
+            {90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            {89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            // `GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA` and
+            // `GROUP_MIA_RECOMMENDATIONS` matches should not be added.
+            {88, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
+            {87, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA},
+            {86, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            {85, omnibox::GROUP_MIA_RECOMMENDATIONS},
+            // `GROUP_TRENDS` matches should all be added.
+            {84, omnibox::GROUP_TRENDS},
+            {83, omnibox::GROUP_TRENDS},
+            {82, omnibox::GROUP_TRENDS},
+            {81, omnibox::GROUP_TRENDS},
+            // local `GROUP_PERSONALIZED_ZERO_SUGGEST` should be added.
+            {50, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+        },
+        {
+            {90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            {89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            {50, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+            {84, omnibox::GROUP_TRENDS},
+            {83, omnibox::GROUP_TRENDS},
+            {82, omnibox::GROUP_TRENDS},
+            {81, omnibox::GROUP_TRENDS},
         });
   }
 }

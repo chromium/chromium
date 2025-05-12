@@ -308,6 +308,20 @@ AndroidNTPZpsSection::AndroidNTPZpsSection(
                     }),
               Group(OmniboxFieldTrial::kOmniboxNumNtpZpsRecentSearches.Get(),
                     {
+                        {
+                            omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA,
+                            omnibox_feature_configs::MiaZPS::Get().enabled
+                                ? OmniboxFieldTrial::
+                                      kOmniboxNumNtpZpsRecentSearches.Get()
+                                : 0,
+                        },
+                        {
+                            omnibox::GROUP_MIA_RECOMMENDATIONS,
+                            omnibox_feature_configs::MiaZPS::Get().enabled
+                                ? OmniboxFieldTrial::
+                                      kOmniboxNumNtpZpsRecentSearches.Get()
+                                : 0,
+                        },
                         {omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST,
                          OmniboxFieldTrial::kOmniboxNumNtpZpsRecentSearches
                              .Get()},
@@ -389,10 +403,15 @@ DesktopNTPZpsSection::DesktopNTPZpsSection(
     : ZpsSectionWithLocalHistory(
           limit,
           {
-              Group(8,
-                    {
-                        {omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST, 8},
-                    }),
+              Group(
+                  8,
+                  {
+                      {omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA,
+                       omnibox_feature_configs::MiaZPS::Get().enabled ? 8 : 0},
+                      {omnibox::GROUP_MIA_RECOMMENDATIONS,
+                       omnibox_feature_configs::MiaZPS::Get().enabled ? 8 : 0},
+                      {omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST, 8},
+                  }),
               Group(8,
                     {
                         {omnibox::GROUP_TRENDS, 8},
@@ -669,10 +688,15 @@ IOSNTPZpsSection::IOSNTPZpsSection(omnibox::GroupConfigMap& group_configs)
                     {
                         {omnibox::GROUP_MOBILE_CLIPBOARD, 1},
                     }),
-              Group(20,
-                    {
-                        {omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST, 20},
-                    }),
+              Group(
+                  20,
+                  {
+                      {omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA,
+                       omnibox_feature_configs::MiaZPS::Get().enabled ? 20 : 0},
+                      {omnibox::GROUP_MIA_RECOMMENDATIONS,
+                       omnibox_feature_configs::MiaZPS::Get().enabled ? 20 : 0},
+                      {omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST, 20},
+                  }),
               Group(5,
                     {
                         {omnibox::GROUP_TRENDS, 5},
@@ -760,6 +784,18 @@ IOSIpadNTPZpsSection::IOSIpadNTPZpsSection(
                     }),
               Group(total_count - trends_count - 1,
                     {
+                        {
+                            omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST_WITH_MIA,
+                            omnibox_feature_configs::MiaZPS::Get().enabled
+                                ? total_count - trends_count - 1
+                                : 0,
+                        },
+                        {
+                            omnibox::GROUP_MIA_RECOMMENDATIONS,
+                            omnibox_feature_configs::MiaZPS::Get().enabled
+                                ? total_count - trends_count - 1
+                                : 0,
+                        },
                         {omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST,
                          total_count - trends_count - 1},
                     }),

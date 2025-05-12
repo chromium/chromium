@@ -141,6 +141,12 @@ bool ContextualSearch::IsContextualSearchEnabled() const {
   return contextual_zps_limit > 0;
 }
 
+BASE_FEATURE(MiaZPS::kOmniboxMiaZPS,
+             "OmniboxMiaZPS",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+MiaZPS::MiaZPS() : enabled(base::FeatureList::IsEnabled(kOmniboxMiaZPS)) {}
+
 DocumentProvider::DocumentProvider() {
   enabled = base::FeatureList::IsEnabled(omnibox::kDocumentProvider);
   min_query_length =

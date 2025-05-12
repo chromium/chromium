@@ -179,6 +179,14 @@ struct ContextualSearch : Config<ContextualSearch> {
   bool use_vertical_bar;
 };
 
+// If enabled, allows MIA zero-prefix suggestions in NTP omnibox and realbox.
+struct MiaZPS : Config<MiaZPS> {
+  DECLARE_FEATURE(kOmniboxMiaZPS);
+
+  MiaZPS();
+  bool enabled;
+};
+
 // If enabled, allow document provider requests when all other conditions are
 // met.
 struct DocumentProvider : Config<DocumentProvider> {
