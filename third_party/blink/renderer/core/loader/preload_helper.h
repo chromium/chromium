@@ -25,14 +25,20 @@ class PreloadHelper final {
   STATIC_ONLY(PreloadHelper);
 
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(LoadLinksFromHeaderMode)
   enum class LoadLinksFromHeaderMode {
-    kDocumentBeforeCommit,
-    kDocumentAfterCommitWithoutViewport,
-    kDocumentAfterCommitWithViewport,
-    kDocumentAfterLoadCompleted,
-    kSubresourceFromMemoryCache,
-    kSubresourceNotFromMemoryCache,
+    kDocumentBeforeCommit = 0,
+    kDocumentAfterCommitWithoutViewport = 1,
+    kDocumentAfterCommitWithViewport = 2,
+    kDocumentAfterLoadCompleted = 3,
+    kSubresourceFromMemoryCache = 4,
+    kSubresourceNotFromMemoryCache = 5,
+    kMaxValue = kSubresourceNotFromMemoryCache,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:LoadLinksFromHeaderMode)
 
   static void LoadLinksFromHeader(
       const String& header_value,

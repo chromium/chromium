@@ -6918,6 +6918,19 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="keyboardUnlock()"/>
 </enum>
 
+<!-- LINT.IfChange(LoadLinksFromHeaderMode) -->
+
+<enum name="LoadLinksFromHeaderMode">
+  <int value="0" label="Document before commit"/>
+  <int value="1" label="Document after commit without viewport"/>
+  <int value="2" label="Document after commit with viewport"/>
+  <int value="3" label="Document after load completed"/>
+  <int value="4" label="Subresource from memory cache"/>
+  <int value="5" label="Subresource not from memory cache"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/core/loader/preload_helper.h:LoadLinksFromHeaderMode) -->
+
 <!-- LINT.IfChange(MappedCSSProperties) -->
 
 <enum name="MappedCSSProperties">

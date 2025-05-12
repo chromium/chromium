@@ -790,6 +790,10 @@ void PreloadHelper::LoadLinksFromHeader(
     const base::UnguessableToken* recursive_prefetch_token) {
   if (header_value.empty())
     return;
+
+  base::UmaHistogramEnumeration("Blink.LinkHeader.LoadLinksFromHeaderMode",
+                                mode);
+
   LinkHeaderSet header_set(header_value);
   for (auto& header : header_set) {
     if (!header.Valid() || header.Url().empty() || header.Rel().empty()) {
