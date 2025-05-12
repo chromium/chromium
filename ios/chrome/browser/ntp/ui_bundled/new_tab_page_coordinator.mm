@@ -33,7 +33,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_history_sync/signin_and_history_sync_coordinator.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_coordinator.h"
@@ -879,17 +878,22 @@
     }
   } else {
     __weak __typeof(self) weakSelf = self;
-    _signinCoordinator = [[SignInAndHistorySyncCoordinator alloc]
-        initWithBaseViewController:self.baseViewController
-                           browser:self.browser
-                      contextStyle:SigninContextStyle::kDefault
-                       accessPoint:signin_metrics::AccessPoint::
-                                       kNtpSignedOutIcon
-                       promoAction:signin_metrics::PromoAction::
-                                       PROMO_ACTION_NO_SIGNIN_PROMO
-               optionalHistorySync:YES
-                   fullscreenPromo:NO
-              continuationProvider:DoNothingContinuationProvider()];
+    auto accessPoint = signin_metrics::AccessPoint::kNtpSignedOutIcon;
+    auto promoAction =
+        signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
+    _signinCoordinator = [SigninCoordinator
+        signinAndHistorySyncCoordinatorWithBaseViewController:
+            self.baseViewController
+                                                      browser:self.browser
+                                                 contextStyle:
+                                                     SigninContextStyle::
+                                                         kDefault
+                                                  accessPoint:accessPoint
+                                                  promoAction:promoAction
+                                          optionalHistorySync:YES
+                                              fullscreenPromo:NO
+                                         continuationProvider:
+                                             DoNothingContinuationProvider()];
     _signinCoordinator.signinCompletion = ^(
         SigninCoordinatorResult result, id<SystemIdentity> completionIdentity) {
       [weakSelf showSigninCommandDidFinish];
