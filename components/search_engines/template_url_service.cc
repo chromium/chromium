@@ -1994,7 +1994,6 @@ std::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
 
   for (SyncDataMap::const_iterator iter = sync_data_map.begin();
        iter != sync_data_map.end(); ++iter) {
-    // TODO(crbug.com/374903497): Revisit `local_turl` naming.
     TemplateURL* local_turl = GetTemplateURLForGUID(iter->first);
     std::unique_ptr<TemplateURL> sync_turl(
         CreateTemplateURLFromTemplateURLAndSyncData(

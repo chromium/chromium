@@ -449,9 +449,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("http://key1.com", account->url());
 }
 
-// TODO(crbug.com/374903497): Investigate why these tests fail on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS)
-
 IN_PROC_BROWSER_TEST_F(
     SingleClientSearchEnginesSyncTestWithSeparateLocalAndAccountSearchEnginesEnabled,
     PRE_ShouldPreserveLocalAndAccountSearchEnginesAcrossRestart) {
@@ -519,5 +516,3 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(search_engines_helper::HasSearchEngineInFakeServer(
       "key1", GetFakeServer()));
 }
-
-#endif  // !BUILDFLAG(IS_CHROMEOS)
