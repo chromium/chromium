@@ -1035,6 +1035,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 
   devtools_scrim_view_ =
       contents_container->AddChildView(std::make_unique<ScrimView>());
+  devtools_scrim_view_->layer()->SetName("DevtoolsScrimView");
 
   views::View* contents_view;
   if (base::FeatureList::IsEnabled(features::kSideBySide)) {
@@ -1078,6 +1079,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 
   contents_scrim_view_ =
       contents_container->AddChildView(std::make_unique<ScrimView>());
+  contents_scrim_view_->layer()->SetName("ContentsScrimView");
+
 #if BUILDFLAG(ENABLE_GLIC)
   // `IsProfileEligible` returns true if the feature flags are present and the
   // profile can potentially enable the feature. If the feature is disabled the
@@ -1142,6 +1145,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   find_bar_host_view_ = AddChildView(std::make_unique<View>());
 
   window_scrim_view_ = AddChildView(std::make_unique<ScrimView>());
+  window_scrim_view_->layer()->SetName("WindowScrimView");
 
   UpgradeNotificationController::CreateForBrowser(browser_.get());
 
