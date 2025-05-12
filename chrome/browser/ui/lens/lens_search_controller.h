@@ -229,6 +229,11 @@ class LensSearchController {
     // One or more Lens features are active on this tab.
     kActive,
 
+    // The UI has been made inactive / backgrounded and is hidden. This differs
+    // from kSuspended as the overlay and web view are not freed and could be
+    // immediately reshown.
+    kBackground,
+
     // The controller is in the process of closing all dependencies and cleaning
     // up. Will soon be kOff.
     kClosing,
@@ -287,6 +292,21 @@ class LensSearchController {
   // the progress of the page content upload.
   void HandlePageContentUploadProgress(uint64_t position, uint64_t total);
 
+  // Called when the associated tab enters the foreground.
+  void TabForegrounded(tabs::TabInterface* tab);
+
+  // Called when the associated tab will enter the background.
+  void TabWillEnterBackground(tabs::TabInterface* tab);
+
+  // Called when the tab's WebContents is discarded.
+  void WillDiscardContents(tabs::TabInterface* tab,
+                           content::WebContents* old_contents,
+                           content::WebContents* new_contents);
+
+  // Called when the tab will be removed from the window.
+  void WillDetach(tabs::TabInterface* tab,
+                  tabs::TabInterface::DetachReason reason);
+
   // Whether the LensSearchController has been initialized. Meaning, all the
   // dependencies have been initialized and the controller is ready to use.
   bool initialized_ = false;
@@ -318,6 +338,9 @@ class LensSearchController {
   // TODO(crbug.com/413138792): Hook up this controller to handle searchbox
   // interactions, without a dependency on the overlay controller.
   std::unique_ptr<lens::LensSearchboxController> lens_searchbox_controller_;
+
+  // Holds subscriptions for TabInterface callbacks.
+  std::vector<base::CallbackListSubscription> tab_subscriptions_;
 
   // The page context eligibility API if it has been fetched. Can be nullptr.
   raw_ptr<optimization_guide::PageContextEligibility> page_context_eligibility_;
