@@ -229,7 +229,7 @@ class ClankCompiler:
       if options.use_siso:
         # assume recipe sets siso context (e.g. SISO_PROJECT etc).
         # rather than reading .sisoenv by depot_tools/siso.py
-        self._ninja_command = [_SISO_PATH, 'ninja']
+        self._ninja_command = [str(_SISO_PATH), 'ninja']
         # enable cloud logging on bot
         self._ninja_command += ['--enable_cloud_logging']
       else:
@@ -237,7 +237,7 @@ class ClankCompiler:
         if options.ninja_path:
           self._ninja_command = [options.ninja_path]
         else:
-          self._ninja_command = [_NINJA_PATH]
+          self._ninja_command = [str(_NINJA_PATH)]
     else:
       # use ninja_path if it is explicitly given.
       if options.ninja_path:
