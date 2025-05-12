@@ -4777,7 +4777,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
 
       <!-- Account bookmarks strings -->
-      <message name="IDS_LOCAL_BOOKMARKS_SECTION_HEADER" desc="The section header of local top-level bookmark folders.">
+      <message name="IDS_LOCAL_BOOKMARKS_SECTION_HEADER" desc="This string appears on a page of saved bookmarks. It is the heading for a category. The categories indicate where a bookmark is saved: in this string, the bookmarks are saved locally on the user's device. This is a shortened version of the noun phrase: 'Bookmarks that are only on your device'. If your language permits it, you can omit 'Bookmarks' because it is already at the top of the page." meaning="Bookmarks that are only on your device">
         Only on this device
       </message>
       <message name="IDS_ACCOUNT_BOOKMARKS_SECTION_HEADER" desc="The section header of account top-level bookmark folders.">
