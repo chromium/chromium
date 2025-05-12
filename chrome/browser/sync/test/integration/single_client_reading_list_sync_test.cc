@@ -25,11 +25,13 @@
 
 namespace {
 
+using syncer::IsEmptyLocalDataDescription;
 using syncer::MatchesDeletionOrigin;
+using syncer::MatchesLocalDataDescription;
+using syncer::MatchesLocalDataItemModel;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::IsEmpty;
-using testing::VariantWith;
 
 std::set<GURL> GetReadingListURLsFromFakeServer(
     fake_server::FakeServer* fake_server) {
@@ -767,34 +769,20 @@ IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
 
   ASSERT_THAT(descriptions.Get().size(), 1u);
   EXPECT_EQ(descriptions.Get().begin()->first, syncer::READING_LIST);
-  syncer::LocalDataDescription local_data_description =
-      descriptions.Get().begin()->second;
 
-  EXPECT_EQ(local_data_description.type, syncer::DataType::READING_LIST);
-
-  std::vector<syncer::LocalDataItemModel> local_data_models =
-      local_data_description.local_data_models;
-  ASSERT_THAT(local_data_models.size(), 2u);
-
-  // Items should be sorted by syncer::LocalDataItemModel::DataId.
-  syncer::LocalDataItemModel item_a = local_data_models[0];
-  EXPECT_EQ(std::get<GURL>(item_a.id), kUrlA);
-  EXPECT_EQ(item_a.title, "title_a");
-  EXPECT_THAT(item_a.subtitle, IsEmpty());
-  EXPECT_THAT(item_a.icon,
-              VariantWith<syncer::LocalDataItemModel::PageUrlIcon>(kUrlA));
-
-  syncer::LocalDataItemModel item_b = local_data_models[1];
-  EXPECT_EQ(std::get<GURL>(item_b.id), kUrlB);
-  EXPECT_EQ(item_b.title, "title_b");
-  EXPECT_THAT(item_b.subtitle, IsEmpty());
-  EXPECT_THAT(item_b.icon,
-              VariantWith<syncer::LocalDataItemModel::PageUrlIcon>(kUrlB));
-
-  EXPECT_EQ(local_data_description.item_count, 2u);
-  EXPECT_EQ(local_data_description.domain_count, 2u);
-  EXPECT_THAT(local_data_description.domains,
-              ElementsAre("url_a.com", "url_b.com"));
+  EXPECT_THAT(
+      descriptions.Get().begin()->second,
+      // Items should be sorted by syncer::LocalDataItemModel::DataId.
+      MatchesLocalDataDescription(
+          syncer::DataType::READING_LIST,
+          ElementsAre(MatchesLocalDataItemModel(
+                          kUrlA, syncer::LocalDataItemModel::PageUrlIcon(kUrlA),
+                          /*title=*/"title_a", /*subtitle=*/IsEmpty()),
+                      MatchesLocalDataItemModel(
+                          kUrlB, syncer::LocalDataItemModel::PageUrlIcon(kUrlB),
+                          /*title=*/"title_b", /*subtitle=*/IsEmpty())),
+          /*item_count=*/2u, /*domains=*/ElementsAre("url_a.com", "url_b.com"),
+          /*domain_count=*/2u));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,

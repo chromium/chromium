@@ -19,6 +19,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/service/local_data_description.h"
+#include "components/sync/test/test_matchers.h"
 #include "components/sync_bookmarks/switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,57 +29,12 @@
 namespace sync_bookmarks {
 namespace {
 
+using ::syncer::IsEmptyLocalDataDescription;
+using ::syncer::MatchesLocalDataDescription;
+using ::syncer::MatchesLocalDataItemModel;
 using ::testing::_;
 using ::testing::ElementsAre;
-using ::testing::Eq;
-using ::testing::ExplainMatchResult;
-using ::testing::Field;
 using ::testing::IsEmpty;
-using ::testing::VariantWith;
-
-// Checks whether the item matches a syncer::LocalDataItemModel.
-MATCHER_P4(MatchesLocalDataItemModel, id, icon, title, subtitle, "") {
-  return ExplainMatchResult(Field(&syncer::LocalDataItemModel::id, id), arg,
-                            result_listener) &&
-         ExplainMatchResult(Field(&syncer::LocalDataItemModel::icon, icon), arg,
-                            result_listener) &&
-         ExplainMatchResult(Field(&syncer::LocalDataItemModel::title, title),
-                            arg, result_listener) &&
-         ExplainMatchResult(
-             Field(&syncer::LocalDataItemModel::subtitle, subtitle), arg,
-             result_listener);
-}
-
-// Checks whether the description matches a syncer::LocalDataDescription.
-MATCHER_P5(MatchesLocalDataDescription,
-           type,
-           local_data_models,
-           item_count,
-           domains,
-           domain_count,
-           "") {
-  return ExplainMatchResult(Field(&syncer::LocalDataDescription::type, type),
-                            arg, result_listener) &&
-         ExplainMatchResult(
-             Field(&syncer::LocalDataDescription::local_data_models,
-                   local_data_models),
-             arg, result_listener) &&
-         ExplainMatchResult(
-             Field(&syncer::LocalDataDescription::item_count, item_count), arg,
-             result_listener) &&
-         ExplainMatchResult(
-             Field(&syncer::LocalDataDescription::domains, domains), arg,
-             result_listener) &&
-         ExplainMatchResult(
-             Field(&syncer::LocalDataDescription::domain_count, domain_count),
-             arg, result_listener);
-}
-
-MATCHER(IsEmptyLocalDataDescription, "") {
-  return ExplainMatchResult(
-      MatchesLocalDataDescription(_, IsEmpty(), Eq(0u), IsEmpty(), Eq(0u)), arg,
-      result_listener);
-}
 
 MATCHER_P2(MatchesTitleAndUrl, title, url, "") {
   if (!arg->is_url()) {

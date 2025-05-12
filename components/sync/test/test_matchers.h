@@ -10,13 +10,20 @@
 #include <string>
 #include <utility>
 
+#include "base/hash/hash.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/deletion_origin.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
+#include "components/sync/service/local_data_description.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace syncer {
+using ::testing::_;
+using ::testing::Eq;
+using ::testing::ExplainMatchResult;
+using ::testing::Field;
+using ::testing::IsEmpty;
 
 // Matcher for std::optional<ModelError>: verifies that it contains no error.
 MATCHER(NoModelError, "") {
@@ -100,6 +107,50 @@ MATCHER_P2(MatchesDeletionOrigin, expected_version, expected_location, "") {
     return false;
   }
   return true;
+}
+
+// Checks whether the item matches a syncer::LocalDataItemModel.
+MATCHER_P4(MatchesLocalDataItemModel, id, icon, title, subtitle, "") {
+  return ExplainMatchResult(Field(&syncer::LocalDataItemModel::id, id), arg,
+                            result_listener) &&
+         ExplainMatchResult(Field(&syncer::LocalDataItemModel::icon, icon), arg,
+                            result_listener) &&
+         ExplainMatchResult(Field(&syncer::LocalDataItemModel::title, title),
+                            arg, result_listener) &&
+         ExplainMatchResult(
+             Field(&syncer::LocalDataItemModel::subtitle, subtitle), arg,
+             result_listener);
+}
+
+// Checks whether the description matches a syncer::LocalDataDescription.
+MATCHER_P5(MatchesLocalDataDescription,
+           type,
+           local_data_models,
+           item_count,
+           domains,
+           domain_count,
+           "") {
+  return ExplainMatchResult(Field(&syncer::LocalDataDescription::type, type),
+                            arg, result_listener) &&
+         ExplainMatchResult(
+             Field(&syncer::LocalDataDescription::local_data_models,
+                   local_data_models),
+             arg, result_listener) &&
+         ExplainMatchResult(
+             Field(&syncer::LocalDataDescription::item_count, item_count), arg,
+             result_listener) &&
+         ExplainMatchResult(
+             Field(&syncer::LocalDataDescription::domains, domains), arg,
+             result_listener) &&
+         ExplainMatchResult(
+             Field(&syncer::LocalDataDescription::domain_count, domain_count),
+             arg, result_listener);
+}
+
+MATCHER(IsEmptyLocalDataDescription, "") {
+  return ExplainMatchResult(
+      MatchesLocalDataDescription(_, IsEmpty(), Eq(0u), IsEmpty(), Eq(0u)), arg,
+      result_listener);
 }
 
 }  // namespace syncer

@@ -19,16 +19,20 @@
 #include "components/sync/base/features.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
+#include "components/sync/test/test_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace reading_list {
 namespace {
 
+using ::syncer::IsEmptyLocalDataDescription;
+using ::syncer::MatchesLocalDataDescription;
+using ::syncer::MatchesLocalDataItemModel;
+using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::Return;
-using ::testing::VariantWith;
 
 class ReadingListLocalDataBatchUploaderTest : public ::testing::Test {
  public:
@@ -76,11 +80,7 @@ TEST_F(ReadingListLocalDataBatchUploaderTest, DescriptionEmptyIfModelNull) {
 
   uploader.GetLocalDataDescription(description.GetCallback());
 
-  EXPECT_EQ(description.Get().type, syncer::DataType::UNSPECIFIED);
-  EXPECT_THAT(description.Get().local_data_models, IsEmpty());
-  EXPECT_EQ(description.Get().item_count, 0u);
-  EXPECT_EQ(description.Get().domain_count, 0u);
-  EXPECT_THAT(description.Get().domains, IsEmpty());
+  EXPECT_THAT(description.Get(), IsEmptyLocalDataDescription());
 }
 
 TEST_F(ReadingListLocalDataBatchUploaderTest,
@@ -90,11 +90,7 @@ TEST_F(ReadingListLocalDataBatchUploaderTest,
 
   uploader.GetLocalDataDescription(description.GetCallback());
 
-  EXPECT_EQ(description.Get().type, syncer::DataType::UNSPECIFIED);
-  EXPECT_THAT(description.Get().local_data_models, IsEmpty());
-  EXPECT_EQ(description.Get().item_count, 0u);
-  EXPECT_EQ(description.Get().domain_count, 0u);
-  EXPECT_THAT(description.Get().domains, IsEmpty());
+  EXPECT_THAT(description.Get(), IsEmptyLocalDataDescription());
 }
 
 TEST_F(ReadingListLocalDataBatchUploaderTest, DescriptionHasOnlyLocalData) {
@@ -111,19 +107,16 @@ TEST_F(ReadingListLocalDataBatchUploaderTest, DescriptionHasOnlyLocalData) {
 
   uploader.GetLocalDataDescription(description.GetCallback());
 
-  EXPECT_EQ(description.Get().type, syncer::DataType::READING_LIST);
-  auto local_data_models = description.Get().local_data_models;
-  EXPECT_EQ(local_data_models.size(), 1u);
-  auto item = local_data_models.back();
-  EXPECT_EQ(std::get<GURL>(item.id), GURL("https://local.com"));
-  EXPECT_EQ(item.title, "local");
-  EXPECT_THAT(item.subtitle, IsEmpty());
-  EXPECT_THAT(item.icon, VariantWith<syncer::LocalDataItemModel::PageUrlIcon>(
-                             GURL("https://local.com/")));
-
-  EXPECT_EQ(description.Get().item_count, 1u);
-  EXPECT_EQ(description.Get().domain_count, 1u);
-  EXPECT_THAT(description.Get().domains, ElementsAre("local.com"));
+  EXPECT_THAT(description.Get(),
+              MatchesLocalDataDescription(
+                  syncer::DataType::READING_LIST,
+                  ElementsAre(MatchesLocalDataItemModel(
+                      GURL("https://local.com"),
+                      syncer::LocalDataItemModel::PageUrlIcon(
+                          GURL("https://local.com/")),
+                      /*title=*/"local", /*subtitle=*/IsEmpty())),
+                  /*item_count=*/1u, /*domains=*/ElementsAre("local.com"),
+                  /*domain_count=*/1u));
 }
 
 TEST_F(ReadingListLocalDataBatchUploaderTest,
@@ -145,11 +138,11 @@ TEST_F(ReadingListLocalDataBatchUploaderTest,
 
   uploader.GetLocalDataDescription(description.GetCallback());
 
-  EXPECT_EQ(description.Get().type, syncer::DataType::UNSPECIFIED);
-  EXPECT_THAT(description.Get().local_data_models, IsEmpty());
-  EXPECT_EQ(description.Get().item_count, 1u);
-  EXPECT_EQ(description.Get().domain_count, 1u);
-  EXPECT_THAT(description.Get().domains, ElementsAre("local.com"));
+  EXPECT_THAT(description.Get(),
+              MatchesLocalDataDescription(_, /*local_data_models=*/IsEmpty(),
+                                          /*item_count=*/1u,
+                                          /*domains=*/ElementsAre("local.com"),
+                                          /*domain_count=*/1u));
 }
 
 TEST_F(ReadingListLocalDataBatchUploaderTest, MigrationNoOpsIfModelNull) {
