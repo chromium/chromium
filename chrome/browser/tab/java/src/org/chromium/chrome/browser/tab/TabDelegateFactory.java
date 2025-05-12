@@ -25,12 +25,13 @@ public interface TabDelegateFactory {
     TabWebContentsDelegateAndroid createWebContentsDelegate(Tab tab);
 
     /**
-     * Creates the {@link ExternalNavigationHandler} the tab will use for its
-     * {@link InterceptNavigationDelegate}.
+     * Creates the {@link ExternalNavigationHandler} the tab will use for its {@link
+     * InterceptNavigationDelegate}.
+     *
      * @param tab The associated {@link Tab}.
      * @return The {@link ExternalNavigationHandler} to be used for this tab.
      */
-    ExternalNavigationHandler createExternalNavigationHandler(Tab tab);
+    @Nullable ExternalNavigationHandler createExternalNavigationHandler(Tab tab);
 
     /**
      * Creates the {@link ContextMenuPopulatorFactory} the tab will be initialized with.
@@ -46,7 +47,7 @@ public interface TabDelegateFactory {
      *
      * @param tab The associated {@link Tab}.
      */
-    BrowserControlsVisibilityDelegate createBrowserControlsVisibilityDelegate(Tab tab);
+    @Nullable BrowserControlsVisibilityDelegate createBrowserControlsVisibilityDelegate(Tab tab);
 
     /**
      * Returns a NativePage for displaying the given URL if the URL is a valid chrome-native URL, or

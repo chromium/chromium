@@ -4,10 +4,9 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ThreadUtils.ThreadChecker;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.ArrayList;
@@ -17,10 +16,11 @@ import java.util.List;
 import java.util.ListIterator;
 
 /**
- * Manages the logic pertaining to tracking pending tab closures for a {@link TabModelImpl}.
- * This class does not directly perform any tab related actions and delegates that work
- * to the {@link PendingTabClosureDelegate} it is provided.
+ * Manages the logic pertaining to tracking pending tab closures for a {@link TabModelImpl}. This
+ * class does not directly perform any tab related actions and delegates that work to the {@link
+ * PendingTabClosureDelegate} it is provided.
  */
+@NullMarked
 public class PendingTabClosureManager {
     /**
      * Delegate for applying changes to a {@link TabList} based on the decision logic in
@@ -155,13 +155,13 @@ public class PendingTabClosureManager {
         }
 
         @Override
-        public Tab getTabAt(int index) {
+        public @Nullable Tab getTabAt(int index) {
             if (index < 0 || index >= mRewoundTabs.size()) return null;
             return mRewoundTabs.get(index);
         }
 
         @Override
-        public int indexOf(Tab tab) {
+        public int indexOf(@Nullable Tab tab) {
             return mRewoundTabs.indexOf(tab);
         }
 
@@ -187,7 +187,7 @@ public class PendingTabClosureManager {
          * @return The {@link Tab} specified by {@code tabId} as long as that tab only exists in
          *     this model and not in {@code mTabModel}. {@code null} otherwise.
          */
-        public Tab getPendingRewindTab(int tabId) {
+        public @Nullable Tab getPendingRewindTab(int tabId) {
             if (mTabModel.getTabById(tabId) != null) return null;
             for (Tab tab : mRewoundTabs) {
                 if (tab.getId() == tabId) return tab;
@@ -248,8 +248,7 @@ public class PendingTabClosureManager {
      * @param delegate A {@link PendingTabClosureDelegate} to use to apply cancelled and committed
      *     tab closures.
      */
-    public PendingTabClosureManager(
-            @NonNull TabModel tabModel, @NonNull PendingTabClosureDelegate delegate) {
+    public PendingTabClosureManager(TabModel tabModel, PendingTabClosureDelegate delegate) {
         assert tabModel != null;
         assert delegate != null;
 

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 
@@ -11,6 +12,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
  * This class serves as a callback from TabModel to TabModelSelector. Avoid adding unnecessary
  * methods that expose too much access to TabModel. http://crbug.com/263579
  */
+@NullMarked
 public interface TabModelDelegate {
     /**
      * Requests the specified to be shown.

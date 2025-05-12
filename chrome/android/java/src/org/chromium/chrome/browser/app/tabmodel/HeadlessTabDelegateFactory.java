@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.app.tabmodel;
 
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.pdf.PdfInfo;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
@@ -15,31 +17,32 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulator
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 
 /** A fake/stub implementation since none of these dependencies exist in headless mode. */
+@NullMarked
 public class HeadlessTabDelegateFactory implements TabDelegateFactory {
     @Override
     public TabWebContentsDelegateAndroid createWebContentsDelegate(Tab tab) {
+        // In practice the result of this method is never used in headless mode.
+        return assumeNonNull(null);
+    }
+
+    @Override
+    public @Nullable ExternalNavigationHandler createExternalNavigationHandler(Tab tab) {
         return null;
     }
 
     @Override
-    public ExternalNavigationHandler createExternalNavigationHandler(Tab tab) {
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public ContextMenuPopulatorFactory createContextMenuPopulatorFactory(Tab tab) {
+    public @Nullable ContextMenuPopulatorFactory createContextMenuPopulatorFactory(Tab tab) {
         return null;
     }
 
     @Override
-    public BrowserControlsVisibilityDelegate createBrowserControlsVisibilityDelegate(Tab tab) {
+    public @Nullable BrowserControlsVisibilityDelegate createBrowserControlsVisibilityDelegate(
+            Tab tab) {
         return null;
     }
 
-    @Nullable
     @Override
-    public NativePage createNativePage(
+    public @Nullable NativePage createNativePage(
             String url, NativePage candidatePage, Tab tab, PdfInfo pdfInfo) {
         return null;
     }

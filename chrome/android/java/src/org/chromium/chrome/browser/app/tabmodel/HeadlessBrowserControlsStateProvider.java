@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.app.tabmodel;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 
 /** A fake/stub implementation since there are no browser controls for headless mode. */
+@NullMarked
 public class HeadlessBrowserControlsStateProvider implements BrowserControlsStateProvider {
     @Override
     public void addObserver(Observer obs) {}

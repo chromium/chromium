@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tabmodel;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -15,10 +16,11 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import java.util.List;
 
 /**
- * An implementation of TabModelObserver that forwards notifications over a JNI bridge
- * to a corresponding native implementation. Objects of this type are created and owned by
- * the native TabModelJniBridge implementation when native observers are added.
+ * An implementation of TabModelObserver that forwards notifications over a JNI bridge to a
+ * corresponding native implementation. Objects of this type are created and owned by the native
+ * TabModelJniBridge implementation when native observers are added.
  */
+@NullMarked
 class TabModelObserverJniBridge implements TabModelObserver {
     /** Native TabModelObserverJniBridge pointer, set by the constructor. */
     private long mNativeTabModelObserverJniBridge;
@@ -211,6 +213,7 @@ class TabModelObserverJniBridge implements TabModelObserver {
      * this prior to cleaning up its last reference to the Java endpoint so that it can be correctly
      * torn down.
      */
+    @SuppressWarnings("NullAway")
     @CalledByNative
     private void detachFromTabModel() {
         assert mNativeTabModelObserverJniBridge != 0;

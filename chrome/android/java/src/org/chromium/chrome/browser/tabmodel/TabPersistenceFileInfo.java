@@ -6,11 +6,14 @@ package org.chromium.chrome.browser.tabmodel;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 /** Contains representations of stored Tab data, sufficient to identify said Tab data in storage. */
+@NullMarked
 public class TabPersistenceFileInfo {
     // List of identifiers for TabState files.
     private final List<TabStateFileInfo> mTabStateFileInfos = new LinkedList<>();
