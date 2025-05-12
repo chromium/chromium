@@ -1,4 +1,6 @@
 file://components/privacy_sandbox/OWNERS
+per-file privacy_sandbox_internals*=chrstne@google.com
+per-file privacy_sandbox_internals*=kenok@google.com
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
