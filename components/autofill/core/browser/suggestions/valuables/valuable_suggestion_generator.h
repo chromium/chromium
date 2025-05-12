@@ -34,16 +34,5 @@ void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
     std::vector<Suggestion>& email_suggestions,
     const ValuablesDataManager& valuables_manager,
     const GURL& url);
-
-// Appends loyalty cards suggestions to given `autocomplete_suggestions`.
-//
-// Loyalty cards suggestions are retrieved and follow the same logic as
-// `GetLoyaltyCardSuggestions()`. The passed `autocomplete_suggestions` must not
-// be empty.
-void ExtendAutocompleteSuggestionsWithLoyaltyCardSuggestions(
-    std::vector<Suggestion>& autocomplete_suggestions,
-    const ValuablesDataManager& valuables_manager,
-    const GURL& url);
 }  // namespace autofill
-
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_VALUABLES_VALUABLE_SUGGESTION_GENERATOR_H_

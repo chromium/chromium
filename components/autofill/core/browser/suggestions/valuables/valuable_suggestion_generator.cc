@@ -154,24 +154,4 @@ void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
                            Suggestion(SuggestionType::kSeparator));
 }
 
-// TODO(crbug.com/404436027): Deduplicate autocomplete and loyalty cards
-// suggestions.
-void ExtendAutocompleteSuggestionsWithLoyaltyCardSuggestions(
-    std::vector<Suggestion>& autocomplete_suggestions,
-    const ValuablesDataManager& valuables_manager,
-    const GURL& url) {
-  // There is at least one autocomplete suggestion that we can separate from
-  // loyalty cards.
-  CHECK(autocomplete_suggestions.size() >= 1);
-  std::vector<Suggestion> loyalty_cards_suggestions =
-      GetLoyaltyCardSuggestions(valuables_manager, url);
-  if (loyalty_cards_suggestions.empty()) {
-    return;
-  }
-  autocomplete_suggestions.emplace_back(SuggestionType::kSeparator);
-  autocomplete_suggestions.insert(
-      autocomplete_suggestions.end(),
-      std::make_move_iterator(loyalty_cards_suggestions.begin()),
-      std::make_move_iterator(loyalty_cards_suggestions.end()));
-}
 }  // namespace autofill
