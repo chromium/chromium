@@ -521,7 +521,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
     }
     // Ensure we're really a column box. We can't use |BoxType| to call this
     // from the constructor.
-    DCHECK(node_.GetLayoutBox()->SlowFirstChild()->IsLayoutFlowThread());
+    DCHECK(node_.GetLayoutBox()->IsMulticolContainer());
     return false;
   }
 

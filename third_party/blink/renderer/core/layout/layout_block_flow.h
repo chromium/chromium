@@ -97,13 +97,9 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   // Return true if this block establishes a fragmentation context root (e.g. a
   // multicol container).
-  //
-  // Implementation detail: At some point in the future there should be no flow
-  // threads. Callers that only want to know if this is a fragmentation context
-  // root (and don't depend on flow threads) should call this method.
   bool IsFragmentationContextRoot() const override {
     NOT_DESTROYED();
-    return MultiColumnFlowThread();
+    return IsMulticolContainer();
   }
 
   bool IsInitialLetterBox() const override;
@@ -173,8 +169,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   void DirtyLinesFromChangedChild(LayoutObject* child) final;
 
  private:
-  void CreateOrDestroyMultiColumnFlowThreadIfNeeded(
-      const ComputedStyle* old_style);
+  void UpdateForMulticol(const ComputedStyle* old_style);
 
   // Merge children of |sibling_that_may_be_deleted| into this object if
   // possible, and delete |sibling_that_may_be_deleted|. Returns true if we

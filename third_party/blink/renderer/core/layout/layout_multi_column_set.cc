@@ -149,7 +149,9 @@ DeprecatedLayoutPoint ComputeLocation(
 LayoutMultiColumnSet::LayoutMultiColumnSet(LayoutFlowThread* flow_thread)
     : LayoutBlockFlow(nullptr),
       fragmentainer_groups_(*this),
-      flow_thread_(flow_thread) {}
+      flow_thread_(flow_thread) {
+  DCHECK(!RuntimeEnabledFeatures::FlowThreadLessEnabled());
+}
 
 LayoutMultiColumnSet* LayoutMultiColumnSet::CreateAnonymous(
     LayoutFlowThread& flow_thread,

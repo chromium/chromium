@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 namespace {
@@ -66,9 +67,17 @@ bool HasLineEvenIfEmpty(LayoutBox* box) {
     return block_flow->HasLineIfEmpty() &&
            InlineNode(block_flow).IsBlockLevel();
   }
-  if (const auto* const flow_thread = block_flow->MultiColumnFlowThread()) {
-    DCHECK(!flow_thread->ChildrenInline());
-    for (const auto* child = flow_thread->FirstChild(); child;
+  const LayoutBlockFlow* fragmentation_context_root = nullptr;
+  if (RuntimeEnabledFeatures::FlowThreadLessEnabled()) {
+    if (block_flow->IsMulticolContainer()) {
+      fragmentation_context_root = block_flow;
+    }
+  } else {
+    fragmentation_context_root = block_flow->MultiColumnFlowThread();
+  }
+  if (fragmentation_context_root) {
+    DCHECK(!fragmentation_context_root->ChildrenInline());
+    for (const auto* child = fragmentation_context_root->FirstChild(); child;
          child = child->NextSibling()) {
       if (child->IsInline()) {
         // Note: |LayoutOutsideListMarker| is out-of-flow for the tree

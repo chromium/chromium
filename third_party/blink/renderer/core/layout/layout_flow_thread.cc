@@ -37,7 +37,9 @@
 namespace blink {
 
 LayoutFlowThread::LayoutFlowThread()
-    : LayoutBlockFlow(nullptr), column_sets_invalidated_(false) {}
+    : LayoutBlockFlow(nullptr), column_sets_invalidated_(false) {
+  DCHECK(!RuntimeEnabledFeatures::FlowThreadLessEnabled());
+}
 
 void LayoutFlowThread::Trace(Visitor* visitor) const {
   visitor->Trace(multi_column_set_list_);

@@ -9,15 +9,19 @@
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_set.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
 namespace {
 
-class MultiColumnFragmentainerGroupTest : public RenderingTest {
+class MultiColumnFragmentainerGroupTest : public RenderingTest,
+                                          public ScopedFlowThreadLessForTest {
  public:
   MultiColumnFragmentainerGroupTest()
-      : flow_thread_(nullptr), column_set_(nullptr) {}
+      : ScopedFlowThreadLessForTest(false),
+        flow_thread_(nullptr),
+        column_set_(nullptr) {}
 
  protected:
   void SetUp() override;

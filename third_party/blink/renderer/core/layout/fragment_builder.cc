@@ -552,7 +552,7 @@ void FragmentBuilder::ClearOutOfFlowPositionedCandidates() {
 void FragmentBuilder::AddMulticolWithPendingOOFs(
     const BlockNode& multicol,
     MulticolWithPendingOofs<LogicalOffset>* multicol_info) {
-  DCHECK(To<LayoutBlockFlow>(multicol.GetLayoutBox())->MultiColumnFlowThread());
+  DCHECK(multicol.GetLayoutBox()->IsMulticolContainer());
   auto it = multicols_with_pending_oofs_.find(multicol.GetLayoutBox());
   if (it != multicols_with_pending_oofs_.end())
     return;

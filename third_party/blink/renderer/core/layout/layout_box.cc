@@ -2994,6 +2994,57 @@ void LayoutBox::ClearSpannerPlaceholder() {
   rare_data_->spanner_placeholder_ = nullptr;
 }
 
+bool LayoutBox::IsValidColumnSpanner() const {
+  NOT_DESTROYED();
+  // Note that this function may be called in many circumstances, such as before
+  // it is inserted into the tree, and even as part of calculating the
+  // containing block. Be careful.
+  DCHECK_EQ(StyleRef().GetColumnSpan(), EColumnSpan::kAll);
+  if (!RuntimeEnabledFeatures::FlowThreadLessEnabled()) {
+    return SpannerPlaceholder();
+  }
+
+  if (!Parent() || !IsInsideMulticol()) {
+    return false;
+  }
+
+  // The spec says that column-span only applies to in-flow block-level
+  // elements.
+  if (IsInline() || IsFloatingOrOutOfFlowPositioned()) {
+    return false;
+  }
+
+  // This looks like a spanner, but if we're inside something unbreakable or
+  // something that establishes a new formatting context, it's not to be treated
+  // as one.
+  for (const LayoutBox* ancestor = Parent()->EnclosingBox(); ancestor;
+       ancestor = ancestor->ContainingBlock()) {
+    if (ancestor->IsMulticolContainer()) {
+      return true;
+    }
+    const auto* ancestor_block_flow = DynamicTo<LayoutBlockFlow>(ancestor);
+    if (!ancestor_block_flow) {
+      // Needs to be in a block-flow container, and not e.g. a table.
+      return false;
+    }
+
+    // Make sure that there's nothing about this ancestor that prevents `this`
+    // from becoming a column spanner. We require the ancestor to participate in
+    // the block formatting context established by the multicol container
+    // (i.e. that there are no formatting contexts in-between). Transforms are
+    // also forbidden, since they insist on being in the containing block chain
+    // for everything inside, which will easily conflict with a spanners's need
+    // to have the multicol container as its direct containing block.
+    if (ancestor_block_flow->IsMonolithic() ||
+        ancestor_block_flow->CreatesNewFormattingContext() ||
+        ancestor_block_flow->CanContainFixedPositionObjects()) {
+      return false;
+    }
+    DCHECK(!ancestor->IsColumnSpanAll());
+  }
+  return false;
+}
+
 void LayoutBox::InflateVisualRectForFilterUnderContainer(
     TransformState& transform_state,
     const LayoutObject& container,

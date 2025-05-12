@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_set.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -21,7 +22,9 @@ static constexpr LayoutUnit kMulticolMaxClipPixels(1000000);
 
 MultiColumnFragmentainerGroup::MultiColumnFragmentainerGroup(
     const LayoutMultiColumnSet& column_set)
-    : column_set_(&column_set) {}
+    : column_set_(&column_set) {
+  DCHECK(!RuntimeEnabledFeatures::FlowThreadLessEnabled());
+}
 
 LogicalOffset MultiColumnFragmentainerGroup::OffsetFromColumnSet() const {
   return LogicalOffset(LayoutUnit(), LogicalTop());

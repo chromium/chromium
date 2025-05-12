@@ -467,6 +467,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // one. This function follows the containing block chain.
   LayoutFlowThread* FlowThreadContainingBlock() const {
     NOT_DESTROYED();
+    DCHECK(!RuntimeEnabledFeatures::FlowThreadLessEnabled());
     if (!IsInsideMulticol()) {
       return nullptr;
     }
@@ -757,12 +758,21 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     parent_ = parent;
 
-    // Only update if our flow thread state is different from our new parent and
-    // if we're not a LayoutFlowThread.
-    // A LayoutFlowThread is always considered to be inside itself, so it never
-    // has to change its state in response to parent changes.
-    bool inside_multicol = parent && parent->IsInsideMulticol();
-    if (inside_multicol != IsInsideMulticol() && !IsLayoutFlowThread()) {
+    if (!RuntimeEnabledFeatures::FlowThreadLessEnabled()) {
+      // Only update if our flow thread state is different from our new parent
+      // and if we're not a LayoutFlowThread.  A LayoutFlowThread is always
+      // considered to be inside itself, so it never has to change its state in
+      // response to parent changes.
+      bool inside_multicol = parent && parent->IsInsideMulticol();
+      if (inside_multicol != IsInsideMulticol() && !IsLayoutFlowThread()) {
+        SetIsInsideMulticolIncludingDescendants(inside_multicol);
+      }
+      return;
+    }
+
+    bool inside_multicol =
+        parent && (parent->IsInsideMulticol() || parent->IsMulticolContainer());
+    if (inside_multicol != IsInsideMulticol()) {
       SetIsInsideMulticolIncludingDescendants(inside_multicol);
     }
   }
@@ -1743,10 +1753,22 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return nullptr;
   }
+
+  // Return true if this box is to be treated as a column spanner. This function
+  // assumes that `column-span` is `all`, but there are additional requirements
+  // for it to actually become a spanner. For one, it needs to be a block-level
+  // box that's inside a multicol container, and it also needs to be in the
+  // block formatting context established by the columns.
+  virtual bool IsValidColumnSpanner() const {
+    NOT_DESTROYED();
+    return false;
+  }
+
   bool IsColumnSpanAll() const {
     NOT_DESTROYED();
-    return StyleRef().GetColumnSpan() == EColumnSpan::kAll &&
-           SpannerPlaceholder();
+    // May be called before style is set.
+    return Style() && Style()->GetColumnSpan() == EColumnSpan::kAll &&
+           IsValidColumnSpanner();
   }
 
   // We include LayoutButton in this check, because buttons are
@@ -1836,6 +1858,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   LayoutObject* ContainerForAbsolutePosition(AncestorSkipInfo* = nullptr) const;
   // Finds the container as if this object is fixed-position.
   LayoutObject* ContainerForFixedPosition(AncestorSkipInfo* = nullptr) const;
+  // Finds the container as if this object is a column spanner.
+  LayoutObject* ContainerForColumnSpanner(AncestorSkipInfo* = nullptr) const;
 
   bool CanContainOutOfFlowPositionedElement(EPosition position) const {
     NOT_DESTROYED();
@@ -3392,6 +3416,15 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     bitfields_.SetHasSVGTextDescendants(b);
   }
 
+  bool IsMulticolContainer() const {
+    NOT_DESTROYED();
+    return bitfields_.IsMulticolContainer();
+  }
+  void SetIsMulticolContainer(bool b) {
+    NOT_DESTROYED();
+    bitfields_.SetIsMulticolContainer(b);
+  }
+
   // Returns true if this layout object is created for an element which will be
   // changing behaviour for overflow: visible.
   // See
@@ -3793,7 +3826,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           has_broken_spine_(false),
           has_valid_cached_geometry_(false),
           may_be_non_contiguous_ifc_(false),
-          has_svg_text_descendants_(false) {}
+          has_svg_text_descendants_(false),
+          is_multicol_container_(false) {}
 
     // Typically indicates that this object has had its style changed, and
     // requires a "full" layout.
@@ -4133,6 +4167,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // For LayoutBlock - true if this block has *any* SVG text descendants.
     // Used for invalidation on transform changes.
     ADD_BOOLEAN_BITFIELD(has_svg_text_descendants_, HasSVGTextDescendants);
+
+    // True if this is a LayoutBlockFlow that establishes a multicol container.
+    ADD_BOOLEAN_BITFIELD(is_multicol_container_, IsMulticolContainer);
   };
 
 #undef ADD_BOOLEAN_BITFIELD

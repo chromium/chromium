@@ -2245,6 +2245,13 @@
       status: "test",
     },
     {
+      // Don't create LayoutMultiColumnFlowThread objects, or any of the other
+      // legacy multicol objects.
+      name: "FlowThreadLess",
+      depends_on: ["LayoutBoxVisualLocation"],
+      status: "stable",
+    },
+    {
       name: "FluentOverlayScrollbars",
       // The associated base feature is defined in
       // ui/native_theme/native_theme_features.cc.

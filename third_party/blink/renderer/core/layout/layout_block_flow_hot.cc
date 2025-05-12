@@ -65,8 +65,9 @@ void LayoutBlockFlow::StyleDidChange(StyleDifference diff,
   NOT_DESTROYED();
   LayoutBlock::StyleDidChange(diff, old_style);
 
-  if (diff.NeedsFullLayout() || !old_style)
-    CreateOrDestroyMultiColumnFlowThreadIfNeeded(old_style);
+  if (diff.NeedsFullLayout() || !old_style) {
+    UpdateForMulticol(old_style);
+  }
   if (old_style) {
     if (LayoutMultiColumnFlowThread* flow_thread = MultiColumnFlowThread()) {
       if (!StyleRef().ColumnRuleEquivalent(*old_style)) {

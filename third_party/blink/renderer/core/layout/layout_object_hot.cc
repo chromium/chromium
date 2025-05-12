@@ -46,6 +46,9 @@ LayoutObject* LayoutObject::Container(AncestorSkipInfo* skip_info) const {
   }
 
   if (IsColumnSpanAll()) {
+    if (RuntimeEnabledFeatures::FlowThreadLessEnabled()) {
+      return ContainerForColumnSpanner(skip_info);
+    }
     LayoutObject* multicol_container = SpannerPlaceholder()->Container();
     if (skip_info) {
       // We jumped directly from the spanner to the multicol container. Need to
@@ -224,7 +227,11 @@ LayoutBlock* LayoutObject::ContainingBlock(AncestorSkipInfo* skip_info) const {
   }
   LayoutObject* object;
   if (IsColumnSpanAll()) {
-    object = SpannerPlaceholder()->ContainingBlock();
+    if (RuntimeEnabledFeatures::FlowThreadLessEnabled()) {
+      object = ContainerForColumnSpanner(skip_info);
+    } else {
+      object = SpannerPlaceholder()->ContainingBlock();
+    }
   } else {
     object = Parent();
     if (!object && IsLayoutCustomScrollbarPart()) {

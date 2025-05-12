@@ -70,6 +70,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
@@ -81,9 +82,14 @@ namespace {
 // returned, and there are inline children, an anonymous block wrapper needs to
 // be created.
 bool AllowsInlineChildren(const LayoutBlockFlow& block) {
+  bool is_multicol;
+  if (RuntimeEnabledFeatures::FlowThreadLessEnabled()) {
+    is_multicol = block.IsMulticolContainer();
+  } else {
+    is_multicol = IsA<LayoutMultiColumnFlowThread>(block);
+  }
   const auto* inner_editor = DynamicTo<LayoutTextControlInnerEditor>(block);
-  return !IsA<LayoutMultiColumnFlowThread>(block) &&
-         !block.IsScrollMarkerGroup() &&
+  return !is_multicol && !block.IsScrollMarkerGroup() &&
          !(inner_editor && inner_editor->IsMultiline());
 }
 
@@ -709,12 +715,13 @@ bool LayoutBlockFlow::AllowsColumns() const {
   return true;
 }
 
-void LayoutBlockFlow::CreateOrDestroyMultiColumnFlowThreadIfNeeded(
-    const ComputedStyle* old_style) {
+// TODO(crbug.com/371802475): Remove the parameter.
+void LayoutBlockFlow::UpdateForMulticol(const ComputedStyle* old_style) {
   NOT_DESTROYED();
   bool specifies_columns = StyleRef().SpecifiesColumns();
 
   if (MultiColumnFlowThread()) {
+    DCHECK(!RuntimeEnabledFeatures::FlowThreadLessEnabled());
     DCHECK(old_style);
     if (specifies_columns != old_style->SpecifiesColumns()) {
       // If we're no longer to be multicol/paged, destroy the flow thread. Also
@@ -722,57 +729,91 @@ void LayoutBlockFlow::CreateOrDestroyMultiColumnFlowThreadIfNeeded(
       // affects the column set structure (multicol containers may have
       // spanners, paged containers may not).
       MultiColumnFlowThread()->EvacuateAndDestroy();
+      SetIsMulticolContainer(false);
       DCHECK(!MultiColumnFlowThread());
     }
     return;
   }
 
-  if (!specifies_columns)
+  auto ShouldBeMulticol = [this]() -> bool {
+    if (!StyleRef().SpecifiesColumns() || !AllowsColumns()) {
+      return false;
+    }
+
+    // Multicol is applied to the anonymous content box child of a fieldset, not
+    // the fieldset itself, and the fieldset code will make sure that any
+    // relevant multicol properties are copied to said child.
+    if (IsFieldset()) {
+      return false;
+    }
+
+    // Form controls are replaced content (also when implemented as a regular
+    // block), and are therefore not supposed to support multicol.
+    const auto* element = DynamicTo<Element>(GetNode());
+    if (element && element->IsFormControlElement()) {
+      return false;
+    }
+
+    return true;
+  };
+
+  bool should_be_multicol = ShouldBeMulticol();
+  if (should_be_multicol == IsMulticolContainer()) {
     return;
+  }
+
+  SetIsMulticolContainer(should_be_multicol);
 
   if (IsListItem()) {
     UseCounter::Count(GetDocument(), WebFeature::kMultiColAndListItem);
   }
 
-  if (!AllowsColumns())
-    return;
+  if (!RuntimeEnabledFeatures::FlowThreadLessEnabled()) {
+    if (!should_be_multicol) {
+      return;
+    }
 
-  // Fieldsets look for a legend special child (layoutSpecialExcludedChild()).
-  // We currently only support one special child per layout object, and the
-  // flow thread would make for a second one.
-  // For LayoutNG, the multi-column display type will be applied to the
-  // anonymous content box. Thus, the flow thread should be added to the
-  // anonymous content box instead of the fieldset itself.
-  if (IsFieldset()) {
+    auto* flow_thread =
+        LayoutMultiColumnFlowThread::CreateAnonymous(GetDocument(), StyleRef());
+    AddChild(flow_thread);
+    if (IsLayoutNGObject()) {
+      // For simplicity of layout algorithm, we assume flow thread having block
+      // level children only.
+      // For example, we can handle them in same way:
+      //   <div style="columns:3">abc<br>def<br>ghi<br></div>
+      //   <div style="columns:3"><div>abc<br>def<br>ghi<br></div></div>
+      flow_thread->SetChildrenInline(false);
+    }
+
+    // Check that addChild() put the flow thread as a direct child, and didn't
+    // do fancy things.
+    DCHECK_EQ(flow_thread->Parent(), this);
+
+    flow_thread->Populate();
+
+    DCHECK(!multi_column_flow_thread_);
+    multi_column_flow_thread_ = flow_thread;
     return;
   }
 
-  // Form controls are replaced content (also when implemented as a regular
-  // block), and are therefore not supposed to support multicol.
-  const auto* element = DynamicTo<Element>(GetNode());
-  if (element && element->IsFormControlElement())
-    return;
-
-  auto* flow_thread =
-      LayoutMultiColumnFlowThread::CreateAnonymous(GetDocument(), StyleRef());
-  AddChild(flow_thread);
-  if (IsLayoutNGObject()) {
-    // For simplicity of layout algorithm, we assume flow thread having block
-    // level children only.
-    // For example, we can handle them in same way:
-    //   <div style="columns:3">abc<br>def<br>ghi<br></div>
-    //   <div style="columns:3"><div>abc<br>def<br>ghi<br></div></div>
-    flow_thread->SetChildrenInline(false);
+  // Descendants are inside multicol if this is now a multicol container, or if
+  // this ex-multicol container is inside an outer multicol container.
+  bool is_inside_multicol = should_be_multicol || IsInsideMulticol();
+  for (LayoutObject* child = FirstChild(); child;
+       child = child->NextSibling()) {
+    child->SetIsInsideMulticolIncludingDescendants(is_inside_multicol);
   }
 
-  // Check that addChild() put the flow thread as a direct child, and didn't do
-  // fancy things.
-  DCHECK_EQ(flow_thread->Parent(), this);
-
-  flow_thread->Populate();
-
-  DCHECK(!multi_column_flow_thread_);
-  multi_column_flow_thread_ = flow_thread;
+  if (should_be_multicol) {
+    // Inline children need to be wrapped inside an anonymous block. This
+    // anonymous block will participate in the fragmentation context established
+    // by `this`, whereas `this` (the multicol container itself) won't.
+    MakeChildrenNonInline();
+  } else {
+    // No longer a multicol, so no need to force anonymous blocks around all
+    // inline children.
+    MakeChildrenInlineIfPossible();
+  }
 }
 
 void LayoutBlockFlow::SetShouldDoFullPaintInvalidationForFirstLine() {

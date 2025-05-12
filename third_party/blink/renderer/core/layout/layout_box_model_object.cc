@@ -136,7 +136,7 @@ void LayoutBoxModelObject::StyleWillChange(StyleDifference diff,
     ObjectPaintInvalidator(*this).SlowSetPaintingLayerNeedsRepaint();
   }
 
-  if (Style()) {
+  if (!RuntimeEnabledFeatures::FlowThreadLessEnabled() && Style()) {
     LayoutFlowThread* flow_thread = FlowThreadContainingBlock();
     if (flow_thread && flow_thread != this) {
       flow_thread->FlowThreadDescendantStyleWillChange(this, diff, new_style);
@@ -235,9 +235,12 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
   }
 
   if (old_style && Parent()) {
-    if (LayoutFlowThread* flow_thread = FlowThreadContainingBlock()) {
-      if (flow_thread != this) {
-        flow_thread->FlowThreadDescendantStyleDidChange(this, diff, *old_style);
+    if (!RuntimeEnabledFeatures::FlowThreadLessEnabled()) {
+      if (LayoutFlowThread* flow_thread = FlowThreadContainingBlock()) {
+        if (flow_thread != this) {
+          flow_thread->FlowThreadDescendantStyleDidChange(this, diff,
+                                                          *old_style);
+        }
       }
     }
 

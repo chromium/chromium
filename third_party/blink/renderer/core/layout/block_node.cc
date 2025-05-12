@@ -111,10 +111,6 @@ inline LayoutMultiColumnFlowThread* GetFlowThread(
   return block_flow->MultiColumnFlowThread();
 }
 
-inline LayoutMultiColumnFlowThread* GetFlowThread(const LayoutBox& box) {
-  return GetFlowThread(DynamicTo<LayoutBlockFlow>(box));
-}
-
 // The entire purpose of this function is to avoid allocating space on the stack
 // for all layout algorithms for each node we lay out. Therefore it must not be
 // inline.
@@ -196,12 +192,7 @@ NOINLINE void DetermineAlgorithmAndRun(const LayoutAlgorithmParams& params,
     CreateAlgorithmAndRun<FieldsetLayoutAlgorithm>(params, callback);
   } else if (box.IsFrameSet()) {
     CreateAlgorithmAndRun<FrameSetLayoutAlgorithm>(params, callback);
-  }
-  // If there's a legacy layout box, we can only do block fragmentation if
-  // we would have done block fragmentation with the legacy engine.
-  // Otherwise writing data back into the legacy tree will fail. Look for
-  // the flow thread.
-  else if (GetFlowThread(box) && params.node.Style().SpecifiesColumns()) {
+  } else if (box.IsMulticolContainer()) {
     CreateAlgorithmAndRun<ColumnLayoutAlgorithm>(params, callback);
   } else if (!box.Parent() && params.node.IsPaginatedRoot()) [[unlikely]] {
     CreateAlgorithmAndRun<PaginatedRootLayoutAlgorithm>(params, callback);
@@ -1433,6 +1424,9 @@ void BlockNode::CopyChildFragmentPosition(
 }
 
 void BlockNode::MakeRoomForExtraColumns(LayoutUnit block_size) const {
+  if (RuntimeEnabledFeatures::FlowThreadLessEnabled()) {
+    return;
+  }
   auto* block_flow = DynamicTo<LayoutBlockFlow>(GetLayoutBox());
   DCHECK(block_flow && block_flow->MultiColumnFlowThread());
   MultiColumnFragmentainerGroup& last_group =
@@ -1860,6 +1854,9 @@ void BlockNode::UpdateShapeOutsideInfoIfNeeded(
 }
 
 void BlockNode::StoreColumnCount(int count) {
+  if (RuntimeEnabledFeatures::FlowThreadLessEnabled()) {
+    return;
+  }
   LayoutMultiColumnFlowThread* flow_thread =
       To<LayoutBlockFlow>(box_.Get())->MultiColumnFlowThread();
   flow_thread->SetColumnCountFromNG(count);

@@ -49,6 +49,7 @@ LayoutMultiColumnFlowThread::LayoutMultiColumnFlowThread()
     : last_set_worked_on_(nullptr),
       column_count_(1),
       is_being_evacuated_(false) {
+  DCHECK(!RuntimeEnabledFeatures::FlowThreadLessEnabled());
   SetIsInsideMulticol(true);
 }
 

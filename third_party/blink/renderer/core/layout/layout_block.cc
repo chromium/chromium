@@ -299,9 +299,11 @@ void LayoutBlock::RemoveLeftoverAnonymousBlock(LayoutBlock* child) {
   // and grids).
   child->MoveAllChildrenTo(this, child->NextSibling());
 
-  // Remove all the information in the flow thread associated with the leftover
-  // anonymous block.
-  child->RemoveFromLayoutFlowThread();
+  if (!RuntimeEnabledFeatures::FlowThreadLessEnabled()) {
+    // Remove all the information in the flow thread associated with the
+    // leftover anonymous block.
+    child->RemoveFromLayoutFlowThread();
+  }
 
   // Now remove the leftover anonymous block from the tree, and destroy it.
   // We'll rip it out manually from the tree before destroying it, because we
