@@ -521,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(
   // Confirm the worker state does still exist, and that the browser stop
   // notification reset it to no longer ready.
   EXPECT_EQ(worker_state->browser_state(),
-            ServiceWorkerTaskQueue::BrowserState::kInitial);
+            ServiceWorkerTaskQueue::BrowserState::kNotStarted);
   EXPECT_EQ(worker_state->renderer_state(),
             ServiceWorkerTaskQueue::RendererState::kNotActive);
 
@@ -535,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Confirm the worker state still exists and state remains the same.
   EXPECT_EQ(worker_state->browser_state(),
-            ServiceWorkerTaskQueue::BrowserState::kInitial);
+            ServiceWorkerTaskQueue::BrowserState::kNotStarted);
   EXPECT_EQ(worker_state->renderer_state(),
             ServiceWorkerTaskQueue::RendererState::kNotActive);
 }
@@ -582,7 +582,7 @@ IN_PROC_BROWSER_TEST_F(
   // Confirm the worker state still exists and browser and renderer state are
   // not ready.
   EXPECT_EQ(worker_state->browser_state(),
-            ServiceWorkerTaskQueue::BrowserState::kInitial);
+            ServiceWorkerTaskQueue::BrowserState::kNotStarted);
   EXPECT_EQ(worker_state->renderer_state(),
             ServiceWorkerTaskQueue::RendererState::kNotActive);
 
@@ -593,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(
   // Confirm the worker state still exists, and browser and renderer state
   // remain not ready.
   EXPECT_EQ(worker_state->browser_state(),
-            ServiceWorkerTaskQueue::BrowserState::kInitial);
+            ServiceWorkerTaskQueue::BrowserState::kNotStarted);
   EXPECT_EQ(worker_state->renderer_state(),
             ServiceWorkerTaskQueue::RendererState::kNotActive);
 }
@@ -692,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStopTrackingBrowserTest,
   // Confirm the worker state still exists and browser and renderer states have
   // been set to inactive by `ServiceWorkerHost::RenderProcessForWorkerExited`.
   EXPECT_EQ(worker_state->browser_state(),
-            ServiceWorkerTaskQueue::BrowserState::kInitial);
+            ServiceWorkerTaskQueue::BrowserState::kNotStarted);
   EXPECT_EQ(worker_state->renderer_state(),
             ServiceWorkerTaskQueue::RendererState::kNotActive);
 }
