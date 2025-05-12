@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/payments/content/payment_app_factory.h"
 #include "components/payments/content/payment_app_service.h"
@@ -511,6 +512,27 @@ TEST_F(PaymentRequestStateTest, JaLatnShippingAddress) {
   EXPECT_EQ("Example Inc", selected_shipping_address()->organization);
   EXPECT_EQ("Jon V. Doe", selected_shipping_address()->recipient);
   EXPECT_EQ("+81363849000", selected_shipping_address()->phone);
+}
+
+// Tests that the home and work profiles are filtered out from showing in the
+// shipping profiles.
+TEST_F(PaymentRequestStateTest, FilteredHomeWorkAddressProfiles) {
+  autofill::AutofillProfile profile1 = autofill::test::GetFullProfile();
+  test_api(profile1).set_record_type(
+      autofill::AutofillProfile::RecordType::kAccountHome);
+
+  autofill::AutofillProfile profile2 = autofill::test::GetFullProfile2();
+  test_api(profile2).set_record_type(
+      autofill::AutofillProfile::RecordType::kAccountWork);
+
+  test_personal_data_manager_.address_data_manager().AddProfile(profile1);
+  test_personal_data_manager_.address_data_manager().AddProfile(profile2);
+
+  RecreateStateWithOptions(mojom::PaymentOptions::New());
+
+  EXPECT_EQ(state()->shipping_profiles().size(), 1U);
+  EXPECT_EQ(state()->shipping_profiles()[0]->record_type(),
+            autofill::AutofillProfile::RecordType::kLocalOrSyncable);
 }
 
 }  // namespace
