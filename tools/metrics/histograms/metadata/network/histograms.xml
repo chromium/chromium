@@ -2402,6 +2402,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.SharedDictionary.DocumentRequestCacheResult"
+    enum="SharedDictionaryDocumentRequestCacheResult"
+    expires_after="2025-12-31">
+  <owner>pmeenan@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    For each request that is for a document destination that has a shared
+    compression dictionary available and is using the disk-based dictionary
+    storage, records if the dictionary was available in one of the memory
+    caches.
+
+    Logged at the time a request is sent and only for those requests that were
+    for a document destination and had a compression dictionary available.
+  </summary>
+</histogram>
+
 <histogram name="Network.SharedDictionary.EncodingType"
     enum="SharedDictionaryEncodingType" expires_after="2025-10-05">
   <owner>nidhijaju@chromium.org</owner>

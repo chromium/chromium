@@ -2304,6 +2304,12 @@ chromium-metrics-reviews@google.com.
   <int value="681" label="97"/>
 </enum>
 
+<enum name="SharedDictionaryDocumentRequestCacheResult">
+  <int value="0" label="Cache Miss"/>
+  <int value="1" label="Hit from LRU Cache"/>
+  <int value="2" label="Hit from Active Dictionary List"/>
+</enum>
+
 <enum name="SharedDictionaryEncodingType">
   <int value="0" label="Not Used"/>
   <int value="1" label="Shared Brotli"/>

@@ -36,6 +36,7 @@ namespace mojom {
 enum class RequestDestination : int32_t;
 }  // namespace mojom
 
+class SharedDictionaryCache;
 class SharedDictionaryStorage;
 
 // A SharedDictionaryManager which persists dictionary information on disk.
@@ -172,12 +173,16 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
     return writing_disk_cache_key_tokens_;
   }
 
+  void OnMemoryPressure(
+      base::MemoryPressureListener::MemoryPressureLevel level);
+
   uint64_t cache_max_size() const { return cache_max_size_; }
   uint64_t cache_max_count() const { return cache_max_count_; }
 
   uint64_t cache_max_size_;
   const uint64_t cache_max_count_;
   SharedDictionaryDiskCache disk_cache_;
+  scoped_refptr<SharedDictionaryCache> dictionary_cache_;
   net::SQLitePersistentSharedDictionaryStore metadata_store_;
 
   std::unique_ptr<SerializedTask> running_serialized_task_;
@@ -190,6 +195,7 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
   bool expired_entry_deletion_task_queued_ = false;
 
   bool cleanup_task_disabled_for_testing_ = false;
+  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 
   base::WeakPtrFactory<SharedDictionaryManagerOnDisk> weak_factory_{this};
 };

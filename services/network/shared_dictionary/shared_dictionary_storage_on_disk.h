@@ -12,6 +12,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -28,6 +29,7 @@
 
 namespace network {
 
+class SharedDictionaryCache;
 class SharedDictionaryManagerOnDisk;
 class SimpleUrlPatternMatcher;
 
@@ -54,10 +56,20 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
     std::set<mojom::RequestDestination> match_dest_;
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class CacheResult {
+    kCacheMiss = 0,
+    kCacheHitLRU = 1,
+    kCacheHitActive = 2,
+    kMaxValue = kCacheHitActive,
+  };
+
   SharedDictionaryStorageOnDisk(
       base::WeakPtr<SharedDictionaryManagerOnDisk> manager,
       const net::SharedDictionaryIsolationKey& isolation_key,
-      base::ScopedClosureRunner on_deleted_closure_runner);
+      base::ScopedClosureRunner on_deleted_closure_runner,
+      scoped_refptr<SharedDictionaryCache> dictionary_cache);
 
   SharedDictionaryStorageOnDisk(const SharedDictionaryStorageOnDisk&) = delete;
   SharedDictionaryStorageOnDisk& operator=(
@@ -110,6 +122,9 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
   void OnSharedDictionaryDeleted(
       const base::UnguessableToken& disk_cache_key_token);
 
+  void OnMemoryPressure(
+      base::MemoryPressureListener::MemoryPressureLevel level);
+
   const std::map<
       url::SchemeHostPort,
       std::map<std::tuple<std::string, std::set<mojom::RequestDestination>>,
@@ -127,8 +142,13 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
                WrappedDictionaryInfo>>
       dictionary_info_map_;
 
+  scoped_refptr<SharedDictionaryCache> dictionary_cache_;
   std::map<base::UnguessableToken, raw_ptr<net::SharedDictionary>>
       dictionaries_;
+
+  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level_ =
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
 
   bool get_dictionary_called_ = false;
   bool is_metadata_ready_ = false;

@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/time/time.h"
@@ -276,6 +277,9 @@ class SharedDictionaryManagerOnDiskTest : public ::testing::Test {
 };
 
 TEST_F(SharedDictionaryManagerOnDiskTest, ReusingRefCountedSharedDictionary) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kSharedDictionaryCache);
+  base::HistogramTester histogram_tester;
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
   net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
@@ -292,7 +296,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest, ReusingRefCountedSharedDictionary) {
   // Check the returned dictionary from GetDictionarySync().
   scoped_refptr<net::SharedDictionary> dict1 =
       storage->GetDictionarySync(GURL("https://origin.test/testfile?1"),
-                                 mojom::RequestDestination::kEmpty);
+                                 mojom::RequestDestination::kDocument);
   ASSERT_TRUE(dict1);
   {
     base::RunLoop run_loop;
@@ -305,7 +309,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest, ReusingRefCountedSharedDictionary) {
   }
   scoped_refptr<net::SharedDictionary> dict2 =
       storage->GetDictionarySync(GURL("https://origin.test/testfile?2"),
-                                 mojom::RequestDestination::kEmpty);
+                                 mojom::RequestDestination::kDocument);
   ASSERT_TRUE(dict2);
   // `dict2` shares the same RefCountedSharedDictionary with `dict1`. So
   // ReadAll() must synchronously return OK.
@@ -318,6 +322,198 @@ TEST_F(SharedDictionaryManagerOnDiskTest, ReusingRefCountedSharedDictionary) {
   EXPECT_EQ(kTestData1,
             std::string(reinterpret_cast<const char*>(dict1->data()->data()),
                         dict1->size()));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Network.SharedDictionary.DocumentRequestCacheResult"),
+      testing::ElementsAre(
+          base::Bucket(
+              static_cast<int>(
+                  SharedDictionaryStorageOnDisk::CacheResult::kCacheMiss),
+              1),
+          base::Bucket(
+              static_cast<int>(
+                  SharedDictionaryStorageOnDisk::CacheResult::kCacheHitActive),
+              1)));
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest,
+       ReusingRefCountedSharedDictionaryWithLRU) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kSharedDictionaryCache);
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  WriteDictionary(storage.get(), GURL("https://origin.test/dict"), "testfile*",
+                  kTestData1);
+  WriteDictionary(storage.get(), GURL("https://origin.test/dict"),
+                  "othertestfile*", kTestData1);
+
+  FlushCacheTasks();
+
+  // Check the returned dictionary from GetDictionarySync().
+  scoped_refptr<net::SharedDictionary> dict1 =
+      storage->GetDictionarySync(GURL("https://origin.test/testfile?1"),
+                                 mojom::RequestDestination::kDocument);
+  ASSERT_TRUE(dict1);
+  {
+    base::RunLoop run_loop;
+    EXPECT_EQ(net::ERR_IO_PENDING,
+              dict1->ReadAll(base::BindLambdaForTesting([&](int rv) {
+                EXPECT_EQ(net::OK, rv);
+                run_loop.Quit();
+              })));
+    run_loop.Run();
+  }
+  // Request a second dictionary to push the first one out of the LRU cache
+  // so it will fall back to the ref-counted cache.
+  scoped_refptr<net::SharedDictionary> unused_dict =
+      storage->GetDictionarySync(GURL("https://origin.test/othertestfile?1"),
+                                 mojom::RequestDestination::kDocument);
+  scoped_refptr<net::SharedDictionary> dict2 =
+      storage->GetDictionarySync(GURL("https://origin.test/testfile?2"),
+                                 mojom::RequestDestination::kDocument);
+  ASSERT_TRUE(dict2);
+  // `dict2` shares the same RefCountedSharedDictionary with `dict1`. So
+  // ReadAll() must synchronously return OK.
+  EXPECT_EQ(net::OK, dict2->ReadAll(base::BindLambdaForTesting(
+                         [&](int rv) { NOTREACHED(); })));
+  // `dict2` shares the same IOBuffer with `dict1`.
+  EXPECT_EQ(dict1->data(), dict2->data());
+  EXPECT_EQ(dict1->size(), dict2->size());
+  EXPECT_EQ(dict1->hash(), dict2->hash());
+  EXPECT_EQ(kTestData1,
+            std::string(reinterpret_cast<const char*>(dict1->data()->data()),
+                        dict1->size()));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Network.SharedDictionary.DocumentRequestCacheResult"),
+      testing::ElementsAre(
+          base::Bucket(
+              static_cast<int>(
+                  SharedDictionaryStorageOnDisk::CacheResult::kCacheMiss),
+              2),
+          base::Bucket(
+              static_cast<int>(
+                  SharedDictionaryStorageOnDisk::CacheResult::kCacheHitActive),
+              1)));
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest, DeletingRefCountedSharedDictionary) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kSharedDictionaryCache);
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  WriteDictionary(storage.get(), GURL("https://origin.test/dict"), "testfile*",
+                  kTestData1);
+
+  FlushCacheTasks();
+
+  // dict1 should be released when it goes out of scope which should trigger
+  // the removal of the underlying cached RefCountedSharedDictionary.
+  {
+    scoped_refptr<net::SharedDictionary> dict1 =
+        storage->GetDictionarySync(GURL("https://origin.test/testfile?1"),
+                                   mojom::RequestDestination::kDocument);
+    ASSERT_TRUE(dict1);
+    {
+      base::RunLoop run_loop;
+      EXPECT_EQ(net::ERR_IO_PENDING,
+                dict1->ReadAll(base::BindLambdaForTesting([&](int rv) {
+                  EXPECT_EQ(net::OK, rv);
+                  run_loop.Quit();
+                })));
+      run_loop.Run();
+    }
+  }
+  scoped_refptr<net::SharedDictionary> dict2 =
+      storage->GetDictionarySync(GURL("https://origin.test/testfile?2"),
+                                 mojom::RequestDestination::kDocument);
+  ASSERT_TRUE(dict2);
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Network.SharedDictionary.DocumentRequestCacheResult"),
+              testing::ElementsAre(base::Bucket(
+                  static_cast<int>(
+                      SharedDictionaryStorageOnDisk::CacheResult::kCacheMiss),
+                  2)));
+  // `dict2` should not share the same RefCountedSharedDictionary with `dict1`.
+  // So ReadAll() must synchronously return ERR_IO_PENDING.
+  EXPECT_EQ(net::ERR_IO_PENDING, dict2->ReadAll(base::BindLambdaForTesting(
+                                     [&](int rv) { NOTREACHED(); })));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Network.SharedDictionary.DocumentRequestCacheResult"),
+              testing::ElementsAre(base::Bucket(
+                  static_cast<int>(
+                      SharedDictionaryStorageOnDisk::CacheResult::kCacheMiss),
+                  2)));
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest, ReusingLRUCachedSharedDictionary) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kSharedDictionaryCache);
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  WriteDictionary(storage.get(), GURL("https://origin.test/dict"), "testfile*",
+                  kTestData1);
+
+  FlushCacheTasks();
+
+  // dict1 should not be released when it goes out of scope since it will also
+  // be kept in the LRU cache for document requests.
+  {
+    scoped_refptr<net::SharedDictionary> dict1 =
+        storage->GetDictionarySync(GURL("https://origin.test/testfile?1"),
+                                   mojom::RequestDestination::kDocument);
+    ASSERT_TRUE(dict1);
+    {
+      base::RunLoop run_loop;
+      EXPECT_EQ(net::ERR_IO_PENDING,
+                dict1->ReadAll(base::BindLambdaForTesting([&](int rv) {
+                  EXPECT_EQ(net::OK, rv);
+                  run_loop.Quit();
+                })));
+      run_loop.Run();
+    }
+  }
+  scoped_refptr<net::SharedDictionary> dict2 =
+      storage->GetDictionarySync(GURL("https://origin.test/testfile?2"),
+                                 mojom::RequestDestination::kDocument);
+  ASSERT_TRUE(dict2);
+  // `dict2` should share the same RefCountedSharedDictionary with `dict1`.
+  // So ReadAll() must synchronously return OK.
+  EXPECT_EQ(net::OK, dict2->ReadAll(base::BindLambdaForTesting(
+                         [&](int rv) { NOTREACHED(); })));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Network.SharedDictionary.DocumentRequestCacheResult"),
+      testing::ElementsAre(
+          base::Bucket(
+              static_cast<int>(
+                  SharedDictionaryStorageOnDisk::CacheResult::kCacheMiss),
+              1),
+          base::Bucket(
+              static_cast<int>(
+                  SharedDictionaryStorageOnDisk::CacheResult::kCacheHitLRU),
+              1)));
 }
 
 TEST_F(SharedDictionaryManagerOnDiskTest,

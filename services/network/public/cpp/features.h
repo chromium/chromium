@@ -332,6 +332,18 @@ BASE_DECLARE_FEATURE(kCacheSharingForPervasiveScripts);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE_PARAM(std::string, kPervasiveScriptURLPatterns);
 
+// When enabled, disk-based shared dictionaries will use a memory cache to
+// keep frequently used dictionaries in memory.
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE(kSharedDictionaryCache);
+
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE_PARAM(size_t, kSharedDictionaryCacheSize);
+
+// Maximum size of dictionaries that are allowed to be stored in the cache.
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE_PARAM(size_t, kSharedDictionaryCacheMaxSizeBytes);
+
 }  // namespace network::features
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_FEATURES_H_
