@@ -1861,6 +1861,7 @@ void Element::scrollIntoViewWithOptions(const ScrollIntoViewOptions* options) {
   if (options->hasContainer() &&
       options->container() == V8ScrollContainer::Enum::kNearest) {
     container = this;
+    GetDocument().CountUse(WebFeature::kScrollIntoViewContainerNearest);
   }
 
   ScrollIntoViewNoVisualUpdate(std::move(params), container);

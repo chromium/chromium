@@ -8,6 +8,8 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_plugin.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_container.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -1390,6 +1392,22 @@ TEST_F(ElementTest, NestedMarkerInheritsFromPseudoParent) {
 
   EXPECT_EQ(marker->GetComputedStyle()->ListStyleType()->GetCounterStyleName(),
             AtomicString("disc"));
+}
+
+TEST_F(ElementTest, ScrollIntoViewNearestUseCounted) {
+  // Set via setAttribute
+  SetBodyInnerHTML(R"HTML(
+    <body>
+      <div id=target></div>
+    </body>
+  )HTML");
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kScrollIntoViewContainerNearest));
+  ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
+  options->setContainer(V8ScrollContainer::Enum::kNearest);
+  GetElementById("target")->scrollIntoViewWithOptions(options);
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kScrollIntoViewContainerNearest));
 }
 
 }  // namespace blink
