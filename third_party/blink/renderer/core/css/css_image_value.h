@@ -68,10 +68,9 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
   bool Equals(const CSSImageValue&) const;
 
   CSSImageValue* ComputedCSSValue() const {
-    return MakeGarbageCollected<CSSImageValue>(*UrlData().MakeAbsolute(),
+    return MakeGarbageCollected<CSSImageValue>(*UrlData().MakeComputed(),
                                                cached_image_.Get());
   }
-  CSSImageValue* ComputedCSSValueMaybeLocal() const;
 
   CSSImageValue* Clone() const {
     return MakeGarbageCollected<CSSImageValue>(*UrlData().MakeWithoutReferrer(),

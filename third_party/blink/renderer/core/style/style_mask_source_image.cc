@@ -36,7 +36,7 @@ CSSValue* StyleMaskSourceImage::ComputedCSSValue(
     const ComputedStyle& style,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return resource_css_value_->ComputedCSSValueMaybeLocal();
+  return resource_css_value_->ComputedCSSValue();
 }
 
 bool StyleMaskSourceImage::CanRender() const {
