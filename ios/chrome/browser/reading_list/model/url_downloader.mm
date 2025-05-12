@@ -20,7 +20,8 @@
 #import "base/strings/stringprintf.h"
 #import "base/task/thread_pool.h"
 #import "components/reading_list/core/offline_url_utils.h"
-#import "ios/chrome/browser/dom_distiller/model/distiller_viewer.h"
+#import "ios/chrome/browser/dom_distiller/model/distiller_viewer_interface.h"
+#import "ios/chrome/browser/dom_distiller/model/offline_page_distiller_viewer.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_distiller_page.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_distiller_page_factory.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
@@ -374,7 +375,7 @@ void URLDownloader::DownloadURL(const GURL& url, bool offline_url_exists) {
       reading_list_distiller_page =
           distiller_page_factory_->CreateReadingListDistillerPage(url, this);
 
-  distiller_viewer_.reset(new DistillerViewer(
+  distiller_viewer_.reset(new OfflinePageDistillerViewer(
       distiller_service_, std::move(reading_list_distiller_page), url,
       base::BindRepeating(&URLDownloader::DistillerCallback,
                           weak_factory_.GetWeakPtr())));

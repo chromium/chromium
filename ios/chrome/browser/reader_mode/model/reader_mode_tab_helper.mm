@@ -12,7 +12,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
-#import "ios/chrome/browser/dom_distiller/model/distiller_viewer.h"
+#import "ios/chrome/browser/dom_distiller/model/offline_page_distiller_viewer.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_distiller_page.h"
@@ -310,7 +310,7 @@ void ReaderModeTabHelper::HandleReaderModeHeuristicResult(
   std::unique_ptr<ReaderModeDistillerPage> distiller_page =
       std::make_unique<ReaderModeDistillerPage>(web_state_);
 
-  distiller_viewer_.reset(new DistillerViewer(
+  distiller_viewer_.reset(new OfflinePageDistillerViewer(
       distiller_service_, std::move(distiller_page), url,
       base::BindRepeating(&ReaderModeTabHelper::PageDistillationCompleted,
                           weak_ptr_factory_.GetWeakPtr(), result,

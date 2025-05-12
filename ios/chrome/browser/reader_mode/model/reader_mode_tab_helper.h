@@ -8,7 +8,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/timer/timer.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_service.h"
-#import "ios/chrome/browser/dom_distiller/model/distiller_viewer.h"
+#import "ios/chrome/browser/dom_distiller/model/offline_page_distiller_viewer.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_delegate.h"
 #import "ios/web/public/web_state_observer.h"
@@ -103,7 +103,7 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   raw_ptr<web::WebState> web_state_ = nullptr;
   raw_ptr<DistillerService> distiller_service_;
 
-  std::unique_ptr<DistillerViewer> distiller_viewer_;
+  std::unique_ptr<OfflinePageDistillerViewer> distiller_viewer_;
 
   base::WeakPtrFactory<ReaderModeTabHelper> weak_ptr_factory_{this};
 };

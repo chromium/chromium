@@ -13,7 +13,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/task/cancelable_task_tracker.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_service.h"
-#import "ios/chrome/browser/dom_distiller/model/distiller_viewer.h"
+#import "ios/chrome/browser/dom_distiller/model/distiller_viewer_interface.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_distiller_page.h"
 
 class GURL;

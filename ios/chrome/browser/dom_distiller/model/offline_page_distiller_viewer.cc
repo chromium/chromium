@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/dom_distiller/model/distiller_viewer.h"
+#include "ios/chrome/browser/dom_distiller/model/offline_page_distiller_viewer.h"
 
 #include <string>
 #include <utility>
@@ -19,7 +19,7 @@
 #import "ios/chrome/browser/dom_distiller/model/distiller_service.h"
 #include "ui/gfx/geometry/size.h"
 
-DistillerViewer::DistillerViewer(
+OfflinePageDistillerViewer::OfflinePageDistillerViewer(
     DistillerService* distiller_service,
     std::unique_ptr<dom_distiller::DistillerPage> page,
     const GURL& url,
@@ -33,23 +33,24 @@ DistillerViewer::DistillerViewer(
   SendCommonJavaScript();
   distiller_service->DistillPage(
       url, std::move(page),
-      base::BindOnce(&DistillerViewer::OnDistillerFinished,
+      base::BindOnce(&OfflinePageDistillerViewer::OnDistillerFinished,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::BindRepeating(&DistillerViewer::OnArticleDistillationUpdated,
-                          weak_ptr_factory_.GetWeakPtr()));
+      base::BindRepeating(
+          &OfflinePageDistillerViewer::OnArticleDistillationUpdated,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
-DistillerViewer::~DistillerViewer() {}
+OfflinePageDistillerViewer::~OfflinePageDistillerViewer() {}
 
-void DistillerViewer::OnArticleDistillationUpdated(
+void OfflinePageDistillerViewer::OnArticleDistillationUpdated(
     const dom_distiller::ArticleDistillationUpdate& article_update) {}
 
-void DistillerViewer::OnDistillerFinished(
+void OfflinePageDistillerViewer::OnDistillerFinished(
     std::unique_ptr<dom_distiller::DistilledArticleProto> distilled_article) {
   OnArticleReady(distilled_article.get());
 }
 
-void DistillerViewer::OnArticleReady(
+void OfflinePageDistillerViewer::OnArticleReady(
     const dom_distiller::DistilledArticleProto* article_proto) {
   DCHECK(!callback_.is_null());
   DomDistillerRequestViewBase::OnArticleReady(article_proto);
@@ -80,10 +81,10 @@ void DistillerViewer::OnArticleReady(
   }
 }
 
-void DistillerViewer::SendJavaScript(const std::string& buffer) {
+void OfflinePageDistillerViewer::SendJavaScript(const std::string& buffer) {
   js_buffer_ += buffer;
 }
 
-std::string DistillerViewer::GetCspNonce() {
+std::string OfflinePageDistillerViewer::GetCspNonce() {
   return csp_nonce_;
 }

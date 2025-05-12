@@ -8,8 +8,9 @@ source_set("model") {
     "distiller_service.mm",
     "distiller_service_factory.h",
     "distiller_service_factory.mm",
-    "distiller_viewer.cc",
-    "distiller_viewer.h",
+    "distiller_viewer_interface.h",
+    "offline_page_distiller_viewer.cc",
+    "offline_page_distiller_viewer.h",
   ]
   deps = [
     "//base",
