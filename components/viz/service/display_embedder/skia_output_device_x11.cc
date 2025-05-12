@@ -121,7 +121,7 @@ void SkiaOutputDeviceX11::Present(const std::optional<gfx::Rect>& update_rect,
       graphite_shared_context->asyncRescaleAndReadPixels(
           sk_surface_.get(), dst_info, gfx::RectToSkIRect(rect),
           SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
-          &OnReadPixelsDone, &context);
+          base::BindOnce(&OnReadPixelsDone), &context);
       graphite_shared_context->submit(skgpu::graphite::SyncToCpu::kYes);
       LOG_IF(FATAL, !context.async_result)
           << "Failed to read pixels from offscreen SkSurface.";

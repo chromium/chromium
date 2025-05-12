@@ -5,13 +5,14 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_GRAPHITE_SHARED_CONTEXT_H_
 #define GPU_COMMAND_BUFFER_SERVICE_GRAPHITE_SHARED_CONTEXT_H_
 
+#include "base/functional/callback.h"
 #include "base/synchronization/lock.h"
 #include "gpu/gpu_gles2_export.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/graphite/GraphiteTypes.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
 
-class SkSurface;
 class SkTraceMemoryDump;
 
 namespace skgpu ::graphite {
@@ -32,6 +33,9 @@ namespace gpu {
 // are equivalent to no-op.
 class GPU_GLES2_EXPORT GraphiteSharedContext {
  public:
+  using SkImageReadPixelsCallback = base::OnceCallback<
+      void(void* ctx, std::unique_ptr<const SkSurface::AsyncReadResult>)>;
+
   GraphiteSharedContext(
       std::unique_ptr<skgpu::graphite::Context> graphite_context,
       bool is_thread_safe);
@@ -63,14 +67,14 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
                                  const SkIRect& srcRect,
                                  SkImage::RescaleGamma rescaleGamma,
                                  SkImage::RescaleMode rescaleMode,
-                                 SkImage::ReadPixelsCallback callback,
+                                 SkImageReadPixelsCallback callback,
                                  SkImage::ReadPixelsContext context);
   void asyncRescaleAndReadPixels(const SkSurface* src,
                                  const SkImageInfo& dstImageInfo,
                                  const SkIRect& srcRect,
                                  SkImage::RescaleGamma rescaleGamma,
                                  SkImage::RescaleMode rescaleMode,
-                                 SkImage::ReadPixelsCallback callback,
+                                 SkImageReadPixelsCallback callback,
                                  SkImage::ReadPixelsContext context);
 
   void asyncRescaleAndReadPixelsYUV420(const SkImage* src,
@@ -80,7 +84,7 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
                                        const SkISize& dstSize,
                                        SkImage::RescaleGamma rescaleGamma,
                                        SkImage::RescaleMode rescaleMode,
-                                       SkImage::ReadPixelsCallback callback,
+                                       SkImageReadPixelsCallback callback,
                                        SkImage::ReadPixelsContext context);
   void asyncRescaleAndReadPixelsYUV420(const SkSurface* src,
                                        SkYUVColorSpace yuvColorSpace,
@@ -89,7 +93,7 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
                                        const SkISize& dstSize,
                                        SkImage::RescaleGamma rescaleGamma,
                                        SkImage::RescaleMode rescaleMode,
-                                       SkImage::ReadPixelsCallback callback,
+                                       SkImageReadPixelsCallback callback,
                                        SkImage::ReadPixelsContext context);
 
   void asyncRescaleAndReadPixelsYUVA420(const SkImage* src,
@@ -99,7 +103,7 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
                                         const SkISize& dstSize,
                                         SkImage::RescaleGamma rescaleGamma,
                                         SkImage::RescaleMode rescaleMode,
-                                        SkImage::ReadPixelsCallback callback,
+                                        SkImageReadPixelsCallback callback,
                                         SkImage::ReadPixelsContext context);
   void asyncRescaleAndReadPixelsYUVA420(const SkSurface* src,
                                         SkYUVColorSpace yuvColorSpace,
@@ -108,7 +112,7 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
                                         const SkISize& dstSize,
                                         SkImage::RescaleGamma rescaleGamma,
                                         SkImage::RescaleMode rescaleMode,
-                                        SkImage::ReadPixelsCallback callback,
+                                        SkImageReadPixelsCallback callback,
                                         SkImage::ReadPixelsContext context);
 
   void checkAsyncWorkCompletion();

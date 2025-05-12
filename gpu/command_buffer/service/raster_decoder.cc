@@ -2711,8 +2711,8 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
     graphite_shared_context()->asyncRescaleAndReadPixelsYUV420(
         sk_image.get(), kJPEG_Full_SkYUVColorSpace, SkColorSpace::MakeSRGB(),
         src_rect, dst_size, SkImage::RescaleGamma::kSrc,
-        SkImage::RescaleMode::kRepeatedLinear, &OnReadYUVImagePixelsDone,
-        &yuv_result);
+        SkImage::RescaleMode::kRepeatedLinear,
+        base::BindOnce(&OnReadYUVImagePixelsDone), &yuv_result);
   } else {
     CHECK(gr_context());
     sk_image->asyncRescaleAndReadPixelsYUV420(

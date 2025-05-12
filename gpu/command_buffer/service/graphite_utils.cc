@@ -47,7 +47,8 @@ bool GraphiteReadPixelsSyncImpl(GraphiteSharedContext* context,
 
   context->asyncRescaleAndReadPixels(
       imageOrSurface, dst_info, src_rect, SkImage::RescaleGamma::kSrc,
-      SkImage::RescaleMode::kRepeatedLinear, &OnReadPixelsDone, &read_context);
+      SkImage::RescaleMode::kRepeatedLinear, base::BindOnce(&OnReadPixelsDone),
+      &read_context);
 
   context->submit(skgpu::graphite::SyncToCpu::kYes);
   CHECK(read_context.finished);

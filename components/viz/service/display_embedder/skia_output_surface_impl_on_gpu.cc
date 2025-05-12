@@ -878,7 +878,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInMemory(
     // for Graphite. Instead the equivalent methods will be on Graphite Context.
     graphite_shared_context->asyncRescaleAndReadPixels(
         surface, dst_info, src_rect, SkSurface::RescaleGamma::kSrc,
-        rescale_mode, &CopyOutputResultSkiaRGBA::OnReadbackDone,
+        rescale_mode, base::BindOnce(&CopyOutputResultSkiaRGBA::OnReadbackDone),
         context.release());
   } else {
     surface->asyncRescaleAndReadPixels(
@@ -1769,7 +1769,8 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
         graphite_shared_context->asyncRescaleAndReadPixelsYUV420(
             surface, kRec709_SkYUVColorSpace, SkColorSpace::MakeSRGB(),
             src_rect, dst_size, SkSurface::RescaleGamma::kSrc, rescale_mode,
-            &CopyOutputResultSkiaYUV::OnReadbackDone, context.release());
+            base::BindOnce(CopyOutputResultSkiaYUV::OnReadbackDone),
+            context.release());
       } else {
         surface->asyncRescaleAndReadPixelsYUV420(
             kRec709_SkYUVColorSpace, SkColorSpace::MakeSRGB(), src_rect,

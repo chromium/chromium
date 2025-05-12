@@ -240,7 +240,7 @@ void SkiaOutputDeviceOffscreen::ReadbackForTesting(
         sk_surface_.get(), sk_surface_->imageInfo(),
         SkIRect::MakeSize(sk_surface_->imageInfo().dimensions()),
         SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
-        &ReadPixelsContext::OnReadPixelsDone, &context);
+        base::BindOnce(&ReadPixelsContext::OnReadPixelsDone), &context);
   } else {
     CHECK(context_state_->gr_context());
     sk_surface_->asyncRescaleAndReadPixels(

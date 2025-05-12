@@ -316,7 +316,7 @@ bool WrappedGraphiteTextureBacking::ReadbackToMemory(
     context_state_->graphite_shared_context()->asyncRescaleAndReadPixels(
         sk_image.get(), pixmaps[i].info(), src_rect,
         SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
-        &OnReadPixelsDone, &contexts[i]);
+        base::BindOnce(&OnReadPixelsDone), &contexts[i]);
   }
 
   if (!context_state_->graphite_shared_context()->submit(

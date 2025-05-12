@@ -336,7 +336,8 @@ void SharedImageTestBase::VerifyPixelsWithReadbackGraphite(
     const SkIRect src_rect = dst_info.bounds();
     context_state_->graphite_shared_context()->asyncRescaleAndReadPixels(
         sk_image.get(), dst_info, src_rect, SkImage::RescaleGamma::kSrc,
-        SkImage::RescaleMode::kRepeatedLinear, &OnReadPixelsDone, &context);
+        SkImage::RescaleMode::kRepeatedLinear,
+        base::BindOnce(&OnReadPixelsDone), &context);
     InsertRecordingAndSubmit(context_state_.get(), /*sync_cpu=*/true);
     ASSERT_TRUE(context.finished) << "plane_index=" << plane;
     if (context.async_result) {

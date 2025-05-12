@@ -156,7 +156,7 @@ void AttemptDebuggerBufferCapture(
         skimage.get(), dst_info,
         SkIRect::MakeWH(texture_size.width(), texture_size.height()),
         SkSurface::RescaleGamma::kSrc, SkSurface::RescaleMode::kRepeatedLinear,
-        &DebuggerCaptureBufferCallback, si_info.release());
+        base::BindOnce(&DebuggerCaptureBufferCallback), si_info.release());
   } else {
     skimage->asyncRescaleAndReadPixels(
         dst_info, SkIRect::MakeWH(texture_size.width(), texture_size.height()),
