@@ -74,6 +74,10 @@ void LogAddAccountToDeviceHistograms(SigninAddAccountToDeviceResult result,
         (id<SystemIdentityInteractionManager>)identityInteractionManager {
   self = [super init];
   if (self) {
+    CHECK(baseViewController, base::NotFatalUntil::M140);
+    CHECK(prefService, base::NotFatalUntil::M140);
+    CHECK(identityManager, base::NotFatalUntil::M140);
+    CHECK(identityInteractionManager, base::NotFatalUntil::M140);
     _baseViewController = baseViewController;
     _prefService = prefService;
     _identityManager = identityManager;

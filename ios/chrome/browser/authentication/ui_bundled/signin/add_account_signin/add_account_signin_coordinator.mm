@@ -84,6 +84,8 @@ using signin_metrics::PromoAction;
                                accessPoint:accessPoint];
   if (self) {
     CHECK(continuationProvider);
+    CHECK(viewController, base::NotFatalUntil::M140);
+    CHECK(browser, base::NotFatalUntil::M140);
     _continuationProvider = continuationProvider;
     _signinIntent = signinIntent;
     _promoAction = promoAction;

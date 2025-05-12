@@ -236,6 +236,8 @@ using signin_metrics::PromoAction;
                            continuationProvider:
                                (const ChangeProfileContinuationProvider&)
                                    continuationProvider {
+  CHECK(viewController, base::NotFatalUntil::M140);
+  CHECK(browser, base::NotFatalUntil::M140);
   CHECK(continuationProvider);
   return [[AddAccountSigninCoordinator alloc]
       initWithBaseViewController:viewController
@@ -261,6 +263,8 @@ using signin_metrics::PromoAction;
                                          (const ChangeProfileContinuationProvider&)
                                              continuationProvider {
   CHECK(continuationProvider);
+  CHECK(viewController, base::NotFatalUntil::M140);
+  CHECK(browser, base::NotFatalUntil::M140);
   return [[AddAccountSigninCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser
@@ -285,6 +289,8 @@ using signin_metrics::PromoAction;
                                         (const ChangeProfileContinuationProvider&)
                                             continuationProvider {
   CHECK(continuationProvider);
+  CHECK(viewController, base::NotFatalUntil::M140);
+  CHECK(browser, base::NotFatalUntil::M140);
   return [[AddAccountSigninCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser

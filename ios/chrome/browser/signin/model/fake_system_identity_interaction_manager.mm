@@ -147,7 +147,8 @@ BOOL gUsingUnknownCapabilities;
 - (void)startAuthActivityWithViewController:(UIViewController*)viewController
                                   userEmail:(NSString*)userEmail
                                  completion:(SigninCompletionBlock)completion {
-  DCHECK(completion);
+  CHECK(completion, base::NotFatalUntil::M140);
+  CHECK(viewController, base::NotFatalUntil::M140);
   _lastStartAuthActivityUserEmail = userEmail;
   if (userEmail.length) {
     [FakeSystemIdentityInteractionManager
