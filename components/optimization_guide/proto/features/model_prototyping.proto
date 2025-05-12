@@ -8,8 +8,6 @@ package optimization_guide.proto;
 
 import "components/optimization_guide/proto/features/forms_classifications.proto";
 
-import "components/optimization_guide/proto/features/forms_predictions.proto";
-
 import "components/optimization_guide/proto/features/common_quality_data.proto";
 
 import "components/optimization_guide/proto/common_types.proto";
@@ -161,10 +159,6 @@ message BrowserCollectedInformation {
   // field to be empty.
   FormData form_data = 5;
 
-  // The current entries in the user annotations database helpful for filling
-  // out this form.
-  repeated UserAnnotationsEntry entries = 6;
-
   // The ungrouped tabs that are requested to be organized.
   repeated Tab tabs = 7;
 
@@ -179,11 +173,6 @@ message BrowserCollectedInformation {
 
   // The recent historical page data.
   repeated HistoryQueryResult history_query_result = 11;
-
-  // Forms predictions metadata used for data collection/evaluations.
-  FormsPredictionsRequest forms_predictions_request = 12;
-
-  FormsPredictionsResponse forms_predictions_response = 13;
 
   // Specifies which data is included in this request to the browser.
   // For example, some requests only include foreground tab data,
@@ -200,6 +189,8 @@ message BrowserCollectedInformation {
   // for production but is needed for  prototyping. See crbug.com/403632369 for more
   // details.
   AnnotatedPageContent action_annotated_page_content = 17;
+
+  reserved 6, 12, 13;
 }
 
 message HistoryQueryResult {
@@ -307,14 +298,13 @@ message PageContextSpecifier {
   // Whether to collect the PDF data.
   bool pdf_data = 6;
 
-  // Whether to collect the last FormsPredictions request and response.
-  bool forms_prediction = 7;
-
   // Whether to collect the annotated page content.
   bool annotated_page_content = 8;
 
   // The global ID of the field whose form should be extract (if any).
   AutofillFieldGlobalId field_global_id = 9;
+
+  reserved 7;
 }
 
 message AutofillFieldGlobalId {
