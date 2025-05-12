@@ -99,7 +99,7 @@ class FullscreenController : public BrowserUserData<FullscreenController> {
   virtual void ResizeHorizontalViewport() = 0;
 
  protected:
-  FullscreenController() = default;
+  FullscreenController(Browser* browser) : BrowserUserData(browser) {}
 
  private:
   friend class BrowserUserData<FullscreenController>;

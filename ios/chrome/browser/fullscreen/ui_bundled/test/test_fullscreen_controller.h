@@ -19,8 +19,15 @@ enum class FullscreenExitReason;
 // - Supports FullscreenControllerObserver::FullscreenControllerWillShutDown().
 class TestFullscreenController : public FullscreenController {
  public:
-  TestFullscreenController();
+  TestFullscreenController(Browser* browser);
   ~TestFullscreenController() override;
+
+  // Overrides FullscreenController::CreateForBrowser(...) for tests.
+  static void CreateForBrowser(Browser* browser);
+
+  // Overrides FullscreenController::FromBrowser(...) for tests.
+  static TestFullscreenController* FromBrowser(Browser* browser);
+  static const TestFullscreenController* FromBrowser(const Browser* browser);
 
   // FullscreenController:
   ChromeBroadcaster* broadcaster() override;

@@ -5,9 +5,12 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_web_view_resizer.h"
 
 #import "base/test/scoped_feature_list.h"
+#import "base/test/task_environment.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/fullscreen_model_test_util.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -27,7 +30,12 @@ const CGFloat kViewHeight = 700;
 class FullscreenWebViewResizerTest : public PlatformTest {
  public:
   FullscreenWebViewResizerTest() {
-    _model = controller_.getModel();
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    TestFullscreenController::CreateForBrowser(browser_.get());
+    TestFullscreenController* controller =
+        TestFullscreenController::FromBrowser(browser_.get());
+    _model = controller->getModel();
     // FullscreenModel setup.
     ToolbarsSize* toolbarsSize = [[ToolbarsSize alloc]
         initWithCollapsedTopToolbarHeight:kCollapsedTopToolbarHeight
@@ -53,7 +61,9 @@ class FullscreenWebViewResizerTest : public PlatformTest {
 
  protected:
   base::test::ScopedFeatureList _features;
-  TestFullscreenController controller_;
+  base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<TestProfileIOS> profile_;
+  std::unique_ptr<TestBrowser> browser_;
   raw_ptr<FullscreenModel> _model = nullptr;
   UIView* _webStateSuperview;
   UIView* _webStateView;

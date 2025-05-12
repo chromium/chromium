@@ -19,7 +19,8 @@ std::unique_ptr<FullscreenController> FullscreenController::Create(
 }
 
 FullscreenControllerImpl::FullscreenControllerImpl(Browser* browser)
-    : broadcaster_([[ChromeBroadcaster alloc] init]),
+    : FullscreenController(browser),
+      broadcaster_([[ChromeBroadcaster alloc] init]),
       model_(std::make_unique<FullscreenModel>()),
       mediator_(this, model_.get()),
       web_state_list_observer_(this, model_.get(), &mediator_),

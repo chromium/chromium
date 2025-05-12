@@ -4,10 +4,13 @@
 
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
 
+#import "base/test/task_environment.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "testing/platform_test.h"
 
@@ -69,17 +72,25 @@
 // Test fixture for FullscreenBroadcastForwarder.
 class FullscreenUIUpdaterTest : public PlatformTest {
  public:
-  FullscreenUIUpdaterTest()
-      : element_([[TestFullscreenUIElement alloc] init]),
-        updater_(&controller_, element_) {}
+  FullscreenUIUpdaterTest() {
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    TestFullscreenController::CreateForBrowser(browser_.get());
+    element_ = [[TestFullscreenUIElement alloc] init];
+    updater_ = std::make_unique<FullscreenUIUpdater>(controller(), element_);
+  }
 
-  TestFullscreenController* controller() { return &controller_; }
+  TestFullscreenController* controller() {
+    return TestFullscreenController::FromBrowser(browser_.get());
+  }
   TestFullscreenUIElement* element() { return element_; }
 
  private:
-  TestFullscreenController controller_;
+  base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<TestProfileIOS> profile_;
+  std::unique_ptr<TestBrowser> browser_;
   __strong TestFullscreenUIElement* element_;
-  FullscreenUIUpdater updater_;
+  std::unique_ptr<FullscreenUIUpdater> updater_;
 };
 
 // Tests that the updater correctly changes the UI element's progress value.

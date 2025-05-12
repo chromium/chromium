@@ -136,7 +136,7 @@ class BrowserCoordinatorTest : public PlatformTest {
     SyncErrorBrowserAgent::CreateForBrowser(browser_.get());
     OmniboxPositionBrowserAgent::CreateForBrowser(browser_.get());
     BrowserViewVisibilityNotifierBrowserAgent::CreateForBrowser(browser_.get());
-    FullscreenController::CreateForBrowser(browser_.get());
+    TestFullscreenController::CreateForBrowser(browser_.get());
 
     WebUsageEnablerBrowserAgent* enabler =
         WebUsageEnablerBrowserAgent::FromBrowser(browser_.get());
@@ -251,15 +251,11 @@ TEST_F(BrowserCoordinatorTest, ShowDownloadsFolder) {
 // Tests that `-showShareSheet` is leaving fullscreen and starting the share
 // coordinator.
 TEST_F(BrowserCoordinatorTest, ShowShareSheet) {
-  std::unique_ptr<TestFullscreenController> controller =
-      std::make_unique<TestFullscreenController>();
-  TestFullscreenController* controller_ptr = controller.get();
+  TestFullscreenController* controller =
+      TestFullscreenController::FromBrowser(browser_.get());
 
-  browser_->SetUserData(TestFullscreenController::UserDataKeyForTesting(),
-                        std::move(controller));
-
-  controller_ptr->EnterFullscreen();
-  ASSERT_EQ(0.0, controller_ptr->GetProgress());
+  controller->EnterFullscreen();
+  ASSERT_EQ(0.0, controller->GetProgress());
 
   id classMock = OCMClassMock([SharingCoordinator class]);
   SharingCoordinator* mockSharingCoordinator = classMock;
@@ -279,7 +275,7 @@ TEST_F(BrowserCoordinatorTest, ShowShareSheet) {
   [browser_coordinator showShareSheet];
 
   // Check that fullscreen is exited.
-  EXPECT_EQ(1.0, controller_ptr->GetProgress());
+  EXPECT_EQ(1.0, controller->GetProgress());
 
   [browser_coordinator stop];
 
@@ -291,15 +287,11 @@ TEST_F(BrowserCoordinatorTest, ShowShareSheet) {
 // SharingCoordinator with SharingParams where scenario is ShareChrome, leaving
 // fullscreen and starting the share coordinator.
 TEST_F(BrowserCoordinatorTest, ShowShareSheetForChromeApp) {
-  std::unique_ptr<TestFullscreenController> controller =
-      std::make_unique<TestFullscreenController>();
-  TestFullscreenController* controller_ptr = controller.get();
+  TestFullscreenController* controller =
+      TestFullscreenController::FromBrowser(browser_.get());
 
-  browser_->SetUserData(TestFullscreenController::UserDataKeyForTesting(),
-                        std::move(controller));
-
-  controller_ptr->EnterFullscreen();
-  ASSERT_EQ(0.0, controller_ptr->GetProgress());
+  controller->EnterFullscreen();
+  ASSERT_EQ(0.0, controller->GetProgress());
 
   id expectShareChromeScenarioArg =
       [OCMArg checkWithBlock:^BOOL(SharingParams* params) {
@@ -322,7 +314,7 @@ TEST_F(BrowserCoordinatorTest, ShowShareSheetForChromeApp) {
   [browser_coordinator showShareSheetForChromeApp];
 
   // Check that fullscreen is exited.
-  EXPECT_EQ(1.0, controller_ptr->GetProgress());
+  EXPECT_EQ(1.0, controller->GetProgress());
 
   [browser_coordinator stop];
 
