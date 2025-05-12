@@ -53,6 +53,21 @@ source_set("passkey_browser_binder_unittests") {
 }
 
 if (is_android) {
+  source_set("browser_bound_keys_deleter_factory") {
+    sources = [
+      "browser_bound_keys_deleter_factory.cc",
+      "browser_bound_keys_deleter_factory.h",
+    ]
+    public_deps = [
+      "//base",  # base/no_destructor.h
+      "//components/keyed_service/content",
+    ]
+    deps = [
+      "//components/keyed_service/content",
+      "//components/webdata_services",
+    ]
+  }
+
   source_set("android") {
     visibility = [ "//components/payments/content/browser_binding" ]
     sources = [
