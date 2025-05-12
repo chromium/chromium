@@ -189,6 +189,10 @@ class HttpStreamPool::AttemptManager
     return quic_attempt_result_;
   }
 
+  base::WeakPtr<AttemptManager> GetWeakPtrForTesting() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   void SetIsFailingForTest(bool is_failing) { is_failing_ = is_failing; }
 
   QuicAttempt* quic_attempt_for_testing() const { return quic_attempt_.get(); }

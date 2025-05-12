@@ -75,14 +75,6 @@ HttpStreamPool::Group::IdleStreamSocket::IdleStreamSocket(
 
 HttpStreamPool::Group::IdleStreamSocket::~IdleStreamSocket() = default;
 
-bool HttpStreamPool::Group::PausedJobComparator::operator()(Job* a,
-                                                            Job* b) const {
-  if (a->create_time() == b->create_time()) {
-    return a < b;
-  }
-  return a->create_time() < b->create_time();
-}
-
 HttpStreamPool::Group::Group(
     HttpStreamPool* pool,
     HttpStreamKey stream_key,
@@ -123,23 +115,7 @@ std::unique_ptr<HttpStreamPool::Job> HttpStreamPool::Group::CreateJob(
                                request_net_log);
 }
 
-bool HttpStreamPool::Group::CanStartJob(Job* job) {
-  if (IsFailing()) {
-    auto [_, inserted] = paused_jobs_.emplace(job);
-    CHECK(inserted);
-    // `job` will be resumed once the current AttemptManager completes with a
-    // new AttemptManager.
-    return false;
-  }
-
-  EnsureAttemptManager();
-  return true;
-}
-
 void HttpStreamPool::Group::OnJobComplete(Job* job) {
-  paused_jobs_.erase(job);
-  resumed_jobs_.erase(job);
-
   if (attempt_manager_) {
     attempt_manager_->OnJobComplete(job);
     // `this` may be deleted.
@@ -334,35 +310,38 @@ void HttpStreamPool::Group::CloseIdleStreams(
 }
 
 void HttpStreamPool::Group::CancelJobs(int error) {
-  if (!paused_jobs_.empty()) {
-    CancelPausedJob(error);
-  }
   if (attempt_manager_) {
     attempt_manager_->CancelJobs(error);
   }
 }
 
-void HttpStreamPool::Group::EnsureAttemptManager() {
-  if (attempt_manager_) {
-    return;
+HttpStreamPool::AttemptManager* HttpStreamPool::Group::EnsureAttemptManager() {
+  if (!attempt_manager_) {
+    attempt_manager_ = std::make_unique<AttemptManager>(
+        this, http_network_session()->net_log());
   }
-  attempt_manager_ =
-      std::make_unique<AttemptManager>(this, http_network_session()->net_log());
+  return attempt_manager_.get();
 }
 
-void HttpStreamPool::Group::OnAttemptManagerComplete() {
-  CHECK(attempt_manager_);
+void HttpStreamPool::Group::OnAttemptManagerShuttingDown(
+    AttemptManager* attempt_manager) {
+  CHECK_EQ(attempt_manager_.get(), attempt_manager);
+  shutting_down_attempt_managers_.emplace(std::move(attempt_manager_));
+  CHECK(!attempt_manager_.get());
+}
 
-  const bool should_resume_paused_job =
-      attempt_manager_->is_failing() && !paused_jobs_.empty();
-
-  attempt_manager_.reset();
-
-  if (should_resume_paused_job) {
-    ResumePausedJob();
+void HttpStreamPool::Group::OnAttemptManagerComplete(
+    AttemptManager* attempt_manager) {
+  auto it = shutting_down_attempt_managers_.find(attempt_manager);
+  if (it != shutting_down_attempt_managers_.end()) {
+    CHECK_NE(attempt_manager_.get(), attempt_manager);
+    shutting_down_attempt_managers_.erase(it);
   } else {
-    MaybeComplete();
+    CHECK_EQ(attempt_manager_.get(), attempt_manager);
+    attempt_manager_.reset();
   }
+
+  MaybeComplete();
 }
 
 base::Value::Dict HttpStreamPool::Group::GetInfoAsValue() const {
@@ -371,23 +350,9 @@ base::Value::Dict HttpStreamPool::Group::GetInfoAsValue() const {
   dict.Set("idle_socket_count", static_cast<int>(IdleStreamSocketCount()));
   dict.Set("handed_out_socket_count",
            static_cast<int>(HandedOutStreamSocketCount()));
-  dict.Set("paused_job_count", static_cast<int>(PausedJobCount()));
-  dict.Set("resumed_job_count", static_cast<int>(resumed_jobs_.size()));
   dict.Set("attempt_manager_alive", !!attempt_manager_);
   if (attempt_manager_) {
     dict.Set("attempt_state", attempt_manager_->GetInfoAsValue());
-  }
-
-  if (!paused_jobs_.empty()) {
-    base::Value::List paused_jobs;
-    for (const auto job : paused_jobs_) {
-      base::Value::Dict job_dict;
-      job_dict.Set(
-          "create_to_resume_ms",
-          static_cast<int>(job->CreateToResumeTime().InMilliseconds()));
-      paused_jobs.Append(std::move(job_dict));
-    }
-    dict.Set("paused_jobs", std::move(paused_jobs));
   }
 
   return dict;
@@ -402,54 +367,6 @@ bool HttpStreamPool::Group::IsFailing() const {
   // because we destroy an AttemptManager after all in-flight attempts are
   // completed (There are only handed out streams and/or idle streams).
   return attempt_manager_ && attempt_manager_->is_failing();
-}
-
-void HttpStreamPool::Group::ResumePausedJob() {
-  // The current AttemptManager could be failing again while resuming jobs.
-  if (IsFailing()) {
-    return;
-  }
-
-  raw_ptr<Job> job = ExtractOnePausedJob();
-  if (!job) {
-    return;
-  }
-
-  // Using PostTask() to resume the remaining paused jobs to avoid reentrancy.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Group::ResumePausedJob, weak_ptr_factory_.GetWeakPtr()));
-
-  job->Resume();
-}
-
-void HttpStreamPool::Group::CancelPausedJob(int error) {
-  Job* job = ExtractOnePausedJob();
-  if (!job) {
-    // Try to complete asynchronously because this method can be called in the
-    // middle of CancelJobs() and `this` must be alive until CancelJobs()
-    // completes.
-    MaybeCompleteLater();
-    return;
-  }
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&Group::CancelPausedJob,
-                                weak_ptr_factory_.GetWeakPtr(), error));
-
-  job->OnStreamFailed(error, NetErrorDetails(), ResolveErrorInfo());
-}
-
-HttpStreamPool::Job* HttpStreamPool::Group::ExtractOnePausedJob() {
-  if (paused_jobs_.empty()) {
-    return nullptr;
-  }
-
-  raw_ptr<Job> job =
-      std::move(paused_jobs_.extract(paused_jobs_.begin())).value();
-  Job* job_raw_ptr = job.get();
-  resumed_jobs_.emplace(std::move(job));
-  return job_raw_ptr;
 }
 
 void HttpStreamPool::Group::CleanupIdleStreamSockets(
@@ -479,8 +396,8 @@ void HttpStreamPool::Group::CleanupIdleStreamSockets(
 }
 
 bool HttpStreamPool::Group::CanComplete() const {
-  return ActiveStreamSocketCount() == 0 && paused_jobs_.empty() &&
-         resumed_jobs_.empty() && !attempt_manager_;
+  return ActiveStreamSocketCount() == 0 && !attempt_manager_ &&
+         shutting_down_attempt_managers_.empty();
 }
 
 void HttpStreamPool::Group::MaybeComplete() {

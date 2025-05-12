@@ -39,11 +39,10 @@ class StreamSocket;
 // creates an HttpStreamPool::AttemptManager and starts connection attempts for
 // streams.
 //
-// Keeps incoming jobs (called paused jobs) when the current AttemptManager is
-// "failing", i.e., AttemptManager is notifying the failure to associated jobs
-// and waiting for completions of these jobs. Once the failing AttemptManager
-// completes, this starts a new AttemptManager and pass paused jobs to the new
-// AttemptManager.
+// When an active AttemptManager starts shutting down (e.g. the AttemptManager
+// fails), creates a new AttemptManager for subsequent stream requests (Jobs).
+// AttemptManagers need to outlive all associated Jobs. Keeps shutting down
+// AttemptManager(s) until these are ready to destroy.
 //
 // Owned by an HttpStreamPool, keyed by HttpStreamKey. Destroyed when all
 // streams associated with this group are completed.
@@ -82,7 +81,12 @@ class HttpStreamPool::Group {
     return pool_->http_network_session();
   }
 
+  // TODO(crbug.com/416088643): Rename to `active_attempt_manager()`.
   AttemptManager* attempt_manager() const { return attempt_manager_.get(); }
+
+  size_t ShuttingDownAttemptManagerCount() const {
+    return shutting_down_attempt_managers_.size();
+  }
 
   const NetLogWithSource& net_log() { return net_log_; }
 
@@ -96,9 +100,6 @@ class HttpStreamPool::Group {
                                  quic::ParsedQuicVersion quic_version,
                                  NextProto expected_protocol,
                                  const NetLogWithSource& request_net_log);
-
-  // Called by `job` to see whether `job` can start.
-  bool CanStartJob(Job* job);
 
   // Called when `job` is going to be destroyed.
   void OnJobComplete(Job* job);
@@ -154,9 +155,6 @@ class HttpStreamPool::Group {
   // True when the number of active streams reached the group limit.
   bool ReachedMaxStreamLimit() const;
 
-  // Returns the number of paused jobs. See the comment of `paused_jobs_`.
-  size_t PausedJobCount() const { return paused_jobs_.size(); }
-
   // Returns the highest pending request priority if the group is stalled due to
   // the per-pool limit, not the per-group limit.
   std::optional<RequestPriority> GetPriorityIfStalledByPoolLimit() const;
@@ -178,10 +176,13 @@ class HttpStreamPool::Group {
   void CancelJobs(int error);
 
   // Create an AttemptManager if needed.
-  void EnsureAttemptManager();
+  AttemptManager* EnsureAttemptManager();
 
-  // Called when the attempt manager has completed.
-  void OnAttemptManagerComplete();
+  // Called when the active AttemptManager is shutting down.
+  void OnAttemptManagerShuttingDown(AttemptManager* attempt_manager);
+
+  // Called when an AttemptManager has completed.
+  void OnAttemptManagerComplete(AttemptManager* attempt_manager);
 
   // Retrieves information on the current state of the group as a base::Value.
   base::Value::Dict GetInfoAsValue() const;
@@ -215,27 +216,10 @@ class HttpStreamPool::Group {
     kForce,
   };
 
-  // Compares jobs based on their creation time. Used for `paused_jobs_`.
-  struct PausedJobComparator {
-    bool operator()(Job* a, Job* b) const;
-  };
-
-  using PausedJobSet = std::set<raw_ptr<Job>, PausedJobComparator>;
-
   static base::expected<void, std::string_view> IsIdleStreamSocketUsable(
       const IdleStreamSocket& idle);
 
   bool IsFailing() const;
-
-  // Resumes a paused job. Schedules another task if more paused jobs exist.
-  void ResumePausedJob();
-
-  // Cancels a paused job. Schedules another task if more paused jobs exist.
-  void CancelPausedJob(int error);
-
-  // Extracts a paused job from `paused_jobs_`. The ownership of the raw_ptr of
-  // the job is moved to `notified_paused_jobs_`.
-  HttpStreamPool::Job* ExtractOnePausedJob();
 
   void CleanupIdleStreamSockets(CleanupMode mode,
                                 std::string_view net_log_close_reason_utf8);
@@ -258,16 +242,9 @@ class HttpStreamPool::Group {
 
   std::unique_ptr<AttemptManager> attempt_manager_;
 
-  // Keeps jobs that are created while the current AttemptManager is failing.
-  // Once the AttemptManager completes notifying the failure to its jobs, we
-  // create a new AttemptManager and pass these jobs to the new AttemptManager.
-  // We call these jobs "paused". Note that there are another type of jobs that
-  // are called "pending". Pending jobs are associated with an AttemptManager
-  // but haven't attempted connections yet.
-  PausedJobSet paused_jobs_;
-  // Keeps jobs that are previously paused and already resumed. We need to keep
-  // them to avoid dangling pointers.
-  PausedJobSet resumed_jobs_;
+  // Keeps AttemptManagers that are shutting down.
+  std::set<std::unique_ptr<AttemptManager>, base::UniquePtrComparator>
+      shutting_down_attempt_managers_;
 
   base::WeakPtrFactory<Group> weak_ptr_factory_{this};
 };

@@ -3223,24 +3223,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Net.HttpStreamPool.JobCreateToResumeTime2.{Result}" units="ms"
-    expires_after="2025-09-14">
-  <owner>bashi@chromium.org</owner>
-  <owner>blink-network-stack@google.com</owner>
-  <summary>
-    Time from when an HttpStreamPool::Job is created to when the job is resumed.
-    This is the time the job was paused to wait for a failing AttemptManager.
-    Recorded for each job that has a result upon destruction of the job.
-  </summary>
-  <token key="Result">
-    <variant name="Failure" summary="Job failed"/>
-    <variant name="H1" summary="Job succeeded with HTTP/1.1"/>
-    <variant name="H2" summary="Job succeeded with HTTP/2"/>
-    <variant name="H3" summary="Job succeeded with HTTP/3"/>
-    <variant name="Unknown" summary="Job succeeded with unknown next protocol"/>
-  </token>
-</histogram>
-
 <histogram name="Net.HttpStreamPool.JobErrorCode" enum="NetErrorCodes"
     expires_after="2025-09-14">
   <owner>bashi@chromium.org</owner>

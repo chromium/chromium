@@ -240,8 +240,6 @@ void HttpStreamPool::AttemptManager::StartJob(Job* job) {
                  job->enable_alternative_services());
         dict.Set("quic_version",
                  quic::ParsedQuicVersionToString(job->quic_version()));
-        dict.Set("create_to_resume_ms",
-                 static_cast<int>(job->CreateToResumeTime().InMilliseconds()));
         job->net_log().source().AddToEventParameters(dict);
         return dict;
       });
@@ -1439,6 +1437,13 @@ void HttpStreamPool::AttemptManager::HandleFinalError(int error) {
   CancelQuicAttempt(final_error_to_notify_jobs());
   NotifyPreconnectsComplete(final_error_to_notify_jobs());
   NotifyJobOfFailure();
+
+  CHECK(tcp_based_attempts_.empty());
+  CHECK(jobs_.empty());
+  CHECK(preconnect_jobs_.empty());
+  CHECK(!quic_attempt_);
+
+  group_->OnAttemptManagerShuttingDown(this);
   // `this` may be deleted.
 }
 
@@ -2079,7 +2084,7 @@ void HttpStreamPool::AttemptManager::MaybeComplete() {
         FROM_HERE, std::move(on_complete_callback_for_testing_));
   }
 
-  group_->OnAttemptManagerComplete();
+  group_->OnAttemptManagerComplete(this);
   // `this` is deleted.
 }
 
