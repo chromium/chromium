@@ -85,6 +85,27 @@ enum ItemType : NSInteger {
   self.navigationItem.rightBarButtonItem = dismissButton;
 }
 
+// The title view needs to be set manually so it's possible to force focus
+// VoiceOver on it.
+- (void)setTitle:(NSString*)title {
+  if (!title) {
+    self.navigationItem.titleView = nil;
+    return;
+  }
+  UILabel* titleLabel = [[UILabel alloc] init];
+  titleLabel.adjustsFontForContentSizeCategory = YES;
+  titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+  titleLabel.text = title;
+  titleLabel.textAlignment = NSTextAlignmentLeft;
+  titleLabel.adjustsFontSizeToFitWidth = YES;
+  titleLabel.minimumScaleFactor = 0.1;
+  self.navigationItem.titleView = titleLabel;
+
+  // Force VoiceOver to focus the heading of the view.
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  self.navigationItem.titleView);
+}
+
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
