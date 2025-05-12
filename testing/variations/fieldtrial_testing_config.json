@@ -23196,7 +23196,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "has_background": "false"
+                        "tab_search_toolbar_button": "true"
                     },
                     "enable_features": [
                         "TabstripComboButton"
