@@ -49,6 +49,12 @@ class OnTaskBlocklist {
   OnTaskBlocklist& operator=(const OnTaskBlocklist&) = delete;
   ~OnTaskBlocklist();
 
+  // Returns whether the `url` is in the same domain as `domain_url` (including
+  // sub-domains). This should ideally be a standalone util method, but we leave
+  // this in here for now so we can reuse domain level filters from the domain
+  // nav restriction setup.
+  static bool IsURLInDomain(const GURL& url, const GURL& domain_url);
+
   // Returns the URLBlocklistState for the given url.
   policy::URLBlocklist::URLBlocklistState GetURLBlocklistState(
       const GURL& url) const;
