@@ -213,9 +213,23 @@ wtf_size_t InlinePaintContext::SyncDecoratingBox(
 
       // The style engine may create a clone, not an inherited decorations,
       // such as a `<span>` in `::first-line`.
-      DCHECK_EQ(decorations.size(), parent_decorations.size() + 1);
-      PushDecoratingBox(item, layout_object, style, decorations);
-      return 1;
+      if (decorations.size() == parent_decorations.size() + 1) {
+        PushDecoratingBox(item, layout_object, style, decorations);
+        return 1;
+      }
+
+      // As the last resort, when the decorations tree isn't expected, matching
+      // the count to the increased size from the parent is critical.
+      if (decorations.size() > parent_decorations.size()) {
+        const wtf_size_t count = decorations.size() - parent_decorations.size();
+        for (wtf_size_t i = 0; i < count; ++i) {
+          PushDecoratingBox(item, layout_object, style, decorations);
+        }
+        return count;
+      }
+
+      DCHECK_EQ(decorations.size(), parent_decorations.size());
+      return 0;
     }
 
     void PushDecoratingBox(
