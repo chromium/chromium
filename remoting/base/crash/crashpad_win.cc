@@ -19,7 +19,8 @@
 
 namespace remoting {
 
-constexpr wchar_t kChromotingCrashpadHandler[] = L"crashpad-handler";
+constexpr wchar_t kChromotingCrashpadHandler[] =
+    L"remoting_crashpad_handler.exe";
 constexpr char kDefaultCrashpadUploadUrl[] =
     "https://clients2.google.com/cr/report";
 
