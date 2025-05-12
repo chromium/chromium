@@ -38,8 +38,6 @@ VkFormat ToVkFormatSinglePlanarInternal(viz::SharedImageFormat format) {
     return VK_FORMAT_B8G8R8A8_UNORM;
   } else if (format == viz::SinglePlaneFormat::kR_8) {
     return VK_FORMAT_R8_UNORM;
-  } else if (format == viz::SinglePlaneFormat::kRGB_565) {
-    return VK_FORMAT_B5G6R5_UNORM_PACK16;
   } else if (format == viz::SinglePlaneFormat::kBGR_565) {
     return VK_FORMAT_R5G6B5_UNORM_PACK16;
   } else if (format == viz::SinglePlaneFormat::kRG_88) {
@@ -86,8 +84,7 @@ GLenum GLDataFormat(viz::SharedImageFormat format, int plane_index) {
       return GL_ALPHA;
     } else if (format == viz::SinglePlaneFormat::kLUMINANCE_F16) {
       return GL_LUMINANCE;
-    } else if (format == viz::SinglePlaneFormat::kRGB_565 ||
-               format == viz::SinglePlaneFormat::kBGR_565 ||
+    } else if (format == viz::SinglePlaneFormat::kBGR_565 ||
                format == viz::SinglePlaneFormat::kETC1 ||
                format == viz::SinglePlaneFormat::kRGBX_8888 ||
                format == viz::SinglePlaneFormat::kBGRX_8888) {
@@ -126,8 +123,7 @@ GLenum GLDataType(viz::SharedImageFormat format) {
       return GL_UNSIGNED_BYTE;
     } else if (format == viz::SinglePlaneFormat::kRGBA_4444) {
       return GL_UNSIGNED_SHORT_4_4_4_4;
-    } else if (format == viz::SinglePlaneFormat::kBGR_565 ||
-               format == viz::SinglePlaneFormat::kRGB_565) {
+    } else if (format == viz::SinglePlaneFormat::kBGR_565) {
       return GL_UNSIGNED_SHORT_5_6_5;
     } else if (format == viz::SinglePlaneFormat::kLUMINANCE_F16 ||
                format == viz::SinglePlaneFormat::kR_F16 ||

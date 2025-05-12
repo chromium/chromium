@@ -74,14 +74,10 @@ class WrappedSkImageBackingFactoryTest
       GTEST_SKIP();
     }
 
-    // We don't support RGBA_4444 and RGB_565 formats with
-    // WrappedGraphiteTextureBacking.
-    if (gr_context_type == GrContextType::kGraphiteDawn) {
-      // Formats not supported with Dawn for now.
-      if (format == viz::SinglePlaneFormat::kRGBA_4444 ||
-          format == viz::SinglePlaneFormat::kRGB_565) {
-        GTEST_SKIP();
-      }
+    // We don't support RGBA_4444 as format is not supported with Dawn.
+    if (gr_context_type == GrContextType::kGraphiteDawn &&
+        format == viz::SinglePlaneFormat::kRGBA_4444) {
+      GTEST_SKIP();
     }
 
     backing_factory_ =
@@ -213,7 +209,6 @@ const auto kFormats = ::testing::Values(viz::SinglePlaneFormat::kALPHA_8,
                                         viz::SinglePlaneFormat::kR_8,
                                         viz::SinglePlaneFormat::kRG_88,
                                         viz::SinglePlaneFormat::kRGBA_4444,
-                                        viz::SinglePlaneFormat::kRGB_565,
                                         viz::SinglePlaneFormat::kRGBA_8888,
                                         viz::SinglePlaneFormat::kBGRA_8888,
                                         viz::SinglePlaneFormat::kRGBX_8888,

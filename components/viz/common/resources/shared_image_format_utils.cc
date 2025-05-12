@@ -26,8 +26,7 @@ SkColorType ToClosestSkColorType(SharedImageFormat format) {
     return kBGRA_8888_SkColorType;
   } else if (format == SinglePlaneFormat::kALPHA_8) {
     return kAlpha_8_SkColorType;
-  } else if (format == SinglePlaneFormat::kBGR_565 ||
-             format == SinglePlaneFormat::kRGB_565) {
+  } else if (format == SinglePlaneFormat::kBGR_565) {
     return kRGB_565_SkColorType;
   } else if (format == SinglePlaneFormat::kRGBX_8888 ||
              format == SinglePlaneFormat::kBGRX_8888 ||
@@ -258,8 +257,7 @@ SharedImageFormatRestrictedSinglePlaneUtils::ToGLTextureStorageFormat(
     return GL_RGBA4;
   } else if (format == SinglePlaneFormat::kALPHA_8) {
     return GL_ALPHA8_EXT;
-  } else if (format == SinglePlaneFormat::kBGR_565 ||
-             format == SinglePlaneFormat::kRGB_565) {
+  } else if (format == SinglePlaneFormat::kBGR_565) {
     return GL_RGB565;
   } else if (format == SinglePlaneFormat::kR_8) {
     return GL_R8_EXT;
