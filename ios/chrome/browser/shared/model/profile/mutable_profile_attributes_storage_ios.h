@@ -48,6 +48,10 @@ class MutableProfileAttributesStorageIOS : public ProfileAttributesStorageIOS {
 
   // Returns the list of all profiles marked for deletion.
   std::set<std::string> GetProfilesMarkedForDeletion() const;
+
+ private:
+  // Names of all deleted profiles in the current app execution.
+  std::set<std::string, std::less<>> deleted_profiles_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_MUTABLE_PROFILE_ATTRIBUTES_STORAGE_IOS_H_

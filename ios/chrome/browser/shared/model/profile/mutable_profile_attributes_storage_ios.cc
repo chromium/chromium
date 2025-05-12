@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "components/prefs/pref_service.h"
@@ -67,7 +68,16 @@ void MutableProfileAttributesStorageIOS::MarkProfileForDeletion(
 
 void MutableProfileAttributesStorageIOS::ProfileDeletionComplete(
     std::string_view profile_name) {
-  CHECK(IsProfileMarkedForDeletion(profile_name));
+  // Note: Usually `IsProfileMarkedForDeletion(profile_name)` should be true
+  // here, but in some situations the deletion may get triggered twice, and then
+  // this method also runs twice, and on the second run the profile will already
+  // not be marked for deletion anymore.
+  if (!IsProfileMarkedForDeletion(profile_name)) {
+    CHECK(base::Contains(deleted_profiles_, profile_name));
+    return;
+  }
+  deleted_profiles_.insert(std::string(profile_name));
+
   ScopedListPrefUpdate update(prefs_, prefs::kProfilesToRemove);
   update.Get().EraseIf([&profile_name](const base::Value& value) {
     return value == profile_name;
