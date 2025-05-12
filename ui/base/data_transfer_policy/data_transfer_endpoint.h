@@ -65,9 +65,6 @@ class COMPONENT_EXPORT(UI_BASE_DATA_TRANSFER_POLICY) DataTransferEndpoint {
   DataTransferEndpoint& operator=(DataTransferEndpoint&& other);
 
   bool operator==(const DataTransferEndpoint& other) const;
-  bool operator!=(const DataTransferEndpoint& other) const {
-    return !(*this == other);
-  }
 
   ~DataTransferEndpoint();
 
