@@ -31,6 +31,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/styled_label.h"
@@ -239,7 +240,20 @@ AccountHoverButton::AccountHoverButton(
                   add_vertical_label_spacing,
                   footer),
       callback_(std::move(callback)),
-      button_position_(button_position) {}
+      button_position_(button_position) {
+  // HoverButton does not highlight on hover since it focuses on hover, but this
+  // class modifies that behavior, so change the InkDrop so we highlight on both
+  // focus and hover.
+  views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this),
+                                               /*highlight_on_hover=*/true,
+                                               /*highlight_on_focus=*/true);
+}
+
+void AccountHoverButton::StateChanged(ButtonState old_state) {
+  // Do not focus on hover since it causes odd scrolling. Do this by skipping
+  // the code in HoverButton::StateChanged.
+  views::LabelButton::StateChanged(old_state);
+}
 
 void AccountHoverButton::OnPressed(const ui::Event& event) {
   // We do not disable the button which has been clicked because otherwise,

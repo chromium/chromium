@@ -111,6 +111,9 @@ class AccountHoverButton : public HoverButton {
   AccountHoverButton& operator=(const AccountHoverButton&) = delete;
   ~AccountHoverButton() override = default;
 
+  // HoverButton
+  void StateChanged(ButtonState old_state) override;
+
   void OnPressed(const ui::Event& event);
   bool HasBeenClicked();
 
