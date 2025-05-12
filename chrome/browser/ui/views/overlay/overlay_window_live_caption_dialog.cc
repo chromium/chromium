@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/overlay/overlay_window_live_caption_dialog.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/global_media_controls/live_translate_combobox_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -174,6 +175,8 @@ OverlayWindowLiveCaptionDialog::~OverlayWindowLiveCaptionDialog() = default;
 void OverlayWindowLiveCaptionDialog::OnLiveCaptionButtonPressed() {
   bool enabled = !profile_->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled);
   profile_->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled, enabled);
+  base::UmaHistogramBoolean(
+      "Accessibility.LiveCaption.EnableFromVideoPictureInPicture", enabled);
 }
 
 void OverlayWindowLiveCaptionDialog::OnLiveCaptionEnabledChanged() {
@@ -189,6 +192,8 @@ void OverlayWindowLiveCaptionDialog::OnLiveTranslateButtonPressed() {
   bool enabled =
       !profile_->GetPrefs()->GetBoolean(prefs::kLiveTranslateEnabled);
   profile_->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled, enabled);
+  base::UmaHistogramBoolean(
+      "Accessibility.LiveTranslate.EnableFromVideoPictureInPicture", enabled);
 }
 
 void OverlayWindowLiveCaptionDialog::OnLiveTranslateEnabledChanged() {

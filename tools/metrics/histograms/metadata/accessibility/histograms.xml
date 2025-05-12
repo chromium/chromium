@@ -1950,7 +1950,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.EnableFrom{Entrypoint}"
-    enum="BooleanEnabled" expires_after="2025-10-19">
+    enum="BooleanEnabled" expires_after="2026-05-09">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -1961,6 +1961,7 @@ even if they fit the naming pattern. -->
     <variant name="GlobalMediaControls"
         summary="global media controls (Zenith)"/>
     <variant name="Settings" summary="chrome://settings"/>
+    <variant name="VideoPictureInPicture" summary="video picture-in-picture"/>
   </token>
 </histogram>
 
@@ -2114,7 +2115,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.EnableFrom{Entrypoint}"
-    enum="BooleanEnabled" expires_after="2025-08-19">
+    enum="BooleanEnabled" expires_after="2026-05-09">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2126,6 +2127,7 @@ even if they fit the naming pattern. -->
     <variant name="GlobalMediaControls"
         summary="global media controls (Zenith)"/>
     <variant name="Settings" summary="chrome://settings"/>
+    <variant name="VideoPictureInPicture" summary="video picture-in-picture"/>
   </token>
 </histogram>
 
