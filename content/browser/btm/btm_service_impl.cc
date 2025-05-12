@@ -370,15 +370,17 @@ void BtmServiceImpl::HandleRedirectChain(
     return;
   }
 
-  if (chain->initial_url.source_id != ukm::kInvalidSourceId) {
-    ukm::builders::DIPS_ChainBegin(chain->initial_url.source_id)
+  if (!chain->are_3pcs_generally_enabled &&
+      chain->initial_url.source_id != ukm::kInvalidSourceId) {
+    ukm::builders::BTM_ChainBegin(chain->initial_url.source_id)
         .SetChainId(chain->chain_id)
         .SetInitialAndFinalSitesSame(chain->initial_and_final_sites_same)
         .Record(ukm::UkmRecorder::Get());
   }
 
-  if (chain->final_url.source_id != ukm::kInvalidSourceId) {
-    ukm::builders::DIPS_ChainEnd(chain->final_url.source_id)
+  if (!chain->are_3pcs_generally_enabled &&
+      chain->final_url.source_id != ukm::kInvalidSourceId) {
+    ukm::builders::BTM_ChainEnd(chain->final_url.source_id)
         .SetChainId(chain->chain_id)
         .SetInitialAndFinalSitesSame(chain->initial_and_final_sites_same)
         .Record(ukm::UkmRecorder::Get());
@@ -536,23 +538,26 @@ void BtmServiceImpl::HandleRedirect(
   bool final_site_same = (redirect.site == chain.final_site);
   DCHECK_LT(redirect.chain_index.value(), chain.length);
 
-  ukm::builders::DIPS_Redirect(redirect.redirecting_url.source_id)
-      .SetSiteEngagementLevel(redirect.site_had_user_activation.value() ? 1 : 0)
-      .SetRedirectType(static_cast<int64_t>(redirect.redirect_type))
-      .SetCookieAccessType(static_cast<int64_t>(redirect.access_type))
-      .SetRedirectAndInitialSiteSame(initial_site_same)
-      .SetRedirectAndFinalSiteSame(final_site_same)
-      .SetInitialAndFinalSitesSame(chain.initial_and_final_sites_same)
-      .SetRedirectChainIndex(redirect.chain_index.value())
-      .SetRedirectChainLength(chain.length)
-      .SetIsPartialRedirectChain(chain.is_partial_chain)
-      .SetClientBounceDelay(
-          BucketizeBtmBounceDelay(redirect.client_bounce_delay))
-      .SetHasStickyActivation(redirect.has_sticky_activation)
-      .SetWebAuthnAssertionRequestSucceeded(
-          redirect.web_authn_assertion_request_succeeded)
-      .SetChainId(redirect.chain_id.value())
-      .Record(ukm::UkmRecorder::Get());
+  if (!chain.are_3pcs_generally_enabled) {
+    ukm::builders::BTM_Redirect(redirect.redirecting_url.source_id)
+        .SetSiteEngagementLevel(redirect.site_had_user_activation.value() ? 1
+                                                                          : 0)
+        .SetRedirectType(static_cast<int64_t>(redirect.redirect_type))
+        .SetCookieAccessType(static_cast<int64_t>(redirect.access_type))
+        .SetRedirectAndInitialSiteSame(initial_site_same)
+        .SetRedirectAndFinalSiteSame(final_site_same)
+        .SetInitialAndFinalSitesSame(chain.initial_and_final_sites_same)
+        .SetRedirectChainIndex(redirect.chain_index.value())
+        .SetRedirectChainLength(chain.length)
+        .SetIsPartialRedirectChain(chain.is_partial_chain)
+        .SetClientBounceDelay(
+            BucketizeBtmBounceDelay(redirect.client_bounce_delay))
+        .SetHasStickyActivation(redirect.has_sticky_activation)
+        .SetWebAuthnAssertionRequestSucceeded(
+            redirect.web_authn_assertion_request_succeeded)
+        .SetChainId(redirect.chain_id.value())
+        .Record(ukm::UkmRecorder::Get());
+  }
 
   if (initial_site_same || final_site_same) {
     // Don't record UMA metrics for same-site redirects.

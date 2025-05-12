@@ -115,7 +115,6 @@ using testing::Eq;
 using testing::Gt;
 using testing::IsEmpty;
 using testing::Pair;
-using ukm::builders::DIPS_Redirect;
 
 namespace content {
 
@@ -420,6 +419,14 @@ class BtmBounceDetectorBrowserTest : public ContentBrowserTest {
     net::test_server::RegisterDefaultHandlers(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
     host_resolver()->AddRule("*", "127.0.0.1");
+
+    // Set third-party cookies to be blocked by default. If they're not blocked
+    // by default, BTM will not run.
+    browser_client().SetBlockThirdPartyCookiesByDefault(true);
+    WebContents* web_contents = GetActiveWebContents();
+    ASSERT_FALSE(btm::Are3PcsGenerallyEnabled(web_contents->GetBrowserContext(),
+                                              web_contents));
+
     SetUpBtmWebContentsObserver();
   }
 
@@ -1992,6 +1999,9 @@ class RedirectHeuristicGrantTest
 
     browser_client_.emplace();
     browser_client().SetBlockThirdPartyCookiesByDefault(true);
+    WebContents* web_contents = GetActiveWebContents();
+    ASSERT_FALSE(btm::Are3PcsGenerallyEnabled(web_contents->GetBrowserContext(),
+                                              web_contents));
   }
 
   TpcBlockingBrowserClient& browser_client() { return browser_client_->impl(); }
@@ -2864,6 +2874,9 @@ class BtmBounceTriggerBrowserTest : public BtmBounceDetectorBrowserTest {
     BtmBounceDetectorBrowserTest::SetUpOnMainThread();
     // BTM will only record bounces if 3PCs are blocked.
     browser_client().SetBlockThirdPartyCookiesByDefault(true);
+    WebContents* web_contents = GetActiveWebContents();
+    ASSERT_FALSE(btm::Are3PcsGenerallyEnabled(web_contents->GetBrowserContext(),
+                                              web_contents));
   }
 };
 
@@ -3124,6 +3137,9 @@ class BtmPrivacySandboxApiInteractionTest : public ContentBrowserTest {
     ASSERT_TRUE(embedded_https_test_server_.Start());
     browser_client_.emplace();
     browser_client().SetBlockThirdPartyCookiesByDefault(true);
+    WebContents* web_contents = GetActiveWebContents();
+    ASSERT_FALSE(btm::Are3PcsGenerallyEnabled(web_contents->GetBrowserContext(),
+                                              web_contents));
   }
 
   WebContents* GetActiveWebContents() { return shell()->web_contents(); }
@@ -3737,6 +3753,9 @@ class BtmDataDeletionBrowserTest
     ASSERT_TRUE(https_server_.Start());
 
     browser_client().SetBlockThirdPartyCookiesByDefault(true);
+    WebContents* web_contents = GetActiveWebContents();
+    ASSERT_FALSE(btm::Are3PcsGenerallyEnabled(web_contents->GetBrowserContext(),
+                                              web_contents));
   }
 
   const net::EmbeddedTestServer& https_server() const { return https_server_; }
@@ -3866,6 +3885,33 @@ class BtmDataDeletionBrowserTest
 
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
+
+IN_PROC_BROWSER_TEST_P(BtmDataDeletionBrowserTest, DontDeleteIfTpcsEnabled) {
+  // Do not block third-party cookies by default. This should make it such that
+  // BTM deletion does not run.
+  browser_client().SetBlockThirdPartyCookiesByDefault(false);
+  WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(btm::Are3PcsGenerallyEnabled(web_contents->GetBrowserContext(),
+                                           web_contents));
+
+  // Perform a stateful bounce on b.test to make it eligible for deletion.
+  ASSERT_TRUE(DoStatefulBounce("a.test", "b.test", "c.test"));
+  // Confirm unpartitioned storage was written on b.test.
+  EXPECT_THAT(ReadFromStorage("b.test"), base::test::ValueIs("bounce=yes"));
+  // Navigate away from b.test since BTM won't delete its state while loaded.
+  ASSERT_TRUE(NavigateToURL(web_contents,
+                            https_server().GetURL("a.test", "/title1.html")));
+
+  // Trigger BTM deletion.
+  base::test::TestFuture<const std::vector<std::string>&> deleted_sites;
+  BtmService::Get(web_contents->GetBrowserContext())
+      ->DeleteEligibleSitesImmediately(deleted_sites.GetCallback());
+
+  // Confirm that nothing was deleted.
+  EXPECT_THAT(deleted_sites.Get(), IsEmpty());
+  // Confirm b.test storage has not changed.
+  EXPECT_THAT(ReadFromStorage("b.test"), base::test::ValueIs("bounce=yes"));
+}
 
 IN_PROC_BROWSER_TEST_P(BtmDataDeletionBrowserTest, DeleteDomain) {
   WebContents* web_contents = GetActiveWebContents();

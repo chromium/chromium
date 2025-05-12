@@ -717,6 +717,12 @@ void ContentBrowserClient::GrantCookieAccessDueToHeuristic(
     base::TimeDelta ttl,
     bool ignore_schemes) {}
 
+bool ContentBrowserClient::AreThirdPartyCookiesGenerallyAllowed(
+    content::BrowserContext* browser_context,
+    content::WebContents* web_contents) {
+  return true;
+}
+
 bool ContentBrowserClient::CanSendSCTAuditingReport(
     BrowserContext* browser_context) {
   return false;

@@ -1467,6 +1467,12 @@ bool AwContentBrowserClient::IsFullCookieAccessAllowed(
     const GURL& url,
     const blink::StorageKey& storage_key,
     net::CookieSettingOverrides overrides) {
+  return AreThirdPartyCookiesGenerallyAllowed(browser_context, web_contents);
+}
+
+bool AwContentBrowserClient::AreThirdPartyCookiesGenerallyAllowed(
+    content::BrowserContext* browser_context,
+    content::WebContents* web_contents) {
   if (!web_contents) {
     // We do not allow third-party cookie access from service workers.
     return false;

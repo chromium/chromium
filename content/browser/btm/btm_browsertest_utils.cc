@@ -18,6 +18,13 @@ bool ContentBrowserTestTpcBlockingBrowserClient::IsFullCookieAccessAllowed(
                                          storage_key, overrides);
 }
 
+bool ContentBrowserTestTpcBlockingBrowserClient::
+    AreThirdPartyCookiesGenerallyAllowed(BrowserContext* browser_context,
+                                         WebContents* web_contents) {
+  return impl_.AreThirdPartyCookiesGenerallyAllowed(browser_context,
+                                                    web_contents);
+}
+
 void ContentBrowserTestTpcBlockingBrowserClient::
     GrantCookieAccessDueToHeuristic(BrowserContext* browser_context,
                                     const net::SchemefulSite& top_frame_site,

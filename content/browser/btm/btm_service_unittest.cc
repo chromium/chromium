@@ -258,6 +258,7 @@ class BtmServiceStateRemovalTest : public testing::Test {
 
     GetProfile()->GetBrowsingDataRemover()->SetEmbedderDelegate(&delegate_);
     browser_client_.SetBlockThirdPartyCookiesByDefault(true);
+    ASSERT_FALSE(Are3PcsGenerallyEnabled());
 
     DCHECK(service_);
     service_->SetStorageClockForTesting(&clock_);
@@ -319,6 +320,10 @@ class BtmServiceStateRemovalTest : public testing::Test {
         final_url, time, stateful, stateful_bounce_callback);
   }
 
+  bool Are3PcsGenerallyEnabled() {
+    return btm::Are3PcsGenerallyEnabled(profile_.get(), nullptr);
+  }
+
  private:
   base::SimpleTestClock clock_;
 
@@ -360,7 +365,7 @@ TEST_F(BtmServiceStateRemovalTest,
   auto complete_chain = std::make_unique<BtmRedirectChainInfo>(
       /*initial_url=*/MakeUrlAndId("http://a.test/"),
       /*final_url=*/MakeUrlAndId("http://c.test/"),
-      /*length=*/1, /*is_partial_chain=*/false);
+      /*length=*/1, /*is_partial_chain=*/false, Are3PcsGenerallyEnabled());
 
   btm::Populate3PcExceptions(GetProfile(), /*web_contents=*/nullptr,
                              complete_chain->initial_url.url,
@@ -389,7 +394,7 @@ TEST_F(BtmServiceStateRemovalTest,
   auto partial_chain = std::make_unique<BtmRedirectChainInfo>(
       /*initial_url=*/MakeUrlAndId("http://a.test/"),
       /*final_url=*/MakeUrlAndId("http://c.test/"),
-      /*length=*/1, /*is_partial_chain=*/true);
+      /*length=*/1, /*is_partial_chain=*/true, Are3PcsGenerallyEnabled());
 
   btm::Populate3PcExceptions(GetProfile(), /*web_contents=*/nullptr,
                              partial_chain->initial_url.url,
@@ -675,6 +680,7 @@ TEST_F(
     BtmServiceStateRemovalTest,
     BrowsingDataDeletion_Respects1PExceptionsForBlocking3PCWhenDefaultAllowed) {
   browser_client_.SetBlockThirdPartyCookiesByDefault(false);
+  ASSERT_TRUE(Are3PcsGenerallyEnabled());
 
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::test::ScopedFeatureList feature_list;
@@ -751,6 +757,7 @@ TEST_F(BtmServiceStateRemovalTest, ImmediateEnforcement) {
   feature_list.InitAndEnableFeatureWithParameters(
       features::kBtm, {{"triggering_action", "bounce"}});
   SetNow(base::Time::FromSecondsSinceUnixEpoch(2));
+  ASSERT_FALSE(Are3PcsGenerallyEnabled());
 
   // Record a bounce.
   GURL url("https://example.com");
@@ -1008,7 +1015,7 @@ TEST_F(BtmServiceHistogramTest, ServerBounceDelay) {
       /*server_bounce_delay=*/base::Milliseconds(100)));
   BtmRedirectChainInfoPtr chain = std::make_unique<BtmRedirectChainInfo>(
       initial_url, UrlAndSourceId(), redirects.size(),
-      /*is_partial_chain=*/false);
+      /*is_partial_chain=*/false, Are3PcsGenerallyEnabled());
   btm::Populate3PcExceptions(&profile, /*web_contents=*/nullptr,
                              chain->initial_url.url, chain->final_url.url,
                              redirects);
@@ -1073,7 +1080,8 @@ TEST_F(BtmServiceUkmTest, BothChainBeginAndChainEnd) {
       /*server_bounce_delay=*/base::TimeDelta()));
   BtmRedirectChainInfoPtr chain = std::make_unique<BtmRedirectChainInfo>(
       initial_url, final_url,
-      /*length=*/2, /*is_partial_chain=*/false);
+      /*length=*/2, /*is_partial_chain=*/false,
+      /*are_3pcs_generally_enabled=*/false);
   const int32_t chain_id = chain->chain_id;
   btm::Populate3PcExceptions(&profile, /*web_contents=*/nullptr,
                              initial_url.url, final_url.url, redirects);
@@ -1081,7 +1089,7 @@ TEST_F(BtmServiceUkmTest, BothChainBeginAndChainEnd) {
                                base::DoNothing());
   observer.Wait();
 
-  EXPECT_THAT(ukm_recorder.GetEntries("DIPS.ChainBegin",
+  EXPECT_THAT(ukm_recorder.GetEntries("BTM.ChainBegin",
                                       {"ChainId", "InitialAndFinalSitesSame"}),
               ElementsAre(AllOf(HasSourceId(initial_url.source_id),
                                 HasMetrics(ElementsAre(
@@ -1089,7 +1097,7 @@ TEST_F(BtmServiceUkmTest, BothChainBeginAndChainEnd) {
                                     Pair("InitialAndFinalSitesSame", 0))))));
 
   EXPECT_THAT(
-      ukm_recorder.GetEntries("DIPS.Redirect",
+      ukm_recorder.GetEntries("BTM.Redirect",
                               {"ChainId", "InitialAndFinalSitesSame"}),
       ElementsAre(
           AllOf(HasSourceId(redirect_url1.source_id),
@@ -1099,7 +1107,7 @@ TEST_F(BtmServiceUkmTest, BothChainBeginAndChainEnd) {
                 HasMetrics(ElementsAre(Pair("ChainId", chain_id),
                                        Pair("InitialAndFinalSitesSame", 0))))));
 
-  EXPECT_THAT(ukm_recorder.GetEntries("DIPS.ChainEnd",
+  EXPECT_THAT(ukm_recorder.GetEntries("BTM.ChainEnd",
                                       {"ChainId", "InitialAndFinalSitesSame"}),
               ElementsAre(AllOf(HasSourceId(final_url.source_id),
                                 HasMetrics(ElementsAre(
@@ -1127,7 +1135,8 @@ TEST_F(BtmServiceUkmTest, InitialAndFinalSitesSame_True) {
       /*server_bounce_delay=*/base::TimeDelta()));
   BtmRedirectChainInfoPtr chain = std::make_unique<BtmRedirectChainInfo>(
       initial_url, final_url,
-      /*length=*/1, /*is_partial_chain=*/false);
+      /*length=*/1, /*is_partial_chain=*/false,
+      /*are_3pcs_generally_enabled=*/false);
   btm::Populate3PcExceptions(&profile, /*web_contents=*/nullptr,
                              chain->initial_url.url, chain->final_url.url,
                              redirects);
@@ -1136,19 +1145,19 @@ TEST_F(BtmServiceUkmTest, InitialAndFinalSitesSame_True) {
   observer.Wait();
 
   EXPECT_THAT(
-      ukm_recorder.GetEntries("DIPS.ChainBegin", {"InitialAndFinalSitesSame"}),
+      ukm_recorder.GetEntries("BTM.ChainBegin", {"InitialAndFinalSitesSame"}),
       ElementsAre(
           AllOf(HasSourceId(initial_url.source_id),
                 HasMetrics(ElementsAre(Pair("InitialAndFinalSitesSame", 1))))));
 
   EXPECT_THAT(
-      ukm_recorder.GetEntries("DIPS.Redirect", {"InitialAndFinalSitesSame"}),
+      ukm_recorder.GetEntries("BTM.Redirect", {"InitialAndFinalSitesSame"}),
       ElementsAre(
           AllOf(HasSourceId(redirect_url.source_id),
                 HasMetrics(ElementsAre(Pair("InitialAndFinalSitesSame", 1))))));
 
   EXPECT_THAT(
-      ukm_recorder.GetEntries("DIPS.ChainEnd", {"InitialAndFinalSitesSame"}),
+      ukm_recorder.GetEntries("BTM.ChainEnd", {"InitialAndFinalSitesSame"}),
       ElementsAre(
           AllOf(HasSourceId(final_url.source_id),
                 HasMetrics(ElementsAre(Pair("InitialAndFinalSitesSame", 1))))));
@@ -1165,14 +1174,15 @@ TEST_F(BtmServiceUkmTest, DontReportEmptyChainsAtAll) {
   BtmRedirectChainObserver observer(service, final_url.url);
   BtmRedirectChainInfoPtr chain = std::make_unique<BtmRedirectChainInfo>(
       initial_url, final_url,
-      /*length=*/0, /*is_partial_chain=*/false);
+      /*length=*/0, /*is_partial_chain=*/false,
+      /*are_3pcs_generally_enabled*/ false);
 
   service->HandleRedirectChain({}, std::move(chain), base::DoNothing());
   observer.Wait();
 
-  EXPECT_THAT(ukm_recorder.GetEntries("DIPS.ChainBegin", {}), IsEmpty());
-  EXPECT_THAT(ukm_recorder.GetEntries("DIPS.Redirect", {}), IsEmpty());
-  EXPECT_THAT(ukm_recorder.GetEntries("DIPS.ChainEnd", {}), IsEmpty());
+  EXPECT_THAT(ukm_recorder.GetEntries("BTM.ChainBegin", {}), IsEmpty());
+  EXPECT_THAT(ukm_recorder.GetEntries("BTM.Redirect", {}), IsEmpty());
+  EXPECT_THAT(ukm_recorder.GetEntries("BTM.ChainEnd", {}), IsEmpty());
 }
 
 TEST_F(BtmServiceUkmTest, DontReportChainBeginIfInvalidSourceId) {
@@ -1194,7 +1204,8 @@ TEST_F(BtmServiceUkmTest, DontReportChainBeginIfInvalidSourceId) {
       /*server_bounce_delay=*/base::TimeDelta()));
   BtmRedirectChainInfoPtr chain = std::make_unique<BtmRedirectChainInfo>(
       UrlAndSourceId(), final_url,
-      /*length=*/1, /*is_partial_chain=*/false);
+      /*length=*/1, /*is_partial_chain=*/false,
+      /*are_3pcs_generally_enabled=*/false);
   btm::Populate3PcExceptions(&profile, /*web_contents=*/nullptr,
                              chain->initial_url.url, chain->final_url.url,
                              redirects);
@@ -1202,12 +1213,12 @@ TEST_F(BtmServiceUkmTest, DontReportChainBeginIfInvalidSourceId) {
                                base::DoNothing());
   observer.Wait();
 
-  EXPECT_THAT(ukm_recorder.GetEntries("DIPS.ChainBegin", {}), IsEmpty());
+  EXPECT_THAT(ukm_recorder.GetEntries("BTM.ChainBegin", {}), IsEmpty());
 
-  EXPECT_THAT(ukm_recorder.GetEntries("DIPS.Redirect", {}),
+  EXPECT_THAT(ukm_recorder.GetEntries("BTM.Redirect", {}),
               ElementsAre(AllOf(HasSourceId(redirect_url.source_id))));
 
-  EXPECT_THAT(ukm_recorder.GetEntries("DIPS.ChainEnd", {}),
+  EXPECT_THAT(ukm_recorder.GetEntries("BTM.ChainEnd", {}),
               ElementsAre(AllOf(HasSourceId(final_url.source_id))));
 }
 
@@ -1230,7 +1241,8 @@ TEST_F(BtmServiceUkmTest, DontReportChainEndIfInvalidSourceId) {
       /*server_bounce_delay=*/base::TimeDelta()));
   BtmRedirectChainInfoPtr chain = std::make_unique<BtmRedirectChainInfo>(
       initial_url, UrlAndSourceId(),
-      /*length=*/1, /*is_partial_chain=*/false);
+      /*length=*/1, /*is_partial_chain=*/false,
+      /*are_3pcs_generally_enabled=*/false);
   btm::Populate3PcExceptions(&profile, /*web_contents=*/nullptr,
                              chain->initial_url.url, chain->final_url.url,
                              redirects);
@@ -1238,13 +1250,48 @@ TEST_F(BtmServiceUkmTest, DontReportChainEndIfInvalidSourceId) {
                                base::DoNothing());
   observer.Wait();
 
-  EXPECT_THAT(ukm_recorder.GetEntries("DIPS.ChainBegin", {}),
+  EXPECT_THAT(ukm_recorder.GetEntries("BTM.ChainBegin", {}),
               ElementsAre(AllOf(HasSourceId(initial_url.source_id))));
 
-  EXPECT_THAT(ukm_recorder.GetEntries("DIPS.Redirect", {}),
+  EXPECT_THAT(ukm_recorder.GetEntries("BTM.Redirect", {}),
               ElementsAre(AllOf(HasSourceId(redirect_url.source_id))));
 
-  EXPECT_THAT(ukm_recorder.GetEntries("DIPS.ChainEnd", {}), IsEmpty());
+  EXPECT_THAT(ukm_recorder.GetEntries("BTM.ChainEnd", {}), IsEmpty());
+}
+
+TEST_F(BtmServiceUkmTest, DontReportChainIfTpcsEnabled) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  TestBrowserContext profile;
+  BtmServiceImpl* service = BtmServiceImpl::Get(&profile);
+
+  UrlAndSourceId initial_url = MakeUrlAndId("http://a.test/");
+  UrlAndSourceId redirect_url = MakeUrlAndId("http://b.test/");
+  UrlAndSourceId final_url = MakeUrlAndId("http://c.test/");
+
+  BtmRedirectChainObserver observer(service, final_url.url);
+  std::vector<BtmRedirectInfoPtr> redirects;
+  redirects.push_back(BtmRedirectInfo::CreateForServer(
+      redirect_url,
+      /*access_type=*/BtmDataAccessType::kNone,
+      /*time=*/base::Time::Now(),
+      /*was_response_cached=*/false,
+      /*response_code=*/net::HTTP_FOUND,
+      /*server_bounce_delay=*/base::TimeDelta()));
+  BtmRedirectChainInfoPtr chain = std::make_unique<BtmRedirectChainInfo>(
+      initial_url, final_url, redirects.size(), /*is_partial_chain=*/false,
+      /*are_3pcs_generally_enabled=*/true);
+  btm::Populate3PcExceptions(&profile, /*web_contents=*/nullptr,
+                             initial_url.url, final_url.url, redirects);
+  service->HandleRedirectChain(std::move(redirects), std::move(chain),
+                               base::DoNothing());
+  observer.Wait();
+
+  // There should be no BTM chain UKMs, as processing gets short-circuited when
+  // third-party cookies are enabled.
+  EXPECT_THAT(ukm_recorder.GetEntries("BTM.ChainBegin", {"ChainId"}),
+              IsEmpty());
+  EXPECT_THAT(ukm_recorder.GetEntries("BTM.Redirect", {"ChainId"}), IsEmpty());
+  EXPECT_THAT(ukm_recorder.GetEntries("BTM.ChainEnd", {"ChainId"}), IsEmpty());
 }
 
 }  // namespace content

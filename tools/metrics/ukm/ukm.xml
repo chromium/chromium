@@ -5760,6 +5760,143 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="BTM.ChainBegin" singular="True">
+  <owner>navtracking-team@google.com</owner>
+  <owner>dc-komics@google.com</owner>
+  <summary>
+    Emitted for the page visited at the beginning of a redirect chain (i.e. the
+    initial URL), when third-party cookies are disabled. The redirect chain is
+    used as a part of Bounce Tracking Mitigations (BTM).
+  </summary>
+  <metric name="ChainId">
+    <summary>
+      A randomly-generated 32-bit id to connect this event with the BTM.Redirect
+      and BTM.ChainEnd events emitted within the same redirect chain.
+    </summary>
+  </metric>
+  <metric name="InitialAndFinalSitesSame" enum="BooleanSameSite">
+    <summary>
+      True when the site before the redirect chain is the same as the site at
+      the end of the chain.
+    </summary>
+  </metric>
+</event>
+
+<event name="BTM.ChainEnd" singular="True">
+  <owner>navtracking-team@google.com</owner>
+  <owner>dc-komics@google.com</owner>
+  <summary>
+    Emitted for the page visited at the end of a redirect chain (i.e. the final
+    URL), when third-party cookies are disabled. The redirect chain is used as a
+    part of Bounce Tracking Mitigations (BTM).
+  </summary>
+  <metric name="ChainId">
+    <summary>
+      A randomly-generated 32-bit id to connect this event with the
+      BTM.ChainBegin and BTM.Redirect events emitted within the same redirect
+      chain.
+    </summary>
+  </metric>
+  <metric name="InitialAndFinalSitesSame" enum="BooleanSameSite">
+    <summary>
+      True when the site before the redirect chain is the same as the site at
+      the end of the chain.
+    </summary>
+  </metric>
+</event>
+
+<event name="BTM.Redirect" singular="True">
+  <owner>navtracking-team@google.com</owner>
+  <owner>dc-komics@google.com</owner>
+  <summary>
+    Emitted on every HTTP redirect or client-side bounce within a redirect
+    chain, when third-party cookies are disabled. A client-side bounce is a
+    non-user-initiated navigation starting soon after the previous navigation
+    committed.
+
+    The redirect chain is used as a part of Bounce Tracking Mitigations (BTM).
+  </summary>
+  <metric name="ChainId">
+    <summary>
+      A randomly-generated 32-bit id to connect this event with other
+      BTM.Redirect events and the BTM.ChainBegin/ChainEnd events emitted within
+      the same redirect chain.
+    </summary>
+  </metric>
+  <metric name="ClientBounceDelay">
+    <summary>
+      Populated for client redirects only. The time in seconds (capped at 10)
+      between the page committing and the redirect navigation starting. An int
+      in the range [0, 10].
+    </summary>
+  </metric>
+  <metric name="CookieAccessType" enum="CookieAccessType">
+    <summary>
+      Whether the redirect read cookies, wrote cookies, both, or neither.
+    </summary>
+  </metric>
+  <metric name="HasStickyActivation" enum="BooleanHasUserActivation">
+    <summary>
+      Populated for client redirects only. Whether the user interacted with the
+      page (See the HTML spec for a definition). This info is persisted within
+      BTM for a duration of `btm::kInteractionTtl`.
+    </summary>
+  </metric>
+  <metric name="InitialAndFinalSitesSame" enum="BooleanSameSite">
+    <summary>
+      True when the site before the redirect chain is the same as the site at
+      the end of the chain.
+    </summary>
+  </metric>
+  <metric name="IsPartialRedirectChain">
+    <summary>
+      True if the chain is missing the end URL. Any comparisons to the final
+      site are invalid for this redirect.
+    </summary>
+  </metric>
+  <metric name="RedirectAndFinalSiteSame" enum="BooleanSameSite">
+    <summary>
+      True when the redirect site is the same as the site at the end of the
+      redirect chain.
+    </summary>
+  </metric>
+  <metric name="RedirectAndInitialSiteSame" enum="BooleanSameSite">
+    <summary>
+      True when the redirect site is the same as the site before the redirect
+      chain.
+    </summary>
+  </metric>
+  <metric name="RedirectChainIndex">
+    <summary>
+      0-based index of this individual redirect within its chain.
+    </summary>
+  </metric>
+  <metric name="RedirectChainLength">
+    <summary>
+      The length of the overall redirect chain.
+    </summary>
+  </metric>
+  <metric name="RedirectType" enum="DIPSRedirectType">
+    <summary>
+      The type of the redirect: client or server.
+    </summary>
+  </metric>
+  <metric name="SiteEngagementLevel" enum="SiteEngagementLevel">
+    <summary>
+      The site engagement level of the redirect URL, at the time the redirect
+      took place.
+    </summary>
+  </metric>
+  <metric name="WebAuthnAssertionRequestSucceeded"
+      enum="BooleanWebAuthnAssertionRequestSucceeded">
+    <summary>
+      Populated for client redirects only. Whether the user triggered a
+      successful web authn assertion. This info is persisted within BTM for a
+      duration of `btm::kInteractionTtl`.
+    </summary>
+  </metric>
+</event>
+
 <event name="BTM.ShortVisit">
   <owner>navtracking-team@google.com</owner>
   <owner>dc-komics@google.com</owner>
@@ -7719,6 +7856,9 @@ be describing additional metrics about the same event.
   <owner>navtracking-team@google.com</owner>
   <owner>dc-komics@google.com</owner>
   <summary>
+    This metric has been superceded by the BTM.ChainBegin UKM and is no longer
+    emitted as of M138.
+
     Emitted after a redirect chain terminates, but for the page visited before
     the chain began -- the initial URL.
   </summary>
@@ -7741,6 +7881,9 @@ be describing additional metrics about the same event.
   <owner>navtracking-team@google.com</owner>
   <owner>dc-komics@google.com</owner>
   <summary>
+    This metric has been superceded by the BTM.ChainEnd UKM and is no longer
+    emitted as of M138.
+
     Emitted for the page visited at the end of a redirect chain -- the final
     URL.
   </summary>
@@ -7841,6 +7984,9 @@ be describing additional metrics about the same event.
   <owner>navtracking-team@google.com</owner>
   <owner>dc-komics@google.com</owner>
   <summary>
+    This metric has been superceded by the BTM.Redirect UKM and is no longer
+    emitted as of M138.
+
     Recorded on every HTTP redirect or client-side bounce, where a client-side
     bounce is a non-user-initiated navigation starting soon after the previous
     navigation committed.

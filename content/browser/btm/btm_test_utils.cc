@@ -437,6 +437,12 @@ void TpcBlockingBrowserClient::GrantCookieAccessDueToHeuristic(
                                  /*metadata=*/{});
 }
 
+bool TpcBlockingBrowserClient::AreThirdPartyCookiesGenerallyAllowed(
+    BrowserContext* browser_context,
+    WebContents* web_contents) {
+  return !block_3pcs_;
+}
+
 bool TpcBlockingBrowserClient::ShouldBtmDeleteInteractionRecords(
     uint64_t remove_mask) {
   return remove_mask & TpcBlockingBrowserClient::DATA_TYPE_HISTORY;

@@ -14,7 +14,8 @@ namespace content {
 BtmRedirectChainInfo::BtmRedirectChainInfo(const UrlAndSourceId& initial_url,
                                            const UrlAndSourceId& final_url,
                                            size_t length,
-                                           bool is_partial_chain)
+                                           bool is_partial_chain,
+                                           bool are_3pcs_generally_enabled)
     : chain_id(static_cast<int32_t>(base::RandUint64())),
       initial_url(initial_url),
       initial_site(GetSiteForBtm(initial_url.url)),
@@ -22,7 +23,8 @@ BtmRedirectChainInfo::BtmRedirectChainInfo(const UrlAndSourceId& initial_url,
       final_site(GetSiteForBtm(final_url.url)),
       initial_and_final_sites_same(initial_site == final_site),
       length(length),
-      is_partial_chain(is_partial_chain) {}
+      is_partial_chain(is_partial_chain),
+      are_3pcs_generally_enabled(are_3pcs_generally_enabled) {}
 
 BtmRedirectChainInfo::BtmRedirectChainInfo(const BtmRedirectChainInfo&) =
     default;

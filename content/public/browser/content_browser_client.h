@@ -1249,6 +1249,15 @@ class CONTENT_EXPORT ContentBrowserClient {
       base::TimeDelta ttl,
       bool ignore_schemes);
 
+  // Returns whether third-party cookies are allowed by default.
+  //
+  // The `web_contents` parameter should be `nullptr` for requests coming from
+  // ServiceWorkers, otherwise set to the WebContents instance that is making
+  // the request. The `browser_context` parameter must not be `nullptr`.
+  virtual bool AreThirdPartyCookiesGenerallyAllowed(
+      content::BrowserContext* browser_context,
+      content::WebContents* web_contents);
+
   // Allows the embedder to implement policy for whether an SCT auditing report
   // should be sent.
   virtual bool CanSendSCTAuditingReport(BrowserContext* browser_context);

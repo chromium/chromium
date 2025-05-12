@@ -44,7 +44,8 @@ struct CONTENT_EXPORT BtmRedirectChainInfo {
   BtmRedirectChainInfo(const UrlAndSourceId& initial_url,
                        const UrlAndSourceId& final_url,
                        size_t length,
-                       bool is_partial_chain);
+                       bool is_partial_chain,
+                       bool are_3pcs_generally_enabled);
   BtmRedirectChainInfo(const BtmRedirectChainInfo&);
   ~BtmRedirectChainInfo();
 
@@ -66,6 +67,7 @@ struct CONTENT_EXPORT BtmRedirectChainInfo {
   // True if the chain is missing the end URL. This occurs when redirects are
   // trimmed from the front of the in-progress redirect chain.
   const bool is_partial_chain;
+  const bool are_3pcs_generally_enabled;
 
   // These properties aren't known at the time of creation, and are filled in
   // later:

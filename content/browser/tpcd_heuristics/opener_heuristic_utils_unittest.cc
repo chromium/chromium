@@ -4,6 +4,7 @@
 
 #include "content/browser/tpcd_heuristics/opener_heuristic_utils.h"
 
+#include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/content_settings/core/common/features.h"
 #include "content/browser/btm/btm_bounce_detector.h"
@@ -17,6 +18,7 @@
 
 namespace {
 
+using content::Btm3PcSettingsCallback;
 using content::BtmDataAccessType;
 using content::BtmRedirectChainInfoPtr;
 using content::BtmRedirectInfo;
@@ -64,6 +66,10 @@ BtmRedirectInfoPtr MakeClientRedirect(
       /*client_bounce_delay=*/base::Seconds(1),
       /*has_sticky_activation=*/has_sticky_activation,
       /*web_authn_assertion_request_succeeded*/ has_web_authn_assertion);
+}
+
+Btm3PcSettingsCallback GetAre3pcsAllowedCallback() {
+  return base::BindRepeating([] { return false; });
 }
 }  // namespace
 
@@ -137,7 +143,7 @@ TEST(BtmRedirectContextTest, GetRedirectHeuristicURLs_NoRequirements) {
   std::vector<ChainPair> chains;
   BtmRedirectContext context(
       base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
-      UrlAndSourceId(),
+      GetAre3pcsAllowedCallback(), UrlAndSourceId(),
       /*redirect_prefix_count=*/0);
 
   context.AppendCommitted(first_party_url,
@@ -176,7 +182,7 @@ TEST(BtmRedirectContextTest, GetRedirectHeuristicURLs_RequireABAFlow) {
   std::vector<ChainPair> chains;
   BtmRedirectContext context(
       base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
-      UrlAndSourceId(),
+      GetAre3pcsAllowedCallback(), UrlAndSourceId(),
       /*redirect_prefix_count=*/0);
 
   context.AppendCommitted(
@@ -212,7 +218,7 @@ TEST(BtmRedirectContextTest,
   std::vector<ChainPair> chains;
   BtmRedirectContext context(
       base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
-      UrlAndSourceId(),
+      GetAre3pcsAllowedCallback(), UrlAndSourceId(),
       /*redirect_prefix_count=*/0);
 
   context.AppendCommitted(first_party_url,

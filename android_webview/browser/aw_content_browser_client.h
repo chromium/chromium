@@ -314,6 +314,9 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       const GURL& url,
       const blink::StorageKey& storage_key,
       net::CookieSettingOverrides overrides) override;
+  bool AreThirdPartyCookiesGenerallyAllowed(
+      content::BrowserContext* browser_context,
+      content::WebContents* web_contents) override;
   bool AllowNonActivatedCrossOriginPaintHolding() override;
   bool IsSharedStorageAllowed(
       content::BrowserContext* browser_context,

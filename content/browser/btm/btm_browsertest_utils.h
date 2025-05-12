@@ -47,6 +47,9 @@ class ContentBrowserTestTpcBlockingBrowserClient
                                        base::TimeDelta ttl,
                                        bool ignore_schemes) override;
 
+  bool AreThirdPartyCookiesGenerallyAllowed(BrowserContext* browser_context,
+                                            WebContents* web_contents) override;
+
   bool ShouldBtmDeleteInteractionRecords(uint64_t remove_mask) override;
 
   bool IsPrivacySandboxReportingDestinationAttested(

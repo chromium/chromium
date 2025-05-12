@@ -78,13 +78,10 @@ class BtmTabHelperBrowserTest : public ContentBrowserTest {
         ->SetClockForTesting(&test_clock_);
     browser_client_.emplace();
 
-    // Initialize exceptions for 1P sites with embedded 3P cookies. Block 3PC by
-    // default on a.test and d.test, since those are used as the initial and
-    // final URL in the redirect chains. This avoids trimming bounces due to 1P
-    // exceptions (e.g. Chrome Guard).
-    browser_client_->impl().SetBlockThirdPartyCookiesByDefault(false);
-    browser_client_->impl().BlockThirdPartyCookiesOnSite(GURL("http://a.test"));
-    browser_client_->impl().BlockThirdPartyCookiesOnSite(GURL("http://d.test"));
+    browser_client_->impl().SetBlockThirdPartyCookiesByDefault(true);
+    WebContents* web_contents = GetActiveWebContents();
+    ASSERT_FALSE(btm::Are3PcsGenerallyEnabled(web_contents->GetBrowserContext(),
+                                              web_contents));
 
     // We can only create extra browser contexts while single-threaded.
     extra_browser_context_ = CreateTestBrowserContext();

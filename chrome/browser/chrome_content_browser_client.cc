@@ -3649,6 +3649,21 @@ void ChromeContentBrowserClient::GrantCookieAccessDueToHeuristic(
       /*use_schemeless_patterns=*/ignore_schemes);
 }
 
+bool ChromeContentBrowserClient::AreThirdPartyCookiesGenerallyAllowed(
+    content::BrowserContext* browser_context,
+    content::WebContents* web_contents) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  scoped_refptr<content_settings::CookieSettings> cookie_settings =
+      CookieSettingsFactory::GetForProfile(profile);
+  // If there are no cookie settings to block third-party cookies, they will be
+  // allowed by default. Cookie settings should always exist in Chrome, unless
+  // navigating through the profile picker.
+  if (!cookie_settings) {
+    return true;
+  }
+  return !cookie_settings->ShouldBlockThirdPartyCookies();
+}
+
 bool ChromeContentBrowserClient::CanSendSCTAuditingReport(
     content::BrowserContext* browser_context) {
   return SCTReportingService::CanSendSCTAuditingReport();
