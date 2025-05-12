@@ -3486,11 +3486,8 @@ void LocalFrame::NotifyContextMenuInsetsObservers(
 void LocalFrame::ShowInterestInElement(int nodeID) const {
   Element* element = DynamicTo<Element>(DOMNodeIds::NodeForId(nodeID));
   if (!element) {
-    LOG(ERROR) << "Unable to find node, or it isn't an element: "
-               << DOMNodeIds::NodeForId(nodeID);
     return;
   }
-  LOG(ERROR) << "Showing interest in element " << element;
   element->ShowInterestNow();
 }
 

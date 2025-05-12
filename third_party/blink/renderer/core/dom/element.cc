@@ -7407,7 +7407,6 @@ bool Element::IsInPartialInterestPopover() const {
 
 void Element::ShowInterestNow() {
   Element* target = InterestTargetElement();
-  LOG(ERROR) << "Interest in element " << this << ", with target " << target;
   if (!target) {
     return;
   }
