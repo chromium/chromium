@@ -43,6 +43,10 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 bool IsEnabled(const user_manager::User* user) {
+  if (!ash::features::IsBocaUberEnabled()) {
+    return false;
+  }
+
   if (features::IsBocaEnabled()) {
     return true;
   }
