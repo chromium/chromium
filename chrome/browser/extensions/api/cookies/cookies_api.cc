@@ -220,11 +220,13 @@ void CookiesEventRouter::OnOffTheRecordProfileCreated(Profile* off_the_record) {
   // When an off-the-record spinoff of |profile_| is created, start listening
   // for cookie changes there. The OTR receiver should never be bound, since
   // there wasn't previously an OTR profile.
-  DCHECK(!otr_receiver_.is_bound());
+  if (off_the_record->IsPrimaryOTRProfile()) {
+    DCHECK(!otr_receiver_.is_bound());
 #if !BUILDFLAG(IS_ANDROID)
-  otr_profile_observation_.Observe(off_the_record);
+    otr_profile_observation_.Observe(off_the_record);
 #endif
-  BindToCookieManager(&otr_receiver_, off_the_record);
+    BindToCookieManager(&otr_receiver_, off_the_record);
+  }
 }
 
 void CookiesEventRouter::OnProfileWillBeDestroyed(Profile* profile) {
