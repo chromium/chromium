@@ -705,8 +705,8 @@ void DismissPaymentBottomSheet() {
       performAction:grey_tap()];
 
   // Verify the payment method settings opened.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::AddCreditCardView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:chrome_test_util::
+                                                          AddCreditCardView()];
 }
 
 // Tests that the "Add Payment Method..." action works on OTR.
