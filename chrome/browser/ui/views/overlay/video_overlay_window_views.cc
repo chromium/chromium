@@ -677,13 +677,11 @@ void VideoOverlayWindowViews::OnMouseEvent(ui::MouseEvent* event) {
       // controls are visible if the mouse is still over the window.
       // We also check that the user isn't currently dragging the progress bar,
       // since setting visibility to false during the drag will prevent the drag
-      // from functioning properly (and we'll lose the drag end). Additionally,
-      // while the live caption dialog is open we also don't hide the controls.
+      // from functioning properly (and we'll lose the drag end).
       const bool should_update_control_visibility =
           !GetWindowBackgroundView()->bounds().Contains(event->location()) &&
           progress_view_drag_state_ ==
-              global_media_controls::DragState::kDragEnded &&
-          !IsLiveCaptionDialogVisible();
+              global_media_controls::DragState::kDragEnded;
       if (should_update_control_visibility) {
         UpdateControlsVisibility(false);
       }
@@ -754,11 +752,6 @@ void VideoOverlayWindowViews::UpdateControlsVisibility(bool is_visible) {
   // this gets us stuck in the `kDragStarted` state.
   if (progress_view_drag_state_ ==
       global_media_controls::DragState::kDragStarted) {
-    return;
-  }
-
-  // We should not hide the controls while the live caption dialog is open.
-  if (IsLiveCaptionDialogVisible()) {
     return;
   }
 
@@ -2295,7 +2288,7 @@ gfx::Rect VideoOverlayWindowViews::GetLiveCaptionButtonBounds() {
 }
 
 gfx::Rect VideoOverlayWindowViews::GetLiveCaptionDialogBounds() {
-  if (!IsLiveCaptionDialogVisible()) {
+  if (!Use2024UI() || !live_caption_dialog_->GetVisible()) {
     return gfx::Rect();
   }
   return live_caption_dialog_->GetMirroredBounds();
@@ -2481,10 +2474,6 @@ void VideoOverlayWindowViews::RemoveOverlayViewIfExists() {
     GetContentsView()->RemoveChildViewT(overlay_view_.ExtractAsDangling());
     OnSizeConstraintsChanged();
   }
-}
-
-bool VideoOverlayWindowViews::IsLiveCaptionDialogVisible() const {
-  return Use2024UI() && live_caption_dialog_->GetVisible();
 }
 
 void VideoOverlayWindowViews::OnProgressDragStateChanged(

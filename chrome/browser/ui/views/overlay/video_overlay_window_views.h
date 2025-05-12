@@ -310,8 +310,6 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   // Removes the `overlay_view_` if it exists.
   void RemoveOverlayViewIfExists();
 
-  bool IsLiveCaptionDialogVisible() const;
-
   void OnProgressDragStateChanged(global_media_controls::DragState drag_state);
   void ChangePlaybackStateForProgressDrag(
       global_media_controls::PlaybackStateChangeForDragging
