@@ -94,6 +94,12 @@ chromium-metrics-reviews@google.com.
   <variant name=".READING_LIST" summary="READING_LIST"/>
 </variants>
 
+<variants name="SyncErrorInfobarTrigger">
+  <variant name="" summary="Any trigger, this is just a total count."/>
+  <variant name=".NewTab" summary="Opening a new tab."/>
+  <variant name=".PasswordForm" summary="Loading a page with a password form."/>
+</variants>
+
 <variants name="SyncErrorReason">
   <variant name=".AuthError" summary="Auth error."/>
   <variant name=".ClientOutOfDate" summary="Client out of date."/>
@@ -2134,13 +2140,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.SyncErrorInfobarDisplayed2" enum="SyncErrorInfobarTypes"
-    expires_after="2025-08-10">
+<histogram name="Sync.SyncErrorInfobarDisplayed2{SyncErrorInfobarTrigger}"
+    enum="SyncErrorInfobarTypes" expires_after="2025-08-10">
+  <owner>rgod@google.com</owner>
+  <owner>ylahodiuk@google.com</owner>
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
-    Enumeration of error conditions that displays an infobar to the user. iOS
-    only.
+    Enumeration of error conditions that displays an infobar to the user
+    triggered by a following event: {SyncErrorInfobarTrigger}
+
+    iOS only.
   </summary>
 </histogram>
 

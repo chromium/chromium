@@ -6,6 +6,7 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
+#import "base/strings/strcat.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/signin/public/identity_manager/account_info.h"
@@ -28,6 +29,9 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+constexpr char kSyncErrorInfobarDisplayedHistogramName[] =
+    "Sync.SyncErrorInfobarDisplayed2";
 
 // Enumerated constants for logging when a sign-in error infobar was shown
 // to the user. This was added for crbug/265352 to quantify how often this
@@ -150,6 +154,17 @@ NSString* GetIdentityErrorInfoBarButtonLabel(
     case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
       NOTREACHED();
   }
+}
+
+std::string GetSyncErrorInfobarHistogramSuffix(
+    SyncErrorInfoBarTrigger trigger) {
+  switch (trigger) {
+    case SyncErrorInfoBarTrigger::kNewTabOpened:
+      return ".NewTab";
+    case SyncErrorInfoBarTrigger::kPasswordFormParsed:
+      return ".PasswordForm";
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -283,7 +298,8 @@ bool ShouldShowSyncSettings(syncer::SyncService::UserActionableError error) {
 
 bool DisplaySyncErrors(ProfileIOS* profile,
                        web::WebState* web_state,
-                       id<SyncPresenter> presenter) {
+                       id<SyncPresenter> presenter,
+                       SyncErrorInfoBarTrigger trigger) {
   // Avoid displaying sync errors on incognito tabs.
   if (profile->IsOffTheRecord()) {
     return false;
@@ -328,10 +344,13 @@ bool DisplaySyncErrors(ProfileIOS* profile,
       SyncErrorInfoBarDelegate::Create(infoBarManager, profile, presenter);
   if (infobar_displayed) {
     // Logs when an infobar is shown to user. See crbug.com/265352.
-    base::UmaHistogramEnumeration("Sync.SyncErrorInfobarDisplayed2",
+    base::UmaHistogramEnumeration(kSyncErrorInfobarDisplayedHistogramName,
                                   *infobarSyncError);
+    base::UmaHistogramEnumeration(
+        base::StrCat({kSyncErrorInfobarDisplayedHistogramName,
+                      GetSyncErrorInfobarHistogramSuffix(trigger)}),
+        *infobarSyncError);
   }
-
   return infobar_displayed;
 }
 
