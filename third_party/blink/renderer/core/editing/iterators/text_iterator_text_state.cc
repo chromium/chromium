@@ -80,18 +80,14 @@ String TextIteratorTextState::GetTextForTesting() const {
 }
 
 void TextIteratorTextState::AppendTextToStringBuilder(
-    StringBuilder& builder,
-    unsigned position,
-    unsigned max_length) const {
-  SECURITY_DCHECK(position <= this->length());
-  unsigned length_to_append = std::min(length() - position, max_length);
-  if (!length_to_append)
+    StringBuilder& builder) const {
+  if (!text_length_) {
     return;
+  }
   if (single_character_buffer_) {
-    DCHECK_EQ(position, 0u);
     builder.Append(single_character_buffer_);
   } else {
-    builder.Append(text_, text_start_offset_ + position, length_to_append);
+    builder.Append(text_, text_start_offset_, text_length_);
   }
 }
 

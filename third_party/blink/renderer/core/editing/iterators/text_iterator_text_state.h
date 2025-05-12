@@ -57,9 +57,7 @@ class CORE_EXPORT TextIteratorTextState {
   UChar CharacterAt(unsigned index) const;
   // TODO(xiaochengh): Rename to |GetText()| as it's used in production code.
   String GetTextForTesting() const;
-  void AppendTextToStringBuilder(WTF::StringBuilder&,
-                                 unsigned position = 0,
-                                 unsigned max_length = UINT_MAX) const;
+  void AppendTextToStringBuilder(WTF::StringBuilder&) const;
 
   // Emits code unit relative to |node|.
   void EmitChar16AfterNode(UChar code_unit, const Node& node);
