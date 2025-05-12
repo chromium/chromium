@@ -1809,6 +1809,7 @@ SystemIdentityManager::IteratorResult IdentitiesOnDevice(
       << "self.signinCoordinator: "
       << base::SysNSStringToUTF8([self.signinCoordinator description]);
   Browser* browser = self.mainInterface.browser;
+  [self stopSigninCoordinatorAnimated:NO fromExternalTrigger:NO];
   self.signinCoordinator = [SigninCoordinator
       upgradeSigninPromoCoordinatorWithBaseViewController:self.mainInterface
                                                               .viewController
@@ -2167,6 +2168,7 @@ using UserFeedbackDataCallback =
     return;
   }
   Browser* mainBrowser = self.mainInterface.browser;
+  [self stopSigninCoordinatorAnimated:NO fromExternalTrigger:NO];
   self.signinCoordinator =
       [SigninCoordinator signinCoordinatorWithCommand:command
                                               browser:mainBrowser
@@ -2191,6 +2193,8 @@ using UserFeedbackDataCallback =
                                         anchorView:nil
                                        accessPoint:accessPoint
                                                URL:url];
+
+  [self stopSigninCoordinatorAnimated:NO fromExternalTrigger:NO];
   self.signinCoordinator = accountMenuCoordinator;
   // TODO(crbug.com/336719423): Record signin metrics based on the
   // selected action from the account switcher.
@@ -2216,6 +2220,7 @@ using UserFeedbackDataCallback =
   };
   ChangeProfileContinuationProvider provider =
       base::BindRepeating(&CreateChangeProfileOpensURLContinuation, url);
+  [self stopSigninCoordinatorAnimated:NO fromExternalTrigger:NO];
   self.signinCoordinator = [SigninCoordinator
       consistencyPromoSigninCoordinatorWithBaseViewController:baseViewController
                                                       browser:self.mainInterface
