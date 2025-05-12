@@ -180,7 +180,6 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       // Split view new tab page strings
       {"splitViewEmptyBody", IDS_SPLIT_VIEW_NTP_EMPTY_BODY},
       {"splitViewEmptyTitle", IDS_SPLIT_VIEW_NTP_EMPTY_TITLE},
-      {"splitViewOpenHeading", IDS_SPLIT_VIEW_NTP_OPEN_HEADING},
       {"splitViewTabTitle", IDS_SPLIT_VIEW_NTP_TAB_TITLE},
       {"splitViewTitle", IDS_SPLIT_VIEW_NTP_TITLE},
   };

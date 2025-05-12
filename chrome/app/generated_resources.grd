@@ -9836,9 +9836,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_SPLIT_VIEW_NTP_TITLE" desc="The title of the split view new tab page.">
         Choose a tab to add to split view
       </message>
-      <message name="IDS_SPLIT_VIEW_NTP_OPEN_HEADING" desc="The header for the open tab list in the split view new tab page.">
-        Open Tabs
-      </message>
       <message name="IDS_SPLIT_VIEW_NTP_TAB_TITLE" desc="The title of the split view new tab page as displayed in the tab strip.">
         Choose a tab
       </message>

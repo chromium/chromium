@@ -6,7 +6,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {SplitNewTabPageAppElement, Tab} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {TabAlertState, TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {createProfileData, createTab, SAMPLE_WINDOW_HEIGHT} from './tab_search_test_data.js';
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
@@ -77,7 +77,7 @@ suite('SplitNewTabPageTest', () => {
     ];
   }
 
-  function splitNewTabPageSetup(windowData?: any) {
+  async function splitNewTabPageSetup(windowData?: any) {
     loadTimeData.overrideValues({
       splitViewEnabled: true,
     });
@@ -92,7 +92,11 @@ suite('SplitNewTabPageTest', () => {
 
     splitNewTabPage = document.createElement('split-new-tab-page-app');
     document.body.appendChild(splitNewTabPage);
-    return microtasksFinished();
+
+    // TODO(crbug.com/412693981): Figure out why this is needed only in tests.
+    splitNewTabPage.shadowRoot.querySelector<HTMLElement>(
+                                  '.tab-list')!.style.flexGrow = '1';
+    await eventToPromise('viewport-filled', splitNewTabPage.$.splitTabsList);
   }
 
   test('Shows correct tab count', async () => {
@@ -131,7 +135,7 @@ suite('SplitNewTabPageTest', () => {
       tab: tab,
     };
     testApiProxy.getCallbackRouterRemote().tabUpdated(tabUpdateInfo);
-    await microtasksFinished();
+    await eventToPromise('viewport-filled', splitNewTabPage.$.splitTabsList);
 
     const updatedTabSearchItems =
         splitNewTabPage.shadowRoot.querySelectorAll('tab-search-item');
@@ -154,7 +158,7 @@ suite('SplitNewTabPageTest', () => {
       tab: tab,
     };
     testApiProxy.getCallbackRouterRemote().tabUpdated(tabUpdateInfo);
-    await microtasksFinished();
+    await eventToPromise('viewport-filled', splitNewTabPage.$.splitTabsList);
 
     const updatedTabSearchItems =
         splitNewTabPage.shadowRoot.querySelectorAll('tab-search-item');
@@ -177,7 +181,7 @@ suite('SplitNewTabPageTest', () => {
     testApiProxy.getCallbackRouterRemote().tabsChanged(createProfileData({
       windows: windowData,
     }));
-    await microtasksFinished();
+    await eventToPromise('viewport-filled', splitNewTabPage.$.splitTabsList);
 
     assertEquals(
         4,
@@ -194,7 +198,7 @@ suite('SplitNewTabPageTest', () => {
       tabIds: [6],
       recentlyClosedTabs: [],
     });
-    await microtasksFinished();
+    await eventToPromise('viewport-filled', splitNewTabPage.$.splitTabsList);
 
     assertEquals(
         2,
