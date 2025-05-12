@@ -1045,6 +1045,22 @@ LayoutUnit LayoutBox::ClientHeightWithTableSpecialBehavior() const {
   return ClientHeight();
 }
 
+LayoutUnit LayoutBox::OffsetWidth() const {
+  NOT_DESTROYED();
+  if (RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
+    return LayoutBoxModelObject::OffsetWidth();
+  }
+  return Size().width;
+}
+
+LayoutUnit LayoutBox::OffsetHeight() const {
+  NOT_DESTROYED();
+  if (RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
+    return LayoutBoxModelObject::OffsetHeight();
+  }
+  return Size().height;
+}
+
 bool LayoutBox::UsesOverlayScrollbars() const {
   NOT_DESTROYED();
   if (StyleRef().HasCustomScrollbarStyle(DynamicTo<Element>(GetNode()))) {
@@ -4502,6 +4518,33 @@ PhysicalOffset LayoutBox::PhysicalLocation(
   }
   return DeprecatedPhysicalLocationInternal(
       location_container ? location_container : LocationContainer());
+}
+
+PhysicalRect LayoutBox::BoundingBoxRelativeToFirstFragment() const {
+  NOT_DESTROYED();
+  PhysicalRect bounding_rect;
+  const PhysicalBoxFragment* first_fragment = nullptr;
+  for (const PhysicalBoxFragment& fragment : PhysicalFragments()) {
+    PhysicalOffset offset;
+    if (!first_fragment) {
+      first_fragment = &fragment;
+    } else {
+      offset = fragment.OffsetFromRootFragmentationContext() -
+               first_fragment->OffsetFromRootFragmentationContext();
+    }
+    PhysicalRect fragment_rect(offset, fragment.Size());
+    bounding_rect.UniteEvenIfEmpty(fragment_rect);
+
+    if (const BlockBreakToken* break_token = fragment.GetBreakToken()) {
+      if (break_token->IsAtBlockEnd()) {
+        // Ignore subsequent fragments that are just there to hold overflowing
+        // children.
+        break;
+      }
+    }
+  }
+
+  return bounding_rect;
 }
 
 bool LayoutBox::IsReadingFlowContainer() const {

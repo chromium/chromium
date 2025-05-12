@@ -302,6 +302,8 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   LayoutUnit OffsetWidth() const final;
   LayoutUnit OffsetHeight() const final;
 
+  PhysicalRect BoundingBoxRelativeToFirstFragment() const final;
+
   bool MapToVisualRectInAncestorSpaceInternal(
       const LayoutBoxModelObject* ancestor,
       TransformState&,

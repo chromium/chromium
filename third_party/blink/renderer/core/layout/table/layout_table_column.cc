@@ -243,6 +243,29 @@ PhysicalOffset LayoutTableColumn::PhysicalLocation(
   return offset;
 }
 
+PhysicalRect LayoutTableColumn::BoundingBoxRelativeToFirstFragment() const {
+  NOT_DESTROYED();
+  DCHECK(RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
+  std::optional<PhysicalOffset> first_offset_from_fragmentation_context_root;
+  PhysicalRect bounding_rect;
+
+  ForAllSynthesizedFragments([&](const SynthesizedFragment& fragment) -> bool {
+    PhysicalOffset offset =
+        fragment.additional_offset_from_table_fragment + fragment.rect.offset +
+        fragment.table_fragment.OffsetFromRootFragmentationContext();
+    if (!first_offset_from_fragmentation_context_root) {
+      first_offset_from_fragmentation_context_root = offset;
+    }
+    // Make offsets relative to the first fragment.
+    offset -= *first_offset_from_fragmentation_context_root;
+    PhysicalRect rect(offset, fragment.rect.size);
+    bounding_rect.UniteEvenIfEmpty(rect);
+    return true;
+  });
+
+  return bounding_rect;
+}
+
 void LayoutTableColumn::QuadsInAncestorInternal(
     Vector<gfx::QuadF>& quads,
     const LayoutBoxModelObject* ancestor,

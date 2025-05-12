@@ -349,6 +349,18 @@ void LayoutBoxModelObject::DestroyLayer() {
   SetNeedsPaintPropertyUpdate();
 }
 
+LayoutUnit LayoutBoxModelObject::OffsetWidth() const {
+  NOT_DESTROYED();
+  DCHECK(RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
+  return BoundingBoxRelativeToFirstFragment().size.width;
+}
+
+LayoutUnit LayoutBoxModelObject::OffsetHeight() const {
+  NOT_DESTROYED();
+  DCHECK(RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
+  return BoundingBoxRelativeToFirstFragment().size.height;
+}
+
 bool LayoutBoxModelObject::HasSelfPaintingLayer() const {
   NOT_DESTROYED();
   return Layer() && Layer()->IsSelfPaintingLayer();

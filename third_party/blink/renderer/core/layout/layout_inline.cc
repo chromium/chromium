@@ -601,12 +601,39 @@ LayoutUnit LayoutInline::OffsetTop(const Element* parent) const {
 
 LayoutUnit LayoutInline::OffsetWidth() const {
   NOT_DESTROYED();
+  if (RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
+    return LayoutBoxModelObject::OffsetWidth();
+  }
   return PhysicalLinesBoundingBox().Width();
 }
 
 LayoutUnit LayoutInline::OffsetHeight() const {
   NOT_DESTROYED();
+  if (RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
+    return LayoutBoxModelObject::OffsetHeight();
+  }
   return PhysicalLinesBoundingBox().Height();
+}
+
+PhysicalRect LayoutInline::BoundingBoxRelativeToFirstFragment() const {
+  NOT_DESTROYED();
+  DCHECK(RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
+  DCHECK(IsInLayoutNGInlineFormattingContext());
+  InlineCursor cursor;
+  cursor.MoveToIncludingCulledInline(*this);
+  PhysicalRect bounding_box;
+  std::optional<PhysicalOffset> first_fragment_offset;
+  for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
+    PhysicalRect rect = cursor.CurrentRectInFirstContainerFragment();
+    if (!first_fragment_offset) {
+      // All fragment rectangles need to be relative to the first container
+      // fragment.
+      first_fragment_offset = rect.offset;
+    }
+    rect.offset -= *first_fragment_offset;
+    bounding_box.UniteIfNonZero(rect);
+  }
+  return bounding_box;
 }
 
 static LayoutUnit ComputeMargin(const LayoutInline* layout_object,
@@ -762,6 +789,9 @@ PhysicalRect LayoutInline::PhysicalLinesBoundingBox() const {
     InlineCursor cursor;
     cursor.MoveToIncludingCulledInline(*this);
     PhysicalRect bounding_box;
+    // TODO(layout-dev): Current().RectInContainerFragment() is unsuitable when
+    // there are multiple container fragments (block fragmentation). Use
+    // CurrentRectInFirstContainerFragment() instead.
     for (; cursor; cursor.MoveToNextForSameLayoutObject())
       bounding_box.UniteIfNonZero(cursor.Current().RectInContainerFragment());
     return bounding_box;
@@ -775,6 +805,9 @@ PhysicalRect LayoutInline::LinesVisualOverflowBoundingBox() const {
     PhysicalRect result;
     InlineCursor cursor;
     cursor.MoveToIncludingCulledInline(*this);
+    // TODO(layout-dev): Current().OffsetInContainerFragment() is unsuitable
+    // when there are multiple container fragments (block fragmentation). Use
+    // CurrentOffsetInFirstContainerFragment() instead.
     for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
       PhysicalRect child_rect = cursor.Current().InkOverflowRect();
       child_rect.offset += cursor.Current().OffsetInContainerFragment();

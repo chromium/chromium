@@ -17,8 +17,11 @@ test(() => {
     var parent = document.getElementById("parent");
     var child1 = document.getElementById("child1");
     var child2 = document.getElementById("child2");
-    assert_equals(parent.offsetHeight, 400);
+    assert_equals(parent.offsetWidth, 100);
+    assert_equals(parent.offsetHeight, 100);
+    assert_equals(child1.offsetWidth, 25);
     assert_equals(child1.offsetHeight, 100);
-    assert_equals(child2.offsetHeight, 300);
+    assert_equals(child2.offsetWidth, 75);
+    assert_equals(child2.offsetHeight, 100);
 }, "Balance, non-auto height, unused space");
 </script>

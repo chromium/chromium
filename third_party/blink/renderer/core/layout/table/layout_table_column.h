@@ -42,6 +42,7 @@ class CORE_EXPORT LayoutTableColumn : public LayoutBox {
   PhysicalSize Size() const override;
 
   PhysicalOffset PhysicalLocation(const LayoutBox*) const override;
+  PhysicalRect BoundingBoxRelativeToFirstFragment() const override;
 
   void QuadsInAncestorInternal(Vector<gfx::QuadF>&,
                                const LayoutBoxModelObject* ancestor,
