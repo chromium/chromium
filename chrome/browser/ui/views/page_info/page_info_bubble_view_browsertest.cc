@@ -1766,7 +1766,8 @@ class PageInfoBubbleViewBrowserTestTrackingProtectionSubpage
         enabled_features =
             {privacy_sandbox::kTrackingProtectionContentSettingUbControl,
              privacy_sandbox::kActUserBypassUx,
-             privacy_sandbox::kFingerprintingProtectionUx},
+             privacy_sandbox::kFingerprintingProtectionUx,
+             privacy_sandbox::kIpProtectionUx},
         disabled_features = {};
     if (GetParam()) {
       enabled_features.push_back(
@@ -1784,7 +1785,7 @@ class PageInfoBubbleViewBrowserTestTrackingProtectionSubpage
 
 IN_PROC_BROWSER_TEST_P(
     PageInfoBubbleViewBrowserTestTrackingProtectionSubpage,
-    ToggleForBlockingThirdPartyCookiesUpdatesTrackingProtectionException) {
+    ButtonForPausingAndResumingProtectionsUpdatesTrackingProtectionException) {
   profile_metrics::SetBrowserProfileType(
       browser()->profile(), profile_metrics::BrowserProfileType::kIncognito);
 
@@ -1792,25 +1793,30 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_example));
 
   SetCookieControlsMode(content_settings::CookieControlsMode::kBlockThirdParty);
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kFingerprintingProtectionEnabled, true);
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kIpProtectionEnabled,
+                                               true);
 
   OpenPageInfoAndGoToCookiesSubpage(/*rws_owner =*/{});
 
-  auto* third_party_cookies_toggle = static_cast<views::ToggleButton*>(GetView(
-      PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_TOGGLE));
-  EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsFalse());
+  auto* tracking_protections_button = static_cast<views::LabelButton*>(
+      GetView(PageInfoViewFactory::VIEW_ID_PAGE_INFO_ACT_PROTECTIONS_BUTTON));
+  EXPECT_TRUE(tracking_protections_button->GetVisible());
 
-  PerformMouseClickOnView(third_party_cookies_toggle);
-  EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsTrue());
+  PerformMouseClickOnView(tracking_protections_button);
   content_settings::SettingInfo info;
+
+  EXPECT_THAT(tracking_protections_button->GetText(),
+              l10n_util::GetStringUTF16(
+                  IDS_TRACKING_PROTECTION_BUBBLE_RESUME_PROTECTIONS_LABEL));
   EXPECT_EQ(
       host_content_settings_map()->GetContentSetting(
           GURL(), url_example, ContentSettingsType::TRACKING_PROTECTION, &info),
       CONTENT_SETTING_ALLOW);
 
-  PerformMouseClickOnView(third_party_cookies_toggle);
-  EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsFalse());
+  PerformMouseClickOnView(tracking_protections_button);
+  EXPECT_THAT(tracking_protections_button->GetText(),
+              l10n_util::GetStringUTF16(
+                  IDS_TRACKING_PROTECTION_BUBBLE_PAUSE_PROTECTIONS_LABEL));
   EXPECT_EQ(
       host_content_settings_map()->GetContentSetting(
           GURL(), url_example, ContentSettingsType::TRACKING_PROTECTION, &info),

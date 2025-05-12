@@ -213,10 +213,10 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionBubbleViewBrowserTest,
   ShowIncognitoBubble();
   EXPECT_FALSE(tracking_protection_settings->HasTrackingProtectionException(
       third_party_cookie_page_url()));
-  SimulateTogglePress(true);
+  SimulateTogglePress(false);
   EXPECT_TRUE(tracking_protection_settings->HasTrackingProtectionException(
       third_party_cookie_page_url()));
-  SimulateTogglePress(false);
+  SimulateTogglePress(true);
   EXPECT_FALSE(tracking_protection_settings->HasTrackingProtectionException(
       third_party_cookie_page_url()));
 }

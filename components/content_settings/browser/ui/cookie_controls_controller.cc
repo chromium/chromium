@@ -214,39 +214,36 @@ CookieControlsController::Status CookieControlsController::GetStatus(
       GetEnforcementForThirdPartyCookieBlocking(blocking_status, url, info,
                                                 cookies_allowed);
 
-  // If 3PC blocking is the only protection controllable on a site, reflect
-  // that state. If ACT features are controllable, reflect ACT state.
-  bool protections_disabled =
-      ShowActFeatures()
-          ? tracking_protection_settings_->HasTrackingProtectionException(url,
-                                                                          &info)
-          : cookies_allowed;
-
   CookieControlsState controls_state;
-  // TODO(crbug.com/388294499): Add support for `kTpPaused` and `kTpActive`.
   if (enforcement == CookieControlsEnforcement::kEnforcedByTpcdGrant) {
     controls_state = CookieControlsState::kHidden;
+  } else if (ShowActFeatures()) {
+    controls_state =
+        tracking_protection_settings_->HasTrackingProtectionException(url,
+                                                                      &info)
+            ? CookieControlsState::kTpPaused
+            : CookieControlsState::kTpActive;
   } else {
-    controls_state = protections_disabled ? CookieControlsState::k3pcsAllowed
-                                          : CookieControlsState::k3pcsBlocked;
+    controls_state = cookies_allowed ? CookieControlsState::k3pcsAllowed
+                                     : CookieControlsState::k3pcsBlocked;
   }
 
   return {controls_state, enforcement, blocking_status,
           info.metadata.expiration()};
 }
 
-void CookieControlsController::RecordActMetrics(bool protections_on) {
+void CookieControlsController::RecordActMetrics(bool pause_protections) {
   if (GetIsSubresourceBlocked()) {
     base::RecordAction(UserMetricsAction(
-        protections_on
-            ? "TrackingProtections.Bubble.FppActive.EnableProtections"
-            : "TrackingProtections.Bubble.FppActive.DisableProtections"));
+        pause_protections
+            ? "TrackingProtections.Bubble.FppActive.DisableProtections"
+            : "TrackingProtections.Bubble.FppActive.EnableProtections"));
   }
   if (GetIsSubresourceProxied()) {
     base::RecordAction(UserMetricsAction(
-        protections_on
-            ? "TrackingProtections.Bubble.IppActive.EnableProtections"
-            : "TrackingProtections.Bubble.IppActive.DisableProtections"));
+        pause_protections
+            ? "TrackingProtections.Bubble.IppActive.DisableProtections"
+            : "TrackingProtections.Bubble.IppActive.EnableProtections"));
   }
 }
 
@@ -324,29 +321,30 @@ bool CookieControlsController::HasOriginSandboxedTopLevelDocument() const {
   return rfh->IsSandboxed(network::mojom::WebSandboxFlags::kOrigin);
 }
 
+void CookieControlsController::OnTrackingProtectionsChangedForSite(
+    bool pause_protections) {
+  const GURL& url = GetWebContents()->GetLastCommittedURL();
+  if (pause_protections) {
+    tracking_protection_settings_->AddTrackingProtectionException(url);
+  } else {
+    tracking_protection_settings_->RemoveTrackingProtectionException(url);
+  }
+  OnCookieBlockingEnabledForSite(!pause_protections);
+  RecordActMetrics(pause_protections);
+}
+
 void CookieControlsController::OnCookieBlockingEnabledForSite(
     bool block_third_party_cookies) {
   const GURL& url = GetWebContents()->GetLastCommittedURL();
   should_reload_ = true;
   if (block_third_party_cookies) {
     base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOn"));
-    // Update TRACKING_PROTECTION content setting first since the COOKIES
-    // content setting observer updates the UI for both settings.
-    if (ShouldUpdateTpContentSetting()) {
-      tracking_protection_settings_->RemoveTrackingProtectionException(url);
-      RecordActMetrics(block_third_party_cookies);
-    }
     cookie_settings_->ResetThirdPartyCookieSetting(url);
-
     return;
   }
 
   CHECK(!block_third_party_cookies);
   base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOff"));
-  if (ShouldUpdateTpContentSetting()) {
-    tracking_protection_settings_->AddTrackingProtectionException(url);
-    RecordActMetrics(block_third_party_cookies);
-  }
   cookie_settings_->SetCookieSettingForUserBypass(url);
   // Record expiration metadata for the newly created exception, and increased
   // the activation count.
@@ -643,6 +641,7 @@ bool CookieControlsController::ShouldUserBypassIconBeVisible(
   // contexts.
   return HasOriginSandboxedTopLevelDocument() ||
          controls_state == CookieControlsState::k3pcsAllowed ||
+         controls_state == CookieControlsState::kTpPaused ||
          // If no 3P sites have attempted to access site data, nor were any
          // stateful bounces recorded, the icon should not be displayed. Take
          // into account both allow and blocked counts, since the breakage might

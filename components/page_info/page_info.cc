@@ -388,6 +388,13 @@ void PageInfo::OnThirdPartyToggleClicked(bool block_third_party_cookies) {
   show_info_bar_ = true;
 }
 
+void PageInfo::OnTrackingProtectionButtonPressed(bool pause_protections) {
+  DCHECK(controls_state_ != CookieControlsState::kHidden);
+  // TODO(crbug.com/388294499): Add metrics for toggling tracking protections.
+  controller_->OnTrackingProtectionsChangedForSite(pause_protections);
+  show_info_bar_ = true;
+}
+
 // static
 bool PageInfo::IsPermissionFactoryDefault(const PermissionInfo& info,
                                           bool is_incognito) {

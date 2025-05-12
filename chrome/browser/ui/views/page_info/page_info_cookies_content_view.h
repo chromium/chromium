@@ -46,6 +46,8 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
 
   void OnToggleButtonPressed();
 
+  void OnTrackingProtectionButtonPressed();
+
   // Sets the callback for when the cookies subpage is fully initialized. If it
   // is already calls the callback
   void SetInitializedCallbackForTesting(base::OnceClosure initialized_callback);
@@ -72,6 +74,10 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
       CookieControlsEnforcement enforcement,
       CookieBlocking3pcdStatus blocking_status,
       base::Time expiration);
+
+  // Updates the label of the tracking protection button using:
+  // `controls_state`: state of controls to display
+  void SetTrackingProtectionButtonLabel(CookieControlsState controls_state);
 
   // Sets properties for `third_party_cookies_toggle_` using:
   // `controls_state`: state of controls to display
@@ -166,6 +172,7 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   raw_ptr<views::Label> third_party_cookies_description_ = nullptr;
   raw_ptr<RichControlsContainerView> third_party_cookies_row_ = nullptr;
   raw_ptr<views::ToggleButton> third_party_cookies_toggle_ = nullptr;
+  raw_ptr<views::LabelButton> tracking_protection_button_ = nullptr;
   raw_ptr<views::ImageView> third_party_cookies_enforced_icon_ = nullptr;
   raw_ptr<views::Label> third_party_cookies_toggle_subtitle_ = nullptr;
 };

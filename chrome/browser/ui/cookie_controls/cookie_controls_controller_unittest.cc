@@ -1619,7 +1619,7 @@ TEST_F(CookieControlsUserBypassIncognitoTest, AddTrackingProtectionException) {
       TrackingProtectionSettingsFactory::GetForProfile(incognito_profile());
 
   incognito_cookie_controls()->Update(web_contents());
-  incognito_cookie_controls()->OnCookieBlockingEnabledForSite(false);
+  incognito_cookie_controls()->OnTrackingProtectionsChangedForSite(true);
 
   EXPECT_TRUE(
       tracking_protection_settings->HasTrackingProtectionException(GURL(kUrl)));
@@ -1637,7 +1637,7 @@ TEST_F(CookieControlsUserBypassIncognitoTest,
   EXPECT_TRUE(
       tracking_protection_settings->HasTrackingProtectionException(GURL(kUrl)));
 
-  incognito_cookie_controls()->OnCookieBlockingEnabledForSite(true);
+  incognito_cookie_controls()->OnTrackingProtectionsChangedForSite(false);
 
   EXPECT_FALSE(
       tracking_protection_settings->HasTrackingProtectionException(GURL(kUrl)));
@@ -1817,8 +1817,8 @@ TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
   auto* tester = content::WebContentsTester::For(incognito_web_contents());
   tester->NavigateAndCommit(GURL(kUrl));
   incognito_cookie_controls()->Update(incognito_web_contents());
-  incognito_cookie_controls()->OnCookieBlockingEnabledForSite(
-      std::get<0>(GetParam()) == CookieControlsState::k3pcsBlocked);
+  incognito_cookie_controls()->OnTrackingProtectionsChangedForSite(
+      std::get<0>(GetParam()) == CookieControlsState::kTpPaused);
 
   EXPECT_CALL(
       *incognito_mock(),
@@ -1837,10 +1837,9 @@ TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
   tester->NavigateAndCommit(GURL(kUrl));
   incognito_cookie_controls()->Update(incognito_web_contents());
 
-  bool protections_on =
-      (std::get<0>(GetParam()) == CookieControlsState::k3pcsBlocked);
+  bool tp_paused = std::get<0>(GetParam()) == CookieControlsState::kTpPaused;
 
-  incognito_cookie_controls()->OnCookieBlockingEnabledForSite(protections_on);
+  incognito_cookie_controls()->OnTrackingProtectionsChangedForSite(tp_paused);
 
   // Allowing 3PCs in regular mode should allow & enforce them in incognito.
   // Protections (i.e. the toggle) should still be on iff ACT features are
@@ -1864,8 +1863,7 @@ TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
   EXPECT_CALL(*incognito_mock(),
               OnCookieControlsIconStatusChanged(
                   /*icon_visible=*/
-                  !protections_on,  // Icon shown when
-                                    // protections are off
+                  tp_paused,  // Icon shown when protections paused
                   std::get<0>(GetParam()), CookieBlocking3pcdStatus::kNotIn3pcd,
                   /*should_highlight=*/false));
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
@@ -1875,15 +1873,14 @@ TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
 
 TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
        RecordUmaToggleMetricWhenActFeaturesAreActive) {
-  bool protections_on =
-      std::get<0>(GetParam()) == CookieControlsState::k3pcsBlocked;
+  bool tp_paused = std::get<0>(GetParam()) == CookieControlsState::kTpPaused;
   bool ipp_enabled = std::get<1>(GetParam()) != ActFeatureState::kIppDisabled;
   bool fpp_enabled = std::get<1>(GetParam()) != ActFeatureState::kFppDisabled;
   incognito_cookie_controls()->Update(web_contents());
 
   // Add site exception when protections are on so toggling UB initiates the
   // observer calls correctly.
-  if (protections_on) {
+  if (!tp_paused) {
     AddSiteException();
   }
 
@@ -1917,27 +1914,26 @@ TEST_P(CookieControlsUserBypassTrackingProtectionUiTest,
                   CookieBlocking3pcdStatus::kNotIn3pcd,
                   /*should_highlight=*/false));
 
-  incognito_cookie_controls()->OnCookieBlockingEnabledForSite(protections_on);
+  incognito_cookie_controls()->OnTrackingProtectionsChangedForSite(tp_paused);
 
   EXPECT_EQ(user_actions_.GetActionCount(kUMAIppActiveEnableProtections),
-            ipp_enabled && protections_on ? 1 : 0);
+            ipp_enabled && !tp_paused ? 1 : 0);
   EXPECT_EQ(user_actions_.GetActionCount(kUMAIppActiveDisableProtections),
-            ipp_enabled && !protections_on ? 1 : 0);
+            ipp_enabled && tp_paused ? 1 : 0);
   EXPECT_EQ(user_actions_.GetActionCount(kUMAFppActiveEnableProtections),
-            fpp_enabled && protections_on ? 1 : 0);
+            fpp_enabled && !tp_paused ? 1 : 0);
   EXPECT_EQ(user_actions_.GetActionCount(kUMAFppActiveDisableProtections),
-            fpp_enabled && !protections_on ? 1 : 0);
+            fpp_enabled && tp_paused ? 1 : 0);
 }
 
 std::string ParamToTestSuffixTrackingProtection(
     const testing::TestParamInfo<
         CookieControlsUserBypassTrackingProtectionUiTest::ParamType>& info) {
   std::stringstream name;
-  // TODO(crbug.com/388294499): Update to use TP specific enums.
-  if (std::get<0>(info.param) == CookieControlsState::k3pcsBlocked) {
-    name << "3pcsBlocked";
+  if (std::get<0>(info.param) == CookieControlsState::kTpActive) {
+    name << "TpActive";
   } else {
-    name << "3pcsAllowed";
+    name << "TpPaused";
   }
   switch (std::get<1>(info.param)) {
     case ActFeatureState::kActFeaturesEnabled:
@@ -1958,8 +1954,8 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     CookieControlsUserBypassTrackingProtectionUiTest,
     testing::Combine(
-        /*controls_state*/ testing::Values(CookieControlsState::k3pcsAllowed,
-                                           CookieControlsState::k3pcsBlocked),
+        /*controls_state*/ testing::Values(CookieControlsState::kTpActive,
+                                           CookieControlsState::kTpPaused),
         testing::Values(ActFeatureState::kActFeaturesEnabled,
                         ActFeatureState::kIppDisabled,
                         ActFeatureState::kFppDisabled)),

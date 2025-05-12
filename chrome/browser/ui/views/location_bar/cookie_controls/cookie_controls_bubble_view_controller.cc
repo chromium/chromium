@@ -164,7 +164,9 @@ void CookieControlsBubbleViewController::ApplyThirdPartyCookiesBlockedState() {
 void CookieControlsBubbleViewController::FillViewForThirdPartyCookies(
     CookieControlsEnforcement enforcement,
     base::Time expiration) {
-  bool tpcs_allowed = controls_state_ == CookieControlsState::k3pcsAllowed;
+  // TODO(crbug.com/388294499): Add support for ACT UI separately.
+  bool tpcs_allowed = controls_state_ == CookieControlsState::k3pcsAllowed ||
+                      controls_state_ == CookieControlsState::kTpPaused;
   if (tpcs_allowed) {
     ApplyThirdPartyCookiesAllowedState(enforcement, expiration);
   } else {
@@ -273,11 +275,15 @@ void CookieControlsBubbleViewController::OnToggleButtonPressed(
 
   controller_->SetUserChangedCookieBlockingForSite(true);
   // We should only enter the reloading state in the Incognito ACT UI.
+  // TODO(crbug.com/388294499): Move this logic into a separate function for the
+  // ACT toggle button.
   if (controller_->ShowActFeatures()) {
     is_reloading_state_ = true;
     OnUserTriggeredReloadingAction();
+    controller_->OnTrackingProtectionsChangedForSite(!toggled_on);
+  } else {
+    controller_->OnCookieBlockingEnabledForSite(!toggled_on);
   }
-  controller_->OnCookieBlockingEnabledForSite(!toggled_on);
   bubble_view_->GetContentView()->NotifyAccessibilityEventDeprecated(
       ax::mojom::Event::kAlert, true);
 }

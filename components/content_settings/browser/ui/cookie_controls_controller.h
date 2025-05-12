@@ -63,9 +63,13 @@ class CookieControlsController final
   // Called when the UI is closing.
   void OnUiClosing();
 
-  // Called when the user clicks on the button to enable/disable cookie
+  // Called when the user clicks on the toggle to enable/disable cookie
   // blocking.
   void OnCookieBlockingEnabledForSite(bool block_third_party_cookies);
+
+  // Called when the user clicks on the button to change their tracking
+  // protections state for the current site.
+  void OnTrackingProtectionsChangedForSite(bool pause_protections);
 
   // Called when the entry point for cookie controls was animated.
   void OnEntryPointAnimated();
@@ -74,7 +78,7 @@ class CookieControlsController final
   bool ShowActFeatures();
 
   // Record UMA for toggling ACT User Bypass.
-  void RecordActMetrics(bool protections_on);
+  void RecordActMetrics(bool pause_protections);
 
   // Returns whether the cookie blocking setting for the current site was
   // changed by the user via user bypass.

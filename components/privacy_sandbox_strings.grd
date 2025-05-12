@@ -317,6 +317,21 @@
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_LIMITED_TITLE" desc="Title shown on the cookie controls bubble when third-party cookies are limited.">
         Third-party cookies limited
       </message>
+      <message name="IDS_TRACKING_PROTECTION_BUBBLE_RESUME_PROTECTIONS_LABEL" desc="The label for the button in the Tracking Protection bubble when ACT protections are paused." translateable="false">
+        Resume tracking protections
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_BUBBLE_PAUSE_PROTECTIONS_LABEL" desc="The label for the button in the Tracking Protection bubble when ACT protections are active." translateable="false">
+        Pause tracking protections
+      </message>
+       <message name="IDS_TRACKING_PROTECTION_BUBBLE_ACTIVE_PROTECTIONS_DESCRIPTION" desc="The description label in the Tracking Protection bubble when ACT protections are active." translateable="false">
+        Try pausing tracking protections on this site, which can help site features work as expected.
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_BUBBLE_PAUSED_PROTECTIONS_DESCRIPTION" desc="The description label in the Tracking Protection bubble when ACT protections are paused." translateable="false">
+        Protections are paused until all Incognito windows are closed.
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_BUBBLE_PAUSED_PROTECTIONS_TITLE" desc="The title label in the Tracking Protection bubble when ACT protections are paused." translateable="false">
+        Tracking protections are paused on this site
+      </message>
       <!-- Privacy UX WebUI -->
       <!-- Privacy Sandbox Ads Notice -->
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_CLANK" desc="A sentence that appears alone at the bottom of the learn more page. It offers the user a path towards additional information about how Google protects their data." formatter_data="android_java">
