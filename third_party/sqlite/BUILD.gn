@@ -358,6 +358,13 @@ group("sqlite_dev") {
   public_configs = [ ":dev_sqlite3_compile_options" ]
 }
 
+config("sqlite_shell_warnings") {
+  if (is_clang) {
+    # TODO(crbug.com/417151790): Remove once upstream is fixed and rolled.
+    cflags = [ "-Wno-tautological-overlap-compare" ]
+  }
+}
+
 if (is_win || is_mac || is_linux || is_chromeos) {
   executable("sqlite_shell") {
     include_dirs = [
@@ -387,6 +394,7 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       # Must be after no_chromium_code for warning flags to be ordered
       # correctly.
       ":sqlite_warnings",
+      ":sqlite_shell_warnings",
     ]
   }
 
@@ -420,6 +428,7 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       # Must be after no_chromium_code for warning flags to be ordered
       # correctly.
       ":sqlite_warnings",
+      ":sqlite_shell_warnings",
     ]
   }
 }
