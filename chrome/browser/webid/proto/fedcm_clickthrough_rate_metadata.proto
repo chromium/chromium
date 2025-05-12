@@ -20,4 +20,8 @@ message FedCmClickthroughRateMetadata {
 
   // Likelihood of FedCM sign-ins. Value is between 0 and 1.
   float likely_to_signin = 4;
+
+  // Likelihood of data being used to compute the above fields is insufficient.
+  // e.g. Low data volume. Value is between 0 and 1.
+  float likely_insufficient_data = 5;
 }

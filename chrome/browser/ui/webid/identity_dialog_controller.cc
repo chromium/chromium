@@ -371,6 +371,10 @@ void IdentityDialogController::RequestUiVolumeRecommendation(
       segmentation_platform::kFedCmLikelyToSignin,
       segmentation_platform::processing::ProcessedValue(
           metadata.likely_to_signin()));
+  input_context->metadata_args.emplace(
+      segmentation_platform::kFedCmLikelyInsufficientData,
+      segmentation_platform::processing::ProcessedValue(
+          metadata.likely_insufficient_data()));
   segmentation_platform_service_->GetClassificationResult(
       segmentation_platform::kFedCmUserKey, prediction_options, input_context,
       std::move(callback));

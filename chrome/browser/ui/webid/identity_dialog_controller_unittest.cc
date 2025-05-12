@@ -48,6 +48,7 @@ constexpr float kPerPageLoadClickthroughRate = 0.1;
 constexpr float kPerClientClickthroughRate = 0.2;
 constexpr float kPerImpressionClickthroughRate = 0.3;
 constexpr float kLikelyToSignin = 0.4;
+constexpr float kLikelyInsufficientData = 0.5;
 
 // Mock version of AccountSelectionView for injection during tests.
 class MockAccountSelectionView : public AccountSelectionView {
@@ -240,6 +241,11 @@ class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
                               kLikelyToSignin),
                           input_context->GetMetadataArgument(
                               segmentation_platform::kFedCmLikelyToSignin));
+                ASSERT_EQ(
+                    segmentation_platform::processing::ProcessedValue(
+                        kLikelyInsufficientData),
+                    input_context->GetMetadataArgument(
+                        segmentation_platform::kFedCmLikelyInsufficientData));
               }
               base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
                   FROM_HERE, base::BindOnce(std::move(callback), result)
@@ -276,6 +282,8 @@ class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
               fedcm_metadata.set_per_impression_clickthrough_rate(
                   kPerImpressionClickthroughRate);
               fedcm_metadata.set_likely_to_signin(kLikelyToSignin);
+              fedcm_metadata.set_likely_insufficient_data(
+                  kLikelyInsufficientData);
               metadata->SetAnyMetadataForTesting(fedcm_metadata);
               return optimization_guide::OptimizationGuideDecision::kTrue;
             });

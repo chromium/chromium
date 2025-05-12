@@ -115,5 +115,5 @@ enum SegmentId {
   // Test model for EPHEMERAL_HOME_MODULE_BACKEND.
   EPHEMERAL_HOME_MODULE_BACKEND_TEST = 1012;
   // Segment for users who use FedCM.
-  FEDCM_USER = 1013;
+  // FEDCM_USER = 1013;  // Deprecated.
 };
