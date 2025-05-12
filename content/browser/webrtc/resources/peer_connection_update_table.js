@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {$} from 'chrome://resources/js/util.js';
+import * as SDPUtils from './sdp_utils.js';
 
 const MAX_NUMBER_OF_STATE_CHANGES_DISPLAYED = 10;
 const MAX_NUMBER_OF_EXPANDED_MEDIASECTIONS = 10;
@@ -183,28 +184,31 @@ export class PeerConnectionUpdateTable {
         };
         valueContainer.appendChild(copyBtn);
 
+        let lastSections;
+        const lastOfferAnswer = this.getLastOfferAnswer_(tableElement);
+        if (lastOfferAnswer && lastOfferAnswer !== update.value) {
+          lastSections = SDPUtils.splitSections(
+              lastOfferAnswer.substring(6).split(', sdp: ')[1]);
+        }
         // Fold the SDP sections.
-        const sections = sdp.split('\nm=')
-          .map((part, index) => (index > 0 ?
-            'm=' + part : part).trim() + '\r\n');
+        const sections = SDPUtils.splitSections(sdp);
         summary.textContent +=
           ' (type: "' + type + '", ' + sections.length + ' sections)';
-        sections.forEach(section => {
-          const lines = section.trim().split('\n');
+        sections.forEach((section, index) => {
+          const lines = SDPUtils.splitLines(section);
           // Extract the mid attribute.
           const mid = lines
               .filter(line => line.startsWith('a=mid:'))
               .map(line => line.substring(6))[0];
-          // Extract the direction.
-          const direction = lines
-              .map(line => line.substring(2).trim())
-              .find(line => ['sendrecv', 'sendonly',
-                    'recvonly', 'inactive'].includes(line)) || 'sendrecv';
+          const direction = SDPUtils.getDirection(section, sections[0]);
 
           const sectionDetails = document.createElement('details');
-          // Fold by default for large SDP.
+          const rejected = index !== 0 &&
+              SDPUtils.parseMLine(lines[0]).port === 0;
+          // Fold by default for large SDP, inactive SDP or rejected m-lines.
           sectionDetails.open =
-            sections.length <= MAX_NUMBER_OF_EXPANDED_MEDIASECTIONS;
+            sections.length <= MAX_NUMBER_OF_EXPANDED_MEDIASECTIONS &&
+            direction !== 'inactive' && !rejected;
           sectionDetails.textContent = lines.slice(1).join('\n');
 
           const sectionSummary = document.createElement('summary');
@@ -213,6 +217,12 @@ export class PeerConnectionUpdateTable {
             ' (' + (lines.length - 1) + ' more lines)' +
             (section.startsWith('m=') ? ' direction=' + direction : '') +
             (mid ? ' mid=' + mid : '');
+          if (lastSections && lastSections[index] !== sections[index]) {
+            // Open munged sections by default and give visual feedback.
+            sectionDetails.open = true;
+            sectionSummary.textContent += ' munged';
+            sectionSummary.style.backgroundColor = '#FBCEB1';
+          }
           sectionDetails.appendChild(sectionSummary);
 
           valueContainer.appendChild(sectionDetails);
