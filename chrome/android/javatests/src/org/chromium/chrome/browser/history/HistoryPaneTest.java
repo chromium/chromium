@@ -4,20 +4,7 @@
 
 package org.chromium.chrome.browser.history;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.replaceText;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
-import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.containsString;
-
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import androidx.test.filters.MediumTest;
 
@@ -28,9 +15,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
@@ -41,8 +26,10 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.hub.HistoryPaneStation;
+import org.chromium.chrome.test.transit.hub.HistoryPaneStation.HistorySearchFacility;
+import org.chromium.chrome.test.transit.hub.HistoryPaneStation.HistoryWithEntriesFacility;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
-import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 
 /** Public transit tests for the Hub's history pane. */
@@ -69,14 +56,7 @@ public class HistoryPaneTest {
     @MediumTest
     public void testEmptyView() {
         RegularTabSwitcherStation tabSwitcher = mStartingPage.openRegularTabSwitcher();
-        enterHistoryPane(tabSwitcher);
-
-        onViewWaiting(withText("You’ll find your history here")).check(matches(isDisplayed()));
-        onViewWaiting(
-                        withText(
-                                "You can see the pages you’ve visited or delete them from your"
-                                        + " history"))
-                .check(matches(isDisplayed()));
+        tabSwitcher.selectHistoryPane().expectEmptyState();
     }
 
     @Test
@@ -91,10 +71,9 @@ public class HistoryPaneTest {
                         .loadWebPageProgrammatically(urlOne)
                         .loadWebPageProgrammatically(urlTwo)
                         .openRegularTabSwitcher();
-        enterHistoryPane(tabSwitcher);
-
-        onViewWaiting(withText("One")).check(matches(isDisplayed()));
-        onViewWaiting(withText("Two")).check(matches(isDisplayed()));
+        HistoryWithEntriesFacility history = tabSwitcher.selectHistoryPane().expectEntries();
+        history.expectEntry("One");
+        history.expectEntry("Two");
     }
 
     @Test
@@ -109,17 +88,18 @@ public class HistoryPaneTest {
                         .loadWebPageProgrammatically(urlOne)
                         .loadWebPageProgrammatically(urlTwo)
                         .openRegularTabSwitcher();
-        enterHistoryPane(tabSwitcher);
-
-        onViewWaiting(withText("One")).check(matches(isDisplayed()));
-        onViewWaiting(withText("Two")).check(matches(isDisplayed()));
+        HistoryPaneStation historyPaneStation = tabSwitcher.selectHistoryPane();
+        HistoryWithEntriesFacility history = historyPaneStation.expectEntries();
+        history.expectEntry("One");
+        history.expectEntry("Two");
 
         // Search for "One" in the history search box.
-        onView(withId(R.id.search_menu_id)).perform(click());
-        onView(withId(R.id.search_text)).perform(replaceText("One"));
+        HistorySearchFacility search = history.openSearch();
+        search.typeSearchTerm("One");
 
         // Verify that "One" is displayed as a match.
-        onViewWaiting(allOf(withText("One"), withId(R.id.title))).check(matches(isDisplayed()));
+        history.expectEntry("One");
+        history.expectNoEntry("Two");
     }
 
     @Test
@@ -129,33 +109,13 @@ public class HistoryPaneTest {
                 mCtaTestRule.getTestServer().getURL("/chrome/test/data/android/navigate/one.html");
         String urlTwo =
                 mCtaTestRule.getTestServer().getURL("/chrome/test/data/android/navigate/two.html");
-        RegularTabSwitcherStation tabSwitcher =
+        WebPageStation page =
                 mStartingPage
                         .loadWebPageProgrammatically(urlOne)
-                        .loadWebPageProgrammatically(urlTwo)
-                        .openRegularTabSwitcher();
-        enterHistoryPane(tabSwitcher);
-
-        onViewWaiting(withText("One")).perform(click());
-        // When the history view is clicked, it should replace the current tab's URL.
-        CriteriaHelper.pollUiThread(
-                () ->
-                        urlOne.equals(
-                                mCtaTestRule
-                                        .getActivity()
-                                        .getTabModelSelector()
-                                        .getCurrentTab()
-                                        .getUrl()
-                                        .getSpec()));
-    }
-
-    private void enterHistoryPane(TabSwitcherStation tabSwitcher) {
-        onView(
-                        tabSwitcher
-                                .paneSwitcherElement
-                                .descendant(withContentDescription(containsString("History")))
-                                .getViewMatcher())
-                .perform(click());
+                        .loadWebPageProgrammatically(urlTwo);
+        HistoryWithEntriesFacility history =
+                page.openRegularTabSwitcher().selectHistoryPane().expectEntries();
+        history.expectEntry("One").selectToOpenWebPage(page, urlOne);
     }
 
     private void clearHistory(Profile profile) {

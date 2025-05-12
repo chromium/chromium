@@ -118,6 +118,19 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
         return mViewSpec.descendant(viewClass, viewMatcher);
     }
 
+    /** Returns a {@link ViewSpec} to declare an ancestor of this ViewElement. */
+    @SafeVarargs
+    public final ViewSpec<View> ancestor(Matcher<View>... viewMatcher) {
+        return mViewSpec.ancestor(viewMatcher);
+    }
+
+    /** Returns a {@link ViewSpec} to declare an ancestor of this ViewElement. */
+    @SafeVarargs
+    public final <DescendantViewT extends View> ViewSpec<DescendantViewT> ancestor(
+            Class<DescendantViewT> viewClass, Matcher<View>... viewMatcher) {
+        return mViewSpec.ancestor(viewClass, viewMatcher);
+    }
+
     /** Trigger an Espresso action on this View. */
     public Transition.Trigger getPerformTrigger(ViewAction action) {
         return () -> {

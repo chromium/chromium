@@ -123,13 +123,23 @@ public abstract class HubBaseStation extends Station<ChromeTabbedActivity> {
     }
 
     /** Convenience method to select the Regular Tab Switcher pane. */
-    public RegularTabSwitcherStation selectRegularTabList() {
+    public RegularTabSwitcherStation selectRegularTabsPane() {
         return selectPane(PaneId.TAB_SWITCHER, RegularTabSwitcherStation.class);
     }
 
     /** Convenience method to select the Incognito Tab Switcher pane. */
-    public IncognitoTabSwitcherStation selectIncognitoTabList() {
+    public IncognitoTabSwitcherStation selectIncognitoTabsPane() {
         return selectPane(PaneId.INCOGNITO_TAB_SWITCHER, IncognitoTabSwitcherStation.class);
+    }
+
+    /** Convenience method to select the Tab Groups pane. */
+    public TabGroupPaneStation selectTabGroupsPane() {
+        return selectPane(PaneId.TAB_GROUPS, TabGroupPaneStation.class);
+    }
+
+    /** Convenience method to select the History pane. */
+    public HistoryPaneStation selectHistoryPane() {
+        return selectPane(PaneId.HISTORY, HistoryPaneStation.class);
     }
 
     public class SwitchPaneButtonFacility extends Facility<HubBaseStation> {

@@ -689,13 +689,19 @@ public class TabSwitcherLayoutPTTest {
         IncognitoTabSwitcherStation incognitoTabSwitcherStation = incognitoPage.openIncognitoTabSwitcher();
         // Load URL in Regular Model
         mCtaTestRule.loadUrlInTab(
-                mCtaTestRule.getTestServer().getURL(TEST_URL), PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR, regularTab);
+                mCtaTestRule.getTestServer().getURL(TEST_URL),
+                PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
+                regularTab);
 
-        RegularTabSwitcherStation regularTabSwitcherStation = incognitoTabSwitcherStation.selectRegularTabList();
+        RegularTabSwitcherStation regularTabSwitcherStation =
+                incognitoTabSwitcherStation.selectRegularTabsPane();
         // Load URL in Incognito Model
         mCtaTestRule.loadUrlInTab(
-                mCtaTestRule.getTestServer().getURL(TEST_URL), PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR, incognitoTab);
+                mCtaTestRule.getTestServer().getURL(TEST_URL),
+                PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
+                incognitoTab);
 
-        regularTabSwitcherStation.selectTabAtIndex(0, WebPageStation.newBuilder().withExpectedUrlSubstring(TEST_URL));
+        regularTabSwitcherStation.selectTabAtIndex(
+                0, WebPageStation.newBuilder().withExpectedUrlSubstring(TEST_URL));
     }
 }

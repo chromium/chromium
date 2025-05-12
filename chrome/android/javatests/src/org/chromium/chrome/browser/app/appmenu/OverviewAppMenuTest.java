@@ -137,7 +137,7 @@ public class OverviewAppMenuTest {
             menu.verifyPresentItems();
         } finally {
             menu.closeProgrammatically();
-            incognitoTabSwitcher.selectRegularTabList();
+            incognitoTabSwitcher.selectRegularTabsPane();
         }
     }
 

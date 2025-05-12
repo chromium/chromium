@@ -219,6 +219,7 @@ android_library("chrome_java_transit") {
     "javatests/src/org/chromium/chrome/test/transit/hub/ArchiveMessageCardFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/hub/ArchivedTabsDialogStation.java",
     "javatests/src/org/chromium/chrome/test/transit/hub/CardAtPositionCondition.java",
+    "javatests/src/org/chromium/chrome/test/transit/hub/HistoryPaneStation.java",
     "javatests/src/org/chromium/chrome/test/transit/hub/HubBaseStation.java",
     "javatests/src/org/chromium/chrome/test/transit/hub/HubStationUtils.java",
     "javatests/src/org/chromium/chrome/test/transit/hub/IncognitoTabSwitcherStation.java",

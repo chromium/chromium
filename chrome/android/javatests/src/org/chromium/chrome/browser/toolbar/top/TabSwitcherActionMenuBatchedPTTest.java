@@ -131,7 +131,7 @@ public class TabSwitcherActionMenuBatchedPTTest {
 
         // Return to one non-incognito blank tab
         IncognitoTabSwitcherStation incognitoTabSwitcher =
-                regularTabSwitcher.selectIncognitoTabList();
+                regularTabSwitcher.selectIncognitoTabsPane();
         regularTabSwitcher =
                 incognitoTabSwitcher.closeTabAtIndex(0, RegularTabSwitcherStation.class);
         blankPage = regularTabSwitcher.openNewTab().loadAboutBlank();

@@ -86,12 +86,8 @@ public class HubLayoutPublicTransitTest {
                         .openNewIncognitoTabFast()
                         .openIncognitoTabSwitcher();
 
-        RegularTabSwitcherStation regularTabSwitcher =
-                incognitoTabSwitcher.selectPane(
-                        PaneId.TAB_SWITCHER, RegularTabSwitcherStation.class);
-        incognitoTabSwitcher =
-                regularTabSwitcher.selectPane(
-                        PaneId.INCOGNITO_TAB_SWITCHER, IncognitoTabSwitcherStation.class);
+        RegularTabSwitcherStation regularTabSwitcher = incognitoTabSwitcher.selectRegularTabsPane();
+        incognitoTabSwitcher = regularTabSwitcher.selectIncognitoTabsPane();
 
         // Go back to a PageStation for BlankCTATabInitialStateRule to reset state.
         incognitoTabSwitcher.selectTabAtIndex(0, IncognitoNewTabPageStation.newBuilder());

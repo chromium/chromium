@@ -102,13 +102,13 @@ public class TabSwitcherPanePublicTransitTest {
         IncognitoTabSwitcherStation incognitoTabSwitcher = incognitoNtp.openIncognitoTabSwitcher();
         onView(RegularTabSwitcherStation.EMPTY_STATE_TEXT.getViewMatcher()).check(doesNotExist());
 
-        RegularTabSwitcherStation regularTabSwitcher = incognitoTabSwitcher.selectRegularTabList();
+        RegularTabSwitcherStation regularTabSwitcher = incognitoTabSwitcher.selectRegularTabsPane();
 
         regularTabSwitcher = regularTabSwitcher.closeTabAtIndex(0, RegularTabSwitcherStation.class);
         onView(RegularTabSwitcherStation.EMPTY_STATE_TEXT.getViewMatcher())
                 .check(matches(isDisplayed()));
 
-        incognitoTabSwitcher = regularTabSwitcher.selectIncognitoTabList();
+        incognitoTabSwitcher = regularTabSwitcher.selectIncognitoTabsPane();
         onView(RegularTabSwitcherStation.EMPTY_STATE_TEXT.getViewMatcher()).check(doesNotExist());
 
         regularTabSwitcher =
