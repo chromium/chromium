@@ -103,7 +103,9 @@ SystemIdentityManager::IteratorResult SystemAccountUpdater::IdentitiesOnDevice(
   // Add the avatar info to the dictionary of avatars.
   if (image) {
     NSData* png_data = UIImagePNGRepresentation(image);
-    [avatars setObject:png_data forKey:identity.gaiaID];
+    if (png_data) {
+      [avatars setObject:png_data forKey:identity.gaiaID];
+    }
   }
 
   return SystemIdentityManager::IteratorResult::kContinueIteration;
