@@ -1108,6 +1108,7 @@ public class FeedSurfaceCoordinator
             TextView titleView = (TextView) mHeaderView.findViewById(R.id.header_title);
             if (titleView != null) {
                 titleView.setText(headerText);
+                titleView.setContentDescription(headerText);
             }
         }
     }
