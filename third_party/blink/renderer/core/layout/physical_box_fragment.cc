@@ -1027,13 +1027,6 @@ PhysicalRect PhysicalBoxFragment::RecalcContentsInkOverflow() {
       DCHECK(child_layout_object);
       DCHECK(!child_layout_object->CanUseFragmentsForVisualOverflow());
       child_layout_object->RecalcVisualOverflow();
-      // TODO(crbug.com/1144203): Reconsider this when fragment-based ink
-      // overflow supports block fragmentation. Never allow flow threads to
-      // propagate overflow up to a parent.
-      DCHECK_EQ(child_fragment->IsColumnBox(),
-                child_layout_object->IsLayoutFlowThread());
-      if (child_fragment->IsColumnBox())
-        continue;
       child_rect = child_layout_object->VisualOverflowRect();
     }
     child_rect.offset += child.offset;
