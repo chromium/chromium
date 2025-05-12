@@ -1,5 +1,4 @@
 gab@chromium.org
-isherman@chromium.org
 
 per-file *_messages*.h=set noparent
 per-file *_messages*.h=file://ipc/SECURITY_OWNERS
