@@ -220,7 +220,7 @@ BASE_FEATURE(kEnableErrorBadgeOnIdentityDisc,
 
 BASE_FEATURE(kEnableASWebAuthenticationSession,
              "EnableASWebAuthenticationSession",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Enables showing the enterprise dialog after every signin into a managed
