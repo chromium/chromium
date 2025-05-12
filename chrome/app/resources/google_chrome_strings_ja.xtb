@@ -212,7 +212,7 @@
 <translation id="3635073343384702370">パスワードを保存すると、Chrome による確認が可能になります</translation>
 <translation id="3667616615096815454">インストールできません。このアプリはサーバーに認識されていません。</translation>
 <translation id="3673813398384385993">Chrome で「<ph name="EXTENSION_NAME" />」に不正なソフトウェアが含まれていることが検出されました</translation>
-<translation id="3697952514309507634">その他の Chrome プロフィール</translation>
+<translation id="3697952514309507634">その他の Chrome プロファイル</translation>
 <translation id="3703994572283698466">ChromeOS は、<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開発環境<ph name="END_LINK_LINUX_OSS" />と同様に、追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
 <translation id="3716540481907974026">ChromeOS Flex のバージョン</translation>
 <translation id="3718181793972440140">このデバイスから 1 件の項目を削除します。後でデータを取得するには、<ph name="USER_EMAIL" /> として Chrome にログインしてください。</translation>
@@ -540,7 +540,7 @@
 <translation id="80471789339884597">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはすべてのブラウザを再起動してください。</translation>
 <translation id="8064015041956107954">右上の Chrome メニューから、ブックマークやリーディング モードなどを開くことができます</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
-<translation id="8077579734294125741">その他の Chrome プロフィール</translation>
+<translation id="8077579734294125741">その他の Chrome プロファイル</translation>
 <translation id="8086881907087796310">パソコンがハードウェアの最小要件を満たしていないため、インストールできませんでした。</translation>
 <translation id="8111297389482307122">Google アカウントに一部のデータを保存してすべてのデバイスで使用できるようにするには、Chrome で本人確認を行う必要があります。ログアウトしても、このデータはこのデバイスに残ります。</translation>
 <translation id="8113883687556086139">アカウント「<ph name="ACCOUNT_EMAIL" />」で Chrome のデータを使用、保存するには、本人確認を行ってください</translation>

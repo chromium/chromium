@@ -1176,7 +1176,7 @@
 <translation id="5971459446352190251">QR コード検索</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 個のブックマークが削除されました}other{{count} 個のブックマークが削除されました}}</translation>
 <translation id="5972844218283131174">すべての選択を解除</translation>
-<translation id="5977976211062815271">このデバイス</translation>
+<translation id="5977976211062815271">保存先: このデバイス</translation>
 <translation id="598634819525651074">面積</translation>
 <translation id="5988097621740394599">タブで値下げ情報を確認します。</translation>
 <translation id="5988851877894965432">Chrome で URL を開く</translation>

@@ -991,7 +991,7 @@
 <translation id="5620163320393916465">Сохраненных паролей нет</translation>
 <translation id="5620928963363755975">Чтобы найти скачанные файлы и веб-страницы, нажмите кнопку "Ещё" и выберите соответствующий пункт</translation>
 <translation id="5626134646977739690">Имя:</translation>
-<translation id="5628604359369369630">Не прочитано – доступно в офлайн-режиме</translation>
+<translation id="5628604359369369630">Не прочитано – доступно офлайн</translation>
 <translation id="5631483240431073854">Управлять открытыми вкладками</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />История поиска<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />сведения о других действиях<ph name="END_LINK2" /> могут сохраняться в аккаунте Google.</translation>
 <translation id="5648166631817621825">Последние 7 дней</translation>
@@ -1034,7 +1034,7 @@
 <translation id="5814749351757353073">Подпишитесь на любимые сайты</translation>
 <translation id="5822875253699806474">Чтобы быстро возвращаться к просмотренным сайтам, включите синхронизацию вкладок и истории.</translation>
 <translation id="5828921839638612740">Удалить данные можно в настройках Chrome.</translation>
-<translation id="5829586821381540080">Сохранено в папке "<ph name="FOLDER_NAME" />"</translation>
+<translation id="5829586821381540080">Сохранено в папке <ph name="FOLDER_NAME" /></translation>
 <translation id="583281660410589416">Неизвестно</translation>
 <translation id="5833984609253377421">Поделиться ссылкой</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>

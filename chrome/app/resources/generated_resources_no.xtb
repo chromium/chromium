@@ -2930,7 +2930,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3007771295016901659">Dupliser fanen</translation>
 <translation id="3008142279736625920">Ostekake</translation>
 <translation id="3008272652534848354">Tilbakestill tillatelser</translation>
-<translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> krever at du kobler til Wifi i dag og laster ned en oppdatering. Eller last ned via en tilkobling med datamåling (kostnader kan påløpe).}other{<ph name="MANAGER" /> krever at du kobler til Wifi og laster ned en oppdatering før tidsfristen. Eller last ned via en tilkobling med datamåling (kostnader kan påløpe).}}</translation>
+<translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> krever at du kobler til wifi i dag og laster ned en oppdatering. Eller last ned via en tilkobling med datamåling (kostnader kan påløpe).}other{<ph name="MANAGER" /> krever at du kobler til wifi og laster ned en oppdatering før tidsfristen. Eller last ned via en tilkobling med datamåling (kostnader kan påløpe).}}</translation>
 <translation id="3009178788565917040">Utdata</translation>
 <translation id="3009352964623081324">Søk + O og deretter S. Bruk for å installere, administrere og tilpasse stemmer.</translation>
 <translation id="3009779501245596802">Indekserte databaser</translation>

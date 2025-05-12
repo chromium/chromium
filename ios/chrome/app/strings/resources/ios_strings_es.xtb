@@ -1137,7 +1137,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="5779117921996157216">{count,plural, =1{Tienes {count} contraseña vulnerada que podría poner en riesgo tu seguridad. Soluciona el problema para protegerte.}other{Tienes {count} contraseñas vulneradas que podrían poner en riesgo tu seguridad. Soluciona el problema para protegerte.}}</translation>
 <translation id="5791632441210678828">Botón para ordenar el feed Siguiendo</translation>
 <translation id="5803566855766646066">¿Seguro que quieres descartar esta nueva tarjeta?</translation>
-<translation id="5804012843049740908">Configura consejos que te ayuden a sacar el máximo partido de Chrome</translation>
+<translation id="5804012843049740908">Consejos sobre configuración que te ayudan a sacar el máximo partido de Chrome</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5817176759448082654">Revisión de contraseñas</translation>
 <translation id="5819208479324046259">Gestionado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>

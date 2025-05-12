@@ -7060,7 +7060,7 @@
 <translation id="5978277834170881274">使用基本拼写检查(&amp;U)</translation>
 <translation id="5979084224081478209">检查密码</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{您重新开启了 1 个可能有害的扩展程序}other{您重新开启了 {NUM_EXTENSIONS} 个可能有害的扩展程序}}</translation>
-<translation id="5979353814339191480">此选项适用于以下类型的 Chromebook：具有流量套餐或移动网络加密狗，或者已通过“网络共享”功能连接到便携式热点</translation>
+<translation id="5979353814339191480">此选项适用于以下类型的 Chromebook：具有流量套餐或移动网络网卡，或者已通过“网络共享”功能连接到便携式热点</translation>
 <translation id="5979421442488174909">翻译成<ph name="LANGUAGE" />(&amp;T)</translation>
 <translation id="5979469435153841984">要为网页添加书签，请点击地址栏中的星形图标</translation>
 <translation id="5982578203375898585">下载完成后显示下载内容</translation>
@@ -8372,7 +8372,7 @@
 <translation id="6921104647315081813">清除活动</translation>
 <translation id="692114467174262153">无法打开<ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
 <translation id="692135145298539227">删除</translation>
-<translation id="6922128026973287222">使用 Google 流量节省程序可以节省流量并加快加载速度。点击此处即可了解详情。</translation>
+<translation id="6922128026973287222">使用 Google 流量节省模式可以节省流量并加快加载速度。点击此处即可了解详情。</translation>
 <translation id="6922745772873733498">请输入 PIN 码以进行打印</translation>
 <translation id="6922763095098248079">您的设备由贵单位管理。管理员可访问此设备上任意个人资料中的数据。</translation>
 <translation id="6923633482430812883">装载共享时出错。请检查您要连接的文件服务器是否支持 SMBv2 或更高版本。</translation>

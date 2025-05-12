@@ -3858,7 +3858,7 @@
 <translation id="369736917241079046">ランチャー+左矢印</translation>
 <translation id="3697716475445175867">最終使用日</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{今後、このサイトからの通知の送信を停止できます。}other{今後、これらのサイトからの通知の送信を停止できます。}}</translation>
-<translation id="3697952514309507634">その他の Chrome プロフィール</translation>
+<translation id="3697952514309507634">その他の Chrome プロファイル</translation>
 <translation id="3698471669415859717">確認が終わりました</translation>
 <translation id="3699624789011381381">メール アドレス</translation>
 <translation id="3699920817649120894">同期とカスタマイズをオフにしますか？</translation>
@@ -4959,7 +4959,7 @@
 <translation id="4446933390699670756">ミラーリング</translation>
 <translation id="4448560527907365660">保存してもっと見る</translation>
 <translation id="4448914100439890108"><ph name="DOMAIN" /> の <ph name="USERNAME" /> のパスワードを非表示にします</translation>
-<translation id="4449247303975391730">権限の管理</translation>
+<translation id="4449247303975391730">権限を管理</translation>
 <translation id="4449948729197510913">お客様のユーザー名は組織の企業アカウントに属しています。アカウントにデバイスを登録するには、まず管理コンソールでドメインの所有権を確認してください。なお、確認にはアカウントの管理者権限が必要です。</translation>
 <translation id="4450974146388585462">診断</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> が、データをより安全に保存できる有効な TPM を検出しました。</translation>
@@ -7056,7 +7056,7 @@
 <translation id="5975792506968920132">バッテリー残量（%）</translation>
 <translation id="5976160379964388480">その他</translation>
 <translation id="5976780232488408272">文章作成のサポート</translation>
-<translation id="5977976211062815271">このデバイス</translation>
+<translation id="5977976211062815271">保存先: このデバイス</translation>
 <translation id="5978277834170881274">基本スペルチェックを使用(&amp;U)</translation>
 <translation id="5979084224081478209">パスワードを確認</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{1 個の有害な可能性がある拡張機能を再度有効にしました}other{{NUM_EXTENSIONS} 個の有害な可能性がある拡張機能を再度有効にしました}}</translation>
@@ -10006,7 +10006,7 @@
     <ph name="BEGIN_PARAGRAPH3" />このサービスは [設定] でオフにできます。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8076835018653442223">デバイスのローカル ファイルへのアクセスは管理者によって無効にされています</translation>
 <translation id="8077120325605624147">アクセスしたすべてのサイトであらゆる広告の表示が許可されます</translation>
-<translation id="8077579734294125741">その他の Chrome プロフィール</translation>
+<translation id="8077579734294125741">その他の Chrome プロファイル</translation>
 <translation id="8077749280021225629">閲覧履歴データ（<ph name="URL" />）も削除します。これにより、<ph name="DOMAIN" /> からログアウトします。<ph name="LEARN_MORE" /></translation>
 <translation id="80790299200510644">画像検索</translation>
 <translation id="80798452873915119">全ディスプレイのウィンドウ管理をリクエストすることをサイトに許可する</translation>
@@ -11256,7 +11256,7 @@
 <translation id="895347679606913382">開始しています...</translation>
 <translation id="8954796993367253220">ゲストモードの履歴を削除するには、すべてのゲスト ウィンドウを閉じてください。</translation>
 <translation id="8955174612586215829">テーマを検索</translation>
-<translation id="8957757410289731985">プロフィールをカスタマイズ</translation>
+<translation id="8957757410289731985">プロファイルをカスタマイズ</translation>
 <translation id="8959144235813727886">ウェブサイトとアプリ</translation>
 <translation id="895944840846194039">JavaScript メモリ</translation>
 <translation id="8960208913905765425">クイック アンサーの単位変換</translation>
