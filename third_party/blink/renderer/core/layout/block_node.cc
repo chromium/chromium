@@ -1859,13 +1859,9 @@ void BlockNode::UpdateShapeOutsideInfoIfNeeded(
       constraint_space.PercentageResolutionInlineSize());
 }
 
-void BlockNode::StoreColumnSizeAndCount(LayoutUnit inline_size, int count) {
+void BlockNode::StoreColumnCount(int count) {
   LayoutMultiColumnFlowThread* flow_thread =
       To<LayoutBlockFlow>(box_.Get())->MultiColumnFlowThread();
-  // We have no chance to unregister the inline size for the
-  // LayoutMultiColumnFlowThread.
-  TextAutosizer::MaybeRegisterInlineSize(*flow_thread, inline_size);
-
   flow_thread->SetColumnCountFromNG(count);
 }
 

@@ -208,9 +208,8 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
       bool use_first_line_style,
       BaselineAlgorithmType baseline_algorithm_type);
 
-  // Write the inline-size and number of columns in a multicol container to
-  // legacy.
-  void StoreColumnSizeAndCount(LayoutUnit inline_size, int count);
+  // Write the number of columns in a multicol container to legacy.
+  void StoreColumnCount(int count);
 
   bool ShouldApplyLayoutContainment() const {
     return box_->ShouldApplyLayoutContainment();

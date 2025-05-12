@@ -48,6 +48,7 @@ class Size;
 
 namespace blink {
 
+class BlockNode;
 class Document;
 class Frame;
 class LayoutBlock;
@@ -97,10 +98,13 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
 
   bool PageNeedsAutosizing() const;
 
-  // Register the specified |inline_size| for |ng_block| if the document has
-  // a TextAutosizer instance and it should handle layout.
-  static void MaybeRegisterInlineSize(const LayoutBlock& ng_block,
-                                      LayoutUnit inline_size);
+  // Override the inline-size when entering a column in a multicol container.
+  // Called when entering a column inside a multicol container.
+  //
+  // TODO(layout-dev): This approach is wrong for column spanners (if we care)
+  // (since those aren't part of columns), but this has never worked anyway.
+  static void ForceInlineSizeForColumn(const BlockNode& multicol_container,
+                                       LayoutUnit inline_size);
 
   void Trace(Visitor*) const;
 

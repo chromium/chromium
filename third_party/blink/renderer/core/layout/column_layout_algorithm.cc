@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/layout/simplified_oof_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/space_utils.h"
 #include "third_party/blink/renderer/core/layout/table/table_layout_utils.h"
+#include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
@@ -300,11 +301,10 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
   used_column_count_ =
       ResolveUsedColumnCount(Style(), ChildAvailableSize().inline_size);
 
-  // Write the column inline-size and count back to the legacy flow thread if
-  // we're at the first fragment. TextAutosizer needs the inline-size, and the
-  // legacy fragmentainer group machinery needs the count.
+  // Write the column count back to the legacy flow thread if we're at the first
+  // fragment. The legacy fragmentainer group machinery needs the count.
   if (!IsBreakInside(GetBreakToken())) {
-    node_.StoreColumnSizeAndCount(column_inline_size_, used_column_count_);
+    node_.StoreColumnCount(used_column_count_);
   }
 
   // If we know the block-size of the fragmentainers in an outer fragmentation
@@ -989,6 +989,8 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
           min_break_appeal.value_or(kBreakAppealLastResort),
           &container_builder_);
 
+      TextAutosizer::ForceInlineSizeForColumn(Node(), column_size.inline_size);
+
       FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
           child_space, Node(), GetBreakToken());
 
@@ -1655,6 +1657,7 @@ LayoutUnit ColumnLayoutAlgorithm::ResolveColumnAutoBlockSizeInternal(
   tallest_unbreakable_block_size_ = LayoutUnit();
   int forced_break_count = 0;
   do {
+    TextAutosizer::ForceInlineSizeForColumn(Node(), column_size.inline_size);
     LayoutAlgorithmParams params(Node(), fragment_geometry, space, break_token);
     params.column_spanner_path = spanner_path_;
     BlockLayoutAlgorithm balancing_algorithm(params);
