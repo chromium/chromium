@@ -53,12 +53,13 @@ class GPU_EXPORT GpuMemoryBufferImplIOSurface : public GpuMemoryBufferImpl {
   gfx::GpuMemoryBufferHandle CloneHandle() const override;
 
  private:
-  GpuMemoryBufferImplIOSurface(gfx::GpuMemoryBufferId id,
-                               const gfx::Size& size,
-                               gfx::BufferFormat format,
-                               DestructionCallback callback,
-                               IOSurfaceRef io_surface,
-                               uint32_t lock_flags);
+  GpuMemoryBufferImplIOSurface(
+      gfx::GpuMemoryBufferId id,
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      DestructionCallback callback,
+      base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface,
+      uint32_t lock_flags);
 
   base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface_;
   uint32_t lock_flags_;

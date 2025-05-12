@@ -52,10 +52,10 @@ GpuMemoryBufferImplIOSurface::GpuMemoryBufferImplIOSurface(
     const gfx::Size& size,
     gfx::BufferFormat format,
     DestructionCallback callback,
-    IOSurfaceRef io_surface,
+    base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface,
     uint32_t lock_flags)
     : GpuMemoryBufferImpl(id, size, format, std::move(callback)),
-      io_surface_(io_surface),
+      io_surface_(std::move(io_surface)),
       lock_flags_(lock_flags) {}
 
 GpuMemoryBufferImplIOSurface::~GpuMemoryBufferImplIOSurface() {}
@@ -91,7 +91,7 @@ GpuMemoryBufferImplIOSurface::CreateFromHandle(
   }
 
   return base::WrapUnique(new GpuMemoryBufferImplIOSurface(
-      handle.id, size, format, std::move(callback), io_surface.release(),
+      handle.id, size, format, std::move(callback), std::move(io_surface),
       LockFlags(usage)));
 }
 
