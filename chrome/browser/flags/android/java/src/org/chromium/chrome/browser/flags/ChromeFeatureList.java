@@ -195,6 +195,8 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS =
             "AndroidTabDeclutterArchiveTabGroups";
     public static final String ANDROID_TAB_DECLUTTER_AUTO_DELETE = "AndroidTabDeclutterAutoDelete";
+    public static final String ANDROID_TAB_DECLUTTER_AUTO_DELETE_KILL_SWITCH =
+            "AndroidTabDeclutterAutoDeleteKillSwitch";
     public static final String ANDROID_TAB_DECLUTTER_DEDUPE_TAB_IDS_KILL_SWITCH =
             "AndroidTabDeclutterDedupeTabIdsKillSwitch";
     public static final String ANDROID_TAB_DECLUTTER_PERFORMANCE_IMPROVEMENTS =
@@ -1003,6 +1005,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS, false);
     public static final MutableFlagWithSafeDefault sAndroidTabDeclutterAutoDelete =
             newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER_AUTO_DELETE, false);
+    public static final MutableFlagWithSafeDefault sAndroidTabDeclutterAutoDeleteKillSwitch =
+            newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER_AUTO_DELETE_KILL_SWITCH, true);
     public static final MutableFlagWithSafeDefault sAndroidTabDeclutterPerformanceImprovements =
             newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER_PERFORMANCE_IMPROVEMENTS, false);
     public static final MutableFlagWithSafeDefault sAndroidTabDeclutterRescueKillSwitch =
@@ -1499,7 +1503,7 @@ public abstract class ChromeFeatureList {
     public static final MutableIntParamWithSafeDefault
             sAndroidTabDeclutterAutoDeleteTimeDeltaHours =
                     sAndroidTabDeclutterAutoDelete.newIntParam(
-                            "android_tab_declutter_auto_delete_time_delta_hours", 60 * 24);
+                            "android_tab_declutter_auto_delete_time_delta_hours", 90 * 24);
     public static final MutableBooleanParamWithSafeDefault
             sDisableBottomControlsStackerYOffsetDispatching =
                     sBottomBrowserControlsRefactor.newBooleanParam(

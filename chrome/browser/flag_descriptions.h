@@ -2675,6 +2675,9 @@ extern const char kAndroidSurfaceColorUpdateDescription[];
 extern const char kAndroidTabDeclutterAutoDeleteName[];
 extern const char kAndroidTabDeclutterAutoDeleteDescription[];
 
+extern const char kAndroidTabDeclutterAutoDeleteKillSwitchName[];
+extern const char kAndroidTabDeclutterAutoDeleteKillSwitchDescription[];
+
 extern const char kAndroidTabDeclutterArchiveAllButActiveTabName[];
 extern const char kAndroidTabDeclutterArchiveAllButActiveTabDescription[];
 

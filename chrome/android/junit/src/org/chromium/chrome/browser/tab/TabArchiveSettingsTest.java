@@ -26,7 +26,7 @@ import org.chromium.chrome.browser.tab.TabArchiveSettings.Observer;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowPostTask.class})
 public class TabArchiveSettingsTest {
-    private static final int AUTO_DELETE_TIME_DELTA_HOURS_DEFAULT = 60 * 24; // 60 days.
+    private static final int AUTO_DELETE_TIME_DELTA_HOURS_DEFAULT = 90 * 24; // 60 days.
 
     private TabArchiveSettings mSettings;
     private SharedPreferencesManager mPrefsManager;

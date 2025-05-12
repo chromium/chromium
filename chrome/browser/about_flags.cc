@@ -10762,6 +10762,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidTabDeclutterAutoDeleteDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidTabDeclutterAutoDelete)},
 
+    {"android-tab-declutter-auto-delete-kill-switch",
+     flag_descriptions::kAndroidTabDeclutterAutoDeleteKillSwitchName,
+     flag_descriptions::kAndroidTabDeclutterAutoDeleteKillSwitchDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kAndroidTabDeclutterAutoDeleteKillSwitch)},
+
     {"android-tab-declutter-performance-improvements",
      flag_descriptions::kAndroidTabDeclutterPerformanceImprovementsName,
      flag_descriptions::kAndroidTabDeclutterPerformanceImprovementsDescription,

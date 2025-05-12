@@ -4562,6 +4562,11 @@ const char kAndroidTabDeclutterAutoDeleteName[] =
 const char kAndroidTabDeclutterAutoDeleteDescription[] =
     "Enables auto-deletion of inactive tabs.";
 
+const char kAndroidTabDeclutterAutoDeleteKillSwitchName[] =
+    "Android Tab Declutter Auto Delete Kill Switch";
+const char kAndroidTabDeclutterAutoDeleteKillSwitchDescription[] =
+    "Kill switch for auto delete archived tabs.";
+
 const char kAndroidTabDeclutterArchiveAllButActiveTabName[] =
     "Archive all tabs except active";
 const char kAndroidTabDeclutterArchiveAllButActiveTabDescription[] =

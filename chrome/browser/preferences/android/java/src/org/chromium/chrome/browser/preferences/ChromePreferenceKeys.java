@@ -864,6 +864,8 @@ public final class ChromePreferenceKeys {
             "Chrome.Tab.ArchiveTimeDeltaHours";
     public static final String TAB_DECLUTTER_AUTO_DELETE_ENABLED =
             "Chrome.Tab.ArchiveAutoDeleteEnabled";
+    public static final String TAB_DECLUTTER_AUTO_DELETE_DECISION_MADE =
+            "Chrome.Tab.ArchiveAutoDeleteDecisionMade";
     public static final String TAB_DECLUTTER_AUTO_DELETE_TIME_DELTA_HOURS =
             "Chrome.Tab.ArchiveAutoDeleteTimeDeltaHours";
     public static final String TAB_DECLUTTER_DIALOG_IPH_DISMISS_COUNT =
@@ -1128,6 +1130,7 @@ public final class ChromePreferenceKeys {
                 TAB_DECLUTTER_ARCHIVE_ENABLED,
                 TAB_DECLUTTER_ARCHIVE_TIME_DELTA_HOURS,
                 TAB_DECLUTTER_AUTO_DELETE_ENABLED,
+                TAB_DECLUTTER_AUTO_DELETE_DECISION_MADE,
                 TAB_DECLUTTER_AUTO_DELETE_TIME_DELTA_HOURS,
                 TAB_DECLUTTER_DIALOG_IPH_DISMISS_COUNT,
                 TAB_OR_GROUP_TEARING_MAX_INSTANCES_FAILURE_START_TIME_MS,

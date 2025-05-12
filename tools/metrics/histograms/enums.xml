@@ -8967,6 +8967,8 @@ from previous Chrome versions.
   <int value="-1931102691" label="EducationalTipModule:disabled"/>
   <int value="-1930720286" label="nacl-debug-mask"/>
   <int value="-1930656203" label="TabGroupSyncForceOff:disabled"/>
+  <int value="-1930555429"
+      label="AndroidTabDeclutterAutoDeleteKillSwitch:disabled"/>
   <int value="-1930487223"
       label="EnableFrameSinkDesktopCapturerInCrd:disabled"/>
   <int value="-1928198763" label="enable-async-dns"/>
@@ -11676,6 +11678,8 @@ from previous Chrome versions.
   <int value="-898653891" label="UseClientGmbInterface:disabled"/>
   <int value="-898594349" label="ash-enable-stable-overview-order"/>
   <int value="-898499262" label="ImprovedA2HS:enabled"/>
+  <int value="-898344488"
+      label="AndroidTabDeclutterAutoDeleteKillSwitch:enabled"/>
   <int value="-898005938" label="disable-pinch-virtual-viewport"/>
   <int value="-897994913"
       label="OmniboxUIExperimentRevealSteadyStateUrlPathQueryAndRefOnHover:enabled"/>
