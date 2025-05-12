@@ -52,9 +52,9 @@ enum class TrustedVaultUserActionTriggerForUMA {
   // TODO(crbug.com/40131571): record this bucket bucket on Android once
   // corresponding UI added.
   kNewTabPageInfobar = 3,
-  // Used on Android only. This dialog is shown when GMSCore returned
-  // kKeyRetrievalRequired, kEmptySecurityDomain or kIrretrievableSecurityDomain
-  // error when obtaining passwords.
+  // This dialog is shown on Android and iOS during sign-in or sign-up flows
+  // when there is an error preventing passwords from being fetched from
+  // an account (e.g. need to retrieve trusted vault key for passwords).
   kPasswordManagerErrorMessage = 4,
   // Used on iOS only, from the account menu.
   kAccountMenu = 5,
