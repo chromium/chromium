@@ -153,6 +153,10 @@ SharedWorker* SharedWorker::CreateImpl(
         /*is_top_level_navigation=*/false);
   }
 
+  if (script_url.ProtocolIs("data")) {
+    context->CountUse(WebFeature::kDataUrlSharedWorker);
+  }
+
   auto options = mojom::blink::WorkerOptions::New();
   // The same_site_cookies setting defaults to kAll for first-party contexts
   // (allowing access to SameSite Lax and String cookies) and kNone in

@@ -6193,6 +6193,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5565" label="Proofreader_Proofread"/>
   <int value="5566" label="Proofreader_Availability"/>
   <int value="5567" label="Proofreader_Create"/>
+  <int value="5568" label="DataUrlDedicatedWorker"/>
+  <int value="5569" label="DataUrlSharedWorker"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -6816,7 +6818,7 @@ Called by update_permissions_policy_enum.py.-->
 </enum>
 
 <enum name="ImageHasMultipleGeneratorClientIds">
-  <int value="0" label="Image decode is requested bfy at least one client"/>
+  <int value="0" label="Image decode is requested by at least one client"/>
   <int value="1" label="Image decode is requested by more than one client"/>
 </enum>
 

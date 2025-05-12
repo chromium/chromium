@@ -4869,6 +4869,8 @@ enum WebFeature {
   kProofreader_Proofread = 5565,
   kProofreader_Availability = 5566,
   kProofreader_Create = 5567,
+  kDataUrlDedicatedWorker = 5568,
+  kDataUrlSharedWorker = 5569,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

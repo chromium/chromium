@@ -291,6 +291,10 @@ void DedicatedWorker::Start() {
         /*is_top_level_navigation=*/false);
   }
 
+  if (script_request_url_.ProtocolIs("data")) {
+    GetExecutionContext()->CountUse(WebFeature::kDataUrlDedicatedWorker);
+  }
+
   factory_client_->CreateWorkerHost(
       token_, script_request_url_, credentials_mode,
       WebFetchClientSettingsObject(*outside_fetch_client_settings_object_),
