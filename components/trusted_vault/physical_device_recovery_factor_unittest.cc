@@ -337,9 +337,7 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
   ASSERT_THAT(proto.user_size(), Eq(1));
   // Ensure that the failure is remembered, so there are no retries. This is a
   // regression test for crbug.com/1358015.
-  EXPECT_TRUE(proto.user(0)
-                  .local_device_registration_info()
-                  .last_registration_returned_local_data_obsolete());
+  EXPECT_TRUE(proto.user(0).last_registration_returned_local_data_obsolete());
   // Additionally ensure that |local_device_registration_info| has correct
   // state.
   EXPECT_FALSE(
@@ -372,7 +370,8 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
 TEST_F(PhysicalDeviceRecoveryFactorTest,
        ShouldNotTryToRegisterDeviceIfPreviousAttemptFailed) {
   StoreKeys(account_info(), {kVaultKey}, kLastKeyVersion);
-  GetDeviceRegistrationInfo(account_info())
+  storage()
+      ->FindUserVault(account_info().gaia)
       ->set_last_registration_returned_local_data_obsolete(true);
 
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
@@ -384,31 +383,6 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
   EXPECT_EQ(
       status,
       TrustedVaultRecoveryFactorRegistrationStateForUMA::kLocalKeysAreStale);
-}
-
-TEST_F(PhysicalDeviceRecoveryFactorTest, ShouldClearRegistrationAttemptInfo) {
-  GetDeviceRegistrationInfo(account_info())
-      ->set_last_registration_returned_local_data_obsolete(true);
-
-  recovery_factor()->ClearRegistrationAttemptInfo(account_info().gaia);
-
-  EXPECT_FALSE(GetDeviceRegistrationInfo(account_info())
-                   ->last_registration_returned_local_data_obsolete());
-}
-
-TEST_F(PhysicalDeviceRecoveryFactorTest,
-       ShouldClearRegistrationAttemptInfoWithoutPrimaryAccount) {
-  ResetRecoveryFactor(std::nullopt);
-
-  GetDeviceRegistrationInfo(account_info())
-      ->set_last_registration_returned_local_data_obsolete(true);
-
-  // This should work even if the recovery factor was initialized without a
-  // primary account.
-  recovery_factor()->ClearRegistrationAttemptInfo(account_info().gaia);
-
-  EXPECT_FALSE(GetDeviceRegistrationInfo(account_info())
-                   ->last_registration_returned_local_data_obsolete());
 }
 
 TEST_F(PhysicalDeviceRecoveryFactorTest,

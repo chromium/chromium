@@ -394,7 +394,55 @@ TEST_F(StandaloneTrustedVaultStorageTest, ShouldUpgradeToVersion3) {
       new_data.user(0).local_device_registration_info().device_registered());
   EXPECT_TRUE(
       new_data.user(1).local_device_registration_info().device_registered());
-  EXPECT_THAT(new_data.data_version(), Eq(3));
+  EXPECT_THAT(new_data.data_version(), Ge(3));
+}
+
+TEST_F(StandaloneTrustedVaultStorageTest, ShouldUpgradeToVersion4) {
+  const char gaia_id_1[] = "user1";
+  const char gaia_id_2[] = "user2";
+  const auto key_pair = SecureBoxKeyPair::GenerateRandom();
+
+  trusted_vault_pb::LocalTrustedVault initial_data;
+
+  // First user has `local_device_registration_info.
+  // last_registration_returned_local_data_obsolete` unset.
+  trusted_vault_pb::LocalTrustedVaultPerUser* user_data1 =
+      initial_data.add_user();
+  user_data1->set_gaia_id(gaia_id_1);
+  user_data1->mutable_local_device_registration_info()->set_device_registered(
+      true);
+  AssignBytesToProtoString(key_pair->private_key().ExportToBytes(),
+                           user_data1->mutable_local_device_registration_info()
+                               ->mutable_private_key_material());
+
+  // Second user has `local_device_registration_info.
+  // last_registration_returned_local_data_obsolete` set to true.
+  trusted_vault_pb::LocalTrustedVaultPerUser* user_data2 =
+      initial_data.add_user();
+  user_data2->set_gaia_id(gaia_id_2);
+  user_data2->mutable_local_device_registration_info()->set_device_registered(
+      true);
+  user_data2->mutable_local_device_registration_info()
+      ->set_deprecated_last_registration_returned_local_data_obsolete(true);
+  AssignBytesToProtoString(key_pair->private_key().ExportToBytes(),
+                           user_data2->mutable_local_device_registration_info()
+                               ->mutable_private_key_material());
+
+  ASSERT_TRUE(WriteLocalTrustedVaultFile(initial_data, file_path()));
+
+  // Storage should populate per-user
+  // `last_registration_returned_local_data_obsolete` from the deprecated
+  // fields.
+  storage()->ReadDataFromDisk();
+
+  trusted_vault_pb::LocalTrustedVault new_data =
+      ReadLocalTrustedVaultFile(file_path());
+  ASSERT_THAT(new_data.user_size(), Eq(2));
+  EXPECT_FALSE(
+      new_data.user(0).has_last_registration_returned_local_data_obsolete());
+  EXPECT_TRUE(
+      new_data.user(1).last_registration_returned_local_data_obsolete());
+  EXPECT_THAT(new_data.data_version(), Ge(4));
 }
 
 // This test ensures that migration logic in ReadDataFromDisk() doesn't create

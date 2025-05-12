@@ -113,8 +113,9 @@ class MockDelegate : public StandaloneTrustedVaultBackend::Delegate {
 
 class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
  public:
-  explicit FakeLocalRecoveryFactor(std::optional<CoreAccountInfo> account)
-      : account_(account) {}
+  FakeLocalRecoveryFactor(StandaloneTrustedVaultStorage* storage,
+                          std::optional<CoreAccountInfo> account)
+      : storage_(storage), account_(account) {}
   FakeLocalRecoveryFactor(const FakeLocalRecoveryFactor&) = delete;
   FakeLocalRecoveryFactor& operator=(const FakeLocalRecoveryFactor&) = delete;
   ~FakeLocalRecoveryFactor() override = default;
@@ -148,22 +149,21 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
 
   void MarkAsNotRegistered() override { is_registered_ = false; }
 
-  void ClearRegistrationAttemptInfo(const GaiaId& gaia_id) override {
-    CHECK(!account_.has_value() || account_->gaia == gaia_id);
-    last_registration_returned_local_data_obsolete_ = false;
-  }
-
   TrustedVaultRecoveryFactorRegistrationStateForUMA MaybeRegister(
       TrustedVaultThrottlingConnection* connection,
       RegisterCallback callback) override {
     CHECK(register_callback_.is_null());
     maybe_register_was_called_ = true;
 
+    CHECK(account_);
+    auto* per_user_vault = storage_->FindUserVault(account_->gaia);
+    CHECK(per_user_vault);
+
     if (is_registered_) {
       return TrustedVaultRecoveryFactorRegistrationStateForUMA::
           kAlreadyRegisteredV1;
     }
-    if (last_registration_returned_local_data_obsolete_) {
+    if (per_user_vault->last_registration_returned_local_data_obsolete()) {
       return TrustedVaultRecoveryFactorRegistrationStateForUMA::
           kLocalKeysAreStale;
     }
@@ -173,16 +173,18 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
     }
 
     register_callback_ = base::BindOnce(
-        base::BindLambdaForTesting([this](RegisterCallback cb,
-                                          TrustedVaultRegistrationStatus status,
-                                          int key_version,
-                                          bool had_local_keys) {
+        base::BindLambdaForTesting([this, per_user_vault](
+                                       RegisterCallback cb,
+                                       TrustedVaultRegistrationStatus status,
+                                       int key_version, bool had_local_keys) {
           if (status == TrustedVaultRegistrationStatus::kSuccess ||
               status == TrustedVaultRegistrationStatus::kAlreadyRegistered) {
             is_registered_ = true;
           }
           if (status == TrustedVaultRegistrationStatus::kLocalDataObsolete) {
-            last_registration_returned_local_data_obsolete_ = true;
+            per_user_vault->set_last_registration_returned_local_data_obsolete(
+                true);
+            storage_->WriteDataToDisk();
           }
           std::move(cb).Run(status, key_version, had_local_keys);
         }),
@@ -218,6 +220,10 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
     std::move(register_callback_).Run(status, key_version, had_local_keys);
   }
 
+  void SetStorage(StandaloneTrustedVaultStorage* storage) {
+    storage_ = storage;
+  }
+
   void ResetCallInfo() {
     recovery_callback_.Reset();
     register_callback_.Reset();
@@ -225,17 +231,11 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
     maybe_register_was_called_ = false;
   }
 
-  void SetLastRegistrationReturnedLocalDataObsolete(
-      bool last_registration_returned_local_data_obsolete) {
-    last_registration_returned_local_data_obsolete_ =
-        last_registration_returned_local_data_obsolete;
-  }
-
  private:
+  raw_ptr<StandaloneTrustedVaultStorage> storage_;
   const std::optional<CoreAccountInfo> account_;
 
   bool is_registered_ = false;
-  bool last_registration_returned_local_data_obsolete_ = false;
   bool key_pair_exists_ = false;
   bool attempt_recovery_was_called_ = false;
   bool maybe_register_was_called_ = false;
@@ -269,9 +269,6 @@ class ForwardingLocalRecoveryFactor : public LocalRecoveryFactor {
   }
   bool IsRegistered() override { return delegate_->IsRegistered(); }
   void MarkAsNotRegistered() override { delegate_->MarkAsNotRegistered(); }
-  void ClearRegistrationAttemptInfo(const GaiaId& gaia_id) override {
-    delegate_->ClearRegistrationAttemptInfo(gaia_id);
-  }
   TrustedVaultRecoveryFactorRegistrationStateForUMA MaybeRegister(
       TrustedVaultThrottlingConnection* connection,
       RegisterCallback callback) override {
@@ -300,7 +297,7 @@ class TestLocalRecoveryFactorsFactory
       StandaloneTrustedVaultStorage* storage,
       const std::optional<CoreAccountInfo>& account) override {
     std::vector<FakeLocalRecoveryFactor*> fake_recovery_factors =
-        GetOrCreateRecoveryFactors(account);
+        GetOrCreateRecoveryFactors(storage, account);
 
     std::vector<std::unique_ptr<LocalRecoveryFactor>> local_recovery_factors;
     for (auto* fake_recovery_factor : fake_recovery_factors) {
@@ -319,20 +316,32 @@ class TestLocalRecoveryFactorsFactory
   }
 
   void SetRecoveryFactors(
+      StandaloneTrustedVaultStorage* new_storage,
       std::map<std::optional<GaiaId>,
                std::vector<std::unique_ptr<FakeLocalRecoveryFactor>>>&&
           recovery_factors) {
     recovery_factors_ = std::move(recovery_factors);
+
+    // Storage might have changed, make sure to update all fake recovery
+    // factors to point to the new one.
+    // Note: FakeLocalRecoveryFactor does not store any recovery factor related
+    // state in storage, but needs it to access per user information.
+    for (auto& user_recovery_factors : recovery_factors_) {
+      for (auto& recovery_factor : user_recovery_factors.second) {
+        recovery_factor->SetStorage(new_storage);
+      }
+    }
   }
 
   std::vector<FakeLocalRecoveryFactor*> GetOrCreateRecoveryFactors(
+      StandaloneTrustedVaultStorage* storage,
       const std::optional<CoreAccountInfo>& account) {
     const auto gaia = account ? std::optional(account->gaia) : std::nullopt;
     if (!recovery_factors_.contains(gaia)) {
       std::vector<std::unique_ptr<FakeLocalRecoveryFactor>> recovery_factors;
       for (size_t i = 0; i < num_local_recovery_factors_; ++i) {
         recovery_factors.emplace_back(
-            std::make_unique<FakeLocalRecoveryFactor>(account));
+            std::make_unique<FakeLocalRecoveryFactor>(storage, account));
       }
       recovery_factors_.emplace(gaia, std::move(recovery_factors));
     }
@@ -377,8 +386,6 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
 
     auto delegate = std::make_unique<testing::NiceMock<MockDelegate>>();
 
-    connection_ = connection.get();
-
     auto local_recovery_factors_factory =
         std::make_unique<TestLocalRecoveryFactorsFactory>(
             num_local_recovery_factors_);
@@ -386,9 +393,12 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
       // We only want to reset the backend, not the underlying faked recovery
       // factors incl. their state.
       local_recovery_factors_factory->SetRecoveryFactors(
-          local_recovery_factors_factory_->GetRecoveryFactors());
+          storage.get(), local_recovery_factors_factory_->GetRecoveryFactors());
     }
     local_recovery_factors_factory_ = local_recovery_factors_factory.get();
+
+    storage_ = storage.get();
+    connection_ = connection.get();
 
     backend_ = StandaloneTrustedVaultBackend::CreateForTesting(
         security_domain_id(), std::move(storage), std::move(delegate),
@@ -402,13 +412,16 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
     num_local_recovery_factors_ = num_local_recovery_factors;
   }
 
+  StandaloneTrustedVaultStorage* storage() { return storage_; }
+
   FakeFileAccess* file_access() { return file_access_; }
 
   MockTrustedVaultThrottlingConnection* connection() { return connection_; }
 
   std::vector<FakeLocalRecoveryFactor*> GetOrCreateRecoveryFactors(
       const std::optional<CoreAccountInfo>& account) {
-    return local_recovery_factors_factory_->GetOrCreateRecoveryFactors(account);
+    return local_recovery_factors_factory_->GetOrCreateRecoveryFactors(storage_,
+                                                                       account);
   }
 
   // Shorthand to get/create the first recovery factor.
@@ -466,6 +479,7 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
  private:
   size_t num_local_recovery_factors_ = 1;
   scoped_refptr<StandaloneTrustedVaultBackend> backend_;
+  raw_ptr<StandaloneTrustedVaultStorage> storage_ = nullptr;
   raw_ptr<FakeFileAccess> file_access_ = nullptr;
   raw_ptr<testing::NiceMock<MockTrustedVaultThrottlingConnection>> connection_ =
       nullptr;
@@ -956,8 +970,10 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRecordLocalKeysAreStale) {
   const int kLastKeyVersion = 1;
 
   backend()->StoreKeys(kAccountInfo.gaia, {kVaultKey}, kLastKeyVersion);
-  GetOrCreateRecoveryFactor(kAccountInfo)
-      ->SetLastRegistrationReturnedLocalDataObsolete(true);
+
+  auto* per_user_vault = storage()->FindUserVault(kAccountInfo.gaia);
+  per_user_vault->set_last_registration_returned_local_data_obsolete(true);
+  storage()->WriteDataToDisk();
 
   base::HistogramTester histogram_tester;
   SetPrimaryAccountWithUnknownAuthError(kAccountInfo);

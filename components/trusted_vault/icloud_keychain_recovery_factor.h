@@ -45,8 +45,6 @@ class ICloudKeychainRecoveryFactor : public LocalRecoveryFactor {
   bool IsRegistered() override;
   void MarkAsNotRegistered() override;
 
-  void ClearRegistrationAttemptInfo(const GaiaId& gaia_id) override;
-
   TrustedVaultRecoveryFactorRegistrationStateForUMA MaybeRegister(
       TrustedVaultThrottlingConnection* connection,
       RegisterCallback cb) override;

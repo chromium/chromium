@@ -39,17 +39,11 @@ message LocalDeviceRegistrationInfo {
   // already registered. Not set if `device_registered` is false.
   optional int32 device_registered_version = 3;
 
-  // If true, it indicates that a previous attempt to register or reregister
-  // the device failed, with a failure that suggests future attempts will fail
-  // too. This usually means additional keys are needed, which can be resolved
-  // via key retrieval.
-  //
-  // Note that true doesn't imply the device isn't registered. It may be that
-  // the failure corresponds to a re-registration attempt. In this case, besides
-  // key retrieval, it may be possible to resolve the error by attempting to
-  // download new keys.
-  // TODO(crbug.com/409488087): Migrate this field to LocalTrustedVaultPerUser.
-  optional bool last_registration_returned_local_data_obsolete = 4;
+  // Deprecated. Use
+  // `LocalTrustedVaultPerUser.last_registration_returned_local_data_obsolete`
+  // instead.
+  optional bool deprecated_last_registration_returned_local_data_obsolete = 4
+      [deprecated = true];
 }
 
 message ICloudKeychainRegistrationInfo {
@@ -110,6 +104,17 @@ message LocalTrustedVaultPerUser {
   // recoverability is degraded and when was the last refreshing time.
   optional LocalTrustedVaultDegradedRecoverabilityState
       degraded_recoverability_state = 8;
+
+  // If true, it indicates that a previous attempt to register or reregister
+  // the device failed, with a failure that suggests future attempts will fail
+  // too. This usually means additional keys are needed, which can be resolved
+  // via key retrieval.
+  //
+  // Note that true doesn't imply the device isn't registered. It may be that
+  // the failure corresponds to a re-registration attempt. In this case, besides
+  // key retrieval, it may be possible to resolve the error by attempting to
+  // download new keys.
+  optional bool last_registration_returned_local_data_obsolete = 11;
 
   reserved 9;
 }

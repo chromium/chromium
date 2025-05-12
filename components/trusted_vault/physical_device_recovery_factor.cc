@@ -125,16 +125,6 @@ void PhysicalDeviceRecoveryFactor::MarkAsNotRegistered() {
   storage_->WriteDataToDisk();
 }
 
-void PhysicalDeviceRecoveryFactor::ClearRegistrationAttemptInfo(
-    const GaiaId& gaia_id) {
-  auto* per_user_vault = storage_->FindUserVault(gaia_id);
-  CHECK(per_user_vault);
-
-  per_user_vault->mutable_local_device_registration_info()
-      ->set_last_registration_returned_local_data_obsolete(false);
-  storage_->WriteDataToDisk();
-}
-
 TrustedVaultRecoveryFactorRegistrationStateForUMA
 PhysicalDeviceRecoveryFactor::MaybeRegister(
     TrustedVaultThrottlingConnection* connection,
@@ -147,8 +137,7 @@ PhysicalDeviceRecoveryFactor::MaybeRegister(
         kAlreadyRegisteredV1;
   }
 
-  if (per_user_vault->local_device_registration_info()
-          .last_registration_returned_local_data_obsolete()) {
+  if (per_user_vault->last_registration_returned_local_data_obsolete()) {
     // Client already knows that existing vault keys (or their absence) isn't
     // sufficient for device registration. Fresh keys should be obtained
     // first.
@@ -307,8 +296,7 @@ void PhysicalDeviceRecoveryFactor::OnRegistered(
   // `kLocalDataObsolete`. If this precondition wasn't guaranteed here, the
   // field would need to be reset for some cases below such as `kSuccess` and
   // `kAlreadyRegistered`.
-  CHECK(!per_user_vault->local_device_registration_info()
-             .last_registration_returned_local_data_obsolete());
+  CHECK(!per_user_vault->last_registration_returned_local_data_obsolete());
   switch (status) {
     case TrustedVaultRegistrationStatus::kSuccess:
     case TrustedVaultRegistrationStatus::kAlreadyRegistered:
@@ -321,8 +309,7 @@ void PhysicalDeviceRecoveryFactor::OnRegistered(
       storage_->WriteDataToDisk();
       break;
     case TrustedVaultRegistrationStatus::kLocalDataObsolete:
-      per_user_vault->mutable_local_device_registration_info()
-          ->set_last_registration_returned_local_data_obsolete(true);
+      per_user_vault->set_last_registration_returned_local_data_obsolete(true);
       storage_->WriteDataToDisk();
       break;
     case TrustedVaultRegistrationStatus::kTransientAccessTokenFetchError:

@@ -359,9 +359,7 @@ void StandaloneTrustedVaultBackend::StoreKeys(
   // Having retrieved (or downloaded) new keys indicates that information about
   // past registration attempts (and probably failures) may no longer be
   // relevant.
-  for (auto& local_recovery_factor : local_recovery_factors_) {
-    local_recovery_factor->ClearRegistrationAttemptInfo(gaia_id);
-  }
+  per_user_vault->set_last_registration_returned_local_data_obsolete(false);
 
   // Replace all keys.
   per_user_vault->set_last_vault_key_version(last_key_version);

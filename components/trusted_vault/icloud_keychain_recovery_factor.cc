@@ -221,12 +221,6 @@ void ICloudKeychainRecoveryFactor::MarkAsRegistered() {
   storage_->WriteDataToDisk();
 }
 
-void ICloudKeychainRecoveryFactor::ClearRegistrationAttemptInfo(
-    const GaiaId& gaia_id) {
-  // TODO(crbug.com/409488087): Registration attempt information is currently
-  // shared with PhysicalDeviceRecoveryFactor, so there's nothing to do here.
-}
-
 TrustedVaultRecoveryFactorRegistrationStateForUMA
 ICloudKeychainRecoveryFactor::MaybeRegister(
     TrustedVaultThrottlingConnection* connection,
@@ -238,8 +232,7 @@ ICloudKeychainRecoveryFactor::MaybeRegister(
         kAlreadyRegisteredV1;
   }
 
-  if (per_user_vault->local_device_registration_info()
-          .last_registration_returned_local_data_obsolete()) {
+  if (per_user_vault->last_registration_returned_local_data_obsolete()) {
     // Client already knows that existing vault keys (or their absence) isn't
     // sufficient for registration. Fresh keys should be obtained first.
     return TrustedVaultRecoveryFactorRegistrationStateForUMA::
@@ -397,13 +390,11 @@ void ICloudKeychainRecoveryFactor::OnRegistered(
       // client doesn't fully handled successful device registration before.
       per_user_vault->mutable_icloud_keychain_registration_info()
           ->set_registered(true);
-      per_user_vault->mutable_local_device_registration_info()
-          ->clear_last_registration_returned_local_data_obsolete();
+      per_user_vault->clear_last_registration_returned_local_data_obsolete();
       storage_->WriteDataToDisk();
       break;
     case TrustedVaultRegistrationStatus::kLocalDataObsolete:
-      per_user_vault->mutable_local_device_registration_info()
-          ->set_last_registration_returned_local_data_obsolete(true);
+      per_user_vault->set_last_registration_returned_local_data_obsolete(true);
       storage_->WriteDataToDisk();
       break;
     case TrustedVaultRegistrationStatus::kTransientAccessTokenFetchError:

@@ -716,8 +716,7 @@ TEST_F(ICloudKeychainRecoveryFactorTest,
   trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
       storage()->FindUserVault(account_info().gaia);
   ASSERT_THAT(per_user_vault, NotNull());
-  per_user_vault->mutable_local_device_registration_info()
-      ->set_last_registration_returned_local_data_obsolete(true);
+  per_user_vault->set_last_registration_returned_local_data_obsolete(true);
 
   base::MockCallback<LocalRecoveryFactor::RegisterCallback> register_callback;
   EXPECT_CALL(register_callback, Run).Times(0);
@@ -827,8 +826,7 @@ TEST_F(ICloudKeychainRecoveryFactorTest,
   trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
       storage()->FindUserVault(account_info().gaia);
   ASSERT_THAT(per_user_vault, NotNull());
-  EXPECT_TRUE(per_user_vault->local_device_registration_info()
-                  .last_registration_returned_local_data_obsolete());
+  EXPECT_TRUE(per_user_vault->last_registration_returned_local_data_obsolete());
 }
 
 TEST_F(ICloudKeychainRecoveryFactorTest, RegistrationShouldSucceed) {
