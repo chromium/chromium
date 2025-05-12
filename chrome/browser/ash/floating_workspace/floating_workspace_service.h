@@ -48,7 +48,6 @@ namespace ash {
 
 extern const char kNotificationForNoNetworkConnection[];
 extern const char kNotificationForSyncErrorOrTimeOut[];
-extern const char kNotificationForRestoreAfterError[];
 extern const char kNotificationForProgressStatus[];
 
 // The restore from error notification button index.
@@ -62,7 +61,6 @@ enum class FloatingWorkspaceServiceNotificationType {
   kUnknown = 0,
   kNoNetworkConnection,
   kSyncErrorOrTimeOut,
-  kRestoreAfterError,
   kProgressStatus,
   kSafeMode
 };
@@ -259,11 +257,6 @@ class FloatingWorkspaceService
   // floating workspace service should send notification to user asking
   // whether to restore the most recent FWS desk from local storage.
   void HandleSyncError();
-
-  // When floating workspace service waited long enough but no desk is
-  // restored floating workspace service should send notification to user
-  // asking whether to restore the most recent FWS desk from local storage.
-  void MaybeHandleDownloadTimeOut();
 
   void SendNotification(const std::string& id);
 

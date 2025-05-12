@@ -53,6 +53,7 @@
 #include "components/desks_storage/core/desk_sync_service.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_utils.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/local_device_info_provider_impl.h"
@@ -85,8 +86,6 @@ constexpr char kNotificationForNoNetworkConnection[] =
     "notification_no_network_connection";
 constexpr char kNotificationForSyncErrorOrTimeOut[] =
     "notification_sync_error_or_timeout";
-constexpr char kNotificationForRestoreAfterError[] =
-    "notification_restore_after_error";
 constexpr char kNotificationForProgressStatus[] =
     "notification_progress_status";
 constexpr char kSafeMode[] = "notification_safe_mode";
@@ -106,9 +105,6 @@ FloatingWorkspaceServiceNotificationType GetNotificationTypeById(
   }
   if (id == kNotificationForSyncErrorOrTimeOut) {
     return FloatingWorkspaceServiceNotificationType::kSyncErrorOrTimeOut;
-  }
-  if (id == kNotificationForRestoreAfterError) {
-    return FloatingWorkspaceServiceNotificationType::kRestoreAfterError;
   }
   if (id == kNotificationForProgressStatus) {
     return FloatingWorkspaceServiceNotificationType::kProgressStatus;
@@ -292,8 +288,17 @@ void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
     MaybeSignOutOfCurrentSession();
     return;
   }
+  syncer::UploadState workspace_upload_state = syncer::GetUploadToGoogleState(
+      sync_service_, syncer::DataType::WORKSPACE_DESK);
+  if (workspace_upload_state == syncer::UploadState::NOT_ACTIVE) {
+    // This state indicates that we are not permitted to upload user's workspace
+    // data (see the comment above syncer::UploadState::NOT_ACTIVE for details).
+    // We should treat this as if the feature is fully disabled.
+    should_run_restore_ = false;
+    return;
+  }
   syncer::SyncService::DataTypeDownloadStatus workspace_download_status =
-      sync->GetDownloadStatusFor(syncer::DataType::WORKSPACE_DESK);
+      sync_service_->GetDownloadStatusFor(syncer::DataType::WORKSPACE_DESK);
   bool is_new_workspace_status =
       download_status_cache_ != workspace_download_status;
   download_status_cache_ = workspace_download_status;
@@ -304,6 +309,12 @@ void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
       break;
     }
     case syncer::SyncService::DataTypeDownloadStatus::kUpToDate: {
+      if (workspace_upload_state != syncer::UploadState::ACTIVE) {
+        // Download state can be kUpToDate when offline, but upload status will
+        // only be active once we are connected to server and completed a sync
+        // cycle. We shouldn't restore anything until then.
+        break;
+      }
       if (!first_sync_data_downloaded_timeticks_.has_value()) {
         first_sync_data_downloaded_timeticks_ = base::TimeTicks::Now();
       }
@@ -315,9 +326,6 @@ void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
         // `false`, which will enable an early return from `OnStateChanged`.
         // In practice, cookies and desks usually become up to date at the same
         // time.
-        // TODO(crbug.com/377327839): if we time out after hitting this code,
-        // then it's due to us waiting for cookies, not for desk templates. We
-        // should add a new version of timeout UI for that.
         break;
       }
       LaunchWhenAppCacheIsReady();
@@ -351,6 +359,14 @@ bool FloatingWorkspaceService::ShouldWaitForCookies() {
       return true;
     }
     case syncer::SyncService::DataTypeDownloadStatus::kUpToDate: {
+      syncer::UploadState cookies_upload_state = syncer::GetUploadToGoogleState(
+          sync_service_, syncer::DataType::COOKIES);
+      if (cookies_upload_state != syncer::UploadState::ACTIVE) {
+        // Download state can be kUpToDate when offline, but upload status will
+        // only be active once we are connected to server and completed a sync
+        // cycle. We shouldn't restore anything until then.
+        return true;
+      }
       ash::floating_sso::FloatingSsoService* floating_sso_service =
           ash::floating_sso::FloatingSsoServiceFactory::GetForProfile(profile_);
       // Even when Sync status is "up to date", cookies might still be in the
@@ -427,18 +443,6 @@ void FloatingWorkspaceService::Click(
         // button.
         chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
             profile_, chromeos::settings::mojom::kNetworkSectionPath);
-      }
-      break;
-    case FloatingWorkspaceServiceNotificationType::kRestoreAfterError:
-      if (!button_index.has_value() ||
-          button_index.value() ==
-              static_cast<int>(
-                  RestoreFromErrorNotificationButtonIndex::kRestore)) {
-        VLOG(1) << "Restore button clicked for floating workspace after error";
-        if (floating_workspace_template_to_restore_ != nullptr) {
-          LaunchFloatingWorkspaceTemplate(
-              floating_workspace_template_to_restore_.get());
-        }
       }
       break;
   }
@@ -586,17 +590,6 @@ void FloatingWorkspaceService::StopProgressBarNotification() {
 }
 
 void FloatingWorkspaceService::HandleProgressBarStatus() {
-  const base::TimeDelta time_difference =
-      base::TimeTicks::Now() - initialization_timeticks_;
-  if (!should_run_restore_ ||
-      time_difference >=
-          ash::features::
-              kFloatingWorkspaceV2MaxTimeAvailableForRestoreAfterLogin.Get()) {
-    StopProgressBarNotification();
-    MaybeHandleDownloadTimeOut();
-    return;
-  }
-
   SendNotification(kNotificationForProgressStatus);
 }
 
@@ -701,22 +694,6 @@ void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
   floating_workspace_metrics_util::RecordFloatingWorkspaceV2TemplateLoadTime(
       base::TimeTicks::Now() - initialization_timeticks_);
   RecordWindowAndTabCountHistogram(*desk_template);
-  // Check if template has been downloaded after
-  // kFloatingWorkspaceV2MaxTimeAvailableForRestoreAfterLogin.
-  if (base::TimeTicks::Now() >
-      initialization_timeticks_ +
-          ash::features::
-              kFloatingWorkspaceV2MaxTimeAvailableForRestoreAfterLogin.Get()) {
-    // Template arrives late, asking user to restore or not.
-    StopProgressBarNotification();
-    SendNotification(kNotificationForRestoreAfterError);
-    // Save the workspace template in memory so we can restore the correct one.
-    floating_workspace_template_to_restore_ = desk_template->Clone();
-    // Set this flag to false after sending restore notification to user
-    // since the user will control the restoration behavior from here on.
-    should_run_restore_ = false;
-    return;
-  }
   LaunchFloatingWorkspaceTemplate(desk_template);
 }
 
@@ -981,23 +958,6 @@ void FloatingWorkspaceService::HandleSyncError() {
   SendNotification(kNotificationForSyncErrorOrTimeOut);
 }
 
-void FloatingWorkspaceService::MaybeHandleDownloadTimeOut() {
-  if (download_status_cache_.has_value() &&
-      download_status_cache_.value() ==
-          syncer::SyncService::DataTypeDownloadStatus::kUpToDate) {
-    should_run_restore_ = false;
-  }
-  if (!should_run_restore_) {
-    return;
-  }
-  // Record timeout metrics.
-  floating_workspace_metrics_util::
-      RecordFloatingWorkspaceV2TemplateLaunchTimeout(
-          floating_workspace_metrics_util::LaunchTemplateTimeoutType::
-              kPassedWaitPeriod);
-  SendNotification(kNotificationForSyncErrorOrTimeOut);
-}
-
 void FloatingWorkspaceService::SendNotification(const std::string& id) {
   // If there is a previous notification for floating workspace, close it.
   MaybeCloseNotification();
@@ -1024,15 +984,6 @@ void FloatingWorkspaceService::SendNotification(const std::string& id) {
       message = l10n_util::GetStringUTF16(IDS_FLOATING_WORKSPACE_ERROR_MESSAGE);
       warning_level =
           message_center::SystemNotificationWarningLevel::CRITICAL_WARNING;
-      break;
-    case FloatingWorkspaceServiceNotificationType::kRestoreAfterError:
-      title = l10n_util::GetStringUTF16(
-          IDS_FLOATING_WORKSPACE_RESTORE_FROM_ERROR_TITLE);
-      message = l10n_util::GetStringUTF16(
-          IDS_FLOATING_WORKSPACE_RESTORE_FROM_ERROR_MESSAGE);
-      warning_level = message_center::SystemNotificationWarningLevel::NORMAL;
-      notification_data.buttons.emplace_back(l10n_util::GetStringUTF16(
-          IDS_FLOATING_WORKSPACE_RESTORE_FROM_ERROR_RESTORATION_BUTTON));
       break;
     case FloatingWorkspaceServiceNotificationType::kProgressStatus:
       title =
