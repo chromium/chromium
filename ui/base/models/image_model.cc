@@ -42,16 +42,6 @@ VectorIconModel::VectorIconModel(VectorIconModel&&) = default;
 
 VectorIconModel& VectorIconModel::operator=(VectorIconModel&&) = default;
 
-bool VectorIconModel::operator==(const VectorIconModel& other) const {
-  return std::tie(vector_icon_, icon_size_, color_, badge_icon_) ==
-         std::tie(other.vector_icon_, other.icon_size_, other.color_,
-                  other.badge_icon_);
-}
-
-bool VectorIconModel::operator!=(const VectorIconModel& other) const {
-  return !(*this == other);
-}
-
 ImageModel::ImageModel() = default;
 
 ImageModel::~ImageModel() = default;
@@ -141,14 +131,6 @@ ImageModel::ImageGenerator ImageModel::GetImageGenerator() const {
   return std::get<ImageGeneratorAndSize>(icon_).generator;
 }
 
-bool ImageModel::operator==(const ImageModel& other) const {
-  return icon_ == other.icon_;
-}
-
-bool ImageModel::operator!=(const ImageModel& other) const {
-  return !(*this == other);
-}
-
 gfx::ImageSkia ImageModel::Rasterize(
     const ui::ColorProvider* color_provider) const {
   TRACE_EVENT0("ui", "ImageModel::Rasterize");
@@ -182,11 +164,6 @@ ImageModel::ImageGeneratorAndSize& ImageModel::ImageGeneratorAndSize::operator=(
     const ImageGeneratorAndSize&) = default;
 
 ImageModel::ImageGeneratorAndSize::~ImageGeneratorAndSize() = default;
-
-bool ImageModel::ImageGeneratorAndSize::operator==(
-    const ImageGeneratorAndSize& other) const {
-  return std::tie(generator, size) == std::tie(other.generator, other.size);
-}
 
 ImageModel::ImageModel(const VectorIconModel& vector_icon_model)
     : icon_(vector_icon_model) {}

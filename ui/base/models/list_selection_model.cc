@@ -110,15 +110,6 @@ ListSelectionModel& ListSelectionModel::operator=(const ListSelectionModel&) =
 ListSelectionModel& ListSelectionModel::operator=(ListSelectionModel&&) =
     default;
 
-bool ListSelectionModel::operator==(const ListSelectionModel& other) const {
-  return std::tie(active_, anchor_, selected_indices_) ==
-         std::tie(other.active_, other.anchor_, other.selected_indices_);
-}
-
-bool ListSelectionModel::operator!=(const ListSelectionModel& other) const {
-  return !operator==(other);
-}
-
 void ListSelectionModel::IncrementFrom(size_t index) {
   // Shift the selection to account for a newly inserted item at |index|.
   for (size_t& selected_index : selected_indices_) {

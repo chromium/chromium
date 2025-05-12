@@ -49,8 +49,8 @@ class COMPONENT_EXPORT(UI_BASE) VectorIconModel {
 
   bool is_empty() const { return !vector_icon_; }
 
-  bool operator==(const VectorIconModel& other) const;
-  bool operator!=(const VectorIconModel& other) const;
+  friend bool operator==(const VectorIconModel&,
+                         const VectorIconModel&) = default;
 
   const gfx::VectorIcon* vector_icon() const { return vector_icon_; }
   int icon_size() const { return icon_size_; }
@@ -112,8 +112,7 @@ class COMPONENT_EXPORT(UI_BASE) ImageModel {
   ImageGenerator GetImageGenerator() const;
 
   // Checks if both models yield equal images.
-  bool operator==(const ImageModel& other) const;
-  bool operator!=(const ImageModel& other) const;
+  friend bool operator==(const ImageModel&, const ImageModel&) = default;
 
   // Rasterizes if necessary.
   gfx::ImageSkia Rasterize(const ui::ColorProvider* color_provider) const;
@@ -125,7 +124,8 @@ class COMPONENT_EXPORT(UI_BASE) ImageModel {
     ImageGeneratorAndSize& operator=(const ImageGeneratorAndSize&);
     ~ImageGeneratorAndSize();
 
-    bool operator==(const ImageGeneratorAndSize& other) const;
+    friend bool operator==(const ImageGeneratorAndSize&,
+                           const ImageGeneratorAndSize&) = default;
 
     ImageGenerator generator;
     gfx::Size size;

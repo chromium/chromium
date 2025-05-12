@@ -39,8 +39,8 @@ class COMPONENT_EXPORT(UI_BASE) ListSelectionModel {
   ListSelectionModel& operator=(const ListSelectionModel&);
   ListSelectionModel& operator=(ListSelectionModel&&);
 
-  bool operator==(const ListSelectionModel& other) const;
-  bool operator!=(const ListSelectionModel& other) const;
+  friend bool operator==(const ListSelectionModel&,
+                         const ListSelectionModel&) = default;
 
   // See class description for details of the anchor.
   void set_anchor(std::optional<size_t> anchor) { anchor_ = anchor; }

@@ -96,9 +96,6 @@ class COMPONENT_EXPORT(UI_DATA_PACK) DataPack : public ResourceHandle {
     bool operator==(const Iterator& other) const {
       return entry_ == other.entry_;
     }
-    bool operator!=(const Iterator& other) const {
-      return entry_ != other.entry_;
-    }
 
    private:
     friend class DataPack;
