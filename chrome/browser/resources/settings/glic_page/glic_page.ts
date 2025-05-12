@@ -18,6 +18,7 @@ import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -91,6 +92,13 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
           value: 0,
         },
       },
+
+      closedCaptionsFeatureEnabled_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('glicClosedCaptionsFeatureEnabled');
+        },
+      },
     };
   }
 
@@ -112,6 +120,7 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
   declare private tabAccessToggleExpanded_: boolean;
+  declare private closedCaptionsFeatureEnabled_: boolean;
 
   override async connectedCallback() {
     super.connectedCallback();

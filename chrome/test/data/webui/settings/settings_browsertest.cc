@@ -471,6 +471,23 @@ IN_PROC_BROWSER_TEST_F(SettingsGlicPageTabAccessToggleLearnMoreTest,
   RunTest("settings/glic_page_test.js",
           "runMochaSuite('GlicPage TabAccessToggleLearnMoreEnabled')");
 }
+
+class SettingsGlicPageClosedCaptionsToggleTest : public SettingsBrowserTest {
+ public:
+  SettingsGlicPageClosedCaptionsToggleTest() {
+    scoped_feature_list_.InitWithFeatures({features::kGlicClosedCaptioning},
+                                          /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsGlicPageClosedCaptionsToggleTest,
+                       SettingsGlicPageClosedCaptionsToggleEnabled) {
+  RunTest("settings/glic_page_test.js",
+          "runMochaSuite('GlicPage ClosedCaptionsToggleEnabled')");
+}
 #endif
 
 class PeoplePageSyncPageTest : public SettingsBrowserTest {

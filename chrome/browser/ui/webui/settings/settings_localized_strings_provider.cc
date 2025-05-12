@@ -797,6 +797,9 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
                          features::kGlicTabAccessToggleLearnMoreURL.Get());
   html_source->AddString("glicSettingsPageLearnMoreUrl",
                          features::kGlicSettingsPageLearnMoreURL.Get());
+  html_source->AddBoolean(
+      "glicClosedCaptionsFeatureEnabled",
+      base::FeatureList::IsEnabled(features::kGlicClosedCaptioning));
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
