@@ -61,15 +61,19 @@ class LensPermissionBubbleController {
   bool HasOpenDialogWidget();
 
  private:
-  std::unique_ptr<ui::DialogModel> CreateLensPermissionDialogModel();
+  std::unique_ptr<ui::DialogModel> CreateLensPermissionDialogModel(
+      RequestPermissionCallback callback);
   void OnHelpCenterLinkClicked(const ui::Event& event);
-  void OnPermissionDialogAccept();
-  void OnPermissionPreferenceUpdated(RequestPermissionCallback callback);
+  void OnPermissionDialogAccept(RequestPermissionCallback callback);
+  // Callback that closes permission dialogs open on non-active tabs if the
+  // active tab accepts the permission.
+  void OnPermissionPreferenceUpdated();
   void TabWillDetach(tabs::TabInterface* tab,
                      tabs::TabInterface::DetachReason reason);
 
   // Creates and shows the dialog widget.
   std::unique_ptr<views::Widget> ShowDialogWidget(
+      RequestPermissionCallback callback,
       content::WebContents* web_contents);
   void CloseDialogWidget(views::Widget::ClosedReason reason);
 
