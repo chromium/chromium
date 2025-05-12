@@ -797,7 +797,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.CookieAPIPartitionKeyWellFormatted"
-    enum="BooleanEnabled" expires_after="2025-06-22">
+    enum="BooleanEnabled" expires_after="2026-04-30">
   <owner>arichiv@google.com</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
