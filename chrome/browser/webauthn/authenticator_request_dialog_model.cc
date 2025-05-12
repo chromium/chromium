@@ -99,11 +99,14 @@ std::u16string AuthenticatorRequestDialogModel::GetMechanismDescription(
     return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_SOURCE_PHONE,
                                       base::UTF8ToUTF16(*phone_name));
   }
+  bool immediate_mode = UIPresentation::kModalImmediate == ui_presentation;
   if (cred.provider_name) {
-    return base::UTF8ToUTF16(*cred.provider_name);
+    return immediate_mode ? l10n_util::GetStringFUTF16(
+                                IDS_PASSWORD_MANAGER_PASSKEY_FROM_PROVIDER,
+                                base::UTF8ToUTF16(*cred.provider_name))
+                          : base::UTF8ToUTF16(*cred.provider_name);
   }
   int message;
-  bool immediate_mode = UIPresentation::kModalImmediate == ui_presentation;
   switch (cred.source) {
     case device::AuthenticatorType::kWinNative:
       message = immediate_mode ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO

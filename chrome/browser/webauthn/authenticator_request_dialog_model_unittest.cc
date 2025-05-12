@@ -3046,7 +3046,9 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
       delegate->GetPasskeys().value();
   ASSERT_TRUE(autofill_passkeys);
   EXPECT_EQ(autofill_passkeys->size(), 1u);
-  EXPECT_EQ(autofill_passkeys->at(0).GetAuthenticatorLabel(), u"Bitwarden");
+  EXPECT_THAT(
+      base::UTF16ToUTF8(autofill_passkeys->at(0).GetAuthenticatorLabel()),
+      testing::HasSubstr("Bitwarden"));
 }
 
 TEST_F(AuthenticatorRequestDialogControllerTest, MechanismsFromUserAccounts) {
