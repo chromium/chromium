@@ -822,6 +822,31 @@ class TabStripModel : public TabGroupController {
   // Notify observers that `group` is attached to the model.
   void OnTabGroupAttached(tabs::TabGroupTabCollection* group_collection);
 
+  // Notify observers that split with `split_id` has been created.
+  void OnSplitTabCreated(
+      split_tabs::SplitTabId split_id,
+      const std::vector<std::pair<tabs::TabInterface*, int>>& tabs_with_indices,
+      SplitTabChange::SplitTabAddReason reason,
+      const split_tabs::SplitTabVisualData& visual_data);
+
+  // Notify observers that visual data for a split has changed.
+  void OnSplitTabVisualsChanged(
+      split_tabs::SplitTabId split_id,
+      const split_tabs::SplitTabVisualData& old_visual_data,
+      const split_tabs::SplitTabVisualData& new_visual_data);
+
+  // Notify observers that contents of a split has been reordered.
+  void OnSplitTabContentsUpdated(
+      split_tabs::SplitTabId split_id,
+      const std::vector<std::pair<tabs::TabInterface*, int>>& prev_tabs,
+      const std::vector<std::pair<tabs::TabInterface*, int>>& new_tabs);
+
+  // Notify observers that split with `split_id` has been removed.
+  void OnSplitTabRemoved(
+      split_tabs::SplitTabId split_id,
+      const std::vector<std::pair<tabs::TabInterface*, int>>& tabs_with_indices,
+      SplitTabChange::SplitTabRemoveReason reason);
+
   // Detaches the tab at the specified `index` from this strip.
   // `web_contents_remove_reason` is used to indicate to observers what is going
   // to happen to the WebContents (i.e. deleted or reinserted into another tab
@@ -978,10 +1003,10 @@ class TabStripModel : public TabGroupController {
       split_tabs::SplitTabId split_id,
       std::vector<int> indices,
       split_tabs::SplitTabVisualData visual_data,
-      TabStripModelObserver::SplitTabAddReason reasons);
+      SplitTabChange::SplitTabAddReason reasons);
 
   void RemoveSplitImpl(split_tabs::SplitTabId split_id,
-                       TabStripModelObserver::SplitTabRemoveReason reason);
+                       SplitTabChange::SplitTabRemoveReason reason);
 
   // Adds tabs to newly-allocated group id |new_group|. This group must be new
   // and have no tabs in it.

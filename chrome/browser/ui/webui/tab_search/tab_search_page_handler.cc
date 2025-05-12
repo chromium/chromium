@@ -1567,11 +1567,11 @@ void TabSearchPageHandler::TabChangedAt(content::WebContents* contents,
   page_->TabUpdated(std::move(tab_update_info));
 }
 
-void TabSearchPageHandler::OnSplitTabRemoved(
-    std::vector<std::pair<tabs::TabInterface*, int>> tabs,
-    split_tabs::SplitTabId split_id,
-    TabStripModelObserver::SplitTabRemoveReason reason) {
+void TabSearchPageHandler::OnSplitTabChanged(const SplitTabChange& change) {
   if (!base::FeatureList::IsEnabled(features::kSideBySide)) {
+    return;
+  }
+  if (change.type != SplitTabChange::Type::kRemoved) {
     return;
   }
   GURL url = web_ui_->GetWebContents()->GetURL();

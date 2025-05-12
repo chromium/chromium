@@ -150,10 +150,7 @@ class TabSearchPageHandler
   void TabChangedAt(content::WebContents* contents,
                     int index,
                     TabChangeType change_type) override;
-  void OnSplitTabRemoved(
-      std::vector<std::pair<tabs::TabInterface*, int>> tabs,
-      split_tabs::SplitTabId split_id,
-      TabStripModelObserver::SplitTabRemoveReason reason) override;
+  void OnSplitTabChanged(const SplitTabChange& change) override;
 
   // TabDeclutterObserver:
   void OnUnusedTabsProcessed(

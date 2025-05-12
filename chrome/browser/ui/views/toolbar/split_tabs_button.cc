@@ -67,22 +67,17 @@ void SplitTabsToolbarButton::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  UpdateButtonVisibility();
+  if (selection.active_tab_changed()) {
+    UpdateButtonVisibility();
+  }
 }
 
-void SplitTabsToolbarButton::OnSplitTabCreated(
-    std::vector<std::pair<tabs::TabInterface*, int>> tabs,
-    split_tabs::SplitTabId split_id,
-    TabStripModelObserver::SplitTabAddReason reason,
-    split_tabs::SplitTabVisualData visual_data) {
-  UpdateButtonVisibility();
-}
-
-void SplitTabsToolbarButton::OnSplitTabRemoved(
-    std::vector<std::pair<tabs::TabInterface*, int>> tabs,
-    split_tabs::SplitTabId split_id,
-    SplitTabRemoveReason reason) {
-  UpdateButtonVisibility();
+void SplitTabsToolbarButton::OnSplitTabChanged(const SplitTabChange& change) {
+  if (change.type == SplitTabChange::Type::kAdded ||
+      change.type == SplitTabChange::Type::kRemoved ||
+      change.type == SplitTabChange::Type::kContentsChanged) {
+    UpdateButtonVisibility();
+  }
 }
 
 void SplitTabsToolbarButton::ButtonPressed(const ui::Event& event) {

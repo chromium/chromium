@@ -35,10 +35,6 @@ class TabGroupId;
 class TabGroupVisualData;
 }  // namespace tab_groups
 
-namespace split_tabs {
-class SplitTabVisualData;
-}
-
 namespace ui {
 class ListSelectionModel;
 }
@@ -161,14 +157,7 @@ class BrowserTabStripController : public TabStripController,
                               int index) override;
   void SetTabNeedsAttentionAt(int index, bool attention) override;
   bool IsFrameButtonsRightAligned() const override;
-
-  void OnSplitTabCreated(std::vector<std::pair<tabs::TabInterface*, int>> tabs,
-                         split_tabs::SplitTabId split_id,
-                         SplitTabAddReason reason,
-                         split_tabs::SplitTabVisualData visual_data) override;
-  void OnSplitTabRemoved(std::vector<std::pair<tabs::TabInterface*, int>> tabs,
-                         split_tabs::SplitTabId split_id,
-                         SplitTabRemoveReason reason) override;
+  void OnSplitTabChanged(const SplitTabChange& change) override;
 
   const Browser* browser() const { return browser_view_->browser(); }
 

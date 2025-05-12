@@ -539,11 +539,9 @@ std::unique_ptr<DetachedTabGroup> TabStripModel::DetachTabGroupImpl(
 
   // Send possible split detach notification.
   for (auto const& [split_id, tabs_with_indices] : splits_in_group) {
-    for (TabStripModelObserver& observer : observers_) {
-      observer.OnSplitTabRemoved(tabs_with_indices, split_id,
-                                 TabStripModelObserver::SplitTabRemoveReason::
-                                     kDetachedToAnotherTabstrip);
-    }
+    OnSplitTabRemoved(
+        split_id, tabs_with_indices,
+        SplitTabChange::SplitTabRemoveReason::kDetachedToAnotherTabstrip);
   }
 
   // Notify tab is removed from model
@@ -650,12 +648,10 @@ gfx::Range TabStripModel::InsertDetachedTabGroupImpl(
 
   // Send split attach notification
   for (const split_tabs::SplitTabId& split_id : splits_in_group) {
-    for (TabStripModelObserver& observer : observers_) {
-      observer.OnSplitTabCreated(GetTabsAndIndicesInSplit(split_id), split_id,
-                                 TabStripModelObserver::SplitTabAddReason::
-                                     kInsertedFromAnotherTabstrip,
-                                 *GetSplitData(split_id)->visual_data());
-    }
+    OnSplitTabCreated(
+        split_id, GetTabsAndIndicesInSplit(split_id),
+        SplitTabChange::SplitTabAddReason::kInsertedFromAnotherTabstrip,
+        *GetSplitData(split_id)->visual_data());
   }
 
   return tabs_in_group;
@@ -891,9 +887,8 @@ void TabStripModel::MoveGroupTo(const tab_groups::TabGroupId& group,
       MoveBreaksSplitContiguity(static_cast<int>(tabs_in_group.start()),
                                 tabs_in_group.length(), to_index);
   if (destination_split.has_value()) {
-    RemoveSplitImpl(
-        destination_split.value(),
-        TabStripModelObserver::SplitTabRemoveReason::kSplitTabRemoved);
+    RemoveSplitImpl(destination_split.value(),
+                    SplitTabChange::SplitTabRemoveReason::kSplitTabRemoved);
   }
 
   MoveGroupToImpl(group, to_index);
@@ -1551,9 +1546,8 @@ void TabStripModel::MaybeRemoveSplitsForMove(
   // Remove the split of the origin tab if it is not moving within the
   // split collection.
   if (tab->IsSplit()) {
-    RemoveSplitImpl(
-        tab->GetSplit().value(),
-        TabStripModelObserver::SplitTabRemoveReason::kSplitTabRemoved);
+    RemoveSplitImpl(tab->GetSplit().value(),
+                    SplitTabChange::SplitTabRemoveReason::kSplitTabRemoved);
   }
 
   // Maybe remove the split tab of the destination if it results in
@@ -1562,9 +1556,8 @@ void TabStripModel::MaybeRemoveSplitsForMove(
       MoveBreaksSplitContiguity(initial_index, 1, final_index);
 
   if (destination_split.has_value()) {
-    RemoveSplitImpl(
-        destination_split.value(),
-        TabStripModelObserver::SplitTabRemoveReason::kSplitTabRemoved);
+    RemoveSplitImpl(destination_split.value(),
+                    SplitTabChange::SplitTabRemoveReason::kSplitTabRemoved);
   }
 }
 
@@ -1583,10 +1576,8 @@ void TabStripModel::UpdateSplitLayout(split_tabs::SplitTabId split_id,
 
   split_data->visual_data()->set_split_layout(tab_layout);
 
-  for (TabStripModelObserver& observer : observers_) {
-    observer.OnSplitTabVisualsChanged(split_id, old_visual_data,
-                                      *split_data->visual_data());
-  }
+  OnSplitTabVisualsChanged(split_id, old_visual_data,
+                           *split_data->visual_data());
 }
 
 void TabStripModel::UpdateSplitRatio(split_tabs::SplitTabId split_id,
@@ -1600,10 +1591,8 @@ void TabStripModel::UpdateSplitRatio(split_tabs::SplitTabId split_id,
   split_tabs::SplitTabVisualData old_visual_data = *split_data->visual_data();
   split_data->visual_data()->set_split_ratio(split_ratio);
 
-  for (TabStripModelObserver& observer : observers_) {
-    observer.OnSplitTabVisualsChanged(split_id, old_visual_data,
-                                      *split_data->visual_data());
-  }
+  OnSplitTabVisualsChanged(split_id, old_visual_data,
+                           *split_data->visual_data());
 }
 
 void TabStripModel::UpdateActiveTabInSplit(split_tabs::SplitTabId split_id,
@@ -1627,8 +1616,8 @@ void TabStripModel::UpdateActiveTabInSplit(split_tabs::SplitTabId split_id,
   // 3. Close the previous active tab (if we are replacing the tab).
   // 4. Re-split the other tabs that were a part of the split collection with
   // the new active tab (the initial tab at `update_index`)
-  RemoveSplitImpl(
-      split_id, TabStripModelObserver::SplitTabRemoveReason::kSplitTabUpdated);
+  RemoveSplitImpl(split_id,
+                  SplitTabChange::SplitTabRemoveReason::kSplitTabUpdated);
 
   if (update_type == SplitUpdateType::kReplace) {
     int destination_index =
@@ -1643,16 +1632,12 @@ void TabStripModel::UpdateActiveTabInSplit(split_tabs::SplitTabId split_id,
         GetTabGroupForTab(update_index);
     bool destination_pinned = IsTabPinned(update_index);
 
+    MoveTabToIndexImpl(update_index, active_index(), GetActiveTab()->GetGroup(),
+                       GetActiveTab()->IsPinned(), true);
     if (active_index() < update_index) {
-      MoveTabToIndexImpl(update_index, active_index(),
-                         GetActiveTab()->GetGroup(), GetActiveTab()->IsPinned(),
-                         true);
       MoveTabToIndexImpl(initial_active_index + 1, update_index,
                          destination_group, destination_pinned, false);
     } else {
-      MoveTabToIndexImpl(update_index, active_index(),
-                         GetActiveTab()->GetGroup(), GetActiveTab()->IsPinned(),
-                         true);
       MoveTabToIndexImpl(initial_active_index - 1, update_index,
                          destination_group, destination_pinned, false);
     }
@@ -1664,7 +1649,7 @@ void TabStripModel::UpdateActiveTabInSplit(split_tabs::SplitTabId split_id,
   }
 
   AddToSplitImpl(split_id, split_indices, split_visual_data,
-                 TabStripModelObserver::SplitTabAddReason::kSplitTabUpdated);
+                 SplitTabChange::SplitTabAddReason::kSplitTabUpdated);
 }
 
 void TabStripModel::ReverseTabsInSplit(split_tabs::SplitTabId split_id) {
@@ -1691,9 +1676,9 @@ split_tabs::SplitTabId TabStripModel::AddToNewSplit(
 
   split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
 
-  return AddToSplitImpl(
-      split_id, indices, split_tabs::SplitTabVisualData(tab_layout, 0.5),
-      TabStripModelObserver::SplitTabAddReason::kNewSplitTabAdded);
+  return AddToSplitImpl(split_id, indices,
+                        split_tabs::SplitTabVisualData(tab_layout, 0.5),
+                        SplitTabChange::SplitTabAddReason::kNewSplitTabAdded);
 }
 
 void TabStripModel::AddTabGroup(const tab_groups::TabGroupId group_id,
@@ -1816,8 +1801,8 @@ void TabStripModel::RemoveFromGroup(const std::vector<int>& indices) {
 
 void TabStripModel::RemoveSplit(split_tabs::SplitTabId split_id) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
-  RemoveSplitImpl(
-      split_id, TabStripModelObserver::SplitTabRemoveReason::kSplitTabRemoved);
+  RemoveSplitImpl(split_id,
+                  SplitTabChange::SplitTabRemoveReason::kSplitTabRemoved);
 }
 
 bool TabStripModel::IsReadLaterSupportedForAny(
@@ -1938,6 +1923,57 @@ void TabStripModel::OnTabGroupAttached(
           group_collection));
   for (auto& observer : observers_) {
     observer.OnTabGroupChanged(change);
+  }
+}
+
+void TabStripModel::OnSplitTabCreated(
+    split_tabs::SplitTabId split_id,
+    const std::vector<std::pair<tabs::TabInterface*, int>>& tabs_with_indices,
+    SplitTabChange::SplitTabAddReason reason,
+    const split_tabs::SplitTabVisualData& visual_data) {
+  SplitTabChange change(
+      this, split_id,
+      SplitTabChange::AddedChange(tabs_with_indices, reason, visual_data));
+
+  for (auto& observer : observers_) {
+    observer.OnSplitTabChanged(change);
+  }
+}
+
+void TabStripModel::OnSplitTabVisualsChanged(
+    split_tabs::SplitTabId split_id,
+    const split_tabs::SplitTabVisualData& old_visual_data,
+    const split_tabs::SplitTabVisualData& new_visual_data) {
+  SplitTabChange change(
+      this, split_id,
+      SplitTabChange::VisualsChange(old_visual_data, new_visual_data));
+
+  for (auto& observer : observers_) {
+    observer.OnSplitTabChanged(change);
+  }
+}
+
+void TabStripModel::OnSplitTabContentsUpdated(
+    split_tabs::SplitTabId split_id,
+    const std::vector<std::pair<tabs::TabInterface*, int>>& prev_tabs,
+    const std::vector<std::pair<tabs::TabInterface*, int>>& new_tabs) {
+  SplitTabChange change(this, split_id,
+                        SplitTabChange::ContentsChange(prev_tabs, new_tabs));
+
+  for (auto& observer : observers_) {
+    observer.OnSplitTabChanged(change);
+  }
+}
+
+void TabStripModel::OnSplitTabRemoved(
+    split_tabs::SplitTabId split_id,
+    const std::vector<std::pair<tabs::TabInterface*, int>>& tabs_with_indices,
+    SplitTabChange::SplitTabRemoveReason reason) {
+  SplitTabChange change(
+      this, split_id, SplitTabChange::RemovedChange(tabs_with_indices, reason));
+
+  for (auto& observer : observers_) {
+    observer.OnSplitTabChanged(change);
   }
 }
 
@@ -3308,7 +3344,7 @@ split_tabs::SplitTabId TabStripModel::AddToSplitImpl(
     split_tabs::SplitTabId split_id,
     std::vector<int> indices,
     split_tabs::SplitTabVisualData visual_data,
-    TabStripModelObserver::SplitTabAddReason reason) {
+    SplitTabChange::SplitTabAddReason reason) {
   // Insert the active index into the sorted `indices`.
   auto position = lower_bound(indices.begin(), indices.end(), active_index());
   indices.insert(position, active_index());
@@ -3345,17 +3381,14 @@ split_tabs::SplitTabId TabStripModel::AddToSplitImpl(
   TabStripModelChange change;
   OnChange(change, selection);
 
-  for (TabStripModelObserver& observer : observers_) {
-    observer.OnSplitTabCreated(tabs_with_indices, split_id, reason,
-                               visual_data);
-  }
+  OnSplitTabCreated(split_id, tabs_with_indices, reason, visual_data);
 
   return split_id;
 }
 
 void TabStripModel::RemoveSplitImpl(
     split_tabs::SplitTabId split_id,
-    TabStripModelObserver::SplitTabRemoveReason reason) {
+    SplitTabChange::SplitTabRemoveReason reason) {
   std::vector<std::pair<tabs::TabInterface*, int>> tabs_with_indices =
       GetTabsAndIndicesInSplit(split_id);
 
@@ -3377,9 +3410,7 @@ void TabStripModel::RemoveSplitImpl(
     OnChange(change, selection);
   }
 
-  for (TabStripModelObserver& observer : observers_) {
-    observer.OnSplitTabRemoved(tabs_with_indices, split_id, reason);
-  }
+  OnSplitTabRemoved(split_id, tabs_with_indices, reason);
 }
 
 void TabStripModel::AddToNewGroupImpl(
@@ -3554,9 +3585,8 @@ void TabStripModel::InsertTabAtIndexImpl(
   if (std::optional<split_tabs::SplitTabId> split_id =
           InsertionBreaksSplitContiguity(index);
       split_id.has_value()) {
-    RemoveSplitImpl(
-        split_id.value(),
-        TabStripModelObserver::SplitTabRemoveReason::kSplitTabRemoved);
+    RemoveSplitImpl(split_id.value(),
+                    SplitTabChange::SplitTabRemoveReason::kSplitTabRemoved);
   }
 
   tabs::TabInterface* old_active_tab = GetActiveTab();
@@ -3601,9 +3631,8 @@ std::unique_ptr<tabs::TabModel> TabStripModel::RemoveTabFromIndexImpl(
   std::optional<int> next_selected_index = DetermineNewSelectedIndex(index);
   const bool removed_tab_is_split = tab->IsSplit();
   if (removed_tab_is_split) {
-    RemoveSplitImpl(
-        tab->GetSplit().value(),
-        TabStripModelObserver::SplitTabRemoveReason::kSplitTabRemoved);
+    RemoveSplitImpl(tab->GetSplit().value(),
+                    SplitTabChange::SplitTabRemoveReason::kSplitTabRemoved);
   }
 
   // Remove the tab.
@@ -3707,11 +3736,9 @@ void TabStripModel::MoveTabToIndexImpl(
   }
 
   if (move_within_split) {
-    for (TabStripModelObserver& observer : observers_) {
-      observer.OnSplitTabContentsUpdated(
-          tab->GetSplit().value(), initial_split_tabs,
-          GetTabsAndIndicesInSplit(tab->GetSplit().value()));
-    }
+    OnSplitTabContentsUpdated(
+        tab->GetSplit().value(), initial_split_tabs,
+        GetTabsAndIndicesInSplit(tab->GetSplit().value()));
   }
 
   if (initial_pinned_state != tab->IsPinned()) {

@@ -962,38 +962,38 @@ bool BrowserTabStripController::IsFrameButtonsRightAligned() const {
 #endif  // BUILDFLAG(IS_MAC)
 }
 
-void BrowserTabStripController::OnSplitTabCreated(
-    std::vector<std::pair<tabs::TabInterface*, int>> tabs,
-    split_tabs::SplitTabId split_id,
-    SplitTabAddReason reason,
-    split_tabs::SplitTabVisualData visual_data) {
-  std::vector<int> split_indices;
-  std::transform(
-      tabs.begin(), tabs.end(), std::back_inserter(split_indices),
-      [](const std::pair<tabs::TabInterface*, int>& p) { return p.second; });
+void BrowserTabStripController::OnSplitTabChanged(
+    const SplitTabChange& change) {
+  if (change.type == SplitTabChange::Type::kAdded) {
+    std::vector<int> split_indices;
+    std::transform(
+        change.GetAddedChange()->tabs().begin(),
+        change.GetAddedChange()->tabs().end(),
+        std::back_inserter(split_indices),
+        [](const std::pair<tabs::TabInterface*, int>& p) { return p.second; });
 
-  tabstrip_->OnSplitCreated(split_indices, split_id);
+    tabstrip_->OnSplitCreated(split_indices, change.split_id);
 
-  // Stop animating if we are updating an active split.
-  if (reason != SplitTabAddReason::kNewSplitTabAdded) {
-    tabstrip_->StopAnimating(true);
-  }
-}
+    // Stop animating if we are updating an active split.
+    if (change.GetAddedChange()->reason() !=
+        SplitTabChange::SplitTabAddReason::kNewSplitTabAdded) {
+      tabstrip_->StopAnimating(true);
+    }
+  } else if (change.type == SplitTabChange::Type::kRemoved) {
+    std::vector<int> split_indices;
+    std::transform(
+        change.GetRemovedChange()->tabs().begin(),
+        change.GetRemovedChange()->tabs().end(),
+        std::back_inserter(split_indices),
+        [](const std::pair<tabs::TabInterface*, int>& p) { return p.second; });
 
-void BrowserTabStripController::OnSplitTabRemoved(
-    std::vector<std::pair<tabs::TabInterface*, int>> tabs,
-    split_tabs::SplitTabId split_id,
-    SplitTabRemoveReason reason) {
-  std::vector<int> split_indices;
-  std::transform(
-      tabs.begin(), tabs.end(), std::back_inserter(split_indices),
-      [](const std::pair<tabs::TabInterface*, int>& p) { return p.second; });
+    tabstrip_->OnSplitRemoved(split_indices);
 
-  tabstrip_->OnSplitRemoved(split_indices);
-
-  // Stop animating if we are updating an active split.
-  if (reason != SplitTabRemoveReason::kSplitTabRemoved) {
-    tabstrip_->StopAnimating(true);
+    // Stop animating if we are updating an active split.
+    if (change.GetRemovedChange()->reason() !=
+        SplitTabChange::SplitTabRemoveReason::kSplitTabRemoved) {
+      tabstrip_->StopAnimating(true);
+    }
   }
 }
 

@@ -15,10 +15,6 @@
 
 class Browser;
 
-namespace split_tabs {
-class SplitTabVisualData;
-}
-
 class SplitTabsToolbarButton : public ToolbarButton, TabStripModelObserver {
   METADATA_HEADER(SplitTabsToolbarButton, ToolbarButton)
 
@@ -38,14 +34,7 @@ class SplitTabsToolbarButton : public ToolbarButton, TabStripModelObserver {
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
-  void OnSplitTabCreated(std::vector<std::pair<tabs::TabInterface*, int>> tabs,
-                         split_tabs::SplitTabId split_id,
-                         TabStripModelObserver::SplitTabAddReason reason,
-                         split_tabs::SplitTabVisualData visual_data) override;
-
-  void OnSplitTabRemoved(std::vector<std::pair<tabs::TabInterface*, int>> tabs,
-                         split_tabs::SplitTabId split_id,
-                         SplitTabRemoveReason reason) override;
+  void OnSplitTabChanged(const SplitTabChange& change) override;
 
   const std::optional<ToolbarButton::VectorIcons>& GetIconsForTesting();
 

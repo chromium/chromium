@@ -754,13 +754,7 @@ class Browser : public TabStripModelObserver,
                               tabs::TabInterface* tab,
                               int index) override;
   void TabStripEmpty() override;
-  void OnSplitTabCreated(std::vector<std::pair<tabs::TabInterface*, int>> tabs,
-                         split_tabs::SplitTabId split_id,
-                         SplitTabAddReason reason,
-                         split_tabs::SplitTabVisualData visual_data) override;
-  void OnSplitTabRemoved(std::vector<std::pair<tabs::TabInterface*, int>> tabs,
-                         split_tabs::SplitTabId split_id,
-                         SplitTabRemoveReason reason) override;
+  void OnSplitTabChanged(const SplitTabChange& change) override;
 
   // Overridden from content::WebContentsDelegate:
   void ActivateContents(content::WebContents* contents) override;

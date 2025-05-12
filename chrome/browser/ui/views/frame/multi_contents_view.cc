@@ -148,7 +148,7 @@ void MultiContentsView::ExecuteOnEachVisibleContentsView(
 
 void MultiContentsView::OnSwap() {
   CHECK(IsInSplitView());
-  browser_view_->SwapTabsInActiveSplit();
+  browser_view_->ReverseWebContents();
 }
 
 void MultiContentsView::UpdateSplitRatio(double ratio) {

@@ -104,10 +104,6 @@ namespace version_info {
 enum class Channel;
 }
 
-namespace split_tabs {
-class SplitTabVisualData;
-}
-
 namespace views {
 class ExternalFocusTracker;
 class WebView;
@@ -492,16 +488,25 @@ class BrowserView : public BrowserWindow,
   // side-by-side display.
   void HideSplitView();
 
-  // Update the index of the active split based on the active tab's web contents
+  // Update the index of the active split based on the active tab's web
+  // contents.
   void UpdateActiveTabInSplitView();
 
-  // Reverses the order of the tabs in the active split.
-  void SwapTabsInActiveSplit();
+  // Updates the contents in the active split view.
+  void UpdateContentsInSplitView(
+      const std::vector<std::pair<tabs::TabInterface*, int>>& prev_tabs,
+      const std::vector<std::pair<tabs::TabInterface*, int>>& new_tabs);
 
   // True if an activation from `old_contents` to `new_contents` happens between
   // tabs that are already in a split-view configuration.
   bool IsTabChangeInSplitView(content::WebContents* old_contents,
                               content::WebContents* new_contents);
+
+  // Reverses the order of the contents in the active split.
+  void ReverseWebContents();
+
+  // Resize the ratio of the contents in the active split.
+  void ResizeWebContents(double start_ratio);
 
   // Activate the tab containing the given WebContents (if any).
   void ActivateWebContents(content::WebContents* web_contents);
@@ -730,30 +735,14 @@ class BrowserView : public BrowserWindow,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
-  void OnSplitTabContentsUpdated(
-      split_tabs::SplitTabId split_id,
-      std::vector<std::pair<tabs::TabInterface*, int>> prev_tabs,
-      std::vector<std::pair<tabs::TabInterface*, int>> new_tabs) override;
   void TabChangedAt(content::WebContents* contents,
                     int index,
                     TabChangeType change_type) override;
-  void OnSplitTabCreated(std::vector<std::pair<tabs::TabInterface*, int>> tabs,
-                         split_tabs::SplitTabId split_id,
-                         SplitTabAddReason reason,
-                         split_tabs::SplitTabVisualData visual_data) override;
-  void OnSplitTabRemoved(std::vector<std::pair<tabs::TabInterface*, int>> tabs,
-                         split_tabs::SplitTabId split_id,
-                         SplitTabRemoveReason reason) override;
-  void OnSplitTabVisualsChanged(
-      split_tabs::SplitTabId split_id,
-      split_tabs::SplitTabVisualData old_visual_data,
-      split_tabs::SplitTabVisualData new_visual_data) override;
+  void OnSplitTabChanged(const SplitTabChange& change) override;
   void TabStripEmpty() override;
   void WillCloseAllTabs(TabStripModel* tab_strip_model) override;
   void CloseAllTabsStopped(TabStripModel* tab_strip_model,
                            CloseAllStoppedReason reason) override;
-
-  void OnSplitTabResize(double start_ratio);
 
   // ui::AcceleratorProvider:
   bool GetAcceleratorForCommandId(int command_id,
