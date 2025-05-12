@@ -225,12 +225,7 @@ suite('AppReceivesToolbarChanges', () => {
   });
 
   suite('play/pause', () => {
-    let propagatedActiveState: boolean;
-
     setup(() => {
-      chrome.readingMode.onSpeechPlayingStateChanged = isSpeechActive => {
-        propagatedActiveState = isSpeechActive;
-      };
       app.updateContent();
       return microtasksFinished();
     });
@@ -240,22 +235,11 @@ suite('AppReceivesToolbarChanges', () => {
       return microtasksFinished();
     }
 
-    test('by default is paused', () => {
-      assertFalse(speechController.isSpeechActive());
-      assertFalse(!!propagatedActiveState);
-      assertFalse(speechController.hasSpeechBeenTriggered());
-
-      // isSpeechTreeInitialized is set in updateContent
-      assertTrue(speechController.isSpeechTreeInitialized());
-    });
-
-
     test('on first click starts speech', async () => {
       await emitPlayPause();
       assertTrue(speechController.isSpeechActive());
       assertTrue(speechController.isSpeechTreeInitialized());
       assertTrue(speechController.hasSpeechBeenTriggered());
-      assertTrue(propagatedActiveState);
     });
 
     test('on second click stops speech', async () => {
@@ -265,7 +249,6 @@ suite('AppReceivesToolbarChanges', () => {
       assertFalse(speechController.isSpeechActive());
       assertTrue(speechController.isSpeechTreeInitialized());
       assertTrue(speechController.hasSpeechBeenTriggered());
-      assertFalse(propagatedActiveState);
     });
 
     suite('on keyboard k pressed', () => {
@@ -280,7 +263,6 @@ suite('AppReceivesToolbarChanges', () => {
         await microtasksFinished();
 
         assertTrue(speechController.isSpeechActive());
-        assertTrue(propagatedActiveState);
         assertEquals(0, metrics.getCallCount('recordSpeechStopSource'));
       });
 
@@ -290,7 +272,6 @@ suite('AppReceivesToolbarChanges', () => {
         await microtasksFinished();
 
         assertFalse(speechController.isSpeechActive());
-        assertFalse(propagatedActiveState);
         assertEquals(
             chrome.readingMode.keyboardShortcutStopSource,
             await metrics.whenCalled('recordSpeechStopSource'));
@@ -398,45 +379,15 @@ suite('AppReceivesToolbarChanges', () => {
       app.updateContent();
     });
 
-    function emitNextGranularity() {
-      emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
-    }
-
-    function emitPreviousGranularity() {
-      emitEvent(app, ToolbarEvent.PREVIOUS_GRANULARITY);
-    }
-
-    test('next propagates change', () => {
-      let movedToNext = false;
-      chrome.readingMode.movePositionToNextGranularity = () => {
-        movedToNext = true;
-      };
-
-      emitNextGranularity();
-
-      assertTrue(movedToNext);
-    });
-
     test('next highlights text', () => {
-      emitNextGranularity();
+      emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
       const currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
       assertTrue(!!currentHighlight!.textContent);
     });
 
-    test('previous propagates change', () => {
-      let movedToPrevious: boolean = false;
-      chrome.readingMode.movePositionToPreviousGranularity = () => {
-        movedToPrevious = true;
-      };
-
-      emitPreviousGranularity();
-
-      assertTrue(movedToPrevious);
-    });
-
     test('previous highlights text', () => {
-      emitPreviousGranularity();
+      emitEvent(app, ToolbarEvent.PREVIOUS_GRANULARITY);
       const currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
       assertTrue(!!currentHighlight!.textContent);

@@ -105,7 +105,7 @@ export class VoicePackController {
     const hadAvailableVoices = this.hasAvailableVoices();
     // Get a new list of voices. This should be done before we call
     // updateUnavailableVoiceToDefaultVoice_();
-    this.refreshAvailableVoices(/*forceRefresh=*/ true);
+    this.refreshAvailableVoices_(/*forceRefresh=*/ true);
 
     // TODO: crbug.com/390435037 - Simplify logic around loading voices and
     // language availability, especially around the new TTS engine.
@@ -153,7 +153,6 @@ export class VoicePackController {
 
     const langCodeForVoicePackManager = convertLangOrLocaleForVoicePackManager(
         langOrLocale, this.getEnabledLangs(), this.getAvailableLangs());
-
     if (!langCodeForVoicePackManager) {
       this.autoSwitchVoice_(langOrLocale);
       return;
@@ -180,7 +179,7 @@ export class VoicePackController {
 
     // Enable the preferred locale for this lang if one exists. Otherwise,
     // enable a Google TTS supported locale for this language if one exists.
-    this.refreshAvailableVoices();
+    this.refreshAvailableVoices_();
     const preferredVoice = chrome.readingMode.getStoredVoice();
     const preferredVoiceLang = this.getAvailableVoices()
                                    .find(voice => voice.name === preferredVoice)
@@ -247,7 +246,7 @@ export class VoicePackController {
       return;
     }
 
-    this.refreshAvailableVoices();
+    this.refreshAvailableVoices_();
     const selectedVoice = this.getAvailableVoices().filter(
         voice => voice.name === storedVoiceName);
     const newVoice = (selectedVoice.length && selectedVoice[0]) ?
@@ -322,7 +321,7 @@ export class VoicePackController {
 
     // If the default voice won't work, try another voice in that language.
     const baseLang = this.getCurrentLanguage();
-    this.refreshAvailableVoices();
+    this.refreshAvailableVoices_();
     const voicesForLanguage = this.getAvailableVoices().filter(
         voice => voice.lang.startsWith(baseLang));
 
@@ -353,7 +352,7 @@ export class VoicePackController {
 
   private disableLangIfNoVoices_(lang: string): void {
     const lowerLang = lang.toLowerCase();
-    this.refreshAvailableVoices();
+    this.refreshAvailableVoices_();
     const availableVoicesForLang = this.getAvailableVoicesForLang_(lowerLang);
 
     let disableLang = false;
@@ -424,7 +423,7 @@ export class VoicePackController {
   restoreFromPrefs(): void {
     // We need to make sure the languages we choose correspond to voices, so
     // refresh the list of voices and available langs
-    this.refreshAvailableVoices();
+    this.refreshAvailableVoices_();
     this.setCurrentLanguage(chrome.readingMode.baseLanguageForSpeech);
     const storedLanguagesPref = chrome.readingMode.getLanguagesEnabledInPref();
     const langOfDefaultVoice = this.getDefaultVoice_()?.lang;
@@ -441,7 +440,7 @@ export class VoicePackController {
     this.setUserPreferredVoiceFromPrefs_();
   }
 
-  refreshAvailableVoices(forceRefresh: boolean = false): void {
+  private refreshAvailableVoices_(forceRefresh: boolean = false): void {
     if (!this.hasAvailableVoices() || forceRefresh) {
       const availableVoices = getFilteredVoiceList(this.speech_.getVoices());
       this.setAvailableVoices(availableVoices);
@@ -530,7 +529,7 @@ export class VoicePackController {
         case VoicePackServerStatusSuccessCode.INSTALLED:
           // Force a refresh of the voices list since we might not get an update
           // the voices have changed.
-          this.refreshAvailableVoices(/*forceRefresh=*/ true);
+          this.refreshAvailableVoices_(/*forceRefresh=*/ true);
           this.autoSwitchVoice_(lang);
 
           // Some languages may require a download from the voice pack
@@ -746,7 +745,7 @@ export class VoicePackController {
   }
 
   private getDefaultVoice_(): SpeechSynthesisVoice|null {
-    this.refreshAvailableVoices();
+    this.refreshAvailableVoices_();
     const allPossibleVoices = this.getAvailableVoices();
     const voicesForLanguage = allPossibleVoices.filter(
         voice => voice.lang.startsWith(this.getCurrentLanguage()));

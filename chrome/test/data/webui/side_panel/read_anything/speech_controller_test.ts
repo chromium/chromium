@@ -358,6 +358,7 @@ suite('SpeechController', () => {
         chrome.readingMode.engineInterruptStopSource,
         await metrics.whenCalled('recordSpeechStopSource'));
   });
+
   test('onSpeechFinished', () => {
     speechController.onPlayPauseToggle(null, 'New phone who dis?');
 
@@ -367,5 +368,29 @@ suite('SpeechController', () => {
     assertEquals(1, metrics.getCallCount('recordSpeechPlaybackLength'));
     assertEquals(1, metrics.getCallCount('recordSpeechStopSource'));
     assertFalse(speechController.isSpeechActive());
+  });
+
+  test('playNextGranularity propagates change', () => {
+    let movedToNext = false;
+    chrome.readingMode.getCurrentText = () => [];
+    chrome.readingMode.movePositionToNextGranularity = () => {
+      movedToNext = true;
+    };
+
+    speechController.playNextGranularity();
+
+    assertTrue(movedToNext);
+  });
+
+  test('playPreviousGranularity propagates change', () => {
+    let movedToPrevious: boolean = false;
+    chrome.readingMode.getCurrentText = () => [];
+    chrome.readingMode.movePositionToPreviousGranularity = () => {
+      movedToPrevious = true;
+    };
+
+    speechController.playPreviousGranularity();
+
+    assertTrue(movedToPrevious);
   });
 });
