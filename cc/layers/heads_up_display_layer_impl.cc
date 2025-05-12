@@ -401,7 +401,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
             static_cast<double>(in_flight_resource_.size().height()));
       }
       quad->SetNew(sqs, quad_rect, visible_rect, /*needs_blending=*/true,
-                   resource_id, /*premultiplied_alpha=*/true,
+                   resource_id,
                    /*uv_top_left=*/gfx::PointF(),
                    /*uv_bottom_right=*/uv_bottom_right,
                    /*background_color=*/SkColors::kTransparent,

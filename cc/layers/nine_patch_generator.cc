@@ -427,8 +427,6 @@ void NinePatchGenerator::AppendQuads(
   client_resource_provider->ValidateResource(resource);
 #endif
 
-  constexpr bool premultiplied_alpha = true;
-
   for (const auto& patch : patches) {
     gfx::Rect output_rect = patch.output_rect + offset;
     gfx::Rect visible_rect = clip_visible_rect(output_rect);
@@ -437,9 +435,8 @@ void NinePatchGenerator::AppendQuads(
       gfx::RectF image_rect = patch.normalized_image_rect;
       auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
       quad->SetNew(shared_quad_state, output_rect, visible_rect, needs_blending,
-                   resource, premultiplied_alpha, image_rect.origin(),
-                   image_rect.bottom_right(), SkColors::kTransparent,
-                   nearest_neighbor_,
+                   resource, image_rect.origin(), image_rect.bottom_right(),
+                   SkColors::kTransparent, nearest_neighbor_,
                    /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
     }
   }

@@ -464,10 +464,10 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
     const gfx::PointF kUVTopLeft(0.1f, 0.2f);
     const gfx::PointF kUVBottomRight(1.0f, 1.0f);
     quad->SetNew(shared_state, output_rect, output_rect,
-                 false /*needs_blending*/, ResourceId(1),
-                 true /*premultiplied_alpha*/, kUVTopLeft, kUVBottomRight,
-                 SkColors::kTransparent, false /*nearest_neighbor*/,
-                 false /*secure_output_only*/, gfx::ProtectedVideoType::kClear);
+                 false /*needs_blending*/, ResourceId(1), kUVTopLeft,
+                 kUVBottomRight, SkColors::kTransparent,
+                 false /*nearest_neighbor*/, false /*secure_output_only*/,
+                 gfx::ProtectedVideoType::kClear);
 
     if (per_quad_damage_output) {
       quad->damage_rect = output_rect;
@@ -5839,7 +5839,6 @@ CompositorFrame BuildCompositorFrameWithResources(
     const gfx::Rect rect;
     const gfx::Rect visible_rect;
     bool needs_blending = false;
-    bool premultiplied_alpha = true;
     const gfx::PointF uv_top_left;
     const gfx::PointF uv_bottom_right;
     SkColor4f background_color = SkColors::kGreen;
@@ -5848,9 +5847,8 @@ CompositorFrame BuildCompositorFrameWithResources(
     gfx::ProtectedVideoType protected_video_type =
         gfx::ProtectedVideoType::kClear;
     quad->SetAll(sqs, rect, visible_rect, needs_blending, resource_id,
-                 premultiplied_alpha, uv_top_left, uv_bottom_right,
-                 background_color, nearest_neighbor, secure_output_only,
-                 protected_video_type);
+                 uv_top_left, uv_bottom_right, background_color,
+                 nearest_neighbor, secure_output_only, protected_video_type);
   }
   frame.render_pass_list.push_back(std::move(pass));
   return frame;
@@ -7815,9 +7813,9 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, PerQuadDamageSameSharedQuadState) {
     const gfx::PointF kUVBottomRight(1.0f, 1.0f);
     texure_quad->SetNew(
         sqs, quad_rects[i], quad_rects[i], false /*needs_blending*/,
-        ResourceId(1), true /*premultiplied_alpha*/, kUVTopLeft, kUVBottomRight,
-        SkColors::kTransparent, false /*nearest_neighbor*/,
-        false /*secure_output_only*/, gfx::ProtectedVideoType::kClear);
+        ResourceId(1), kUVTopLeft, kUVBottomRight, SkColors::kTransparent,
+        false /*nearest_neighbor*/, false /*secure_output_only*/,
+        gfx::ProtectedVideoType::kClear);
 
     texure_quad->damage_rect = damage_rects[i];
   }

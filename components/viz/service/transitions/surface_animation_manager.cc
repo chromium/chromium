@@ -117,7 +117,6 @@ void ReplaceSharedElementWithTexture(
       /*visible_rect=*/shared_element_quad.visible_rect,
       /*needs_blending=*/shared_element_quad.needs_blending,
       /*resource_id=*/resource_id,
-      /*premultiplied_alpha=*/true,
       /*uv_top_left=*/gfx::PointF(0, 0),
       /*uv_bottom_right=*/gfx::PointF(1, 1),
       /*background_color=*/SkColors::kTransparent,

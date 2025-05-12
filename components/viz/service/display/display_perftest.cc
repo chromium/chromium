@@ -103,7 +103,6 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
                    int quad_width) {
     bool needs_blending = false;
     ResourceId resource_id(1);
-    bool premultiplied_alpha = true;
     gfx::PointF uv_top_left(0, 0);
     gfx::PointF uv_bottom_right(1, 1);
     SkColor4f background_color = SkColors::kRed;
@@ -121,8 +120,8 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
                          ->CreateAndAppendDrawQuad<TextureDrawQuad>();
         gfx::Rect rect(i, j, quad_width, quad_height);
         quad->SetNew(shared_quad_state, rect, rect, needs_blending, resource_id,
-                     premultiplied_alpha, uv_top_left, uv_bottom_right,
-                     background_color, nearest_neighbor,
+                     uv_top_left, uv_bottom_right, background_color,
+                     nearest_neighbor,
                      /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
         j += quad_height;
       }

@@ -173,7 +173,7 @@ void PaintedScrollbarLayerImpl::AppendThumbQuads(
   auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   quad->SetNew(shared_quad_state, scaled_thumb_quad_rect,
                scaled_visible_thumb_quad_rect, /*needs_blending=*/true,
-               thumb_resource_id, /*premultiplied=*/true,
+               thumb_resource_id,
                /*top_left=*/gfx::PointF(0.f, 0.f),
                /*bottom_right=*/gfx::PointF(1.f, 1.f),
                /*background=*/SkColors::kTransparent,
@@ -238,7 +238,7 @@ void PaintedScrollbarLayerImpl::AppendTrackAndButtonsQuads(
   quad->SetNew(track_and_buttons_shared_quad_state,
                scaled_track_and_buttons_quad_rect,
                scaled_visible_track_and_buttons_quad_rect, needs_blending,
-               track_and_buttons_resource_id, /*premultiplied=*/true,
+               track_and_buttons_resource_id,
                /*top_left=*/gfx::PointF(0.f, 0.f),
                /*bottom_right=*/gfx::PointF(1.f, 1.f),
                /*background=*/SkColors::kTransparent,

@@ -91,7 +91,6 @@ class OcclusionCullerTest : public testing::Test {
                                        bool is_overlay_candidate) {
     bool nearest_neighbor = false;
     bool needs_blending = false;
-    bool premultiplied_alpha = true;
     gfx::Size resource_size_in_pixels = rect.size();
 
     TestResourceFactory::TestResourceContext resource_context;
@@ -105,7 +104,7 @@ class OcclusionCullerTest : public testing::Test {
         render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
     overlay_quad->SetNew(
         shared_quad_state, rect, rect, needs_blending, resource_id,
-        premultiplied_alpha, /*top_left=*/gfx::PointF(),
+        /*top_left=*/gfx::PointF(),
         /*bottom_right=*/gfx::PointF(), SkColors::kBlack, nearest_neighbor,
         /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
 

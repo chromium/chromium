@@ -81,8 +81,7 @@ void AppendQuad(const viz::TransferableResource& resource,
   uv_crop.Scale(1.f / buffer_size.width(), 1.f / buffer_size.height());
 
   texture_quad->SetNew(quad_state, quad_rect, quad_rect,
-                       /*needs_blending=*/true, resource.id,
-                       /*premultiplied=*/true, uv_crop.origin(),
+                       /*needs_blending=*/true, resource.id, uv_crop.origin(),
                        uv_crop.bottom_right(), SkColors::kTransparent,
                        /*nearest=*/false,
                        /*secure_output=*/false,

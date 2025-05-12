@@ -755,10 +755,10 @@ class OverlayTest : public testing::Test {
     auto* overlay_quad =
         render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
     overlay_quad->SetNew(shared_quad_state, rect, rect, needs_blending,
-                         resource_id, premultiplied_alpha, kUVTopLeft,
-                         kUVBottomRight, SkColors::kTransparent,
-                         nearest_neighbor,
+                         resource_id, kUVTopLeft, kUVBottomRight,
+                         SkColors::kTransparent, nearest_neighbor,
                          /*secure_output=*/false, protected_video_type);
+    overlay_quad->premultiplied_alpha = premultiplied_alpha;
 
     return overlay_quad;
   }
@@ -1838,10 +1838,9 @@ TEST_F(SingleOverlayOnTopTest, StablePrioritizeIntervalFrame) {
     TextureDrawQuad* quad_small =
         pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
     quad_small->SetNew(shared_quad_state_a, kCandidateRectA, kCandidateRectA,
-                       false /*needs_blending*/, resource_id_a,
-                       true /*premultiplied_alpha*/, kUVTopLeft, kUVBottomRight,
-                       SkColors::kTransparent, false /*nearest_neighbor*/,
-                       false /*secure_output_only*/,
+                       false /*needs_blending*/, resource_id_a, kUVTopLeft,
+                       kUVBottomRight, SkColors::kTransparent,
+                       false /*nearest_neighbor*/, false /*secure_output_only*/,
                        gfx::ProtectedVideoType::kClear);
     AddExpectedRectToOverlayProcessor(gfx::RectF(kCandidateRectA));
 
@@ -1852,10 +1851,9 @@ TEST_F(SingleOverlayOnTopTest, StablePrioritizeIntervalFrame) {
         pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
 
     quad_big->SetNew(shared_quad_state_b, kCandidateRectB, kCandidateRectB,
-                     false /*needs_blending*/, resource_id_b,
-                     true /*premultiplied_alpha*/, kUVTopLeft, kUVBottomRight,
-                     SkColors::kTransparent, false /*nearest_neighbor*/,
-                     false /*secure_output_only*/,
+                     false /*needs_blending*/, resource_id_b, kUVTopLeft,
+                     kUVBottomRight, SkColors::kTransparent,
+                     false /*nearest_neighbor*/, false /*secure_output_only*/,
                      gfx::ProtectedVideoType::kClear);
 
     shared_quad_state_b->overlay_damage_index = 1;
@@ -3115,9 +3113,8 @@ TEST_F(ChangeSingleOnTopTest, DoNotPromoteIfContentsDontChange) {
         main_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
     original_quad->SetNew(
         pass->shared_quad_state_list.back(), pass->output_rect,
-        pass->output_rect, false /*needs_blending*/, resource_id,
-        true /*premultiplied_alpha*/, kUVTopLeft, kUVBottomRight,
-        SkColors::kTransparent, false /*nearest_neighbor*/,
+        pass->output_rect, false /*needs_blending*/, resource_id, kUVTopLeft,
+        kUVBottomRight, SkColors::kTransparent, false /*nearest_neighbor*/,
         false /*secure_output_only*/, gfx::ProtectedVideoType::kClear);
 
     // Add something behind it.
@@ -3315,9 +3312,8 @@ TEST_F(OverlayHysteresisTest, HysteresisResumeWhenCandidateComeBackActive) {
           main_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
       quad_candidate_no_occlusion->SetNew(
           sqs, kOverlayTopLeftRect, kOverlayTopLeftRect,
-          /*needs_blending=*/false, no_occlusion_quad_resource_id,
-          /*premultiplied=*/true, kUVTopLeft, kUVBottomRight,
-          SkColors::kTransparent, /*nearest=*/false,
+          /*needs_blending=*/false, no_occlusion_quad_resource_id, kUVTopLeft,
+          kUVBottomRight, SkColors::kTransparent, /*nearest=*/false,
           /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
       TrackingIdData track_data_top_left{
           quad_candidate_no_occlusion->rect,

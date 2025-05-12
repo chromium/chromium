@@ -38,7 +38,6 @@ void TextureDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                              const gfx::Rect& visible_rect,
                              bool needs_blending,
                              ResourceId resource,
-                             bool premultiplied,
                              const gfx::PointF& top_left,
                              const gfx::PointF& bottom_right,
                              SkColor4f background,
@@ -50,7 +49,6 @@ void TextureDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kTextureContent, rect,
                    visible_rect, needs_blending);
   resource_id = resource;
-  premultiplied_alpha = premultiplied;
   uv_top_left = top_left;
   uv_bottom_right = bottom_right;
   background_color = background;
@@ -64,7 +62,6 @@ void TextureDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                              const gfx::Rect& visible_rect,
                              bool needs_blending,
                              ResourceId resource,
-                             bool premultiplied,
                              const gfx::PointF& top_left,
                              const gfx::PointF& bottom_right,
                              SkColor4f background,
@@ -75,7 +72,6 @@ void TextureDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kTextureContent, rect,
                    visible_rect, needs_blending);
   resource_id = resource;
-  premultiplied_alpha = premultiplied;
   uv_top_left = top_left;
   uv_bottom_right = bottom_right;
   background_color = background;

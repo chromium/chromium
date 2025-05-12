@@ -319,14 +319,14 @@ void RoundedDisplayFrameFactory::AppendQuad(
   // Since the gutter texture is drawn into a buffer of exact size, therefore
   // we do not need to scale uv coordinates (zoom in or out on texture) to fit
   // the buffer size.
-  texture_quad->SetNew(
-      quad_state, quad_rect, quad_rect,
-      /*needs_blending=*/true, resource.id,
-      /*premultiplied=*/true, /*uv_top_left=*/gfx::PointF(0, 0),
-      /*uv_bottom_right=*/gfx::PointF(1, 1),
-      /*background=*/SkColors::kTransparent,
-      /*nearest=*/false,
-      /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
+  texture_quad->SetNew(quad_state, quad_rect, quad_rect,
+                       /*needs_blending=*/true, resource.id,
+                       /*uv_top_left=*/gfx::PointF(0, 0),
+                       /*uv_bottom_right=*/gfx::PointF(1, 1),
+                       /*background=*/SkColors::kTransparent,
+                       /*nearest=*/false,
+                       /*secure_output=*/false,
+                       gfx::ProtectedVideoType::kClear);
 
   texture_quad->rounded_display_masks_info =
       MapToRoundedDisplayMasksInfo(gutter.GetGutterCorners());

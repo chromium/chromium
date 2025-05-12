@@ -200,9 +200,9 @@ void CreateTestTextureDrawQuad(ResourceId resource_id,
   auto* quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
 
   quad->SetNew(shared_state, rect, rect, needs_blending, resource_id,
-               premultiplied_alpha, uv_top_left, uv_bottom_right,
-               background_color, nearest_neighbor,
+               uv_top_left, uv_bottom_right, background_color, nearest_neighbor,
                /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
+  quad->premultiplied_alpha = premultiplied_alpha;
 }
 
 void CreateTestTileDrawQuad(ResourceId resource_id,

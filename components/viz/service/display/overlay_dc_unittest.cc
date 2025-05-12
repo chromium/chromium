@@ -142,7 +142,7 @@ TextureDrawQuad* CreateTextureQuadAt(
                      is_overlay_candidate, /*is_low_latency=*/false);
   auto* quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   quad->SetNew(shared_quad_state, rect, /*visible_rect=*/rect,
-               /*needs_blending=*/false, resource_id, /*premultiplied=*/true,
+               /*needs_blending=*/false, resource_id,
                /*top_left=*/gfx::PointF(0, 0),
                /*bottom_right=*/gfx::PointF(1, 1),
                /*background=*/SkColors::kBlack,
@@ -165,7 +165,7 @@ TextureDrawQuad* CreateLowLatencyTextureQuadAt(
                      /*is_overlay_candidate=*/true, /*is_low_latency=*/true);
   auto* quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   quad->SetNew(shared_quad_state, rect, /*visible_rect=*/rect,
-               /*needs_blending=*/false, resource_id, /*premultiplied=*/true,
+               /*needs_blending=*/false, resource_id,
                /*top_left=*/gfx::PointF(0, 0),
                /*bottom_right=*/gfx::PointF(1, 1),
                /*background=*/SkColors::kBlack,
@@ -206,7 +206,6 @@ TextureDrawQuad* CreateYUVTextureQuadAt(
                        /*rect=*/quad_rect,
                        /*visible_rect=*/quad_rect,
                        /*needs_blending=*/false, resource_id,
-                       /*premultiplied=*/true,
                        /*top_left=*/gfx::PointF(0, 0),
                        /*bottom_right=*/gfx::PointF(1, 1),
                        /*background=*/SkColors::kBlack,

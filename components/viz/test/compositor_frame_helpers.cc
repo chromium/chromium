@@ -214,10 +214,10 @@ RenderPassBuilder& RenderPassBuilder::AddTextureQuad(
   auto* sqs = AppendDefaultSharedQuadState(rect, visible_rect);
   auto* quad = pass_->CreateAndAppendDrawQuad<TextureDrawQuad>();
   quad->SetAll(sqs, rect, visible_rect, params.needs_blending, resource_id,
-               params.premultiplied_alpha, gfx::PointF(0.0f, 0.0f),
-               gfx::PointF(1.0f, 1.0f), params.background_color,
-               params.nearest_neighbor, params.secure_output_only,
-               params.protected_video_type);
+               gfx::PointF(0.0f, 0.0f), gfx::PointF(1.0f, 1.0f),
+               params.background_color, params.nearest_neighbor,
+               params.secure_output_only, params.protected_video_type);
+  quad->premultiplied_alpha = params.premultiplied_alpha;
   return *this;
 }
 

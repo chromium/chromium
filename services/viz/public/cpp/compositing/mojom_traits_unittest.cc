@@ -1082,7 +1082,6 @@ TEST_F(StructTraitsTest, QuadListBasic) {
 
   const gfx::Rect rect5(123, 567, 91011, 13141);
   const ResourceId resource_id5(1337);
-  const bool premultiplied_alpha = true;
 
   const gfx::PointF uv_top_left(12.1f, 34.2f);
   const gfx::PointF uv_bottom_right(56.3f, 78.4f);
@@ -1094,9 +1093,9 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   TextureDrawQuad* texture_draw_quad =
       render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   texture_draw_quad->SetAll(sqs, rect5, rect5, needs_blending, resource_id5,
-                            premultiplied_alpha, uv_top_left, uv_bottom_right,
-                            background_color, nearest_neighbor,
-                            secure_output_only, protected_video_type);
+                            uv_top_left, uv_bottom_right, background_color,
+                            nearest_neighbor, secure_output_only,
+                            protected_video_type);
   // Create a stream video TextureDrawQuad.
   const gfx::Rect rect6(321, 765, 11109, 151413);
   const bool needs_blending6 = false;
@@ -1104,9 +1103,9 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   TextureDrawQuad* stream_video_draw_quad =
       render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   stream_video_draw_quad->SetAll(sqs, rect6, rect6, needs_blending6,
-                                 resource_id6, false, uv_top_left,
-                                 uv_bottom_right, SkColors::kTransparent, false,
-                                 false, protected_video_type);
+                                 resource_id6, uv_top_left, uv_bottom_right,
+                                 SkColors::kTransparent, false, false,
+                                 protected_video_type);
   stream_video_draw_quad->is_stream_video = true;
 
   // Create a TextureDrawQuad with rounded-display masks.
@@ -1120,9 +1119,9 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   TextureDrawQuad* rounded_display_mask_quad =
       render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   rounded_display_mask_quad->SetAll(sqs, rect7, rect7, needs_blending7,
-                                    resource_id7, false, uv_top_left,
-                                    uv_bottom_right, SkColors::kTransparent,
-                                    false, false, protected_video_type);
+                                    resource_id7, uv_top_left, uv_bottom_right,
+                                    SkColors::kTransparent, false, false,
+                                    protected_video_type);
   rounded_display_mask_quad->rounded_display_masks_info =
       TextureDrawQuad::RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(
           origin_rounded_display_mask_radius, other_rounded_display_mask_radius,
@@ -1192,7 +1191,6 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   EXPECT_EQ(rect5, out_texture_draw_quad->visible_rect);
   EXPECT_EQ(needs_blending, out_texture_draw_quad->needs_blending);
   EXPECT_EQ(resource_id5, out_texture_draw_quad->resource_id);
-  EXPECT_EQ(premultiplied_alpha, out_texture_draw_quad->premultiplied_alpha);
   EXPECT_EQ(uv_top_left, out_texture_draw_quad->uv_top_left);
   EXPECT_EQ(uv_bottom_right, out_texture_draw_quad->uv_bottom_right);
   EXPECT_EQ(background_color, out_texture_draw_quad->background_color);

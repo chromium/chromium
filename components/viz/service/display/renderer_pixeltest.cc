@@ -347,9 +347,9 @@ void CreateTestTwoColoredTextureDrawQuad(
   const bool nearest_neighbor = false;
   auto* quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   quad->SetNew(shared_state, rect, rect, needs_blending, mapped_resource,
-               premultiplied_alpha, uv_top_left, uv_bottom_right,
-               background_color, nearest_neighbor,
+               uv_top_left, uv_bottom_right, background_color, nearest_neighbor,
                /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
+  quad->premultiplied_alpha = premultiplied_alpha;
 }
 
 // TODO(crbug.com/40219248): Make this function use SkColor4f
@@ -416,9 +416,9 @@ void CreateTestTextureDrawQuad(
   const bool nearest_neighbor = false;
   auto* quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   quad->SetNew(shared_state, rect, rect, needs_blending, mapped_resource,
-               premultiplied_alpha, uv_top_left, uv_bottom_right,
-               background_color, nearest_neighbor,
+               uv_top_left, uv_bottom_right, background_color, nearest_neighbor,
                /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
+  quad->premultiplied_alpha = premultiplied_alpha;
 }
 
 void CreateTestY16TextureDrawQuad_FromVideoFrame(
@@ -1761,8 +1761,8 @@ TEST_P(GPURendererPixelTest, OverlayHintRequiredFallback) {
   TextureDrawQuad* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   quad->SetNew(texture_quad_state, gfx::Rect(this->device_viewport_size_),
                gfx::Rect(this->device_viewport_size_), false, ResourceId{1},
-               true, gfx::PointF(), gfx::PointF(), SkColors::kTransparent,
-               false, false, gfx::ProtectedVideoType::kClear);
+               gfx::PointF(), gfx::PointF(), SkColors::kTransparent, false,
+               false, gfx::ProtectedVideoType::kClear);
   quad->overlay_priority_hint = OverlayPriority::kRequired;
 
   // Add a background that's not the expected fallback color.
@@ -1807,8 +1807,8 @@ TEST_P(GPURendererPixelTest, OverlayHintRequiredFallbackRPDQBypassCase) {
     TextureDrawQuad* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
     quad->SetNew(sqs, gfx::Rect(this->device_viewport_size_),
                  gfx::Rect(this->device_viewport_size_), false, ResourceId{1},
-                 true, gfx::PointF(), gfx::PointF(), SkColors::kTransparent,
-                 false, false, gfx::ProtectedVideoType::kClear);
+                 gfx::PointF(), gfx::PointF(), SkColors::kTransparent, false,
+                 false, gfx::ProtectedVideoType::kClear);
     quad->overlay_priority_hint = OverlayPriority::kRequired;
 
     pass_list.push_back(std::move(pass));
@@ -4948,7 +4948,7 @@ TEST_F(SoftwareRendererPixelTest, TextureDrawQuadNearestNeighbor) {
 
   auto* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   quad->SetNew(shared_state, viewport, viewport, needs_blending,
-               mapped_resource, true, gfx::PointF(0, 0), gfx::PointF(1, 1),
+               mapped_resource, gfx::PointF(0, 0), gfx::PointF(1, 1),
                SkColors::kBlack, nearest_neighbor,
                /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
 
@@ -5001,8 +5001,8 @@ TEST_F(SoftwareRendererPixelTest, TextureDrawQuadLinear) {
 
   auto* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   quad->SetNew(shared_state, viewport, viewport, needs_blending,
-               mapped_resource, /*premultiplied=*/true, gfx::PointF(0, 0),
-               gfx::PointF(1, 1), SkColors::kBlack, nearest_neighbor,
+               mapped_resource, gfx::PointF(0, 0), gfx::PointF(1, 1),
+               SkColors::kBlack, nearest_neighbor,
                /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
 
   AggregatedRenderPassList pass_list;
@@ -5383,8 +5383,8 @@ TEST_P(GPURendererPixelTest, TextureQuadBatching) {
       auto* texture_quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
       texture_quad->SetNew(
           shared_state, layer_rect, layer_rect, needs_blending, mapped_resource,
-          true, uv_rect.origin(), uv_rect.bottom_right(), SkColors::kWhite,
-          false, /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
+          uv_rect.origin(), uv_rect.bottom_right(), SkColors::kWhite, false,
+          /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
     }
   }
 
@@ -5548,8 +5548,8 @@ TEST_P(GPURendererPixelTest, RoundedCornerSimpleTextureDrawQuad) {
   const bool nearest_neighbor = false;
   auto* blue = root_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   blue->SetNew(shared_state_rounded, blue_rect, blue_rect, needs_blending,
-               mapped_resource, true, uv_top_left, uv_bottom_right,
-               SkColors::kBlack, nearest_neighbor,
+               mapped_resource, uv_top_left, uv_bottom_right, SkColors::kBlack,
+               nearest_neighbor,
                /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
 
   SharedQuadState* shared_state_normal = CreateTestSharedQuadState(
@@ -6401,9 +6401,10 @@ class ColorTransformPixelTest
       auto* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
 
       quad->SetNew(shared_state, rect, rect, needs_blending, mapped_resource,
-                   this->premultiplied_alpha_, uv_top_left, uv_bottom_right,
-                   SkColors::kBlack, nearest_neighbor,
+                   uv_top_left, uv_bottom_right, SkColors::kBlack,
+                   nearest_neighbor,
                    /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
+      quad->premultiplied_alpha = this->premultiplied_alpha_;
 
       auto* color_quad = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
       color_quad->SetNew(shared_state, rect, rect, SkColors::kBlack, false);

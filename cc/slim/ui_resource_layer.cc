@@ -102,16 +102,14 @@ void UIResourceLayer::AppendQuads(viz::CompositorRenderPass& render_pass,
   viz::TextureDrawQuad* quad =
       render_pass.CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   constexpr bool kNearest = false;
-  constexpr bool kPremultiplied = true;
   constexpr bool kSecureOutputOnly = false;
   constexpr auto kVideoType = gfx::ProtectedVideoType::kClear;
   const bool needs_blending = !static_cast<LayerTreeImpl*>(layer_tree())
                                    ->IsUIResourceOpaque(resource_id_);
   quad->SetNew(quad_state, quad_state->quad_layer_rect,
                quad_state->visible_quad_layer_rect, needs_blending,
-               viz_resource_id, kPremultiplied, uv_top_left(),
-               uv_bottom_right(), SkColors::kTransparent, kNearest,
-               kSecureOutputOnly, kVideoType);
+               viz_resource_id, uv_top_left(), uv_bottom_right(),
+               SkColors::kTransparent, kNearest, kSecureOutputOnly, kVideoType);
 }
 
 }  // namespace cc::slim

@@ -123,7 +123,6 @@ TextureDrawQuad* CreateCandidateQuadAt(
     const gfx::Rect& rect,
     gfx::ProtectedVideoType protected_video_type) {
   bool needs_blending = false;
-  bool premultiplied_alpha = true;
   bool nearest_neighbor = false;
   gfx::Size resource_size_in_pixels = rect.size();
   bool is_overlay_candidate = true;
@@ -133,8 +132,8 @@ TextureDrawQuad* CreateCandidateQuadAt(
 
   auto* overlay_quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   overlay_quad->SetNew(shared_quad_state, rect, rect, needs_blending,
-                       resource_id, premultiplied_alpha, kUVTopLeft,
-                       kUVBottomRight, SkColors::kTransparent, nearest_neighbor,
+                       resource_id, kUVTopLeft, kUVBottomRight,
+                       SkColors::kTransparent, nearest_neighbor,
                        /*secure_output_only=*/false, protected_video_type);
 
   return overlay_quad;
@@ -356,14 +355,13 @@ TEST_F(CALayerOverlayTest, TextureDrawQuadVideoOverlay) {
   {
     auto pass = CreateRenderPass();
     auto* texture_video_quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
-    texture_video_quad->SetNew(pass->shared_quad_state_list.back(),
-                               gfx::Rect(size), gfx::Rect(size),
-                               /*needs_blending=*/false, resource_id,
-                               /*premultiplied_alpha=*/true, kUVTopLeft,
-                               kUVBottomRight, SkColors::kTransparent,
-                               /*nearest_neighbor=*/false,
-                               /*secure_output_only=*/false,
-                               /*video_type=*/gfx::ProtectedVideoType::kClear);
+    texture_video_quad->SetNew(
+        pass->shared_quad_state_list.back(), gfx::Rect(size), gfx::Rect(size),
+        /*needs_blending=*/false, resource_id, kUVTopLeft, kUVBottomRight,
+        SkColors::kTransparent,
+        /*nearest_neighbor=*/false,
+        /*secure_output_only=*/false,
+        /*video_type=*/gfx::ProtectedVideoType::kClear);
     texture_video_quad->is_video_frame = true;
 
     OverlayCandidateList ca_layer_list;

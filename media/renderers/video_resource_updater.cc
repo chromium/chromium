@@ -591,8 +591,6 @@ void VideoResourceUpdater::AppendQuad(
       if (frame_resource_id_.is_null()) {
         break;
       }
-      bool premultiplied_alpha =
-          frame_resource_type_ == VideoFrameResourceType::RGBA_PREMULTIPLIED;
 
       bool nearest_neighbor = false;
       gfx::ProtectedVideoType protected_video_type =
@@ -600,10 +598,12 @@ void VideoResourceUpdater::AppendQuad(
       auto* texture_quad =
           render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
       texture_quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect,
-                           needs_blending, frame_resource_id_,
-                           premultiplied_alpha, uv_top_left, uv_bottom_right,
-                           SkColors::kTransparent, nearest_neighbor, false,
-                           protected_video_type);
+                           needs_blending, frame_resource_id_, uv_top_left,
+                           uv_bottom_right, SkColors::kTransparent,
+                           nearest_neighbor, false, protected_video_type);
+      texture_quad->premultiplied_alpha =
+          frame_resource_type_ == VideoFrameResourceType::RGBA_PREMULTIPLIED;
+
       // Set the is_stream_video flag for STREAM_TEXTURE. Is used downstream
       // (e.g. *_layer_overlay.cc).
       texture_quad->is_stream_video =

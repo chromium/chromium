@@ -336,15 +336,16 @@ bool CanvasResourceDispatcher::PrepareFrame(
       pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
 
   const bool needs_blending = !is_opaque;
-  // TODO(crbug.com/645993): this should be inherited from WebGL context's
-  // creation settings.
-  constexpr bool kPremultipliedAlpha = true;
   constexpr gfx::PointF uv_top_left(0.f, 0.f);
   constexpr gfx::PointF uv_bottom_right(1.f, 1.f);
-  quad->SetAll(sqs, bounds, bounds, needs_blending, resource_id,
-               kPremultipliedAlpha, uv_top_left, uv_bottom_right,
-               SkColors::kTransparent, nearest_neighbor,
+  quad->SetAll(sqs, bounds, bounds, needs_blending, resource_id, uv_top_left,
+               uv_bottom_right, SkColors::kTransparent, nearest_neighbor,
                /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
+
+  // TODO(crbug.com/645993): this should be inherited from WebGL context's
+  // creation settings.
+  quad->premultiplied_alpha = true;
+
   frame->render_pass_list.push_back(std::move(pass));
 
   if (change_size_for_next_commit_ ||

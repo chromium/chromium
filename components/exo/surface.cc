@@ -1815,8 +1815,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
       texture_quad->SetNew(
           quad_state, quad_rect, quad_rect,
           /* needs_blending=*/!are_contents_opaque, current_resource_.id,
-          /* premultiplied*/ true, uv_crop.origin(), uv_crop.bottom_right(),
-          background_color,
+          uv_crop.origin(), uv_crop.bottom_right(), background_color,
           /* nearest*/ false, state_.basic_state.only_visible_on_secure_output,
           gfx::ProtectedVideoType::kClear);
 

@@ -146,9 +146,10 @@ void TextureLayerImpl::AppendQuads(const AppendQuadsContext& context,
 
   auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect, needs_blending,
-               resource_id_, premultiplied_alpha_, uv_top_left_,
-               uv_bottom_right_, bg_color, nearest_neighbor,
+               resource_id_, uv_top_left_, uv_bottom_right_, bg_color,
+               nearest_neighbor,
                /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
+  quad->premultiplied_alpha = premultiplied_alpha_;
   quad->dynamic_range_limit = GetDynamicRangeLimit();
   ValidateQuadResources(quad);
 }

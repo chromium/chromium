@@ -1477,11 +1477,10 @@ bool TextureDrawQuadFromDict(const base::Value::Dict& dict,
   ResourceId resource_id = common.resource_id;
   draw_quad->SetAll(
       common.shared_quad_state, common.rect, common.visible_rect,
-      common.needs_blending, resource_id, premultiplied_alpha.value(),
-      t_uv_top_left, t_uv_bottom_right, t_background_color,
-      nearest_neighbor.value(), secure_output_only.value(),
+      common.needs_blending, resource_id, t_uv_top_left, t_uv_bottom_right,
+      t_background_color, nearest_neighbor.value(), secure_output_only.value(),
       static_cast<gfx::ProtectedVideoType>(protected_video_type_index));
-
+  draw_quad->premultiplied_alpha = premultiplied_alpha.value();
   draw_quad->is_stream_video = dict.FindBool("is_stream_video").value_or(false);
 
   gfx::Rect t_damage_rect;
