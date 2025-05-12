@@ -273,6 +273,11 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
   expected_providers += 1;
 #endif
 
+#if BUILDFLAG(ENABLE_GLIC)
+  // GlicMetricsProvider
+  expected_providers += 1;
+#endif
+
   std::unique_ptr<TestChromeMetricsServiceClient>
       chrome_metrics_service_client = TestChromeMetricsServiceClient::Create(
           metrics_state_manager_.get(), synthetic_trial_registry_.get());

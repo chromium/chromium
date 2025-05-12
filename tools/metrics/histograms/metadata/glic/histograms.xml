@@ -665,6 +665,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.TieredRolloutEnablementStatus"
+    enum="GlicTieredRolloutEnablementStatus" expires_after="2026-01-15">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>dewittj@chromium.org</owner>
+  <summary>
+    Records whether the Glic-eligible profiles are enabled for tiered rollout.
+    Emitted in every UMA record from the current session (at the time the record
+    is finalized), but only if there is at least one Glic-eligible profile.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Usage.Hotkey" enum="GlicHotkeyUsage"
     expires_after="2026-01-15">
   <owner>erikchen@chromium.org</owner>

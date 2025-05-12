@@ -41,7 +41,7 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(::switches::kGlicDev)) {
     if (!base::FeatureList::IsEnabled(features::kGlicRollout) &&
-        !profile->GetPrefs()->GetBoolean(prefs::kGlicRolloutEligibility)) {
+        !IsEligibleForGlicTieredRollout(profile)) {
       result.not_rolled_out = true;
     }
 
