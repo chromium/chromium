@@ -73,10 +73,12 @@ void ModulatorImplBase::FetchTree(
     const ScriptFetchOptions& options,
     ModuleScriptCustomFetchType custom_fetch_type,
     ModuleTreeClient* client,
+    ModuleImportPhase import_phase,
     String referrer) {
   tree_linker_registry_->Fetch(
       url, module_type, fetch_client_settings_object_fetcher, context_type,
-      destination, options, this, custom_fetch_type, client, referrer);
+      destination, options, this, custom_fetch_type, client, import_phase,
+      referrer);
 }
 
 void ModulatorImplBase::FetchDescendantsForInlineScript(

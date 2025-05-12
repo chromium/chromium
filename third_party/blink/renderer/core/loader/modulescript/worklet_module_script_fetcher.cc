@@ -21,7 +21,8 @@ void WorkletModuleScriptFetcher::Fetch(
     ModuleType expected_module_type,
     ResourceFetcher* fetch_client_settings_object_fetcher,
     ModuleGraphLevel level,
-    ModuleScriptFetcher::Client* client) {
+    ModuleScriptFetcher::Client* client,
+    ModuleImportPhase import_phase) {
   DCHECK_EQ(fetch_params.GetScriptType(), mojom::blink::ScriptType::kModule);
   if (global_scope_->GetModuleResponsesMap()->GetEntry(
           fetch_params.Url(), expected_module_type, client,

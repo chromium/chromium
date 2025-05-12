@@ -30,7 +30,8 @@ void InstalledServiceWorkerModuleScriptFetcher::Fetch(
     ModuleType expected_module_type,
     ResourceFetcher*,
     ModuleGraphLevel level,
-    ModuleScriptFetcher::Client* client) {
+    ModuleScriptFetcher::Client* client,
+    ModuleImportPhase import_phase) {
   DCHECK_EQ(fetch_params.GetScriptType(), mojom::blink::ScriptType::kModule);
   DCHECK(global_scope_->IsContextThread());
   auto* installed_scripts_manager = global_scope_->GetInstalledScriptsManager();

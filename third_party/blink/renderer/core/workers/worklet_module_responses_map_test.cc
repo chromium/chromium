@@ -120,7 +120,8 @@ class WorkletModuleResponsesMapTest : public PageTestBase {
             global_scope_, ModuleScriptLoader::CreatePassKeyForTests());
     module_fetcher->Fetch(fetch_params, ModuleType::kJavaScriptOrWasm,
                           fetcher_.Get(),
-                          ModuleGraphLevel::kTopLevelModuleFetch, client);
+                          ModuleGraphLevel::kTopLevelModuleFetch, client,
+                          ModuleImportPhase::kEvaluation);
   }
 
   void RunUntilIdle() {

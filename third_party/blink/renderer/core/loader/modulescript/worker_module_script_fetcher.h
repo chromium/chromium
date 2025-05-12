@@ -33,7 +33,8 @@ class CORE_EXPORT WorkerModuleScriptFetcher final
              ModuleType,
              ResourceFetcher*,
              ModuleGraphLevel,
-             ModuleScriptFetcher::Client*) override;
+             ModuleScriptFetcher::Client*,
+             ModuleImportPhase import_phase) override;
 
   // Implements WorkerMainScriptLoaderClient, and these will be called for
   // dedicated workers and shared workers.
@@ -67,6 +68,7 @@ class CORE_EXPORT WorkerModuleScriptFetcher final
   Member<Client> client_;
   ModuleGraphLevel level_;
   ModuleType expected_module_type_;
+  ModuleImportPhase import_phase_;
 };
 
 }  // namespace blink

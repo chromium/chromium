@@ -601,7 +601,8 @@ void PreloadHelper::ModulePreloadIfNeeded(
       modulator->TaskRunner()->PostTask(
           FROM_HERE,
           WTF::BindOnce(&SingleModuleClient::NotifyModuleLoadFinished,
-                        WrapPersistent(client), nullptr));
+                        WrapPersistent(client), nullptr,
+                        ModuleImportPhase::kEvaluation));
     }
     return;
   }
@@ -675,7 +676,8 @@ void PreloadHelper::ModulePreloadIfNeeded(
                          params.referrer_policy,
                          mojom::blink::FetchPriorityHint::kAuto,
                          RenderBlockingBehavior::kNonBlocking),
-      Referrer::NoReferrer(), TextPosition::MinimumPosition());
+      Referrer::NoReferrer(), TextPosition::MinimumPosition(),
+      ModuleImportPhase::kEvaluation);
 
   // Step 13. "Fetch a modulepreload module script graph given url, destination,
   // settings object, and options. Wait until the algorithm asynchronously

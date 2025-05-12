@@ -100,7 +100,8 @@ TEST_F(ModuleTreeLinkerTest, FetchTreeNoDeps) {
       sim_module.GetURL(), ModuleType::kJavaScriptOrWasm,
       GetDocument().Fetcher(), mojom::blink::RequestContextType::SCRIPT,
       network::mojom::RequestDestination::kScript, ScriptFetchOptions(),
-      ModuleScriptCustomFetchType::kNone, client);
+      ModuleScriptCustomFetchType::kNone, client,
+      ModuleImportPhase::kEvaluation);
 
   EXPECT_FALSE(client->WasNotifyFinished())
       << "ModuleTreeLinker should always finish asynchronously.";
@@ -124,7 +125,8 @@ TEST_F(ModuleTreeLinkerTest, FetchTreeInstantiationFailure) {
       sim_module.GetURL(), ModuleType::kJavaScriptOrWasm,
       GetDocument().Fetcher(), mojom::blink::RequestContextType::SCRIPT,
       network::mojom::RequestDestination::kScript, ScriptFetchOptions(),
-      ModuleScriptCustomFetchType::kNone, client);
+      ModuleScriptCustomFetchType::kNone, client,
+      ModuleImportPhase::kEvaluation);
 
   EXPECT_FALSE(client->WasNotifyFinished())
       << "ModuleTreeLinker should always finish asynchronously.";
@@ -151,7 +153,8 @@ TEST_F(ModuleTreeLinkerTest, FetchTreeWithSingleDependency) {
       sim_module.GetURL(), ModuleType::kJavaScriptOrWasm,
       GetDocument().Fetcher(), mojom::blink::RequestContextType::SCRIPT,
       network::mojom::RequestDestination::kScript, ScriptFetchOptions(),
-      ModuleScriptCustomFetchType::kNone, client);
+      ModuleScriptCustomFetchType::kNone, client,
+      ModuleImportPhase::kEvaluation);
 
   EXPECT_FALSE(client->WasNotifyFinished())
       << "ModuleTreeLinker should always finish asynchronously.";
@@ -179,7 +182,8 @@ TEST_F(ModuleTreeLinkerTest, FetchTreeWith3Deps) {
       sim_module.GetURL(), ModuleType::kJavaScriptOrWasm,
       GetDocument().Fetcher(), mojom::blink::RequestContextType::SCRIPT,
       network::mojom::RequestDestination::kScript, ScriptFetchOptions(),
-      ModuleScriptCustomFetchType::kNone, client);
+      ModuleScriptCustomFetchType::kNone, client,
+      ModuleImportPhase::kEvaluation);
 
   EXPECT_FALSE(client->WasNotifyFinished())
       << "ModuleTreeLinker should always finish asynchronously.";
@@ -219,7 +223,8 @@ TEST_F(ModuleTreeLinkerTest, FetchTreeWith3Deps1Fail) {
       sim_module.GetURL(), ModuleType::kJavaScriptOrWasm,
       GetDocument().Fetcher(), mojom::blink::RequestContextType::SCRIPT,
       network::mojom::RequestDestination::kScript, ScriptFetchOptions(),
-      ModuleScriptCustomFetchType::kNone, client);
+      ModuleScriptCustomFetchType::kNone, client,
+      ModuleImportPhase::kEvaluation);
 
   EXPECT_FALSE(client->WasNotifyFinished())
       << "ModuleTreeLinker should always finish asynchronously.";
@@ -269,7 +274,8 @@ TEST_F(ModuleTreeLinkerTest, FetchDependencyOfCyclicGraph) {
       sim_module.GetURL(), ModuleType::kJavaScriptOrWasm,
       GetDocument().Fetcher(), mojom::blink::RequestContextType::SCRIPT,
       network::mojom::RequestDestination::kScript, ScriptFetchOptions(),
-      ModuleScriptCustomFetchType::kNone, client);
+      ModuleScriptCustomFetchType::kNone, client,
+      ModuleImportPhase::kEvaluation);
 
   EXPECT_FALSE(client->WasNotifyFinished())
       << "ModuleTreeLinker should always finish asynchronously.";

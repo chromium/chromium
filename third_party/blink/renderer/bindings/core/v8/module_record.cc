@@ -160,6 +160,7 @@ Vector<ModuleRequest> ModuleRecord::ModuleRequests(
         v8_module_requests->Get(script_state->GetContext(), i)
             .As<v8::ModuleRequest>();
     v8::Local<v8::String> v8_specifier = v8_module_request->GetSpecifier();
+    v8::ModuleImportPhase import_phase = v8_module_request->GetPhase();
     TextPosition position = TextPosition::MinimumPosition();
     if (needs_text_position) {
       // The source position is only used by DevTools for module requests and
@@ -181,7 +182,7 @@ Vector<ModuleRequest> ModuleRecord::ModuleRequests(
 
     requests.emplace_back(
         ToCoreString(script_state->GetIsolate(), v8_specifier), position,
-        import_attributes);
+        import_attributes, import_phase);
   }
 
   return requests;

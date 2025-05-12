@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/module_record_resolver.h"
 #include "third_party/blink/renderer/core/script/module_script.h"
+#include "third_party/blink/renderer/core/script/wasm_module_script.h"
 #include "third_party/blink/renderer/core/testing/dummy_modulator.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/module_test_base.h"
@@ -41,17 +42,21 @@ class TestSingleModuleClient final : public SingleModuleClient {
     SingleModuleClient::Trace(visitor);
   }
 
-  void NotifyModuleLoadFinished(ModuleScript* module_script) override {
+  void NotifyModuleLoadFinished(ModuleScript* module_script,
+                                ModuleImportPhase import_phase) override {
     was_notify_finished_ = true;
     module_script_ = module_script;
+    import_phase_ = import_phase;
   }
 
   bool WasNotifyFinished() const { return was_notify_finished_; }
   ModuleScript* GetModuleScript() { return module_script_.Get(); }
+  ModuleImportPhase GetModuleImportPhase() { return import_phase_; }
 
  private:
   bool was_notify_finished_ = false;
   Member<ModuleScript> module_script_;
+  ModuleImportPhase import_phase_;
 };
 
 class TestModuleRecordResolver final : public ModuleRecordResolver {
@@ -117,10 +122,11 @@ class ModuleMapTestModulator final : public DummyModulator {
                ModuleType module_type,
                ResourceFetcher*,
                ModuleGraphLevel,
-               ModuleScriptFetcher::Client* client) override {
+               ModuleScriptFetcher::Client* client,
+               ModuleImportPhase import_phase) override {
       CHECK_EQ(request.GetScriptType(), mojom::blink::ScriptType::kModule);
-      TestRequest* test_request =
-          MakeGarbageCollected<TestRequest>(request.Url(), client);
+      TestRequest* test_request = MakeGarbageCollected<TestRequest>(
+          request.Url(), client, import_phase);
       modulator_->test_requests_.push_back(test_request);
     }
     String DebugName() const override { return "TestModuleScriptFetcher"; }
@@ -144,20 +150,44 @@ class ModuleMapTestModulator final : public DummyModulator {
   }
 
   struct TestRequest final : public GarbageCollected<TestRequest> {
-    TestRequest(const KURL& url, ModuleScriptFetcher::Client* client)
-        : url_(url), client_(client) {}
+    TestRequest(const KURL& url,
+                ModuleScriptFetcher::Client* client,
+                ModuleImportPhase import_phase)
+        : url_(url), client_(client), import_phase_(import_phase) {}
     void NotifyFetchFinished() {
+      ResolvedModuleType resolved_module_type = ResolvedModuleTypeFromUrl();
+      String script_string = EmptyModuleString(resolved_module_type);
       client_->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
           url_, url_, ScriptSourceLocationType::kExternalFile,
-          ResolvedModuleType::kJavaScript,
-          ParkableString(String("").ReleaseImpl()), nullptr,
-          network::mojom::ReferrerPolicy::kDefault));
+          resolved_module_type, ParkableString(script_string.ReleaseImpl()),
+          nullptr, network::mojom::ReferrerPolicy::kDefault, nullptr,
+          ScriptStreamer::NotStreamingReason::kStreamingDisabled,
+          import_phase_));
     }
     void Trace(Visitor* visitor) const { visitor->Trace(client_); }
 
    private:
+    ResolvedModuleType ResolvedModuleTypeFromUrl() {
+      const AtomicString& string_url = url_.GetString();
+      if (string_url.Find(".js") != WTF::kNotFound) {
+        return ResolvedModuleType::kJavaScript;
+      }
+      CHECK_NE(string_url.Find(".wasm"), WTF::kNotFound);
+      return ResolvedModuleType::kWasm;
+    }
+
+    String EmptyModuleString(ResolvedModuleType module_type) {
+      if (module_type == ResolvedModuleType::kJavaScript) {
+        return String("");
+      }
+      CHECK_EQ(module_type, ResolvedModuleType::kWasm);
+      return String(base::span<const uint8_t, 8>(
+          WasmModuleScript::kEmptyWasmByteSequence));
+    }
+
     const KURL url_;
     Member<ModuleScriptFetcher::Client> client_;
+    ModuleImportPhase import_phase_;
   };
   HeapVector<Member<TestRequest>> test_requests_;
 
@@ -196,6 +226,105 @@ class ModuleMapTest : public PageTestBase, public ModuleTestBase {
   ModuleMapTestModulator* Modulator() { return modulator_.Get(); }
   ModuleMap* Map() { return map_; }
 
+  void TestSequentialRequest(const KURL& url,
+                             ModuleGraphLevel graph_level,
+                             ModuleImportPhase import_phase,
+                             bool is_wasm_module_record) {
+    // First request
+    TestSingleModuleClient* client =
+        MakeGarbageCollected<TestSingleModuleClient>();
+    Map()->FetchSingleModuleScript(
+        ModuleScriptFetchRequest::CreateForTest(
+            url, ModuleType::kJavaScriptOrWasm, import_phase),
+        GetDocument().Fetcher(), graph_level,
+        ModuleScriptCustomFetchType::kNone, client);
+    Modulator()->ResolveFetches();
+    EXPECT_FALSE(client->WasNotifyFinished())
+        << "fetchSingleModuleScript shouldn't complete synchronously";
+    test::RunPendingTasks();
+
+    EXPECT_EQ(Modulator()
+                  ->GetTestModuleRecordResolver()
+                  ->RegisterModuleScriptCallCount(),
+              1);
+    EXPECT_TRUE(client->WasNotifyFinished());
+    ModuleScript* module_script = client->GetModuleScript();
+    EXPECT_TRUE(module_script);
+    EXPECT_EQ(module_script->IsWasmModuleRecord(), is_wasm_module_record);
+    EXPECT_EQ(client->GetModuleImportPhase(), import_phase);
+
+    // Secondary request
+    TestSingleModuleClient* client2 =
+        MakeGarbageCollected<TestSingleModuleClient>();
+    Map()->FetchSingleModuleScript(
+        ModuleScriptFetchRequest::CreateForTest(
+            url, ModuleType::kJavaScriptOrWasm, import_phase),
+        GetDocument().Fetcher(), graph_level,
+        ModuleScriptCustomFetchType::kNone, client2);
+    Modulator()->ResolveFetches();
+    EXPECT_FALSE(client2->WasNotifyFinished())
+        << "fetchSingleModuleScript shouldn't complete synchronously";
+    test::RunPendingTasks();
+
+    EXPECT_EQ(Modulator()
+                  ->GetTestModuleRecordResolver()
+                  ->RegisterModuleScriptCallCount(),
+              1)
+        << "registerModuleScript shouldn't be called in secondary request.";
+    EXPECT_TRUE(client2->WasNotifyFinished());
+    module_script = client->GetModuleScript();
+    EXPECT_TRUE(module_script);
+    EXPECT_EQ(module_script->IsWasmModuleRecord(), is_wasm_module_record);
+    EXPECT_EQ(client->GetModuleImportPhase(), import_phase);
+  }
+
+  void TestConcurrentRequestsShouldJoin(const KURL& url,
+                                        ModuleGraphLevel graph_level,
+                                        ModuleImportPhase import_phase,
+                                        bool is_wasm_module_record) {
+    // First request
+    TestSingleModuleClient* client =
+        MakeGarbageCollected<TestSingleModuleClient>();
+    Map()->FetchSingleModuleScript(
+        ModuleScriptFetchRequest::CreateForTest(
+            url, ModuleType::kJavaScriptOrWasm, import_phase),
+        GetDocument().Fetcher(), graph_level,
+        ModuleScriptCustomFetchType::kNone, client);
+
+    // Secondary request (which should join the first request)
+    TestSingleModuleClient* client2 =
+        MakeGarbageCollected<TestSingleModuleClient>();
+    Map()->FetchSingleModuleScript(
+        ModuleScriptFetchRequest::CreateForTest(
+            url, ModuleType::kJavaScriptOrWasm, import_phase),
+        GetDocument().Fetcher(), graph_level,
+        ModuleScriptCustomFetchType::kNone, client2);
+
+    Modulator()->ResolveFetches();
+    EXPECT_FALSE(client->WasNotifyFinished())
+        << "fetchSingleModuleScript shouldn't complete synchronously";
+    EXPECT_FALSE(client2->WasNotifyFinished())
+        << "fetchSingleModuleScript shouldn't complete synchronously";
+    test::RunPendingTasks();
+
+    EXPECT_EQ(Modulator()
+                  ->GetTestModuleRecordResolver()
+                  ->RegisterModuleScriptCallCount(),
+              1);
+
+    EXPECT_TRUE(client->WasNotifyFinished());
+    ModuleScript* module_script = client->GetModuleScript();
+    EXPECT_TRUE(module_script);
+    EXPECT_EQ(module_script->IsWasmModuleRecord(), is_wasm_module_record);
+    EXPECT_EQ(client->GetModuleImportPhase(), import_phase);
+
+    EXPECT_TRUE(client2->WasNotifyFinished());
+    module_script = client2->GetModuleScript();
+    EXPECT_TRUE(module_script);
+    EXPECT_EQ(module_script->IsWasmModuleRecord(), is_wasm_module_record);
+    EXPECT_EQ(client2->GetModuleImportPhase(), import_phase);
+  }
+
  protected:
   Persistent<ModuleMapTestModulator> modulator_;
   Persistent<ModuleMap> map_;
@@ -218,85 +347,33 @@ void ModuleMapTest::TearDown() {
 TEST_F(ModuleMapTest, sequentialRequests) {
   KURL url(NullURL(), "https://example.com/foo.js");
 
-  // First request
-  TestSingleModuleClient* client =
-      MakeGarbageCollected<TestSingleModuleClient>();
-  Map()->FetchSingleModuleScript(ModuleScriptFetchRequest::CreateForTest(
-                                     url, ModuleType::kJavaScriptOrWasm),
-                                 GetDocument().Fetcher(),
-                                 ModuleGraphLevel::kTopLevelModuleFetch,
-                                 ModuleScriptCustomFetchType::kNone, client);
-  Modulator()->ResolveFetches();
-  EXPECT_FALSE(client->WasNotifyFinished())
-      << "fetchSingleModuleScript shouldn't complete synchronously";
-  test::RunPendingTasks();
-
-  EXPECT_EQ(Modulator()
-                ->GetTestModuleRecordResolver()
-                ->RegisterModuleScriptCallCount(),
-            1);
-  EXPECT_TRUE(client->WasNotifyFinished());
-  EXPECT_TRUE(client->GetModuleScript());
-
-  // Secondary request
-  TestSingleModuleClient* client2 =
-      MakeGarbageCollected<TestSingleModuleClient>();
-  Map()->FetchSingleModuleScript(ModuleScriptFetchRequest::CreateForTest(
-                                     url, ModuleType::kJavaScriptOrWasm),
-                                 GetDocument().Fetcher(),
-                                 ModuleGraphLevel::kTopLevelModuleFetch,
-                                 ModuleScriptCustomFetchType::kNone, client2);
-  Modulator()->ResolveFetches();
-  EXPECT_FALSE(client2->WasNotifyFinished())
-      << "fetchSingleModuleScript shouldn't complete synchronously";
-  test::RunPendingTasks();
-
-  EXPECT_EQ(Modulator()
-                ->GetTestModuleRecordResolver()
-                ->RegisterModuleScriptCallCount(),
-            1)
-      << "registerModuleScript sholudn't be called in secondary request.";
-  EXPECT_TRUE(client2->WasNotifyFinished());
-  EXPECT_TRUE(client2->GetModuleScript());
+  TestSequentialRequest(url, ModuleGraphLevel::kTopLevelModuleFetch,
+                        ModuleImportPhase::kEvaluation,
+                        /*is_wasm_module_record =*/false);
 }
 
 TEST_F(ModuleMapTest, concurrentRequestsShouldJoin) {
   KURL url(NullURL(), "https://example.com/foo.js");
 
-  // First request
-  TestSingleModuleClient* client =
-      MakeGarbageCollected<TestSingleModuleClient>();
-  Map()->FetchSingleModuleScript(ModuleScriptFetchRequest::CreateForTest(
-                                     url, ModuleType::kJavaScriptOrWasm),
-                                 GetDocument().Fetcher(),
-                                 ModuleGraphLevel::kTopLevelModuleFetch,
-                                 ModuleScriptCustomFetchType::kNone, client);
+  TestConcurrentRequestsShouldJoin(url, ModuleGraphLevel::kTopLevelModuleFetch,
+                                   ModuleImportPhase::kEvaluation,
+                                   /*is_wasm_module_record =*/false);
+}
 
-  // Secondary request (which should join the first request)
-  TestSingleModuleClient* client2 =
-      MakeGarbageCollected<TestSingleModuleClient>();
-  Map()->FetchSingleModuleScript(ModuleScriptFetchRequest::CreateForTest(
-                                     url, ModuleType::kJavaScriptOrWasm),
-                                 GetDocument().Fetcher(),
-                                 ModuleGraphLevel::kTopLevelModuleFetch,
-                                 ModuleScriptCustomFetchType::kNone, client2);
+TEST_F(ModuleMapTest, WasmSourcePhaseSequentialRequests) {
+  KURL url(NullURL(), "https://example.com/foo.wasm");
 
-  Modulator()->ResolveFetches();
-  EXPECT_FALSE(client->WasNotifyFinished())
-      << "fetchSingleModuleScript shouldn't complete synchronously";
-  EXPECT_FALSE(client2->WasNotifyFinished())
-      << "fetchSingleModuleScript shouldn't complete synchronously";
-  test::RunPendingTasks();
+  TestSequentialRequest(url, ModuleGraphLevel::kDependentModuleFetch,
+                        ModuleImportPhase::kSource,
+                        /*is_wasm_module_record =*/true);
+}
 
-  EXPECT_EQ(Modulator()
-                ->GetTestModuleRecordResolver()
-                ->RegisterModuleScriptCallCount(),
-            1);
+TEST_F(ModuleMapTest, WasmSourcePhaseConcurrentRequestsShouldJoin) {
+  KURL url(NullURL(), "https://example.com/foo.wasm");
 
-  EXPECT_TRUE(client->WasNotifyFinished());
-  EXPECT_TRUE(client->GetModuleScript());
-  EXPECT_TRUE(client2->WasNotifyFinished());
-  EXPECT_TRUE(client2->GetModuleScript());
+  TestConcurrentRequestsShouldJoin(url, ModuleGraphLevel::kDependentModuleFetch,
+                                   ModuleImportPhase::kSource,
+                                   /*is_wasm_module_record =*/true);
 }
 
 }  // namespace blink

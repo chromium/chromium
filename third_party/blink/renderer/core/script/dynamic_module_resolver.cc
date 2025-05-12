@@ -305,6 +305,7 @@ void DynamicModuleResolver::ResolveDynamically(
                         mojom::blink::RequestContextType::SCRIPT,
                         network::mojom::RequestDestination::kScript, options,
                         ModuleScriptCustomFetchType::kNone, tree_client,
+                        module_request.import_phase,
                         referrer_info.BaseURL().GetString());
 
   // Steps 6-9 are implemented at

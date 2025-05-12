@@ -60,17 +60,21 @@ class TestModuleScriptLoaderClient final
     visitor->Trace(module_script_);
   }
 
-  void NotifyNewSingleModuleFinished(ModuleScript* module_script) override {
+  void NotifyNewSingleModuleFinished(ModuleScript* module_script,
+                                     ModuleImportPhase import_phase) override {
     was_notify_finished_ = true;
     module_script_ = module_script;
+    import_phase_ = import_phase;
   }
 
   bool WasNotifyFinished() const { return was_notify_finished_; }
   ModuleScript* GetModuleScript() { return module_script_.Get(); }
+  ModuleImportPhase GetModuleImportPhase() const { return import_phase_; }
 
  private:
   bool was_notify_finished_ = false;
   Member<ModuleScript> module_script_;
+  ModuleImportPhase import_phase_;
 };
 
 class ModuleScriptLoaderTestModulator final : public DummyModulator {
@@ -132,11 +136,13 @@ class ModuleScriptLoaderTest : public PageTestBase {
                             TestModuleScriptLoaderClient*);
   void TestFetchInvalidURL(ModuleScriptCustomFetchType,
                            TestModuleScriptLoaderClient*);
-  void TestFetchURL(ModuleScriptCustomFetchType,
-                    TestModuleScriptLoaderClient*,
-                    const char*,
-                    const char*,
-                    const char*);
+  void TestFetchURL(
+      ModuleScriptCustomFetchType,
+      TestModuleScriptLoaderClient*,
+      const char*,
+      const char*,
+      const char*,
+      ModuleImportPhase import_phase = ModuleImportPhase::kEvaluation);
   void TestFetchDataURLJSONModule(ModuleScriptCustomFetchType custom_fetch_type,
                                   TestModuleScriptLoaderClient* client);
   void TestFetchDataURLInvalidJSONModule(
@@ -507,18 +513,19 @@ void ModuleScriptLoaderTest::TestFetchURL(
     TestModuleScriptLoaderClient* client,
     const char* url_string,
     const char* module_name,
-    const char* mime_type) {
+    const char* mime_type,
+    ModuleImportPhase import_phase) {
   KURL url(url_string);
   url_test_helpers::RegisterMockedURLLoad(
       url, test::CoreTestDataPath(module_name), WebString(mime_type),
       platform_->GetURLLoaderMockFactory());
 
   auto* registry = MakeGarbageCollected<ModuleScriptLoaderRegistry>();
-  ModuleScriptLoader::Fetch(ModuleScriptFetchRequest::CreateForTest(
-                                url, ModuleType::kJavaScriptOrWasm),
-                            fetcher_, ModuleGraphLevel::kTopLevelModuleFetch,
-                            GetModulator(), custom_fetch_type, registry,
-                            client);
+  ModuleScriptLoader::Fetch(
+      ModuleScriptFetchRequest::CreateForTest(
+          url, ModuleType::kJavaScriptOrWasm, import_phase),
+      fetcher_, ModuleGraphLevel::kTopLevelModuleFetch, GetModulator(),
+      custom_fetch_type, registry, client);
 }
 
 TEST_F(ModuleScriptLoaderTest, FetchURL) {
@@ -590,7 +597,8 @@ TEST_F(ModuleScriptLoaderTest, FetchWasmURLWrongMimeType) {
       MakeGarbageCollected<TestModuleScriptLoaderClient>();
   TestFetchURL(ModuleScriptCustomFetchType::kNone, client,
                "https://example.test/exported-names.wasm",
-               "exported-names.wasm", "text/javascript");
+               "exported-names.wasm", "text/javascript",
+               ModuleImportPhase::kSource);
 
   EXPECT_FALSE(client->WasNotifyFinished())
       << "ModuleScriptLoader unexpectedly finished synchronously.";
@@ -601,6 +609,7 @@ TEST_F(ModuleScriptLoaderTest, FetchWasmURLWrongMimeType) {
   ModuleScript* module_script = client->GetModuleScript();
   EXPECT_TRUE(module_script);
   EXPECT_TRUE(module_script->HasParseError());
+  EXPECT_EQ(client->GetModuleImportPhase(), ModuleImportPhase::kSource);
 }
 
 TEST_F(ModuleScriptLoaderTest, FetchWasmURLInvalidModule) {
@@ -613,7 +622,8 @@ TEST_F(ModuleScriptLoaderTest, FetchWasmURLInvalidModule) {
       MakeGarbageCollected<TestModuleScriptLoaderClient>();
   TestFetchURL(ModuleScriptCustomFetchType::kNone, client,
                "https://example.test/invalid-module.wasm",
-               "invalid-module.wasm", "application/wasm");
+               "invalid-module.wasm", "application/wasm",
+               ModuleImportPhase::kSource);
 
   EXPECT_FALSE(client->WasNotifyFinished())
       << "ModuleScriptLoader unexpectedly finished synchronously.";
@@ -624,6 +634,7 @@ TEST_F(ModuleScriptLoaderTest, FetchWasmURLInvalidModule) {
   ModuleScript* module_script = client->GetModuleScript();
   EXPECT_TRUE(module_script);
   EXPECT_TRUE(module_script->HasParseError());
+  EXPECT_EQ(client->GetModuleImportPhase(), ModuleImportPhase::kSource);
 }
 
 }  // namespace blink

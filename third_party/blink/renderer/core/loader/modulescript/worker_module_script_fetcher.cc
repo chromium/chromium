@@ -39,7 +39,8 @@ void WorkerModuleScriptFetcher::Fetch(
     ModuleType expected_module_type,
     ResourceFetcher* fetch_client_settings_object_fetcher,
     ModuleGraphLevel level,
-    ModuleScriptFetcher::Client* client) {
+    ModuleScriptFetcher::Client* client,
+    ModuleImportPhase import_phase) {
   DCHECK_EQ(fetch_params.GetScriptType(), mojom::blink::ScriptType::kModule);
   DCHECK(global_scope_->IsContextThread());
   DCHECK(!fetch_client_settings_object_fetcher_);
@@ -47,6 +48,7 @@ void WorkerModuleScriptFetcher::Fetch(
   client_ = client;
   level_ = level;
   expected_module_type_ = expected_module_type;
+  import_phase_ = import_phase;
 
   // Use WorkerMainScriptLoader to load the main script when
   // dedicated workers and shared workers.
@@ -199,7 +201,8 @@ void WorkerModuleScriptFetcher::NotifyClient(
   client_->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
       /*source_url=*/response_url, /*base_url=*/response_url,
       ScriptSourceLocationType::kExternalFile, module_type, source_text,
-      cache_handler, response_referrer_policy));
+      cache_handler, response_referrer_policy, nullptr,
+      ScriptStreamer::NotStreamingReason::kStreamingDisabled, import_phase_));
 }
 
 void WorkerModuleScriptFetcher::DidReceiveDataWorkerMainScript(

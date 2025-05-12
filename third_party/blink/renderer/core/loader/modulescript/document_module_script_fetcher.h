@@ -30,7 +30,8 @@ class CORE_EXPORT DocumentModuleScriptFetcher final
              ModuleType,
              ResourceFetcher*,
              ModuleGraphLevel,
-             Client*) override;
+             Client*,
+             ModuleImportPhase) override;
 
   // Implements ResourceClient
   void NotifyFinished(Resource*) override;
@@ -41,6 +42,7 @@ class CORE_EXPORT DocumentModuleScriptFetcher final
  private:
   Member<Client> client_;
   ModuleType expected_module_type_;
+  ModuleImportPhase import_phase_;
 };
 
 }  // namespace blink

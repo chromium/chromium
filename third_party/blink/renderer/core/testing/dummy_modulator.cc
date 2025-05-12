@@ -75,6 +75,7 @@ void DummyModulator::FetchTree(const KURL&,
                                const ScriptFetchOptions&,
                                ModuleScriptCustomFetchType,
                                ModuleTreeClient*,
+                               ModuleImportPhase,
                                String referrer) {
   NOTREACHED();
 }

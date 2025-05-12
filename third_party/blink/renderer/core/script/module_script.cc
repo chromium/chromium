@@ -63,6 +63,7 @@ BoxedV8Module* ModuleScript::BoxModuleRecord() const {
 Vector<ModuleRequest> ModuleScript::GetModuleRecordRequests() const {
   CHECK(!record_.IsEmpty());
   v8::Isolate* isolate = settings_object_->GetScriptState()->GetIsolate();
+  v8::HandleScope scope(isolate);
   v8::Local<v8::Module> record = record_.Get(isolate).As<v8::Module>();
   return ModuleRecord::ModuleRequests(settings_object_->GetScriptState(),
                                       record);

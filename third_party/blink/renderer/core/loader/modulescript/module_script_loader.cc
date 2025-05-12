@@ -57,7 +57,8 @@ const char* ModuleScriptLoader::StateToString(ModuleScriptLoader::State state) {
 }
 #endif
 
-void ModuleScriptLoader::AdvanceState(ModuleScriptLoader::State new_state) {
+void ModuleScriptLoader::AdvanceState(ModuleScriptLoader::State new_state,
+                                      ModuleImportPhase load_type) {
   switch (state_) {
     case State::kInitial:
       DCHECK_EQ(new_state, State::kFetching);
@@ -78,7 +79,7 @@ void ModuleScriptLoader::AdvanceState(ModuleScriptLoader::State new_state) {
 
   if (state_ == State::kFinished) {
     registry_->ReleaseFinishedLoader(this);
-    client_->NotifyNewSingleModuleFinished(module_script_);
+    client_->NotifyNewSingleModuleFinished(module_script_, load_type);
   }
 }
 
@@ -274,7 +275,8 @@ void ModuleScriptLoader::FetchInternal(
   module_fetcher_ =
       modulator_->CreateModuleScriptFetcher(custom_fetch_type, PassKey());
   module_fetcher_->Fetch(fetch_params, module_request.GetExpectedModuleType(),
-                         fetch_client_settings_object_fetcher, level, this);
+                         fetch_client_settings_object_fetcher, level, this,
+                         module_request.GetModuleImportPhase());
 }
 
 // <specdef href="https://html.spec.whatwg.org/C/#fetch-a-single-module-script">
@@ -353,7 +355,7 @@ void ModuleScriptLoader::NotifyFetchFinishedSuccess(
       break;
   }
 
-  AdvanceState(State::kFinished);
+  AdvanceState(State::kFinished, params.GetModuleImportPhase());
 }
 
 void ModuleScriptLoader::Trace(Visitor* visitor) const {

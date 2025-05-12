@@ -48,7 +48,8 @@ class CORE_EXPORT ModuleScriptFetcher : public ResourceClient {
                      ModuleType,
                      ResourceFetcher*,
                      ModuleGraphLevel,
-                     Client*) = 0;
+                     Client*,
+                     ModuleImportPhase) = 0;
 
   void Trace(Visitor*) const override;
 

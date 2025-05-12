@@ -1338,7 +1338,8 @@ void ScriptLoader::FetchModuleScriptTree(
                        fetch_client_settings_object_fetcher,
                        mojom::blink::RequestContextType::SCRIPT,
                        network::mojom::RequestDestination::kScript, options,
-                       ModuleScriptCustomFetchType::kNone, module_tree_client);
+                       ModuleScriptCustomFetchType::kNone, module_tree_client,
+                       ModuleImportPhase::kEvaluation);
   prepared_pending_script_ = MakeGarbageCollected<ModulePendingScript>(
       element_, module_tree_client, is_external_script_,
       GetRunningTask(modulator->GetScriptState()));

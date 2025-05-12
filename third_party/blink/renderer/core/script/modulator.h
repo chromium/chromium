@@ -28,6 +28,12 @@
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
+namespace v8 {
+
+enum class ModuleImportPhase;
+
+}
+
 namespace blink {
 
 class ModuleScript;
@@ -55,7 +61,8 @@ class CORE_EXPORT SingleModuleClient
     return "SingleModuleClient";
   }
 
-  virtual void NotifyModuleLoadFinished(ModuleScript*) = 0;
+  virtual void NotifyModuleLoadFinished(ModuleScript*,
+                                        v8::ModuleImportPhase) = 0;
 };
 
 // A ModuleTreeClient is notified when a module script and its whole descendent
@@ -138,6 +145,7 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
       const ScriptFetchOptions&,
       ModuleScriptCustomFetchType,
       ModuleTreeClient*,
+      v8::ModuleImportPhase,
       String referrer = Referrer::ClientReferrerString()) = 0;
 
   // Asynchronously retrieve a module script from the module map, or fetch it

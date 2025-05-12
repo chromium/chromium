@@ -27,7 +27,8 @@ class CORE_EXPORT InstalledServiceWorkerModuleScriptFetcher final
              ModuleType,
              ResourceFetcher*,
              ModuleGraphLevel,
-             ModuleScriptFetcher::Client*) override;
+             ModuleScriptFetcher::Client*,
+             ModuleImportPhase) override;
 
   void Trace(Visitor*) const override;
 

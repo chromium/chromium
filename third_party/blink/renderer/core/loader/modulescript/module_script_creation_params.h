@@ -17,8 +17,11 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "v8/include/v8-callbacks.h"
 
 namespace blink {
+
+typedef v8::ModuleImportPhase ModuleImportPhase;
 
 // Spec module types. Return value of
 // "https://html.spec.whatwg.org/#module-type-from-module-request".
@@ -47,7 +50,8 @@ class ModuleScriptCreationParams {
       network::mojom::ReferrerPolicy response_referrer_policy,
       ScriptStreamer* script_streamer = nullptr,
       ScriptStreamer::NotStreamingReason not_streaming_reason =
-          ScriptStreamer::NotStreamingReason::kStreamingDisabled)
+          ScriptStreamer::NotStreamingReason::kStreamingDisabled,
+      ModuleImportPhase import_phase = ModuleImportPhase::kEvaluation)
       : source_url_(source_url),
         base_url_(base_url),
         source_location_type_(source_location_type),
@@ -58,7 +62,8 @@ class ModuleScriptCreationParams {
         cache_handler_(cache_handler),
         response_referrer_policy_(response_referrer_policy),
         script_streamer_(script_streamer),
-        not_streaming_reason_(not_streaming_reason) {
+        not_streaming_reason_(not_streaming_reason),
+        import_phase_(import_phase) {
     DCHECK(source_location_type == ScriptSourceLocationType::kExternalFile ||
            source_location_type == ScriptSourceLocationType::kInline);
     // https://html.spec.whatwg.org/multipage/webappapis.html#concept-script-base-url
@@ -78,10 +83,11 @@ class ModuleScriptCreationParams {
                                       : GetSourceText().ToString();
     return ModuleScriptCreationParams(
         SourceURL(), BaseURL(), source_location_type_, GetModuleType(),
-        isolated_source_text, response_referrer_policy_);
+        isolated_source_text, response_referrer_policy_, import_phase_);
   }
 
   ResolvedModuleType GetModuleType() const { return module_type_; }
+  ModuleImportPhase GetModuleImportPhase() const { return import_phase_; }
 
   const KURL& SourceURL() const { return source_url_; }
   const KURL& BaseURL() const { return base_url_; }
@@ -130,7 +136,8 @@ class ModuleScriptCreationParams {
       ScriptSourceLocationType source_location_type,
       const ResolvedModuleType& module_type,
       const String& isolated_source_text,
-      network::mojom::ReferrerPolicy response_referrer_policy)
+      network::mojom::ReferrerPolicy response_referrer_policy,
+      ModuleImportPhase import_phase)
       : source_url_(source_url),
         base_url_(base_url),
         source_location_type_(source_location_type),
@@ -145,7 +152,8 @@ class ModuleScriptCreationParams {
         // passed across threads.
         script_streamer_(nullptr),
         not_streaming_reason_(
-            ScriptStreamer::NotStreamingReason::kStreamingDisabled) {}
+            ScriptStreamer::NotStreamingReason::kStreamingDisabled),
+        import_phase_(import_phase) {}
 
   const KURL source_url_;
   const KURL base_url_;
@@ -170,6 +178,8 @@ class ModuleScriptCreationParams {
   // |script_streamer_| is cleared when crossing thread boundaries.
   Persistent<ScriptStreamer> script_streamer_;
   const ScriptStreamer::NotStreamingReason not_streaming_reason_;
+
+  const ModuleImportPhase import_phase_;
 };
 
 }  // namespace blink

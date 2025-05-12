@@ -47,6 +47,8 @@ class CORE_EXPORT WasmModuleScript final : public ModuleScript,
   }
 
  private:
+  friend class ModuleMapTestModulator;
+
   // This byte sequence corresponds to an empty WebAssembly module with only
   // the magic bytes and version number provided.
   static constexpr const uint8_t kEmptyWasmByteSequence[8] = {

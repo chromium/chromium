@@ -597,11 +597,14 @@ void WorkerOrWorkletGlobalScope::FetchModuleScript(
 
   Modulator* modulator = Modulator::From(ScriptController()->GetScriptState());
   // Step 3. "Perform the internal module script graph fetching procedure ..."
+  // The main script for a worker or worklet is always imported in the
+  // evaluation import phase.
   modulator->FetchTree(
       module_url_record, ModuleType::kJavaScriptOrWasm,
       CreateOutsideSettingsFetcher(fetch_client_settings_object,
                                    resource_timing_notifier),
-      context_type, destination, options, custom_fetch_type, client);
+      context_type, destination, options, custom_fetch_type, client,
+      v8::ModuleImportPhase::kEvaluation);
 }
 
 void WorkerOrWorkletGlobalScope::SetDefersLoadingForResourceFetchers(

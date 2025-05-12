@@ -96,6 +96,7 @@ class DynamicModuleResolverTestModulator final : public DummyModulator {
                  const ScriptFetchOptions&,
                  ModuleScriptCustomFetchType custom_fetch_type,
                  ModuleTreeClient* client,
+                 ModuleImportPhase import_phase,
                  String) final {
     EXPECT_EQ(expected_fetch_tree_url_, url);
     EXPECT_EQ(expected_fetch_tree_module_type_, module_type);

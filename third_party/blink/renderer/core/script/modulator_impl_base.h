@@ -63,6 +63,7 @@ class ModulatorImplBase : public Modulator {
                  const ScriptFetchOptions&,
                  ModuleScriptCustomFetchType,
                  ModuleTreeClient*,
+                 v8::ModuleImportPhase,
                  String referrer) override;
   void FetchDescendantsForInlineScript(
       ModuleScript*,
