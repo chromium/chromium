@@ -236,7 +236,6 @@ void ArcScreenCaptureSession::SetOutputBuffer(
        gpu::SHARED_IMAGE_USAGE_RASTER_WRITE, "ArcScreenCapture"},
       gfx::GpuMemoryBufferHandle(std::move(native_pixmap_handle)));
   CHECK(client_shared_image);
-  ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
   std::unique_ptr<PendingBuffer> pending_buffer =
       std::make_unique<PendingBuffer>(std::move(callback),
@@ -349,9 +348,13 @@ void ArcScreenCaptureSession::CopyDesktopTextureToGpuBuffer(
   uint32_t query_id;
   ri->GenQueriesEXT(1, &query_id);
   ri->BeginQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM, query_id);
+  scoped_refptr<gpu::ClientSharedImage> si = pending_buffer->shared_image_;
+  std::unique_ptr<gpu::RasterScopedAccess> ri_access =
+      si->BeginRasterAccess(ri, si->creation_sync_token(), /*readonly=*/false);
   ri->CopySharedImage(desktop_texture->mailbox_,
                       pending_buffer->shared_image_->mailbox(), 0, 0, 0, 0,
                       size_.width(), size_.height());
+  gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
   ri->EndQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM);
 
   // The query will be signalled after the copy operation has finished on the
