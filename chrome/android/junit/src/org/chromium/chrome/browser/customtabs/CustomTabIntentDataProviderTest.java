@@ -1900,4 +1900,32 @@ public class CustomTabIntentDataProviderTest {
                 DisplayMode.UNDEFINED,
                 dataProvider.getResolvedDisplayMode());
     }
+
+    @Test
+    public void uiTypePopup_hasNoToolbarButtons() {
+        Intent intent =
+                new Intent()
+                        .putExtra(
+                                CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_ON)
+                        .putExtra(CustomTabsIntent.EXTRA_CLOSE_BUTTON_ENABLED, true)
+                        .putExtra(
+                                CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.POPUP);
+        IntentUtils.setForceIsTrustedIntentForTesting(true);
+
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        // If there are no custom buttons defined, then the share button is added to the set of
+        // custom toolbar buttons. Otherwise it gets punted to menu.
+        // The open in browser button can be presented only by being added to the set of custom
+        // toolbar buttons.
+        assertEquals(
+                "There should be no buttons on toolbar",
+                0,
+                dataProvider.getCustomButtonsOnToolbar().size());
+
+        assertFalse("The close button should be disabled", dataProvider.isCloseButtonEnabled());
+
+        IntentUtils.setForceIsTrustedIntentForTesting(false);
+    }
 }
