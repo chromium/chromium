@@ -80,6 +80,11 @@ class ChromeBrowserMainPartsWin : public ChromeBrowserMainParts {
   static base::CommandLine GetRestartCommandLine(
       const base::CommandLine& command_line);
 
+  // Check if running elevated, and attempt to automatically de-elevate. Returns
+  // an exit code if browser should exit due to a restart, or std::nullopt if
+  // startup should continue.
+  static std::optional<int> MaybeAutoDeElevate();
+
  private:
   void OnModuleEvent(const ModuleWatcher::ModuleEvent& event);
   void SetupModuleDatabase(std::unique_ptr<ModuleWatcher>* module_watcher);

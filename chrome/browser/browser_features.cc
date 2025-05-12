@@ -326,6 +326,11 @@ const base::FeatureParam<base::TimeDelta>
     kNoPreReadMainDllStartup_StartupDuration{&kNoPreReadMainDllStartup,
                                              "no-preread-dll-startup-time",
                                              base::Minutes(2)};
+
+// When enabled, the browser process will re-launch itself when launched with
+// an elevated linked token. The re-launched browser will use the token from
+// the Windows Shell (explorer.exe), which is typically non-elevated.
+BASE_FEATURE(kAutoDeElevate, "AutoDeElevate", base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if !BUILDFLAG(IS_ANDROID)

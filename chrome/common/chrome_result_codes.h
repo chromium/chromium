@@ -124,11 +124,14 @@ enum ResultCode {
   // system state can't be recovered and will be unstable.
   CHROME_RESULT_CODE_SYSTEM_RESOURCE_EXHAUSTED,
 
+  // The browser process exited because it was re-launched without elevation.
+  CHROME_RESULT_CODE_NORMAL_EXIT_AUTO_DE_ELEVATED,
+
   // Last return code (keep this last).
   CHROME_RESULT_CODE_CHROME_LAST_CODE
 };
 
-static_assert(CHROME_RESULT_CODE_CHROME_LAST_CODE == 38,
+static_assert(CHROME_RESULT_CODE_CHROME_LAST_CODE == 39,
               "Please make sure the enum values are in sync with enums.xml");
 
 // Returns true if the result code should be treated as a normal exit code i.e.

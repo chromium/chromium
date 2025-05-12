@@ -61,6 +61,11 @@ BASE_EXPORT bool GetUserSidString(std::wstring* user_sid);
 // if the OS is Vista or later.
 BASE_EXPORT bool UserAccountControlIsEnabled();
 
+// Returns true if the process is running at elevated permissions, but could
+// be at medium IL (eg. UAC is enabled and the account is not a built-in
+// administrator).
+BASE_EXPORT bool UserAccountIsUnnecessarilyElevated();
+
 // Sets the boolean value for a given key in given IPropertyStore.
 BASE_EXPORT bool SetBooleanValueForPropertyStore(
     IPropertyStore* property_store,

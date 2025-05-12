@@ -121,6 +121,7 @@ BASE_DECLARE_FEATURE(kNoPreReadMainDllIfSsd);
 BASE_DECLARE_FEATURE(kNoPreReadMainDllStartup);
 extern const base::FeatureParam<base::TimeDelta>
     kNoPreReadMainDllStartup_StartupDuration;
+BASE_DECLARE_FEATURE(kAutoDeElevate);
 #endif
 
 BASE_DECLARE_FEATURE(kReportPakFileIntegrity);

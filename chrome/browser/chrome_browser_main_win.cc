@@ -45,6 +45,7 @@
 #include "base/trace_event/base_tracing.h"
 #include "base/types/expected.h"
 #include "base/version.h"
+#include "base/win/elevation_util.h"
 #include "base/win/pe_image.h"
 #include "base/win/win_util.h"
 #include "base/win/wrapped_window_proc.h"
@@ -949,4 +950,37 @@ void ChromeBrowserMainPartsWin::SetupModuleDatabase(
 
   *module_watcher = ModuleWatcher::Create(base::BindRepeating(
       &ChromeBrowserMainPartsWin::OnModuleEvent, base::Unretained(this)));
+}
+
+std::optional<int> ChromeBrowserMainPartsWin::MaybeAutoDeElevate() {
+  // Check if the browser process is launching elevated, and attempt to
+  // automatically de-elevate. Do not interfere with automation scenarios. Don't
+  // bother trying when UAC is disabled because it won't work anyway.
+  if (base::FeatureList::IsEnabled(features::kAutoDeElevate) &&
+      base::win::UserAccountIsUnnecessarilyElevated() &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableAutomation) &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDoNotDeElevateOnLaunch)) {
+    base::CommandLine new_command_line(*base::CommandLine::ForCurrentProcess());
+    // Give a fully qualified .exe name
+    base::FilePath full_exe_name;
+    if (base::PathService::Get(base::FILE_EXE, &full_exe_name)) {
+      new_command_line.SetProgram(full_exe_name);
+    }
+    new_command_line.AppendSwitch(switches::kDoNotDeElevateOnLaunch);
+
+    base::FilePath current_dir;
+    CHECK(base::PathService::Get(base::DIR_CURRENT, &current_dir));
+
+    HRESULT hr = base::win::RunDeElevatedNoWait(
+        new_command_line.GetProgram().value(),
+        new_command_line.GetArgumentsString(), current_dir.value());
+    base::UmaHistogramSparse("Windows.AutoDeElevateResult", hr);
+    // If it fails, it doesn't matter why, just proceed with the normal launch.
+    if (SUCCEEDED(hr)) {
+      return CHROME_RESULT_CODE_NORMAL_EXIT_AUTO_DE_ELEVATED;
+    }
+  }
+  return std::nullopt;
 }

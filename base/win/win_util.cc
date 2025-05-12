@@ -724,6 +724,22 @@ bool UserAccountControlIsEnabled() {
   return (uac_enabled != 0);
 }
 
+bool UserAccountIsUnnecessarilyElevated() {
+  // Check the process token to tell us that it's:
+  // * Elevated
+  // * UAC is enabled
+  // * It's not an account that always runs elevated even with UAC enabled
+  // The last bullet happens on built-in Admin *without* the "run BA filtered"
+  // policy set.
+  DWORD size;
+  TOKEN_ELEVATION_TYPE elevation_type;
+  if (GetTokenInformation(GetCurrentProcessToken(), TokenElevationType,
+                          &elevation_type, sizeof(elevation_type), &size)) {
+    return elevation_type == TokenElevationTypeFull;
+  }
+  return false;
+}
+
 bool SetBooleanValueForPropertyStore(IPropertyStore* property_store,
                                      const PROPERTYKEY& property_key,
                                      bool property_bool_value) {

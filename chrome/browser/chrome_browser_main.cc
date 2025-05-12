@@ -762,6 +762,11 @@ int ChromeBrowserMainParts::PreEarlyInitialization() {
     // result in browser startup bailing.
     return CHROME_RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED;
   }
+
+  // Requires FeatureList and may restart the browser.
+  if (auto result = ChromeBrowserMainPartsWin::MaybeAutoDeElevate()) {
+    return *result;
+  }
 #endif
 
   return load_local_state_result;

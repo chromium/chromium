@@ -112,7 +112,9 @@ HRESULT RunDeElevatedNoWait(const CommandLine& command_line) {
 }
 
 HRESULT RunDeElevatedNoWait(const std::wstring& path,
-                            const std::wstring& parameters) {
+                            const std::wstring& parameters,
+                            std::optional<std::wstring_view> current_directory,
+                            bool start_hidden) {
   Microsoft::WRL::ComPtr<IShellWindows> shell;
   HRESULT hr = ::CoCreateInstance(CLSID_ShellWindows, nullptr,
                                   CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&shell));
@@ -171,8 +173,10 @@ HRESULT RunDeElevatedNoWait(const std::wstring& path,
 
   return shell_dispatch->ShellExecute(
       ScopedBstr(path.c_str()).Get(), ScopedVariant(parameters.c_str()),
-      ScopedVariant::kEmptyVariant, ScopedVariant::kEmptyVariant,
-      ScopedVariant::kEmptyVariant);
+      current_directory ? ScopedVariant(current_directory->data())
+                        : ScopedVariant::kEmptyVariant,
+      ScopedVariant::kEmptyVariant /* vOperation */,
+      ScopedVariant(start_hidden ? SW_HIDE : SW_SHOWDEFAULT));
 }
 
 }  // namespace base::win

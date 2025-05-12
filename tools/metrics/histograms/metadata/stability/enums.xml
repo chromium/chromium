@@ -1035,6 +1035,10 @@ Called by update_debug_scenarios.py.-->
   <int value="33" label="chrome::RESULT_CODE_DOWNGRADE_AND_RELAUNCH"/>
   <int value="34" label="chrome::RESULT_CODE_GPU_EXIT_ON_CONTEXT_LOST"/>
   <int value="35" label="chrome::RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED"/>
+  <int value="36"
+      label="chrome::RESULT_CODE_NORMAL_EXIT_PACK_EXTENSION_SUCCESS"/>
+  <int value="37" label="chrome::RESULT_CODE_SYSTEM_RESOURCE_EXHAUSTED"/>
+  <int value="38" label="chrome::RESULT_CODE_NORMAL_EXIT_AUTO_DE_ELEVATED"/>
   <int value="259" label="0x103 - STILL_ACTIVE."/>
   <int value="1285" label="ERROR_DELAY_LOAD_FAILED"/>
   <int value="1717" label="RPC_S_UNKNOWN_IF"/>

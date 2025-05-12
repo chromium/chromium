@@ -85,6 +85,7 @@ extern const char kDisableStackProfiler[];
 extern const char kDisableZeroBrowsersOpenForTests[];
 extern const char kDiskCacheDir[];
 extern const char kDiskCacheSize[];
+extern const char kDoNotDeElevateOnLaunch[];
 extern const char kDumpBrowserHistograms[];
 extern const char kEnableAudioDebugRecordingsFromExtension[];
 extern const char kEnableBookmarkUndo[];

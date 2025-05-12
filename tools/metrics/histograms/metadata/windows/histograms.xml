@@ -33,6 +33,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.AutoDeElevateResult" enum="Hresult"
+    expires_after="2026-05-07">
+  <owner>wfh@chromium.org</owner>
+  <owner>ssmole@microsoft.com</owner>
+  <summary>
+    Records the HRESULT from the attempt to automatically de-elevate the browser
+    process, which only happens on startup, if it's launched with an elevated
+    linked process token.
+  </summary>
+</histogram>
+
 <histogram name="Windows.CetAvailable" enum="BooleanAvailable"
     expires_after="2025-09-09">
   <owner>ajgo@chromium.org</owner>
