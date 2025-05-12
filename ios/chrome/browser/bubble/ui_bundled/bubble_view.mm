@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -77,6 +78,11 @@ const CGFloat kTitleBottomMargin = 3.0f;
 const CGFloat kSnoozeButtonTitleVerticalMargin = 16.0f;
 const CGFloat kSnoozeButtonMinimumSize = 48.0f;
 const CGFloat kSnoozeButtonFontSize = 15.0f;
+
+// Vertical spacing between the next button and separator.
+const CGFloat kNextButtonSeparatorVerticalSpacing = 12.0f;
+// Vertical margin below and above next button and seprator.
+const CGFloat kNextButtonVerticalMargin = 16.0f;
 
 // The size of symbol action images.
 const CGFloat kSymbolBubblePointSize = 17;
@@ -243,6 +249,23 @@ UILabel* BubbleTitleLabelWithText(NSString* text,
   return label;
 }
 
+UIButton* BubbleNextButton() {
+  UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
+  button.accessibilityIdentifier = kBubbleViewNextButtonIdentifier;
+  [button setTitle:l10n_util::GetNSString(IDS_IOS_IPH_BUBBLE_NEXT)
+          forState:UIControlStateNormal];
+  [button setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
+               forState:UIControlStateNormal];
+  [button.titleLabel
+      setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]];
+  button.titleLabel.numberOfLines = 0;
+  button.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+  [button setContentHorizontalAlignment:
+              UIControlContentHorizontalAlignmentTrailing];
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+  return button;
+}
+
 }  // namespace
 
 @interface BubbleView ()
@@ -274,12 +297,19 @@ UILabel* BubbleTitleLabelWithText(NSString* text,
 @property(nonatomic, readonly) BOOL showsCloseButton;
 // Controls if there is a snooze button in the view.
 @property(nonatomic, readonly) BOOL showsSnoozeButton;
+// Controls if there is a next button in the view.
+@property(nonatomic, readonly) BOOL showsNextButton;
 // The delegate for interactions in this View.
 @property(nonatomic, weak, readonly) id<BubbleViewDelegate> delegate;
 
 @end
 
-@implementation BubbleView
+@implementation BubbleView {
+  // Separator line between text and next button.
+  UIView* _separator;
+  // Optional Next button displayed on the bubble.
+  UIButton* _nextButton;
+}
 
 - (instancetype)initWithText:(NSString*)text
               arrowDirection:(BubbleArrowDirection)direction
@@ -287,6 +317,7 @@ UILabel* BubbleTitleLabelWithText(NSString* text,
             showsCloseButton:(BOOL)shouldShowCloseButton
                        title:(NSString*)titleString
            showsSnoozeButton:(BOOL)shouldShowSnoozeButton
+             showsNextButton:(BOOL)showsNextButton
                textAlignment:(NSTextAlignment)textAlignment
                     delegate:(id<BubbleViewDelegate>)delegate {
   self = [super initWithFrame:CGRectZero];
@@ -338,6 +369,18 @@ UILabel* BubbleTitleLabelWithText(NSString* text,
               forControlEvents:UIControlEventTouchUpInside];
       [self addSubview:_snoozeButton];
     }
+    _showsNextButton = showsNextButton;
+    if (_showsNextButton) {
+      _separator = [[UIView alloc] init];
+      _separator.translatesAutoresizingMaskIntoConstraints = NO;
+      _separator.backgroundColor = [UIColor colorNamed:kSeparatorColor];
+      [self addSubview:_separator];
+      _nextButton = BubbleNextButton();
+      [_nextButton addTarget:self
+                      action:@selector(nextButtonWasTapped:)
+            forControlEvents:UIControlEventTouchUpInside];
+      [self addSubview:_nextButton];
+    }
     _delegate = delegate;
     _needsAddConstraints = YES;
 
@@ -369,6 +412,7 @@ UILabel* BubbleTitleLabelWithText(NSString* text,
            showsCloseButton:NO
                       title:nil
           showsSnoozeButton:NO
+            showsNextButton:NO
               textAlignment:NSTextAlignmentCenter
                    delegate:nil];
 }
@@ -446,6 +490,13 @@ UILabel* BubbleTitleLabelWithText(NSString* text,
   }
 }
 
+- (void)nextButtonWasTapped:(UIButton*)button {
+  DCHECK(self.showsNextButton);
+  if ([self.delegate respondsToSelector:@selector(didTapNextButton)]) {
+    [self.delegate didTapNextButton];
+  }
+}
+
 // Add a drop shadow to the bubble.
 - (void)addShadow {
   [self.layer setShadowOffset:kShadowOffset];
@@ -479,6 +530,9 @@ UILabel* BubbleTitleLabelWithText(NSString* text,
   // Add constraints for snooze button.
   if (self.showsSnoozeButton) {
     [constraints addObjectsFromArray:[self snoozeButtonConstraints]];
+  }
+  if (self.showsNextButton) {
+    [constraints addObjectsFromArray:[self nextButtonConstraints]];
   }
   [NSLayoutConstraint activateConstraints:constraints];
 }
@@ -629,6 +683,28 @@ UILabel* BubbleTitleLabelWithText(NSString* text,
                                                             .leadingAnchor]];
   }
   return constraints;
+}
+
+- (NSArray<NSLayoutConstraint*>*)nextButtonConstraints {
+  return @[
+    [_separator.heightAnchor constraintEqualToConstant:AlignValueToPixel(0.5)],
+    [_separator.topAnchor constraintEqualToAnchor:_label.bottomAnchor
+                                         constant:kNextButtonVerticalMargin],
+    [_separator.leadingAnchor constraintEqualToAnchor:_label.leadingAnchor],
+    [_separator.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
+    [_nextButton.titleLabel.topAnchor
+        constraintEqualToAnchor:_separator.bottomAnchor
+                       constant:kNextButtonSeparatorVerticalSpacing],
+    [_background.bottomAnchor
+        constraintEqualToAnchor:_nextButton.titleLabel.bottomAnchor
+                       constant:kNextButtonVerticalMargin],
+    [_background.trailingAnchor
+        constraintGreaterThanOrEqualToAnchor:_nextButton.trailingAnchor
+                                    constant:kBubbleHorizontalPadding],
+    [_nextButton.heightAnchor constraintGreaterThanOrEqualToConstant:42.0f],
+    [_nextButton.widthAnchor
+        constraintGreaterThanOrEqualToConstant:kSnoozeButtonMinimumSize],
+  ];
 }
 
 // Returns the constraint that aligns the arrow to the bubble view. This depends
@@ -818,12 +894,20 @@ UILabel* BubbleTitleLabelWithText(NSString* text,
     // Add padding to computed height.
     snoozeButtonTitleSize.height += kSnoozeButtonTitleVerticalMargin;
   }
+  CGSize nextButtonTitleSize = CGSizeZero;
+  if (self.showsNextButton) {
+    nextButtonTitleSize = [_nextButton.titleLabel sizeThatFits:size];
+    // Add padding to computed height.
+    nextButtonTitleSize.height +=
+        kNextButtonVerticalMargin * 2 + kNextButtonSeparatorVerticalSpacing;
+  }
   // Optimal width is the maximum width between label, title and snoozeButton's
   // label.
   CGFloat textWidth = MAX(labelSize.width, titleSize.width);
   textWidth = MAX(textWidth, snoozeButtonTitleSize.width);
-  CGFloat textHeight =
-      labelSize.height + titleSize.height + snoozeButtonTitleSize.height;
+  CGFloat textHeight = labelSize.height + titleSize.height +
+                       snoozeButtonTitleSize.height +
+                       nextButtonTitleSize.height;
   CGSize textSize = CGSizeMake(textWidth, textHeight);
   return textSize;
 }
@@ -860,6 +944,9 @@ UILabel* BubbleTitleLabelWithText(NSString* text,
   if (self.showsSnoozeButton) {
     textContentHeight +=
         MAX(kBubbleVerticalPadding, kSnoozeButtonTitleVerticalMargin);
+  } else if (self.showsNextButton) {
+    textContentHeight += AlignValueToPixel(0.5);
+    textContentHeight += kNextButtonVerticalMargin;
   } else {
     textContentHeight += kBubbleVerticalPadding;
   }

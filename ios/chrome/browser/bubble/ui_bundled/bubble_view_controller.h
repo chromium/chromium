@@ -35,11 +35,12 @@ typedef NS_ENUM(NSInteger, BubbleViewType);
 
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
-// Animates the bubble view in with a fade-in and sink-down animation.
+// Animates the bubble view in with a fade-in and sink-down animation if
+// `animated` is YES, otherwise it just shows the bubble view.
 //
 // The caller is responsible for adding the bubble view controller to the
 // view hierarchy.
-- (void)animateContentIn;
+- (void)displayAnimated:(BOOL)animated;
 
 // If `hidden`, the arrow hides behind the bubble; otherwise, it is visible and
 // pointing to the anchor point. If `animated`, the arrow will be slid out of /

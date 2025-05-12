@@ -24,6 +24,7 @@ BubbleView* BubbleViewWithType(BubbleViewType bubble_view_type,
   BOOL show_title = NO;
   BOOL show_close_button = NO;
   BOOL show_snooze_button = NO;
+  BOOL show_next_button = NO;
   NSTextAlignment text_alignment = NSTextAlignmentNatural;
 
   switch (bubble_view_type) {
@@ -40,6 +41,10 @@ BubbleView* BubbleViewWithType(BubbleViewType bubble_view_type,
       show_title = YES;
       show_snooze_button = YES;
       break;
+    case BubbleViewTypeRichWithNext:
+      show_title = YES;
+      show_next_button = YES;
+      break;
   }
   BubbleView* bubble_view =
       [[BubbleView alloc] initWithText:text
@@ -48,6 +53,7 @@ BubbleView* BubbleViewWithType(BubbleViewType bubble_view_type,
                       showsCloseButton:show_close_button
                                  title:show_title ? title : nil
                      showsSnoozeButton:show_snooze_button
+                       showsNextButton:show_next_button
                          textAlignment:text_alignment
                               delegate:delegate];
   return bubble_view;
@@ -97,8 +103,14 @@ BubbleView* BubbleViewWithType(BubbleViewType bubble_view_type,
   [self.view setHidden:YES];
 }
 
-// Animate the bubble view in with a fade-in and sink-down animation.
-- (void)animateContentIn {
+// Animate the bubble view in with a fade-in and sink-down animation if
+// `animated` is YES, otherwise just show the bubble view.
+- (void)displayAnimated:(BOOL)animated {
+  if (!animated) {
+    [self.view setAlpha:1.0f];
+    [self.view setHidden:NO];
+    return;
+  }
   // Set the frame's origin to be slightly higher on the screen, so that the
   // view will be properly positioned once it sinks down.
   CGRect frame = self.view.frame;

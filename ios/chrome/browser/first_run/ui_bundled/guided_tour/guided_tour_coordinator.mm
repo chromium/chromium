@@ -49,7 +49,7 @@ const CGFloat kNTPTabGridButtonSpotlightCornerRadius = 7.0f;
       title:[self titleString]
       arrowDirection:direction
       alignment:BubbleAlignmentBottomOrTrailing
-      bubbleType:BubbleViewTypeRich
+      bubbleType:BubbleViewTypeRichWithNext
       backgroundCutoutCornerRadius:[self backgroundCutoutCornerRadius]
       dismissalCallback:^(IPHDismissalReasonType reason) {
         [weakSelf dismissFinished];

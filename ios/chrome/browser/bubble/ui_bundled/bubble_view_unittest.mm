@@ -38,6 +38,10 @@
   _tapCounter += 1;
 }
 
+- (void)didTapNextButton {
+  _tapCounter += 1;
+}
+
 @end
 
 // Fixture to test BubbleView.
@@ -103,6 +107,7 @@ TEST_F(BubbleViewTest, CloseButtonIsNotPresent) {
                                        showsCloseButton:NO
                                                   title:nil
                                       showsSnoozeButton:NO
+                                        showsNextButton:NO
                                           textAlignment:text_alignment_
                                                delegate:nil];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
@@ -120,6 +125,7 @@ TEST_F(BubbleViewTest, CloseButtonActionAndPresent) {
                                        showsCloseButton:YES
                                                   title:nil
                                       showsSnoozeButton:NO
+                                        showsNextButton:NO
                                           textAlignment:text_alignment_
                                                delegate:delegate];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
@@ -150,6 +156,7 @@ TEST_F(BubbleViewTest, TitleIsPresentAndCorrect) {
                                        showsCloseButton:NO
                                                   title:short_text_
                                       showsSnoozeButton:NO
+                                        showsNextButton:NO
                                           textAlignment:text_alignment_
                                                delegate:nil];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
@@ -167,6 +174,7 @@ TEST_F(BubbleViewTest, TitleIsAligned) {
                                        showsCloseButton:NO
                                                   title:short_text_
                                       showsSnoozeButton:NO
+                                        showsNextButton:NO
                                           textAlignment:NSTextAlignmentNatural
                                                delegate:nil];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
@@ -184,6 +192,7 @@ TEST_F(BubbleViewTest, SnoozeButtonIsNotPresent) {
                                        showsCloseButton:NO
                                                   title:nil
                                       showsSnoozeButton:NO
+                                        showsNextButton:NO
                                           textAlignment:text_alignment_
                                                delegate:nil];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
@@ -201,6 +210,7 @@ TEST_F(BubbleViewTest, SnoozeButtonActionAndPresent) {
                                        showsCloseButton:NO
                                                   title:nil
                                       showsSnoozeButton:YES
+                                        showsNextButton:NO
                                           textAlignment:text_alignment_
                                                delegate:delegate];
   UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
@@ -261,4 +271,25 @@ TEST_F(BubbleViewTest, ArrowViewTrailingAligned) {
   // trailing edge of the bubble.
   EXPECT_EQ(CGRectGetMidX(arrow_view.frame),
             bubble.frame.size.width - alignment_offset_);
+}
+
+// Tests the next button action and its presence.
+TEST_F(BubbleViewTest, NextButtonActionAndPresent) {
+  BubbleViewDelegateTest* delegate = [[BubbleViewDelegateTest alloc] init];
+  BubbleView* bubble = [[BubbleView alloc] initWithText:long_text_
+                                         arrowDirection:arrow_direction_
+                                              alignment:alignment_
+                                       showsCloseButton:NO
+                                                  title:nil
+                                      showsSnoozeButton:NO
+                                        showsNextButton:YES
+                                          textAlignment:text_alignment_
+                                               delegate:delegate];
+  UIView* superview = [[UIView alloc] initWithFrame:CGRectZero];
+  [superview addSubview:bubble];
+  UIButton* next_button = GetNextButtonFromBubbleView(bubble);
+  ASSERT_TRUE(next_button);
+  // Tests snooze button action.
+  [next_button sendActionsForControlEvents:UIControlEventTouchUpInside];
+  EXPECT_EQ(delegate.tapCounter, 1);
 }

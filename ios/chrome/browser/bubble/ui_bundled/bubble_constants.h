@@ -21,6 +21,8 @@ extern NSString* const kBubbleViewArrowViewIdentifier;
 extern NSTimeInterval const kBubbleVisibilityDuration;
 // How long, in seconds, the default "long duration" bubbles are visible.
 extern NSTimeInterval const kDefaultLongDurationBubbleVisibility;
+// Accessibility identifier for the next button.
+extern NSString* const kBubbleViewNextButtonIdentifier;
 
 // Metric name for bubble dismissal tracking.
 extern const char kUMAIPHDismissalReason[];
@@ -67,6 +69,8 @@ typedef NS_ENUM(NSInteger, BubbleViewType) {
   BubbleViewTypeRich,
   // Bubble view with title, text and snooze button.
   BubbleViewTypeRichWithSnooze,
+  // Bubble view with title, text, and a next button.
+  BubbleViewTypeRichWithNext,
 };
 
 // Possible types of dismissal reasons.

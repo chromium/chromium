@@ -172,7 +172,7 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
   [self.parentView addSubview:self.bubbleViewController.view];
   [self.bubbleViewController
       didMoveToParentViewController:parentViewController];
-  [self.bubbleViewController animateContentIn];
+  [self.bubbleViewController displayAnimated:YES];
 
   [self setUpDismissalTimer];
   [self registerVoiceOverAnnouncement];

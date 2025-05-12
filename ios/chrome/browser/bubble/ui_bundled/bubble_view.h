@@ -19,6 +19,8 @@ typedef NS_ENUM(NSInteger, BubbleArrowDirection);
 - (void)didTapCloseButton;
 // User tapped on the snooze button.
 - (void)didTapSnoozeButton;
+// User tapped on the next button.
+- (void)didTapNextButton;
 
 @end
 
@@ -34,6 +36,7 @@ typedef NS_ENUM(NSInteger, BubbleArrowDirection);
             showsCloseButton:(BOOL)shouldShowCloseButton
                        title:(NSString*)titleString
            showsSnoozeButton:(BOOL)shouldShowSnoozeButton
+             showsNextButton:(BOOL)showsNextButton
                textAlignment:(NSTextAlignment)textAlignment
                     delegate:(id<BubbleViewDelegate>)delegate
     NS_DESIGNATED_INITIALIZER;

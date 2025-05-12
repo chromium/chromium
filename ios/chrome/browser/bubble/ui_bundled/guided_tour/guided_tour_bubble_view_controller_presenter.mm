@@ -46,6 +46,7 @@
 - (void)presentInViewController:(UIViewController*)parentViewController
                     anchorPoint:(CGPoint)anchorPoint
                 anchorViewFrame:(CGRect)anchorViewFrame {
+  [self.bubbleViewController displayAnimated:NO];
   [self configureInParentViewController:parentViewController
                             anchorPoint:anchorPoint
                         anchorViewFrame:anchorViewFrame];
