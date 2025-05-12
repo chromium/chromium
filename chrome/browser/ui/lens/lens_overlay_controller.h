@@ -1021,6 +1021,15 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Called when the associated tab will enter the background.
   void TabWillEnterBackground(tabs::TabInterface* tab);
 
+  // Called when the tab's WebContents is discarded.
+  void WillDiscardContents(tabs::TabInterface* tab,
+                           content::WebContents* old_contents,
+                           content::WebContents* new_contents);
+
+  // Called when the tab will be removed from the window.
+  void WillDetach(tabs::TabInterface* tab,
+                  tabs::TabInterface::DetachReason reason);
+
   // Suggest a name for the save as image feature incorporating the hostname of
   // the page. Protocol, TLD, etc are not taken into consideration. Duplicate
   // names get automatic suffixes.
@@ -1231,6 +1240,9 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Query controller. Owned by the search controller, guaranteed to be alive
   // until the overlay is closed.
   raw_ptr<lens::LensOverlayQueryController> lens_overlay_query_controller_;
+
+  // Holds subscriptions for TabInterface callbacks.
+  std::vector<base::CallbackListSubscription> tab_subscriptions_;
 
   // The callbacks pending the handshake to complete so the Lens suggest inputs
   // can be retrieved.

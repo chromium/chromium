@@ -330,6 +330,16 @@ LensOverlayController::LensOverlayController(
       theme_service_(theme_service),
       gen204_controller_(
           std::make_unique<lens::LensOverlayGen204Controller>()) {
+  tab_subscriptions_.push_back(tab_->RegisterDidActivate(base::BindRepeating(
+      &LensOverlayController::TabForegrounded, weak_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(tab_->RegisterWillDeactivate(
+      base::BindRepeating(&LensOverlayController::TabWillEnterBackground,
+                          weak_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(tab_->RegisterWillDiscardContents(
+      base::BindRepeating(&LensOverlayController::WillDiscardContents,
+                          weak_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(tab_->RegisterWillDetach(base::BindRepeating(
+      &LensOverlayController::WillDetach, weak_factory_.GetWeakPtr())));
   lens_overlay_event_handler_ =
       std::make_unique<lens::LensOverlayEventHandler>(this);
 
@@ -2776,7 +2786,10 @@ void LensOverlayController::RenderProcessExited(
 }
 
 void LensOverlayController::TabForegrounded(tabs::TabInterface* tab) {
-  CHECK(state_ == State::kBackground);
+  // Ignore the event if the overlay is not backgrounded.
+  if (state_ != State::kBackground) {
+    return;
+  }
 
   // If the overlay was backgrounded, restore the previous state.
   if (backgrounded_state_ != State::kLivePageAndResults) {
@@ -2795,7 +2808,10 @@ void LensOverlayController::TabForegrounded(tabs::TabInterface* tab) {
 }
 
 void LensOverlayController::TabWillEnterBackground(tabs::TabInterface* tab) {
-  CHECK(state_ != State::kBackground);
+  // If the current tab was already backgrounded, do nothing.
+  if (state_ == State::kBackground) {
+    return;
+  }
 
   // If the overlay is active, background it.
   if (IsOverlayActive()) {
@@ -2817,6 +2833,33 @@ void LensOverlayController::TabWillEnterBackground(tabs::TabInterface* tab) {
   // created yet.
   lens_search_controller_->CloseLensSync(
       lens::LensOverlayDismissalSource::kTabBackgroundedWhileScreenshotting);
+}
+
+void LensOverlayController::WillDiscardContents(
+    tabs::TabInterface* tab,
+    content::WebContents* old_contents,
+    content::WebContents* new_contents) {
+  // Background tab contents discarded.
+  lens_search_controller_->CloseLensSync(
+      lens::LensOverlayDismissalSource::kTabContentsDiscarded);
+}
+
+void LensOverlayController::WillDetach(
+    tabs::TabInterface* tab,
+    tabs::TabInterface::DetachReason reason) {
+  // When dragging a tab into a new window, all window-specific state must be
+  // reset. As this flow is not fully functional, close the overlay regardless
+  // of `reason`. https://crbug.com/342921671.
+  switch (reason) {
+    case tabs::TabInterface::DetachReason::kDelete:
+      lens_search_controller_->CloseLensSync(
+          lens::LensOverlayDismissalSource::kTabClosed);
+      return;
+    case tabs::TabInterface::DetachReason::kInsertIntoOtherWindow:
+      lens_search_controller_->CloseLensSync(
+          lens::LensOverlayDismissalSource::kTabDragNewWindow);
+      return;
+  }
 }
 
 void LensOverlayController::ActivityRequestedByOverlay(
