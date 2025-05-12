@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin_handler.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/signin_history_sync_optin_resources.h"
 #include "chrome/grit/signin_history_sync_optin_resources_map.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -31,6 +33,19 @@ HistorySyncOptinUI::HistorySyncOptinUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       source, base::span(kSigninHistorySyncOptinResources),
       IDR_SIGNIN_HISTORY_SYNC_OPTIN_HISTORY_SYNC_OPTIN_HTML);
+
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"historySyncOptInTitle", IDS_HISTORY_SYNC_OPT_IN_TITLE},
+      {"historySyncOptInSubtitle", IDS_HISTORY_SYNC_OPT_IN_SUBTITLE},
+      {"historySyncOptInAcceptButtonLabel",
+       IDS_HISTORY_SYNC_OPT_IN_ACCEPT_BUTTON},
+      {"historySyncOptInCancelButtonLabel",
+       IDS_HISTORY_SYNC_OPT_IN_CANCEL_BUTTON},
+      {"historySyncOptInDescription", IDS_HISTORY_SYNC_OPT_IN_DESCRIPTION}};
+  source->AddLocalizedStrings(kLocalizedStrings);
+  // Add avatar fallback value.
+  source->AddString("accountPictureUrl",
+                    profiles::GetPlaceholderAvatarIconUrl());
 }
 
 HistorySyncOptinUI::~HistorySyncOptinUI() = default;
