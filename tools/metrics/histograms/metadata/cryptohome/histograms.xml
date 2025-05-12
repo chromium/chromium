@@ -456,7 +456,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToAuthSessionRemoveAuthFactorUSS" units="ms"
-    expires_after="2025-06-01">
+    expires_after="2026-02-01">
   <owner>thomascedeno@google.com</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
@@ -468,7 +468,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToCreatePersistentUser" units="ms"
-    expires_after="2025-06-01">
+    expires_after="2026-02-01">
   <owner>thomascedeno@google.com</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
@@ -567,7 +567,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToUSSLoadPersisted" units="ms"
-    expires_after="2025-06-01">
+    expires_after="2026-02-01">
   <owner>thomascedeno@google.com</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
@@ -580,7 +580,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToUSSPersist" units="ms"
-    expires_after="2025-06-01">
+    expires_after="2026-02-01">
   <owner>thomascedeno@google.com</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
