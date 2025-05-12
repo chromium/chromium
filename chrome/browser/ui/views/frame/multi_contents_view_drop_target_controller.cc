@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "content/public/common/drop_data.h"
 #include "ui/views/view_class_properties.h"
 
@@ -24,10 +25,31 @@ void MultiContentsViewDropTargetController::OnWebContentsDragUpdate(
   const bool should_show_drop_zone =
       data.url.is_valid() &&
       point.x() >= drop_target_view_->parent()->width() - kDropEntryPointWidth;
-  // TODO(crbug.com/394369035): Add a timer to delay showing the drop zone.
-  drop_target_view_->SetVisible(should_show_drop_zone);
+
+  UpdateDropTargetTimer(should_show_drop_zone);
 }
 
 void MultiContentsViewDropTargetController::OnWebContentsDragExit() {
-  drop_target_view_->SetVisible(false);
+  UpdateDropTargetTimer(/*should_run_timer=*/false);
+}
+
+void MultiContentsViewDropTargetController::UpdateDropTargetTimer(
+    bool should_run_timer) {
+  if (!should_run_timer) {
+    // The view itself isn't hidden immediately. If the view is already
+    // visible, then it has the responsibility of handling drags and hiding
+    // itself.
+    show_drop_target_timer_.Stop();
+  } else if (!drop_target_view_->GetVisible() &&
+             !show_drop_target_timer_.IsRunning()) {
+    // TODO(crbug.com/394369035): Settle on an appropriate value for this.
+    constexpr base::TimeDelta kDropTargetDelay = base::Seconds(1);
+    show_drop_target_timer_.Start(
+        FROM_HERE, kDropTargetDelay, this,
+        &MultiContentsViewDropTargetController::ShowDropTarget);
+  }
+}
+
+void MultiContentsViewDropTargetController::ShowDropTarget() {
+  drop_target_view_->SetVisible(true);
 }

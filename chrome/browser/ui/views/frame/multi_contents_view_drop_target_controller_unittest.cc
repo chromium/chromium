@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/task_environment.h"
 #include "content/public/common/drop_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -16,6 +17,12 @@ namespace {
 static constexpr gfx::Size kMultiContentsViewSize(500, 500);
 
 static constexpr gfx::PointF kDragPointForDropTargetShow(450, 450);
+
+content::DropData ValidUrlDropData() {
+  content::DropData valid_url_data;
+  valid_url_data.url = GURL("https://mail.google.com");
+  return valid_url_data;
+}
 
 class MultiContentsViewDropTargetControllerTest : public testing::Test {
  public:
@@ -43,54 +50,64 @@ class MultiContentsViewDropTargetControllerTest : public testing::Test {
 
   views::View& drop_target_view() { return *drop_target_view_; }
 
+  // Fast forwards by an arbitrary time to ensure timed events are executed.
+  void FastForward() { task_environment_.FastForwardBy(base::Seconds(60)); }
+
+  void TriggerDropTargetShowTimer() {
+    controller().OnWebContentsDragUpdate(ValidUrlDropData(),
+                                         kDragPointForDropTargetShow);
+  }
+
  private:
   std::unique_ptr<MultiContentsViewDropTargetController> controller_;
   std::unique_ptr<views::View> multi_contents_view_;
   raw_ptr<views::View> drop_target_view_;
+
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 // Tests that the drop target is shown when a drag reaches enters the "drop
 // area" and a valid url is being dragged.
 TEST_F(MultiContentsViewDropTargetControllerTest,
        OnWebContentsDragUpdate_ShowDropTarget) {
-  ASSERT_FALSE(drop_target_view().GetVisible());
+  TriggerDropTargetShowTimer();
+  EXPECT_FALSE(drop_target_view().GetVisible());
 
-  content::DropData valid_url_data;
-  valid_url_data.url = GURL("https://mail.google.com");
-  controller().OnWebContentsDragUpdate(valid_url_data,
-                                       kDragPointForDropTargetShow);
-
+  FastForward();
   EXPECT_TRUE(drop_target_view().GetVisible());
 }
 
-// Tests that the drop target is hidden when an invalid url is being dragged.
+// Tests that the drop target is not shown when an invalid url is being dragged.
 TEST_F(MultiContentsViewDropTargetControllerTest,
        OnWebContentsDragUpdate_HideDropTargetOnInvalidURL) {
-  drop_target_view().SetVisible(true);
-  ASSERT_TRUE(drop_target_view().GetVisible());
-
   controller().OnWebContentsDragUpdate(content::DropData(),
                                        kDragPointForDropTargetShow);
 
+  FastForward();
   EXPECT_FALSE(drop_target_view().GetVisible());
 }
 
-// Tests that the drop target is hidden when a drag is not in the "drop area".
+// Tests that the drop target timer is cancelled when a drag is not in the
+// "drop area".
 TEST_F(MultiContentsViewDropTargetControllerTest,
        OnWebContentsDragUpdate_HideDropTargetOnOutOfBounds) {
-  drop_target_view().SetVisible(true);
-  ASSERT_TRUE(drop_target_view().GetVisible());
+  TriggerDropTargetShowTimer();
+  EXPECT_FALSE(drop_target_view().GetVisible());
 
-  content::DropData valid_url_data;
-  valid_url_data.url = GURL("https://mail.google.com");
-  controller().OnWebContentsDragUpdate(valid_url_data, gfx::PointF(0, 0));
-
+  controller().OnWebContentsDragUpdate(ValidUrlDropData(), gfx::PointF(0, 0));
+  FastForward();
   EXPECT_FALSE(drop_target_view().GetVisible());
 }
 
+// Tests that the drop target timer is cancelled when a drag exits the contents
+// view.
 TEST_F(MultiContentsViewDropTargetControllerTest, OnWebContentsDragExit) {
-  drop_target_view().SetVisible(true);
+  TriggerDropTargetShowTimer();
+  EXPECT_FALSE(drop_target_view().GetVisible());
+
   controller().OnWebContentsDragExit();
+  FastForward();
   EXPECT_FALSE(drop_target_view().GetVisible());
 }
 
