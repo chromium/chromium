@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.app.Activity;
+import android.graphics.Point;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -61,6 +62,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayerJni;
+import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -72,6 +74,7 @@ import org.chromium.chrome.browser.toolbar.CustomTabCount;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.url.GURL;
 
 /** Unit tests for {@link NewTabAnimationLayout}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -86,6 +89,7 @@ public class NewTabAnimationLayoutUnitTest {
     private static final @TabId int NEW_TAB_ID = 123;
     private static final long FAKE_NATIVE_ADDRESS_1 = 498723734L;
     private static final long FAKE_NATIVE_ADDRESS_2 = 123210L;
+    private static final Point sPoint = new Point(-1, -1);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -97,7 +101,7 @@ public class NewTabAnimationLayoutUnitTest {
     @Mock private ToolbarManager mToolbarManager;
     @Mock private CustomTabCount mCustomTabCount;
     @Mock private BrowserControlsManager mBrowserControlsManager;
-    @Mock private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
+    @Mock private BrowserStateBrowserControlsVisibilityDelegate mBrowserVisibilityDelegate;
     @Mock private SceneLayer.Natives mSceneLayerJni;
     @Mock private StaticTabSceneLayer.Natives mStaticTabSceneLayerJni;
     @Mock private LayoutUpdateHost mUpdateHost;
@@ -111,6 +115,7 @@ public class NewTabAnimationLayoutUnitTest {
     @Mock private LayoutTab mLayoutTab;
     @Mock private ToggleTabStackButton mTabSwitcherButton;
     @Mock private View mToolbar;
+    @Mock private NewTabPage mNtp;
 
     private ObservableSupplierImpl<Tab> mCurrentTabSupplier = new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<CompositorViewHolder> mCompositorViewHolderSupplier =
@@ -121,6 +126,7 @@ public class NewTabAnimationLayoutUnitTest {
     private FrameLayout mContentContainer;
     private FrameLayout mAnimationHostView;
     private UserDataHost mUserDataHost;
+    private int mToken;
 
     @Before
     public void setUp() {
@@ -159,8 +165,12 @@ public class NewTabAnimationLayoutUnitTest {
         mUserDataHost = new UserDataHost();
         when(mCurrentTab.getUserDataHost()).thenReturn(mUserDataHost);
         when(mNewTab.getId()).thenReturn(NEW_TAB_ID);
+        when(mNtp.getLastTouchPosition()).thenReturn(sPoint);
         when(mBrowserControlsManager.getBrowserVisibilityDelegate())
-                .thenReturn(mBrowserControlsVisibilityDelegate);
+                .thenReturn(mBrowserVisibilityDelegate);
+        mToken = 0;
+        when(mBrowserVisibilityDelegate.showControlsPersistent())
+                .thenAnswer(invocation -> mToken++);
         when(mToolbarManager.getCustomTabCount()).thenReturn(mCustomTabCount);
         mCompositorViewHolderSupplier.set(mCompositorViewHolder);
         mScrimVisibilitySupplier.set(false);
@@ -351,6 +361,7 @@ public class NewTabAnimationLayoutUnitTest {
         assertEquals(CURRENT_TAB_ID, layoutTabs[0].getId());
         verify(mNewTabAnimationLayout, times(1)).forceNewTabAnimationToFinish();
         assertTrue(mNewTabAnimationLayout.isStartingToHide());
+        verify(mBrowserVisibilityDelegate, times(1)).showControlsPersistent();
         verify(mAnimationHostView, times(1)).addView(any(NewBackgroundTabAnimationHostView.class));
 
         ShadowLooper.runUiThreadTasks();
@@ -359,8 +370,59 @@ public class NewTabAnimationLayoutUnitTest {
         verify(mAnimationHostView, times(1))
                 .removeView(any(NewBackgroundTabAnimationHostView.class));
         verify(mTabModelSelector, never()).selectModel(false);
+        verify(mBrowserVisibilityDelegate, times(1)).releasePersistentShowingToken(0);
     }
-    // TODO(crbug.com/40282469): Tests for forceAnimationToFinish, updateLayout, and
-    // updateSceneLayer depend on the implementation of onTabCreated being finished so that
-    // mLayoutTabs gets populated.
+
+    @Test
+    public void testOnTabCreated_tabCreatedInBackground_ntpToken() {
+        when(mCurrentTab.getUrl()).thenReturn(new GURL("chrome://newtab"));
+        when(mCurrentTab.getNativePage()).thenReturn(mNtp);
+
+        mNewTabAnimationLayout.onTabCreated(
+                FAKE_TIME,
+                NEW_TAB_ID,
+                /* index= */ 1,
+                CURRENT_TAB_ID,
+                /* newIsIncognito= */ false,
+                /* background= */ true,
+                /* originX= */ 0f,
+                /* originY= */ 0f);
+
+        ShadowLooper.runUiThreadTasks();
+
+        verify(mBrowserVisibilityDelegate, never()).showControlsPersistent();
+    }
+
+    @Test
+    public void testOnTabCreated_tabCreatedInBackground_animationHaltToken() {
+        mNewTabAnimationLayout.onTabCreated(
+                FAKE_TIME,
+                NEW_TAB_ID,
+                /* index= */ 1,
+                CURRENT_TAB_ID,
+                /* newIsIncognito= */ false,
+                /* background= */ true,
+                /* originX= */ 0f,
+                /* originY= */ 0f);
+
+        verify(mBrowserVisibilityDelegate, times(1)).showControlsPersistent();
+
+        // Halt animation with second animation
+        mNewTabAnimationLayout.onTabCreated(
+                FAKE_TIME,
+                NEW_TAB_ID,
+                /* index= */ 1,
+                CURRENT_TAB_ID,
+                /* newIsIncognito= */ false,
+                /* background= */ true,
+                /* originX= */ 0f,
+                /* originY= */ 0f);
+
+        verify(mBrowserVisibilityDelegate, times(1)).releasePersistentShowingToken(0);
+        verify(mBrowserVisibilityDelegate, times(2)).showControlsPersistent();
+
+        ShadowLooper.runUiThreadTasks();
+
+        verify(mBrowserVisibilityDelegate, times(1)).releasePersistentShowingToken(1);
+    }
 }
