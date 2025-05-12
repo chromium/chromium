@@ -76,8 +76,10 @@ void WebMVideoClient::Reset() {
   display_unit_ = -1;
   alpha_mode_ = -1;
   colour_parsed_ = false;
+  colour_parser_.Reset();
   stereo_mode_ = -1;
   projection_parsed_ = false;
+  projection_parser_.Reset();
 }
 
 bool WebMVideoClient::InitializeConfig(
@@ -97,6 +99,9 @@ bool WebMVideoClient::InitializeConfig(
     is_8bit = color_metadata.BitsPerChannel <= 8;
   }
 
+  VideoTransformation transformation =
+      projection_parsed_ ? projection_parser_.GetVideoTransformation()
+                         : kNoTransformation;
   VideoCodec video_codec = VideoCodec::kUnknown;
   VideoCodecProfile profile = VIDEO_CODEC_PROFILE_UNKNOWN;
   if (codec_id == "V_VP8") {
@@ -163,7 +168,7 @@ bool WebMVideoClient::InitializeConfig(
                      alpha_mode_ == 1
                          ? VideoDecoderConfig::AlphaMode::kHasAlpha
                          : VideoDecoderConfig::AlphaMode::kIsOpaque,
-                     color_space, kNoTransformation, coded_size, visible_rect,
+                     color_space, transformation, coded_size, visible_rect,
                      natural_size, codec_private, encryption_scheme);
 
   return config->IsValidConfig();
