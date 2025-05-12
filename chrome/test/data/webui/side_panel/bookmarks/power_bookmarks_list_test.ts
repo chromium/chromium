@@ -766,7 +766,7 @@ suite('General', () => {
 
       // Open the context menu.
       contextMenu.showAtPosition(
-          new MouseEvent('click'), [bookmark], false, false);
+          new MouseEvent('click'), [bookmark], false, false, false);
       await waitAfterNextRender(contextMenu);
 
       // Get the edit option in the menu.
@@ -801,7 +801,7 @@ suite('General', () => {
 
       // Open the context menu.
       contextMenu.showAtPosition(
-          new MouseEvent('click'), bookmarks, false, false);
+          new MouseEvent('click'), bookmarks, false, false, false);
       await waitAfterNextRender(contextMenu);
 
       // Get the move option in the menu.
