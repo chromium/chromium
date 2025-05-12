@@ -71,6 +71,7 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
   MOCK_METHOD(void, ShowErrorScreen, (), (override));
   MOCK_METHOD(void, DismissPrompt, (), (override));
   MOCK_METHOD(autofill::StrikeDatabase*, GetStrikeDatabase, (), (override));
+  MOCK_METHOD(void, InitPixAccountLinkingFlow, (), (override));
 };
 
 }  // namespace payments::facilitated

@@ -531,6 +531,31 @@ TEST_F(PixManagerTest, PayflowExitedReason_NoLinkedAccount) {
       /*expected_bucket_count=*/1);
 }
 
+TEST_F(
+    PixManagerTest,
+    NoLinkedAccount_AccountLinkingFlagDisabled_AccountLinkingFlowNotTriggered) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kEnablePixAccountLinking);
+
+  EXPECT_CALL(*client_, InitPixAccountLinkingFlow).Times(0);
+
+  pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                                   base::TimeTicks::Now(),
+                                   /*is_pix_code_valid=*/true);
+}
+
+TEST_F(PixManagerTest,
+       NoLinkedAccount_AccountLinkingFlagEnabled_AccountLinkingFlowTriggered) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnablePixAccountLinking);
+
+  EXPECT_CALL(*client_, InitPixAccountLinkingFlow);
+
+  pix_manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                                   base::TimeTicks::Now(),
+                                   /*is_pix_code_valid=*/true);
+}
+
 // If the validation utility process has disconnected (e.g., due to a crash in
 // the validation code), then the manager does not check the API for
 // availability.

@@ -124,6 +124,12 @@ class PixManager {
                            PayflowExitedReason_CodeValidatorFailed);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTest, PayflowExitedReason_InvalidCode);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTest, PayflowExitedReason_NoLinkedAccount);
+  FRIEND_TEST_ALL_PREFIXES(
+      PixManagerTest,
+      NoLinkedAccount_AccountLinkingFlagDisabled_AccountLinkingFlowNotTriggered);
+  FRIEND_TEST_ALL_PREFIXES(
+      PixManagerTest,
+      NoLinkedAccount_AccountLinkingFlagEnabled_AccountLinkingFlowTriggered);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTest, PayflowExitedReason_RiskDataEmpty);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTest, PayflowExitedReason_UserOptedOut);
   FRIEND_TEST_ALL_PREFIXES(PixManagerTest,

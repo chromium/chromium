@@ -139,6 +139,9 @@ void PixManager::OnPixCodeValidated(
 
   if (!payments_data_manager->HasMaskedBankAccounts()) {
     LogPixFlowExitedReason(PixFlowExitedReason::kNoLinkedAccount);
+    if (base::FeatureList::IsEnabled(kEnablePixAccountLinking)) {
+      client_->InitPixAccountLinkingFlow();
+    }
     return;
   }
 

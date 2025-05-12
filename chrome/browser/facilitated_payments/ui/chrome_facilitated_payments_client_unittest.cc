@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/facilitated_payments/core/browser/pix_account_linking_manager.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/optimization_guide/core/mock_optimization_guide_decider.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -37,6 +38,14 @@ class MockFacilitatedPaymentsController : public FacilitatedPaymentsController {
   MOCK_METHOD(void, Dismiss, (), (override));
 };
 
+class MockPixAccountLinkingManager
+    : public payments::facilitated::PixAccountLinkingManager {
+ public:
+  ~MockPixAccountLinkingManager() override = default;
+
+  MOCK_METHOD(void, MaybeShowPixAccountLinkingPrompt, (), (override));
+};
+
 class ChromeFacilitatedPaymentsClientTest
     : public ChromeRenderViewHostTestHarness {
  public:
@@ -48,6 +57,11 @@ class ChromeFacilitatedPaymentsClientTest
         std::make_unique<MockFacilitatedPaymentsController>(web_contents());
     controller_ = controller.get();
     client_->SetFacilitatedPaymentsControllerForTesting(std::move(controller));
+    auto pix_account_linking_manager =
+        std::make_unique<MockPixAccountLinkingManager>();
+    pix_account_linking_manager_ = pix_account_linking_manager.get();
+    client_->SetPixAccountLinkingManagerForTesting(
+        std::move(pix_account_linking_manager));
   }
 
   void TearDown() override {
@@ -61,10 +75,15 @@ class ChromeFacilitatedPaymentsClientTest
 
   MockFacilitatedPaymentsController& controller() { return *controller_; }
 
+  MockPixAccountLinkingManager& pix_account_linking_manager() {
+    return *pix_account_linking_manager_;
+  }
+
  protected:
   optimization_guide::MockOptimizationGuideDecider optimization_guide_decider_;
   std::unique_ptr<ChromeFacilitatedPaymentsClient> client_;
   raw_ptr<MockFacilitatedPaymentsController> controller_;
+  raw_ptr<MockPixAccountLinkingManager> pix_account_linking_manager_;
 };
 
 TEST_F(ChromeFacilitatedPaymentsClientTest, GetPaymentsDataManager) {
@@ -173,4 +192,12 @@ TEST_F(ChromeFacilitatedPaymentsClientTest,
        ShowEwalletPaymentPrompt_ControllerInvoked) {
   EXPECT_CALL(controller(), ShowForEwallet);
   base_client().ShowEwalletPaymentPrompt({}, base::DoNothing());
+}
+
+// Test that the client forwards call to initiate Pix account linking flow to
+// the Pix account linking manager.
+TEST_F(ChromeFacilitatedPaymentsClientTest, InitPixAccountLinkingFlow) {
+  EXPECT_CALL(pix_account_linking_manager(), MaybeShowPixAccountLinkingPrompt);
+
+  base_client().InitPixAccountLinkingFlow();
 }

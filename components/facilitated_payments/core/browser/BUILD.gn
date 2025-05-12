@@ -23,6 +23,8 @@ static_library("browser") {
     "network_api/facilitated_payments_network_interface.h",
     "network_api/multiple_request_facilitated_payments_network_interface.cc",
     "network_api/multiple_request_facilitated_payments_network_interface.h",
+    "pix_account_linking_manager.cc",
+    "pix_account_linking_manager.h",
     "pix_manager.cc",
     "pix_manager.h",
     "strike_databases/payment_link_suggestion_strike_database.h",
