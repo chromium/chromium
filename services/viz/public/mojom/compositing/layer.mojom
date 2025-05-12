@@ -279,6 +279,11 @@ struct TransformNode {
   // cc::DamageReasonsSet bit mask tracking the damage reasons for changes to
   // this node.
   uint64 damage_reasons_bit_mask;
+
+  // Used by the compositor to determine which layers need to be repositioned by
+  // the compositor as a result of safe area inset bottom before Blink
+  // repositions the fixed layers.
+  bool moved_by_safe_area_bottom;
 };
 
 // Details about a new or updated node within a clip property tree.

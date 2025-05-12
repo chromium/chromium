@@ -158,6 +158,7 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
           cc::DamageReasonSet::FromEnumBitmask(wire.damage_reasons_bit_mask))) {
     return base::unexpected("Invalid damage_reasons_bit_mask");
   }
+  node.moved_by_safe_area_bottom = wire.moved_by_safe_area_bottom;
   return base::ok();
 }
 
