@@ -9,6 +9,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "build/branding_buildflags.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/authentication_egtest_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
@@ -105,6 +106,13 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
 
 @implementation VirtualCardEnrollmentBottomSheetEgTest
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_enabled.push_back(
+      autofill::features::kAutofillSaveCardBottomSheet);
+  return config;
+}
+
 - (void)setUp {
   [super setUp];
   [AutofillAppInterface clearCreditCardStore];
@@ -126,7 +134,7 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
   [super tearDownHelper];
 }
 
-- (void)showVirtualCardEnrollmentBottomSheet {
+- (void)fillAndSubmitFormWithServerResponse {
   // Load the test page with a credit card form.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kCreditCardUploadUrl)];
 
@@ -160,22 +168,38 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
   // Wait for upload and get upload details.
   GREYAssertTrue([AutofillAppInterface waitForEvents],
                  @"Did not call upload save or get upload details response.");
+}
 
-  // Push the save button on the card.
-  id<GREYMatcher> overlaySaveButton =
-      chrome_test_util::ButtonWithAccessibilityLabelId(
-          IDS_IOS_AUTOFILL_SAVE_ELLIPSIS);
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:overlaySaveButton];
-  [[EarlGrey selectElementWithMatcher:overlaySaveButton]
-      performAction:grey_tap()];
+- (void)showVirtualCardEnrollmentBottomSheetAfterSaveCardBottomSheet:
+    (BOOL)afterSaveCardBottomSheet {
+  [self fillAndSubmitFormWithServerResponse];
 
-  // Push the save button on the modal.
-  id<GREYMatcher> modalSaveButton =
-      chrome_test_util::ButtonWithAccessibilityLabelId(
-          IDS_IOS_AUTOFILL_SAVE_CARD);
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:modalSaveButton];
-  [[EarlGrey selectElementWithMatcher:modalSaveButton]
-      performAction:grey_tap()];
+  if (afterSaveCardBottomSheet) {
+    // Push the accept button on the save card bottomsheet.
+    id<GREYMatcher> saveCardBottomSheetAcceptButtonMatcher =
+        chrome_test_util::ButtonWithAccessibilityLabelId(
+            IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT);
+    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                        saveCardBottomSheetAcceptButtonMatcher];
+    [[EarlGrey selectElementWithMatcher:saveCardBottomSheetAcceptButtonMatcher]
+        performAction:grey_tap()];
+  } else {
+    // Push the save button on the save card infobar banner.
+    id<GREYMatcher> overlaySaveButton =
+        chrome_test_util::ButtonWithAccessibilityLabelId(
+            IDS_IOS_AUTOFILL_SAVE_ELLIPSIS);
+    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:overlaySaveButton];
+    [[EarlGrey selectElementWithMatcher:overlaySaveButton]
+        performAction:grey_tap()];
+
+    // Push the save button on the save card infobar modal.
+    id<GREYMatcher> modalSaveButton =
+        chrome_test_util::ButtonWithAccessibilityLabelId(
+            IDS_IOS_AUTOFILL_SAVE_CARD);
+    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:modalSaveButton];
+    [[EarlGrey selectElementWithMatcher:modalSaveButton]
+        performAction:grey_tap()];
+  }
 
   // Inject risk data required for the card upload request to be initiated.
   [AutofillAppInterface setPaymentsRiskData:@"Fake risk data for tests"];
@@ -190,7 +214,7 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Disabled on iPad");
   }
-  [self showVirtualCardEnrollmentBottomSheet];
+  [self showVirtualCardEnrollmentBottomSheetAfterSaveCardBottomSheet:YES];
 
   // Assert the header trait is set on the header label.
   [[EarlGrey selectElementWithMatcher:VirtualCardEnrollmentTitle()]
@@ -210,8 +234,45 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
       waitForUIElementToDisappearWithMatcher:VirtualCardEnrollmentTitle()];
 }
 
+- (void)testSaveCardInfobarFollowedByVirtualCardEnrollment {
+  [self fillAndSubmitFormWithServerResponse];
+
+  // Dismiss save card bottomsheet. Dismissing the bottomsheet incurs a strike
+  // on the card. For the second card upload offer, an infobar banner will be
+  // shown. Push the accept button on the save card bottomsheet.
+  id<GREYMatcher> saveCardBottomSheetCancelButtonMatcher =
+      chrome_test_util::ButtonWithAccessibilityLabelId(
+          IDS_AUTOFILL_NO_THANKS_MOBILE_UPLOAD_SAVE);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      saveCardBottomSheetCancelButtonMatcher];
+  [[EarlGrey selectElementWithMatcher:saveCardBottomSheetCancelButtonMatcher]
+      performAction:grey_tap()];
+
+  // Assert save card bottomsheet dimisses.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      saveCardBottomSheetCancelButtonMatcher];
+  // Submit the credit card form again to be offered card upload in a save card
+  // infobar.
+  [self fillAndSubmitFormWithServerResponse];
+
+  [self showVirtualCardEnrollmentBottomSheetAfterSaveCardBottomSheet:NO];
+
+  // Assert the header trait is set on the header label.
+  [[EarlGrey selectElementWithMatcher:VirtualCardEnrollmentTitle()]
+      assertWithMatcher:grey_allOf(
+                            grey_accessibilityTrait(UIAccessibilityTraitHeader),
+                            grey_sufficientlyVisible(), nil)];
+
+  // Push the skip button on the virtual card enrollment bottom sheet.
+  [[EarlGrey
+      selectElementWithMatcher:
+          testing::ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+              IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DECLINE_BUTTON_LABEL_SKIP))]
+      performAction:grey_tap()];
+}
+
 - (void)testVirtualCardEnrollmentShowsLoadingAndConfirmationAfterAcceptPushed {
-  [self showVirtualCardEnrollmentBottomSheet];
+  [self showVirtualCardEnrollmentBottomSheetAfterSaveCardBottomSheet:YES];
 
   // Avoid immediately failing due to missing access token.
   [AutofillAppInterface setAccessToken];

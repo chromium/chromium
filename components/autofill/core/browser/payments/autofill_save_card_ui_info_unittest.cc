@@ -249,6 +249,8 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave, VerifyCommonAttributes) {
 // upload-card-only-save infobar.
 TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
        VerifyAttributesForCardSaveOnlyInfobar) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kAutofillSaveCardBottomSheet);
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
       /*options=*/{.card_save_type = CardSaveType::kCardSaveOnly},
       is_gpay_branded());
@@ -441,6 +443,13 @@ TEST(AutofillSaveCardUiInfoTestForUploadSave,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
 }
 
+#if !BUILDFLAG(IS_IOS)
+// Not applicable for iOS since AutofillSaveCardUiInfo's `confirm_text` is not
+// used by save card infobar which is shown when expiration date or cardholder
+// name is requested. Not applicable for save card bottomsheet on iOS either
+// since bottomsheet is not shown when expiration date or cardholder name is
+// requested.
+
 // Tests that CreateForUploadSave() sets confirm text to "continue" when the
 // expiration is requested from the user.
 TEST(AutofillSaveCardUiInfoTestForUploadSave,
@@ -468,6 +477,7 @@ TEST(AutofillSaveCardUiInfoTestForUploadSave,
   EXPECT_EQ(ui_info.confirm_text,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_PROMPT_CONTINUE));
 }
+#endif
 
 }  // namespace
 }  // namespace autofill

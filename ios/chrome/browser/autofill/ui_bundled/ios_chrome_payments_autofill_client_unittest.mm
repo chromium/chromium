@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/ios_chrome_payments_autofill_client.h"
 
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/mock_callback.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/uuid.h"
 #import "components/autofill/core/browser/autofill_progress_dialog_type.h"
@@ -19,7 +20,6 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
-#import "ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/test/mock_autofill_save_card_infobar_delegate_mobile.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -127,19 +127,6 @@ class TestChromeAutofillClient
                                                        web_state,
                                                        infobar_manager,
                                                        autofill_agent) {
-    if (!base::FeatureList::IsEnabled(features::kAutofillSaveCardBottomSheet)) {
-      autofill::CreditCard credit_card(
-          base::Uuid::GenerateRandomV4().AsLowercaseString(),
-          "https://www.example.test/");
-      save_card_delegate_ = MockAutofillSaveCardInfoBarDelegateMobileFactory::
-          CreateMockAutofillSaveCardInfoBarDelegateMobileFactory(
-              /*upload=*/true, credit_card);
-    }
-  }
-
-  MockAutofillSaveCardInfoBarDelegateMobile*
-  GetAutofillSaveCardInfoBarDelegateIOS() override {
-    return save_card_delegate_.get();
   }
 
   void RemoveAutofillSaveCardInfoBar() override {
@@ -149,9 +136,6 @@ class TestChromeAutofillClient
   bool DidRemoveSaveCardInfobar() { return removed_save_card_infobar_; }
 
  private:
-  std::unique_ptr<MockAutofillSaveCardInfoBarDelegateMobile>
-      save_card_delegate_;
-
   bool removed_save_card_infobar_ = false;
 };
 
@@ -216,6 +200,9 @@ class IOSChromePaymentsAutofillClientTest : public PlatformTest {
 
 TEST_F(IOSChromePaymentsAutofillClientTest,
        DoNotShowSaveCardBottomSheet_FlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      autofill::features::kAutofillSaveCardBottomSheet);
   payments_client()->ShowSaveCreditCardToCloud(
       CreditCard(), LegalMessageLines(),
       payments::PaymentsAutofillClient::SaveCreditCardOptions()
@@ -225,26 +212,74 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
   EXPECT_FALSE([autofill_commands() showSaveCardBottomSheetCalled]);
 }
 
+// Test that on credit card upload completed successfully with infobar showing,
+// `AutofillSaveCardInfoBarDelegateIOS.credit_card_upload_completed_` is set and
+// runs
+// `AutofillSaveCardInfoBarDelegateIOS.credit_card_upload_completion_callback_`
+// with card saved.
 TEST_F(IOSChromePaymentsAutofillClientTest,
-       CreditCardUploadCompleted_CardSaved) {
-  EXPECT_CALL(*(client()->GetAutofillSaveCardInfoBarDelegateIOS()),
-              CreditCardUploadCompleted(/*card_saved=*/true, _));
+       CreditCardUploadCompleted_CardSaved_WithInfobar) {
+  // Shows card upload in an infobar for a card with 1 strike.
+  payments_client()->ShowSaveCreditCardToCloud(
+      CreditCard(), LegalMessageLines(),
+      payments::PaymentsAutofillClient::SaveCreditCardOptions()
+          .with_num_strikes(1)
+          .with_show_prompt(true),
+      base::DoNothing());
+
+  // Sets credit card upload completion callback that gets executed with the
+  // save card result as saved.
+  base::MockCallback<base::OnceCallback<void(bool card_saved)>>
+      mock_credit_card_upload_completion_callback;
+  client()
+      ->GetAutofillSaveCardInfoBarDelegateIOS()
+      ->SetCreditCardUploadCompletionCallback(
+          mock_credit_card_upload_completion_callback.Get());
+
+  EXPECT_CALL(mock_credit_card_upload_completion_callback,
+              Run(/*card_saved=*/true));
   payments_client()->CreditCardUploadCompleted(
       /*result=*/payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       /*on_confirmation_closed_callback=*/std::nullopt);
+  EXPECT_TRUE(client()
+                  ->GetAutofillSaveCardInfoBarDelegateIOS()
+                  ->IsCreditCardUploadComplete());
   EXPECT_FALSE(client()->DidRemoveSaveCardInfobar());
 }
 
+// Test that on credit card upload completed unsuccessfully with infobar
+// showing, `AutofillSaveCardInfoBarDelegateIOS.credit_card_upload_completed_`
+// is set and runs
+// `AutofillSaveCardInfoBarDelegateIOS.credit_card_upload_completion_callback_`
+// with card not saved and error context is set.
 TEST_F(IOSChromePaymentsAutofillClientTest,
-       CreditCardUploadCompleted_CardNotSaved) {
-  EXPECT_CALL(*(client()->GetAutofillSaveCardInfoBarDelegateIOS()),
-              CreditCardUploadCompleted(/*card_saved=*/false, _));
+       CreditCardUploadCompleted_CardNotSaved_WithInfobar) {
+  // Shows card upload in an infobar for a card with 1 strike.
+  payments_client()->ShowSaveCreditCardToCloud(
+      CreditCard(), LegalMessageLines(),
+      payments::PaymentsAutofillClient::SaveCreditCardOptions()
+          .with_num_strikes(1)
+          .with_show_prompt(true),
+      base::DoNothing());
 
+  // Sets credit card upload completion callback that gets executed with the
+  // save card result as not saved.
+  base::MockCallback<base::OnceCallback<void(bool card_saved)>>
+      mock_credit_card_upload_completion_callback;
+  client()
+      ->GetAutofillSaveCardInfoBarDelegateIOS()
+      ->SetCreditCardUploadCompletionCallback(
+          mock_credit_card_upload_completion_callback.Get());
+
+  EXPECT_CALL(mock_credit_card_upload_completion_callback,
+              Run(/*card_saved=*/false));
   payments_client()->CreditCardUploadCompleted(
       /*result=*/payments::PaymentsAutofillClient::PaymentsRpcResult::
           kPermanentFailure,
       /*on_confirmation_closed_callback=*/std::nullopt);
-
+  EXPECT_TRUE(client()
+                  ->GetAutofillSaveCardInfoBarDelegateIOS()
+                  ->IsCreditCardUploadComplete());
   EXPECT_TRUE(client()->DidRemoveSaveCardInfobar());
   const std::optional<AutofillErrorDialogContext>& error_context =
       [autofill_commands() autofillErrorDialogContext];
@@ -253,16 +288,40 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
             AutofillErrorDialogType::kCreditCardUploadError);
 }
 
-// Test that on getting client-side timeout, the save card dialog is dismissed
-// and error dialog is not shown.
-TEST_F(IOSChromePaymentsAutofillClientTest,
-       CreditCardUploadCompleted_ClientSideTimeout_NoErrorConfirmation) {
-  EXPECT_CALL(*(client()->GetAutofillSaveCardInfoBarDelegateIOS()),
-              CreditCardUploadCompleted(/*card_saved=*/false, _));
+// Test that on credit card upload's client-side timeout with infobar showing,
+// `AutofillSaveCardInfoBarDelegateIOS.credit_card_upload_completed_` is set and
+// runs
+// `AutofillSaveCardInfoBarDelegateIOS.credit_card_upload_completion_callback_`
+// with save card result as not saved and error context is not set.
+TEST_F(
+    IOSChromePaymentsAutofillClientTest,
+    CreditCardUploadCompleted_ClientSideTimeout_WithInfobar_NoErrorConfirmation) {
+  // Shows card upload in an infobar for a card with 1 strike.
+  payments_client()->ShowSaveCreditCardToCloud(
+      CreditCard(), LegalMessageLines(),
+      payments::PaymentsAutofillClient::SaveCreditCardOptions()
+          .with_num_strikes(1)
+          .with_show_prompt(true),
+      base::DoNothing());
+
+  // Sets credit card upload completion callback that gets executed with the
+  // save card result as not saved.
+  base::MockCallback<base::OnceCallback<void(bool card_saved)>>
+      mock_credit_card_upload_completion_callback;
+  client()
+      ->GetAutofillSaveCardInfoBarDelegateIOS()
+      ->SetCreditCardUploadCompletionCallback(
+          mock_credit_card_upload_completion_callback.Get());
+
+  EXPECT_CALL(mock_credit_card_upload_completion_callback,
+              Run(/*card_saved=*/false));
   payments_client()->CreditCardUploadCompleted(
       /*result=*/payments::PaymentsAutofillClient::PaymentsRpcResult::
           kClientSideTimeout,
       /*on_confirmation_closed_callback=*/std::nullopt);
+  EXPECT_TRUE(client()
+                  ->GetAutofillSaveCardInfoBarDelegateIOS()
+                  ->IsCreditCardUploadComplete());
   EXPECT_TRUE(client()->DidRemoveSaveCardInfobar());
   const std::optional<AutofillErrorDialogContext>& error_context =
       [autofill_commands() autofillErrorDialogContext];
