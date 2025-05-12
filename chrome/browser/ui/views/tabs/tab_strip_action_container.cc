@@ -453,6 +453,7 @@ void TabStripActionContainer::OnGlicButtonClicked() {
   }
 
   ExecuteHideTabStripNudge(glic_button_);
+  glic_button_->SetText(std::u16string());
 }
 
 void TabStripActionContainer::OnGlicButtonDismissed() {
