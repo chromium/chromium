@@ -485,5 +485,11 @@ enum ContentSettingsType {
 
   // Stores which Translator API language packs the site has initialized.
   INITIALIZED_TRANSLATIONS,
+
+  // Stores a list of notification ids where content detection found the
+  // notification to be suspicious and a warning has already been shown for the
+  // site. Used for recovering notification contents from the database if the
+  // user decides they would like to see all of these notifications.
+  SUSPICIOUS_NOTIFICATION_IDS,
 };
 // LINT.ThenChange(//components/content_settings/core/browser/content_settings_uma_util.cc:kHistogramValue)

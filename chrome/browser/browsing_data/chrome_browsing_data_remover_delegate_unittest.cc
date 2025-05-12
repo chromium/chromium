@@ -4033,6 +4033,33 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   EXPECT_TRUE(prefs->GetDict(kPermissionActionsPrefPath).empty());
 }
 
+TEST_F(ChromeBrowsingDataRemoverDelegateTest, WipeSuspiciousNotificationIds) {
+  // Add setting value.
+  const GURL kOrigin1("http://host1.com:1");
+  base::Value::List suspicious_notification_ids;
+  suspicious_notification_ids.Append("1");
+  suspicious_notification_ids.Append("2");
+  base::Value::Dict suspicious_notification_id_dict;
+  suspicious_notification_id_dict.Set("suspicious-notification-ids",
+                                      std::move(suspicious_notification_ids));
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(GetProfile());
+  host_content_settings_map->SetWebsiteSettingDefaultScope(
+      kOrigin1, GURL(), ContentSettingsType::SUSPICIOUS_NOTIFICATION_IDS,
+      base::Value(suspicious_notification_id_dict.Clone()));
+  ContentSettingsForOneType host_settings =
+      host_content_settings_map->GetSettingsForOneType(
+          ContentSettingsType::SUSPICIOUS_NOTIFICATION_IDS);
+  ASSERT_EQ(1u, host_settings.size());
+
+  // Wipe the setting.
+  BlockUntilBrowsingDataRemoved(base::Time::Now(), base::Time::Max(),
+                                constants::DATA_TYPE_HISTORY, false);
+  host_settings = host_content_settings_map->GetSettingsForOneType(
+      ContentSettingsType::SUSPICIOUS_NOTIFICATION_IDS);
+  ASSERT_EQ(0u, host_settings.size());
+}
+
 // Tests with non-null AccountPasswordStoreFactory::GetForProfile().
 class ChromeBrowsingDataRemoverDelegateWithAccountPasswordsTest
     : public ChromeBrowsingDataRemoverDelegateWithPasswordsTest {

@@ -258,6 +258,7 @@ constexpr auto kContentSettingsTypeGroupNames = std::to_array<
     {ContentSettingsType::ON_DEVICE_SPEECH_RECOGNITION_LANGUAGES_DOWNLOADED,
      nullptr},
     {ContentSettingsType::INITIALIZED_TRANSLATIONS, nullptr},
+    {ContentSettingsType::SUSPICIOUS_NOTIFICATION_IDS, nullptr},
 });
 
 static_assert(
