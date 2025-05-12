@@ -326,6 +326,8 @@ enum OptimizationType {
   SOSS_HOSTING_SERVICE_PROVIDERS = 94;
   // Provides a list of commonly abused TLDs.
   SOSS_TLDS = 95;
+  // Provides information about whether the page is eligible for GLIC.
+  GLIC_PAGE_CONTEXT_ELIGIBILITY = 96;
 }
 
 // Presents semantics for how page load URLs should be matched.

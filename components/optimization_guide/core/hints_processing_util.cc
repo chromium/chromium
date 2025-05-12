@@ -185,6 +185,8 @@ std::string GetStringNameForOptimizationType(
       return "SossHostingServiceProviders";
     case proto::OptimizationType::SOSS_TLDS:
       return "SossTlds";
+    case proto::OptimizationType::GLIC_PAGE_CONTEXT_ELIGIBILITY:
+      return "GlicPageContextEligibility";
   }
 
   // The returned string is used to record histograms for the optimization type.

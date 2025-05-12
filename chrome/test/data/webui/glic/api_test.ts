@@ -664,6 +664,40 @@ class ApiTests extends ApiTestFixtureBase {
     await observeSequence(this.host.isManuallyResizing()).waitForValue(false);
   }
 
+  async testGetContextFromFocusedTabWithIneligiblePage() {
+    assertTrue(!!this.host.getContextFromFocusedTab);
+    await this.host.setTabContextPermissionState(true);
+
+    try {
+      await this.host.getContextFromFocusedTab?.({
+        innerText: true,
+        viewportScreenshot: true,
+        annotatedPageContent: true,
+        maxMetaTags: 32,
+        pdfData: true,
+      });
+    } catch (e) {
+      assertEquals(
+          'tabContext failed: page context ineligible', (e as Error).message);
+      return;
+    }
+    assertTrue(false, 'getContextFromFocusedTab should have thrown an error');
+  }
+
+  async testGetContextFromFocusedTabWithEligiblePage() {
+    await this.host.setTabContextPermissionState(true);
+
+    const result = await this.host.getContextFromFocusedTab?.({
+      innerText: true,
+      viewportScreenshot: true,
+      annotatedPageContent: true,
+      maxMetaTags: 32,
+      pdfData: true,
+    });
+
+    assertTrue(!!result);
+  }
+
   async testOpenOsMediaPermissionSettings() {
     assertTrue(!!this.host.openOsPermissionSettingsMenu);
     this.host.openOsPermissionSettingsMenu('media');

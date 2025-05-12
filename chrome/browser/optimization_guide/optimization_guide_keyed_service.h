@@ -45,6 +45,10 @@ namespace download {
 class BackgroundDownloadService;
 }  // namespace download
 
+namespace glic {
+class GlicPageContextEligibilityObserver;
+}  // namespace glic
+
 namespace on_device_internals {
 class PageHandler;
 }
@@ -251,6 +255,7 @@ class OptimizationGuideKeyedService
   friend class ChromeBrowserMainExtraPartsOptimizationGuide;
   friend class ChromeBrowsingDataRemoverDelegate;
   friend class contextual_cueing::ZeroStateSuggestionsPageData;
+  friend class glic::GlicPageContextEligibilityObserver;
   friend class HintsFetcherBrowserTest;
   friend class on_device_internals::PageHandler;
   friend class OptimizationGuideInternalsUI;

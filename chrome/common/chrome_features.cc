@@ -516,6 +516,14 @@ BASE_FEATURE(kGlicRollout, "GlicRollout", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicUserStatusCheck,
              "GlicUserStatusCheck",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGlicPageContextEligibility,
+             "GlicPageContextEligibility",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kGlicPageContextEligibilityAllowNoMetadata{
+    &kGlicPageContextEligibility,
+    "glic-page-context-eligibility-allow-no-metadata", true};
+
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 BASE_FEATURE(kTabstripComboButton,
