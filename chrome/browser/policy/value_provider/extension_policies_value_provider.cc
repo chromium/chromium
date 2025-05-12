@@ -57,20 +57,10 @@ ExtensionPoliciesValueProvider::ExtensionPoliciesValueProvider(Profile* profile)
     : profile_(profile) {
   extension_registry_observation_.Observe(
       extensions::ExtensionRegistry::Get(profile_));
-  policy::PolicyService* policy_service = GetPolicyService(profile_);
-  policy_service->AddObserver(policy::POLICY_DOMAIN_EXTENSIONS, this);
-#if BUILDFLAG(IS_CHROMEOS)
-  policy_service->AddObserver(policy::POLICY_DOMAIN_SIGNIN_EXTENSIONS, this);
-#endif  // BUILDFLAG(IS_CHROMEOS)
+  policy_service_observation_.Observe(GetPolicyService(profile_));
 }
 
-ExtensionPoliciesValueProvider::~ExtensionPoliciesValueProvider() {
-  policy::PolicyService* policy_service = GetPolicyService(profile_);
-  policy_service->RemoveObserver(policy::POLICY_DOMAIN_EXTENSIONS, this);
-#if BUILDFLAG(IS_CHROMEOS)
-  policy_service->RemoveObserver(policy::POLICY_DOMAIN_SIGNIN_EXTENSIONS, this);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
+ExtensionPoliciesValueProvider::~ExtensionPoliciesValueProvider() = default;
 
 base::Value::Dict ExtensionPoliciesValueProvider::GetValues() {
   base::Value::Dict extension_policies;
