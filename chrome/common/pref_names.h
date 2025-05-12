@@ -4224,11 +4224,11 @@ inline constexpr char kEnterpriseProfileBadgeToolbarSettings[] =
 inline constexpr char kNTPFooterManagementNoticeEnabled[] =
     "ntp_footer.settings.management_notice";
 
-// Boolean value that determine whether the NTP theme attribution on the NTP
-// footer is enabled. This is false when disabled by the
-// `NTPFooterThemeAttributionEnabled` policy.
-inline constexpr char kNTPFooterThemeAttributionEnabled[] =
-    "ntp_footer.settings.theme_attribution";
+// Boolean value that determines whether the NTP extension attribution on the
+// NTP footer is enabled. This is false when disabled by the
+// `NTPFooterExtensionAttributionEnabled` policy.
+inline constexpr char kNTPFooterExtensionAttributionEnabled[] =
+    "ntp_footer.settings.extension_attribution";
 
 #if BUILDFLAG(IS_ANDROID)
 // An integer count of how many account-level breached credentials were

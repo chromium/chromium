@@ -201,6 +201,7 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
                                std::string());
   registry->RegisterIntegerPref(prefs::kEnterpriseProfileBadgeToolbarSettings,
                                 0);
-  registry->RegisterBooleanPref(prefs::kNTPFooterThemeAttributionEnabled, true);
+  registry->RegisterBooleanPref(prefs::kNTPFooterExtensionAttributionEnabled,
+                                true);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 }

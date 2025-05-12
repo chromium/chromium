@@ -2392,8 +2392,8 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  { key::kNTPFooterThemeAttributionEnabled,
-    prefs::kNTPFooterThemeAttributionEnabled,
+  { key::kNTPFooterExtensionAttributionEnabled,
+    prefs::kNTPFooterExtensionAttributionEnabled,
     base::Value::Type::BOOLEAN },
   { key::kNTPFooterManagementNoticeEnabled,
     prefs::kNTPFooterManagementNoticeEnabled,

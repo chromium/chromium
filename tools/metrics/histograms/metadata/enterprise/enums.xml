@@ -2227,7 +2227,7 @@ chromium-metrics-reviews@google.com.
   <int value="1357" label="BuiltInAIAPIsEnabled"/>
   <int value="1358" label="TabGroupSharingSettings"/>
   <int value="1359" label="NTPFootermanagementNoticeEnabled"/>
-  <int value="1360" label="NTPFooterThemeAttributionEnabled"/>
+  <int value="1360" label="NTPFooterExtensionAttributionEnabled"/>
   <int value="1361" label="ClearWindowNameForNewBrowsingContextGroup"/>
 </enum>
 

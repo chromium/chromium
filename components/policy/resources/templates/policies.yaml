@@ -1358,7 +1358,7 @@ policies:
   1357: BuiltInAIAPIsEnabled
   1358: TabGroupSharingSettings
   1359: NTPFooterManagementNoticeEnabled
-  1360: NTPFooterThemeAttributionEnabled
+  1360: NTPFooterExtensionAttributionEnabled
   1361: ClearWindowNameForNewBrowsingContextGroup
 
 atomic_groups:
