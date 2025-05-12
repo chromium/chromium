@@ -24,6 +24,10 @@ void OpenAccountMenu();
 // enters the "Manage accounts on this device" view.
 void OpenManageAccountsView();
 
+// Opens the account menu on the NTP (which must already be visible), then
+// taps on the sign-out button, and dismisses the signout snackabr.
+void SignoutFromAccountMenu();
+
 id<GREYMatcher> SigninScreenMatcher();
 id<GREYMatcher> ManagedProfileCreationScreenMatcher();
 id<GREYMatcher> BrowsingDataManagementScreenMatcher();
