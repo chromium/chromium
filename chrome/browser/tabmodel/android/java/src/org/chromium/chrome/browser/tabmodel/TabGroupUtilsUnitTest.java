@@ -11,6 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -255,11 +256,7 @@ public class TabGroupUtilsUnitTest {
         TabGroupUtils.regroupTabs(
                 mTabGroupModelFilter, tabs, tabGroupMetadata, shouldApplyCollapse);
 
-        for (Tab tab : tabs) {
-            verify(mTabGroupModelFilter).mergeTabsToGroup(eq(tab.getId()), eq(TAB1_ID), eq(true));
-            verify(tab).setTabGroupId(TAB_GROUP_ID1);
-            verify(tab).setRootId(TAB1_ID);
-        }
+        verify(mTabGroupModelFilter).createTabGroupForTabGroupSync(any(), eq(TAB_GROUP_ID1));
         verify(mTabGroupModelFilter).setTabGroupColor(eq(TAB1_ID), eq(0));
         verify(mTabGroupModelFilter).setTabGroupTitle(eq(TAB1_ID), eq(TAB_GROUP_TITLE));
         if (shouldApplyCollapse) {

@@ -102,31 +102,22 @@ public class TabGroupUtils {
             TabGroupMetadata tabGroupMetadata,
             boolean shouldApplyCollapse) {
         // 1. Extract tab group properties from the metadata.
-        int rootId = tabGroupMetadata.rootId;
         Token tabGroupId = tabGroupMetadata.tabGroupId;
         String tabGroupTitle = tabGroupMetadata.tabGroupTitle;
         boolean tabGroupCollapsed = tabGroupMetadata.tabGroupCollapsed;
         int tabGroupColor = tabGroupMetadata.tabGroupColor;
 
-        // 2. Set rootId and TabGroupId for all tabs before merging to guarantee they are treated as
-        // part of the same group.
-        for (Tab tab : tabs) {
-            tab.setRootId(rootId);
-            tab.setTabGroupId(tabGroupId);
-        }
+        // 2. Create the local tab group in the current TabGroupModelFilter.
+        tabGroupModelFilter.createTabGroupForTabGroupSync(tabs, tabGroupId);
+        int newRootId = tabs.get(0).getRootId();
 
-        // 3. Merge tabs to recreate tab group
-        for (Tab tab : tabs) {
-            int tabId = tab.getId();
-            tabGroupModelFilter.mergeTabsToGroup(tabId, rootId, /* skipUpdateTabModel= */ true);
-        }
-
-        // 4. Apply the tab group attributes (color, collapsed state, and title).
-        tabGroupModelFilter.setTabGroupColor(rootId, tabGroupColor);
-        tabGroupModelFilter.setTabGroupTitle(rootId, tabGroupTitle);
+        // 3. Apply the tab group attributes (color, collapsed state, and title) using the new
+        // rootId.
+        tabGroupModelFilter.setTabGroupColor(newRootId, tabGroupColor);
+        tabGroupModelFilter.setTabGroupTitle(newRootId, tabGroupTitle);
         if (shouldApplyCollapse) {
             tabGroupModelFilter.setTabGroupCollapsed(
-                    rootId, tabGroupCollapsed, /* animate= */ false);
+                    newRootId, tabGroupCollapsed, /* animate= */ false);
         }
     }
 

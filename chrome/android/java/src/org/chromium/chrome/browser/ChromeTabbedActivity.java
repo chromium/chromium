@@ -313,8 +313,8 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -1596,7 +1596,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
     private boolean maybeHandleGroupUrlsIntent(Intent intent, TabGroupMetadata tabGroupMetadata) {
         @TabOpenType int tabOpenType = IntentHandler.getTabOpenType(intent);
 
-        ArrayList<Tab> tabs = new ArrayList<>();
+        LinkedList<Tab> tabs = new LinkedList<>();
         for (Map.Entry<Integer, String> entry : tabGroupMetadata.tabIdsToUrls) {
             int tabId = entry.getKey();
             String url = entry.getValue();
@@ -1622,7 +1622,10 @@ public class ChromeTabbedActivity extends ChromeActivity {
                             IntentUtils.safeGetStringExtra(intent, Browser.EXTRA_APPLICATION_ID),
                             Tab.INVALID_TAB_ID,
                             intent);
-            tabs.add(tab);
+            // Restores the correct tab order by adding the tab to the front. `tabIdsToUrls` were
+            // stored in reverse to preserve open positions (see {@link
+            // TabGroupMetadataExtractor#extractTabGroupMetadata}).
+            tabs.add(0, tab);
         }
 
         // 4. Regroup tabs and restore the original group properties(e.g. color, title, collapsed
