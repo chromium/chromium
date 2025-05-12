@@ -4409,12 +4409,11 @@ TEST_F(HttpStreamPoolAttemptManagerTest, SpdySessionAvailableAfterFailure) {
   ASSERT_FALSE(pool().GetGroupForTesting(stream_key));
 }
 
+// Test that after a request fails and an QUIC session becomes available later,
+// subsequent request/preconnect should succeed with the session.
 // This test uses an HTTP/3 Origin frame to make a session usable for
 // the destination.
-// TODO(crbug.com/416364483): Fix this test. We need to support out-of-band
-// QUIC session arrival to fix this test.
-TEST_F(HttpStreamPoolAttemptManagerTest,
-       DISABLED_QuicSessionAvailableAfterFailure) {
+TEST_F(HttpStreamPoolAttemptManagerTest, QuicSessionAvailableAfterFailure) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
 
@@ -4489,16 +4488,23 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
     alt_session->OnOriginFrame(origin_frame);
   }  // End of creating an existing QUIC session.
 
-  // Destroy the first request.
-  failing_requester.ResetRequest();
+  // Finish DNS resolution to trigger checking existing QUIC session.
+  // TODO(crbug.com/416364483): Ideally we should not depend on DNS resolution.
+  endpoint_request
+      ->add_endpoint(ServiceEndpointBuilder().add_v6("2001:db8::1").endpoint())
+      .CallOnServiceEndpointRequestFinished(OK);
 
-  // TODO(crbug.com/416364483): Currently the following WaitForResult()s time
-  // out. Support out-of-band QUIC session arrival.
   requester.WaitForResult();
   EXPECT_THAT(requester.result(), Optional(IsOk()));
   EXPECT_EQ(requester.negotiated_protocol(), NextProto::kProtoQUIC);
   preconnector.WaitForResult();
   EXPECT_THAT(preconnector.result(), Optional(IsOk()));
+
+  // Destroy requests so that the group can complete.
+  failing_requester.ResetRequest();
+  requester.ResetRequest();
+  WaitForAttemptManagerComplete(attempt_manager.get());
+  ASSERT_FALSE(pool().GetGroupForTesting(stream_key));
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, ReleaseStreamWhileFailing) {

@@ -318,11 +318,15 @@ class HttpStreamPool::AttemptManager
   // Called when service endpoint results have changed or finished.
   void ProcessServiceEndpointChanges();
 
-  // Returns true when there is an active SPDY/QUIC session that can be used for
-  // on-going jobs after service endpoint results has changed. May notify jobs
-  // of stream ready.
+  // Returns true when there is an active QUIC session that can be used for
+  // on-going jobs after service endpoint results have changed.
+  // TODO(bashi): Change the return value to `QuicChromiumClientSession*` and
+  // remove redundant QuicSessionPool::FindExistingSession() calls.
   bool CanUseExistingQuicSessionAfterEndpointChanges();
-  bool CanUseExistingSpdySessionAfterEndpointChanges();
+
+  // Returns an active SPDY session when there is an active SPDY session that
+  // can be used for on-going jobs after service endpoint results have changed.
+  base::WeakPtr<SpdySession> CanUseExistingSpdySessionAfterEndpointChanges();
 
   // If `this` is ready to start cryptographic handshakes, notifies TCP based
   // attempts that SSLConfigs are ready.
@@ -434,9 +438,9 @@ class HttpStreamPool::AttemptManager
 
   bool HasAvailableSpdySession() const;
 
-  void CreateSpdyStreamAndNotify(base::WeakPtr<SpdySession> spdy_session);
+  void MaybeCreateSpdyStreamAndNotify(base::WeakPtr<SpdySession> spdy_session);
 
-  void CreateQuicStreamAndNotify();
+  void MaybeCreateQuicStreamAndNotify();
 
   void NotifyStreamReady(std::unique_ptr<HttpStream> stream,
                          NextProto negotiated_protocol);

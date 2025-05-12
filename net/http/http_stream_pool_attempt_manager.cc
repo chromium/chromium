@@ -747,11 +747,7 @@ void HttpStreamPool::AttemptManager::OnQuicAttemptComplete(
 
   if (rv == OK) {
     HandleQuicSessionReady(StreamSocketCloseReason::kQuicSessionCreated);
-    if (!jobs_.empty()) {
-      CreateQuicStreamAndNotify();
-    } else {
-      MaybeCompleteLater();
-    }
+    MaybeCompleteLater();
     return;
   }
 
@@ -924,11 +920,48 @@ void HttpStreamPool::AttemptManager::ProcessServiceEndpointChanges() {
   }
 
   if (CanUseExistingQuicSessionAfterEndpointChanges()) {
+    net_log_.AddEvent(
+        NetLogEventType::
+            HTTP_STREAM_POOL_ATTEMPT_MANAGER_EXISTING_QUIC_SESSION_MATCHED,
+        [&] {
+          base::Value::Dict dict;
+          QuicChromiumClientSession* quic_session =
+              quic_session_pool()->FindExistingSession(
+                  quic_session_alias_key().session_key(),
+                  quic_session_alias_key().destination());
+          CHECK(quic_session);
+          quic_session->net_log().source().AddToEventParameters(dict);
+          return dict;
+        });
+    base::UmaHistogramTimes(
+        "Net.HttpStreamPool.ExistingQuicSessionFoundTime",
+        base::TimeTicks::Now() - dns_resolution_start_time_);
+
+    CancelQuicAttempt(OK);
+    HandleQuicSessionReady(StreamSocketCloseReason::kUsingExistingQuicSession);
+
     CHECK(tcp_based_attempts_.empty());
     return;
   }
 
-  if (CanUseExistingSpdySessionAfterEndpointChanges()) {
+  if (base::WeakPtr<SpdySession> spdy_session =
+          CanUseExistingSpdySessionAfterEndpointChanges()) {
+    net_log_.AddEvent(
+        NetLogEventType::
+            HTTP_STREAM_POOL_ATTEMPT_MANAGER_EXISTING_SPDY_SESSION_MATCHED,
+        [&] {
+          base::Value::Dict dict;
+          spdy_session->net_log().source().AddToEventParameters(dict);
+          return dict;
+        });
+    base::UmaHistogramTimes(
+        "Net.HttpStreamPool.ExistingSpdySessionFoundTime",
+        base::TimeTicks::Now() - dns_resolution_start_time_);
+    ip_matching_spdy_session_found_ = true;
+
+    HandleSpdySessionReady(spdy_session,
+                           StreamSocketCloseReason::kUsingExistingSpdySession);
+
     CHECK(tcp_based_attempts_.empty());
     return;
   }
@@ -950,7 +983,6 @@ bool HttpStreamPool::AttemptManager::
   }
 
   if (CanUseExistingQuicSession()) {
-    CancelQuicAttempt(OK);
     return true;
   }
 
@@ -961,41 +993,24 @@ bool HttpStreamPool::AttemptManager::
       continue;
     }
 
-    CancelQuicAttempt(OK);
-
-    net_log_.AddEvent(
-        NetLogEventType::
-            HTTP_STREAM_POOL_ATTEMPT_MANAGER_EXISTING_QUIC_SESSION_MATCHED,
-        [&] {
-          base::Value::Dict dict;
-          QuicChromiumClientSession* quic_session =
-              quic_session_pool()->FindExistingSession(
-                  quic_session_alias_key().session_key(),
-                  quic_session_alias_key().destination());
-          CHECK(quic_session);
-          quic_session->net_log().source().AddToEventParameters(dict);
-          return dict;
-        });
-    base::UmaHistogramTimes(
-        "Net.HttpStreamPool.ExistingQuicSessionFoundTime",
-        base::TimeTicks::Now() - dns_resolution_start_time_);
-
-    HandleQuicSessionReady(StreamSocketCloseReason::kUsingExistingQuicSession);
-    CreateQuicStreamAndNotify();
     return true;
   }
 
   return false;
 }
 
-bool HttpStreamPool::AttemptManager::
+base::WeakPtr<SpdySession> HttpStreamPool::AttemptManager::
     CanUseExistingSpdySessionAfterEndpointChanges() {
   if (!IsIpBasedPoolingEnabled() || !UsingTls()) {
-    return false;
+    return nullptr;
   }
 
   if (HasAvailableSpdySession()) {
-    return true;
+    base::WeakPtr<SpdySession> spdy_session = pool()->FindAvailableSpdySession(
+        stream_key(), spdy_session_key(), IsIpBasedPoolingEnabled(), net_log());
+    CHECK(spdy_session);
+    CHECK(spdy_session->IsAvailable());
+    return spdy_session;
   }
 
   for (const auto& endpoint : service_endpoint_request_->GetEndpointResults()) {
@@ -1007,26 +1022,10 @@ bool HttpStreamPool::AttemptManager::
       continue;
     }
     CHECK(spdy_session->IsAvailable());
-
-    net_log_.AddEvent(
-        NetLogEventType::
-            HTTP_STREAM_POOL_ATTEMPT_MANAGER_EXISTING_SPDY_SESSION_MATCHED,
-        [&] {
-          base::Value::Dict dict;
-          spdy_session->net_log().source().AddToEventParameters(dict);
-          return dict;
-        });
-    base::UmaHistogramTimes(
-        "Net.HttpStreamPool.ExistingSpdySessionFoundTime",
-        base::TimeTicks::Now() - dns_resolution_start_time_);
-    ip_matching_spdy_session_found_ = true;
-
-    HandleSpdySessionReady(spdy_session,
-                           StreamSocketCloseReason::kUsingExistingSpdySession);
-    return true;
+    return spdy_session;
   }
 
-  return false;
+  return nullptr;
 }
 
 void HttpStreamPool::AttemptManager::MaybeNotifySSLConfigReady() {
@@ -1595,12 +1594,16 @@ bool HttpStreamPool::AttemptManager::HasAvailableSpdySession() const {
       spdy_session_key(), IsIpBasedPoolingEnabled(), /*is_websocket=*/false);
 }
 
-void HttpStreamPool::AttemptManager::CreateSpdyStreamAndNotify(
+void HttpStreamPool::AttemptManager::MaybeCreateSpdyStreamAndNotify(
     base::WeakPtr<SpdySession> spdy_session) {
   CHECK(!is_canceling_jobs_);
   CHECK(!is_failing_);
   CHECK(spdy_session);
   CHECK(spdy_session->IsAvailable());
+
+  if (jobs_.empty()) {
+    return;
+  }
 
   std::set<std::string> dns_aliases =
       http_network_session()->spdy_session_pool()->GetDnsAliasesForSessionKey(
@@ -1622,9 +1625,13 @@ void HttpStreamPool::AttemptManager::CreateSpdyStreamAndNotify(
   CHECK(!weak_this || jobs_.empty());
 }
 
-void HttpStreamPool::AttemptManager::CreateQuicStreamAndNotify() {
+void HttpStreamPool::AttemptManager::MaybeCreateQuicStreamAndNotify() {
   CHECK(!is_canceling_jobs_);
   CHECK(!is_failing_);
+
+  if (jobs_.empty()) {
+    return;
+  }
 
   QuicChromiumClientSession* quic_session =
       quic_session_pool()->FindExistingSession(
@@ -1678,7 +1685,7 @@ void HttpStreamPool::AttemptManager::HandleSpdySessionReady(
 
   group_->Refresh(kSwitchingToHttp2, refresh_group_reason);
   NotifyPreconnectsComplete(OK);
-  CreateSpdyStreamAndNotify(spdy_session);
+  MaybeCreateSpdyStreamAndNotify(spdy_session);
 }
 
 void HttpStreamPool::AttemptManager::HandleQuicSessionReady(
@@ -1693,6 +1700,7 @@ void HttpStreamPool::AttemptManager::HandleQuicSessionReady(
 
   group_->Refresh(kSwitchingToHttp3, refresh_group_reason);
   NotifyPreconnectsComplete(OK);
+  MaybeCreateQuicStreamAndNotify();
 }
 
 HttpStreamPool::Job* HttpStreamPool::AttemptManager::ExtractFirstJobToNotify() {
