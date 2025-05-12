@@ -679,6 +679,76 @@ BASE_DECLARE_FEATURE(kSafetyHub);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kSafetyHubThreeDotDetails);
 
+// Automatically revoke disruptive notifications
+// in Safety Hub.
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kSafetyHubDisruptiveNotificationRevocation);
+
+// Whether the disruptive notification revocation will be performed as a shadow
+// run (without actually revoking permissions). Used to collect metrics and
+// evaluate the conditions for autorevocation.
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<bool>
+    kSafetyHubDisruptiveNotificationRevocationShadowRun;
+
+// The minimum number of average daily notifications over last 7 days for a
+// website to classify for disruptive notification revocation. Used in a
+// combination with
+// `kSafetyHubDisruptiveNotificationRevocationMaxEngagementScore`.
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<int>
+    kSafetyHubDisruptiveNotificationRevocationMinNotificationCount;
+
+// The maximum site engagement score for a website to classify for disruptive
+// notification revocation. Used in a combination with
+// `kSafetyHubDisruptiveNotificationRevocationMinNotificationCount`.
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<double>
+    kSafetyHubDisruptiveNotificationRevocationMaxEngagementScore;
+
+// Timeout in seconds for the Safety Hub OS notification informing users about
+// revoked notification permissions.
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<int>
+    kSafetyHubDisruptiveNotificationRevocationNotificationTimeoutSeconds;
+
+// The minimum number of days since the revocation until a site can be
+// considered a false positive disruptive notification revocation. The cooldown
+// period allows to gather interactions for a period of time to understand how
+// much users have interacted with a site and whether it might have been a flake
+// (ex. accidental click on a notification).
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<int>
+    kSafetyHubDisruptiveNotificationRevocationMinFalsePositiveCooldown;
+
+// The maximum number of days since the revocation when a site can be considered
+// a false positive disruptive notification revocation. After it runs out, the
+// revocation won't be reported as a false positive.
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<int>
+    kSafetyHubDisruptiveNotificationRevocationMaxFalsePositivePeriod;
+
+// The minimum site engagement score delta for a website to be considered a
+// false positive disruptive notification revocation.
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<double>
+    kSafetyHubDisruptiveNotificationRevocationMinSiteEngagementScoreDelta;
+
+// The maximum number of days to observe the revoked site for user regranting
+// the permission while visiting the site. The period is a number of days since
+// a false positive was detected (a page visit or a notification click).
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<int>
+    kSafetyHubDisruptiveNotificationRevocationUserRegrantWaitingPeriod;
+
+// The maximum number of days to wait for metrics to be reported for proposed
+// disruptive notification revocation. After the period runs out, the permission
+// will be revoked. The number is a number of days since a revocation was
+// proposed.
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<int>
+    kSafetyHubDisruptiveNotificationRevocationWaitingForMetricsDays;
+
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kSafetyHubMagicStack);

@@ -13,14 +13,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
+#include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/content_settings_type_set.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/notifications_engagement_service.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/site_engagement/content/site_engagement_service.h"
-#include "safety_hub_constants.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "url/gurl.h"
 
@@ -233,8 +232,7 @@ bool DisruptiveNotificationPermissionsManager::
     return false;
   }
 
-  if (!safe_browsing::kSafetyHubDisruptiveNotificationRevocationShadowRun
-           .Get() &&
+  if (!features::kSafetyHubDisruptiveNotificationRevocationShadowRun.Get() &&
       CanRevokeNotifications(url, dict)) {
     RevokeNotifications(url, std::move(dict));
     return true;
@@ -275,7 +273,7 @@ bool DisruptiveNotificationPermissionsManager::CanRevokeNotifications(
       dict.FindBool(safety_hub::kHasReportedMetricsStr).value_or(false);
   return has_reported_metrics ||
          days_since_proposed_revocation >=
-             safe_browsing::
+             features::
                  kSafetyHubDisruptiveNotificationRevocationWaitingForMetricsDays
                      .Get();
 }
@@ -328,8 +326,7 @@ void DisruptiveNotificationPermissionsManager::OnContentSettingChanged(
 void DisruptiveNotificationPermissionsManager::UpdateNotificationCount() {
   // If revocation is currently running there is no point in updating, since
   // the notification will be re-displayed when the revocation completes.
-  if (!safe_browsing::kSafetyHubDisruptiveNotificationRevocationShadowRun
-           .Get() &&
+  if (!features::kSafetyHubDisruptiveNotificationRevocationShadowRun.Get() &&
       notification_wrapper_ && !is_revocation_running_) {
     notification_wrapper_->UpdateNotification(GetRevokedNotifications().size());
   }
@@ -460,12 +457,12 @@ bool DisruptiveNotificationPermissionsManager::IsNotificationDisruptive(
     int daily_notification_count) {
   const bool low_site_engagement_score =
       site_engagement_service_->GetScore(url) <=
-      safe_browsing::
-          kSafetyHubDisruptiveNotificationRevocationMaxEngagementScore.Get();
+      features::kSafetyHubDisruptiveNotificationRevocationMaxEngagementScore
+          .Get();
   const bool high_daily_notification_count =
       daily_notification_count >=
-      safe_browsing::
-          kSafetyHubDisruptiveNotificationRevocationMinNotificationCount.Get();
+      features::kSafetyHubDisruptiveNotificationRevocationMinNotificationCount
+          .Get();
   return low_site_engagement_score && high_daily_notification_count;
 }
 
@@ -531,13 +528,12 @@ void DisruptiveNotificationPermissionsManager::CheckForFalsePositive(
       delta_since_proposed_revocation.InDays();
 
   const int min_days =
-      safe_browsing::
+      features::
           kSafetyHubDisruptiveNotificationRevocationMinFalsePositiveCooldown
               .Get();
   const int max_days =
-      safe_browsing::
-          kSafetyHubDisruptiveNotificationRevocationMaxFalsePositivePeriod
-              .Get();
+      features::kSafetyHubDisruptiveNotificationRevocationMaxFalsePositivePeriod
+          .Get();
   if (days_since_proposed_revocation < min_days ||
       days_since_proposed_revocation > max_days) {
     return;
@@ -548,7 +544,7 @@ void DisruptiveNotificationPermissionsManager::CheckForFalsePositive(
   const double new_site_engagement_score =
       site_engagement::SiteEngagementService::Get(profile)->GetScore(url);
   if (new_site_engagement_score - old_site_engagement_score <
-      safe_browsing::
+      features::
           kSafetyHubDisruptiveNotificationRevocationMinSiteEngagementScoreDelta
               .Get()) {
     return;
@@ -573,7 +569,7 @@ void DisruptiveNotificationPermissionsManager::CheckForFalsePositive(
   dict.Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kFalsePositiveStr);
   content_settings::ContentSettingConstraints constraint(base::Time::Now());
   constraint.set_lifetime(base::Days(
-      safe_browsing::
+      features::
           kSafetyHubDisruptiveNotificationRevocationUserRegrantWaitingPeriod
               .Get()));
   UpdateContentSettingValue(hcsm, url, std::move(dict), constraint);

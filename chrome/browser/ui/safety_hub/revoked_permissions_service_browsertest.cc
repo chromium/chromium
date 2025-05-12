@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -558,10 +559,9 @@ class DisruptiveNotificationPermissionsRevocationShadowRunBrowserTest
  public:
   DisruptiveNotificationPermissionsRevocationShadowRunBrowserTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
-        safe_browsing::kSafetyHubDisruptiveNotificationRevocation,
+        features::kSafetyHubDisruptiveNotificationRevocation,
         {
-            {safe_browsing::kSafetyHubDisruptiveNotificationRevocationShadowRun
-                 .name,
+            {features::kSafetyHubDisruptiveNotificationRevocationShadowRun.name,
              "true"},
         });
   }
@@ -622,11 +622,10 @@ class DisruptiveNotificationPermissionsRevocationBrowserTest
  public:
   DisruptiveNotificationPermissionsRevocationBrowserTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
-        safe_browsing::kSafetyHubDisruptiveNotificationRevocation,
-        {{safe_browsing::kSafetyHubDisruptiveNotificationRevocationShadowRun
-              .name,
+        features::kSafetyHubDisruptiveNotificationRevocation,
+        {{features::kSafetyHubDisruptiveNotificationRevocationShadowRun.name,
           "false"},
-         {safe_browsing::
+         {features::
               kSafetyHubDisruptiveNotificationRevocationWaitingForMetricsDays
                   .name,
           "7"}});

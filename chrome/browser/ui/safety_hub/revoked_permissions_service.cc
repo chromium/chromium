@@ -449,7 +449,7 @@ RevokedPermissionsService::RevokedPermissionsService(
   }
 
   if (base::FeatureList::IsEnabled(
-          safe_browsing::kSafetyHubDisruptiveNotificationRevocation)) {
+          features::kSafetyHubDisruptiveNotificationRevocation)) {
     disruptive_notification_manager_ =
         std::make_unique<DisruptiveNotificationPermissionsManager>(
             hcsm(),

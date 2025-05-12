@@ -473,10 +473,9 @@ TEST_F(NotificationPermissionReviewServiceTest,
        DisruptiveNotificationRevocationShadowRun) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      safe_browsing::kSafetyHubDisruptiveNotificationRevocation,
+      features::kSafetyHubDisruptiveNotificationRevocation,
       {
-          {safe_browsing::kSafetyHubDisruptiveNotificationRevocationShadowRun
-               .name,
+          {features::kSafetyHubDisruptiveNotificationRevocationShadowRun.name,
            "true"},
       });
 
@@ -494,10 +493,9 @@ TEST_F(NotificationPermissionReviewServiceTest,
        DisruptiveNotificationRevocation) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      safe_browsing::kSafetyHubDisruptiveNotificationRevocation,
+      features::kSafetyHubDisruptiveNotificationRevocation,
       {
-          {safe_browsing::kSafetyHubDisruptiveNotificationRevocationShadowRun
-               .name,
+          {features::kSafetyHubDisruptiveNotificationRevocationShadowRun.name,
            "false"},
       });
 

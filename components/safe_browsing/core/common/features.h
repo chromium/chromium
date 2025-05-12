@@ -311,62 +311,6 @@ BASE_DECLARE_FEATURE(kSafeBrowsingSyncCheckerCheckAllowlist);
 // Automatically revoke abusive notifications in Safety Hub.
 BASE_DECLARE_FEATURE(kSafetyHubAbusiveNotificationRevocation);
 
-// TODO(crbug.com/406475122): Move disruptive notifications revocation features
-// and params to chrome_features.
-//
-// Automatically revoke disruptive notifications
-// in Safety Hub.
-BASE_DECLARE_FEATURE(kSafetyHubDisruptiveNotificationRevocation);
-
-// Whether the disruptive notification revocation will be performed as a shadow
-// run (without actually revoking permissions). Used to collect metrics and
-// evaluate the conditions for autorevocation.
-extern const base::FeatureParam<bool>
-    kSafetyHubDisruptiveNotificationRevocationShadowRun;
-
-// The minimum number of average daily notifications over last 7 days for a
-// website to classify for disruptive notification revocation. Used in a
-// combination with
-// `kSafetyHubDisruptiveNotificationRevocationMaxEngagementScore`.
-extern const base::FeatureParam<int>
-    kSafetyHubDisruptiveNotificationRevocationMinNotificationCount;
-
-// The maximum site engagement score for a website to classify for disruptive
-// notification revocation. Used in a combination with
-// `kSafetyHubDisruptiveNotificationRevocationMinNotificationCount`,
-extern const base::FeatureParam<double>
-    kSafetyHubDisruptiveNotificationRevocationMaxEngagementScore;
-
-// Timeout in seconds for the Safety Hub OS notification informing users about
-// revoked notification permissions.
-extern const base::FeatureParam<int>
-    kSafetyHubDisruptiveNotificationRevocationNotificationTimeoutSeconds;
-
-// The minimum number of days since the revocation until a site can be
-// considered a false positive disruptive notification revocation. The cooldown
-// period allows to gather interactions for a period of time to understand how
-// much users have interacted with a site and whether it might have been a flake
-// (ex. accidental click on a notification).
-extern const base::FeatureParam<int>
-    kSafetyHubDisruptiveNotificationRevocationMinFalsePositiveCooldown;
-
-// The maximum number of days since the revocation when a site can be considered
-// a false positive disruptive notification revocation. After it runs out, the
-// revocation won't be reported as a false positive.
-extern const base::FeatureParam<int>
-    kSafetyHubDisruptiveNotificationRevocationMaxFalsePositivePeriod;
-
-// The minimum site engagement score delta for a website to be considered a
-// false positive disruptive notification revocation.
-extern const base::FeatureParam<double>
-    kSafetyHubDisruptiveNotificationRevocationMinSiteEngagementScoreDelta;
-
-// The maximum number of days to observe the revoked site for user regranting
-// the permission while visiting the site. The period is a number of days since
-// a false positive was detected (a page visit or a notification click).
-extern const base::FeatureParam<int>
-    kSafetyHubDisruptiveNotificationRevocationUserRegrantWaitingPeriod;
-
 // Enables saving gaia password hash from the Profile Picker sign-in flow.
 BASE_DECLARE_FEATURE(kSavePasswordHashFromProfilePicker);
 
@@ -385,13 +329,6 @@ extern const base::FeatureParam<int>
 // the buttons should be swapped where "Unsubscribe" is the secondary button.
 extern const base::FeatureParam<bool>
     kShowWarningsForSuspiciousNotificationsShouldSwapButtons;
-
-// The maximum number of days to wait for metrics to be reported for proposed
-// disruptive notification revocation. After the period runs out, the permission
-// will be revoked. The number is a number of days since a revocation was
-// proposed.
-extern const base::FeatureParam<int>
-    kSafetyHubDisruptiveNotificationRevocationWaitingForMetricsDays;
 
 // Controls the daily quota for the suspicious site trigger.
 BASE_DECLARE_FEATURE(kSuspiciousSiteTriggerQuotaFeature);

@@ -12,6 +12,7 @@
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
@@ -162,23 +163,22 @@ class DisruptiveNotificationPermissionsManagerRevocationTest
  public:
   DisruptiveNotificationPermissionsManagerRevocationTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
-        safe_browsing::kSafetyHubDisruptiveNotificationRevocation,
-        {{safe_browsing::kSafetyHubDisruptiveNotificationRevocationShadowRun
-              .name,
+        features::kSafetyHubDisruptiveNotificationRevocation,
+        {{features::kSafetyHubDisruptiveNotificationRevocationShadowRun.name,
           "false"},
-         {safe_browsing::
+         {features::
               kSafetyHubDisruptiveNotificationRevocationMinFalsePositiveCooldown
                   .name,
           "3"},
-         {safe_browsing::
+         {features::
               kSafetyHubDisruptiveNotificationRevocationMaxFalsePositivePeriod
                   .name,
           "10"},
-         {safe_browsing::
+         {features::
               kSafetyHubDisruptiveNotificationRevocationMinSiteEngagementScoreDelta
                   .name,
           "3.0"},
-         {safe_browsing::
+         {features::
               kSafetyHubDisruptiveNotificationRevocationWaitingForMetricsDays
                   .name,
           "7"}});
@@ -852,10 +852,9 @@ class DisruptiveNotificationPermissionsManagerShadowRunTest
  public:
   DisruptiveNotificationPermissionsManagerShadowRunTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
-        safe_browsing::kSafetyHubDisruptiveNotificationRevocation,
+        features::kSafetyHubDisruptiveNotificationRevocation,
         {
-            {safe_browsing::kSafetyHubDisruptiveNotificationRevocationShadowRun
-                 .name,
+            {features::kSafetyHubDisruptiveNotificationRevocationShadowRun.name,
              "true"},
         });
   }

@@ -324,60 +324,6 @@ BASE_FEATURE(kSafetyHubAbusiveNotificationRevocation,
              "SafetyHubAbusiveNotificationRevocation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSafetyHubDisruptiveNotificationRevocation,
-             "SafetyHubDisruptiveNotificationRevocation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<bool>
-    kSafetyHubDisruptiveNotificationRevocationShadowRun{
-        &kSafetyHubDisruptiveNotificationRevocation,
-        /*name=*/"shadow_run", /*default_value=*/true};
-
-constexpr base::FeatureParam<int>
-    kSafetyHubDisruptiveNotificationRevocationMinNotificationCount{
-        &kSafetyHubDisruptiveNotificationRevocation,
-        /*name=*/"min_notification_count", /*default_value=*/3};
-
-constexpr base::FeatureParam<double>
-    kSafetyHubDisruptiveNotificationRevocationMaxEngagementScore{
-        &kSafetyHubDisruptiveNotificationRevocation,
-        /*name=*/"max_engagement_score", /*default_value=*/0.0};
-
-constexpr base::FeatureParam<int>
-    kSafetyHubDisruptiveNotificationRevocationNotificationTimeoutSeconds{
-        &kSafetyHubDisruptiveNotificationRevocation,
-        /*name=*/"notification_timeout_seconds",
-        /*default_value=*/7 * 24 * 3600};
-
-constexpr base::FeatureParam<int>
-    kSafetyHubDisruptiveNotificationRevocationMinFalsePositiveCooldown{
-        &kSafetyHubDisruptiveNotificationRevocation,
-        /*name=*/"min_false_positive_cooldown", /*default_value=*/0};
-
-constexpr base::FeatureParam<int>
-    kSafetyHubDisruptiveNotificationRevocationMaxFalsePositivePeriod{
-        &kSafetyHubDisruptiveNotificationRevocation,
-        /*name=*/"max_false_positive_period", /*default_value=*/14};
-
-// TODO(crbug.com/406472515): Site engagement score increase on navigation
-// happens at the same time as us detecting the navigation. If the score delta
-// is 0, the initial navigation won't trigger marking the site as false
-// positive.
-constexpr base::FeatureParam<double>
-    kSafetyHubDisruptiveNotificationRevocationMinSiteEngagementScoreDelta{
-        &kSafetyHubDisruptiveNotificationRevocation,
-        /*name=*/"min_engagement_score_delta", /*default_value=*/0.0};
-
-constexpr base::FeatureParam<int>
-    kSafetyHubDisruptiveNotificationRevocationUserRegrantWaitingPeriod{
-        &kSafetyHubDisruptiveNotificationRevocation,
-        /*name=*/"user_regrant_waiting_period", /*default_value=*/7};
-
-constexpr base::FeatureParam<int>
-    kSafetyHubDisruptiveNotificationRevocationWaitingForMetricsDays{
-        &kSafetyHubDisruptiveNotificationRevocation,
-        /*name=*/"waiting_for_metrics_days", /*default_value=*/7};
-
 BASE_FEATURE(kSavePasswordHashFromProfilePicker,
              "SavePasswordHashFromProfilePicker",
              base::FEATURE_ENABLED_BY_DEFAULT);

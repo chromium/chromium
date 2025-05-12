@@ -177,7 +177,7 @@ class RevokedPermissionsServiceTest
     }
     if (ShouldSetupDisruptiveSites()) {
       enabled_features.push_back(
-          safe_browsing::kSafetyHubDisruptiveNotificationRevocation);
+          features::kSafetyHubDisruptiveNotificationRevocation);
     }
     feature_list_.InitWithFeatures(
         /*enabled_features=*/enabled_features,
