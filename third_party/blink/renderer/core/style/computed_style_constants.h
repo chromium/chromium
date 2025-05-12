@@ -544,6 +544,8 @@ inline PositionVisibility& operator|=(PositionVisibility& a,
   return a = a | b;
 }
 
+enum class FlexWrapMode : uint8_t { kNowrap, kWrap, kWrapReverse };
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_COMPUTED_STYLE_CONSTANTS_H_

@@ -2225,6 +2225,20 @@ inline PositionVisibility CSSIdentifierValue::ConvertTo() const {
   }
 }
 
+template <>
+inline FlexWrapMode CSSIdentifierValue::ConvertTo() const {
+  switch (GetValueID()) {
+    case CSSValueID::kNowrap:
+      return FlexWrapMode::kNowrap;
+    case CSSValueID::kWrap:
+      return FlexWrapMode::kWrap;
+    case CSSValueID::kWrapReverse:
+      return FlexWrapMode::kWrapReverse;
+    default:
+      NOTREACHED();
+  }
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_IDENTIFIER_VALUE_MAPPINGS_H_

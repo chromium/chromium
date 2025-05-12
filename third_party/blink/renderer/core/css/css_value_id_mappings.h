@@ -573,6 +573,20 @@ inline CSSValueID PlatformEnumToCSSValueID(EAnimationTriggerType v) {
   }
 }
 
+template <>
+inline CSSValueID PlatformEnumToCSSValueID(FlexWrapMode v) {
+  switch (v) {
+    case FlexWrapMode::kNowrap:
+      return CSSValueID::kNowrap;
+    case FlexWrapMode::kWrap:
+      return CSSValueID::kWrap;
+    case FlexWrapMode::kWrapReverse:
+      return CSSValueID::kWrapReverse;
+    default:
+      NOTREACHED();
+  }
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VALUE_ID_MAPPINGS_H_

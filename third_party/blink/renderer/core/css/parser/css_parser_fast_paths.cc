@@ -1554,9 +1554,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kRowReverse ||
              value_id == CSSValueID::kColumn ||
              value_id == CSSValueID::kColumnReverse;
-    case CSSPropertyID::kFlexWrap:
-      return value_id == CSSValueID::kNowrap || value_id == CSSValueID::kWrap ||
-             value_id == CSSValueID::kWrapReverse;
     case CSSPropertyID::kFieldSizing:
       return value_id == CSSValueID::kFixed || value_id == CSSValueID::kContent;
     case CSSPropertyID::kHyphens:
@@ -1818,7 +1815,6 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kColumnFill,
     CSSPropertyID::kColumnWrap,
     CSSPropertyID::kFlexDirection,
-    CSSPropertyID::kFlexWrap,
     CSSPropertyID::kFontKerning,
     CSSPropertyID::kFontOpticalSizing,
     CSSPropertyID::kFontSynthesisWeight,

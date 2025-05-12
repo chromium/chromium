@@ -143,6 +143,8 @@ class StyleBuilderConverter {
   // converted to zero.
   template <typename T, CSSValueID ZeroValue = CSSValueID::kNone>
   static T ConvertFlags(StyleResolverState&, const CSSValue&);
+  static StyleFlexWrapData ConvertFlexWrapData(StyleResolverState&,
+                                               const CSSValue&);
   static FontDescription::FamilyDescription ConvertFontFamily(
       StyleResolverState&,
       const CSSValue&);

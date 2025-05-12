@@ -318,6 +318,36 @@ FilterOperations StyleBuilderConverter::ConvertOffscreenFilterOperations(
   return FilterOperationResolver::CreateOffscreenFilterOperations(value, font);
 }
 
+StyleFlexWrapData StyleBuilderConverter::ConvertFlexWrapData(
+    StyleResolverState&,
+    const CSSValue& value) {
+  bool is_balanced = false;
+  FlexWrapMode wrap_mode = FlexWrapMode::kNowrap;
+  auto process = [&is_balanced, &wrap_mode](const CSSValue& value) {
+    const CSSIdentifierValue& identifier = To<CSSIdentifierValue>(value);
+    if (identifier.GetValueID() == CSSValueID::kBalance) {
+      is_balanced = true;
+    } else {
+      wrap_mode = identifier.ConvertTo<FlexWrapMode>();
+    }
+  };
+
+  if (auto* list = DynamicTo<CSSValueList>(value)) {
+    for (const auto& entry : *list) {
+      process(*entry);
+    }
+  } else {
+    process(value);
+  }
+
+  // Coerce the wrapping value if balanced.
+  if (is_balanced && wrap_mode == FlexWrapMode::kNowrap) {
+    wrap_mode = FlexWrapMode::kWrap;
+  }
+
+  return StyleFlexWrapData(wrap_mode, is_balanced);
+}
+
 static FontDescription::GenericFamilyType ConvertGenericFamily(
     CSSValueID value_id) {
   switch (value_id) {

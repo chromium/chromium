@@ -106,6 +106,7 @@ ALIGNMENT_ORDER = [
     'unsigned short',
     'short',
     # Aligns like char
+    'StyleFlexWrapData',
     'StyleSelfAlignmentData',
     'StyleContentAlignmentData',
     'uint8_t',

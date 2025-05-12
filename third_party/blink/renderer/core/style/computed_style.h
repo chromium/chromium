@@ -1048,13 +1048,13 @@ class ComputedStyle final : public ComputedStyleBase {
     if (IsDeprecatedFlexbox()) {
       return false;
     }
-    return FlexWrap() == EFlexWrap::kWrapReverse;
+    return FlexWrap().GetWrapMode() == FlexWrapMode::kWrapReverse;
   }
   bool ResolvedIsFlexNowrap() const {
     if (IsDeprecatedFlexbox()) {
       return true;
     }
-    return FlexWrap() == EFlexWrap::kNowrap;
+    return FlexWrap().GetWrapMode() == FlexWrapMode::kNowrap;
   }
 
   float ResolvedFlexGrow(const ComputedStyle& box_style) const {
