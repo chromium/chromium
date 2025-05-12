@@ -32,6 +32,7 @@
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/saved_tab_groups/public/utils.h"
+#include "components/saved_tab_groups/test_support/extended_shared_tab_group_data_specifics.pb.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
@@ -72,6 +73,7 @@ using testing::Invoke;
 using testing::InvokeWithoutArgs;
 using testing::IsEmpty;
 using testing::IsNull;
+using testing::Not;
 using testing::NotNull;
 using testing::Pointee;
 using testing::Return;
@@ -2367,6 +2369,117 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
                   kCollaborationId)));
   EXPECT_THAT(model()->saved_tab_groups().front().saved_tabs(),
               ElementsAre(HasTabMetadata("tab title", "http://google.com/1")));
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest,
+       ShouldTrimAllSupportedFieldsFromRemoteTabGroupSpecifics) {
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  sync_pb::EntitySpecifics remote_tab_group_specifics;
+  sync_pb::SharedTabGroupDataSpecifics* tab_group_specifics =
+      remote_tab_group_specifics.mutable_shared_tab_group_data();
+  tab_group_specifics->set_guid("guid");
+  tab_group_specifics->set_update_time_windows_epoch_micros(1234567890);
+  tab_group_specifics->mutable_tab_group()->set_title("title");
+  tab_group_specifics->mutable_tab_group()->set_color(
+      sync_pb::SharedTabGroup::BLUE);
+  tab_group_specifics->mutable_tab_group()->set_originating_tab_group_guid(
+      "originating_guid");
+
+  EXPECT_THAT(bridge()->TrimAllSupportedFieldsFromRemoteSpecifics(
+                  remote_tab_group_specifics),
+              EqualsProto(sync_pb::EntitySpecifics()));
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest,
+       ShouldKeepUnknownFieldsFromRemoteTabGroupSpecifics) {
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  sync_pb::test_utils::SharedTabGroupDataSpecifics extended_tab_group_specifics;
+  extended_tab_group_specifics.set_guid("guid");
+  extended_tab_group_specifics.set_update_time_windows_epoch_micros(1234567890);
+  extended_tab_group_specifics.mutable_tab_group()->set_title("title");
+  extended_tab_group_specifics.mutable_tab_group()->set_color(
+      sync_pb::test_utils::SharedTabGroup::UNSPECIFIED);
+  extended_tab_group_specifics.mutable_tab_group()
+      ->set_originating_tab_group_guid("originating_guid");
+  extended_tab_group_specifics.mutable_tab_group()->set_extra_field_for_testing(
+      "extra_field_for_testing");
+
+  // Serialize and deserialize the proto to get unknown fields.
+  sync_pb::EntitySpecifics remote_tab_group_specifics;
+  ASSERT_TRUE(
+      remote_tab_group_specifics.mutable_shared_tab_group_data()
+          ->ParseFromString(extended_tab_group_specifics.SerializeAsString()));
+
+  sync_pb::EntitySpecifics trimmed_specifics =
+      bridge()->TrimAllSupportedFieldsFromRemoteSpecifics(
+          remote_tab_group_specifics);
+  EXPECT_THAT(trimmed_specifics, Not(EqualsProto(sync_pb::EntitySpecifics())));
+
+  // Verify that deserialized proto keeps unknown fields.
+  sync_pb::test_utils::SharedTabGroupDataSpecifics
+      deserialized_extended_specifics;
+  ASSERT_TRUE(deserialized_extended_specifics.ParseFromString(
+      trimmed_specifics.shared_tab_group_data().SerializeAsString()));
+  EXPECT_EQ(
+      deserialized_extended_specifics.tab_group().extra_field_for_testing(),
+      "extra_field_for_testing");
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest,
+       ShouldTrimAllSupportedFieldsFromRemoteTabSpecifics) {
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  sync_pb::EntitySpecifics remote_tab_specifics;
+  sync_pb::SharedTabGroupDataSpecifics* tab_specifics =
+      remote_tab_specifics.mutable_shared_tab_group_data();
+  tab_specifics->set_guid("guid");
+  tab_specifics->set_update_time_windows_epoch_micros(1234567890);
+  tab_specifics->mutable_tab()->set_url("http://google.com/1");
+  tab_specifics->mutable_tab()->set_title("title");
+  tab_specifics->mutable_tab()->set_shared_tab_group_guid("group_guid");
+  *tab_specifics->mutable_tab()->mutable_unique_position() =
+      GenerateRandomUniquePosition().ToProto();
+
+  EXPECT_THAT(
+      bridge()->TrimAllSupportedFieldsFromRemoteSpecifics(remote_tab_specifics),
+      EqualsProto(sync_pb::EntitySpecifics()));
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest,
+       ShouldKeepUnknownFieldsFromRemoteTabSpecifics) {
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  sync_pb::test_utils::SharedTabGroupDataSpecifics extended_tab_specifics;
+  extended_tab_specifics.set_guid("guid");
+  extended_tab_specifics.set_update_time_windows_epoch_micros(1234567890);
+  extended_tab_specifics.mutable_tab()->set_url("http://google.com/1");
+  extended_tab_specifics.mutable_tab()->set_title("title");
+  extended_tab_specifics.mutable_tab()->set_shared_tab_group_guid("group_guid");
+  *extended_tab_specifics.mutable_tab()->mutable_unique_position() =
+      GenerateRandomUniquePosition().ToProto();
+  extended_tab_specifics.mutable_tab()->set_extra_field_for_testing(
+      "extra_field_for_testing");
+
+  // Serialize and deserialize the proto to get unknown fields.
+  sync_pb::EntitySpecifics remote_tab_specifics;
+  ASSERT_TRUE(
+      remote_tab_specifics.mutable_shared_tab_group_data()->ParseFromString(
+          extended_tab_specifics.SerializeAsString()));
+
+  sync_pb::EntitySpecifics trimmed_specifics =
+      bridge()->TrimAllSupportedFieldsFromRemoteSpecifics(remote_tab_specifics);
+
+  EXPECT_THAT(trimmed_specifics, Not(EqualsProto(sync_pb::EntitySpecifics())));
+
+  // Verify that deserialized proto keeps unknown fields.
+  sync_pb::test_utils::SharedTabGroupDataSpecifics
+      deserialized_extended_specifics;
+  ASSERT_TRUE(deserialized_extended_specifics.ParseFromString(
+      trimmed_specifics.shared_tab_group_data().SerializeAsString()));
+  EXPECT_EQ(deserialized_extended_specifics.tab().extra_field_for_testing(),
+            "extra_field_for_testing");
 }
 
 // The number of tabs to test the correct ordering of remote updates.

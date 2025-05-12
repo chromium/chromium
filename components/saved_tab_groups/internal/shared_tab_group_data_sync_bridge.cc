@@ -906,9 +906,43 @@ sync_pb::EntitySpecifics
 SharedTabGroupDataSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
     const sync_pb::EntitySpecifics& entity_specifics) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTIMPLEMENTED();
-  return DataTypeSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
-      entity_specifics);
+
+  // LINT.IfChange(TrimAllSupportedFieldsFromRemoteSpecifics)
+  sync_pb::SharedTabGroupDataSpecifics trimmed_specifics =
+      entity_specifics.shared_tab_group_data();
+  trimmed_specifics.clear_guid();
+  trimmed_specifics.clear_update_time_windows_epoch_micros();
+
+  if (trimmed_specifics.has_tab()) {
+    sync_pb::SharedTab* tab = trimmed_specifics.mutable_tab();
+    tab->clear_url();
+    tab->clear_title();
+    tab->clear_shared_tab_group_guid();
+    tab->clear_unique_position();
+
+    if (tab->ByteSizeLong() == 0) {
+      trimmed_specifics.clear_tab();
+    }
+  }
+
+  if (trimmed_specifics.has_tab_group()) {
+    sync_pb::SharedTabGroup* tab_group = trimmed_specifics.mutable_tab_group();
+    tab_group->clear_title();
+    tab_group->clear_color();
+    tab_group->clear_originating_tab_group_guid();
+
+    if (tab_group->ByteSizeLong() == 0) {
+      trimmed_specifics.clear_tab_group();
+    }
+  }
+  // LINT.ThenChange(//components/sync/protocol/shared_tab_group_data_specifics.proto:SharedTabGroupDataSpecifics)
+
+  sync_pb::EntitySpecifics trimmed_entity_specifics;
+  if (trimmed_specifics.ByteSizeLong() > 0) {
+    *trimmed_entity_specifics.mutable_shared_tab_group_data() =
+        std::move(trimmed_specifics);
+  }
+  return trimmed_entity_specifics;
 }
 
 bool SharedTabGroupDataSyncBridge::IsEntityDataValid(

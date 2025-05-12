@@ -185,6 +185,7 @@ source_set("unit_tests") {
     "//components/saved_tab_groups/proto",
     "//components/saved_tab_groups/public",
     "//components/saved_tab_groups/test_support",
+    "//components/saved_tab_groups/test_support:test_support_proto",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync",
     "//components/sync:test_support",
