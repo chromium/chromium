@@ -5,6 +5,7 @@
 import type {BackgroundElConfig, BackgroundElSpriteConfig} from './background_el.js';
 import type {HorizonLineConfig} from './horizon_line.js';
 import type {SpritePosition} from './sprite_position.js';
+import type {AltGameModeSpriteConfig as AltTrexSpriteDefinition} from './trex.js';
 
 /*
  * List of alternative game types defined in spriteDefinitionByType.
@@ -79,8 +80,7 @@ export interface SpriteDefinition {
   maxObstacleLength: number;
   hasClouds: boolean;
   bottomPad: number;
-  // TODO(crbug.com/373951324): Use type from trex.ts after it gets migrated.
-  tRex: any;
+  tRex?: AltTrexSpriteDefinition;
   obstacles: ObstacleType[];
   backgroundEl: {
     [key: string]: BackgroundElSpriteConfig,
@@ -137,22 +137,6 @@ export const spriteDefinitionByType: SpriteDefinitionByType = {
     maxObstacleLength: 3,
     hasClouds: true,
     bottomPad: 10,
-    tRex: {
-      WAITING_1: {x: 44, w: 44, h: 47, xOffset: 0},
-      WAITING_2: {x: 0, w: 44, h: 47, xOffset: 0},
-      RUNNING_1: {x: 88, w: 44, h: 47, xOffset: 0},
-      RUNNING_2: {x: 132, w: 44, h: 47, xOffset: 0},
-      JUMPING: {x: 0, w: 44, h: 47, xOffset: 0},
-      CRASHED: {x: 220, w: 44, h: 47, xOffset: 0},
-      COLLISION_BOXES: [
-        {x: 22, y: 0, width: 17, height: 16},
-        {x: 1, y: 18, width: 30, height: 9},
-        {x: 10, y: 35, width: 14, height: 8},
-        {x: 1, y: 24, width: 29, height: 5},
-        {x: 5, y: 30, width: 21, height: 4},
-        {x: 9, y: 34, width: 15, height: 4},
-      ],
-    },
     obstacles: [
       {
         type: 'cactusSmall',

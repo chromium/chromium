@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 import {IS_IOS} from './constants.js';
+import type {Dimensions} from './dimensions.js';
+import type {GeneratedSoundFx} from './generated_sound_fx.js';
 import {Runner} from './offline.js';
+import type {SpriteDefinition} from './offline_sprite_definitions.js';
 
 
 export function getRandomNum(min: number, max: number): number {
@@ -61,6 +64,35 @@ export function getRunnerSlowdown(): boolean|null {
 export function getRunnerAudioCues(): boolean|null {
   if ('audioCues' in Runner && typeof Runner.audioCues === 'boolean') {
     return Runner.audioCues;
+  }
+  return null;
+}
+
+export function getRunnerSpriteDefinition(): SpriteDefinition|null {
+  if ('spriteDefinition' in Runner) {
+    return Runner.spriteDefinition as SpriteDefinition;
+  }
+  return null;
+}
+
+export function getRunnerDefaultDimensions(): Dimensions|null {
+  if ('defaultDimensions' in Runner) {
+    return Runner.defaultDimensions as Dimensions;
+  }
+  return null;
+}
+
+export function getRunnerConfigValue(
+    key: 'BOTTOM_PAD'|'MAX_OBSTACLE_DUPLICATION'): number|null {
+  if ('config' in Runner && Runner.config && key in Runner.config) {
+    return Runner.config[key];
+  }
+  return null;
+}
+
+export function getRunnerGeneratedSoundFx(): GeneratedSoundFx|null {
+  if ('generatedSoundFx' in Runner) {
+    return Runner.generatedSoundFx as GeneratedSoundFx;
   }
   return null;
 }
