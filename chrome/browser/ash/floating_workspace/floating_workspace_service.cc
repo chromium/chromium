@@ -227,7 +227,7 @@ void FloatingWorkspaceService::
           ash::features::kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin
               .Get()) {
     // No need to restore any remote session 3 seconds (TBD) after login.
-    should_run_restore_ = false;
+    StopRestoringSession();
     return;
   }
   const sync_sessions::SyncedSession* most_recently_used_remote_session =
@@ -247,13 +247,13 @@ void FloatingWorkspaceService::
             weak_pointer_factory_.GetWeakPtr()),
         ash::features::kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin
             .Get());
-    should_run_restore_ = false;
+    StopRestoringSession();
     return;
   }
 
   // Restore most recently used remote session.
   RestoreForeignSessionWindows(most_recently_used_remote_session);
-  should_run_restore_ = false;
+  StopRestoringSession();
 }
 
 void FloatingWorkspaceService::TryRestoreMostRecentlyUsedSession() {
@@ -684,7 +684,7 @@ void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
            "restore. This is only possible if this is the first time "
            "a user is using Floating Workspace or we are attempting to restore "
            "from a suspend mode and there are no remote entries to restore.";
-    should_run_restore_ = false;
+    StopRestoringSession();
     floating_workspace_metrics_util::
         RecordFloatingWorkspaceV2TemplateNotFound();
     return;
@@ -699,7 +699,7 @@ void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
 
 void FloatingWorkspaceService::LaunchFloatingWorkspaceTemplate(
     const DeskTemplate* desk_template) {
-  should_run_restore_ = false;
+  StopRestoringSession();
   if (desk_template == nullptr) {
     return;
   }
@@ -1376,5 +1376,9 @@ void FloatingWorkspaceService::LaunchWhenDeskTemplatesAreReadyOnFirstSync() {
   desk_sync_service_->RunWhenDesksTemplatesAreReadyOnFirstSync(
       base::BindOnce(&FloatingWorkspaceService::LaunchWhenAppCacheIsReady,
                      weak_pointer_factory_.GetWeakPtr()));
+}
+
+void FloatingWorkspaceService::StopRestoringSession() {
+  should_run_restore_ = false;
 }
 }  // namespace ash

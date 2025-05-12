@@ -161,6 +161,9 @@ class FloatingWorkspaceService
   // UUID key to `floating_workspace_template_uuid_`.
   void CaptureAndUploadActiveDesk();
 
+  // Prevents floating workspace service from restoring the session.
+  void StopRestoringSession();
+
  protected:
   std::unique_ptr<DeskTemplate> previously_captured_desk_template_;
 
