@@ -57,6 +57,7 @@ namespace {
 
 using testing::ElementsAre;
 using testing::IsEmpty;
+using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
 sync_pb::EntitySpecifics MakeSpecifics(DataType data_type) {
@@ -1086,13 +1087,14 @@ TEST_F(SyncerTest, ConfigureDownloadsTwoBatchesSuccess) {
 
   // The type should have received the initial updates.
   EXPECT_EQ(1U, GetProcessor(PREFERENCES)->GetNumUpdateResponses());
+  EXPECT_THAT(mock_server_->requests(), SizeIs(2));
 }
 
 // Same as the above case, but this time the second batch fails to download.
 TEST_F(SyncerTest, ConfigureFailsDontApplyUpdates) {
-  // The scenario: we have two batches of updates with one update each.  A
-  // normal confgure step would download all the updates one batch at a time and
-  // apply them.  This configure will succeed in downloading the first batch
+  // The scenario: we have two batches of updates with one update each. A
+  // normal configure step would download all the updates one batch at a time
+  // and apply them. This configure will succeed in downloading the first batch
   // then fail when downloading the second.
   mock_server_->FailNthPostBufferToPathCall(2);
 
@@ -1181,6 +1183,31 @@ TEST_F(SyncerTest, CommitOnlyTypes) {
   EXPECT_EQ(2, commit.entries_size());
   EXPECT_TRUE(commit.entries(0).specifics().has_extension());
   EXPECT_TRUE(commit.entries(1).specifics().has_user_event());
+}
+
+TEST_F(SyncerTest, ShouldEarlyExitDownloadIfRequested) {
+  // Construct the first GetUpdates response.
+  mock_server_->AddUpdatePref("id1", "", "one", 1, 10);
+  mock_server_->SetChangesRemaining(1);
+  mock_server_->NextUpdateBatch();
+
+  // Construct the second GetUpdates response.
+  mock_server_->AddUpdatePref("id2", "", "two", 2, 20);
+
+  ASSERT_EQ(0U, GetProcessor(PREFERENCES)->GetNumUpdateResponses());
+
+  // Request early exit. The first GetUpdates response should be downloaded, but
+  // the second one should be skipped.
+  cancelation_signal_.Signal();
+  SyncShareConfigure();
+
+  // No updates should be applied to the processor but there should be a single
+  // GetUpdates request.
+  EXPECT_EQ(0U, GetProcessor(PREFERENCES)->GetNumUpdateResponses());
+  EXPECT_THAT(mock_server_->requests(), SizeIs(1));
+
+  // One update is still pending.
+  mock_server_->ClearUpdatesQueue();
 }
 
 enum {
