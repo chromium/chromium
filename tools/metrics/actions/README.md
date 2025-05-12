@@ -3,11 +3,14 @@
 [TOC]
 
 This document covers the best practices on using user actions in code and
-documenting them for the dashboard. User actions come with only a name and
-a timestamp. They are best used when you care about a sequence—which actions
-happen in what order. If you don't care about the order, you should be using
+documenting them for the dashboard. (You can find user actions on the dashboard
+by typing "user actions" in the Metrics/Histograms search bar and selecting it.)
+User actions come with only a name and a timestamp. They are best used when you
+care about a sequence—which actions happen in what order. If you don't care
+about the order, you should be using
 [histograms](https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md)
-(likely [enumerated histograms](https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms)).
+(likely
+[enumerated histograms](https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms)).
 
 Often, you want both user actions and histogram logging in your code. They
 enable different analyses. They're complementary.
