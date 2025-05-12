@@ -3234,6 +3234,12 @@ if (is_apple) {
     cflags_objc = common_flags
     cflags_objcc = common_flags
   }
+
+  config("assign_property_warning") {
+    common_flags = [ "-Wobjc-property-assign-on-object-type" ]
+    cflags_objc = common_flags
+    cflags_objcc = common_flags
+  }
 }
 
 if (is_android) {
