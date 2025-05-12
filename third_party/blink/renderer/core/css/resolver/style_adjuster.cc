@@ -696,7 +696,7 @@ void StyleAdjuster::AdjustOverflow(ComputedStyleBuilder& builder,
 // g-issues.chromium.org/issues/349835587
 // https://github.com/WICG/canvas-place-element
 static bool IsCanvasPlaceOrDrawElement(const Element* element) {
-  if (RuntimeEnabledFeatures::CanvasElementDrawElementEnabled() && element &&
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() && element &&
       element->IsInCanvasSubtree()) {
     // Placed elements are always immediate children of the canvas.
     if (const auto* canvas =
@@ -709,7 +709,7 @@ static bool IsCanvasPlaceOrDrawElement(const Element* element) {
 }
 
 static bool IsCanvasWithPlaceOrDrawElements(const Element* element) {
-  if (!RuntimeEnabledFeatures::CanvasElementDrawElementEnabled() || !element) {
+  if (!RuntimeEnabledFeatures::CanvasDrawElementEnabled() || !element) {
     return false;
   }
 

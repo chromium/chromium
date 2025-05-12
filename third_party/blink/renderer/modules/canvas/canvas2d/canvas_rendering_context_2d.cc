@@ -712,7 +712,7 @@ void CanvasRenderingContext2D::DrawElementInternal(
     std::optional<double> dwidth,
     std::optional<double> dheight,
     ExceptionState& exception_state) {
-  CHECK(RuntimeEnabledFeatures::CanvasElementDrawElementEnabled());
+  CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled());
   if (!IsDrawElementEligible(element, exception_state)) {
     return;
   }

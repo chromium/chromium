@@ -134,7 +134,7 @@ void DumpAccessibilityTreeTest::SetUpCommandLine(
                                   "HeadingOffset");
   // Enable layout of canvas children with the layoutsubtree attribute.
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                  "CanvasElementDrawElement");
+                                  "CanvasDrawElement");
 }
 
 void DumpAccessibilityTreeTest::SetUpOnMainThread() {

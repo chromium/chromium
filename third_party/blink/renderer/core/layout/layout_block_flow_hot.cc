@@ -30,7 +30,7 @@ bool LayoutBlockFlow::CreatesNewFormattingContext() const {
     return true;
   }
 
-  if (RuntimeEnabledFeatures::CanvasElementDrawElementEnabled() &&
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
       Parent()->IsCanvas()) {
     return true;
   }
