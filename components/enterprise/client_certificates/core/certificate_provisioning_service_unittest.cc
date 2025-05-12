@@ -89,7 +89,8 @@ class CertificateProvisioningServiceTest : public testing::Test {
   }
 
   void VerifySuccessState(scoped_refptr<PrivateKey> expected_private_key,
-                          scoped_refptr<net::X509Certificate> expected_cert) {
+                          scoped_refptr<net::X509Certificate> expected_cert,
+                          bool was_uploaded = true) {
     ASSERT_TRUE(service_);
 
     base::test::TestFuture<std::optional<ClientIdentity>> test_future;
@@ -105,8 +106,11 @@ class CertificateProvisioningServiceTest : public testing::Test {
     EXPECT_FALSE(status.is_provisioning);
     ASSERT_TRUE(status.identity.has_value());
     EXPECT_EQ(status.identity.value(), managed_identity.value());
-    ASSERT_TRUE(status.last_upload_code.has_value());
-    EXPECT_EQ(status.last_upload_code.value(), kSuccessUploadCode);
+
+    ASSERT_EQ(status.last_upload_code.has_value(), was_uploaded);
+    if (was_uploaded) {
+      EXPECT_EQ(status.last_upload_code.value(), kSuccessUploadCode);
+    }
   }
 
   void VerifyIdleWithCache(scoped_refptr<PrivateKey> expected_private_key,
@@ -285,12 +289,10 @@ TEST_F(CertificateProvisioningServiceTest,
   SetPolicyPref(true);
 
   auto mock_context_delegate =
-      std::make_unique<StrictMock<MockContextDelegate>>();
+      std::make_unique<MockContextDelegate>();
   EXPECT_CALL(*mock_context_delegate, GetPolicyPref())
-      .Times(3)
       .WillRepeatedly(Return(pref()));
   EXPECT_CALL(*mock_context_delegate, GetIdentityName())
-      .Times(2)
       .WillRepeatedly(Return(kIdentityName));
 
   auto mocked_private_key = base::MakeRefCounted<StrictMock<MockPrivateKey>>();
@@ -304,10 +306,16 @@ TEST_F(CertificateProvisioningServiceTest,
   CreateProvisioningService(
       std::move(mock_context_delegate),
       std::make_unique<StrictMock<MockKeyUploadClient>>());
-  EXPECT_EQ(
-      histogram_tester_.GetTotalCountsForPrefix("Enterprise.ClientCertificate")
-          .size(),
-      0U);
+
+  VerifySuccessState(mocked_private_key, fake_cert, /*was_uploaded=*/false);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.ClientCertificate.Profile.Provisioning.ExistingIdentity."
+      "Outcome",
+      true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.ClientCertificate.Profile.Provisioning.ExistingIdentity."
+      "Success.Latency",
+      1);
 }
 
 // When the service is created, the policy is enabled and the store has an
