@@ -47,8 +47,8 @@ export class GoogleCalendarModuleElement extends
     };
   }
 
-  protected accessor events_: CalendarEvent[];
-  protected accessor showInfoDialog_: boolean;
+  protected accessor events_: CalendarEvent[] = [];
+  protected accessor showInfoDialog_: boolean = false;
 
   private handler_: GoogleCalendarPageHandlerRemote;
 
