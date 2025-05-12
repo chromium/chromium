@@ -47,9 +47,9 @@ WebDatabase* WebDataServiceBase::GetDatabase() {
   return wdbs_ ? wdbs_->GetDatabaseOnDB() : nullptr;
 }
 
-bool WebDataServiceBase::UsesInMemoryDatabaseForMetrics() const {
+bool WebDataServiceBase::UsesInMemoryDatabaseForTesting() const {
   CHECK(wdbs_);
-  return wdbs_->UsesInMemoryDatabaseForMetrics();
+  return wdbs_->UsesInMemoryDatabaseForTesting();  // IN-TEST
 }
 
 WebDataServiceBase::~WebDataServiceBase() = default;

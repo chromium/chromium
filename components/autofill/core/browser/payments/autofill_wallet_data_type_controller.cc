@@ -10,10 +10,6 @@
 #include "base/functional/callback_helpers.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
-#include "components/sync/base/sync_mode.h"
-#include "components/sync/service/configure_context.h"
 #include "components/sync/service/sync_service.h"
 
 namespace browser_sync {
@@ -25,16 +21,12 @@ AutofillWalletDataTypeController::AutofillWalletDataTypeController(
     std::unique_ptr<syncer::DataTypeControllerDelegate>
         delegate_for_transport_mode,
     PrefService* pref_service,
-    syncer::SyncService* sync_service,
-    base::RepeatingCallback<void(bool, bool)>
-        on_load_models_with_transport_only_cb)
+    syncer::SyncService* sync_service)
     : DataTypeController(type,
                          std::move(delegate_for_full_sync_mode),
                          std::move(delegate_for_transport_mode)),
       pref_service_(pref_service),
-      sync_service_(sync_service),
-      on_load_models_with_transport_only_cb_(
-          std::move(on_load_models_with_transport_only_cb)) {
+      sync_service_(sync_service) {
   CHECK(type == syncer::AUTOFILL_WALLET_CREDENTIAL ||
         type == syncer::AUTOFILL_WALLET_DATA ||
         type == syncer::AUTOFILL_WALLET_METADATA ||
@@ -48,17 +40,6 @@ AutofillWalletDataTypeController::AutofillWalletDataTypeController(
 
 AutofillWalletDataTypeController::~AutofillWalletDataTypeController() {
   sync_service_->RemoveObserver(this);
-}
-
-void AutofillWalletDataTypeController::LoadModels(
-    const syncer::ConfigureContext& configure_context,
-    const ModelLoadCallback& model_load_callback) {
-  if (configure_context.sync_mode == syncer::SyncMode::kTransportOnly) {
-    on_load_models_with_transport_only_cb_.Run(
-        pref_service_->GetBoolean(prefs::kExplicitBrowserSignin),
-        sync_service_->HasSyncConsent());
-  }
-  DataTypeController::LoadModels(configure_context, model_load_callback);
 }
 
 void AutofillWalletDataTypeController::Stop(syncer::SyncStopMetadataFate fate,

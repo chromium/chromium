@@ -12,8 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -184,78 +182,6 @@ base::WeakPtr<syncer::SyncableService> SyncableServiceForPrefs(
     syncer::DataType type) {
   return prefs_service ? prefs_service->GetSyncableService(type)->AsWeakPtr()
                        : nullptr;
-}
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-// Enum representing all possible combination of two booleans: the first one
-// distinguishes whether the user is signed in explicitly vs implicitly, and the
-// second one represents whether account wallet data is stored in-memory only vs
-// on-disk. See function below implementation the conversion from bools to enum.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(PaymentsAccountStorageUponConfiguration)
-enum class PaymentsAccountStorageUponConfiguration {
-  // kDeprecatedSignedInImplicitlyWithInMemoryStorage = 0,
-  kSignedInExplicitlyWithOnDiskStorage = 1,
-  kSignedInExplicitlyWithInMemoryStorage = 2,
-  // kDeprecatedSignedInImplicitlyWithUnexpectedOnDiskStorage = 3,
-  kSignedInImplicitlyWithInMemoryStorage = 4,
-  kSignedInImplicitlyWithUnexpectedOnDiskStorage = 5,
-  // Account storage isn't normally configured if Sync-the-feature is enabled
-  // and therefore this metric isn't recorded. However this is not always the
-  // case, for example if the user went to settings during the sync flow and
-  // didn't complete the initial setup. Whether or not this case uses on-disk
-  // storage or not isn't particularly interesting.
-  kSignedInAndLegacySyncEnabledWithOnDiskStorage = 6,
-  kSignedInAndLegacySyncEnabledWithInMemoryStorage = 7,
-  kMaxValue = kSignedInAndLegacySyncEnabledWithInMemoryStorage
-};
-// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:PaymentsAccountStorageUponConfiguration)
-
-PaymentsAccountStorageUponConfiguration
-DeterminePaymentsAccountStorageUponConfiguration(bool signed_in_explicitly,
-                                                 bool has_sync_consent,
-                                                 bool uses_in_memory_database) {
-  if (signed_in_explicitly) {
-    return uses_in_memory_database ? PaymentsAccountStorageUponConfiguration::
-                                         kSignedInExplicitlyWithInMemoryStorage
-                                   : PaymentsAccountStorageUponConfiguration::
-                                         kSignedInExplicitlyWithOnDiskStorage;
-  }
-
-  if (has_sync_consent) {
-    // This case should be rare when logging the metric at hands, recorded only
-    // during sync-the-transport configuration, but it is for example reachable
-    // by users that didn't complete the sync setup flow.
-    return uses_in_memory_database
-               ? PaymentsAccountStorageUponConfiguration::
-                     kSignedInAndLegacySyncEnabledWithInMemoryStorage
-               : PaymentsAccountStorageUponConfiguration::
-                     kSignedInAndLegacySyncEnabledWithOnDiskStorage;
-  }
-
-  return uses_in_memory_database
-             ? PaymentsAccountStorageUponConfiguration::
-                   kSignedInImplicitlyWithInMemoryStorage
-             : PaymentsAccountStorageUponConfiguration::
-                   kSignedInImplicitlyWithUnexpectedOnDiskStorage;
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-void LogPaymentsAccountStorageOnDbSequence(
-    const autofill::AutofillWebDataService* account_autofill_web_data_service,
-    bool signed_in_explicitly,
-    bool has_sync_consent) {
-  // Don't even bother recording the metric on mobile platforms, because it is
-  // known to always use kSignedInExplicitlyWithOnDiskStorage.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  base::UmaHistogramEnumeration(
-      "Sync.PaymentsAccountStorageUponSyncConfiguration",
-      DeterminePaymentsAccountStorageUponConfiguration(
-          signed_in_explicitly, has_sync_consent,
-          account_autofill_web_data_service->UsesInMemoryDatabaseForMetrics()));
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 bool ArePreferencesAllowedInTransportMode() {
@@ -1006,27 +932,10 @@ CommonControllerBuilder::CreateWalletDataTypeController(
                     base::RetainedRef(
                         account_autofill_web_data_service_.value())))
           : nullptr;
-
-  // For AUTOFILL_WALLET_DATA specifically, inject a callback that can log a
-  // metric when the model is loaded with `SyncMode::kTransportOnly`. Complex
-  // plumbing is required to ensure that AutofillWebDataService is exercised on
-  // the DB sequence.
-  base::RepeatingCallback<void(bool, bool)>
-      on_load_models_with_transport_only_cb =
-          (type == syncer::AUTOFILL_WALLET_DATA)
-              ? base::BindPostTask(
-                    account_autofill_web_data_service_.value()
-                        ->GetDBTaskRunner(),
-                    base::BindRepeating(
-                        &LogPaymentsAccountStorageOnDbSequence,
-                        base::RetainedRef(
-                            account_autofill_web_data_service_.value())))
-              : base::DoNothing();
-
   return std::make_unique<AutofillWalletDataTypeController>(
       type, std::move(delegate_for_full_sync_mode),
       std::move(delegate_for_transport_mode), pref_service_.value(),
-      sync_service, std::move(on_load_models_with_transport_only_cb));
+      sync_service);
 }
 
 }  // namespace browser_sync

@@ -228,14 +228,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   // feature flags. The corresponding metric is recorded twice as an artifact
   // of the test setup: SyncTest creates a new profile for single-client tests,
   // disregarding the existing profile that browser tests already have.
-  EXPECT_FALSE(GetAccountWebDataService(0)->UsesInMemoryDatabaseForMetrics());
+  EXPECT_FALSE(GetAccountWebDataService(0)->UsesInMemoryDatabaseForTesting());
   histogram_tester_.ExpectUniqueSample("WebDatabase.AutofillAccountStorage",
                                        /*sample=*/2,  // kOnDisk_SignedOut.
                                        /*expected_bucket_count=*/2);
-  histogram_tester_.ExpectUniqueSample(
-      "Sync.PaymentsAccountStorageUponSyncConfiguration",
-      /*sample=*/1,  // kSignedInExplicitlyWithOnDiskStorage.
-      /*expected_bucket_count=*/1);
 
   ASSERT_NE(nullptr, paydm);
   std::vector<const CreditCard*> cards = paydm->GetCreditCards();
@@ -305,15 +301,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   // artifact of the test setup: SyncTest creates a new profile for
   // single-client tests, disregarding the existing profile that browser tests
   // already have.
-  EXPECT_TRUE(GetAccountWebDataService(0)->UsesInMemoryDatabaseForMetrics());
+  EXPECT_TRUE(GetAccountWebDataService(0)->UsesInMemoryDatabaseForTesting());
   histogram_tester_.ExpectBucketCount(
       "WebDatabase.AutofillAccountStorage",
       /*sample=*/1,  // kInMemory_SignedInImplicitly.
-      /*expected_bucket_count=*/1);
-
-  histogram_tester_.ExpectUniqueSample(
-      "Sync.PaymentsAccountStorageUponSyncConfiguration",
-      /*sample=*/4,  // kSignedInImplicitlyWithInMemoryStorage.
       /*expected_bucket_count=*/1);
 
   PaymentsDataManager* paydm = GetPaymentsDataManager(0);
@@ -400,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, EnabledByDefault) {
   // exists.
   ASSERT_TRUE(GetClient(0)->service()->GetActiveDataTypes().Has(
       syncer::AUTOFILL_WALLET_METADATA));
-  EXPECT_FALSE(GetProfileWebDataService(0)->UsesInMemoryDatabaseForMetrics());
+  EXPECT_FALSE(GetProfileWebDataService(0)->UsesInMemoryDatabaseForTesting());
 }
 
 // ChromeOS does not sign out, so the test below does not apply.
