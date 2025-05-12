@@ -6,6 +6,7 @@
 
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/blocklist_factory.h"
 #include "chrome/browser/extensions/chrome_extension_cookies_factory.h"
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
@@ -28,7 +29,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/account_extension_tracker.h"
-#include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/chrome_app_icon_service_factory.h"
 #include "chrome/browser/extensions/extension_action_dispatcher.h"
 #include "chrome/browser/extensions/extension_error_controller_factory.h"
@@ -54,6 +54,7 @@ void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
   TRACE_EVENT("browser",
               "chrome_extensions::"
               "EnsureChromeBrowserContextKeyedServiceFactoriesBuilt");
+  extensions::ActivityLog::GetFactoryInstance();
   extensions::BlocklistFactory::GetInstance();
   extensions::ChromeExtensionCookiesFactory::GetInstance();
   extensions::ChromeExtensionSystemFactory::GetInstance();
@@ -77,7 +78,6 @@ void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   ExtensionSyncServiceFactory::GetInstance();
   extensions::AccountExtensionTracker::GetFactory();
-  extensions::ActivityLog::GetFactoryInstance();
   extensions::ChromeAppIconServiceFactory::GetInstance();
   extensions::ExtensionActionDispatcher::GetFactoryInstance();
   extensions::ExtensionErrorControllerFactory::GetInstance();

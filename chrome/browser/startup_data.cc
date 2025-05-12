@@ -52,7 +52,7 @@
 #include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
 
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-#include "chrome/browser/extensions/desktop_android/desktop_android_extensions_browser_client.h"
+#include "chrome/browser/extensions/chrome_extensions_browser_client.h"
 #include "extensions/browser/extensions_browser_client.h"
 #endif
 
@@ -168,9 +168,10 @@ void StartupData::PreProfilePrefServiceInit() {
   // must be initialized before BrowserContextKeyedServiceFactories are built.
   // Some factories use ExtensionsBrowserClient::Get() in their DependsOn().
   extensions_browser_client_ =
-      std::make_unique<extensions::DesktopAndroidExtensionsBrowserClient>();
+      std::make_unique<extensions::ChromeExtensionsBrowserClient>();
   // We don't set ExtensionsBrowserClient to nullptr in this class because
-  // ownership will be transferred later to BrowserProcessImpl.
+  // ownership will be transferred later to BrowserProcessImpl. Initialization
+  // will finish in BrowserProcessImpl as well.
   extensions::ExtensionsBrowserClient::Set(extensions_browser_client_.get());
 #endif
 

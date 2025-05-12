@@ -2,43 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/desktop_android/desktop_android_extensions_browser_client.h"
-
 #include <memory>
 #include <utility>
 
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/management/chrome_management_api_delegate.h"
-#include "chrome/browser/extensions/api/runtime/chrome_runtime_api_delegate.h"
 #include "chrome/browser/extensions/api/storage/managed_value_store_cache.h"
 #include "chrome/browser/extensions/api/storage/sync_value_store_cache.h"
-#include "chrome/browser/extensions/chrome_extension_system_factory.h"
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
-#include "chrome/browser/extensions/chrome_extensions_browser_api_provider.h"
+#include "chrome/browser/extensions/chrome_extensions_browser_client.h"
 #include "chrome/browser/extensions/desktop_android/desktop_android_extension_host_delegate.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
-#include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/ui/webui/devtools/devtools_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/core/browser/signin_header_helper.h"
-#include "components/update_client/update_client.h"
 #include "components/value_store/value_store_factory.h"
-#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
-#include "extensions/browser/api/core_extensions_browser_api_provider.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/messaging/messaging_delegate.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/api/web_request/web_request_resource_type.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_error.h"
-#include "extensions/browser/extension_util.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/extensions_browser_interface_binders.h"
 #include "extensions/browser/kiosk/kiosk_delegate.h"
@@ -52,6 +38,40 @@
 
 using content::BrowserContext;
 using content::BrowserThread;
+
+////////////////////////////////////////////////////////////////////////////////
+// S  T  O  P
+// ALL THIS CODE WILL BE DELETED.
+// THINK TWICE (OR THRICE) BEFORE ADDING MORE.
+//
+// The details:
+// This is part of an experimental desktop-android build and allows us to
+// bootstrap the extension system by incorporating a lightweight extensions
+// runtime into the chrome binary. This allows us to do things like load
+// extensions in tests and exercise code in these builds without needing to have
+// the entirety of the //chrome/browser/extensions system either compiled and
+// implemented (which is a massive undertaking) or gracefully if-def'd out
+// (which is a massive amount of technical debt).
+// This approach, by comparison, allows us to have a minimal interface in the
+// chrome browser that mostly relies on the top-level //extensions layer, along
+// with small bits of the //chrome code that compile cleanly on the
+// experimental desktop-android build.
+//
+// This entire class should go away. Instead of adding new functionality here,
+// it should be added in a location that can be shared across desktop-android
+// and other desktop builds. In practice, this means:
+// * Pulling the code up to //extensions. If it can be cleanly segmented from
+//   the //chrome layer, this is preferable. It gets cleanly included across
+//   all builds, encourages proper separation of concerns, and reduces the
+//   interdependency between features.
+// * Including the functionality in the desktop-android build. This can be done
+//   for //chrome sources that do not have any dependencies on areas that
+//   cannot be included in desktop-android (such as dependencies on `Browser`
+//   or native UI code).
+//
+// TODO(https://crbug.com/356905053): Delete this file once desktop-android
+// properly leverages the extension system.
+////////////////////////////////////////////////////////////////////////////////
 
 namespace extensions {
 
@@ -164,160 +184,22 @@ class DesktopAndroidExtensionsAPIClient : public ExtensionsAPIClient {
 
 }  // namespace
 
-DesktopAndroidExtensionsBrowserClient::DesktopAndroidExtensionsBrowserClient()
-    : extension_cache_(std::make_unique<NullExtensionCache>()),
-      kiosk_delegate_(std::make_unique<DesktopAndroidKioskDelegate>()),
-      api_client_(std::make_unique<DesktopAndroidExtensionsAPIClient>()) {
-  AddAPIProvider(std::make_unique<CoreExtensionsBrowserAPIProvider>());
-  AddAPIProvider(std::make_unique<ChromeExtensionsBrowserAPIProvider>());
+void ChromeExtensionsBrowserClient::Init() {
+  kiosk_delegate_ = std::make_unique<DesktopAndroidKioskDelegate>();
+  api_client_ = std::make_unique<DesktopAndroidExtensionsAPIClient>();
 }
 
-DesktopAndroidExtensionsBrowserClient::
-    ~DesktopAndroidExtensionsBrowserClient() = default;
-
-bool DesktopAndroidExtensionsBrowserClient::IsShuttingDown() {
-  return false;
-}
-
-bool DesktopAndroidExtensionsBrowserClient::AreExtensionsDisabled(
-    const base::CommandLine& command_line,
-    BrowserContext* context) {
-  return util::AreExtensionsDisabled(command_line, context);
-}
-
-bool DesktopAndroidExtensionsBrowserClient::IsValidContext(void* context) {
-  if (!g_browser_process) {
-    LOG(ERROR) << "Unexpected null g_browser_process";
-    NOTREACHED();
-  }
-  return g_browser_process->profile_manager() &&
-         g_browser_process->profile_manager()->IsValidProfile(context);
-}
-
-bool DesktopAndroidExtensionsBrowserClient::IsSameContext(
-    BrowserContext* first,
-    BrowserContext* second) {
-  Profile* first_profile = Profile::FromBrowserContext(first);
-  Profile* second_profile = Profile::FromBrowserContext(second);
-  return first_profile->IsSameOrParent(second_profile);
-}
-
-bool DesktopAndroidExtensionsBrowserClient::HasOffTheRecordContext(
-    BrowserContext* context) {
-  return static_cast<Profile*>(context)->HasPrimaryOTRProfile();
-}
-
-BrowserContext* DesktopAndroidExtensionsBrowserClient::GetOffTheRecordContext(
-    BrowserContext* context) {
-  return static_cast<Profile*>(context)->GetPrimaryOTRProfile(
-      /*create_if_needed=*/true);
-}
-
-BrowserContext* DesktopAndroidExtensionsBrowserClient::GetOriginalContext(
-    BrowserContext* context) {
-  return static_cast<Profile*>(context)->GetOriginalProfile();
-}
-
-content::BrowserContext*
-DesktopAndroidExtensionsBrowserClient::GetContextRedirectedToOriginal(
-    content::BrowserContext* context) {
-  return ProfileSelections::Builder()
-      .WithRegular(ProfileSelection::kRedirectedToOriginal)
-      .WithGuest(ProfileSelection::kRedirectedToOriginal)
-      .Build()
-      .ApplyProfileSelection(Profile::FromBrowserContext(context));
-}
-
-content::BrowserContext*
-DesktopAndroidExtensionsBrowserClient::GetContextOwnInstance(
-    content::BrowserContext* context) {
-  return context;
-}
-
-content::BrowserContext*
-DesktopAndroidExtensionsBrowserClient::GetContextForOriginalOnly(
-    content::BrowserContext* context) {
-  return context;
-}
-
-bool DesktopAndroidExtensionsBrowserClient::AreExtensionsDisabledForContext(
-    content::BrowserContext* context) {
-  return false;
-}
-
-bool DesktopAndroidExtensionsBrowserClient::IsGuestSession(
-    BrowserContext* context) const {
-  return false;
-}
-
-bool DesktopAndroidExtensionsBrowserClient::IsExtensionIncognitoEnabled(
-    const std::string& extension_id,
-    content::BrowserContext* context) const {
-  return IsGuestSession(context) ||
-         util::IsIncognitoEnabled(extension_id, context);
-}
-
-bool DesktopAndroidExtensionsBrowserClient::CanExtensionCrossIncognito(
-    const Extension* extension,
-    content::BrowserContext* context) const {
-  return IsGuestSession(context) || util::CanCrossIncognito(extension, context);
-}
-
-base::FilePath DesktopAndroidExtensionsBrowserClient::GetBundleResourcePath(
-    const network::ResourceRequest& request,
-    const base::FilePath& extension_resources_path,
-    int* resource_id) const {
-  *resource_id = 0;
-  return base::FilePath();
-}
-
-void DesktopAndroidExtensionsBrowserClient::LoadResourceFromResourceBundle(
-    const network::ResourceRequest& request,
-    mojo::PendingReceiver<network::mojom::URLLoader> loader,
-    const base::FilePath& resource_relative_path,
-    int resource_id,
-    scoped_refptr<net::HttpResponseHeaders> headers,
-    mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
-  NOTREACHED() << "Load resources from bundles not supported.";
-}
-
-bool DesktopAndroidExtensionsBrowserClient::AllowCrossRendererResourceLoad(
-    const network::ResourceRequest& request,
-    network::mojom::RequestDestination destination,
-    ui::PageTransition page_transition,
-    int child_id,
-    bool is_incognito,
-    const Extension* extension,
-    const ExtensionSet& extensions,
-    const ProcessMap& process_map,
-    const GURL& upstream_url) {
-  bool allowed = false;
-  if (url_request_util::AllowCrossRendererResourceLoad(
-          request, destination, page_transition, child_id, is_incognito,
-          extension, extensions, process_map, upstream_url, &allowed)) {
-    return allowed;
-  }
-
-  // Couldn't determine if resource is allowed. Block the load.
-  return false;
-}
-
-PrefService* DesktopAndroidExtensionsBrowserClient::GetPrefServiceForContext(
-    BrowserContext* context) {
-  return static_cast<Profile*>(context)->GetPrefs();
-}
-
-void DesktopAndroidExtensionsBrowserClient::GetEarlyExtensionPrefsObservers(
+void ChromeExtensionsBrowserClient::GetEarlyExtensionPrefsObservers(
     content::BrowserContext* context,
     std::vector<EarlyExtensionPrefsObserver*>* observers) const {}
 
 ProcessManagerDelegate*
-DesktopAndroidExtensionsBrowserClient::GetProcessManagerDelegate() const {
+ChromeExtensionsBrowserClient::GetProcessManagerDelegate() const {
   return nullptr;
 }
 
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
-DesktopAndroidExtensionsBrowserClient::GetControlledFrameEmbedderURLLoader(
+ChromeExtensionsBrowserClient::GetControlledFrameEmbedderURLLoader(
     const url::Origin& app_origin,
     content::FrameTreeNodeId frame_tree_node_id,
     content::BrowserContext* browser_context) {
@@ -325,118 +207,31 @@ DesktopAndroidExtensionsBrowserClient::GetControlledFrameEmbedderURLLoader(
 }
 
 std::unique_ptr<ExtensionHostDelegate>
-DesktopAndroidExtensionsBrowserClient::CreateExtensionHostDelegate() {
+ChromeExtensionsBrowserClient::CreateExtensionHostDelegate() {
   return std::make_unique<DesktopAndroidExtensionHostDelegate>();
 }
 
-bool DesktopAndroidExtensionsBrowserClient::DidVersionUpdate(
-    BrowserContext* context) {
-  return false;
-}
-
-void DesktopAndroidExtensionsBrowserClient::PermitExternalProtocolHandler() {}
-
-bool DesktopAndroidExtensionsBrowserClient::IsInDemoMode() {
-  return false;
-}
-
-bool DesktopAndroidExtensionsBrowserClient::IsScreensaverInDemoMode(
-    const std::string& app_id) {
-  return false;
-}
-
-bool DesktopAndroidExtensionsBrowserClient::IsRunningInForcedAppMode() {
-  return false;
-}
-
-bool DesktopAndroidExtensionsBrowserClient::IsAppModeForcedForApp(
-    const ExtensionId& extension_id) {
-  return false;
-}
-
-bool DesktopAndroidExtensionsBrowserClient::IsLoggedInAsPublicAccount() {
-  return false;
-}
-
-ExtensionSystemProvider*
-DesktopAndroidExtensionsBrowserClient::GetExtensionSystemFactory() {
-  return ChromeExtensionSystemFactory::GetInstance();
-}
-
-void DesktopAndroidExtensionsBrowserClient::
-    RegisterBrowserInterfaceBindersForFrame(
-        mojo::BinderMapWithContext<content::RenderFrameHost*>* binder_map,
-        content::RenderFrameHost* render_frame_host,
-        const Extension* extension) const {
+void ChromeExtensionsBrowserClient::RegisterBrowserInterfaceBindersForFrame(
+    mojo::BinderMapWithContext<content::RenderFrameHost*>* binder_map,
+    content::RenderFrameHost* render_frame_host,
+    const Extension* extension) const {
   PopulateExtensionFrameBinders(binder_map, render_frame_host, extension);
 }
 
-std::unique_ptr<RuntimeAPIDelegate>
-DesktopAndroidExtensionsBrowserClient::CreateRuntimeAPIDelegate(
-    content::BrowserContext* context) const {
-  return std::make_unique<ChromeRuntimeAPIDelegate>(context);
-}
-
 const ComponentExtensionResourceManager*
-DesktopAndroidExtensionsBrowserClient::GetComponentExtensionResourceManager() {
+ChromeExtensionsBrowserClient::GetComponentExtensionResourceManager() {
   return nullptr;
 }
 
-void DesktopAndroidExtensionsBrowserClient::BroadcastEventToRenderers(
-    events::HistogramValue histogram_value,
-    const std::string& event_name,
-    base::Value::List args,
-    bool dispatch_to_off_the_record_profiles) {}
-
-ExtensionCache* DesktopAndroidExtensionsBrowserClient::GetExtensionCache() {
-  return extension_cache_.get();
-}
-
-bool DesktopAndroidExtensionsBrowserClient::IsBackgroundUpdateAllowed() {
-  return true;
-}
-
-bool DesktopAndroidExtensionsBrowserClient::IsMinBrowserVersionSupported(
-    const std::string& min_version) {
-  return true;
-}
-
-void DesktopAndroidExtensionsBrowserClient::ReportError(
+void ChromeExtensionsBrowserClient::ReportError(
     content::BrowserContext* context,
     std::unique_ptr<ExtensionError> error) {
   LOG(ERROR) << error->GetDebugString();
   ErrorConsole::Get(context)->ReportError(std::move(error));
 }
 
-void DesktopAndroidExtensionsBrowserClient::CreateExtensionWebContentsObserver(
-    content::WebContents* web_contents) {
-  ChromeExtensionWebContentsObserver::CreateForWebContents(web_contents);
-}
-
-ExtensionWebContentsObserver*
-DesktopAndroidExtensionsBrowserClient::GetExtensionWebContentsObserver(
-    content::WebContents* web_contents) {
-  return ChromeExtensionWebContentsObserver::FromWebContents(web_contents);
-}
-
-scoped_refptr<update_client::UpdateClient>
-DesktopAndroidExtensionsBrowserClient::CreateUpdateClient(
-    content::BrowserContext* context) {
-  return util::CreateUpdateClient(context);
-}
-
-std::unique_ptr<ScopedExtensionUpdaterKeepAlive>
-DesktopAndroidExtensionsBrowserClient::CreateUpdaterKeepAlive(
-    content::BrowserContext* context) {
-  return util::CreateUpdaterKeepAlive(context);
-}
-
-KioskDelegate* DesktopAndroidExtensionsBrowserClient::GetKioskDelegate() {
+KioskDelegate* ChromeExtensionsBrowserClient::GetKioskDelegate() {
   return kiosk_delegate_.get();
-}
-
-std::string DesktopAndroidExtensionsBrowserClient::GetApplicationLocale() {
-  return "en-US";
 }
 
 }  // namespace extensions

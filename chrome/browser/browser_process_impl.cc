@@ -207,22 +207,18 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/chrome_extensions_browser_client.h"
 #include "chrome/common/initialize_extensions_client.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/apps/platform_apps/chrome_apps_browser_api_provider.h"
-#include "chrome/browser/extensions/chrome_extensions_browser_client.h"
 #include "chrome/browser/media_galleries/media_file_system_registry.h"
 #include "chrome/browser/ui/apps/chrome_app_window_client.h"
 #include "chrome/common/extensions/chrome_extensions_client.h"
 #include "components/storage_monitor/storage_monitor.h"
 #include "extensions/common/context_data.h"
 #include "extensions/common/extension_l10n_util.h"
-#endif
-
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-#include "chrome/browser/extensions/desktop_android/desktop_android_extensions_browser_client.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -347,9 +343,17 @@ void BrowserProcessImpl::Init() {
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
   extensions_browser_client_ = startup_data()->TakeExtensionsBrowserClient();
 #elif BUILDFLAG(ENABLE_EXTENSIONS)
-  extensions::AppWindowClient::Set(ChromeAppWindowClient::GetInstance());
   extensions_browser_client_ =
       std::make_unique<extensions::ChromeExtensionsBrowserClient>();
+#else
+  // Neither ENABLE_EXTENSIONS nor ENABLE_DESKTOP_ANDROID_EXTENSIONS are
+  // enabled. Unknown configuration.
+#error "Unknown configuration."
+#endif
+
+  extensions_browser_client_->Init();
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions_browser_client_->AddAPIProvider(
       std::make_unique<chrome_apps::ChromeAppsBrowserAPIProvider>());
   extensions_browser_client_->AddAPIProvider(
@@ -360,11 +364,8 @@ void BrowserProcessImpl::Init() {
       std::make_unique<
           chromeos::ChromeOSTelemetryExtensionsBrowserAPIProvider>());
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#else
-  // Neither ENABLE_EXTENSIONS nor ENABLE_DESKTOP_ANDROID_EXTENSIONS are
-  // enabled. Unknown configuration.
-#error "Unknown configuration."
-#endif
+  extensions::AppWindowClient::Set(ChromeAppWindowClient::GetInstance());
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   extensions::ExtensionsBrowserClient::Set(extensions_browser_client_.get());
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)

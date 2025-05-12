@@ -1637,61 +1637,55 @@ if (enable_extensions) {
 # ChromeExtensionsBrowserClient.
 source_set("chrome_extensions_browser_client") {
   sources = [
-    # TODO(crbug.com/415033270): Move chrome_extensions_browser_client.h/cc
-    # here once it only contains cross-platform code.
+    "chrome_extensions_browser_client.cc",
+    "chrome_extensions_browser_client.h",
   ]
 
-  deps = []
+  deps = [
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/extensions",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/prefetch",
+    "//chrome/browser/ui",
+    "//components/content_settings/core/browser",
+    "//components/embedder_support:user_agent",
+    "//components/privacy_sandbox:privacy_sandbox_prefs",
+    "//components/proxy_config",
+    "//components/sessions",
+    "//components/update_client",
+    "//extensions/browser/updater",
+    "//extensions/browser/updater:keepalive",
+  ]
 
   if (enable_desktop_android_extensions) {
-    sources += [
-      "desktop_android/desktop_android_extensions_browser_client.cc",
-
-      # TODO(crbug.com/415033270): Delete this header.
-      "desktop_android/desktop_android_extensions_browser_client.h",
-    ]
+    sources +=
+        [ "desktop_android/desktop_android_extensions_browser_client.cc" ]
 
     deps += [
       "//chrome/browser:browser_process",
       "//chrome/browser/extensions",
       "//chrome/browser/extensions/api/runtime",
       "//chrome/browser/profiles",
-      "//chrome/browser/ui",
       "//chrome/common",
       "//components/signin/core/browser",
       "//components/update_client",
       "//components/version_info",
       "//extensions/browser",
       "//extensions/browser/kiosk",
-      "//extensions/browser/updater",
-      "//extensions/browser/updater:keepalive",
     ]
   }
 
   if (enable_extensions) {
-    sources += [
-      "chrome_extensions_browser_client.cc",
-      "chrome_extensions_browser_client.h",
-      "chrome_extensions_browser_client_non_android.cc",
-    ]
-
-    public_deps = [ "//chrome/browser/safe_browsing" ]
+    sources += [ "chrome_extensions_browser_client_non_android.cc" ]
 
     deps += [
       "//chrome/browser:browser_process",
-      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/extensions",
       "//chrome/browser/extensions/api/runtime",
-      "//chrome/browser/prefetch",
-      "//chrome/browser/ui",
+      "//chrome/browser/safe_browsing",
       "//chrome/browser/web_applications",
-      "//components/embedder_support:user_agent",
-      "//components/privacy_sandbox:privacy_sandbox_prefs",
-      "//components/proxy_config",
       "//components/safe_browsing/core/common:features",
-      "//components/update_client",
-      "//extensions/browser/updater",
-      "//extensions/browser/updater:keepalive",
+      "//extensions/browser/api/content_settings",
     ]
 
     if (is_chromeos) {

@@ -309,9 +309,6 @@ std::unique_ptr<const PermissionSet> GetInstallPromptPermissionSetForExtension(
   return extension->permissions_data()->active_permissions().Clone();
 }
 
-// TODO(crbug.com/356905053): Enable more extension util functions on
-// desktop android.
-#if !BUILDFLAG(IS_ANDROID)
 std::vector<content::BrowserContext*> GetAllRelatedProfiles(
     Profile* profile,
     const Extension& extension) {
@@ -334,7 +331,6 @@ std::vector<content::BrowserContext*> GetAllRelatedProfiles(
 
   return related_contexts;
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 void SetDeveloperModeForProfile(Profile* profile, bool in_developer_mode) {
   profile->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode,

@@ -124,6 +124,10 @@ class ExtensionsBrowserClient {
   /////////////////////////////////////////////////////////////////////////////
   // Virtual Methods
 
+  // Initializes the client. For Chrome, must be called after g_browser_process
+  // is constructed, due to dependencies of UserScriptLoader.
+  virtual void Init() = 0;
+
   // Alerts the ExtensionsBrowserClient that the browser is shutting down,
   // indicating that we should perform any teardown necessary before being
   // destroyed (e.g. unsubscribing observers, or any other pre-emptive freeing
