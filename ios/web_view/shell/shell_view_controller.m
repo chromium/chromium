@@ -466,9 +466,11 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                                   weakAlertController.textFields[1].text;
                               NSString* site =
                                   weakAlertController.textFields[2].text;
+                              NSDate* now = [NSDate date];
                               [dataManager addNewPasswordForUsername:username
                                                             password:password
-                                                                site:site];
+                                                                site:site
+                                                           timestamp:now];
                             }]];
   [self presentViewController:alertController animated:YES completion:nil];
 }
@@ -535,10 +537,11 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                                          NSString* newPassword =
                                              weakAlertController.textFields
                                                  .lastObject.text;
-                                         [dataManager
-                                             updatePassword:password
-                                                newUsername:newUsername
-                                                newPassword:newPassword];
+                                         NSDate* now = [NSDate date];
+                                         [dataManager updatePassword:password
+                                                         newUsername:newUsername
+                                                         newPassword:newPassword
+                                                           timestamp:now];
                                        }]];
   [self presentViewController:alertController animated:YES completion:nil];
 }

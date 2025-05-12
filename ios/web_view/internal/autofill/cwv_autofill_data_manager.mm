@@ -8,6 +8,7 @@
 #import "base/location.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -268,9 +269,11 @@ class WebViewPasswordStoreObserver
 
 - (void)updatePassword:(CWVPassword*)password
            newUsername:(nullable NSString*)newUsername
-           newPassword:(nullable NSString*)newPassword {
+           newPassword:(nullable NSString*)newPassword
+             timestamp:(NSDate*)timestamp {
   password_manager::PasswordForm* passwordForm =
       [password internalPasswordForm];
+  passwordForm->date_password_modified = base::Time::FromNSDate(timestamp);
 
   // Only change the password if it actually changed and not empty.
   if (newPassword && newPassword.length > 0 &&
@@ -298,7 +301,8 @@ class WebViewPasswordStoreObserver
 
 - (void)addNewPasswordForUsername:(NSString*)username
                          password:(NSString*)password
-                             site:(NSString*)site {
+                             site:(NSString*)site
+                        timestamp:(NSDate*)timestamp {
   password_manager::PasswordForm form;
 
   DCHECK_GT(username.length, 0ul);
@@ -310,13 +314,15 @@ class WebViewPasswordStoreObserver
   form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.username_value = base::SysNSStringToUTF16(username);
   form.password_value = base::SysNSStringToUTF16(password);
+  form.date_created = base::Time::FromNSDate(timestamp);
 
   _passwordStore->AddLogin(form);
 }
 
 - (void)addNewPasswordForUsername:(NSString*)username
                 serviceIdentifier:(NSString*)serviceIdentifier
-               keychainIdentifier:(NSString*)keychainIdentifier {
+               keychainIdentifier:(NSString*)keychainIdentifier
+                        timestamp:(NSDate*)timestamp {
   password_manager::PasswordForm form;
 
   GURL url(base::SysNSStringToUTF8(serviceIdentifier));
@@ -326,6 +332,7 @@ class WebViewPasswordStoreObserver
   form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.username_value = base::SysNSStringToUTF16(username);
   form.keychain_identifier = base::SysNSStringToUTF8(keychainIdentifier);
+  form.date_created = base::Time::FromNSDate(timestamp);
 
   _passwordStore->AddLogin(form);
 }

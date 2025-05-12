@@ -117,4 +117,7 @@
 // Supports early initialization.
 #define IOS_WEB_VIEW_SUPPORTS_EARLY_INITIALIZATION 1
 
+// Supports timestamps in the CWVAutofillDataManager
+#define IOS_WEB_VIEW_CWV_AUTOFILL_DATA_MANAGER_TIMESTAMPS 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_
