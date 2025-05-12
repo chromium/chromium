@@ -312,7 +312,6 @@ TEST(DrawQuadTest, CopyTextureDrawQuad) {
   EXPECT_EQ(nearest_neighbor, copy_quad->nearest_neighbor);
   EXPECT_EQ(secure_output_only, copy_quad->secure_output_only);
   EXPECT_EQ(protected_video_type, copy_quad->protected_video_type);
-  EXPECT_FALSE(copy_quad->is_stream_video);
 
   CREATE_QUAD_ALL(TextureDrawQuad, resource_id, uv_top_left, uv_bottom_right,
                   SkColors::kTransparent, nearest_neighbor, secure_output_only,
@@ -324,7 +323,6 @@ TEST(DrawQuadTest, CopyTextureDrawQuad) {
   EXPECT_EQ(nearest_neighbor, copy_quad->nearest_neighbor);
   EXPECT_EQ(secure_output_only, copy_quad->secure_output_only);
   EXPECT_EQ(protected_video_type, copy_quad->protected_video_type);
-  EXPECT_FALSE(copy_quad->is_stream_video);
 }
 
 TEST(DrawQuadTest, CopyTileDrawQuad) {

@@ -751,7 +751,7 @@ TEST_F(VideoResourceUpdaterTest,
 
   VideoFrameExternalResource resource =
       updater->CreateExternalResourceFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::STREAM_TEXTURE, resource.type);
+  EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
   EXPECT_TRUE(resource.release_callback);
   EXPECT_EQ((GLenum)GL_TEXTURE_EXTERNAL_OES,
             resource.resource.texture_target());

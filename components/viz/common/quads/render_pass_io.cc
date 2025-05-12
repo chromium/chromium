@@ -1267,12 +1267,6 @@ void TextureDrawQuadToDict(const TextureDrawQuad* draw_quad,
   if (draw_quad->damage_rect.has_value()) {
     dict->Set("damage_rect", RectToDict(draw_quad->damage_rect.value()));
   }
-  // Conditionally set is_stream_video to not break backwards-compatibility with
-  // unit test data.
-  // Note: is_video_frame is not being saved in dict.
-  if (draw_quad->is_stream_video) {
-    dict->Set("is_stream_video", draw_quad->is_stream_video);
-  }
 }
 
 void TileDrawQuadToDict(const TileDrawQuad* draw_quad,
@@ -1481,7 +1475,6 @@ bool TextureDrawQuadFromDict(const base::Value::Dict& dict,
       t_background_color, nearest_neighbor.value(), secure_output_only.value(),
       static_cast<gfx::ProtectedVideoType>(protected_video_type_index));
   draw_quad->premultiplied_alpha = premultiplied_alpha.value();
-  draw_quad->is_stream_video = dict.FindBool("is_stream_video").value_or(false);
 
   gfx::Rect t_damage_rect;
   if (damage_rect && RectFromDict(*damage_rect, &t_damage_rect)) {

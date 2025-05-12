@@ -244,16 +244,6 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
   solid_color_quad->SetNew(shared_state, rect, visible_rect, SkColors::kRed,
                            false);
 
-  // We add a TextureDrawQuad with is_stream_video set to true to cover related
-  // code paths.
-  auto* stream_video_quad =
-      to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
-  stream_video_quad->SetNew(
-      shared_state, rect, visible_rect, needs_blending, resource6,
-      gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SkColors::kTransparent,
-      false, false, gfx::ProtectedVideoType::kHardwareProtected);
-  stream_video_quad->is_stream_video = true;
-
   auto* texture_quad = to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   texture_quad->SetNew(shared_state, rect, visible_rect, needs_blending,
                        resource1, gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f),
@@ -334,11 +324,7 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
       CreateAndImportResource(child_resource_provider, kDefaultSyncToken);
   viz::ResourceId resource5 =
       CreateAndImportResource(child_resource_provider, kDefaultSyncToken);
-  viz::ResourceId resource6 =
-      CreateAndImportResource(child_resource_provider, kDefaultSyncToken);
-  viz::ResourceId resource7 =
-      CreateAndImportResource(child_resource_provider, kDefaultSyncToken);
-  viz::ResourceId resource8 = CreateAndImportResource(
+  viz::ResourceId resource6 = CreateAndImportResource(
       child_resource_provider, kSyncTokenForMailboxTextureQuad);
 
   // Transfer resource to the parent.
@@ -349,8 +335,6 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
   resource_ids_to_transfer.push_back(resource4);
   resource_ids_to_transfer.push_back(resource5);
   resource_ids_to_transfer.push_back(resource6);
-  resource_ids_to_transfer.push_back(resource7);
-  resource_ids_to_transfer.push_back(resource8);
 
   std::vector<viz::ReturnedResource> returned_to_child;
   int child_id = resource_provider->CreateChild(
@@ -379,7 +363,6 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
   viz::ResourceId mapped_resource4 = resource_map[resource4];
   viz::ResourceId mapped_resource5 = resource_map[resource5];
   viz::ResourceId mapped_resource6 = resource_map[resource6];
-  viz::ResourceId mapped_resource8 = resource_map[resource8];
 
   viz::SharedQuadState* shared_state =
       to_pass->CreateAndAppendSharedQuadState();
@@ -407,14 +390,6 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
   solid_color_quad->SetNew(shared_state, rect, visible_rect, SkColors::kRed,
                            false);
 
-  viz::TextureDrawQuad* stream_video_quad =
-      to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
-  stream_video_quad->SetNew(
-      shared_state, rect, visible_rect, needs_blending, mapped_resource6,
-      gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SkColors::kTransparent,
-      false, false, gfx::ProtectedVideoType::kHardwareProtected);
-  stream_video_quad->is_stream_video = true;
-
   viz::TextureDrawQuad* texture_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   texture_quad->SetNew(shared_state, rect, visible_rect, needs_blending,
@@ -425,7 +400,7 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
   viz::TextureDrawQuad* external_resource_texture_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   external_resource_texture_quad->SetNew(
-      shared_state, rect, visible_rect, needs_blending, mapped_resource8,
+      shared_state, rect, visible_rect, needs_blending, mapped_resource6,
       gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SkColors::kTransparent,
       false, false, gfx::ProtectedVideoType::kClear);
 

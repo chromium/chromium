@@ -194,11 +194,10 @@ TEST(RenderPassIOTest, SharedQuadStateList) {
 }
 
 TEST(RenderPassIOTest, QuadList) {
-  const size_t kSharedQuadStateCount = 4;
+  const size_t kSharedQuadStateCount = 3;
   size_t quad_count = 0;
   const std::array<DrawQuad::Material, 8> kQuadMaterials = {
       DrawQuad::Material::kSolidColor,
-      DrawQuad::Material::kTextureContent,  // is_stream_video set to true.
       DrawQuad::Material::kVideoHole,
       DrawQuad::Material::kTextureContent,
       DrawQuad::Material::kCompositorRenderPass,
@@ -229,20 +228,7 @@ TEST(RenderPassIOTest, QuadList) {
       ++quad_count;
     }
     {
-      // 2. TextureDrawQuad with is_stream_video set to true.
-      TextureDrawQuad* quad =
-          render_pass0->CreateAndAppendDrawQuad<TextureDrawQuad>();
-      quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
-                   gfx::Rect(10, 10, 300, 400), gfx::Rect(10, 10, 200, 400),
-                   false, ResourceId(100), gfx::PointF(0.f, 0.f),
-                   gfx::PointF(1.f, 1.f), SkColors::kTransparent, false, false,
-                   gfx::ProtectedVideoType::kHardwareProtected);
-      quad->is_stream_video = true;
-      ++sqs_index;
-      ++quad_count;
-    }
-    {
-      // 3. VideoHoleDrawQuad
+      // 2. VideoHoleDrawQuad
       VideoHoleDrawQuad* quad =
           render_pass0->CreateAndAppendDrawQuad<VideoHoleDrawQuad>();
       quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
@@ -251,7 +237,7 @@ TEST(RenderPassIOTest, QuadList) {
       ++quad_count;
     }
     {
-      // 4. TextureDrawQuad
+      // 3. TextureDrawQuad
       TextureDrawQuad* quad =
           render_pass0->CreateAndAppendDrawQuad<TextureDrawQuad>();
       quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
@@ -264,7 +250,7 @@ TEST(RenderPassIOTest, QuadList) {
       ++quad_count;
     }
     {
-      // 5. CompositorRenderPassDrawQuad
+      // 4. CompositorRenderPassDrawQuad
       CompositorRenderPassDrawQuad* quad =
           render_pass0->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
       quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
@@ -277,7 +263,7 @@ TEST(RenderPassIOTest, QuadList) {
       ++quad_count;
     }
     {
-      // 6. TileDrawQuad
+      // 5. TileDrawQuad
       TileDrawQuad* quad =
           render_pass0->CreateAndAppendDrawQuad<TileDrawQuad>();
       quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
@@ -287,7 +273,7 @@ TEST(RenderPassIOTest, QuadList) {
       ++quad_count;
     }
     {
-      // 7. SurfaceDrawQuad
+      // 6. SurfaceDrawQuad
       SurfaceDrawQuad* quad =
           render_pass0->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
       quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
@@ -297,7 +283,7 @@ TEST(RenderPassIOTest, QuadList) {
       ++quad_count;
     }
     {
-      // 8. SurfaceDrawQuad with no starting SurfaceId
+      // 7. SurfaceDrawQuad with no starting SurfaceId
       SurfaceDrawQuad* quad =
           render_pass0->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
       quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),

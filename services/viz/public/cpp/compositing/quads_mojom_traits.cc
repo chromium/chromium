@@ -178,7 +178,6 @@ bool StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad>::Read(
 
   quad->nearest_neighbor = data.nearest_neighbor();
   quad->secure_output_only = data.secure_output_only();
-  quad->is_stream_video = data.is_stream_video();
   quad->is_video_frame = data.is_video_frame();
   quad->force_rgbx = data.force_rgbx();
 
