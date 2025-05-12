@@ -16549,7 +16549,7 @@
                         "hats_survey_ukm_id": "1027171324",
                         "ppm_survey_segment_name1": "Linux",
                         "ppm_survey_uniform_sample": "true",
-                        "probability": "0.88",
+                        "probability": "0.088",
                         "survey": "performance-ppm"
                     },
                     "enable_features": [
@@ -16573,7 +16573,7 @@
                         "ppm_survey_segment_name1": "Mac, up to 8 GB",
                         "ppm_survey_segment_name2": "Mac, over 8 GB",
                         "ppm_survey_uniform_sample": "true",
-                        "probability": "0.88",
+                        "probability": "0.088",
                         "survey": "performance-ppm"
                     },
                     "enable_features": [
@@ -16599,7 +16599,7 @@
                         "ppm_survey_segment_name2": "Windows, 4-8 GB",
                         "ppm_survey_segment_name3": "Windows, over 8 GB",
                         "ppm_survey_uniform_sample": "true",
-                        "probability": "0.88",
+                        "probability": "0.088",
                         "survey": "performance-ppm"
                     },
                     "enable_features": [
