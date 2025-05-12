@@ -55,6 +55,9 @@ class GURL;
 // Defines the interface for interacting with a Chrome Lens Overlay.
 @protocol ChromeLensOverlay
 
+// The size of the base image in points.
+@property(nonatomic, readonly) CGSize imageSize;
+
 // Whether the current mode is translate.
 //
 // Note: this method will always return `NO` until the overlay is started.

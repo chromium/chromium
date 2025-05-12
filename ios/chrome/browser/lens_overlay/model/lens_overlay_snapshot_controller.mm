@@ -448,7 +448,13 @@ void LensOverlaySnapshotController::ProcessRawSnapshot(UIImage* snapshot) {
   if (lens::ContainerPresentationFor(base_window_) ==
       lens::ContainerPresentationType::kContentAreaCover) {
     // Content area cover presentation does not require any preprocessing.
-    std::move(callbackOnInitialSequence).Run(snapshot);
+    // Lens requires the image to be 1.0 scale.
+    UIImage* rescaledSnapshot =
+        [[UIImage alloc] initWithCGImage:snapshot.CGImage
+                                   scale:1
+                             orientation:UIImageOrientationUp];
+
+    std::move(callbackOnInitialSequence).Run(rescaledSnapshot);
     return;
   }
 

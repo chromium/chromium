@@ -88,6 +88,10 @@
   return CGRectZero;
 }
 
+- (CGSize)imageSize {
+  return CGSizeZero;
+}
+
 #pragma mark - Public
 
 - (void)simulateSelectionUpdate {

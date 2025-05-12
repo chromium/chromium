@@ -1350,8 +1350,30 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
 // Whether the image should be repositioned when exiting.
 - (BOOL)shouldResetSelectionToInitialPositionOnExit {
-  return _entrypoint != LensOverlayEntrypoint::kSearchImageContextMenu &&
-         _entrypoint != LensOverlayEntrypoint::kLVFImagePicker;
+  BOOL isLVFEntrypoint =
+      _entrypoint == LensOverlayEntrypoint::kSearchImageContextMenu ||
+      _entrypoint == LensOverlayEntrypoint::kLVFImagePicker;
+  if (isLVFEntrypoint) {
+    return NO;
+  }
+
+  UIWindow* sceneWindow = self.browser->GetSceneState().window;
+  if (!sceneWindow) {
+    return NO;
+  }
+
+  // If the window was resized and the current width does not match the initial
+  // snapshot width anymore, refrain from repositioning.
+  CGFloat currentWindowWidth =
+      self.browser->GetSceneState().window.frame.size.width;
+  CGFloat initialImageWidth = _selectionViewController.imageSize.width;
+
+  // Factor in the native scale of the screen to compensate for the initial
+  // rescale. This initial adjustment was necessary to meet the specifications
+  // of the Lens API.
+  CGFloat screenScale = [UIScreen mainScreen].nativeScale;
+
+  return currentWindowWidth * screenScale == initialImageWidth;
 }
 
 - (BOOL)isLensOverlayVisible {
