@@ -152,9 +152,13 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
   private onLiveCaptionEnabledChanged_(event: Event): void {
     const liveCaptionEnabled =
         (event.target as SettingsToggleButtonElement).checked;
+    const defaultLanguageInstalled =
+        this.installedLanguagePacks_.findIndex(
+            (language: LiveCaptionLanguage) =>
+                this.isDefaultLanguage_(language.code)) !== -1;
     chrome.metricsPrivate.recordBoolean(
         'Accessibility.LiveCaption.EnableFromSettings', liveCaptionEnabled);
-    if (this.installedLanguagePacks_.length === 0) {
+    if (liveCaptionEnabled && !defaultLanguageInstalled) {
       this.installLanguagePacks_(
           [this.getPref('accessibility.captions.live_caption_language').value]);
     }
