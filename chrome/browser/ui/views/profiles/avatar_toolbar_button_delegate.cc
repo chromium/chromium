@@ -1685,6 +1685,7 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
                                            guest_window_count));
       text = l10n_util::GetPluralStringFUTF16(IDS_AVATAR_BUTTON_GUEST,
                                               guest_window_count);
+      color = color_provider->GetColor(kColorAvatarButtonHighlightNormal);
       break;
     }
     case ButtonState::kManagement: {
@@ -1780,13 +1781,13 @@ SkColor AvatarToolbarButtonDelegate::GetHighlightTextColor(
     case ButtonState::kPassphraseError:
     case ButtonState::kSyncPaused:
     case ButtonState::kExplicitTextShowing:
-    case ButtonState::kGuestSession:
     case ButtonState::kShowIdentityName:
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     case ButtonState::kHistorySyncOptin:
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
       return color_provider->GetColor(
           kColorAvatarButtonHighlightDefaultForeground);
+    case ButtonState::kGuestSession:
     case ButtonState::kNormal:
       return color_provider->GetColor(
           kColorAvatarButtonHighlightNormalForeground);
@@ -1919,6 +1920,7 @@ ui::ImageModel AvatarToolbarButtonDelegate::GetAvatarIcon(
 bool AvatarToolbarButtonDelegate::ShouldPaintBorder() const {
   switch (state_manager_->GetButtonActiveState()) {
     case ButtonState::kGuestSession:
+      return true;
     case ButtonState::kShowIdentityName:
     case ButtonState::kNormal:
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
