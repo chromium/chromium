@@ -26,7 +26,7 @@ class ColorChooserIOS;
         colorChooser;
 
 // Consumer that is configured by this mediator.
-@property(nonatomic, assign) id<ColorChooserConsumerIOS> consumer;
+@property(nonatomic, weak) id<ColorChooserConsumerIOS> consumer;
 
 // Initializer.
 - (instancetype)initWithColorChooser:

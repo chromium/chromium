@@ -22,7 +22,7 @@ class ShellBluetoothChooserIOS;
     content::ShellBluetoothChooserIOS* bluetoothChooser;
 
 // Consumer that is configured by this mediator.
-@property(nonatomic, assign) id<ShellBluetoothDeviceListConsumer> consumer;
+@property(nonatomic, weak) id<ShellBluetoothDeviceListConsumer> consumer;
 
 - (instancetype)initWithBluetoothChooser:
     (content::ShellBluetoothChooserIOS*)bluetoothChooser;
