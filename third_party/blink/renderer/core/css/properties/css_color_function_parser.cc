@@ -143,21 +143,6 @@ std::optional<Color> TryResolveAtParseTime(const CSSValue& value) {
           *color1, *color2, CSSToLengthConversionData(/*element=*/nullptr));
     }
   }
-  if (auto* relative_color_value =
-          DynamicTo<cssvalue::CSSRelativeColorValue>(value)) {
-    auto origin_color =
-        TryResolveAtParseTime(relative_color_value->OriginColor());
-    if (!origin_color) {
-      return std::nullopt;
-    }
-    StyleColor::UnresolvedRelativeColor* unresolved_relative_color =
-        MakeGarbageCollected<StyleColor::UnresolvedRelativeColor>(
-            StyleColor(origin_color.value()),
-            relative_color_value->ColorInterpolationSpace(),
-            relative_color_value->Channel0(), relative_color_value->Channel1(),
-            relative_color_value->Channel2(), relative_color_value->Alpha());
-    return unresolved_relative_color->Resolve(Color());
-  }
   return std::nullopt;
 }
 

@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 
 namespace blink {
@@ -71,12 +72,15 @@ TEST(StyleColorTest, Equality) {
           currentcolor_1, red_rgb_1, 0.5, 1.0));
   CSSIdentifierValue* r = CSSIdentifierValue::Create(CSSValueID::kR);
   CSSIdentifierValue* b = CSSIdentifierValue::Create(CSSValueID::kB);
+  CSSToLengthConversionData length_resolver(/*element=*/nullptr);
   StyleColor unresolved_relative_1(
       MakeGarbageCollected<StyleColor::UnresolvedRelativeColor>(
-          currentcolor_1, Color::ColorSpace::kSRGB, *r, *r, *r, nullptr));
+          currentcolor_1, Color::ColorSpace::kSRGB, *r, *r, *r, nullptr,
+          length_resolver));
   StyleColor unresolved_relative_2(
       MakeGarbageCollected<StyleColor::UnresolvedRelativeColor>(
-          currentcolor_1, Color::ColorSpace::kSRGB, *b, *b, *b, nullptr));
+          currentcolor_1, Color::ColorSpace::kSRGB, *b, *b, *b, nullptr,
+          length_resolver));
   EXPECT_NE(unresolved_mix_1, unresolved_mix_2);
   EXPECT_NE(unresolved_mix_1, unresolved_relative_1);
   EXPECT_NE(unresolved_relative_1, unresolved_relative_2);
@@ -147,55 +151,58 @@ TEST(StyleColorTest, UnresolvedRelativeColor_Equality) {
   CSSValue* calc_1 = CreateCalcAddValue(CSSValueID::kR, CSSValueID::kG);
   CSSValue* calc_2 = CreateCalcAddValue(CSSValueID::kG, CSSValueID::kB);
 
+  CSSToLengthConversionData length_resolver(/*element=*/nullptr);
   using UnresolvedRelativeColor = StyleColor::UnresolvedRelativeColor;
   UnresolvedRelativeColor* relative_1 =
       MakeGarbageCollected<UnresolvedRelativeColor>(
-          currentcolor, Color::ColorSpace::kSRGB, *r, *number, *calc_1,
-          nullptr);
+          currentcolor, Color::ColorSpace::kSRGB, *r, *number, *calc_1, nullptr,
+          length_resolver);
   UnresolvedRelativeColor* relative_2 =
       MakeGarbageCollected<UnresolvedRelativeColor>(
-          currentcolor, Color::ColorSpace::kSRGB, *r, *number, *calc_1,
-          nullptr);
+          currentcolor, Color::ColorSpace::kSRGB, *r, *number, *calc_1, nullptr,
+          length_resolver);
   EXPECT_EQ(*relative_1, *relative_2);
 
   UnresolvedRelativeColor* relative_3 =
       MakeGarbageCollected<UnresolvedRelativeColor>(
-          mix, Color::ColorSpace::kSRGB, *r, *number, *calc_1, nullptr);
+          mix, Color::ColorSpace::kSRGB, *r, *number, *calc_1, nullptr,
+          length_resolver);
   EXPECT_NE(*relative_1, *relative_3);
 
   UnresolvedRelativeColor* relative_4 =
       MakeGarbageCollected<UnresolvedRelativeColor>(
-          currentcolor, Color::ColorSpace::kHSL, *r, *number, *calc_1, nullptr);
+          currentcolor, Color::ColorSpace::kHSL, *r, *number, *calc_1, nullptr,
+          length_resolver);
   EXPECT_NE(*relative_1, *relative_4);
 
   UnresolvedRelativeColor* relative_5 =
       MakeGarbageCollected<UnresolvedRelativeColor>(
           currentcolor, Color::ColorSpace::kSRGB, *none, *number, *calc_1,
-          nullptr);
+          nullptr, length_resolver);
   EXPECT_NE(*relative_1, *relative_5);
 
   UnresolvedRelativeColor* relative_6 =
       MakeGarbageCollected<UnresolvedRelativeColor>(
           currentcolor, Color::ColorSpace::kSRGB, *r, *percent, *calc_1,
-          nullptr);
+          nullptr, length_resolver);
   EXPECT_NE(*relative_1, *relative_6);
 
   UnresolvedRelativeColor* relative_7 =
       MakeGarbageCollected<UnresolvedRelativeColor>(
-          currentcolor, Color::ColorSpace::kSRGB, *r, *number, *calc_2,
-          nullptr);
+          currentcolor, Color::ColorSpace::kSRGB, *r, *number, *calc_2, nullptr,
+          length_resolver);
   EXPECT_NE(*relative_1, *relative_7);
 
   UnresolvedRelativeColor* relative_8 =
       MakeGarbageCollected<UnresolvedRelativeColor>(
-          currentcolor, Color::ColorSpace::kSRGB, *r, *number, *calc_1,
-          percent);
+          currentcolor, Color::ColorSpace::kSRGB, *r, *number, *calc_1, percent,
+          length_resolver);
   EXPECT_NE(*relative_1, *relative_8);
 
   UnresolvedRelativeColor* relative_9 =
       MakeGarbageCollected<UnresolvedRelativeColor>(
-          currentcolor, Color::ColorSpace::kSRGB, *r, *number, *calc_1,
-          percent);
+          currentcolor, Color::ColorSpace::kSRGB, *r, *number, *calc_1, percent,
+          length_resolver);
   EXPECT_EQ(*relative_8, *relative_9);
 }
 
@@ -223,10 +230,12 @@ TEST(StyleColorTest, UnresolvedRelativeColor_ToCSSValue) {
       25, CSSPrimitiveValue::UnitType::kPercentage);
   CSSValue* calc = CreateCalcAddValue(CSSValueID::kR, CSSValueID::kG);
 
+  CSSToLengthConversionData length_resolver(/*element=*/nullptr);
   using UnresolvedRelativeColor = StyleColor::UnresolvedRelativeColor;
   UnresolvedRelativeColor* relative_1 =
       MakeGarbageCollected<UnresolvedRelativeColor>(
-          currentcolor, Color::ColorSpace::kSRGB, *r, *number, *calc, nullptr);
+          currentcolor, Color::ColorSpace::kSRGB, *r, *number, *calc, nullptr,
+          length_resolver);
   CSSValue* value_1 = relative_1->ToCSSValue();
   EXPECT_TRUE(value_1->IsRelativeColorValue());
   EXPECT_EQ(value_1->CssText(),
@@ -235,7 +244,8 @@ TEST(StyleColorTest, UnresolvedRelativeColor_ToCSSValue) {
   using UnresolvedRelativeColor = StyleColor::UnresolvedRelativeColor;
   UnresolvedRelativeColor* relative_2 =
       MakeGarbageCollected<UnresolvedRelativeColor>(
-          currentcolor, Color::ColorSpace::kSRGB, *r, *percent, *none, nullptr);
+          currentcolor, Color::ColorSpace::kSRGB, *r, *percent, *none, nullptr,
+          length_resolver);
   CSSValue* value_2 = relative_2->ToCSSValue();
   EXPECT_TRUE(value_2->IsRelativeColorValue());
   EXPECT_EQ(value_2->CssText(), "color(from currentcolor srgb r 25% none)");
@@ -248,12 +258,13 @@ TEST(StyleColorTest, UnresolvedRelativeColor_Resolve) {
   // Note: This test compares serializations to allow tolerance for
   // floating-point rounding error.
 
+  CSSToLengthConversionData length_resolver(/*element=*/nullptr);
   using UnresolvedRelativeColor = StyleColor::UnresolvedRelativeColor;
   UnresolvedRelativeColor* rgb = MakeGarbageCollected<UnresolvedRelativeColor>(
       currentcolor, Color::ColorSpace::kSRGB,
       *CreateCalcAddValue(CSSValueID::kR, CSSValueID::kG),
       *CSSNumericLiteralValue::Create(0, CSSPrimitiveValue::UnitType::kNumber),
-      *CSSIdentifierValue::Create(CSSValueID::kNone), nullptr);
+      *CSSIdentifierValue::Create(CSSValueID::kNone), nullptr, length_resolver);
   EXPECT_EQ(
       rgb->Resolve(rebeccapurple).SerializeAsCSSColor(),
       Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.6, 0, std::nullopt, 1.0)
@@ -265,7 +276,7 @@ TEST(StyleColorTest, UnresolvedRelativeColor_Resolve) {
       *CSSNumericLiteralValue::Create(20,
                                       CSSPrimitiveValue::UnitType::kPercentage),
       *CSSIdentifierValue::Create(CSSValueID::kL),
-      CSSIdentifierValue::Create(CSSValueID::kAlpha));
+      CSSIdentifierValue::Create(CSSValueID::kAlpha), length_resolver);
   EXPECT_EQ(hsl->Resolve(rebeccapurple).SerializeAsCSSColor(),
             Color::FromRGB(102, 82, 122).SerializeAsCSSColor());
   EXPECT_EQ(
@@ -280,7 +291,7 @@ TEST(StyleColorTest, UnresolvedRelativeColor_Resolve) {
       *CSSIdentifierValue::Create(CSSValueID::kL),
       *CSSIdentifierValue::Create(CSSValueID::kC),
       *CSSIdentifierValue::Create(CSSValueID::kH),
-      CSSIdentifierValue::Create(CSSValueID::kAlpha));
+      CSSIdentifierValue::Create(CSSValueID::kAlpha), length_resolver);
   EXPECT_EQ(lch->Resolve(Color::FromColorSpace(Color::ColorSpace::kLch, 200,
                                                300, 400, 5))
                 .SerializeAsCSSColor(),

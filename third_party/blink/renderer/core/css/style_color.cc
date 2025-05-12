@@ -130,13 +130,15 @@ StyleColor::UnresolvedRelativeColor::UnresolvedRelativeColor(
     const CSSValue& channel0,
     const CSSValue& channel1,
     const CSSValue& channel2,
-    const CSSValue* alpha)
+    const CSSValue* alpha,
+    const CSSLengthResolver& length_resolver)
     : UnresolvedColorFunction(UnresolvedColorFunction::Type::kRelativeColor),
       origin_color_(origin_color.color_or_unresolved_color_function_),
       origin_color_type_(ResolveColorOperandType(origin_color)),
       color_interpolation_space_(color_interpolation_space) {
   auto to_channel =
-      [](const CSSValue& value) -> scoped_refptr<const CalculationValue> {
+      [&length_resolver](
+          const CSSValue& value) -> scoped_refptr<const CalculationValue> {
     if (const CSSNumericLiteralValue* numeric =
             DynamicTo<CSSNumericLiteralValue>(value)) {
       if (numeric->IsPercentage()) {
@@ -161,8 +163,7 @@ StyleColor::UnresolvedRelativeColor::UnresolvedRelativeColor(
                                                 Length::ValueRange::kAll);
     } else if (const CSSMathFunctionValue* function =
                    DynamicTo<CSSMathFunctionValue>(value)) {
-      return function->ToCalcValue(
-          CSSToLengthConversionData(/*element=*/nullptr));
+      return function->ToCalcValue(length_resolver);
     } else {
       NOTREACHED();
     }
