@@ -7245,7 +7245,6 @@ test("unit_tests") {
     if (is_chrome_branded) {
       sources += [
         "../browser/component_updater/recovery_improved_component_unittest.cc",
-        "../browser/ui/startup/installer_downloader/installer_downloader_infobar_delegate_unittest.cc",
       ]
 
       data_deps +=

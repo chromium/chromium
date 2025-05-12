@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/startup/installer_downloader/installer_downloader_infobar_delegate.h"
+#include "chrome/browser/win/installer_downloader/installer_downloader_infobar_delegate.h"
 
 #include <memory>
 #include <utility>

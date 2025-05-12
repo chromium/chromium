@@ -22,6 +22,8 @@ source_set("installer_downloader") {
   sources = [
     "installer_downloader_controller.cc",
     "installer_downloader_feature.cc",
+    "installer_downloader_infobar_delegate.cc",
+    "installer_downloader_infobar_delegate.h",
     "installer_downloader_model.h",
     "installer_downloader_model_impl.cc",
     "installer_downloader_model_impl.h",
@@ -34,9 +36,17 @@ source_set("installer_downloader") {
 
   deps = [
     ":prefs",
+    "//chrome/app:branded_strings_grit",
+    "//chrome/app:generated_resources_grit",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ui",
     "//chrome/browser/win:cloud_synced_folder_checker",
+    "//components/infobars/content",
+    "//components/infobars/core",
+    "//components/omnibox/browser:vector_icons",
     "//components/prefs",
+    "//components/vector_icons",
+    "//ui/base",
     "//url",
   ]
 }
@@ -46,6 +56,7 @@ source_set("unit_tests") {
 
   sources = [
     "installer_downloader_controller_unittest.cc",
+    "installer_downloader_infobar_delegate_unittest.cc",
     "installer_downloader_model_impl_unittest.cc",
   ]
 
@@ -56,9 +67,13 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/win:cloud_synced_folder_checker",
     "//chrome/test:test_support",
+    "//components/infobars/content",
+    "//components/infobars/core",
     "//components/prefs",
     "//components/prefs:test_support",
+    "//components/vector_icons",
     "//content/test:test_support",
     "//testing/gtest",
+    "//ui/base",
   ]
 }
