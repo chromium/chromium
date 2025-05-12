@@ -151,22 +151,6 @@ public class DragDropMetricUtils {
     }
 
     /**
-     * Record times histogram Android.DragDrop.Tab.Duration.WithinDestStrip and
-     * Android.DragDrop.TabGroup.Duration.WithinDestStrip.
-     *
-     * @param duration scrolling on a destination strip.
-     * @param isTabGroup True if the dragged item is a tab group; otherwise, it is assumed to be a
-     *     single tab.
-     */
-    public static void recordDurationWithinDestStrip(long duration, boolean isTabGroup) {
-        String histogram =
-                String.format(
-                        "Android.DragDrop.%s.Duration.WithinDestStrip",
-                        isTabGroup ? "TabGroup" : "Tab");
-        RecordHistogram.recordMediumTimesHistogram(histogram, duration);
-    }
-
-    /**
      * Record boolean histogram Android.DragDrop.Tab.SourceWindowClosed and
      * Android.DragDrop.TabGroup.SourceWindowClosed.
      *

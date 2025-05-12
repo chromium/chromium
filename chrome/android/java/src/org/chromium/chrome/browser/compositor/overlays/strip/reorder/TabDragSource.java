@@ -13,7 +13,6 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.SystemClock;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.View.DragShadowBuilder;
@@ -108,8 +107,8 @@ public class TabDragSource implements View.OnDragListener {
     private int mLastAction;
     private boolean mHoveringInStrip;
 
-    // Local state used by Drag Drop metrics. Not-null when a tab dragging is in progress.
-    private @Nullable DragLocalUmaState mUmaState;
+    // Tracks whether the current drag has ever left the source strip.
+    private boolean mDragEverLeftStrip;
 
     /**
      * Prepares the toolbar view to listen to the drag events and data drop after the drag is
@@ -352,12 +351,9 @@ public class TabDragSource implements View.OnDragListener {
         switch (dragEvent.getAction()) {
             case DragEvent.ACTION_DRAG_STARTED:
                 res = onDragStart(dragEvent.getX(), dragEvent.getClipDescription());
-                if (res) mUmaState = new DragLocalUmaState();
                 break;
             case DragEvent.ACTION_DRAG_ENDED:
                 res = onDragEnd(dragEvent.getResult(), mLastAction == DragEvent.ACTION_DRAG_EXITED);
-
-                mUmaState = null;
                 break;
             case DragEvent.ACTION_DRAG_ENTERED:
                 // We'll trigger #onDragEnter when handling the following ACTION_DRAG_LOCATION so we
@@ -454,9 +450,6 @@ public class TabDragSource implements View.OnDragListener {
     private boolean onDragEnter(float xPx) {
         mHoveringInStrip = true;
         boolean isDragSource = isDragSource();
-        if (!isDragSource && mUmaState.mTabEnteringDestStripSystemElapsedTime < 0) {
-            mUmaState.mTabEnteringDestStripSystemElapsedTime = SystemClock.elapsedRealtime();
-        }
         if (isDragSource || XrUtils.isXrDevice()) {
             mHandler.removeCallbacks(mOnDragExitRunnable);
             showDragShadow(false);
@@ -486,7 +479,7 @@ public class TabDragSource implements View.OnDragListener {
         helper.stopReorderMode();
         if (isDragSource()) {
             DragDropMetricUtils.recordReorderStripWithDragDrop(
-                    mUmaState.mDragEverLeftStrip, isTabGroupDrop());
+                    mDragEverLeftStrip, isTabGroupDrop());
             return true;
         }
 
@@ -536,7 +529,6 @@ public class TabDragSource implements View.OnDragListener {
                 DragDropType.TAB_STRIP_TO_TAB_STRIP,
                 AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager),
                 /* isTabGroup= */ false);
-        mUmaState.mTabLeavingDestStripSystemElapsedTime = SystemClock.elapsedRealtime();
         return true;
     }
 
@@ -573,25 +565,14 @@ public class TabDragSource implements View.OnDragListener {
                 DragDropType.TAB_STRIP_TO_TAB_STRIP,
                 AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager),
                 /* isTabGroup= */ true);
-        mUmaState.mTabLeavingDestStripSystemElapsedTime = SystemClock.elapsedRealtime();
         return true;
     }
 
     private boolean onDragEnd(boolean dropHandled, boolean didExitToolbar) {
         mHoveringInStrip = false;
 
-        // No-op for destination strip. Note: If we add updates for target strip, also check for
-        // !TabUiFeatureUtilities.DISABLE_STRIP_TO_STRIP_DD.getValue()
+        // No-op for destination strip.
         if (!isDragSource()) {
-            if (mUmaState.mTabEnteringDestStripSystemElapsedTime > 0
-                    && mUmaState.mTabLeavingDestStripSystemElapsedTime > 0) {
-                long duration =
-                        mUmaState.mTabLeavingDestStripSystemElapsedTime
-                                - mUmaState.mTabEnteringDestStripSystemElapsedTime;
-                assert duration >= 0
-                        : "Duration when the drag is within the destination strip is invalid";
-                DragDropMetricUtils.recordDurationWithinDestStrip(duration, isTabGroupDrop());
-            }
             return false;
         }
 
@@ -660,10 +641,7 @@ public class TabDragSource implements View.OnDragListener {
 
     private boolean onDragExit() {
         mHoveringInStrip = false;
-        mUmaState.mDragEverLeftStrip = true;
-        if (!isDragSource()) {
-            mUmaState.mTabLeavingDestStripSystemElapsedTime = SystemClock.elapsedRealtime();
-        }
+        mDragEverLeftStrip = true;
         if (XrUtils.isXrDevice()) {
             showDragShadow(true);
         }
@@ -859,10 +837,6 @@ public class TabDragSource implements View.OnDragListener {
         return tabModelSelector != null && tabModelSelector.getTotalTabCount() > 1;
     }
 
-    void createUmaStateForTesting() {
-        mUmaState = new DragLocalUmaState();
-    }
-
     View getShadowViewForTesting() {
         return mShadowView;
     }
@@ -873,20 +847,5 @@ public class TabDragSource implements View.OnDragListener {
 
     Runnable getOnDragExitRunnableForTesting() {
         return mOnDragExitRunnable;
-    }
-
-    static class DragLocalUmaState {
-        // Whether the tab drag has ever left the source strip.
-        boolean mDragEverLeftStrip;
-        // The SystemElapsedTime when the tab dragged first enters the destination strip.
-        long mTabEnteringDestStripSystemElapsedTime;
-        // The SystemElapsedTime when the tab dragged exits or drops into the destination strip.
-        long mTabLeavingDestStripSystemElapsedTime;
-
-        DragLocalUmaState() {
-            mDragEverLeftStrip = false;
-            mTabEnteringDestStripSystemElapsedTime = -1;
-            mTabLeavingDestStripSystemElapsedTime = -1;
-        }
     }
 }

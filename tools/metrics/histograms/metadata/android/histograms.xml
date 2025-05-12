@@ -1783,21 +1783,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.DragDrop{TabObjectType}.Duration.WithinDestStrip"
-    units="ms" expires_after="2026-05-05">
-  <owner>shuyng@google.com</owner>
-  <owner>zheliooo@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    During {TabObjectType} drag and drop, record duration when the drag is
-    within the destination strip, which is the time difference from the first
-    time entering the destination strip to the last time leaving or dropping
-    into the destination strip. Recorded when a {TabObjectType} drag and drop is
-    finished.
-  </summary>
-  <token key="TabObjectType" variants="TabObjectType"/>
-</histogram>
-
 <histogram name="Android.DragDrop{TabObjectType}.FromStrip.Result"
     enum="DragDropResult" expires_after="2026-05-05">
   <owner>shuyng@google.com</owner>

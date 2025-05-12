@@ -248,7 +248,6 @@ public class TabDragSourceTest {
                         mTabStripHeightSupplier,
                         mDesktopWindowStateManager);
         mDestInstance.setTabModelSelector(mTabModelSelector);
-        mSourceInstance.createUmaStateForTesting();
 
         when(mSourceMultiInstanceManager.closeChromeWindowIfEmpty(anyInt())).thenReturn(false);
 
@@ -609,7 +608,6 @@ public class TabDragSourceTest {
                         .expectNoRecords("Android.DragDrop.Tab.Type")
                         .expectNoRecords("Android.DragDrop.Tab.Type.DesktopWindow")
                         .expectNoRecords("Android.DragDrop.Tab.ReorderStripWithDragDrop")
-                        .expectNoRecords("Android.DragDrop.Tab.Duration.WithinDestStrip")
                         .build();
         new DragEventInvoker(/* isGroupDrag= */ false, /* isGroupShared= */ false)
                 .dragExit(mSourceInstance)
@@ -1044,11 +1042,9 @@ public class TabDragSourceTest {
                         .expectNoRecords("Android.DragDrop.TabGroup.FromStrip.Result.DesktopWindow")
                         .expectNoRecords("Android.DragDrop.TabGroup.Type")
                         .expectNoRecords("Android.DragDrop.TabGroup.Type.DesktopWindow")
-                        .expectNoRecords("Android.DragDrop.TabGroup.Duration.WithinDestStrip")
                         .expectNoRecords("Android.DragDrop.Tab.FromStrip.Result.DesktopWindow")
                         .expectNoRecords("Android.DragDrop.Tab.Type")
                         .expectNoRecords("Android.DragDrop.Tab.Type.DesktopWindow")
-                        .expectNoRecords("Android.DragDrop.Tab.Duration.WithinDestStrip")
                         .build();
 
         new DragEventInvoker(isGroupDrag, /* isGroupShared= */ false)
@@ -1080,12 +1076,10 @@ public class TabDragSourceTest {
                         .expectNoRecords("Android.DragDrop.Tab.Type")
                         .expectNoRecords("Android.DragDrop.Tab.Type.DesktopWindow")
                         .expectNoRecords("Android.DragDrop.Tab.ReorderStripWithDragDrop")
-                        .expectNoRecords("Android.DragDrop.Tab.Duration.WithinDestStrip")
                         .expectNoRecords("Android.DragDrop.TabGroup.FromStrip.Result.DesktopWindow")
                         .expectNoRecords("Android.DragDrop.TabGroup.Type")
                         .expectNoRecords("Android.DragDrop.TabGroup.Type.DesktopWindow")
                         .expectNoRecords("Android.DragDrop.TabGroup.ReorderStripWithDragDrop")
-                        .expectNoRecords("Android.DragDrop.TabGroup.Duration.WithinDestStrip")
                         .build();
         new DragEventInvoker(isGroupDrag, /* isGroupShared= */ false)
                 // Drag our of strip but within toolbar container.
@@ -1145,8 +1139,7 @@ public class TabDragSourceTest {
                                 DragDropResult.IGNORED_MAX_INSTANCES)
                         .expectNoRecords("Android.DragDrop.Tab.Type")
                         .expectNoRecords("Android.DragDrop.Tab.Type.DesktopWindow")
-                        .expectNoRecords("Android.DragDrop.Tab.ReorderStripWithDragDrop")
-                        .expectNoRecords("Android.DragDrop.Tab.Duration.WithinDestStrip");
+                        .expectNoRecords("Android.DragDrop.Tab.ReorderStripWithDragDrop");
 
         if (isInDesktopWindow) {
             AppHeaderUtils.setAppInDesktopWindowForTesting(true);
@@ -1215,17 +1208,12 @@ public class TabDragSourceTest {
                         "Android.DragDrop.%s.FromStrip.Result", isGroupDrag ? "TabGroup" : "Tab");
         String typeHistogram =
                 String.format("Android.DragDrop.%s.Type", isGroupDrag ? "TabGroup" : "Tab");
-        String durationHistogram =
-                String.format(
-                        "Android.DragDrop.%s.Duration.WithinDestStrip",
-                        isGroupDrag ? "TabGroup" : "Tab");
         HistogramWatcher.Builder builder =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(resultHistogram, DragDropResult.SUCCESS)
                         .expectIntRecord(typeHistogram, DragDropType.TAB_STRIP_TO_TAB_STRIP)
                         .expectNoRecords("Android.DragDrop.Tab.ReorderStripWithDragDrop")
-                        .expectNoRecords("Android.DragDrop.TabGroup.ReorderStripWithDragDrop")
-                        .expectAnyRecord(durationHistogram);
+                        .expectNoRecords("Android.DragDrop.TabGroup.ReorderStripWithDragDrop");
 
         if (isInDesktopWindow) {
             AppHeaderUtils.setAppInDesktopWindowForTesting(true);
@@ -1270,15 +1258,10 @@ public class TabDragSourceTest {
                         "Android.DragDrop.%s.FromStrip.Result", isGroupDrag ? "TabGroup" : "Tab");
         String typeHistogram =
                 String.format("Android.DragDrop.%s.Type", isGroupDrag ? "TabGroup" : "Tab");
-        String durationHistogram =
-                String.format(
-                        "Android.DragDrop.%s.Duration.WithinDestStrip",
-                        isGroupDrag ? "TabGroup" : "Tab");
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(resultHistogram, DragDropResult.SUCCESS)
                         .expectIntRecord(typeHistogram, DragDropType.TAB_STRIP_TO_TAB_STRIP)
-                        .expectAnyRecord(durationHistogram)
                         .expectNoRecords("Android.DragDrop.Tab.FromStrip.Result.DesktopWindow")
                         .expectNoRecords("Android.DragDrop.Tab.Type.DesktopWindow")
                         .expectNoRecords("Android.DragDrop.Tab.ReorderStripWithDragDrop")
@@ -1313,10 +1296,6 @@ public class TabDragSourceTest {
         String resultHistogram =
                 String.format(
                         "Android.DragDrop.%s.FromStrip.Result", isGroupDrag ? "TabGroup" : "Tab");
-        String durationHistogram =
-                String.format(
-                        "Android.DragDrop.%s.Duration.WithinDestStrip",
-                        isGroupDrag ? "TabGroup" : "Tab");
 
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newBuilder()
@@ -1325,7 +1304,6 @@ public class TabDragSourceTest {
                         .expectNoRecords("Android.DragDrop.Tab.Type")
                         .expectNoRecords("Android.DragDrop.Tab.Type.DesktopWindow")
                         .expectNoRecords("Android.DragDrop.Tab.ReorderStripWithDragDrop")
-                        .expectAnyRecord(durationHistogram)
                         .expectNoRecords("Android.DragDrop.TabGroup.FromStrip.Result.DesktopWindow")
                         .expectNoRecords("Android.DragDrop.TabGroup.Type")
                         .expectNoRecords("Android.DragDrop.TabGroup.Type.DesktopWindow")
@@ -1378,11 +1356,9 @@ public class TabDragSourceTest {
                         .expectNoRecords("Android.DragDrop.TabGroup.FromStrip.Result.DesktopWindow")
                         .expectNoRecords("Android.DragDrop.TabGroup.Type")
                         .expectNoRecords("Android.DragDrop.TabGroup.Type.DesktopWindow")
-                        .expectNoRecords("Android.DragDrop.TabGroup.Duration.WithinDestStrip")
                         .expectNoRecords("Android.DragDrop.Tab.FromStrip.Result.DesktopWindow")
                         .expectNoRecords("Android.DragDrop.Tab.Type")
                         .expectNoRecords("Android.DragDrop.Tab.Type.DesktopWindow")
-                        .expectNoRecords("Android.DragDrop.Tab.Duration.WithinDestStrip")
                         .build();
 
         new DragEventInvoker(isGroupDrag, /* isGroupShared= */ false)
