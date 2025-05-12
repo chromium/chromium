@@ -39,11 +39,13 @@ class PlatformHandleImpl : public PlatformHandle {
           return false;
         }
       }
+      // crbug.com/414523295: while the status of camera/microphone can be
+      // determined, we currently don't support requesting them on Windows.
+      // Until this is fixed we will return `false`.
       case ContentSettingsType::MEDIASTREAM_CAMERA:
       case ContentSettingsType::MEDIASTREAM_MIC:
       case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
-        return SystemMediaSourceWin::GetInstance().SystemPermissionStatus(
-                   type) == SystemMediaSourceWin::Status::kNotDetermined;
+        return false;
       default:
         return false;
     }
