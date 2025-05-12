@@ -105,10 +105,10 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   virtual bool IsBitmapImage() const { return false; }
   virtual bool IsStaticBitmapImage() const { return false; }
 
-  virtual bool CurrentFrameKnownToBeOpaque() = 0;
+  virtual bool IsOpaque() = 0;
 
-  virtual bool CurrentFrameIsComplete() { return false; }
-  virtual bool CurrentFrameIsLazyDecoded() { return false; }
+  virtual bool FirstFrameIsComplete() { return false; }
+  virtual bool IsLazyDecoded() { return false; }
   virtual size_t FrameCount() { return 0; }
   virtual bool IsTextureBacked() const { return false; }
 

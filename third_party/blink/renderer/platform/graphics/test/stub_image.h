@@ -13,7 +13,7 @@ class StubImage : public Image {
  public:
   StubImage() = default;
 
-  bool CurrentFrameKnownToBeOpaque() override { return false; }
+  bool IsOpaque() override { return false; }
   gfx::Size SizeWithConfig(SizeConfig) const override {
     return gfx::Size(10, 10);
   }

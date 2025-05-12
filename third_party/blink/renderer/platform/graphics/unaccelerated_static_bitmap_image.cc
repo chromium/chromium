@@ -73,7 +73,7 @@ UnacceleratedStaticBitmapImage::~UnacceleratedStaticBitmapImage() {
   }
 }
 
-bool UnacceleratedStaticBitmapImage::CurrentFrameKnownToBeOpaque() {
+bool UnacceleratedStaticBitmapImage::IsOpaque() {
   return paint_image_.IsOpaque();
 }
 

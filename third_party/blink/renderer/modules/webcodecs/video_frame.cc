@@ -798,8 +798,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   const gfx::Size default_display_size(coded_size);
   const bool has_undiscarded_unpremultiplied_alpha =
       sk_image_info.alphaType() == kUnpremul_SkAlphaType &&
-      !image->CurrentFrameKnownToBeOpaque() &&
-      !(init && init->alpha() == kAlphaDiscard);
+      !image->IsOpaque() && !(init && init->alpha() == kAlphaDiscard);
 
   sk_sp<SkImage> sk_image;
   scoped_refptr<media::VideoFrame> frame;
@@ -808,7 +807,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     DCHECK(image->IsStaticBitmapImage());
     const auto format = media::VideoPixelFormatFromSkColorType(
         paint_image.GetColorType(),
-        image->CurrentFrameKnownToBeOpaque() || init->alpha() == kAlphaDiscard);
+        image->IsOpaque() || init->alpha() == kAlphaDiscard);
 
     ParsedVideoFrameInit parsed_init(init, format, coded_size,
                                      default_visible_rect, default_display_size,

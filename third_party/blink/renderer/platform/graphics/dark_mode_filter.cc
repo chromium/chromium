@@ -76,8 +76,9 @@ sk_sp<cc::ColorFilter> GetDarkModeFilterForImageOnMainThread(
     // default frame is completely received. This will help get correct
     // classification results for incremental content received for the given
     // image.
-    if (!image->IsBitmapImage() || image->CurrentFrameIsComplete())
+    if (!image->IsBitmapImage() || image->FirstFrameIsComplete()) {
       cache->Add(rounded_src, color_filter);
+    }
   }
   return color_filter;
 }

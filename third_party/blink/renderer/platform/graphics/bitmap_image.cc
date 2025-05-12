@@ -415,15 +415,15 @@ scoped_refptr<Image> BitmapImage::ImageForDefaultFrame() {
   return Image::ImageForDefaultFrame();
 }
 
-bool BitmapImage::CurrentFrameKnownToBeOpaque() {
+bool BitmapImage::IsOpaque() {
   return decoder_ ? decoder_->AlphaType() == kOpaque_SkAlphaType : false;
 }
 
-bool BitmapImage::CurrentFrameIsComplete() {
+bool BitmapImage::FirstFrameIsComplete() {
   return decoder_ && decoder_->FrameIsReceivedAtIndex(0);
 }
 
-bool BitmapImage::CurrentFrameIsLazyDecoded() {
+bool BitmapImage::IsLazyDecoded() {
   // BitmapImage supports only lazy generated images.
   return true;
 }

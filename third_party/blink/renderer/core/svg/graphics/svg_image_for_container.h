@@ -132,7 +132,7 @@ class CORE_EXPORT SVGImageForContainer final : public Image {
             const ImageDrawOptions&) override;
 
   // FIXME: Implement this to be less conservative.
-  bool CurrentFrameKnownToBeOpaque() override { return false; }
+  bool IsOpaque() override { return false; }
 
   PaintImage PaintImageForCurrentFrame() override;
 

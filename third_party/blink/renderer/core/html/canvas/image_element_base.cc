@@ -134,7 +134,7 @@ bool ImageElementBase::IsOpaque() const {
   if (!GetImageLoader().ImageComplete() || !image_content)
     return false;
   Image* image = image_content->GetImage();
-  return image->CurrentFrameKnownToBeOpaque();
+  return image->IsOpaque();
 }
 
 static bool HasDimensionsForImage(SVGImage& svg_image,

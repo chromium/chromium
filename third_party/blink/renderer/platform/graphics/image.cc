@@ -323,7 +323,7 @@ void Image::DrawPattern(GraphicsContext& context,
 
   StartAnimation();
 
-  if (CurrentFrameIsLazyDecoded()) {
+  if (IsLazyDecoded()) {
     TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                          "Draw LazyPixelRef", TRACE_EVENT_SCOPE_THREAD,
                          "LazyPixelRef", image_id);

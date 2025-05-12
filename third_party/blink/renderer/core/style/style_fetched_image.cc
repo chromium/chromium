@@ -255,7 +255,7 @@ scoped_refptr<Image> StyleFetchedImage::GetImage(
 
 bool StyleFetchedImage::KnownToBeOpaque(const Document&,
                                         const ComputedStyle&) const {
-  return image_->GetImage()->CurrentFrameKnownToBeOpaque();
+  return image_->GetImage()->IsOpaque();
 }
 
 void StyleFetchedImage::LoadDeferredImage(const Document& document) {

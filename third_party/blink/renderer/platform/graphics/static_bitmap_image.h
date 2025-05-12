@@ -46,7 +46,7 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   gfx::Size SizeWithConfig(SizeConfig) const final;
 
   // Methods have common implementation for all sub-classes
-  bool CurrentFrameIsComplete() override { return true; }
+  bool FirstFrameIsComplete() override { return true; }
   void DestroyDecodedData() override {}
 
   // Methods that have a default implementation, and overridden by only one

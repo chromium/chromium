@@ -91,8 +91,7 @@ void StaticBitmapImageToVideoFrameCopier::Convert(
   auto& context_provider = context_provider_wrapper->ContextProvider();
 
   // Readback to YUV is only used when result is opaque.
-  const bool result_is_opaque =
-      image->CurrentFrameKnownToBeOpaque() || can_discard_alpha_;
+  const bool result_is_opaque = image->IsOpaque() || can_discard_alpha_;
 
   const bool supports_yuv_readback =
       context_provider.GetCapabilities().supports_yuv_readback;

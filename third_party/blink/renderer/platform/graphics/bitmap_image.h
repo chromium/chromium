@@ -87,11 +87,9 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
 
   scoped_refptr<Image> ImageForDefaultFrame() override;
 
-  // TODO(khushalsagar): These names are bogus, we don't know what the current
-  // frame is.
-  bool CurrentFrameKnownToBeOpaque() override;
-  bool CurrentFrameIsComplete() override;
-  bool CurrentFrameIsLazyDecoded() override;
+  bool IsOpaque() override;
+  bool FirstFrameIsComplete() override;
+  bool IsLazyDecoded() override;
   size_t FrameCount() override;
   PaintImage PaintImageForCurrentFrame() override;
   ImageOrientation CurrentFrameOrientation() const override;

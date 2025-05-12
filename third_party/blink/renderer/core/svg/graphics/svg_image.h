@@ -171,8 +171,7 @@ class CORE_EXPORT SVGImage final : public Image {
   // to prune because these functions are not implemented yet.
   void DestroyDecodedData() override {}
 
-  // FIXME: Implement this to be less conservative.
-  bool CurrentFrameKnownToBeOpaque() override { return false; }
+  bool IsOpaque() override { return false; }
 
   class DrawInfo {
     STACK_ALLOCATED();

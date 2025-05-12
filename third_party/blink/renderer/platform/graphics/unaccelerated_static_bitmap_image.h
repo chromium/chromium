@@ -27,7 +27,7 @@ class PLATFORM_EXPORT UnacceleratedStaticBitmapImage final
       PaintImage,
       ImageOrientation orientation = ImageOrientationEnum::kDefault);
 
-  bool CurrentFrameKnownToBeOpaque() override;
+  bool IsOpaque() override;
 
   void Draw(cc::PaintCanvas*,
             const cc::PaintFlags&,

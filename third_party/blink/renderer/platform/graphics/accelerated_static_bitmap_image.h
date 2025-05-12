@@ -78,7 +78,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       const gfx::ColorSpace& color_space,
       base::OnceCallback<void(const gpu::SyncToken&)> release_callback);
 
-  bool CurrentFrameKnownToBeOpaque() override;
+  bool IsOpaque() override;
   bool IsTextureBacked() const override { return true; }
 
   void Draw(cc::PaintCanvas*,

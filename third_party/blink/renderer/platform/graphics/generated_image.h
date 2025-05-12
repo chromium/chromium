@@ -72,7 +72,7 @@ class PLATFORM_EXPORT GeneratedImage : public Image {
       const ImageDrawOptions& draw_options);
 
   // FIXME: Implement this to be less conservative.
-  bool CurrentFrameKnownToBeOpaque() override { return false; }
+  bool IsOpaque() override { return false; }
 
   GeneratedImage(const gfx::SizeF& size) : size_(size) {}
 

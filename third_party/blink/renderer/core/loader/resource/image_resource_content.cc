@@ -668,7 +668,7 @@ bool ImageResourceContent::IsAnimatedImage() const {
 }
 
 bool ImageResourceContent::IsPaintedFirstFrame() const {
-  return IsAnimatedImage() && image_->CurrentFrameIsComplete();
+  return IsAnimatedImage() && image_->FirstFrameIsComplete();
 }
 
 bool ImageResourceContent::TimingAllowPassed() const {

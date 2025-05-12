@@ -442,7 +442,7 @@ void AcceleratedStaticBitmapImage::Transfer() {
   DETACH_FROM_THREAD(thread_checker_);
 }
 
-bool AcceleratedStaticBitmapImage::CurrentFrameKnownToBeOpaque() {
+bool AcceleratedStaticBitmapImage::IsOpaque() {
   return SkAlphaTypeIsOpaque(GetAlphaType()) ||
          !GetSharedImageFormat().HasAlpha();
 }

@@ -332,7 +332,7 @@ bool LayoutImage::ForegroundIsKnownToBeOpaqueInRect(
   DEVTOOLS_TIMELINE_TRACE_EVENT_WITH_CATEGORIES(
       TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "PaintImage",
       inspector_paint_image_event::Data, this, *image_content);
-  return image_content->GetImage()->CurrentFrameKnownToBeOpaque();
+  return image_content->GetImage()->IsOpaque();
 }
 
 bool LayoutImage::ComputeBackgroundIsKnownToBeObscured() const {

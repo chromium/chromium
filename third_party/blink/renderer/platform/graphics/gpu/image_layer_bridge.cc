@@ -105,7 +105,7 @@ void ImageLayerBridge::SetImage(scoped_refptr<StaticBitmapImage> image) {
 
   image_ = std::move(image);
   if (image_) {
-    const bool image_is_opaque = image_->CurrentFrameKnownToBeOpaque();
+    const bool image_is_opaque = image_->IsOpaque();
     if (is_opaque_) {
       // If we in opaque mode but image might have transparency we need to
       // ensure its opacity is not used.
