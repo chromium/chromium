@@ -989,8 +989,8 @@ suite('NewTabPageAppTest', () => {
                 getCustomizeButton().querySelector('.customize-text')!,
                 'display', 'none');
             assertNotStyle(
-                getCustomizeButton().querySelector('.customize-icon')!,
-                'background-color', 'rgb(255, 255, 255)');
+                getCustomizeButton().querySelector('.customize-icon')!, 'fill',
+                'rgb(255, 255, 255)');
 
             const theme = createTheme({isDark: true});
             theme.backgroundImage = createBackgroundImage('https://foo.com');
@@ -1000,8 +1000,8 @@ suite('NewTabPageAppTest', () => {
             // Customize chrome button is collapsed and its icon is white.
             assertEquals(32, getCustomizeButton().offsetWidth);
             assertStyle(
-                getCustomizeButton().querySelector('.customize-icon')!,
-                'background-color', 'rgb(255, 255, 255)');
+                getCustomizeButton().querySelector('.customize-icon')!, 'fill',
+                'rgb(255, 255, 255)');
             assertStyle(
                 getCustomizeButton().querySelector('.customize-text')!,
                 'display', 'none');
@@ -1208,13 +1208,18 @@ suite('NewTabPageAppTest', () => {
       test(
           'setting background styles both customize chrome buttons',
           async () => {
-            // Both buttons' icons should have a non-white color.
+            // The fill color of wallpaperSearchButton's icon is explicitly
+            // hardcoded to white (#fff) in the SVG <path>, which takes higher
+            // percedence over any CSS fill color.
+            assertStyle(
+                getWallpaperSearchButton()
+                    .querySelector(
+                        '.customize-icon')!.shadowRoot!.querySelector('path')!,
+                'fill', 'rgb(255, 255, 255)');
+            // customizeButton's icon should have a non-white color.
             assertNotStyle(
-                getWallpaperSearchButton().querySelector('.customize-icon')!,
-                'background-color', 'rgb(255, 255, 255)');
-            assertNotStyle(
-                getCustomizeButton().querySelector('.customize-icon')!,
-                'background-color', 'rgb(255, 255, 255)');
+                getCustomizeButton().querySelector('.customize-icon')!, 'fill',
+                'rgb(255, 255, 255)');
             // Only customize chrome button should be collapsed.
             assertNotStyle(
                 getWallpaperSearchButton().querySelector('.customize-text')!,
@@ -1224,19 +1229,25 @@ suite('NewTabPageAppTest', () => {
                 'display', 'none');
             assertNotEquals(32, getWallpaperSearchButton().offsetWidth);
             assertEquals(32, getCustomizeButton().offsetWidth);
+
             // Create and set theme.
             const theme = createTheme({isDark: true});
             theme.backgroundImage = createBackgroundImage('https://foo.com');
             callbackRouterRemote.setTheme(theme);
             await callbackRouterRemote.$.flushForTesting();
 
-            // Both buttons' icons should be white.
+            // The fill color of wallpaperSearchButton's icon is explicitly
+            // hardcoded to white (#fff) in the SVG <path>, which takes higher
+            // percedence over any CSS fill color.
             assertStyle(
-                getWallpaperSearchButton().querySelector('.customize-icon')!,
-                'background-color', 'rgb(255, 255, 255)');
+                getWallpaperSearchButton()
+                    .querySelector(
+                        '.customize-icon')!.shadowRoot!.querySelector('path')!,
+                'fill', 'rgb(255, 255, 255)');
+            // customizeButton's icon should have a non-white color.
             assertStyle(
-                getCustomizeButton().querySelector('.customize-icon')!,
-                'background-color', 'rgb(255, 255, 255)');
+                getCustomizeButton().querySelector('.customize-icon')!, 'fill',
+                'rgb(255, 255, 255)');
             // Only customize chrome button should be collapsed.
             assertNotStyle(
                 getWallpaperSearchButton().querySelector('.customize-text')!,

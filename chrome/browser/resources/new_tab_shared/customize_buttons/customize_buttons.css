@@ -84,14 +84,8 @@
   --cr-icon-ripple-margin: 0;
   --cr-icon-ripple-size: 16px;
   --cr-icon-size: 100%;
-}
-
-#wallpaperSearchIcon {
-  --cr-icon-image: url(icons/sparkle.svg);
-}
-
-#customizeIcon {
-  --cr-icon-image: url(icons/icon_pencil.svg);
+  --iron-icon-width: 16px;
+  --iron-icon-height: 16px;
 }
 
 @media (max-width: 550px) {

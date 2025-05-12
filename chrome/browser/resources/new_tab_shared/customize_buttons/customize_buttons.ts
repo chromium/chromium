@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import './icons.html.js';
 
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
