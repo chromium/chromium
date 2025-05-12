@@ -837,7 +837,7 @@ TEST_P(ViewTransitionTest, InspectorStyleResolver) {
 
     // The resolver collects developer and UA rules.
     EXPECT_GT(pseudo_element_rules->size(), 1u);
-    EXPECT_EQ(pseudo_element_rules->back().first->cssText(),
+    EXPECT_EQ(pseudo_element_rules->back().rule->cssText(),
               test_case.user_rule);
   }
 
@@ -871,7 +871,7 @@ TEST_P(ViewTransitionTest, InspectorStyleResolver) {
     auto pseudo_element_rules = matched_rules_for_pseudo->matched_rules;
     // The resolver collects developer and UA rules.
     EXPECT_GT(pseudo_element_rules->size(), 1u);
-    EXPECT_EQ(pseudo_element_rules->back().first->cssText(),
+    EXPECT_EQ(pseudo_element_rules->back().rule->cssText(),
               test_case.user_rule);
   }
 

@@ -3899,7 +3899,7 @@ TEST_F(StyleResolverTest, PseudoCSSRulesForElementExcludeStartingStyle) {
       target, kPseudoIdBefore, g_null_atom);
   ASSERT_NE(pseudo_rules, nullptr);
   EXPECT_EQ(pseudo_rules->size(), 1u);
-  EXPECT_EQ(pseudo_rules->at(0).first->cssText(),
+  EXPECT_EQ(pseudo_rules->at(0).rule->cssText(),
             "#target::before { content: \"X\"; color: green; }");
 }
 

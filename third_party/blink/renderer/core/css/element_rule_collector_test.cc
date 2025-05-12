@@ -568,14 +568,14 @@ TEST_F(ElementRuleCollectorTest, FindStyleRuleWithNesting) {
 
   RuleIndexList* foo_css_rules = GetMatchedCSSRuleList(foo, rule_set);
   ASSERT_EQ(2u, foo_css_rules->size());
-  CSSRule* foo_css_rule_1 = foo_css_rules->at(0).first;
+  CSSRule* foo_css_rule_1 = foo_css_rules->at(0).rule.Get();
   EXPECT_EQ("#foo", DynamicTo<CSSStyleRule>(foo_css_rule_1)->selectorText());
-  CSSRule* foo_css_rule_2 = foo_css_rules->at(1).first;
+  CSSRule* foo_css_rule_2 = foo_css_rules->at(1).rule.Get();
   EXPECT_EQ("&.a", DynamicTo<CSSStyleRule>(foo_css_rule_2)->selectorText());
 
   RuleIndexList* bar_css_rules = GetMatchedCSSRuleList(bar, rule_set);
   ASSERT_EQ(1u, bar_css_rules->size());
-  CSSRule* bar_css_rule_1 = bar_css_rules->at(0).first;
+  CSSRule* bar_css_rule_1 = bar_css_rules->at(0).rule.Get();
   EXPECT_EQ("& > .b", DynamicTo<CSSStyleRule>(bar_css_rule_1)->selectorText());
 }
 
@@ -805,6 +805,54 @@ TEST_F(ElementRuleCollectorTest, FindStyleSheetWithCacheDisabled) {
   const StyleRule* rule_not_in_sheet = To<StyleRule>(
       css_test_helpers::ParseRule(GetDocument(), ".e .f { color: blue; }"));
   EXPECT_EQ(FindStyleSheet(nullptr, GetDocument(), rule_not_in_sheet), nullptr);
+}
+
+// https://crbug.com/416699692
+TEST_F(ElementRuleCollectorTest, TraceRuleIndexList) {
+  SetBodyInnerHTML(R"HTML(
+    <style id=style>
+      #e {
+        color: green;
+      }
+    </style>
+    <thing id=e></thing>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Persistent<RuleIndexList> rule_index_list;
+
+  // All of this stuff should go out of scope, except `rule_index_list`.
+  {
+    Element* sheet_element =
+        GetDocument().getElementById(AtomicString("style"));
+    ASSERT_TRUE(sheet_element);
+    CSSStyleSheet* sheet = To<HTMLStyleElement>(sheet_element)->sheet();
+    RuleSet* rule_set = &sheet->Contents()->GetRuleSet();
+    ASSERT_TRUE(rule_set);
+    Element* e = GetDocument().getElementById(AtomicString("e"));
+    ASSERT_TRUE(e);
+    rule_index_list = GetMatchedCSSRuleList(e, rule_set);
+  }
+
+  {
+    ASSERT_TRUE(rule_index_list);
+    ASSERT_EQ(1u, rule_index_list->size());
+    CSSRule* css_rule = rule_index_list->at(0).rule.Get();
+    ASSERT_TRUE(IsA<CSSStyleRule>(css_rule));
+    EXPECT_EQ("#e", DynamicTo<CSSStyleRule>(css_rule)->selectorText());
+  }
+
+  ThreadState::Current()->CollectAllGarbageForTesting();
+
+  // After collecting garbage, the objects reachable from `rule_index_list`
+  // must still be valid. (crbug.com/416699692)
+  {
+    ASSERT_TRUE(rule_index_list);
+    ASSERT_EQ(1u, rule_index_list->size());
+    CSSRule* css_rule = rule_index_list->at(0).rule.Get();
+    ASSERT_TRUE(IsA<CSSStyleRule>(css_rule));
+    EXPECT_EQ("#e", DynamicTo<CSSStyleRule>(css_rule)->selectorText());
+  }
 }
 
 }  // namespace blink

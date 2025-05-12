@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/inspector/inspector_style_resolver.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -45,8 +46,16 @@ class InspectorCSSAgentTest : public PageTestBase {
     HeapHashMap<Member<const ScopedCSSName>, Member<CSSFunctionRule>>
         function_rules;
     InspectorCSSAgent::CollectReferencedFunctionRules(
-        GetDocument(), sheets, *resolver.MatchedRules(), function_rules);
+        sheets, *resolver.MatchedRules(), function_rules);
     return function_rules;
+  }
+
+  CSSFunctionRule* FindFunctionRule(
+      const HeapHashMap<Member<const ScopedCSSName>, Member<CSSFunctionRule>>&
+          function_rules,
+      const ScopedCSSName* scoped_name) {
+    auto it = function_rules.find(scoped_name);
+    return it != function_rules.end() ? it->value.Get() : nullptr;
   }
 
   CSSFunctionRule* FindFunctionRule(
@@ -55,8 +64,7 @@ class InspectorCSSAgentTest : public PageTestBase {
       const char* name) {
     auto* scoped_name = MakeGarbageCollected<ScopedCSSName>(
         AtomicString(name), /*tree_scope=*/&GetDocument());
-    auto it = function_rules.find(scoped_name);
-    return it != function_rules.end() ? it->value.Get() : nullptr;
+    return FindFunctionRule(function_rules, scoped_name);
   }
 
   String GetComputedStyle(Element* element, CSSPropertyID property_id) {
@@ -339,6 +347,62 @@ TEST_F(InspectorCSSAgentTest, DashedFunctionUnknown) {
   EXPECT_TRUE(FindFunctionRule(function_rules, "--a"));
   // The presence of a reference to a function that does not exist
   // should not cause a crash.
+}
+
+TEST_F(InspectorCSSAgentTest, SameFunctionNamesAcrossShadows) {
+  GetDocument().body()->setHTMLUnsafe(R"HTML(
+    <style>
+      @function --a() {
+        result: 10px;
+      }
+      @function --b() {
+        result: --a(); /* Outer --a() */
+      }
+    </style>
+    <div id=host>
+      <template shadowrootmode=open>
+        <style>
+          @function --a() {
+            result: --b();
+          }
+          :host {
+             width: --a(); /* Inner --a() */
+          }
+        </style>
+      </template>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  HeapHashMap<Member<const ScopedCSSName>, Member<CSSFunctionRule>>
+      function_rules = CollectReferencedFunctionRules("#host");
+  EXPECT_EQ(3u, function_rules.size());
+
+  Element* host = GetDocument().getElementById(AtomicString("host"));
+  ASSERT_TRUE(host);
+  const TreeScope* document_scope = &GetDocument();
+  const TreeScope* inner_scope = host->GetShadowRoot();
+  ASSERT_TRUE(inner_scope);
+
+  CSSFunctionRule* inner_a = FindFunctionRule(
+      function_rules,
+      MakeGarbageCollected<ScopedCSSName>(AtomicString("--a"), inner_scope));
+  CSSFunctionRule* outer_a = FindFunctionRule(
+      function_rules,
+      MakeGarbageCollected<ScopedCSSName>(AtomicString("--a"), document_scope));
+  CSSFunctionRule* outer_b = FindFunctionRule(
+      function_rules,
+      MakeGarbageCollected<ScopedCSSName>(AtomicString("--b"), inner_scope));
+
+  EXPECT_TRUE(inner_a);
+  EXPECT_TRUE(outer_a);
+  EXPECT_TRUE(outer_b);
+  EXPECT_NE(inner_a, outer_a);
+
+  // `function_rules` maps invocations to the corresponding invoked functions,
+  // and there was no invocation of --b() in the outer scope.
+  EXPECT_FALSE(FindFunctionRule(
+      function_rules, MakeGarbageCollected<ScopedCSSName>(AtomicString("--b"),
+                                                          document_scope)));
 }
 
 const CSSPropertyID DirectionAwareConverterTestData[] = {
