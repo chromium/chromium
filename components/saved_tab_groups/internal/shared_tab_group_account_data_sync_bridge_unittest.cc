@@ -6,10 +6,12 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "components/saved_tab_groups/test_support/extended_shared_tab_group_account_data_specifics.pb.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/sync/base/features.h"
@@ -25,11 +27,13 @@ namespace tab_groups {
 
 namespace {
 
+using base::test::EqualsProto;
 using testing::_;
 using testing::DefaultValue;
 using testing::Eq;
 using testing::Invoke;
 using testing::Matcher;
+using testing::Not;
 using testing::Return;
 using testing::Sequence;
 using testing::UnorderedElementsAre;
@@ -781,6 +785,155 @@ TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
   EXPECT_EQ(GetNumTabDetailsInStore(), 0u);
   EXPECT_FALSE(bridge().GetSpecificsForStorageKey(storage_key1));
   EXPECT_FALSE(bridge().GetSpecificsForStorageKey(storage_key2));
+}
+
+TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
+       ShouldTrimAllSupportedFieldsFromSharedTabDetailsSpecifics) {
+  InitializeBridgeAndModel();
+
+  sync_pb::EntitySpecifics remote_account_data_specifics;
+  sync_pb::SharedTabGroupAccountDataSpecifics* account_data_specifics =
+      remote_account_data_specifics.mutable_shared_tab_group_account_data();
+  account_data_specifics->set_guid("guid");
+  account_data_specifics->set_collaboration_id("collaboration_id");
+  account_data_specifics->set_update_time_windows_epoch_micros(1234567890);
+  account_data_specifics->mutable_shared_tab_details()
+      ->set_shared_tab_group_guid("shared_tab_group_guid");
+  account_data_specifics->mutable_shared_tab_details()
+      ->set_last_seen_timestamp_windows_epoch(3214567890);
+
+  EXPECT_THAT(bridge().TrimAllSupportedFieldsFromRemoteSpecifics(
+                  remote_account_data_specifics),
+              EqualsProto(sync_pb::EntitySpecifics()));
+
+  sync_pb::EntitySpecifics remote_account_data_specifics2;
+  sync_pb::SharedTabGroupAccountDataSpecifics* account_data_specifics2 =
+      remote_account_data_specifics2.mutable_shared_tab_group_account_data();
+  account_data_specifics2->set_guid("guid");
+  account_data_specifics2->set_collaboration_id("collaboration_id");
+  account_data_specifics2->set_update_time_windows_epoch_micros(1234567890);
+  account_data_specifics2->mutable_shared_tab_group_details()
+      ->set_pinned_position(11);
+
+  EXPECT_THAT(bridge().TrimAllSupportedFieldsFromRemoteSpecifics(
+                  remote_account_data_specifics2),
+              EqualsProto(sync_pb::EntitySpecifics()));
+}
+
+TEST_F(
+    SharedTabGroupAccountDataSyncBridgeTest,
+    ShouldKeepUnknownFieldsFromSharedTabAccountDataSpecifics_SharedTabDetails) {
+  InitializeBridgeAndModel();
+
+  sync_pb::test_utils::SharedTabGroupAccountDataSpecifics
+      extended_account_data_specifics;
+  extended_account_data_specifics.set_guid("guid");
+  extended_account_data_specifics.set_collaboration_id("collaboration_id");
+  extended_account_data_specifics.set_update_time_windows_epoch_micros(
+      1234567890);
+  extended_account_data_specifics.mutable_shared_tab_details()
+      ->set_shared_tab_group_guid("shared_tab_group_guid");
+  extended_account_data_specifics.mutable_shared_tab_details()
+      ->set_last_seen_timestamp_windows_epoch(3214567890);
+
+  extended_account_data_specifics.mutable_shared_tab_details()
+      ->set_extra_field_for_testing("extra_field_for_testing");
+
+  // Serialize and deserialize the proto to get unknown fields.
+  sync_pb::EntitySpecifics remote_entity_specifics;
+  ASSERT_TRUE(remote_entity_specifics.mutable_shared_tab_group_account_data()
+                  ->ParseFromString(
+                      extended_account_data_specifics.SerializeAsString()));
+
+  sync_pb::EntitySpecifics trimmed_specifics =
+      bridge().TrimAllSupportedFieldsFromRemoteSpecifics(
+          remote_entity_specifics);
+  EXPECT_THAT(trimmed_specifics, Not(EqualsProto(sync_pb::EntitySpecifics())));
+
+  // Verify that deserialized proto keeps unknown fields.
+  sync_pb::test_utils::SharedTabGroupAccountDataSpecifics
+      deserialized_extended_specifics;
+  ASSERT_TRUE(deserialized_extended_specifics.ParseFromString(
+      trimmed_specifics.shared_tab_group_account_data().SerializeAsString()));
+  EXPECT_EQ(deserialized_extended_specifics.shared_tab_details()
+                .extra_field_for_testing(),
+            "extra_field_for_testing");
+}
+
+TEST_F(
+    SharedTabGroupAccountDataSyncBridgeTest,
+    ShouldKeepUnknownFieldsFromSharedTabAccountDataSpecifics_SharedTabGroupDetails) {
+  InitializeBridgeAndModel();
+
+  sync_pb::test_utils::SharedTabGroupAccountDataSpecifics
+      extended_account_data_specifics;
+  extended_account_data_specifics.set_guid("guid");
+  extended_account_data_specifics.set_collaboration_id("collaboration_id");
+  extended_account_data_specifics.set_update_time_windows_epoch_micros(
+      1234567890);
+  extended_account_data_specifics.mutable_shared_tab_group_details()
+      ->set_pinned_position(99);
+
+  extended_account_data_specifics.mutable_shared_tab_group_details()
+      ->set_extra_field_for_testing("extra_field_for_testing");
+
+  // Serialize and deserialize the proto to get unknown fields.
+  sync_pb::EntitySpecifics remote_entity_specifics;
+  ASSERT_TRUE(remote_entity_specifics.mutable_shared_tab_group_account_data()
+                  ->ParseFromString(
+                      extended_account_data_specifics.SerializeAsString()));
+
+  sync_pb::EntitySpecifics trimmed_specifics =
+      bridge().TrimAllSupportedFieldsFromRemoteSpecifics(
+          remote_entity_specifics);
+  EXPECT_THAT(trimmed_specifics, Not(EqualsProto(sync_pb::EntitySpecifics())));
+
+  // Verify that deserialized proto keeps unknown fields.
+  sync_pb::test_utils::SharedTabGroupAccountDataSpecifics
+      deserialized_extended_specifics;
+  ASSERT_TRUE(deserialized_extended_specifics.ParseFromString(
+      trimmed_specifics.shared_tab_group_account_data().SerializeAsString()));
+  EXPECT_EQ(deserialized_extended_specifics.shared_tab_group_details()
+                .extra_field_for_testing(),
+            "extra_field_for_testing");
+}
+
+TEST_F(SharedTabGroupAccountDataSyncBridgeTest,
+       ShouldKeepUnknownFieldsFromSharedTabAccountDataSpecifics_TopLevel) {
+  InitializeBridgeAndModel();
+
+  sync_pb::test_utils::SharedTabGroupAccountDataSpecifics
+      extended_account_data_specifics;
+  extended_account_data_specifics.set_guid("guid");
+  extended_account_data_specifics.set_collaboration_id("collaboration_id");
+  extended_account_data_specifics.set_update_time_windows_epoch_micros(
+      1234567890);
+  extended_account_data_specifics.mutable_shared_tab_details()
+      ->set_shared_tab_group_guid("shared_tab_group_guid");
+  extended_account_data_specifics.mutable_shared_tab_details()
+      ->set_last_seen_timestamp_windows_epoch(3214567890);
+
+  extended_account_data_specifics.set_extra_field_for_testing(
+      "extra_field_for_testing");
+
+  // Serialize and deserialize the proto to get unknown fields.
+  sync_pb::EntitySpecifics remote_entity_specifics;
+  ASSERT_TRUE(remote_entity_specifics.mutable_shared_tab_group_account_data()
+                  ->ParseFromString(
+                      extended_account_data_specifics.SerializeAsString()));
+
+  sync_pb::EntitySpecifics trimmed_specifics =
+      bridge().TrimAllSupportedFieldsFromRemoteSpecifics(
+          remote_entity_specifics);
+  EXPECT_THAT(trimmed_specifics, Not(EqualsProto(sync_pb::EntitySpecifics())));
+
+  // Verify that deserialized proto keeps unknown fields.
+  sync_pb::test_utils::SharedTabGroupAccountDataSpecifics
+      deserialized_extended_specifics;
+  ASSERT_TRUE(deserialized_extended_specifics.ParseFromString(
+      trimmed_specifics.shared_tab_group_account_data().SerializeAsString()));
+  EXPECT_EQ(deserialized_extended_specifics.extra_field_for_testing(),
+            "extra_field_for_testing");
 }
 
 }  // namespace
