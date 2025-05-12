@@ -5,6 +5,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
@@ -239,6 +240,11 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
     config.features_enabled.push_back(kIOSKeyboardAccessoryUpgradeForIPad);
   } else {
     config.features_disabled.push_back(kIOSKeyboardAccessoryUpgradeForIPad);
+  }
+  if ([self isRunningTest:@selector
+            (testDoNotEditHomeWorkAddressFromOverflowMenu)]) {
+    config.features_enabled.push_back(
+        autofill::features::kAutofillEnableSupportForHomeAndWork);
   }
 
   return config;
@@ -609,6 +615,35 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
       assertWithMatcher:grey_notVisible()];
 
   // TODO(crbug.com/332956674): Check that the updated suggestion is visible.
+}
+
+// Tests the "Edit" action of the overflow menu button does not display the
+// address's details for Home and Work profiles.
+- (void)testDoNotEditHomeWorkAddressFromOverflowMenu {
+  if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    EARL_GREY_TEST_DISABLED(@"This test is not relevant when the Keyboard "
+                            @"Accessory Upgrade feature is disabled.")
+  }
+  [AutofillAppInterface clearProfilesStore];
+  [AutofillAppInterface saveExampleHomeWorkAccountProfile];
+
+  // Bring up the keyboard
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementName)];
+  [ChromeEarlGrey waitForKeyboardToAppear];
+
+  // Open the address manual fill view.
+  OpenAddressManualFillView();
+
+  // Tap the overflow menu button and select the "Edit" action.
+  [[EarlGrey selectElementWithMatcher:OverflowMenuButton(/*cell_index=*/0)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:OverflowMenuEditAction()]
+      performAction:grey_tap()];
+
+  // Check that the address details page is not opened.
+  [[EarlGrey selectElementWithMatcher:AddressDetailsPage()]
+      assertWithMatcher:grey_notVisible()];
 }
 
 #pragma mark - Private
