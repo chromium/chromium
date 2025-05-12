@@ -15,7 +15,6 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/tab_interface.h"
-#include "components/tabs/public/tab_interface_holder.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
@@ -25,9 +24,7 @@ namespace tabs {
 class TabCollection;
 class TabFeatures;
 
-class TabModel final : public TabInterface,
-                       public TabInterfaceHolder,
-                       public TabStripModelObserver {
+class TabModel final : public TabInterface, public TabStripModelObserver {
  public:
   // Conceptually, tabs should always be a part of a normal window. There are
   // currently 2 cases where they are not:
@@ -153,9 +150,6 @@ class TabModel final : public TabInterface,
                     base::PassKey<TabCollection>) override;
   void OnAncestorChanged(base::PassKey<TabCollection>) override;
   void Close() override;
-
-  // TabInterfaceHolder impl.
-  TabInterface* GetTabInterface() override;
 
  private:
   // Overridden from TabStripModelObserver:
