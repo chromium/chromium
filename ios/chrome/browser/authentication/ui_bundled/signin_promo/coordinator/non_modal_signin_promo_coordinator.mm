@@ -42,6 +42,8 @@ constexpr CGFloat kLogoSize = 22;
   // The type of promo to be displayed.
   SignInPromoType _promoType;
   raw_ptr<feature_engagement::Tracker> _tracker;
+  // Whether the latest displayed infobar is not yet tapped.
+  BOOL _infobarUntapped;
 }
 
 // Synthesize because readonly property from superclass is changed to readwrite.
@@ -172,6 +174,7 @@ constexpr CGFloat kLogoSize = 22;
     return;
   }
 
+  _infobarUntapped = YES;
   self.bannerViewController = [[InfobarBannerViewController alloc]
       initWithDelegate:self
          presentsModal:NO
@@ -225,6 +228,11 @@ constexpr CGFloat kLogoSize = 22;
 }
 
 - (void)performInfobarAction {
+  if (!_infobarUntapped) {
+    // Double tap. Ignore
+    return;
+  }
+  _infobarUntapped = NO;
   // Log sign-in action when user taps the sign-in button
   LogNonModalSignInPromoAction(NonModalSignInPromoAction::kAccept, _promoType);
 
