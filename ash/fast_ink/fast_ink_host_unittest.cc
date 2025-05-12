@@ -136,7 +136,6 @@ TEST_P(FastInkHostTest, RecreateGpuBufferOnLosingFrameSink) {
 
   // MappableSI should be initialized after receiving the first begin frame.
   ASSERT_TRUE(fast_ink_host_test.client_shared_image());
-  auto sync_token = fast_ink_host_test.sync_token();
 
   // A new frame-sink will be created. FastInkHost should also create a new
   // shared image.
@@ -144,16 +143,15 @@ TEST_P(FastInkHostTest, RecreateGpuBufferOnLosingFrameSink) {
       ->frame_sink_holder_for_testing()
       ->DidLoseLayerTreeFrameSink();
 
-  EXPECT_NE(sync_token, fast_ink_host_test.sync_token());
-  sync_token = fast_ink_host_test.sync_token();
+  // MappableSI should be destroyed after losing a frame sink.
+  EXPECT_FALSE(fast_ink_host_test.client_shared_image());
 
-  // This will be the first OnBeginFrame for the new frame sink, therefore
-  // `FrameSinkHost::OnFirstFrameRequested()` will be called again.
+  // A new MappableSI should be initialized once
+  // `FrameSinkHost::OnFirstFrameRequested()` is called for the new
+  // FrameSinkHolder.
   OnBeginFrame();
 
-  // Ensure we do not recreate a shared image on
-  // `FrameSinkHost::OnFirstFrameRequested()`.
-  EXPECT_EQ(sync_token, fast_ink_host_test.sync_token());
+  EXPECT_TRUE(fast_ink_host_test.client_shared_image());
 }
 
 TEST_P(FastInkHostTest, DelayPaintingUntilReceivingFirstBeginFrame) {
