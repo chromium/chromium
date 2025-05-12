@@ -40,7 +40,12 @@ class MerchantPromoCodeManager : public KeyedService {
 
   ~MerchantPromoCodeManager() override;
 
-  // Returns true iff it consumes `on_suggestions_returned`.
+  // May generate promo code suggestions for the given `autofill_field` which
+  // belongs to the `form_structure`.
+  // If `OnGetSingleFieldSuggestions` decides to claim the opportunity to fill
+  // `field`, it returns true and calls `on_suggestions_returned`. Claiming the
+  // opportunity is not a promise that suggestions will be available. The
+  // callback may be called with no suggestions.
   [[nodiscard]] virtual bool OnGetSingleFieldSuggestions(
       const FormStructure& form_structure,
       const FormFieldData& field,

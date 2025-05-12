@@ -52,37 +52,6 @@ void SingleFieldFillRouter::OnWillSubmitForm(
       autocomplete_fields, is_autocomplete_enabled);
 }
 
-bool SingleFieldFillRouter::OnGetSingleFieldSuggestions(
-    const FormStructure* form_structure,
-    const FormFieldData& field,
-    const AutofillField* autofill_field,
-    const AutofillClient& client,
-    SingleFieldFillRouter::OnSuggestionsReturnedCallback
-        on_suggestions_returned) {
-  // Retrieving suggestions for a new field; select the appropriate filler.
-  if (merchant_promo_code_manager_ && form_structure && autofill_field &&
-      merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
-          *form_structure, field, *autofill_field, client,
-          on_suggestions_returned)) {
-    return true;
-  }
-  if (iban_manager_ && autofill_field &&
-      iban_manager_->OnGetSingleFieldSuggestions(field, *autofill_field, client,
-                                                 on_suggestions_returned)) {
-    return true;
-  }
-  if (autocomplete_history_manager_->OnGetSingleFieldSuggestions(
-          field, client, on_suggestions_returned)) {
-    return true;
-  }
-
-  CancelPendingQueries();
-  if (on_suggestions_returned) {
-    std::move(on_suggestions_returned).Run(field.global_id(), {});
-  }
-  return false;
-}
-
 void SingleFieldFillRouter::CancelPendingQueries() {
   autocomplete_history_manager_->CancelPendingQueries();
 }

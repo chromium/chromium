@@ -322,6 +322,14 @@ FormData CreateTestLoyaltyCardFormData() {
   return form;
 }
 
+FormData CreateTestMerchantPromoCodeFormData() {
+  FormData form = ConstructFormWithNameRenderIdAndProtocol(/*is_https=*/true);
+  form.set_fields(
+      {CreateTestFormField("Promo code", "promocode", /*value=*/"",
+                           FormControlType::kInputText)});
+  return form;
+}
+
 FormData CreateTestPasswordFormData() {
   std::vector<FormFieldData> fields;
   fields.push_back(

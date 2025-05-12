@@ -755,19 +755,6 @@ class MockAutofillClient : public TestAutofillClient {
       syncer::TestSyncService* sync_service) {
     auto client = std::make_unique<NiceMock<MockAutofillClient>>();
 
-    auto create_single_field_fill_router = [&client] {
-      auto x = std::make_unique<NiceMock<MockSingleFieldFillRouter>>(
-          client->GetAutocompleteHistoryManager(),
-          client->GetPaymentsAutofillClient()->GetIbanManager(),
-          client->GetPaymentsAutofillClient()->GetMerchantPromoCodeManager());
-      // By default, if we offer single field form fill, suggestions should be
-      // returned because it is assumed |field.should_autocomplete| is set to
-      // true. This should be overridden in tests where
-      // |field.should_autocomplete| is set to false.
-      ON_CALL(*x, OnGetSingleFieldSuggestions).WillByDefault(Return(true));
-      return x;
-    };
-
     auto create_payments_autofill_client = [&client] {
       auto x = std::make_unique<MockPaymentsAutofillClient>(&*client);
       x->set_payments_network_interface(
@@ -788,7 +775,12 @@ class MockAutofillClient : public TestAutofillClient {
     client->GetPersonalDataManager().SetPrefService(client->GetPrefs());
     client->GetPersonalDataManager().SetSyncServiceForTest(sync_service);
     client->set_test_strike_database(std::make_unique<TestStrikeDatabase>());
-    client->set_single_field_fill_router(create_single_field_fill_router());
+    client->set_single_field_fill_router(
+        std::make_unique<NiceMock<MockSingleFieldFillRouter>>(
+            client->GetAutocompleteHistoryManager(),
+            client->GetPaymentsAutofillClient()->GetIbanManager(),
+            client->GetPaymentsAutofillClient()
+                ->GetMerchantPromoCodeManager()));
     client->set_crowdsourcing_manager(
         std::make_unique<NiceMock<MockAutofillCrowdsourcingManager>>(&*client));
     test_api(client->GetPersonalDataManager().address_data_manager())
@@ -797,6 +789,21 @@ class MockAutofillClient : public TestAutofillClient {
         .set_credit_card_save_manager(create_credit_card_save_manager());
     test_api(*client->GetFormDataImporter())
         .set_iban_save_manager(std::make_unique<IbanSaveManager>(&*client));
+
+    // By default, if we offer single field form fill, suggestions should be
+    // returned because it is assumed `field.should_autocomplete` is set to
+    // true. This should be overridden in tests where
+    // `field.should_autocomplete` is set to false or other conditions for
+    // different providers are not met.
+    ON_CALL(*client->GetPaymentsAutofillClient()->GetMerchantPromoCodeManager(),
+            OnGetSingleFieldSuggestions)
+        .WillByDefault(Return(true));
+    ON_CALL(*client->GetPaymentsAutofillClient()->GetIbanManager(),
+            OnGetSingleFieldSuggestions)
+        .WillByDefault(Return(true));
+    ON_CALL(*client->GetAutocompleteHistoryManager(),
+            OnGetSingleFieldSuggestions)
+        .WillByDefault(Return(true));
     return client;
   }
 
@@ -1436,6 +1443,21 @@ class BrowserAutofillManagerTest : public testing::Test {
         test_api(manager()).external_delegate());
   }
 
+  MockIbanManager& iban_manager() {
+    return *static_cast<MockIbanManager*>(
+        client().GetPaymentsAutofillClient()->GetIbanManager());
+  }
+
+  MockMerchantPromoCodeManager& merchant_promo_code_manager() {
+    return *static_cast<MockMerchantPromoCodeManager*>(
+        client().GetPaymentsAutofillClient()->GetMerchantPromoCodeManager());
+  }
+
+  MockAutocompleteHistoryManager& autocomplete_history_manager() {
+    return *static_cast<MockAutocompleteHistoryManager*>(
+        client().GetAutocompleteHistoryManager());
+  }
+
  private:
   void CreateTestAutofillProfiles() {
     AutofillProfile profile1 =
@@ -1575,9 +1597,13 @@ TEST_F(BrowserAutofillManagerTest,
                            FormControlType::kInputText, "unrecognized")});
   FormsSeen({form});
 
-  // Ensure that the SingleFieldFillRouter is not called for
-  // suggestions either.
-  EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions).Times(0);
+  // Ensure that the single field suggestions are not considered for any
+  // field.
+  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
+      .Times(0);
+  EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions).Times(0);
+  EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
+      .Times(0);
 
   // Suggestions should be returned for the first two fields.
   OnAskForValuesToFill(form, form.fields()[0]);
@@ -1705,8 +1731,9 @@ TEST_F(BrowserAutofillManagerTest,
 
   FormsSeen({form});
 
-  // Ensure that the SingleFieldFillRouter is called for both fields.
-  EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions).Times(2);
+  // Ensure that the single field suggestions are considered for both fields.
+  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
+      .Times(2);
 
   OnAskForValuesToFill(form, form.fields()[0]);
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
@@ -1996,12 +2023,13 @@ TEST_F(BrowserAutofillManagerTest,
   std::vector<Suggestion> suggestions = {Suggestion(u"one"),
                                          Suggestion(u"two")};
 
-  // Mock returning some autocomplete `suggestions`.
-  EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions)
-      .WillOnce([&](const FormStructure*, const FormFieldData& field,
-                    const AutofillField*, const AutofillClient&,
-                    SingleFieldFillRouter::OnSuggestionsReturnedCallback
-                        on_suggestions_returned) {
+  // Mock returning some single field fill `suggestions`.
+  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly([&](const FormStructure& form, const FormFieldData& field,
+                          const AutofillField& autofill_field,
+                          const AutofillClient& client,
+                          SingleFieldFillRouter::OnSuggestionsReturnedCallback&
+                              on_suggestions_returned) {
         std::move(on_suggestions_returned).Run(field.global_id(), suggestions);
         return true;
       });
@@ -4418,8 +4446,8 @@ TEST_F(BrowserAutofillManagerTest,
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
 
-  // Expect the SingleFieldFillRouter to be called for suggestions.
-  EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions);
+  // Expect the single field suggestion generator to be called for suggestions.
+  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions);
 
   OnAskForValuesToFill(form, form.fields()[0]);
 
@@ -4436,8 +4464,13 @@ TEST_F(BrowserAutofillManagerTest,
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
 
-  // SingleFieldFillRouter is not called for suggestions.
-  EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions).Times(0);
+  // Ensure that the single field suggestions are not considered for any
+  // field.
+  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
+      .Times(0);
+  EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions).Times(0);
+  EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
+      .Times(0);
 
   OnAskForValuesToFill(form, form.fields()[0]);
   // Verify that suggestions are returned.
@@ -4456,9 +4489,9 @@ TEST_F(BrowserAutofillManagerTest,
   email_field.set_value(u"donkey");
   FormsSeen({form});
 
-  // Single field form fill manager is called for suggestions because Autofill
+  // Single field managers are called for suggestions because Autofill
   // is empty.
-  EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions);
+  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions);
 
   OnAskForValuesToFill(form, email_field);
 }
@@ -4492,8 +4525,9 @@ TEST_F(BrowserAutofillManagerTest_AutofillDisabled,
   FormFieldData& field = test_api(form).field(0);
   field.set_should_autocomplete(true);
 
-  // SingleFieldFillRouter is called for suggestions.
-  EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions);
+  // Single field managers are called for suggestions because Autofill
+  // is empty.
+  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions);
 
   OnAskForValuesToFill(form, field);
 }
@@ -4510,8 +4544,13 @@ TEST_F(BrowserAutofillManagerTest_AutofillDisabled,
   FormFieldData& field = test_api(form).field(1);
   field.set_should_autocomplete(true);
 
-  // SingleFieldFillRouter is not called for suggestions.
-  EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions).Times(0);
+  // Ensure that the single field suggestions are not considered for any
+  // field.
+  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
+      .Times(0);
+  EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions).Times(0);
+  EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
+      .Times(0);
 
   OnAskForValuesToFill(form, field);
 }
@@ -4532,16 +4571,25 @@ TEST_F(
   email_field.set_should_autocomplete(false);
   FormsSeen({form});
 
-  // Autocomplete is set to off, so suggestions should not get returned from
-  // single_field_fill_router().
-  EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly([&](const FormStructure*, const FormFieldData& field,
-                          const AutofillField*, const AutofillClient&,
-                          SingleFieldFillRouter::OnSuggestionsReturnedCallback
-                              on_suggestions_returned) {
-        std::move(on_suggestions_returned).Run(field.global_id(), {});
-        return false;
-      });
+  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly(
+          [&](const FormStructure&, const FormFieldData&, const AutofillField&,
+              const AutofillClient&,
+              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
+            return false;
+          });
+  EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly(
+          [&](const FormFieldData&, const AutofillField&, const AutofillClient&,
+              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
+            return false;
+          });
+  EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly(
+          [&](const FormFieldData&, const AutofillClient&,
+              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
+            return false;
+          });
 
   OnAskForValuesToFill(form, email_field);
 
@@ -4565,16 +4613,25 @@ TEST_F(BrowserAutofillManagerTest,
   FormFieldData& field = test_api(form).field(0);
   field.set_should_autocomplete(false);
 
-  // Autocomplete is set to off, so suggestions should not get returned from
-  // `single_field_fill_router()`.
-  EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly([&](const FormStructure*, const FormFieldData& field,
-                          const AutofillField*, const AutofillClient&,
-                          SingleFieldFillRouter::OnSuggestionsReturnedCallback
-                              on_suggestions_returned) {
-        std::move(on_suggestions_returned).Run(field.global_id(), {});
-        return false;
-      });
+  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly(
+          [&](const FormStructure&, const FormFieldData&, const AutofillField&,
+              const AutofillClient&,
+              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
+            return false;
+          });
+  EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly(
+          [&](const FormFieldData&, const AutofillField&, const AutofillClient&,
+              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
+            return false;
+          });
+  EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly(
+          [&](const FormFieldData&, const AutofillClient&,
+              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
+            return false;
+          });
 
   OnAskForValuesToFill(form, field);
 
@@ -5480,12 +5537,16 @@ TEST_F(BrowserAutofillManagerTest,
 
   // Suggestions should always be displayed.
   for (const FormFieldData& mixed_form_field : mixed_form.fields()) {
+    ON_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
+        .WillByDefault(Return(false));
+    ON_CALL(iban_manager(), OnGetSingleFieldSuggestions)
+        .WillByDefault(Return(false));
     // Single field form fill suggestions being returned are directly correlated
     // to whether or not the field has autocomplete set to true or false. We
     // know autocomplete must be the single field form filler in this case due
     // to the field not having a type that would route to any of the other
     // single field form fillers.
-    ON_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions)
+    ON_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
         .WillByDefault(Return(mixed_form_field.should_autocomplete()));
     OnAskForValuesToFill(mixed_form, mixed_form_field);
 
@@ -6793,7 +6854,11 @@ TEST_F(BrowserAutofillManagerTest, ComposeSuggestionsOnFocusWithoutClick) {
   test_api(form).field(3).set_form_control_type(FormControlType::kTextArea);
   FormsSeen({form});
 
-  EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions).Times(0);
+  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
+      .Times(0);
+  EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions).Times(0);
+  EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
+      .Times(0);
   EXPECT_CALL(
       compose_delegate,
       GetSuggestion(
@@ -6823,7 +6888,11 @@ TEST_F(BrowserAutofillManagerTest, ComposeSuggestionsAreQueriedForTextareas) {
   form.set_action(GURL("https://myform.com/submit.html"));
   FormsSeen({form});
 
-  EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions).Times(0);
+  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
+      .Times(0);
+  EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions).Times(0);
+  EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
+      .Times(0);
   EXPECT_CALL(
       compose_delegate,
       GetSuggestion(
@@ -7910,14 +7979,25 @@ TEST_F(BrowserAutofillManagerTest,
                                        FormControlType::kInputText)});
   // Autocomplete suggestions (and all others for that matter) should be empty
   // in order to `SuggestionType::kAddressEntryOnTyping` to exist.
-  EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly([&](const FormStructure*, const FormFieldData& field,
-                          const AutofillField*, const AutofillClient&,
-                          SingleFieldFillRouter::OnSuggestionsReturnedCallback
-                              on_suggestions_returned) {
-        std::move(on_suggestions_returned).Run(field.global_id(), {});
-        return false;
-      });
+  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly(
+          [&](const FormStructure&, const FormFieldData&, const AutofillField&,
+              const AutofillClient&,
+              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
+            return false;
+          });
+  EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly(
+          [&](const FormFieldData&, const AutofillField&, const AutofillClient&,
+              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
+            return false;
+          });
+  EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly(
+          [&](const FormFieldData&, const AutofillClient&,
+              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
+            return false;
+          });
   FormsSeen({form});
   OnAskForValuesToFill(form, form.fields()[0]);
 
@@ -8090,7 +8170,11 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
       .WillOnce(Return(std::vector<Suggestion>{
           Suggestion(SuggestionType::kFillExistingPlusAddress)}));
   // No single field form fill suggestions requests.
-  EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions).Times(0);
+  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
+      .Times(0);
+  EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions).Times(0);
+  EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
+      .Times(0);
 
   EXPECT_CALL(plus_address_delegate(),
               OnPlusAddressSuggestionShown(
@@ -8200,14 +8284,25 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
       .WillOnce(Return(std::vector<Suggestion>{
           Suggestion(SuggestionType::kCreateNewPlusAddress)}));
   // Single field form fill suggestions request - No results.
-  EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly([&](const FormStructure*, const FormFieldData& field,
-                          const AutofillField*, const AutofillClient&,
-                          SingleFieldFillRouter::OnSuggestionsReturnedCallback
-                              on_suggestions_returned) {
-        std::move(on_suggestions_returned).Run(field.global_id(), {});
-        return false;
-      });
+  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly(
+          [&](const FormStructure&, const FormFieldData&, const AutofillField&,
+              const AutofillClient&,
+              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
+            return false;
+          });
+  EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly(
+          [&](const FormFieldData&, const AutofillField&, const AutofillClient&,
+              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
+            return false;
+          });
+  EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly(
+          [&](const FormFieldData&, const AutofillClient&,
+              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
+            return false;
+          });
 
   EXPECT_CALL(plus_address_delegate(),
               OnPlusAddressSuggestionShown(
@@ -8246,10 +8341,17 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   EXPECT_CALL(plus_address_delegate(), GetSuggestionsFromPlusAddresses)
       .Times(0);
   // Single field form fill suggestions request.
-  EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly([&](const FormStructure*, const FormFieldData& field,
-                          const AutofillField*, const AutofillClient&,
-                          SingleFieldFillRouter::OnSuggestionsReturnedCallback
+  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly(
+          [&](const FormStructure&, const FormFieldData&, const AutofillField&,
+              const AutofillClient&,
+              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
+            return false;
+          });
+  EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly([&](const FormFieldData& field, const AutofillField&,
+                          const AutofillClient&,
+                          SingleFieldFillRouter::OnSuggestionsReturnedCallback&
                               on_suggestions_returned) {
         std::move(on_suggestions_returned)
             .Run(field.global_id(),
@@ -8291,10 +8393,10 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   EXPECT_CALL(plus_address_delegate(), GetSuggestionsFromPlusAddresses)
       .Times(0);
   // Single field form fill suggestions request.
-  EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly([&](const FormStructure*, const FormFieldData& field,
-                          const AutofillField*, const AutofillClient&,
-                          SingleFieldFillRouter::OnSuggestionsReturnedCallback
+  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly([&](const FormStructure&, const FormFieldData& field,
+                          const AutofillField&, const AutofillClient&,
+                          SingleFieldFillRouter::OnSuggestionsReturnedCallback&
                               on_suggestions_returned) {
         std::move(on_suggestions_returned)
             .Run(field.global_id(),
@@ -8309,9 +8411,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   EXPECT_CALL(plus_address_delegate(), OnPlusAddressSuggestionShown).Times(0);
 
   // Set up our form data. Notably, the first field is a promo code field.
-  FormData form;
-  form.set_fields({CreateTestFormField("Promo code", "promocode", "",
-                                       FormControlType::kInputText)});
+  FormData form = test::CreateTestMerchantPromoCodeFormData();
   FormsSeen({form});
 
   // Check that only promo code related suggestions are offered.
@@ -8345,10 +8445,22 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
       .WillOnce(Return(std::vector<Suggestion>{
           Suggestion(SuggestionType::kFillExistingPlusAddress)}));
   // Single field form fill suggestions request.
-  EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly([&](const FormStructure*, const FormFieldData& field,
-                          const AutofillField*, const AutofillClient&,
-                          SingleFieldFillRouter::OnSuggestionsReturnedCallback
+  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly(
+          [&](const FormStructure&, const FormFieldData&, const AutofillField&,
+              const AutofillClient&,
+              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
+            return false;
+          });
+  EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly(
+          [&](const FormFieldData&, const AutofillField&, const AutofillClient&,
+              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
+            return false;
+          });
+  EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly([&](const FormFieldData& field, const AutofillClient&,
+                          SingleFieldFillRouter::OnSuggestionsReturnedCallback&
                               on_suggestions_returned) {
         std::move(on_suggestions_returned)
             .Run(field.global_id(),
@@ -8400,14 +8512,25 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   EXPECT_CALL(plus_address_delegate(), GetManagePlusAddressSuggestion).Times(0);
   EXPECT_CALL(plus_address_delegate(), OnPlusAddressSuggestionShown).Times(0);
   // Single field form fill suggestions request - No results.
-  EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions)
-      .WillRepeatedly([&](const FormStructure*, const FormFieldData& field,
-                          const AutofillField*, const AutofillClient&,
-                          SingleFieldFillRouter::OnSuggestionsReturnedCallback
-                              on_suggestions_returned) {
-        std::move(on_suggestions_returned).Run(field.global_id(), {});
-        return false;
-      });
+  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly(
+          [&](const FormStructure&, const FormFieldData&, const AutofillField&,
+              const AutofillClient&,
+              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
+            return false;
+          });
+  EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly(
+          [&](const FormFieldData&, const AutofillField&, const AutofillClient&,
+              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
+            return false;
+          });
+  EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
+      .WillRepeatedly(
+          [&](const FormFieldData&, const AutofillClient&,
+              SingleFieldFillRouter::OnSuggestionsReturnedCallback&) {
+            return false;
+          });
 
   // Set up our form data. Notably, the first field is an email address.
   FormData form = test::GetFormData(
@@ -8442,7 +8565,11 @@ TEST_F(BrowserAutofillManagerPlusAddressTest, ManualFallbackPlusAddress) {
               OnPlusAddressSuggestionShown(
                   Ref(manager()), _, _, kManualFallback, kNoPasswordForm,
                   SuggestionType::kCreateNewPlusAddress));
-  EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions).Times(0);
+  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
+      .Times(0);
+  EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions).Times(0);
+  EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
+      .Times(0);
 
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
@@ -8560,7 +8687,11 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   // No single field form fill suggestions requests.
   EXPECT_CALL(plus_address_delegate(), IsFieldEligibleForPlusAddress)
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(single_field_fill_router(), OnGetSingleFieldSuggestions).Times(0);
+  EXPECT_CALL(merchant_promo_code_manager(), OnGetSingleFieldSuggestions)
+      .Times(0);
+  EXPECT_CALL(iban_manager(), OnGetSingleFieldSuggestions).Times(0);
+  EXPECT_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
+      .Times(0);
   EXPECT_CALL(plus_address_delegate(), OnPlusAddressSuggestionShown).Times(0);
 
   // Set up our form data. Notably, the first field is an email address.

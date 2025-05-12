@@ -11,8 +11,6 @@
 
 namespace autofill {
 
-class AutofillClient;
-
 class MockSingleFieldFillRouter : public SingleFieldFillRouter {
  public:
   explicit MockSingleFieldFillRouter(
@@ -26,14 +24,6 @@ class MockSingleFieldFillRouter : public SingleFieldFillRouter {
               (const FormData& form,
                const FormStructure* form_structure,
                bool is_autocomplete_enabled),
-              (override));
-  MOCK_METHOD(bool,
-              OnGetSingleFieldSuggestions,
-              (const FormStructure* form_structure,
-               const FormFieldData& field,
-               const AutofillField* autofill_field,
-               const AutofillClient& client,
-               SingleFieldFillRouter::OnSuggestionsReturnedCallback callback),
               (override));
   MOCK_METHOD(void, CancelPendingQueries, (), (override));
   MOCK_METHOD(void,
