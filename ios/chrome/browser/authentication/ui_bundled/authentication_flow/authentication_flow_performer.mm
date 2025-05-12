@@ -163,6 +163,114 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
   return response;
 }
 
+void ShowHistorySyncScreenAfterProfileSwitch(
+    Browser* browser,
+    signin_metrics::AccessPoint access_point) {
+  ShowSigninCommand* command = [[ShowSigninCommand alloc]
+      initWithOperation:AuthenticationOperation::kHistorySync
+               identity:nil
+            accessPoint:access_point
+            promoAction:signin_metrics::PromoAction::
+                            PROMO_ACTION_NO_SIGNIN_PROMO
+             completion:nil];
+  command.optionalHistorySync = YES;
+
+  UIViewController* view_controller =
+      browser->GetSceneState().rootViewController;
+  while (view_controller.presentedViewController) {
+    view_controller = view_controller.presentedViewController;
+  }
+
+  [browser->GetSceneState().controller showSignin:command
+                               baseViewController:view_controller];
+}
+
+// Displays the identity confirmation snackbar with `identity`.
+void TriggerAccountSwitchSnackbarWithIdentity(id<SystemIdentity> identity,
+                                              Browser* browser) {
+  ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
+  UIImage* avatar = ChromeAccountManagerServiceFactory::GetForProfile(profile)
+                        ->GetIdentityAvatarWithIdentity(
+                            identity, IdentityAvatarSize::Regular);
+  ManagementState management_state =
+      GetManagementState(IdentityManagerFactory::GetForProfile(profile),
+                         AuthenticationServiceFactory::GetForProfile(profile),
+                         profile->GetPrefs());
+  MDCSnackbarMessage* snackbar_title = [[IdentitySnackbarMessage alloc]
+      initWithName:identity.userGivenName
+             email:identity.userEmail
+            avatar:avatar
+           managed:management_state.is_profile_managed()];
+  CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
+  id<SnackbarCommands> snackbar_commands_handler =
+      HandlerForProtocol(dispatcher, SnackbarCommands);
+  [snackbar_commands_handler
+      showSnackbarMessageOverBrowserToolbar:snackbar_title];
+}
+
+void CompletePostSignInActions(PostSignInActionSet post_signin_actions,
+                               id<SystemIdentity> identity,
+                               Browser* browser,
+                               signin_metrics::AccessPoint access_point) {
+  DCHECK(browser);
+  ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile);
+
+  // Signing in from bookmarks and reading list enables the corresponding
+  // type.
+  std::optional<syncer::UserSelectableType> clear_selectable_type;
+  if (post_signin_actions.Has(
+          PostSignInAction::kEnableUserSelectableTypeBookmarks) &&
+      !sync_service->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kBookmarks)) {
+    sync_service->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kBookmarks, true);
+    clear_selectable_type = syncer::UserSelectableType::kBookmarks;
+  } else if (post_signin_actions.Has(
+                 PostSignInAction::kEnableUserSelectableTypeReadingList) &&
+             !sync_service->GetUserSettings()->GetSelectedTypes().Has(
+                 syncer::UserSelectableType::kReadingList)) {
+    sync_service->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kReadingList, true);
+    clear_selectable_type = syncer::UserSelectableType::kReadingList;
+  }
+
+  if (post_signin_actions.Has(
+          PostSignInAction::kShowHistorySyncScreenAfterProfileSwitch)) {
+    ShowHistorySyncScreenAfterProfileSwitch(browser, access_point);
+  }
+
+  if (post_signin_actions.Has(
+          PostSignInAction::kShowIdentityConfirmationSnackbar)) {
+    TriggerAccountSwitchSnackbarWithIdentity(identity, browser);
+    return;
+  }
+
+  if (!post_signin_actions.Has(PostSignInAction::kShowSnackbar)) {
+    return;
+  }
+
+  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
+  action.handler = base::CallbackToBlock(base::BindOnce(
+      &HandleSignoutForSnackbar, browser->AsWeakPtr(), clear_selectable_type));
+
+  action.title = l10n_util::GetNSString(IDS_IOS_SIGNIN_SNACKBAR_UNDO);
+  action.accessibilityIdentifier = kSigninSnackbarUndo;
+  NSString* messageText =
+      l10n_util::GetNSStringF(IDS_IOS_SIGNIN_SNACKBAR_SIGNED_IN_AS,
+                              base::SysNSStringToUTF16(identity.userEmail));
+  MDCSnackbarMessage* message = CreateSnackbarMessage(messageText);
+  message.action = action;
+  message.category = kAuthenticationSnackbarCategory;
+
+  id<SnackbarCommands> handler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), SnackbarCommands);
+  CHECK(handler);
+  TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
+  [handler showSnackbarMessage:message];
+}
+
 }  // namespace
 
 @interface AuthenticationFlowPerformer () <
@@ -422,63 +530,7 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
                      withIdentity:(id<SystemIdentity>)identity
                           browser:(Browser*)browser
                       accessPoint:(signin_metrics::AccessPoint)accessPoint {
-  DCHECK(browser);
-  ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
-  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
-
-  // Signing in from bookmarks and reading list enables the corresponding
-  // type.
-  std::optional<syncer::UserSelectableType> clearSelectableType;
-  if (postSignInActions.Has(
-          PostSignInAction::kEnableUserSelectableTypeBookmarks) &&
-      !syncService->GetUserSettings()->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kBookmarks)) {
-    syncService->GetUserSettings()->SetSelectedType(
-        syncer::UserSelectableType::kBookmarks, true);
-    clearSelectableType = syncer::UserSelectableType::kBookmarks;
-  } else if (postSignInActions.Has(
-                 PostSignInAction::kEnableUserSelectableTypeReadingList) &&
-             !syncService->GetUserSettings()->GetSelectedTypes().Has(
-                 syncer::UserSelectableType::kReadingList)) {
-    syncService->GetUserSettings()->SetSelectedType(
-        syncer::UserSelectableType::kReadingList, true);
-    clearSelectableType = syncer::UserSelectableType::kReadingList;
-  }
-
-  if (postSignInActions.Has(
-          PostSignInAction::kShowHistorySyncScreenAfterProfileSwitch)) {
-    [self showHistorySyncScreenAfterProfileSwitch:browser
-                                      accessPoint:accessPoint];
-  }
-
-  if (postSignInActions.Has(
-          PostSignInAction::kShowIdentityConfirmationSnackbar)) {
-    [self triggerAccountSwitchSnackbarWithIdentity:identity browser:browser];
-    return;
-  }
-
-  if (!postSignInActions.Has(PostSignInAction::kShowSnackbar)) {
-    return;
-  }
-
-  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
-  action.handler = base::CallbackToBlock(base::BindOnce(
-      &HandleSignoutForSnackbar, browser->AsWeakPtr(), clearSelectableType));
-
-  action.title = l10n_util::GetNSString(IDS_IOS_SIGNIN_SNACKBAR_UNDO);
-  action.accessibilityIdentifier = kSigninSnackbarUndo;
-  NSString* messageText =
-      l10n_util::GetNSStringF(IDS_IOS_SIGNIN_SNACKBAR_SIGNED_IN_AS,
-                              base::SysNSStringToUTF16(identity.userEmail));
-  MDCSnackbarMessage* message = CreateSnackbarMessage(messageText);
-  message.action = action;
-  message.category = kAuthenticationSnackbarCategory;
-
-  id<SnackbarCommands> handler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), SnackbarCommands);
-  CHECK(handler);
-  TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  [handler showSnackbarMessage:message];
+  CompletePostSignInActions(postSignInActions, identity, browser, accessPoint);
 }
 
 - (void)showAuthenticationError:(NSError*)error
@@ -805,28 +857,6 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
   [self.delegate didAcceptManagedConfirmation:keepBrowsingDataSeparate];
 }
 
-// Displays the identity confirmation snackbar with `identity`.
-- (void)triggerAccountSwitchSnackbarWithIdentity:(id<SystemIdentity>)identity
-                                         browser:(Browser*)browser {
-  ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
-  UIImage* avatar = ChromeAccountManagerServiceFactory::GetForProfile(profile)
-                        ->GetIdentityAvatarWithIdentity(
-                            identity, IdentityAvatarSize::Regular);
-  ManagementState managementState =
-      GetManagementState(IdentityManagerFactory::GetForProfile(profile),
-                         AuthenticationServiceFactory::GetForProfile(profile),
-                         profile->GetPrefs());
-  MDCSnackbarMessage* snackbarTitle = [[IdentitySnackbarMessage alloc]
-      initWithName:identity.userGivenName
-             email:identity.userEmail
-            avatar:avatar
-           managed:managementState.is_profile_managed()];
-  CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
-  id<SnackbarCommands> snackbarCommandsHandler =
-      HandlerForProtocol(dispatcher, SnackbarCommands);
-  [snackbarCommandsHandler showSnackbarMessageOverBrowserToolbar:snackbarTitle];
-}
-
 #pragma mark - ManagedProfileCreationCoordinatorDelegate
 
 - (void)managedProfileCreationCoordinator:
@@ -842,28 +872,6 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
   [self managedConfirmationDidAccept:accepted
                              browser:browser
             keepBrowsingDataSeparate:keepBrowsingDataSeparate];
-}
-
-- (void)showHistorySyncScreenAfterProfileSwitch:(Browser*)browser
-                                    accessPoint:(signin_metrics::AccessPoint)
-                                                    accessPoint {
-  ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperation::kHistorySync
-               identity:nil
-            accessPoint:accessPoint
-            promoAction:signin_metrics::PromoAction::
-                            PROMO_ACTION_NO_SIGNIN_PROMO
-             completion:nil];
-  command.optionalHistorySync = YES;
-
-  UIViewController* viewController =
-      browser->GetSceneState().rootViewController;
-  while (viewController.presentedViewController) {
-    viewController = viewController.presentedViewController;
-  }
-
-  [browser->GetSceneState().controller showSignin:command
-                               baseViewController:viewController];
 }
 
 @end
