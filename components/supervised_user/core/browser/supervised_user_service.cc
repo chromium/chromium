@@ -308,6 +308,10 @@ void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
 }
 
 void SupervisedUserService::OnSafeSitesSettingChanged() {
+  for (SupervisedUserServiceObserver& observer : observer_list_) {
+    observer.OnURLFilterChanged();
+  }
+
   WebFilterType filter_type = url_filter_->GetWebFilterType();
   if (current_web_filter_type_ != filter_type) {
     url_filter_->ReportWebFilterTypeMetrics();

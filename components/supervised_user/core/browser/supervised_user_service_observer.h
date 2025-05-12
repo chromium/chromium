@@ -8,7 +8,7 @@
 class SupervisedUserServiceObserver {
  public:
   // Called whenever the URL filter is updated, e.g. a manual exception or a
-  // content pack is added, or the default fallback behavior is changed.
+  // content pack is added, or when filtering behavior is changed.
   virtual void OnURLFilterChanged() {}
 
   // Called when information about the supervised user's custodian is changed,
