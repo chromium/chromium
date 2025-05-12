@@ -44,6 +44,9 @@ constexpr base::TimeDelta kRecencyTabTimeLimit = base::Seconds(600);
 // Number of switches to the tab to group with the current tab.
 constexpr int kMinSwitchesToGroup = 2;
 
+// history_clusters::Config::content_visibility_threshold
+constexpr float kVisibilityScoreThreshold = 0.7;
+
 UrlGroupingSuggestionId::Generator g_id_generator;
 
 // A heuristic that find the recently opened tabs and groups them.
@@ -256,6 +259,51 @@ void SetSuggestionText(GroupSuggestion& suggestion) {
   }
 }
 
+// Returns true if the group is visible.
+bool IsGroupVisible(const GroupSuggestion& suggestion,
+                    const std::vector<URLVisitAggregate>& candidates) {
+  std::map<int, bool> suggestion_tabs_visibility;
+  for (const auto& candidate : candidates) {
+    auto tab_it = candidate.fetcher_data_map.find(Fetcher::kTabModel);
+    if (tab_it == candidate.fetcher_data_map.end()) {
+      continue;
+    }
+    const auto& tab_data =
+        std::get_if<URLVisitAggregate::TabData>(&tab_it->second);
+    if (!tab_data) {
+      continue;
+    }
+
+    int tab_id = tab_data->last_active_tab.id;
+    if (!base::Contains(suggestion.tab_ids, tab_id)) {
+      continue;
+    }
+
+    const auto& history_it = candidate.fetcher_data_map.find(Fetcher::kHistory);
+    if (history_it != candidate.fetcher_data_map.end()) {
+      const auto* history =
+          std::get_if<URLVisitAggregate::HistoryData>(&history_it->second);
+      if (history) {
+        suggestion_tabs_visibility[tab_id] =
+            history->last_visited.content_annotations.model_annotations
+                .visibility_score > kVisibilityScoreThreshold;
+      }
+    };
+  }
+
+  // Return false if all tabs in the suggestion do not have a score, or if any
+  // tab is not visible.
+  if (suggestion_tabs_visibility.empty()) {
+    return false;
+  }
+  for (const auto& [tab_id, is_visible] : suggestion_tabs_visibility) {
+    if (!is_visible) {
+      return false;
+    }
+  }
+  return true;
+}
+
 std::optional<GroupSuggestion> GetSuggestionFromHeuristicResult(
     const std::vector<URLVisitAggregate>& candidates,
     GroupSuggestion::SuggestionReason reason,
@@ -314,6 +362,11 @@ std::optional<GroupSuggestion> GetSuggestionFromHeuristicResult(
   if (suggestion.tab_ids.size() < min_tabs) {
     return std::nullopt;
   }
+
+  if (!IsGroupVisible(suggestion, candidates)) {
+    return std::nullopt;
+  }
+
   suggestion.suggestion_id = g_id_generator.GenerateNextId();
   SetSuggestionText(suggestion);
   return suggestion;

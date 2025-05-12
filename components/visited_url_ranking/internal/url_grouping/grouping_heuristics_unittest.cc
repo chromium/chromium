@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/tab_metadata.h"
 #include "components/visited_url_ranking/public/test_support.h"
@@ -19,15 +20,38 @@
 namespace visited_url_ranking {
 
 using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 
 constexpr char kTestUrl[] = "https://www.example1.com/";
 constexpr char kFooUrl1[] = "https://www.foo.com/1";
 constexpr char kFooUrl2[] = "https://www.foo.com/2";
 constexpr char kFooUrl3[] = "https://www.foo.com/3";
+constexpr char kFooUrl4[] = "https://www.foo4.com/4";
+constexpr char kFooUrl5[] = "https://www.foo5.com/5";
+
+// Visibility threshold from grouping_heuristics.cc
+const float kVisibilityThreshold = 0.7f;
+
+// Helper to add history data with a specific visibility score.
+void SetVisibilityScore(URLVisitAggregate& visit_aggregate,
+                        std::optional<float> visibility_score) {
+  visit_aggregate.fetcher_data_map.erase(Fetcher::kHistory);
+  if (!visibility_score) {
+    return;
+  }
+  history::AnnotatedVisit annotated_visit = GenerateSampleAnnotatedVisit(
+      /*visit_id=*/1, /*page_title=*/u"Test Title", GURL(),
+      /*has_url_keyed_image=*/true, /*originator_cache_guid=*/"",
+      *visibility_score, /*categories=*/{}, base::Time());
+  visit_aggregate.fetcher_data_map.emplace(
+      Fetcher::kHistory,
+      URLVisitAggregate::HistoryData(std::move(annotated_visit)));
+}
 
 URLVisitAggregate CreateVisitForTab(base::TimeDelta time_since_active,
                                     int tab_id,
-                                    GURL url = GURL(kTestUrl)) {
+                                    GURL url = GURL(kTestUrl),
+                                    float visibility_score = 0.95) {
   base::Time timestamp = base::Time::Now() - time_since_active;
   auto candidate =
       CreateSampleURLVisitAggregate(url, 1, timestamp, {Fetcher::kTabModel});
@@ -38,6 +62,8 @@ URLVisitAggregate CreateVisitForTab(base::TimeDelta time_since_active,
   tab_data->last_active_tab.tab_metadata.tab_origin =
       TabMetadata::TabOrigin::kOpenedByUserAction;
   tab_data->last_active_tab.tab_metadata.tab_creation_time = timestamp;
+
+  SetVisibilityScore(candidate, visibility_score);
   return candidate;
 }
 
@@ -481,6 +507,125 @@ TEST_F(GroupingHeuristicsTest, SimilarSourceHeuristic_SameParentTabCluster) {
   EXPECT_EQ(GroupSuggestion::SuggestionReason::kSimilarSource,
             suggestion.suggestion_reason);
   EXPECT_THAT(suggestion.tab_ids, ElementsAre(111, 112, 113, 114));
+}
+
+TEST_F(GroupingHeuristicsTest,
+       VisibilityScore_GroupNotShown_OneTabInGroupHasInvisibleHistory) {
+  features_.InitAndEnableFeatureWithParameters(
+      features::kGroupSuggestionService,
+      {{"group_suggestion_enable_recently_opened", "true"}});
+
+  heuristics_ =
+      std::make_unique<GroupingHeuristics>();  // Re-init after features
+
+  std::vector<URLVisitAggregate> candidates;
+
+  // Tab 1 (Active): Recent, visible history.
+  candidates.push_back(CreateVisitForTab(base::Seconds(50), 1, GURL(kFooUrl1)));
+  GetTabMetadata(candidates.back()).is_currently_active = true;
+  SetVisibilityScore(candidates.back(), kVisibilityThreshold + 0.1f);
+  // Tab 2: Recent, INVISIBLE history.
+  candidates.push_back(
+      CreateVisitForTab(base::Seconds(100), 2, GURL(kFooUrl2)));
+  SetVisibilityScore(candidates.back(), kVisibilityThreshold - 0.1f);
+  // Tab 3: Recent, visible history.
+  candidates.push_back(
+      CreateVisitForTab(base::Seconds(150), 3, GURL(kFooUrl3)));
+  SetVisibilityScore(candidates.back(), kVisibilityThreshold + 0.1f);
+  // Tab 4: Recent, no history data.
+  candidates.push_back(
+      CreateVisitForTab(base::Seconds(200), 4, GURL(kFooUrl4)));
+  SetVisibilityScore(candidates.back(), std::nullopt);
+  // Tab 5: Not recent enough, visible history.
+  candidates.push_back(
+      CreateVisitForTab(base::Seconds(700), 5, GURL(kFooUrl5)));
+  SetVisibilityScore(candidates.back(), kVisibilityThreshold + 0.1f);
+
+  // Potential group: {1,2,3,4}. Tab 2 makes it not visible.
+  std::optional<GroupSuggestions> suggestions =
+      GetSuggestionsFor(std::move(candidates),
+                        GroupSuggestion::SuggestionReason::kRecentlyOpened);
+
+  ASSERT_FALSE(suggestions.has_value());
+}
+
+TEST_F(GroupingHeuristicsTest,
+       VisibilityScore_GroupNotShown_AllTabsInGroupLackHistory) {
+  features_.InitAndEnableFeatureWithParameters(
+      features::kGroupSuggestionService,
+      {{"group_suggestion_enable_recently_opened", "true"}});
+
+  heuristics_ =
+      std::make_unique<GroupingHeuristics>();  // Re-init after features
+
+  std::vector<URLVisitAggregate> candidates;
+  // All tabs are recent but lack history data.
+  candidates.push_back(CreateVisitForTab(base::Seconds(50), 1, GURL(kFooUrl1)));
+  GetTabMetadata(candidates.back()).is_currently_active = true;
+  SetVisibilityScore(candidates.back(), std::nullopt);
+  candidates.push_back(
+      CreateVisitForTab(base::Seconds(100), 2, GURL(kFooUrl2)));
+  SetVisibilityScore(candidates.back(), std::nullopt);
+  candidates.push_back(
+      CreateVisitForTab(base::Seconds(150), 3, GURL(kFooUrl3)));
+  SetVisibilityScore(candidates.back(), std::nullopt);
+  candidates.push_back(
+      CreateVisitForTab(base::Seconds(200), 4, GURL(kFooUrl4)));
+  SetVisibilityScore(candidates.back(), std::nullopt);
+  // Tab 5: Not recent enough, also no history.
+  candidates.push_back(
+      CreateVisitForTab(base::Seconds(700), 5, GURL(kFooUrl5)));
+  SetVisibilityScore(candidates.back(), std::nullopt);
+
+  // Potential group: {1,2,3,4}.
+  std::optional<GroupSuggestions> suggestions =
+      GetSuggestionsFor(std::move(candidates),
+                        GroupSuggestion::SuggestionReason::kRecentlyOpened);
+
+  ASSERT_FALSE(suggestions.has_value());
+}
+
+TEST_F(GroupingHeuristicsTest,
+       VisibilityScore_GroupShown_MixedHistoryInGroup_VisibleAndNoHistory) {
+  features_.InitAndEnableFeatureWithParameters(
+      features::kGroupSuggestionService,
+      {{"group_suggestion_enable_recently_opened", "true"}});
+
+  heuristics_ =
+      std::make_unique<GroupingHeuristics>();  // Re-init after features
+
+  std::vector<URLVisitAggregate> candidates;
+
+  // Tab 1 (Active): Recent, No history data.
+  candidates.push_back(CreateVisitForTab(base::Seconds(50), 1, GURL(kFooUrl1)));
+  GetTabMetadata(candidates.back()).is_currently_active = true;
+  // Tab 2: Recent, Visible history.
+  candidates.push_back(
+      CreateVisitForTab(base::Seconds(100), 2, GURL(kFooUrl2)));
+  SetVisibilityScore(candidates.back(), kVisibilityThreshold + 0.1f);
+  // Tab 3: Recent, Visible history.
+  candidates.push_back(
+      CreateVisitForTab(base::Seconds(150), 3, GURL(kFooUrl3)));
+  SetVisibilityScore(candidates.back(), kVisibilityThreshold + 0.2f);
+  // Tab 4: Recent, No history data.
+  candidates.push_back(
+      CreateVisitForTab(base::Seconds(200), 4, GURL(kFooUrl4)));
+  SetVisibilityScore(candidates.back(), std::nullopt);
+  // Tab 5: Not recent enough, visible history.
+  candidates.push_back(
+      CreateVisitForTab(base::Seconds(700), 5, GURL(kFooUrl5)));
+  SetVisibilityScore(candidates.back(), kVisibilityThreshold + 0.1f);
+
+  // Potential group: {1,2,3,4}. Tabs 1 & 4 lack history (implicitly
+  // visible). Tabs 2 & 3 have visible history. Intended: `IsGroupVisible`
+  // returns true.
+  std::optional<GroupSuggestions> suggestions =
+      GetSuggestionsFor(std::move(candidates),
+                        GroupSuggestion::SuggestionReason::kRecentlyOpened);
+
+  ASSERT_TRUE(suggestions.has_value());
+  ASSERT_EQ(1u, suggestions->suggestions.size());
+  EXPECT_THAT(suggestions->suggestions[0].tab_ids, ElementsAre(1, 2, 3, 4));
 }
 
 }  // namespace visited_url_ranking

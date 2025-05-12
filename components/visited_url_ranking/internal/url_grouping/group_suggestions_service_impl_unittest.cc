@@ -53,6 +53,15 @@ URLVisitAggregate CreateVisitForTab(base::TimeDelta time_since_active,
   auto tab_data_it = candidate.fetcher_data_map.find(Fetcher::kTabModel);
   auto* tab = std::get_if<URLVisitAggregate::TabData>(&tab_data_it->second);
   tab->last_active_tab.id = tab_id;
+
+  history::AnnotatedVisit annotated_visit = GenerateSampleAnnotatedVisit(
+      /*visit_id=*/1, /*page_title=*/u"Test Title", GURL(),
+      /*has_url_keyed_image=*/true, /*originator_cache_guid=*/"",
+      /*visibility_score=*/0.9, /*categories=*/{}, base::Time());
+  candidate.fetcher_data_map.emplace(
+      Fetcher::kHistory,
+      URLVisitAggregate::HistoryData(std::move(annotated_visit)));
+
   return candidate;
 }
 

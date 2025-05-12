@@ -238,15 +238,28 @@ bool GroupSuggestionsTracker::ShouldShowSuggestion(
            features::kGroupSuggestionThrottleAgeLimit.Get();
   });
 
+  if (HasOverlappingTabs(suggestion) ||
+      HasOverlappingHosts(suggestion, inputs)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool GroupSuggestionsTracker::HasOverlappingTabs(
+    const GroupSuggestion& suggestion) const {
   base::flat_set<int> all_shown;
   for (const auto& item : suggestions_) {
     all_shown.insert(item.tab_ids.begin(), item.tab_ids.end());
   }
   float overlap = GetOverlappingTabCount(all_shown, suggestion.tab_ids);
-  if (overlap > kReasonToMaxOverlappingTabs.at(suggestion.suggestion_reason)) {
-    return false;
-  }
+  return overlap > kReasonToMaxOverlappingTabs.at(suggestion.suggestion_reason);
+}
 
+bool GroupSuggestionsTracker::HasOverlappingHosts(
+    const GroupSuggestion& suggestion,
+    const std::vector<scoped_refptr<segmentation_platform::InputContext>>&
+        inputs) const {
   base::flat_set<int> all_shown_hosts;
   for (const auto& item : suggestions_) {
     all_shown_hosts.insert(item.host_hashes.begin(), item.host_hashes.end());
@@ -260,12 +273,8 @@ bool GroupSuggestionsTracker::ShouldShowSuggestion(
   }
   float hosts_overlap =
       GetOverlappingTabCount(all_shown_hosts, suggestion_hosts);
-  if (hosts_overlap >
-      kReasonToMaxOverlappingTabs.at(suggestion.suggestion_reason)) {
-    return false;
-  }
-
-  return true;
+  return hosts_overlap >
+         kReasonToMaxOverlappingTabs.at(suggestion.suggestion_reason);
 }
 
 }  // namespace visited_url_ranking

@@ -30,7 +30,7 @@ void HistoryURLVisitAggregatesVisibilityScoreTransformer::Transform(
       return true;
     }
 
-    const auto history =
+    const auto* history =
         std::get_if<URLVisitAggregate::HistoryData>(&it->second);
     if (!history) {
       return false;

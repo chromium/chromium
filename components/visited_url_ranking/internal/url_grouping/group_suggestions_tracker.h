@@ -64,6 +64,12 @@ class GroupSuggestionsTracker {
         GroupSuggestionsDelegate::UserResponse::kUnknown;
   };
 
+  bool HasOverlappingTabs(const GroupSuggestion& suggestion) const;
+  bool HasOverlappingHosts(
+      const GroupSuggestion& suggestion,
+      const std::vector<scoped_refptr<segmentation_platform::InputContext>>&
+          inputs) const;
+
   raw_ptr<PrefService> pref_service_;
   std::vector<ShownSuggestion> suggestions_;
 };
