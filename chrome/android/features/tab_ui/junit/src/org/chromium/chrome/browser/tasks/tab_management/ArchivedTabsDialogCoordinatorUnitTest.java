@@ -19,6 +19,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.graphics.drawable.ColorDrawable;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -65,6 +66,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
@@ -311,5 +313,25 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
         var padAdjuster = mCoordinator.getEdgeToEdgePadAdjusterForTesting();
         assertNull("Pad adjuster should be created when feature enabled.", padAdjuster);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE)
+    public void testCloseAllTabsButtonBackgroundColor() {
+        mCoordinator.show(mOnTabSelectingListener);
+        FrameLayout buttonContainer = mCoordinator.getCloseAllTabsButtonContainer();
+        assertEquals(
+                SemanticColorUtils.getColorSurface(mActivity),
+                ((ColorDrawable) buttonContainer.getBackground()).getColor());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE)
+    public void testCloseAllTabsButtonBackgroundColorUpdate() {
+        mCoordinator.show(mOnTabSelectingListener);
+        FrameLayout buttonContainer = mCoordinator.getCloseAllTabsButtonContainer();
+        assertEquals(
+                SemanticColorUtils.getColorSurfaceContainerHigh(mActivity),
+                ((ColorDrawable) buttonContainer.getBackground()).getColor());
     }
 }
