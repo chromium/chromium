@@ -49,7 +49,8 @@ CompositorFrameMetadata::CompositorFrameMetadata(
       screenshot_destination(other.screenshot_destination),
       is_software(other.is_software),
       offset_tag_definitions(other.offset_tag_definitions),
-      offset_tag_values(other.offset_tag_values) {
+      offset_tag_values(other.offset_tag_values),
+      frame_interval_inputs(other.frame_interval_inputs) {
   if (other.delegated_ink_metadata) {
     delegated_ink_metadata = std::make_unique<gfx::DelegatedInkMetadata>(
         *other.delegated_ink_metadata.get());
