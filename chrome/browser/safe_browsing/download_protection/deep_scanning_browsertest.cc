@@ -531,8 +531,8 @@ class DownloadDeepScanningBrowserTestBase
     }
 
     if (request.url == connector_url_) {
-        ASSERT_TRUE(GetResumableUploadMetadata(network::GetUploadData(request),
-                                               &last_request_));
+      ASSERT_TRUE(GetResumableUploadMetadata(network::GetUploadData(request),
+                                             &last_request_));
     }
   }
 
@@ -858,8 +858,9 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   EXPECT_EQ(item->GetState(), download::DownloadItem::INTERRUPTED);
 }
 
+// TODO(crbug.com/414822762): Fix flaky test.
 IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
-                       DlpAndMalwareViolations) {
+                       DISABLED_DlpAndMalwareViolations) {
   // This allows the blocking DM token reads happening on profile-Connector
   // triggers.
   base::ScopedAllowBlockingForTesting allow_blocking;

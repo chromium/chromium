@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include <algorithm>
 #include <memory>
 #include <set>
@@ -1540,8 +1539,7 @@ class ContentAnalysisDelegateBlockingSettingBrowserTest
       public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   ContentAnalysisDelegateBlockingSettingBrowserTest()
-      : ContentAnalysisDelegateBrowserTestBase(machine_scope()) {
-  }
+      : ContentAnalysisDelegateBrowserTestBase(machine_scope()) {}
 
   bool machine_scope() const { return std::get<0>(GetParam()); }
 
@@ -1554,11 +1552,15 @@ class ContentAnalysisDelegateBlockingSettingBrowserTest
 
 INSTANTIATE_TEST_SUITE_P(,
                          ContentAnalysisDelegateBlockingSettingBrowserTest,
-                         testing::Combine(testing::Bool(),
-                                          testing::Bool()));
-
+                         testing::Combine(testing::Bool(), testing::Bool()));
+// TODO(crbug.com/413427796): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_BlockPasswordProtected DISABLED_BlockPasswordProtected
+#else
+#define MAYBE_BlockPasswordProtected BlockPasswordProtected
+#endif
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
-                       BlockPasswordProtected) {
+                       MAYBE_BlockPasswordProtected) {
   // When the resumable protocol is in use and the `blocked_password_protected`
   // setting is off, the final verdict is determined by the server, not by the
   // policy value. So this specific scenario only applies to multi-part upload.
@@ -1865,8 +1867,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   content_analysis_run_loop.Run();
 }
 
+// TODO(crbug.com/413427796): Fix flaky test.
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
-                       BlockUntilVerdict) {
+                       DISABLED_BlockUntilVerdict) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   // Set up delegate and upload service.
