@@ -3240,7 +3240,8 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
     }
   } else if (name == html_names::kClassAttr) {
     if (params.old_value == params.new_value &&
-        params.reason != AttributeModificationReason::kByMoveToNewDocument) {
+        params.reason != AttributeModificationReason::kByMoveToNewDocument &&
+        params.reason != AttributeModificationReason::kByCloning) {
       return;
     }
     ClassAttributeChanged(params.new_value);
@@ -10275,17 +10276,21 @@ void Element::CloneAttributesFrom(const Element& other) {
     element_data_ = other.element_data_->MakeUniqueCopy();
   }
 
+  // Since we're going through the list of attributes now, we use the
+  // opportunity to recreate the Bloom filter; in particular, it may
+  // be different from the source's Bloom filter if it came from a document
+  // with different quirks mode setting.
+  attribute_or_class_bloom_ = 0;
   for (const Attribute& attr : element_data_->Attributes()) {
     AttributeChanged(
         AttributeModificationParams(attr.GetName(), g_null_atom, attr.Value(),
                                     AttributeModificationReason::kByCloning));
+    attribute_or_class_bloom_ |= FilterForAttribute(attr.GetName());
   }
 
   if (other.nonce() != g_null_atom) {
     setNonce(other.nonce());
   }
-
-  attribute_or_class_bloom_ = other.attribute_or_class_bloom_;
 }
 
 void Element::CreateUniqueElementData() {
