@@ -336,3 +336,18 @@ promise_test(async testCase => {
   const cookie = await cookieStore.get('cookie-name');
   assert_equals(cookie, null);
 }, 'cookieStore.set checks if the domain is too long');
+
+promise_test(async testCase => {
+  // Cookies having a __Host- prefix are not allowed to specify a domain
+  await cookieStore.delete('cookie-name');
+
+  const currentUrl = new URL(self.location.href);
+  const currentDomain = currentUrl.hostname;
+
+  await promise_rejects_js(testCase, TypeError, cookieStore.set(
+      { name: '__Host-cookie-name',
+        value: 'cookie-value',
+        domain: currentDomain }));
+  const cookie = await cookieStore.get('cookie-name');
+  assert_equals(cookie, null);
+}, 'cookieStore.set with a __Host- prefix should not have a domain');
