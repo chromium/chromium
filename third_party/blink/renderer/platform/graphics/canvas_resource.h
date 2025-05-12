@@ -89,24 +89,8 @@ class PLATFORM_EXPORT CanvasResource
   // GPU compositing.
   virtual bool CreatesAcceleratedTransferableResources() const = 0;
 
-  // Transfers ownership of the resource's vix::ReleaseCallback.  This is useful
-  // prior to transferring a resource to another thread, to retain the release
-  // callback on the current thread since the callback may not be thread safe.
-  // Even if the callback is never executed on another thread, simply transiting
-  // through another thread is dangerous because garbage collection races may
-  // make it impossible to return the resource to its thread of origin for
-  // destruction; in which case the callback (and its bound arguments) may be
-  // destroyed on the wrong thread.
-  virtual viz::ReleaseCallback TakeVizReleaseCallback() {
-    return viz::ReleaseCallback();
-  }
-
   virtual void OnReturnedFromCompositor(
       scoped_refptr<CanvasResource>&& resource) {}
-
-  virtual void SetVizReleaseCallback(viz::ReleaseCallback cb) {
-    CHECK(cb.is_null());
-  }
 
   // Returns true if the resource is still usable. It maybe not be valid in the
   // case of a context loss or if we fail to initialize the memory backing for
@@ -382,12 +366,6 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   }
 
   scoped_refptr<StaticBitmapImage> Bitmap() override;
-  viz::ReleaseCallback TakeVizReleaseCallback() override {
-    return std::move(release_callback_);
-  }
-  void SetVizReleaseCallback(viz::ReleaseCallback cb) override {
-    release_callback_ = std::move(cb);
-  }
 
  private:
   gfx::HDRMetadata GetHDRMetadata() const final { return hdr_metadata_; }
