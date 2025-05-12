@@ -39,9 +39,10 @@ class VIEWS_EXPORT NormalizedPoint {
   void SetPoint(int main, int cross);
   void Offset(int delta_main, int delta_cross);
 
-  bool operator==(const NormalizedPoint& other) const;
-  bool operator!=(const NormalizedPoint& other) const;
-  bool operator<(const NormalizedPoint& other) const;
+  friend bool operator==(const NormalizedPoint&,
+                         const NormalizedPoint&) = default;
+  friend auto operator<=>(const NormalizedPoint&,
+                          const NormalizedPoint&) = default;
 
   std::string ToString() const;
 
@@ -73,9 +74,10 @@ class VIEWS_EXPORT NormalizedSize {
 
   constexpr bool is_empty() const { return main_ == 0 || cross_ == 0; }
 
-  bool operator==(const NormalizedSize& other) const;
-  bool operator!=(const NormalizedSize& other) const;
-  bool operator<(const NormalizedSize& other) const;
+  friend bool operator==(const NormalizedSize&,
+                         const NormalizedSize&) = default;
+  friend auto operator<=>(const NormalizedSize&,
+                          const NormalizedSize&) = default;
 
   std::string ToString() const;
 
@@ -130,9 +132,10 @@ class VIEWS_EXPORT NormalizedInsets {
   const Inset1D& cross() const { return cross_; }
   void set_cross(const Inset1D& cross) { cross_ = cross; }
 
-  bool operator==(const NormalizedInsets& other) const;
-  bool operator!=(const NormalizedInsets& other) const;
-  bool operator<(const NormalizedInsets& other) const;
+  friend bool operator==(const NormalizedInsets&,
+                         const NormalizedInsets&) = default;
+  friend auto operator<=>(const NormalizedInsets&,
+                          const NormalizedInsets&) = default;
 
   std::string ToString() const;
 
@@ -160,8 +163,8 @@ class VIEWS_EXPORT NormalizedSizeBounds {
   void Expand(int main, int cross);
   void Inset(const NormalizedInsets& insets);
 
-  bool operator==(const NormalizedSizeBounds& other) const;
-  bool operator!=(const NormalizedSizeBounds& other) const;
+  friend bool operator==(const NormalizedSizeBounds&,
+                         const NormalizedSizeBounds&) = default;
   bool operator<(const NormalizedSizeBounds& other) const;
 
   std::string ToString() const;
@@ -239,9 +242,10 @@ class VIEWS_EXPORT NormalizedRect {
   void Offset(int main, int cross);
 
   constexpr bool is_empty() const { return size_.is_empty(); }
-  bool operator==(const NormalizedRect& other) const;
-  bool operator!=(const NormalizedRect& other) const;
-  bool operator<(const NormalizedRect& other) const;
+  friend bool operator==(const NormalizedRect&,
+                         const NormalizedRect&) = default;
+  friend auto operator<=>(const NormalizedRect&,
+                          const NormalizedRect&) = default;
 
   std::string ToString() const;
 
