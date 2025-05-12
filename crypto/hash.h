@@ -5,6 +5,11 @@
 #ifndef CRYPTO_HASH_H_
 #define CRYPTO_HASH_H_
 
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <string_view>
+
 #include "base/containers/span.h"
 #include "base/notreached.h"
 #include "crypto/crypto_export.h"
