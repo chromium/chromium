@@ -21,9 +21,8 @@ public class SimpleSelectionController extends SelectionController {
          *
          * @param position the position to apply selection change to
          * @param isSelected whether that position should be selected
-         * @return whether selection was applied at requested position
          */
-        boolean onSelectionChanged(int position, boolean isSelected);
+        void onSelectionChanged(int position, boolean isSelected);
     }
 
     /**
@@ -57,7 +56,7 @@ public class SimpleSelectionController extends SelectionController {
     }
 
     @Override
-    protected boolean setItemState(int position, boolean isSelected) {
-        return mListener.onSelectionChanged(position, isSelected);
+    protected void setItemState(int position, boolean isSelected) {
+        mListener.onSelectionChanged(position, isSelected);
     }
 }

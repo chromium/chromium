@@ -427,6 +427,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/OmniboxSuggestionsDropdownUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/PreWarmingRecycledViewPoolTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/RecyclerViewSelectionControllerUnitTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/suggestions/SelectionControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/SimpleSelectionControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/SuggestionHorizontalDividerTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/SuggestionListViewBinderUnitTest.java",

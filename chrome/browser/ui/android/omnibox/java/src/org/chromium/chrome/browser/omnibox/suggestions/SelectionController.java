@@ -84,9 +84,24 @@ public abstract class SelectionController {
      * @return whether selection was applied to the new element.
      */
     public boolean advanceForward() {
+        // If parked at upper sentinel, bail.
         if (mPosition == Integer.MAX_VALUE) return false;
-        if (mPosition == Integer.MIN_VALUE) return setPosition(0);
-        return setPosition(mPosition + 1);
+
+        // If parked at lower sentinel, resume from 0.
+        int newPosition = getPosition().orElse(-1) + 1;
+        int itemCount = getItemCount();
+        while (newPosition < itemCount) {
+            if (isSelectableItem(newPosition)) {
+                return setPosition(newPosition);
+            }
+            newPosition++;
+        }
+
+        // Don't touch selection if we can't advance. Otherwise, park at sentinel.
+        if (mMode == Mode.SATURATING_WITH_SENTINEL) {
+            setPosition(Integer.MAX_VALUE);
+        }
+        return false;
     }
 
     /**
@@ -96,14 +111,33 @@ public abstract class SelectionController {
      * @return whether selection was applied to the new element.
      */
     public boolean advanceBack() {
+        // If parked at lower sentinel, bail.
         if (mPosition == Integer.MIN_VALUE) return false;
-        if (mPosition == Integer.MAX_VALUE) return setPosition(getItemCount());
-        return setPosition(mPosition - 1);
+
+        // If parked at upper sentinel, resume from getItemCount() - 1.
+        int newPosition = getPosition().orElse(getItemCount()) - 1;
+        while (newPosition >= 0) {
+            if (isSelectableItem(newPosition)) {
+                return setPosition(newPosition);
+            }
+            newPosition--;
+        }
+
+        // Don't touch selection if we can't advance. Otherwise, park at sentinel.
+        if (mMode == Mode.SATURATING_WITH_SENTINEL) {
+            setPosition(Integer.MIN_VALUE);
+        }
+        return false;
+    }
+
+    /** Returns whether specific position is a sentinel. */
+    private static boolean isSentinel(int position) {
+        return position == Integer.MIN_VALUE || position == Integer.MAX_VALUE;
     }
 
     /** Returns true if selection controller is currently parked outside the valid range. */
     public boolean isParkedAtSentinel() {
-        return mPosition == Integer.MIN_VALUE || mPosition == Integer.MAX_VALUE;
+        return isSentinel(mPosition);
     }
 
     /** Returns current counter value (unless saturated). */
@@ -120,42 +154,48 @@ public abstract class SelectionController {
      */
     @VisibleForTesting
     boolean setPosition(int newPosition) {
-        if (!isParkedAtSentinel()) {
-            setItemState(mPosition, false);
-        }
-
-        int oldPosition = mPosition;
+        // Compute new position.
         int itemCount = getItemCount();
-        mPosition = newPosition;
         switch (mMode) {
             case Mode.SATURATING:
                 if (itemCount == 0) {
-                    mPosition = Integer.MIN_VALUE;
+                    newPosition = Integer.MIN_VALUE;
                 } else {
-                    mPosition = MathUtils.clamp(mPosition, 0, itemCount - 1);
+                    newPosition = MathUtils.clamp(newPosition, 0, itemCount - 1);
                 }
                 break;
 
             case Mode.SATURATING_WITH_SENTINEL:
                 // Park outside the valid range, keeping the information which edge we hit.
-                if (mPosition < 0) { // Underflow
-                    mPosition = Integer.MIN_VALUE;
-                } else if (mPosition >= itemCount) {
-                    mPosition = Integer.MAX_VALUE;
+                if (newPosition < 0) { // Underflow
+                    newPosition = Integer.MIN_VALUE;
+                } else if (newPosition >= itemCount) {
+                    newPosition = Integer.MAX_VALUE;
                 }
                 break;
         }
 
-        if (isParkedAtSentinel()) return false;
-
-        // Select new item, fall back to old position if not possible.
-        if (!setItemState(mPosition, true)) {
-            mPosition = oldPosition;
-            setItemState(mPosition, true);
-            // We failed to select the requested entry.
+        // Do not attempt to move selection if the next item is not selectable.
+        if (!isSentinel(newPosition) && !isSelectableItem(newPosition)) {
             return false;
         }
 
+        if (!isParkedAtSentinel()) {
+            setItemState(mPosition, false);
+        }
+
+        mPosition = newPosition;
+
+        if (!isParkedAtSentinel()) {
+            setItemState(mPosition, true);
+            return true;
+        }
+
+        return false;
+    }
+
+    /** Returns whether view at specific position is focusable. */
+    protected boolean isSelectableItem(int position) {
         return true;
     }
 
@@ -164,7 +204,6 @@ public abstract class SelectionController {
      *
      * @param position the index of an element to change the state of
      * @param state the desired new state
-     * @return the applied state of the item at specified position.
      */
-    protected abstract boolean setItemState(int position, boolean isSelected);
+    protected abstract void setItemState(int position, boolean isSelected);
 }

@@ -122,9 +122,8 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
      *
      * @param buttonIndex the index of an action button
      * @param isSelected whether to apply hairline
-     * @return the highlight state of the specified action button.
      */
-    private boolean highlightActionButton(int buttonIndex, boolean isHighlighted) {
+    private void highlightActionButton(int buttonIndex, boolean isHighlighted) {
         mActionButtons
                 .get(buttonIndex)
                 .setForeground(
@@ -132,7 +131,6 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
                                 ? AppCompatResources.getDrawable(
                                         getContext(), R.drawable.hairline_circle)
                                 : null);
-        return isHighlighted;
     }
 
     /**
