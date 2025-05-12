@@ -30,6 +30,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
+#include "content/browser/webid/fedcm_mappers.h"
 #include "content/browser/webid/federated_auth_disconnect_request.h"
 #include "content/browser/webid/federated_auth_request_page_data.h"
 #include "content/browser/webid/federated_auth_user_info_request.h"
@@ -106,43 +107,12 @@ static constexpr double kRejectionLogNormalMu = 8.6;
 static constexpr double kRejectionLogNormalSigma = 1.4;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-static constexpr char kDefaultFieldName[] = "name";
-static constexpr char kDefaultFieldEmail[] = "email";
-static constexpr char kDefaultFieldPicture[] = "picture";
-static constexpr char kFieldPhoneNumber[] = "tel";
-static constexpr char kFieldUsername[] = "username";
-
 static constexpr char kVcSdJwt[] = "vc+sd-jwt";
 
 bool IsRequestingDefaultPermissions(const std::vector<std::string>& fields) {
-  return base::Contains(fields, kDefaultFieldName) &&
-         base::Contains(fields, kDefaultFieldEmail) &&
-         base::Contains(fields, kDefaultFieldPicture);
-}
-
-std::vector<std::string> DisclosureFieldsToStringList(
-    const std::vector<IdentityRequestDialogDisclosureField>& fields) {
-  std::vector<std::string> list;
-  for (auto field : fields) {
-    switch (field) {
-      case IdentityRequestDialogDisclosureField::kName:
-        list.push_back(kDefaultFieldName);
-        break;
-      case IdentityRequestDialogDisclosureField::kEmail:
-        list.push_back(kDefaultFieldEmail);
-        break;
-      case IdentityRequestDialogDisclosureField::kPicture:
-        list.push_back(kDefaultFieldPicture);
-        break;
-      case IdentityRequestDialogDisclosureField::kPhoneNumber:
-        list.push_back(kFieldPhoneNumber);
-        break;
-      case IdentityRequestDialogDisclosureField::kUsername:
-        list.push_back(kFieldUsername);
-        break;
-    }
-  }
-  return list;
+  return base::Contains(fields, kFedCmDefaultFieldName) &&
+         base::Contains(fields, kFedCmDefaultFieldEmail) &&
+         base::Contains(fields, kFedCmDefaultFieldPicture);
 }
 
 std::string ComputeUrlEncodedTokenPostDataForIssuers(
@@ -219,8 +189,8 @@ std::string ComputeUrlEncodedTokenPostData(
   if (fields) {
     fields_to_use = *fields;
   } else {
-    fields_to_use = {kDefaultFieldName, kDefaultFieldEmail,
-                     kDefaultFieldPicture};
+    fields_to_use = {kFedCmDefaultFieldName, kFedCmDefaultFieldEmail,
+                     kFedCmDefaultFieldPicture};
   }
   if (!fields_to_use.empty()) {
     query += "&fields=" +
@@ -243,143 +213,6 @@ std::string ComputeUrlEncodedTokenPostData(
     query += "&type=" + base::EscapeUrlEncodedData(*type, /*use_plus=*/true);
   }
   return query;
-}
-
-RequestTokenStatus FederatedAuthRequestResultToRequestTokenStatus(
-    FederatedAuthRequestResult result) {
-  // Avoids exposing to renderer detailed error messages which may leak cross
-  // site information to the API call site.
-  switch (result) {
-    case FederatedAuthRequestResult::kSuccess: {
-      return RequestTokenStatus::kSuccess;
-    }
-    case FederatedAuthRequestResult::kTooManyRequests: {
-      return RequestTokenStatus::kErrorTooManyRequests;
-    }
-    case FederatedAuthRequestResult::kCanceled: {
-      return RequestTokenStatus::kErrorCanceled;
-    }
-    case FederatedAuthRequestResult::kShouldEmbargo:
-    case FederatedAuthRequestResult::kIdpNotPotentiallyTrustworthy:
-    case FederatedAuthRequestResult::kDisabledInSettings:
-    case FederatedAuthRequestResult::kDisabledInFlags:
-    case FederatedAuthRequestResult::kWellKnownHttpNotFound:
-    case FederatedAuthRequestResult::kWellKnownNoResponse:
-    case FederatedAuthRequestResult::kWellKnownInvalidResponse:
-    case FederatedAuthRequestResult::kWellKnownListEmpty:
-    case FederatedAuthRequestResult::kWellKnownInvalidContentType:
-    case FederatedAuthRequestResult::kConfigNotInWellKnown:
-    case FederatedAuthRequestResult::kWellKnownTooBig:
-    case FederatedAuthRequestResult::kConfigHttpNotFound:
-    case FederatedAuthRequestResult::kConfigNoResponse:
-    case FederatedAuthRequestResult::kConfigInvalidResponse:
-    case FederatedAuthRequestResult::kConfigInvalidContentType:
-    case FederatedAuthRequestResult::kClientMetadataHttpNotFound:
-    case FederatedAuthRequestResult::kClientMetadataNoResponse:
-    case FederatedAuthRequestResult::kClientMetadataInvalidResponse:
-    case FederatedAuthRequestResult::kClientMetadataInvalidContentType:
-    case FederatedAuthRequestResult::kAccountsHttpNotFound:
-    case FederatedAuthRequestResult::kAccountsNoResponse:
-    case FederatedAuthRequestResult::kAccountsInvalidResponse:
-    case FederatedAuthRequestResult::kAccountsListEmpty:
-    case FederatedAuthRequestResult::kAccountsInvalidContentType:
-    case FederatedAuthRequestResult::kIdTokenHttpNotFound:
-    case FederatedAuthRequestResult::kIdTokenNoResponse:
-    case FederatedAuthRequestResult::kIdTokenInvalidResponse:
-    case FederatedAuthRequestResult::kIdTokenIdpErrorResponse:
-    case FederatedAuthRequestResult::kIdTokenCrossSiteIdpErrorResponse:
-    case FederatedAuthRequestResult::kIdTokenInvalidContentType:
-    case FederatedAuthRequestResult::kRpPageNotVisible:
-    case FederatedAuthRequestResult::kSilentMediationFailure:
-    case FederatedAuthRequestResult::kThirdPartyCookiesBlocked:
-    case FederatedAuthRequestResult::kNotSignedInWithIdp:
-    case FederatedAuthRequestResult::kMissingTransientUserActivation:
-    case FederatedAuthRequestResult::kReplacedByActiveMode:
-    case FederatedAuthRequestResult::kInvalidFieldsSpecified:
-    case FederatedAuthRequestResult::kRelyingPartyOriginIsOpaque:
-    case FederatedAuthRequestResult::kTypeNotMatching:
-    case FederatedAuthRequestResult::kUiDismissedNoEmbargo:
-    case FederatedAuthRequestResult::kCorsError:
-    case FederatedAuthRequestResult::kSuppressedBySegmentationPlatform:
-    case FederatedAuthRequestResult::kError: {
-      return RequestTokenStatus::kError;
-    }
-  }
-}
-
-IdpNetworkRequestManager::MetricsEndpointErrorCode
-FederatedAuthRequestResultToMetricsEndpointErrorCode(
-    blink::mojom::FederatedAuthRequestResult result) {
-  switch (result) {
-    case FederatedAuthRequestResult::kSuccess: {
-      return IdpNetworkRequestManager::MetricsEndpointErrorCode::kNone;
-    }
-    case FederatedAuthRequestResult::kTooManyRequests:
-    case FederatedAuthRequestResult::kMissingTransientUserActivation:
-    case FederatedAuthRequestResult::kRelyingPartyOriginIsOpaque:
-    case FederatedAuthRequestResult::kInvalidFieldsSpecified:
-    case FederatedAuthRequestResult::kCanceled: {
-      return IdpNetworkRequestManager::MetricsEndpointErrorCode::kRpFailure;
-    }
-    case FederatedAuthRequestResult::kAccountsInvalidResponse:
-    case FederatedAuthRequestResult::kAccountsListEmpty:
-    case FederatedAuthRequestResult::kAccountsInvalidContentType: {
-      return IdpNetworkRequestManager::MetricsEndpointErrorCode::
-          kAccountsEndpointInvalidResponse;
-    }
-    case FederatedAuthRequestResult::kIdTokenInvalidResponse:
-    case FederatedAuthRequestResult::kIdTokenIdpErrorResponse:
-    case FederatedAuthRequestResult::kIdTokenCrossSiteIdpErrorResponse:
-    case FederatedAuthRequestResult::kIdTokenInvalidContentType:
-    case FederatedAuthRequestResult::kCorsError: {
-      return IdpNetworkRequestManager::MetricsEndpointErrorCode::
-          kTokenEndpointInvalidResponse;
-    }
-    case FederatedAuthRequestResult::kShouldEmbargo:
-    case FederatedAuthRequestResult::kUiDismissedNoEmbargo:
-    case FederatedAuthRequestResult::kDisabledInFlags:
-    case FederatedAuthRequestResult::kDisabledInSettings:
-    case FederatedAuthRequestResult::kThirdPartyCookiesBlocked:
-    case FederatedAuthRequestResult::kRpPageNotVisible:
-    case FederatedAuthRequestResult::kReplacedByActiveMode:
-    case FederatedAuthRequestResult::kNotSignedInWithIdp: {
-      return IdpNetworkRequestManager::MetricsEndpointErrorCode::kUserFailure;
-    }
-    case FederatedAuthRequestResult::kWellKnownHttpNotFound:
-    case FederatedAuthRequestResult::kWellKnownNoResponse:
-    case FederatedAuthRequestResult::kConfigHttpNotFound:
-    case FederatedAuthRequestResult::kConfigNoResponse:
-    case FederatedAuthRequestResult::kClientMetadataHttpNotFound:
-    case FederatedAuthRequestResult::kClientMetadataNoResponse:
-    case FederatedAuthRequestResult::kAccountsHttpNotFound:
-    case FederatedAuthRequestResult::kAccountsNoResponse:
-    case FederatedAuthRequestResult::kIdTokenHttpNotFound:
-    case FederatedAuthRequestResult::kIdTokenNoResponse: {
-      return IdpNetworkRequestManager::MetricsEndpointErrorCode::
-          kIdpServerUnavailable;
-    }
-    case FederatedAuthRequestResult::kConfigNotInWellKnown:
-    case FederatedAuthRequestResult::kWellKnownTooBig: {
-      return IdpNetworkRequestManager::MetricsEndpointErrorCode::kManifestError;
-    }
-    case FederatedAuthRequestResult::kWellKnownListEmpty:
-    case FederatedAuthRequestResult::kWellKnownInvalidResponse:
-    case FederatedAuthRequestResult::kConfigInvalidResponse:
-    case FederatedAuthRequestResult::kClientMetadataInvalidResponse:
-    case FederatedAuthRequestResult::kWellKnownInvalidContentType:
-    case FederatedAuthRequestResult::kConfigInvalidContentType:
-    case FederatedAuthRequestResult::kClientMetadataInvalidContentType: {
-      return IdpNetworkRequestManager::MetricsEndpointErrorCode::
-          kIdpServerInvalidResponse;
-    }
-    case FederatedAuthRequestResult::kIdpNotPotentiallyTrustworthy:
-    case FederatedAuthRequestResult::kError:
-    case FederatedAuthRequestResult::kSilentMediationFailure:
-    case FederatedAuthRequestResult::kTypeNotMatching:
-    case FederatedAuthRequestResult::kSuppressedBySegmentationPlatform: {
-      return IdpNetworkRequestManager::MetricsEndpointErrorCode::kOther;
-    }
-  }
 }
 
 // The time from when the accounts dialog is shown to when a user explicitly
@@ -1461,16 +1294,16 @@ FederatedAuthRequestImpl::GetDisclosureFields(
 
   std::vector<IdentityRequestDialogDisclosureField> list;
   for (const auto& field : *fields) {
-    if (field == kDefaultFieldName) {
+    if (field == kFedCmDefaultFieldName) {
       list.push_back(IdentityRequestDialogDisclosureField::kName);
-    } else if (field == kDefaultFieldEmail) {
+    } else if (field == kFedCmDefaultFieldEmail) {
       list.push_back(IdentityRequestDialogDisclosureField::kEmail);
-    } else if (field == kDefaultFieldPicture) {
+    } else if (field == kFedCmDefaultFieldPicture) {
       list.push_back(IdentityRequestDialogDisclosureField::kPicture);
     } else if (IsFedCmAlternativeIdentifiersEnabled()) {
-      if (field == kFieldPhoneNumber) {
+      if (field == kFedCmFieldPhoneNumber) {
         list.push_back(IdentityRequestDialogDisclosureField::kPhoneNumber);
-      } else if (field == kFieldUsername) {
+      } else if (field == kFedCmFieldUsername) {
         list.push_back(IdentityRequestDialogDisclosureField::kUsername);
       }
     }
@@ -2996,8 +2829,9 @@ void FederatedAuthRequestImpl::OnSdJwtParsed(const GURL& config_url,
       idp_infos_[config_url]->provider;
   DCHECK(provider);
 
-  std::vector<std::string> fields = {kDefaultFieldName, kDefaultFieldEmail,
-                                     kDefaultFieldPicture};
+  std::vector<std::string> fields = {kFedCmDefaultFieldName,
+                                     kFedCmDefaultFieldEmail,
+                                     kFedCmDefaultFieldPicture};
   if (provider->fields) {
     fields = *provider->fields;
   }
@@ -3212,7 +3046,7 @@ void FederatedAuthRequestImpl::SendSuccessfulTokenRequestMetrics(
       // selecting any IDP.
       network_manager_->SendFailedTokenRequestMetrics(
           metrics_endpoint, did_show_ui_,
-          IdpNetworkRequestManager::MetricsEndpointErrorCode::kUserFailure);
+          MetricsEndpointErrorCode::kUserFailure);
     }
   }
 }

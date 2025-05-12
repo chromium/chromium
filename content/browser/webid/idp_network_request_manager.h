@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "content/browser/webid/fedcm_mappers.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/identity_request_account.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
@@ -149,26 +150,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
 
     std::string token;
     std::optional<IdentityCredentialTokenError> error;
-  };
-
-  // Error codes sent to the metrics endpoint.
-  // Enum is part of public FedCM API. Do not renumber error codes.
-  // The error codes are not consecutive to make adding error codes easier in
-  // the future.
-  enum class MetricsEndpointErrorCode {
-    kNone = 0,  // Success
-    kOther = 1,
-    // Errors triggered by how RP calls FedCM API.
-    kRpFailure = 100,
-    // User Failures.
-    kUserFailure = 200,
-    // Generic IDP Failures.
-    kIdpServerInvalidResponse = 300,
-    kIdpServerUnavailable = 301,
-    kManifestError = 302,
-    // Specific IDP Failures.
-    kAccountsEndpointInvalidResponse = 401,
-    kTokenEndpointInvalidResponse = 402,
   };
 
   enum class DisconnectResponse {
