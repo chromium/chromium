@@ -88,6 +88,7 @@ source_set("unit_tests") {
   deps = [
     ":popup_ui",
     ":popup_ui_protocols",
+    "//base/test:test_support",
     "//ios/chrome/browser/omnibox/model:omnibox_pedal_swift",
     "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
     "//testing/gtest",

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_view_controller.h"
 
+#import "base/test/task_environment.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_suggestion_group_impl.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_consumer.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_mutator.h"
@@ -73,6 +74,8 @@ class OmniboxPopupViewControllerTest : public PlatformTest {
                   type:SuggestionGroupType::kUnspecifiedSuggestionGroup];
     suggestion_groups_ = @[ first_suggestion_group_, second_suggestion_group_ ];
   }
+  // Message loop for the main test thread.
+  base::test::TaskEnvironment environment_;
 
   OCMockObject<OmniboxPopupMutator>* mutator_;
   OmniboxPopupViewController* popup_view_controller_;

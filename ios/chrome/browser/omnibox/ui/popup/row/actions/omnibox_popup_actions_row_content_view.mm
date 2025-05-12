@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/omnibox/model/suggest_action.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_icon_view.h"
@@ -394,9 +395,18 @@ const CGFloat kActionScrollViewSeparatorSpace = 8;
 
   self.directionalLayoutMargins = configuration.directionalLayoutMargin;
   self.semanticContentAttribute = configuration.semanticContentAttribute;
-  [configuration.delegate
-              omniboxPopupRowWithConfiguration:configuration
-      didUpdateAccessibilityActionsAtIndexPath:configuration.indexPath];
+  // Update the accessibility action once the cell becomes visible. This
+  // avoids calling cellForRowAtIndexPath while the table view is updating and
+  // presenting cells, which causes a
+  // UITableViewAlertForCellForRowAtIndexPathAccessDuringUpdate warning.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](OmniboxPopupRowContentConfiguration* config) {
+            [config.delegate omniboxPopupRowWithConfiguration:config
+                     didUpdateAccessibilityActionsAtIndexPath:config.indexPath];
+          },
+          configuration));
 }
 
 /// Handles tap on trailing button.
