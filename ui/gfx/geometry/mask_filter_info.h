@@ -66,6 +66,9 @@ class COMPONENT_EXPORT(GEOMETRY_SKIA) MaskFilterInfo {
 
   std::string ToString() const;
 
+  friend bool operator==(const MaskFilterInfo&,
+                         const MaskFilterInfo&) = default;
+
  private:
   // The rounded corner bounds. This also defines the bounds that the mask
   // filter will be applied to.
@@ -74,15 +77,6 @@ class COMPONENT_EXPORT(GEOMETRY_SKIA) MaskFilterInfo {
   // Shader based linear gradient mask to be applied to a layer.
   std::optional<gfx::LinearGradient> gradient_mask_;
 };
-
-inline bool operator==(const MaskFilterInfo& lhs, const MaskFilterInfo& rhs) {
-  return (lhs.rounded_corner_bounds() == rhs.rounded_corner_bounds()) &&
-         (lhs.gradient_mask() == rhs.gradient_mask());
-}
-
-inline bool operator!=(const MaskFilterInfo& lhs, const MaskFilterInfo& rhs) {
-  return !(lhs == rhs);
-}
 
 // This is declared here for use in gtest-based unit tests but is defined in
 // the //ui/gfx:test_support target. Depend on that to use this in your unit

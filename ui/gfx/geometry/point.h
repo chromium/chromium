@@ -95,18 +95,12 @@ class COMPONENT_EXPORT(GEOMETRY) Point {
   // Returns a string representation of point.
   std::string ToString() const;
 
+  friend constexpr bool operator==(const Point&, const Point&) = default;
+
  private:
   int x_;
   int y_;
 };
-
-constexpr bool operator==(const Point& lhs, const Point& rhs) {
-  return lhs.x() == rhs.x() && lhs.y() == rhs.y();
-}
-
-inline bool operator!=(const Point& lhs, const Point& rhs) {
-  return !(lhs == rhs);
-}
 
 inline Point operator+(const Point& lhs, const Vector2d& rhs) {
   Point result(lhs);

@@ -138,6 +138,8 @@ class COMPONENT_EXPORT(GEOMETRY) QuadF {
   // Returns a string representation of quad.
   std::string ToString() const;
 
+  friend bool operator==(const QuadF&, const QuadF&) = default;
+
  private:
   bool IsToTheLeftOfOrTouchingLine(const PointF& base,
                                    const Vector2dF& vector) const;
@@ -148,16 +150,6 @@ class COMPONENT_EXPORT(GEOMETRY) QuadF {
   PointF p3_;
   PointF p4_;
 };
-
-inline bool operator==(const QuadF& lhs, const QuadF& rhs) {
-  return
-      lhs.p1() == rhs.p1() && lhs.p2() == rhs.p2() &&
-      lhs.p3() == rhs.p3() && lhs.p4() == rhs.p4();
-}
-
-inline bool operator!=(const QuadF& lhs, const QuadF& rhs) {
-  return !(lhs == rhs);
-}
 
 // Add a vector to a quad, offseting each point in the quad by the vector.
 COMPONENT_EXPORT(GEOMETRY)

@@ -35,6 +35,8 @@ class COMPONENT_EXPORT(GEOMETRY_SKIA) LinearGradient {
     float fraction = 0;
     // Alpha, from 0 to 255.
     uint8_t alpha = 0;
+
+    friend bool operator==(const Step&, const Step&) = default;
   };
   static LinearGradient& GetEmpty();
 
@@ -69,26 +71,15 @@ class COMPONENT_EXPORT(GEOMETRY_SKIA) LinearGradient {
 
   std::string ToString() const;
 
+  friend bool operator==(const LinearGradient&,
+                         const LinearGradient&) = default;
+
  private:
   // angle in degrees.
   int16_t angle_ = 0;
   size_t step_count_ = 0;
   StepArray steps_;
 };
-
-inline bool operator==(const LinearGradient::Step& lhs,
-                       const LinearGradient::Step& rhs) {
-  return lhs.fraction == rhs.fraction && lhs.alpha == rhs.alpha;
-}
-
-inline bool operator==(const LinearGradient& lhs, const LinearGradient& rhs) {
-  return lhs.angle() == rhs.angle() && lhs.step_count() == rhs.step_count() &&
-         lhs.steps() == rhs.steps();
-}
-
-inline bool operator!=(const LinearGradient& lhs, const LinearGradient& rhs) {
-  return !(lhs == rhs);
-}
 
 }  // namespace gfx
 

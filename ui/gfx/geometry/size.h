@@ -76,18 +76,12 @@ class COMPONENT_EXPORT(GEOMETRY) Size {
 
   std::string ToString() const;
 
+  friend bool operator==(const Size&, const Size&) = default;
+
  private:
   int width_;
   int height_;
 };
-
-inline bool operator==(const Size& lhs, const Size& rhs) {
-  return lhs.width() == rhs.width() && lhs.height() == rhs.height();
-}
-
-inline bool operator!=(const Size& lhs, const Size& rhs) {
-  return !(lhs == rhs);
-}
 
 inline Size operator+(Size lhs, const Size& rhs) {
   lhs += rhs;

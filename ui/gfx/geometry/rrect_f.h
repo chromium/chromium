@@ -193,10 +193,6 @@ inline bool operator==(const RRectF& a, const RRectF& b) {
   return a.Equals(b);
 }
 
-inline bool operator!=(const RRectF& a, const RRectF& b) {
-  return !(a == b);
-}
-
 inline RRectF operator+(const RRectF& a, const gfx::Vector2dF& b) {
   RRectF result = a;
   result += b;

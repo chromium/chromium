@@ -61,16 +61,8 @@ class COMPONENT_EXPORT(GEOMETRY) RoundedCornersF {
            lower_right_ == 0.0f && lower_left_ == 0.0f;
   }
 
-  bool operator==(const RoundedCornersF& corners) const {
-    return upper_left_ == corners.upper_left_ &&
-           upper_right_ == corners.upper_right_ &&
-           lower_right_ == corners.lower_right_ &&
-           lower_left_ == corners.lower_left_;
-  }
-
-  bool operator!=(const RoundedCornersF& corners) const {
-    return !(*this == corners);
-  }
+  friend bool operator==(const RoundedCornersF&,
+                         const RoundedCornersF&) = default;
 
   // Returns a string representation of the insets.
   std::string ToString() const;

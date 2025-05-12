@@ -37,12 +37,8 @@ class COMPONENT_EXPORT(GEOMETRY) AxisTransform2d {
     return AxisTransform2d(scale, translation);
   }
 
-  constexpr bool operator==(const AxisTransform2d& other) const {
-    return scale_ == other.scale_ && translation_ == other.translation_;
-  }
-  constexpr bool operator!=(const AxisTransform2d& other) const {
-    return !(*this == other);
-  }
+  friend constexpr bool operator==(const AxisTransform2d&,
+                                   const AxisTransform2d&) = default;
 
   void PreScale(const Vector2dF& scale) { scale_.Scale(scale.x(), scale.y()); }
   void PostScale(const Vector2dF& scale) {

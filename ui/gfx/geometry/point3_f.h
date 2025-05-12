@@ -76,6 +76,8 @@ class COMPONENT_EXPORT(GEOMETRY) Point3F {
   // Returns a string representation of 3d point.
   std::string ToString() const;
 
+  friend bool operator==(const Point3F&, const Point3F&) = default;
+
  private:
   float x_;
   float y_;
@@ -83,14 +85,6 @@ class COMPONENT_EXPORT(GEOMETRY) Point3F {
 
   // copy/assign are allowed.
 };
-
-inline bool operator==(const Point3F& lhs, const Point3F& rhs) {
-  return lhs.x() == rhs.x() && lhs.y() == rhs.y() && lhs.z() == rhs.z();
-}
-
-inline bool operator!=(const Point3F& lhs, const Point3F& rhs) {
-  return !(lhs == rhs);
-}
 
 // Add a vector to a point, producing a new point offset by the vector.
 COMPONENT_EXPORT(GEOMETRY)

@@ -138,7 +138,6 @@ class COMPONENT_EXPORT(GEOMETRY_SKIA) Transform {
       return matrix_ == rhs.matrix_;
     return GetFullMatrix() == rhs.GetFullMatrix();
   }
-  bool operator!=(const Transform& rhs) const { return !(*this == rhs); }
 
   // Gets a value at |row|, |col| from the matrix.
   constexpr double rc(int row, int col) const {

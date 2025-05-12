@@ -245,18 +245,12 @@ class COMPONENT_EXPORT(GEOMETRY) RectF {
                           float tolerance_x,
                           float tolerance_y) const;
 
+  friend constexpr bool operator==(const RectF&, const RectF&) = default;
+
  private:
   PointF origin_;
   SizeF size_;
 };
-
-constexpr bool operator==(const RectF& lhs, const RectF& rhs) {
-  return lhs.origin() == rhs.origin() && lhs.size() == rhs.size();
-}
-
-constexpr bool operator!=(const RectF& lhs, const RectF& rhs) {
-  return !(lhs == rhs);
-}
 
 inline RectF operator+(const RectF& lhs, const Vector2dF& rhs) {
   return RectF(lhs.x() + rhs.x(), lhs.y() + rhs.y(),

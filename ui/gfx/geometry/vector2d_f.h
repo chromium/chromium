@@ -88,18 +88,13 @@ class COMPONENT_EXPORT(GEOMETRY) Vector2dF {
 
   void WriteIntoTrace(perfetto::TracedValue) const;
 
+  friend constexpr bool operator==(const Vector2dF&,
+                                   const Vector2dF&) = default;
+
  private:
   float x_;
   float y_;
 };
-
-inline constexpr bool operator==(const Vector2dF& lhs, const Vector2dF& rhs) {
-  return lhs.x() == rhs.x() && lhs.y() == rhs.y();
-}
-
-inline constexpr bool operator!=(const Vector2dF& lhs, const Vector2dF& rhs) {
-  return !(lhs == rhs);
-}
 
 inline constexpr Vector2dF operator-(const Vector2dF& v) {
   return Vector2dF(-v.x(), -v.y());

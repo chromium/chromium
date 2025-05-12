@@ -112,18 +112,12 @@ class COMPONENT_EXPORT(GEOMETRY) PointF {
   // Write a represtation of this object into a trace event argument.
   void WriteIntoTrace(perfetto::TracedValue) const;
 
+  friend constexpr bool operator==(const PointF&, const PointF&) = default;
+
  private:
   float x_;
   float y_;
 };
-
-constexpr bool operator==(const PointF& lhs, const PointF& rhs) {
-  return lhs.x() == rhs.x() && lhs.y() == rhs.y();
-}
-
-constexpr bool operator!=(const PointF& lhs, const PointF& rhs) {
-  return !(lhs == rhs);
-}
 
 constexpr PointF operator+(const PointF& lhs, const Vector2dF& rhs) {
   PointF result(lhs);

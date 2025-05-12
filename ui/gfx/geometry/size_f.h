@@ -96,6 +96,8 @@ class COMPONENT_EXPORT(GEOMETRY) SizeF {
 
   std::string ToString() const;
 
+  friend constexpr bool operator==(const SizeF&, const SizeF&) = default;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(SizeFTest, IsEmpty);
   FRIEND_TEST_ALL_PREFIXES(SizeFTest, ClampsToZero);
@@ -113,14 +115,6 @@ class COMPONENT_EXPORT(GEOMETRY) SizeF {
   float width_;
   float height_;
 };
-
-constexpr bool operator==(const SizeF& lhs, const SizeF& rhs) {
-  return lhs.width() == rhs.width() && lhs.height() == rhs.height();
-}
-
-constexpr bool operator!=(const SizeF& lhs, const SizeF& rhs) {
-  return !(lhs == rhs);
-}
 
 inline SizeF operator+(const SizeF& lhs, const SizeF& rhs) {
   return SizeF(lhs.width() + rhs.width(), lhs.height() + rhs.height());

@@ -137,12 +137,8 @@ struct GFX_KEYFRAME_ANIMATION_EXPORT LinearEasingPoint {
     this->output = output;
   }
 
-  bool operator==(const LinearEasingPoint& other) const {
-    return input == other.input && output == other.output;
-  }
-  bool operator!=(const LinearEasingPoint& other) const {
-    return !(*this == other);
-  }
+  friend bool operator==(const LinearEasingPoint&,
+                         const LinearEasingPoint&) = default;
 };
 
 class GFX_KEYFRAME_ANIMATION_EXPORT LinearTimingFunction

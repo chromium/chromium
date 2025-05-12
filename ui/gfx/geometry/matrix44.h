@@ -66,8 +66,6 @@ class COMPONENT_EXPORT(GEOMETRY_SKIA) Matrix44 {
     return AllTrue(Col(0) == other.Col(0)) && AllTrue(Col(1) == other.Col(1)) &&
            AllTrue(Col(2) == other.Col(2)) && AllTrue(Col(3) == other.Col(3));
   }
-  bool operator!=(const Matrix44& other) const { return !(other == *this); }
-
   // Returns true if the matrix is identity.
   bool IsIdentity() const { return *this == Matrix44(); }
 

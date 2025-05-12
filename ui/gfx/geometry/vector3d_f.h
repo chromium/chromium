@@ -82,19 +82,13 @@ class COMPONENT_EXPORT(GEOMETRY) Vector3dF {
 
   std::string ToString() const;
 
+  friend bool operator==(const Vector3dF&, const Vector3dF&) = default;
+
  private:
   float x_;
   float y_;
   float z_;
 };
-
-inline bool operator==(const Vector3dF& lhs, const Vector3dF& rhs) {
-  return lhs.x() == rhs.x() && lhs.y() == rhs.y() && lhs.z() == rhs.z();
-}
-
-inline bool operator!=(const Vector3dF& lhs, const Vector3dF& rhs) {
-  return !(lhs == rhs);
-}
 
 inline Vector3dF operator-(const Vector3dF& v) {
   return Vector3dF(-v.x(), -v.y(), -v.z());
