@@ -234,6 +234,23 @@ void AnnotationAgentContainerImpl::CreateAgentFromSelection(
                     WrapWeakPersistent(this), std::move(callback)));
 }
 
+void AnnotationAgentContainerImpl::RemoveAgentsOfType(
+    mojom::blink::AnnotationType type) {
+  TRACE_EVENT("blink", "AnnotationAgentContainerImpl::RemoveAgentsOfType",
+              "type", ToString(type));
+  // Note: We need this temporary vector to avoid removal of elements in
+  // `agents_` while iterating through to it. `AnnotationAgentImpl::Remove`
+  // (called below) calls `AnnotationAgentContainerImpl::RemoveAgent`, which
+  // removes itself from `agents_`.
+  HeapVector<Member<AnnotationAgentImpl>> agents_to_remove;
+  std::ranges::copy_if(
+      agents_, std::back_inserter(agents_to_remove),
+      [type](AnnotationAgentImpl* agent) { return agent->GetType() == type; });
+  for (AnnotationAgentImpl* agent : agents_to_remove) {
+    agent->Remove();
+  }
+}
+
 // TODO(cheickcisse@): Move shared highlighting enums, also used in user note to
 // annotation.mojom.
 void AnnotationAgentContainerImpl::DidFinishSelectorGeneration(

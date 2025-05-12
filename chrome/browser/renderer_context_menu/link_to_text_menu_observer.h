@@ -10,6 +10,7 @@
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "content/public/browser/render_frame_host.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/mojom/annotation/annotation.mojom-shared.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom.h"
 #include "url/gurl.h"
 
@@ -116,6 +117,11 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
 
   // True when generation is completed.
   bool is_generation_complete_ = false;
+
+  // Set when the context menu was opened with an annotation (with a value
+  // corresponding to the type of annotation). We show different menu items
+  // based on the type.
+  std::optional<blink::mojom::AnnotationType> annotation_type_;
 
   base::WeakPtrFactory<LinkToTextMenuObserver> weak_ptr_factory_{this};
 };

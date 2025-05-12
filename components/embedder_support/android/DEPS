@@ -12,6 +12,7 @@ include_rules = [
   "+content/public/common",
   "+net/android/java/src/org/chromium/net",
   "+third_party/blink/public/common/context_menu_data/context_menu_data.h",
+  "+third_party/blink/public/mojom/annotation/annotation.mojom-shared.h",
   "+ui/accessibility",
   "+ui/android",
   "+ui/base",

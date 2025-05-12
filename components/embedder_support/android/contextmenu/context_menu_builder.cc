@@ -12,6 +12,7 @@
 #include "content/public/browser/android/impression_android.h"
 #include "content/public/browser/context_menu_params.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
+#include "third_party/blink/public/mojom/annotation/annotation.mojom-shared.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -60,8 +61,10 @@ base::android::ScopedJavaGlobalRef<jobject> BuildJavaContextMenuParams(
           url::GURLAndroid::FromNativeGURL(env, sanitizedReferrer),
           static_cast<int>(params.referrer_policy), can_save, params.x,
           params.y, static_cast<int>(params.source_type),
-          params.opened_from_highlight, params.opened_from_interest_target,
-          params.interest_target_node_id, additional_navigation_params));
+          params.annotation_type ==
+              blink::mojom::AnnotationType::kSharedHighlight,
+          params.opened_from_interest_target, params.interest_target_node_id,
+          additional_navigation_params));
 }
 
 content::ContextMenuParams* ContextMenuParamsFromJavaObject(

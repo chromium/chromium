@@ -38,6 +38,7 @@
 #include "third_party/blink/public/common/context_menu_data/menu_item_info.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/common/navigation/impression.h"
+#include "third_party/blink/public/mojom/annotation/annotation.mojom-shared.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-shared.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-shared.h"
 #include "ui/gfx/geometry/point.h"
@@ -160,9 +161,9 @@ struct ContextMenuData {
 
   WebMenuSourceType source_type;
 
-  // True when the context contains text selected by a text fragment. See
-  // TextFragmentAnchor.
-  bool opened_from_highlight = false;
+  // Set when the context contains text selected by an annotation (see
+  // third_party/blink/renderer/core/annotation/README.md).
+  std::optional<mojom::AnnotationType> annotation_type;
 
   // True when the context menu was opened from an element with the
   // `interesttarget` attribute.

@@ -65,7 +65,7 @@ bool ContextMenuContentType::SupportsGroupInternal(int group) {
   const bool has_selection = !params_.selection_text.empty();
   const bool is_password = params_.form_control_type ==
                            blink::mojom::FormControlType::kInputPassword;
-  const bool existing_highlight = params_.opened_from_highlight;
+  const bool existing_highlight = params_.annotation_type.has_value();
 
   switch (group) {
     case ITEM_GROUP_CUSTOM:
@@ -125,7 +125,7 @@ bool ContextMenuContentType::SupportsGroupInternal(int group) {
       return has_selection;
 
     case ITEM_GROUP_EXISTING_LINK_TO_TEXT:
-      return params_.opened_from_highlight;
+      return params_.annotation_type.has_value();
 
     case ITEM_GROUP_SEARCH_PROVIDER:
       return has_selection && !is_password;

@@ -38,6 +38,10 @@ class MockAnnotationAgentContainer
                void(blink::mojom::AnnotationType,
                     CreateAgentFromSelectionCallback));
 
+  void RemoveAgentsOfType(blink::mojom::AnnotationType) override {
+    NOTREACHED();
+  }
+
   void MockCreateAgent(
       mojo::PendingRemote<blink::mojom::AnnotationAgentHost> host_remote,
       mojo::PendingReceiver<blink::mojom::AnnotationAgent> agent_receiver,

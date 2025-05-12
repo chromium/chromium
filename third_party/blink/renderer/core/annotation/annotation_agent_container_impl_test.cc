@@ -42,6 +42,11 @@ class AnnotationAgentContainerImplTest : public SimTest {
     return container.agents_.size();
   }
 
+  AnnotationAgentImpl* GetAgentAt(AnnotationAgentContainerImpl& container,
+                                  size_t index) {
+    return container.agents_[index];
+  }
+
   void SendRightClick(const gfx::Point& click_point) {
     auto event = frame_test_helpers::CreateMouseEvent(
         WebMouseEvent::Type::kMouseDown, WebMouseEvent::Button::kRight,
@@ -757,6 +762,55 @@ TEST_F(AnnotationAgentContainerImplTest,
             mojom::blink::AttachmentResult::kSelectorNotMatched);
   EXPECT_TRUE(host.did_finish_attachment_rect_->IsEmpty());
   EXPECT_FALSE(host.did_disconnect_);
+}
+
+TEST_F(AnnotationAgentContainerImplTest, RemoveAgentsOfType) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    TEST PAGE
+  )HTML");
+  Compositor().BeginFrame();
+
+  mojo::Remote<mojom::blink::AnnotationAgentContainer> remote;
+  AnnotationAgentContainerImpl::BindReceiver(
+      GetDocument().GetFrame(), remote.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(remote.is_connected());
+  auto* container = AnnotationAgentContainerImpl::FromIfExists(GetDocument());
+  ASSERT_TRUE(container);
+
+  struct AnnotationAgentHost {
+    MockAnnotationAgentHost host;
+    mojom::AnnotationType type = mojom::AnnotationType::kSharedHighlight;
+  };
+  std::array<AnnotationAgentHost, 3> agent_hosts;
+  agent_hosts[0].type = mojom::AnnotationType::kGlic;
+  agent_hosts[2].type = mojom::AnnotationType::kGlic;
+
+  for (auto& agent_host : agent_hosts) {
+    auto remote_receiver_pair = agent_host.host.BindForCreateAgent();
+    container->CreateAgent(std::move(remote_receiver_pair.first),
+                           std::move(remote_receiver_pair.second),
+                           agent_host.type,
+                           mojom::blink::Selector::NewSerializedSelector(
+                               "MockAnnotationSelector"));
+  }
+
+  remote->RemoveAgentsOfType(mojom::AnnotationType::kGlic);
+  remote.FlushForTesting();
+
+  // Only the agents of type kGlic should be removed.
+  EXPECT_EQ(GetAgentCount(*container), 1u);
+  EXPECT_EQ(GetAgentAt(*container, 0)->GetType(),
+            mojom::AnnotationType::kSharedHighlight);
+
+  for (auto& agent_host : agent_hosts) {
+    agent_host.host.FlushForTesting();
+  }
+  EXPECT_TRUE(agent_hosts[0].host.did_disconnect_);
+  EXPECT_FALSE(agent_hosts[1].host.did_disconnect_);
+  EXPECT_TRUE(agent_hosts[2].host.did_disconnect_);
 }
 
 }  // namespace blink

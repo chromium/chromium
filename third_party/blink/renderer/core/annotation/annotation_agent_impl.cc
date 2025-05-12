@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/markers/text_fragment_marker.h"
+#include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/range_in_flat_tree.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -30,6 +31,7 @@
 #include "third_party/blink/renderer/core/html/html_details_element.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -187,6 +189,25 @@ std::optional<DocumentMarker::MarkerTypes> GetMarkerTypesForAnnotationType(
 bool AlmostEqual(const ScrollOffset& a, const ScrollOffset& b) {
   float length = (a - b).Length();
   return length <= 1.f;
+}
+
+bool HasMarkerAroundPosition(const HitTestResult& result,
+                             DocumentMarker::MarkerType marker_type) {
+  // Tree should be clean before accessing the position.
+  // |HitTestResult::GetPosition| calls |PositionForPoint()| which requires
+  // |kPrePaintClean|.
+  DCHECK_GE(result.InnerNodeFrame()->GetDocument()->Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
+
+  DocumentMarkerController& marker_controller =
+      result.InnerNodeFrame()->GetDocument()->Markers();
+  PositionWithAffinity pos_with_affinity = result.GetPosition();
+  const Position marker_position = pos_with_affinity.GetPosition();
+
+  auto markers = marker_controller.MarkersAroundPosition(
+      ToPositionInFlatTree(marker_position),
+      DocumentMarker::MarkerTypes(marker_type));
+  return !markers.empty();
 }
 
 }  // namespace
@@ -406,6 +427,26 @@ void AnnotationAgentImpl::ScrollIntoView(bool applies_focus) const {
 
   scroll_into_view_util::ScrollRectToVisible(*first_node.GetLayoutObject(),
                                              bounding_box, std::move(params));
+}
+
+std::optional<mojom::blink::AnnotationType>
+AnnotationAgentImpl::IsOverAnnotation(const HitTestResult& result) {
+  if (!result.InnerNode() || !result.InnerNodeFrame()) {
+    return std::nullopt;
+  }
+
+  if (HasMarkerAroundPosition(result, DocumentMarker::MarkerType::kGlic)) {
+    // Note: We could also have a marker of type kTextFragment around the
+    // position as well, but we treat kGlic as topmost.
+    return mojom::blink::AnnotationType::kGlic;
+  }
+
+  if (HasMarkerAroundPosition(result,
+                              DocumentMarker::MarkerType::kTextFragment)) {
+    return mojom::blink::AnnotationType::kSharedHighlight;
+  }
+
+  return std::nullopt;
 }
 
 void AnnotationAgentImpl::DidFinishFindRange(const RangeInFlatTree* range) {

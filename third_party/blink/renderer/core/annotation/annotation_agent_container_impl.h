@@ -7,6 +7,7 @@
 
 #include "base/types/pass_key.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
+#include "third_party/blink/public/mojom/annotation/annotation.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -112,6 +113,7 @@ class CORE_EXPORT AnnotationAgentContainerImpl final
   void CreateAgentFromSelection(
       mojom::blink::AnnotationType type,
       CreateAgentFromSelectionCallback callback) override;
+  void RemoveAgentsOfType(mojom::blink::AnnotationType type) override;
 
   void OpenedContextMenuOverSelection();
 

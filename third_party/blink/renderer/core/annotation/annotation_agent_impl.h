@@ -24,6 +24,7 @@ class AnnotationAgentContainerImpl;
 class AnnotationAgentImplTest;
 class AnnotationSelector;
 class Document;
+class HitTestResult;
 class RangeInFlatTree;
 
 // This class represents an instantiation of an annotation in a Document. It is
@@ -120,6 +121,14 @@ class CORE_EXPORT AnnotationAgentImpl final
   const AnnotationSelector* GetSelector() const { return selector_.Get(); }
 
   mojom::blink::AnnotationType GetType() const { return type_; }
+
+  // Determine if `result` represents a click on an existing annotation, and
+  // returns the type of the annotation if so (or std::nullopt if not).
+  // Note: It is possible for the click to be above multiple annotations, in
+  // which case we only return the type of what we consider to be the "topmost"
+  // (see implementation).
+  static std::optional<mojom::blink::AnnotationType> IsOverAnnotation(
+      const HitTestResult& result);
 
  private:
   friend AnnotationAgentImplTest;

@@ -76,7 +76,7 @@ void UntrustworthyContextMenuParams::Assign(
   source_type = other.source_type;
   selection_rect = other.selection_rect;
   selection_start_offset = other.selection_start_offset;
-  opened_from_highlight = other.opened_from_highlight;
+  annotation_type = other.annotation_type;
   opened_from_interest_target = other.opened_from_interest_target;
   interest_target_node_id = other.interest_target_node_id;
   form_control_type = other.form_control_type;

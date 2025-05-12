@@ -1866,7 +1866,7 @@ TEST_F(ContextMenuControllerTest,
       1);
 }
 
-TEST_F(ContextMenuControllerTest, OpenedFromHighlight) {
+TEST_F(ContextMenuControllerTest, AnnotationType) {
   WebURL url = url_test_helpers::ToKURL("http://www.test.com/");
   frame_test_helpers::LoadHTMLString(LocalMainFrame(),
                                      R"(<html><head><style>body
@@ -1875,6 +1875,8 @@ TEST_F(ContextMenuControllerTest, OpenedFromHighlight) {
       <p id="two">This is a test page two</p>
       <p id="three">This is a test page three</p>
       <p id="four">This is a test page four</p>
+      <p id="five">This is a test page five</p>
+      <p id="six">This is a test page six</p>
       </html>
       )",
                                      url);
@@ -1883,35 +1885,58 @@ TEST_F(ContextMenuControllerTest, OpenedFromHighlight) {
   ASSERT_TRUE(IsA<HTMLDocument>(document));
 
   Element* first_element = document->getElementById(AtomicString("one"));
-  Element* middle_element = document->getElementById(AtomicString("one"));
+  Element* second_element = document->getElementById(AtomicString("one"));
   Element* third_element = document->getElementById(AtomicString("three"));
-  Element* last_element = document->getElementById(AtomicString("four"));
+  Element* fourth_element = document->getElementById(AtomicString("four"));
+  Element* fifth_element = document->getElementById(AtomicString("five"));
+  Element* last_element = document->getElementById(AtomicString("six"));
 
   // Install a text fragment marker from the beginning of <p> one to near the
-  // end of <p> three.
+  // end of <p> four.
   EphemeralRange dom_range =
       EphemeralRange(Position(first_element->firstChild(), 0),
-                     Position(third_element->firstChild(), 22));
+                     Position(fourth_element->firstChild(), 21));
   document->Markers().AddTextFragmentMarker(dom_range);
+
+  // Install a glic marker from the beginning of <p> four to near the end of
+  // of <p> five.
+  dom_range = EphemeralRange(Position(fourth_element->firstChild(), 0),
+                             Position(fifth_element->firstChild(), 21));
+  document->Markers().AddGlicMarker(dom_range);
+
   document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   // Opening the context menu from the last <p> should not set
-  // |opened_from_highlight|.
+  // `annotation_type`.
   EXPECT_TRUE(ShowContextMenuForElement(last_element, kMenuSourceMouse));
   ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
-  EXPECT_FALSE(context_menu_data.opened_from_highlight);
+  EXPECT_EQ(context_menu_data.annotation_type, std::nullopt);
 
-  // Opening the context menu from the second <p> should set
-  // |opened_from_highlight|.
-  EXPECT_TRUE(ShowContextMenuForElement(middle_element, kMenuSourceMouse));
+  // Opening the context menu from the second <p> should set `annotation_type`.
+  EXPECT_TRUE(ShowContextMenuForElement(second_element, kMenuSourceMouse));
   context_menu_data = GetWebFrameClient().GetContextMenuData();
-  EXPECT_TRUE(context_menu_data.opened_from_highlight);
+  EXPECT_EQ(context_menu_data.annotation_type,
+            mojom::AnnotationType::kSharedHighlight);
 
   // Opening the context menu from the middle of the third <p> should set
-  // |opened_from_highlight|.
+  // `annotation_type`.
   EXPECT_TRUE(ShowContextMenuForElement(third_element, kMenuSourceMouse));
   context_menu_data = GetWebFrameClient().GetContextMenuData();
-  EXPECT_TRUE(context_menu_data.opened_from_highlight);
+  EXPECT_EQ(context_menu_data.annotation_type,
+            mojom::AnnotationType::kSharedHighlight);
+
+  // Opening the context menu from fifth <p> should set `annotation_type` to
+  // kGlic.
+  EXPECT_TRUE(ShowContextMenuForElement(fifth_element, kMenuSourceMouse));
+  context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ(context_menu_data.annotation_type, mojom::AnnotationType::kGlic);
+
+  // Opening the context menu from fourth <p> should set `annotation_type` to
+  // kGlic (even though there's also an overlapping annotation of type
+  // kSharedHighlight).
+  EXPECT_TRUE(ShowContextMenuForElement(fourth_element, kMenuSourceMouse));
+  context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ(context_menu_data.annotation_type, mojom::AnnotationType::kGlic);
 }
 
 TEST_F(ContextMenuControllerTest, SelectAllEnabledForEditContext) {

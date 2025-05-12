@@ -146,4 +146,9 @@ interface AnnotationAgentContainer {
       SelectorCreationResult? result,
       LinkGenerationError error,
       LinkGenerationReadyStatus ready_status);
+
+  // Removes all annotations of a particular type from the container's document.
+  //
+  // `type`:  The particular type (use case) of annotation to remove
+  RemoveAgentsOfType(AnnotationType type);
 };
