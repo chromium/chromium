@@ -2094,7 +2094,7 @@ bool URLLoader::IsSharedDictionaryReadAllowed() {
   shared_dictionary_allowed_check_passed_ =
       shared_dictionary_checker_->CheckAllowedToReadAndReport(
           url_request_->url(), url_request_->site_for_cookies(),
-          url_request_->isolation_info());
+          url_request_->isolation_info(), url_request_->cookie_partition_key());
   return shared_dictionary_allowed_check_passed_;
 }
 
