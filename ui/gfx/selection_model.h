@@ -98,8 +98,8 @@ class COMPONENT_EXPORT(GFX) SelectionModel {
   // considering the effect on the caret affinity.
   void set_selection_start(uint32_t pos) { selection_.set_start(pos); }
 
-  bool operator==(const SelectionModel& sel) const;
-  bool operator!=(const SelectionModel& sel) const { return !(*this == sel); }
+  friend bool operator==(const SelectionModel&,
+                         const SelectionModel&) = default;
 
   std::string ToString() const;
 

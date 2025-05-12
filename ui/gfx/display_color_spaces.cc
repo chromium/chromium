@@ -217,10 +217,6 @@ bool DisplayColorSpaces::operator==(const DisplayColorSpaces& other) const {
   return true;
 }
 
-bool DisplayColorSpaces::operator!=(const DisplayColorSpaces& other) const {
-  return !(*this == other);
-}
-
 // static
 bool DisplayColorSpaces::EqualExceptForHdrHeadroom(
     const DisplayColorSpaces& a,

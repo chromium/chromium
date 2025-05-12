@@ -128,7 +128,6 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
                  std::vector<gfx::BufferFormat>* out_buffer_formats) const;
 
   bool operator==(const DisplayColorSpaces& other) const;
-  bool operator!=(const DisplayColorSpaces& other) const;
 
   // Return true if the two parameters are equal except for their
   // `hdr_max_luminance_relative_` member.

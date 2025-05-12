@@ -54,6 +54,9 @@ struct PresentationFeedback {
 
   bool failed() const { return !!(flags & Flags::kFailure); }
 
+  friend bool operator==(const PresentationFeedback&,
+                         const PresentationFeedback&) = default;
+
   // The time when a buffer begins scan-out. If a buffer is never presented on
   // a screen, the |timestamp| will be set to the time of the failure.
   base::TimeTicks timestamp;
@@ -103,25 +106,6 @@ struct PresentationFeedback {
   // perfetto::protos::pbzero::ChromeTrackEvent.event_latency.display_trace_id.
   std::optional<int64_t> display_trace_id;
 };
-
-inline bool operator==(const PresentationFeedback& lhs,
-                       const PresentationFeedback& rhs) {
-  return lhs.timestamp == rhs.timestamp && lhs.interval == rhs.interval &&
-         lhs.flags == rhs.flags &&
-         lhs.available_timestamp == rhs.available_timestamp &&
-         lhs.ready_timestamp == rhs.ready_timestamp &&
-         lhs.latch_timestamp == rhs.latch_timestamp &&
-#if BUILDFLAG(IS_APPLE)
-         lhs.ca_layer_error_code == rhs.ca_layer_error_code &&
-#endif
-         lhs.writes_done_timestamp == rhs.writes_done_timestamp &&
-         lhs.display_trace_id == rhs.display_trace_id;
-}
-
-inline bool operator!=(const PresentationFeedback& lhs,
-                       const PresentationFeedback& rhs) {
-  return !(lhs == rhs);
-}
 
 }  // namespace gfx
 

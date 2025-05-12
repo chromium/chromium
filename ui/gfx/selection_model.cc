@@ -49,12 +49,6 @@ std::vector<Range> SelectionModel::GetAllSelections() const {
   return selections;
 }
 
-bool SelectionModel::operator==(const SelectionModel& sel) const {
-  return selection() == sel.selection() &&
-         caret_affinity() == sel.caret_affinity() &&
-         secondary_selections() == sel.secondary_selections();
-}
-
 std::string SelectionModel::ToString() const {
   std::string str = "{";
   if (selection().is_empty())

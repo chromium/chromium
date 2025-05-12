@@ -370,10 +370,6 @@ bool ColorSpace::FullRangeEncodedValues() const {
          transfer_ == TransferID::IEC61966_2_4;
 }
 
-bool ColorSpace::operator!=(const ColorSpace& other) const {
-  return !(*this == other);
-}
-
 bool ColorSpace::operator<(const ColorSpace& other) const {
   if (primaries_ < other.primaries_)
     return true;

@@ -82,8 +82,6 @@ class COMPONENT_EXPORT(GFX) SelectionBound {
 
 COMPONENT_EXPORT(GFX)
 bool operator==(const SelectionBound& lhs, const SelectionBound& rhs);
-COMPONENT_EXPORT(GFX)
-bool operator!=(const SelectionBound& lhs, const SelectionBound& rhs);
 
 COMPONENT_EXPORT(GFX)
 gfx::Rect RectBetweenSelectionBounds(const SelectionBound& b1,

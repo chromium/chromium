@@ -77,13 +77,8 @@ class COMPONENT_EXPORT(GFX) ImageFamily {
       return result;
     }
 
-    bool operator==(const const_iterator& other) const {
-      return map_iterator_ == other.map_iterator_;
-    }
-
-    bool operator!=(const const_iterator& other) const {
-      return map_iterator_ != other.map_iterator_;
-    }
+    friend bool operator==(const const_iterator&,
+                           const const_iterator&) = default;
 
     const gfx::Image& operator*() const {
       return map_iterator_->second;

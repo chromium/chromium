@@ -66,10 +66,6 @@ bool operator==(const SelectionBound& lhs, const SelectionBound& rhs) {
          lhs.visible_edge_end() == rhs.visible_edge_end();
 }
 
-bool operator!=(const SelectionBound& lhs, const SelectionBound& rhs) {
-  return !(lhs == rhs);
-}
-
 gfx::Rect RectBetweenSelectionBounds(const SelectionBound& b1,
                                      const SelectionBound& b2) {
   gfx::Point top_left(b1.edge_start_rounded());

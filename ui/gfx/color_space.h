@@ -263,7 +263,6 @@ class COLOR_SPACE_EXPORT ColorSpace {
   static constexpr float kDefaultSDRWhiteLevel = 203.f;
 
   bool operator==(const ColorSpace& other) const;
-  bool operator!=(const ColorSpace& other) const;
   bool operator<(const ColorSpace& other) const;
   size_t GetHash() const;
   std::string ToString() const;

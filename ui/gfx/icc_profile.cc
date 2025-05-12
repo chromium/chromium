@@ -137,10 +137,6 @@ bool ICCProfile::operator==(const ICCProfile& other) const {
   return false;
 }
 
-bool ICCProfile::operator!=(const ICCProfile& other) const {
-  return !(*this == other);
-}
-
 bool ICCProfile::IsValid() const {
   return internals_ ? internals_->is_valid_ : false;
 }
