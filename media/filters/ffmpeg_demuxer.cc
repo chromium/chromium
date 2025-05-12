@@ -673,9 +673,9 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
   // below. Only the first buffer should have discard padding.
   // Note: Some packets marked for total discard have their `start_padding` set
   // to kInfiniteDuration. Ignore these packets.
-  if (first_valid_frame_timestamp_ == kNoTimestamp &&
+  if (!initial_start_padding_.has_value() &&
       start_padding != kInfiniteDuration) {
-    first_valid_frame_timestamp_ = buffer->timestamp() + start_padding;
+    initial_start_padding_ = start_padding;
   }
 
   last_packet_timestamp_ = buffer->timestamp();
@@ -684,14 +684,10 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
   // Check if `buffer` contains only padding.
   const bool is_padding = buffer->duration() == start_padding + end_padding;
 
-  // Don't adjust for `first_valid_frame_timestamp_` if we don't have a valid
-  // timestamp yet. Otherwise, we end up with an infinite `new_duration`.
-  const base::TimeDelta base_timestamp =
-      first_valid_frame_timestamp_ == kNoTimestamp
-          ? base::TimeDelta()
-          : first_valid_frame_timestamp_;
+  const base::TimeDelta new_duration =
+      last_packet_timestamp_ -
+      initial_start_padding_.value_or(base::TimeDelta());
 
-  const base::TimeDelta new_duration = last_packet_timestamp_ - base_timestamp;
   if ((!is_padding && new_duration > duration_) || duration_ == kNoTimestamp) {
     duration_ = new_duration;
   }
