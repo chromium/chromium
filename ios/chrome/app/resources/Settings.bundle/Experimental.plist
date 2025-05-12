@@ -860,6 +860,20 @@
 			<key>AutocorrectionType</key>
 			<string>No</string>
 		</dict>
+			<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>Lens Result Panel GWS URL</string>
+			<key>Key</key>
+			<string>LensResultPanelGwsURL</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>KeyboardType</key>
+			<string>URL</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+		</dict>
 	</array>
 </dict>
 </plist>

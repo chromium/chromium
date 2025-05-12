@@ -185,6 +185,9 @@ bool AlwaysShowTheFirstPartyIncognitoUI();
 // Enables the AI menu, which is a tool for debugging LLM queries.
 bool EnableAIPrototypingMenu();
 
+// Gets GWS URL base used to generate Lens result panel URLs. Returns nil if
+// there is no alternative URL specified.
+NSString* GetLensResultPanelGwsURL();
 }  // namespace experimental_flags
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_SYSTEM_FLAGS_H_

@@ -66,6 +66,7 @@ NSString* const kTipsMagicStackStateOverride = @"TipsMagicStackStateOverride";
 NSString* const kInactiveTabsDemoMode = @"InactiveTabsDemoMode";
 NSString* const kInactiveTabsTestMode = @"InactiveTabsTestMode";
 NSString* const kAsyncStartupOverrideResponse = @"AsyncStartupOverrideResponse";
+NSString* const kLensResultPanelGwsURL = @"LensResultPanelGwsURL";
 }  // namespace
 
 namespace experimental_flags {
@@ -353,6 +354,11 @@ bool AlwaysShowTheFirstPartyIncognitoUI() {
 bool EnableAIPrototypingMenu() {
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:@"EnableAIPrototypingMenu"];
+}
+
+NSString* GetLensResultPanelGwsURL() {
+  return [[NSUserDefaults standardUserDefaults]
+      stringForKey:kLensResultPanelGwsURL];
 }
 
 }  // namespace experimental_flags

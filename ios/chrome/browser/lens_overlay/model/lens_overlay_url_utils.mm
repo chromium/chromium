@@ -8,11 +8,19 @@
 
 #import "components/google/core/common/google_util.h"
 #import "components/lens/lens_url_utils.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "net/base/url_util.h"
 
 namespace lens {
 
 bool IsGoogleHostURL(const GURL& url) {
+  // Only available for debug builds.
+  if (experimental_flags::GetLensResultPanelGwsURL() != nil) {
+    return google_util::IsGoogleDomainUrl(
+        url, google_util::ALLOW_SUBDOMAIN,
+        google_util::ALLOW_NON_STANDARD_PORTS);
+  }
+
   return google_util::IsGoogleDomainUrl(
       url, google_util::DISALLOW_SUBDOMAIN,
       google_util::DISALLOW_NON_STANDARD_PORTS);

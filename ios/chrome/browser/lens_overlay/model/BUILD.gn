@@ -55,6 +55,7 @@ source_set("utils") {
   deps = [
     "//components/google/core/common",
     "//components/lens",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/web/public/navigation",
     "//net",
     "//url",
