@@ -819,6 +819,7 @@ void WebMediaPlayerImpl::ExitedFullscreen() {
 }
 
 void WebMediaPlayerImpl::BecameDominantVisibleContent(bool is_dominant) {
+  is_dominant_visible_content_ = is_dominant;
   if (observer_)
     observer_->OnBecameDominantVisibleContent(is_dominant);
 }
@@ -832,6 +833,9 @@ void WebMediaPlayerImpl::SetIsEffectivelyFullscreen(
         fullscreen_video_status !=
         WebFullscreenVideoStatus::kNotEffectivelyFullscreen);
   }
+  is_effectively_fullscreen_ =
+      fullscreen_video_status !=
+      WebFullscreenVideoStatus::kNotEffectivelyFullscreen;
 }
 
 void WebMediaPlayerImpl::OnHasNativeControlsChanged(bool has_native_controls) {
@@ -2660,6 +2664,15 @@ void WebMediaPlayerImpl::OnIdleTimeout() {
 
   // This should never be called when stale state testing overrides are used.
   DCHECK(!stale_state_override_for_testing_.has_value());
+
+  // An idle media player that's the dominant visible content/full screen is
+  // likely to be resumed. We shouldn't release the resources yet so clear the
+  // stale flag.
+  if (!IsPageHidden() &&
+      (is_dominant_visible_content_ || is_effectively_fullscreen_)) {
+    delegate_->ClearStaleFlag(delegate_id_);
+    return;
+  }
 
   // If we are attempting preroll, clear the stale flag.
   if (IsPrerollAttemptNeeded()) {

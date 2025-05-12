@@ -1128,6 +1128,10 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
 
   bool should_pause_when_frame_is_hidden_ = false;
 
+  bool is_dominant_visible_content_ = false;
+
+  bool is_effectively_fullscreen_ = false;
+
   base::CancelableOnceClosure have_enough_after_lazy_load_cb_;
 
   media::RendererType renderer_type_ = media::RendererType::kRendererImpl;

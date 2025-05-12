@@ -2796,6 +2796,19 @@ TEST_F(WebMediaPlayerImplTest, DISABLED_DemuxerOverride) {
   EXPECT_TRUE(IsSuspended());
 }
 
+TEST_F(WebMediaPlayerImplTest, DominantPlayersAreNotCleanedUp) {
+  InitializeWebMediaPlayerImpl();
+  wmpi_->BecameDominantVisibleContent(true);
+  EXPECT_FALSE(delegate_.ExpireForTesting());
+}
+
+TEST_F(WebMediaPlayerImplTest, FullscreenPlayersAreNotCleanedUp) {
+  InitializeWebMediaPlayerImpl();
+  wmpi_->SetIsEffectivelyFullscreen(
+      WebFullscreenVideoStatus::kFullscreenAndPictureInPictureEnabled);
+  EXPECT_FALSE(delegate_.ExpireForTesting());
+}
+
 class WebMediaPlayerImplBackgroundBehaviorTest
     : public WebMediaPlayerImplTest,
       public WebAudioSourceProviderClient,
