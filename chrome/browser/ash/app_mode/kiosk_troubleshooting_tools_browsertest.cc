@@ -7,10 +7,7 @@
 #include "ash/shell.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ash/app_mode/kiosk_controller.h"
-#include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_window_handler.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
@@ -31,6 +28,8 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
+using ash::kiosk::test::CreatePopupBrowser;
+using ash::kiosk::test::CreateRegularBrowser;
 using ash::kiosk::test::DidKioskCloseNewWindow;
 using policy::DeveloperToolsPolicyHandler::Availability::kAllowed;
 using policy::DeveloperToolsPolicyHandler::Availability::kDisallowed;
@@ -120,16 +119,12 @@ class KioskTroubleshootingToolsTest : public WebKioskBaseTest {
         /*alt=*/true, /*command=*/false);
   }
 
-  Browser* OpenForAppPopupBrowser() const {
+  Browser& OpenForAppPopupBrowser() const {
     profile()->GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
-    Browser::CreateParams params = Browser::CreateParams::CreateForAppPopup(
-        /*app_name=*/kiosk_app_browser()->app_name(), /*trusted_source=*/true,
-        /*window_bounds=*/gfx::Rect(), /*profile=*/profile(),
-        /*user_gesture=*/true);
-    Browser* new_browser = Browser::Create(params);
-    new_browser->window()->Show();
+    Browser& browser =
+        CreatePopupBrowser(*profile(), kiosk_app_browser()->app_name());
     EXPECT_FALSE(DidKioskCloseNewWindow());
-    return new_browser;
+    return browser;
   }
 
   bool IsLactActiveBrowserResizable() {
@@ -264,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
   ExpectOnlyKioskAppOpen();
 
   // Explicitly open a new window to make sure it will be closed.
-  Browser::Create(Browser::CreateParams(profile(), /*user_gesture=*/true));
+  CreateRegularBrowser(*profile());
   EXPECT_TRUE(DidKioskCloseNewWindow());
 
   histogram.ExpectBucketCount(
@@ -363,22 +358,22 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest, SwitchWindowsDisallowed) {
   // Enable another feature to allow opening two popup browsers to make sure
   // that switching between windows is still not available if the
   // troubleshooting policy is disabled.
-  Browser* new_browser = OpenForAppPopupBrowser();
+  Browser& new_browser = OpenForAppPopupBrowser();
 
   // When new window is opened, it becomes active.
-  EXPECT_TRUE(new_browser->window()->IsActive());
+  EXPECT_TRUE(new_browser.window()->IsActive());
   EXPECT_FALSE(main_browser->window()->IsActive());
 
   EmulateSwitchWindowsForwardShortcutPressed();
 
   // Active window remains the same.
-  EXPECT_TRUE(new_browser->window()->IsActive());
+  EXPECT_TRUE(new_browser.window()->IsActive());
   EXPECT_FALSE(main_browser->window()->IsActive());
 
   EmulateSwitchWindowsBackwardShortcutPressed();
 
   // Active window remains the same.
-  EXPECT_TRUE(new_browser->window()->IsActive());
+  EXPECT_TRUE(new_browser.window()->IsActive());
   EXPECT_FALSE(main_browser->window()->IsActive());
 }
 

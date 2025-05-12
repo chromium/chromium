@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_BROWSER_WINDOW_HANDLER_H_
 
 #include <map>
+#include <memory>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -19,6 +20,7 @@
 namespace chromeos {
 
 class KioskTroubleshootingController;
+class NavigationWaiter;
 
 extern const char kKioskNewBrowserWindowHistogram[];
 
@@ -63,7 +65,8 @@ class KioskBrowserWindowHandler : public BrowserListObserver {
   Browser* GetSettingsBrowserForTesting() { return settings_browser_; }
 
  private:
-  void HandleNewBrowserWindow(Browser* browser);
+  void OnCompleteBrowserAdded(Browser* browser);
+  bool TriageNewBrowserWindow(Browser* browser);
   void HandleNewSettingsWindow(Browser* browser, const std::string& url_string);
 
   void CloseBrowserWindowsIf(base::FunctionRef<bool(const Browser&)> filter);
@@ -118,6 +121,8 @@ class KioskBrowserWindowHandler : public BrowserListObserver {
   // before the timer fires, we will crash as we consider the kiosk session
   // compromised.
   std::map<Browser*, base::OneShotTimer> closing_browsers_;
+
+  std::map<Browser*, std::unique_ptr<NavigationWaiter>> url_waiters_;
 
   base::WeakPtrFactory<KioskBrowserWindowHandler> weak_ptr_factory_{this};
 };

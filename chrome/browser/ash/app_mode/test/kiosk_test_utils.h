@@ -129,6 +129,13 @@ void CachePolicy(const std::string& account_id,
 // of a Kiosk app of the given `type` to a Chrome `AccountId`.
 AccountId CreateDeviceLocalAccountId(std::string_view account_id,
                                      policy::DeviceLocalAccountType type);
+
+// Opens a new browser window including navigation to a test url.
+Browser& CreateRegularBrowser(Profile& profile);
+
+// opens a new popup browser window belonging to the provided `app_name`.
+Browser& CreatePopupBrowser(Profile& profile, const std::string& app_name);
+
 }  // namespace ash::kiosk::test
 
 #endif  // CHROME_BROWSER_ASH_APP_MODE_TEST_KIOSK_TEST_UTILS_H_

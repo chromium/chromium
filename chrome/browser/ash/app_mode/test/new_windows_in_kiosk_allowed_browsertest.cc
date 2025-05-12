@@ -3,14 +3,12 @@
 // found in the LICENSE file.
 
 #include <cstddef>
-#include <optional>
 #include <string>
 #include <string_view>
 
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/check_deref.h"
-#include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/load_profile.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
@@ -18,7 +16,6 @@
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_web_app_install_util.h"
-#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/test/test_browser_closed_waiter.h"
@@ -33,12 +30,13 @@
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/browser/app_window/app_window.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 
 using kiosk::test::CachePolicy;
+using kiosk::test::CreatePopupBrowser;
+using kiosk::test::CreateRegularBrowser;
 using kiosk::test::CurrentProfile;
 using kiosk::test::DidKioskCloseNewWindow;
 using kiosk::test::TheKioskWebApp;
@@ -56,24 +54,6 @@ std::string WebAppWindowName(const KioskApp& app) {
   auto [_, app_id] =
       chromeos::GetKioskWebAppInstallState(CurrentProfile(), app.url().value());
   return web_app::GenerateApplicationNameFromAppId(app_id.value());
-}
-
-Browser& OpenRegularBrowser(Profile& profile) {
-  Browser::CreateParams params(&profile, /*user_gesture=*/true);
-  Browser& browser = CHECK_DEREF(Browser::Create(params));
-  browser.window()->Show();
-  return browser;
-}
-
-Browser& OpenPopupBrowser(Profile& profile, const KioskApp& app) {
-  Browser::CreateParams params = Browser::CreateParams::CreateForAppPopup(
-      WebAppWindowName(app),
-      /*trusted_source=*/true,
-      /*window_bounds=*/gfx::Rect(), &profile,
-      /*user_gesture=*/true);
-  Browser& browser = CHECK_DEREF(Browser::Create(params));
-  browser.window()->Show();
-  return browser;
 }
 
 KioskMixin::DefaultServerWebAppOption WebAppInConfig() {
@@ -145,7 +125,8 @@ IN_PROC_BROWSER_TEST_F(NewWindowsInKioskAllowedTest, AllowsNewPopupWindows) {
   ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
   Browser& initial_browser = CHECK_DEREF(BrowserList::GetInstance()->get(0));
 
-  Browser& popup = OpenPopupBrowser(profile, TheKioskWebApp());
+  Browser& popup =
+      CreatePopupBrowser(profile, WebAppWindowName(TheKioskWebApp()));
 
   ASSERT_FALSE(DidKioskCloseNewWindow());
   EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
@@ -161,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(NewWindowsInKioskAllowedTest,
   ASSERT_TRUE(GetPolicyValueInPrefs(CurrentProfile()));
 
   ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
-  Browser& browser = OpenRegularBrowser(CurrentProfile());
+  Browser& browser = CreateRegularBrowser(CurrentProfile());
   ASSERT_TRUE(TestBrowserClosedWaiter(&browser).WaitUntilClosed());
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
 }
@@ -189,11 +170,12 @@ IN_PROC_BROWSER_TEST_P(NewWindowsInKioskDisallowedTest, DisallowsNewWindows) {
 
   ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
 
-  Browser& browser = OpenRegularBrowser(CurrentProfile());
+  Browser& browser = CreateRegularBrowser(CurrentProfile());
   ASSERT_TRUE(TestBrowserClosedWaiter(&browser).WaitUntilClosed());
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
 
-  Browser& popup = OpenPopupBrowser(CurrentProfile(), TheKioskWebApp());
+  Browser& popup =
+      CreatePopupBrowser(CurrentProfile(), WebAppWindowName(TheKioskWebApp()));
   ASSERT_TRUE(TestBrowserClosedWaiter(&popup).WaitUntilClosed());
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
 }

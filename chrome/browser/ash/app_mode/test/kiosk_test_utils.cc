@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -57,6 +58,8 @@
 namespace ash::kiosk::test {
 
 namespace {
+
+const char kTestUrl[] = "https://www.test.com";
 
 const extensions::Extension* FindInExtensionRegistry(Profile& profile,
                                                      std::string_view app_id) {
@@ -89,6 +92,25 @@ class SessionInitializedWaiter : public KioskAppManagerObserver {
                                      KioskAppManagerObserver>
       observation_{this};
 };
+
+content::WebContents* GetActiveWebContents(const Browser& browser) {
+  return browser.tab_strip_model()->GetActiveWebContents();
+}
+
+void AddWebContentsToBrowser(Browser& browser, Profile& profile) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(&profile));
+
+  browser.tab_strip_model()->AddWebContents(std::move(web_contents), -1,
+                                            ui::PAGE_TRANSITION_FIRST,
+                                            AddTabTypes::ADD_ACTIVE);
+}
+
+void TriggerNavigation(content::WebContents* web_contents) {
+  web_contents->GetController().LoadURLWithParams(
+      content::NavigationController::LoadURLParams(GURL(kTestUrl)));
+}
 
 }  // namespace
 
@@ -315,6 +337,32 @@ AccountId CreateDeviceLocalAccountId(std::string_view account_id,
                                      policy::DeviceLocalAccountType type) {
   return AccountId(AccountId::FromUserEmail(
       policy::GenerateDeviceLocalAccountUserId(account_id, type)));
+}
+
+Browser& CreateRegularBrowser(Profile& profile) {
+  Browser::CreateParams params(&profile, /*user_gesture=*/true);
+  Browser& browser = CHECK_DEREF(Browser::Create(params));
+  browser.window()->Show();
+
+  AddWebContentsToBrowser(browser, profile);
+  TriggerNavigation(GetActiveWebContents(browser));
+
+  return browser;
+}
+
+Browser& CreatePopupBrowser(Profile& profile, const std::string& app_name) {
+  Browser::CreateParams params = Browser::CreateParams::CreateForAppPopup(
+      app_name,
+      /*trusted_source=*/true,
+      /*window_bounds=*/gfx::Rect(), &profile,
+      /*user_gesture=*/true);
+  Browser& browser = CHECK_DEREF(Browser::Create(params));
+  browser.window()->Show();
+
+  AddWebContentsToBrowser(browser, profile);
+  TriggerNavigation(GetActiveWebContents(browser));
+
+  return browser;
 }
 
 }  // namespace ash::kiosk::test
