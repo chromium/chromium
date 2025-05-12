@@ -47,7 +47,6 @@
 <translation id="2042889939382983733">Прегледајте ја историјата на Chromium</translation>
 <translation id="2052320862053429062">Chromium повремено ги споредува лозинките со списоци објавени онлајн. Кога го прави ова, вашите лозинки и кориснички имиња се шифрирани, па нив не може да ги прочита никој, вклучително и Google.</translation>
 <translation id="2059365270911640413">Довршете го поставувањето на Chromium</translation>
-<translation id="2147210759439165826">Бидете во тек со содржините и корисните совети за Chromium.</translation>
 <translation id="2168108852149185974">Некои додатоци предизвикуваат пад на Chromium. Деинсталирајте:</translation>
 <translation id="2168593389981132306">Подобрете го Chromium</translation>
 <translation id="2178608107313874732">Chromium не може да ја користи камерата сега</translation>
@@ -157,6 +156,7 @@
 <translation id="4828317641996116749">Chromium не може да ги провери сите лозинки. Обидете се повторно подоцна.</translation>
 <translation id="4856138222358683580">Дејства во Chromium</translation>
 <translation id="4904452304169763785">Известувања за проблеми со приватноста или безбедноста што Chromium ќе ги открие за вас.</translation>
+<translation id="4908570938463711775">За да започнете, научете ги корисните основни работи за Chromium</translation>
 <translation id="4962295957157529683">Довршете го тоа што сте го започнале во другиот отворен прозорец на Chromium.</translation>
 <translation id="4985291216379576555">Офлајн сте. Chromium не може да провери дали има ажурирања</translation>
 <translation id="4996471330284142407">Завршувајте повеќе работи со едноставниот, безбеден и побрз од кога било Chromium.</translation>
@@ -197,6 +197,7 @@
 <translation id="5688047395118852662">Картичкава ви прикажува предлози за тоа како да го извлечете максимумот од Chromium.</translation>
 <translation id="5700709190537129682">Chromium не може да ги провери вашите лозинки</translation>
 <translation id="584550191241316896">Најавени сте на Chromium</translation>
+<translation id="5862307444128926510">Добре дојдовте во Chromium</translation>
 <translation id="5889847953983052353">Кога е вклучено:
 <ph name="BEGIN_INDENT" />  • помага да се подобри Chromium за луѓето што го користат исто како и вие<ph name="END_INDENT" />
 
@@ -223,6 +224,7 @@
 <translation id="6301717043141881464">За да ги добиете зачуваните лозинки лесно во другите апликации, користете Chromium for AutoFill</translation>
 <translation id="6324041800010509197">Отворање на мрежата со картички во Chromium</translation>
 <translation id="6325378625795868881">Користете го Chromium секогаш кога ќе допрете линкови во пораки и други апликации.</translation>
+<translation id="6387994184698195448">Бидете во тек со корисните совети за Chromium и друго.</translation>
 <translation id="6424492062988593837">Chromium е подобрен! Достапна е нова верзија.</translation>
 <translation id="6433172051771630690">Совети како да извлечете максимум од Chromium.</translation>
 <translation id="65045991564554105">Видете ги обележувачите во Chromium</translation>
@@ -284,7 +286,6 @@
 <translation id="7980860476903281594">Изберете дали дозволувате Chromium ја споделува вашата локација со сајтов.</translation>
 <translation id="7994322153108931467">За да добивате корисни совети за Chromium, вклучете ги известувањата во поставките за iOS.</translation>
 <translation id="7997159823054171568">Поставете го Chromium како стандарден прелистувач</translation>
-<translation id="800195749539500647">Извлечете го максимумот од Chromium</translation>
 <translation id="800380310260616129">Преземете го Chromium тука.</translation>
 <translation id="8013573822802650211">За да ги гледате картичките секаде каде што користите Chromium, најавете се на сите ваши уреди</translation>
 <translation id="8014091604604659473">Одјавени сте од Chromium</translation>
@@ -317,6 +318,7 @@
 <translation id="8860548555286245440">Отворај URL-адреси во Chromium во „Инкогнито“</translation>
 <translation id="8880024619507699923">Вашата организација бара да се најавите за да го користите Chromium. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Добијте ја најсилната безбедност на Chromium</translation>
+<translation id="8925569192291721236">Бидете во тек со известувањата за следењето цена и советите за Chromium.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Ова се случува кога Chromium не се користи {THRESHOLD} минута}one{Ова се случува кога Chromium не се користи {THRESHOLD} минута}other{Ова се случува кога Chromium не се користи {THRESHOLD} минути}}</translation>
 <translation id="8963279154877372067">Дозволете известувања за Chromium за да добивате известувања за намалувања на цените</translation>
 <translation id="8975812008711371178">Пребарувајте со глас во Chromium</translation>

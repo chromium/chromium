@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">Korenbloemblauw</translation>
 <translation id="1246424317317450637">Vet</translation>
+<translation id="1250181918001045969">Probeer verbinding te maken met de camera. Gezichtsbediening wordt over <ph name="SECONDS" /> seconden uitgezet.</translation>
 <translation id="1251750620252348585">Volgende kop voor niveau 6</translation>
 <translation id="1264956950255940376">Je linkeroog dichtknijpen</translation>
 <translation id="1268366246392928616">Geen vorige wiskundige uitdrukking</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Vorige bezochte link</translation>
 <translation id="3241638166094654466">Cellen in elke regel:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Camera niet beschikbaar. Zorg dat je bent ingelogd en dat de camera aanstaat.</translation>
 <translation id="3260949043575829030">Vorige vergelijkbare item</translation>
 <translation id="3270069636408109001">Geen volgende tabel</translation>
 <translation id="3273791280096244679">Label Opslaan</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Pagina automatisch lezen nadat deze is geladen</translation>
 <translation id="5826479389509458994">rij <ph name="ROW" /> kolom <ph name="COL" /></translation>
 <translation id="5833044594931167190">Geen ARIA-oriëntatiepunten</translation>
+<translation id="5836800981500311517">Geen toegang tot camera. Zet de camera aan en zorg dat deze niet wordt geblokkeerd.</translation>
 <translation id="584044465500042213">Scrollmodus sluiten</translation>
 <translation id="5842625257683688671">Geen volgende afbeelding</translation>
 <translation id="5847883414085148048">Opgedragen aan</translation>

@@ -20,6 +20,7 @@
 <translation id="1059913517121127803">Tidak dapat memulai pemindaian</translation>
 <translation id="1061864016440983342">Gunakan tanpa lokasi</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> dari <ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="106558928761833284">galaksi nebula kosmik yang indah dengan pesawat luar angkasa futuristik yang cepat, dalam warna biru, merah muda, dan ungu</translation>
 <translation id="1069150558259542054">Penyisipan Cepat tidak dapat digunakan untuk pintasan kustom.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall terdeteksi</translation>
@@ -27,6 +28,7 @@
 <translation id="1082009148392559545">Mendownload screensaver</translation>
 <translation id="1094693127011229778">Alamat IP tidak tersedia</translation>
 <translation id="1100902271996134409">Membuat gambar...</translation>
+<translation id="1102946598597843031">foto bulan di atas danau dengan daun sakura berguguran, 4K</translation>
 <translation id="1107856713690040084">Audio <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">Tentang</translation>
 <translation id="1118572504348554005">Kami mungkin membagikan masukan yang dikirim melalui formulir ini kepada partner kami untuk memecahkan masalah bug dan masalah lain yang Anda laporkan kepada kami. Jangan sertakan informasi sensitif seperti sandi.</translation>
@@ -67,6 +69,7 @@
 <translation id="1238163879850290856">Reset untuk mencegah orang lain mengakses data. Hanya gunakan metode input yang Anda percayai.</translation>
 <translation id="1238612778414822719">Latensi HTTPS</translation>
 <translation id="1252766349417594414">Joystick</translation>
+<translation id="1261045951892393759">kucing bermain gitar listrik sambil menunggangi unicorn, dengan petir di latar belakang</translation>
 <translation id="1270369111467284986">Captive portal dicurigai</translation>
 <translation id="1274654146705270731">jeruk</translation>
 <translation id="1275718070701477396">Dipilih</translation>
@@ -273,6 +276,7 @@
 <translation id="2045814230297767491">peralatan makan</translation>
 <translation id="2047316797244836561">Hubungkan ke jaringan dan muat ulang halaman untuk melihat screensaver.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
+<translation id="2068472557797646626">Rendering 3D bola kromium dan bentuk bola di latar belakang elemen arsitektur kromium. Komposisi ini adalah konsep minimalis modern untuk periklanan, branding, atau presentasi dengan ruang konten. Lengkungan besar berdiri di depan latar belakang abstrak dengan gaya minimalis. Pencahayaan studio. Foto jarak dekat.</translation>
 <translation id="2073232437457681324">samudra luas</translation>
 <translation id="2080070583977670716">Setelan lain</translation>
 <translation id="2082932131694554252">Tombol keyboard yang ditetapkan</translation>
@@ -390,7 +394,6 @@
 <translation id="2584559707064218956">Untuk menyiapkan, buka Setelan</translation>
 <translation id="2586146417912237930">biru dan nila</translation>
 <translation id="2589921777872778654">Menu edit dan hapus</translation>
-<translation id="2590424100019931043">Anda telah dihapus dari kelas ini</translation>
 <translation id="2597774443162333062">File akan dikirim ke Google untuk proses debug</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Pemindaian selesai. 1 halaman dipindai}other{Pemindaian selesai. {NUMBER_OF_PAGES} halaman dipindai}}</translation>
 <translation id="261322795497077164">Identifikasi pembicara</translation>
@@ -430,6 +433,7 @@
 <translation id="2805756323405976993">Aplikasi</translation>
 <translation id="28232023175184696">Tidak dapat terhubung ke internet. Klik untuk mencoba lagi.</translation>
 <translation id="2855718259207180827">wol</translation>
+<translation id="2856429654176718363">Pesawat luar angkasa besar melayang di atas kota yang diterangi banyak lampu. Adegan tersebut memiliki gaya lukisan cat minyak dan menampilkan warna gelap. Tampilan ini menciptakan suasana misterius dengan elemen fiksi ilmiah futuristik. Karya seni ini dibuat menggunakan software C4D dan OC renderer untuk menunjukkan resolusi dan detail tinggi. Terdapat beberapa bangunan perkotaan dalam jarak dekat, yang menambah efek kedalaman ruang. Adegan ini dirender dengan gaya lukisan cat minyak, yang menampilkan warna gelap dan menciptakan suasana misterius dengan elemen fiksi ilmiah futuristik.</translation>
 <translation id="2859243502336719778">Update penting</translation>
 <translation id="2860473693272905224">Letakkan halaman lain pada pemindai</translation>
 <translation id="286265581261662583">Klik kanan atau tekan lama untuk mendapatkan definisi, terjemahan, atau konversi unit</translation>
@@ -446,9 +450,11 @@
 <translation id="2895772081848316509">gelap</translation>
 <translation id="2915996080311180594">Mulai Ulang Nanti</translation>
 <translation id="2926057806159140518">Masukkan nama pengguna dan sandi atau pindai kode QR</translation>
+<translation id="2927007463545347013">jalur anime yang menghadap ke laut dengan daun sakura berguguran</translation>
 <translation id="2940811910881150316">Tidak dapat menguji perangkat. Buka kembali penutup untuk menguji.</translation>
 <translation id="2941112035454246133">Rendah</translation>
 <translation id="2956070106555335453">Ringkasan</translation>
+<translation id="2968959705684615497">harimau putih surealis dengan mata emas dan loreng emas duduk di bukit pasir putih</translation>
 <translation id="299385721391037602">merah muda dan kuning</translation>
 <translation id="3008341117444806826">PERBARUI</translation>
 <translation id="3009958530611748826">Pilih folder untuk menyimpan</translation>
@@ -518,6 +524,7 @@
 <translation id="3321030238473337787">Kecepatan pemutaran</translation>
 <translation id="3327613592010997943">Anda akan dapat menggunakan perangkat ini lagi <ph name="DAY" /> pukul <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Pengujian sedang berjalan</translation>
+<translation id="3332683265015995419">pesawat luar angkasa steampunk terbang melewati badai pasir</translation>
 <translation id="3340011300870565703">Perangkat memiliki <ph name="BATTERY_PERCENTAGE" />% daya baterai earbud kanan.</translation>
 <translation id="3340978935015468852">setelan</translation>
 <translation id="3347558044552027859">modern</translation>
@@ -529,6 +536,7 @@
 <translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">Wallpaper Aliran bumi</translation>
 <translation id="33736539805963175">Latar belakang <ph name="LETTERS_COLOR" /> dengan huruf <ph name="LETTERS_LETTER" /></translation>
+<translation id="3382806462014639823"><ph name="TEACHER_NAME" /> sedang melihat layar Anda</translation>
 <translation id="3383623117265110236">Eksklusif</translation>
 <translation id="3404249063913988450">Aktifkan screen saver</translation>
 <translation id="3413935475507503304">Untuk melanjutkan update, klik Berikutnya.</translation>
@@ -561,6 +569,7 @@
 <translation id="3532980081107202182">Sekitar <ph name="MIN_REMAINING" /> menit lagi</translation>
 <translation id="3533790840489634638">kolam renang</translation>
 <translation id="3547264467365135390">Formula</translation>
+<translation id="3552832331940389362">ilustrasi animasi Jepang yang menggambarkan kucing duduk di ambang jendela sambil melihat hujan di sore hari</translation>
 <translation id="3557205324756024651">Identitas lokal (opsional)</translation>
 <translation id="3565064564551103223">IP yang diizinkan</translation>
 <translation id="3569407787324516067">Screen saver</translation>
@@ -636,12 +645,14 @@
 <translation id="38811596981744338">Masalah hukum</translation>
 <translation id="3885327323343477505">Ubah screensaver</translation>
 <translation id="3889914174935857450">Reset tanggal</translation>
+<translation id="3889954687526985291">sepeda motor futuristik yang terbuat dari kertas hitam dengan latar belakang gelap dan lampu neon</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3902271751020176019">Bahasa transkripsi</translation>
 <translation id="390890062090528082">langit penuh bintang</translation>
 <translation id="391412459402535266">Tidak dapat menguji perangkat. Beralih ke mode laptop untuk menguji.</translation>
 <translation id="3916998944874125962">ambil screenshot</translation>
 <translation id="3923184630988645767">Penggunaan data</translation>
+<translation id="392943705803418306">Sesi Alat Kelas telah berakhir untuk Anda</translation>
 <translation id="3932043219784172185">Tidak ada perangkat yang terhubung</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> yang tidak ditetapkan</translation>
 <translation id="3941014780699102620">Gagal me-resolve host</translation>
@@ -808,6 +819,7 @@
 <translation id="4593212453765072419">Autentikasi Proxy dibutuhkan</translation>
 <translation id="4594021849294327751">Buat transkrip</translation>
 <translation id="4594541568452132351">Pilih bahasa transkripsi dan download model</translation>
+<translation id="4600301862817165514">mobil Delorean dengan lampu neon melintasi galaksi dengan bintang-bintang yang melintas</translation>
 <translation id="4609350030397390689">Kurangi kecerahan keyboard</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> dari <ph name="TOTAL_PAGE_NUMBER" />. Tekan enter untuk membatalkan tugas pencetakan.</translation>
 <translation id="463791356324567266">Membatalkan pemindaian ...</translation>
@@ -830,6 +842,7 @@
 <translation id="4697260493945012995">Pilih jenis kontrol</translation>
 <translation id="4712940987669302829">efek bokeh</translation>
 <translation id="4731797938093519117">Akses orang tua</translation>
+<translation id="4733200407105375152">Tidak ada di Alat Kelas</translation>
 <translation id="4734982181169850310">warna pastel</translation>
 <translation id="473775607612524610">Update</translation>
 <translation id="4744944742468440486">Info terkait pilihan Anda</translation>
@@ -1006,6 +1019,7 @@
 <translation id="5499762266711462226">Warna keyboard didasarkan pada wallpaper</translation>
 <translation id="5502931783115429516">Android tidak berjalan</translation>
 <translation id="550600468576850160">padang rumput</translation>
+<translation id="5507504956167780539">foto profesional minimalis bukit pasir hitam berkilauan dengan bayangan dramatis</translation>
 <translation id="551689408806449779">Perangkat telah terputus. Coba hubungkan kembali untuk melakukan pengujian</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="552644173505433109">Pelajari lebih lanjut pembuatan judul dan ringkasan</translation>
@@ -1077,6 +1091,7 @@
 <translation id="5876385649737594562">Aktifkan untuk memilih opsi</translation>
 <translation id="5877503382465267833">Jeda <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Layar Penuh</translation>
+<translation id="5889539348012432386">Beranda Alat Kelas</translation>
 <translation id="5893975327266416093">Ketuk tombol keyboard untuk menetapkan</translation>
 <translation id="5895138241574237353">Mulai Ulang</translation>
 <translation id="5896602941605730551">Putar</translation>
@@ -1125,6 +1140,7 @@
 <translation id="6075872808778243331">(Android) Latensi HTTP</translation>
 <translation id="6078323886959318429">Tambahkan pintasan</translation>
 <translation id="6079693086494835199">Reset untuk memastikan halaman beranda default bukan situs phishing. Hanya gunakan situs yang Anda percayai.</translation>
+<translation id="6090672065638047175">foto pohon bercahaya yang terbuat dari bintang dengan langit malam dan galaksi yang indah di latar belakang</translation>
 <translation id="6091080061796993741">kuning</translation>
 <translation id="6104112872696127344">Pemindaian telah dibatalkan</translation>
 <translation id="6106186594183574873">Untuk menyelesaikan, masukkan sandi yang lama</translation>
@@ -1310,6 +1326,7 @@
 <translation id="6900701049656042631">Album ini tidak memiliki foto. Untuk menambahkan foto, buka <ph name="LINK" /></translation>
 <translation id="6902359863093437070">Buat latar belakang dengan AI</translation>
 <translation id="6905163627763043954">Cobalah</translation>
+<translation id="6905275015682612674">foto eksposur panjang pantai bercahaya saat matahari terbenam dengan langit yang bertabur bintang, warna pastel indah, 4K</translation>
 <translation id="6905724422583748843">Kembali ke <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Penutup pemindai terbuka. Tutup penutup dan coba lagi.</translation>
 <translation id="6910845598686542904">Menentukan model suara yang terdeteksi dalam rekaman</translation>
@@ -1319,6 +1336,7 @@
 <translation id="6930597342185648547">Tentang latar belakang</translation>
 <translation id="6931666215260956151">galaksi</translation>
 <translation id="6939766318048400022">Kafe</translation>
+<translation id="6940212863873359282">kain organza putih melayang di tengah, di atas lengkungan marmer putih dengan latar belakang krem</translation>
 <translation id="6942253772720771875">Berikan masukan atau jelaskan masalah Anda</translation>
 <translation id="6943893908656559156">Identitas jarak jauh (opsional)</translation>
 <translation id="694981048020558038">Telusuri judul rekaman</translation>
@@ -1405,6 +1423,7 @@
 <translation id="7271040990581020067">Pemindai sedang digunakan. Coba lagi nanti.</translation>
 <translation id="7271932918253517778">Pintasan dengan tombol baris atas harus menyertakan tombol <ph name="META_KEY" />.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7275707758336796649">anjing dalmatian di depan latar belakang berwarna merah muda dengan pose dinamis seluruh tubuh, diambil dengan fotografi resolusi tinggi dan latar belakang stok yang sangat realistis dengan gradasi warna</translation>
 <translation id="7281657306185710294">Rasakan angin sepoi-sepoi</translation>
 <translation id="7287310195820267359">Koleksi Wallpaper</translation>
 <translation id="7293429513719260019">Pilih bahasa</translation>
@@ -1414,6 +1433,7 @@
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Tanya pakar di forum bantuan Chromebook</translation>
+<translation id="7309823890857024809">lukisan objek minimalis dari beberapa batang Papaver rhea dalam vas kaca pada latar belakang hitam</translation>
 <translation id="7311368985037279727">warna keyboard</translation>
 <translation id="7317831949569936035">Pendaftaran sekolah</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -1431,6 +1451,7 @@
 <translation id="7353413232959255829">Hasil penelusuran <ph name="LIST_POSITION" /> dari <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Tekan Enter untuk membuka pintasan.</translation>
 <translation id="7359657277149375382">Jenis file</translation>
 <translation id="73631062356239394">Bagikan data diagnostik</translation>
+<translation id="7369648056634183167">tampilan dekat teratai kolam yang rumit dan tertutup embun saat hujan. Fokusnya terletak pada kelopak bunga yang halus dan tetesan air yang memantulkan cahaya, yang menampilkan warna pastel lembutnya dengan latar belakang biru. Diambil dari ketinggian mata menggunakan cahaya alami</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378170410161264436">Perekam Suara dapat membuat transkripsi untuk rekaman yang berisi ucapan.
 Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</translation>
@@ -1601,6 +1622,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8135609423982943441">Chromebook Anda direset ke setelan default yang aman. Anda dapat menyesuaikan perubahan ini kapan saja di Setelan.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">Buat sendiri</translation>
+<translation id="8142182840415860496">tampilan dekat beberapa bunga putih dan kuning, foto diam dari film animasi, bunga merah muda pucat yang halus dengan kelopak panjang dan batang hijau yang ditempatkan di antara dua tulip kuning besar dengan latar belakang langit biru tanpa daun atau dedaunan dalam warna pastel, foto diam sinematik dengan resolusi tinggi dan detail yang rumit, octane render dengan pencahayaan yang indah, cahaya volumetrik, serta cahaya yang terkesan suram.</translation>
 <translation id="8143951647992294073">Pilih <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Developer Tools</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
@@ -1681,6 +1703,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8503813439785031346">Nama Pengguna</translation>
 <translation id="8503836310948963452">Tinggal beberapa menit lagi...</translation>
 <translation id="8505011850330200833">Model Gemini memerlukan penyimpanan 2 GB untuk memproses transkrip dan membuat ringkasan</translation>
+<translation id="8506063704538210734">foto langit malam dengan hujan meteor dan beberapa pohon di latar depan, dengan warna ungu dan merah muda</translation>
 <translation id="8506394543220680287">tertutup salju</translation>
 <translation id="8508640263392900755">Detail APN</translation>
 <translation id="8522687886059337719">Sekarang Anda memiliki akses ke <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />wallpaper<ph name="END_LINK_WALLPAPER_SUBPAGE" /> dan <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />screensaver<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> baru</translation>

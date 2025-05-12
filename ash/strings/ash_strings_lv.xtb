@@ -1440,6 +1440,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="5672890847723042801">Utilītprogrammas</translation>
 <translation id="5673434351075758678">Pēc iestatījumu sinhronizēšanas valoda tika mainīta no “<ph name="FROM_LOCALE" />” uz “<ph name="TO_LOCALE" />”.</translation>
 <translation id="5675363643668471212">Plaukta vienums</translation>
+<translation id="5677022547882470786">Velciet vai nospiediet atstarpes taustiņu, lai atlasītu meklēšanas apgabalu</translation>
 <translation id="5677928146339483299">Bloķēts</translation>
 <translation id="5678564054339031017">Rādīt nākamo nedēļu</translation>
 <translation id="5679050765726761783">Pievienots strāvas adapteris ar mazu strāvas padevi</translation>
@@ -2432,6 +2433,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8934418770423095813">Izveidot Google dokumentu</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fails}zero{# failu}one{# fails}other{# faili}}</translation>
 <translation id="8936501819958976551">deaktivizēta</translation>
+<translation id="8937312474322077653">Ekrānuzņēmuma izveidei atlasiet šādu iestatījumu: <ph name="SOURCE" /> <ph name="TYPE" />. Lai izvēlētos ekrānuzņēmuma izveides veidu, nospiediet tabulēšanas taustiņu. Nospiediet atstarpes taustiņu, lai atlasītu reģionu. Nospiediet taustiņu Enter, lai sāktu izveidi.</translation>
 <translation id="8938800817013097409">USB-C ierīce (pieslēgvieta aizmugurē pa labi)</translation>
 <translation id="8939855324412367560">Ieejas audio ierīce ir <ph name="INPUT_DEVICE_NAME" />, un izvades audio ierīce ir <ph name="OUTPUT_DEVICE_NAME" />. Lai tās mainītu, pārejiet uz iestatījumiem.</translation>
 <translation id="8940956008527784070">Akumulators gandrīz tukšs (<ph name="PERCENTAGE" />%)</translation>

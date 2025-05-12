@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{વાંચ્યા વગરનું 1 નોટિફિકેશન}one{# વાંચ્યા વગરના નોટિફિકેશન}other{# વાંચ્યા વગરના નોટિફિકેશન}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{છૂપા મોડમાં નીચેનું એક્સ્ટેન્શન ચાલુ કરો:}one{છૂપા મોડમાં નીચેનું એક્સ્ટેન્શન ચાલુ કરો:}other{છૂપા મોડમાં નીચેના એક્સ્ટેન્શન ચાલુ કરો:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 મહિના પહેલાં}one{# મહિના પહેલાં}other{# મહિના પહેલાં}}</translation>
+<translation id="4277033906326892359"><ph name="COLUMN_NAME" /> કૉલમને ચઢતા ક્રમમાં સૉર્ટ કરી છે</translation>
 <translation id="4289300219472526559">બોલવાનું પ્રારંભ કરો</translation>
 <translation id="4289540628985791613">ઓવરવ્યૂ</translation>
 <translation id="4491109536499578614">છબી</translation>
@@ -169,8 +170,10 @@
 <translation id="6503257047630241175">RTF કન્ટેન્ટ</translation>
 <translation id="6539092367496845964">કંઈક ખોટું થયું હતું. થોડીવાર પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="654149438358937226">તમામ નોટિફિકેશનને બ્લૉક કરો</translation>
+<translation id="6612467943526193239">કેલિબ્રેશનથી બહાર નીકળવા માટે Esc દબાવો.</translation>
 <translation id="6620110761915583480">ફાઇલ સાચવો</translation>
 <translation id="6699343763173986273">મીડિયા આગલો ટ્રૅક</translation>
+<translation id="6807086321996342431">કૉલમ <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">મીડિયા સ્ટોપ</translation>
 <translation id="6845383723252244143">ફોલ્ડર પસંદ કરો</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 કલાક બાકી}one{# કલાક બાકી}other{# કલાક બાકી}}</translation>
@@ -202,11 +205,11 @@
 <translation id="7969046989155602842">આદેશ</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{1 કરતાં વઘુ વાંચ્યા વગરના નોટિફિકેશન}one{# કરતાં વઘુ વાંચ્યા વગરના નોટિફિકેશન}other{# કરતાં વઘુ વાંચ્યા વગરના નોટિફિકેશન}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{1મિ માં}one{#મિ માં}other{#મિ માં}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568"><ph name="ORIGIN" />માંથી નંબર</translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 કલાક પહેલા}one{# કલાક પહેલાં}other{# કલાક પહેલાં}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 સે બાકી}one{# સે બાકી}other{# સે બાકી}}</translation>
 <translation id="8134065097954893699">આ પેજને ફરીથી લોડ કરી રહ્યાં છીએ</translation>
+<translation id="813785873406874127"><ph name="COLUMN_NAME" /> કૉલમને અનસૉર્ટ કરી</translation>
 <translation id="815598010540052116">નીચે સ્ક્રોલ કરો</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Page Down</translation>
@@ -218,6 +221,7 @@
 <translation id="8393700583063109961">મેસેજ મોકલો</translation>
 <translation id="8394908167088220973">મીડિયા ચલાવો/થોભાવો</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 વ}one{# વ}other{# વ}}</translation>
+<translation id="8582972250170726813"><ph name="COLUMN_NAME" /> કૉલમને ઉતરતા ક્રમમાં સૉર્ટ કરી છે</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> ફાઇલ (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>

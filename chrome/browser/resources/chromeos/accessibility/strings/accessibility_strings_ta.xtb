@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">கார்ன்ஃபிளார் புளூ</translation>
 <translation id="1246424317317450637">தடித்த</translation>
+<translation id="1250181918001045969">கேமராவுடன் இணைக்க முயல்கிறது. முகக் கட்டுப்பாடு அம்சம் <ph name="SECONDS" /> வினாடிகளில் ஆஃப் ஆகும்.</translation>
 <translation id="1251750620252348585">அடுத்த 6 ஆம் படிநிலை தலைப்பு</translation>
 <translation id="1264956950255940376">இடது கண்ணைச் சுருக்குதல்</translation>
 <translation id="1268366246392928616">முந்தைய கணிதக் கோவை எதுவும் இல்லை</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">முந்தையதாக பார்வையிட்ட இணைப்பு</translation>
 <translation id="3241638166094654466">ஒவ்வொரு வரியிலும் உள்ள கலங்கள்:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">கேமராவைக் கண்டறிய முடியவில்லை. நீங்கள் உள்நுழைந்திருப்பதையும் கேமரா ஆன் செய்யப்பட்டிருப்பதையும் உறுதிசெய்துகொள்ளவும்.</translation>
 <translation id="3260949043575829030">இதேபோன்ற முந்தைய கட்டளை</translation>
 <translation id="3270069636408109001">அடுத்த அட்டவணை எதுவும் இல்லை</translation>
 <translation id="3273791280096244679">சேமி லேபிள்</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">பக்கம் ஏற்றப்பட்டதும், அதைத் தானாகவே வாசி</translation>
 <translation id="5826479389509458994"><ph name="ROW" /> வரிசை <ph name="COL" /> நெடுவரிசை</translation>
 <translation id="5833044594931167190">ARIA லேண்ட்மார்க்குகள் எதுவும் இல்லை</translation>
+<translation id="5836800981500311517">கேமராவை அணுக முடியவில்லை. கேமரா ஆன் செய்யப்பட்டிருப்பதையும் அது தடுக்கப்படவில்லை என்பதையும் உறுதிசெய்துகொள்ளவும்.</translation>
 <translation id="584044465500042213">நகர்த்துதல் பயன்முறையில் இருந்து வெளியேறுதல்</translation>
 <translation id="5842625257683688671">அடுத்த கிராஃபிக் எதுவும் இல்லை</translation>
 <translation id="5847883414085148048">அர்ப்பணம்</translation>

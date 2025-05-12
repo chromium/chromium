@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">Azul-centáurea</translation>
 <translation id="1246424317317450637">Negrito</translation>
+<translation id="1250181918001045969">Tentando se conectar à câmera. O controle facial será desligado em <ph name="SECONDS" /> segundos.</translation>
 <translation id="1251750620252348585">Próximo cabeçalho de nível 6</translation>
 <translation id="1264956950255940376">Apertar o olho esquerdo</translation>
 <translation id="1268366246392928616">Nenhuma expressão matemática anterior</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Link anterior visitado</translation>
 <translation id="3241638166094654466">Células em cada linha:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">A câmera está indisponível. Confira se você fez login e se a câmera está ligada.</translation>
 <translation id="3260949043575829030">Item semelhante anterior</translation>
 <translation id="3270069636408109001">Nenhuma tabela a seguir</translation>
 <translation id="3273791280096244679">Salvar etiqueta</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Ler página automaticamente após o fim do carregamento</translation>
 <translation id="5826479389509458994">linha <ph name="ROW" /> coluna <ph name="COL" /></translation>
 <translation id="5833044594931167190">Nenhum ponto de referência ARIA</translation>
+<translation id="5836800981500311517">Não é possível acessar a câmera. Ligue a câmera e confirme que não há nada na frente da lente.</translation>
 <translation id="584044465500042213">Sair do modo de rolagem</translation>
 <translation id="5842625257683688671">Nenhum gráfico a seguir</translation>
 <translation id="5847883414085148048">Dedicatória</translation>

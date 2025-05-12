@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">Տերեփուկի կապույտ</translation>
 <translation id="1246424317317450637">Թավ</translation>
+<translation id="1250181918001045969">Փորձում ենք միացնել տեսախցիկը։ Դեմքով կառավարումը կանջատվի <ph name="SECONDS" /> վայրկյանից։</translation>
 <translation id="1251750620252348585">6-րդ մակարդակի հաջորդ վերնագիրը</translation>
 <translation id="1264956950255940376">Կիսափակ արեք ձախ աչքը</translation>
 <translation id="1268366246392928616">Մաթեմատիկական նախորդ արտահայտություն չկա</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Նախորդ այցելած հղումը</translation>
 <translation id="3241638166094654466">Տողում բջիջների քանակը`</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />՝ <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Տեսախցիկն անհասանելի է։ Համոզվեք, որ տեսախցիկը միացված է, և մտել եք հաշիվ։</translation>
 <translation id="3260949043575829030">Նախորդ նման տարրը</translation>
 <translation id="3270069636408109001">Հաջորդ աղյուսակ չկա</translation>
 <translation id="3273791280096244679">Պահել պիտակը</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Էջի բեռնումից հետո այն ավտոմատ կարդալ</translation>
 <translation id="5826479389509458994">տող <ph name="ROW" /> սյունակ <ph name="COL" /></translation>
 <translation id="5833044594931167190">ARIA ուղենիշներ չկան</translation>
+<translation id="5836800981500311517">Տեսախցիկն անհասանելի է։ Միացրեք տեսախցիկը և համոզվեք, որ այն արգելափակված չէ։</translation>
 <translation id="584044465500042213">Դուրս գալ թերթելու ռեժիմից</translation>
 <translation id="5842625257683688671">Հաջորդ գծապատկեր չկա</translation>
 <translation id="5847883414085148048">Ձոն</translation>

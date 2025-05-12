@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">alternativknappsgrupp</translation>
 <translation id="1243477406442346359">Kornblå</translation>
 <translation id="1246424317317450637">Fet</translation>
+<translation id="1250181918001045969">Försöker ansluta till kameran. Ansiktsstyrning inaktiveras om <ph name="SECONDS" /> sekunder.</translation>
 <translation id="1251750620252348585">Nästa rubrik på nivå 6</translation>
 <translation id="1264956950255940376">Blinka med vänster öga</translation>
 <translation id="1268366246392928616">Det finns inget föregående matematiskt uttryck</translation>
@@ -145,7 +146,7 @@
 <translation id="1829244130665387512">Hitta på sida</translation>
 <translation id="1834891354138622109">Kolumn</translation>
 <translation id="1846771122725914429">Punktskriftsskärm med Bluetooth</translation>
-<translation id="1852018405765032699">Du öppnar och stänger ChromeVox-menyerna genom att trycka på skärmen med fyra fingrar. Menyerna innehåller praktisk information om kommandon och genvägar. När menyerna är öppna kan du navigera mellan menyalternativen genom att svepa med ett finger och aktivera ett alternativ genom att trycka snabbt två gånger. Fortsätt genom att trycka på skärmen med fyra fingrar.</translation>
+<translation id="1852018405765032699">Du öppnar och stänger ChromeVox-menyerna genom att trycka på skärmen med fyra fingrar. Menyerna innehåller praktisk information om kommandon och genvägar. När menyerna är öppna kan du navigera mellan menyalternativen genom att svepa med ett finger och aktivera ett alternativ genom att dubbeltrycka. Fortsätt genom att trycka på skärmen med fyra fingrar.</translation>
 <translation id="1864430479908918647">Tryck på Sök + blanksteg</translation>
 <translation id="1865601187525349519">Slutet på texten</translation>
 <translation id="1876229593313240038">dok</translation>
@@ -266,7 +267,7 @@
 <translation id="2697408785920771974">autoslutför på raden</translation>
 <translation id="2697786971245905543">Kandidat för textkonvertering</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{vänsterparentes}other{# vänsterparenteser}}</translation>
-<translation id="270523456882008230">Tips! Tryck snabbt två gånger med ett finger för att aktivera det aktuella objektet.</translation>
+<translation id="270523456882008230">Tips! Dubbeltryck med ett finger för att aktivera det aktuella objektet.</translation>
 <translation id="2705875883745373140">Inte nedtryckt</translation>
 <translation id="2708078563826046398">Persikofärgad</translation>
 <translation id="2713444072780614174">Vit</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Föregående länk som har besökts</translation>
 <translation id="3241638166094654466">Celler i varje rad:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Kameran är inte tillgänglig. Kontrollera att du är inloggad och att kameran är på.</translation>
 <translation id="3260949043575829030">Föregående liknande</translation>
 <translation id="3270069636408109001">Det finns inga fler tabeller</translation>
 <translation id="3273791280096244679">Spara etikett</translation>
@@ -660,14 +662,14 @@
 <translation id="5142101052131610456">Alla lektioner</translation>
 <translation id="514387318601895731">Titta ned</translation>
 <translation id="5158275234811857234">Omslag</translation>
-<translation id="516076699907426116">Om du vill fortsätta letar du reda på knappen Nästa lektion med Explore by touch. Tryck sedan snabbt två gånger för att fortsätta.</translation>
+<translation id="516076699907426116">Om du vill fortsätta letar du reda på knappen Nästa lektion med Explore by touch. Dubbeltryck sedan för att fortsätta.</translation>
 <translation id="5170206230005240598">Textning med punktskrift har aktiverats</translation>
 <translation id="5183440668879371625">Punktskrift på föregående rad</translation>
 <translation id="5189244881767082992">Rad</translation>
 <translation id="5263034204789987535">Majssilkebrun</translation>
 <translation id="5263344797180442561">rubr2</translation>
 <translation id="528468243742722775">Avsluta</translation>
-<translation id="5290220123487191192">Vi börjar med några vanliga rörelser. När du har kommit till ett objekt du vill aktivera trycker du snabbt på skärmen två gånger med ett finger. Tryck snabbt två gånger nu för att fortsätta.</translation>
+<translation id="5290220123487191192">Vi börjar med några vanliga rörelser. När du har kommit till ett objekt du vill aktivera dubbeltrycker du med ett finger. Dubbeltryck nu för att fortsätta.</translation>
 <translation id="5291860916305032607">Återuppta ansiktsstyrning</translation>
 <translation id="5302089807023311274">Bibliografisk referens</translation>
 <translation id="530391007967514163">Testa hoppkommandona medan du navigerar genom texten nedan.</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Läs upp sidan automatiskt när den har lästs in</translation>
 <translation id="5826479389509458994">rad <ph name="ROW" /> kolumn <ph name="COL" /></translation>
 <translation id="5833044594931167190">Det finns inga ARIA-landmärken</translation>
+<translation id="5836800981500311517">Det går inte att komma åt kameran. Slå på kameran och se till att den inte är blockerad.</translation>
 <translation id="584044465500042213">Avsluta scrollningsläge</translation>
 <translation id="5842625257683688671">Det finns inga fler bilder</translation>
 <translation id="5847883414085148048">Tillägnan</translation>
@@ -825,7 +828,7 @@
 <translation id="6236061028292614533">Nästa rubrik</translation>
 <translation id="6254901459154107917">Nästa redigerbara textområde</translation>
 <translation id="6259464875943891919">Lämnade <ph name="TYPE" />.</translation>
-<translation id="6280088282605782512">Tryck snabbt två gånger</translation>
+<translation id="6280088282605782512">Dubbeltryck</translation>
 <translation id="6282062888058716985">navig</translation>
 <translation id="6295699829709583154">Viktiga tangenter: Sök</translation>
 <translation id="6305702903308659374">Spela upp på normal volym även när ChromeVox används</translation>
@@ -887,7 +890,7 @@
 <translation id="6759710362319508545">Resurser</translation>
 <translation id="67862343314499040">Violett</translation>
 <translation id="6786800275320335305">Artikel</translation>
-<translation id="6790781785997195160">När du har övat lite letar du reda på knappen Nästa lektion. Tryck sedan snabbt två gånger för att fortsätta.</translation>
+<translation id="6790781785997195160">När du har övat lite letar du reda på knappen Nästa lektion. Dubbeltryck sedan för att fortsätta.</translation>
 <translation id="6793101435925451627">listruta</translation>
 <translation id="6815255864998354418">Gulbrun</translation>
 <translation id="6816066673340002913">Blekt gullrisgul</translation>
@@ -914,7 +917,7 @@
 <translation id="6994042831499278539">Hänvisning till ordlista</translation>
 <translation id="6996566555547746822">Nästa kombinationsruta</translation>
 <translation id="6997224546856374593">När stora bokstäver läses upp:</translation>
-<translation id="6999752561504308105">Välkommen till ChromeVox-självstudierna. Du kan avsluta självstudierna när som helst genom att svepa från höger till vänster med två fingrar. Du kan när som helst aktivera eller inaktivera ChromeVox genom att hålla båda volymknapparna nedtryckta i fem sekunder. Tryck snabbt två gånger på skärmen med ett finger när du vill fortsätta till nästa lektion.</translation>
+<translation id="6999752561504308105">Välkommen till ChromeVox-självstudierna. Du kan avsluta självstudierna när som helst genom att svepa från höger till vänster med två fingrar. Du kan när som helst aktivera eller inaktivera ChromeVox genom att hålla båda volymknapparna nedtryckta i fem sekunder. Dubbeltryck på skärmen med ett finger när du vill fortsätta till nästa lektion.</translation>
 <translation id="700202842116345659">Bibliografipost</translation>
 <translation id="7005146664810010831">Ingen webbadress hittades</translation>
 <translation id="7026338066939101231">Minska</translation>

@@ -123,6 +123,7 @@ Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir di
 <translation id="3984746313391923992">Organisasjonen din krever at du forblir logget av Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome har ikke tilgang til bildene eller videoene dine. Slå på tilgangen i iOS-innstillingene &gt; Personvern &gt; Bilder.</translation>
 <translation id="4064699917955374540">For å bruke og lagre Chrome-data i Google-kontoen din, bekreft at det er deg.</translation>
+<translation id="411154422556990518">Få med deg oppdateringer om prissporing og Chrome-tips.</translation>
 <translation id="417201473131094001">Støttes ikke i Chrome Canary</translation>
 <translation id="424864128008805179">Vil du logge av Chrome?</translation>
 <translation id="4430797724889237570">Åpne linker fra Gmail, Maps, YouTube og andre apper i Chrome</translation>
@@ -133,6 +134,7 @@ Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir di
 <translation id="4636900170638246267">Logg på dette nettstedet og Chrome.</translation>
 <translation id="4647910807533196601">Åpne den nyligste fanen min i Chrome.</translation>
 <translation id="4693084815234024320">Du er i Chrome Inkognito</translation>
+<translation id="4713907610796204963">Lær deg det grunnleggende om Chrome for å komme i gang</translation>
 <translation id="4724297637870447613">Bruk Chrome overalt</translation>
 <translation id="4738647308035481133">Google Chrome-side</translation>
 <translation id="4742795653798179840">Slettede Chrome-data</translation>
@@ -239,7 +241,6 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="7175129790242719365">Chrome-tips: Logg på Chrome</translation>
 <translation id="7187993566681480880">Holder deg trygg i Chrome og kan brukes til å øke sikkerheten din i andre Google-apper når du er pålogget.</translation>
 <translation id="7200524487407690471">Chrome kjører sikkerhetssjekken automatisk hver dag for å beskytte deg mot databrudd, utrygge nettsteder med mer. Du kan finne ut mer om sikkerhetssjekken i innstillingene.</translation>
-<translation id="7203324561587388418">Få med deg innhold og nyttige Chrome-tips.</translation>
 <translation id="72119412072970160">Du kan bruke passordene du har lagret i Google Passordlagring, i andre apper på iPaden din.</translation>
 <translation id="7214019116829172458">Åpne en inkognitofane i Chrome</translation>
 <translation id="722167379782941918">Chrome anbefaler økt beskyttelse</translation>
@@ -252,6 +253,7 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="7299681342915173313">Nå kan du bruke Chrome hver gang du trykker på linker i e-poster, dokumenter og andre apper.</translation>
 <translation id="7344094882820374540">Få den sterkeste beskyttelsen mot farlige nettsteder i Chrome</translation>
 <translation id="7349129508108954623">La Chrome bruke Google Maps for å gi deg veibeskrivelser og lokal informasjon om registrerte adresser.</translation>
+<translation id="7371674917547846460">Få med deg nyttige Chrome-tips med mer.</translation>
 <translation id="7394108421562933108">Maps i Chrome</translation>
 <translation id="7400722733683201933">Om Google Chrome</translation>
 <translation id="7466693328838535498">I feltet Søkemoduler skriver du inn Chrome</translation>
@@ -262,6 +264,7 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="7581063337314642333">Gå til fanerutenettet i Chrome</translation>
 <translation id="7599894504325210080">Utvidet autofyllvisning i Chrome</translation>
 <translation id="7617512710641355143">Chrome administreres</translation>
+<translation id="7626032353295482388">Velkommen til Chrome</translation>
 <translation id="7642373780953416937">Motta varsler om eventuelle personvern- eller sikkerhetsproblemer som Chrome automatisk oppdager for deg.</translation>
 <translation id="7660356333829433649">Kom tilbake hit for å se flere nyttige tips og få mest mulig ut av Chrome.</translation>
 <translation id="7662994914830945754">For å se fanene dine overalt hvor du bruker Chrome, logg på og slå på synkronisering</translation>
@@ -314,7 +317,6 @@ Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den in
 <translation id="8603022514504485810">Google Passordlagring kunne ikke sjekke alle passordene. Prøv på nytt i morgen, eller <ph name="BEGIN_LINK" />sjekk passordene i Google-kontoen din<ph name="END_LINK" />.</translation>
 <translation id="8630122478628016441">Slå på «Lås inkognitofaner når du lukker Chrome».</translation>
 <translation id="8673726683583791503">Kjøp ting med Google Lens</translation>
-<translation id="8727043961453758442">Få mest mulig ut av Chrome</translation>
 <translation id="8765470054473112089">Når du skriver i adressefeltet eller søkefeltet, sender Chrome det du skriver til standardsøkemotoren din, for å gi deg bedre forslag. Dette er av i Inkognito.</translation>
 <translation id="8772179140489533211">Viser vinduer som ber deg logge på Chrome.</translation>
 <translation id="8788269841521769222">Du trenger ikke å huske dette passordet. Det blir lagret i Google Passordlagring for <ph name="EMAIL" /></translation>

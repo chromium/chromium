@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rádiógombcsoport</translation>
 <translation id="1243477406442346359">Búzavirágkék</translation>
 <translation id="1246424317317450637">Félkövér</translation>
+<translation id="1250181918001045969">Próbálkozás a kamerához való csatlakozásra. Az arcalapú vezérlés <ph name="SECONDS" /> másodperc múlva kikapcsol.</translation>
 <translation id="1251750620252348585">Következő 6. szintű fejléc</translation>
 <translation id="1264956950255940376">Hunyorítás bal szemmel</translation>
 <translation id="1268366246392928616">Nincs előző matematikai kifejezés</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Előző felkeresett link</translation>
 <translation id="3241638166094654466">Az egyes sorokban található cellák száma:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">A kamera nem áll rendelkezésre. Győződjön meg arról, hogy be van jelentkezve, és a kamera be van kapcsolva.</translation>
 <translation id="3260949043575829030">Előző hasonló elem</translation>
 <translation id="3270069636408109001">Nincs következő táblázat</translation>
 <translation id="3273791280096244679">Címke mentése</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Oldal automatikus felolvasása a betöltés befejezése után</translation>
 <translation id="5826479389509458994"><ph name="ROW" />. sor, <ph name="COL" />. oszlop</translation>
 <translation id="5833044594931167190">Nincsenek ARIA-területek</translation>
+<translation id="5836800981500311517">Nem lehet hozzáférni a kamerához. Kapcsolja be a kamerát, és győződjön meg arról, hogy nincs eltakarva.</translation>
 <translation id="584044465500042213">Kilépés a görgetési módból</translation>
 <translation id="5842625257683688671">Nincs következő ábra</translation>
 <translation id="5847883414085148048">Ajánlás</translation>

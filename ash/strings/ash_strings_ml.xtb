@@ -1440,6 +1440,7 @@
 <translation id="5672890847723042801">യൂട്ടിലിറ്റികൾ</translation>
 <translation id="5673434351075758678">നിങ്ങളുടെ ക്രമീകരണം സമന്വയിപ്പിച്ചതിന് ശേഷം, "<ph name="FROM_LOCALE" />" എന്നതിൽ നിന്ന്"<ph name="TO_LOCALE" />" എന്നതിലേക്ക്.</translation>
 <translation id="5675363643668471212">ഷെൽഫ് ഇനം</translation>
+<translation id="5677022547882470786">തിരയുന്നതിനായി ഒരു ഏരിയ തിരഞ്ഞെടുക്കാൻ വലിച്ചിടുക അല്ലെങ്കിൽ Space അമർത്തുക</translation>
 <translation id="5677928146339483299">തടഞ്ഞു</translation>
 <translation id="5678564054339031017">അടുത്ത ആഴ്‌ചത്തെ കാണിക്കുക</translation>
 <translation id="5679050765726761783">കുറഞ്ഞ പവറുള്ള അഡാപ്‌റ്റർ കണക്റ്റ് ചെയ്‌തു</translation>
@@ -2433,6 +2434,7 @@
 <translation id="8934418770423095813">Google ഡോക് സൃഷ്ടിക്കുക</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{ഒരു ഫയൽ}other{# ഫയലുകൾ}}</translation>
 <translation id="8936501819958976551">നിർജീവമാക്കി</translation>
+<translation id="8937312474322077653">സ്ക്രീൻ ക്യാപ്ച്ചറിൽ, <ph name="SOURCE" /> <ph name="TYPE" /> എന്നതായി സജ്ജീകരിക്കുക. ക്യാപ്‌ച്ചർ തരം തിരഞ്ഞെടുക്കാൻ Tab അമർത്തുക. പ്രദേശം തിരഞ്ഞെടുക്കാൻ Space അമർത്തുക. ക്യാപ്‌ചർ ചെയ്യാൻ Enter അമർത്തുക.</translation>
 <translation id="8938800817013097409">USB-C ഉപകരണം (പുറകിൽ വലതുവശത്തെ പോർട്ട്)</translation>
 <translation id="8939855324412367560">ഇൻപുട്ട് ഓഡിയോ "<ph name="INPUT_DEVICE_NAME" />" എന്നതും ഔട്ട്പുട്ട് വീഡിയോ "<ph name="OUTPUT_DEVICE_NAME" />" എന്നതുമാണ്. മാറ്റാൻ ക്രമീകരണത്തിൽ പോകുക.</translation>
 <translation id="8940956008527784070">ബാറ്ററി കുറവാണ് (<ph name="PERCENTAGE" />%)</translation>

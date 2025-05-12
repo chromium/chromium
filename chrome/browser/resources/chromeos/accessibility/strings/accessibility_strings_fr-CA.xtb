@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">groupe radio</translation>
 <translation id="1243477406442346359">Bleuet</translation>
 <translation id="1246424317317450637">Gras</translation>
+<translation id="1250181918001045969">Tentative de connexion à la caméra. La commande par le visage sera désactivée dans <ph name="SECONDS" /> secondes.</translation>
 <translation id="1251750620252348585">En-tête de niveau 6 suivant</translation>
 <translation id="1264956950255940376">Plissez l'œil gauche</translation>
 <translation id="1268366246392928616">Aucune expression mathématique précédente</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Lien suivi précédent</translation>
 <translation id="3241638166094654466">Cellules dans chaque ligne :</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" /> : <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Caméra non accessible. Assurez-vous d'être connecté et que la caméra est activée.</translation>
 <translation id="3260949043575829030">Élément similaire précédent</translation>
 <translation id="3270069636408109001">Aucun tableau suivant</translation>
 <translation id="3273791280096244679">Étiquette Enregistrer</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Lire automatiquement la page une fois son chargement terminé</translation>
 <translation id="5826479389509458994">rangée <ph name="ROW" />, colonne <ph name="COL" /></translation>
 <translation id="5833044594931167190">Aucun point de repère ARIA</translation>
+<translation id="5836800981500311517">Impossible d'accéder à la caméra. Activez la caméra et assurez-vous qu'elle n'est pas bloquée.</translation>
 <translation id="584044465500042213">Sortez du mode de défilement</translation>
 <translation id="5842625257683688671">Aucun élément graphique suivant</translation>
 <translation id="5847883414085148048">Dédicace</translation>

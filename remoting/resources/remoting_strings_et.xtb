@@ -93,6 +93,7 @@ Kui ruut teenuse „<ph name="SERVICE_SCRIPT_NAME" />” juures on juba märgitu
 <translation id="4987330545941822761">Chrome Remote Desktop ei suuda tuvastada brauserit, mis on mõeldud URL-ide kohalikult avamiseks. Valige see allolevast loendist.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (võrguühenduseta)</translation>
 <translation id="507204348399810022">Kas soovite kindlasti keelata kaugühendused hostiga <ph name="HOSTNAME" />?</translation>
+<translation id="5095424396646120601">Krahhiaruanded</translation>
 <translation id="5170982930780719864">Sobimatu hosti ID.</translation>
 <translation id="5204575267916639804">KKK-d</translation>
 <translation id="5222676887888702881">Logi välja</translation>

@@ -93,6 +93,7 @@ Ako je stavka „<ph name="SERVICE_SCRIPT_NAME" />“ već označena, uklonite 
 <translation id="4987330545941822761">Chrome udaljeni računar ne može da odredi pregledač za lokalno otvaranje URL-ova. Izaberite ga sa liste u nastavku.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (van mreže)</translation>
 <translation id="507204348399810022">Želite li stvarno da onemogućite daljinsko povezivanje sa hostom <ph name="HOSTNAME" />?</translation>
+<translation id="5095424396646120601">Izveštavanje o otkazivanju</translation>
 <translation id="5170982930780719864">ID hosta je nevažeći.</translation>
 <translation id="5204575267916639804">Česta pitanja</translation>
 <translation id="5222676887888702881">Odjavi me</translation>

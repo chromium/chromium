@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">آبی کدر</translation>
 <translation id="1246424317317450637">سیاه</translation>
+<translation id="1250181918001045969">در تلاش برای متصل شدن به دوربین. «کنترل چهره» <ph name="SECONDS" /> ثانیه دیگر خاموش می‌شود.</translation>
 <translation id="1251750620252348585">عنوان بعدی سطح ۶</translation>
 <translation id="1264956950255940376">تنگ کردن چشم چپ</translation>
 <translation id="1268366246392928616">عبارت ریاضی قبلی وجود ندارد</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">پیوند بازدید شده قبلی</translation>
 <translation id="3241638166094654466">تعداد سلول‌ها در هر خط:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">دوربین دردسترس نیست. مطمئن شوید به سیستم وارد شده‌اید و دوربین روشن است.</translation>
 <translation id="3260949043575829030">مورد مشابه قبلی</translation>
 <translation id="3270069636408109001">جدول بعدی وجود ندارد</translation>
 <translation id="3273791280096244679">ذخیره برچسب</translation>
@@ -763,12 +765,13 @@
 <translation id="5824976764713185207">خواندن صفحه به‌طور خودکار بعد از اتمام بارگیری</translation>
 <translation id="5826479389509458994">ردیف <ph name="ROW" /> ستون <ph name="COL" /></translation>
 <translation id="5833044594931167190">‏علامت مشخصه ARIA وجود ندارد</translation>
+<translation id="5836800981500311517">دسترسی به دوربین امکان‌پذیر نیست. دوربین را روشن کنید و مطمئن شوید چیزی جلوی آن را نگرفته باشد.</translation>
 <translation id="584044465500042213">خارج شدن از حالت پیمایش</translation>
 <translation id="5842625257683688671">گرافیک بعدی وجود ندارد</translation>
 <translation id="5847883414085148048">تقدیم‌نامه</translation>
 <translation id="5850707923114094062">حرکت به عقب</translation>
 <translation id="5851548754964597211">فهرست برگه</translation>
-<translation id="5866042630553435010">علامت‌گذاری نیمه</translation>
+<translation id="5866042630553435010">ناقص علامت زده‌شده</translation>
 <translation id="5866210856231860256">برای مرور کردن درس‌های این عنوان، کلید «جستجو» + «پیکان روبه‌راست» یا «جستجو» + «پیکان روبه‌چپ» را فشار دهید</translation>
 <translation id="5867591286054666064">در طول این آموزش گام‌به‌گام، برای شنیدن نام هر کلید روی آن فشار دهید.</translation>
 <translation id="5869546221129391014">جدولی</translation>
@@ -1187,7 +1190,7 @@
 <translation id="8937112856099038376">intlnk</translation>
 <translation id="8940925288729953902">کلیدهای توصیف‌گر</translation>
 <translation id="8943282376843390568">لیمویی</translation>
-<translation id="8944511129464116546">برخی علامت‌گذاری شده است</translation>
+<translation id="8944511129464116546">ناقص علامت زده‌شده</translation>
 <translation id="8946628535652548639">ر<ph name="TABLECELLROWINDEX" />س<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">دکمه رادیویی قبلی وجود ندارد</translation>
 <translation id="8970172509886453271">بخش قبلی وجود ندارد</translation>

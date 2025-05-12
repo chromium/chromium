@@ -123,6 +123,7 @@ Prueba a esperar unos minutos antes de cerrar sesión. Si cierras sesión ahora,
 <translation id="3984746313391923992">Tu organización requiere que mantengas tu sesión cerrada en Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome no puede acceder a tus fotos y vídeos (para permitirlo, ve a Ajustes de iOS &gt; Privacidad &gt; Fotos).</translation>
 <translation id="4064699917955374540">Para usar y guardar los datos de Chrome en tu cuenta de Google, debes verificar tu identidad.</translation>
+<translation id="411154422556990518">Mantente al día con las novedades de seguimiento de precios y los consejos de Chrome.</translation>
 <translation id="417201473131094001">No compatible con Chrome Canary</translation>
 <translation id="424864128008805179">¿Quieres cerrar sesión en Chrome?</translation>
 <translation id="4430797724889237570">Abre enlaces de Gmail, Maps, YouTube y otras aplicaciones en Chrome</translation>
@@ -133,6 +134,7 @@ Prueba a esperar unos minutos antes de cerrar sesión. Si cierras sesión ahora,
 <translation id="4636900170638246267">Inicia sesión en este sitio y en Chrome.</translation>
 <translation id="4647910807533196601">Abre mi última pestaña en Chrome.</translation>
 <translation id="4693084815234024320">Estás en el modo Incógnito de Chrome</translation>
+<translation id="4713907610796204963">Aprende los conceptos básicos de Chrome para empezar</translation>
 <translation id="4724297637870447613">Usa Chrome estés donde estés</translation>
 <translation id="4738647308035481133">Página de Google Chrome</translation>
 <translation id="4742795653798179840">Datos de Chrome eliminados</translation>
@@ -239,7 +241,6 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="7175129790242719365">Consejo de Chrome: Inicia sesión en Chrome</translation>
 <translation id="7187993566681480880">Te protege en Chrome y puede usarse para mejorar tu seguridad en otras aplicaciones de Google cuando has iniciado sesión.</translation>
 <translation id="7200524487407690471">Chrome realiza automáticamente una comprobación de seguridad todos los días para protegerte frente a brechas de seguridad de datos, sitios web no seguros y más. Puedes consultar más información sobre la comprobación de seguridad en Configuración.</translation>
-<translation id="7203324561587388418">Recibe contenido y consejos útiles sobre Chrome.</translation>
 <translation id="72119412072970160">Puedes usar las contraseñas que has guardado en el Gestor de contraseñas de Google en otras aplicaciones de tu iPad.</translation>
 <translation id="7214019116829172458">Abrir pestaña de Incógnito de Chrome</translation>
 <translation id="722167379782941918">Chrome recomienda la protección mejorada</translation>
@@ -252,6 +253,7 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="7299681342915173313">Ahora puedes usar Chrome cada vez que hagas clic en enlaces de correos, documentos y otras aplicaciones.</translation>
 <translation id="7344094882820374540">Consigue la seguridad más potente de Chrome frente a sitios peligrosos</translation>
 <translation id="7349129508108954623">Permite que Chrome use Google Maps para ofrecerte indicaciones e información local sobre las direcciones detectadas.</translation>
+<translation id="7371674917547846460">Recibe consejos útiles sobre Chrome y más.</translation>
 <translation id="7394108421562933108">Maps en Chrome</translation>
 <translation id="7400722733683201933">Información de Google Chrome</translation>
 <translation id="7466693328838535498">En el cuadro de búsqueda de widgets, escribe Chrome</translation>
@@ -262,6 +264,7 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="7581063337314642333">Acceder a la cuadrícula de pestañas en Chrome</translation>
 <translation id="7599894504325210080">Vista ampliada de la función Autocompletar de Chrome</translation>
 <translation id="7617512710641355143">Chrome está gestionado</translation>
+<translation id="7626032353295482388">Te damos la bienvenida a Chrome</translation>
 <translation id="7642373780953416937">Recibe alertas sobre los problemas de privacidad o seguridad detectados automáticamente por Chrome.</translation>
 <translation id="7660356333829433649">Vuelve a esta página para ver más consejos útiles que te ayudarán a sacar el máximo partido a Chrome.</translation>
 <translation id="7662994914830945754">Inicia sesión y activa la sincronización para ver tus pestañas dondequiera que uses Chrome</translation>
@@ -314,7 +317,6 @@ Tus datos se han cifrado con tu frase de contraseña el <ph name="TIME" />. Intr
 <translation id="8603022514504485810">El Gestor de contraseñas de Google no ha podido comprobar todas las contraseñas. Vuelve a intentarlo mañana o <ph name="BEGIN_LINK" />comprueba las contraseñas en tu cuenta de Google<ph name="END_LINK" />.</translation>
 <translation id="8630122478628016441">Activa Bloquear pestañas de Incógnito al cerrar Chrome.</translation>
 <translation id="8673726683583791503">Compra con Google Lens</translation>
-<translation id="8727043961453758442">Aprovecha Chrome al máximo</translation>
 <translation id="8765470054473112089">Al escribir en la barra de direcciones o en el cuadro de búsqueda, Chrome envía lo que escribes a tu buscador predeterminado para que obtengas mejores sugerencias. Esta función está desactivada en el modo Incógnito.</translation>
 <translation id="8772179140489533211">Muestra solicitudes para iniciar sesión en Chrome.</translation>
 <translation id="8788269841521769222">No tendrás que recordar esta contraseña. Se guardará en el Gestor de contraseñas de Google de <ph name="EMAIL" />.</translation>

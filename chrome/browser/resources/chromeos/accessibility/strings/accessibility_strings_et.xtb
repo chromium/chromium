@@ -54,6 +54,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">Rukkilillesinine</translation>
 <translation id="1246424317317450637">Paks</translation>
+<translation id="1250181918001045969">Üritatakse kaameraga ühendust luua. Näoga juhtimine lülitatakse <ph name="SECONDS" /> sekundi pärast välja.</translation>
 <translation id="1251750620252348585">Järgmine 6. taseme pealkiri</translation>
 <translation id="1264956950255940376">Vasaku silma kissitamine</translation>
 <translation id="1268366246392928616">Eelmist matemaatilist avaldist ei ole</translation>
@@ -372,6 +373,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="3241052487511142956">Eelmine külastatud link</translation>
 <translation id="3241638166094654466">Igal real olevad lahtrid:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Kaamera pole saadaval. Veenduge, et oleksite sisse logitud ja kaamera oleks sisse lülitatud.</translation>
 <translation id="3260949043575829030">Eelmine sarnane üksus</translation>
 <translation id="3270069636408109001">Järgmist tabelit ei ole</translation>
 <translation id="3273791280096244679">Salvesta silt</translation>
@@ -763,6 +765,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="5824976764713185207">Lehte loetakse pärast laadimise lõpetamist automaatselt</translation>
 <translation id="5826479389509458994">rida <ph name="ROW" /> veerg <ph name="COL" /></translation>
 <translation id="5833044594931167190">ARIA maamärke ei ole</translation>
+<translation id="5836800981500311517">Kaamerale ei pääse juurde. Lülitage kaamera sisse ja veenduge, et objektiiv poleks blokeeritud.</translation>
 <translation id="584044465500042213">Kerimisrežiimist väljumine</translation>
 <translation id="5842625257683688671">Järgmist graafikat ei ole</translation>
 <translation id="5847883414085148048">Pühendus</translation>

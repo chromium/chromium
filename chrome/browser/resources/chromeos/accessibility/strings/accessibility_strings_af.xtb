@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">radiogroep</translation>
 <translation id="1243477406442346359">Koringblommetjieblou</translation>
 <translation id="1246424317317450637">Vetdruk</translation>
+<translation id="1250181918001045969">Probeer tans om aan kamera te koppel. Gesigbeheer sal oor <ph name="SECONDS" /> sekondes afskakel.</translation>
 <translation id="1251750620252348585">Volgende vlak 6-opskrif.</translation>
 <translation id="1264956950255940376">Trek linkeroog skrefies</translation>
 <translation id="1268366246392928616">Geen vorige wiskunde-uitdrukking nie</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Skakel wat voorheen besoek is</translation>
 <translation id="3241638166094654466">Selle in elke lyn:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Kamera is nie beskikbaar nie. Maak seker dat jy aangemeld is en dat die kamera aan is.</translation>
 <translation id="3260949043575829030">Vorige soortgelyke item</translation>
 <translation id="3270069636408109001">Geen volgende tabel nie</translation>
 <translation id="3273791280096244679">Stoor etiket</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Lees bladsy outomaties nadat dit klaar gelaai het</translation>
 <translation id="5826479389509458994">ry <ph name="ROW" /> kolom <ph name="COL" /></translation>
 <translation id="5833044594931167190">Geen ARIA-landmerke nie</translation>
+<translation id="5836800981500311517">Kan nie toegang tot kamera verkry nie. Skakel kamera aan en maak seker dis nie geblokkeer nie.</translation>
 <translation id="584044465500042213">Verlaat rolleesmodus</translation>
 <translation id="5842625257683688671">Geen volgende grafika nie</translation>
 <translation id="5847883414085148048">Opdrag</translation>
@@ -786,7 +789,7 @@
 <translation id="5937336320314038555">{COUNT,plural, =1{gelyk aan}other{# gelyk aan-tekens}}</translation>
 <translation id="5947651424015173580">Dubbelklik die muis</translation>
 <translation id="5948123859135882163">Wissel interpretasie van wiskunde-uitdrukkings tussen struktureel en semanties</translation>
-<translation id="5955304353782037793">program</translation>
+<translation id="5955304353782037793">app</translation>
 <translation id="5956928062748260866">Dialoog</translation>
 <translation id="5963413905009737549">Afdeling</translation>
 <translation id="5968607524793740041">Wys kontekskieslys</translation>
@@ -955,7 +958,7 @@
 <translation id="7240858705033280249">Spring na besonderhede</translation>
 <translation id="7241683698754534149">Maak lang beskrywing in 'n volgende oortjie oop</translation>
 <translation id="7244947685630430863">Geen vorige grafiek nie</translation>
-<translation id="7248671827512403053">Program</translation>
+<translation id="7248671827512403053">App</translation>
 <translation id="725969808843520477">Volgende radioknoppie</translation>
 <translation id="7261612856573623172">Stelsel se teks-na-spraak-stem</translation>
 <translation id="7269119382257320590">Geen leestekens nie</translation>

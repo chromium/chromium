@@ -170,6 +170,7 @@
 <translation id="6503257047630241175">Змесціва ў фармаце RTF</translation>
 <translation id="6539092367496845964">Нешта пайшло не так. Паўтарыце спробу пазней.</translation>
 <translation id="654149438358937226">Блакіраваць усе апавяшчэнні</translation>
+<translation id="6612467943526193239">Каб выйсці з каліброўкі, націсніце Esc.</translation>
 <translation id="6620110761915583480">Захаваць файл</translation>
 <translation id="6699343763173986273">Мультымедыйная клавіша "Наступны трэк"</translation>
 <translation id="6807086321996342431">Слупок "<ph name="COLUMN_NAME" />"</translation>
@@ -204,7 +205,6 @@
 <translation id="7969046989155602842">Command</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Больш чым 1 непрачытанае апавяшчэнне}one{Больш чым # непрачытанае апавяшчэнне}few{Больш чым # непрачытаныя апавяшчэнні}many{Больш чым # непрачытаных апавяшчэнняў}other{Больш чым # непрачытанага апавяшчэння}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{праз 1 хв}one{праз # хв}few{праз # хв}many{праз # хв}other{праз # хв}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Нумар з <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 гадзіну таму}one{# гадзіну таму}few{# гадзіны таму}many{# гадзін таму}other{# гадзіны таму}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{Засталася 1 с}one{Засталася # с}few{Засталося # с}many{Засталося # с}other{Засталося # с}}</translation>

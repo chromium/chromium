@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">Chabrowy</translation>
 <translation id="1246424317317450637">Pogrubienie</translation>
+<translation id="1250181918001045969">Próbuję połączyć się z kamerą. Sterowanie za pomocą twarzy wyłączy się za <ph name="SECONDS" /> s.</translation>
 <translation id="1251750620252348585">Następny nagłówek poziomu 6</translation>
 <translation id="1264956950255940376">Zmrużenie lewego oka</translation>
 <translation id="1268366246392928616">Nie ma poprzedniego wyrażenia matematycznego</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Poprzedni kliknięty link</translation>
 <translation id="3241638166094654466">Komórki w każdym wierszu:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Kamera jest niedostępna. Sprawdź, czy jesteś zalogowany(-a) i czy kamera jest włączona.</translation>
 <translation id="3260949043575829030">Poprzedni podobny element</translation>
 <translation id="3270069636408109001">Nie ma następnej tabeli</translation>
 <translation id="3273791280096244679">Zapisz etykietę</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Automatycznie zacznij czytać stronę po jej załadowaniu</translation>
 <translation id="5826479389509458994">wiersz <ph name="ROW" />, kolumna <ph name="COL" /></translation>
 <translation id="5833044594931167190">Brak punktów orientacyjnych ARIA</translation>
+<translation id="5836800981500311517">Brak dostępu do kamery. Włącz kamerę i upewnij się, że nic jej nie blokuje.</translation>
 <translation id="584044465500042213">Wyłącz tryb przewijania</translation>
 <translation id="5842625257683688671">Nie ma następnej grafiki</translation>
 <translation id="5847883414085148048">Dedykacja</translation>

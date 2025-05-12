@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">ਲਾਜਵਰੀ</translation>
 <translation id="1246424317317450637">ਗੂੜ੍ਹਾ</translation>
+<translation id="1250181918001045969">ਕੈਮਰੇ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ। ਫ਼ੇਸ ਕੰਟਰੋਲ <ph name="SECONDS" /> ਸਕਿੰਟਾਂ ਵਿੱਚ ਬੰਦ ਹੋ ਜਾਵੇਗਾ।</translation>
 <translation id="1251750620252348585">ਅਗਲਾ ਪੱਧਰ 6 ਸਿਰਲੇਖ</translation>
 <translation id="1264956950255940376">ਖੱਬੀ ਅੱਖ ਨੂੰ ਥੋੜ੍ਹਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="1268366246392928616">ਕੋਈ ਪਿਛਲਾ ਗਣਿਤ ਸਮੀਕਰਨ ਨਹੀਂ</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">ਪਿਛਲਾ ਵਿਜਿਟ ਕੀਤਾ ਲਿੰਕ</translation>
 <translation id="3241638166094654466">ਹਰੇਕ ਲਾਈਨ ਵਿੱਚ ਸੈੱਲਾਂ ਦੀ ਗਿਣਤੀ:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">ਕੈਮਰਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਸੀਂ ਸਾਈਨ-ਇਨ ਹੋ ਅਤੇ ਕੈਮਰਾ ਚਾਲੂ ਹੈ।</translation>
 <translation id="3260949043575829030">ਪਿਛਲੀ ਮਿਲਦੀ-ਜੁਲਦੀ ਆਈਟਮ</translation>
 <translation id="3270069636408109001">ਕੋਈ ਅਗਲੀ ਸਾਰਨੀ ਨਹੀਂ</translation>
 <translation id="3273791280096244679">ਲੇਬਲ ਰੱਖਿਅਤ ਕਰੋ</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">ਪੰਨੇ ਦੇ ਲੋਡ ਹੋਣ ਤੋਂ ਬਾਅਦ ਇਸਨੂੰ ਸਵੈਚਲਿਤ ਰੂਪ ਵਿੱਚ ਪੜ੍ਹੋ</translation>
 <translation id="5826479389509458994">ਰੋ <ph name="ROW" /> ਕਾੱਲਮ <ph name="COL" /></translation>
 <translation id="5833044594931167190">ਕੋਈ ARIA ਭੂਮੀ ਚਿੰਨ੍ਹ ਨਹੀਂ</translation>
+<translation id="5836800981500311517">ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ। ਕੈਮਰਾ ਚਾਲੂ ਕਰੋ ਅਤੇ ਪੱਕਾ ਕਰੋ ਕਿ ਇਹ ਬਲਾਕ ਨਹੀਂ ਹੈ।</translation>
 <translation id="584044465500042213">ਸਕ੍ਰੋਲ ਮੋਡ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
 <translation id="5842625257683688671">ਕੋਈ ਅਗਲਾ ਗ੍ਰਾਫ਼ਿਕ ਨਹੀਂ</translation>
 <translation id="5847883414085148048">ਸਮਰਪਣ</translation>

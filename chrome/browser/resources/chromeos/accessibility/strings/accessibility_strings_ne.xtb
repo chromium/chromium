@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">कर्न्फ्लावर निलो</translation>
 <translation id="1246424317317450637">बोल्ड</translation>
+<translation id="1250181918001045969">क्यामेरामा कनेक्ट गर्ने प्रयास गरिँदै छ। फेस कन्ट्रोल <ph name="SECONDS" /> सेकेन्डमा अफ हुने छ।</translation>
 <translation id="1251750620252348585">अर्को चरण</translation>
 <translation id="1264956950255940376">बायाँ आँखा आधा चिम्लनुहोस्</translation>
 <translation id="1268366246392928616">अघिल्लो कुनै पनि गणितीय अभिव्यक्ति छैन</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">अघिल्लो भिजिट गरेको लिङ्क</translation>
 <translation id="3241638166094654466">प्रत्येक लाइनमा रहने कक्षहरूको संख्या:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">क्यामेरा उपलब्ध छैन। तपाईंले साइन इन गर्नुभएको छ र क्यामेरा अन छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="3260949043575829030">अघिल्लो उस्तै वस्तु</translation>
 <translation id="3270069636408109001">अर्को कुनै पनि तालिका छैन</translation>
 <translation id="3273791280096244679">लेबल सेभ गर्नुहोस्</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">पृष्ठ लोड भइसकेपछि उक्त पृष्ठ स्वतः पढ्नुहोस्</translation>
 <translation id="5826479389509458994">पङ्क्ति <ph name="ROW" /> स्तम्भ <ph name="COL" /></translation>
 <translation id="5833044594931167190">कुनै पनि ARIA स्थलचिन्ह छैन</translation>
+<translation id="5836800981500311517">क्यामेरा एक्सेस गर्न सकिएन। क्यामेरा अन गर्नुहोस् र क्यामेरा छेकिएको छैन भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="584044465500042213">स्क्रोल मोडबाट बाहिरिनुहोस्</translation>
 <translation id="5842625257683688671">अर्को कुनै पनि ग्राफिक छैन</translation>
 <translation id="5847883414085148048">समर्पण</translation>

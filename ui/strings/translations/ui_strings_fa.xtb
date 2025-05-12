@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{۱ اعلان خوانده‌نشده}one{# اعلان خوانده‌نشده}other{# اعلان خوانده‌نشده}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{افزونه زیر را در «حالت ناشناس» روشن کنید:}one{افزونه زیر را در «حالت ناشناس» روشن کنید:}other{افزونه‌های زیر را در «حالت ناشناس» روشن کنید:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{۱ ماه قبل}one{# ماه قبل}other{# ماه قبل}}</translation>
+<translation id="4277033906326892359">ستون <ph name="COLUMN_NAME" /> به‌ترتیب صعودی مرتب شد</translation>
 <translation id="4289300219472526559">شروع صحبت</translation>
 <translation id="4289540628985791613">نمای کلی</translation>
 <translation id="4491109536499578614">تصویر</translation>
@@ -169,8 +170,10 @@
 <translation id="6503257047630241175">‏محتوای RTF</translation>
 <translation id="6539092367496845964">مشکلی پیش آمد. بعداً دوباره امتحان کنید.</translation>
 <translation id="654149438358937226">مسدود کردن همه اعلان‌ها</translation>
+<translation id="6612467943526193239">‏برای خروج از کالیبراسیون، کلید Esc را فشار دهید.</translation>
 <translation id="6620110761915583480">ذخیره کردن فایل</translation>
 <translation id="6699343763173986273">آهنگ بعدی رسانه</translation>
+<translation id="6807086321996342431">ستون <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">توقف رسانه</translation>
 <translation id="6845383723252244143">انتخاب پوشه</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{۱ ساعت باقی مانده است}one{# ساعت باقی مانده است}other{# ساعت باقی مانده است}}</translation>
@@ -202,11 +205,11 @@
 <translation id="7969046989155602842">فرمان</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{بیش از ۱ اعلان خوانده‌نشده}one{بیش از # اعلان خوانده‌نشده}other{بیش از # اعلان خوانده‌نشده}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{تا ۱ دقیقه دیگر}one{تا # دقیقه دیگر}other{تا # دقیقه دیگر}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">شماره از <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{۱ ساعت قبل}one{# ساعت قبل}other{# ساعت قبل}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{۱ ثانیه باقی مانده است}one{# ثانیه باقی مانده است}other{# ثانیه باقی مانده است}}</translation>
 <translation id="8134065097954893699">درحال بار کردن مجدد این صفحه</translation>
+<translation id="813785873406874127">مرتب‌سازی ستون <ph name="COLUMN_NAME" /> لغو شد</translation>
 <translation id="815598010540052116">پیمایش به پایین</translation>
 <translation id="8179976553408161302">ورود</translation>
 <translation id="8210608804940886430">صفحه پایین</translation>
@@ -218,6 +221,7 @@
 <translation id="8393700583063109961">ارسال پیام</translation>
 <translation id="8394908167088220973">پخش/مکث رسانه</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{۱ سال}one{# سال}other{# سال}}</translation>
+<translation id="8582972250170726813">ستون <ph name="COLUMN_NAME" /> به‌ترتیب نزولی مرتب شد</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />٪</translation>
 <translation id="8602707065186045623">فایل <ph name="SAVEAS_EXTENSION_TYPE" /> (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> کیلوبایت/ثانیه</translation>

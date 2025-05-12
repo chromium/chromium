@@ -170,6 +170,7 @@
 <translation id="6503257047630241175">Contenuti RTF</translation>
 <translation id="6539092367496845964">Si è verificato un problema. Riprova più tardi.</translation>
 <translation id="654149438358937226">Blocca tutte le notifiche</translation>
+<translation id="6612467943526193239">Per uscire dalla calibrazione premi Esc.</translation>
 <translation id="6620110761915583480">Salva file</translation>
 <translation id="6699343763173986273">Traccia successiva contenuti multimediali</translation>
 <translation id="6807086321996342431">Colonna <ph name="COLUMN_NAME" /></translation>
@@ -204,7 +205,6 @@
 <translation id="7969046989155602842">Comando</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Più di 1 notifica da leggere}other{Più di # notifiche da leggere}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{tra 1 m}other{tra # m}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" /> + <ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Numero da <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 ora fa}other{# ore fa}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 sec rimanente}other{# sec rimanenti}}</translation>

@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">Сина како синчец</translation>
 <translation id="1246424317317450637">Болд</translation>
+<translation id="1250181918001045969">Се обидува да се поврзе со камерата. „Контрола со лик“ ќе се исклучи по <ph name="SECONDS" /> секунди.</translation>
 <translation id="1251750620252348585">Следно заглавие на ниво 6</translation>
 <translation id="1264956950255940376">Подзамижете со левото око</translation>
 <translation id="1268366246392928616">Нема претходен математички израз</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Претходно посетена врска</translation>
 <translation id="3241638166094654466">Ќелии во редовите:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Камерата е недостапна. Погрижете се да бидете најавени и камерата да биде вклучена.</translation>
 <translation id="3260949043575829030">Претходна слична ставка</translation>
 <translation id="3270069636408109001">Нема следна табела</translation>
 <translation id="3273791280096244679">Зачувај ја етикетата</translation>
@@ -764,6 +766,7 @@
 <translation id="5824976764713185207">По вчитувањето, автоматски прочитај ја страницата</translation>
 <translation id="5826479389509458994">ред <ph name="ROW" />, колона <ph name="COL" /></translation>
 <translation id="5833044594931167190">Нема обележја на ARIA</translation>
+<translation id="5836800981500311517">Не може да пристапи до камерата. Вклучете ја камерата и погрижете се да не биде блокирана.</translation>
 <translation id="584044465500042213">Излезете од „Режим на лизгање“</translation>
 <translation id="5842625257683688671">Нема следна графика</translation>
 <translation id="5847883414085148048">Посвета</translation>
@@ -826,7 +829,7 @@
 <translation id="6236061028292614533">Следен наслов</translation>
 <translation id="6254901459154107917">Следна област за уредување текст</translation>
 <translation id="6259464875943891919">Излеговте од <ph name="TYPE" />.</translation>
-<translation id="6280088282605782512">Допрете двапати</translation>
+<translation id="6280088282605782512">Двоен допир</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">Основни копчиња: Search</translation>
 <translation id="6305702903308659374">Пуштај со нормална јачина на звук дури и кога зборува ChromeVox</translation>

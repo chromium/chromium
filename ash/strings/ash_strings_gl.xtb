@@ -1441,6 +1441,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="5672890847723042801">Utilidades</translation>
 <translation id="5673434351075758678">De "<ph name="FROM_LOCALE" />" a "<ph name="TO_LOCALE" />" tras sincronizar a configuración.</translation>
 <translation id="5675363643668471212">Elemento do estante</translation>
+<translation id="5677022547882470786">Arrastra ou preme Espazo para seleccionar unha área para buscar</translation>
 <translation id="5677928146339483299">Bloqueada</translation>
 <translation id="5678564054339031017">Mostrar semana seguinte</translation>
 <translation id="5679050765726761783">Conectouse un adaptador de corrente de baixa potencia</translation>
@@ -2433,6 +2434,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8934418770423095813">Crear documento de Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ficheiro}other{# ficheiros}}</translation>
 <translation id="8936501819958976551">desactivou</translation>
+<translation id="8937312474322077653">En Captura de pantalla, establece o <ph name="TYPE" /> de <ph name="SOURCE" />. Preme a pestana para elixir o tipo de captura. Preme Espazo para seleccionar a área. Preme Introducir para facer a captura.</translation>
 <translation id="8938800817013097409">Dispositivo USB‑C (porto dereito posterior)</translation>
 <translation id="8939855324412367560">O dispositivo de entrada de audio é <ph name="INPUT_DEVICE_NAME" /> e o de saída, <ph name="OUTPUT_DEVICE_NAME" />. Vai a Configuración para cambialos.</translation>
 <translation id="8940956008527784070">Batería baixa (<ph name="PERCENTAGE" />%)</translation>

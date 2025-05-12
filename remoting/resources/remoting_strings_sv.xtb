@@ -93,6 +93,7 @@ Om <ph name="SERVICE_SCRIPT_NAME" /> redan har markerats avmarkerar du rutan och
 <translation id="4987330545941822761">Chrome Remote Desktop kan inte avgöra vilken webbläsare som ska användas för att öppna webbadresser lokalt. Välj webbläsare i listan nedan.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
 <translation id="507204348399810022">Är du säker på att du vill inaktivera fjärranslutningar till <ph name="HOSTNAME" />?</translation>
+<translation id="5095424396646120601">Felrapportering</translation>
 <translation id="5170982930780719864">Ogiltigt värd-id.</translation>
 <translation id="5204575267916639804">Vanliga frågor</translation>
 <translation id="5222676887888702881">Logga ut</translation>

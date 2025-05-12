@@ -47,7 +47,6 @@
 <translation id="2042889939382983733">Veja o histórico do Chromium</translation>
 <translation id="2052320862053429062">O Chromium verifica periodicamente se as suas palavras-passe fazem parte das listas publicadas online. Ao fazê-lo, as suas palavras-passe e nomes de utilizador estão encriptados, pelo que não podem ser lidos por ninguém, incluindo a Google.</translation>
 <translation id="2059365270911640413">Conclua a configuração do Chromium</translation>
-<translation id="2147210759439165826">Mantenha-se a par do conteúdo e das sugestões úteis do Chromium.</translation>
 <translation id="2168108852149185974">Alguns suplementos provocam falhas no sistema do Chromium. Desinstale:</translation>
 <translation id="2168593389981132306">Melhore o Chromium</translation>
 <translation id="2178608107313874732">O Chromium não pode utilizar a câmara neste momento</translation>
@@ -157,6 +156,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="4828317641996116749">O Chromium não conseguiu verificar todas as palavras-passe. Tente mais tarde.</translation>
 <translation id="4856138222358683580">Ações do Chromium</translation>
 <translation id="4904452304169763785">Alertas sobre quaisquer problemas de privacidade ou segurança detetados pelo Chromium.</translation>
+<translation id="4908570938463711775">Conheça as noções básicas do Chromium para começar</translation>
 <translation id="4962295957157529683">Termine o que estava a fazer na outra janela do Chromium aberta.</translation>
 <translation id="4985291216379576555">Está offline. O Chromium não consegue verificar se existem atualizações.</translation>
 <translation id="4996471330284142407">Faça mais com um Chromium simples, seguro e mais rápido do que nunca.</translation>
@@ -197,6 +197,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="5688047395118852662">Este cartão mostra sugestões sobre como tirar o máximo partido do Chromium.</translation>
 <translation id="5700709190537129682">O Chromium não consegue verificar as suas palavras-passe.</translation>
 <translation id="584550191241316896">Com sessão iniciada no Chromium</translation>
+<translation id="5862307444128926510">Bem-vindo ao Chromium</translation>
 <translation id="5889847953983052353">Quando a opção está ativada:
 <ph name="BEGIN_INDENT" /> • Ajude a melhorar o Chromium para as pessoas que o usam de forma semelhante à sua.<ph name="END_INDENT" />
 
@@ -223,6 +224,7 @@ Aspetos a considerar:
 <translation id="6301717043141881464">Para ter facilmente as palavras-passe guardadas nas suas outras apps, escolha o Chromium para o preenchimento automático</translation>
 <translation id="6324041800010509197">Aceda à grelha de separadores no Chromium</translation>
 <translation id="6325378625795868881">Use o Chromium sempre que tocar em links em mensagens e noutras apps.</translation>
+<translation id="6387994184698195448">Mantenha-se a par das dicas úteis do Chromium e muito mais.</translation>
 <translation id="6424492062988593837">O Chromium ficou ainda melhor! Está disponível uma nova versão.</translation>
 <translation id="6433172051771630690">Sugestões para tirar o máximo partido do Chromium.</translation>
 <translation id="65045991564554105">Veja os marcadores do Chromium</translation>
@@ -284,7 +286,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="7980860476903281594">O Chromium partilha a sua localização com os sites que permite.</translation>
 <translation id="7994322153108931467">Para receber sugestões úteis do Chromium, ative as notificações nas definições do iOS.</translation>
 <translation id="7997159823054171568">Defina o Chromium como o navegador predefinido</translation>
-<translation id="800195749539500647">Tire o máximo partido do Chromium</translation>
 <translation id="800380310260616129">Transfira o Chromium aqui.</translation>
 <translation id="8013573822802650211">Para ver os seus separadores onde quer que esteja a utilizar o Chromium, inicie sessão em todos os seus dispositivos.</translation>
 <translation id="8014091604604659473">Sessão terminada no Chromium</translation>
@@ -317,6 +318,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="8860548555286245440">Abrir URLs no Chromium na Navegação anónima</translation>
 <translation id="8880024619507699923">A sua organização requer que inicie sessão para usar o Chromium. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Tenha a segurança mais avançada do Chromium</translation>
+<translation id="8925569192291721236">Mantenha-se a par das atualizações de acompanhamento de preço e das dicas do Chromium.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Isto acontece quando o Chromium não é usado durante {THRESHOLD} minuto}other{Isto acontece quando o Chromium não é usado durante {THRESHOLD} minutos}}</translation>
 <translation id="8963279154877372067">Permita que as notificações do Chromium recebam alertas de descida do preço</translation>
 <translation id="8975812008711371178">Pesquise com a voz no Chromium</translation>

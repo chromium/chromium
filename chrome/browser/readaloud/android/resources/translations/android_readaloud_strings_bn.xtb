@@ -4,15 +4,22 @@
 <translation id="1173075331199604451">'ভয়েস' মেনু</translation>
 <translation id="1178581264944972037">বিরতি</translation>
 <translation id="1246424317317450637">বোল্ড</translation>
+<translation id="1370273601702151510">পছন্দ</translation>
 <translation id="1483137792530497944">নদী</translation>
 <translation id="1586836055630070874">সুদিং</translation>
+<translation id="1666704368140506043">আপত্তিকর কন্টেন্ট</translation>
 <translation id="1741047078107369903">উষ্ণ</translation>
 <translation id="1807863182207623884">Ruby</translation>
 <translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> সেকেন্ড ফাস্ট ফরওয়ার্ড করুন</translation>
 <translation id="1984328900355667246">প্লেব্যাক উপলভ্য নেই</translation>
+<translation id="2019727681730021602">স্ট্যান্ডার্ড প্লেব্যাক</translation>
 <translation id="2224347680315897176">স্থির</translation>
+<translation id="2575502321843437554">যথেষ্ট এনগেজমেন্ট নেই</translation>
 <translation id="2611765907167846862">শান্ত</translation>
 <translation id="3023502830214299618">এই সময়ে, এই পৃষ্ঠার জন্য প্লেব্যাক উপলভ্য নেই। পরে আবার চেষ্টা করে দেখুন।</translation>
+<translation id="3457812538570616687">পছন্দ হয়নি</translation>
+<translation id="3493899379487634969">কী সমস্যা হয়েছে?</translation>
+<translation id="3778044272390020426">খারাপ মতামত দেওয়ার বিকল্পের মেনু</translation>
 <translation id="3807208219231826020">প্লেব্যাক স্ক্রাব করুন</translation>
 <translation id="385051799172605136">ফিরুন</translation>
 <translation id="3936324432406465283">প্লেব্যাক স্পিড</translation>
@@ -31,26 +38,31 @@
 <translation id="5526614127710223793">প্লেব্যাক মোড বাছাইকারী</translation>
 <translation id="5596627076506792578">আরও বিকল্পগুলি</translation>
 <translation id="5694491020339060116">'প্লেব্যাক স্পিড' মেনু</translation>
+<translation id="5965409657393819302">প্রযুক্তিগত সমস্যা</translation>
+<translation id="6218961554829577610">ভয়েস পছন্দ হয়নি</translation>
 <translation id="6315170314923504164">ভয়েস</translation>
+<translation id="6330455646577575965">AI অডিও প্লেব্যাক</translation>
 <translation id="6343633247422081848">শ্যাওলা</translation>
 <translation id="6550675742724504774">বিকল্পসমূহ</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
+<translation id="677790449852070664">ধন্যবাদ! আপনার মতামত সাহায্য করে।</translation>
 <translation id="6790428901817661496">চালু করুন</translation>
 <translation id="6831043979455480757">অনুবাদ</translation>
 <translation id="6846298663435243399">লোড হচ্ছে...</translation>
 <translation id="6889157801232138307">“এই পৃষ্ঠার কন্টেন্ট শুনুন” প্লেয়ার</translation>
 <translation id="7051308646573997571">প্রবাল রঙ</translation>
 <translation id="7112750136794557642">আরও বিকল্পের জন্য প্লেয়ার বড় করতে ট্যাপ করুন।</translation>
+<translation id="7138678301420049075">অন্যান্য</translation>
 <translation id="7221920857098237570">মৃদু</translation>
 <translation id="7237590978482584900">মৃদুমন্দ</translation>
 <translation id="7282547042039404307">মসৃণ</translation>
-<translation id="7587250070160020374">Chrome এখন চলছে</translation>
 <translation id="8004767876552422827">ফিল্ড</translation>
 <translation id="8136852699834914183">এই পৃষ্ঠায় প্লেব্যাকের সুবিধা উপলভ্য নেই।</translation>
 <translation id="8198036737896977997">বায়ু</translation>
 <translation id="8264989794233974275">গতি <ph name="PLAYBACK_SPEED" />গুণ বাড়ান/কমান।</translation>
 <translation id="8407011429883244666">প্লেয়ার বন্ধ করুন।</translation>
 <translation id="8481839122437406573">শান্তভাবে</translation>
+<translation id="8756370108715456837">তথ্যগতভাবে ঠিক নয়</translation>
 <translation id="8953618380150219653">“এই পৃষ্ঠা শুনুন” প্লেয়ার সম্পূর্ণ স্ক্রিন জুড়ে খোলা হয়েছে।</translation>
 <translation id="978117257931832348">লো-পিচ</translation>
 </translationbundle>

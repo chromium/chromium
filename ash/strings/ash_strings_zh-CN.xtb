@@ -836,7 +836,7 @@
 <translation id="3742055079367172538">已完成屏幕截图</translation>
 <translation id="3743775386021959186">已开启专注模式，还剩 <ph name="REMAINING_TIME" /></translation>
 <translation id="3750403286520637847">隐藏天气信息建议</translation>
-<translation id="3756485814916578707">正在投放屏幕</translation>
+<translation id="3756485814916578707">正在投屏</translation>
 <translation id="3765841382945324995">“<ph name="SIX_PACK_KEY_NAME" />”对应的快捷键原为 <ph name="OLD_SHORTCUT" />，现已更新为 <ph name="NEW_SHORTCUT" /></translation>
 <translation id="3765841986579723851">今天修改过</translation>
 <translation id="3772109172035555611">自定义 TrackPoint</translation>
@@ -1438,6 +1438,7 @@
 <translation id="5672890847723042801">实用程序</translation>
 <translation id="5673434351075758678">当系统同步完您的设置后，“<ph name="FROM_LOCALE" />”即会改为“<ph name="TO_LOCALE" />”。</translation>
 <translation id="5675363643668471212">任务栏中的项目</translation>
+<translation id="5677022547882470786">拖动或按空格键可选择要搜索的区域</translation>
 <translation id="5677928146339483299">已阻止</translation>
 <translation id="5678564054339031017">显示下一周的活动</translation>
 <translation id="5679050765726761783">已连接低功耗适配器</translation>
@@ -1774,7 +1775,7 @@
 <translation id="6732087373923685049">摄像头</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">摄像头和麦克风正在使用中</translation>
-<translation id="6739144137573853180">转到“设置”</translation>
+<translation id="6739144137573853180">前往“设置”</translation>
 <translation id="6747985245839783873">剩余的电池电量为 <ph name="PERCENTAGE" />%。省电模式已开启。</translation>
 <translation id="6751052314767925245">由您的管理员强制执行</translation>
 <translation id="6751826523481687655">已启用性能跟踪</translation>
@@ -2430,6 +2431,7 @@
 <translation id="8934418770423095813">创建 Google 文档</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 个文件}other{# 个文件}}</translation>
 <translation id="8936501819958976551">已停用</translation>
+<translation id="8937312474322077653">在屏幕截取中，将其设置为<ph name="SOURCE" /><ph name="TYPE" />。按 Tab 键可选择截取类型。按空格键可选择区域。按 Enter 键可截取。</translation>
 <translation id="8938800817013097409">USB-C 设备（背面右侧端口）</translation>
 <translation id="8939855324412367560">音频输入设备为“<ph name="INPUT_DEVICE_NAME" />”，音频输出设备为“<ph name="OUTPUT_DEVICE_NAME" />”。如需更改，请前往“设置”。</translation>
 <translation id="8940956008527784070">电池电量不足 (<ph name="PERCENTAGE" />%)</translation>

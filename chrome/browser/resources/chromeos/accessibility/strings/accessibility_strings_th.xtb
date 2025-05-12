@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">สีฟ้าดอกคอร์นฟลาวเวอร์</translation>
 <translation id="1246424317317450637">ตัวหนา</translation>
+<translation id="1250181918001045969">กำลังพยายามเชื่อมต่อกับกล้อง การควบคุมด้วยใบหน้าจะปิดใน <ph name="SECONDS" /> วินาที</translation>
 <translation id="1251750620252348585">ส่วนหัวระดับ 6 ถัดไป</translation>
 <translation id="1264956950255940376">หรี่ตาซ้าย</translation>
 <translation id="1268366246392928616">ไม่มีนิพจน์คณิตศาสตร์ก่อนหน้า</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">ลิงก์ที่เคยเข้าชมก่อนหน้า</translation>
 <translation id="3241638166094654466">จำนวนเซลล์ในแต่ละบรรทัด:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">กล้องไม่พร้อมใช้งาน ตรวจสอบว่าคุณได้ลงชื่อเข้าใช้และเปิดกล้องแล้ว</translation>
 <translation id="3260949043575829030">รายการที่คล้ายกันก่อนหน้า</translation>
 <translation id="3270069636408109001">ไม่มีตารางถัดไป</translation>
 <translation id="3273791280096244679">บันทึกป้ายกำกับ</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">อ่านหน้าโดยอัตโนมัติหลังจากที่โหลดเสร็จ</translation>
 <translation id="5826479389509458994">แถว <ph name="ROW" /> คอลัมน์ <ph name="COL" /></translation>
 <translation id="5833044594931167190">ไม่มีจุดสังเกต ARIA</translation>
+<translation id="5836800981500311517">เข้าถึงกล้องไม่ได้ เปิดกล้องและตรวจสอบว่ากล้องไม่โดนบัง</translation>
 <translation id="584044465500042213">ออกจากโหมดเลื่อน</translation>
 <translation id="5842625257683688671">ไม่มีกราฟิกถัดไป</translation>
 <translation id="5847883414085148048">คำอุทิศ</translation>

@@ -47,7 +47,6 @@
 <translation id="2042889939382983733">Посмотреть историю Chromium</translation>
 <translation id="2052320862053429062">Время от времени Chromium проверяет, есть ли ваши пароли в списках, опубликованных в интернете. При этом имена пользователей и сами пароли зашифрованы и никому не видны, даже сотрудникам Google.</translation>
 <translation id="2059365270911640413">Закончите настройку Chromium</translation>
-<translation id="2147210759439165826">Так вы не пропустите новый контент и будете получать полезные советы Chromium.</translation>
 <translation id="2168108852149185974">Некоторые дополнения вызывают сбой Chromium. Необходимо удалить:</translation>
 <translation id="2168593389981132306">Сделайте браузер Chromium лучше</translation>
 <translation id="2178608107313874732">Chromium не может получить доступ к камере.</translation>
@@ -157,6 +156,7 @@
 <translation id="4828317641996116749">Браузеру Chromium не удается проверить все пароли. Повторите попытку позже.</translation>
 <translation id="4856138222358683580">Действия Chromium</translation>
 <translation id="4904452304169763785">Оповещения от Chromium о проблемах, связанных с конфиденциальностью и безопасностью.</translation>
+<translation id="4908570938463711775">Чтобы начать работу с Chromium, изучите полезную базовую информацию.</translation>
 <translation id="4962295957157529683">Завершите то, что вы делали в другом открытом окне Chromium.</translation>
 <translation id="4985291216379576555">Вы не в Сети, Chromium не может проверить наличие обновлений</translation>
 <translation id="4996471330284142407">Успевайте больше вместе с удобным, безопасным и быстрым браузером Chromium.</translation>
@@ -197,6 +197,7 @@
 <translation id="5688047395118852662">Карточка с предложениями о том, как наиболее эффективно использовать Chromium.</translation>
 <translation id="5700709190537129682">Не удается проверить пароли в Chromium.</translation>
 <translation id="584550191241316896">Вы вошли в Chromium</translation>
+<translation id="5862307444128926510">Добро пожаловать в Chromium</translation>
 <translation id="5889847953983052353">Если параметр включен:
 <ph name="BEGIN_INDENT" />  • Вы помогаете нам делать Chromium удобнее для всех пользователей браузера.<ph name="END_INDENT" />
 
@@ -223,6 +224,7 @@
 <translation id="6301717043141881464">Чтобы быстро вводить сохраненные пароли в других приложениях, выберите автозаполнение Chromium.</translation>
 <translation id="6324041800010509197">Страница вкладок в Chromium</translation>
 <translation id="6325378625795868881">Открывайте ссылки в сообщениях и других приложениях с помощью Chromium.</translation>
+<translation id="6387994184698195448">Так вы не пропустите полезные советы Chromium и многое другое.</translation>
 <translation id="6424492062988593837">Chromium становится лучше! Доступна новая версия.</translation>
 <translation id="6433172051771630690">Советы по эффективной работе с Chromium.</translation>
 <translation id="65045991564554105">Посмотреть закладки Chromium</translation>
@@ -284,7 +286,6 @@
 <translation id="7980860476903281594">Chromium сообщает геоданные только тем сайтам, которые вы разрешили.</translation>
 <translation id="7994322153108931467">Чтобы получать советы по Chromium, включите уведомления в настройках iOS.</translation>
 <translation id="7997159823054171568">Сделать Chromium браузером по умолчанию</translation>
-<translation id="800195749539500647">Максимально эффективная работа с Chromium</translation>
 <translation id="800380310260616129">Chromium можно скачать здесь.</translation>
 <translation id="8013573822802650211">Чтобы ваши вкладки всегда были доступны вам при работе с Chromium, выполните вход на всех своих устройствах.</translation>
 <translation id="8014091604604659473">Вы вышли из Chromium</translation>
@@ -317,6 +318,7 @@
 <translation id="8860548555286245440">Открыть URL в Chromium в режиме инкогнито</translation>
 <translation id="8880024619507699923">По правилам организации, чтобы использовать Chromium, нужно выполнить вход. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Настройте максимальную защиту в Chromium</translation>
+<translation id="8925569192291721236">Так вы сможете отслеживать цены и не пропустите советы Chromium.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Это происходит, если Chromium не используется в течение {THRESHOLD} минуты.}one{Это происходит, если Chromium не используется в течение {THRESHOLD} минуты.}few{Это происходит, если Chromium не используется в течение {THRESHOLD} минут.}many{Это происходит, если Chromium не используется в течение {THRESHOLD} минут.}other{Это происходит, если Chromium не используется в течение {THRESHOLD} минуты.}}</translation>
 <translation id="8963279154877372067">Разрешите уведомления Chromium, чтобы получать оповещения о скидках</translation>
 <translation id="8975812008711371178">Голосовой поиск в Chromium</translation>

@@ -20,6 +20,7 @@
 <translation id="1059913517121127803">Tarama işlemi başlatılamadı</translation>
 <translation id="1061864016440983342">Konum olmadan kullan</translation>
 <translation id="1062823486781306604"><ph name="INDEX" />/<ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="106558928761833284">mavi, pembe ve mor tonlarda, hızlı bir fütüristik uzay gemisinin bulunduğu güzel bir kozmik bulutsu galaksi</translation>
 <translation id="1069150558259542054">Hızlı Yapıştır özelliği, özel kısayollarda kullanılamaz.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Güvenlik duvarı algılandı</translation>
@@ -27,6 +28,7 @@
 <translation id="1082009148392559545">Ekran koruyucu indiriliyor</translation>
 <translation id="1094693127011229778">IP adresi kullanılamıyor</translation>
 <translation id="1100902271996134409">Resimler üretiliyor...</translation>
+<translation id="1102946598597843031">üzerine kiraz çiçeği yaprakları dökülmüş gölün üzerindeki ay fotoğrafı, 4K</translation>
 <translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> sesi</translation>
 <translation id="1116694919640316211">Hakkında</translation>
 <translation id="1118572504348554005">Bize bildirdiğiniz hataları ve diğer sorunları gidermek için bu form üzerinden gönderilen geri bildirimleri iş ortaklarımızla paylaşabiliriz. Şifreler gibi hassas bilgileri eklemeyin.</translation>
@@ -67,6 +69,7 @@
 <translation id="1238163879850290856">Başka kişilerin verilerinize erişmesini önlemek için sıfırlayın. Yalnızca güvendiğiniz giriş yöntemlerini kullanın.</translation>
 <translation id="1238612778414822719">HTTPS Gecikmesi</translation>
 <translation id="1252766349417594414">Kontrol çubuğu</translation>
+<translation id="1261045951892393759">arka plandaki şimşek işaretinin önünde tek boynuzlu ata binmiş, flying v çalan bir kedi</translation>
 <translation id="1270369111467284986">Giriş portalı şüpheli</translation>
 <translation id="1274654146705270731">portakallar</translation>
 <translation id="1275718070701477396">Seçildi</translation>
@@ -273,6 +276,7 @@
 <translation id="2045814230297767491">çatal bıçak takımı</translation>
 <translation id="2047316797244836561">Ekran koruyucuyu görmek için lütfen bir ağa bağlanıp sayfayı yeniden yükleyin.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
+<translation id="2068472557797646626">Krom mimari öğelerin yer aldığı arka planda krom kürelerin ve küre şekillerinin üç boyutlu oluşturması. Kompozisyon; reklamcılık, marka bilinci oluşturma veya sunum için metin alanı içeren modern ve minimalist bir konsept. Minimalist tarzdaki soyut arka planın önünde büyük bir kemer var. Stüdyo ışıklandırması. Yakın çekim.</translation>
 <translation id="2073232437457681324">engin okyanus</translation>
 <translation id="2080070583977670716">Daha fazla ayar</translation>
 <translation id="2082932131694554252">Atanan klavye tuşu</translation>
@@ -390,7 +394,6 @@
 <translation id="2584559707064218956">Kurulum yapmak için Ayarlar'a gidin</translation>
 <translation id="2586146417912237930">mavi ve çivit mavisi</translation>
 <translation id="2589921777872778654">Düzenle ve sil menüsü</translation>
-<translation id="2590424100019931043">Bu sınıftan çıkarıldınız</translation>
 <translation id="2597774443162333062">Dosyalar hata ayıklama amacıyla Google'a gönderilecektir</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Tarama işlemi tamamlandı. 1 sayfa tarandı}other{Tarama işlemi tamamlandı. {NUMBER_OF_PAGES} sayfa tarandı}}</translation>
 <translation id="261322795497077164">Konuşmacı tanımlama</translation>
@@ -430,6 +433,7 @@
 <translation id="2805756323405976993">Uygulamalar</translation>
 <translation id="28232023175184696">İnternete bağlanamıyor. Tekrar denemek için tıklayın.</translation>
 <translation id="2855718259207180827">yün</translation>
+<translation id="2856429654176718363">Çok sayıda ışıkla aydınlatılmış devasa bir uzay gemisi, şehrin üzerinde süzülüyor. Tüm sahne yağlı boya stilinde ve koyu tonlarda. Fütüristik bilim kurgu öğeleriyle gizemli bir atmosfer yaratılmış. Bu sanat eseri, yüksek çözünürlüğe ve ayrıntılara dikkat çekmek için C4D yazılımı ve OC oluşturucu kullanılarak oluşturulmuş. Yakın mesafedeki bazı kentsel yapılar da alan derinliği efekti katmış. Yağlı boya tablo tarzında oluşturulan sahne, karanlık tonlar ve fütüristik bilim kurgu öğeleriyle gizemli bir atmosfer sunuyor.</translation>
 <translation id="2859243502336719778">Kritik güncelleme</translation>
 <translation id="2860473693272905224">Tarayıcıya başka bir sayfa yerleştirin</translation>
 <translation id="286265581261662583">Tanımlar, çeviriler veya birim dönüştürme işlemlerini görmek için sağ tıklayın ya da basılı tutun</translation>
@@ -446,9 +450,11 @@
 <translation id="2895772081848316509">koyu</translation>
 <translation id="2915996080311180594">Daha Sonra Yeniden Başlat</translation>
 <translation id="2926057806159140518">Kullanıcı adınızı ve şifrenizi girin ya da QR kodunuzu tarayın</translation>
+<translation id="2927007463545347013">üzerine kiraz çiçeği yaprakları dökülmüş, okyanusa bakan anime yolu</translation>
 <translation id="2940811910881150316">Cihaz test edilemiyor. Test etmek için kapağı tekrar açın.</translation>
 <translation id="2941112035454246133">Düşük</translation>
 <translation id="2956070106555335453">Özet</translation>
+<translation id="2968959705684615497">altın rengi gözleri ve şeritleri olan sürrealist bir beyaz kaplan, beyaz kum tepesinde oturuyor</translation>
 <translation id="299385721391037602">pembe ve sarı</translation>
 <translation id="3008341117444806826">YENİLE</translation>
 <translation id="3009958530611748826">Kaydedilecek bir klasör seçin</translation>
@@ -518,6 +524,7 @@
 <translation id="3321030238473337787">Oynatma hızı</translation>
 <translation id="3327613592010997943">Bu cihazı <ph name="DAY" /> saat <ph name="TIME" /> itibarıyla tekrar kullanabileceksiniz.</translation>
 <translation id="3328783797891415197">Test çalışıyor</translation>
+<translation id="3332683265015995419">kum fırtınasında uçan bir steampunk uzay gemisi</translation>
 <translation id="3340011300870565703">Cihazın sağ kulaklık pili %<ph name="BATTERY_PERCENTAGE" /> düzeyinde.</translation>
 <translation id="3340978935015468852">ayarlar</translation>
 <translation id="3347558044552027859">modern</translation>
@@ -529,6 +536,7 @@
 <translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">Toprak akışı duvar kağıdı</translation>
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> harfini içeren <ph name="LETTERS_COLOR" /> arka plan</translation>
+<translation id="3382806462014639823"><ph name="TEACHER_NAME" /> ekranınızı izliyor</translation>
 <translation id="3383623117265110236">Özel</translation>
 <translation id="3404249063913988450">Ekran koruyucuyu etkinleştir</translation>
 <translation id="3413935475507503304">Güncelleme işlemine devam etmek için İleri'yi tıklayın.</translation>
@@ -561,6 +569,7 @@
 <translation id="3532980081107202182">Yaklaşık <ph name="MIN_REMAINING" /> dakika kaldı</translation>
 <translation id="3533790840489634638">havuz</translation>
 <translation id="3547264467365135390">Formül</translation>
+<translation id="3552832331940389362">öğleden sonra pencere kenarında oturup yağmuru izleyen bir kedinin Japon animasyon çizimi</translation>
 <translation id="3557205324756024651">Yerel kimlik (isteğe bağlı)</translation>
 <translation id="3565064564551103223">İzin verilen IP'ler</translation>
 <translation id="3569407787324516067">Ekran koruyucu</translation>
@@ -581,7 +590,7 @@
 <translation id="361575905210396100">Geri bildiriminiz için teşekkürler</translation>
 <translation id="3621072146987826699">filler</translation>
 <translation id="3628462041319107639">Metne dönüştürme modeli indiriliyor…</translation>
-<translation id="3632040286124154621">İyi öneri</translation>
+<translation id="3632040286124154621">İyi bir öneri</translation>
 <translation id="3632579075709132555">Gizlilik ekranını aç/kapat</translation>
 <translation id="3634941468757842845">Tema seçin</translation>
 <translation id="3644695927181369554">Hatalı öneri</translation>
@@ -636,12 +645,14 @@
 <translation id="38811596981744338">Yasal sorun</translation>
 <translation id="3885327323343477505">Ekran koruyucuyu değiştir</translation>
 <translation id="3889914174935857450">Tarihi sıfırlayın</translation>
+<translation id="3889954687526985291">neon ışıklı koyu arka plan önünde siyah kağıttan yapılmış fütüristik bir motosiklet</translation>
 <translation id="3897092660631435901">Menü</translation>
 <translation id="3902271751020176019">Transkript dili</translation>
 <translation id="390890062090528082">yıldızlarla dolu gökyüzü</translation>
 <translation id="391412459402535266">Cihaz test edilemiyor. Test etmek için dizüstü bilgisayar moduna geçin.</translation>
 <translation id="3916998944874125962">ekran görüntüsü al</translation>
 <translation id="3923184630988645767">Veri kullanımı</translation>
+<translation id="392943705803418306">Sınıf araçları oturumunuz sona erdi</translation>
 <translation id="3932043219784172185">Bağlı cihaz yok</translation>
 <translation id="3934185438132762746">Atanmayan <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Ana makine çözümlenemedi</translation>
@@ -808,6 +819,7 @@
 <translation id="4593212453765072419">Proxy kimlik doğrulaması gerekli</translation>
 <translation id="4594021849294327751">Transkript oluştur</translation>
 <translation id="4594541568452132351">Metne dönüştürme dilini seçin ve modeli indirin</translation>
+<translation id="4600301862817165514">galakside ilerleyen neon ışıklı Delorean ve yanından hızla geçen yıldızlar</translation>
 <translation id="4609350030397390689">Klavye parlaklığını azalt</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> Yazdırma işini iptal etmek için enter tuşuna basın.</translation>
 <translation id="463791356324567266">Tarama iptal ediliyor...</translation>
@@ -830,6 +842,7 @@
 <translation id="4697260493945012995">Kontrol türünüzü seçin</translation>
 <translation id="4712940987669302829">bokeh efekti</translation>
 <translation id="4731797938093519117">Ebeveyn erişimi</translation>
+<translation id="4733200407105375152">Sınıf Araçlarında Yok</translation>
 <translation id="4734982181169850310">pastel renkler</translation>
 <translation id="473775607612524610">Güncelle</translation>
 <translation id="4744944742468440486">Seçiminizle ilgili bilgi</translation>
@@ -1006,6 +1019,7 @@
 <translation id="5499762266711462226">Klavye rengi, duvar kağıdına göre belirlenir</translation>
 <translation id="5502931783115429516">Android çalışmıyor</translation>
 <translation id="550600468576850160">çayır</translation>
+<translation id="5507504956167780539">dramatik gölgelerle siyah ışıltılı kum tepelerinin minimalist profesyonel fotoğrafı</translation>
 <translation id="551689408806449779">Cihazın bağlantısı kesildi. Test etmek için yeniden bağlanmayı deneyin</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="552644173505433109">Özet ve başlık oluşturma hakkında daha fazla bilgi</translation>
@@ -1077,6 +1091,7 @@
 <translation id="5876385649737594562">Seçenekleri belirlemek için etkinleştirin</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> dosyasını duraklat</translation>
 <translation id="588258955323874662">Tam ekran</translation>
+<translation id="5889539348012432386">Sınıf Araçları Ana Sayfası</translation>
 <translation id="5893975327266416093">Atamak istediğiniz klavye tuşuna dokunun</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>
 <translation id="5896602941605730551">Çal</translation>
@@ -1125,6 +1140,7 @@
 <translation id="6075872808778243331">(Android) HTTP Gecikmesi</translation>
 <translation id="6078323886959318429">Kısayol ekle</translation>
 <translation id="6079693086494835199">Varsayılan ana sayfanın kimlik avı sitesi olmadığından emin olmak için sıfırlayın. Yalnızca güvendiğiniz web sitelerini kullanın.</translation>
+<translation id="6090672065638047175">arka planda güzel bir gece gökyüzü ve galaksinin bulunduğu, yıldızlardan yapılmış ışıldayan bir ağacın fotoğrafı</translation>
 <translation id="6091080061796993741">sarı</translation>
 <translation id="6104112872696127344">Tarama iptal edildi</translation>
 <translation id="6106186594183574873">Bitirmek için eski şifrenizi girin</translation>
@@ -1310,6 +1326,7 @@
 <translation id="6900701049656042631">Bu albümde fotoğraf yok. Fotoğraf eklemek için <ph name="LINK" /> adresine gidin</translation>
 <translation id="6902359863093437070">Yapay zeka ile arka plan üretin</translation>
 <translation id="6905163627763043954">Dene</translation>
+<translation id="6905275015682612674">gün batımında biyolüminesan sahilin uzun pozlama fotoğrafı, gökyüzünde yıldızlar, güzel pastel renkler, 4K</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> uygulamasına geri dön</translation>
 <translation id="6910312834584889076">Tarayıcının kapağı açık. Kapağı kapatıp tekrar deneyin.</translation>
 <translation id="6910845598686542904">Kayıtta algılanan seslerin modellerini hesaplama</translation>
@@ -1319,6 +1336,7 @@
 <translation id="6930597342185648547">Arka plan hakkında</translation>
 <translation id="6931666215260956151">galaksi</translation>
 <translation id="6939766318048400022">Kafe</translation>
+<translation id="6940212863873359282">krem rengi arka planın önündeki beyaz mermer kemerin üzerinde süzülen beyaz bir organze kumaş parçası</translation>
 <translation id="6942253772720771875">Geri bildiriminizi paylaşın veya sorununuzu açıklayın</translation>
 <translation id="6943893908656559156">Uzak kimlik (isteğe bağlı)</translation>
 <translation id="694981048020558038">Kayıt başlığı arayın</translation>
@@ -1405,6 +1423,7 @@
 <translation id="7271040990581020067">Tarayıcı şu anda kullanımda. Daha sonra tekrar deneyin.</translation>
 <translation id="7271932918253517778">Üst sıra tuşlarını kullanan kısayolun <ph name="META_KEY" /> tuşunu içermesi gerekir.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7275707758336796649">pembe arka plan önünde tüm vücuduyla hareket eden dalmaçyalı köpek, yüksek çözünürlüklü fotoğrafçılıkla çekilmiş, renk derecelendirmeli hiper gerçekçi stok arka planı</translation>
 <translation id="7281657306185710294">Esintiyi hissedin</translation>
 <translation id="7287310195820267359">Duvar Kağıdı Koleksiyonları</translation>
 <translation id="7293429513719260019">Dil seç</translation>
@@ -1414,6 +1433,7 @@
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Chromebook Yardım Forumu'nda uzmanlara soru sorun</translation>
+<translation id="7309823890857024809">siyah arka planın önündeki cam vazoda bulunan birkaç gelincik çiçeği sapının resmedildiği minimalist natürmort</translation>
 <translation id="7311368985037279727">klavye rengi</translation>
 <translation id="7317831949569936035">Okula kayıt</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -1431,6 +1451,7 @@
 <translation id="7353413232959255829"><ph name="LIST_POSITION" />/<ph name="LIST_SIZE" /> arama sonucu: <ph name="SEARCH_RESULT_TEXT" />. Kısayola gitmek için Enter tuşuna basın.</translation>
 <translation id="7359657277149375382">Dosya türü</translation>
 <translation id="73631062356239394">Teşhis verilerini paylaşın</translation>
+<translation id="7369648056634183167">Yağmurda çiy kaplı bir nilüferin yakından görünümü. Hassas yapraklara ve ışığı yansıtan su damlacıklarına odaklanılan bu fotoğrafta, mavi arka planın önünde yumuşak pastel renkler görülüyor. Göz hizasından doğal ışık kullanılarak çekilmiş</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378170410161264436">Kaydedici, konuşma içeren kayıtlar için transkript oluşturabilir.
 Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) indirin.</translation>
@@ -1601,6 +1622,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8135609423982943441">Chromebook'unuz güvenli varsayılan ayarlara sıfırlandı. Bu değişiklikleri dilediğiniz zaman Ayarlar'dan düzenleyebilirsiniz.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">Kendiniz oluşturun</translation>
+<translation id="8142182840415860496">birkaç beyaz ve sarı çiçeğin yakından görünümü, animasyon filminden bir kare, mavi gökyüzü önünde yaprakları veya yeşillikleri olmayan pastel renkli iki büyük sarı lalenin arasına yerleştirilmiş uzun yapraklı ve yeşil saplı narin tozpembe bir çiçek, yüksek çözünürlüklü ve çok ayrıntılı ince detaylara sahip sinematik bir kare, güzel ışıklandırma, hacimsel ışık ve loş ışıklı Octane oluşturma</translation>
 <translation id="8143951647992294073">Seç: <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Geliştirici araçları</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
@@ -1681,6 +1703,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8503813439785031346">Kullanıcı adı</translation>
 <translation id="8503836310948963452">Sadece birkaç dakika kaldı…</translation>
 <translation id="8505011850330200833">Gemini modelinin transkriptleri işlemesi ve özet oluşturması için 2 GB depolama alanı gerekir</translation>
+<translation id="8506063704538210734">ön planda birkaç ağaç ve meteor yağmurunun bulunduğu gece gökyüzünün mor ile pembe tonlardaki fotoğrafı</translation>
 <translation id="8506394543220680287">karla kaplı</translation>
 <translation id="8508640263392900755">APN ayrıntıları</translation>
 <translation id="8522687886059337719">Artık yeni <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />duvar kağıtları<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ve <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ekran koruyucu<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> özelliklerine erişebilirsiniz</translation>

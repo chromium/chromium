@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">Cornflower Blue</translation>
 <translation id="1246424317317450637">Tebal</translation>
+<translation id="1250181918001045969">Mencoba menghubungkan ke kamera. Kontrol dengan wajah akan dinonaktifkan setelah <ph name="SECONDS" /> detik.</translation>
 <translation id="1251750620252348585">Judul tingkat 6 berikutnya</translation>
 <translation id="1264956950255940376">Menyipitkan mata kiri</translation>
 <translation id="1268366246392928616">Tidak ada ekspresi matematika sebelumnya</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Tautan yang dikunjungi sebelumnya</translation>
 <translation id="3241638166094654466">Sel di tiap baris:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Kamera tidak tersedia. Pastikan Anda login dan kamera aktif.</translation>
 <translation id="3260949043575829030">Item serupa sebelumnya</translation>
 <translation id="3270069636408109001">Tidak ada tabel berikutnya</translation>
 <translation id="3273791280096244679">Simpan label</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Baca halaman secara otomatis setelah selesai dimuat</translation>
 <translation id="5826479389509458994">baris <ph name="ROW" /> kolom <ph name="COL" /></translation>
 <translation id="5833044594931167190">Tidak ada penanda ARIA</translation>
+<translation id="5836800981500311517">Tidak dapat mengakses kamera. Aktifkan kamera dan pastikan kamera tidak terhalang.</translation>
 <translation id="584044465500042213">Keluar dari mode scroll</translation>
 <translation id="5842625257683688671">Tidak ada grafik berikutnya</translation>
 <translation id="5847883414085148048">Persembahan</translation>

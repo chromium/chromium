@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">Azul aciano</translation>
 <translation id="1246424317317450637">Negrita</translation>
+<translation id="1250181918001045969">Intentando conectar con la cámara. El control con gestos faciales se desactivará dentro de <ph name="SECONDS" /> segundos.</translation>
 <translation id="1251750620252348585">Siguiente encabezado de nivel 6</translation>
 <translation id="1264956950255940376">Entrecerrar el ojo izquierdo</translation>
 <translation id="1268366246392928616">No hay ninguna expresión matemática anterior</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Anterior enlace visitado</translation>
 <translation id="3241638166094654466">Celdas en cada línea:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Cámara no disponible. Asegúrate de que has iniciado sesión y de que la cámara está encendida.</translation>
 <translation id="3260949043575829030">Elemento similar anterior</translation>
 <translation id="3270069636408109001">No hay ninguna tabla posterior</translation>
 <translation id="3273791280096244679">Guardar etiqueta</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Leer la página automáticamente cuando termine de cargarse</translation>
 <translation id="5826479389509458994">fila <ph name="ROW" /> columna <ph name="COL" /></translation>
 <translation id="5833044594931167190">No hay puntos de referencia de ARIA</translation>
+<translation id="5836800981500311517">No se puede acceder a la cámara. Activa la cámara y asegúrate de que no esté bloqueada.</translation>
 <translation id="584044465500042213">Salir del modo de desplazamiento</translation>
 <translation id="5842625257683688671">No hay ningún elemento gráfico posterior</translation>
 <translation id="5847883414085148048">Dedicatoria</translation>

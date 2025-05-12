@@ -394,7 +394,6 @@
 <translation id="2584559707064218956">Vai alle Impostazioni per la configurazione</translation>
 <translation id="2586146417912237930">blu e indaco</translation>
 <translation id="2589921777872778654">Menu per modificare o eliminare</translation>
-<translation id="2590424100019931043">Non fai più parte di questo corso</translation>
 <translation id="2597774443162333062">I file verranno inviati a Google per il debug</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Scansione completata. 1 pagina scansionata}other{Scansione completata. {NUMBER_OF_PAGES} pagine scansionate}}</translation>
 <translation id="261322795497077164">Identificazione dei relatori</translation>
@@ -653,6 +652,7 @@
 <translation id="391412459402535266">Impossibile testare il dispositivo. Passa alla modalità laptop per testarlo.</translation>
 <translation id="3916998944874125962">acquisisci screenshot</translation>
 <translation id="3923184630988645767">Utilizzo dei dati</translation>
+<translation id="392943705803418306">La sessione di Strumenti del corso è terminata per te</translation>
 <translation id="3932043219784172185">Nessun dispositivo connesso</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> non assegnato</translation>
 <translation id="3941014780699102620">impossibile risolvere l'host</translation>
@@ -842,6 +842,7 @@
 <translation id="4697260493945012995">Seleziona il tipo di controllo</translation>
 <translation id="4712940987669302829">effetto bokeh</translation>
 <translation id="4731797938093519117">Accesso genitore</translation>
+<translation id="4733200407105375152">Non in Strumenti del corso</translation>
 <translation id="4734982181169850310">colori pastello</translation>
 <translation id="473775607612524610">Aggiorna</translation>
 <translation id="4744944742468440486">Informazioni relative al testo selezionato</translation>
@@ -994,7 +995,6 @@
 <translation id="5335373365677455232">rosa</translation>
 <translation id="5344619683981067131">Sostituzione del testo selezionato con il suggerimento in corso…</translation>
 <translation id="5346687412805619883">Rete locale</translation>
-<translation id="5352672374624748928">Un primo piano di diversi fiori bianchi e gialli su sfondo viola, un fermoimmagine da un film d'animazione, un delicato fiore rosa pallido con petali lunghi e uno stelo verde posizionato tra due grandi tulipani gialli davanti a un cielo blu senza foglie o vegetazione dai colori pastello, un fermoimmagine cinematografico ad alta risoluzione con dettagli intricati molto dettagliati, un rendering ottano con meravigliosa illuminazione, luce volumetrica e atmosfera.</translation>
 <translation id="5358174242040570474">Si è verificato un errore. Prova a scegliere nuovamente uno sfondo o a riaprire l'app.</translation>
 <translation id="5368228070728130240">Impossibile scaricare il modello di riepilogo e creazione del titolo. Riprova o riavvia <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5372659122375744710">la rete Wi-Fi non è sicura</translation>
@@ -1091,6 +1091,7 @@
 <translation id="5876385649737594562">Attiva per selezionare le opzioni</translation>
 <translation id="5877503382465267833">Metti in pausa <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Schermo intero</translation>
+<translation id="5889539348012432386">Home page di Strumenti del corso</translation>
 <translation id="5893975327266416093">Tocca un tasto della tastiera per assegnare</translation>
 <translation id="5895138241574237353">Riavvia</translation>
 <translation id="5896602941605730551">Riproduci</translation>
@@ -1621,6 +1622,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8135609423982943441">Su Chromebook sono state ripristinate le impostazioni predefinite sicure. Puoi intervenire su queste modifiche in qualsiasi momento nelle Impostazioni.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">Crea il tuo</translation>
+<translation id="8142182840415860496">Un primo piano di diversi fiori bianchi e gialli, un fermoimmagine da un film d'animazione, un delicato fiore rosa pallido con petali lunghi e uno stelo verde posizionato tra due grandi tulipani gialli davanti a un cielo blu senza foglie o vegetazione dai colori pastello, un fermoimmagine cinematografico ad alta risoluzione con dettagli intricati molto dettagliati, un rendering ottano con meravigliosa illuminazione, luce volumetrica e atmosfera.</translation>
 <translation id="8143951647992294073">Seleziona <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Strumenti per sviluppatori</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>

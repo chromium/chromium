@@ -66,7 +66,7 @@
 <translation id="2583543531130364912">Hiệu chỉnh màn hình cảm ứng</translation>
 <translation id="2586657967955657006">Bảng nhớ tạm</translation>
 <translation id="2653844658857826081">MỚI</translation>
-<translation id="2666092431469916601">Hàng đầu</translation>
+<translation id="2666092431469916601">Trên cùng</translation>
 <translation id="2701330563083355633">Chia sẻ từ <ph name="DEVICE_NAME" /></translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 năm trước}other{# năm trước}}</translation>
 <translation id="2878511608894704031">Xóa tất cả</translation>
@@ -75,7 +75,7 @@
 <translation id="293972288692056847">{COUNT,plural, =1{Không tìm thấy tiện ích}other{Không tìm thấy tiện ích}}</translation>
 <translation id="3036649622769666520">Mở Tệp</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
-<translation id="3087734570205094154">Bên dưới</translation>
+<translation id="3087734570205094154">Dưới cùng</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3157931365184549694">Khôi phục</translation>
 <translation id="3183922693828471536">Cuộn tới Đây</translation>
@@ -170,6 +170,7 @@
 <translation id="6503257047630241175">Nội dung ở định dạng văn bản giàu tính chất (RTF)</translation>
 <translation id="6539092367496845964">Đã xảy ra lỗi. Hãy thử lại sau.</translation>
 <translation id="654149438358937226">Chặn tất cả thông báo</translation>
+<translation id="6612467943526193239">Để thoát chế độ hiệu chỉnh, nhấn Esc.</translation>
 <translation id="6620110761915583480">Lưu Tệp</translation>
 <translation id="6699343763173986273">Bản nhạc tiếp theo của trình phát phương tiện</translation>
 <translation id="6807086321996342431">Cột <ph name="COLUMN_NAME" /></translation>
@@ -204,7 +205,6 @@
 <translation id="7969046989155602842">Phím Command</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Bạn có hơn 1 thông báo chưa đọc}other{Bạn có hơn # thông báo chưa đọc}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{trong 1 phút}other{trong # phút}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Số điện thoại từ <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 giờ trước}other{# giờ trước}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{Còn 1 giây}other{Còn # giây}}</translation>

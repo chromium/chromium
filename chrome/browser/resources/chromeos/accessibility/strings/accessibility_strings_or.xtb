@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">ରେଡିଓ ବଟନ୍ ଗ୍ରୁପ୍</translation>
 <translation id="1243477406442346359">କର୍ନଫ୍ଲାୱାର୍ ନୀଳ</translation>
 <translation id="1246424317317450637">ବୋଲ୍ଡ</translation>
+<translation id="1250181918001045969">କେମେରା ସହ କନେକ୍ଟ କରିବାକୁ ଚେଷ୍ଟା କରୁଛି। <ph name="SECONDS" /> ସେକେଣ୍ଡରେ ଫେସ ନିୟନ୍ତ୍ରଣ ବନ୍ଦ ହୋଇଯିବ।</translation>
 <translation id="1251750620252348585">ପରବର୍ତ୍ତୀ ସ୍ତର 6 ଶୀର୍ଷକ</translation>
 <translation id="1264956950255940376">ବାମ ଆଖିରେ ଟେରେଇ ଚାହାଁନ୍ତୁ</translation>
 <translation id="1268366246392928616">କୌଣସି ପୂର୍ବବର୍ତ୍ତୀ ଗାଣିତିକ ଅଭିବ୍ୟକ୍ତି ନାହିଁ</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">ପୂର୍ବରୁ ଯାଇଥିବା ଲିଙ୍କ୍</translation>
 <translation id="3241638166094654466">ପ୍ରତ୍ୟେକ ଧାଡ଼ିରେ ଥିବା ସେଲ୍‍ଗୁଡ଼ିକ:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">କେମେରା ଉପଲବ୍ଧ ନାହିଁ। ଆପଣ ସାଇନ ଇନ କରିଛନ୍ତି ଏବଂ କେମେରା ଚାଲୁ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="3260949043575829030">ପୂର୍ବବର୍ତ୍ତୀ ସମାନ ଆଇଟମ୍</translation>
 <translation id="3270069636408109001">କୌଣସି ପରବର୍ତ୍ତୀ ଟେବଲ୍ ନାହିଁ</translation>
 <translation id="3273791280096244679">ଲେବଲ୍ ସେଭ୍ କରନ୍ତୁ</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">ପୃଷ୍ଠା ଲୋଡ୍ ହେବା ପରେ ଏହାକୁ ସ୍ୱଚାଳିତ ଭାବେ ପଢ଼ନ୍ତୁ</translation>
 <translation id="5826479389509458994">ଧାଡ଼ି <ph name="ROW" />ସ୍ତମ୍ଭ <ph name="COL" /></translation>
 <translation id="5833044594931167190">କୌଣସି ARIA ଲ୍ୟାଣ୍ଡମାର୍କ ନାହିଁ</translation>
+<translation id="5836800981500311517">କେମେରାକୁ ଆକ୍ସେସ କରାଯାଇପାରିବ ନାହିଁ। କେମେରାକୁ ଚାଲୁ କରି ଏହାକୁ ବ୍ଲକ କରାଯାଇନାହିଁ ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="584044465500042213">ସ୍କ୍ରୋଲ ମୋଡରୁ ବାହାରି ଯାଆନ୍ତୁ</translation>
 <translation id="5842625257683688671">କୌଣସି ପରବର୍ତ୍ତୀ ଗ୍ରାଫିକ୍ ନାହିଁ</translation>
 <translation id="5847883414085148048">ସମର୍ପଣ</translation>

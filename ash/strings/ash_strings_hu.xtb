@@ -1441,6 +1441,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="5672890847723042801">Segédprogramok</translation>
 <translation id="5673434351075758678">Módosítás <ph name="FROM_LOCALE" /> nyelvről <ph name="TO_LOCALE" /> nyelvre a beállítások szinkronizálása után.</translation>
 <translation id="5675363643668471212">Polcelem</translation>
+<translation id="5677022547882470786">Húzással vagy a szóköz billentyű lenyomásával válassza ki a keresni kívánt területet</translation>
 <translation id="5677928146339483299">Letiltva</translation>
 <translation id="5678564054339031017">A következő hét megjelenítése</translation>
 <translation id="5679050765726761783">Alacsony energiafogyasztású csatlakozó csatlakoztatva</translation>
@@ -2433,6 +2434,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8934418770423095813">Google-dokumentum létrehozása</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fájl}other{# fájl}}</translation>
 <translation id="8936501819958976551">deaktiválva</translation>
+<translation id="8937312474322077653">A képernyőfelvételnél állítsa be a következőre: <ph name="SOURCE" />, <ph name="TYPE" />. A felvétel típusának kiválasztásához nyomja meg a Tab billentyűt. A régió kiválasztásához nyomja le a szóköz billentyűt. A felvétel elkészítéséhez nyomja meg az Enter billentyűt.</translation>
 <translation id="8938800817013097409">C típusú USB-vel kompatibilis eszköz (jobb hátsó port)</translation>
 <translation id="8939855324412367560">A hangbemenet a következőre van állítva: „<ph name="INPUT_DEVICE_NAME" />”, a hangkimenet pedig a következőre: „<ph name="OUTPUT_DEVICE_NAME" />”. Ezeket a beállításoknál módosíthatja.</translation>
 <translation id="8940956008527784070">Alacsony akkumulátortöltöttség (<ph name="PERCENTAGE" />%)</translation>

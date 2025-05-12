@@ -1441,6 +1441,7 @@
 <translation id="5672890847723042801">Услужне апликације</translation>
 <translation id="5673434351075758678">Са језика „<ph name="FROM_LOCALE" />“ на „<ph name="TO_LOCALE" />“ после синхронизације уређаја.</translation>
 <translation id="5675363643668471212">Ставка на полици</translation>
+<translation id="5677022547882470786">Превуците или притисните тастер за размак да бисте изабрали област за претрагу</translation>
 <translation id="5677928146339483299">Блокирано</translation>
 <translation id="5678564054339031017">Прикажите следећу недељу</translation>
 <translation id="5679050765726761783">Повезан је адаптер мале снаге</translation>
@@ -2434,6 +2435,7 @@
 <translation id="8934418770423095813">Направите Google документ</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 фајл}one{# фајл}few{# фајла}other{# фајлова}}</translation>
 <translation id="8936501819958976551">деактивирано</translation>
+<translation id="8937312474322077653">У снимању екрана подесите на <ph name="SOURCE" /> <ph name="TYPE" />. Притисните Tab да бисте изабрали тип снимања. Притисните тастер за размак да бисте изабрали регион. Притисните Enter да бисте снимили.</translation>
 <translation id="8938800817013097409">Уређај са USB прикључком типа C (задњи десни порт)</translation>
 <translation id="8939855324412367560">Аудио улаз је <ph name="INPUT_DEVICE_NAME" />, а аудио излаз је <ph name="OUTPUT_DEVICE_NAME" />. Идите у Подешавања да бисте то променили.</translation>
 <translation id="8940956008527784070">Батерија је скоро празна (<ph name="PERCENTAGE" />%)</translation>

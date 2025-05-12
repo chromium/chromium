@@ -54,6 +54,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">కార్న్‌ఫ్లవర్ నీలం రంగు</translation>
 <translation id="1246424317317450637">బోల్డ్</translation>
+<translation id="1250181918001045969">కెమెరాకు కనెక్ట్ అవ్వడానికి ట్రై చేస్తున్నాను. ఫేస్ కంట్రోల్ <ph name="SECONDS" /> సెకన్లలో ఆఫ్ చేయడం జరుగుతుంది.</translation>
 <translation id="1251750620252348585">తర్వాత స్థాయి 6 శీర్షిక</translation>
 <translation id="1264956950255940376">ఎడమ కన్ను మెల్లగా పెట్టడం</translation>
 <translation id="1268366246392928616">మునుపటి గణిత వ్యక్తీకరణ లేదు</translation>
@@ -373,6 +374,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="3241052487511142956">మునుపు సందర్శించిన లింక్</translation>
 <translation id="3241638166094654466">ప్రతి పంక్తిలో గడులు:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">కెమెరా అందుబాటులో లేదు. మీరు సైన్ ఇన్ అయ్యారని, కెమెరా ఆన్‌లో ఉందని నిర్ధారించుకోండి.</translation>
 <translation id="3260949043575829030">ఇలాంటి మునుపటి అంశం</translation>
 <translation id="3270069636408109001">తర్వాత టేబుల్ లేదు</translation>
 <translation id="3273791280096244679">లేబుల్‌ను సేవ్ చేయండి</translation>
@@ -764,6 +766,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="5824976764713185207">పేజీ పూర్తిగా లోడ్ అయిన తర్వాత ఆటోమేటిక్‌గా చదువుతుంది</translation>
 <translation id="5826479389509458994"><ph name="ROW" />వ అడ్డు వరుస <ph name="COL" />వ నిలువు వరుస</translation>
 <translation id="5833044594931167190">ARIA ల్యాండ్‌మార్క్‌లు లేవు</translation>
+<translation id="5836800981500311517">కెమెరాను యాక్సెస్ చేయడం సాధ్యపడదు. కెమెరాను ఆన్ చేసి, అది బ్లాక్ చేయలేదు అని నిర్ధారించుకోండి.</translation>
 <translation id="584044465500042213">స్క్రోల్ మోడ్ నుండి ఎగ్జిట్ అవ్వండి</translation>
 <translation id="5842625257683688671">తర్వాత గ్రాఫిక్ లేదు</translation>
 <translation id="5847883414085148048">అంకితం</translation>

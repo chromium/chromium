@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{O notificare necitită}few{# notificări necitite}other{# de notificări necitite}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Activează următoarea extensie în modul incognito:}few{Activează următoarele extensii în modul incognito:}other{Activează următoarele extensii în modul incognito:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Acum 1 lună}few{Acum # luni}other{Acum # de luni}}</translation>
+<translation id="4277033906326892359">Coloana <ph name="COLUMN_NAME" /> este sortată în ordine crescătoare</translation>
 <translation id="4289300219472526559">Începeți să vorbiți</translation>
 <translation id="4289540628985791613">Prezentare generală</translation>
 <translation id="4491109536499578614">Imagine</translation>
@@ -169,8 +170,10 @@
 <translation id="6503257047630241175">Conținut RTF</translation>
 <translation id="6539092367496845964">A apărut o eroare. Încearcă din nou mai târziu.</translation>
 <translation id="654149438358937226">Blochează toate notificările</translation>
+<translation id="6612467943526193239">Pentru a ieși din calibrare, apasă pe Esc.</translation>
 <translation id="6620110761915583480">Salvează fișierul</translation>
 <translation id="6699343763173986273">Melodia următoare din conținutul media</translation>
+<translation id="6807086321996342431">Coloana <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">Opriți conținutul media</translation>
 <translation id="6845383723252244143">Selectează dosarul</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{O oră rămasă}few{# ore rămase}other{# de ore rămase}}</translation>
@@ -202,11 +205,11 @@
 <translation id="7969046989155602842">Tasta Command</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Mai mult de o notificare necitită}few{Mai mult de # notificări necitite}other{Mai mult de # de notificări necitite}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{în 1 m}few{în # m}other{în # m}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Numărul provine de la <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{Acum o oră}few{Acum # ore}other{Acum # de ore}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{O sec. rămasă}few{# sec. rămase}other{# sec. rămase}}</translation>
 <translation id="8134065097954893699">Se reîncarcă pagina</translation>
+<translation id="813785873406874127">Coloana <ph name="COLUMN_NAME" /> nu este sortată</translation>
 <translation id="815598010540052116">Derulează în jos</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">O pagină mai jos</translation>
@@ -218,6 +221,7 @@
 <translation id="8393700583063109961">Trimite un mesaj</translation>
 <translation id="8394908167088220973">Redați/întrerupeți conținutul media</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 an}few{# ani}other{# ani}}</translation>
+<translation id="8582972250170726813">Coloana <ph name="COLUMN_NAME" /> este sortată în ordine descrescătoare</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" /> %</translation>
 <translation id="8602707065186045623">Fișier <ph name="SAVEAS_EXTENSION_TYPE" /> (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KO/s</translation>

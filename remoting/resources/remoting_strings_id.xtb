@@ -93,6 +93,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu
 <translation id="4987330545941822761">Chrome Desktop Jarak Jauh tidak dapat menentukan browser untuk membuka URL secara lokal. Pilih dari daftar di bawah ini.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
 <translation id="507204348399810022">Yakin ingin menonaktifkan sambungan jarak jauh ke <ph name="HOSTNAME" />?</translation>
+<translation id="5095424396646120601">Laporan Error</translation>
 <translation id="5170982930780719864">ID host tidak valid.</translation>
 <translation id="5204575267916639804">FAQ</translation>
 <translation id="5222676887888702881">Logout</translation>

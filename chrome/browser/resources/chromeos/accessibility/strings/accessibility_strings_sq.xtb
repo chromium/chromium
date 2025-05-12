@@ -54,6 +54,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">Blu lule misri</translation>
 <translation id="1246424317317450637">Të trashësuara</translation>
+<translation id="1250181918001045969">Po përpiqet të lidhet me kamerën. Kontrolli me anë të fytyrës do të çaktivizohet pas <ph name="SECONDS" /> sekondash.</translation>
 <translation id="1251750620252348585">Titulli tjetër i nivelit 6</translation>
 <translation id="1264956950255940376">Picërro syrin e majtë</translation>
 <translation id="1268366246392928616">Nuk ka shprehje të mëparshme matematikore</translation>
@@ -372,6 +373,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="3241052487511142956">Lidhja e mëparshme e vizituar</translation>
 <translation id="3241638166094654466">Qelizat në secilën vijë:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Kamera nuk ofrohet. Sigurohu që je identifikuar dhe kamera është e ndezur.</translation>
 <translation id="3260949043575829030">Artikulli i mëparshëm i ngjashëm</translation>
 <translation id="3270069636408109001">Nuk ka tabelë tjetër</translation>
 <translation id="3273791280096244679">Ruaj etiketën</translation>
@@ -763,6 +765,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="5824976764713185207">Lexoje automatikisht faqen pasi ajo të përfundojë ngarkimin</translation>
 <translation id="5826479389509458994">radha <ph name="ROW" /> kolona <ph name="COL" /></translation>
 <translation id="5833044594931167190">Nuk ka pika referimi ARIA</translation>
+<translation id="5836800981500311517">Nuk mund të qaset te kamera. Ndiz kamerën dhe sigurohu që të mos jetë e bllokuar.</translation>
 <translation id="584044465500042213">Dil nga modaliteti i lëvizjes</translation>
 <translation id="5842625257683688671">Nuk ka grafik tjetër</translation>
 <translation id="5847883414085148048">Dedikim</translation>

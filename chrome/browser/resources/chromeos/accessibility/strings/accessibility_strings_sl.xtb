@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">izbskp</translation>
 <translation id="1243477406442346359">Plavičasto modra</translation>
 <translation id="1246424317317450637">Krepko</translation>
+<translation id="1250181918001045969">Poskus vzpostavljanja povezave s kamero. Upravljanje z obrazom se bo izklopilo čez <ph name="SECONDS" /> s.</translation>
 <translation id="1251750620252348585">Naslednji naslov na ravni 6</translation>
 <translation id="1264956950255940376">Priprtje levega očesa</translation>
 <translation id="1268366246392928616">Ni prejšnjega matematičnega izraza</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Prejšnja obiskana povezava</translation>
 <translation id="3241638166094654466">Celice v posamezni vrstici:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Kamera ni na voljo. Biti morate prijavljeni in kamera mora biti vklopljena.</translation>
 <translation id="3260949043575829030">Prejšnji podobni element</translation>
 <translation id="3270069636408109001">Ni naslednje tabele</translation>
 <translation id="3273791280096244679">Shrani oznako</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Samodejno branje strani po dokončanju nalaganja</translation>
 <translation id="5826479389509458994">vrstica <ph name="ROW" />, stolpec <ph name="COL" /></translation>
 <translation id="5833044594931167190">Ni orientacijskih točk v različici ARIA</translation>
+<translation id="5836800981500311517">Ni mogoče dostopati do kamere. Vklopite jo in se prepričajte, da ni blokirana.</translation>
 <translation id="584044465500042213">Izklopite način drsenja</translation>
 <translation id="5842625257683688671">Ni naslednje grafike</translation>
 <translation id="5847883414085148048">Posvetilo</translation>

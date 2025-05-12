@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 notification non lue}one{# notification non lue}other{# notifications non lues}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Activez l'extension suivante en mode navigation privée :}one{Activez l'extension suivante en mode navigation privée :}other{Activez les extensions suivantes en mode navigation privée :}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Il y a 1 mois}one{Il y a # mois}other{Il y a # mois}}</translation>
+<translation id="4277033906326892359">Colonne <ph name="COLUMN_NAME" /> triée par ordre croissant</translation>
 <translation id="4289300219472526559">Commencer à parler</translation>
 <translation id="4289540628985791613">Présentation</translation>
 <translation id="4491109536499578614">Image</translation>
@@ -169,8 +170,10 @@
 <translation id="6503257047630241175">Contenu au format RTF</translation>
 <translation id="6539092367496845964">Un problème est survenu. Réessayez plus tard.</translation>
 <translation id="654149438358937226">Bloquer toutes les notifications</translation>
+<translation id="6612467943526193239">Pour quitter le mode Étalonnage, appuyez sur Échap.</translation>
 <translation id="6620110761915583480">Enregistrer le fichier</translation>
 <translation id="6699343763173986273">Contenu multimédia : titre suivant</translation>
+<translation id="6807086321996342431">Colonne <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">Contenu multimédia : arrêt</translation>
 <translation id="6845383723252244143">Sélectionner un dossier</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 heure restante}one{# heure restante}other{# heures restantes}}</translation>
@@ -202,11 +205,11 @@
 <translation id="7969046989155602842">Commande</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Plus de 1 notification non lue}one{Plus de # notification non lue}other{Plus de # notifications non lues}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{dans 1 m}one{dans # m}other{dans # m}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Numéro issu de <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{Il y a 1 heure}one{Il y a # heure}other{Il y a # heures}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 s restante}one{# s restante}other{# s restantes}}</translation>
 <translation id="8134065097954893699">Actualiser cette page</translation>
+<translation id="813785873406874127">Colonne <ph name="COLUMN_NAME" /> non triée</translation>
 <translation id="815598010540052116">Défilement vers le bas</translation>
 <translation id="8179976553408161302">Entrée</translation>
 <translation id="8210608804940886430">Page suivante</translation>
@@ -218,6 +221,7 @@
 <translation id="8393700583063109961">Envoyer un message</translation>
 <translation id="8394908167088220973">Contenu multimédia : lecture/pause</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 a}one{# a}other{# a}}</translation>
+<translation id="8582972250170726813">Colonne <ph name="COLUMN_NAME" /> triée par ordre décroissant</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" /> %</translation>
 <translation id="8602707065186045623">Fichier <ph name="SAVEAS_EXTENSION_TYPE" /> (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> Ko/s</translation>

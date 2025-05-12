@@ -8,6 +8,7 @@
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> বছর আগে তৈরি করা হয়েছে}one{<ph name="NUM_YEARS_MANY" /> বছর আগে তৈরি করা হয়েছে}other{<ph name="NUM_YEARS_MANY" /> বছর আগে তৈরি করা হয়েছে}}</translation>
 <translation id="1173894706177603556">পুনঃনামকরণ</translation>
 <translation id="1197088940767939838">কমলা</translation>
+<translation id="1245862538775272968">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT2" />টি ট্যাব সহ <ph name="TITLE_OF_GROUP" /> খুলুন}one{<ph name="TAB_COUNT2" />টি ট্যাব সহ <ph name="TITLE_OF_GROUP" /> খুলুন}other{<ph name="TAB_COUNT2" />টি ট্যাব সহ <ph name="TITLE_OF_GROUP" /> খুলুন}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপের বিকল্প</translation>
 <translation id="1329584516321524826">এখনই আপডেট করা হয়েছে</translation>
 <translation id="1340839264183302272">গ্রুপ থেকে বেরিয়ে আসুন</translation>
@@ -16,7 +17,6 @@
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> মিনিট আগে তৈরি করা হয়েছে}one{<ph name="NUM_MINS_MANY" /> মিনিট আগে তৈরি করা হয়েছে}other{<ph name="NUM_MINS_MANY" /> মিনিট আগে তৈরি করা হয়েছে}}</translation>
 <translation id="1499635324672558517">সবকটি ছদ্মবেশী ট্যাব বন্ধ করবেন?</translation>
 <translation id="1501480321619201731">আইটেমের গ্রুপ মুছুন</translation>
-<translation id="1505526451013346974"><ph name="TITLE_OF_GROUP" />-এ যোগ করুন</translation>
 <translation id="1555130319947370107">নীল</translation>
 <translation id="161042844686301425">নীলাভ</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" />টি ট্যাব, গ্রুপ করা হয়েছে</translation>
@@ -43,6 +43,7 @@
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" ও "<ph name="TAB_GROUP_NAME_2" />" ট্যাব গ্রুপ আর উপলভ্য নেই</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব ছোট করুন।}one{সেই ট্যাব গ্রুপকে ছোট করুন যাতে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}other{সেই ট্যাব গ্রুপকে ছোট করুন যাতে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}}</translation>
 <translation id="2569352796411618312">সাজেশন: সব ট্যাবের মধ্যে থেকে <ph name="NUMBER_OF_TABS" />টি ট্যাব সম্প্রতি ব্যবহার করা হয়নি। সেগুলি বন্ধ করে দিতে চান?</translation>
+<translation id="2656693375914502139">গ্রুপে সরান</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> রেটিং</translation>
 <translation id="266935134738038806">সাইট দেখুন</translation>
 <translation id="2671423594960767771">গ্রুপ শেয়ার করুন</translation>
@@ -75,7 +76,6 @@
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" />টি নতুন ট্যাব,<ph name="ANY_CLOSED" />টি বন্ধ আছে}one{<ph name="MANY_ADDED" />টি নতুন ট্যাব,<ph name="ANY_CLOSED" />টি বন্ধ আছে}other{<ph name="MANY_ADDED" />টি নতুন ট্যাব,<ph name="ANY_CLOSED" />টি বন্ধ আছে}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{ট্যাব গ্রুপ করুন}one{ট্যাব গ্রুপ করুন}other{ট্যাব গ্রুপ করুন}}</translation>
 <translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি ইনঅ্যাক্টিভ ট্যাব}one{<ph name="TABS_COUNT_MANY" />টি ইনঅ্যাক্টিভ ট্যাব}other{<ph name="TABS_COUNT_MANY" />টি ইনঅ্যাক্টিভ ট্যাব}}</translation>
-<translation id="3969565576924904454"><ph name="TITLE_OF_GROUP" /> অ্যাপ খুলুন</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> দিন আগে তৈরি করা হয়েছে}one{<ph name="NUM_DAYS_MANY" /> দিন আগে তৈরি করা হয়েছে}other{<ph name="NUM_DAYS_MANY" /> দিন আগে তৈরি করা হয়েছে}}</translation>
 <translation id="4076226664360336092">ট্যাব গ্রুপের তালিকা, পূর্ণ উচ্চতায় খোলা আছে</translation>
 <translation id="4133493477912226187">মনে হচ্ছে <ph name="NUMBER_OF_TABS" />টি ট্যাব সম্পর্কযুক্ত। সেগুলি গ্রুপ করতে চান?</translation>
@@ -139,7 +139,9 @@
 <translation id="6590332670428149473"><ph name="COLOR_NAME" /> রঙের ট্যাব গ্রুপ <ph name="TITLE_OF_GROUP" />-এর জন্য শেয়ার করা ট্যাব গ্রুপের অ্যাকশন মেনু খুলুন।</translation>
 <translation id="6615455863669487791">আমাকে দেখান</translation>
 <translation id="6694634756612002311">শেয়ার করা ম্যানেজ করুন</translation>
+<translation id="6709297274997495821">ট্যাব বেছে নিন</translation>
 <translation id="6744956528665271406">গ্রুপের রঙ এডিট করুন</translation>
+<translation id="6784585810034073638">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT1" />টি ট্যাব সহ <ph name="TITLE_OF_GROUP" /> নামের গ্রুপে যোগ করুন}one{<ph name="TAB_COUNT1" />টি ট্যাব সহ <ph name="TITLE_OF_GROUP" /> নামের গ্রুপে যোগ করুন}other{<ph name="TAB_COUNT1" />টি ট্যাব সহ <ph name="TITLE_OF_GROUP" /> নামের গ্রুপে যোগ করুন}}</translation>
 <translation id="6856809498882026482">একাধিক ট্যাব একসাথে বেছে নেওয়ার মোড লুকান</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, শেয়ার করা <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বড় করুন।}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, শেয়ার করা <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বড় করুন।}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, শেয়ার করা <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বড় করুন।}}</translation>
 <translation id="709473454666962555">ট্যাব গ্রুপ বেছে নিন</translation>

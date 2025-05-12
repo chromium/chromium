@@ -1440,6 +1440,7 @@
 <translation id="5672890847723042801">Утиліти</translation>
 <translation id="5673434351075758678">Після синхронізації налаштувань мову змінено. Попередня мова: <ph name="FROM_LOCALE" />, нова: <ph name="TO_LOCALE" />.</translation>
 <translation id="5675363643668471212">Елемент полиці</translation>
+<translation id="5677022547882470786">Щоб вибрати область для пошуку, перетягніть її або натисніть пробіл</translation>
 <translation id="5677928146339483299">Заблоковано</translation>
 <translation id="5678564054339031017">Показати наступний тиждень</translation>
 <translation id="5679050765726761783">Підключено енергоекономний адаптер</translation>
@@ -2432,6 +2433,7 @@
 <translation id="8934418770423095813">Створити документ Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}one{# файл}few{# файли}many{# файлів}other{# файлу}}</translation>
 <translation id="8936501819958976551">деактивовано</translation>
+<translation id="8937312474322077653">У налаштуваннях запису екрана вибрано область екрана "<ph name="SOURCE" />" і тип запису "<ph name="TYPE" />". Щоб вибрати тип запису, натисніть клавішу Tab. Щоб вибрати область екрана, натисніть пробіл. Щоб почати запис, натисніть клавішу Enter.</translation>
 <translation id="8938800817013097409">Пристрій, під’єднаний до порту USB-C (праворуч на задній панелі)</translation>
 <translation id="8939855324412367560">Для введення аудіо використовується <ph name="INPUT_DEVICE_NAME" />, а для виведення – <ph name="OUTPUT_DEVICE_NAME" />. Щоб внести зміни, перейдіть у налаштування.</translation>
 <translation id="8940956008527784070">Низький заряд акумулятора (<ph name="PERCENTAGE" />%)</translation>

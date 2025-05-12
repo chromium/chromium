@@ -4,15 +4,22 @@
 <translation id="1173075331199604451">የVoice ምናሌ</translation>
 <translation id="1178581264944972037">ለአፍታ አቁም</translation>
 <translation id="1246424317317450637">ደማቅ</translation>
+<translation id="1370273601702151510">አሪፍ</translation>
 <translation id="1483137792530497944">ወንዝ</translation>
 <translation id="1586836055630070874">ሚያረጋጋ</translation>
+<translation id="1666704368140506043">አስከፊ ይዘት</translation>
 <translation id="1741047078107369903">ሞቅ ያለያ</translation>
 <translation id="1807863182207623884">ሩቢ</translation>
 <translation id="1921351128855867012">በ<ph name="NUMBER_OF_SECONDS" /> ሰከንዶች በፍጥነት ወደፊት አስተላልፍ</translation>
 <translation id="1984328900355667246">መልሶ ማጫወት አይገኝም</translation>
+<translation id="2019727681730021602">መደበኛ መልሶ ማጫወት</translation>
 <translation id="2224347680315897176">የማይቀያየር</translation>
+<translation id="2575502321843437554">በበቂ መልኩ አሳታፊ አይደለም</translation>
 <translation id="2611765907167846862">ጸት ያለ</translation>
 <translation id="3023502830214299618">በሚያሳዝን ሁኔታ፣ በዚህ ገጽ ላይ መልሶ ማጫወት በአሁኑ ጊዜ አይገኝም። እባክዎ ቆይተው እንደገና ይሞክሩ።</translation>
+<translation id="3457812538570616687">ደባሪ ነው</translation>
+<translation id="3493899379487634969">ምን ችግር ተፈጠረ?</translation>
+<translation id="3778044272390020426">የአሉታዊ ግብረመልስ አማራጮች ምናሌ</translation>
 <translation id="3807208219231826020">መልሶ ማጫወትን ያፅዱ</translation>
 <translation id="385051799172605136">ተመለስ</translation>
 <translation id="3936324432406465283">የመልሶ ማጫወት ፍጥነት</translation>
@@ -28,28 +35,34 @@
 <translation id="5026371835667036198">ብሩህ</translation>
 <translation id="5234971936051226002">«ይህን ገፅ አዳምጥ» አጫዋች እንዲያንስ ተደርጓል።</translation>
 <translation id="5251803541071282808">ደመና</translation>
+<translation id="5526614127710223793">የመልሶ ማጫወት ሁነታ መራጭ</translation>
 <translation id="5596627076506792578">ተጨማሪ አማራጮች</translation>
 <translation id="5694491020339060116">የመልሶ ማጫወት ፍጥነት ምናሌ</translation>
+<translation id="5965409657393819302">ቴክኒካዊ ችግር</translation>
+<translation id="6218961554829577610">ድምፁን አልወደዱትም</translation>
 <translation id="6315170314923504164">ድምፅ</translation>
+<translation id="6330455646577575965">የሰው ሠራሽ አስተውሎት ኦዲዮ መልሶ ማጫወት</translation>
 <translation id="6343633247422081848">ቅጠልያ አረንጓዴ</translation>
 <translation id="6550675742724504774">አማራጮች</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />፣ <ph name="TONE" /></translation>
+<translation id="677790449852070664">እናመሰግናለን! የእርስዎ ግብረመልስ ያግዛል።</translation>
 <translation id="6790428901817661496">አጫውት</translation>
 <translation id="6831043979455480757">መተርጎም</translation>
 <translation id="6846298663435243399">በመጫን ላይ…</translation>
 <translation id="6889157801232138307">«ይህን ገፅ አዳምጥ» አጫዋች።</translation>
 <translation id="7051308646573997571">ኮራል</translation>
 <translation id="7112750136794557642">ለተጨማሪ አማራጮች ማጫወቻውን ለመዘርጋት መታ ያድርጉ።</translation>
+<translation id="7138678301420049075">ሌላ</translation>
 <translation id="7221920857098237570">ረጋ ያለ</translation>
 <translation id="7237590978482584900">ዘና ያለ</translation>
 <translation id="7282547042039404307">ለስላሳ</translation>
-<translation id="7587250070160020374">Chrome አሁን በመጫወት ላይ</translation>
 <translation id="8004767876552422827">መስክ</translation>
 <translation id="8136852699834914183">ለዚህ ገፅ መልሶ ማጫወት አይገኝም።</translation>
 <translation id="8198036737896977997">አየር</translation>
 <translation id="8264989794233974275"><ph name="PLAYBACK_SPEED" />x ፍጥነት መጨመር / መቀነስ።</translation>
 <translation id="8407011429883244666">ማጫወቻን ይዝጉ።</translation>
 <translation id="8481839122437406573">የረጋ</translation>
+<translation id="8756370108715456837">ከእውነታ አንጻር ትክክል ያልሆነ</translation>
 <translation id="8953618380150219653">«ይህን ገፅ አዳምጥ» አጫዋች በሙሉ ቀመት ተከፍቷል።</translation>
 <translation id="978117257931832348">ዝቅተኛ የወንድ ድምፅ</translation>
 </translationbundle>

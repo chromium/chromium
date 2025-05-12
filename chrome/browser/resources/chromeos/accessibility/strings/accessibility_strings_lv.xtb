@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">radiopogu grupa</translation>
 <translation id="1243477406442346359">Rudzupuķu zila</translation>
 <translation id="1246424317317450637">Treknraksts</translation>
+<translation id="1250181918001045969">Tiek mēģināts izveidot savienojumu ar kameru. Sejas kontrole tiks izslēgta pēc <ph name="SECONDS" /> s.</translation>
 <translation id="1251750620252348585">Nākamais 6. līmeņa virsraksts</translation>
 <translation id="1264956950255940376">Aizmiedziet kreiso aci</translation>
 <translation id="1268366246392928616">Nav iepriekšējās matemātiskās izteiksmes.</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Iepriekšējā apmeklētā saite</translation>
 <translation id="3241638166094654466">Šūnas katrā rindā:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Kamera nav pieejama. Pārliecinieties, ka esat pierakstījies un kamera ir ieslēgta.</translation>
 <translation id="3260949043575829030">Iepriekšējais līdzīgais vienums</translation>
 <translation id="3270069636408109001">Nav nākamās tabulas.</translation>
 <translation id="3273791280096244679">Saglabāt iezīmi</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Automātiski lasīt lapu, kad ir pabeigta tās ielāde</translation>
 <translation id="5826479389509458994"><ph name="ROW" />. rinda, <ph name="COL" />. sleja</translation>
 <translation id="5833044594931167190">Nav ARIA orientieru.</translation>
+<translation id="5836800981500311517">Nevar piekļūt kamerai. Ieslēdziet kameru un pārliecinieties, ka tā nav aizsegta.</translation>
 <translation id="584044465500042213">Izslēgt ritināšanas režīmu</translation>
 <translation id="5842625257683688671">Nav nākamā grafiskā elementa.</translation>
 <translation id="5847883414085148048">Veltījums</translation>

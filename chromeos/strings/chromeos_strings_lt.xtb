@@ -20,6 +20,7 @@
 <translation id="1059913517121127803">Nepavyko pradėti nuskaitymo</translation>
 <translation id="1061864016440983342">Naudoti be vietovės</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> iš <ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="106558928761833284">nuostabi kosminė ūkų galaktika ir greitas futuristinis erdvėlaivis, mėlyni, rožiniai ir violetiniai atspalviai</translation>
 <translation id="1069150558259542054">Sparčiojo įterpimo funkcijos negalima naudoti tinkintiems spartiesiems klavišams.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Aptikta užkarda</translation>
@@ -27,6 +28,7 @@
 <translation id="1082009148392559545">Atsisiunčiama ekrano užsklanda</translation>
 <translation id="1094693127011229778">IP adresas nepasiekiamas</translation>
 <translation id="1100902271996134409">Kuriami vaizdai...</translation>
+<translation id="1102946598597843031">nuotrauka, vaizduojanti mėnulį virš ežero su krentančiais vyšnių žiedais, 4K</translation>
 <translation id="1107856713690040084">„<ph name="DEVICE_TYPE" />“ garsas</translation>
 <translation id="1116694919640316211">Apie</translation>
 <translation id="1118572504348554005">Galime bendrinti per šią formą pateiktus atsiliepimus su partneriais, siekdami pašalinti triktis ir kitas problemas, apie kurias pranešate. Neįtraukite neskelbtinos informacijos, pvz., slaptažodžių.</translation>
@@ -67,6 +69,7 @@
 <translation id="1238163879850290856">Iš naujo nustatykite, kad kiti negalėtų pasiekti duomenų. Naudokite tik tuos įvesties metodus, kuriais pasitikite.</translation>
 <translation id="1238612778414822719">HTTPS delsa</translation>
 <translation id="1252766349417594414">Vairasvirtė</translation>
+<translation id="1261045951892393759">katė, grojanti elektrine gitara ir sėdinti ant vienaragio, fone – žaibas</translation>
 <translation id="1270369111467284986">Įtariamas fiksuotasis portalas</translation>
 <translation id="1274654146705270731">apelsinai</translation>
 <translation id="1275718070701477396">Pasirinkta</translation>
@@ -273,6 +276,7 @@
 <translation id="2045814230297767491">stalo įrankiai</translation>
 <translation id="2047316797244836561">Jei norite peržiūrėti ekrano užsklandą, prisijunkite prie tinklo ir iš naujo įkelkite puslapį.</translation>
 <translation id="2056550196601855911">IPv4 / IPv6</translation>
+<translation id="2068472557797646626">trimačiu formatu pateiktos chromo sferos ir sferinės formos chromo architektūrinių elementų fone Ši kompozicija yra moderni minimalistinė reklamos koncepcija, skirta reklamai, prekės ženklui ar pristatymui su vieta tekstui. Didelė arka priešais abstraktų foną minimalistiniu stiliumi. Studijos apšvietimas. Nuotrauka iš arti.</translation>
 <translation id="2073232437457681324">vandenynas</translation>
 <translation id="2080070583977670716">Daugiau nustatymų</translation>
 <translation id="2082932131694554252">Priskirtas klaviatūros klavišas</translation>
@@ -390,7 +394,6 @@
 <translation id="2584559707064218956">Norėdami nustatyti eikite į Nustatymus</translation>
 <translation id="2586146417912237930">mėlynos ir indigo spalvų</translation>
 <translation id="2589921777872778654">Redagavimo ir ištrynimo meniu</translation>
-<translation id="2590424100019931043">Buvote pašalinti iš šio kurso</translation>
 <translation id="2597774443162333062">Failai bus išsiųsti į sistemą „Google“, kad būtų suderinti</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Nuskaitymas baigtas. Nuskaitytas vienas puslapis}one{Nuskaitymas baigtas. Nuskaitytas {NUMBER_OF_PAGES} puslapis}few{Nuskaitymas baigtas. Nuskaityti {NUMBER_OF_PAGES} puslapiai}many{Nuskaitymas baigtas. Nuskaityta {NUMBER_OF_PAGES} puslapio}other{Nuskaitymas baigtas. Nuskaityta {NUMBER_OF_PAGES} puslapių}}</translation>
 <translation id="261322795497077164">Garsiakalbio identifikavimas</translation>
@@ -430,6 +433,7 @@
 <translation id="2805756323405976993">Taikomosios programos</translation>
 <translation id="28232023175184696">Nepavyko prisijungti prie interneto. Spustelėkite, jei norite bandyti dar kartą.</translation>
 <translation id="2855718259207180827">vilnos</translation>
+<translation id="2856429654176718363">Didžiulis erdvėlaivis sklendžia virš miesto, apšviesto daugybės šviesų. Visa scena perteikta tapybos aliejiniais dažais stiliumi ir pasižymi tamsiais tonais. Sukuriama paslaptinga atmosfera su futuristiniais mokslinės fantastikos elementais. Šis meno kūrinys sukurtas naudojant „Cinema 4D“ programinę įrangą ir „Octane Render“ pateikimo priemonę, kad būtų pabrėžta didelė skyra ir detalumas. Taip pat vaizduojami keli urbanistiniai statiniai iš arti, sustiprinantys lauko gylio efektą. Scena sukurta tapybos aliejiniais dažais stiliumi, naudojant tamsius tonus ir kuriant paslaptingą atmosferą su futuristiniais mokslinės fantastikos elementais.</translation>
 <translation id="2859243502336719778">Kritinis naujinys</translation>
 <translation id="2860473693272905224">Padėkite kitą puslapį ant skaitytuvo</translation>
 <translation id="286265581261662583">Spustelėkite dešiniuoju klavišu arba paspauskite ir palaikykite, kad gautumėte apibrėžtis, vertimus ar konvertuotumėte vienetus</translation>
@@ -446,9 +450,11 @@
 <translation id="2895772081848316509">tamsus</translation>
 <translation id="2915996080311180594">Paleisti iš naujo vėliau</translation>
 <translation id="2926057806159140518">Įveskite naudotojo vardą ir slaptažodį arba nuskaitykite QR kodą</translation>
+<translation id="2927007463545347013">animė stiliaus takas su vaizdu į vandenyną ir krentančiais vyšnių žiedais</translation>
 <translation id="2940811910881150316">Nepavyko išbandyti įrenginio. Jei norite išbandyti, iš naujo atidarykite dangtelį.</translation>
 <translation id="2941112035454246133">Žema</translation>
 <translation id="2956070106555335453">Suvestinė</translation>
+<translation id="2968959705684615497">siurrealistinis baltas tigras su auksinėmis akimis ir auksinėmis juostomis, tupintis ant balto smėlio kopos</translation>
 <translation id="299385721391037602">rožinės ir geltonos spalvų</translation>
 <translation id="3008341117444806826">ATNAUJINTI</translation>
 <translation id="3009958530611748826">Pasirinkite aplanką, kuriame pageidaujate išsaugoti</translation>
@@ -518,6 +524,7 @@
 <translation id="3321030238473337787">Atkūrimo sparta</translation>
 <translation id="3327613592010997943">Šį įrenginį vėl galėsite naudoti <ph name="DAY" /> <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Vykdomas bandymas</translation>
+<translation id="3332683265015995419">stimpanko stiliaus erdvėlaivis, skrendantis per smėlio audrą</translation>
 <translation id="3340011300870565703">Įrenginio dešiniosios ausinės akumuliatoriaus energijos lygis: <ph name="BATTERY_PERCENTAGE" /> proc.</translation>
 <translation id="3340978935015468852">Nustatymai</translation>
 <translation id="3347558044552027859">modernus</translation>
@@ -529,6 +536,7 @@
 <translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">„Earth“ srauto ekrano fonas</translation>
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> fonas su raide <ph name="LETTERS_LETTER" /></translation>
+<translation id="3382806462014639823"><ph name="TEACHER_NAME" /> žiūri jūsų ekraną</translation>
 <translation id="3383623117265110236">Išskirtiniai</translation>
 <translation id="3404249063913988450">Įgalinti ekrano užsklandą</translation>
 <translation id="3413935475507503304">Jei norite tęsti atnaujinimo procesą, spustelėkite „Kitas“.</translation>
@@ -561,6 +569,7 @@
 <translation id="3532980081107202182">Liko apie <ph name="MIN_REMAINING" /> min.</translation>
 <translation id="3533790840489634638">baseinas</translation>
 <translation id="3547264467365135390">Formulė</translation>
+<translation id="3552832331940389362">japoniška animacinė iliustracija, kurioje vaizduojama ant palangės tupinti katė, popiet stebinti lietų</translation>
 <translation id="3557205324756024651">Vietinio ryšio tapatybė (pasirenkama)</translation>
 <translation id="3565064564551103223">Leidžiami IP</translation>
 <translation id="3569407787324516067">Ekrano užsklanda</translation>
@@ -636,12 +645,14 @@
 <translation id="38811596981744338">Teisinė problema</translation>
 <translation id="3885327323343477505">Keisti ekrano užsklandą</translation>
 <translation id="3889914174935857450">Nustatyti datą iš naujo</translation>
+<translation id="3889954687526985291">futuristinis motociklas iš juodo popieriaus su neoninėmis šviesomis tamsiame fone</translation>
 <translation id="3897092660631435901">Meniu</translation>
 <translation id="3902271751020176019">Transkribavimo kalba</translation>
 <translation id="390890062090528082">žvaigždėtas dangus</translation>
 <translation id="391412459402535266">Nepavyko išbandyti įrenginio. Perjunkite į nešiojamojo kompiuterio režimą, kad išbandytumėte.</translation>
 <translation id="3916998944874125962">padaryti ekrano kopiją</translation>
 <translation id="3923184630988645767">Duomenų naudojimas</translation>
+<translation id="392943705803418306">Jūsų Mokymosi įrankių seansas baigėsi</translation>
 <translation id="3932043219784172185">Nėra susieto įrenginio</translation>
 <translation id="3934185438132762746">Nepriskirta: <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Nepavyko nustatyti prieglobos pavadinimo</translation>
@@ -808,12 +819,13 @@
 <translation id="4593212453765072419">Būtina autentifikuoti įgaliotąjį serverį</translation>
 <translation id="4594021849294327751">Sukurti transkribuotą tekstą</translation>
 <translation id="4594541568452132351">Pasirinkite transkribavimo kalbą ir atsisiųskite modelį</translation>
+<translation id="4600301862817165514">„DeLorean“ su neoniniais žibintais, skriejantis per galaktiką su žybsinčiomis žvaigždėmis</translation>
 <translation id="4609350030397390689">Sumažinti klaviatūros šviesumą</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, „<ph name="PRINTER_NAME" />“, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> iš <ph name="TOTAL_PAGE_NUMBER" /> psl. Paspauskite „Enter“, jei norite atšaukti spausdinimo užduotį.</translation>
 <translation id="463791356324567266">Atšaukiamas nuskaitymas...</translation>
 <translation id="4644611440022666152">Įjungti ir atsisiųsti</translation>
 <translation id="4646949265910132906">Saugus „Wi-Fi“ ryšys</translation>
-<translation id="4650608062294027130">Dešinysis antrojo lygio klavišas</translation>
+<translation id="4650608062294027130">Lyg2 (dešinysis)</translation>
 <translation id="4654549501020883054">Keisti kasdien</translation>
 <translation id="4655868084888499342">Vaizdas nustatytas kaip ekrano fonas</translation>
 <translation id="4660989616054030633">Generatyvinis DI gali klysti, įskaitant su žmonėmis susijusias klaidas, todėl patikrinkite dar kartą</translation>
@@ -830,6 +842,7 @@
 <translation id="4697260493945012995">Pasirinkite valdymo tipą</translation>
 <translation id="4712940987669302829">„Bokeh“ efektas</translation>
 <translation id="4731797938093519117">Tėvų prieiga</translation>
+<translation id="4733200407105375152">Ne Mokymosi įrankiuose</translation>
 <translation id="4734982181169850310">pastelinės spalvos</translation>
 <translation id="473775607612524610">Atnaujinti</translation>
 <translation id="4744944742468440486">Informacija, susijusi su jūsų pasirinkimu</translation>
@@ -1006,6 +1019,7 @@
 <translation id="5499762266711462226">Klaviatūros spalva nustatyta pagal ekrano foną</translation>
 <translation id="5502931783115429516">„Android“ neveikia</translation>
 <translation id="550600468576850160">pieva</translation>
+<translation id="5507504956167780539">minimali profesionali nuotrauka, vaizduojanti blizgančio juodo smėlio kopas su dramatiškais šešėliais</translation>
 <translation id="551689408806449779">Įrenginys atjungtas. Bandykite prisijungti dar kartą ir išbandykite</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="552644173505433109">Sužinokite daugiau apie suvestinės ir pavadinimo kūrimą</translation>
@@ -1077,6 +1091,7 @@
 <translation id="5876385649737594562">Įjunkite ir pasirinkite parinktis</translation>
 <translation id="5877503382465267833">Pristabdyti „<ph name="RECORDING_NAME" />“</translation>
 <translation id="588258955323874662">Visas ekranas</translation>
+<translation id="5889539348012432386">Mokymosi įrankių pagrindinis puslapis</translation>
 <translation id="5893975327266416093">Palieskite klaviatūros klavišą, kad priskirtumėte</translation>
 <translation id="5895138241574237353">Paleisti iš naujo</translation>
 <translation id="5896602941605730551">Leisti</translation>
@@ -1125,6 +1140,7 @@
 <translation id="6075872808778243331">(„Android“) HTTP delsa</translation>
 <translation id="6078323886959318429">Pridėti spartųjį klavišą</translation>
 <translation id="6079693086494835199">Iš naujo nustatykite, kad įsitikintumėte, jog numatytasis pagrindinis puslapis nėra sukčiavimo svetainė. Naudokite tik patikimas svetaines.</translation>
+<translation id="6090672065638047175">švytinčio, iš žvaigždžių sudėlioto medžio nuotrauka su gražiu nakties dangumi ir galaktika fone</translation>
 <translation id="6091080061796993741">geltonos spalvos</translation>
 <translation id="6104112872696127344">Nuskaitymas atšauktas</translation>
 <translation id="6106186594183574873">Norėdami užbaigti įveskite seną slaptažodį</translation>
@@ -1310,6 +1326,7 @@
 <translation id="6900701049656042631">Šiame albume nėra nuotraukų. Jei norite pridėti nuotraukų, eikite adresu <ph name="LINK" /></translation>
 <translation id="6902359863093437070">Fono kūrimas naudojant DI</translation>
 <translation id="6905163627763043954">Išbandyti</translation>
+<translation id="6905275015682612674">ilgos ekspozicijos nuotrauka, vaizduojanti švytintį paplūdimį leidžiantis saulei su žvaigždėmis danguje, gražios pastelinės spalvos, 4K</translation>
 <translation id="6905724422583748843">Atgal į puslapį „<ph name="PAGE_NAME" />“</translation>
 <translation id="6910312834584889076">Skaitytuvo dangtis atidarytas. Uždarykite dangtį ir bandykite dar kartą.</translation>
 <translation id="6910845598686542904">Įvertinti įraše aptiktų balsų modelius</translation>
@@ -1319,6 +1336,7 @@
 <translation id="6930597342185648547">Apie foną</translation>
 <translation id="6931666215260956151">galaktika</translation>
 <translation id="6939766318048400022">Kavinė</translation>
+<translation id="6940212863873359282">baltas organzos audinys, sklendžiantis per vidurį virš balto marmuro arkos kreminės spalvos fone</translation>
 <translation id="6942253772720771875">Pateikite atsiliepimą arba aprašykite problemą</translation>
 <translation id="6943893908656559156">Nuotolinio ryšio tapatybė (pasirenkama)</translation>
 <translation id="694981048020558038">Ieškokite įrašo pavadinimo</translation>
@@ -1405,6 +1423,7 @@
 <translation id="7271040990581020067">Skaitytuvas šiuo metu naudojamas. Vėliau bandykite dar kartą.</translation>
 <translation id="7271932918253517778">Į spartųjį klavišą su viršutinės eilutės klavišais turi būti įtrauktas klavišas „<ph name="META_KEY" />“.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7275707758336796649">dalmatinas dinamiška poza rožiniame fone, užfiksuotas didelės skyros fotografijoje, hiperrealistiškas fonas su spalvų koregavimu</translation>
 <translation id="7281657306185710294">Pajusk vėjo dvelksmą</translation>
 <translation id="7287310195820267359">Ekrano fonų rinkiniai</translation>
 <translation id="7293429513719260019">Pasirinkti kalbą</translation>
@@ -1414,6 +1433,7 @@
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Paklauskite ekspertų „Chromebook“ pagalbos forume</translation>
+<translation id="7309823890857024809">minimalistinis natiurmortas su keliomis aguonomis stiklinėje vazoje juodame fone</translation>
 <translation id="7311368985037279727">klaviatūros spalva</translation>
 <translation id="7317831949569936035">Mokyklos registracija</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -1431,6 +1451,7 @@
 <translation id="7353413232959255829"><ph name="LIST_POSITION" /> paieškos rezultatas iš <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Norėdami pereiti prie sparčiojo klavišo, paspauskite „Enter“.</translation>
 <translation id="7359657277149375382">Failo tipas</translation>
 <translation id="73631062356239394">Diagnostikos duomenų bendrinimas</translation>
+<translation id="7369648056634183167">Išraiškingos, rasos lašeliais padengtos tvenkinio lelijos vaizdas iš arti per lietų. Daugiausia dėmesio skiriama subtiliems žiedlapiams ir šviesą atspindintiems vandens lašeliams, užfiksuojant jų švelnius pastelinius atspalvius mėlyname fone. Nuotrauka, užfiksuota akių lygyje, su natūralia šviesa.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378170410161264436">Garso įrašytuvas gali kurti įrašų, kuriuose kalbama, transkribuotus tekstus.
 Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus tekstus.</translation>
@@ -1601,6 +1622,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8135609423982943441">„Chromebook“ buvo iš naujo nustatyti saugūs numatytieji nustatymai. Šiuos pakeitimus galite bet kada koreguoti skiltyje „Nustatymai“.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">Sukurkite savo</translation>
+<translation id="8142182840415860496">Kelių baltų ir geltonų gėlių kadras stambiu planu iš animacinio filmo, subtili šviesiai rožinė gėlė pailgais žiedlapiais ir žaliu stiebu tarp dviejų didelių geltonų tulpių mėlyno dangaus fone, be lapų ar lapijos, pastelinių spalvų, kinematografinis didelės skyros kadras su itin smulkiomis sudėtingomis detalėmis, „Octane Render“ su puikia šviesa, tūriniu ir nuotaiką kuriančiu apšvietimu.</translation>
 <translation id="8143951647992294073">Pasirinkite <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Kūrėjo įrankiai</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
@@ -1681,6 +1703,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8503813439785031346">Vartotojo vardas</translation>
 <translation id="8503836310948963452">Dar kelios minutės...</translation>
 <translation id="8505011850330200833">„Gemini“ modeliui reikia 2 GB saugyklos vietos, kad būtų galima apdoroti transkribuotą tekstą ir kurti santraukas</translation>
+<translation id="8506063704538210734">nuotrauka, vaizduojanti naktinį dangų su meteorų lietumi ir keliais medžiais priekiniame plane, violetiniai ir rožiniai atspalviai</translation>
 <translation id="8506394543220680287">apsnigta</translation>
 <translation id="8508640263392900755">Išsami APN informacija</translation>
 <translation id="8522687886059337719">Dabar galite pasiekti naujus <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ekrano fonus<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ir <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ekrano užsklandą<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
@@ -1823,7 +1846,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="9126720536733509015">Išsaugokite kelis puslapius viename PDF</translation>
 <translation id="9133772297793293778">Paspauskite klaviatūros 1–4 modifikatorius ir dar vieną klavišą. Kad išeitumėte iš redagavimo režimo, paspauskite „Alt“ + „Esc“.</translation>
 <translation id="9137526406337347448">„Google“ paslaugos</translation>
-<translation id="9138630967333032450">Kairysis antrojo lygio klavišas</translation>
+<translation id="9138630967333032450">Lyg2 (kairysis)</translation>
 <translation id="9149391708638971077">Vykdyti atminties bandymą</translation>
 <translation id="9159524746324788320">mėsainiai</translation>
 <translation id="9161276708550942948">tarpo klavišas</translation>

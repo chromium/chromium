@@ -170,6 +170,7 @@
 <translation id="6503257047630241175">RTF අන්තර්ගතය</translation>
 <translation id="6539092367496845964">යම් දෙයක් වැරදිණි. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="654149438358937226">සියලු දැනුම්දීම් අවහිර කරන්න</translation>
+<translation id="6612467943526193239">ක්‍රමාංකනයෙන් පිට වීමට Esc ඔබන්න.</translation>
 <translation id="6620110761915583480">ගොනුව සුරකින්න</translation>
 <translation id="6699343763173986273">මාධ්‍යය ඊළඟ ඛණ්ඩය</translation>
 <translation id="6807086321996342431"><ph name="COLUMN_NAME" /> තීරුව</translation>
@@ -204,7 +205,6 @@
 <translation id="7969046989155602842">විධානය</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{1 ට වැඩි නොකියවූ දැනුම්දීමක්}one{# ට වැඩි නොකියවූ දැනුම්දීම්}other{# ට වැඩි නොකියවූ දැනුම්දීම්}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{1 විනාඩියකින්}one{විනාඩි #කින්}other{විනාඩි #කින්}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">අංකය <ph name="ORIGIN" /> සිට</translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{පැය 1 කට පෙර}one{පැය # කට පෙර}other{පැය # කට පෙර}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{තත්පර 1 ක් ඉතිරියි}one{තත්පර # ක් ඉතිරියි}other{තත්පර # ක් ඉතිරියි}}</translation>

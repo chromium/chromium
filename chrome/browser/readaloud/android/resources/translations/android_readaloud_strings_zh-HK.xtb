@@ -4,15 +4,22 @@
 <translation id="1173075331199604451">語音選單</translation>
 <translation id="1178581264944972037">暫停</translation>
 <translation id="1246424317317450637">粗體</translation>
+<translation id="1370273601702151510">喜歡</translation>
 <translation id="1483137792530497944">河流</translation>
 <translation id="1586836055630070874">撫慰心靈</translation>
+<translation id="1666704368140506043">令人反感的內容</translation>
 <translation id="1741047078107369903">溫暖</translation>
 <translation id="1807863182207623884">紅寶石</translation>
 <translation id="1921351128855867012">快轉 <ph name="NUMBER_OF_SECONDS" /> 秒</translation>
 <translation id="1984328900355667246">無法播放</translation>
+<translation id="2019727681730021602">標準播放</translation>
 <translation id="2224347680315897176">平穩</translation>
+<translation id="2575502321843437554">吸引力不足</translation>
 <translation id="2611765907167846862">穩重</translation>
 <translation id="3023502830214299618">很抱歉，目前無法播放此頁面。請稍後再試。</translation>
+<translation id="3457812538570616687">不喜歡</translation>
+<translation id="3493899379487634969">出現什麼問題？</translation>
+<translation id="3778044272390020426">負面意見選項選單</translation>
 <translation id="3807208219231826020">拖曳時間軸播放</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3936324432406465283">播放速度</translation>
@@ -28,28 +35,34 @@
 <translation id="5026371835667036198">明亮</translation>
 <translation id="5234971936051226002">「朗讀此頁面內容」播放器已經縮到最細。</translation>
 <translation id="5251803541071282808">雲端</translation>
+<translation id="5526614127710223793">播放模式選取器</translation>
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="5694491020339060116">播放速度選單</translation>
+<translation id="5965409657393819302">技術問題</translation>
+<translation id="6218961554829577610">不喜歡此聲音</translation>
 <translation id="6315170314923504164">語音</translation>
+<translation id="6330455646577575965">AI 音訊播放</translation>
 <translation id="6343633247422081848">青苔</translation>
 <translation id="6550675742724504774">選項</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />，<ph name="TONE" /></translation>
+<translation id="677790449852070664">謝謝！你的意見有助我們改進！</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="6846298663435243399">載入中…</translation>
 <translation id="6889157801232138307">「朗讀此頁內容」播放器</translation>
 <translation id="7051308646573997571">珊瑚紅色</translation>
 <translation id="7112750136794557642">輕按展開播放器以查看更多選項。</translation>
+<translation id="7138678301420049075">其他</translation>
 <translation id="7221920857098237570">柔和</translation>
 <translation id="7237590978482584900">輕快</translation>
 <translation id="7282547042039404307">流暢</translation>
-<translation id="7587250070160020374">Chrome 正在播放</translation>
 <translation id="8004767876552422827">原野</translation>
 <translation id="8136852699834914183">無法播放此頁面的內容。</translation>
 <translation id="8198036737896977997">空氣</translation>
 <translation id="8264989794233974275"><ph name="PLAYBACK_SPEED" /> 倍加/減速。</translation>
 <translation id="8407011429883244666">閂播放器。</translation>
 <translation id="8481839122437406573">平靜</translation>
+<translation id="8756370108715456837">與事實不符</translation>
 <translation id="8953618380150219653">「朗讀此頁面內容」播放器宜家顯示喺成個畫面。</translation>
 <translation id="978117257931832348">低音</translation>
 </translationbundle>

@@ -20,6 +20,7 @@
 <translation id="1059913517121127803">ቅኝትን መጀመር አልተቻለም</translation>
 <translation id="1061864016440983342">ያለአካባቢ ተጠቀም</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> ከ<ph name="COUNT" />፣ <ph name="NAME" />።</translation>
+<translation id="106558928761833284">ፈጣን የወደፊት የሕዋ መንኮራኩር ያለው ውብ ኮዝሚክ የኔቡላ ጋላክሲ፣ ሰማያዊ፣ ሮዝ እና ሐምራዊ ቀለማት</translation>
 <translation id="1069150558259542054">ፈጣን ማስገቢያ ለብጁ አቋራጮች ጥቅም ላይ መዋል አይችልም።</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ኬላ ተገኝቷል</translation>
@@ -27,6 +28,7 @@
 <translation id="1082009148392559545">ማያ ገፅ ቆጣቢውን በማውረድ ላይ</translation>
 <translation id="1094693127011229778">የአይፒ አድራሻ አይገኝም</translation>
 <translation id="1100902271996134409">ምስሎች በመፍጠር ላይ...</translation>
+<translation id="1102946598597843031">የሚወዳድቁ የቼሪ የሚፈነዱ ቅጠሎች ያሉት በሐይቅ በላይ የጨረቃ ፎቶ፣ 4ኪ</translation>
 <translation id="1107856713690040084">የ<ph name="DEVICE_TYPE" /> ኦዲዮ</translation>
 <translation id="1116694919640316211">ስለ</translation>
 <translation id="1118572504348554005">ለሳንካዎች እና ለእኛ ሪፖርት ለሚያደርጓቸው ሌሎች ችግሮች መላ ለመፈለግ በዚህ ቅጽ በኩል የቀረበውን ግብረመልስ ከአጋሮቻችን ጋር ልናጋራ እንችላለን። እንደ የይለፍ ቃላት የመሳሰሉ ልዩ ጥንቃቄ የሚያስፈልጋቸው መረጃዎችን አያካትቱ።</translation>
@@ -67,6 +69,7 @@
 <translation id="1238163879850290856">ሌሎች ውሂብን እንዳይደርሱ ለመከላከል ዳግም ያስጀምሩ። እርስዎ የሚያምኗቸውን የግቤት ስልቶች ብቻ ይጠቀሙ።</translation>
 <translation id="1238612778414822719">የHTTPS የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="1252766349417594414">ጆይስቲክ</translation>
+<translation id="1261045951892393759">ድመት ዩኒኮር እየጋለበች ሳለ የሚበርር v እየተጫወተች፣ በዳራው ላይ የመብረቅ ብልጭታ ይኖራል</translation>
 <translation id="1270369111467284986">ተያዥ መግቢያ ተጠርጥሯል</translation>
 <translation id="1274654146705270731">ቡርቱካኖች</translation>
 <translation id="1275718070701477396">የተመረጡ</translation>
@@ -273,6 +276,7 @@
 <translation id="2045814230297767491">መቁረጫዎች</translation>
 <translation id="2047316797244836561">እባክዎ ከአውታረ መረብ ጋር ይገናኙ እና የማያ ገፅ ማቆያን ለማየት ገጹን እንደገና ይጫኑ።</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
+<translation id="2068472557797646626">የክሮም የሥነ ሕንፃ አካላት ዳራ ላይ የክሮም ሉሎች እና የሉል ቅርፆች 3ል ምስል መሥራት ውቅረቱ በቅጂ ቦታ ለማስተዋወቂያ፣ የምርት ስም መሥራት እና አቀራረብ ዘመናዊ ዝቅተኛ ዝርዝር ያለው ጽንሰ-ሐሳብ ነው። በዝቅተኛ ዝርዝር ቅጥ በረቂቅ ዳራ ፊት ለፊት ትልቅ ቅስት ይቆማል። የስቱዲዮ መብራት። የቅርብ ቀረጻ።</translation>
 <translation id="2073232437457681324">ሰፊ ውቅያኖስ</translation>
 <translation id="2080070583977670716">ተጨማሪ ቅንብሮች</translation>
 <translation id="2082932131694554252">የተመደበ የቁልፍ ሰሌዳ ቁልፍ</translation>
@@ -390,7 +394,6 @@
 <translation id="2584559707064218956">ለማዋቀር ወደ ቅንብሮች ይሂዱ</translation>
 <translation id="2586146417912237930">ሰማያዊ እና ኢንዲጎ</translation>
 <translation id="2589921777872778654">ምናሌውን ያርትዑ እና ይሰርዙ</translation>
-<translation id="2590424100019931043">ከዚህ ክፍል ላይ ተወግደዋል</translation>
 <translation id="2597774443162333062">ፋይሎች ስህተታቸው እንዲታረም ወደ Google ይላካሉ</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{ቅኝት ተጠናቅቋል። 1 ገፅ ተቃኝቷል}one{ቅኝት ተጠናቅቋል። {NUMBER_OF_PAGES} ገጾች ተቃኝተዋል}other{ቅኝት ተጠናቅቋል። {NUMBER_OF_PAGES} ገጾች ተቃኝተዋል}}</translation>
 <translation id="261322795497077164">ተናጋሪን መለየት</translation>
@@ -430,6 +433,7 @@
 <translation id="2805756323405976993">መተግበሪያዎች</translation>
 <translation id="28232023175184696">ከበይነመረቡ ጋር መገናኘት አልተቻለም። እንደገና ለመሞከር ጠቅ ያድርጉ።</translation>
 <translation id="2855718259207180827">ሱፍ</translation>
+<translation id="2856429654176718363">በብዙ ብርሃኖች የበራ ከተማ በላይ ትልቅ የሕዋ መንኮራኩር ይንሳፈፋል። መላው ትዕይንት የዘይት የቀለም ሥዕል ቅጥ አለው እና ጨለማ ቅልሞችን ያቀርባል። በወደፊት ሳይንሳዊ ልብ-ወለድ አካላት ምሥጢራዊ ድባብ ይፈጥራል። ይህ ሥነ ጥበብ የተፈጠረው ከፍተኛ ጥራት እና ከፍተኛ ዝርዝሮችን ለማድመቅ C4D ሶፍትዌር እና OC ምስል ሠሪ በመጠቀም ነው። እንዲሁም በቅርብ ርቀት ውስጥ አንዳንድ የከተማ ሕንፃዎች ነበሩ፣ እነዚህም የመስክ ተጽዕኖ ጥልቀት አክለዋል። ይህ ትዕይንት ምስል የተሠራው በዘይት የቀለም ሥዕል ቅጥ ሲሆን ጠቆር ያሉ ገጽታዎች ያቀርባል እና በወደፊት ሳይንሳዊ ልብ-ወለድ አካላት ምሥጢራዊ ድባብ ይፈጥራል።</translation>
 <translation id="2859243502336719778">ወሳኝ ዝማኔ</translation>
 <translation id="2860473693272905224">በቃኚው ላይ ሌላ ገፅ ያስቀምጡ</translation>
 <translation id="286265581261662583">ፍቺዎችን፣ ትርጉሞችን ወይም አሃድ ውይይቶችን ለማግኘት የቀኝ ጠቅታ ወይም ተጭነው ይያዙ</translation>
@@ -446,9 +450,11 @@
 <translation id="2895772081848316509">ጨለማ</translation>
 <translation id="2915996080311180594">በኋላ ዳግም አስነሳ</translation>
 <translation id="2926057806159140518">የእርስዎ የተጠቃሚ ስም እና የይለፍ ቃል ያስገቡ ወይም QR ኮድዎን ይቃኙ</translation>
+<translation id="2927007463545347013">የሚወዳድቁ የቼሪ የሚፈነዱ ቅጠሎች ያሉት ውቂያኖሱን ተሻግሮ የሚመለከት የእነማ ዱካ</translation>
 <translation id="2940811910881150316">መሣሪያን መፈተሽ አልተቻለም። ለመፈተሽ ክዳኑን እንደገና ይክፈቱ።</translation>
 <translation id="2941112035454246133">ዝቅተኛ</translation>
 <translation id="2956070106555335453">ማጠቃለያ</translation>
+<translation id="2968959705684615497">ወርቃማ ዓይኖች እና ወርቃማ መስመሮች ያሉት እጹብ ድንቅ ነብር ነጭ የአሸዋ ተራራ ላይ ተቀምጦ</translation>
 <translation id="299385721391037602">ሮዝ እና ቢጫ</translation>
 <translation id="3008341117444806826">አድስ</translation>
 <translation id="3009958530611748826">የሚያስቀምጡበትን አቃፊ ይምረጡ</translation>
@@ -518,6 +524,7 @@
 <translation id="3321030238473337787">የመልሶ ማጫወት ፍጥነት</translation>
 <translation id="3327613592010997943"><ph name="DAY" /> <ph name="TIME" /> ላይ ይህን መሣሪያ እንደገና መጠቀም ይችላሉ።</translation>
 <translation id="3328783797891415197">ሙከራ በማሄድ ላይ</translation>
+<translation id="3332683265015995419">በአሸዋ ነፋስ ውስጥ እየበረረ ያለ ስቲምፓንክ የሕዋ መንኮራኩር</translation>
 <translation id="3340011300870565703">መሣሪያ <ph name="BATTERY_PERCENTAGE" />% የቀኝ ጆሮ ማዳመጫ ባትሪ አለው።</translation>
 <translation id="3340978935015468852">ቅንብሮች</translation>
 <translation id="3347558044552027859">ዘመናዊ</translation>
@@ -529,6 +536,7 @@
 <translation id="3369632935976756339"><ph name="INTENT" />፤ <ph name="QUERY_TEXT" />፤ <ph name="SUBTEXT" />፤ <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">የመሬት ፍሰት ልጣፍ</translation>
 <translation id="33736539805963175">የ<ph name="LETTERS_COLOR" /> ዳራ ከ<ph name="LETTERS_LETTER" /> ፊደል ጋር</translation>
+<translation id="3382806462014639823"><ph name="TEACHER_NAME" /> ማያ ገፅዎን እየተመለከቱ ነው</translation>
 <translation id="3383623117265110236">ለሚመለከተው የተወሰነ</translation>
 <translation id="3404249063913988450">የማያ ገፅ ማቆያን አንቃ</translation>
 <translation id="3413935475507503304">በዝማኔው ለመቀጠል ቀጣይ የሚለውን ጠቅ ያድርጉ።</translation>
@@ -561,6 +569,7 @@
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> ደቂቃዎች ገደማ ይቀራል</translation>
 <translation id="3533790840489634638">መዋኛ ገንዳ</translation>
 <translation id="3547264467365135390">ቀመር</translation>
+<translation id="3552832331940389362">ከሰዓት መስኮት ላይ ተቀምጣ ዝናቡን እየተመለከተች ያለች ድመት የጃፓን እነማ</translation>
 <translation id="3557205324756024651">የአካባቢ ማንነት (ከተፈለገ)</translation>
 <translation id="3565064564551103223">የተፈቀዱ አይፒዎች</translation>
 <translation id="3569407787324516067">የማያ ገፅ ማቆያ</translation>
@@ -636,12 +645,14 @@
 <translation id="38811596981744338">የህግ ጉዳዮች</translation>
 <translation id="3885327323343477505">የማያ ገፅ አሳራፊን ቀይር</translation>
 <translation id="3889914174935857450">ቀንን ዳግም አስጀምር</translation>
+<translation id="3889954687526985291">ኒዮን ብርሃኖች ጨለማ ዳራ ያለው ከጥቁር ወረቀት የተሠራ የወደፊት ሞተርሳይክል</translation>
 <translation id="3897092660631435901">ምናሌ</translation>
 <translation id="3902271751020176019">የጽሑፍ ግልባጭ ቋንቋ</translation>
 <translation id="390890062090528082">በኮከብ-የተሞላ ሰማይ</translation>
 <translation id="391412459402535266">መሣሪያን መፈተሽ አልተቻለም። ለመፈተሽ ወደ የጭን ኮምፒውተር ሁነታ ይቀይሩ።</translation>
 <translation id="3916998944874125962">ቅጽበታዊ ገጽ እይታን የሚያነሳ</translation>
 <translation id="3923184630988645767">የውሂብ አጠቃቀም</translation>
+<translation id="392943705803418306">የክፍል መሣሪያዎች ክፍለ ጊዜ ለእርስዎ አብቅቷል</translation>
 <translation id="3932043219784172185">ምንም መሣሪያ አልተገናኘም</translation>
 <translation id="3934185438132762746">ያልተመደበ <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">ለአስተናጋጅ መፍትሔ መስጠት አልተሳካም</translation>
@@ -808,6 +819,7 @@
 <translation id="4593212453765072419">የተኪ ማረጋገጥ ያስፈልጋል</translation>
 <translation id="4594021849294327751">ጽሁፍ ግልባጭ ፍጠር</translation>
 <translation id="4594541568452132351">የጽሑፍ ግልባጭ ቋንቋ ይምረጡ እና ሞዴል ያውርዱ</translation>
+<translation id="4600301862817165514">ከዋክብት በጎን እያለፉ በጋላክሲ ውስጥ እየነዳ ያለ ኒዮን መብራቶች ያሉት ዴሎሪያን</translation>
 <translation id="4609350030397390689">የቁልፍ ሰሌዳ ብሩህነት መቀነሻ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />፣ <ph name="PRINTER_NAME" />፣ <ph name="CREATION_TIME" />፣ <ph name="PRINTED_PAGE_NUMBER" /> ከ<ph name="TOTAL_PAGE_NUMBER" /> ዉስጥ የሕትመት ሥራን ለመሰረዝ እባክዎ ያስገቡ።</translation>
 <translation id="463791356324567266">መቃኘትን በመሰረዝ ላይ...</translation>
@@ -830,6 +842,7 @@
 <translation id="4697260493945012995">የመቆጣጠሪያዎን አይነት ይምረጡ</translation>
 <translation id="4712940987669302829">የቦከህ ተጽዕኖ</translation>
 <translation id="4731797938093519117">የወላጅ መዳረሻ</translation>
+<translation id="4733200407105375152">የክፍል መሣሪያዎች ውስጥ አይደሉም</translation>
 <translation id="4734982181169850310">ገርጣ ያሉ ቀለማት</translation>
 <translation id="473775607612524610">አዘምን</translation>
 <translation id="4744944742468440486">ከእርስዎ ምርጫ ጋር የተዛመደ መረጃ</translation>
@@ -1006,6 +1019,7 @@
 <translation id="5499762266711462226">የቁልፍ ሰሌዳ ቀለም በልጣፍ ላይ የተመሠረተ ነው</translation>
 <translation id="5502931783115429516">Android እያሄደ አይደለም</translation>
 <translation id="550600468576850160">መስክ</translation>
+<translation id="5507504956167780539">ድራማዊ ጥላዎች ያሉት የሚያብረቀርቅ ጥቁር የአሸዋ ተራራ ዝቅተኛ ዝርዝር ያለው ባለሙያዊ ፎቶ</translation>
 <translation id="551689408806449779">መሣሪያው ግንኙነቱ ተቋርጧል። ለመሞከር ዳግም ማገናኘትን ይሞክሩ</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="552644173505433109">ስለ ማጠቃለያ እና የርዕስ ፈጠራ የበለጠ ይወቁ</translation>
@@ -1077,6 +1091,7 @@
 <translation id="5876385649737594562">አማራጮችን ለመምረጥ ያብሩ</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> ባለበት አቁም</translation>
 <translation id="588258955323874662">ሙሉ ገፅ ዕይታ</translation>
+<translation id="5889539348012432386">የክፍል መሣሪያዎች ቤት</translation>
 <translation id="5893975327266416093">ለመመደብ በአንድ የቁልፍ ሰሌዳ ቁልፍ ላይ መታ ያድርጉ</translation>
 <translation id="5895138241574237353">እንደገና ጀምር</translation>
 <translation id="5896602941605730551">አጫውት</translation>
@@ -1125,6 +1140,7 @@
 <translation id="6075872808778243331">(Android) የኤችቲቲፒኤስ የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="6078323886959318429">አቋራጭ አክል</translation>
 <translation id="6079693086494835199">ነባሪው መነሻ ገፅ የማስገር ጣቢያ አለመሆኑን ለማረጋገጥ ዳግም ያስጀምሩ። የሚያምኗቸውን ድር ጣቢያዎች ብቻ ይጠቀሙ።</translation>
+<translation id="6090672065638047175">በዳራው ላይ ውብ የምሽት ሰማይ እና ጋላክሲ ያሉት ከከዋክብት የተሠራ የሚበራ ዛፍ ፎቶ</translation>
 <translation id="6091080061796993741">ቢጫ</translation>
 <translation id="6104112872696127344">መቃኘት ተሰርዟል</translation>
 <translation id="6106186594183574873">ለማጠናቀቅ፣ የእርስዎን ይለፍ ቃል ያስገቡ</translation>
@@ -1310,6 +1326,7 @@
 <translation id="6900701049656042631">ይህ አልበም ምንም ፎቶዎች የሉትም። ፎቶዎችን ለማከል ወደ <ph name="LINK" /> ይሂዱ</translation>
 <translation id="6902359863093437070">በAI ዳራ ይፍጠሩ</translation>
 <translation id="6905163627763043954">ሞክረው</translation>
+<translation id="6905275015682612674">በሰማይ ላይ ከዋክብት ያሉት በፀሃይ መግቢያ ላይ የሚያበራ የባህር ዳርቻ ረዥም ተጋላጭነት ፎቶ፣ ውብ ገርጣ ያሉ ቀለማት፣ 4ኪ</translation>
 <translation id="6905724422583748843">ወደ <ph name="PAGE_NAME" /> ተመለስ</translation>
 <translation id="6910312834584889076">የቃኚው ሽፋን ክፍት ነው። ሽፋኑን ይዝጉ እና እንደገና ይሞክሩ።</translation>
 <translation id="6910845598686542904">በቅጂው ውስጥ የተገኙትን የድምጾች ሞዴሎች ያስሉ</translation>
@@ -1319,6 +1336,7 @@
 <translation id="6930597342185648547">ስለ ዳራ</translation>
 <translation id="6931666215260956151">ጋላክሲ</translation>
 <translation id="6939766318048400022">ካፌ</translation>
+<translation id="6940212863873359282">መሃል ላይ እየተንሳፈፈ ያለ የነጭ ኦርጋንዛ ክፍል፣ ከላይ ክሬም ዳራ ያለው ነጭ እምነበረድ ቅስት</translation>
 <translation id="6942253772720771875">ግብረመልስዎን ያጋሩ ወይም ችግርዎን ይግለጹ</translation>
 <translation id="6943893908656559156">የርቀት ማንነት (ከተፈለገ)</translation>
 <translation id="694981048020558038">የቅጂ ርዕስ ይፈልጉ</translation>
@@ -1405,6 +1423,7 @@
 <translation id="7271040990581020067">ቃኚ በአሁኑ ጊዜ ጥቅም ላይ እየዋለ ነው። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="7271932918253517778">ከላይ ረድፍ ቁልፎች ያለው አቋራጭ የ<ph name="META_KEY" /> ቁልፍን ማካተት ያስፈልገዋል።</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7275707758336796649">ሮዝ ዳራ ላይ የሙሉ ሰውነት ተለዋዋጭ መልክ እያሳየ ያለ ዳልማሽያዊ ውሻ፣ በከፍተኛ ጥራት ፎቶ በከፍተኛ ደረጃ እውነት የሚመስል የማከማቻ ዳራ በቀለም ደረጃ መስጠት የተነሳ</translation>
 <translation id="7281657306185710294">ነፋሱ ይሰማዎት</translation>
 <translation id="7287310195820267359">የልጣፍ ስብስቦች</translation>
 <translation id="7293429513719260019">ቋንቋ ይምረጡ</translation>
@@ -1414,6 +1433,7 @@
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">ኤጅ</translation>
 <translation id="7308203371573257315">በChromebook የእገዛ ውይይት መድረክ ላይ የሚገኙ ባለሙያዎችን ይጠይቁ</translation>
+<translation id="7309823890857024809">በጥቁር ዳራ ላይ ባለው የመስታወት የአበባ ማስቀመጫ ውስጥ ዝቅተኛ ዝርዝር ያለው ፓፓቨር ሪያ ግንዶች ቅጽበታዊ ገጽ እይታ ሕይወት</translation>
 <translation id="7311368985037279727">የቁልፍ ሰሌዳ ቀለም</translation>
 <translation id="7317831949569936035">የትምህርት ቤት ምዝገባ</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -1431,6 +1451,7 @@
 <translation id="7353413232959255829">የፍለጋ ውጤት <ph name="LIST_POSITION" /> ከ<ph name="LIST_SIZE" />፦ <ph name="SEARCH_RESULT_TEXT" />። ወደ አቋራጭ ለማሰስ አስገባን ይጫኑ።</translation>
 <translation id="7359657277149375382">የፋይል ዓይነት</translation>
 <translation id="73631062356239394">የምርመራ ውሂብን ያጋሩ</translation>
+<translation id="7369648056634183167">በዝናብ ውስጥ የውስብስብ፣ በውሃ እንጥብጣቢዎች የተሸፈነ የኩሬ ሊሊ። ትኩረቱ በለስላሳ የአበባ ቅጠሎች እና ብርሃን የሚያንፀባርቁ የውሃ ጠብታዎች ላይ ሲሆን በሰማያዊ ዳራ ላይ ለስላሳ ገርጣ ያሉ ቀለማታቸውን ያነሳል። ተፈጥሯዊ ብርሃን በመጠቀም የዓይን ደረጃ የተነሳ</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378170410161264436">መቅጃ ንግግር ላላቸው ቅጂዎች ወደ ጽሁፍ ግልባጮችን መፍጠር ይችላል።
 እነዚህን ወደ ጽሁፍ ግልባጮች ለማግኘት ወደ ጽሁፍ ግልባጭ ሞዴሉን (እስከ 100 ሜባ) ያውርዱ።</translation>
@@ -1601,6 +1622,7 @@
 <translation id="8135609423982943441">የእርስዎ Chromebook ወደ ደህንነታቸው የተጠበቁ ነባሪዎች ዳግም ጀምሯል። እነዚህን ቅንብሮች በማንኛውም ጊዜ ቅንብሮች ውስጥ ማስተካከል ይችላሉ።</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">የራስዎን ይፍጠሩ</translation>
+<translation id="8142182840415860496">በርካታ ነጭ እና ቢጫ አበባዎች የቅርብ ቀረጻ፣ ከታነመ ፊልም ላይ ቅጽበታዊ ገጽ እይታ፣ የሰማይ ሰማያዊ ዳራ ላይ ያለ ምንም ቅጠሎች እና የወዳደቁ ቅጠሎች ገርጣ ያሉ ቀለማት የሌሉበት ረጃጅም የአበባ ቅጠሎች እና አረንጓዴ ግንድ ያለው የነጣ ሮዝ አበባ ከሁለት ትላልቅ ቢጫ ቱሊፖች መሃል ተቀምጦ፣ በከፍተኛ ጥራት እና በጣም ዝርዝር ያላቸው ውስብስብ ዝርዝሮች ሲኒማዊ ቅጽበታዊ ገጽ እይታ፣ ውብ ብርሃን ያለው ኦክቴን ምስል ሠሪ፣ ቦታ የሚወስድ ብርሃን እና ስሜታዊ ብርሃን።</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />ን ምረጥ</translation>
 <translation id="8151185429379586178">የገንቢ መሳሪያዎች</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />፣ <ph name="ACCELERATOR_INFO" />።</translation>
@@ -1681,6 +1703,7 @@
 <translation id="8503813439785031346">የተጣቃሚ ስም</translation>
 <translation id="8503836310948963452">ጥቂት ተጨማሪ ደቂቃዎች ብቻ...</translation>
 <translation id="8505011850330200833">የGemini ሞዴል ጽሁፍ ግልባጮችን ለማሰናዳት እና ማጠቃለያዎችን ለመፍጠር 2ጊባ ማከማቻ ያስፈልገዋል</translation>
+<translation id="8506063704538210734">ከፊት ለፊት የሚቲዮር ዝናብ እና ጥቂት ዛፎች ያሉት የሌሊት ሰማይ፣ ከሐምራዊ እና ሮዝ ቀለማት ጋር</translation>
 <translation id="8506394543220680287">በበረዶ የተሸፈነ</translation>
 <translation id="8508640263392900755">የኤፒኤን ዝርዝሮች</translation>
 <translation id="8522687886059337719">አሁን <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />የልጣፎች<ph name="END_LINK_WALLPAPER_SUBPAGE" /> እና <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />የማያ ገፅ ቆጣቢ<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> መዳረሻ አለዎት</translation>

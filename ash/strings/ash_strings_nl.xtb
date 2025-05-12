@@ -1440,6 +1440,7 @@ Geen apparaten verbonden.</translation>
 <translation id="5672890847723042801">Hulpprogramma's</translation>
 <translation id="5673434351075758678">Van '<ph name="FROM_LOCALE" />' naar '<ph name="TO_LOCALE" />' na synchronisatie van je instellingen.</translation>
 <translation id="5675363643668471212">Plankitem</translation>
+<translation id="5677022547882470786">Sleep of druk op de spatiebalk om een gebied te selecteren om te doorzoeken</translation>
 <translation id="5677928146339483299">Geblokkeerd</translation>
 <translation id="5678564054339031017">Volgende week tonen</translation>
 <translation id="5679050765726761783">Adapter met laag vermogen aangesloten</translation>
@@ -2432,6 +2433,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8934418770423095813">Google-document maken</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 bestand}other{# bestanden}}</translation>
 <translation id="8936501819958976551">gedeactiveerd</translation>
+<translation id="8937312474322077653">Je zit in de functie voor schermopname, die is ingesteld op <ph name="SOURCE" /> <ph name="TYPE" />. Druk op Tab om het opnametype te kiezen. Druk op de spatiebalk om de regio te selecteren. Druk op Enter om op te nemen.</translation>
 <translation id="8938800817013097409">USB-C-apparaat (poort rechts aan de achterkant)</translation>
 <translation id="8939855324412367560">De invoeraudio is <ph name="INPUT_DEVICE_NAME" /> en de uitvoeraudio is <ph name="OUTPUT_DEVICE_NAME" />. Ga naar Instellingen voor wijzigingen.</translation>
 <translation id="8940956008527784070">Batterij is bijna leeg (<ph name="PERCENTAGE" />%)</translation>

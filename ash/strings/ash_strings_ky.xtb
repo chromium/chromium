@@ -46,7 +46,7 @@
 <translation id="1153356358378277386">Жупташкан түзмөктөр</translation>
 <translation id="1153918444040990015">Focus добуштарына туташкан жок</translation>
 <translation id="1155734730463845512">Батареянын учурдагы деңгээли: <ph name="BATTERY_PERCENTAGE" />%</translation>
-<translation id="1157514002898505378">Жаратуучу жасалма акыл сынамык болуп эсептелет жана мазмун так эмес, адаштыруучу же адепсиз болушу мүмкүн. Маселе тууралуу кабарлоо үчүн администратор менен байланышыңыз. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
+<translation id="1157514002898505378">Генеративдик жасалма акыл сынамык болуп эсептелет жана мазмун так эмес, адаштыруучу же адепсиз болушу мүмкүн. Маселе тууралуу кабарлоо үчүн администратор менен байланышыңыз. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">күйүк жана колдонулууда</translation>
 <translation id="1163437384438183174">Текчеден Phone Hub'ды алып салуу</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1440,6 +1440,7 @@
 <translation id="5672890847723042801">Кызматтык программалар</translation>
 <translation id="5673434351075758678">Параметрлер шайкештештирилгенден кийин тил "<ph name="FROM_LOCALE" />" тилинен "<ph name="TO_LOCALE" />" тилине өзгөртүлдү.</translation>
 <translation id="5675363643668471212">Текчедеги нерсе</translation>
+<translation id="5677022547882470786">Издөө үчүн аймакты тандоо үчүн сүйрөңүз же Space баскычын басыңыз</translation>
 <translation id="5677928146339483299">Бөгөттөлгөн</translation>
 <translation id="5678564054339031017">Кийинки аптаны көрсөтүү</translation>
 <translation id="5679050765726761783">Кубаты төмөн адаптер туташтырылды</translation>
@@ -2432,6 +2433,7 @@
 <translation id="8934418770423095813">Google документин түзүү</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}other{# файл}}</translation>
 <translation id="8936501819958976551">өчүрүлдү</translation>
+<translation id="8937312474322077653">Экрандагыны тартып алууда <ph name="SOURCE" /> <ph name="TYPE" /> деп коюңуз. Тартуу түрүн тандоо үчүн өтмөктү басыңыз. Аймакты тандоо үчүн боштук баскычын басыңыз. Тартуу үчүн Enter баскычын басыңыз.</translation>
 <translation id="8938800817013097409">USB-C түзмөгү (аркасындагы оң жактагы оюкча)</translation>
 <translation id="8939855324412367560">Киргизүүчү түзмөк – "<ph name="INPUT_DEVICE_NAME" />", ал эми чыгаруучу түзмөк – "<ph name="OUTPUT_DEVICE_NAME" />". Өзгөртүү үчүн параметрлерге өтүңүз.</translation>
 <translation id="8940956008527784070">Батарея аз (<ph name="PERCENTAGE" />%)</translation>

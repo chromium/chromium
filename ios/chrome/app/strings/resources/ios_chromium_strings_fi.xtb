@@ -47,7 +47,6 @@
 <translation id="2042889939382983733">Näytä Chromium-historia</translation>
 <translation id="2052320862053429062">Chromium vertaa salasanojasi säännöllisesti listoihin salasanoista, jotka on julkaistu verkossa. Tätä varten salasanat ja käyttäjänimet salataan, joten kukaan (myöskään Google) ei voi lukea niitä.</translation>
 <translation id="2059365270911640413">Viimeistele Chromiumin käyttöönotto</translation>
-<translation id="2147210759439165826">Pysy ajan tasalla sisällöstä ja hyödyllisistä Chromium-vinkeistä.</translation>
 <translation id="2168108852149185974">Jokin laajennus kaataa Chromiumin. Poista seuraavat:</translation>
 <translation id="2168593389981132306">Entistä parempi Chromium</translation>
 <translation id="2178608107313874732">Chromium ei voi käyttää kameraa tällä hetkellä.</translation>
@@ -157,6 +156,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chromiu
 <translation id="4828317641996116749">Chromium ei voinut tarkistaa kaikkia salasanoja. Yritä myöhemmin uudelleen.</translation>
 <translation id="4856138222358683580">Chromium-toiminnot</translation>
 <translation id="4904452304169763785">Ilmoittaa yksityisyys- tai tietoturvaongelmista, jotka Chromium havaitsee puolestasi.</translation>
+<translation id="4908570938463711775">Aloita tutustumalla Chromiumin perusteisiin</translation>
 <translation id="4962295957157529683">Siirry toiseen avoimeen Chromium-ikkunaan ja viimeistele aloittamasi.</translation>
 <translation id="4985291216379576555">Chromium ei voi tarkistaa, onko päivityksiä saatavilla</translation>
 <translation id="4996471330284142407">Helppokäyttöisellä, turvallisella ja entistäkin nopeammalla Chromiumilla saat enemmän aikaan.</translation>
@@ -197,6 +197,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chromiu
 <translation id="5688047395118852662">Tässä kortissa on ehdotuksia Chromiumin hyödyntämiseen parhaalla mahdollisella tavalla.</translation>
 <translation id="5700709190537129682">Chromium ei voi tarkistaa salasanojasi</translation>
 <translation id="584550191241316896">Kirjautuneena Chromiumiin</translation>
+<translation id="5862307444128926510">Tervetuloa Chromiumiin</translation>
 <translation id="5889847953983052353">Kun se on päällä:
 <ph name="BEGIN_INDENT" />  • Auta tekemään Chromiumista parempi muille, jotka käyttävät sitä samoin kuin sinä.<ph name="END_INDENT" />
 
@@ -223,6 +224,7 @@ Huomioitavaa:
 <translation id="6301717043141881464">Löydät muiden sovellusten tallennetut salasanat helposti käyttämällä Chromiumia automaattiseen täyttöön</translation>
 <translation id="6324041800010509197">Siirry Chromiumin välilehtiruudukkoon</translation>
 <translation id="6325378625795868881">Käytä Chromiumia, kun napautat linkkejä viesteissä ja muissa sovelluksissa.</translation>
+<translation id="6387994184698195448">Pysy ajan tasalla hyödyllisistä Chromium-vinkeistä ja muusta.</translation>
 <translation id="6424492062988593837">Chromiumista tuli juuri entistä parempi! Uusi versio on saatavilla.</translation>
 <translation id="6433172051771630690">Näillä vinkeillä saat Chromiumista mahdollisimman paljon irti.</translation>
 <translation id="65045991564554105">Näytä Chromium-kirjanmerkit</translation>
@@ -284,7 +286,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="7980860476903281594">Chromium jakaa sijaintisi sallimillesi sivustoille.</translation>
 <translation id="7994322153108931467">Jos haluat hyödyllisiä Chromium-vinkkejä, laita ilmoitukset päälle iOS-asetuksista.</translation>
 <translation id="7997159823054171568">Valitse Chromium oletusselaimeksi</translation>
-<translation id="800195749539500647">Paras hyöty Chromiumista</translation>
 <translation id="800380310260616129">Lataa Chromium täältä.</translation>
 <translation id="8013573822802650211">Kirjaudu sisään kaikilla laitteillasi, jotta voit nähdä Chromium-välilehtesi missä tahansa</translation>
 <translation id="8014091604604659473">Olet kirjautunut ulos Chromiumista</translation>
@@ -317,6 +318,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="8860548555286245440">Avaa URL-osoitteet Chromiumin incognito-tilassa</translation>
 <translation id="8880024619507699923">Organisaatiosi edellyttää sisäänkirjautumista, jotta voit käyttää Chromiumia. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Ota Chromiumin tehokkain suojaus käyttöön</translation>
+<translation id="8925569192291721236">Pysy ajan tasalla hintaseurannan päivityksistä ja Chromium-vinkeistä.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Näin käy, kun Chromiumia ei ole käytetty {THRESHOLD} minuuttiin.}other{Näin käy, kun Chromiumia ei ole käytetty {THRESHOLD} minuuttiin.}}</translation>
 <translation id="8963279154877372067">Salli Chromium-ilmoitusten saada ilmoituksia hinnan laskusta</translation>
 <translation id="8975812008711371178">Hae puhumalla Chromiumista.</translation>

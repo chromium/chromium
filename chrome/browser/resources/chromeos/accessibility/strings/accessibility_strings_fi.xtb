@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">Ruiskaunokinsininen</translation>
 <translation id="1246424317317450637">Lihavoitu</translation>
+<translation id="1250181918001045969">Yritetään yhdistää kameraan. Kasvo-ohjaus menee pois päältä <ph name="SECONDS" /> sekunnin kuluttua.</translation>
 <translation id="1251750620252348585">Seuraava tason 6 otsikko</translation>
 <translation id="1264956950255940376">Siristä vasenta silmää</translation>
 <translation id="1268366246392928616">Ei edeltävää matemaattista lauseketta</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Edellinen käyty linkki</translation>
 <translation id="3241638166094654466">Kunkin rivin solut:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Kamera ei käytettävissä. Varmista, että olet kirjautunut sisään ja että kamera on päällä.</translation>
 <translation id="3260949043575829030">Edellinen samanlainen kohde</translation>
 <translation id="3270069636408109001">Ei seuraavia taulukoita</translation>
 <translation id="3273791280096244679">Tallenna tunniste</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Lue sivu automaattisesti, kun se on latautunut</translation>
 <translation id="5826479389509458994">rivi <ph name="ROW" /> sarake <ph name="COL" /></translation>
 <translation id="5833044594931167190">Ei ARIA-merkkejä</translation>
+<translation id="5836800981500311517">Kameraa ei voi käyttää. Laita kamera päälle ja varmista, että sitä ei ole estetty.</translation>
 <translation id="584044465500042213">Poistu vieritystilasta</translation>
 <translation id="5842625257683688671">Ei seuraavia kuvia</translation>
 <translation id="5847883414085148048">Omistuskirjoitus</translation>

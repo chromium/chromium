@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{הודעה אחת שלא נקראה}one{# הודעות שלא נקראו}two{2 הודעות שלא נקראו}other{# הודעות שלא נקראו}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{מפעילים את התוסף הבא במצב פרטי:}one{מפעילים את התוספים הבאים במצב פרטי:}two{מפעילים את התוספים הבאים במצב פרטי:}other{מפעילים את התוספים הבאים במצב פרטי:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{לפני חודש אחד}one{לפני # חודשים}two{לפני חודשיים}other{לפני # חודשים}}</translation>
+<translation id="4277033906326892359">העמודה <ph name="COLUMN_NAME" /> ממוינת בסדר עולה</translation>
 <translation id="4289300219472526559">יש להתחיל לדבר</translation>
 <translation id="4289540628985791613">סקירה כללית</translation>
 <translation id="4491109536499578614">תמונה</translation>
@@ -169,8 +170,10 @@
 <translation id="6503257047630241175">‏תוכן בפורמט RTF</translation>
 <translation id="6539092367496845964">משהו השתבש. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="654149438358937226">חסימת כל ההודעות</translation>
+<translation id="6612467943526193239">‏יש להקיש על Esc כדי לצאת מהכיול.</translation>
 <translation id="6620110761915583480">שמירת קובץ</translation>
 <translation id="6699343763173986273">הרצועה הבאה במדיה</translation>
+<translation id="6807086321996342431">העמודה <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">עצור מדיה</translation>
 <translation id="6845383723252244143">בחירת תיקייה</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{נותרה שעה אחת}one{נותרו # שעות}two{נותרו שעתיים}other{נותרו # שעות}}</translation>
@@ -202,11 +205,11 @@
 <translation id="7969046989155602842">פקודה</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{יותר מהודעה אחת שלא נקראה}one{יותר מ-# הודעות שלא נקראו}two{יותר מ-2 הודעות שלא נקראו}other{יותר מ-# הודעות שלא נקראו}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{עוד דקה}one{עוד דקה}two{עוד 2 דקות}other{עוד # דקות}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">המספר מ-<ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{לפני שעה אחת}one{לפני # שעות}two{לפני שעתיים}other{לפני # שעות}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{נותרה שנ‘ אחת}one{נותרו # שנ‘}two{נותרו # שנ‘}other{נותרו # שנ‘}}</translation>
 <translation id="8134065097954893699">טעינה מחדש של הדף הזה</translation>
+<translation id="813785873406874127">העמודה <ph name="COLUMN_NAME" /> לא ממוינת</translation>
 <translation id="815598010540052116">גלילה למטה</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">דף למטה</translation>
@@ -218,6 +221,7 @@
 <translation id="8393700583063109961">שליחת הודעה</translation>
 <translation id="8394908167088220973">הפעלה/השהיה של המדיה</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{שנה}one{# שנ}two{# שנ}other{# שנ}}</translation>
+<translation id="8582972250170726813">העמודה <ph name="COLUMN_NAME" /> ממוינת בסדר יורד</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623">קובץ <ph name="SAVEAS_EXTENSION_TYPE" />  (<ph name="SAVEAS_EXTENSION_NAME" />.)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" />KB/s‎</translation>

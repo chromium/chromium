@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">Rugiagėlių mėlynumo spalva</translation>
 <translation id="1246424317317450637">Pusjuodis</translation>
+<translation id="1250181918001045969">Bandoma prisijungti prie vaizdo kameros. Valdymas veidu bus išjungtas po <ph name="SECONDS" /> sek.</translation>
 <translation id="1251750620252348585">Kita 6 lygio antraštė</translation>
 <translation id="1264956950255940376">Primerkti kairiąją akį</translation>
 <translation id="1268366246392928616">Nėra ankstesnės matematinės išraiškos</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Ankstesnė aplankyta nuoroda</translation>
 <translation id="3241638166094654466">Langelių kiekvienoje eilutėje:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Vaizdo kamera nepasiekiama. Įsitikinkite, kad esate prisijungę ir vaizdo kamera įjungta.</translation>
 <translation id="3260949043575829030">Ankstesnis panašus elementas</translation>
 <translation id="3270069636408109001">Nėra kitos lentelės</translation>
 <translation id="3273791280096244679">Išsaugoti etiketę</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Automatiškai nuskaityti puslapį po to, kai baigiamas jo įkėlimas</translation>
 <translation id="5826479389509458994"><ph name="ROW" /> eilutė, <ph name="COL" /> stulpelis</translation>
 <translation id="5833044594931167190">Nėra ARIA orientyrų</translation>
+<translation id="5836800981500311517">Nepavyko pasiekti vaizdo kameros. Įjunkite vaizdo kamerą ir įsitikinkite, kad ji nėra užblokuota.</translation>
 <translation id="584044465500042213">Išeiti iš slinkimo režimo</translation>
 <translation id="5842625257683688671">Nėra kito grafinio vaizdo</translation>
 <translation id="5847883414085148048">Dedikacija</translation>

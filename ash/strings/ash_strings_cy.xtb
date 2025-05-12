@@ -1440,6 +1440,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="5672890847723042801">Pethau</translation>
 <translation id="5673434351075758678">O "<ph name="FROM_LOCALE" />" i "<ph name="TO_LOCALE" />" ar ôl cysoni eich gosodiadau.</translation>
 <translation id="5675363643668471212">Eitem silff</translation>
+<translation id="5677022547882470786">Llusgwch neu pwyswch Space i ddewis ardal i'w chwilio</translation>
 <translation id="5677928146339483299">Rhwystrwyd</translation>
 <translation id="5678564054339031017">Dangos yr wythnos nesaf</translation>
 <translation id="5679050765726761783">Mae addasydd pŵer isel wedi'i gysylltu</translation>
@@ -2432,6 +2433,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8934418770423095813">Creu Google Doc</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ffeil}zero{# ffeil}two{# ffeil}few{# ffeil}many{# ffeil}other{# ffeil}}</translation>
 <translation id="8936501819958976551">wedi dadweithredu</translation>
+<translation id="8937312474322077653">Yn y gosodiadau tynnu sgrinlun, gosodwch i <ph name="SOURCE" /> <ph name="TYPE" />. Pwyswch Tab i ddewis math o sgrinlun. Pwyswch Space i ddewis ardal. Pwyswch Enter i dynnu sgrinlun.</translation>
 <translation id="8938800817013097409">Dyfais USB-C (porth de yn y cefn)</translation>
 <translation id="8939855324412367560">Sain mewnbwn yw "<ph name="INPUT_DEVICE_NAME" />" a sain allbwn yw "<ph name="OUTPUT_DEVICE_NAME" />". Ewch i'r Gosodiadau i newid.</translation>
 <translation id="8940956008527784070">Mae'r batri'n isel (<ph name="PERCENTAGE" />%)</translation>

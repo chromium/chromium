@@ -1441,6 +1441,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5672890847723042801">Utiliidid</translation>
 <translation id="5673434351075758678">Pärast seadete sünkroonimist lokaadist „<ph name="FROM_LOCALE" />” lokaati „<ph name="TO_LOCALE" />”.</translation>
 <translation id="5675363643668471212">Riiuliüksus</translation>
+<translation id="5677022547882470786">Otsitava ala valimiseks lohistage või vajutage tühikuklahvi</translation>
 <translation id="5677928146339483299">Blokeeritud</translation>
 <translation id="5678564054339031017">Kuva järgmine nädal</translation>
 <translation id="5679050765726761783">Ühendatud on väikese toitevõimsusega adapter</translation>
@@ -2433,6 +2434,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8934418770423095813">Loo Google'i dokument</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fail}other{# faili}}</translation>
 <translation id="8936501819958976551">inaktiveeritud</translation>
+<translation id="8937312474322077653">Määrake ekraanikuva jäädvustamises <ph name="SOURCE" /> <ph name="TYPE" />. Jäädvustamise tüübi valimiseks vajutage tabulaatorit. Piirkonna valimiseks vajutage tühikuklahvi. Jäädvustamiseks vajutage sisestusklahvi.</translation>
 <translation id="8938800817013097409">C-tüüpi USB-seade (parempoolne port taga)</translation>
 <translation id="8939855324412367560">Sisendheliks on „<ph name="INPUT_DEVICE_NAME" />“ ja väljundheliks on „<ph name="OUTPUT_DEVICE_NAME" />“. Muutmiseks avage menüü Seaded.</translation>
 <translation id="8940956008527784070">Aku tühjeneb (<ph name="PERCENTAGE" />%)</translation>

@@ -1440,6 +1440,7 @@
 <translation id="5672890847723042801">ხელსაწყოები</translation>
 <translation id="5673434351075758678">„<ph name="FROM_LOCALE" />“ გახდა „<ph name="TO_LOCALE" />“ თქვენი პარამეტრების სინქრონიზაციის შემდეგ.</translation>
 <translation id="5675363643668471212">თაროს ელემენტი</translation>
+<translation id="5677022547882470786">ჩავლებით აირჩიეთ ან დააჭირეთ ინტერვალს, რომ აირჩიოთ საძიებო არეალი</translation>
 <translation id="5677928146339483299">დაბლოკილი</translation>
 <translation id="5678564054339031017">შემდეგი კვირის ჩვენება</translation>
 <translation id="5679050765726761783">დაკავშირებულია დაბალი სიმძლავრის ელკვების ადაპტერი</translation>
@@ -2432,6 +2433,7 @@
 <translation id="8934418770423095813">Google Doc-ის შექმნა</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ფაილი}other{# ფაილი}}</translation>
 <translation id="8936501819958976551">დეაქტივირებულია</translation>
+<translation id="8937312474322077653">ეკრანის ანაბეჭდის რეჟიმში დააყენეთ <ph name="SOURCE" /> <ph name="TYPE" />. დააჭირეთ Tab-ს, რომ აირჩიოთ გადაღების ტიპი. დააჭირეთ ინტერვალს, რომ აირჩიოთ რეგიონი. დააჭირეთ შეყვანას, რომ დაიწყოთ გადაღება.</translation>
 <translation id="8938800817013097409">USB-C მოწყობილობა (უკან მდებარე მარჯვენა პორტი)</translation>
 <translation id="8939855324412367560">შემავალი აუდიოა „<ph name="INPUT_DEVICE_NAME" />“, ხოლო გამომავალი — „<ph name="OUTPUT_DEVICE_NAME" />“. შესაცვლელად გადადით პარამეტრებში.</translation>
 <translation id="8940956008527784070">კვების ბატარეა იცლება (<ph name="PERCENTAGE" />%)</translation>

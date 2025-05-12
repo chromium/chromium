@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">Svijetlo plava</translation>
 <translation id="1246424317317450637">Podebljano</translation>
+<translation id="1250181918001045969">Pokušaj povezivanja s kamerom. Upravljanje licem će se isključiti za <ph name="SECONDS" /> s.</translation>
 <translation id="1251750620252348585">Sljedeći naslov 6. nivoa</translation>
 <translation id="1264956950255940376">Škiljenje lijevim okom</translation>
 <translation id="1268366246392928616">Nema prethodnog matematičkog izraza</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Prethodno posjećeni link</translation>
 <translation id="3241638166094654466">Broj ćelija u svakom redu:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Kamera nije dostupna. Provjerite jeste li prijavljeni i je li kamera uključena.</translation>
 <translation id="3260949043575829030">Prethodna slična stavka</translation>
 <translation id="3270069636408109001">Nema sljedeće tabele</translation>
 <translation id="3273791280096244679">Sačuvaj oznaku</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Automatsko čitanje stranice nakon učitavanja</translation>
 <translation id="5826479389509458994">red <ph name="ROW" /> kolona <ph name="COL" /></translation>
 <translation id="5833044594931167190">Nema ARIA obilježja</translation>
+<translation id="5836800981500311517">Nije moguće pristupiti kameri. Uključite kameru i provjerite da nije blokirana.</translation>
 <translation id="584044465500042213">Izlaz iz načina rada za klizanje</translation>
 <translation id="5842625257683688671">Nema sljedeće grafike</translation>
 <translation id="5847883414085148048">Posveta</translation>

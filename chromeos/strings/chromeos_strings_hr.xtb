@@ -394,7 +394,6 @@
 <translation id="2584559707064218956">Da biste postavili mrežu, otvorite postavke</translation>
 <translation id="2586146417912237930">plave i indigo boje</translation>
 <translation id="2589921777872778654">Izbornik za uređivanje i brisanje</translation>
-<translation id="2590424100019931043">Uklonjeni ste iz ovog predmeta</translation>
 <translation id="2597774443162333062">Datoteke će se poslati Googleu radi uklanjanja pogrešaka</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Skeniranje je dovršeno. Skenirana je jedna stranica}one{Skeniranje je dovršeno. Skenirana je {NUMBER_OF_PAGES} stranica}few{Skeniranje je dovršeno. Skenirane su {NUMBER_OF_PAGES} stranice}other{Skeniranje je dovršeno. Skenirano je {NUMBER_OF_PAGES} stranica}}</translation>
 <translation id="261322795497077164">Identifikacija govornika</translation>
@@ -653,6 +652,7 @@
 <translation id="391412459402535266">Testiranje uređaja nije uspjelo. Prijeđite na način prijenosnog računala da biste testirali.</translation>
 <translation id="3916998944874125962">snimanje zaslona</translation>
 <translation id="3923184630988645767">Potrošnja podatkovnog prometa</translation>
+<translation id="392943705803418306">Završila je vaša sesija alata za predmet</translation>
 <translation id="3932043219784172185">Nije povezan nijedan uređaj</translation>
 <translation id="3934185438132762746">Nije dodijeljeno: <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Razrješavanje hosta nije uspjelo</translation>
@@ -842,6 +842,7 @@
 <translation id="4697260493945012995">Odaberite vrstu kontrole</translation>
 <translation id="4712940987669302829">efekt bokeha</translation>
 <translation id="4731797938093519117">Roditeljski pristup</translation>
+<translation id="4733200407105375152">Nije u alatima za predmet</translation>
 <translation id="4734982181169850310">pastelne boje</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4744944742468440486">Informacije o vašem odabiru</translation>
@@ -994,7 +995,6 @@
 <translation id="5335373365677455232">ružičasta</translation>
 <translation id="5344619683981067131">Zamjena odabranog teksta prijedlogom</translation>
 <translation id="5346687412805619883">Lokalna mreža</translation>
-<translation id="5352672374624748928">krupni plan nekoliko bijelih i žutih cvjetova na ljubičastoj pozadini, nepomična slika iz animiranog filma, nježan blijedoružičasti cvijet s dugim laticama i zelena stabljika postavljena između dvaju velikih žutih tulipana na plavoj pozadini bez lišća ili krošnje u pastelnim bojama, filmski nepomični kadar s visokom razlučivošću i vrlo detaljnim složenim detaljima, octane renderiranje s prekrasnim osvjetljenjem, volumetrijsko svjetlo i sumorno svjetlo.</translation>
 <translation id="5358174242040570474">Nešto nije u redu. Ponovno odaberite pozadinu ili ponovno otvorite aplikaciju.</translation>
 <translation id="5368228070728130240">Preuzimanje modela za izradu sažetaka i naslova nije uspjelo. Pokušajte opet ili ponovo pokrenite uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5372659122375744710">Wi-Fi mreža nije sigurna</translation>
@@ -1008,7 +1008,7 @@
 <translation id="5423849171846380976">Aktivirano</translation>
 <translation id="5430931332414098647">Automatsko modemsko povezivanje</translation>
 <translation id="5431318178759467895">Boja</translation>
-<translation id="5457599981699367932">Pregledavaj kao gost</translation>
+<translation id="5457599981699367932">Pregledavajte kao gost</translation>
 <translation id="54609108002486618">Upravljani</translation>
 <translation id="5461608756903394951">U tijeku je preuzimanje modela prijepisa za jezik: <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5470776029649730099">jute</translation>
@@ -1091,6 +1091,7 @@
 <translation id="5876385649737594562">Uključite da biste odabrali opcije</translation>
 <translation id="5877503382465267833">Pauzirajte snimku <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Puni zaslon</translation>
+<translation id="5889539348012432386">Početna stranica alata za predmet</translation>
 <translation id="5893975327266416093">Dodirnite tipku tipkovnice da biste je dodijelili</translation>
 <translation id="5895138241574237353">Ponovno pokreni</translation>
 <translation id="5896602941605730551">Reproducirajte</translation>
@@ -1266,7 +1267,7 @@
 <translation id="6596816719288285829">IP adresa</translation>
 <translation id="6599673642868607614">Zahvaljujemo na povratnim informacijama. Vaše povratne informacije pomažu nam da poboljšamo doživljaj Chromebooka i pregledat će ih naš tim. Zbog velikog broja izvješća nećemo moći poslati odgovor.</translation>
 <translation id="6608043585557830684">Prijepis je isključen. Uključite ga u postavkama ili na izborniku <ph name="THREE_DOTS_MENU_ICON" />.</translation>
-<translation id="660846213831377756">Tipke miša</translation>
+<translation id="660846213831377756">Tipke za pokrete mišem</translation>
 <translation id="6618744767048954150">U tijeku</translation>
 <translation id="6620487321149975369">Zadaci ispisa prikazivat će se u povijesti ako se ne uklone ručno</translation>
 <translation id="6624819909909965616">Nije moguće prenijeti datoteku veću od 10 MB</translation>
@@ -1621,6 +1622,7 @@ Da biste dobili te prijepise, preuzmite model prijepisa (do 100 MB).</translati
 <translation id="8135609423982943441">Chromebook je vraćen na sigurne zadane postavke. Te promjene uvijek možete prilagoditi u postavkama.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">Izradite vlastitu</translation>
+<translation id="8142182840415860496">krupni plan nekoliko bijelih i žutih cvjetova, nepomična slika iz animiranog filma, nježan blijedoružičasti cvijet s dugim laticama i zelena stabljika postavljena između dvaju velikih žutih tulipana na plavoj pozadini bez lišća ili krošnje u pastelnim bojama, filmski nepomični kadar s visokom razlučivošću i vrlo detaljnim složenim detaljima, octane renderiranje s prekrasnim osvjetljenjem, volumetrijsko svjetlo i sumorno svjetlo.</translation>
 <translation id="8143951647992294073">Odaberite <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Alati za razvojne programere</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>

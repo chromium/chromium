@@ -1440,6 +1440,7 @@
 <translation id="5672890847723042801">Βοηθητικά προγράμματα</translation>
 <translation id="5673434351075758678">Από "<ph name="FROM_LOCALE" />" σε "<ph name="TO_LOCALE" />" μετά τον συγχρονισμό των ρυθμίσεων.</translation>
 <translation id="5675363643668471212">Στοιχείο ραφιού</translation>
+<translation id="5677022547882470786">Σύρετε ή πατήστε το πλήκτρο διαστήματος για να επιλέξετε μια περιοχή για αναζήτηση</translation>
 <translation id="5677928146339483299">Αποκλεισμένο</translation>
 <translation id="5678564054339031017">Εμφάνιση επόμενης εβδομάδας</translation>
 <translation id="5679050765726761783">Συνδέθηκε μετασχηματιστής χαμηλής ισχύος</translation>
@@ -2432,6 +2433,7 @@
 <translation id="8934418770423095813">Δημιουργία Εγγράφου Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 αρχείο}other{# αρχεία}}</translation>
 <translation id="8936501819958976551">απενεργοποιημένο</translation>
+<translation id="8937312474322077653">Στην καταγραφή οθόνης, ορίστε σε <ph name="SOURCE" /> <ph name="TYPE" />. Πατήστε Tab για να επιλέξετε τύπο λήψης. Πατήστε το πλήκτρο διαστήματος για να επιλέξετε περιοχή. Πατήστε Enter για λήψη.</translation>
 <translation id="8938800817013097409">Συσκευή USB-C (πίσω δεξιά θύρα)</translation>
 <translation id="8939855324412367560">Ο ήχος εισόδου είναι <ph name="INPUT_DEVICE_NAME" /> και ο ήχος εξόδου είναι <ph name="OUTPUT_DEVICE_NAME" />. Μεταβείτε στις Ρυθμίσεις για αλλαγή.</translation>
 <translation id="8940956008527784070">Χαμηλή στάθμη μπαταρίας (<ph name="PERCENTAGE" />%)</translation>

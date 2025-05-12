@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">ラジオグループ</translation>
 <translation id="1243477406442346359">コーンフラワー ブルー</translation>
 <translation id="1246424317317450637">太字</translation>
+<translation id="1250181918001045969">カメラへの接続を試みています。フェイスナビは <ph name="SECONDS" /> 秒後にオフになります。</translation>
 <translation id="1251750620252348585">次のレベル 6 見出し</translation>
 <translation id="1264956950255940376">左目を細める</translation>
 <translation id="1268366246392928616">前の数式はありません</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">前にアクセスしたリンク</translation>
 <translation id="3241638166094654466">各行のセル数:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">カメラを使用できません。ログインしていて、カメラがオンになっていることを確認してください。</translation>
 <translation id="3260949043575829030">前の同様の項目</translation>
 <translation id="3270069636408109001">次の表はありません</translation>
 <translation id="3273791280096244679">ラベルを保存</translation>
@@ -762,6 +764,7 @@
 <translation id="5824976764713185207">ページの読み込み後、自動的に読み上げを開始する</translation>
 <translation id="5826479389509458994">行 <ph name="ROW" /> 列 <ph name="COL" /></translation>
 <translation id="5833044594931167190">ARIA ランドマークはありません</translation>
+<translation id="5836800981500311517">カメラにアクセスできません。カメラをオンにして、ブロックされていないことを確認してください。</translation>
 <translation id="584044465500042213">スクロール モードを終了</translation>
 <translation id="5842625257683688671">次の図はありません</translation>
 <translation id="5847883414085148048">献辞</translation>

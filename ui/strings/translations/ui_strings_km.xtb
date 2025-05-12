@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{ការជូន​ដំណឹងមិន​ទាន់អាន 1}other{ការជូន​ដំណឹងមិន​ទាន់អាន #}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{បើកកម្មវិធីបន្ថែម​ខាងក្រោមនៅក្នុងមុខងារឯកជន៖}other{បើកកម្មវិធីបន្ថែម​ខាងក្រោមនៅក្នុងមុខងារឯកជន៖}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 ខែមុន}other{# ខែមុន}}</translation>
+<translation id="4277033906326892359">បានតម្រៀប​ជួរឈរ <ph name="COLUMN_NAME" /> តាមលំដាប់​ឡើង</translation>
 <translation id="4289300219472526559">ចាប់ផ្តើមនិយាយ</translation>
 <translation id="4289540628985791613">ទិដ្ឋភាពទូទៅ</translation>
 <translation id="4491109536499578614">រូបភាព</translation>
@@ -169,8 +170,10 @@
 <translation id="6503257047630241175">ខ្លឹមសារ RTF</translation>
 <translation id="6539092367496845964">មានអ្វីមួយខុសប្រក្រតី។ សូមព្យាយាមម្តង​ទៀតនៅ​ពេលក្រោយ។</translation>
 <translation id="654149438358937226">ទប់ស្កាត់ការជូនដំណឹងទាំងអស់</translation>
+<translation id="6612467943526193239">ដើម្បី​ចាក​ចេញ​ពី​ការ​ក្រិត​​ខ្នាត​ សូម​ចុច Esc ។</translation>
 <translation id="6620110761915583480">រក្សាទុកឯកសារ</translation>
 <translation id="6699343763173986273">Media Next Track</translation>
+<translation id="6807086321996342431">ជួរឈរ <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">Media Stop</translation>
 <translation id="6845383723252244143">ជ្រើសរើសថតឯកសារ</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{នៅសល់ 1 ម៉ោងទៀត}other{នៅសល់ # ម៉ោងទៀត}}</translation>
@@ -202,11 +205,11 @@
 <translation id="7969046989155602842">បញ្ជា</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{ការជូនដំណឹង​ដែលមិនទាន់អាន​ច្រើនជាង 1}other{ការជូនដំណឹង​ដែលមិនទាន់អាន​ច្រើនជាង #}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{1 នាទីទៀត}other{# នាទីទៀត}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">លេខពី <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{ 1 ម៉ោងមុន}other{# ម៉ោងមុន}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{នៅសល់ 1 វិនាទីទៀត}other{នៅសល់ # វិនាទីទៀត}}</translation>
 <translation id="8134065097954893699">កំពុង​ផ្ទុកទំព័រនេះ​ឡើងវិញ</translation>
+<translation id="813785873406874127">មិនបាន​តម្រៀប​ជួរឈរ <ph name="COLUMN_NAME" /> ទេ</translation>
 <translation id="815598010540052116">ទាញចុះក្រោម</translation>
 <translation id="8179976553408161302">បញ្ចូល</translation>
 <translation id="8210608804940886430">Page Down</translation>
@@ -218,6 +221,7 @@
 <translation id="8393700583063109961">ផ្ញើ​សារ</translation>
 <translation id="8394908167088220973">លេង/ផ្អាក កំសាន្ត</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 ឆ្នាំ}other{# ឆ្នាំ}}</translation>
+<translation id="8582972250170726813">បាន​តម្រៀប​ជួរឈរ <ph name="COLUMN_NAME" /> តាម​លំដាប់ចុះ</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> ឯកសារ (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/វិនាទី</translation>

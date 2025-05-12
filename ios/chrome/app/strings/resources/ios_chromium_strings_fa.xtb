@@ -16,7 +16,7 @@
 <translation id="1383876407941801731">جستجو</translation>
 <translation id="1423007117030725713">‏جستجویی در برگه جدید Chromium شروع کنید.</translation>
 <translation id="1431818719585918472">‏اجازه دهید Chromium «برگه‌های ناشناس» را قفل کند.</translation>
-<translation id="1451665391191990528">‏پنهان کردن برگه‌های ناشناس باز هنگام خروج از Chromium</translation>
+<translation id="1451665391191990528">‏پنهان کردن برگه‌های ناشناسِ باز هنگام ترک کردن Chromium</translation>
 <translation id="146407871188825689">‏استفاده از Chromium در iPad به‌طور پیش‌فرض</translation>
 <translation id="1471084500615228555">‏حذف کردن داده‌های مرور در Chromium</translation>
 <translation id="1472013873724362412">‏حساب شما در Chromium کار نمی‌کند. لطفاً با سرپرست دامنه‌تان تماس بگیرید یا از یک حساب Google معمولی برای ثبت ورود استفاده کنید.</translation>
@@ -47,7 +47,6 @@
 <translation id="2042889939382983733">‏مشاهده سابقه Chromium</translation>
 <translation id="2052320862053429062">‏Chromium به‌طور دوره‌ای گذرواژه‌هایتان را با فهرست‌هایی که به‌صورت آنلاین منتشر می‌شود مقایسه می‌کند. هنگام انجام این کار، نام‌های کاربری و گذرواژه‌های شما رمزگذاری می‌شود تا اشخاص دیگر، ازجمله Google نتوانند آن‌ها را بخوانند.</translation>
 <translation id="2059365270911640413">‏راه‌اندازی Chromium را تمام کنید</translation>
-<translation id="2147210759439165826">‏با محتوا و نکته‌های مفید Chromium همراه باشید.</translation>
 <translation id="2168108852149185974">‏برخی از افزونه‌ها باعث خرابی Chromium می‌شود. لطفاً آن‌ها را حذف نصب کنید:</translation>
 <translation id="2168593389981132306">‏بهتر کردن Chromium</translation>
 <translation id="2178608107313874732">‏Chromium اکنون نمی‌تواند از دوربین استفاده کند</translation>
@@ -157,6 +156,7 @@
 <translation id="4828317641996116749">‏Chromium نتوانست همه گذرواژه‌ها را بررسی کند. بعداً دوباره امتحان کنید.</translation>
 <translation id="4856138222358683580">‏کنش‌های Chromium</translation>
 <translation id="4904452304169763785">‏برای هر مشکل حریم خصوصی یا امنیتی که Chromium تشخیص می‌دهد به شما هشدار می‌دهد.</translation>
+<translation id="4908570938463711775">‏برای شروع، با مفاهیم پایه و مفید Chromium آشنا شوید</translation>
 <translation id="4962295957157529683">‏کاری را که در دیگر پنجره باز Chromium انجام می‌دادید تمام کنید.</translation>
 <translation id="4985291216379576555">‏آفلاین هستید، Chromium نمی‌تواند به‌روزرسانی‌ها را بررسی کند</translation>
 <translation id="4996471330284142407">‏با Chromium که ساده، ایمن، و سریع‌تر از همیشه است کارهای بیشتری انجام دهید.</translation>
@@ -197,6 +197,7 @@
 <translation id="5688047395118852662">‏این کارت پیشنهادهایی را برای بردن بیشترین بهره از Chromium نشان می‌دهد.</translation>
 <translation id="5700709190537129682">‏Chromium نمی‌تواند گذرواژه‌هایتان را بررسی کند</translation>
 <translation id="584550191241316896">‏به سیستم Chromium وارد شده‌اید</translation>
+<translation id="5862307444128926510">‏به Chromium خوش آمدید</translation>
 <translation id="5889847953983052353">‏وقتی روشن باشد:
 <ph name="BEGIN_INDENT" />  • کمک می‌کنید Chromium برای همه افرادی که مانند شما از آن استفاده می‌کنند بهبود یابد.<ph name="END_INDENT" />
 
@@ -223,6 +224,7 @@
 <translation id="6301717043141881464">‏برای دریافت آسان گذرواژه‌های ذخیره‌شده در برنامه‌های دیگر، «Chromium برای تکمیل خودکار» را انتخاب کنید</translation>
 <translation id="6324041800010509197">‏رفتن به شبکه برگه‌ها در Chromium</translation>
 <translation id="6325378625795868881">‏برای باز کردن پیوندهای موجود در پیام‌ها و برنامه‌های دیگر، از Chromium استفاده کنید.</translation>
+<translation id="6387994184698195448">‏از نکات مفید Chromium و موارد بیشتر مطلع شوید.</translation>
 <translation id="6424492062988593837">‏Chromium بهتر شده است! نسخه جدید آن در دسترس است.</translation>
 <translation id="6433172051771630690">‏نکاتی برای اینکه بیشترین بهره را از Chromium ببرید.</translation>
 <translation id="65045991564554105">‏دیدن نشانک‌های Chromium</translation>
@@ -284,7 +286,6 @@
 <translation id="7980860476903281594">‏Chromium مکانتان را با سایت‌هایی که مجاز کرده‌اید هم‌رسانی می‌کند.</translation>
 <translation id="7994322153108931467">‏برای دریافت نکته‌های مفید درباره Chromium، اعلان‌ها را در تنظیمات iOS روشن کنید.</translation>
 <translation id="7997159823054171568">‏تنظیم کردن Chromium به‌عنوان مرورگر پیش‌فرض</translation>
-<translation id="800195749539500647">‏بیشترین بهره را از Chromium ببرید</translation>
 <translation id="800380310260616129">‏‫Chromium را از اینجا بارگیری کنید.</translation>
 <translation id="8013573822802650211">‏در همه دستگاه‌هایی که در آن‌ها از Chromium استفاده می‌کنید، به سیستم وارد شوید تا بتوانید برگه‌هایتان را ببینید</translation>
 <translation id="8014091604604659473">‏‫Chromium از سیستم خارج شده است</translation>
@@ -317,6 +318,7 @@
 <translation id="8860548555286245440">‏باز کردن نشانی‌های وب در Chromium درحالت «ناشناس»</translation>
 <translation id="8880024619507699923">‏سازمانتان از شما می‌خواهد برای استفاده از Chromium به سیستم وارد شوید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">‏قوی‌ترین امنیت Chromium را دریافت کنید</translation>
+<translation id="8925569192291721236">‏از به‌روزرسانی‌های ردگیری قیمت و نکات Chromium مطلع شوید.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{‏این اتفاق زمانی رخ می‌دهد که از Chromium به‌مدت {THRESHOLD} دقیقه استفاده نشده باشد}one{‏این اتفاق زمانی رخ می‌دهد که از Chromium به‌مدت {THRESHOLD} دقیقه استفاده نشده باشد}other{‏این اتفاق زمانی رخ می‌دهد که از Chromium به‌مدت {THRESHOLD} دقیقه استفاده نشده باشد}}</translation>
 <translation id="8963279154877372067">‏اجازه دادن به اعلان‌های Chromium برای دریافت هشدارهای کاهش قیمت</translation>
 <translation id="8975812008711371178">‏جستجو با صدا در Chromium</translation>

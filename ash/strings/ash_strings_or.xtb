@@ -1440,6 +1440,7 @@
 <translation id="5672890847723042801">ୟୁଟିଲିଟିଗୁଡ଼ିକ</translation>
 <translation id="5673434351075758678">ଆପଣଙ୍କର ସେଟିଂସ୍ ସିଙ୍କ୍ ହେବା ପରେ "<ph name="FROM_LOCALE" />"ରୁ "<ph name="TO_LOCALE" />" ପର୍ଯ୍ୟନ୍ତ।</translation>
 <translation id="5675363643668471212">ସେଲ୍ଫ ଆଇଟମ୍</translation>
+<translation id="5677022547882470786">ସର୍ଚ୍ଚ କରିବା ପାଇଁ ଏକ ଏରିଆ ଚୟନ କରିବାକୁ ଡ୍ରାଗ କରନ୍ତୁ କିମ୍ବା ସ୍ପେସକୁ ଦବାନ୍ତୁ</translation>
 <translation id="5677928146339483299">ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="5678564054339031017">ପରବର୍ତ୍ତୀ ସପ୍ତାହର ଇଭେଣ୍ଟ ଦେଖାନ୍ତୁ</translation>
 <translation id="5679050765726761783">କମ୍-ପାୱାରର ଆଡପ୍ଟର୍ ସଂଯୋଗ କରାଯାଇଛି</translation>
@@ -2431,6 +2432,7 @@
 <translation id="8934418770423095813">Google Doc ତିଆରି କରନ୍ତୁ</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1ଟି ଫାଇଲ}other{#ଟି ଫାଇଲ}}</translation>
 <translation id="8936501819958976551">ନିଷ୍କ୍ରିୟ କରାଯାଇଛି</translation>
+<translation id="8937312474322077653">ସ୍କ୍ରିନ କେପଚରରେ, <ph name="SOURCE" /> <ph name="TYPE" />ରେ ସେଟ କରନ୍ତୁ। କେପଚର ପ୍ରକାର ବାଛିବାକୁ ଟାବକୁ ଦବାନ୍ତୁ। ଅଞ୍ଚଳ ଚୟନ କରିବାକୁ ସ୍ପେସକୁ ଦବାନ୍ତୁ। କେପଚର କରିବାକୁ ଏଣ୍ଟର ଦବାନ୍ତୁ।</translation>
 <translation id="8938800817013097409">USB-C ଡିଭାଇସ୍‌ (ପଛରେ ଥିବା ଡାହାଣପଟ ପୋର୍ଟ)</translation>
 <translation id="8939855324412367560">ଇନପୁଟ ଅଡିଓ ହେଉଛି "<ph name="INPUT_DEVICE_NAME" />" ଏବଂ ଆଉଟପୁଟ ଅଡିଓ ହେଉଛି "<ph name="OUTPUT_DEVICE_NAME" />"। ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ସେଟିଂସକୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="8940956008527784070">ବ୍ୟାଟେରୀ କମ୍ ଅଛି (<ph name="PERCENTAGE" />%)</translation>

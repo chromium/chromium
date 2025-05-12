@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">কৰ্ণফ্লাৱাৰৰ দৰে নীলা</translation>
 <translation id="1246424317317450637">ব’ল্ড</translation>
+<translation id="1250181918001045969">কেমেৰাৰ সৈতে সংযোগ কৰিবলৈ চেষ্টা কৰি থকা হৈছে। মুখাৱয়বৰ জৰিয়তে নিয়ন্ত্ৰণ কৰা সুবিধাটো <ph name="SECONDS" /> ছেকেণ্ডত অফ হ’ব।</translation>
 <translation id="1251750620252348585">পৰৱর্তী স্তৰ ৬ৰ শিৰোনাম</translation>
 <translation id="1264956950255940376">বাওঁ চকুৰে কেৰাহিকৈ চাওক</translation>
 <translation id="1268366246392928616">কোনো পূর্বৱর্তী গাণিতিক বিন্যাস নাই</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">চোৱা পূর্বৰ লিংক</translation>
 <translation id="3241638166094654466">প্ৰতিটো শাৰীত থকা কক্ষ:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">কেমেৰা উপলব্ধ নহয়। আপুনি ছাইন ইন কৰাটো আৰু কেমেৰা অন থকাটো নিশ্চিত কৰক।</translation>
 <translation id="3260949043575829030">পূৰ্বৱৰ্তী একে ধৰণৰ বস্তু</translation>
 <translation id="3270069636408109001">কোনো পৰৱৰ্তী তালিকা নাই</translation>
 <translation id="3273791280096244679">লেবেল ছেভ কৰক</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">ল’ড কৰা সম্পূৰ্ণ হ’লে পৃষ্ঠাখন স্বয়ংক্ৰিয়ভাৱে পঢ়ক</translation>
 <translation id="5826479389509458994">শাৰী <ph name="ROW" /> স্তম্ভ <ph name="COL" /></translation>
 <translation id="5833044594931167190">কোনো ARIA লেণ্ডমার্ক নাই</translation>
+<translation id="5836800981500311517">কেমেৰা এক্সেছ কৰিব পৰা নাই। কেমেৰা অন কৰক আৰু সেইটো অৱৰোধ হৈ নথকাটো নিশ্চিত কৰক।</translation>
 <translation id="584044465500042213">স্ক্ৰ’ল ম’ডৰ পৰা বাহিৰ হওক</translation>
 <translation id="5842625257683688671">কোনো পৰৱৰ্তী গ্ৰাফিক নাই</translation>
 <translation id="5847883414085148048">নিষ্ঠা</translation>

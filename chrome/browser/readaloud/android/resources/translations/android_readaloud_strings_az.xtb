@@ -4,15 +4,22 @@
 <translation id="1173075331199604451">Səs menyusu</translation>
 <translation id="1178581264944972037">Durdurun</translation>
 <translation id="1246424317317450637">Qalın</translation>
+<translation id="1370273601702151510">Baş barmaq yuxarı</translation>
 <translation id="1483137792530497944">Çay</translation>
 <translation id="1586836055630070874">Sakitləşdirici</translation>
+<translation id="1666704368140506043">Nalayiq kontent</translation>
 <translation id="1741047078107369903">Mülayim</translation>
 <translation id="1807863182207623884">Yaqut</translation>
 <translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> saniyə irəli keçin</translation>
 <translation id="1984328900355667246">Oxutma əlçatan deyil</translation>
+<translation id="2019727681730021602">Standart oxutma</translation>
 <translation id="2224347680315897176">Sabit</translation>
+<translation id="2575502321843437554">Kifayət qədər maraqlı deyil</translation>
 <translation id="2611765907167846862">Aydın</translation>
 <translation id="3023502830214299618">Bu səhifə üçün oxutma əlçatan deyil. Sonra cəhd edin.</translation>
+<translation id="3457812538570616687">Baş barmaq aşağı</translation>
+<translation id="3493899379487634969">Problem nə idi?</translation>
+<translation id="3778044272390020426">Mənfi rəy seçimləri menyusu</translation>
 <translation id="3807208219231826020">Sürüşdürüb oxutma</translation>
 <translation id="385051799172605136">Geri</translation>
 <translation id="3936324432406465283">Oxutma sürəti</translation>
@@ -28,28 +35,35 @@
 <translation id="5026371835667036198">Xoşbəxt</translation>
 <translation id="5234971936051226002">"Bu səhifəni dinləyin" pleyeri kiçildildi.</translation>
 <translation id="5251803541071282808">Bulud</translation>
+<translation id="5526614127710223793">Oxutma rejimi seçicisi</translation>
 <translation id="5596627076506792578">Əlavə seçimlər</translation>
+<translation id="565342223183747919">Oxutma rejiminə keçmək üçün toxunun</translation>
 <translation id="5694491020339060116">Oxutma sürəti menyusu</translation>
+<translation id="5965409657393819302">Texniki problem</translation>
+<translation id="6218961554829577610">Səsi bəyənmədim</translation>
 <translation id="6315170314923504164">Səs</translation>
+<translation id="6330455646577575965">Sİ audio oxutması</translation>
 <translation id="6343633247422081848">Mamır</translation>
 <translation id="6550675742724504774">Seçimlər</translation>
 <translation id="6727569846535331147"><ph name="PITCH" /> <ph name="TONE" /></translation>
+<translation id="677790449852070664">Təşəkkür edirik! Rəyiniz faydalıdır.</translation>
 <translation id="6790428901817661496">Oxudun</translation>
 <translation id="6831043979455480757">Tərcümə et</translation>
 <translation id="6846298663435243399">Yüklənir...</translation>
 <translation id="6889157801232138307">"Bu səhifəni dinləyin" pleyeri</translation>
 <translation id="7051308646573997571">Mərcan qırmızısı</translation>
 <translation id="7112750136794557642">Toxunaraq daha çox seçim üçün pleyeri genişləndirin.</translation>
+<translation id="7138678301420049075">Digər</translation>
 <translation id="7221920857098237570">Sakit</translation>
 <translation id="7237590978482584900">Rahat</translation>
 <translation id="7282547042039404307">Problemsiz</translation>
-<translation id="7587250070160020374">Chrome-da oxudulur</translation>
 <translation id="8004767876552422827">Tarla</translation>
 <translation id="8136852699834914183">Bu səhifəni səsləndirmək olmur.</translation>
 <translation id="8198036737896977997">Hava</translation>
 <translation id="8264989794233974275">Sürəti <ph name="PLAYBACK_SPEED" /> dəfə artırın/azaldın.</translation>
 <translation id="8407011429883244666">Pleyeri bağlayın.</translation>
 <translation id="8481839122437406573">Sakit</translation>
+<translation id="8756370108715456837">Faktiki olaraq doğru deyil</translation>
 <translation id="8953618380150219653">"Bu səhifəni dinləyin" pleyeri tam uzunluqda açıldı.</translation>
 <translation id="978117257931832348">Aşağıtonlu</translation>
 </translationbundle>

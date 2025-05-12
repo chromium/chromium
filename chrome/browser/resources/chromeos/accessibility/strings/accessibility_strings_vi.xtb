@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">Màu lam hoa ngô</translation>
 <translation id="1246424317317450637">In đậm</translation>
+<translation id="1250181918001045969">Đang cố gắng kết nối với camera. Tính năng điều khiển bằng khuôn mặt sẽ tắt sau <ph name="SECONDS" /> giây nữa.</translation>
 <translation id="1251750620252348585">Tiêu đề cấp 6 tiếp theo</translation>
 <translation id="1264956950255940376">Liếc mắt trái</translation>
 <translation id="1268366246392928616">Không có biểu thức toán học nào trước đó</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Liên kết đã truy cập trước đó</translation>
 <translation id="3241638166094654466">Số ô mỗi dòng:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Camera hiện không hoạt động. Hãy đảm bảo bạn đã đăng nhập và camera đang bật.</translation>
 <translation id="3260949043575829030">Mục tương tự trước</translation>
 <translation id="3270069636408109001">Không có bảng nào tiếp theo</translation>
 <translation id="3273791280096244679">Nhãn lưu</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Tự động đọc trang sau khi tải xong</translation>
 <translation id="5826479389509458994">hàng <ph name="ROW" /> cột <ph name="COL" /></translation>
 <translation id="5833044594931167190">Không có mốc ARIA nào</translation>
+<translation id="5836800981500311517">Không truy cập được vào camera. Hãy bật camera và đảm bảo camera không bị che chắn.</translation>
 <translation id="584044465500042213">Thoát chế độ cuộn</translation>
 <translation id="5842625257683688671">Không có đồ họa nào tiếp theo</translation>
 <translation id="5847883414085148048">Lời đề tặng</translation>

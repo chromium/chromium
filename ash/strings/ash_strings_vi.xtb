@@ -620,7 +620,7 @@ Nếu không, bàn di chuột tích hợp sẵn sẽ bật lại sau <ph name="T
 <translation id="3068711042108640621">Giá ở bên trái</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Mở rộng menu</translation>
-<translation id="3087734570205094154">Bên dưới</translation>
+<translation id="3087734570205094154">Dưới cùng</translation>
 <translation id="3090214513075567547">Mở trình đơn theo bối cảnh</translation>
 <translation id="3090989381251959936">Bật/tắt <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">Trễ hạn</translation>
@@ -1440,6 +1440,7 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="5672890847723042801">Phần mềm tiện ích</translation>
 <translation id="5673434351075758678">Từ "<ph name="FROM_LOCALE" />" sang "<ph name="TO_LOCALE" />" sau khi đồng bộ hóa cài đặt của bạn.</translation>
 <translation id="5675363643668471212">Mục trong giá</translation>
+<translation id="5677022547882470786">Kéo hoặc nhấn phím cách để chọn khu vực cần tìm kiếm</translation>
 <translation id="5677928146339483299">Bị chặn</translation>
 <translation id="5678564054339031017">Hiện dữ liệu tuần tiếp theo</translation>
 <translation id="5679050765726761783">Đã kết nối bộ sạc công suất thấp</translation>
@@ -2432,6 +2433,7 @@ Mới cài đặt</translation>
 <translation id="8934418770423095813">Tạo Google Tài liệu</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 tệp}other{# tệp}}</translation>
 <translation id="8936501819958976551">đã tắt</translation>
+<translation id="8937312474322077653">Trong chế độ chụp ảnh màn hình, hãy đặt thành <ph name="SOURCE" /> <ph name="TYPE" />. Nhấn phím Tab để chọn kiểu chụp. Nhấn phím cách để chọn khu vực. Nhấn phím Enter để chụp.</translation>
 <translation id="8938800817013097409">Thiết bị USB-C (cổng bên phải ở phía sau)</translation>
 <translation id="8939855324412367560">Âm thanh đầu vào là "<ph name="INPUT_DEVICE_NAME" />" và âm thanh đầu ra là "<ph name="OUTPUT_DEVICE_NAME" />". Chuyển đến phần Cài đặt để thay đổi.</translation>
 <translation id="8940956008527784070">Pin yếu (<ph name="PERCENTAGE" />%)</translation>

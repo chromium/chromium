@@ -1440,6 +1440,7 @@ Bağlı cihaz yok.</translation>
 <translation id="5672890847723042801">Yardımcı programlar</translation>
 <translation id="5673434351075758678">Ayarlarınız senkronize edildikten sonra "<ph name="FROM_LOCALE" />" olan dil "<ph name="TO_LOCALE" />" olarak değiştirildi.</translation>
 <translation id="5675363643668471212">Raf öğesi</translation>
+<translation id="5677022547882470786">Arama yapılacak bir alan seçmek için sürükleyin veya boşluk tuşuna basın</translation>
 <translation id="5677928146339483299">Engelleniyor</translation>
 <translation id="5678564054339031017">Sonraki haftayı göster</translation>
 <translation id="5679050765726761783">Düşük güçlü bir adaptör bağlandı</translation>
@@ -2432,6 +2433,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8934418770423095813">Google Dokümanı Oluştur</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 dosya}other{# dosya}}</translation>
 <translation id="8936501819958976551">devre dışı</translation>
+<translation id="8937312474322077653">Ekran görüntüsünde <ph name="SOURCE" /> <ph name="TYPE" /> olarak ayarlayın. Yakalama türünü seçmek için Sekme tuşuna basın. Bölgeyi seçmek için boşluk tuşuna basın. Çekmek için Enter tuşuna basın.</translation>
 <translation id="8938800817013097409">USB-C cihaz (arkadaki sağ bağlantı noktası)</translation>
 <translation id="8939855324412367560">Giriş sesi "<ph name="INPUT_DEVICE_NAME" />", çıkış sesi "<ph name="OUTPUT_DEVICE_NAME" />". Değiştirmek için Ayarlar'a gidin.</translation>
 <translation id="8940956008527784070">Pil gücü az (%<ph name="PERCENTAGE" />)</translation>

@@ -123,6 +123,7 @@ Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez
 <translation id="3984746313391923992">Votre organisation vous demande de rester déconnecté de Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome n'a pas accès à vos photos ni à vos vidéos. Activez l'accès dans iOS via Réglages &gt; Confidentialité &gt; Photos.</translation>
 <translation id="4064699917955374540">Pour utiliser et enregistrer des données Chrome dans votre compte Google, confirmez votre identité.</translation>
+<translation id="411154422556990518">Suivez les changements de prix et découvrez des conseils sur Chrome.</translation>
 <translation id="417201473131094001">Non disponible dans Chrome Canary</translation>
 <translation id="424864128008805179">Se déconnecter de Chrome ?</translation>
 <translation id="4430797724889237570">Ouvrez les liens de Gmail, Maps, YouTube et d'autres applis dans Chrome</translation>
@@ -133,6 +134,7 @@ Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez
 <translation id="4636900170638246267">Connectez-vous à ce site et à Chrome.</translation>
 <translation id="4647910807533196601">Ouvrez votre dernier onglet dans Chrome.</translation>
 <translation id="4693084815234024320">Vous êtes en navigation privée Chrome</translation>
+<translation id="4713907610796204963">Découvrez les bases utiles de Chrome pour bien démarrer</translation>
 <translation id="4724297637870447613">Utilisez Chrome où que vous soyez</translation>
 <translation id="4738647308035481133">Page Google Chrome</translation>
 <translation id="4742795653798179840">Données Chrome supprimées</translation>
@@ -239,7 +241,6 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="7175129790242719365">Astuce Chromium : connectez-vous à Chrome</translation>
 <translation id="7187993566681480880">Ce mode vous protège dans Chrome et peut servir à renforcer votre sécurité dans d'autres applications Google lorsque vous êtes connecté.</translation>
 <translation id="7200524487407690471">Chrome effectue automatiquement un contrôle de sécurité tous les jours pour vous protéger, entre autres, contre les violations de données et les sites Web dangereux. Vous trouverez plus d'informations sur ce contrôle dans les paramètres.</translation>
-<translation id="7203324561587388418">Tenez-vous informé des contenus et des conseils utiles de Chrome.</translation>
 <translation id="72119412072970160">Vous pouvez utiliser les mots de passe enregistrés dans le Gestionnaire de mots de passe de Google dans d'autres applis sur votre iPad.</translation>
 <translation id="7214019116829172458">Ouvrir un onglet de navigation privée Chrome</translation>
 <translation id="722167379782941918">Chrome recommande une protection renforcée</translation>
@@ -252,6 +253,7 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="7299681342915173313">Vous pouvez désormais utiliser Chrome chaque fois que vous appuyez sur des liens dans des e-mails, des documents et d'autres applis.</translation>
 <translation id="7344094882820374540">Profitez de la protection renforcée de Chrome contre les sites dangereux</translation>
 <translation id="7349129508108954623">Autorisez Chrome à utiliser Google Maps pour vous fournir des itinéraires et des informations locales sur les adresses détectées.</translation>
+<translation id="7371674917547846460">Découvrez des conseils utiles sur Chrome et plus encore.</translation>
 <translation id="7394108421562933108">Maps dans Chrome</translation>
 <translation id="7400722733683201933">À propos de Google Chrome</translation>
 <translation id="7466693328838535498">Dans le champ "Rechercher des widgets", saisissez "Chrome"</translation>
@@ -262,6 +264,7 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="7581063337314642333">Accéder à la grille d'onglets dans Chrome</translation>
 <translation id="7599894504325210080">Vue développée de la saisie automatique Chrome</translation>
 <translation id="7617512710641355143">Chrome est géré</translation>
+<translation id="7626032353295482388">Bienvenue dans Chrome</translation>
 <translation id="7642373780953416937">Recevez des alertes concernant les problèmes de confidentialité ou de sécurité que Chrome détecte automatiquement pour vous.</translation>
 <translation id="7660356333829433649">Revenez ici pour découvrir d'autres conseils utiles afin de profiter au maximum de Chrome.</translation>
 <translation id="7662994914830945754">Pour retrouver vos onglets Chrome quel que soit l'appareil utilisé, connectez-vous et activez la synchronisation</translation>
@@ -314,7 +317,6 @@ Vos données ont été chiffrées avec votre phrase secrète le <ph name="TIME" 
 <translation id="8603022514504485810">Le Gestionnaire de mots de passe de Google n'a pas pu vérifier tous les mots de passe. Réessayez demain ou <ph name="BEGIN_LINK" />vérifiez les mots de passe enregistrés dans votre compte Google<ph name="END_LINK" />.</translation>
 <translation id="8630122478628016441">Activez l'option "Verrouiller les onglets de navigation privée lorsque vous fermez Chrome".</translation>
 <translation id="8673726683583791503">Acheter avec Google Lens</translation>
-<translation id="8727043961453758442">Profiter pleinement de Chrome</translation>
 <translation id="8765470054473112089">Lorsque vous saisissez du texte dans la barre d'adresse ou le champ de recherche, Chrome envoie le contenu saisi à votre moteur de recherche par défaut pour obtenir de meilleures suggestions. Ce paramètre est désactivé en navigation privée.</translation>
 <translation id="8772179140489533211">Permet d'afficher des invites de connexion à Chrome.</translation>
 <translation id="8788269841521769222">Vous n'aurez pas besoin de mémoriser ce mot de passe. Il sera enregistré dans le Gestionnaire de mots de passe Google pour <ph name="EMAIL" /></translation>

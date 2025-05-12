@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">കോൺഫ്ലവർ ബ്ലൂ</translation>
 <translation id="1246424317317450637">ബോള്‍ഡ്</translation>
+<translation id="1250181918001045969">ക്യാമറയുമായി കണക്റ്റ് ചെയ്യാൻ ശ്രമിക്കുന്നു. <ph name="SECONDS" /> സെക്കൻഡിനുള്ളിൽ ഫെയ്സ് കൺട്രോൾ ഓഫാകും.</translation>
 <translation id="1251750620252348585">അടുത്ത നില 6 ശീർഷകം</translation>
 <translation id="1264956950255940376">ഇടത് കണ്ണ് ഭാഗികമായി അടയ്ക്കുക</translation>
 <translation id="1268366246392928616">മുമ്പത്തെ മാത്ത് എക്‌സ്‌പ്രഷനുകളൊന്നുമില്ല</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">സന്ദർശിച്ച മുമ്പത്തെ ലിങ്ക്</translation>
 <translation id="3241638166094654466">ഓരോ വരിയിലെയും കളങ്ങൾ:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">ക്യാമറ ലഭ്യമല്ല. നിങ്ങൾ സൈൻ ഇൻ ചെയ്‌തിട്ടുണ്ടെന്നും ക്യാമറ ഓണാണെന്നും ഉറപ്പാക്കുക.</translation>
 <translation id="3260949043575829030">സമാനമായ മുമ്പത്തെ ഇനം</translation>
 <translation id="3270069636408109001">അടുത്ത പട്ടിക ഒന്നുമില്ല</translation>
 <translation id="3273791280096244679">ലേബൽ സംരക്ഷിക്കുക</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">പേജ് പൂർണ്ണമായി ലോഡ് ചെയ്‌ത ശേഷം അത് സ്വയമേവ വായിക്കുക</translation>
 <translation id="5826479389509458994">വരി <ph name="ROW" /> നിര <ph name="COL" /></translation>
 <translation id="5833044594931167190">ARIA ലാൻഡ്‌മാർക്കുകൾ ഒന്നുമില്ല</translation>
+<translation id="5836800981500311517">ക്യാമറ ആക്‌സസ് ചെയ്യാനാകുന്നില്ല. ക്യാമറ ഓണാക്കി അത് ബ്ലോക്ക് ചെയ്‌തിട്ടില്ലെന്ന് ഉറപ്പാക്കുക.</translation>
 <translation id="584044465500042213">സ്ക്രോൾ മോഡിൽ നിന്ന് പുറത്തുകടക്കുക</translation>
 <translation id="5842625257683688671">അടുത്ത ഗ്രാഫിക് ഒന്നുമില്ല</translation>
 <translation id="5847883414085148048">സമർപ്പണം</translation>

@@ -1121,7 +1121,7 @@ Un appareil connecté.</translation>
 <translation id="4666911709726371538">Autres applications</translation>
 <translation id="4667099493359681081">Téléchargement du fichier <ph name="FILENAME" /> en cours…</translation>
 <translation id="4672539464599646374">L'Économiseur de pile est activé</translation>
-<translation id="4673427585974421255">Garder actif</translation>
+<translation id="4673427585974421255">Garder activé</translation>
 <translation id="4677040906536311086">Feuille de calcul Google</translation>
 <translation id="468019262817532242">Personne ne peut partager avec vous</translation>
 <translation id="468293128311738995">Applications de votre téléphone</translation>
@@ -1439,6 +1439,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="5672890847723042801">Utilitaires</translation>
 <translation id="5673434351075758678">De « <ph name="FROM_LOCALE" />  à « <ph name="TO_LOCALE" /> » après la synchronisation de vos paramètres.</translation>
 <translation id="5675363643668471212">Élément d'étagère</translation>
+<translation id="5677022547882470786">Faire glisser ou appuyer sur la barre d'espace pour sélectionner une zone de recherche</translation>
 <translation id="5677928146339483299">Bloqué</translation>
 <translation id="5678564054339031017">Afficher les données de la semaine suivante</translation>
 <translation id="5679050765726761783">Un adaptateur d'alimentation à faible consommation est branché</translation>
@@ -2430,6 +2431,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8934418770423095813">Créer un document Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fichier}one{# fichier}other{# fichiers}}</translation>
 <translation id="8936501819958976551">désactivée</translation>
+<translation id="8937312474322077653">Dans la capture d'écran, définissez l'option sur <ph name="TYPE" /> <ph name="SOURCE" />. Appuyez sur Tabulation pour choisir le type de capture. Appuyez sur la barre d'espace pour sélectionner la zone. Appuyez sur Entrée pour prendre la capture.</translation>
 <translation id="8938800817013097409">Appareil USB-C (port arrière-droit)</translation>
 <translation id="8939855324412367560">L'audio d'entrée est « <ph name="INPUT_DEVICE_NAME" /> » et l'audio de sortie est « <ph name="OUTPUT_DEVICE_NAME" /> ». Accédez aux paramètres pour effectuer des modifications.</translation>
 <translation id="8940956008527784070">Batterie faible (<ph name="PERCENTAGE" /> %)</translation>

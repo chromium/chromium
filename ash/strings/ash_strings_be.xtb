@@ -1440,6 +1440,7 @@
 <translation id="5672890847723042801">Утыліты</translation>
 <translation id="5673434351075758678">З мовы "<ph name="FROM_LOCALE" />" на мову "<ph name="TO_LOCALE" />" пасля сінхранізацыі налад.</translation>
 <translation id="5675363643668471212">Элемент з паліцы</translation>
+<translation id="5677022547882470786">Каб выбраць вобласць пошуку, перацягніце курсор або націсніце клавішу прабелу</translation>
 <translation id="5677928146339483299">Заблакіравана</translation>
 <translation id="5678564054339031017">Паказаць наступны тыдзень</translation>
 <translation id="5679050765726761783">Падключаны адаптар сілкавання малой магутнасці</translation>
@@ -2432,6 +2433,7 @@
 <translation id="8934418770423095813">Стварыць дакумент Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}one{# файл}few{# файлы}many{# файлаў}other{# файла}}</translation>
 <translation id="8936501819958976551">выключыла</translation>
+<translation id="8937312474322077653">Падчас здымання экрана задайце наступны параметр: <ph name="SOURCE" /> <ph name="TYPE" />. Націсніце клавішу Tab, каб выбраць тып здымка. Націсніце клавішу прабелу, каб выбраць вобласць. Націсніце клавішу "Увод", каб зрабіць здымак.</translation>
 <translation id="8938800817013097409">Прылада USB-C (задні порт справа)</translation>
 <translation id="8939855324412367560">Аўдыяўваход – "<ph name="INPUT_DEVICE_NAME" />", аўдыявыхад –<ph name="OUTPUT_DEVICE_NAME" />".Каб змяніць іх, перайдзіце ў налады.</translation>
 <translation id="8940956008527784070">Нізкі зарад акумулятара (<ph name="PERCENTAGE" /> %)</translation>

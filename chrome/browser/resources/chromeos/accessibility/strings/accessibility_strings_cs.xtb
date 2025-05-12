@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">skup přep</translation>
 <translation id="1243477406442346359">Chrpově modrá</translation>
 <translation id="1246424317317450637">Tučné</translation>
+<translation id="1250181918001045969">Probíhá pokus o připojení ke kameře. Za <ph name="SECONDS" /> s se ovládání obličejem vypne.</translation>
 <translation id="1251750620252348585">Další nadpis 6. úrovně</translation>
 <translation id="1264956950255940376">Přimhuřte levé oko</translation>
 <translation id="1268366246392928616">Žádný předchozí matematický výraz není</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Předchozí navštívený odkaz</translation>
 <translation id="3241638166094654466">Buňky na každém řádku:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Kamera není k dispozici. Ujistěte se, že jste přihlášeni a máte zapnutou kameru.</translation>
 <translation id="3260949043575829030">Předchozí podobná položka</translation>
 <translation id="3270069636408109001">Žádná další tabulka není</translation>
 <translation id="3273791280096244679">Uložit štítek</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Po načtení stránku automaticky přečíst</translation>
 <translation id="5826479389509458994">řádek <ph name="ROW" /> sloupec <ph name="COL" /></translation>
 <translation id="5833044594931167190">Žádné orientační body ARIA</translation>
+<translation id="5836800981500311517">Ke kameře se nepodařilo získat přístup. Zapněte kameru a ujistěte se, že není blokována.</translation>
 <translation id="584044465500042213">Ukončit režim posouvání</translation>
 <translation id="5842625257683688671">Žádný další obrázek není</translation>
 <translation id="5847883414085148048">Věnování</translation>

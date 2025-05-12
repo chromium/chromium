@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">grupa za izbor</translation>
 <translation id="1243477406442346359">Bledoplava</translation>
 <translation id="1246424317317450637">Podebljano</translation>
+<translation id="1250181918001045969">Pokušava se povezivanje sa kamerom. Upravljanje licem će se isključiti za <ph name="SECONDS" /> sek.</translation>
 <translation id="1251750620252348585">Sledeće zaglavlje 6. nivoa</translation>
 <translation id="1264956950255940376">Škiljite levim okom</translation>
 <translation id="1268366246392928616">Nema prethodnog matematičkog izraza</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Prethodni posećeni link</translation>
 <translation id="3241638166094654466">Ćelija u svakoj liniji:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Kamera nije dostupna. Uverite se da ste prijavljeni i da je kamera uključena.</translation>
 <translation id="3260949043575829030">Prethodna slična stavka</translation>
 <translation id="3270069636408109001">Nema sledeće tabele</translation>
 <translation id="3273791280096244679">Sačuvaj oznaku</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Automatski pročitaj stranicu kada završi sa učitavanjem</translation>
 <translation id="5826479389509458994"><ph name="ROW" />. red <ph name="COL" />. kolona</translation>
 <translation id="5833044594931167190">Nema ARIA obeležja</translation>
+<translation id="5836800981500311517">Pristup kameri nije uspeo. Uključite kameru i uverite se da nije blokirana.</translation>
 <translation id="584044465500042213">Izađite iz režima skrolovanja</translation>
 <translation id="5842625257683688671">Nema sledeće grafike</translation>
 <translation id="5847883414085148048">Posveta</translation>

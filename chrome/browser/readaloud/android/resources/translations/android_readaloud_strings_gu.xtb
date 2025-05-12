@@ -4,15 +4,22 @@
 <translation id="1173075331199604451">વૉઇસ મેનૂ</translation>
 <translation id="1178581264944972037">થોભો</translation>
 <translation id="1246424317317450637">ઘાટું</translation>
+<translation id="1370273601702151510">થમ્બ્સ અપ</translation>
 <translation id="1483137792530497944">નદી</translation>
 <translation id="1586836055630070874">હળવોફૂલ</translation>
+<translation id="1666704368140506043">અપમાનજનક કન્ટેન્ટ</translation>
 <translation id="1741047078107369903">ઉષ્માસભર</translation>
 <translation id="1807863182207623884">રૂબી</translation>
 <translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> સેકન્ડ ફાસ્ટ ફૉરવર્ડ કરો</translation>
 <translation id="1984328900355667246">પ્લેબૅક અનુપલબ્ધ છે</translation>
+<translation id="2019727681730021602">સ્ટૅન્ડર્ડ પ્લેબૅક</translation>
 <translation id="2224347680315897176">સ્થિર</translation>
+<translation id="2575502321843437554">પૂરતા પ્રમાણમાં આકર્ષક નથી</translation>
 <translation id="2611765907167846862">ગંભીર</translation>
 <translation id="3023502830214299618">કમનસીબે, આ સમયે આ પેજ માટે પ્લેબૅક અનુપલબ્ધ છે. કૃપા કરીને થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
+<translation id="3457812538570616687">થમ્બ્સ ડાઉન</translation>
+<translation id="3493899379487634969">શું ખોટું થયું?</translation>
+<translation id="3778044272390020426">નકારાત્મક પ્રતિસાદના વિકલ્પોનું મેનૂ</translation>
 <translation id="3807208219231826020">પ્લેબૅક સ્ક્રબ કરો</translation>
 <translation id="385051799172605136">પાછળ</translation>
 <translation id="3936324432406465283">પ્લેબૅકની સ્પીડ</translation>
@@ -28,28 +35,34 @@
 <translation id="5026371835667036198">તેજસ્વી</translation>
 <translation id="5234971936051226002">"આ પેજને સાંભળો" પ્લેયરને નાનું કર્યું.</translation>
 <translation id="5251803541071282808">મેઘ</translation>
+<translation id="5526614127710223793">પ્લેબૅક મોડનું પસંદગીકર્તા</translation>
 <translation id="5596627076506792578">વધુ વિકલ્પો</translation>
 <translation id="5694491020339060116">પ્લેબૅકની સ્પીડનું મેનૂ</translation>
+<translation id="5965409657393819302">ટેક્નિકલ સમસ્યા</translation>
+<translation id="6218961554829577610">વૉઇસ ગમ્યો નહીં</translation>
 <translation id="6315170314923504164">અવાજ</translation>
+<translation id="6330455646577575965">AI ઑડિયો પ્લેબૅક</translation>
 <translation id="6343633247422081848">લીલ</translation>
 <translation id="6550675742724504774">વિકલ્પો</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
+<translation id="677790449852070664">આભાર! તમારો પ્રતિસાદ સહાય કરે છે.</translation>
 <translation id="6790428901817661496">ચલાવો</translation>
 <translation id="6831043979455480757">અનુવાદ કરો</translation>
 <translation id="6846298663435243399">લોડ કરી રહ્યાં છે…</translation>
 <translation id="6889157801232138307">"આ પેજને સાંભળો" પ્લેયર</translation>
 <translation id="7051308646573997571">Coral</translation>
 <translation id="7112750136794557642">વધુ વિકલ્પો માટે, પ્લેયરને મોટું કરવા ટૅપ કરો.</translation>
+<translation id="7138678301420049075">અન્ય</translation>
 <translation id="7221920857098237570">મૃદુ</translation>
 <translation id="7237590978482584900">ખુશખુશાલ</translation>
 <translation id="7282547042039404307">સુગમ</translation>
-<translation id="7587250070160020374">Chrome પરનું પેજ હમણાં સંભળાવવામાં આવી રહ્યું છે</translation>
 <translation id="8004767876552422827">ફીલ્ડ</translation>
 <translation id="8136852699834914183">આ પેજ માટે પ્લેબૅક સુવિધા ઉપલબ્ધ નથી.</translation>
 <translation id="8198036737896977997">હવા</translation>
 <translation id="8264989794233974275"><ph name="PLAYBACK_SPEED" />x સ્પીડ વધારો/ઘટાડો.</translation>
 <translation id="8407011429883244666">પ્લેયર બંધ કરો.</translation>
 <translation id="8481839122437406573">શાંત</translation>
+<translation id="8756370108715456837">વાસ્તવિક રીતે ખોટું છે</translation>
 <translation id="8953618380150219653">"આ પેજને સાંભળો" પ્લેયર સંપૂર્ણ સ્ક્રીન પર ખૂલ્યું છે.</translation>
 <translation id="978117257931832348">ઓછી-તીવ્રતા</translation>
 </translationbundle>

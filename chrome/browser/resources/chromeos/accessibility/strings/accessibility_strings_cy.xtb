@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">grpbtwmrd</translation>
 <translation id="1243477406442346359">Glas Golau</translation>
 <translation id="1246424317317450637">Trwm</translation>
+<translation id="1250181918001045969">Wrthi'n ceisio cysylltu â'r camera. Bydd rheoli ag wyneb yn diffodd mewn <ph name="SECONDS" /> eiliad.</translation>
 <translation id="1251750620252348585">Pennawd lefel 6 nesaf</translation>
 <translation id="1264956950255940376">Craffwch eich llygad chwith</translation>
 <translation id="1268366246392928616">Dim mynegiad mathemateg blaenorol</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Dolen yr ymwelwyd â hi flaenorol</translation>
 <translation id="3241638166094654466">Celloedd ym mhob llinell:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Nid yw'r camera ar gael. Gwnewch yn siŵr eich bod wedi mewngofnodi a bod y camera ymlaen.</translation>
 <translation id="3260949043575829030">Eitem debyg flaenorol</translation>
 <translation id="3270069636408109001">Dim tabl nesaf</translation>
 <translation id="3273791280096244679">Cadw'r label</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Darllen tudalen yn awtomatig ar ôl iddi lwytho</translation>
 <translation id="5826479389509458994">rhes <ph name="ROW" />, colofn <ph name="COL" /></translation>
 <translation id="5833044594931167190">Dim cyfarwyddnod ARIA</translation>
+<translation id="5836800981500311517">Methu â chael mynediad at y camera. Trowch y camera ymlaen a gwnewch yn siŵr nad yw wedi'i rwystro.</translation>
 <translation id="584044465500042213">Gadael y modd sgrolio</translation>
 <translation id="5842625257683688671">Dim graffig nesaf</translation>
 <translation id="5847883414085148048">Ymroddiad</translation>

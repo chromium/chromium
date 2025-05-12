@@ -93,6 +93,7 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 <translation id="4987330545941822761">Chrome 遠端桌面無法判斷該在本機使用哪個瀏覽器開啟網址。請從下方清單選取瀏覽器。</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (離線)</translation>
 <translation id="507204348399810022">您確定要停用與 <ph name="HOSTNAME" /> 之間的遠端連線嗎？</translation>
+<translation id="5095424396646120601">當機報告</translation>
 <translation id="5170982930780719864">主機識別碼無效。</translation>
 <translation id="5204575267916639804">常見問題</translation>
 <translation id="5222676887888702881">登出</translation>

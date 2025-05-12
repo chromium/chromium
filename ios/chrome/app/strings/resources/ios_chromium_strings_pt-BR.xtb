@@ -47,7 +47,6 @@
 <translation id="2042889939382983733">Abrir histórico do Chromium</translation>
 <translation id="2052320862053429062">O Chromium verifica periodicamente se as suas senhas estão em listas que foram publicadas on-line. Quando isso é feito, as senhas e os nomes de usuário são criptografados para que não possam ser lidos por ninguém, nem o Google.</translation>
 <translation id="2059365270911640413">Terminar a configuração do Chromium</translation>
-<translation id="2147210759439165826">Fique por dentro do conteúdo e das dicas úteis do Chromium.</translation>
 <translation id="2168108852149185974">Alguns complementos causam falhas no Chromium. Desinstale-os:</translation>
 <translation id="2168593389981132306">Melhorar o Chromium</translation>
 <translation id="2178608107313874732">O Chromium não pode usar a câmera agora</translation>
@@ -157,6 +156,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="4828317641996116749">Não foi possível verificar todas as senhas com o Chromium. Tente novamente mais tarde.</translation>
 <translation id="4856138222358683580">Ações do Chromium</translation>
 <translation id="4904452304169763785">Mostra alertas sobre problemas de privacidade ou segurança detectados pelo Chromium.</translation>
+<translation id="4908570938463711775">Aprenda os conceitos básicos do Chromium para começar</translation>
 <translation id="4962295957157529683">Termine o que você estava fazendo na outra janela aberta no Chromium.</translation>
 <translation id="4985291216379576555">Off-line. Não é possível verificar se há atualizações</translation>
 <translation id="4996471330284142407">Seja mais eficiente com um Chromium simples, seguro e mais rápido do que nunca.</translation>
@@ -197,6 +197,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="5688047395118852662">Este card mostra sugestões para você aproveitar o Chromium ao máximo.</translation>
 <translation id="5700709190537129682">Não é possível verificar suas senhas com o Chromium</translation>
 <translation id="584550191241316896">Conectado ao Chromium</translation>
+<translation id="5862307444128926510">Bem-vindo ao Chromium</translation>
 <translation id="5889847953983052353">Quando ativado:
 <ph name="BEGIN_INDENT" /> • Ajudar a melhorar o Chromium para as pessoas que o usam como você.<ph name="END_INDENT" />
 
@@ -223,6 +224,7 @@ Considerações:
 <translation id="6301717043141881464">Para acessar com facilidade suas senhas salvas em outros apps, use o preenchimento automático do Chromium</translation>
 <translation id="6324041800010509197">Acessar a grade de guias no Chromium</translation>
 <translation id="6325378625795868881">Use o Chromium sempre que abrir links em mensagens e outros apps.</translation>
+<translation id="6387994184698195448">Receba dicas úteis sobre o Chromium e muito mais.</translation>
 <translation id="6424492062988593837">O Chromium ficou ainda melhor! Uma nova versão está disponível.</translation>
 <translation id="6433172051771630690">Dicas para aproveitar o Chromium ao máximo.</translation>
 <translation id="65045991564554105">Visualizar favoritos do Chromium</translation>
@@ -284,7 +286,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="7980860476903281594">O Chromium compartilha sua localização com os sites aos quais você concede permissão.</translation>
 <translation id="7994322153108931467">Para receber dicas úteis sobre o Chromium, ative as notificações nos ajustes do iOS.</translation>
 <translation id="7997159823054171568">Definir o Chromium como o navegador padrão</translation>
-<translation id="800195749539500647">Aproveite o Chromium ao máximo</translation>
 <translation id="800380310260616129">Baixe o Chromium neste link.</translation>
 <translation id="8013573822802650211">Para acessar suas guias em qualquer lugar onde você usar o Chromium, faça login em todos os seus dispositivos</translation>
 <translation id="8014091604604659473">A conta foi desconectada do Chromium</translation>
@@ -317,6 +318,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="8860548555286245440">Abrir URLs na navegação anônima do Chromium</translation>
 <translation id="8880024619507699923">Sua organização exige que você faça login para usar o Chromium. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Use o nível mais alto de segurança do Chromium</translation>
+<translation id="8925569192291721236">Não perca atualizações sobre monitoramento de preços e dicas do Chromium.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Isso acontece quando o Chromium não é usado por {THRESHOLD} minuto}one{Isso acontece quando o Chromium não é usado por {THRESHOLD} minuto}other{Isso acontece quando o Chromium não é usado por {THRESHOLD} minutos}}</translation>
 <translation id="8963279154877372067">Permitir notificações do Chromium para receber alertas de redução no preço</translation>
 <translation id="8975812008711371178">Pesquise com a voz no Chromium.</translation>

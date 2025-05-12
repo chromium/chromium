@@ -20,6 +20,7 @@
 <translation id="1059913517121127803">Kunne ikke starte skanningen</translation>
 <translation id="1061864016440983342">Bruk uten posisjon</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> av <ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="106558928761833284">en vakker kosmisk nebulagalakse med et raskt, futuristisk romskip, blå, rosa og lilla nyanser</translation>
 <translation id="1069150558259542054">Hurtiginnsetting kan ikke brukes for egendefinerte hurtigtaster.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Oppdaget en brannmur</translation>
@@ -27,6 +28,7 @@
 <translation id="1082009148392559545">Laster ned skjermspareren</translation>
 <translation id="1094693127011229778">IP-adressen er ikke tilgjengelig</translation>
 <translation id="1100902271996134409">Oppretter bilder …</translation>
+<translation id="1102946598597843031">et bilde av en måne over en innsjø med fallende kirsebærblomsterblader, 4K</translation>
 <translation id="1107856713690040084"><ph name="DEVICE_TYPE" />-lyd</translation>
 <translation id="1116694919640316211">Info</translation>
 <translation id="1118572504348554005">Vi kan dele tilbakemeldinger som sendes inn via dette skjemaet, med partnerne våre for å feilsøke feil og andre problemer du rapporterer til oss. Ikke skriv inn sensitiv informasjon, som passord.</translation>
@@ -67,6 +69,7 @@
 <translation id="1238163879850290856">Tilbakestill for å forhindre at andre får tilgang til data. Bruk bare inndatametoder du stoler på.</translation>
 <translation id="1238612778414822719">HTTPS-tidsforsinkelse</translation>
 <translation id="1252766349417594414">Joystick</translation>
+<translation id="1261045951892393759">en katt som spiller en flying V-gitar mens den rir på en enhjørning, med et lynnedslag i bakgrunnen</translation>
 <translation id="1270369111467284986">Mistanke om obligatorisk side</translation>
 <translation id="1274654146705270731">appelsiner</translation>
 <translation id="1275718070701477396">Valgt</translation>
@@ -273,6 +276,7 @@
 <translation id="2045814230297767491">bestikk</translation>
 <translation id="2047316797244836561">Koble til et nettverk og last inn siden på nytt for å se skjermspareren.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
+<translation id="2068472557797646626">3D-gjengivelse av kromkuler og kuleformer på en bakgrunn av arkitektoniske kromelementer. Komposisjonen er et moderne, minimalistisk konsept for reklame, merkevarebygging eller presentasjoner med plass til tekst. En stor bue står foran en abstrakt bakgrunn i minimalistisk stil. Studiobelysning. Nærbilde.</translation>
 <translation id="2073232437457681324">vidstrakt hav</translation>
 <translation id="2080070583977670716">Flere innstillinger</translation>
 <translation id="2082932131694554252">Tilordnet tastaturtast</translation>
@@ -390,7 +394,6 @@
 <translation id="2584559707064218956">For å konfigurere nettverket, gå til Innstillinger</translation>
 <translation id="2586146417912237930">blå og indigo</translation>
 <translation id="2589921777872778654">Rediger og slett-meny</translation>
-<translation id="2590424100019931043">Du er fjernet fra dette kurset</translation>
 <translation id="2597774443162333062">Filene sendes til Google for feilsøking</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Skanningen er fullført. 1 side er skannet}other{Skanningen er fullført. {NUMBER_OF_PAGES} sider er skannet}}</translation>
 <translation id="261322795497077164">Identifisering av personer som snakker</translation>
@@ -430,6 +433,7 @@
 <translation id="2805756323405976993">Apper</translation>
 <translation id="28232023175184696">Kan ikke koble til internett. Klikk for å prøve på nytt.</translation>
 <translation id="2855718259207180827">ull</translation>
+<translation id="2856429654176718363">Et enormt romskip svever over byen, som er opplyst av mange lys. Hele bildet har en oljemalingsstil med mørke toner. Det skaper en mystisk atmosfære med futuristiske science fiction-elementer. Dette kunstverket er laget med C4D-programvare og OC-gjengivelse for å fremheve høy oppløsning og høyt detaljnivå. Det er også noen urbane bygninger i nærheten som tilfører dybdeskarphet. Motivet er gjengitt i oljemaleristil, med mørke toner og en mystisk atmosfære med futuristiske science fiction-elementer.</translation>
 <translation id="2859243502336719778">Kritisk oppdatering</translation>
 <translation id="2860473693272905224">Legg en ny side på skanneren</translation>
 <translation id="286265581261662583">Høyreklikk eller trykk og hold for å få definisjoner, oversettelser eller enhetskonverteringer</translation>
@@ -446,9 +450,11 @@
 <translation id="2895772081848316509">mørk</translation>
 <translation id="2915996080311180594">Start på nytt senere</translation>
 <translation id="2926057806159140518">Oppgi brukernavn og passord, eller skann QR-koden din</translation>
+<translation id="2927007463545347013">anime-sti med utsikt over havet og fallende kirsebærblomsterblader</translation>
 <translation id="2940811910881150316">Kan ikke teste enheten. Åpne lokket igjen for å teste.</translation>
 <translation id="2941112035454246133">Lav</translation>
 <translation id="2956070106555335453">Sammendrag</translation>
+<translation id="2968959705684615497">en surrealistisk hvit tiger med gulløyne og gullstriper som sitter på en hvit sanddyne</translation>
 <translation id="299385721391037602">rosa og gul</translation>
 <translation id="3008341117444806826">OPPDATER</translation>
 <translation id="3009958530611748826">Velg mappen du vil lagre i</translation>
@@ -518,6 +524,7 @@
 <translation id="3321030238473337787">Avspillingshastighet</translation>
 <translation id="3327613592010997943">Du kan bruke denne enheten igjen <ph name="DAY" /> kl. <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Testen kjøres</translation>
+<translation id="3332683265015995419">et damppunk-romskip som flyr gjennom en sandstorm</translation>
 <translation id="3340011300870565703">Enheten har <ph name="BATTERY_PERCENTAGE" /> % batteri i høyre øreplugg.</translation>
 <translation id="3340978935015468852">innstillinger</translation>
 <translation id="3347558044552027859">moderne</translation>
@@ -529,6 +536,7 @@
 <translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">Bakgrunn: Jordflyt</translation>
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" />-bakgrunn med bokstaven <ph name="LETTERS_LETTER" /></translation>
+<translation id="3382806462014639823"><ph name="TEACHER_NAME" /> ser på skjermen din</translation>
 <translation id="3383623117265110236">Eksklusiv</translation>
 <translation id="3404249063913988450">Slå på skjermspareren</translation>
 <translation id="3413935475507503304">For å gå videre med oppdateringen, klikk på Neste.</translation>
@@ -561,6 +569,7 @@
 <translation id="3532980081107202182">Omtrent <ph name="MIN_REMAINING" /> minutter igjen</translation>
 <translation id="3533790840489634638">basseng</translation>
 <translation id="3547264467365135390">Formel</translation>
+<translation id="3552832331940389362">en japansk animasjonsillustrasjon av en katt som sitter i en vinduskarm og ser på regnet på ettermiddagen</translation>
 <translation id="3557205324756024651">Lokal identitet (valgfritt)</translation>
 <translation id="3565064564551103223">Tillatte IP-adresser</translation>
 <translation id="3569407787324516067">Skjermsparer</translation>
@@ -636,12 +645,14 @@
 <translation id="38811596981744338">Juridisk problem</translation>
 <translation id="3885327323343477505">Bytt skjermsparer</translation>
 <translation id="3889914174935857450">Tilbakestillingsdato</translation>
+<translation id="3889954687526985291">en futuristisk motorsykkel laget av svart papir med neonlys på mørk bakgrunn</translation>
 <translation id="3897092660631435901">Meny</translation>
 <translation id="3902271751020176019">Transkripsjonsspråk</translation>
 <translation id="390890062090528082">stjernehimmel</translation>
 <translation id="391412459402535266">Kan ikke teste enheten. Bytt til laptopmodus for å teste.</translation>
 <translation id="3916998944874125962">ta skjermbilde</translation>
 <translation id="3923184630988645767">Databruk</translation>
+<translation id="392943705803418306">Økten med kursverktøy er avsluttet for deg</translation>
 <translation id="3932043219784172185">Ingen enheter er koblet til</translation>
 <translation id="3934185438132762746">Ikke-tilordnet <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Kunne ikke finne tilknytning til verten</translation>
@@ -808,6 +819,7 @@
 <translation id="4593212453765072419">Godkjenning av mellomtjener kreves</translation>
 <translation id="4594021849294327751">Opprett en transkripsjon</translation>
 <translation id="4594541568452132351">Velg transkripsjonsspråk, og last ned modellen</translation>
+<translation id="4600301862817165514">en Delorean med neonlys som kjører gjennom galaksen, med stjerner som suser forbi</translation>
 <translation id="4609350030397390689">Tastaturlysstyrke ned</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> av <ph name="TOTAL_PAGE_NUMBER" />. Trykk på Enter for å avbryte utskriftsjobben.</translation>
 <translation id="463791356324567266">Avbryter skanningen …</translation>
@@ -830,6 +842,7 @@
 <translation id="4697260493945012995">Velg kontrolltype</translation>
 <translation id="4712940987669302829">bokeh-effekt</translation>
 <translation id="4731797938093519117">Foreldretilgang</translation>
+<translation id="4733200407105375152">Ikke i kursverktøy</translation>
 <translation id="4734982181169850310">pastellfarger</translation>
 <translation id="473775607612524610">Oppdater</translation>
 <translation id="4744944742468440486">Informasjon om det du har markert</translation>
@@ -1006,6 +1019,7 @@
 <translation id="5499762266711462226">Tastaturfargen er basert på bakgrunnen</translation>
 <translation id="5502931783115429516">Android kjører ikke</translation>
 <translation id="550600468576850160">eng</translation>
+<translation id="5507504956167780539">et minimalistisk, profesjonelt bilde av glitrende, svarte sanddyner med dramatiske skygger</translation>
 <translation id="551689408806449779">Enheten er koblet fra. Prøv å koble til på nytt for å teste</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="552644173505433109">Finn ut mer om oppretting av sammendrag og titler</translation>
@@ -1077,6 +1091,7 @@
 <translation id="5876385649737594562">Slå på for å velge alternativer</translation>
 <translation id="5877503382465267833">Sett <ph name="RECORDING_NAME" /> på pause</translation>
 <translation id="588258955323874662">Fullskjerm</translation>
+<translation id="5889539348012432386">Startside for kursverktøy</translation>
 <translation id="5893975327266416093">Trykk på en tast på tastaturet for å tilordne den</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
 <translation id="5896602941605730551">Spill av</translation>
@@ -1125,6 +1140,7 @@
 <translation id="6075872808778243331">(Android) HTTP-tidsforsinkelse</translation>
 <translation id="6078323886959318429">Legg til snarvei</translation>
 <translation id="6079693086494835199">Tilbakestill for å sikre at standard-startsiden ikke er et nettsted som driver med nettfisking. Bruk bare nettsteder du stoler på.</translation>
+<translation id="6090672065638047175">et bilde av et lysende tre laget av stjerner med en vakker nattehimmel og en galakse i bakgrunnen</translation>
 <translation id="6091080061796993741">gul</translation>
 <translation id="6104112872696127344">Skanningen er avbrutt</translation>
 <translation id="6106186594183574873">For å fullføre passordendringen, skriv inn det gamle passordet</translation>
@@ -1251,7 +1267,7 @@
 <translation id="6596816719288285829">IP-adresse</translation>
 <translation id="6599673642868607614">Takk for tilbakemeldingen. Tilbakemeldingen din hjelper oss med å gjøre Chromebook-opplevelsen bedre, og den blir gjennomgått av teamet vårt. På grunn av det store antallet rapporter kan vi ikke sende svar.</translation>
 <translation id="6608043585557830684">Transkripsjon er av. Slå det på i innstillingene eller på <ph name="THREE_DOTS_MENU_ICON" />-menyen.</translation>
-<translation id="660846213831377756">Musetaster</translation>
+<translation id="660846213831377756">Mustaster</translation>
 <translation id="6618744767048954150">Kjører</translation>
 <translation id="6620487321149975369">Utskriftsjobber vises i loggen med mindre de fjernes manuelt</translation>
 <translation id="6624819909909965616">Kan ikke laste opp filer som er større enn 10 MB</translation>
@@ -1310,6 +1326,7 @@
 <translation id="6900701049656042631">Dette albumet inneholder ingen bilder. For å legge til bilder, gå til <ph name="LINK" /></translation>
 <translation id="6902359863093437070">Lag en bakgrunn med AI</translation>
 <translation id="6905163627763043954">Prøv det</translation>
+<translation id="6905275015682612674">bilde med lang eksponering av en bioluminescerende strand ved solnedgang med stjerner på himmelen, vakre pastellfarger, 4K</translation>
 <translation id="6905724422583748843">Tilbake til <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Skannerens deksel er åpent. Lukk dekselet, og prøv på nytt.</translation>
 <translation id="6910845598686542904">beregne modeller for stemmene som registreres i opptaket</translation>
@@ -1319,6 +1336,7 @@
 <translation id="6930597342185648547">Om bakgrunnen</translation>
 <translation id="6931666215260956151">galakse</translation>
 <translation id="6939766318048400022">Kafé</translation>
+<translation id="6940212863873359282">et stykke hvit organza-silke som svever i midten over en hvit marmorbue med kremfarget bakgrunn</translation>
 <translation id="6942253772720771875">Del tilbakemeldingen, eller beskriv problemet</translation>
 <translation id="6943893908656559156">Ekstern identitet (valgfritt)</translation>
 <translation id="694981048020558038">Søk etter opptakstittel</translation>
@@ -1405,6 +1423,7 @@
 <translation id="7271040990581020067">Skanneren er i bruk for øyeblikket. Prøv på nytt senere.</translation>
 <translation id="7271932918253517778">En hurtigtast som bruker taster på øverste rad, må inneholde <ph name="META_KEY" />-tasten.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7275707758336796649">en dalmatiner foran en rosa bakgrunn i dynamisk positur der hele kroppen er synlig, fotografert i høy oppløsning med hyperrealistisk arkivfotobakgrunn med fargegradering</translation>
 <translation id="7281657306185710294">Kjenn brisen</translation>
 <translation id="7287310195820267359">Samlinger av bakgrunnsbilder</translation>
 <translation id="7293429513719260019">Velg språk</translation>
@@ -1414,6 +1433,7 @@
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Spør ekspertene i Chromebook-hjelpeforumet</translation>
+<translation id="7309823890857024809">minimalistisk stilleben med noen kornvalmuestilker i en glassvase på svart bakgrunn</translation>
 <translation id="7311368985037279727">tastaturfarge</translation>
 <translation id="7317831949569936035">Skoleregistrering</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -1431,6 +1451,7 @@
 <translation id="7353413232959255829">Søkeresultat <ph name="LIST_POSITION" /> av <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Trykk på Enter for å navigere til snarveien.</translation>
 <translation id="7359657277149375382">Filtype</translation>
 <translation id="73631062356239394">Del diagnostikkdata</translation>
+<translation id="7369648056634183167">et nærbilde av en detaljert vannlilje dekket av dugg i regnet. Fokuset er på de skjøre kronbladene og vanndråpene som reflekterer lyset, med myke pastellfarger mot en blå bakgrunn. Bilde tatt i øyehøyde med naturlig lys</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378170410161264436">Lydopptaker kan lage transkripsjoner av opptak med tale.
 Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonene.</translation>
@@ -1601,6 +1622,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8135609423982943441">Chromebooken er tilbakestilt til trygge standardinnstillinger. Du kan justere disse endringene når som helst i innstillingene.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">Opprett ditt eget</translation>
+<translation id="8142182840415860496">et nærbilde av flere hvite og gule blomster, et stillbilde fra en animasjonsfilm, en skjør, blekrosa blomst med lange kronblader og en grønn stilk plassert mellom to store, gule tulipaner mot en blå himmel uten blader eller løvverk i pastellfarger, et filmatisk stillbilde med høy oppløsning og svært detaljerte, intrikate detaljer, oktan-gjengivelse med vakker, stemningsfull volumbelysning.</translation>
 <translation id="8143951647992294073">Velg <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Utviklerverktøy</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
@@ -1681,6 +1703,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8503813439785031346">Brukernavn</translation>
 <translation id="8503836310948963452">Bare noen få minutter igjen …</translation>
 <translation id="8505011850330200833">Gemini-modellen trenger 2 GB lagringsplass for å behandle transkripsjoner og skrive oppsummeringer</translation>
+<translation id="8506063704538210734">bilde av nattehimmel med en meteorsverm og noen trær i forgrunnen, med lilla og rosa fargetoner</translation>
 <translation id="8506394543220680287">dekket av snø</translation>
 <translation id="8508640263392900755">APN-detaljer</translation>
 <translation id="8522687886059337719">Du har nå tilgang til nye <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />bakgrunner<ph name="END_LINK_WALLPAPER_SUBPAGE" /> og en ny <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />skjermsparer<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>

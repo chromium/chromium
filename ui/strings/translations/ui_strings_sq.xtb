@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 njoftim i palexuar}other{# njoftime të palexuara}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Aktivizo shtesën e mëposhtme në modalitetin "e fshehtë":}other{Aktivizo shtesat e mëposhtme në modalitetin "e fshehtë":}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 muaj më parë}other{# muaj më parë}}</translation>
+<translation id="4277033906326892359">Kolona "<ph name="COLUMN_NAME" />" është renditur në rend ngjitës</translation>
 <translation id="4289300219472526559">Fillo të flasësh</translation>
 <translation id="4289540628985791613">Përmbledhje</translation>
 <translation id="4491109536499578614">Imazh</translation>
@@ -169,8 +170,10 @@
 <translation id="6503257047630241175">Përmbajtja në formatin RTF</translation>
 <translation id="6539092367496845964">Ndodhi një gabim. Provo përsëri më vonë.</translation>
 <translation id="654149438358937226">Blloko të gjitha njoftimet</translation>
+<translation id="6612467943526193239">Për të dalë nga kalibrimi, shtyp Esc.</translation>
 <translation id="6620110761915583480">Ruaj skedarin</translation>
 <translation id="6699343763173986273">Pjesa tjetër e medias</translation>
+<translation id="6807086321996342431">Kolona "<ph name="COLUMN_NAME" />"</translation>
 <translation id="6808150112686056157">Ndalimi i medias</translation>
 <translation id="6845383723252244143">Zgjidh dosje</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 orë e mbetur}other{# orë të mbetura}}</translation>
@@ -202,11 +205,11 @@
 <translation id="7969046989155602842">Komanda</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Më shumë se 1 njoftim i palexuar}other{Më shumë se # njoftime të palexuara}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{në 1 min.}other{në # min.}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Numri nga <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 orë më parë}other{# orë më parë}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 sek. e mbetur}other{# sek. të mbetura}}</translation>
 <translation id="8134065097954893699">Po ringarkon këtë faqe</translation>
+<translation id="813785873406874127">Kolona "<ph name="COLUMN_NAME" />" nuk është renditur</translation>
 <translation id="815598010540052116">Lëviz poshtë</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Faqe poshtë</translation>
@@ -218,6 +221,7 @@
 <translation id="8393700583063109961">Dërgo mesazh</translation>
 <translation id="8394908167088220973">Luaj/pauzo median</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 v}other{# v}}</translation>
+<translation id="8582972250170726813">Kolona "<ph name="COLUMN_NAME" />" është renditur në rend zbritës</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623">Skedar <ph name="SAVEAS_EXTENSION_TYPE" /> (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>

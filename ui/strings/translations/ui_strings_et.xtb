@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 lugemata märguanne}other{# lugemata märguannet}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Lülitage inkognito režiimis sisse järgmine laiendus:}other{Lülitage inkognito režiimis sisse järgmised laiendused:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 kuu tagasi}other{# kuud tagasi}}</translation>
+<translation id="4277033906326892359">Veerg <ph name="COLUMN_NAME" /> on sorditud kasvavas järjestuses</translation>
 <translation id="4289300219472526559">Alusta rääkimist</translation>
 <translation id="4289540628985791613">Ülevaade</translation>
 <translation id="4491109536499578614">Image</translation>
@@ -169,8 +170,10 @@
 <translation id="6503257047630241175">RTF-sisu</translation>
 <translation id="6539092367496845964">Midagi läks valesti. Proovige hiljem uuesti.</translation>
 <translation id="654149438358937226">Blokeeri kõik märguanded</translation>
+<translation id="6612467943526193239">Kalibreerimisest väljumiseks vajutage paoklahvi Esc.</translation>
 <translation id="6620110761915583480">Faili salvestamine</translation>
 <translation id="6699343763173986273">Meediumi järgmine lugu</translation>
+<translation id="6807086321996342431">Veerg <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">Meediumi peatamine</translation>
 <translation id="6845383723252244143">Kausta valimine</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 tund on jäänud}other{# tundi on jäänud}}</translation>
@@ -202,11 +205,11 @@
 <translation id="7969046989155602842">Käsuklahv</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Rohkem kui 1 lugemata märguanne}other{Rohkem kui # lugemata märguannet}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{1 min pärast}other{# min pärast}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" /> + <ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Number saidilt <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 tund tagasi}other{# tundi tagasi}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 s on jäänud}other{# s on jäänud}}</translation>
 <translation id="8134065097954893699">Lehe uuesti laadimine</translation>
+<translation id="813785873406874127">Veerg <ph name="COLUMN_NAME" /> on sortimata</translation>
 <translation id="815598010540052116">Keri alla</translation>
 <translation id="8179976553408161302">Sisestusklahv</translation>
 <translation id="8210608804940886430">Lehekülje lõppu</translation>
@@ -218,6 +221,7 @@
 <translation id="8393700583063109961">Saatke sõnum</translation>
 <translation id="8394908167088220973">Meediumi esitamine/peatamine</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1a}other{#a}}</translation>
+<translation id="8582972250170726813">Veerg <ph name="COLUMN_NAME" /> on sorditud kahanevas järjestuses</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> Fail (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> kB/s</translation>

@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">Kornblå</translation>
 <translation id="1246424317317450637">Fed</translation>
+<translation id="1250181918001045969">Der forsøges at oprette forbindelse til kameraet. Ansigtsstyring deaktiveres om <ph name="SECONDS" /> sekunder.</translation>
 <translation id="1251750620252348585">Næste niveau 6-overskrift</translation>
 <translation id="1264956950255940376">Knib det venstre øje sammen</translation>
 <translation id="1268366246392928616">Der er ingen forrige matematiske udtryk</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Tidligere besøgt link</translation>
 <translation id="3241638166094654466">Celler i hver linje:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Kameraet er ikke tilgængeligt. Sørg for, at du er logget ind, og at kameraet er tændt.</translation>
 <translation id="3260949043575829030">Forrige lignende element</translation>
 <translation id="3270069636408109001">Der er ikke flere tabeller</translation>
 <translation id="3273791280096244679">Gem etiket</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Læs automatisk siden, når den er indlæst</translation>
 <translation id="5826479389509458994">række <ph name="ROW" /> kolonne <ph name="COL" /></translation>
 <translation id="5833044594931167190">Der er ingen ARIA-orienteringspunkter</translation>
+<translation id="5836800981500311517">Der er ikke adgang til kameraet. Tænd kameraet, og sørg for, at det ikke er blokeret.</translation>
 <translation id="584044465500042213">Afslut rulletilstand</translation>
 <translation id="5842625257683688671">Der er ikke flere grafikker</translation>
 <translation id="5847883414085148048">Dedikation</translation>

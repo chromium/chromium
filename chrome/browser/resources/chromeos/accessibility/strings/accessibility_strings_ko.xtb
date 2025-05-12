@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">콘플라워 블루</translation>
 <translation id="1246424317317450637">굵게</translation>
+<translation id="1250181918001045969">카메라에 연결을 시도하고 있습니다. <ph name="SECONDS" />초 후 페이스 컨트롤이 꺼집니다.</translation>
 <translation id="1251750620252348585">다음 수준 6 제목</translation>
 <translation id="1264956950255940376">왼쪽 눈 찡그리기</translation>
 <translation id="1268366246392928616">이전 수식이 없습니다</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">이전 방문한 링크</translation>
 <translation id="3241638166094654466">각 행의 셀 수:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">카메라를 사용할 수 없습니다. 로그인되어 있고 카메라가 켜져 있는지 확인하세요.</translation>
 <translation id="3260949043575829030">이전 유사한 항목</translation>
 <translation id="3270069636408109001">다음 표가 없습니다</translation>
 <translation id="3273791280096244679">라벨 저장</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">로드가 끝나면 자동으로 페이지를 읽습니다.</translation>
 <translation id="5826479389509458994"><ph name="ROW" />행 <ph name="COL" />열</translation>
 <translation id="5833044594931167190">ARIA 랜드마크가 없습니다</translation>
+<translation id="5836800981500311517">카메라에 액세스할 수 없습니다. 카메라를 켜고 카메라가 차단되지 않았는지 확인하세요.</translation>
 <translation id="584044465500042213">스크롤 모드 종료</translation>
 <translation id="5842625257683688671">다음 그래픽이 없습니다</translation>
 <translation id="5847883414085148048">헌정사</translation>

@@ -1441,6 +1441,7 @@ Nijedan uređaj nije povezan.</translation>
 <translation id="5672890847723042801">Uslužne aplikacije</translation>
 <translation id="5673434351075758678">Sa jezika „<ph name="FROM_LOCALE" />“ na „<ph name="TO_LOCALE" />“ posle sinhronizacije uređaja.</translation>
 <translation id="5675363643668471212">Stavka na polici</translation>
+<translation id="5677022547882470786">Prevucite ili pritisnite taster za razmak da biste izabrali oblast za pretragu</translation>
 <translation id="5677928146339483299">Blokirano</translation>
 <translation id="5678564054339031017">Prikažite sledeću nedelju</translation>
 <translation id="5679050765726761783">Povezan je adapter male snage</translation>
@@ -2434,6 +2435,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8934418770423095813">Napravite Google dokument</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fajl}one{# fajl}few{# fajla}other{# fajlova}}</translation>
 <translation id="8936501819958976551">deaktivirano</translation>
+<translation id="8937312474322077653">U snimanju ekrana podesite na <ph name="SOURCE" /> <ph name="TYPE" />. Pritisnite Tab da biste izabrali tip snimanja. Pritisnite taster za razmak da biste izabrali region. Pritisnite Enter da biste snimili.</translation>
 <translation id="8938800817013097409">Uređaj sa USB priključkom tipa C (zadnji desni port)</translation>
 <translation id="8939855324412367560">Audio ulaz je <ph name="INPUT_DEVICE_NAME" />, a audio izlaz je <ph name="OUTPUT_DEVICE_NAME" />. Idite u Podešavanja da biste to promenili.</translation>
 <translation id="8940956008527784070">Baterija je skoro prazna (<ph name="PERCENTAGE" />%)</translation>

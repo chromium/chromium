@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">ပြောင်းပန်းပြာ</translation>
 <translation id="1246424317317450637">စာလုံးထူ</translation>
+<translation id="1250181918001045969">ကင်မရာနှင့် ချိတ်ဆက်ရန် ကြိုးပမ်းနေသည်။ အမူအရာဖြင့် ထိန်းချုပ်ခြင်းသည် <ph name="SECONDS" /> စက္ကန့်အကြာတွင် ပိတ်သွားပါမည်။</translation>
 <translation id="1251750620252348585">နောက်ထပ်အဆင့် ၆ ခေါင်းစီး</translation>
 <translation id="1264956950255940376">ဘယ်မျက်လုံးကို စွေကြည့်ပါ</translation>
 <translation id="1268366246392928616">ယခင် သင်္ချာညီမျှခြင်း မရှိပါ</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">အရင် ဝင်ကြည့်ခဲ့သည့် လင့်</translation>
 <translation id="3241638166094654466">စာကြောင်းတစ်ကြောင်းစီမှ ဆဲလ်များ−</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />- <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">ကင်မရာ မရနိုင်ပါ။ လက်မှတ်ထိုးဝင်ထားပြီး ကင်မရာဖွင့်ထားကြောင်း သေချာပါစေ။</translation>
 <translation id="3260949043575829030">ယခင် အလားတူ အကြောင်းအရာ</translation>
 <translation id="3270069636408109001">နောက်ထပ် ဇယား မရှိပါ</translation>
 <translation id="3273791280096244679">အညွှန်းကို သိမ်းရန်</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">စာမျက်နှာကို ဖွင့်ပြီးသည်နှင့် ၎င်းကို အလိုအလျောက် ဖတ်ရန်</translation>
 <translation id="5826479389509458994">အတန်း <ph name="ROW" /> ကော်လံ <ph name="COL" /></translation>
 <translation id="5833044594931167190">ARIA အထင်ကရနေရာများ မရှိပါ</translation>
+<translation id="5836800981500311517">ကင်မရာ သုံး၍မရပါ။ ကင်မရာဖွင့်ပြီး ၎င်းကို ပိတ်မထားကြောင်း သေချာပါစေ။</translation>
 <translation id="584044465500042213">လှိမ့်ရန်မုဒ်မှ ထွက်ရန်</translation>
 <translation id="5842625257683688671">နောက်ထပ် ဂရပ်ဖစ် မရှိပါ</translation>
 <translation id="5847883414085148048">ရည်ညွှန်းဖော်ပြချက်</translation>

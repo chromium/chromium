@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 ਨਾ-ਪੜ੍ਹੀ ਹੋਈ ਸੂਚਨਾ}one{# ਨਾ-ਪੜ੍ਹੀ ਹੋਈ ਸੂਚਨਾ}other{# ਨਾ-ਪੜ੍ਹੀਆਂ ਹੋਈਆਂ ਸੂਚਨਾਵਾਂ}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{ਇਨਕੋਗਨਿਟੋ ਵਿੱਚ ਅੱਗੇ ਦਿੱਤੀ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਚਾਲੂ ਕਰੋ:}one{ਇਨਕੋਗਨਿਟੋ ਵਿੱਚ ਅੱਗੇ ਦਿੱਤੀ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਚਾਲੂ ਕਰੋ:}other{ਇਨਕੋਗਨਿਟੋ ਵਿੱਚ ਅੱਗੇ ਦਿੱਤੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਚਾਲੂ ਕਰੋ:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 ਮਹੀਨਾ ਪਹਿਲਾਂ}one{# ਮਹੀਨਾ ਪਹਿਲਾਂ}other{# ਮਹੀਨੇ ਪਹਿਲਾਂ}}</translation>
+<translation id="4277033906326892359">ਕਾਲਮ <ph name="COLUMN_NAME" /> ਨੂੰ ਵਧਦੇ ਕ੍ਰਮ ਵਿੱਚ ਕ੍ਰਮ-ਬੱਧ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4289300219472526559">ਬੋਲਣਾ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="4289540628985791613">ਓਵਰਵਿਊ</translation>
 <translation id="4491109536499578614">ਚਿੱਤਰ</translation>
@@ -169,8 +170,10 @@
 <translation id="6503257047630241175">RTF ਸਮੱਗਰੀ</translation>
 <translation id="6539092367496845964">ਕੋਈ ਗੜਬੜ ਹੋਈ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="654149438358937226">ਸਾਰੀਆਂ ਸੂਚਨਾਵਾਂ ਨੂੰ ਬਲਾਕ ਕਰੋ</translation>
+<translation id="6612467943526193239">ਕੈਲੀਬਰੇਸ਼ਨ ਤੋਂ ਬਾਹਰ ਜਾਣ ਲਈ Esc ਦਬਾਓ।</translation>
 <translation id="6620110761915583480">ਫ਼ਾਈਲ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="6699343763173986273">ਮੀਡੀਆ ਅਗਲਾ ਟਰੈਕ</translation>
+<translation id="6807086321996342431">ਕਾਲਮ <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">ਮੀਡੀਆ ਰੋਕੋ</translation>
 <translation id="6845383723252244143">ਫੋਲਡਰ ਚੁਣੋ</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 ਘੰਟਾ ਬਾਕੀ}one{# ਘੰਟੇ ਬਾਕੀ}other{# ਘੰਟੇ ਬਾਕੀ}}</translation>
@@ -202,11 +205,11 @@
 <translation id="7969046989155602842">ਆਦੇਸ਼</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{1 ਤੋਂ ਵੱਧ ਨਾ-ਪੜ੍ਹੀ ਹੋਈ ਸੂਚਨਾ}one{# ਤੋਂ ਵੱਧ ਨਾ-ਪੜ੍ਹੀ ਹੋਈ ਸੂਚਨਾ}other{# ਤੋਂ ਵੱਧ ਨਾ-ਪੜ੍ਹੀਆਂ ਹੋਈਆਂ ਸੂਚਨਾਵਾਂ}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{1 ਮਿੰ. ਵਿੱਚ}one{# ਮਿੰ. ਵਿੱਚ}other{# ਮਿੰ. ਵਿੱਚ}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568"><ph name="ORIGIN" /> ਤੋਂ ਨੰਬਰ</translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 ਘੰਟਾ ਪਹਿਲਾਂ}one{# ਘੰਟੇ ਪਹਿਲਾਂ}other{# ਘੰਟੇ ਪਹਿਲਾਂ}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 ਸਕਿੰਟ ਬਾਕੀ}one{# ਸਕਿੰਟ ਬਾਕੀ}other{# ਸਕਿੰਟ ਬਾਕੀ}}</translation>
 <translation id="8134065097954893699">ਇਸ ਪੰਨੇ ਨੂੰ ਰੀਲੋਡ ਕਰਨਾ</translation>
+<translation id="813785873406874127">ਕਾਲਮ <ph name="COLUMN_NAME" /> ਨੂੰ ਕ੍ਰਮ-ਬੱਧ ਨਹੀਂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="815598010540052116">ਸਕ੍ਰੌਲ ਡਾਊਨ</translation>
 <translation id="8179976553408161302">ਦਰਜ ਕਰੋ</translation>
 <translation id="8210608804940886430">ਸਫ਼ਾ ਹੇਠਾਂ</translation>
@@ -218,6 +221,7 @@
 <translation id="8393700583063109961">ਸੁਨੇਹਾ ਭੇਜੋ</translation>
 <translation id="8394908167088220973">ਮੀਡੀਆ ਪਲੇ ਕਰੋ/ਰੋਕੋ</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 ਸਾਲ}one{# ਸਾਲ}other{# ਸਾਲ}}</translation>
+<translation id="8582972250170726813">ਕਾਲਮ <ph name="COLUMN_NAME" /> ਨੂੰ ਘਟਦੇ ਕ੍ਰਮ ਵਿੱਚ ਕ੍ਰਮ-ਬੱਧ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> ਫਾਈਲ (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>

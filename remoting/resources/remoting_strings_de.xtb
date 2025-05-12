@@ -93,6 +93,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="4987330545941822761">Chrome Remote Desktop kann nicht ermitteln, welcher Browser zum lokalen Öffnen der Links verwendet werden soll. Wähle einen aus der folgenden Liste aus.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
 <translation id="507204348399810022">Möchtest du die Remote-Verbindungen zu <ph name="HOSTNAME" /> wirklich deaktivieren?</translation>
+<translation id="5095424396646120601">Absturzberichte</translation>
 <translation id="5170982930780719864">Ungültige Host-ID</translation>
 <translation id="5204575267916639804">Häufig gestellte Fragen</translation>
 <translation id="5222676887888702881">Abmelden</translation>

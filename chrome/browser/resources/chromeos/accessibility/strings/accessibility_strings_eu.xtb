@@ -54,6 +54,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">Nabar-lorearen kolorekoa</translation>
 <translation id="1246424317317450637">Lodia</translation>
+<translation id="1250181918001045969">Kamerara konektatzen saiatzen ari gara. Aurpegi-keinuen bidez kontrolatzeko eginbidea <ph name="SECONDS" /> segundo barru desaktibatuko da.</translation>
 <translation id="1251750620252348585">Hurrengo 6. mailako goiburua</translation>
 <translation id="1264956950255940376">Ezkerreko begia erdi-ixtea</translation>
 <translation id="1268366246392928616">Ez dago beste adierazpen matematikorik honen aurretik</translation>
@@ -372,6 +373,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="3241052487511142956">Aurreko bisitatutako esteka</translation>
 <translation id="3241638166094654466">Lerro bakoitzeko gelaxkak:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Kamera ez dago erabilgarri. Ziurtatu saioa hasita daukazula eta kamera aktibatuta dagoela.</translation>
 <translation id="3260949043575829030">Aurreko antzeko elementua</translation>
 <translation id="3270069636408109001">Ez dago beste taularik honen ondoren</translation>
 <translation id="3273791280096244679">Gorde etiketa</translation>
@@ -763,6 +765,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="5824976764713185207">Irakurri orria automatikoki kargatzen den bezain laster</translation>
 <translation id="5826479389509458994"><ph name="ROW" /> errenkada, <ph name="COL" /> zutabea</translation>
 <translation id="5833044594931167190">Ez dago beste ARIA mugarririk</translation>
+<translation id="5836800981500311517">Ezin da erabili kamera. Aktibatu kamera eta ziurtatu ez dagoela blokeatuta.</translation>
 <translation id="584044465500042213">Irten gora/behera egiteko modutik</translation>
 <translation id="5842625257683688671">Ez dago beste grafikorik honen ondoren</translation>
 <translation id="5847883414085148048">Eskaintza</translation>

@@ -47,7 +47,6 @@
 <translation id="2042889939382983733">તમારો Chromiumનો ઇતિહાસ જુઓ</translation>
 <translation id="2052320862053429062">Chromium તમારા પાસવર્ડને ઑનલાઇન પ્રકાશિત કરવામાં આવેલી સૂચિઓ સામે સમય સમય પર ચેક કરે છે. આમ કરતી વખતે તમારા પાસવર્ડ અને વપરાશકર્તા નામ એન્ક્રિપ્ટેડ હોય છે, જેથી Google સહિત, કોઈપણ તેને વાંચી શકતું નથી.</translation>
 <translation id="2059365270911640413">Chromiumનું સેટઅપ કરવાનું પૂર્ણ કરો</translation>
-<translation id="2147210759439165826">કન્ટેન્ટ અને Chromiumની સહાયક ટિપ જોતા રહો.</translation>
 <translation id="2168108852149185974">કેટલાક એડ-ઓનને કારણે Chromium ક્રૅશ થાય છે. કૃપા કરી આને અનઇન્સ્ટૉલ કરો:</translation>
 <translation id="2168593389981132306">Chromiumને બહેતર બનાવો</translation>
 <translation id="2178608107313874732">Chromium, અત્યારે તમારા કૅમેરાનો ઉપયોગ કરી શકતું નથી</translation>
@@ -157,6 +156,7 @@
 <translation id="4828317641996116749">Chromium બધા પાસવર્ડ ચેક કરી શક્યું નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="4856138222358683580">Chromium ઍક્શન</translation>
 <translation id="4904452304169763785">તમારા માટે Chromium ભાળ મેળવે તેવી પ્રાઇવસી કે સુરક્ષા સંબંધિત કોઈપણ સમસ્યાઓ માટેના અલર્ટ.</translation>
+<translation id="4908570938463711775">તમે શરૂ કરી શકો તે માટે Chromiumની સહાયરૂપ મૂળભૂત બાબતો વિશે જાણો</translation>
 <translation id="4962295957157529683">તમે અન્ય ખુલ્લી Chromium વિંડોમાં જે કાર્ય કરતા તા તે પૂર્ણ કરો.</translation>
 <translation id="4985291216379576555">ઑફલાઇન, Chromium અપડેટ ચેક કરી શકતાં નથી</translation>
 <translation id="4996471330284142407">Chromiumના સરળ, સુરક્ષિત અને અત્યાર સુધીના સૌથી ઝડપી વર્ઝન વડે વધુ કાર્યો પૂર્ણ કરો.</translation>
@@ -197,6 +197,7 @@
 <translation id="5688047395118852662">આ કાર્ડ તમને Chromiumનો મહત્તમ લાભ મેળવવા માટેના સૂચનો બતાવે છે.</translation>
 <translation id="5700709190537129682">Chromium તમારા પાસવર્ડ ચેક કરી શકતું નથી</translation>
 <translation id="584550191241316896">Chromiumમાં સાઇન ઇન કર્યું</translation>
+<translation id="5862307444128926510">Chromium માં સ્વાગત છે</translation>
 <translation id="5889847953983052353">જ્યારે ચાલુ હોય:
 <ph name="BEGIN_INDENT" />  • તમે જે રીતે ઉપયોગ કરો છો, તે રીતે Chromium વાપરતા લોકો માટે તેને બહેતર બનાવવામાં સહાય કરો.<ph name="END_INDENT" />
 
@@ -223,6 +224,7 @@
 <translation id="6301717043141881464">તમારી અન્ય ઍપમાં તમારા સાચવેલા પાસવર્ડ સરળતાથી મેળવવા, ઑટોમૅટિક રીતે ભરવાની સુવિધા માટે Chromium પસંદ કરો</translation>
 <translation id="6324041800010509197">Chromiumમાં ટૅબ ગ્રિડની મુલાકાત લો</translation>
 <translation id="6325378625795868881">મેસેજ અને અન્ય ઍપમાં જ્યારે પણ તમે કોઈ લિંક પર ટૅપ કરો, ત્યારે Chromiumનો ઉપયોગ કરો.</translation>
+<translation id="6387994184698195448">સહાયરૂપ Chromium ટિપ અને વધુ બાબતો સાથે ચાલુ રાખો.</translation>
 <translation id="6424492062988593837">Chrome હવે વધારે સારું બન્યું છે! નવું વર્ઝન ઉપલબ્ધ છે.</translation>
 <translation id="6433172051771630690">Chromiumનો વધુને વધુ લાભ મેળવવા માટેની ટિપ.</translation>
 <translation id="65045991564554105">Chromium Bookmarks જુઓ</translation>
@@ -284,7 +286,6 @@
 <translation id="7980860476903281594">Chromium તમે મંજૂરી આપો છો તે સાઇટ સાથે તમારા સ્થાનની માહિતી શેર કરે છે.</translation>
 <translation id="7994322153108931467">Chromiumની સહાયક ટિપ મેળવવા માટે, તમારા iOS સેટિંગમાં નોટિફિકેશન ચાલુ કરો.</translation>
 <translation id="7997159823054171568">Chromiumને ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
-<translation id="800195749539500647">Chromiumનો વધુને વધુ લાભ મેળવો</translation>
 <translation id="800380310260616129">અહીંથી Chromium ડાઉનલોડ કરો.</translation>
 <translation id="8013573822802650211">તમે જ્યાંથી Chromiumનો ઉપયોગ કરો ત્યાંથી તમારી ટૅબ જોવા માટે, તમારા બધાં ડિવાઇસ પર સાઇન ઇન કરો</translation>
 <translation id="8014091604604659473">Chromiumમાંથી સાઇન આઉટ થયા</translation>
@@ -317,6 +318,7 @@
 <translation id="8860548555286245440">છૂપા મોડમાં Chromiumમાં URLs ખોલો</translation>
 <translation id="8880024619507699923">તમારી સંસ્થાની પૉલિસી અનુસાર જરૂરી છે કે Chromiumનો ઉપયોગ કરવા માટે તમે સાઇન ઇન કરો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Chromiumની સૌથી સશક્ત સુરક્ષા મેળવો</translation>
+<translation id="8925569192291721236">કિંમત ટ્રૅક કરવાના અપડેટ અને Chromium ટિપ વડે ચાલુ રાખો.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{જ્યારે {THRESHOLD} મિનિટ સુધી Chromiumનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે}one{જ્યારે {THRESHOLD} મિનિટ સુધી Chromiumનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે}other{જ્યારે {THRESHOLD} મિનિટ સુધી Chromiumનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે}}</translation>
 <translation id="8963279154877372067">Chromium નોટિફિકેશનને કિંમતમાં ઘટાડા વિશે અલર્ટ મેળવવાની મંજૂરી આપો</translation>
 <translation id="8975812008711371178">Chromiumમાં વૉઇસની સુવિધા વડે શોધો.</translation>

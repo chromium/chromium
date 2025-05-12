@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">група кнопак-пераключальнікаў</translation>
 <translation id="1243477406442346359">Васільковы</translation>
 <translation id="1246424317317450637">Паўтлусты</translation>
+<translation id="1250181918001045969">Выконваецца падключэнне да камеры. Кіраванне тварам адключыцца праз <ph name="SECONDS" /> с.</translation>
 <translation id="1251750620252348585">Наступны загаловак узроўню 6</translation>
 <translation id="1264956950255940376">Скасіце левае вока</translation>
 <translation id="1268366246392928616">Няма папярэдняга матэматычнага выразу</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Папярэдняя наведаная спасылка</translation>
 <translation id="3241638166094654466">Ячэек у кожным радку:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Камера недаступная. Упэўніцеся, што вы ўвайшлі і што камера ўключана.</translation>
 <translation id="3260949043575829030">Папярэдні падобны элемент</translation>
 <translation id="3270069636408109001">Няма наступнай табліцы</translation>
 <translation id="3273791280096244679">Захаваць метку</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Аўтаматычна чытаць старонку пасля яе загрузкі</translation>
 <translation id="5826479389509458994">радок <ph name="ROW" /> слупок <ph name="COL" /></translation>
 <translation id="5833044594931167190">Няма арыенціраў ARIA</translation>
+<translation id="5836800981500311517">Не ўдалося атрымаць доступ да камеры. Уключыце камеру і праверце, ці не заблакіравана яна.</translation>
 <translation id="584044465500042213">Выйсці з рэжыму гартання</translation>
 <translation id="5842625257683688671">Няма наступнага графічнага аб’екта</translation>
 <translation id="5847883414085148048">Прысвячэнне</translation>

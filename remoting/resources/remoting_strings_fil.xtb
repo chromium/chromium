@@ -93,6 +93,7 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="4987330545941822761">Hindi matukoy ng Remote na Desktop ng Chrome ang browser para lokal na magbukas ng mga URL. Pakipili ito mula sa listahan sa ibaba.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
 <translation id="507204348399810022">Sigurado ka bang gusto mong i-disable ang mga malayuang koneksyon sa <ph name="HOSTNAME" />?</translation>
+<translation id="5095424396646120601">Pag-uulat ng Pag-crash</translation>
 <translation id="5170982930780719864">Di-wastong host id.</translation>
 <translation id="5204575267916639804">Mga FAQ</translation>
 <translation id="5222676887888702881">Mag-sign out</translation>

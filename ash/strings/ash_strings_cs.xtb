@@ -1440,6 +1440,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="5672890847723042801">Nástroje</translation>
 <translation id="5673434351075758678">Po synchronizaci nastavení se oznámení změní z jazyka <ph name="FROM_LOCALE" /> na jazyk <ph name="TO_LOCALE" />.</translation>
 <translation id="5675363643668471212">Položka na poličce</translation>
+<translation id="5677022547882470786">Přetažením nebo stisknutím mezerníku vyberte oblast, kterou chcete prohledat</translation>
 <translation id="5677928146339483299">Zablokováno</translation>
 <translation id="5678564054339031017">Zobrazit příští týden</translation>
 <translation id="5679050765726761783">Je připojen adaptér s nízkou spotřebou</translation>
@@ -2430,6 +2431,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8934418770423095813">Vytvořit Dokument Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 soubor}few{# soubory}many{# souboru}other{# souborů}}</translation>
 <translation id="8936501819958976551">deaktivovala</translation>
+<translation id="8937312474322077653">Je aktivní záznam obrazovky nastavený na <ph name="SOURCE" /> – <ph name="TYPE" />. Stisknutím klávesy Tab vyberete typ záznamu. Stisknutím mezerníku vyberete oblast. Stisknutím klávesy Enter pořídíte záznam.</translation>
 <translation id="8938800817013097409">Zařízení USB Type-C (pravý zadní port)</translation>
 <translation id="8939855324412367560">Vstupní zvukové zařízení je <ph name="INPUT_DEVICE_NAME" /> a výstupní zvukové zařízení je <ph name="OUTPUT_DEVICE_NAME" />. Můžete je změnit v nastavení.</translation>
 <translation id="8940956008527784070">Slabá baterie (<ph name="PERCENTAGE" /> %)</translation>

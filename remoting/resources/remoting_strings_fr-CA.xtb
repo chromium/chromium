@@ -93,6 +93,7 @@ Si l'option « <ph name="SERVICE_SCRIPT_NAME" /> » est déjà cochée, décoc
 <translation id="4987330545941822761">Bureau à distance Chrome ne peut pas déterminer le navigateur pour ouvrir les URL localement. Veuillez le choisir dans la liste ci-dessous.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (hors ligne)</translation>
 <translation id="507204348399810022">Voulez-vous vraiment désactiver les connexions à distance à <ph name="HOSTNAME" />?</translation>
+<translation id="5095424396646120601">Envoi de rapports de plantage</translation>
 <translation id="5170982930780719864">Identifiant d'hôte non valide.</translation>
 <translation id="5204575267916639804">Foire aux questions</translation>
 <translation id="5222676887888702881">Déconnexion</translation>

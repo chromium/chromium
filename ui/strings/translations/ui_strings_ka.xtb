@@ -170,6 +170,7 @@
 <translation id="6503257047630241175">RTF კონტენტი</translation>
 <translation id="6539092367496845964">წარმოიქმნა შეფერხება. ცადეთ მოგვიანებით.</translation>
 <translation id="654149438358937226">ყველა შეტყობინების დაბლოკვა</translation>
+<translation id="6612467943526193239">კალიბრაციიდან გამოსასვლელად, დააჭირეთ კლავიშს „Esc“.</translation>
 <translation id="6620110761915583480">ფაილის შენახვა</translation>
 <translation id="6699343763173986273">შემდეგი მედია ჩანაწერი</translation>
 <translation id="6807086321996342431">სვეტი <ph name="COLUMN_NAME" /></translation>
@@ -204,7 +205,6 @@
 <translation id="7969046989155602842">Command</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{1-ზე მეტი წაუკითხავი შეტყობინება}other{#-ზე მეტი წაუკითხავი შეტყობინება}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{1 წუთში}other{# წუთში}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">ნომერი <ph name="ORIGIN" />-დან</translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 საათის წინ}other{# საათის წინ}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{დარჩენილია 1 წმ}other{დარჩენილია # წმ}}</translation>

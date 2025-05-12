@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">Ачык жашылтым көк</translation>
 <translation id="1246424317317450637">Жоон</translation>
+<translation id="1250181918001045969">Камерага туташып көрүңүз. Жүз менен бүтүрүү <ph name="SECONDS" /> секунддан кийин өчөт.</translation>
 <translation id="1251750620252348585">Кийинки 6-деңгээлдеги баш аты.</translation>
 <translation id="1264956950255940376">Сол көздү жүлжүйтүү</translation>
 <translation id="1268366246392928616">Мурунку математикалык туюнтма жок</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Мурунку каралган шилтеме</translation>
 <translation id="3241638166094654466">Ар бир сызыктагы уячанын саны:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Камера жеткиликсиз. Аккаунтка кирип турганыңызды жана камера күйгүзүлгөнүн текшериңиз.</translation>
 <translation id="3260949043575829030">Мурунку окшош элемент</translation>
 <translation id="3270069636408109001">Кийинки жадыбал жок</translation>
 <translation id="3273791280096244679">Энбелгини сактоо</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Барак жүктөлгөндөн кийин дароо окуңуз</translation>
 <translation id="5826479389509458994">катар <ph name="ROW" /> тилке <ph name="COL" /></translation>
 <translation id="5833044594931167190">ARIA белги жерлери жок</translation>
+<translation id="5836800981500311517">Камерага кирүү мүмкүн болбой жатат. Камераны күйгүзүп, ал бөгөттөлбөгөнүн текшериңиз.</translation>
 <translation id="584044465500042213">Сыдыруу режиминен чыгуу</translation>
 <translation id="5842625257683688671">Кийинки графика жок</translation>
 <translation id="5847883414085148048">Арноо</translation>

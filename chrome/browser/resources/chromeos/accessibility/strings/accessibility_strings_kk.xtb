@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">Гүлкекіре көк</translation>
 <translation id="1246424317317450637">Жуан</translation>
+<translation id="1250181918001045969">Камераға қосылуға әрекеттеніп жатыр. Бетпен басқару функциясы <ph name="SECONDS" /> секундтан кейін өшеді.</translation>
 <translation id="1251750620252348585">Келесі 6-деңгей тақырыбы</translation>
 <translation id="1264956950255940376">Сол көзіңізді сығырайтыңыз.</translation>
 <translation id="1268366246392928616">Алдыңғы математикалық өрнек жоқ.</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Алдыңғы қаралған сілтеме</translation>
 <translation id="3241638166094654466">Әр жолдағы ұяшықтар:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Камера қолжетімді емес. Аккаунтқа кіргеніңізді және камера қосулы екенін тексеріңіз.</translation>
 <translation id="3260949043575829030">Алдыңғы ұқсас элемент</translation>
 <translation id="3270069636408109001">Келесі кесте жоқ.</translation>
 <translation id="3273791280096244679">Белгіні сақтау</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Жүктеліп болғаннан кейін, бетті автоматты түрде оқу</translation>
 <translation id="5826479389509458994"><ph name="ROW" />-қатар <ph name="COL" />-баған</translation>
 <translation id="5833044594931167190">ARIA көрнекті белгілері жоқ.</translation>
+<translation id="5836800981500311517">Камераны пайдалану мүмкін емес. Камераны қосып, блокталмағанын тексеріңіз.</translation>
 <translation id="584044465500042213">Айналдыру режимінен шығу</translation>
 <translation id="5842625257683688671">Келесі график жоқ.</translation>
 <translation id="5847883414085148048">Арнау</translation>

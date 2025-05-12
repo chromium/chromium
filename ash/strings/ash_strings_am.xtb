@@ -1440,6 +1440,7 @@
 <translation id="5672890847723042801">መገልገያዎች</translation>
 <translation id="5673434351075758678">ከ«<ph name="FROM_LOCALE" />» ወደ «<ph name="TO_LOCALE" />» የእርስዎን ቅንብሮች ከማመሳሰል በኋላ።</translation>
 <translation id="5675363643668471212">የመደርደሪያ ንጥል</translation>
+<translation id="5677022547882470786">የሚፈልጉትን ቦታን ለመምረጥ ይጎትቱ ወይም ክፍተትን ይጫኑ</translation>
 <translation id="5677928146339483299">ታግዷል</translation>
 <translation id="5678564054339031017">ቀጣይ ሳምንትን አሳይ</translation>
 <translation id="5679050765726761783">ዝቅተኛ የኃይል አስማሚ ተገናኝቷል</translation>
@@ -2434,6 +2435,7 @@
 <translation id="8934418770423095813">Google ሰነድን ይጫኑ</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ፋይል}one{# ፋይል}other{# ፋይሎች}}</translation>
 <translation id="8936501819958976551">ቦዝኗል</translation>
+<translation id="8937312474322077653">የማያ ገፅ ቀረፃ ውስጥ ወደ <ph name="SOURCE" /> <ph name="TYPE" /> ያቀናብሩ። የቀረጻ ዓይነት ለመምረጥ ትርን መታ ያድርጉ። ክልልን ለመምረጥ ክፍተት ይጫኑ። ለመቅረጽ አስገባን ይጫኑ።</translation>
 <translation id="8938800817013097409">USB-C መሣሪያ (የቀኝ ወደብ ከኋላ በኩል)</translation>
 <translation id="8939855324412367560">የግብዓት ኦዲዮው «<ph name="INPUT_DEVICE_NAME" />» ነው እና የውፅዓት ኦዲዮው «<ph name="OUTPUT_DEVICE_NAME" />» ነው። ለመቀየር ወደ ቅንብሮች ይሂዱ።</translation>
 <translation id="8940956008527784070">ባትሪ ዝቅተኛ ነው (<ph name="PERCENTAGE" />%)</translation>

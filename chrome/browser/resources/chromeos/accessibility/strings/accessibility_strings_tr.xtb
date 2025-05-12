@@ -54,6 +54,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">Kantaron Mavisi</translation>
 <translation id="1246424317317450637">Kalın</translation>
+<translation id="1250181918001045969">Kameraya bağlanmaya çalışıyor. Yüzle kumanda <ph name="SECONDS" /> saniye içinde devre dışı bırakılacak.</translation>
 <translation id="1251750620252348585">Sonraki 6. düzey başlık</translation>
 <translation id="1264956950255940376">Sol gözünüzü kısın</translation>
 <translation id="1268366246392928616">Önceki matematik ifadesi yok</translation>
@@ -372,6 +373,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="3241052487511142956">Ziyaret edilmiş olan önceki bağlantı</translation>
 <translation id="3241638166094654466">Her satırdaki hücre sayısı:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Kamera kullanılamıyor. Oturum açtığınızdan ve kameranın açık olduğundan emin olun.</translation>
 <translation id="3260949043575829030">Önceki benzer öğe</translation>
 <translation id="3270069636408109001">Sonraki tablo yok</translation>
 <translation id="3273791280096244679">Etiketi kaydet</translation>
@@ -763,6 +765,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="5824976764713185207">Yüklenmesi bittikten sonra sayfayı otomatik olarak oku</translation>
 <translation id="5826479389509458994"><ph name="ROW" />. satır, <ph name="COL" />. sütun</translation>
 <translation id="5833044594931167190">ARIA önemli noktası yok</translation>
+<translation id="5836800981500311517">Kameraya erişilemiyor. Kamerayı açın ve önünde herhangi bir engel bulunmadığından emin olun.</translation>
 <translation id="584044465500042213">Kaydırma modundan çıkın</translation>
 <translation id="5842625257683688671">Sonraki grafik yok</translation>
 <translation id="5847883414085148048">İthaf</translation>

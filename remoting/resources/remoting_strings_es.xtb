@@ -93,6 +93,7 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="4987330545941822761">Escritorio Remoto de Chrome no puede identificar el navegador que debe abrir las URLs localmente. Selecciónalo en la lista de abajo.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (sin conexión)</translation>
 <translation id="507204348399810022">¿Seguro que quieres inhabilitar las conexiones remotas a <ph name="HOSTNAME" />?</translation>
+<translation id="5095424396646120601">Informes sobre fallos</translation>
 <translation id="5170982930780719864">Identificador del host no válido</translation>
 <translation id="5204575267916639804">Preguntas frecuentes</translation>
 <translation id="5222676887888702881">Cerrar sesión</translation>

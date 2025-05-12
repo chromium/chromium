@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">Cornflower blue</translation>
 <translation id="1246424317317450637">Bold</translation>
+<translation id="1250181918001045969">Trying to connect to camera. Face control will turn off in <ph name="SECONDS" /> seconds.</translation>
 <translation id="1251750620252348585">Next level 6 heading</translation>
 <translation id="1264956950255940376">Squint left eye</translation>
 <translation id="1268366246392928616">No previous maths expression</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Previous visited link</translation>
 <translation id="3241638166094654466">Cells in each line:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Camera unavailable. Make sure that you are signed in and camera is on.</translation>
 <translation id="3260949043575829030">Previous similar item</translation>
 <translation id="3270069636408109001">No next table</translation>
 <translation id="3273791280096244679">Save label</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Automatically read page after it finishes loading</translation>
 <translation id="5826479389509458994">row <ph name="ROW" /> column <ph name="COL" /></translation>
 <translation id="5833044594931167190">No ARIA landmarks</translation>
+<translation id="5836800981500311517">Can't access camera. Turn on camera and make sure that it isn't blocked.</translation>
 <translation id="584044465500042213">Exit scroll mode</translation>
 <translation id="5842625257683688671">No next graphic</translation>
 <translation id="5847883414085148048">Dedication</translation>

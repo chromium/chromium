@@ -47,7 +47,6 @@
 <translation id="2042889939382983733">‏عرض سجلّ Chromium</translation>
 <translation id="2052320862053429062">‏يتحقَّق Chromium بانتظام من كلمات مرورك ويقارنها بقوائم تم نشرها على الإنترنت. أثناء هذه العملية، يتم تشفير كلمات المرور وأسماء المستخدمين حتى لا يتمكّن أي طرف آخر من الاطّلاع عليها، بما في ذلك Google.</translation>
 <translation id="2059365270911640413">‏إنهاء عملية إعداد Chromium</translation>
-<translation id="2147210759439165826">‏يمكنك متابعة المحتوى ونصائح Chromium المفيدة.</translation>
 <translation id="2168108852149185974">‏تتسبب بعض الإضافات في تعطل Chromium. يُرجى إلغاء تثبيتها:</translation>
 <translation id="2168593389981132306">‏تحسين أداء متصفِّح Chromium</translation>
 <translation id="2178608107313874732">‏يتعذر على Chromium استخدام الكاميرا في الوقت الحالي</translation>
@@ -157,6 +156,7 @@
 <translation id="4828317641996116749">‏تعذّر على متصفِّح Chromium التحقُّق من جميع كلمات المرور. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="4856138222358683580">‏إجراءات Chromium</translation>
 <translation id="4904452304169763785">‏تتعلّق هذه التنبيهات بشأن أي مشاكل في الخصوصية أو الأمان يرصدها Chromium.</translation>
+<translation id="4908570938463711775">‏مزيد من المعلومات عن أساسيات Chromium المفيدة لبدء استخدامه</translation>
 <translation id="4962295957157529683">‏يجب إكمال ما كنت تفعله في نافذة Chromium المفتوحة الأخرى.</translation>
 <translation id="4985291216379576555">‏بلا اتصال بالإنترنت، يتعذّر على Chromium البحث عن تحديثات.</translation>
 <translation id="4996471330284142407">‏يمكنك إنجاز المزيد من المهام باستخدام متصفِّح Chromium السهل الاستخدام والآمن والأسرع من ذي قبل.</translation>
@@ -197,6 +197,7 @@
 <translation id="5688047395118852662">‏تعرض لك هذه القائمة اقتراحات حول كيفية الاستفادة إلى أقصى حدّ من Chromium.</translation>
 <translation id="5700709190537129682">‏يتعذّر على متصفِّح Chromium التحقُّق من كلمات المرور.</translation>
 <translation id="584550191241316896">‏تم تسجيل الدخول إلى Chromium</translation>
+<translation id="5862307444128926510">‏مرحبًا بك في Chromium</translation>
 <translation id="5889847953983052353">‏عند تفعيل هذا الخيار:
 <ph name="BEGIN_INDENT" />  • ستساعد في تحسين متصفِّح Chromium لتلبية احتياجاتك أنت وغيرك من المستخدمين.<ph name="END_INDENT" />
 
@@ -223,6 +224,7 @@
 <translation id="6301717043141881464">‏للوصول بسهولة إلى كلمات المرور المحفوظة واستخدامها في تطبيقاتك الأخرى، ما عليك سوى استخدام ميزة "الملء التلقائي" في Chromium</translation>
 <translation id="6324041800010509197">‏الانتقال إلى شبكة علامات التبويب في Chromium</translation>
 <translation id="6325378625795868881">‏يؤدي هذا الإعداد إلى فتح Chromium عند النقر على الروابط في الرسائل والتطبيقات الأخرى.</translation>
+<translation id="6387994184698195448">‏يمكنك متابعة نصائح Chromium المفيدة وغيرها.</translation>
 <translation id="6424492062988593837">‏لقد أصبح Chromium أفضل من ذي قبل! يتوفر إصدار جديد.</translation>
 <translation id="6433172051771630690">‏نصائح حول الاستفادة إلى أقصى حدّ من Chromium</translation>
 <translation id="65045991564554105">‏الاطّلاع على الإشارات المرجعية في Chromium</translation>
@@ -284,7 +286,6 @@
 <translation id="7980860476903281594">‏يشارك Chromium موقعك الجغرافي مع المواقع الإلكترونية التي تسمح بها.</translation>
 <translation id="7994322153108931467">‏للحصول على نصائح مفيدة حول استخدام Chromium، يمكنك تفعيل الإشعارات في إعدادات أجهزة iOS.</translation>
 <translation id="7997159823054171568">‏ضبط Chromium كمتصفِّح تلقائي</translation>
-<translation id="800195749539500647">‏يمكنك الاستفادة إلى أقصى حدّ من Chromium.</translation>
 <translation id="800380310260616129">‏نزِّل Chromium من هنا.</translation>
 <translation id="8013573822802650211">‏للاطّلاع على علامات التبويب من أي جهاز تستخدم فيه Chromium، سجِّل الدخول على جميع أجهزتك.</translation>
 <translation id="8014091604604659473">‏تمّ تسجيل الخروج من Chromium</translation>
@@ -317,6 +318,7 @@
 <translation id="8860548555286245440">‏فتح عناوين URL في وضع التصفُّح المتخفي من Chromium</translation>
 <translation id="8880024619507699923">‏تطلُب المؤسسة منك تسجيل الدخول لاستخدام Chromium. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">‏الحصول على أعلى مستويات الأمان في Chromium</translation>
+<translation id="8925569192291721236">‏يمكنك متابعة آخر أخبار تتبّع الأسعار ونصائح Chromium.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{‏يحدث هذا الإجراء في حال عدم استخدام Chromium لمدة دقيقة واحدة ({THRESHOLD}).}zero{‏يحدث هذا الإجراء في حال عدم استخدام Chromium لمدة {THRESHOLD} دقيقة.}two{‏يحدث هذا الإجراء في حال عدم استخدام Chromium لمدة دقيقتَين ({THRESHOLD}).}few{‏يحدث هذا الإجراء في حال عدم استخدام Chromium لمدة {THRESHOLD} دقائق.}many{‏يحدث هذا الإجراء في حال عدم استخدام Chromium لمدة {THRESHOLD} دقيقة.}other{‏يحدث هذا الإجراء في حال عدم استخدام Chromium لمدة {THRESHOLD} دقيقة.}}</translation>
 <translation id="8963279154877372067">‏السماح لإشعارات Chromium بعرض تنبيهات حول انخفاض الأسعار</translation>
 <translation id="8975812008711371178">‏البحث باستخدام الصوت في متصفِّح Chromium</translation>

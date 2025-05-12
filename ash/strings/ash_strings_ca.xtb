@@ -1440,6 +1440,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="5672890847723042801">Utilitats</translation>
 <translation id="5673434351075758678">Després de sincronitzar la configuració, canvia <ph name="FROM_LOCALE" /> per <ph name="TO_LOCALE" />.</translation>
 <translation id="5675363643668471212">Objecte de prestatge</translation>
+<translation id="5677022547882470786">Arrossega o prem la barra espaiadora per seleccionar l'àrea que vols cercar</translation>
 <translation id="5677928146339483299">Bloquejat</translation>
 <translation id="5678564054339031017">Mostra la setmana següent</translation>
 <translation id="5679050765726761783">S'ha connectat un adaptador de baixa potència</translation>
@@ -2432,6 +2433,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8934418770423095813">Crea un document de Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fitxer}other{# fitxers}}</translation>
 <translation id="8936501819958976551">desactivada</translation>
+<translation id="8937312474322077653">A la captura de pantalla, estableix en <ph name="TYPE" /> <ph name="SOURCE" />. Prem el tabulador per triar el tipus de captura. Prem la barra espaiadora per seleccionar la regió. Prem Retorn per capturar.</translation>
 <translation id="8938800817013097409">Dispositiu USB-C (port posterior dret)</translation>
 <translation id="8939855324412367560">L'àudio d'entrada és "<ph name="INPUT_DEVICE_NAME" />" i el de sortida, "<ph name="OUTPUT_DEVICE_NAME" />". Per canviar-ho, ves a Configuració.</translation>
 <translation id="8940956008527784070">Bateria baixa (<ph name="PERCENTAGE" />%)</translation>

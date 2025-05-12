@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">Тод хөх (Хонгорзул цэцгийн өнгө)</translation>
 <translation id="1246424317317450637">Тод</translation>
+<translation id="1250181918001045969">Камерт холбогдохоор оролдож байна. Царайн хяналтыг <ph name="SECONDS" /> секундийн дараа унтраана.</translation>
 <translation id="1251750620252348585">Дараагийн түвшин 6 гарчиг</translation>
 <translation id="1264956950255940376">Зүүн талын нүдээ онийлгох</translation>
 <translation id="1268366246392928616">Өмнөх математик илэрхийлэл алга байна</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Өмнө нь зочилсон холбоос</translation>
 <translation id="3241638166094654466">Шугам бүрийн нүд:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Камерыг ашиглах боломжгүй байна. Та нэвтэрсэн бөгөөд камер асаалттай эсэхийг нягтална уу.</translation>
 <translation id="3260949043575829030">Өмнөх ижил төстэй зүйл</translation>
 <translation id="3270069636408109001">Дараагийн хүснэгт алга байна</translation>
 <translation id="3273791280096244679">Шошго хадгалах</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Хуудсыг ачаалж дууссаны дараа автоматаар унших</translation>
 <translation id="5826479389509458994">мөр <ph name="ROW" /> багана <ph name="COL" /></translation>
 <translation id="5833044594931167190">ARIA газрын тэмдэглэгээ алга байна</translation>
+<translation id="5836800981500311517">Камерт хандах боломжгүй. Камерыг асааж, халхлагдаагүй эсэхийг нягтална уу.</translation>
 <translation id="584044465500042213">Гүйлгэх горимоос гарах</translation>
 <translation id="5842625257683688671">Дараагийн график алга байна</translation>
 <translation id="5847883414085148048">Дурсгалын үг</translation>

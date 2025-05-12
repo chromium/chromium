@@ -1441,6 +1441,7 @@
 <translation id="5672890847723042801">काम की सेवाएं</translation>
 <translation id="5673434351075758678">अपनी सेटिंग सिंक करने के बाद "<ph name="FROM_LOCALE" />" से "<ph name="TO_LOCALE" />".</translation>
 <translation id="5675363643668471212">शेल्फ़ आइटम</translation>
+<translation id="5677022547882470786">किसी हिस्से को चुनकर उसके बारे में जानकारी खोजने के लिए, खींचें और छोड़ें या Space दबाएं</translation>
 <translation id="5677928146339483299">ब्लॉक किया गया है</translation>
 <translation id="5678564054339031017">अगले हफ़्ते के इवेंट दिखाएं</translation>
 <translation id="5679050765726761783">लो-पावर अडैप्टर कनेक्ट किया गया</translation>
@@ -2433,6 +2434,7 @@
 <translation id="8934418770423095813">Google दस्तावेज़ बनाएं</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 फ़ाइल}one{# फ़ाइल}other{# फ़ाइलें}}</translation>
 <translation id="8936501819958976551">बंद की गई</translation>
+<translation id="8937312474322077653">स्क्रीन कैप्चर में, <ph name="SOURCE" /> <ph name="TYPE" /> पर सेट करें. कैप्चर का टाइप चुनने के लिए, tab दबाएं. देश/इलाका चुनने के लिए space दबाएं. कैप्चर करने के लिए enter दबाएं.</translation>
 <translation id="8938800817013097409">USB-C डिवाइस (पीछे की ओर दायां पोर्ट)</translation>
 <translation id="8939855324412367560">इनपुट ऑडियो "<ph name="INPUT_DEVICE_NAME" />" है और आउटपुट ऑडियो "<ph name="OUTPUT_DEVICE_NAME" />" है. इन्हें बदलने के लिए सेटिंग पर जाएं.</translation>
 <translation id="8940956008527784070">बैटरी कम (<ph name="PERCENTAGE" />%)</translation>

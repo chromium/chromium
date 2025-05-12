@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 न पढ़ी गई सूचना}one{# न पढ़ी गई सूचनाएं}other{# न पढ़ी गई सूचनाएं}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{इस एक्सटेंशन को गुप्त मोड में चालू करें:}one{इस एक्सटेंशन को गुप्त मोड में चालू करें:}other{इन एक्सटेंशन को गुप्त मोड में चालू करें:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 महीने पहले}one{# महीने पहले}other{# महीने पहले}}</translation>
+<translation id="4277033906326892359"><ph name="COLUMN_NAME" /> कॉलम को बढ़ते क्रम में लगाया गया है</translation>
 <translation id="4289300219472526559">बोलना प्रारंभ करें</translation>
 <translation id="4289540628985791613">संक्षिप्त विवरण</translation>
 <translation id="4491109536499578614">इमेज</translation>
@@ -169,8 +170,10 @@
 <translation id="6503257047630241175">RTF कॉन्टेंट</translation>
 <translation id="6539092367496845964">कोई गड़बड़ी हुई. बाद में कोशिश करें.</translation>
 <translation id="654149438358937226">सभी सूचनाएं ब्लॉक करें</translation>
+<translation id="6612467943526193239">कैलिब्रेशन से बाहर निकलने के लिए Esc दबाएं.</translation>
 <translation id="6620110761915583480">फ़ाइल सेव करें</translation>
 <translation id="6699343763173986273">मीडिया अगला ट्रैक</translation>
+<translation id="6807086321996342431"><ph name="COLUMN_NAME" /> कॉलम</translation>
 <translation id="6808150112686056157">मीडिया रोकें</translation>
 <translation id="6845383723252244143">फ़ोल्डर को चुनें</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 घंटा शेष}one{# घंटे शेष}other{# घंटे शेष}}</translation>
@@ -202,11 +205,11 @@
 <translation id="7969046989155602842">निर्देश</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{1 से ज़्यादा न पढ़ी गई सूचना}one{# से ज़्यादा न पढ़ी गई सूचनाएं}other{# से ज़्यादा न पढ़ी गई सूचनाएं}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{1 मिनट में}one{# मिनट में}other{# मिनट में}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568"><ph name="ORIGIN" /> से नंबर</translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 घंटा पहले}one{# घंटे पहले}other{# घंटे पहले}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 सेकंड शेष}one{# सेकंड शेष}other{# सेकंड शेष}}</translation>
 <translation id="8134065097954893699">इस पेज को फिर से लोड करें</translation>
+<translation id="813785873406874127"><ph name="COLUMN_NAME" /> कॉलम को किसी क्रम में नहीं लगाया है</translation>
 <translation id="815598010540052116">नीचे स्क्रोल करें</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">पेज डाउन</translation>
@@ -218,6 +221,7 @@
 <translation id="8393700583063109961">संदेश भेजें</translation>
 <translation id="8394908167088220973">मीडिया चलाएं/रोकें</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1y}one{#y}other{#y}}</translation>
+<translation id="8582972250170726813"><ph name="COLUMN_NAME" /> कॉलम को घटते क्रम में लगाया गया है</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> फ़ाइल (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> केबी/सेकंड</translation>

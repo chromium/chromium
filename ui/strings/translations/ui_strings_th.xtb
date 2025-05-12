@@ -170,6 +170,7 @@
 <translation id="6503257047630241175">เนื้อหา RTF</translation>
 <translation id="6539092367496845964">เกิดข้อผิดพลาด ลองอีกครั้งภายหลัง</translation>
 <translation id="654149438358937226">บล็อกการแจ้งเตือนทั้งหมด</translation>
+<translation id="6612467943526193239">หากต้องการออกจากการปรับเทียบ ให้กด Esc</translation>
 <translation id="6620110761915583480">บันทึกไฟล์</translation>
 <translation id="6699343763173986273">แทร็กถัดไปของสื่อ</translation>
 <translation id="6807086321996342431">คอลัมน์ <ph name="COLUMN_NAME" /></translation>
@@ -204,7 +205,6 @@
 <translation id="7969046989155602842">Command</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{มีการแจ้งเตือนที่ยังไม่อ่านมากกว่า 1 รายการ}other{มีการแจ้งเตือนที่ยังไม่อ่านมากกว่า # รายการ}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{ใน 1 นาที}other{ใน # นาที}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">หมายเลขจาก <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 ชั่วโมงที่ผ่านมา}other{# ชั่วโมงที่ผ่านมา}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{เหลือ 1 วินาที}other{เหลือ # วินาที}}</translation>

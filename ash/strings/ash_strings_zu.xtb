@@ -1440,6 +1440,7 @@ Awekho amadivayisi axhunyiwe.</translation>
 <translation id="5672890847723042801">Okusetshenziswayo</translation>
 <translation id="5673434351075758678">Kusukela ku-"<ph name="FROM_LOCALE" />" ukuya ku-"<ph name="TO_LOCALE" />" ngemuva kokuvumelanisa izilungiselelo zakho.</translation>
 <translation id="5675363643668471212">Into yeshelufu</translation>
+<translation id="5677022547882470786">Hudula noma uchofe inkinobho yeSikhala ukuze ukhethe indawo ofuna ukuyisesha</translation>
 <translation id="5677928146339483299">Kuvinjelwe</translation>
 <translation id="5678564054339031017">Bonisa iviki elilandelayo</translation>
 <translation id="5679050765726761783">I-adaptha yamandla aphansi ixhunyiwe</translation>
@@ -2432,6 +2433,7 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="8934418770423095813">Dala Amadokhumenti e-Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{Ifayela eli-1}one{Amafayela angu-#}other{Amafayela angu-#}}</translation>
 <translation id="8936501819958976551">kwenziwe kwangasebenzi</translation>
+<translation id="8937312474322077653">Ukuthatha isikrini, kusethwe kokuthi <ph name="SOURCE" /> <ph name="TYPE" />. Chofa ithebhu ukuze ukhethe uhlobo lokushutha. Chofa isikhala ukuze ukhethe isifunda. Chofa u-enter ukuze uthathe isithombe.</translation>
 <translation id="8938800817013097409">Idivayisi ye-USB-C (imbobo engakwesokudla ngemuva)</translation>
 <translation id="8939855324412367560">Okufakwayo komsindo okuthi "<ph name="INPUT_DEVICE_NAME" />" futhi umphumela womsindo okuthi "<ph name="OUTPUT_DEVICE_NAME" />". Iya Kumasethingi ukuze ushintshe.</translation>
 <translation id="8940956008527784070">Ibhethri liphansi (<ph name="PERCENTAGE" />%)</translation>

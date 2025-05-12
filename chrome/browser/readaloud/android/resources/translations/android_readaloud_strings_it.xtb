@@ -4,15 +4,22 @@
 <translation id="1173075331199604451">Menu Voce</translation>
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="1246424317317450637">Grassetto</translation>
+<translation id="1370273601702151510">Mi piace</translation>
 <translation id="1483137792530497944">Fiume</translation>
 <translation id="1586836055630070874">Riposante</translation>
+<translation id="1666704368140506043">Contenuti offensivi</translation>
 <translation id="1741047078107369903">Calda</translation>
 <translation id="1807863182207623884">Rubino</translation>
 <translation id="1921351128855867012">Avanti di <ph name="NUMBER_OF_SECONDS" /> secondi</translation>
 <translation id="1984328900355667246">Riproduzione non disponibile</translation>
+<translation id="2019727681730021602">Riproduzione standard</translation>
 <translation id="2224347680315897176">Seria</translation>
+<translation id="2575502321843437554">Coinvolgimento insufficiente</translation>
 <translation id="2611765907167846862">Serena</translation>
 <translation id="3023502830214299618">Purtroppo al momento la riproduzione di questa pagina non è disponibile. Riprova più tardi.</translation>
+<translation id="3457812538570616687">Non mi piace</translation>
+<translation id="3493899379487634969">Qual è stato il problema?</translation>
+<translation id="3778044272390020426">Menu opzioni di feedback negativo</translation>
 <translation id="3807208219231826020">Esegui lo scrubbing della riproduzione</translation>
 <translation id="385051799172605136">Indietro</translation>
 <translation id="3936324432406465283">Velocità di riproduzione</translation>
@@ -31,26 +38,31 @@
 <translation id="5526614127710223793">Selettore della modalità di riproduzione</translation>
 <translation id="5596627076506792578">Altre opzioni</translation>
 <translation id="5694491020339060116">Menu Velocità di riproduzione</translation>
+<translation id="5965409657393819302">Problema tecnico</translation>
+<translation id="6218961554829577610">Non mi è piaciuta la voce</translation>
 <translation id="6315170314923504164">Voce</translation>
+<translation id="6330455646577575965">Riproduzione audio AI</translation>
 <translation id="6343633247422081848">Muschio</translation>
 <translation id="6550675742724504774">Opzioni</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
+<translation id="677790449852070664">Grazie. Il tuo feedback è utile.</translation>
 <translation id="6790428901817661496">Riproduci</translation>
 <translation id="6831043979455480757">Traduci</translation>
 <translation id="6846298663435243399">Caricamento in corso…</translation>
 <translation id="6889157801232138307">Player "Ascolta questa pagina"</translation>
 <translation id="7051308646573997571">Corallo</translation>
 <translation id="7112750136794557642">Tocca per espandere il player e visualizzare altre opzioni.</translation>
+<translation id="7138678301420049075">Altro</translation>
 <translation id="7221920857098237570">Dolce</translation>
 <translation id="7237590978482584900">Vivace</translation>
 <translation id="7282547042039404307">Fluido</translation>
-<translation id="7587250070160020374">Chrome ora in riproduzione</translation>
 <translation id="8004767876552422827">Campo</translation>
 <translation id="8136852699834914183">Riproduzione non disponibile per questa pagina.</translation>
 <translation id="8198036737896977997">Aria</translation>
 <translation id="8264989794233974275">Aumenta/diminuisci la velocità di <ph name="PLAYBACK_SPEED" /> volte.</translation>
 <translation id="8407011429883244666">Chiudi il player</translation>
 <translation id="8481839122437406573">Calma</translation>
+<translation id="8756370108715456837">Contiene informazioni errate</translation>
 <translation id="8953618380150219653">Player "Ascolta questa pagina" aperto a schermo intero.</translation>
 <translation id="978117257931832348">Tonalità bassa</translation>
 </translationbundle>

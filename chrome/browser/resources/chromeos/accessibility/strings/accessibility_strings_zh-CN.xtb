@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">矢车菊蓝色</translation>
 <translation id="1246424317317450637">粗体</translation>
+<translation id="1250181918001045969">正在尝试连接到摄像头。人脸操控功能将在 <ph name="SECONDS" /> 秒后关闭。</translation>
 <translation id="1251750620252348585">下一个 6 级标题</translation>
 <translation id="1264956950255940376">眯左眼</translation>
 <translation id="1268366246392928616">没有上一个数学表达式</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">上一个访问过的链接</translation>
 <translation id="3241638166094654466">每行中的单元格数：</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />：<ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">摄像头不可用。请确保您已登录，并且摄像头处于开启状态。</translation>
 <translation id="3260949043575829030">上一个相似项</translation>
 <translation id="3270069636408109001">没有下一个表格</translation>
 <translation id="3273791280096244679">保存标签</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">在网页加载完毕后自动朗读网页内容</translation>
 <translation id="5826479389509458994">第<ph name="ROW" />行，第<ph name="COL" />列</translation>
 <translation id="5833044594931167190">没有任何 ARIA 地标</translation>
+<translation id="5836800981500311517">无法使用摄像头。请开启摄像头，并确保摄像头未被遮挡。</translation>
 <translation id="584044465500042213">退出滚动模式</translation>
 <translation id="5842625257683688671">没有下一个图形</translation>
 <translation id="5847883414085148048">献辞</translation>

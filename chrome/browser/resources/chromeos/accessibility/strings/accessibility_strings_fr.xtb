@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">Bleuet</translation>
 <translation id="1246424317317450637">Gras</translation>
+<translation id="1250181918001045969">Tentative de connexion à la caméra… La commande par le visage va s'éteindre dans <ph name="SECONDS" /> secondes.</translation>
 <translation id="1251750620252348585">En-tête suivant de niveau 6</translation>
 <translation id="1264956950255940376">Plisser l'œil gauche</translation>
 <translation id="1268366246392928616">Aucune expression mathématique précédente</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Lien consulté précédent</translation>
 <translation id="3241638166094654466">Cellules sur chaque ligne :</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" /> : <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Caméra indisponible. Assurez-vous que vous êtes connecté et que la caméra est allumée.</translation>
 <translation id="3260949043575829030">Élément similaire précédent</translation>
 <translation id="3270069636408109001">Aucun tableau suivant</translation>
 <translation id="3273791280096244679">Libellé d'enregistrement</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Lire la page automatiquement après son chargement</translation>
 <translation id="5826479389509458994">ligne <ph name="ROW" />, colonne <ph name="COL" /></translation>
 <translation id="5833044594931167190">Aucun repère ARIA</translation>
+<translation id="5836800981500311517">Impossible d'accéder à la caméra. Activez-la et assurez-vous qu'elle n'est pas bloquée.</translation>
 <translation id="584044465500042213">Quitter le mode défilement</translation>
 <translation id="5842625257683688671">Aucune image suivante</translation>
 <translation id="5847883414085148048">Dédicace</translation>
@@ -1022,7 +1025,7 @@
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Case d'option précédente</translation>
 <translation id="7696631298608145306">aller au mot suivant</translation>
-<translation id="7701040980221191251">Désactivée</translation>
+<translation id="7701040980221191251">Désactivé</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">Aucune boîte combinée suivante</translation>
 <translation id="7715455358521357192">Plisser l'œil droit</translation>

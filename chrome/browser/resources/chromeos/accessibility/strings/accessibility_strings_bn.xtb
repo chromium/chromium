@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">ঝুমকো ফুলের নীল</translation>
 <translation id="1246424317317450637">বোল্ড</translation>
+<translation id="1250181918001045969">ক্যামেরার সাথে কানেক্ট করার চেষ্টা হচ্ছে। <ph name="SECONDS" /> সেকেন্ডের মধ্যে 'ফেস কন্ট্রোল' বন্ধ হয়ে যাবে।</translation>
 <translation id="1251750620252348585">পরবর্তী স্তর ৬ শিরোনাম</translation>
 <translation id="1264956950255940376">বাঁদিকের চোখ একটু বন্ধ করুন</translation>
 <translation id="1268366246392928616">এর পূর্বে কোনও গাণিতিক এক্সপ্রেশন নেই</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">আগে ঘুরে দেখা লিঙ্ক</translation>
 <translation id="3241638166094654466">প্রতিটি লাইনে কক্ষের সংখ্যা:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">ক্যামেরা উপলভ্য নেই। আপনি সাইন-ইন করেছেন এবং ক্যামেরা চালু আছে কিনা তা ভালোভাবে দেখে নিন।</translation>
 <translation id="3260949043575829030">এই রকমের আগের আইটেম</translation>
 <translation id="3270069636408109001">কোনও পরবর্তী সারণী নেই</translation>
 <translation id="3273791280096244679">লেবেল সেভ করুন</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">পৃষ্ঠা লোড হওয়ার পর সেটি অটোমেটিক পড়ে</translation>
 <translation id="5826479389509458994">সারি <ph name="ROW" /> কলাম <ph name="COL" /></translation>
 <translation id="5833044594931167190">কোনও ARIA ল্যান্ডমার্ক নেই</translation>
+<translation id="5836800981500311517">ক্যামেরা অ্যাক্সেস করা যাচ্ছে না। ক্যামেরা চালু করুন এবং এটি যে ব্লক করা নেই তা নিশ্চিত করুন।</translation>
 <translation id="584044465500042213">স্ক্রল মোড বন্ধ করুন</translation>
 <translation id="5842625257683688671">কোনও পরবর্তী গ্রাফিক নেই</translation>
 <translation id="5847883414085148048">উৎসর্গ</translation>
@@ -927,7 +930,7 @@
 <translation id="7062635574500127092">নীলচে সবুজ</translation>
 <translation id="7086377898680121060">উজ্জ্বলতা বাড়ান</translation>
 <translation id="7088743565397416204">ফোকাস করা কোনও আইটেম অ্যাক্টিভেট করতে ডবল ট্যাপ করুন</translation>
-<translation id="7088960765736518739">অ্যাক্সেস পাল্টান</translation>
+<translation id="7088960765736518739">সুইচ অ্যাক্সেস</translation>
 <translation id="7090715360595433170">এক আঙুল দিয়ে বাঁদিকে ও ডানদিকে সোয়াইপ করার চেয়ে এই পদ্ধতিটি বেশি কার্যকরী হতে পারে।</translation>
 <translation id="7091296112653361280">নাভাহো সাদা</translation>
 <translation id="7095834689119144465">কেবল পাঠ্য সংখ্যা সম্পাদনা করুন</translation>

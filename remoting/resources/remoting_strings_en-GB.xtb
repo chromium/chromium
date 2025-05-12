@@ -93,6 +93,7 @@ If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tic
 <translation id="4987330545941822761">Chrome Remote Desktop cannot determine the browser to open URLs locally. Please choose it from the list below.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
 <translation id="507204348399810022">Are you sure that you want to disable remote connections to <ph name="HOSTNAME" />?</translation>
+<translation id="5095424396646120601">Crash Reporting</translation>
 <translation id="5170982930780719864">Invalid host id.</translation>
 <translation id="5204575267916639804">FAQs</translation>
 <translation id="5222676887888702881">Sign out</translation>

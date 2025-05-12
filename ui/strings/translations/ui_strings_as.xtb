@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{১টা নপঢ়া জাননী}one{#টা নপঢ়া জাননী}other{#টা নপঢ়া জাননী}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{ইনক’গনিট’ ম’ডত নিম্নলিখিত এক্সটেনশ্বনটো অন কৰক:}one{ইনক’গনিট’ ম’ডত নিম্নলিখিত এক্সটেনশ্বনসমূহ অন কৰক:}other{ইনক’গনিট’ ম’ডত নিম্নলিখিত এক্সটেনশ্বনসমূহ অন কৰক:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{১মাহ পূর্বে}one{#মাহ পূর্বে}other{#মাহ পূর্বে}}</translation>
+<translation id="4277033906326892359">স্তম্ভ <ph name="COLUMN_NAME" /> ঊৰ্ধ্বক্ৰমত সজোৱা হৈছে</translation>
 <translation id="4289300219472526559">কথা কওক</translation>
 <translation id="4289540628985791613">ৰূপৰেখা</translation>
 <translation id="4491109536499578614">প্ৰতিচ্ছবি</translation>
@@ -169,8 +170,10 @@
 <translation id="6503257047630241175">RTF সমল</translation>
 <translation id="6539092367496845964">কিবা ভুল হ’ল। পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="654149438358937226">সকলো জাননী অৱৰোধ কৰক</translation>
+<translation id="6612467943526193239">কেলিব্ৰেশ্বন বন্ধ কৰিবলৈ Esc টিপক।</translation>
 <translation id="6620110761915583480">ফাইল ছেভ কৰক</translation>
 <translation id="6699343763173986273">মিডিয়াৰ পৰৱর্তী ট্ৰেক</translation>
+<translation id="6807086321996342431">স্তম্ভ <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">মিডিয়া বন্ধ কৰক</translation>
 <translation id="6845383723252244143">ফ’ল্ডাৰ বাছনি কৰক</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{১ ঘণ্টা বাকী আছে}one{# ঘণ্টা বাকী আছে}other{# ঘণ্টা বাকী আছে}}</translation>
@@ -202,11 +205,11 @@
 <translation id="7969046989155602842">নিৰ্দেশনা</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{১টাতকৈ অধিক নপঢ়া জাননী}one{#টাতকৈ অধিক নপঢ়া জাননী}other{#টাতকৈ অধিক নপঢ়া জাননী}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{১ মিনিটত}one{# মিনিটত}other{# মিনিটত}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568"><ph name="ORIGIN" />ৰ পৰা নম্বৰ</translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{১ ঘণ্টা পূৰ্বে}one{# ঘণ্টা পূৰ্বে}other{# ঘণ্টা পূৰ্বে}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{১ ছেকেণ্ড বাকী আছে}one{# ছেকেণ্ড বাকী আছে}other{# ছেকেণ্ড বাকী আছে}}</translation>
 <translation id="8134065097954893699">এই পৃষ্ঠাটো পুনৰ ল'ড হৈ আছে</translation>
+<translation id="813785873406874127">স্তম্ভ <ph name="COLUMN_NAME" /> সজোৱা হোৱা নাই</translation>
 <translation id="815598010540052116">তললৈ স্ক্ৰল কৰক</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Page Down</translation>
@@ -218,6 +221,7 @@
 <translation id="8393700583063109961">বাৰ্তা পঠিয়াওক</translation>
 <translation id="8394908167088220973">মিডিয়া প্লে’/পজ</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{১ব}one{#ব}other{#ব}}</translation>
+<translation id="8582972250170726813">স্তম্ভ <ph name="COLUMN_NAME" /> অধঃক্ৰমত সজোৱা হৈছে</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> ফাইল (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> কেবি/ছেকেণ্ড</translation>

@@ -27,16 +27,15 @@
 <translation id="2506926923133667307">详细了解如何管理广告隐私权</translation>
 <translation id="259163387153470272">网站及其广告合作伙伴可以根据您的活动记录（例如您在访问网站时的具体行为）为您展示个性化广告</translation>
 <translation id="2669351694216016687">Google 要求公司公开声明，他们不会跨网站使用此类数据跟踪您。某些网站可能会根据您的活动记录为您提供个性化体验，而不仅仅是展示个性化广告。这些网站还可能会将活动记录与网站中关于您的其他信息整合到一起。公司有责任告知您他们会如何使用您的数据。<ph name="BEGIN_LINK1" />详情请参阅《隐私权政策》<ph name="LINK_END1" /></translation>
+<translation id="2842751064192268730">广告主题有助于限制网站及其广告合作伙伴可以了解您的哪些信息，用于向您展示个性化广告。Chrome 会根据您近期的浏览记录来记录您感兴趣的主题。之后，您访问的网站可请求 Chrome 提供相关主题，以便向您展示个性化广告。</translation>
 <translation id="2937236926373704734">您可根据自己的需要屏蔽网站。Chromium 还会从列表中自动删除保留时长超过 30 天的网站。</translation>
 <translation id="2979365474350987274">第三方 Cookie 受到限制</translation>
 <translation id="3045333309254072201">在无痕模式下，网站无法使用第三方 Cookie。如果某个依赖这些 Cookie 的网站无法正常运行，您可<ph name="START_LINK" />尝试授予该网站对第三方 Cookie 的临时访问权限<ph name="END_LINK" />。</translation>
 <translation id="3046081401397887494">您是否会看到个性化广告取决于多种因素，包括此设置、<ph name="BEGIN_LINK1" />网站推荐广告<ph name="LINK_END1" />、您的 <ph name="BEGIN_LINK2" />Cookie 设置<ph name="LINK_END2" />，以及您正查看的网站是否会展示个性化广告。</translation>
 <translation id="3187472288455401631">广告效果衡量</translation>
-<translation id="33479675708419823">在您登录 Chrome 后，此设置有助于确保您的 IP 地址不会外泄。如果 Chrome 怀疑某个网站可能跟踪您，或许会通过隐私保护服务器来发送您的某些流量。详细了解<ph name="LINK_BEGIN" />“IP 地址保护”的运作方式<ph name="LINK_END" /></translation>
 <translation id="3425311689852411591">依赖第三方 Cookie 的网站应该会按预期运行</translation>
 <translation id="3442071090395342573">Chromium 会在 30 天后删除您与网站分享的所有活动数据。如果您再次访问某个网站，该网站可能会重新出现在列表中。详细了解如何<ph name="BEGIN_LINK" />在 Chromium 中管理广告隐私权设置<ph name="END_LINK" />。</translation>
 <translation id="3467081767799433066">启用广告效果衡量功能后，为了衡量各自的广告效果，网站之间会分享有限类型的数据，例如您在访问某个网站后是否购买了商品。</translation>
-<translation id="3529311220178827364">详细了解如何隐藏您的 IP 地址</translation>
 <translation id="3624583033347146597">选择第三方 Cookie 偏好设置</translation>
 <translation id="3645682729607284687">Chrome 会根据您近期的浏览记录来记录您感兴趣的主题，例如体育、服饰等主题</translation>
 <translation id="3696118321107706175">网站会如何使用您的数据</translation>
@@ -51,19 +50,21 @@
 <translation id="4053540477069125777"><ph name="RWS_OWNER" /> 定义的相关网站</translation>
 <translation id="417625634260506724">列表中网站占用的总存储空间：<ph name="TOTAL_USAGE" /></translation>
 <translation id="4177501066905053472">广告主题</translation>
+<translation id="4278390842282768270">已允许</translation>
 <translation id="4301151630239508244">广告主题只是网站用来展示个性化广告的众多方法之一。即使没有广告主题，网站仍可以向您展示广告，但这些广告可能不够个性化。详细了解如何<ph name="BEGIN_LINK_1" />管理广告隐私权<ph name="END_LINK_1" />。</translation>
+<translation id="4370439921477851706">Google 要求公司公开声明，他们不会跨网站使用此类数据跟踪您。某些网站可能会根据您的活动记录为您提供个性化体验，而不仅仅是展示个性化广告。这些网站还可能会将广告主题存储超过 4 周，并将其与网站已知有关您的其他信息整合到一起公司有责任告知您他们会如何使用您的数据。详情请参阅<ph name="BEGIN_LINK1" />《隐私权政策》<ph name="LINK_END1" />。</translation>
 <translation id="4412992751769744546">允许第三方 Cookie</translation>
 <translation id="4456330419644848501">您是否会看到个性化广告取决于多种因素，包括此设置、<ph name="BEGIN_LINK_1" />网站推荐广告<ph name="END_LINK_1" />、您的 <ph name="BEGIN_LINK_2" />Cookie 设置<ph name="END_LINK_2" />，以及您正查看的网站是否会展示个性化广告。</translation>
 <translation id="4497735604533667838">相关网站可以相互共享第三方 Cookie，以帮助网站正常运行，例如让您保持登录状态或记住您的网站设置。各网站有责任说明为何需要访问这些数据。详细了解<ph name="START_LINK" />相关网站和第三方 Cookie<ph name="END_LINK" /></translation>
 <translation id="4501357987281382712">如需详细了解 Google 如何保护您的数据，请参阅我们的<ph name="BEGIN_LINK" />《隐私权政策》<ph name="END_LINK" />。</translation>
 <translation id="4502954140581098658">您是否会看到个性化广告取决于多种因素，包括此设置、<ph name="BEGIN_LINK_1" />广告主题<ph name="END_LINK_1" />、您的 <ph name="BEGIN_LINK_2" />Cookie 设置<ph name="END_LINK_2" />，以及您正查看的网站是否会展示个性化广告。</translation>
 <translation id="453692855554576066">您可以在 Chromium 设置中查看您的广告主题，并屏蔽不想与网站分享的主题</translation>
-<translation id="4598427486995631491">隐藏您的 IP 地址</translation>
 <translation id="4616029578858572059">Chromium 会根据您近期的浏览记录来记录您感兴趣的主题，例如体育、服饰等主题</translation>
 <translation id="4687718960473379118">网站推荐广告</translation>
 <translation id="4692439979815346597">您可以在 Chrome 设置中查看您的广告主题，并屏蔽不想与网站分享的主题</translation>
 <translation id="4711259472133554310">您可以在“设置”中创建例外情况，始终允许特定网站使用第三方 Cookie</translation>
 <translation id="4894490899128180322">如果某个网站无法按预期运行，您可尝试临时允许您访问的特定网站使用第三方 Cookie</translation>
+<translation id="4995684599009077956">Google 要求公司公开声明，他们不会跨网站使用此类数据跟踪您。某些网站可能会根据您的活动记录为您提供个性化体验，而不仅仅是展示个性化广告。这些网站还可能会将广告主题存储超过 4 周，并将其与网站已知有关您的其他信息整合到一起公司有责任告知您他们会如何使用您的数据。<ph name="BEGIN_LINK" />详情请参阅《隐私权政策》<ph name="END_LINK" />。</translation>
 <translation id="4998299775934183130">有相关网站</translation>
 <translation id="5055880590417889642">网站可以使用您的活动记录等多种信息来建议广告。关闭网站推荐广告功能后，网站仍可以向您展示广告，但这些广告可能不够个性化。详细了解</translation>
 <translation id="5117284457376555514">网站无法使用第三方 Cookie 为您提供个性化内容和广告，也无法了解您在其他网站上的操作，除非您允许相关网站访问第三方 Cookie。部分网站功能可能无法按预期运行。</translation>
@@ -71,14 +72,14 @@
 <translation id="544199055391706031">网站可以使用您的活动记录等多种信息来建议广告。关闭网站推荐广告功能后，网站仍可以向您展示广告，但这些广告可能不够个性化。详细了解<ph name="BEGIN_LINK" />网站推荐广告<ph name="END_LINK" />。</translation>
 <translation id="5495405805627942351">管理相关网站数据</translation>
 <translation id="5574580428711706114">Google 要求公司公开声明，他们不会跨网站使用此类数据跟踪您。公司有责任告知您他们会如何使用您的数据。<ph name="BEGIN_LINK1" />详情请参阅《隐私权政策》<ph name="LINK_END1" />。</translation>
-<translation id="5576983628189470385">Google 要求公司公开声明，他们不会跨网站使用此类数据跟踪您。某些网站可能会根据您的活动记录为您提供个性化体验，而不仅仅是展示个性化广告。这些网站还可能会将活动记录与网站中关于您的其他信息整合到一起。公司有责任告知您他们会如何使用您的数据。详情请参阅《隐私权政策》。</translation>
+<translation id="5677928146339483299">已屏蔽</translation>
+<translation id="5759648952769618186">主题是系统根据您近期的浏览记录推测出来的，有助于限制网站及其广告合作伙伴可以了解您的哪些信息，用于向您展示个性化广告</translation>
 <translation id="5812448946879247580"><ph name="BEGIN_BOLD" />网站会如何使用这些数据？<ph name="END_BOLD" />您访问的网站可请求 Chrome 提供相关信息，以便衡量广告效果。Chrome 会对网站之间可分享的信息加以限制，以保护您的隐私。</translation>
 <translation id="6053735090575989697">如需详细了解 Google 如何保护您的数据，请参阅我们的《隐私权政策》。</translation>
 <translation id="6195163219142236913">已限制第三方 Cookie</translation>
 <translation id="6196640612572343990">阻止第三方 Cookie</translation>
 <translation id="6282129116202535093">网站推荐广告既有助于保护您的浏览记录和身份信息，又能让网站向您展示相关广告。其他网站可以根据您的活动记录，在您继续浏览时建议相关广告。您可在设置中查看这些网站的列表，并酌情屏蔽其中一些网站。</translation>
 <translation id="6308169245546905162">网站可以使用第三方 Cookie 了解您在其他网站上的操作</translation>
-<translation id="6371812158043974664">在您登录 Chromium 后，此设置有助于确保您的 IP 地址不会外泄。如果 Chromium 怀疑某个网站可能跟踪您，或许会通过隐私保护服务器来发送您的某些流量。详细了解<ph name="LINK_BEGIN" />“IP 地址保护”的运作方式<ph name="LINK_END" /></translation>
 <translation id="6398358690696005758">如需详细了解 Google 如何保护您的数据，请参阅我们的<ph name="BEGIN_LINK1" />《隐私权政策》<ph name="LINK_END1" />。</translation>
 <translation id="6702015235374976491">借助广告主题，网站既能向您展示相关广告，又能保护您的浏览记录和身份信息。Chrome 会根据您近期的浏览记录来记录您感兴趣的主题。之后，您访问的网站可请求 Chrome 提供相关主题，以便向您展示个性化广告。</translation>
 <translation id="6710025070089118043">网站无法使用第三方 Cookie 为您提供个性化内容和广告，也无法了解您在其他网站上的操作，除非您授予相关网站对第三方 Cookie 的访问权限</translation>
@@ -89,6 +90,7 @@
 <translation id="7315780377187123731">详细了解“阻止第三方 Cookie”选项</translation>
 <translation id="737025278945207416">某些网站可能会根据您的活动记录为您提供个性化体验，而不仅仅是展示个性化广告。这些网站还可能会将广告主题存储超过 4 周，并将其与网站已知有关您的其他信息整合到一起</translation>
 <translation id="7374493521304367420">网站仍可使用 Cookie 查看您在该网站上的浏览活动</translation>
+<translation id="7419391859099619574">Google 要求公司公开声明，他们不会跨网站使用此类数据跟踪您。某些网站可能会根据您的活动记录为您提供个性化体验，而不仅仅是展示个性化广告。这些网站还可能会将广告主题存储超过 4 周，并将其与网站已知有关您的其他信息整合到一起公司有责任告知您他们会如何使用您的数据。<ph name="BEGIN_LINK1" />详情请参阅《隐私权政策》<ph name="LINK_END1" /></translation>
 <translation id="7442413018273927857">Chrome 会在 30 天后删除您与网站分享的所有活动数据。如果您再次访问某个网站，该网站可能会重新出现在列表中。详细了解如何<ph name="BEGIN_LINK1" />在 Chrome 中管理广告隐私权设置<ph name="LINK_END1" />。</translation>
 <translation id="7453144832830554937">依赖第三方 Cookie 的网站功能可能无法正常运行</translation>
 <translation id="7475768947023614021">查看广告主题设置</translation>
@@ -102,9 +104,11 @@
 <translation id="859369389161884405">在新标签页中打开《隐私权政策》</translation>
 <translation id="877699835489047794"><ph name="BEGIN_BOLD" />您可以如何管理这些数据？<ph name="END_BOLD" />Chrome 会自动删除保留时长超过 4 周的主题。随着您继续浏览，某个主题可能会再次出现在列表中。您还可随时在 Chrome 设置中屏蔽不希望 Chrome 与网站分享的主题，以及停用广告主题。</translation>
 <translation id="8908886019881851657"><ph name="BEGIN_BOLD" />网站会如何使用这些数据？<ph name="END_BOLD" />网站及其广告合作伙伴可以根据您的活动记录，在其他网站上向您展示个性化广告。例如，如果您访问某个网站来查找晚餐食谱，该网站可能会推测您对烹饪感兴趣。之后，另一个网站可能会向您展示第一个网站建议的杂货配送服务广告。</translation>
+<translation id="8944485226638699751">受限</translation>
 <translation id="8984005569201994395">Google 要求公司公开声明，他们不会跨网站使用此类数据跟踪您。某些网站可能会根据您的活动记录为您提供个性化体验，而不仅仅是展示个性化广告。这些网站还可能会将活动记录与网站中关于您的其他信息整合到一起。公司有责任告知您他们会如何使用您的数据。<ph name="BEGIN_LINK" />详情请参阅《隐私权政策》<ph name="END_LINK" /></translation>
 <translation id="9039924186462989565">在无痕模式下，Chromium 会阻止网站使用第三方 Cookie</translation>
 <translation id="9043239285457057403">此操作会删除 <ph name="SITE_NAME" /> 及其相关网站存储的所有数据和 Cookie</translation>
 <translation id="9162335340010958530">网站无法使用第三方 Cookie 为您提供个性化内容和广告，也无法了解您在其他网站上的操作，除非您允许相关网站访问第三方 Cookie</translation>
+<translation id="9168357768716791362">Google 要求公司公开声明，他们不会跨网站使用此类数据跟踪您。某些网站可能会根据您的活动记录为您提供个性化体验，而不仅仅是展示个性化广告。这些网站还可能会将广告主题存储超过 4 周，并将其与网站已知有关您的其他信息整合到一起公司有责任告知您他们会如何使用您的数据。详情请参阅<ph name="BEGIN_LINK" />《隐私权政策》<ph name="END_LINK" />。</translation>
 <translation id="989939163029143304">网站及其广告合作伙伴可以根据广告主题为您提供个性化内容。与第三方 Cookie 相比，广告主题有助于限制网站在您浏览时可以了解您的哪些信息</translation>
 </translationbundle>

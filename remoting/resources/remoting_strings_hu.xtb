@@ -93,6 +93,7 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="4987330545941822761">A Chrome távoliasztal-szolgáltatás nem tudja meghatározni az URL-ek helyi megnyitásához szükséges böngészőt. Válassza ki a böngészőt az alábbi listáról.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
 <translation id="507204348399810022">Biztosan szeretné letiltani a távoli kapcsolatokat a(z) <ph name="HOSTNAME" /> gazdagéppel?</translation>
+<translation id="5095424396646120601">Hibajelentések</translation>
 <translation id="5170982930780719864">Érvénytelen gazdagép-azonosító</translation>
 <translation id="5204575267916639804">GYIK</translation>
 <translation id="5222676887888702881">Kijelentkezés</translation>

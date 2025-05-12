@@ -1440,6 +1440,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="5672890847723042801">Narzędzia</translation>
 <translation id="5673434351075758678">Z języka: „<ph name="FROM_LOCALE" />” na „<ph name="TO_LOCALE" />” po zsynchronizowaniu ustawień.</translation>
 <translation id="5675363643668471212">Element na półce</translation>
+<translation id="5677022547882470786">Aby wybrać obszar do przeszukania, przeciągnij lub naciśnij spację</translation>
 <translation id="5677928146339483299">Zablokowane</translation>
 <translation id="5678564054339031017">Pokaż następny tydzień</translation>
 <translation id="5679050765726761783">Podłączono zasilacz o małej mocy</translation>
@@ -2431,6 +2432,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8934418770423095813">Utwórz dokument Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 plik}few{# pliki}many{# plików}other{# pliku}}</translation>
 <translation id="8936501819958976551">dezaktywowana</translation>
+<translation id="8937312474322077653">Na zrzucie ekranu wybierz <ph name="SOURCE" /> <ph name="TYPE" />. Aby wybrać typ zrzutu ekranu, naciśnij Tab. Aby wybrać region, naciśnij spację. Aby wykonać zrzut ekranu, naciśnij Enter.</translation>
 <translation id="8938800817013097409">Urządzenie USB-C (prawy port z tyłu)</translation>
 <translation id="8939855324412367560">Wejście audio to „<ph name="INPUT_DEVICE_NAME" />”, a wyjście audio to „<ph name="OUTPUT_DEVICE_NAME" />”. Aby to zmienić, otwórz Ustawienia.</translation>
 <translation id="8940956008527784070">Niski stan baterii (<ph name="PERCENTAGE" />%)</translation>

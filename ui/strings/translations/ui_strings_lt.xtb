@@ -21,7 +21,7 @@
 <translation id="1523230076022876491">{MONTHS,plural, =1{prieš 1 mėnesį}one{prieš # mėnesį}few{prieš # mėnesius}many{prieš # mėnesio}other{prieš # mėnesių}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minutė ir }one{# minutė ir }few{# minutės ir }many{# minutės ir }other{# minučių ir }}</translation>
 <translation id="1643823602425662293">Pranešimas</translation>
-<translation id="169515659049020177">Antrojo lygio klavišas</translation>
+<translation id="169515659049020177">Lyg2</translation>
 <translation id="1710340000377843106">dabar</translation>
 <translation id="1752946267035950200">{MINUTES,plural, =1{1 minutė}one{# minutė}few{# minutės}many{# minutės}other{# minučių}}</translation>
 <translation id="1761785978543082658"><ph name="QUANTITY" /> B</translation>
@@ -108,6 +108,7 @@
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 neskaitytas pranešimas}one{# neskaitytas pranešimas}few{# neskaityti pranešimai}many{# neskaityto pranešimo}other{# neskaitytų pranešimų}}</translation>
 <translation id="41501027364808384">{COUNT,plural, =1{Toliau nurodytą plėtinį įjunkite inkognito režimu.}one{Toliau nurodytus plėtinius įjunkite inkognito režimu.}few{Toliau nurodytus plėtinius įjunkite inkognito režimu.}many{Toliau nurodytus plėtinius įjunkite inkognito režimu.}other{Toliau nurodytus plėtinius įjunkite inkognito režimu.}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{Prieš 1 mėnesį}one{Prieš # mėnesį}few{Prieš # mėnesius}many{Prieš # mėnesio}other{Prieš # mėnesių}}</translation>
+<translation id="4277033906326892359">Stulpelis „<ph name="COLUMN_NAME" />“ rūšiuojamas didėjimo tvarka</translation>
 <translation id="4289300219472526559">Pradėti kalbėti</translation>
 <translation id="4289540628985791613">Apžvalga</translation>
 <translation id="4491109536499578614">Vaizdas</translation>
@@ -169,8 +170,10 @@
 <translation id="6503257047630241175">RTF turinys</translation>
 <translation id="6539092367496845964">Įvyko klaida. Vėliau bandykite dar kartą.</translation>
 <translation id="654149438358937226">Blokuoti visus pranešimus</translation>
+<translation id="6612467943526193239">Jei norite išeiti iš kalibravimo, paspauskite „Esc“.</translation>
 <translation id="6620110761915583480">Išsaugoti failą</translation>
 <translation id="6699343763173986273">Kitas medijos takelis</translation>
+<translation id="6807086321996342431">Stulpelis „<ph name="COLUMN_NAME" />“</translation>
 <translation id="6808150112686056157">Sustabdyti mediją</translation>
 <translation id="6845383723252244143">Pasirinkti aplanką</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{LIko 1 valanda}one{Liko # valanda}few{Liko # valandos}many{Liko # valandos}other{Liko # valandų}}</translation>
@@ -202,11 +205,11 @@
 <translation id="7969046989155602842">Komanda</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Daugiau nei 1 neskaitytas pranešimas}one{Daugiau nei # neskaitytas pranešimas}few{Daugiau nei # neskaityti pranešimai}many{Daugiau nei # neskaityto pranešimo}other{Daugiau nei # neskaitytų pranešimų}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{po 1 min.}one{po # min.}few{po # min.}many{po # min.}other{po # min.}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" /> + „<ph name="KEY_COMBO_NAME" />“</translation>
 <translation id="8090736967111090568">Numeris iš <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{Prieš 1 valandą}one{Prieš # valandą}few{Prieš # valandas}many{Prieš # valandos}other{Prieš # valandų}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{Liko 1 sek.}one{Liko # sek.}few{Liko # sek.}many{Liko # sek.}other{Liko # sek.}}</translation>
 <translation id="8134065097954893699">Šis puslapis įkeliamas iš naujo</translation>
+<translation id="813785873406874127">Stulpelis „<ph name="COLUMN_NAME" />“ nerūšiuojamas</translation>
 <translation id="815598010540052116">Slinkti žemyn</translation>
 <translation id="8179976553408161302">Įvesti</translation>
 <translation id="8210608804940886430">Puslapį žemyn</translation>
@@ -218,6 +221,7 @@
 <translation id="8393700583063109961">Siųsti pranešimą</translation>
 <translation id="8394908167088220973">Leisti / pristabdyti mediją</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 m.}one{# m.}few{# m.}many{# m.}other{# m.}}</translation>
+<translation id="8582972250170726813">Stulpelis „<ph name="COLUMN_NAME" />“ rūšiuojamas mažėjimo tvarka</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" /> proc.</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> failas (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB per sek.</translation>

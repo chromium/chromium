@@ -20,6 +20,7 @@
 <translation id="1059913517121127803">無法開始掃描</translation>
 <translation id="1061864016440983342">在不啟用定位功能的情況下使用</translation>
 <translation id="1062823486781306604">名稱：<ph name="NAME" /> (第 <ph name="INDEX" /> 項，共 <ph name="COUNT" /> 項)。</translation>
+<translation id="106558928761833284">美麗的宇宙星雲銀河，畫面中有未來感的太空船快速移動，色調是藍色、粉紅色和紫色</translation>
 <translation id="1069150558259542054">快速插入鍵無法用於自訂快速鍵。</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">已偵測到防火牆</translation>
@@ -27,6 +28,7 @@
 <translation id="1082009148392559545">正在下載螢幕保護程式</translation>
 <translation id="1094693127011229778">缺少 IP 位址</translation>
 <translation id="1100902271996134409">正在生成圖片...</translation>
+<translation id="1102946598597843031">相片中有櫻花飄落的湖泊，上方是月亮，解析度是 4K</translation>
 <translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> 音訊</translation>
 <translation id="1116694919640316211">關於</translation>
 <translation id="1118572504348554005">我們可能會將透過這份表單提交的意見回饋提供給合作夥伴，用於排解錯誤及你回報的其他問題。請勿輸入密碼等機密資訊。</translation>
@@ -67,6 +69,7 @@
 <translation id="1238163879850290856">重設即可防止他人存取資料，建議只使用你信任的輸入法。</translation>
 <translation id="1238612778414822719">HTTPS 延遲</translation>
 <translation id="1252766349417594414">搖桿</translation>
+<translation id="1261045951892393759">貓騎在獨角獸上彈 FLYING V 電吉他，背景有閃電</translation>
 <translation id="1270369111467284986">可疑的網頁認證入口</translation>
 <translation id="1274654146705270731">柳橙</translation>
 <translation id="1275718070701477396">已選取</translation>
@@ -273,6 +276,7 @@
 <translation id="2045814230297767491">餐具</translation>
 <translation id="2047316797244836561">如要查看螢幕保護程式，請連上網路並重新載入頁面。</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
+<translation id="2068472557797646626">3D 算繪鉻金屬球體及球狀物，背景有鉻金屬建築元素。這個創作採用現代極簡概念構圖，適合用於廣告、品牌設計或展示，並預留文案空間。畫面中有一個大型拱門，位於抽象背景的前方，帶有極簡主義風格，並採用專業工作室燈光照明效果，以特寫鏡頭捕捉場景。</translation>
 <translation id="2073232437457681324">大海</translation>
 <translation id="2080070583977670716">顯示更多設定</translation>
 <translation id="2082932131694554252">指定的鍵盤按鍵</translation>
@@ -390,7 +394,6 @@
 <translation id="2584559707064218956">如要設定，請前往「設定」頁面</translation>
 <translation id="2586146417912237930">藍色和靛藍色</translation>
 <translation id="2589921777872778654">編輯及刪除選單</translation>
-<translation id="2590424100019931043">系統已將你從這個課程中移除</translation>
 <translation id="2597774443162333062">檔案將傳送給 Google 進行偵錯</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{掃描完成，已掃描 1 個頁面}other{掃描完成，已掃描 {NUMBER_OF_PAGES} 個頁面}}</translation>
 <translation id="261322795497077164">講者身分識別</translation>
@@ -430,6 +433,7 @@
 <translation id="2805756323405976993">應用程式</translation>
 <translation id="28232023175184696">無法連線至網際網路。按一下即可重試。</translation>
 <translation id="2855718259207180827">羊毛</translation>
+<translation id="2856429654176718363">一艘巨大的太空船漂浮在城市上空，許多燈光照亮了整座城市。整個場景採用油畫風格，以深色調呈現，用未來科幻元素營造神秘氛圍。這張圖像使用 C4D 軟體和 OC 轉譯器製作，強調高解析度和高細節。附近還有一些城市建築，增添了景深效果。場景以油畫風格呈現，色調偏暗，並以未來科幻元素營造神秘氛圍。</translation>
 <translation id="2859243502336719778">重大更新</translation>
 <translation id="2860473693272905224">將另一頁放入掃描機</translation>
 <translation id="286265581261662583">按一下滑鼠右鍵或按住畫面，即可取得定義、翻譯或單位轉換結果</translation>
@@ -446,9 +450,11 @@
 <translation id="2895772081848316509">黑暗</translation>
 <translation id="2915996080311180594">稍後再重新啟動</translation>
 <translation id="2926057806159140518">輸入使用者名稱和密碼或掃描 QR 圖碼</translation>
+<translation id="2927007463545347013">動漫風格的小徑，沿途可飽覽海景，畫面中有櫻花隨風飄落</translation>
 <translation id="2940811910881150316">無法測試裝置。請重新打開機蓋即進行測試。</translation>
 <translation id="2941112035454246133">低</translation>
 <translation id="2956070106555335453">摘要</translation>
+<translation id="2968959705684615497">眼睛和條紋都是金色的超現實白虎坐在白色沙丘上</translation>
 <translation id="299385721391037602">粉紅色和黃色</translation>
 <translation id="3008341117444806826">更新</translation>
 <translation id="3009958530611748826">選取要儲存掃描檔的資料夾</translation>
@@ -518,6 +524,7 @@
 <translation id="3321030238473337787">播放速度</translation>
 <translation id="3327613592010997943">下次可使用這部裝置的時間是<ph name="DAY" /><ph name="TIME" />。</translation>
 <translation id="3328783797891415197">正在執行測試</translation>
+<translation id="3332683265015995419">穿越沙暴的蒸氣龐克太空船</translation>
 <translation id="3340011300870565703">裝置的右側無線耳機電池電量為 <ph name="BATTERY_PERCENTAGE" />%。</translation>
 <translation id="3340978935015468852">設定</translation>
 <translation id="3347558044552027859">現代</translation>
@@ -529,6 +536,7 @@
 <translation id="3369632935976756339"><ph name="INTENT" />；<ph name="QUERY_TEXT" />；<ph name="SUBTEXT" />；<ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">地球動態桌布</translation>
 <translation id="33736539805963175">搭配字母 <ph name="LETTERS_LETTER" /> 的<ph name="LETTERS_COLOR" />背景</translation>
+<translation id="3382806462014639823"><ph name="TEACHER_NAME" />正在查看你的畫面</translation>
 <translation id="3383623117265110236">專屬</translation>
 <translation id="3404249063913988450">啟用螢幕保護程式</translation>
 <translation id="3413935475507503304">如要繼續執行更新作業，請按「下一步」</translation>
@@ -561,6 +569,7 @@
 <translation id="3532980081107202182">大約還剩 <ph name="MIN_REMAINING" /> 分鐘</translation>
 <translation id="3533790840489634638">水池</translation>
 <translation id="3547264467365135390">公式</translation>
+<translation id="3552832331940389362">一隻貓坐在窗台上，看著下午的雨景，風格是日本動畫插圖</translation>
 <translation id="3557205324756024651">本機識別 (選用)</translation>
 <translation id="3565064564551103223">已允許的 IP</translation>
 <translation id="3569407787324516067">螢幕保護程式</translation>
@@ -636,12 +645,14 @@
 <translation id="38811596981744338">法律問題</translation>
 <translation id="3885327323343477505">變更螢幕保護程式</translation>
 <translation id="3889914174935857450">重設日期</translation>
+<translation id="3889954687526985291">黑色紙製的未來感摩托車，搭配有霓虹燈的深色背景</translation>
 <translation id="3897092660631435901">選單</translation>
 <translation id="3902271751020176019">語音轉錄語言</translation>
 <translation id="390890062090528082">滿天星斗</translation>
 <translation id="391412459402535266">無法測試裝置。請切換成筆電模式進行測試。</translation>
 <translation id="3916998944874125962">拍攝螢幕截圖</translation>
 <translation id="3923184630988645767">數據用量</translation>
+<translation id="392943705803418306">你的課程工具組上課時段已結束</translation>
 <translation id="3932043219784172185">未連線到任何裝置</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" />未指定</translation>
 <translation id="3941014780699102620">無法解析主機</translation>
@@ -808,6 +819,7 @@
 <translation id="4593212453765072419">需要 Proxy 驗證</translation>
 <translation id="4594021849294327751">建立轉錄稿</translation>
 <translation id="4594541568452132351">選取語音轉錄語言並下載模型</translation>
+<translation id="4600301862817165514">一輛有霓虹燈的 Delorean 汽車在銀河中穿梭，星星從車旁掠過</translation>
 <translation id="4609350030397390689">鍵盤亮度調低</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，已列印 <ph name="PRINTED_PAGE_NUMBER" /> 頁 (共 <ph name="TOTAL_PAGE_NUMBER" /> 頁)。按下 Enter 鍵即可取消列印工作。</translation>
 <translation id="463791356324567266">正在取消掃描…</translation>
@@ -830,6 +842,7 @@
 <translation id="4697260493945012995">選取控制項類型</translation>
 <translation id="4712940987669302829">散景效果</translation>
 <translation id="4731797938093519117">家長存取</translation>
+<translation id="4733200407105375152">不在課程工具組中</translation>
 <translation id="4734982181169850310">粉彩色調</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4744944742468440486">所選內容的相關資訊</translation>
@@ -1006,6 +1019,7 @@
 <translation id="5499762266711462226">鍵盤色彩是根據桌布而定</translation>
 <translation id="5502931783115429516">Android 未執行</translation>
 <translation id="550600468576850160">草地</translation>
+<translation id="5507504956167780539">相片中有閃閃發光的黑色沙丘和戲劇效果陰影，帶著簡約專業風格</translation>
 <translation id="551689408806449779">裝置已中斷連線，請嘗試重新連線進行測試</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="552644173505433109">進一步瞭解如何建立摘要和標題</translation>
@@ -1077,6 +1091,7 @@
 <translation id="5876385649737594562">開啟即可選取選項</translation>
 <translation id="5877503382465267833">暫停「<ph name="RECORDING_NAME" />」</translation>
 <translation id="588258955323874662">全螢幕</translation>
+<translation id="5889539348012432386">課程工具組首頁</translation>
 <translation id="5893975327266416093">輕觸要指派的鍵盤按鍵</translation>
 <translation id="5895138241574237353">重新啟動</translation>
 <translation id="5896602941605730551">播放</translation>
@@ -1125,6 +1140,7 @@
 <translation id="6075872808778243331">(Android) HTTP 延遲時間</translation>
 <translation id="6078323886959318429">新增捷徑</translation>
 <translation id="6079693086494835199">重設即可確保預設首頁不是網路釣魚網站，建議只使用你信任的網站。</translation>
+<translation id="6090672065638047175">一張由星星組成的發光樹木相片，背景是美麗的夜空與銀河</translation>
 <translation id="6091080061796993741">黃色</translation>
 <translation id="6104112872696127344">已取消掃描作業</translation>
 <translation id="6106186594183574873">如要完成變更，請輸入你的舊密碼</translation>
@@ -1310,6 +1326,7 @@
 <translation id="6900701049656042631">這本相簿中沒有任何相片。如要新增，請前往 <ph name="LINK" /></translation>
 <translation id="6902359863093437070">使用 AI 製作背景</translation>
 <translation id="6905163627763043954">試用</translation>
+<translation id="6905275015682612674">長時間曝光相片，拍攝日落時的生物發光海灘，天上有星星，色調為美麗的粉彩，解析度是 4K</translation>
 <translation id="6905724422583748843">返回「<ph name="PAGE_NAME" />」頁面</translation>
 <translation id="6910312834584889076">掃描器的蓋子已打開。請蓋上蓋子，然後再試一次。</translation>
 <translation id="6910845598686542904">根據錄音中偵測到的語音算出模型</translation>
@@ -1319,6 +1336,7 @@
 <translation id="6930597342185648547">關於背景</translation>
 <translation id="6931666215260956151">銀河</translation>
 <translation id="6939766318048400022">咖啡廳</translation>
+<translation id="6940212863873359282">一條白色透明硬紗在畫面中間飄著，下方有白色大理石拱門，背景是奶油色</translation>
 <translation id="6942253772720771875">分享意見回饋或說明你的問題</translation>
 <translation id="6943893908656559156">遠端識別 (選用)</translation>
 <translation id="694981048020558038">搜尋錄音檔標題</translation>
@@ -1405,6 +1423,7 @@
 <translation id="7271040990581020067">掃描器正在使用中，請稍後再試。</translation>
 <translation id="7271932918253517778">如果快速鍵會用到最上排的按鍵，請一併按下<ph name="META_KEY" />鍵。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7275707758336796649">一隻大麥町狗站在粉紅色背景前，全身入鏡，姿勢有動態感，相片是以高解析攝影技術拍攝而成，背景是超寫實圖庫風格，並經過後製調色</translation>
 <translation id="7281657306185710294">感受微風徐徐</translation>
 <translation id="7287310195820267359">桌布集錦</translation>
 <translation id="7293429513719260019">選取語言</translation>
@@ -1414,6 +1433,7 @@
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">在 Chromebook 說明論壇中詢問專家</translation>
+<translation id="7309823890857024809">極簡靜物畫裡有幾枝虞美人花放在玻璃花瓶中，背景是黑色</translation>
 <translation id="7311368985037279727">鍵盤顏色</translation>
 <translation id="7317831949569936035">學校註冊程序</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -1431,6 +1451,7 @@
 <translation id="7353413232959255829">第 <ph name="LIST_POSITION" /> 項搜尋結果，共 <ph name="LIST_SIZE" /> 項：<ph name="SEARCH_RESULT_TEXT" />。按下 Enter 鍵即可前往捷徑。</translation>
 <translation id="7359657277149375382">檔案類型</translation>
 <translation id="73631062356239394">分享診斷資料</translation>
+<translation id="7369648056634183167">雨中一朵滿是露水的精緻睡蓮特寫。畫面聚焦在細緻的花瓣和反光的水珠，並以藍色背景襯托出柔和的粉彩色調。拍攝角度與眼睛平視，並使用自然光線</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378170410161264436">錄音工具可轉錄含有語音內容的錄音。
 如要取得這些語音轉錄內容，請下載語音轉錄模型 (最多 100 MB)。</translation>
@@ -1601,6 +1622,7 @@
 <translation id="8135609423982943441">Chromebook 設定已重設為安全的預設值，你隨時可以前往「設定」調整。</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">自製桌布</translation>
+<translation id="8142182840415860496">特寫鏡頭中有幾朵白色和黃色的花，風格為動畫電影的靜止畫面。一朵嬌嫩的淡粉色花朵，有長型花瓣和綠色花莖，夾在沒有葉子的兩朵大黃色鬱金香間，背後是藍天，色調柔和。這是個高解析度的電影靜止畫面，細節繁複，並以 Octane 算繪技術產生極佳的光線效果、體積光和情境光。</translation>
 <translation id="8143951647992294073">選取「<ph name="TOPIC_SOURCE" /><ph name="TOPIC_SOURCE_DESC" />」</translation>
 <translation id="8151185429379586178">開發人員工具</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />，<ph name="ACCELERATOR_INFO" />。</translation>
@@ -1681,6 +1703,7 @@
 <translation id="8503813439785031346">使用者名稱</translation>
 <translation id="8503836310948963452">請稍待幾分鐘…</translation>
 <translation id="8505011850330200833">Gemini 模型需要 2 GB 的儲存空間來處理轉錄稿並建立摘要</translation>
+<translation id="8506063704538210734">夜空中出現流星雨的相片，前景有幾棵樹，背景是紫色和粉紅色調</translation>
 <translation id="8506394543220680287">積雪覆蓋</translation>
 <translation id="8508640263392900755">APN 詳細資料</translation>
 <translation id="8522687886059337719">現在起，你可以使用全新的<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />桌布<ph name="END_LINK_WALLPAPER_SUBPAGE" />和<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />螢幕保護程式<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>

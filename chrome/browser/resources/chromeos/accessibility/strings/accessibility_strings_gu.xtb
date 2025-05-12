@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">કૉર્નફ્લાવર ભૂરો</translation>
 <translation id="1246424317317450637">ઘાટું</translation>
+<translation id="1250181918001045969">કૅમેરા સાથે કનેક્ટ કરવાનો પ્રયાસ કરી રહ્યાં છીએ. <ph name="SECONDS" /> સેકન્ડમાં ફેસ કન્ટ્રોલ બંધ થઈ જશે.</translation>
 <translation id="1251750620252348585">આગલા સ્તર 6 નું મથાળું</translation>
 <translation id="1264956950255940376">ડાબી આંખ ઝીણી કરો</translation>
 <translation id="1268366246392928616">કોઈ પાછલું ગાણિતિક પદ નથી</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">પાછલી મુલાકાત લીધેલી લિંક</translation>
 <translation id="3241638166094654466">દરેક લાઇનમાંનાં કોષોની સંખ્યા:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">કૅમેરા ઉપલબ્ધ નથી. ખાતરી કરો કે તમે સાઇન ઇન કર્યું છે અને કૅમેરા ચાલુ છે.</translation>
 <translation id="3260949043575829030">આના જેવી જ અગાઉની આઇટમ</translation>
 <translation id="3270069636408109001">કોઈ આગલું કોષ્ટક નથી</translation>
 <translation id="3273791280096244679">લેબલ સાચવો</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">પેજ લોડ થવાનું પૂર્ણ થાય એ પછી તેને ઑટોમૅટિક રીતે વાંચો</translation>
 <translation id="5826479389509458994">પંક્તિ <ph name="ROW" /> કૉલમ <ph name="COL" /></translation>
 <translation id="5833044594931167190">કોઈ ARIA લૅન્ડમાર્ક નથી</translation>
+<translation id="5836800981500311517">કૅમેરા ઍક્સેસ કરી શકતા નથી. કૅમેરા ચાલુ કરો અને ખાતરી કરો કે તે બ્લૉક કરેલો નથી.</translation>
 <translation id="584044465500042213">સ્ક્રોલ મોડમાંથી બહાર નીકળો</translation>
 <translation id="5842625257683688671">કોઈ આગલું ગ્રાફિક નથી</translation>
 <translation id="5847883414085148048">સમર્પણ</translation>

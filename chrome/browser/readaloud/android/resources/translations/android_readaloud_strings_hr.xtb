@@ -4,15 +4,22 @@
 <translation id="1173075331199604451">Glasovni izbornik</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
 <translation id="1246424317317450637">Podebljano</translation>
+<translation id="1370273601702151510">Palac gore</translation>
 <translation id="1483137792530497944">Rijeka</translation>
 <translation id="1586836055630070874">Umirujući</translation>
+<translation id="1666704368140506043">Uvredljiv sadržaj</translation>
 <translation id="1741047078107369903">Topao</translation>
 <translation id="1807863182207623884">Rubin</translation>
 <translation id="1921351128855867012">Premotavanje unaprijed za <ph name="NUMBER_OF_SECONDS" /> sekundi</translation>
 <translation id="1984328900355667246">Reprodukcija nije dostupna</translation>
+<translation id="2019727681730021602">Standardna reprodukcija</translation>
 <translation id="2224347680315897176">Ujednačen</translation>
+<translation id="2575502321843437554">Nije dovoljno angažirano</translation>
 <translation id="2611765907167846862">Spokojan</translation>
 <translation id="3023502830214299618">Nažalost, reprodukcija trenutačno nije dostupna za ovu stranicu. Pokušajte ponovo kasnije.</translation>
+<translation id="3457812538570616687">Palac dolje</translation>
+<translation id="3493899379487634969">Što je pošlo po zlu?</translation>
+<translation id="3778044272390020426">Izbornik opcija negativnih povratnih informacija</translation>
 <translation id="3807208219231826020">Ponavljanje reprodukcije</translation>
 <translation id="385051799172605136">Natrag</translation>
 <translation id="3936324432406465283">Brzina reprodukcije</translation>
@@ -30,27 +37,33 @@
 <translation id="5251803541071282808">Oblak</translation>
 <translation id="5526614127710223793">Alat za odabir načina reprodukcije</translation>
 <translation id="5596627076506792578">Više opcija</translation>
+<translation id="565342223183747919">Dodirnite da biste promijenili način reprodukcije</translation>
 <translation id="5694491020339060116">Izbornik brzine reprodukcije</translation>
+<translation id="5965409657393819302">Tehnički problem</translation>
+<translation id="6218961554829577610">Ne sviđa mi se glas</translation>
 <translation id="6315170314923504164">Glasovno</translation>
+<translation id="6330455646577575965">AI reprodukcija zvuka</translation>
 <translation id="6343633247422081848">Mahovina</translation>
 <translation id="6550675742724504774">Opcije</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
+<translation id="677790449852070664">Hvala! Vaše nam povratne informacije pomažu.</translation>
 <translation id="6790428901817661496">Reproduciraj</translation>
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="6846298663435243399">Učitavanje…</translation>
 <translation id="6889157801232138307">Player Poslušajte ovu stranicu</translation>
 <translation id="7051308646573997571">Koraljna</translation>
 <translation id="7112750136794557642">Dodirnite da biste proširili player radi više opcija.</translation>
+<translation id="7138678301420049075">Ostalo</translation>
 <translation id="7221920857098237570">Blag</translation>
 <translation id="7237590978482584900">Bezbrižan</translation>
 <translation id="7282547042039404307">Glatko</translation>
-<translation id="7587250070160020374">Chrome sada reproducira</translation>
 <translation id="8004767876552422827">Polje</translation>
 <translation id="8136852699834914183">Reprodukcija nije dostupna za ovu stranicu.</translation>
 <translation id="8198036737896977997">Zrak</translation>
 <translation id="8264989794233974275"><ph name="PLAYBACK_SPEED" />x povećanje/smanjenje brzine.</translation>
 <translation id="8407011429883244666">Zatvori player.</translation>
 <translation id="8481839122437406573">Miran</translation>
+<translation id="8756370108715456837">Nije činjenično točan</translation>
 <translation id="8953618380150219653">Player Poslušajte ovu stranicu otvoren je u punoj visini.</translation>
 <translation id="978117257931832348">Nizak</translation>
 </translationbundle>

@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">Biru Bunga Jagung</translation>
 <translation id="1246424317317450637">Huruf tebal</translation>
+<translation id="1250181918001045969">Cuba untuk menyambung kepada kamera. Kawalan wajah akan dimatikan selepas <ph name="SECONDS" /> saat.</translation>
 <translation id="1251750620252348585">Tajuk tahap 6 seterusnya</translation>
 <translation id="1264956950255940376">Julingkan mata kiri</translation>
 <translation id="1268366246392928616">Tiada ungkapan matematik sebelumnya</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Pautan yang dilawati sebelumnya</translation>
 <translation id="3241638166094654466">Sel dalam setiap baris:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Kamera tidak tersedia. Pastikan anda log masuk dan kamera dihidupkan.</translation>
 <translation id="3260949043575829030">Item serupa sebelumnya</translation>
 <translation id="3270069636408109001">Tiada jadual seterusnya</translation>
 <translation id="3273791280096244679">Simpan label</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Baca halaman secara automatik selepas selesai dimuatkan</translation>
 <translation id="5826479389509458994">baris <ph name="ROW" /> lajur <ph name="COL" /></translation>
 <translation id="5833044594931167190">Tiada tanda tempat ARIA</translation>
+<translation id="5836800981500311517">Tidak dapat mengakses kamera. Hidupkan kamera dan pastikan kamera tidak disekat.</translation>
 <translation id="584044465500042213">Keluar daripada mod tatal</translation>
 <translation id="5842625257683688671">Tiada grafik seterusnya</translation>
 <translation id="5847883414085148048">Dedikasi</translation>

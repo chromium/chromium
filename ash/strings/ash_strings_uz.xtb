@@ -1440,6 +1440,7 @@ Hech qanday qurilma ulanmagan.</translation>
 <translation id="5672890847723042801">Vositalar</translation>
 <translation id="5673434351075758678">Sinxronlash natijasida “<ph name="FROM_LOCALE" />” o‘rniga “<ph name="TO_LOCALE" />” asosiy til etib tayinlandi.</translation>
 <translation id="5675363643668471212">Javondagi element</translation>
+<translation id="5677022547882470786">Qidiruv hududini tanlash uchun kursorni tortib joylang yoki Boʻshliq tugmasini bosing</translation>
 <translation id="5677928146339483299">Bloklangan</translation>
 <translation id="5678564054339031017">Keyingi hafta jadvalini ochish</translation>
 <translation id="5679050765726761783">Kuchsiz quvvat adapteri ulandi</translation>
@@ -2432,6 +2433,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8934418770423095813">Google Doc hujjatini yaratish</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ta fayl}other{# ta fayl}}</translation>
 <translation id="8936501819958976551">faolsizlantirildi</translation>
+<translation id="8937312474322077653">Ekranni yozib olish parametrlari: <ph name="SOURCE" />, <ph name="TYPE" />. Yozuv turini oʻzgartirish uchun Tab tugmasini bosing. Ekran hududini tanlash uchun Boʻshliq tugmasini bosing. Yozib olish uchun Enter tugmasini bosing.</translation>
 <translation id="8938800817013097409">USB-C qurilma (orqa tomondagi o‘ng port)</translation>
 <translation id="8939855324412367560">Audio manbasi: "<ph name="INPUT_DEVICE_NAME" />" va audio chiqarish qurilmasi: "<ph name="OUTPUT_DEVICE_NAME" />". Sozlamalar orqali oʻzgartirish mumkin.</translation>
 <translation id="8940956008527784070">Batareya zaryadi kam (<ph name="PERCENTAGE" />%)</translation>

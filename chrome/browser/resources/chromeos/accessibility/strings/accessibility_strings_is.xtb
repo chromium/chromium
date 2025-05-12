@@ -54,6 +54,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">Bláfjólublár</translation>
 <translation id="1246424317317450637">Feitletur</translation>
+<translation id="1250181918001045969">Reynir að tengjast myndavélinni. Slökkt verður á andlitsstýringu eftir <ph name="SECONDS" /> sekúndur.</translation>
 <translation id="1251750620252348585">Næsta 6. stigs fyrirsögn</translation>
 <translation id="1264956950255940376">Pírðu vinstra augað</translation>
 <translation id="1268366246392928616">Engin fyrri stærðfræðisegð</translation>
@@ -372,6 +373,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="3241052487511142956">Áður opnaður tengill</translation>
 <translation id="3241638166094654466">Hólf í hverri línu:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Myndavélin er ekki tiltæk. Gakktu úr skugga um að þú sért skráð(ur) inn og að kveikt sé á myndavélinni.</translation>
 <translation id="3260949043575829030">Fyrra svipað atriði</translation>
 <translation id="3270069636408109001">Engin næsta tafla</translation>
 <translation id="3273791280096244679">Vista merki</translation>
@@ -763,6 +765,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="5824976764713185207">Lesa síðu sjálfkrafa eftir að hún hefur verið sótt</translation>
 <translation id="5826479389509458994">lína <ph name="ROW" /> dálkur <ph name="COL" /></translation>
 <translation id="5833044594931167190">Engin ARIA-kennileiti</translation>
+<translation id="5836800981500311517">Ekki tókst að opna myndavélina. Kveiktu á myndavélinni og gakktu úr skugga um að ekkert sé til fyrirstöðu.</translation>
 <translation id="584044465500042213">Hætta í flettistillingu</translation>
 <translation id="5842625257683688671">Engin næsta mynd</translation>
 <translation id="5847883414085148048">Tileinkun</translation>

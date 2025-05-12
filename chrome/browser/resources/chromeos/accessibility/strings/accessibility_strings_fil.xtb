@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">Cornflower Blue</translation>
 <translation id="1246424317317450637">Bold</translation>
+<translation id="1250181918001045969">Sinusubukang kumonekta sa camera. Io-off ang pagkontrol gamit ang mukha sa loob ng <ph name="SECONDS" /> (na) segundo.</translation>
 <translation id="1251750620252348585">Susunod na heading sa antas 6</translation>
 <translation id="1264956950255940376">I-squint ang kaliwang mata</translation>
 <translation id="1268366246392928616">Walang nakaraang expression sa math</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Nakaraang binisitang link</translation>
 <translation id="3241638166094654466">Mga cell sa bawat linya:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Hindi available ang camera. Tiyaking naka-sign in ka at naka-on ang camera.</translation>
 <translation id="3260949043575829030">Nakaraang katulad na item</translation>
 <translation id="3270069636408109001">Walang susunod na talahanayan</translation>
 <translation id="3273791280096244679">I-save ang label</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Awtomatikong basahin ang page pagkatapos nitong mag-load</translation>
 <translation id="5826479389509458994">row <ph name="ROW" /> column <ph name="COL" /></translation>
 <translation id="5833044594931167190">Walang mga landmark ng ARIA</translation>
+<translation id="5836800981500311517">Hindi ma-access ang camera. I-on ang camera at tiyaking hindi ito nahaharangan.</translation>
 <translation id="584044465500042213">Lumabas sa scroll mode</translation>
 <translation id="5842625257683688671">Walang susunod na graphic</translation>
 <translation id="5847883414085148048">Dedikasyon</translation>

@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">Васильковый</translation>
 <translation id="1246424317317450637">Полужирный</translation>
+<translation id="1250181918001045969">Попытка подключения к камере. Управление мимикой отключится через <ph name="SECONDS" /> сек.</translation>
 <translation id="1251750620252348585">Перейти к следующему заголовку шестого уровня</translation>
 <translation id="1264956950255940376">Прищурить левый глаз</translation>
 <translation id="1268366246392928616">Предыдущего математического выражения нет</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Перейти к предыдущей открытой ссылке</translation>
 <translation id="3241638166094654466">Ячеек в каждой строке:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Камера недоступна. Убедитесь, что включили ее и вошли в аккаунт.</translation>
 <translation id="3260949043575829030">Предыдущий похожий объект</translation>
 <translation id="3270069636408109001">Следующей таблицы нет</translation>
 <translation id="3273791280096244679">Сохранить метку</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Автоматически читать страницу после загрузки</translation>
 <translation id="5826479389509458994">Строка <ph name="ROW" />, столбец <ph name="COL" /></translation>
 <translation id="5833044594931167190">Ориентиров ARIA нет</translation>
+<translation id="5836800981500311517">Камера недоступна. Убедитесь, что она включена и доступ к ней не заблокирован.</translation>
 <translation id="584044465500042213">Отключить режим прокрутки</translation>
 <translation id="5842625257683688671">Следующей диаграммы нет</translation>
 <translation id="5847883414085148048">Посвящение</translation>

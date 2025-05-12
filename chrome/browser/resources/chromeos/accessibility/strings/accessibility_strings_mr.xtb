@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">हलका निळा</translation>
 <translation id="1246424317317450637">ठळक</translation>
+<translation id="1250181918001045969">कॅमेराशी कनेक्ट करण्याचा प्रयत्न करत आहे. चेहरा नियंत्रण <ph name="SECONDS" /> सेकंदांमध्ये बंद होईल.</translation>
 <translation id="1251750620252348585">पुढील स्तर 6 शीर्षक</translation>
 <translation id="1264956950255940376">डावा डोळा बारीक करा</translation>
 <translation id="1268366246392928616">मागील गणित एक्स्प्रेशन नाही</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">मागील भेट दिलेली लिंक</translation>
 <translation id="3241638166094654466">प्रत्येक रेषेतील सेल:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">कॅमेरा उपलब्ध नाही. तुम्ही साइन इन केल्याची आणि कॅमेरा सुरू असल्याची खात्री करा.</translation>
 <translation id="3260949043575829030">मागील यासारखा आयटम</translation>
 <translation id="3270069636408109001">पुढील टेबल नाही</translation>
 <translation id="3273791280096244679">लेबल सेव्ह करा</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">पेज लोड होणे पूर्ण झाल्यावर ते आपोआप वाचा</translation>
 <translation id="5826479389509458994">पंक्ती <ph name="ROW" /> स्तंभ <ph name="COL" /></translation>
 <translation id="5833044594931167190">ARIA खुणा नाहीत</translation>
+<translation id="5836800981500311517">कॅमेरा अ‍ॅक्सेस करू शकत नाही. कॅमेरा सुरू करा आणि तो ब्लॉक केला नसल्याची खात्री करा.</translation>
 <translation id="584044465500042213">स्क्रोल करा मोडमधून बाहेर पडा</translation>
 <translation id="5842625257683688671">पुढील ग्राफिक नाही</translation>
 <translation id="5847883414085148048">अर्पणपत्रिका</translation>

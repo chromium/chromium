@@ -55,6 +55,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">کارن فلاور نیلا</translation>
 <translation id="1246424317317450637">بولڈ</translation>
+<translation id="1250181918001045969">کیمرے سے جڑنے کی کوشش کر رہا ہے۔ چہرے سے کنٹرول <ph name="SECONDS" /> سیکنڈ میں بند ہو جائے گا۔</translation>
 <translation id="1251750620252348585">سطح 6 کی اگلی سرخی</translation>
 <translation id="1264956950255940376">بائیں آنکھ آدھی کھلی رکھیں</translation>
 <translation id="1268366246392928616">ریاضی کا کوئی پچھلا ایکسپریشن نہیں ہے</translation>
@@ -373,6 +374,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="3241052487511142956">پچھلا ملاحظہ کردہ لنک</translation>
 <translation id="3241638166094654466">ہر لائن میں سیلز:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">کیمرا دستیاب نہیں ہے۔ یقینی بنائیں کہ آپ سائن ان ہیں اور کیمرہ آن ہے۔</translation>
 <translation id="3260949043575829030">گزشتہ مماثل آئٹم</translation>
 <translation id="3270069636408109001">کوئی اگلا ٹیبل نہیں ہے</translation>
 <translation id="3273791280096244679">لیبل محفوظ کریں</translation>
@@ -764,6 +766,7 @@ Chrome براؤزر مینیو کھولنے کیلئے، Alt+F دبائیں۔</t
 <translation id="5824976764713185207">صفحہ لوڈ ہو جانے کے بعد اسے خودکار طور پر پڑھیں</translation>
 <translation id="5826479389509458994">قطار <ph name="ROW" /> کالم <ph name="COL" /></translation>
 <translation id="5833044594931167190">‏ARIA کا کوئی نمایاں مقام نہیں ہے</translation>
+<translation id="5836800981500311517">‏‫Chrome کیمرے تک رسائی حاصل کرنے سے قاصر ہے۔ کیمرا آن کریں اور یقینی بنائیں کہ یہ بلاک نہیں ہے۔</translation>
 <translation id="584044465500042213">اسکرول موڈ سے باہر نکلیں</translation>
 <translation id="5842625257683688671">کوئی اگلا گرافک نہیں ہے</translation>
 <translation id="5847883414085148048">انتساب</translation>

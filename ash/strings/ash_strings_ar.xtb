@@ -1438,6 +1438,7 @@
 <translation id="5672890847723042801">تطبيقات الخدمات</translation>
 <translation id="5673434351075758678">من "<ph name="FROM_LOCALE" />" إلى "<ph name="TO_LOCALE" />" بعد مزامنة الإعدادات.</translation>
 <translation id="5675363643668471212">عنصر الرف</translation>
+<translation id="5677022547882470786">عليك السحب أو الضغط على مفتاح المسافة لتحديد منطقة للبحث فيها</translation>
 <translation id="5677928146339483299">محظور</translation>
 <translation id="5678564054339031017">عرض الأسبوع التالي</translation>
 <translation id="5679050765726761783">تم توصيل محوِّل طاقة منخفضة</translation>
@@ -2431,6 +2432,7 @@
 <translation id="8934418770423095813">‏إنشاء مستند Google</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{ملف واحد}zero{‫# ملف}two{ملفان}few{‫# ملفات}many{‫# ملفًا}other{‫# ملف}}</translation>
 <translation id="8936501819958976551">غير مفعّلة</translation>
+<translation id="8937312474322077653">‏في ميزة "لقطة الشاشة"، عليك ضبط الإعدادات على "<ph name="SOURCE" />" من النوع "<ph name="TYPE" />". يُرجى الضغط على مفتاح التبويب لاختيار نوع الالتقاط. ويُرجى الضغط على مفتاح المسافة لاختيار المنطقة، ثم الضغط على مفتاح Enter لأخذ لقطة شاشة.</translation>
 <translation id="8938800817013097409">‏جهاز USB-C (المنفذ الأيمن في الخلف)</translation>
 <translation id="8939855324412367560">إنّ مصدر إدخال الصوت هو "<ph name="INPUT_DEVICE_NAME" />" ومصدر إخراجه هو "<ph name="OUTPUT_DEVICE_NAME" />". انتقِل إلى "الإعدادات" لتغييرهما.</translation>
 <translation id="8940956008527784070">طاقة البطارية منخفضة (<ph name="PERCENTAGE" />%)</translation>

@@ -1440,6 +1440,7 @@
 <translation id="5672890847723042801">උපයෝගිතා</translation>
 <translation id="5673434351075758678">ඔබේ සැකසීම් සමමුහුර්ත කිරීමෙන් පසු "<ph name="FROM_LOCALE" />" සිට "<ph name="TO_LOCALE" />" දක්වා.</translation>
 <translation id="5675363643668471212">රාක්ක අයිතමය</translation>
+<translation id="5677022547882470786">සෙවීමට ප්‍රදේශයක් තේරීමට Space ඇදගෙන යන්න හෝ ඔබන්න</translation>
 <translation id="5677928146339483299">බාධාකළ</translation>
 <translation id="5678564054339031017">ඊළඟ සතිය පෙන්වන්න</translation>
 <translation id="5679050765726761783">අඩු-බල ඇඩැප්ටරය සම්බන්ධ කරන ලදි</translation>
@@ -2432,6 +2433,7 @@
 <translation id="8934418770423095813">Google Doc තනන්න</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ගොනුවක්}one{ගොනු #ක්}other{ගොනු #ක්}}</translation>
 <translation id="8936501819958976551">ක්‍රියා විරහිතයි</translation>
+<translation id="8937312474322077653">තිර ග්‍රහණයේ දී, <ph name="SOURCE" /> ලෙස <ph name="TYPE" /> සකසන්න. ග්‍රහණ වර්ගය තේරීමට පටිත්ත ඔබන්න. කලාපය තේරීමට ඉඩ ඔබන්න. ග්‍රහණය කිරීමට enter ඔබන්න.</translation>
 <translation id="8938800817013097409">USB-C උපාංගය (පසුපස දකුණු තොට)</translation>
 <translation id="8939855324412367560">ආදාන ශ්‍රව්‍ය "<ph name="INPUT_DEVICE_NAME" />" වන අතර ප්‍රතිදාන ශ්‍රව්‍ය "<ph name="OUTPUT_DEVICE_NAME" />" වේ. වෙනස් කිරීමට සැකසීම් වෙත යන්න.</translation>
 <translation id="8940956008527784070">බැටරි බලය අඩුය (<ph name="PERCENTAGE" />%)</translation>

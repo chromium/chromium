@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">grup radio</translation>
 <translation id="1243477406442346359">Albăstrui</translation>
 <translation id="1246424317317450637">Aldin</translation>
+<translation id="1250181918001045969">Se încearcă conectarea la cameră. Comenzile faciale se vor dezactiva în <ph name="SECONDS" /> secunde.</translation>
 <translation id="1251750620252348585">Titlul de nivel 6 următor</translation>
 <translation id="1264956950255940376">Închide parțial ochiul stâng</translation>
 <translation id="1268366246392928616">Nu există o expresie matematică anterioară</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Link accesat anterior</translation>
 <translation id="3241638166094654466">Celule pe fiecare rând:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Camera nu este disponibilă. Asigură-te că te-ai conectat și camera este pornită.</translation>
 <translation id="3260949043575829030">Elementul similar anterior</translation>
 <translation id="3270069636408109001">Nu există un tabel următor</translation>
 <translation id="3273791280096244679">Salvează eticheta</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Citește automat pagina după ce se încarcă</translation>
 <translation id="5826479389509458994">rândul <ph name="ROW" />, coloana <ph name="COL" /></translation>
 <translation id="5833044594931167190">Nu există repere ARIA</translation>
+<translation id="5836800981500311517">Nu se poate accesa camera. Activează camera și verifică dacă nu este blocată.</translation>
 <translation id="584044465500042213">Ieși din modul de derulare</translation>
 <translation id="5842625257683688671">Nu există un grafic următor</translation>
 <translation id="5847883414085148048">Dedicație</translation>

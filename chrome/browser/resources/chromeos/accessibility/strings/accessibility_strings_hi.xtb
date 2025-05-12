@@ -54,6 +54,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">नीले जंगली फूल जैसा रंग</translation>
 <translation id="1246424317317450637">बोल्ड टेक्स्ट</translation>
+<translation id="1250181918001045969">कैमरे से कनेक्ट करने की कोशिश की जा रही है. फ़ेस कंट्रोल की सुविधा <ph name="SECONDS" /> सेकंड में बंद हो जाएगी.</translation>
 <translation id="1251750620252348585">अगले लेवल 6 का टाइटल</translation>
 <translation id="1264956950255940376">बाईं आंख को थोड़ा बंद करें</translation>
 <translation id="1268366246392928616">पहले से कोई मैथ एक्सप्रेशन नहीं है</translation>
@@ -372,6 +373,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="3241052487511142956">पहले देखा गया लिंक</translation>
 <translation id="3241638166094654466">हर एक पंक्ति में सेल:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">कैमरा डिसकनेक्ट हो गया है. पक्का करें कि आपने साइन इन किया हो और कैमरा चालू हो.</translation>
 <translation id="3260949043575829030">पिछला मिलता-जुलता आइटम</translation>
 <translation id="3270069636408109001">आगे कोई टेबल नहीं है</translation>
 <translation id="3273791280096244679">लेबल सेव करें</translation>
@@ -763,6 +765,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="5824976764713185207">पेज लोड हो जाने के बाद उसे अपने-आप पढ़ें</translation>
 <translation id="5826479389509458994">पंक्ति <ph name="ROW" /> कॉलम <ph name="COL" /></translation>
 <translation id="5833044594931167190">कोई ARIA लैंडमार्क नहीं है</translation>
+<translation id="5836800981500311517">कैमरा ऐक्सेस नहीं किया जा सकता. कैमरा चालू करें और पक्का करें कि उसे ब्लॉक न किया गया हो.</translation>
 <translation id="584044465500042213">स्क्रोल मोड बंद करें</translation>
 <translation id="5842625257683688671">आगे कोई ग्राफ़िक नहीं है</translation>
 <translation id="5847883414085148048">लगन</translation>

@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">矢車菊藍</translation>
 <translation id="1246424317317450637">粗體</translation>
+<translation id="1250181918001045969">正嘗試連線至攝影機。人臉操控功能將在 <ph name="SECONDS" /> 秒後關閉。</translation>
 <translation id="1251750620252348585">下一個第 6 階標題</translation>
 <translation id="1264956950255940376">瞇左眼</translation>
 <translation id="1268366246392928616">沒有上一個數學運算式</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">上一個造訪過的連結</translation>
 <translation id="3241638166094654466">各行儲存格數目：</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />：<ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">無法使用攝影機。請確認你已登入帳戶，且攝影機已開啟。</translation>
 <translation id="3260949043575829030">上一個相似的項目</translation>
 <translation id="3270069636408109001">沒有下一個表格</translation>
 <translation id="3273791280096244679">儲存標籤</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">網頁載入完成後自動朗讀網頁內容</translation>
 <translation id="5826479389509458994">第 <ph name="ROW" /> 列，第 <ph name="COL" /> 欄</translation>
 <translation id="5833044594931167190">沒有任何 ARIA 位置標記</translation>
+<translation id="5836800981500311517">無法存取攝影機。請開啟攝影機，並確認鏡頭未被遮擋。</translation>
 <translation id="584044465500042213">退出捲動模式</translation>
 <translation id="5842625257683688671">沒有下一個圖形</translation>
 <translation id="5847883414085148048">獻辭</translation>

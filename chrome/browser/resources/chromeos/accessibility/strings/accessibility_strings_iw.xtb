@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">כחול דרדר</translation>
 <translation id="1246424317317450637">מודגש</translation>
+<translation id="1250181918001045969">מתבצע ניסיון להתחבר למצלמה. השליטה באמצעות תנועות הפנים תושבת בעוד <ph name="SECONDS" /> שניות.</translation>
 <translation id="1251750620252348585">הכותרת הבאה של רמה 6</translation>
 <translation id="1264956950255940376">מצמצמים את העין השמאלית</translation>
 <translation id="1268366246392928616">אין ביטוי מתמטי קודם</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">הקישור הקודם שאליו נכנסת</translation>
 <translation id="3241638166094654466">תאים בכל שורה:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">המצלמה לא זמינה. עליך לוודא שהתחברת לחשבון והמצלמה פועלת.</translation>
 <translation id="3260949043575829030">הפריט הדומה הקודם</translation>
 <translation id="3270069636408109001">אין עוד טבלאות</translation>
 <translation id="3273791280096244679">שמירת התווית</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">הקראת הדף באופן אוטומטי אחרי שהטעינה שלו מסתיימת</translation>
 <translation id="5826479389509458994">שורה <ph name="ROW" /> עמודה <ph name="COL" /></translation>
 <translation id="5833044594931167190">‏אין ציוני דרך מסוג ARIA</translation>
+<translation id="5836800981500311517">אין גישה למצלמה. צריך להפעיל את המצלמה ולוודא שהיא לא חסומה.</translation>
 <translation id="584044465500042213">יציאה ממצב גלילה</translation>
 <translation id="5842625257683688671">אין עוד פריטי גרפיקה</translation>
 <translation id="5847883414085148048">הקדשה</translation>

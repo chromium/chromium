@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">група за избор</translation>
 <translation id="1243477406442346359">Бледоплава</translation>
 <translation id="1246424317317450637">Подебљано</translation>
+<translation id="1250181918001045969">Покушава се повезивање са камером. Управљање лицем ће се искључити за <ph name="SECONDS" /> сек.</translation>
 <translation id="1251750620252348585">Следеће заглавље 6. нивоа</translation>
 <translation id="1264956950255940376">Шкиљите левим оком</translation>
 <translation id="1268366246392928616">Нема претходног математичког израза</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Претходни посећени линк</translation>
 <translation id="3241638166094654466">Ћелија у свакој линији:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Камера није доступна. Уверите се да сте пријављени и да је камера укључена.</translation>
 <translation id="3260949043575829030">Претходна слична ставка</translation>
 <translation id="3270069636408109001">Нема следеће табеле</translation>
 <translation id="3273791280096244679">Сачувај ознаку</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Аутоматски прочитај страницу када заврши са учитавањем</translation>
 <translation id="5826479389509458994"><ph name="ROW" />. ред <ph name="COL" />. колона</translation>
 <translation id="5833044594931167190">Нема ARIA обележја</translation>
+<translation id="5836800981500311517">Приступ камери није успео. Укључите камеру и уверите се да није блокирана.</translation>
 <translation id="584044465500042213">Изађите из режима скроловања</translation>
 <translation id="5842625257683688671">Нема следеће графике</translation>
 <translation id="5847883414085148048">Посвета</translation>

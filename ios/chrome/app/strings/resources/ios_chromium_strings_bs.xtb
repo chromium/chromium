@@ -47,7 +47,6 @@
 <translation id="2042889939382983733">Pregledajte svoju historiju Chromiuma</translation>
 <translation id="2052320862053429062">Chromium povremeno provjerava nalaze li se vaše lozinke na listama koje su objavljene online. Prilikom toga, vaše lozinke i korisnička imena su šifrirani i niko, uključujući Google, ih ne može pročitati.</translation>
 <translation id="2059365270911640413">Završite postavljanje Chromiuma</translation>
-<translation id="2147210759439165826">Ostanite u toku sa sadržajem i primajte korisne savjete za Chromium.</translation>
 <translation id="2168108852149185974">Neki programski dodaci uzrokuju pad aplikacije Chromium. Deinstalirajte:</translation>
 <translation id="2168593389981132306">Poboljšajte Chromium</translation>
 <translation id="2178608107313874732">Chromium trenutno ne može koristiti kameru</translation>
@@ -157,6 +156,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromium
 <translation id="4828317641996116749">Chromium nije mogao provjeriti sve lozinke. Pokušajte ponovo kasnije.</translation>
 <translation id="4856138222358683580">Radnje u Chromiumu</translation>
 <translation id="4904452304169763785">Upozorenja o problemima s privatnošću ili sigurnošću koje Chromium otkrije za vas.</translation>
+<translation id="4908570938463711775">Da započnete, saznajte korisne osnove o Chromiumu</translation>
 <translation id="4962295957157529683">Završite započetu radnju u drugom otvorenom prozoru Chromiuma.</translation>
 <translation id="4985291216379576555">Van mreže, Chromium ne može provjeravati ima li ažuriranja</translation>
 <translation id="4996471330284142407">Obavite više s jednostavnim i sigurnim Chromiumom koji je brži nego ikad.</translation>
@@ -197,6 +197,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromium
 <translation id="5688047395118852662">Kartica prikazuje prijedloge o tome kako iskoristiti sve prednosti Chromiuma.</translation>
 <translation id="5700709190537129682">Chromium ne može provjeriti vaše lozinke</translation>
 <translation id="584550191241316896">Prijavljeni ste u Chromium</translation>
+<translation id="5862307444128926510">Dobro došli u Chromium</translation>
 <translation id="5889847953983052353">Kada je uključeno:
 <ph name="BEGIN_INDENT" />  • Pomažete da Chromium postane bolji za osobe koje ga koriste na isti način kao vi.<ph name="END_INDENT" />
 
@@ -223,6 +224,7 @@ Stvari za razmatranje:
 <translation id="6301717043141881464">Da lako dobijete sačuvane lozinke u drugim aplikacijama, odaberite Chromium za automatsko popunjavanje</translation>
 <translation id="6324041800010509197">Otvorite mrežu kartica u Chromiumu</translation>
 <translation id="6325378625795868881">Koristite Chromium svaki put kada dodirnete linkove u porukama i drugim aplikacijama.</translation>
+<translation id="6387994184698195448">Pratite korisne savjete za Chromium i drugo.</translation>
 <translation id="6424492062988593837">Chromium je sada još bolji! Dostupna je nova verzija.</translation>
 <translation id="6433172051771630690">Savjeti za iskorištavanje svih prednosti Chromiuma.</translation>
 <translation id="65045991564554105">Prikazivanje oznaka u Chromiumu</translation>
@@ -284,7 +286,6 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="7980860476903281594">Chromium dijeli vašu lokaciju s web lokacijama koje vi odobrite.</translation>
 <translation id="7994322153108931467">Da dobijate korisne savjete za Chromium, uključite obavještenja u postavkama iOS-a.</translation>
 <translation id="7997159823054171568">Postavljanje Chromiuma kao zadanog preglednika</translation>
-<translation id="800195749539500647">Iskoristite sve prednosti Chromiuma</translation>
 <translation id="800380310260616129">Ovdje možete preuzeti Chromium.</translation>
 <translation id="8013573822802650211">Da vidite kartice s bilo kojeg uređaja na kojem koristite Chromium, prijavite se na svim uređajima</translation>
 <translation id="8014091604604659473">Odjavljeni ste iz Chromiuma</translation>
@@ -317,6 +318,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="8860548555286245440">Otvorite URL-ove u Chromiumu u anonimnom načinu rada</translation>
 <translation id="8880024619507699923">Vaša organizacija zahtijeva da se prijavite da koristite Chromium. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Dobijte Chromiumovu najjaču zaštitu</translation>
+<translation id="8925569192291721236">Pratite novosti o praćenju cijena i savjete za Chromium.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Ovo se dešava kad se Chromium ne koristi {THRESHOLD} minutu}one{Ovo se dešava kad se Chromium ne koristi {THRESHOLD} minutu}few{Ovo se dešava kad se Chromium ne koristi {THRESHOLD} minute}other{Ovo se dešava kad se Chromium ne koristi {THRESHOLD} minuta}}</translation>
 <translation id="8963279154877372067">Dozvolite obavještenja Chromiuma da dobijate obavještenja o padu cijena</translation>
 <translation id="8975812008711371178">Pretraživanje glasovnim komandama u Chromiumu</translation>

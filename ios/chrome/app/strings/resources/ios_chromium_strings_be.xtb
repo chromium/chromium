@@ -47,7 +47,6 @@
 <translation id="2042889939382983733">Праглядзець гісторыю Chromium</translation>
 <translation id="2052320862053429062">Chromium перыядычна звярае вашы паролі з паролямі са спісаў, апублікаваных у інтэрнэце. Пры гэтым вашы паролі і імёны карыстальніка зашыфраваны – прачытаць іх не можа ніхто, нават Google.</translation>
 <translation id="2059365270911640413">Завяршыце наладжванне Chromium</translation>
-<translation id="2147210759439165826">Не прапускайце новае змесціва і карысныя парады адносна Chromium.</translation>
 <translation id="2168108852149185974">Некаторыя дадатковыя кампаненты выклікаюць збой у браўзеры Chromium. Выдаліце іх:</translation>
 <translation id="2168593389981132306">Зрабіце браўзер Chromium лепей</translation>
 <translation id="2178608107313874732">Chromium не ўдалося атрымаць доступ да камеры</translation>
@@ -157,6 +156,7 @@
 <translation id="4828317641996116749">Браўзеру Chromium не ўдалося праверыць усе паролі. Паўтарыце спробу пазней.</translation>
 <translation id="4856138222358683580">Дзеянні ў Chromium</translation>
 <translation id="4904452304169763785">Абвесткі аб праблемах з прыватнасцю і бяспекай, якія выяўляе Chromium.</translation>
+<translation id="4908570938463711775">Даведайцеся пра асновы, каб пачаць працу з Chromium</translation>
 <translation id="4962295957157529683">Завяршыце тое, што вы рабілі ў іншым адкрытым акне Chromium.</translation>
 <translation id="4985291216379576555">Няма падключэння да сеткі. Браўзеру Chromium не ўдаецца праверыць наяўнасць абнаўленняў</translation>
 <translation id="4996471330284142407">Паспявайце больш дзякуючы простаму, абароненаму і яшчэ хутчэйшаму браўзеру Chromium.</translation>
@@ -197,6 +197,7 @@
 <translation id="5688047395118852662">На гэтай картцы паказаны прапановы, як карыстацца ўсімі магчымасцямі Chromium.</translation>
 <translation id="5700709190537129682">Браўзеру Chromium не ўдаецца праверыць паролі</translation>
 <translation id="584550191241316896">Вы ўвайшлі ў Chromium</translation>
+<translation id="5862307444128926510">Вас вітае Chromium</translation>
 <translation id="5889847953983052353">Калі параметр уключаны:
 <ph name="BEGIN_INDENT" />  • Вы дапамагаеце палепшыць браўзер Chromium для іншых яго карыстальнікаў.<ph name="END_INDENT" />
 
@@ -223,6 +224,7 @@
 <translation id="6301717043141881464">Для зручнага аўтазапаўнення захаваных пароляў у іншых праграмах выберыце Chromium для аўтазапаўнення</translation>
 <translation id="6324041800010509197">Перайсці да сеткі ўкладак у Chromium</translation>
 <translation id="6325378625795868881">Вы можаце заўсёды выкарыстоўваць Chromium для адкрыцця спасылак, на якія вы націскаеце ў паведамленнях або іншых праграмах.</translation>
+<translation id="6387994184698195448">Не прапускайце карысныя парады і іншую інфармацыю адносна Chromium.</translation>
 <translation id="6424492062988593837">Chromium стаў яшчэ лепшым! З’явілася новая версія.</translation>
 <translation id="6433172051771630690">Парады па эфектыўным выкарыстанні Chromium.</translation>
 <translation id="65045991564554105">Прагляд закладак Chromium</translation>
@@ -284,7 +286,6 @@
 <translation id="7980860476903281594">Chromium абагульвае інфармацыю пра ваша месцазнаходжанне толькі з адобранымі вамі сайтамі.</translation>
 <translation id="7994322153108931467">Каб атрымліваць карысныя парады па выкарыстанні Chromium, уключыце апавяшчэнні ў наладах iOS.</translation>
 <translation id="7997159823054171568">Зрабіць Chromium стандартным браўзерам</translation>
-<translation id="800195749539500647">Выкарыстоўвайце ўсе магчымасці Chromium</translation>
 <translation id="800380310260616129">Спампуйце Chromium тут.</translation>
 <translation id="8013573822802650211">Каб мець доступ да сваіх укладак з усіх прылад, на якіх вы выкарыстоўваеце Chromium, увайдзіце на іх ва ўліковы запіс</translation>
 <translation id="8014091604604659473">Вы выйшлі з Chromium</translation>
@@ -317,6 +318,7 @@
 <translation id="8860548555286245440">Адкрыць URL-адрасы ў Chromium інкогніта</translation>
 <translation id="8880024619507699923">Палітыка вашай арганізацыі патрабуе, каб вы карысталіся браўзерам Chromium, выканаўшы ўваход ва ўліковы запіс. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Засцеражыце браўзер Chromium ад небяспек</translation>
+<translation id="8925569192291721236">Не прапускайце інфармацыю па адсочванні цэн і парады адносна Chromium.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Гэта адбываецца, калі Chromium не выкарыстоўваецца на працягу {THRESHOLD} хвіліны}one{Гэта адбываецца, калі Chromium не выкарыстоўваецца на працягу {THRESHOLD} хвіліны}few{Гэта адбываецца, калі Chromium не выкарыстоўваецца на працягу {THRESHOLD} хвілін}many{Гэта адбываецца, калі Chromium не выкарыстоўваецца на працягу {THRESHOLD} хвілін}other{Гэта адбываецца, калі Chromium не выкарыстоўваецца на працягу {THRESHOLD} хвіліны}}</translation>
 <translation id="8963279154877372067">Уключыце апавяшчэнні Chromium, каб атрымліваць абвесткі пра зніжэнні цэн</translation>
 <translation id="8975812008711371178">Выканаць галасавы пошук у Chromium</translation>

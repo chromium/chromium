@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">Nevädzová modrá</translation>
 <translation id="1246424317317450637">Tučné</translation>
+<translation id="1250181918001045969">Prebieha pokus o pripojenie ku kamere. Ovládanie tvárou sa vypne o <ph name="SECONDS" /> s.</translation>
 <translation id="1251750620252348585">Ďalší nadpis 6. úrovne</translation>
 <translation id="1264956950255940376">Prižmúrte ľavé oko</translation>
 <translation id="1268366246392928616">Žiadny predchádzajúci matematický výraz</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Predchádzajúci navštívený odkaz</translation>
 <translation id="3241638166094654466">Bunky v každom riadku:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Kamera nie je k dispozícii. Uistite sa, že ste sa prihlásili a kamera je zapnutá.</translation>
 <translation id="3260949043575829030">Predchádzajúca podobná položka</translation>
 <translation id="3270069636408109001">Žiadna ďalšia tabuľka</translation>
 <translation id="3273791280096244679">Štítok uloženia</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Po načítaní stránku automaticky prečítať</translation>
 <translation id="5826479389509458994">riadok <ph name="ROW" /> stĺpec <ph name="COL" /></translation>
 <translation id="5833044594931167190">Žiadne orientačné body ARIA</translation>
+<translation id="5836800981500311517">Ku kamere nie je možné získať prístup. Zapnite ju a uistite sa, že nie je blokovaná.</translation>
 <translation id="584044465500042213">Ukončenie režimu posúvania</translation>
 <translation id="5842625257683688671">Žiadna ďalšia grafika</translation>
 <translation id="5847883414085148048">Venovanie</translation>

@@ -1440,6 +1440,7 @@
 <translation id="5672890847723042801">Помощни приложения</translation>
 <translation id="5673434351075758678">От <ph name="FROM_LOCALE" /> към <ph name="TO_LOCALE" /> след синхронизиране на настройките ви.</translation>
 <translation id="5675363643668471212">Елемент в лавицата</translation>
+<translation id="5677022547882470786">Плъзнете или натиснете клавиша за интервал, за да изберете област за търсене</translation>
 <translation id="5677928146339483299">Блокирано</translation>
 <translation id="5678564054339031017">Показване на следващата седмица</translation>
 <translation id="5679050765726761783">Свързан е захранващ адаптер с малка мощност</translation>
@@ -2432,6 +2433,7 @@
 <translation id="8934418770423095813">Създаване на документ в Google Документи</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}other{# файла}}</translation>
 <translation id="8936501819958976551">деактивирана</translation>
+<translation id="8937312474322077653">Във функцията за заснемане на екрана задайте <ph name="SOURCE" /> <ph name="TYPE" />. Натиснете Tab, за да изберете типа на заснемането. Натиснете клавиша за интервал, за да изберете регион. Натиснете Enter за заснемане.</translation>
 <translation id="8938800817013097409">Устройство с USB-C (десният порт на гърба)</translation>
 <translation id="8939855324412367560">Аудиовходът е <ph name="INPUT_DEVICE_NAME" />, а аудиоизходът – <ph name="OUTPUT_DEVICE_NAME" />. За промяна отворете „Настройки“.</translation>
 <translation id="8940956008527784070">Батерията е изтощена (<ph name="PERCENTAGE" />%)</translation>

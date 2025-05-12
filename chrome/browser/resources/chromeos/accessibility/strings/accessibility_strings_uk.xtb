@@ -54,6 +54,7 @@
 <translation id="1237866625126425153">група перемикачів</translation>
 <translation id="1243477406442346359">Волошковий</translation>
 <translation id="1246424317317450637">Жирний</translation>
+<translation id="1250181918001045969">Триває підключення до камери. Керування мімікою вимкнеться через <ph name="SECONDS" /> с.</translation>
 <translation id="1251750620252348585">Наступний заголовок рівня 6</translation>
 <translation id="1264956950255940376">Зіщулити ліве око</translation>
 <translation id="1268366246392928616">Немає попереднього математичного виразу</translation>
@@ -372,6 +373,7 @@
 <translation id="3241052487511142956">Попереднє натиснуте посилання</translation>
 <translation id="3241638166094654466">Клітинок у кожному рядку:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3255999844137387283">Камера недоступна. Переконайтеся, що ви ввійшли в обліковий запис і ввімкнули камеру.</translation>
 <translation id="3260949043575829030">Попередній схожий елемент</translation>
 <translation id="3270069636408109001">Немає наступної таблиці</translation>
 <translation id="3273791280096244679">Зберегти мітку</translation>
@@ -763,6 +765,7 @@
 <translation id="5824976764713185207">Автоматично озвучувати сторінку, коли вона завантажиться</translation>
 <translation id="5826479389509458994">ряд <ph name="ROW" /> стовпець <ph name="COL" /></translation>
 <translation id="5833044594931167190">Немає орієнтирів ARIA</translation>
+<translation id="5836800981500311517">Немає доступу до камери. Увімкніть камеру й переконайтеся, що вона не заблокована.</translation>
 <translation id="584044465500042213">Вимкнути режим прокручування</translation>
 <translation id="5842625257683688671">Немає наступного зображення</translation>
 <translation id="5847883414085148048">Присвята</translation>
