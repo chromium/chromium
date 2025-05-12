@@ -45,6 +45,7 @@ final class SigninPromoViewBinder {
                     .setOnClickListener(model.get(SigninPromoProperties.ON_DISMISS_BUTTON_CLICKED));
         } else if (key == SigninPromoProperties.TITLE_TEXT) {
             view.getTitle().setText(model.get(SigninPromoProperties.TITLE_TEXT));
+            updateDismissButtonContentDescription(view, view.getTitle().getText().toString());
         } else if (key == SigninPromoProperties.DESCRIPTION_TEXT) {
             view.getDescription().setText(model.get(SigninPromoProperties.DESCRIPTION_TEXT));
         } else if (key == SigninPromoProperties.PRIMARY_BUTTON_TEXT) {
@@ -58,11 +59,6 @@ final class SigninPromoViewBinder {
                             ? View.GONE
                             : View.VISIBLE;
             view.getSecondaryButton().setVisibility(visibility);
-            int lastViewId =
-                    visibility == View.GONE
-                            ? view.getPrimaryButton().getId()
-                            : view.getSecondaryButton().getId();
-            view.getDismissButton().setAccessibilityTraversalAfter(lastViewId);
         } else if (key == SigninPromoProperties.SHOULD_HIDE_DISMISS_BUTTON) {
             view.getDismissButton()
                     .setVisibility(
@@ -80,5 +76,17 @@ final class SigninPromoViewBinder {
         layoutParams.height = context.getResources().getDimensionPixelSize(dimenResId);
         layoutParams.width = context.getResources().getDimensionPixelSize(dimenResId);
         view.getImage().setLayoutParams(layoutParams);
+    }
+
+    private static void updateDismissButtonContentDescription(
+            PersonalizedSigninPromoView view, String promoTitle) {
+        // The dismiss button should be read before the other component to keep the traversal order
+        // consistent with the visual order for visual TalkBack users. The promo title is added to
+        // the button description so the user can understand that the action is tied to the promo
+        // view. See
+        // https://crbug.com/414444892.
+        String dismissButtonDescription =
+                promoTitle + " " + view.getContext().getString(R.string.close);
+        view.getDismissButton().setContentDescription(dismissButtonDescription);
     }
 }
