@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/html/html_hr_element.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
@@ -623,6 +624,11 @@ void DeleteSelectionCommand::RemoveCompletelySelectedNodes(
         });
   }
 
+  const ShouldAssumeContentIsAlwaysEditable always_editable =
+      RuntimeEnabledFeatures::EditingFastDeleteEnabled() &&
+              EnclosingTextControl(node)
+          ? kAssumeContentIsAlwaysEditable
+          : kDoNotAssumeContentIsAlwaysEditable;
   // Actually remove the nodes in |nodes_to_be_removed|.
   for (Node* node_to_be_removed : nodes_to_be_removed) {
     if (!downstream_end_.AnchorNode()->IsDescendantOf(node_to_be_removed)) {
@@ -678,7 +684,7 @@ void DeleteSelectionCommand::RemoveCompletelySelectedNodes(
     ending_position_ =
         ComputePositionForNodeRemoval(ending_position_, *node_to_be_removed);
     CompositeEditCommand::RemoveNode(node_to_be_removed, editing_state,
-                                     kDoNotAssumeContentIsAlwaysEditable);
+                                     always_editable);
     if (editing_state->IsAborted())
       return;
   }
@@ -719,7 +725,10 @@ void DeleteSelectionCommand::
     return;
   }
   Node* node = range->FirstNode();
-  while (node && node != range->PastLastNode()) {
+  Node* past_last = range->PastLastNode();
+  while (node && node != (RuntimeEnabledFeatures::EditingFastDeleteEnabled()
+                              ? past_last
+                              : range->PastLastNode())) {
     Node* next_node = NodeTraversal::Next(*node);
     if (IsA<HTMLStyleElement>(*node) || IsA<HTMLLinkElement>(*node)) {
       next_node = NodeTraversal::NextSkippingChildren(*node);

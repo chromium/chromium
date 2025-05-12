@@ -1888,6 +1888,11 @@
     },
     {
       // crbug.com/341564372
+      name: "EditingFastDelete",
+      status: "stable",
+    },
+    {
+      // crbug.com/341564372
       name: "EditingFastRichReplace",
       status: "stable",
     },

@@ -47,11 +47,25 @@ RemoveNodeCommand::RemoveNodeCommand(
 
 void RemoveNodeCommand::DoApply(EditingState* editing_state) {
   ContainerNode* parent = node_->parentNode();
-  GetDocument().UpdateStyleAndLayoutTree();
-  if (!parent || (should_assume_content_is_always_editable_ ==
-                      kDoNotAssumeContentIsAlwaysEditable &&
-                  !IsEditable(*parent) && parent->InActiveDocument()))
+  if (!parent) {
     return;
+  }
+  if (RuntimeEnabledFeatures::EditingFastDeleteEnabled()) {
+    if (should_assume_content_is_always_editable_ ==
+        kDoNotAssumeContentIsAlwaysEditable) {
+      GetDocument().UpdateStyleAndLayoutTree();
+      if (!IsEditable(*parent) && parent->InActiveDocument()) {
+        return;
+      }
+    }
+  } else {
+    GetDocument().UpdateStyleAndLayoutTree();
+    if (should_assume_content_is_always_editable_ ==
+            kDoNotAssumeContentIsAlwaysEditable &&
+        !IsEditable(*parent) && parent->InActiveDocument()) {
+      return;
+    }
+  }
   DCHECK(IsEditable(*parent) || !parent->InActiveDocument()) << parent;
 
   parent_ = parent;
