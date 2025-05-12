@@ -13,11 +13,21 @@
 
 namespace password_manager {
 
+class PasswordManagerClient;
+
+// Various options to where an OTP value can be sent.
+enum class OtpSource {
+  kUnknown = 0,
+  kSms = 1,
+  kEmail = 2,
+};
+
 // A class in charge of handling individual OTP forms, one instance per form.
 class OtpFormManager {
  public:
   OtpFormManager(autofill::FormGlobalId form_id,
-                 const std::vector<autofill::FieldGlobalId>& otp_field_ids);
+                 const std::vector<autofill::FieldGlobalId>& otp_field_ids,
+                 PasswordManagerClient* client);
 
   OtpFormManager(const OtpFormManager&) = delete;
   OtpFormManager& operator=(const OtpFormManager&) = delete;
@@ -35,12 +45,21 @@ class OtpFormManager {
   const std::vector<autofill::FieldGlobalId>& otp_field_ids() const {
     return otp_field_ids_;
   }
+
+  OtpSource otp_source() const { return otp_source_; }
 #endif  // defined(UNIT_TEST)
 
  private:
   autofill::FormGlobalId form_id_;
 
   std::vector<autofill::FieldGlobalId> otp_field_ids_;
+
+  // The client that owns the owner of this class and is guaranteed to outlive
+  // it.
+  raw_ptr<PasswordManagerClient> client_;
+
+  // Tracks where the OTP is sent to.
+  OtpSource otp_source_;
 };
 
 }  // namespace password_manager

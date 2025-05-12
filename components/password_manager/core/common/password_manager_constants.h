@@ -63,7 +63,7 @@ inline constexpr char16_t kHiddenValueRe[] = u"^(\\W)\\1+$";
 // `AutofillUploadContents::ValueType` of the user's input on-upload.
 inline constexpr char16_t kEmailValueRe[] =
     u"^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$";
-inline constexpr char16_t kPhoneValueRe[] = u"^[0-9()+-]{6,25}$";
+inline constexpr char16_t kPhoneValueRe[] = u"^[0-9()+-]{7,25}$";
 inline constexpr char16_t kUsernameLikeValueRe[] = u"[A-Za-z0-9_\\-.]{7,30}";
 
 inline constexpr char16_t kSearch[] = u"search";

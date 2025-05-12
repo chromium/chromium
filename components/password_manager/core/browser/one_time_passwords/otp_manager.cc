@@ -53,8 +53,8 @@ void OtpManager::ProcessClassificationModelPredictions(
   }
 
   if (form_managers_.find(form_id) == form_managers_.end()) {
-    form_managers_.emplace(form_id,
-                           OtpFormManager(form_id, fillable_otp_fields));
+    form_managers_.emplace(
+        form_id, OtpFormManager(form_id, fillable_otp_fields, client_));
     client_->InformPasswordChangeServiceOfOtpPresent();
 
   } else {
