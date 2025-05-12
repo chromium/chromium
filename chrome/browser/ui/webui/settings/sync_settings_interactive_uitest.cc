@@ -13,7 +13,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
@@ -27,14 +26,7 @@ class SyncSettingsInteractiveTest
     : public SigninBrowserTestBaseT<
           WebUiInteractiveTestMixin<InteractiveBrowserTest>> {
  public:
-  SyncSettingsInteractiveTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{switches::kImprovedSettingsUIOnDesktop},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  SyncSettingsInteractiveTest() = default;
 };
 
 // TODO(crbug.com/407795729): Fix and re-enable.

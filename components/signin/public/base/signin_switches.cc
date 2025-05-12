@@ -183,19 +183,6 @@ BASE_FEATURE(kInterceptBubblesDismissibleByAvatarButton,
              "InterceptBubblesDismissibleByAvatarButton",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kImprovedSettingsUIOnDesktop,
-             "ImprovedSettingsUIOnDesktop",
-#if BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
-
-bool IsImprovedSettingsUIOnDesktopEnabled() {
-  return base::FeatureList::IsEnabled(kImprovedSettingsUIOnDesktop);
-}
-
 BASE_FEATURE(kEnableSnackbarInSettings,
              "EnableSnackbarInSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);

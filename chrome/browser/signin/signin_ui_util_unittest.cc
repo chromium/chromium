@@ -832,8 +832,6 @@ TEST_F(SigninUiUtilTest,
 
 // Checks that sync is treated as a promo for kSettings.
 TEST_F(SigninUiUtilTest, EnableSyncPromoWithExistingWebOnlyAccountSettings) {
-  base::test::ScopedFeatureList feature_list{
-      switches::kImprovedSettingsUIOnDesktop};
   access_point_ = signin_metrics::AccessPoint::kSettings;
 
   TestEnableSyncPromoWithExistingWebOnlyAccount();

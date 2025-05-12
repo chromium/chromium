@@ -49,7 +49,6 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -1929,23 +1928,14 @@ TEST_F(PeopleHandlerSignoutTest, Signout) {
   EXPECT_EQ(2U, identity_manager()->GetAccountsWithRefreshTokens().size());
 
   CreatePeopleHandler();
-
-  if (switches::IsImprovedSettingsUIOnDesktopEnabled()) {
-    EXPECT_FALSE(browser()->signin_view_controller()->ShowsModalDialog());
-  }
+  EXPECT_FALSE(browser()->signin_view_controller()->ShowsModalDialog());
 
   base::Value::List args;
   args.Append(/*value=*/false);
   SimulateSignout(args);
-  if (switches::IsImprovedSettingsUIOnDesktopEnabled()) {
-    // The signout confirmation dialog is shown.
-    EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
-    EXPECT_TRUE(browser()->signin_view_controller()->ShowsModalDialog());
-  } else {
-    EXPECT_EQ(web_contents()->GetVisibleURL(),
-              GaiaUrls::GetInstance()->LogOutURLWithContinueURL(GURL()));
-    EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
-  }
+  // The signout confirmation dialog is shown.
+  EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+  EXPECT_TRUE(browser()->signin_view_controller()->ShowsModalDialog());
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

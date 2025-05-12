@@ -84,7 +84,6 @@ struct SyncStatusLabels {
   SyncStatusMessageType message_type = SyncStatusMessageType::kPreSynced;
   int status_label_string_id = 0;
   int button_string_id = 0;
-  // This will be empty when switches::kImprovedSettingsUIOnDesktop is disabled.
   int secondary_button_string_id = 0;
   SyncStatusActionType action_type = SyncStatusActionType::kNoAction;
 };
