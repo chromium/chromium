@@ -663,6 +663,12 @@ public class TabModelImpl extends TabModelJniBridge {
 
     @Override
     public boolean closeTabs(TabClosureParams tabClosureParams) {
+        if (!tabClosureParams.allowUndo) {
+            // The undo stacks assumes that previous actions in the stack are undoable. If an entry
+            // is not undoable then the reversal of the operations may fail or yield an invalid
+            // state. Commit the rest of the closures now to ensure that doesn't occur.
+            commitAllTabClosures();
+        }
         // TODO(crbug.com/356445932): Respect the provided params more broadly.
         switch (tabClosureParams.tabCloseType) {
             case TabCloseType.SINGLE:

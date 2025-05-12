@@ -690,6 +690,28 @@ public class UndoTabModelUnitTest {
         checkState(model, sEmptyList, null, sEmptyList, sEmptyList, null);
     }
 
+    @Test
+    @SmallTest
+    public void testTwoTabsOneNonUndoableOperation() throws TimeoutException {
+        final boolean isIncognito = false;
+        final TabModel model = createTabModel(isIncognito);
+        createTab(model, isIncognito);
+        createTab(model, isIncognito);
+
+        Tab tab0 = model.getTabAt(0);
+        Tab tab1 = model.getTabAt(1);
+
+        Tab[] fullList = new Tab[] {tab0, tab1};
+
+        checkState(model, new Tab[] {tab0, tab1}, tab1, sEmptyList, fullList, tab1);
+
+        closeTab(model, tab0, true);
+        checkState(model, new Tab[] {tab1}, tab1, new Tab[] {tab0}, fullList, tab1);
+
+        closeTab(model, tab1, false);
+        checkState(model, sEmptyList, null, sEmptyList, sEmptyList, null);
+    }
+
     /**
      * Test restoring in the same order of closing with the following actions/expected states:
      *     Action                     Model List         Close List        Comprehensive List
