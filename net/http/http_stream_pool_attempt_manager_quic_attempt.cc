@@ -160,12 +160,13 @@ void HttpStreamPool::AttemptManager::QuicAttempt::OnSessionAttemptComplete(
   }
 
   result_ = rv;
-  NetErrorDetails details;
+  QuicAttemptOutcome outcome(rv);
   if (session_attempt_) {
-    session_attempt_->PopulateNetErrorDetails(&details);
+    outcome.session = session_attempt_->session();
+    session_attempt_->PopulateNetErrorDetails(&outcome.error_details);
   }
   session_attempt_.reset();
-  manager_->OnQuicAttemptComplete(rv, std::move(details));
+  manager_->OnQuicAttemptComplete(std::move(outcome));
   // `this` is deleted.
 }
 

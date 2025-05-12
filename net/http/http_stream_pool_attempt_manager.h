@@ -65,6 +65,19 @@ class HttpStreamPool::AttemptManager
     : public HostResolver::ServiceEndpointRequest::Delegate {
  public:
   class NET_EXPORT_PRIVATE QuicAttempt;
+  struct NET_EXPORT_PRIVATE QuicAttemptOutcome {
+    explicit QuicAttemptOutcome(int result) : result(result) {}
+    ~QuicAttemptOutcome() = default;
+
+    QuicAttemptOutcome(QuicAttemptOutcome&&) = default;
+    QuicAttemptOutcome& operator=(QuicAttemptOutcome&&) = default;
+    QuicAttemptOutcome(const QuicAttemptOutcome&) = delete;
+    QuicAttemptOutcome& operator=(const QuicAttemptOutcome&) = delete;
+
+    int result;
+    NetErrorDetails error_details;
+    raw_ptr<QuicChromiumClientSession> session;
+  };
 
   // The state of an IPEndPoint. There is no success state. The absence of a
   // state for an endpoint means that we haven't yet attempted to connect to the
@@ -177,7 +190,7 @@ class HttpStreamPool::AttemptManager
   bool IsSvcbOptional();
 
   // Called when the QuicAttempt owned by `this` is completed.
-  void OnQuicAttemptComplete(int rv, NetErrorDetails details);
+  void OnQuicAttemptComplete(QuicAttemptOutcome result);
 
   // Retrieves information on the current state of `this` as a base::Value.
   base::Value::Dict GetInfoAsValue() const;
@@ -318,11 +331,9 @@ class HttpStreamPool::AttemptManager
   // Called when service endpoint results have changed or finished.
   void ProcessServiceEndpointChanges();
 
-  // Returns true when there is an active QUIC session that can be used for
-  // on-going jobs after service endpoint results have changed.
-  // TODO(bashi): Change the return value to `QuicChromiumClientSession*` and
-  // remove redundant QuicSessionPool::FindExistingSession() calls.
-  bool CanUseExistingQuicSessionAfterEndpointChanges();
+  // Returns an active QUIC session when there is an active QUIC session that
+  // can be used for on-going jobs after service endpoint results have changed.
+  QuicChromiumClientSession* CanUseExistingQuicSessionAfterEndpointChanges();
 
   // Returns an active SPDY session when there is an active SPDY session that
   // can be used for on-going jobs after service endpoint results have changed.
@@ -440,7 +451,7 @@ class HttpStreamPool::AttemptManager
 
   void MaybeCreateSpdyStreamAndNotify(base::WeakPtr<SpdySession> spdy_session);
 
-  void MaybeCreateQuicStreamAndNotify();
+  void MaybeCreateQuicStreamAndNotify(QuicChromiumClientSession* quic_session);
 
   void NotifyStreamReady(std::unique_ptr<HttpStream> stream,
                          NextProto negotiated_protocol);
@@ -452,7 +463,8 @@ class HttpStreamPool::AttemptManager
 
   // Called when a QUIC session is ready to use. Cancels in-flight attempts.
   // Closes idle streams. Completes preconnects.
-  void HandleQuicSessionReady(StreamSocketCloseReason refresh_group_reason);
+  void HandleQuicSessionReady(QuicChromiumClientSession* quic_session,
+                              StreamSocketCloseReason refresh_group_reason);
 
   // Extracts an entry from `jobs_` of which priority is highest. The ownership
   // of the entry is moved to `notified_jobs_`.

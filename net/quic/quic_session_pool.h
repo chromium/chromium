@@ -353,9 +353,9 @@ class NET_EXPORT_PRIVATE QuicSessionPool
       const QuicSessionKey& session_key,
       const url::SchemeHostPort& destination) const;
 
-  // Returns true when an existing session can be used for `destination` that
-  // is resolved with `service_endpoint`.
-  bool HasMatchingIpSessionForServiceEndpoint(
+  // Returns a session when an existing session can be used for `destination`
+  // that is resolved with `service_endpoint`.
+  QuicChromiumClientSession* HasMatchingIpSessionForServiceEndpoint(
       const QuicSessionAliasKey& session_alias_key,
       const ServiceEndpoint& service_endpoint,
       const std::set<std::string>& dns_aliases,
@@ -584,10 +584,11 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   // during connection.
   static void LogConnectionIpPooling(bool pooled);
 
-  bool HasMatchingIpSession(const QuicSessionAliasKey& key,
-                            const std::vector<IPEndPoint>& ip_endpoints,
-                            const std::set<std::string>& aliases,
-                            bool use_dns_aliases);
+  QuicChromiumClientSession* HasMatchingIpSession(
+      const QuicSessionAliasKey& key,
+      const std::vector<IPEndPoint>& ip_endpoints,
+      const std::set<std::string>& aliases,
+      bool use_dns_aliases);
   // Returns true if IP matching can be waived when trying to send requests to
   // |destination| on |session|.
   bool CanWaiveIpMatching(const url::SchemeHostPort& destination,

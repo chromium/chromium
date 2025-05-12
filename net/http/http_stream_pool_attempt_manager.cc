@@ -705,11 +705,13 @@ bool HttpStreamPool::AttemptManager::IsStalledByPoolLimit() {
 }
 
 void HttpStreamPool::AttemptManager::OnQuicAttemptComplete(
-    int rv,
-    NetErrorDetails details) {
+    QuicAttemptOutcome outcome) {
   CHECK(!quic_attempt_result_.has_value());
+  int rv = outcome.result;
+  QuicChromiumClientSession* quic_session = outcome.session;
+
   quic_attempt_result_ = rv;
-  net_error_details_ = std::move(details);
+  net_error_details_ = std::move(outcome.error_details);
 
   // Record completion time only when QuicAttempt actually attempted QUIC.
   if (rv != ERR_DNS_NO_MATCHING_SUPPORTED_ALPN) {
@@ -732,13 +734,8 @@ void HttpStreamPool::AttemptManager::OnQuicAttemptComplete(
         }
 
         if (rv == OK) {
-          QuicChromiumClientSession* quic_session =
-              quic_session_pool()->FindExistingSession(
-                  quic_session_alias_key().session_key(),
-                  quic_session_alias_key().destination());
-          if (quic_session) {
-            quic_session->net_log().source().AddToEventParameters(dict);
-          }
+          CHECK(quic_session);
+          quic_session->net_log().source().AddToEventParameters(dict);
         }
         return dict;
       });
@@ -746,7 +743,8 @@ void HttpStreamPool::AttemptManager::OnQuicAttemptComplete(
   MaybeMarkQuicBroken();
 
   if (rv == OK) {
-    HandleQuicSessionReady(StreamSocketCloseReason::kQuicSessionCreated);
+    HandleQuicSessionReady(quic_session,
+                           StreamSocketCloseReason::kQuicSessionCreated);
     MaybeCompleteLater();
     return;
   }
@@ -919,17 +917,13 @@ void HttpStreamPool::AttemptManager::ProcessServiceEndpointChanges() {
     return;
   }
 
-  if (CanUseExistingQuicSessionAfterEndpointChanges()) {
+  if (QuicChromiumClientSession* quic_session =
+          CanUseExistingQuicSessionAfterEndpointChanges()) {
     net_log_.AddEvent(
         NetLogEventType::
             HTTP_STREAM_POOL_ATTEMPT_MANAGER_EXISTING_QUIC_SESSION_MATCHED,
         [&] {
           base::Value::Dict dict;
-          QuicChromiumClientSession* quic_session =
-              quic_session_pool()->FindExistingSession(
-                  quic_session_alias_key().session_key(),
-                  quic_session_alias_key().destination());
-          CHECK(quic_session);
           quic_session->net_log().source().AddToEventParameters(dict);
           return dict;
         });
@@ -938,7 +932,8 @@ void HttpStreamPool::AttemptManager::ProcessServiceEndpointChanges() {
         base::TimeTicks::Now() - dns_resolution_start_time_);
 
     CancelQuicAttempt(OK);
-    HandleQuicSessionReady(StreamSocketCloseReason::kUsingExistingQuicSession);
+    HandleQuicSessionReady(quic_session,
+                           StreamSocketCloseReason::kUsingExistingQuicSession);
 
     CHECK(tcp_based_attempts_.empty());
     return;
@@ -976,27 +971,32 @@ void HttpStreamPool::AttemptManager::ProcessServiceEndpointChanges() {
   MaybeAttemptTcpBased();
 }
 
-bool HttpStreamPool::AttemptManager::
+QuicChromiumClientSession* HttpStreamPool::AttemptManager::
     CanUseExistingQuicSessionAfterEndpointChanges() {
   if (!CanUseQuic()) {
-    return false;
+    return nullptr;
   }
 
   if (CanUseExistingQuicSession()) {
-    return true;
+    QuicChromiumClientSession* quic_session =
+        quic_session_pool()->FindExistingSession(
+            quic_session_alias_key().session_key(),
+            quic_session_alias_key().destination());
+    CHECK(quic_session);
+    return quic_session;
   }
 
   for (const auto& endpoint : service_endpoint_request_->GetEndpointResults()) {
-    if (!quic_session_pool()->HasMatchingIpSessionForServiceEndpoint(
+    QuicChromiumClientSession* quic_session =
+        quic_session_pool()->HasMatchingIpSessionForServiceEndpoint(
             quic_session_alias_key(), endpoint,
-            service_endpoint_request_->GetDnsAliasResults(), true)) {
-      continue;
+            service_endpoint_request_->GetDnsAliasResults(), true);
+    if (quic_session) {
+      return quic_session;
     }
-
-    return true;
   }
 
-  return false;
+  return nullptr;
 }
 
 base::WeakPtr<SpdySession> HttpStreamPool::AttemptManager::
@@ -1074,8 +1074,8 @@ void HttpStreamPool::AttemptManager::MaybeAttemptQuic() {
 
   if (service_endpoint_request_finished_) {
     // There is no QUIC endpoint to attempt.
-    OnQuicAttemptComplete(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN,
-                          NetErrorDetails());
+    OnQuicAttemptComplete(
+        QuicAttemptOutcome(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN));
   }
 }
 
@@ -1625,19 +1625,15 @@ void HttpStreamPool::AttemptManager::MaybeCreateSpdyStreamAndNotify(
   CHECK(!weak_this || jobs_.empty());
 }
 
-void HttpStreamPool::AttemptManager::MaybeCreateQuicStreamAndNotify() {
+void HttpStreamPool::AttemptManager::MaybeCreateQuicStreamAndNotify(
+    QuicChromiumClientSession* quic_session) {
   CHECK(!is_canceling_jobs_);
   CHECK(!is_failing_);
+  CHECK(quic_session);
 
   if (jobs_.empty()) {
     return;
   }
-
-  QuicChromiumClientSession* quic_session =
-      quic_session_pool()->FindExistingSession(
-          quic_session_alias_key().session_key(),
-          quic_session_alias_key().destination());
-  CHECK(quic_session);
 
   std::set<std::string> dns_aliases = quic_session->GetDnsAliasesForSessionKey(
       quic_session_alias_key().session_key());
@@ -1689,9 +1685,11 @@ void HttpStreamPool::AttemptManager::HandleSpdySessionReady(
 }
 
 void HttpStreamPool::AttemptManager::HandleQuicSessionReady(
+    QuicChromiumClientSession* quic_session,
     StreamSocketCloseReason refresh_group_reason) {
   CHECK(!is_failing_);
   CHECK(!quic_attempt_);
+  CHECK(quic_session);
   // TODO(crbug.com/415488524): Change to DCHECK once we confirm the bug is
   // fixed.
   CHECK(CanUseExistingQuicSession());
@@ -1700,7 +1698,7 @@ void HttpStreamPool::AttemptManager::HandleQuicSessionReady(
 
   group_->Refresh(kSwitchingToHttp3, refresh_group_reason);
   NotifyPreconnectsComplete(OK);
-  MaybeCreateQuicStreamAndNotify();
+  MaybeCreateQuicStreamAndNotify(quic_session);
 }
 
 HttpStreamPool::Job* HttpStreamPool::AttemptManager::ExtractFirstJobToNotify() {
