@@ -178,6 +178,7 @@ public class HubToolbarView extends LinearLayout {
                     tab.view.setLayoutParams(tabLayoutParams);
                     tab.view.setPadding(
                             tabItemPadding, tabItemPadding, tabItemPadding, tabItemPadding);
+                    tab.view.setBackground(buildBackgroundDrawableForTab());
                 }
             }
             mPaneSwitcher.setVisibility(View.VISIBLE);
@@ -336,6 +337,14 @@ public class HubToolbarView extends LinearLayout {
                                         new PorterDuffColorFilter(color, PorterDuff.Mode.SRC);
                                 mPaneSwitcherCard.getBackground().setColorFilter(filter);
                             }));
+
+            mixer.registerBlend(
+                    new SingleHubViewColorBlend(
+                            PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
+                            colorScheme ->
+                                    HubColors.getPaneSwitcherTabItemHoverColor(
+                                            context, colorScheme),
+                            color -> updateTabItemBackgroundColor(context, color)));
         }
     }
 
@@ -382,6 +391,18 @@ public class HubToolbarView extends LinearLayout {
     private void updateSearchLoupeColor(@ColorInt int color) {
         ColorStateList colorStateList = ColorStateList.valueOf(color);
         mSearchLoupeView.setImageTintList(colorStateList);
+    }
+
+    private void updateTabItemBackgroundColor(Context context, @ColorInt int color) {
+        ColorStateList colorStateList =
+                HubColors.generateHoveredStateColorStateList(context, color);
+        for (int i = 0; i < mPaneSwitcher.getTabCount(); i++) {
+            View tabView = getButtonView(i);
+            if (tabView != null) {
+                GradientDrawable background = (GradientDrawable) tabView.getBackground();
+                background.setColor(colorStateList);
+            }
+        }
     }
 
     void setButtonLookupConsumer(Callback<PaneButtonLookup> lookupConsumer) {
@@ -515,5 +536,14 @@ public class HubToolbarView extends LinearLayout {
         rect.bottom += halfHeightDelta;
 
         return new TouchDelegate(rect, mActionButton);
+    }
+
+    private GradientDrawable buildBackgroundDrawableForTab() {
+        int radius = getResources().getDimensionPixelSize(R.dimen.hub_pane_switcher_tab_radius);
+        GradientDrawable hoverDrawable = new GradientDrawable();
+
+        hoverDrawable.setShape(GradientDrawable.RECTANGLE);
+        hoverDrawable.setCornerRadius(radius);
+        return hoverDrawable;
     }
 }

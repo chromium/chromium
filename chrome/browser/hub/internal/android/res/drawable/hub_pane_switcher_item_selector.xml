@@ -7,6 +7,6 @@ found in the LICENSE file.
 <shape
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:shape="rectangle">
-  <corners android:radius="12dp" />
+  <corners android:radius="@dimen/hub_pane_switcher_tab_radius" />
   <size android:height="@dimen/hub_pane_switcher_tab_size" />
 </shape>

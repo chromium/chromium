@@ -183,6 +183,11 @@ public class SemanticColorUtils {
         return resolve(R.attr.colorOnPrimary, context);
     }
 
+    /** Returns the semantic color values that correspond to colorOnSurface. */
+    public static @ColorInt int getColorOnSurface(Context context) {
+        return resolve(R.attr.colorOnSurface, context);
+    }
+
     /** Returns the semantic color values that correspond to colorOnSurfaceInverse. */
     public static @ColorInt int getColorOnSurfaceInverse(Context context) {
         return resolve(R.attr.colorOnSurfaceInverse, context);
