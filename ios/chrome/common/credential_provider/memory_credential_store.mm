@@ -41,7 +41,7 @@
   __block NSArray<id<Credential>>* credentials;
   __weak __typeof(self) weakSelf = self;
   dispatch_sync(self.workingQueue, ^{
-    credentials = [weakSelf.memoryStorage allValues];
+    credentials = [weakSelf allMemoryStorageValues];
   });
   return credentials;
 }
@@ -51,7 +51,7 @@
   CHECK(completion);
   __weak __typeof(self) weakSelf = self;
   dispatch_async(self.workingQueue, ^{
-    completion([weakSelf.memoryStorage allValues]);
+    completion([weakSelf allMemoryStorageValues]);
   });
 }
 
@@ -119,6 +119,13 @@
 // Loads the store from disk.
 - (NSMutableDictionary<NSString*, ArchivableCredential*>*)loadStorage {
   return [[NSMutableDictionary alloc] init];
+}
+
+#pragma mark - Private
+
+// Returns all values from the `memoryStorage` dictionary.
+- (NSArray<ArchivableCredential*>*)allMemoryStorageValues {
+  return [self.memoryStorage allValues];
 }
 
 @end
