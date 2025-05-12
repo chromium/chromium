@@ -83,7 +83,9 @@ void GLTexturePassthroughOzoneImageRepresentation::EndAccess() {
   // synchronize with GL.
   if (gl::GLFence::IsGpuFenceSupported() && need_end_fence_) {
     if (auto gl_fence = gl::GLFence::CreateForGpuFence()) {
-      fence = gl_fence->GetGpuFence()->GetGpuFenceHandle().Clone();
+      auto gpu_fence = gl_fence->GetGpuFence();
+      CHECK(gpu_fence);
+      fence = gpu_fence->GetGpuFenceHandle().Clone();
     } else {
       DLOG(ERROR) << "Failed to create GPU fence";
     }
