@@ -40,7 +40,8 @@ class ClientCertsTest(ChromeEnterpriseTestCase):
   @test
   def test_client_cert_installed_and_used(self):
     # Admin console setup:
-    # * Create OU "CBCM testing" > "Client certificates".
+    # * Choose an owned test account `accountX@chromepizzatest.com` from the
+    #   preprovisioned pool of users.
     # * Enable Google CA connector for OU.
     # * Copy `GoogleCertificateAuthority.pem` from the admin console to the
     #   GCS secrets.
@@ -49,7 +50,6 @@ class ClientCertsTest(ChromeEnterpriseTestCase):
     #   coverage for that policy, and is also more automation-friendly by not
     #   prompting the client to select a certificate to send to
     #   `test1.com:443`.
-    # * Create test user `client-certs-test@` under the OU.
     server_script = self.path_from_test_dir(os.pardir, 'common',
                                             'echo_server.py')
     server_cert_path = self.download_file_into_vm(
@@ -61,8 +61,7 @@ class ClientCertsTest(ChromeEnterpriseTestCase):
         f'gs://{self.gsbucket}/secrets/certs/GoogleCertificateAuthority.pem')
 
     test_script = self.path_from_test_dir('client_certs_webdriver_test.py')
-    password = self.GetFileFromGCSBucket(
-        'secrets/client-certs-account-password')
+    password = self.GetFileFromGCSBucket('secrets/account0-password')
 
     with self.RunScriptInBackground(self.win_config['dc'], server_script, [
         f'--cert={server_cert_path}',
@@ -73,7 +72,7 @@ class ClientCertsTest(ChromeEnterpriseTestCase):
           self.win_config['client'],
           test_script,
           args=[
-              '--account=client-certs-test@chromepizzatest.com',
+              '--account=account0@chromepizzatest.com',
               f'--password={password}',
           ],
           timeout=(15 * 60))
