@@ -46,7 +46,6 @@ import org.chromium.base.test.util.Features;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcherImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
@@ -75,8 +74,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
     @Mock private ContentView mContentView;
     @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private TabModelSelector mTabModelSelector;
-    private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
-
+    private MultiWindowModeStateDispatcherImpl mMultiWindowModeStateDispatcher;
     private FullscreenHtmlApiHandlerCompat mFullscreenHtmlApiHandlerCompat;
     private ObservableSupplierImpl<Boolean> mAreControlsHidden;
     private UserDataHost mHost;
@@ -560,6 +558,52 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         mFullscreenHtmlApiHandlerCompat.onExitFullscreen(mTab);
         mFullscreenHtmlApiHandlerCompat.onExitFullscreen(mTab);
         verify(observer, times(1)).onExitFullscreen(mTab);
+
+        assertEqualNumberOfEnterAndExitActivityFullscreenMode(1);
+    }
+
+    @Test
+    public void testMultiWindowModeChangeIsHandledWhenNoTabIsActive() {
+        mFullscreenHtmlApiHandlerCompat =
+                new FullscreenHtmlApiHandlerCompat(
+                        mActivity, mAreControlsHidden, true, mMultiWindowModeStateDispatcher) {
+                    @Override
+                    public void destroySelectActionMode(Tab tab) {}
+                };
+        mMultiWindowModeStateDispatcher.dispatchMultiWindowModeChanged(false);
+        mMultiWindowModeStateDispatcher.dispatchMultiWindowModeChanged(true);
+        mMultiWindowModeStateDispatcher.dispatchMultiWindowModeChanged(false);
+    }
+
+    @Test
+    @Config(
+            shadows = {FullscreenShadowActivity.class},
+            sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void testMultiWindowModeChangeIsHandledDuringAfterEnterFullscreen() {
+        mFullscreenHtmlApiHandlerCompat =
+                new FullscreenHtmlApiHandlerCompat(
+                        mActivity, mAreControlsHidden, true, mMultiWindowModeStateDispatcher) {
+                    @Override
+                    public void destroySelectActionMode(Tab tab) {}
+                };
+
+        doReturn(mWebContents).when(mTab).getWebContents();
+        doReturn(mContentView).when(mTab).getContentView();
+        doReturn(true).when(mTab).isUserInteractable();
+        doReturn(true).when(mTab).isHidden();
+        doReturn(true).when(mContentView).hasWindowFocus();
+        doReturn(VISIBLE_SYSTEM_BARS_WINDOW_INSETS.toWindowInsets())
+                .when(mContentView)
+                .getRootWindowInsets();
+        mAreControlsHidden.set(true);
+
+        mFullscreenHtmlApiHandlerCompat.setTabForTesting(mTab);
+        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false);
+
+        mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(mTab, fullscreenOptions);
+        mMultiWindowModeStateDispatcher.dispatchMultiWindowModeChanged(false);
+        mFullscreenHtmlApiHandlerCompat.onExitFullscreen(mTab);
+        mMultiWindowModeStateDispatcher.dispatchMultiWindowModeChanged(true);
 
         assertEqualNumberOfEnterAndExitActivityFullscreenMode(1);
     }

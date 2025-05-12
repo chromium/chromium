@@ -236,7 +236,7 @@ public abstract class FullscreenHtmlApiHandlerBase
             implements MultiWindowModeStateDispatcher.MultiWindowModeObserver {
         @Override
         public void onMultiWindowModeChanged(boolean isInMultiWindowMode) {
-            if (!mIsInMultiWindowMode && isInMultiWindowMode) {
+            if (mTab != null && !mIsInMultiWindowMode && isInMultiWindowMode) {
                 onExitFullscreen(mTab);
             }
             mIsInMultiWindowMode = isInMultiWindowMode;
